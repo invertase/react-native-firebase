@@ -1,0 +1,8722 @@
+[**React Native Firebase**](../../README.mdx)
+
+***
+
+[React Native Firebase](../../packages.mdx) / [@react-native-firebase/firestore](README.mdx) / pipelines
+
+# pipelines
+
+## Functions
+
+### abs()
+
+#### Call Signature
+
+> **abs**(`_expr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1297](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1297)
+
+**`Beta`**
+
+Absolute value of a numeric expression.
+
+##### Parameters
+
+###### \_expr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **abs**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1302](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1302)
+
+**`Beta`**
+
+Absolute value of a field.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### add()
+
+#### Call Signature
+
+> **add**(`_first`, `_second`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1139](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1139)
+
+**`Beta`**
+
+Creates an expression that adds two or more expressions together.
+
+##### Parameters
+
+###### \_first
+
+[`Expression`](#expression)
+
+###### \_second
+
+`unknown`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+A new Expression representing the addition operation.
+
+#### Call Signature
+
+> **add**(`_fieldName`, `_second`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1148](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1148)
+
+**`Beta`**
+
+Creates an expression that adds a field's value to an expression.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_second
+
+`unknown`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+A new Expression representing the addition operation.
+
+***
+
+### and()
+
+> **and**(`first`, `second`, ...`more`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:846](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L846)
+
+**`Beta`**
+
+Logical AND of boolean expressions.
+
+#### Parameters
+
+##### first
+
+[`BooleanExpression`](#booleanexpression)
+
+##### second
+
+[`BooleanExpression`](#booleanexpression)
+
+##### more
+
+...[`BooleanExpression`](#booleanexpression)[]
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### array()
+
+> **array**(`_elements`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1091](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1091)
+
+**`Beta`**
+
+Array expression.
+
+#### Parameters
+
+##### \_elements
+
+`unknown`[]
+
+#### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### arrayAgg()
+
+#### Call Signature
+
+> **arrayAgg**(`_expression`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1410](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1410)
+
+**`Beta`**
+
+Collects all values of an expression across stage inputs into an array (aggregate).
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+`Accumulator`
+
+#### Call Signature
+
+> **arrayAgg**(`_fieldName`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1411](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1411)
+
+**`Beta`**
+
+Collects all values of an expression across stage inputs into an array (aggregate).
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+`Accumulator`
+
+***
+
+### arrayAggDistinct()
+
+#### Call Signature
+
+> **arrayAggDistinct**(`_expression`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1569](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1569)
+
+**`Beta`**
+
+Collects distinct values of an expression across stage inputs into an array (aggregate).
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+`Accumulator`
+
+#### Call Signature
+
+> **arrayAggDistinct**(`_fieldName`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1570](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1570)
+
+**`Beta`**
+
+Collects distinct values of an expression across stage inputs into an array (aggregate).
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+`Accumulator`
+
+***
+
+### arrayConcat()
+
+#### Call Signature
+
+> **arrayConcat**(`_firstArray`, `_secondArray`, ...`_otherArrays`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1579](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1579)
+
+**`Beta`**
+
+Concatenates two or more arrays.
+
+##### Parameters
+
+###### \_firstArray
+
+[`Expression`](#expression)
+
+###### \_secondArray
+
+`unknown`[] \| [`Expression`](#expression)
+
+###### \_otherArrays
+
+...(`unknown`[] \| [`Expression`](#expression))[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **arrayConcat**(`_firstArrayField`, `_secondArray`, ...`_otherArrays`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1584](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1584)
+
+**`Beta`**
+
+Concatenates two or more arrays.
+
+##### Parameters
+
+###### \_firstArrayField
+
+`string`
+
+###### \_secondArray
+
+`unknown`[] \| [`Expression`](#expression)
+
+###### \_otherArrays
+
+...(`unknown`[] \| [`Expression`](#expression))[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### arrayContains()
+
+> **arrayContains**(`_arrayOrFieldName`, `_element`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:972](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L972)
+
+**`Beta`**
+
+Checks if an array contains an element.
+
+#### Parameters
+
+##### \_arrayOrFieldName
+
+[`Expression`](#expression)
+
+##### \_element
+
+[`Expression`](#expression)
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### arrayContainsAll()
+
+> **arrayContainsAll**(`_arrayOrFieldName`, `_values`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:994](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L994)
+
+**`Beta`**
+
+Checks if an array contains all of the given values.
+
+#### Parameters
+
+##### \_arrayOrFieldName
+
+[`Expression`](#expression)
+
+##### \_values
+
+`unknown`[]
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### arrayContainsAny()
+
+> **arrayContainsAny**(`_arrayOrFieldName`, `_values`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:983](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L983)
+
+**`Beta`**
+
+Checks if an array contains any of the given values.
+
+#### Parameters
+
+##### \_arrayOrFieldName
+
+[`Expression`](#expression)
+
+##### \_values
+
+`unknown`[]
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### arrayGet()
+
+#### Call Signature
+
+> **arrayGet**(`_arrayField`, `_offset`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1601](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1601)
+
+**`Beta`**
+
+Gets element at offset in an array field or expression.
+
+##### Parameters
+
+###### \_arrayField
+
+`string`
+
+###### \_offset
+
+`number`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **arrayGet**(`_arrayField`, `_offsetExpr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1602](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1602)
+
+**`Beta`**
+
+Gets element at offset in an array field or expression.
+
+##### Parameters
+
+###### \_arrayField
+
+`string`
+
+###### \_offsetExpr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **arrayGet**(`_arrayExpression`, `_offset`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1603](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1603)
+
+**`Beta`**
+
+Gets element at offset in an array field or expression.
+
+##### Parameters
+
+###### \_arrayExpression
+
+[`Expression`](#expression)
+
+###### \_offset
+
+`number`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **arrayGet**(`_arrayExpression`, `_offsetExpr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1604](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1604)
+
+**`Beta`**
+
+Gets element at offset in an array field or expression.
+
+##### Parameters
+
+###### \_arrayExpression
+
+[`Expression`](#expression)
+
+###### \_offsetExpr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### arrayLength()
+
+#### Call Signature
+
+> **arrayLength**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1616](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1616)
+
+**`Beta`**
+
+Length of an array (field or expression).
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **arrayLength**(`_array`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1617](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1617)
+
+**`Beta`**
+
+Length of an array (field or expression).
+
+##### Parameters
+
+###### \_array
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### arraySum()
+
+#### Call Signature
+
+> **arraySum**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1626](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1626)
+
+**`Beta`**
+
+Sum of numeric values in an array (aggregate-like for arrays).
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **arraySum**(`_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1627](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1627)
+
+**`Beta`**
+
+Sum of numeric values in an array (aggregate-like for arrays).
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### ascending()
+
+> **ascending**(`_expr`): `Ordering`
+
+Defined in: [pipelines/expressions.ts:1051](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1051)
+
+**`Beta`**
+
+Ascending ordering (standalone). Use in sort().
+
+#### Parameters
+
+##### \_expr
+
+[`Expression`](#expression)
+
+#### Returns
+
+`Ordering`
+
+***
+
+### average()
+
+#### Call Signature
+
+> **average**(`_expression`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1281](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1281)
+
+**`Beta`**
+
+Creates an aggregation that calculates the average (mean) of values from an expression.
+SDK name: average (avg is RN alias).
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+`Accumulator`
+
+#### Call Signature
+
+> **average**(`_fieldName`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1286](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1286)
+
+**`Beta`**
+
+Creates an aggregation that calculates the average (mean) of a field's values.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+`Accumulator`
+
+***
+
+### byteLength()
+
+#### Call Signature
+
+> **byteLength**(`_expr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1634](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1634)
+
+##### Parameters
+
+###### \_expr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **byteLength**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1635](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1635)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### ceil()
+
+#### Call Signature
+
+> **ceil**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1311](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1311)
+
+**`Beta`**
+
+Rounds up to the nearest integer.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **ceil**(`_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1312](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1312)
+
+**`Beta`**
+
+Rounds up to the nearest integer.
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### charLength()
+
+#### Call Signature
+
+> **charLength**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1640](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1640)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **charLength**(`_stringExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1641](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1641)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### collectionId()
+
+#### Call Signature
+
+> **collectionId**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1646](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1646)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **collectionId**(`_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1647](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1647)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### concat()
+
+#### Call Signature
+
+> **concat**(`_first`, `_second`, ...`_others`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1420](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1420)
+
+**`Beta`**
+
+Concatenates two or more expressions (e.g. strings or arrays).
+
+##### Parameters
+
+###### \_first
+
+[`Expression`](#expression)
+
+###### \_second
+
+`unknown`
+
+###### \_others
+
+...`unknown`[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **concat**(`_fieldName`, `_second`, ...`_others`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1425](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1425)
+
+**`Beta`**
+
+Concatenates two or more expressions (e.g. strings or arrays).
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_second
+
+`unknown`
+
+###### \_others
+
+...`unknown`[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### conditional()
+
+> **conditional**(`_condition`, `_thenExpr`, `_elseExpr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1368](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1368)
+
+**`Beta`**
+
+Conditional expression: if condition then thenExpr else elseExpr.
+
+#### Parameters
+
+##### \_condition
+
+[`BooleanExpression`](#booleanexpression)
+
+##### \_thenExpr
+
+[`Expression`](#expression)
+
+##### \_elseExpr
+
+[`Expression`](#expression)
+
+#### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### constant()
+
+#### Call Signature
+
+> **constant**(`_value`): [`Expression`](#expression)
+
+Defined in: [pipelines/expressions.ts:1104](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1104)
+
+**`Beta`**
+
+Creates a constant expression for a number value.
+
+##### Parameters
+
+###### \_value
+
+`number`
+
+##### Returns
+
+[`Expression`](#expression)
+
+#### Call Signature
+
+> **constant**(`_value`): [`Expression`](#expression)
+
+Defined in: [pipelines/expressions.ts:1109](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1109)
+
+**`Beta`**
+
+Creates a constant expression for a string value.
+
+##### Parameters
+
+###### \_value
+
+`string`
+
+##### Returns
+
+[`Expression`](#expression)
+
+#### Call Signature
+
+> **constant**(`_value`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1114](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1114)
+
+**`Beta`**
+
+Creates a constant boolean expression.
+
+##### Parameters
+
+###### \_value
+
+`boolean`
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **constant**(`_value`): [`Expression`](#expression)
+
+Defined in: [pipelines/expressions.ts:1119](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1119)
+
+**`Beta`**
+
+Creates a constant expression for null.
+
+##### Parameters
+
+###### \_value
+
+`null`
+
+##### Returns
+
+[`Expression`](#expression)
+
+#### Call Signature
+
+> **constant**(`_value`): [`Expression`](#expression)
+
+Defined in: [pipelines/expressions.ts:1124](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1124)
+
+**`Beta`**
+
+Creates a constant expression for a value (e.g. GeoPoint, Timestamp, Date, Bytes, DocumentReference, VectorValue).
+
+##### Parameters
+
+###### \_value
+
+`unknown`
+
+##### Returns
+
+[`Expression`](#expression)
+
+***
+
+### cosineDistance()
+
+#### Call Signature
+
+> **cosineDistance**(`_fieldName`, `_vector`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1749](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1749)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_vector
+
+`number`[] \| [`VectorValue`](../../index/@react-native-firebase/firestore/index.mdx#vectorvalue)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **cosineDistance**(`_fieldName`, `_vectorExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1753](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1753)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_vectorExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **cosineDistance**(`_vectorExpression`, `_vector`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1757](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1757)
+
+##### Parameters
+
+###### \_vectorExpression
+
+[`Expression`](#expression)
+
+###### \_vector
+
+`number`[] \| [`VectorValue`](../../index/@react-native-firebase/firestore/index.mdx#vectorvalue)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **cosineDistance**(`_vectorExpression`, `_otherVectorExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1761](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1761)
+
+##### Parameters
+
+###### \_vectorExpression
+
+[`Expression`](#expression)
+
+###### \_otherVectorExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### count()
+
+#### Call Signature
+
+> **count**(`_expression`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1266](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1266)
+
+**`Beta`**
+
+Creates an aggregation that counts stage inputs with valid evaluations of the expression.
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+`Accumulator`
+
+#### Call Signature
+
+> **count**(`_fieldName`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1271](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1271)
+
+**`Beta`**
+
+Creates an aggregation that counts stage inputs where the field exists.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+`Accumulator`
+
+***
+
+### countAll()
+
+> **countAll**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1075](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1075)
+
+**`Beta`**
+
+Count-all aggregation (e.g. countAll().as('total')).
+
+#### Returns
+
+`Accumulator`
+
+***
+
+### countDistinct()
+
+> **countDistinct**(`_expr`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1380](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1380)
+
+**`Beta`**
+
+Count distinct values of an expression or field.
+
+#### Parameters
+
+##### \_expr
+
+[`Expression`](#expression)
+
+#### Returns
+
+`Accumulator`
+
+***
+
+### countIf()
+
+> **countIf**(`_booleanExpr`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1652](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1652)
+
+#### Parameters
+
+##### \_booleanExpr
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Returns
+
+`Accumulator`
+
+***
+
+### currentTimestamp()
+
+> **currentTimestamp**(): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1452](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1452)
+
+**`Beta`**
+
+Server timestamp at execution time.
+
+#### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### descending()
+
+> **descending**(`_expr`): `Ordering`
+
+Defined in: [pipelines/expressions.ts:1059](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1059)
+
+**`Beta`**
+
+Descending ordering (standalone). Use in sort().
+
+#### Parameters
+
+##### \_expr
+
+[`Expression`](#expression)
+
+#### Returns
+
+`Ordering`
+
+***
+
+### divide()
+
+#### Call Signature
+
+> **divide**(`_left`, `_right`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1189](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1189)
+
+**`Beta`**
+
+Creates an expression that divides the first by the second.
+
+##### Parameters
+
+###### \_left
+
+[`Expression`](#expression)
+
+###### \_right
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **divide**(`_expression`, `_value`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1194](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1194)
+
+**`Beta`**
+
+Creates an expression that divides an expression by a constant value.
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_value
+
+`unknown`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **divide**(`_fieldName`, `_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1199](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1199)
+
+**`Beta`**
+
+Creates an expression that divides a field's value by an expression.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **divide**(`_fieldName`, `_value`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1204](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1204)
+
+**`Beta`**
+
+Creates an expression that divides a field's value by a constant.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_value
+
+`unknown`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### documentId()
+
+#### Call Signature
+
+> **documentId**(`_documentPath`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1236](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1236)
+
+**`Beta`**
+
+Creates an expression that evaluates to the document ID (and optionally path).
+
+##### Parameters
+
+###### \_documentPath
+
+`string` \| [`DocumentReference`](../../index/@react-native-firebase/firestore/index.mdx#documentreference)\<[`DocumentData`](../../index/@react-native-firebase/firestore/index.mdx#documentdata), [`DocumentData`](../../index/@react-native-firebase/firestore/index.mdx#documentdata)\>
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+A new Expression representing the document ID.
+
+#### Call Signature
+
+> **documentId**(`_documentPathExpr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1241](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1241)
+
+**`Beta`**
+
+Creates an expression that evaluates to the document ID from a path expression.
+
+##### Parameters
+
+###### \_documentPathExpr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### dotProduct()
+
+#### Call Signature
+
+> **dotProduct**(`_fieldName`, `_vector`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1772](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1772)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_vector
+
+`number`[] \| [`VectorValue`](../../index/@react-native-firebase/firestore/index.mdx#vectorvalue)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **dotProduct**(`_fieldName`, `_vectorExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1773](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1773)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_vectorExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **dotProduct**(`_vectorExpression`, `_vector`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1774](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1774)
+
+##### Parameters
+
+###### \_vectorExpression
+
+[`Expression`](#expression)
+
+###### \_vector
+
+`number`[] \| [`VectorValue`](../../index/@react-native-firebase/firestore/index.mdx#vectorvalue)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **dotProduct**(`_vectorExpression`, `_otherVectorExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1778](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1778)
+
+##### Parameters
+
+###### \_vectorExpression
+
+[`Expression`](#expression)
+
+###### \_otherVectorExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### endsWith()
+
+#### Call Signature
+
+> **endsWith**(`_stringOrFieldName`, `_suffix`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1021](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1021)
+
+**`Beta`**
+
+Checks if a string ends with a suffix.
+
+##### Parameters
+
+###### \_stringOrFieldName
+
+`string`
+
+###### \_suffix
+
+`string`
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **endsWith**(`_stringOrFieldName`, `_suffix`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1022](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1022)
+
+**`Beta`**
+
+Checks if a string ends with a suffix.
+
+##### Parameters
+
+###### \_stringOrFieldName
+
+[`Expression`](#expression)
+
+###### \_suffix
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### equal()
+
+> **equal**(`_left`, `_right`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:900](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L900)
+
+**`Beta`**
+
+Equality comparison (alias for eq).
+
+#### Parameters
+
+##### \_left
+
+[`Expression`](#expression)
+
+##### \_right
+
+[`Expression`](#expression)
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### equalAny()
+
+#### Call Signature
+
+> **equalAny**(`_expression`, `_values`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1789](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1789)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_values
+
+`unknown`[]
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **equalAny**(`_expression`, `_arrayExpression`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1793](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1793)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_arrayExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **equalAny**(`_fieldName`, `_values`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1794](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1794)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_values
+
+`unknown`[]
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **equalAny**(`_fieldName`, `_arrayExpression`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1798](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1798)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_arrayExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### euclideanDistance()
+
+#### Call Signature
+
+> **euclideanDistance**(`_fieldName`, `_vector`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1806](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1806)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_vector
+
+`number`[] \| [`VectorValue`](../../index/@react-native-firebase/firestore/index.mdx#vectorvalue)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **euclideanDistance**(`_fieldName`, `_vectorExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1810](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1810)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_vectorExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **euclideanDistance**(`_vectorExpression`, `_vector`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1814](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1814)
+
+##### Parameters
+
+###### \_vectorExpression
+
+[`Expression`](#expression)
+
+###### \_vector
+
+`number`[] \| [`VectorValue`](../../index/@react-native-firebase/firestore/index.mdx#vectorvalue)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **euclideanDistance**(`_vectorExpression`, `_otherVectorExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1818](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1818)
+
+##### Parameters
+
+###### \_vectorExpression
+
+[`Expression`](#expression)
+
+###### \_otherVectorExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### execute()
+
+#### Call Signature
+
+> **execute**(`pipeline`): `Promise`\<[`PipelineSnapshot`](#pipelinesnapshot)\<[`DocumentData`](../../index/@react-native-firebase/firestore/index.mdx#documentdata)\>\>
+
+Defined in: [pipelines/pipeline\_impl.ts:34](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline_impl.ts#L34)
+
+**`Beta`**
+
+Executes a pipeline and returns a Promise that resolves to the pipeline snapshot.
+
+##### Parameters
+
+###### pipeline
+
+[`Pipeline`](#pipeline)
+
+##### Returns
+
+`Promise`\<[`PipelineSnapshot`](#pipelinesnapshot)\<[`DocumentData`](../../index/@react-native-firebase/firestore/index.mdx#documentdata)\>\>
+
+##### Example
+
+```
+const snapshot = await execute(
+  firestore.pipeline().collection('books').where(gt(field('rating'), 4.5)).select('title', 'author', 'rating')
+);
+```
+
+#### Call Signature
+
+> **execute**(`options`): `Promise`\<[`PipelineSnapshot`](#pipelinesnapshot)\<[`DocumentData`](../../index/@react-native-firebase/firestore/index.mdx#documentdata)\>\>
+
+Defined in: [pipelines/pipeline\_impl.ts:40](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline_impl.ts#L40)
+
+**`Beta`**
+
+Executes a pipeline with options.
+
+##### Parameters
+
+###### options
+
+[`PipelineExecuteOptions`](#pipelineexecuteoptions)
+
+##### Returns
+
+`Promise`\<[`PipelineSnapshot`](#pipelinesnapshot)\<[`DocumentData`](../../index/@react-native-firebase/firestore/index.mdx#documentdata)\>\>
+
+***
+
+### exists()
+
+> **exists**(`_valueOrFieldName`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:964](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L964)
+
+**`Beta`**
+
+Checks if a field exists (or expression evaluates to a value).
+
+#### Parameters
+
+##### \_valueOrFieldName
+
+[`Expression`](#expression)
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### exp()
+
+#### Call Signature
+
+> **exp**(`_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1656](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1656)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **exp**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1657](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1657)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### field()
+
+> **field**(`_path`): [`Field`](#field)
+
+Defined in: [pipelines/expressions.ts:838](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L838)
+
+**`Beta`**
+
+Returns a Field reference for use in pipeline expressions.
+
+#### Parameters
+
+##### \_path
+
+`string`
+
+#### Returns
+
+[`Field`](#field)
+
+***
+
+### first()
+
+#### Call Signature
+
+> **first**(`_expression`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1388](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1388)
+
+**`Beta`**
+
+First value of the expression in each group (aggregate).
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+`Accumulator`
+
+#### Call Signature
+
+> **first**(`_fieldName`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1389](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1389)
+
+**`Beta`**
+
+First value of the expression in each group (aggregate).
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+`Accumulator`
+
+***
+
+### floor()
+
+#### Call Signature
+
+> **floor**(`_expr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1321](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1321)
+
+**`Beta`**
+
+Rounds down to the nearest integer.
+
+##### Parameters
+
+###### \_expr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **floor**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1322](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1322)
+
+**`Beta`**
+
+Rounds down to the nearest integer.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### greaterThan()
+
+> **greaterThan**(`_left`, `_right`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:884](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L884)
+
+**`Beta`**
+
+Greater-than comparison (alias for gt).
+
+#### Parameters
+
+##### \_left
+
+[`Expression`](#expression)
+
+##### \_right
+
+[`Expression`](#expression)
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### greaterThanOrEqual()
+
+> **greaterThanOrEqual**(`_left`, `_right`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:956](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L956)
+
+**`Beta`**
+
+Greater-than-or-equal comparison (alias for gte).
+
+#### Parameters
+
+##### \_left
+
+[`Expression`](#expression)
+
+##### \_right
+
+[`Expression`](#expression)
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### ifAbsent()
+
+#### Call Signature
+
+> **ifAbsent**(`_ifExpr`, `_elseExpr`): [`Expression`](#expression)
+
+Defined in: [pipelines/expressions.ts:1468](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1468)
+
+**`Beta`**
+
+If ifExpr is present use it, else use elseExpr/elseValue.
+
+##### Parameters
+
+###### \_ifExpr
+
+[`Expression`](#expression)
+
+###### \_elseExpr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`Expression`](#expression)
+
+#### Call Signature
+
+> **ifAbsent**(`_ifExpr`, `_elseValue`): [`Expression`](#expression)
+
+Defined in: [pipelines/expressions.ts:1469](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1469)
+
+**`Beta`**
+
+If ifExpr is present use it, else use elseExpr/elseValue.
+
+##### Parameters
+
+###### \_ifExpr
+
+[`Expression`](#expression)
+
+###### \_elseValue
+
+`unknown`
+
+##### Returns
+
+[`Expression`](#expression)
+
+#### Call Signature
+
+> **ifAbsent**(`_ifFieldName`, `_elseExpr`): [`Expression`](#expression)
+
+Defined in: [pipelines/expressions.ts:1470](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1470)
+
+**`Beta`**
+
+If ifExpr is present use it, else use elseExpr/elseValue.
+
+##### Parameters
+
+###### \_ifFieldName
+
+`string`
+
+###### \_elseExpr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`Expression`](#expression)
+
+#### Call Signature
+
+> **ifAbsent**(`_ifFieldName`, `_elseValue`): [`Expression`](#expression)
+
+Defined in: [pipelines/expressions.ts:1471](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1471)
+
+**`Beta`**
+
+If ifExpr is present use it, else use elseExpr/elseValue.
+
+##### Parameters
+
+###### \_ifFieldName
+
+[`Expression`](#expression)
+
+###### \_elseValue
+
+`unknown`
+
+##### Returns
+
+[`Expression`](#expression)
+
+***
+
+### ifError()
+
+#### Call Signature
+
+> **ifError**(`_tryExpr`, `_catchExpr`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1486](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1486)
+
+**`Beta`**
+
+If tryExpr errors, return catchExpr/catchValue (error handling expression).
+
+##### Parameters
+
+###### \_tryExpr
+
+[`BooleanExpression`](#booleanexpression)
+
+###### \_catchExpr
+
+[`BooleanExpression`](#booleanexpression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **ifError**(`_tryExpr`, `_catchExpr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1490](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1490)
+
+**`Beta`**
+
+If tryExpr errors, return catchExpr/catchValue (error handling expression).
+
+##### Parameters
+
+###### \_tryExpr
+
+[`Expression`](#expression)
+
+###### \_catchExpr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **ifError**(`_tryExpr`, `_catchValue`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1491](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1491)
+
+**`Beta`**
+
+If tryExpr errors, return catchExpr/catchValue (error handling expression).
+
+##### Parameters
+
+###### \_tryExpr
+
+[`Expression`](#expression)
+
+###### \_catchValue
+
+`unknown`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### isAbsent()
+
+#### Call Signature
+
+> **isAbsent**(`_value`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1829](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1829)
+
+##### Parameters
+
+###### \_value
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **isAbsent**(`_field`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1830](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1830)
+
+##### Parameters
+
+###### \_field
+
+`string`
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### isError()
+
+> **isError**(`_value`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1835](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1835)
+
+#### Parameters
+
+##### \_value
+
+[`Expression`](#expression)
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### isType()
+
+#### Call Signature
+
+> **isType**(`_fieldName`, `_type`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1839](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1839)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_type
+
+[`Type`](#type)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **isType**(`_expression`, `_type`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1840](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1840)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_type
+
+[`Type`](#type)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### join()
+
+#### Call Signature
+
+> **join**(`_arrayFieldName`, `_delimiter`): [`Expression`](#expression)
+
+Defined in: [pipelines/expressions.ts:1662](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1662)
+
+##### Parameters
+
+###### \_arrayFieldName
+
+`string`
+
+###### \_delimiter
+
+`string`
+
+##### Returns
+
+[`Expression`](#expression)
+
+#### Call Signature
+
+> **join**(`_arrayExpression`, `_delimiterExpression`): [`Expression`](#expression)
+
+Defined in: [pipelines/expressions.ts:1663](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1663)
+
+##### Parameters
+
+###### \_arrayExpression
+
+[`Expression`](#expression)
+
+###### \_delimiterExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`Expression`](#expression)
+
+#### Call Signature
+
+> **join**(`_arrayExpression`, `_delimiter`): [`Expression`](#expression)
+
+Defined in: [pipelines/expressions.ts:1664](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1664)
+
+##### Parameters
+
+###### \_arrayExpression
+
+[`Expression`](#expression)
+
+###### \_delimiter
+
+`string`
+
+##### Returns
+
+[`Expression`](#expression)
+
+#### Call Signature
+
+> **join**(`_arrayFieldName`, `_delimiterExpression`): [`Expression`](#expression)
+
+Defined in: [pipelines/expressions.ts:1665](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1665)
+
+##### Parameters
+
+###### \_arrayFieldName
+
+`string`
+
+###### \_delimiterExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`Expression`](#expression)
+
+***
+
+### last()
+
+#### Call Signature
+
+> **last**(`_expression`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1398](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1398)
+
+**`Beta`**
+
+Last value of the expression in each group (aggregate).
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+`Accumulator`
+
+#### Call Signature
+
+> **last**(`_fieldName`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1399](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1399)
+
+**`Beta`**
+
+Last value of the expression in each group (aggregate).
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+`Accumulator`
+
+***
+
+### length()
+
+#### Call Signature
+
+> **length**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2317](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2317)
+
+**`Beta`**
+
+Length of string, array, map, vector, or bytes (field or expression).
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **length**(`_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2318](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2318)
+
+**`Beta`**
+
+Length of string, array, map, vector, or bytes (field or expression).
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### lessThan()
+
+> **lessThan**(`_left`, `_right`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:932](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L932)
+
+**`Beta`**
+
+Less-than comparison (alias for lt).
+
+#### Parameters
+
+##### \_left
+
+[`Expression`](#expression)
+
+##### \_right
+
+[`Expression`](#expression)
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### lessThanOrEqual()
+
+> **lessThanOrEqual**(`_left`, `_right`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:948](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L948)
+
+**`Beta`**
+
+Less-than-or-equal comparison (alias for lte).
+
+#### Parameters
+
+##### \_left
+
+[`Expression`](#expression)
+
+##### \_right
+
+[`Expression`](#expression)
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### like()
+
+#### Call Signature
+
+> **like**(`_fieldName`, `_pattern`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1673](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1673)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_pattern
+
+`string`
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **like**(`_fieldName`, `_pattern`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1674](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1674)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_pattern
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **like**(`_stringExpression`, `_pattern`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1675](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1675)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+###### \_pattern
+
+`string`
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **like**(`_stringExpression`, `_pattern`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1676](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1676)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+###### \_pattern
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### ln()
+
+#### Call Signature
+
+> **ln**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1684](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1684)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **ln**(`_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1685](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1685)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### log()
+
+#### Call Signature
+
+> **log**(`_expression`, `_base`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1690](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1690)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_base
+
+`number`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **log**(`_expression`, `_base`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1691](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1691)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_base
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **log**(`_fieldName`, `_base`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1692](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1692)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_base
+
+`number`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **log**(`_fieldName`, `_base`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1693](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1693)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_base
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### log10()
+
+#### Call Signature
+
+> **log10**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1701](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1701)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **log10**(`_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1702](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1702)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### logicalMaximum()
+
+#### Call Signature
+
+> **logicalMaximum**(`_first`, `_second`, ...`_others`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1845](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1845)
+
+##### Parameters
+
+###### \_first
+
+[`Expression`](#expression)
+
+###### \_second
+
+`unknown`
+
+###### \_others
+
+...`unknown`[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **logicalMaximum**(`_fieldName`, `_second`, ...`_others`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1850](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1850)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_second
+
+`unknown`
+
+###### \_others
+
+...`unknown`[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### logicalMinimum()
+
+#### Call Signature
+
+> **logicalMinimum**(`_first`, `_second`, ...`_others`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1863](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1863)
+
+##### Parameters
+
+###### \_first
+
+[`Expression`](#expression)
+
+###### \_second
+
+`unknown`
+
+###### \_others
+
+...`unknown`[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **logicalMinimum**(`_fieldName`, `_second`, ...`_others`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1868](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1868)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_second
+
+`unknown`
+
+###### \_others
+
+...`unknown`[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### ltrim()
+
+#### Call Signature
+
+> **ltrim**(`_fieldName`, `_valueToTrim?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1881](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1881)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_valueToTrim?
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **ltrim**(`_expression`, `_valueToTrim?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1885](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1885)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_valueToTrim?
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### map()
+
+> **map**(`_entries`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1083](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1083)
+
+**`Beta`**
+
+Map expression for replaceWith etc.
+
+#### Parameters
+
+##### \_entries
+
+`Record`\<`string`, `unknown`\>
+
+#### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### mapEntries()
+
+#### Call Signature
+
+> **mapEntries**(`_mapField`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1952](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1952)
+
+##### Parameters
+
+###### \_mapField
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **mapEntries**(`_mapExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1953](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1953)
+
+##### Parameters
+
+###### \_mapExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### mapGet()
+
+#### Call Signature
+
+> **mapGet**(`_fieldName`, `_subField`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1958](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1958)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_subField
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **mapGet**(`_mapExpression`, `_subField`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1959](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1959)
+
+##### Parameters
+
+###### \_mapExpression
+
+[`Expression`](#expression)
+
+###### \_subField
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### mapKeys()
+
+#### Call Signature
+
+> **mapKeys**(`_mapField`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1964](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1964)
+
+##### Parameters
+
+###### \_mapField
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **mapKeys**(`_mapExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1965](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1965)
+
+##### Parameters
+
+###### \_mapExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### mapMerge()
+
+#### Call Signature
+
+> **mapMerge**(`_mapField`, `_secondMap`, ...`_otherMaps`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1970](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1970)
+
+##### Parameters
+
+###### \_mapField
+
+`string`
+
+###### \_secondMap
+
+`Record`\<`string`, `unknown`\> \| [`Expression`](#expression)
+
+###### \_otherMaps
+
+...(`Record`\<`string`, `unknown`\> \| [`Expression`](#expression))[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **mapMerge**(`_firstMap`, `_secondMap`, ...`_otherMaps`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1975](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1975)
+
+##### Parameters
+
+###### \_firstMap
+
+`Record`\<`string`, `unknown`\> \| [`Expression`](#expression)
+
+###### \_secondMap
+
+`Record`\<`string`, `unknown`\> \| [`Expression`](#expression)
+
+###### \_otherMaps
+
+...(`Record`\<`string`, `unknown`\> \| [`Expression`](#expression))[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### mapRemove()
+
+#### Call Signature
+
+> **mapRemove**(`_mapField`, `_key`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1988](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1988)
+
+##### Parameters
+
+###### \_mapField
+
+`string`
+
+###### \_key
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **mapRemove**(`_mapExpr`, `_key`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1989](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1989)
+
+##### Parameters
+
+###### \_mapExpr
+
+[`Expression`](#expression)
+
+###### \_key
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **mapRemove**(`_mapField`, `_keyExpr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1990](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1990)
+
+##### Parameters
+
+###### \_mapField
+
+`string`
+
+###### \_keyExpr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **mapRemove**(`_mapExpr`, `_keyExpr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1991](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1991)
+
+##### Parameters
+
+###### \_mapExpr
+
+[`Expression`](#expression)
+
+###### \_keyExpr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### mapSet()
+
+#### Call Signature
+
+> **mapSet**(`_mapField`, `_key`, `_value`, ...`_moreKeyValues`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1999](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1999)
+
+##### Parameters
+
+###### \_mapField
+
+`string`
+
+###### \_key
+
+[`Expression`](#expression)
+
+###### \_value
+
+`unknown`
+
+###### \_moreKeyValues
+
+...`unknown`[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **mapSet**(`_mapExpression`, `_key`, `_value`, ...`_moreKeyValues`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2005](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2005)
+
+##### Parameters
+
+###### \_mapExpression
+
+[`Expression`](#expression)
+
+###### \_key
+
+[`Expression`](#expression)
+
+###### \_value
+
+`unknown`
+
+###### \_moreKeyValues
+
+...`unknown`[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### mapValues()
+
+#### Call Signature
+
+> **mapValues**(`_mapField`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2020](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2020)
+
+##### Parameters
+
+###### \_mapField
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **mapValues**(`_mapExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2021](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2021)
+
+##### Parameters
+
+###### \_mapExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### maximum()
+
+#### Call Signature
+
+> **maximum**(`_expression`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1707](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1707)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+`Accumulator`
+
+#### Call Signature
+
+> **maximum**(`_fieldName`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1708](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1708)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+`Accumulator`
+
+***
+
+### minimum()
+
+#### Call Signature
+
+> **minimum**(`_expression`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1713](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1713)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+`Accumulator`
+
+#### Call Signature
+
+> **minimum**(`_fieldName`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1714](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1714)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+`Accumulator`
+
+***
+
+### mod()
+
+#### Call Signature
+
+> **mod**(`_left`, `_right`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1331](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1331)
+
+**`Beta`**
+
+Remainder (modulo) of left divided by right.
+
+##### Parameters
+
+###### \_left
+
+[`Expression`](#expression)
+
+###### \_right
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **mod**(`_expression`, `_value`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1332](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1332)
+
+**`Beta`**
+
+Remainder (modulo) of left divided by right.
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_value
+
+`unknown`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **mod**(`_fieldName`, `_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1333](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1333)
+
+**`Beta`**
+
+Remainder (modulo) of left divided by right.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **mod**(`_fieldName`, `_value`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1334](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1334)
+
+**`Beta`**
+
+Remainder (modulo) of left divided by right.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_value
+
+`unknown`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### multiply()
+
+#### Call Signature
+
+> **multiply**(`_first`, `_second`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1216](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1216)
+
+**`Beta`**
+
+Creates an expression that multiplies two or more expressions.
+
+##### Parameters
+
+###### \_first
+
+[`Expression`](#expression)
+
+###### \_second
+
+`unknown`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **multiply**(`_fieldName`, `_second`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1221](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1221)
+
+**`Beta`**
+
+Creates an expression that multiplies a field's value by an expression or literal.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_second
+
+`unknown`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### not()
+
+> **not**(`_booleanExpr`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1460](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1460)
+
+**`Beta`**
+
+Logical NOT of a boolean expression.
+
+#### Parameters
+
+##### \_booleanExpr
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### notEqual()
+
+> **notEqual**(`_left`, `_right`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:908](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L908)
+
+**`Beta`**
+
+Inequality comparison.
+
+#### Parameters
+
+##### \_left
+
+[`Expression`](#expression)
+
+##### \_right
+
+[`Expression`](#expression)
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### notEqualAny()
+
+#### Call Signature
+
+> **notEqualAny**(`_element`, `_values`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1896](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1896)
+
+##### Parameters
+
+###### \_element
+
+[`Expression`](#expression)
+
+###### \_values
+
+`unknown`[]
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **notEqualAny**(`_fieldName`, `_values`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1900](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1900)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_values
+
+`unknown`[]
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **notEqualAny**(`_element`, `_arrayExpression`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1904](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1904)
+
+##### Parameters
+
+###### \_element
+
+[`Expression`](#expression)
+
+###### \_arrayExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **notEqualAny**(`_fieldName`, `_arrayExpression`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1905](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1905)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_arrayExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### or()
+
+> **or**(`first`, `second`, ...`more`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:861](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L861)
+
+**`Beta`**
+
+Logical OR of boolean expressions.
+
+#### Parameters
+
+##### first
+
+[`BooleanExpression`](#booleanexpression)
+
+##### second
+
+[`BooleanExpression`](#booleanexpression)
+
+##### more
+
+...[`BooleanExpression`](#booleanexpression)[]
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### pipelineResultEqual()
+
+> **pipelineResultEqual**(`left`, `right`): `boolean`
+
+Defined in: [pipelines/pipeline-result.ts:49](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-result.ts#L49)
+
+**`Beta`**
+
+Compares two pipeline results for equality.
+
+#### Parameters
+
+##### left
+
+[`PipelineResult`](#pipelineresult)
+
+##### right
+
+[`PipelineResult`](#pipelineresult)
+
+#### Returns
+
+`boolean`
+
+***
+
+### pow()
+
+#### Call Signature
+
+> **pow**(`_base`, `_exponent`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1719](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1719)
+
+##### Parameters
+
+###### \_base
+
+[`Expression`](#expression)
+
+###### \_exponent
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **pow**(`_base`, `_exponent`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1720](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1720)
+
+##### Parameters
+
+###### \_base
+
+[`Expression`](#expression)
+
+###### \_exponent
+
+`number`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **pow**(`_base`, `_exponent`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1721](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1721)
+
+##### Parameters
+
+###### \_base
+
+`string`
+
+###### \_exponent
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **pow**(`_base`, `_exponent`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1722](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1722)
+
+##### Parameters
+
+###### \_base
+
+`string`
+
+###### \_exponent
+
+`number`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### rand()
+
+> **rand**(): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1913](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1913)
+
+#### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### regexContains()
+
+#### Call Signature
+
+> **regexContains**(`_fieldName`, `_pattern`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:2026](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2026)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_pattern
+
+`string`
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **regexContains**(`_fieldName`, `_pattern`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:2027](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2027)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_pattern
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **regexContains**(`_stringExpression`, `_pattern`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:2028](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2028)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+###### \_pattern
+
+`string`
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **regexContains**(`_stringExpression`, `_pattern`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:2029](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2029)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+###### \_pattern
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### regexFind()
+
+#### Call Signature
+
+> **regexFind**(`_fieldName`, `_pattern`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2040](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2040)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_pattern
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **regexFind**(`_fieldName`, `_pattern`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2041](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2041)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_pattern
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **regexFind**(`_stringExpression`, `_pattern`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2042](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2042)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+###### \_pattern
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **regexFind**(`_stringExpression`, `_pattern`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2043](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2043)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+###### \_pattern
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### regexFindAll()
+
+#### Call Signature
+
+> **regexFindAll**(`_fieldName`, `_pattern`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2051](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2051)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_pattern
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **regexFindAll**(`_fieldName`, `_pattern`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2052](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2052)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_pattern
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **regexFindAll**(`_stringExpression`, `_pattern`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2053](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2053)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+###### \_pattern
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **regexFindAll**(`_stringExpression`, `_pattern`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2054](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2054)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+###### \_pattern
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### regexMatch()
+
+#### Call Signature
+
+> **regexMatch**(`_fieldName`, `_pattern`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:2065](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2065)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_pattern
+
+`string`
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **regexMatch**(`_fieldName`, `_pattern`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:2066](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2066)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_pattern
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **regexMatch**(`_stringExpression`, `_pattern`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:2067](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2067)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+###### \_pattern
+
+`string`
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **regexMatch**(`_stringExpression`, `_pattern`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:2068](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2068)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+###### \_pattern
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### reverse()
+
+#### Call Signature
+
+> **reverse**(`_stringExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1730](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1730)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **reverse**(`_field`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1731](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1731)
+
+##### Parameters
+
+###### \_field
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### round()
+
+#### Call Signature
+
+> **round**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1346](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1346)
+
+**`Beta`**
+
+Rounds to the nearest integer (or to decimalPlaces when provided).
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **round**(`_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1347](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1347)
+
+**`Beta`**
+
+Rounds to the nearest integer (or to decimalPlaces when provided).
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **round**(`_expression`, `_decimalPlaces`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1352](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1352)
+
+**`Beta`**
+
+Rounds to the given number of decimal places.
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_decimalPlaces
+
+`number` \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **round**(`_fieldName`, `_decimalPlaces`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1356](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1356)
+
+**`Beta`**
+
+Rounds to the nearest integer (or to decimalPlaces when provided).
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_decimalPlaces
+
+`number` \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### rtrim()
+
+#### Call Signature
+
+> **rtrim**(`_fieldName`, `_valueToTrim?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1917](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1917)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_valueToTrim?
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **rtrim**(`_expression`, `_valueToTrim?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1921](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1921)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_valueToTrim?
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### split()
+
+#### Call Signature
+
+> **split**(`_fieldName`, `_delimiter`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1736](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1736)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_delimiter
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **split**(`_fieldName`, `_delimiter`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1737](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1737)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_delimiter
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **split**(`_expression`, `_delimiter`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1738](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1738)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_delimiter
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **split**(`_expression`, `_delimiter`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1739](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1739)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_delimiter
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### sqrt()
+
+#### Call Signature
+
+> **sqrt**(`_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1442](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1442)
+
+**`Beta`**
+
+Square root of a numeric expression.
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **sqrt**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1443](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1443)
+
+**`Beta`**
+
+Square root of a numeric expression.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### startsWith()
+
+#### Call Signature
+
+> **startsWith**(`_stringOrFieldName`, `_prefix`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1005](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1005)
+
+**`Beta`**
+
+Checks if a string starts with a prefix.
+
+##### Parameters
+
+###### \_stringOrFieldName
+
+`string`
+
+###### \_prefix
+
+`string`
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **startsWith**(`_stringOrFieldName`, `_prefix`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:1006](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1006)
+
+**`Beta`**
+
+Checks if a string starts with a prefix.
+
+##### Parameters
+
+###### \_stringOrFieldName
+
+[`Expression`](#expression)
+
+###### \_prefix
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### stringConcat()
+
+#### Call Signature
+
+> **stringConcat**(`_fieldName`, `_secondString`, ...`_otherStrings`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1932](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1932)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_secondString
+
+[`Expression`](#expression)
+
+###### \_otherStrings
+
+...[`Expression`](#expression)[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **stringConcat**(`_firstString`, `_secondString`, ...`_otherStrings`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1937](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1937)
+
+##### Parameters
+
+###### \_firstString
+
+[`Expression`](#expression)
+
+###### \_secondString
+
+[`Expression`](#expression)
+
+###### \_otherStrings
+
+...[`Expression`](#expression)[]
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### stringContains()
+
+#### Call Signature
+
+> **stringContains**(`_fieldName`, `_substring`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:2076](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2076)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_substring
+
+`string`
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **stringContains**(`_fieldName`, `_substring`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:2077](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2077)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_substring
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **stringContains**(`_stringExpression`, `_substring`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:2078](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2078)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+###### \_substring
+
+`string`
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+#### Call Signature
+
+> **stringContains**(`_stringExpression`, `_substring`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:2082](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2082)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+###### \_substring
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+***
+
+### stringIndexOf()
+
+#### Call Signature
+
+> **stringIndexOf**(`_fieldName`, `_search`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2093](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2093)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_search
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **stringIndexOf**(`_expression`, `_search`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2097](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2097)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_search
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### stringRepeat()
+
+#### Call Signature
+
+> **stringRepeat**(`_fieldName`, `_repetitions`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2108](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2108)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_repetitions
+
+`number` \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **stringRepeat**(`_expression`, `_repetitions`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2112](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2112)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_repetitions
+
+`number` \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### stringReplaceAll()
+
+#### Call Signature
+
+> **stringReplaceAll**(`_fieldName`, `_find`, `_replacement`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2123](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2123)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_find
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+###### \_replacement
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **stringReplaceAll**(`_expression`, `_find`, `_replacement`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2128](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2128)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_find
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+###### \_replacement
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### stringReplaceOne()
+
+#### Call Signature
+
+> **stringReplaceOne**(`_fieldName`, `_find`, `_replacement`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2145](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2145)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_find
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+###### \_replacement
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **stringReplaceOne**(`_expression`, `_find`, `_replacement`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2150](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2150)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_find
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+###### \_replacement
+
+[`Bytes`](../../index/@react-native-firebase/firestore/index.mdx#bytes) \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### stringReverse()
+
+#### Call Signature
+
+> **stringReverse**(`_stringExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2163](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2163)
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **stringReverse**(`_field`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2164](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2164)
+
+##### Parameters
+
+###### \_field
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### substring()
+
+#### Call Signature
+
+> **substring**(`_field`, `_position`, `_length?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1539](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1539)
+
+**`Beta`**
+
+Substring from position with optional length.
+
+##### Parameters
+
+###### \_field
+
+`string`
+
+###### \_position
+
+`number`
+
+###### \_length?
+
+`number`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **substring**(`_input`, `_position`, `_length?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1540](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1540)
+
+**`Beta`**
+
+Substring from position with optional length.
+
+##### Parameters
+
+###### \_input
+
+[`Expression`](#expression)
+
+###### \_position
+
+`number`
+
+###### \_length?
+
+`number`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **substring**(`_field`, `_position`, `_length?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1545](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1545)
+
+**`Beta`**
+
+Substring from position with optional length.
+
+##### Parameters
+
+###### \_field
+
+`string`
+
+###### \_position
+
+[`Expression`](#expression)
+
+###### \_length?
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **substring**(`_input`, `_position`, `_length?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1550](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1550)
+
+**`Beta`**
+
+Substring from position with optional length.
+
+##### Parameters
+
+###### \_input
+
+[`Expression`](#expression)
+
+###### \_position
+
+[`Expression`](#expression)
+
+###### \_length?
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### subtract()
+
+#### Call Signature
+
+> **subtract**(`_left`, `_right`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1160](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1160)
+
+**`Beta`**
+
+Creates an expression that subtracts the second from the first.
+
+##### Parameters
+
+###### \_left
+
+[`Expression`](#expression)
+
+###### \_right
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **subtract**(`_expression`, `_value`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1165](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1165)
+
+**`Beta`**
+
+Creates an expression that subtracts a constant value from an expression.
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_value
+
+`unknown`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **subtract**(`_fieldName`, `_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1170](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1170)
+
+**`Beta`**
+
+Creates an expression that subtracts an expression from a field's value.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **subtract**(`_fieldName`, `_value`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1175](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1175)
+
+**`Beta`**
+
+Creates an expression that subtracts a constant value from a field's value.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_value
+
+`unknown`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### sum()
+
+#### Call Signature
+
+> **sum**(`_expression`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1252](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1252)
+
+**`Beta`**
+
+Creates an aggregation that sums values from an expression across stage inputs.
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+`Accumulator`
+
+#### Call Signature
+
+> **sum**(`_fieldName`): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:1257](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1257)
+
+**`Beta`**
+
+Creates an aggregation that sums a field's values across stage inputs.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+`Accumulator`
+
+***
+
+### timestampAdd()
+
+#### Call Signature
+
+> **timestampAdd**(`_timestamp`, `_unit`, `_amount`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2169](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2169)
+
+##### Parameters
+
+###### \_timestamp
+
+[`Expression`](#expression)
+
+###### \_unit
+
+[`Expression`](#expression)
+
+###### \_amount
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **timestampAdd**(`_timestamp`, `_unit`, `_amount`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2174](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2174)
+
+##### Parameters
+
+###### \_timestamp
+
+[`Expression`](#expression)
+
+###### \_unit
+
+`TimestampUnit`
+
+###### \_amount
+
+`number`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **timestampAdd**(`_fieldName`, `_unit`, `_amount`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2179](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2179)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_unit
+
+`TimestampUnit`
+
+###### \_amount
+
+`number`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### timestampSubtract()
+
+#### Call Signature
+
+> **timestampSubtract**(`_timestamp`, `_unit`, `_amount`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2192](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2192)
+
+##### Parameters
+
+###### \_timestamp
+
+[`Expression`](#expression)
+
+###### \_unit
+
+[`Expression`](#expression)
+
+###### \_amount
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **timestampSubtract**(`_timestamp`, `_unit`, `_amount`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2197](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2197)
+
+##### Parameters
+
+###### \_timestamp
+
+[`Expression`](#expression)
+
+###### \_unit
+
+`TimestampUnit`
+
+###### \_amount
+
+`number`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **timestampSubtract**(`_fieldName`, `_unit`, `_amount`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2202](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2202)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_unit
+
+`TimestampUnit`
+
+###### \_amount
+
+`number`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### timestampToUnixMicros()
+
+#### Call Signature
+
+> **timestampToUnixMicros**(`_expr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2215](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2215)
+
+##### Parameters
+
+###### \_expr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **timestampToUnixMicros**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2216](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2216)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### timestampToUnixMillis()
+
+#### Call Signature
+
+> **timestampToUnixMillis**(`_expr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2221](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2221)
+
+##### Parameters
+
+###### \_expr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **timestampToUnixMillis**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2222](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2222)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### timestampToUnixSeconds()
+
+#### Call Signature
+
+> **timestampToUnixSeconds**(`_expr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2227](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2227)
+
+##### Parameters
+
+###### \_expr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **timestampToUnixSeconds**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2228](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2228)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### timestampTruncate()
+
+#### Call Signature
+
+> **timestampTruncate**(`_fieldName`, `_granularity`, `_timezone?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2233](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2233)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_granularity
+
+[`TimeGranularity`](#timegranularity)
+
+###### \_timezone?
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **timestampTruncate**(`_fieldName`, `_granularity`, `_timezone?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2238](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2238)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_granularity
+
+[`Expression`](#expression)
+
+###### \_timezone?
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **timestampTruncate**(`_timestampExpression`, `_granularity`, `_timezone?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2243](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2243)
+
+##### Parameters
+
+###### \_timestampExpression
+
+[`Expression`](#expression)
+
+###### \_granularity
+
+[`TimeGranularity`](#timegranularity)
+
+###### \_timezone?
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **timestampTruncate**(`_timestampExpression`, `_granularity`, `_timezone?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2248](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2248)
+
+##### Parameters
+
+###### \_timestampExpression
+
+[`Expression`](#expression)
+
+###### \_granularity
+
+[`Expression`](#expression)
+
+###### \_timezone?
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### toLower()
+
+#### Call Signature
+
+> **toLower**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1503](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1503)
+
+**`Beta`**
+
+Converts string to lower case.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **toLower**(`_stringExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1504](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1504)
+
+**`Beta`**
+
+Converts string to lower case.
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### toUpper()
+
+#### Call Signature
+
+> **toUpper**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1513](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1513)
+
+**`Beta`**
+
+Converts string to upper case.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **toUpper**(`_stringExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1514](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1514)
+
+**`Beta`**
+
+Converts string to upper case.
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### trim()
+
+#### Call Signature
+
+> **trim**(`_fieldName`, `_valueToTrim?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1523](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1523)
+
+**`Beta`**
+
+Trims whitespace (or optional valueToTrim) from string.
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_valueToTrim?
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **trim**(`_stringExpression`, `_valueToTrim?`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:1524](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1524)
+
+**`Beta`**
+
+Trims whitespace (or optional valueToTrim) from string.
+
+##### Parameters
+
+###### \_stringExpression
+
+[`Expression`](#expression)
+
+###### \_valueToTrim?
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### trunc()
+
+#### Call Signature
+
+> **trunc**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2261](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2261)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **trunc**(`_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2262](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2262)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **trunc**(`_fieldName`, `_decimalPlaces`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2263](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2263)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+###### \_decimalPlaces
+
+`number` \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **trunc**(`_expression`, `_decimalPlaces`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2264](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2264)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+###### \_decimalPlaces
+
+`number` \| [`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### type()
+
+#### Call Signature
+
+> **type**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2275](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2275)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **type**(`_expression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2276](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2276)
+
+##### Parameters
+
+###### \_expression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### unixMicrosToTimestamp()
+
+#### Call Signature
+
+> **unixMicrosToTimestamp**(`_expr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2281](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2281)
+
+##### Parameters
+
+###### \_expr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **unixMicrosToTimestamp**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2282](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2282)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### unixMillisToTimestamp()
+
+#### Call Signature
+
+> **unixMillisToTimestamp**(`_expr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2287](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2287)
+
+##### Parameters
+
+###### \_expr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **unixMillisToTimestamp**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2288](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2288)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### unixSecondsToTimestamp()
+
+#### Call Signature
+
+> **unixSecondsToTimestamp**(`_expr`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2293](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2293)
+
+##### Parameters
+
+###### \_expr
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **unixSecondsToTimestamp**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2294](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2294)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### vectorLength()
+
+#### Call Signature
+
+> **vectorLength**(`_vectorExpression`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2299](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2299)
+
+##### Parameters
+
+###### \_vectorExpression
+
+[`Expression`](#expression)
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+#### Call Signature
+
+> **vectorLength**(`_fieldName`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:2300](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2300)
+
+##### Parameters
+
+###### \_fieldName
+
+`string`
+
+##### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+***
+
+### xor()
+
+> **xor**(`_first`, `_second`, ...`_additionalConditions`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:2305](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L2305)
+
+#### Parameters
+
+##### \_first
+
+[`BooleanExpression`](#booleanexpression)
+
+##### \_second
+
+[`BooleanExpression`](#booleanexpression)
+
+##### \_additionalConditions
+
+...[`BooleanExpression`](#booleanexpression)[]
+
+#### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+## Interfaces
+
+### AliasedAggregate
+
+Defined in: [pipelines/expressions.ts:185](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L185)
+
+**`Beta`**
+
+An aggregate function with an output alias.
+
+#### Properties
+
+##### aggregate
+
+> `readonly` **aggregate**: `Accumulator`
+
+Defined in: [pipelines/expressions.ts:186](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L186)
+
+**`Beta`**
+
+##### alias
+
+> `readonly` **alias**: `string`
+
+Defined in: [pipelines/expressions.ts:187](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L187)
+
+**`Beta`**
+
+***
+
+### AliasedExpression
+
+Defined in: [pipelines/expressions.ts:194](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L194)
+
+**`Beta`**
+
+An expression with an output alias (implements Selectable).
+
+#### Extends
+
+- [`Selectable`](#selectable-4)
+
+#### Properties
+
+##### alias
+
+> `readonly` **alias**: `string`
+
+Defined in: [pipelines/expressions.ts:196](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L196)
+
+**`Beta`**
+
+##### expr
+
+> `readonly` **expr**: [`Expression`](#expression)
+
+Defined in: [pipelines/expressions.ts:195](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L195)
+
+**`Beta`**
+
+##### exprType?
+
+> `optional` **exprType?**: [`ExpressionType`](#expressiontype)
+
+Defined in: [pipelines/expressions.ts:197](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L197)
+
+**`Beta`**
+
+##### selectable
+
+> **selectable**: `true`
+
+Defined in: [pipelines/expressions.ts:122](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L122)
+
+**`Beta`**
+
+###### Inherited from
+
+[`Selectable`](#selectable-4).[`selectable`](#selectable-5)
+
+***
+
+### BooleanExpression
+
+Defined in: [pipelines/expressions.ts:113](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L113)
+
+**`Beta`**
+
+Selectable for pipeline field selection/expressions (e.g. field('a').as('b'), expressions).
+
+#### Extends
+
+- [`Selectable`](#selectable-4).`FluentExpressionMethods`
+
+#### Methods
+
+##### add()
+
+###### Call Signature
+
+> **add**(`value`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:93](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L93)
+
+###### Parameters
+
+###### value
+
+[`Expression`](#expression)
+
+###### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.add`
+
+###### Call Signature
+
+> **add**(`value`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:94](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L94)
+
+###### Parameters
+
+###### value
+
+`unknown`
+
+###### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.add`
+
+##### arrayAgg()
+
+> **arrayAgg**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:109](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L109)
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.arrayAgg`
+
+##### arrayAggDistinct()
+
+> **arrayAggDistinct**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:110](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L110)
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.arrayAggDistinct`
+
+##### as()
+
+> **as**(`name`): [`AliasedExpression`](#aliasedexpression)
+
+Defined in: [pipelines/expressions.ts:90](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L90)
+
+###### Parameters
+
+###### name
+
+`string`
+
+###### Returns
+
+[`AliasedExpression`](#aliasedexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.as`
+
+##### ascending()
+
+> **ascending**(): `Ordering`
+
+Defined in: [pipelines/expressions.ts:91](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L91)
+
+###### Returns
+
+`Ordering`
+
+###### Inherited from
+
+`FluentExpressionMethods.ascending`
+
+##### average()
+
+> **average**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:95](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L95)
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.average`
+
+##### count()
+
+> **count**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:96](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L96)
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.count`
+
+##### countDistinct()
+
+> **countDistinct**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:97](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L97)
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.countDistinct`
+
+##### descending()
+
+> **descending**(): `Ordering`
+
+Defined in: [pipelines/expressions.ts:92](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L92)
+
+###### Returns
+
+`Ordering`
+
+###### Inherited from
+
+`FluentExpressionMethods.descending`
+
+##### equal()
+
+###### Call Signature
+
+> **equal**(`expression`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:98](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L98)
+
+###### Parameters
+
+###### expression
+
+[`Expression`](#expression)
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.equal`
+
+###### Call Signature
+
+> **equal**(`value`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:99](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L99)
+
+###### Parameters
+
+###### value
+
+`unknown`
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.equal`
+
+##### first()
+
+> **first**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:100](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L100)
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.first`
+
+##### greaterThan()
+
+###### Call Signature
+
+> **greaterThan**(`expression`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:101](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L101)
+
+###### Parameters
+
+###### expression
+
+[`Expression`](#expression)
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.greaterThan`
+
+###### Call Signature
+
+> **greaterThan**(`value`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:102](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L102)
+
+###### Parameters
+
+###### value
+
+`unknown`
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.greaterThan`
+
+##### greaterThanOrEqual()
+
+###### Call Signature
+
+> **greaterThanOrEqual**(`expression`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:103](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L103)
+
+###### Parameters
+
+###### expression
+
+[`Expression`](#expression)
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.greaterThanOrEqual`
+
+###### Call Signature
+
+> **greaterThanOrEqual**(`value`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:104](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L104)
+
+###### Parameters
+
+###### value
+
+`unknown`
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.greaterThanOrEqual`
+
+##### last()
+
+> **last**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:105](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L105)
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.last`
+
+##### maximum()
+
+> **maximum**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:106](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L106)
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.maximum`
+
+##### minimum()
+
+> **minimum**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:107](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L107)
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.minimum`
+
+##### sum()
+
+> **sum**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:108](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L108)
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.sum`
+
+#### Properties
+
+##### \_brand?
+
+> `readonly` `optional` **\_brand?**: `"BooleanExpression"`
+
+Defined in: [pipelines/expressions.ts:114](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L114)
+
+##### selectable
+
+> **selectable**: `true`
+
+Defined in: [pipelines/expressions.ts:122](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L122)
+
+**`Beta`**
+
+###### Inherited from
+
+[`Selectable`](#selectable-4).[`selectable`](#selectable-5)
+
+***
+
+### Field
+
+Defined in: [pipelines/expressions.ts:129](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L129)
+
+**`Beta`**
+
+Field reference for pipeline stages.
+
+#### Extends
+
+- [`Selectable`](#selectable-4).`FluentExpressionMethods`
+
+#### Methods
+
+##### add()
+
+###### Call Signature
+
+> **add**(`value`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:93](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L93)
+
+**`Beta`**
+
+###### Parameters
+
+###### value
+
+[`Expression`](#expression)
+
+###### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.add`
+
+###### Call Signature
+
+> **add**(`value`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:94](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L94)
+
+**`Beta`**
+
+###### Parameters
+
+###### value
+
+`unknown`
+
+###### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.add`
+
+##### arrayAgg()
+
+> **arrayAgg**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:109](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L109)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.arrayAgg`
+
+##### arrayAggDistinct()
+
+> **arrayAggDistinct**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:110](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L110)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.arrayAggDistinct`
+
+##### as()
+
+> **as**(`name`): [`AliasedExpression`](#aliasedexpression)
+
+Defined in: [pipelines/expressions.ts:90](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L90)
+
+**`Beta`**
+
+###### Parameters
+
+###### name
+
+`string`
+
+###### Returns
+
+[`AliasedExpression`](#aliasedexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.as`
+
+##### ascending()
+
+> **ascending**(): `Ordering`
+
+Defined in: [pipelines/expressions.ts:91](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L91)
+
+**`Beta`**
+
+###### Returns
+
+`Ordering`
+
+###### Inherited from
+
+`FluentExpressionMethods.ascending`
+
+##### average()
+
+> **average**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:95](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L95)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.average`
+
+##### count()
+
+> **count**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:96](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L96)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.count`
+
+##### countDistinct()
+
+> **countDistinct**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:97](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L97)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.countDistinct`
+
+##### descending()
+
+> **descending**(): `Ordering`
+
+Defined in: [pipelines/expressions.ts:92](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L92)
+
+**`Beta`**
+
+###### Returns
+
+`Ordering`
+
+###### Inherited from
+
+`FluentExpressionMethods.descending`
+
+##### equal()
+
+###### Call Signature
+
+> **equal**(`expression`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:98](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L98)
+
+**`Beta`**
+
+###### Parameters
+
+###### expression
+
+[`Expression`](#expression)
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.equal`
+
+###### Call Signature
+
+> **equal**(`value`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:99](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L99)
+
+**`Beta`**
+
+###### Parameters
+
+###### value
+
+`unknown`
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.equal`
+
+##### first()
+
+> **first**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:100](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L100)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.first`
+
+##### greaterThan()
+
+###### Call Signature
+
+> **greaterThan**(`expression`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:101](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L101)
+
+**`Beta`**
+
+###### Parameters
+
+###### expression
+
+[`Expression`](#expression)
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.greaterThan`
+
+###### Call Signature
+
+> **greaterThan**(`value`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:102](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L102)
+
+**`Beta`**
+
+###### Parameters
+
+###### value
+
+`unknown`
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.greaterThan`
+
+##### greaterThanOrEqual()
+
+###### Call Signature
+
+> **greaterThanOrEqual**(`expression`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:103](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L103)
+
+**`Beta`**
+
+###### Parameters
+
+###### expression
+
+[`Expression`](#expression)
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.greaterThanOrEqual`
+
+###### Call Signature
+
+> **greaterThanOrEqual**(`value`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:104](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L104)
+
+**`Beta`**
+
+###### Parameters
+
+###### value
+
+`unknown`
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.greaterThanOrEqual`
+
+##### last()
+
+> **last**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:105](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L105)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.last`
+
+##### maximum()
+
+> **maximum**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:106](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L106)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.maximum`
+
+##### minimum()
+
+> **minimum**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:107](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L107)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.minimum`
+
+##### sum()
+
+> **sum**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:108](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L108)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.sum`
+
+#### Properties
+
+##### \_brand?
+
+> `readonly` `optional` **\_brand?**: `"Field"`
+
+Defined in: [pipelines/expressions.ts:130](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L130)
+
+**`Beta`**
+
+##### selectable
+
+> **selectable**: `true`
+
+Defined in: [pipelines/expressions.ts:122](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L122)
+
+**`Beta`**
+
+###### Inherited from
+
+[`Selectable`](#selectable-4).[`selectable`](#selectable-5)
+
+***
+
+### FunctionExpression
+
+Defined in: [pipelines/expressions.ts:137](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L137)
+
+**`Beta`**
+
+Function expression (e.g. map(...), array(...)). Used as return type and in Expression union.
+
+#### Extends
+
+- [`Selectable`](#selectable-4).`FluentExpressionMethods`
+
+#### Methods
+
+##### add()
+
+###### Call Signature
+
+> **add**(`value`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:93](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L93)
+
+**`Beta`**
+
+###### Parameters
+
+###### value
+
+[`Expression`](#expression)
+
+###### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.add`
+
+###### Call Signature
+
+> **add**(`value`): [`FunctionExpression`](#functionexpression)
+
+Defined in: [pipelines/expressions.ts:94](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L94)
+
+**`Beta`**
+
+###### Parameters
+
+###### value
+
+`unknown`
+
+###### Returns
+
+[`FunctionExpression`](#functionexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.add`
+
+##### arrayAgg()
+
+> **arrayAgg**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:109](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L109)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.arrayAgg`
+
+##### arrayAggDistinct()
+
+> **arrayAggDistinct**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:110](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L110)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.arrayAggDistinct`
+
+##### as()
+
+> **as**(`name`): [`AliasedExpression`](#aliasedexpression)
+
+Defined in: [pipelines/expressions.ts:90](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L90)
+
+**`Beta`**
+
+###### Parameters
+
+###### name
+
+`string`
+
+###### Returns
+
+[`AliasedExpression`](#aliasedexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.as`
+
+##### ascending()
+
+> **ascending**(): `Ordering`
+
+Defined in: [pipelines/expressions.ts:91](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L91)
+
+**`Beta`**
+
+###### Returns
+
+`Ordering`
+
+###### Inherited from
+
+`FluentExpressionMethods.ascending`
+
+##### average()
+
+> **average**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:95](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L95)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.average`
+
+##### count()
+
+> **count**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:96](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L96)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.count`
+
+##### countDistinct()
+
+> **countDistinct**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:97](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L97)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.countDistinct`
+
+##### descending()
+
+> **descending**(): `Ordering`
+
+Defined in: [pipelines/expressions.ts:92](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L92)
+
+**`Beta`**
+
+###### Returns
+
+`Ordering`
+
+###### Inherited from
+
+`FluentExpressionMethods.descending`
+
+##### equal()
+
+###### Call Signature
+
+> **equal**(`expression`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:98](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L98)
+
+**`Beta`**
+
+###### Parameters
+
+###### expression
+
+[`Expression`](#expression)
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.equal`
+
+###### Call Signature
+
+> **equal**(`value`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:99](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L99)
+
+**`Beta`**
+
+###### Parameters
+
+###### value
+
+`unknown`
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.equal`
+
+##### first()
+
+> **first**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:100](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L100)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.first`
+
+##### greaterThan()
+
+###### Call Signature
+
+> **greaterThan**(`expression`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:101](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L101)
+
+**`Beta`**
+
+###### Parameters
+
+###### expression
+
+[`Expression`](#expression)
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.greaterThan`
+
+###### Call Signature
+
+> **greaterThan**(`value`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:102](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L102)
+
+**`Beta`**
+
+###### Parameters
+
+###### value
+
+`unknown`
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.greaterThan`
+
+##### greaterThanOrEqual()
+
+###### Call Signature
+
+> **greaterThanOrEqual**(`expression`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:103](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L103)
+
+**`Beta`**
+
+###### Parameters
+
+###### expression
+
+[`Expression`](#expression)
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.greaterThanOrEqual`
+
+###### Call Signature
+
+> **greaterThanOrEqual**(`value`): [`BooleanExpression`](#booleanexpression)
+
+Defined in: [pipelines/expressions.ts:104](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L104)
+
+**`Beta`**
+
+###### Parameters
+
+###### value
+
+`unknown`
+
+###### Returns
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Inherited from
+
+`FluentExpressionMethods.greaterThanOrEqual`
+
+##### last()
+
+> **last**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:105](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L105)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.last`
+
+##### maximum()
+
+> **maximum**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:106](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L106)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.maximum`
+
+##### minimum()
+
+> **minimum**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:107](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L107)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.minimum`
+
+##### sum()
+
+> **sum**(): `Accumulator`
+
+Defined in: [pipelines/expressions.ts:108](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L108)
+
+**`Beta`**
+
+###### Returns
+
+`Accumulator`
+
+###### Inherited from
+
+`FluentExpressionMethods.sum`
+
+#### Properties
+
+##### \_brand?
+
+> `readonly` `optional` **\_brand?**: `"FunctionExpression"`
+
+Defined in: [pipelines/expressions.ts:139](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L139)
+
+**`Beta`**
+
+##### selectable
+
+> **selectable**: `true`
+
+Defined in: [pipelines/expressions.ts:138](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L138)
+
+**`Beta`**
+
+###### Overrides
+
+[`Selectable`](#selectable-4).[`selectable`](#selectable-5)
+
+***
+
+### Pipeline
+
+Defined in: [pipelines/pipeline.ts:45](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L45)
+
+**`Beta`**
+
+Pipeline with chained stages. Each stage returns a new Pipeline (immutable chain).
+
+#### Type Parameters
+
+##### T
+
+`T` = [`DocumentData`](../../index/@react-native-firebase/firestore/index.mdx#documentdata)
+
+#### Methods
+
+##### addFields()
+
+###### Call Signature
+
+> **addFields**(...`field`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:58](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L58)
+
+**`Beta`**
+
+###### Parameters
+
+###### field
+
+...[`Selectable`](#selectable-4)[]
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **addFields**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:59](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L59)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+###### field
+
+[`Selectable`](#selectable-4)[]
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### aggregate()
+
+###### Call Signature
+
+> **aggregate**(...`accumulator`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:73](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L73)
+
+**`Beta`**
+
+###### Parameters
+
+###### accumulator
+
+...[`AliasedAggregate`](#aliasedaggregate)[]
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **aggregate**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:74](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L74)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+`PipelineAggregateOptions`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### distinct()
+
+###### Call Signature
+
+> **distinct**(...`group`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:76](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L76)
+
+**`Beta`**
+
+###### Parameters
+
+###### group
+
+...(`string` \| [`Field`](#field))[]
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **distinct**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:77](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L77)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+`PipelineDistinctOptions`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### findNearest()
+
+> **findNearest**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:79](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L79)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+`PipelineFindNearestOptions`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### limit()
+
+###### Call Signature
+
+> **limit**(`n`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:67](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L67)
+
+**`Beta`**
+
+###### Parameters
+
+###### n
+
+`number`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **limit**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:68](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L68)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+###### n
+
+`number`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### offset()
+
+###### Call Signature
+
+> **offset**(`n`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:70](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L70)
+
+**`Beta`**
+
+###### Parameters
+
+###### n
+
+`number`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **offset**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:71](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L71)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+###### n
+
+`number`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### rawStage()
+
+> **rawStage**(`name`, `params`, `options?`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:94](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L94)
+
+**`Beta`**
+
+###### Parameters
+
+###### name
+
+`string`
+
+###### params
+
+`Record`\<`string`, `unknown`\>
+
+###### options?
+
+`PipelineRawStageOptions`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### removeFields()
+
+###### Call Signature
+
+> **removeFields**(...`field`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:61](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L61)
+
+**`Beta`**
+
+###### Parameters
+
+###### field
+
+...(`string` \| [`Field`](#field))[]
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **removeFields**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:62](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L62)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+###### field
+
+(`string` \| [`Field`](#field))[]
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### replaceWith()
+
+###### Call Signature
+
+> **replaceWith**(`fieldName`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:81](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L81)
+
+**`Beta`**
+
+###### Parameters
+
+###### fieldName
+
+`string`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **replaceWith**(`expr`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:82](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L82)
+
+**`Beta`**
+
+###### Parameters
+
+###### expr
+
+[`Selectable`](#selectable-4)
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **replaceWith**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:83](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L83)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+`PipelineReplaceWithOptions`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### sample()
+
+###### Call Signature
+
+> **sample**(`n`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:85](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L85)
+
+**`Beta`**
+
+###### Parameters
+
+###### n
+
+`number`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **sample**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:86](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L86)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+`PipelineSampleOptions`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### select()
+
+###### Call Signature
+
+> **select**(...`selection`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:55](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L55)
+
+**`Beta`**
+
+###### Parameters
+
+###### selection
+
+...(`string` \| [`Selectable`](#selectable-4))[]
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **select**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:56](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L56)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+###### selection
+
+(`string` \| [`Selectable`](#selectable-4))[]
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### serialize()
+
+> **serialize**(): `FirestorePipelineSerializedInternal`
+
+Defined in: [pipelines/pipeline.ts:50](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L50)
+
+**`Internal`**
+
+Serializes the source + stage chain to the wire format.
+
+###### Returns
+
+`FirestorePipelineSerializedInternal`
+
+##### sort()
+
+###### Call Signature
+
+> **sort**(...`ordering`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:64](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L64)
+
+**`Beta`**
+
+###### Parameters
+
+###### ordering
+
+...`Ordering`[]
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **sort**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:65](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L65)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+###### ordering
+
+`Ordering`[]
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### union()
+
+###### Call Signature
+
+> **union**(`otherPipeline`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:88](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L88)
+
+**`Beta`**
+
+###### Parameters
+
+###### otherPipeline
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **union**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:89](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L89)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+`PipelineUnionOptions`\<`T`\>
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### unnest()
+
+###### Call Signature
+
+> **unnest**(`selectable`, `indexField?`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:91](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L91)
+
+**`Beta`**
+
+###### Parameters
+
+###### selectable
+
+[`Selectable`](#selectable-4)
+
+###### indexField?
+
+`string`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **unnest**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:92](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L92)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+`PipelineUnnestOptions`
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+##### where()
+
+###### Call Signature
+
+> **where**(`condition`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:52](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L52)
+
+**`Beta`**
+
+###### Parameters
+
+###### condition
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+###### Call Signature
+
+> **where**(`options`): [`Pipeline`](#pipeline)\<`T`\>
+
+Defined in: [pipelines/pipeline.ts:53](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline.ts#L53)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+###### condition
+
+[`BooleanExpression`](#booleanexpression)
+
+###### Returns
+
+[`Pipeline`](#pipeline)\<`T`\>
+
+***
+
+### PipelineExecuteOptions
+
+Defined in: [pipelines/pipeline\_options.ts:28](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline_options.ts#L28)
+
+**`Beta`**
+
+Options for pipeline execute().
+
+Note: `indexMode` and `rawOptions` are currently applied on Android and web only. iOS rejects
+them because the native Firestore pipeline SDK does not yet expose execute options.
+
+#### Extends
+
+- [`StageOptions`](#stageoptions)
+
+#### Properties
+
+##### indexMode?
+
+> `optional` **indexMode?**: `"recommended"`
+
+Defined in: [pipelines/pipeline\_options.ts:30](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline_options.ts#L30)
+
+**`Beta`**
+
+##### pipeline
+
+> **pipeline**: [`Pipeline`](#pipeline)
+
+Defined in: [pipelines/pipeline\_options.ts:29](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline_options.ts#L29)
+
+**`Beta`**
+
+##### rawOptions?
+
+> `optional` **rawOptions?**: `object`
+
+Defined in: [pipelines/pipeline\_options.ts:31](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline_options.ts#L31)
+
+**`Beta`**
+
+Escape hatch for options not known at build time (e.g. backend-specific snake_case options).
+
+###### Index Signature
+
+\[`name`: `string`\]: `unknown`
+
+###### Overrides
+
+[`StageOptions`](#stageoptions).[`rawOptions`](#rawoptions-1)
+
+***
+
+### PipelineResult
+
+Defined in: [pipelines/pipeline-result.ts:27](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-result.ts#L27)
+
+**`Beta`**
+
+Result of running a pipeline. One per document (or per group with aggregation, or single for global aggregation).
+
+#### Type Parameters
+
+##### T
+
+`T` = [`DocumentData`](../../index/@react-native-firebase/firestore/index.mdx#documentdata)
+
+#### Methods
+
+##### data()
+
+> **data**(): `T`
+
+Defined in: [pipelines/pipeline-result.ts:28](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-result.ts#L28)
+
+**`Beta`**
+
+###### Returns
+
+`T`
+
+##### get()
+
+> **get**(`fieldPath`): `unknown`
+
+Defined in: [pipelines/pipeline-result.ts:29](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-result.ts#L29)
+
+**`Beta`**
+
+###### Parameters
+
+###### fieldPath
+
+`string` \| [`FieldPath`](../../index/@react-native-firebase/firestore/index.mdx#fieldpath) \| [`Field`](#field)
+
+###### Returns
+
+`unknown`
+
+#### Properties
+
+##### createTime?
+
+> `readonly` `optional` **createTime?**: [`Timestamp`](../../index/@react-native-firebase/firestore/index.mdx#timestamp)
+
+Defined in: [pipelines/pipeline-result.ts:32](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-result.ts#L32)
+
+**`Beta`**
+
+##### id?
+
+> `readonly` `optional` **id?**: `string`
+
+Defined in: [pipelines/pipeline-result.ts:31](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-result.ts#L31)
+
+**`Beta`**
+
+##### ref?
+
+> `readonly` `optional` **ref?**: [`DocumentReference`](../../index/@react-native-firebase/firestore/index.mdx#documentreference)\<[`DocumentData`](../../index/@react-native-firebase/firestore/index.mdx#documentdata), [`DocumentData`](../../index/@react-native-firebase/firestore/index.mdx#documentdata)\>
+
+Defined in: [pipelines/pipeline-result.ts:30](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-result.ts#L30)
+
+**`Beta`**
+
+##### updateTime?
+
+> `readonly` `optional` **updateTime?**: [`Timestamp`](../../index/@react-native-firebase/firestore/index.mdx#timestamp)
+
+Defined in: [pipelines/pipeline-result.ts:33](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-result.ts#L33)
+
+**`Beta`**
+
+***
+
+### PipelineSnapshot
+
+Defined in: [pipelines/pipeline-result.ts:40](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-result.ts#L40)
+
+**`Beta`**
+
+Snapshot returned from `execute(pipeline)`.
+
+#### Type Parameters
+
+##### T
+
+`T` = [`DocumentData`](../../index/@react-native-firebase/firestore/index.mdx#documentdata)
+
+#### Properties
+
+##### executionTime
+
+> `readonly` **executionTime**: [`Timestamp`](../../index/@react-native-firebase/firestore/index.mdx#timestamp)
+
+Defined in: [pipelines/pipeline-result.ts:42](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-result.ts#L42)
+
+**`Beta`**
+
+##### results
+
+> `readonly` **results**: [`PipelineResult`](#pipelineresult)\<`T`\>[]
+
+Defined in: [pipelines/pipeline-result.ts:41](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-result.ts#L41)
+
+**`Beta`**
+
+***
+
+### PipelineSource
+
+Defined in: [pipelines/pipeline-source.ts:69](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-source.ts#L69)
+
+**`Beta`**
+
+PipelineSource defines the input for a pipeline. Call exactly one of collection, collectionGroup, database, documents, or createFrom.
+
+#### Type Parameters
+
+##### TPipeline
+
+`TPipeline` *extends* [`Pipeline`](#pipeline) = [`Pipeline`](#pipeline)
+
+#### Methods
+
+##### collection()
+
+###### Call Signature
+
+> **collection**(`path`): `TPipeline`
+
+Defined in: [pipelines/pipeline-source.ts:70](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-source.ts#L70)
+
+**`Beta`**
+
+###### Parameters
+
+###### path
+
+`string`
+
+###### Returns
+
+`TPipeline`
+
+###### Call Signature
+
+> **collection**(`collectionRef`): `TPipeline`
+
+Defined in: [pipelines/pipeline-source.ts:71](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-source.ts#L71)
+
+**`Beta`**
+
+###### Parameters
+
+###### collectionRef
+
+[`CollectionReference`](../../index/@react-native-firebase/firestore/index.mdx#collectionreference)
+
+###### Returns
+
+`TPipeline`
+
+###### Call Signature
+
+> **collection**(`options`): `TPipeline`
+
+Defined in: [pipelines/pipeline-source.ts:72](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-source.ts#L72)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+`PipelineCollectionSourceOptions`
+
+###### Returns
+
+`TPipeline`
+
+##### collectionGroup()
+
+###### Call Signature
+
+> **collectionGroup**(`collectionId`): `TPipeline`
+
+Defined in: [pipelines/pipeline-source.ts:74](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-source.ts#L74)
+
+**`Beta`**
+
+###### Parameters
+
+###### collectionId
+
+`string`
+
+###### Returns
+
+`TPipeline`
+
+###### Call Signature
+
+> **collectionGroup**(`options`): `TPipeline`
+
+Defined in: [pipelines/pipeline-source.ts:75](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-source.ts#L75)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+`PipelineCollectionGroupSourceOptions`
+
+###### Returns
+
+`TPipeline`
+
+##### createFrom()
+
+> **createFrom**(`query`): `TPipeline`
+
+Defined in: [pipelines/pipeline-source.ts:82](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-source.ts#L82)
+
+**`Beta`**
+
+###### Parameters
+
+###### query
+
+[`Query`](../../index/@react-native-firebase/firestore/index.mdx#query-2)
+
+###### Returns
+
+`TPipeline`
+
+##### database()
+
+> **database**(`options?`): `TPipeline`
+
+Defined in: [pipelines/pipeline-source.ts:77](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-source.ts#L77)
+
+**`Beta`**
+
+###### Parameters
+
+###### options?
+
+`PipelineDatabaseSourceOptions`
+
+###### Returns
+
+`TPipeline`
+
+##### documents()
+
+###### Call Signature
+
+> **documents**(`docs`): `TPipeline`
+
+Defined in: [pipelines/pipeline-source.ts:79](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-source.ts#L79)
+
+**`Beta`**
+
+###### Parameters
+
+###### docs
+
+(`string` \| [`DocumentReference`](../../index/@react-native-firebase/firestore/index.mdx#documentreference)\<[`DocumentData`](../../index/@react-native-firebase/firestore/index.mdx#documentdata), [`DocumentData`](../../index/@react-native-firebase/firestore/index.mdx#documentdata)\>)[]
+
+###### Returns
+
+`TPipeline`
+
+###### Call Signature
+
+> **documents**(`options`): `TPipeline`
+
+Defined in: [pipelines/pipeline-source.ts:80](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/pipeline-source.ts#L80)
+
+**`Beta`**
+
+###### Parameters
+
+###### options
+
+`PipelineDocumentsSourceOptions`
+
+###### Returns
+
+`TPipeline`
+
+***
+
+### Selectable
+
+Defined in: [pipelines/expressions.ts:121](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L121)
+
+**`Beta`**
+
+Selectable for pipeline field selection/expressions (e.g. field('a').as('b'), expressions).
+
+#### Extended by
+
+- [`BooleanExpression`](#booleanexpression)
+- [`Field`](#field)
+- [`FunctionExpression`](#functionexpression)
+- [`AliasedExpression`](#aliasedexpression)
+
+#### Properties
+
+##### selectable
+
+> **selectable**: `true`
+
+Defined in: [pipelines/expressions.ts:122](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L122)
+
+**`Beta`**
+
+***
+
+### StageOptions
+
+Defined in: [pipelines/stage\_options.ts:112](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L112)
+
+**`Beta`**
+
+Options defining how a Stage is evaluated. Base type for stage option types.
+
+#### Extended by
+
+- [`PipelineExecuteOptions`](#pipelineexecuteoptions)
+
+#### Properties
+
+##### rawOptions?
+
+> `optional` **rawOptions?**: `object`
+
+Defined in: [pipelines/stage\_options.ts:117](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L117)
+
+**`Beta`**
+
+Escape hatch for options not known at build time (e.g. backend-specific snake_case options).
+
+###### Index Signature
+
+\[`name`: `string`\]: `unknown`
+
+## Type Aliases
+
+### AddFieldsStageOptions
+
+> **AddFieldsStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:126](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L126)
+
+**`Beta`**
+
+Options for AddFields stage. At least one field required.
+
+#### Type Declaration
+
+##### fields
+
+> **fields**: [`Selectable`](#selectable-4)[]
+
+**`Beta`**
+
+The fields to add to each document, specified as a Selectable. At least one field is required.
+
+***
+
+### AggregateFunction
+
+> **AggregateFunction** = `Accumulator`
+
+Defined in: [pipelines/expressions.ts:179](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L179)
+
+**`Beta`**
+
+Aggregate function (e.g. countAll()). Alias for Accumulator.
+
+***
+
+### AggregateStageOptions
+
+> **AggregateStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:138](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L138)
+
+**`Beta`**
+
+Options for Aggregate stage.
+
+#### Type Declaration
+
+##### accumulators
+
+> **accumulators**: [`AliasedAggregate`](#aliasedaggregate)[]
+
+**`Beta`**
+
+The AliasedAggregate values specifying aggregate operations to perform on the input documents.
+
+##### groups?
+
+> `optional` **groups?**: (`string` \| [`Selectable`](#selectable-4))[]
+
+**`Beta`**
+
+The Selectable expressions or field names to consider when determining distinct value combinations (groups), which will be aggregated over.
+
+***
+
+### CollectionGroupStageOptions
+
+> **CollectionGroupStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:155](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L155)
+
+**`Beta`**
+
+Options for CollectionGroup stage.
+
+#### Type Declaration
+
+##### collectionId
+
+> **collectionId**: `string`
+
+**`Beta`**
+
+ID of the collection group to use as the Pipeline source.
+
+##### forceIndex?
+
+> `optional` **forceIndex?**: `string`
+
+**`Beta`**
+
+Specifies the name of an index to be used for a query, overriding the query optimizer's default choice. This can be useful for performance tuning in specific scenarios where the default index selection does not yield optimal performance. This property is optional. When provided, it should be the exact name of the index to force.
+
+***
+
+### CollectionStageOptions
+
+> **CollectionStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:172](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L172)
+
+**`Beta`**
+
+Options for Collection stage.
+
+#### Type Declaration
+
+##### collection
+
+> **collection**: `string` \| [`Query`](../../index/@react-native-firebase/firestore/index.mdx#query-2)
+
+**`Beta`**
+
+Name or reference to the collection that will be used as the Pipeline source.
+
+##### forceIndex?
+
+> `optional` **forceIndex?**: `string`
+
+**`Beta`**
+
+Specifies the name of an index to be used for a query, overriding the query optimizer's default choice. This can be useful for performance tuning in specific scenarios where the default index selection does not yield optimal performance. This property is optional. When provided, it should be the exact name of the index to force.
+
+***
+
+### DatabaseStageOptions
+
+> **DatabaseStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:189](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L189)
+
+**`Beta`**
+
+Options for Database stage.
+
+***
+
+### DistinctStageOptions
+
+> **DistinctStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:195](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L195)
+
+**`Beta`**
+
+Options for Distinct stage.
+
+#### Type Declaration
+
+##### groups
+
+> **groups**: (`string` \| [`Selectable`](#selectable-4))[]
+
+**`Beta`**
+
+The Selectable expressions or field names to consider when determining distinct value combinations (groups).
+
+***
+
+### DocumentsStageOptions
+
+> **DocumentsStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:207](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L207)
+
+**`Beta`**
+
+Options for Documents stage.
+
+#### Type Declaration
+
+##### docs
+
+> **docs**: (`string` \| [`DocumentReference`](../../index/@react-native-firebase/firestore/index.mdx#documentreference))[]
+
+**`Beta`**
+
+An array of paths and DocumentReferences specifying the individual documents that will be the source of this pipeline. The converters for these DocumentReferences will be ignored and not have an effect on this pipeline. There must be at least one document specified in the array.
+
+***
+
+### Expression
+
+> **Expression** = [`Field`](#field) \| [`FunctionExpression`](#functionexpression) \| `ConstantExpression` \| [`Selectable`](#selectable-4) \| `string`
+
+Defined in: [pipelines/expressions.ts:154](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L154)
+
+**`Beta`**
+
+Expression type for pipeline parameters (field refs, literals, function results).
+
+***
+
+### ExpressionType
+
+> **ExpressionType** = `"Field"` \| `"Constant"` \| `"Function"` \| `"AggregateFunction"` \| `"ListOfExpressions"` \| `"AliasedExpression"`
+
+Defined in: [pipelines/expressions.ts:26](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L26)
+
+**`Beta`**
+
+Expression type kind (for internal/backend use).
+
+***
+
+### FindNearestStageOptions
+
+> **FindNearestStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:219](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L219)
+
+**`Beta`**
+
+Options for FindNearest stage (vector search).
+
+#### Type Declaration
+
+##### distanceField?
+
+> `optional` **distanceField?**: `string`
+
+**`Beta`**
+
+If set, specifies the field on the output documents that will contain the computed vector distance for the document. If not set, the computed vector distance will not be returned.
+
+##### distanceMeasure
+
+> **distanceMeasure**: `"euclidean"` \| `"cosine"` \| `"dot_product"`
+
+**`Beta`**
+
+Specifies the method used to compute the distance between vectors. Possible values are: 'euclidean', 'cosine', 'dot_product'.
+
+##### field
+
+> **field**: [`Field`](#field) \| `string`
+
+**`Beta`**
+
+Specifies the field to be used. This can be a string representing the field path (e.g., 'fieldName', 'nested.fieldName') or an object of type Field representing a more complex field expression.
+
+##### limit?
+
+> `optional` **limit?**: `number`
+
+**`Beta`**
+
+The maximum number of documents to return from the FindNearest stage.
+
+##### vectorValue
+
+> **vectorValue**: [`VectorValue`](../../index/@react-native-firebase/firestore/index.mdx#vectorvalue) \| `number`[]
+
+**`Beta`**
+
+Specifies the query vector value, to which the vector distance will be computed.
+
+***
+
+### LimitStageOptions
+
+> **LimitStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:251](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L251)
+
+**`Beta`**
+
+Options for Limit stage.
+
+#### Type Declaration
+
+##### limit
+
+> **limit**: `number`
+
+**`Beta`**
+
+The maximum number of documents to return.
+
+***
+
+### OffsetStageOptions
+
+> **OffsetStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:263](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L263)
+
+**`Beta`**
+
+Options for Offset stage.
+
+#### Type Declaration
+
+##### offset
+
+> **offset**: `number`
+
+**`Beta`**
+
+The number of documents to skip.
+
+***
+
+### OneOf
+
+> **OneOf**\<`T`\> = `{ [K in keyof T]: Pick<T, K> & { [P in Exclude<keyof T, K>]?: undefined } }`\[keyof `T`\]
+
+Defined in: [pipelines/types.ts:22](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/types.ts#L22)
+
+**`Beta`**
+
+Utility type: only one property of T may be set.
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+***
+
+### RemoveFieldsStageOptions
+
+> **RemoveFieldsStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:275](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L275)
+
+**`Beta`**
+
+Options for RemoveFields stage.
+
+#### Type Declaration
+
+##### fields
+
+> **fields**: ([`Field`](#field) \| `string`)[]
+
+**`Beta`**
+
+The fields to remove from each document.
+
+***
+
+### ReplaceWithStageOptions
+
+> **ReplaceWithStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:287](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L287)
+
+**`Beta`**
+
+Options for ReplaceWith stage.
+
+#### Type Declaration
+
+##### map
+
+> **map**: [`Expression`](#expression) \| `string`
+
+**`Beta`**
+
+The name of a field that contains a map or an Expression that evaluates to a map.
+
+***
+
+### SampleStageOptions
+
+> **SampleStageOptions** = [`StageOptions`](#stageoptions) & [`OneOf`](#oneof)\<\{ `documents`: `number`; `percentage`: `number`; \}\>
+
+Defined in: [pipelines/stage\_options.ts:299](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L299)
+
+**`Beta`**
+
+Options for Sample stage (documents or percentage, one of).
+
+***
+
+### SelectStageOptions
+
+> **SelectStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:317](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L317)
+
+**`Beta`**
+
+Options for Select stage.
+
+#### Type Declaration
+
+##### selections
+
+> **selections**: ([`Selectable`](#selectable-4) \| `string`)[]
+
+**`Beta`**
+
+The fields to include in the output documents, specified as Selectable expression or as a string value indicating the field name.
+
+***
+
+### SortStageOptions
+
+> **SortStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:329](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L329)
+
+**`Beta`**
+
+Options for Sort stage.
+
+#### Type Declaration
+
+##### orderings
+
+> **orderings**: `Ordering`[]
+
+**`Beta`**
+
+Orderings specify how the input documents are sorted. One or more ordering are required.
+
+***
+
+### TimeGranularity
+
+> **TimeGranularity** = `"microsecond"` \| `"millisecond"` \| `"second"` \| `"minute"` \| `"hour"` \| `"day"` \| `"week"` \| `"week(monday)"` \| `"week(tuesday)"` \| `"week(wednesday)"` \| `"week(thursday)"` \| `"week(friday)"` \| `"week(saturday)"` \| `"week(sunday)"` \| `"isoWeek"` \| `"month"` \| `"quarter"` \| `"year"` \| `"isoYear"`
+
+Defined in: [pipelines/expressions.ts:64](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L64)
+
+**`Beta`**
+
+Time granularity for timestampTruncate.
+
+***
+
+### Type
+
+> **Type** = `"null"` \| `"array"` \| `"boolean"` \| `"bytes"` \| `"timestamp"` \| `"geo_point"` \| `"number"` \| `"int32"` \| `"int64"` \| `"float64"` \| `"decimal128"` \| `"map"` \| `"reference"` \| `"string"` \| `"vector"` \| `"max_key"` \| `"min_key"` \| `"object_id"` \| `"regex"` \| `"request_timestamp"`
+
+Defined in: [pipelines/expressions.ts:38](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L38)
+
+**`Beta`**
+
+Firestore value type for isType() checks.
+
+***
+
+### UnionStageOptions
+
+> **UnionStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:341](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L341)
+
+**`Beta`**
+
+Options for Union stage.
+
+#### Type Declaration
+
+##### other
+
+> **other**: [`Pipeline`](#pipeline)
+
+**`Beta`**
+
+Specifies the other Pipeline to union with.
+
+***
+
+### UnnestStageOptions
+
+> **UnnestStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:353](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L353)
+
+**`Beta`**
+
+Options for Unnest stage.
+
+#### Type Declaration
+
+##### indexField?
+
+> `optional` **indexField?**: `string`
+
+**`Beta`**
+
+If set, specifies the field on the output documents that will contain the offset (starting at zero) that the element is from the original array.
+
+##### selectable
+
+> **selectable**: [`Selectable`](#selectable-4)
+
+**`Beta`**
+
+A Selectable object that defines an array expression to be un-nested and the alias for the un-nested field.
+
+***
+
+### WhereStageOptions
+
+> **WhereStageOptions** = [`StageOptions`](#stageoptions) & `object`
+
+Defined in: [pipelines/stage\_options.ts:370](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/stage_options.ts#L370)
+
+**`Beta`**
+
+Options for Where stage.
+
+#### Type Declaration
+
+##### condition
+
+> **condition**: [`BooleanExpression`](#booleanexpression)
+
+**`Beta`**
+
+The BooleanExpression to apply as a filter for each input document to this stage.
+
+## Variables
+
+### Ordering
+
+> `const` **Ordering**: `object`
+
+Defined in: [pipelines/expressions.ts:1037](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/expressions.ts#L1037)
+
+**`Beta`**
+
+Ordering helper (e.g. Ordering.of(field('rating')).descending()).
+
+#### Type Declaration
+
+##### of()
+
+> **of**(`_fieldOrOrdering`): `Ordering`
+
+###### Parameters
+
+###### \_fieldOrOrdering
+
+[`Field`](#field) \| `Ordering`
+
+###### Returns
+
+`Ordering`

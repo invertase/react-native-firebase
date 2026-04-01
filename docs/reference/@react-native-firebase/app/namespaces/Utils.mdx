@@ -1,0 +1,596 @@
+[**React Native Firebase**](../../../README.mdx)
+
+***
+
+[React Native Firebase](../../../packages.mdx) / [@react-native-firebase/app](../README.mdx) / Utils
+
+# Utils
+
+## Firebase
+
+utils
+
+## Classes
+
+### `abstract` Module
+
+Defined in: [types/app.ts:568](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L568)
+
+The React Native Firebase Utils service interface.
+
+> This module is available for the default app only.
+
+#### Example
+
+Get the Utils service for the default app:
+
+```js
+const defaultAppUtils = firebase.utils();
+```
+
+#### Extends
+
+- [`FirebaseModule`](ReactNativeFirebase.mdx#abstract-firebasemodule)
+
+#### Constructors
+
+##### Constructor
+
+> **new Module**(): [`Module`](#abstract-module)
+
+###### Returns
+
+[`Module`](#abstract-module)
+
+###### Inherited from
+
+[`FirebaseModule`](ReactNativeFirebase.mdx#abstract-firebasemodule).[`constructor`](ReactNativeFirebase.mdx#constructor)
+
+#### Methods
+
+##### getPlayServicesStatus()
+
+> `abstract` **getPlayServicesStatus**(): `Promise`\<[`PlayServicesAvailability`](#playservicesavailability-1)\>
+
+Defined in: [types/app.ts:604](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L604)
+
+Returns PlayServicesAvailability properties
+
+#### Example
+
+```js
+const PlayServicesAvailability = await firebase.utils().getPlayServicesStatus();
+```
+
+###### Returns
+
+`Promise`\<[`PlayServicesAvailability`](#playservicesavailability-1)\>
+
+###### Android
+
+Android only - iOS always returns { isAvailable: true, status: 0 }
+
+##### makePlayServicesAvailable()
+
+> `abstract` **makePlayServicesAvailable**(): `Promise`\<`void`\>
+
+Defined in: [types/app.ts:629](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L629)
+
+Attempts to make Google Play services available on this device
+
+#### Example
+
+```js
+await firebase.utils().makePlayServicesAvailable();
+```
+
+###### Returns
+
+`Promise`\<`void`\>
+
+###### Android
+
+Android only - iOS returns undefined
+
+##### promptForPlayServices()
+
+> `abstract` **promptForPlayServices**(): `Promise`\<`void`\>
+
+Defined in: [types/app.ts:617](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L617)
+
+A prompt appears on the device to ask the user to update play services
+
+#### Example
+
+```js
+await firebase.utils().promptForPlayServices();
+```
+
+###### Returns
+
+`Promise`\<`void`\>
+
+###### Android
+
+Android only - iOS returns undefined
+
+##### resolutionForPlayServices()
+
+> `abstract` **resolutionForPlayServices**(): `Promise`\<`void`\>
+
+Defined in: [types/app.ts:641](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L641)
+
+Resolves an error by starting any intents requiring user interaction.
+
+#### Example
+
+```js
+await firebase.utils().resolutionForPlayServices();
+```
+
+###### Returns
+
+`Promise`\<`void`\>
+
+###### Android
+
+Android only - iOS returns undefined
+
+#### Properties
+
+##### app
+
+> `abstract` **app**: [`FirebaseApp`](ReactNativeFirebase.mdx#firebaseapp)
+
+Defined in: [types/app.ts:279](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L279)
+
+The current `FirebaseApp` instance for this Firebase service.
+
+###### Inherited from
+
+[`FirebaseModule`](ReactNativeFirebase.mdx#abstract-firebasemodule).[`app`](ReactNativeFirebase.mdx#app)
+
+##### isRunningInTestLab
+
+> `abstract` **isRunningInTestLab**: `boolean`
+
+Defined in: [types/app.ts:579](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L579)
+
+Returns true if this app is running inside a Firebase Test Lab environment.
+
+#### Example
+
+```js
+const isRunningInTestLab = await firebase.utils().isRunningInTestLab;
+```
+
+###### Android
+
+Android only - iOS returns false
+
+##### playServicesAvailability
+
+> `abstract` **playServicesAvailability**: [`PlayServicesAvailability`](#playservicesavailability-1)
+
+Defined in: [types/app.ts:591](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L591)
+
+Returns PlayServicesAvailability properties
+
+#### Example
+
+```js
+const PlayServicesAvailability = await firebase.utils().playServicesAvailability;
+```
+
+###### Android
+
+Android only - iOS always returns { isAvailable: true, status: 0 }
+
+## Enumerations
+
+### PlayServicesAvailabilityStatusCodes
+
+Defined in: [types/app.ts:474](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L474)
+
+For further information on the status codes available & what they represent, please head over
+to ConnectionResult documentation:
+https://developers.google.com/android/reference/com/google/android/gms/common/ConnectionResult
+
+#### Enumeration Members
+
+##### API\_UNAVAILABLE
+
+> **API\_UNAVAILABLE**: `16`
+
+Defined in: [types/app.ts:475](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L475)
+
+##### CANCELED
+
+> **CANCELED**: `13`
+
+Defined in: [types/app.ts:476](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L476)
+
+##### DEVELOPER\_ERROR
+
+> **DEVELOPER\_ERROR**: `10`
+
+Defined in: [types/app.ts:477](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L477)
+
+##### DRIVE\_EXTERNAL\_STORAGE\_REQUIRED
+
+> **DRIVE\_EXTERNAL\_STORAGE\_REQUIRED**: `1500`
+
+Defined in: [types/app.ts:478](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L478)
+
+##### INTERNAL\_ERROR
+
+> **INTERNAL\_ERROR**: `8`
+
+Defined in: [types/app.ts:479](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L479)
+
+##### INTERRUPTED
+
+> **INTERRUPTED**: `15`
+
+Defined in: [types/app.ts:480](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L480)
+
+##### INVALID\_ACCOUNT
+
+> **INVALID\_ACCOUNT**: `5`
+
+Defined in: [types/app.ts:481](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L481)
+
+##### LICENSE\_CHECK\_FAILED
+
+> **LICENSE\_CHECK\_FAILED**: `11`
+
+Defined in: [types/app.ts:482](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L482)
+
+##### NETWORK\_ERROR
+
+> **NETWORK\_ERROR**: `7`
+
+Defined in: [types/app.ts:483](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L483)
+
+##### RESOLUTION\_REQUIRED
+
+> **RESOLUTION\_REQUIRED**: `6`
+
+Defined in: [types/app.ts:484](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L484)
+
+##### RESTRICTED\_PROFILE
+
+> **RESTRICTED\_PROFILE**: `20`
+
+Defined in: [types/app.ts:485](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L485)
+
+##### SERVICE\_DISABLED
+
+> **SERVICE\_DISABLED**: `3`
+
+Defined in: [types/app.ts:486](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L486)
+
+##### SERVICE\_INVALID
+
+> **SERVICE\_INVALID**: `9`
+
+Defined in: [types/app.ts:487](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L487)
+
+##### SERVICE\_MISSING
+
+> **SERVICE\_MISSING**: `1`
+
+Defined in: [types/app.ts:488](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L488)
+
+##### SERVICE\_MISSING\_PERMISSION
+
+> **SERVICE\_MISSING\_PERMISSION**: `19`
+
+Defined in: [types/app.ts:489](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L489)
+
+##### SERVICE\_UPDATING
+
+> **SERVICE\_UPDATING**: `18`
+
+Defined in: [types/app.ts:490](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L490)
+
+##### SERVICE\_VERSION\_UPDATE\_REQUIRED
+
+> **SERVICE\_VERSION\_UPDATE\_REQUIRED**: `2`
+
+Defined in: [types/app.ts:491](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L491)
+
+##### SIGN\_IN\_FAILED
+
+> **SIGN\_IN\_FAILED**: `17`
+
+Defined in: [types/app.ts:492](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L492)
+
+##### SIGN\_IN\_REQUIRED
+
+> **SIGN\_IN\_REQUIRED**: `4`
+
+Defined in: [types/app.ts:493](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L493)
+
+##### SUCCESS
+
+> **SUCCESS**: `0`
+
+Defined in: [types/app.ts:494](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L494)
+
+##### TIMEOUT
+
+> **TIMEOUT**: `14`
+
+Defined in: [types/app.ts:495](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L495)
+
+## Interfaces
+
+### FilePath
+
+Defined in: [types/app.ts:351](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L351)
+
+A collection of native device file paths to aid in the usage of file path based methods.
+
+Concatenate a file path with your target file name when using with Storage `putFile` or `writeToFile`.
+
+```js
+firebase.utils.FilePath;
+```
+
+#### Properties
+
+##### CACHES\_DIRECTORY
+
+> **CACHES\_DIRECTORY**: `string`
+
+Defined in: [types/app.ts:372](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L372)
+
+Returns an absolute path to the application specific cache directory on the filesystem.
+
+The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.
+
+```js
+firebase.utils.FilePath.CACHES_DIRECTORY;
+```
+
+##### DOCUMENT\_DIRECTORY
+
+> **DOCUMENT\_DIRECTORY**: `string`
+
+Defined in: [types/app.ts:388](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L388)
+
+Returns an absolute path to the users Documents directory.
+
+Use this directory to place documents that have been created by the user.
+
+Normally this is the external files directory on Android but if no external storage directory found,
+e.g. removable media has been ejected by the user, it will fall back to internal storage. This may
+under rare circumstances where device storage environment changes cause the directory to be different
+between runs of the application
+
+```js
+firebase.utils.FilePath.DOCUMENT_DIRECTORY;
+```
+
+##### EXTERNAL\_DIRECTORY
+
+> **EXTERNAL\_DIRECTORY**: `string` \| `null`
+
+Defined in: [types/app.ts:425](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L425)
+
+Returns an absolute path to the directory on the primary shared/external storage device.
+
+Here your application can place persistent files it owns. These files are internal to the application, and not typically visible to the user as media.
+
+Returns null if no external storage directory found, e.g. removable media has been ejected by the user.
+
+```js
+firebase.utils.FilePath.EXTERNAL_DIRECTORY;
+```
+
+###### Android
+
+Android only - iOS returns null
+
+##### EXTERNAL\_STORAGE\_DIRECTORY
+
+> **EXTERNAL\_STORAGE\_DIRECTORY**: `string` \| `null`
+
+Defined in: [types/app.ts:441](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L441)
+
+Returns an absolute path to the primary shared/external storage directory.
+
+Traditionally this is an SD card, but it may also be implemented as built-in storage on a device.
+
+Returns null if no external storage directory found, e.g. removable media has been ejected by the user.
+Requires special permission granted by Play Store review team on Android, is unlikely to be a valid path.
+
+```js
+firebase.utils.FilePath.EXTERNAL_STORAGE_DIRECTORY;
+```
+
+###### Android
+
+Android only - iOS returns null
+
+##### LIBRARY\_DIRECTORY
+
+> **LIBRARY\_DIRECTORY**: `string`
+
+Defined in: [types/app.ts:410](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L410)
+
+Returns an absolute path to the apps library/resources directory.
+
+E.g. this can be used for things like documentation, support files, and configuration files and generic resources.
+
+```js
+firebase.utils.FilePath.LIBRARY_DIRECTORY;
+```
+
+##### MAIN\_BUNDLE
+
+> **MAIN\_BUNDLE**: `string`
+
+Defined in: [types/app.ts:361](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L361)
+
+Returns an absolute path to the applications main bundle.
+
+```js
+firebase.utils.FilePath.MAIN_BUNDLE;
+```
+
+###### Ios
+
+iOS only
+
+##### MOVIES\_DIRECTORY
+
+> **MOVIES\_DIRECTORY**: `string`
+
+Defined in: [types/app.ts:461](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L461)
+
+Returns an absolute path to a directory in which to place movies that are available to the user.
+Requires special permission granted by Play Store review team on Android, is unlikely to be a valid path.
+
+```js
+firebase.utils.FilePath.MOVIES_DIRECTORY;
+```
+
+##### PICTURES\_DIRECTORY
+
+> **PICTURES\_DIRECTORY**: `string`
+
+Defined in: [types/app.ts:451](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L451)
+
+Returns an absolute path to a directory in which to place pictures that are available to the user.
+Requires special permission granted by Play Store review team on Android, is unlikely to be a valid path.
+
+```js
+firebase.utils.FilePath.PICTURES_DIRECTORY;
+```
+
+##### TEMP\_DIRECTORY
+
+> **TEMP\_DIRECTORY**: `string`
+
+Defined in: [types/app.ts:399](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L399)
+
+Returns an absolute path to a temporary directory.
+
+Use this directory to create temporary files. The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.
+
+```js
+firebase.utils.FilePath.TEMP_DIRECTORY;
+```
+
+***
+
+### PlayServicesAvailability
+
+Defined in: [types/app.ts:498](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L498)
+
+#### Properties
+
+##### error
+
+> **error**: `string` \| `undefined`
+
+Defined in: [types/app.ts:552](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L552)
+
+A human readable error string
+
+```js
+firebase.utils().playServicesAvailability.error;
+```
+
+###### Android
+
+Android only - iOS returns undefined
+
+##### hasResolution
+
+> **hasResolution**: `boolean` \| `undefined`
+
+Defined in: [types/app.ts:532](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L532)
+
+If Play Services is not available on the device, hasResolution indicates
+whether it is possible to do something about it (e.g. install Play Services).
+
+```js
+firebase.utils().playServicesAvailability.hasResolution;
+```
+
+###### Android
+
+Android only - iOS returns undefined
+
+##### isAvailable
+
+> **isAvailable**: `boolean`
+
+Defined in: [types/app.ts:521](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L521)
+
+Returns a boolean indicating whether Play Store is available on the device
+
+```js
+firebase.utils().playServicesAvailability.isAvailable;
+```
+
+###### Android
+
+Android only - iOS returns true
+
+##### isUserResolvableError
+
+> **isUserResolvableError**: `boolean` \| `undefined`
+
+Defined in: [types/app.ts:542](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L542)
+
+If an error was received, this indicates whether the error is resolvable
+
+```js
+firebase.utils().playServicesAvailability.isUserResolvableError;
+```
+
+###### Android
+
+Android only - iOS returns undefined
+
+##### status
+
+> **status**: [`PlayServicesAvailabilityStatusCodes`](#playservicesavailabilitystatuscodes)
+
+Defined in: [types/app.ts:510](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L510)
+
+Returns a numeric status code. Please refer to Android documentation
+for further information:
+https://developers.google.com/android/reference/com/google/android/gms/common/ConnectionResult
+
+```js
+firebase.utils().playServicesAvailability.status;
+```
+
+###### Android
+
+Android only - iOS returns 0
+
+***
+
+### Statics
+
+Defined in: [types/app.ts:464](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L464)
+
+#### Properties
+
+##### FilePath
+
+> **FilePath**: [`FilePath`](#filepath)
+
+Defined in: [types/app.ts:466](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L466)
+
+##### SDK\_VERSION
+
+> **SDK\_VERSION**: `string`
+
+Defined in: [types/app.ts:465](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/types/app.ts#L465)

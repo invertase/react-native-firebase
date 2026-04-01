@@ -62,23 +62,27 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
       this.ready = true;
     }
     (RNFBAppModule.eventsAddListener as EventsAddListenerMethod)(eventType);
+    // @ts-ignore - globalThis is a collection of arbitrary types
     if (globalThis.RNFBDebug) {
       // eslint-disable-next-line no-console
       console.debug(`[RNFB-->Event][👂] ${eventType} -> listening`);
     }
     const listenerDebugger = (...args: unknown[]) => {
+      // @ts-ignore - globalThis is a collection of arbitrary types
       if (globalThis.RNFBDebug) {
         // eslint-disable-next-line no-console
         console.debug(`[RNFB<--Event][📣] ${eventType} <-`, JSON.stringify(args[0]));
         // Possible leaking test if events are still being received after the test.
         // This is not super accurate but it's better than nothing, e.g. if doing setup/teardown
         // logic outside of a test this may cause false positives.
+        // @ts-ignore - globalThis is a collection of arbitrary types
         if (globalThis.RNFBTest && !globalThis.RNFBDebugInTestLeakDetection) {
           // eslint-disable-next-line no-console
           console.debug(
             `[TEST--->Leak][💡] Possible leaking test detected! An event (☝️) ` +
               `was received outside of any running tests which may indicates that some ` +
               `listeners/event subscriptions that have not been unsubscribed from in your ` +
+              // @ts-ignore - globalThis is a collection of arbitrary types
               `test code. The last test that ran was: "${globalThis.RNFBDebugLastTest}".`,
           );
         }

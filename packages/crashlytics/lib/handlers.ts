@@ -128,6 +128,7 @@ export const setGlobalErrorHandler = once((nativeModule: NativeModule) => {
         // remember our current deprecation warning state in case users
         // have set it to non-default
         const currentDeprecationWarningToggle =
+          // @ts-ignore - globalThis is a collection of arbitrary types
           globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS;
 
         // Notify analytics, if it exists - throws error if not
@@ -137,6 +138,7 @@ export const setGlobalErrorHandler = once((nativeModule: NativeModule) => {
           // Unfortunately, this fails completely when using modular!
           // Did not matter if I did named imports above or dynamic require here.
           // So temporarily reverting and silencing warnings instead
+          // @ts-ignore - globalThis is a collection of arbitrary types
           globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
           // @ts-ignore - analytics types not available in crashlytics
           await firebase.app().analytics().logEvent(
@@ -150,6 +152,7 @@ export const setGlobalErrorHandler = once((nativeModule: NativeModule) => {
           // This just means analytics was not present, so we could not log the analytics event
           // console.log('error logging analytics app_exception: ' + e);
         } finally {
+          // @ts-ignore - globalThis is a collection of arbitrary types
           globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = currentDeprecationWarningToggle;
         }
 

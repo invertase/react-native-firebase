@@ -1,0 +1,79 @@
+[**React Native Firebase**](../../README.mdx)
+
+***
+
+[React Native Firebase](../../packages.mdx) / @react-native-firebase/ml
+
+# @react-native-firebase/ml
+
+## Functions
+
+### getML()
+
+> **getML**(`app?`): [`Module`](namespaces/FirebaseMLTypes.mdx#module)
+
+Defined in: [modular/index.d.ts:14](https://github.com/invertase/react-native-firebase/blob/main/packages/ml/lib/modular/index.d.ts#L14)
+
+Returns the existing default [FirebaseML](#firebaseml) instance that is associated with the
+default @firebase/app#FirebaseApp. If no instance exists, initializes a new
+instance with default settings.
+
+#### Parameters
+
+##### app?
+
+[`FirebaseApp`](../app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+#### Returns
+
+[`Module`](namespaces/FirebaseMLTypes.mdx#module)
+
+The [FirebaseML](#firebaseml) instance of the provided app.
+
+## Namespaces
+
+- [FirebaseMLTypes](namespaces/FirebaseMLTypes.mdx)
+
+## Type Aliases
+
+### FirebaseML
+
+> **FirebaseML** = [`Module`](namespaces/FirebaseMLTypes.mdx#module)
+
+Defined in: [modular/index.d.ts:4](https://github.com/invertase/react-native-firebase/blob/main/packages/ml/lib/modular/index.d.ts#L4)
+
+## Variables
+
+### default
+
+> `const` **default**: `MLNamespace`
+
+Defined in: [index.d.ts:78](https://github.com/invertase/react-native-firebase/blob/main/packages/ml/lib/index.d.ts#L78)
+
+***
+
+### firebase
+
+> `const` **firebase**: [`Module`](../app/namespaces/ReactNativeFirebase.mdx#module) & `object`
+
+Defined in: [index.d.ts:80](https://github.com/invertase/react-native-firebase/blob/main/packages/ml/lib/index.d.ts#L80)
+
+#### Type Declaration
+
+##### ml
+
+> **ml**: *typeof* [`default`](#default)
+
+##### app()
+
+> **app**(`name?`): [`FirebaseApp`](../app/namespaces/ReactNativeFirebase.mdx#firebaseapp) & `object`
+
+###### Parameters
+
+###### name?
+
+`string`
+
+###### Returns
+
+[`FirebaseApp`](../app/namespaces/ReactNativeFirebase.mdx#firebaseapp) & `object`

@@ -1,0 +1,5876 @@
+[**React Native Firebase**](../../../README.mdx)
+
+***
+
+[React Native Firebase](../../../packages.mdx) / [@react-native-firebase/firestore](../../../@react-native-firebase/firestore/README.mdx) / index
+
+# index
+
+## Functions
+
+### addDoc()
+
+> **addDoc**\<`AppModelType`, `DbModelType`\>(`reference`, `data`): `Promise`\<[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>\>
+
+Defined in: [modular.ts:304](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L304)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType`
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### reference
+
+[`CollectionReference`](#collectionreference)\<`AppModelType`, `DbModelType`\>
+
+##### data
+
+[`WithFieldValue`](#withfieldvalue)\<`AppModelType`\>
+
+#### Returns
+
+`Promise`\<[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>\>
+
+***
+
+### and()
+
+> **and**(...`queryConstraints`): [`QueryCompositeFilterConstraint`](#querycompositefilterconstraint)
+
+Defined in: [modular/query.ts:244](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L244)
+
+#### Parameters
+
+##### queryConstraints
+
+...[`QueryFilterConstraint`](#queryfilterconstraint)[]
+
+#### Returns
+
+[`QueryCompositeFilterConstraint`](#querycompositefilterconstraint)
+
+***
+
+### arrayRemove()
+
+> **arrayRemove**(...`elements`): [`FieldValue`](#fieldvalue)
+
+Defined in: [modular/FieldValue.ts:34](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.ts#L34)
+
+#### Parameters
+
+##### elements
+
+...`unknown`[]
+
+#### Returns
+
+[`FieldValue`](#fieldvalue)
+
+***
+
+### arrayUnion()
+
+> **arrayUnion**(...`elements`): [`FieldValue`](#fieldvalue)
+
+Defined in: [modular/FieldValue.ts:30](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.ts#L30)
+
+#### Parameters
+
+##### elements
+
+...`unknown`[]
+
+#### Returns
+
+[`FieldValue`](#fieldvalue)
+
+***
+
+### average()
+
+> **average**(`field`): [`AggregateField`](#aggregatefield)\<`number` \| `null`\>
+
+Defined in: [modular.ts:475](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L475)
+
+#### Parameters
+
+##### field
+
+`string` \| [`FieldPath`](#fieldpath)
+
+#### Returns
+
+[`AggregateField`](#aggregatefield)\<`number` \| `null`\>
+
+***
+
+### clearIndexedDbPersistence()
+
+> **clearIndexedDbPersistence**(`firestore`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:328](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L328)
+
+#### Parameters
+
+##### firestore
+
+[`Firestore`](#firestore-2)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### clearPersistence()
+
+> **clearPersistence**(`firestore`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:323](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L323)
+
+#### Parameters
+
+##### firestore
+
+[`Firestore`](#firestore-2)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### collection()
+
+#### Call Signature
+
+> **collection**(`parent`, `path`, ...`pathSegments`): [`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [modular.ts:146](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L146)
+
+##### Parameters
+
+###### parent
+
+[`Firestore`](#firestore-2)
+
+###### path
+
+`string`
+
+###### pathSegments
+
+...`string`[]
+
+##### Returns
+
+[`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+#### Call Signature
+
+> **collection**\<`AppModelType`, `DbModelType`\>(`parent`, `path`, ...`pathSegments`): [`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [modular.ts:151](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L151)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### parent
+
+[`CollectionReference`](#collectionreference)\<`AppModelType`, `DbModelType`\>
+
+###### path
+
+`string`
+
+###### pathSegments
+
+...`string`[]
+
+##### Returns
+
+[`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+#### Call Signature
+
+> **collection**\<`AppModelType`, `DbModelType`\>(`parent`, `path`, ...`pathSegments`): [`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [modular.ts:156](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L156)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### parent
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+###### path
+
+`string`
+
+###### pathSegments
+
+...`string`[]
+
+##### Returns
+
+[`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+***
+
+### collectionGroup()
+
+> **collectionGroup**(`firestore`, `collectionId`): [`Query`](#query-2)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [modular.ts:199](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L199)
+
+#### Parameters
+
+##### firestore
+
+[`Firestore`](#firestore-2)
+
+##### collectionId
+
+`string`
+
+#### Returns
+
+[`Query`](#query-2)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+***
+
+### connectFirestoreEmulator()
+
+> **connectFirestoreEmulator**(`firestore`, `host`, `port`, `options?`): `void`
+
+Defined in: [modular.ts:354](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L354)
+
+#### Parameters
+
+##### firestore
+
+[`Firestore`](#firestore-2)
+
+##### host
+
+`string`
+
+##### port
+
+`number`
+
+##### options?
+
+###### mockUserToken?
+
+`string` \| [`EmulatorMockTokenOptions`](#emulatormocktokenoptions)
+
+#### Returns
+
+`void`
+
+***
+
+### count()
+
+> **count**(): [`AggregateField`](#aggregatefield)\<`number`\>
+
+Defined in: [modular.ts:479](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L479)
+
+#### Returns
+
+[`AggregateField`](#aggregatefield)\<`number`\>
+
+***
+
+### deleteAllPersistentCacheIndexes()
+
+> **deleteAllPersistentCacheIndexes**(`indexManager`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:532](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L532)
+
+#### Parameters
+
+##### indexManager
+
+`PersistentCacheIndexManager`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### deleteDoc()
+
+> **deleteDoc**\<`AppModelType`, `DbModelType`\>(`reference`): `Promise`\<`void`\>
+
+Defined in: [modular/query.ts:354](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L354)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### deleteField()
+
+> **deleteField**(): [`FieldValue`](#fieldvalue)
+
+Defined in: [modular/FieldValue.ts:22](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.ts#L22)
+
+#### Returns
+
+[`FieldValue`](#fieldvalue)
+
+***
+
+### disableNetwork()
+
+> **disableNetwork**(`firestore`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:319](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L319)
+
+#### Parameters
+
+##### firestore
+
+[`Firestore`](#firestore-2)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### disablePersistentCacheIndexAutoCreation()
+
+> **disablePersistentCacheIndexAutoCreation**(`indexManager`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:523](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L523)
+
+#### Parameters
+
+##### indexManager
+
+`PersistentCacheIndexManager`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### doc()
+
+#### Call Signature
+
+> **doc**(`parent`, `path`, ...`pathSegments`): [`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [modular.ts:108](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L108)
+
+##### Parameters
+
+###### parent
+
+[`Firestore`](#firestore-2)
+
+###### path
+
+`string`
+
+###### pathSegments
+
+...`string`[]
+
+##### Returns
+
+[`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+#### Call Signature
+
+> **doc**\<`AppModelType`, `DbModelType`\>(`parent`, `path?`, ...`pathSegments`): [`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [modular.ts:113](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L113)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### parent
+
+[`CollectionReference`](#collectionreference)\<`AppModelType`, `DbModelType`\>
+
+###### path?
+
+`string`
+
+###### pathSegments
+
+...`string`[]
+
+##### Returns
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+#### Call Signature
+
+> **doc**\<`AppModelType`, `DbModelType`\>(`parent`, `path`, ...`pathSegments`): [`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [modular.ts:118](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L118)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### parent
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+###### path
+
+`string`
+
+###### pathSegments
+
+...`string`[]
+
+##### Returns
+
+[`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+***
+
+### documentId()
+
+> **documentId**(): [`FieldPath`](#fieldpath)
+
+Defined in: [modular/FieldPath.ts:22](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldPath.ts#L22)
+
+#### Returns
+
+[`FieldPath`](#fieldpath)
+
+***
+
+### enableNetwork()
+
+> **enableNetwork**(`firestore`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:315](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L315)
+
+#### Parameters
+
+##### firestore
+
+[`Firestore`](#firestore-2)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### enablePersistentCacheIndexAutoCreation()
+
+> **enablePersistentCacheIndexAutoCreation**(`indexManager`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:514](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L514)
+
+#### Parameters
+
+##### indexManager
+
+`PersistentCacheIndexManager`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### endAt()
+
+#### Call Signature
+
+> **endAt**\<`AppModelType`, `DbModelType`\>(`snapshot`): [`QueryEndAtConstraint`](#queryendatconstraint)
+
+Defined in: [modular/query.ts:275](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L275)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### snapshot
+
+`DocumentSnapshot`\<`AppModelType`, `DbModelType`\>
+
+##### Returns
+
+[`QueryEndAtConstraint`](#queryendatconstraint)
+
+#### Call Signature
+
+> **endAt**(...`fieldValues`): [`QueryEndAtConstraint`](#queryendatconstraint)
+
+Defined in: [modular/query.ts:278](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L278)
+
+##### Parameters
+
+###### fieldValues
+
+...`unknown`[]
+
+##### Returns
+
+[`QueryEndAtConstraint`](#queryendatconstraint)
+
+***
+
+### endBefore()
+
+#### Call Signature
+
+> **endBefore**\<`AppModelType`, `DbModelType`\>(`snapshot`): [`QueryEndAtConstraint`](#queryendatconstraint)
+
+Defined in: [modular/query.ts:283](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L283)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### snapshot
+
+`DocumentSnapshot`\<`AppModelType`, `DbModelType`\>
+
+##### Returns
+
+[`QueryEndAtConstraint`](#queryendatconstraint)
+
+#### Call Signature
+
+> **endBefore**(...`fieldValues`): [`QueryEndAtConstraint`](#queryendatconstraint)
+
+Defined in: [modular/query.ts:287](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L287)
+
+##### Parameters
+
+###### fieldValues
+
+...`unknown`[]
+
+##### Returns
+
+[`QueryEndAtConstraint`](#queryendatconstraint)
+
+***
+
+### Filter()
+
+> **Filter**(`fieldPath`, `operator`, `value`): `_Filter`
+
+Defined in: [FirestoreFilter.ts:39](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreFilter.ts#L39)
+
+#### Parameters
+
+##### fieldPath
+
+`string` \| [`FieldPath`](#fieldpath)
+
+##### operator
+
+`string`
+
+##### value
+
+`unknown`
+
+#### Returns
+
+`_Filter`
+
+***
+
+### getAggregateFromServer()
+
+> **getAggregateFromServer**\<`AggregateSpecType`, `AppModelType`, `DbModelType`\>(`query`, `aggregateSpec`): `Promise`\<[`AggregateQuerySnapshot`](#aggregatequerysnapshot)\<`AggregateSpecType`, `AppModelType`, `DbModelType`\>\>
+
+Defined in: [modular.ts:394](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L394)
+
+#### Type Parameters
+
+##### AggregateSpecType
+
+`AggregateSpecType` *extends* [`AggregateSpec`](#aggregatespec)
+
+##### AppModelType
+
+`AppModelType`
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### query
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+##### aggregateSpec
+
+`AggregateSpecType`
+
+#### Returns
+
+`Promise`\<[`AggregateQuerySnapshot`](#aggregatequerysnapshot)\<`AggregateSpecType`, `AppModelType`, `DbModelType`\>\>
+
+***
+
+### getCountFromServer()
+
+> **getCountFromServer**\<`AppModelType`, `DbModelType`\>(`query`): `Promise`\<[`AggregateQuerySnapshot`](#aggregatequerysnapshot)\<\{ `count`: [`AggregateField`](#aggregatefield)\<`number`\>; \}, `AppModelType`, `DbModelType`\>\>
+
+Defined in: [modular.ts:384](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L384)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType`
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### query
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+#### Returns
+
+`Promise`\<[`AggregateQuerySnapshot`](#aggregatequerysnapshot)\<\{ `count`: [`AggregateField`](#aggregatefield)\<`number`\>; \}, `AppModelType`, `DbModelType`\>\>
+
+***
+
+### getDoc()
+
+> **getDoc**\<`AppModelType`, `DbModelType`\>(`reference`): `Promise`\<`DocumentSnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+Defined in: [modular/query.ts:300](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L300)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+#### Returns
+
+`Promise`\<`DocumentSnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+***
+
+### getDocFromCache()
+
+> **getDocFromCache**\<`AppModelType`, `DbModelType`\>(`reference`): `Promise`\<`DocumentSnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+Defined in: [modular/query.ts:310](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L310)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+#### Returns
+
+`Promise`\<`DocumentSnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+***
+
+### getDocFromServer()
+
+> **getDocFromServer**\<`AppModelType`, `DbModelType`\>(`reference`): `Promise`\<`DocumentSnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+Defined in: [modular/query.ts:320](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L320)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+#### Returns
+
+`Promise`\<`DocumentSnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+***
+
+### getDocs()
+
+> **getDocs**\<`AppModelType`, `DbModelType`\>(`queryRef`): `Promise`\<`QuerySnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+Defined in: [modular/query.ts:330](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L330)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### queryRef
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+#### Returns
+
+`Promise`\<`QuerySnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+***
+
+### getDocsFromCache()
+
+> **getDocsFromCache**\<`AppModelType`, `DbModelType`\>(`queryRef`): `Promise`\<`QuerySnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+Defined in: [modular/query.ts:338](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L338)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### queryRef
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+#### Returns
+
+`Promise`\<`QuerySnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+***
+
+### getDocsFromServer()
+
+> **getDocsFromServer**\<`AppModelType`, `DbModelType`\>(`queryRef`): `Promise`\<`QuerySnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+Defined in: [modular/query.ts:346](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L346)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### queryRef
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+#### Returns
+
+`Promise`\<`QuerySnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+***
+
+### getFirestore()
+
+#### Call Signature
+
+> **getFirestore**(): [`Firestore`](#firestore-2)
+
+Defined in: [modular.ts:72](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L72)
+
+##### Returns
+
+[`Firestore`](#firestore-2)
+
+#### Call Signature
+
+> **getFirestore**(`app`): [`Firestore`](#firestore-2)
+
+Defined in: [modular.ts:73](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L73)
+
+##### Parameters
+
+###### app
+
+[`FirebaseApp`](../../../@react-native-firebase/app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+##### Returns
+
+[`Firestore`](#firestore-2)
+
+#### Call Signature
+
+> **getFirestore**(`app`, `databaseId`): [`Firestore`](#firestore-2)
+
+Defined in: [modular.ts:74](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L74)
+
+##### Parameters
+
+###### app
+
+[`FirebaseApp`](../../../@react-native-firebase/app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+###### databaseId
+
+`string`
+
+##### Returns
+
+[`Firestore`](#firestore-2)
+
+***
+
+### getPersistentCacheIndexManager()
+
+> **getPersistentCacheIndexManager**(`firestore`): `PersistentCacheIndexManager` \| `null`
+
+Defined in: [modular.ts:505](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L505)
+
+#### Parameters
+
+##### firestore
+
+[`Firestore`](#firestore-2)
+
+#### Returns
+
+`PersistentCacheIndexManager` \| `null`
+
+***
+
+### increment()
+
+> **increment**(`n`): [`FieldValue`](#fieldvalue)
+
+Defined in: [modular/FieldValue.ts:38](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.ts#L38)
+
+#### Parameters
+
+##### n
+
+`number`
+
+#### Returns
+
+[`FieldValue`](#fieldvalue)
+
+***
+
+### initializeFirestore()
+
+> **initializeFirestore**(`app`, `settings`, `databaseId?`): `Promise`\<[`Firestore`](#firestore-2)\>
+
+Defined in: [modular.ts:343](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L343)
+
+#### Parameters
+
+##### app
+
+[`FirebaseApp`](../../../@react-native-firebase/app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+##### settings
+
+[`FirestoreSettings`](#firestoresettings)
+
+##### databaseId?
+
+`string`
+
+#### Returns
+
+`Promise`\<[`Firestore`](#firestore-2)\>
+
+***
+
+### limit()
+
+> **limit**(`limitValue`): [`QueryLimitConstraint`](#querylimitconstraint)
+
+Defined in: [modular/query.ts:292](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L292)
+
+#### Parameters
+
+##### limitValue
+
+`number`
+
+#### Returns
+
+[`QueryLimitConstraint`](#querylimitconstraint)
+
+***
+
+### limitToLast()
+
+> **limitToLast**(`limitValue`): [`QueryLimitConstraint`](#querylimitconstraint)
+
+Defined in: [modular/query.ts:296](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L296)
+
+#### Parameters
+
+##### limitValue
+
+`number`
+
+#### Returns
+
+[`QueryLimitConstraint`](#querylimitconstraint)
+
+***
+
+### loadBundle()
+
+> **loadBundle**(`firestore`, `bundleData`): [`LoadBundleTask`](#loadbundletask)
+
+Defined in: [modular.ts:483](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L483)
+
+#### Parameters
+
+##### firestore
+
+[`Firestore`](#firestore-2)
+
+##### bundleData
+
+`string` \| `ArrayBuffer` \| `ReadableStream`\<`Uint8Array`\<`ArrayBufferLike`\>\>
+
+#### Returns
+
+[`LoadBundleTask`](#loadbundletask)
+
+***
+
+### namedQuery()
+
+> **namedQuery**(`firestore`, `name`): `Promise`\<[`Query`](#query-2)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\> \| `null`\>
+
+Defined in: [modular.ts:495](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L495)
+
+#### Parameters
+
+##### firestore
+
+[`Firestore`](#firestore-2)
+
+##### name
+
+`string`
+
+#### Returns
+
+`Promise`\<[`Query`](#query-2)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\> \| `null`\>
+
+***
+
+### onSnapshot()
+
+#### Call Signature
+
+> **onSnapshot**\<`AppModelType`, `DbModelType`\>(`reference`, `observer`): [`Unsubscribe`](#unsubscribe)
+
+Defined in: [modular/snapshot.ts:35](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/snapshot.ts#L35)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+###### observer
+
+###### complete?
+
+() => `void`
+
+###### error?
+
+(`error`) => `void`
+
+###### next?
+
+(`snapshot`) => `void`
+
+##### Returns
+
+[`Unsubscribe`](#unsubscribe)
+
+#### Call Signature
+
+> **onSnapshot**\<`AppModelType`, `DbModelType`\>(`reference`, `options`, `observer`): [`Unsubscribe`](#unsubscribe)
+
+Defined in: [modular/snapshot.ts:46](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/snapshot.ts#L46)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+###### options
+
+[`SnapshotListenOptions`](#snapshotlistenoptions)
+
+###### observer
+
+###### complete?
+
+() => `void`
+
+###### error?
+
+(`error`) => `void`
+
+###### next?
+
+(`snapshot`) => `void`
+
+##### Returns
+
+[`Unsubscribe`](#unsubscribe)
+
+#### Call Signature
+
+> **onSnapshot**\<`AppModelType`, `DbModelType`\>(`reference`, `onNext`, `onError?`, `onCompletion?`): [`Unsubscribe`](#unsubscribe)
+
+Defined in: [modular/snapshot.ts:58](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/snapshot.ts#L58)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+###### onNext
+
+(`snapshot`) => `void`
+
+###### onError?
+
+(`error`) => `void`
+
+###### onCompletion?
+
+() => `void`
+
+##### Returns
+
+[`Unsubscribe`](#unsubscribe)
+
+#### Call Signature
+
+> **onSnapshot**\<`AppModelType`, `DbModelType`\>(`reference`, `options`, `onNext`, `onError?`, `onCompletion?`): [`Unsubscribe`](#unsubscribe)
+
+Defined in: [modular/snapshot.ts:67](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/snapshot.ts#L67)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+###### options
+
+[`SnapshotListenOptions`](#snapshotlistenoptions)
+
+###### onNext
+
+(`snapshot`) => `void`
+
+###### onError?
+
+(`error`) => `void`
+
+###### onCompletion?
+
+() => `void`
+
+##### Returns
+
+[`Unsubscribe`](#unsubscribe)
+
+#### Call Signature
+
+> **onSnapshot**\<`AppModelType`, `DbModelType`\>(`query`, `observer`): [`Unsubscribe`](#unsubscribe)
+
+Defined in: [modular/snapshot.ts:77](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/snapshot.ts#L77)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### query
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### observer
+
+###### complete?
+
+() => `void`
+
+###### error?
+
+(`error`) => `void`
+
+###### next?
+
+(`snapshot`) => `void`
+
+##### Returns
+
+[`Unsubscribe`](#unsubscribe)
+
+#### Call Signature
+
+> **onSnapshot**\<`AppModelType`, `DbModelType`\>(`query`, `options`, `observer`): [`Unsubscribe`](#unsubscribe)
+
+Defined in: [modular/snapshot.ts:88](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/snapshot.ts#L88)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### query
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### options
+
+[`SnapshotListenOptions`](#snapshotlistenoptions)
+
+###### observer
+
+###### complete?
+
+() => `void`
+
+###### error?
+
+(`error`) => `void`
+
+###### next?
+
+(`snapshot`) => `void`
+
+##### Returns
+
+[`Unsubscribe`](#unsubscribe)
+
+#### Call Signature
+
+> **onSnapshot**\<`AppModelType`, `DbModelType`\>(`query`, `onNext`, `onError?`, `onCompletion?`): [`Unsubscribe`](#unsubscribe)
+
+Defined in: [modular/snapshot.ts:100](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/snapshot.ts#L100)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### query
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### onNext
+
+(`snapshot`) => `void`
+
+###### onError?
+
+(`error`) => `void`
+
+###### onCompletion?
+
+() => `void`
+
+##### Returns
+
+[`Unsubscribe`](#unsubscribe)
+
+#### Call Signature
+
+> **onSnapshot**\<`AppModelType`, `DbModelType`\>(`query`, `options`, `onNext`, `onError?`, `onCompletion?`): [`Unsubscribe`](#unsubscribe)
+
+Defined in: [modular/snapshot.ts:109](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/snapshot.ts#L109)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### query
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### options
+
+[`SnapshotListenOptions`](#snapshotlistenoptions)
+
+###### onNext
+
+(`snapshot`) => `void`
+
+###### onError?
+
+(`error`) => `void`
+
+###### onCompletion?
+
+() => `void`
+
+##### Returns
+
+[`Unsubscribe`](#unsubscribe)
+
+***
+
+### onSnapshotsInSync()
+
+#### Call Signature
+
+> **onSnapshotsInSync**(`firestore`, `observer`): [`Unsubscribe`](#unsubscribe)
+
+Defined in: [modular.ts:212](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L212)
+
+##### Parameters
+
+###### firestore
+
+[`Firestore`](#firestore-2)
+
+###### observer
+
+###### complete?
+
+() => `void`
+
+###### error?
+
+(`error`) => `void`
+
+###### next?
+
+() => `void`
+
+##### Returns
+
+[`Unsubscribe`](#unsubscribe)
+
+#### Call Signature
+
+> **onSnapshotsInSync**(`firestore`, `onSync`): [`Unsubscribe`](#unsubscribe)
+
+Defined in: [modular.ts:216](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L216)
+
+##### Parameters
+
+###### firestore
+
+[`Firestore`](#firestore-2)
+
+###### onSync
+
+() => `void`
+
+##### Returns
+
+[`Unsubscribe`](#unsubscribe)
+
+***
+
+### or()
+
+> **or**(...`queryConstraints`): [`QueryCompositeFilterConstraint`](#querycompositefilterconstraint)
+
+Defined in: [modular/query.ts:240](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L240)
+
+#### Parameters
+
+##### queryConstraints
+
+...[`QueryFilterConstraint`](#queryfilterconstraint)[]
+
+#### Returns
+
+[`QueryCompositeFilterConstraint`](#querycompositefilterconstraint)
+
+***
+
+### orderBy()
+
+> **orderBy**(`fieldPath`, `directionStr?`): [`QueryOrderByConstraint`](#queryorderbyconstraint)
+
+Defined in: [modular/query.ts:248](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L248)
+
+#### Parameters
+
+##### fieldPath
+
+`string` \| [`FieldPath`](#fieldpath)
+
+##### directionStr?
+
+[`OrderByDirection`](#orderbydirection)
+
+#### Returns
+
+[`QueryOrderByConstraint`](#queryorderbyconstraint)
+
+***
+
+### query()
+
+#### Call Signature
+
+> **query**\<`AppModelType`, `DbModelType`\>(`queryRef`, `compositeFilter`, ...`queryConstraints`): [`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [modular/query.ts:200](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L200)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### queryRef
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### compositeFilter
+
+[`QueryCompositeFilterConstraint`](#querycompositefilterconstraint)
+
+###### queryConstraints
+
+...[`QueryNonFilterConstraint`](#querynonfilterconstraint)[]
+
+##### Returns
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+#### Call Signature
+
+> **query**\<`AppModelType`, `DbModelType`\>(`queryRef`, ...`queryConstraints`): [`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [modular/query.ts:205](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L205)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### queryRef
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### queryConstraints
+
+...[`QueryConstraint`](#abstract-queryconstraint)[]
+
+##### Returns
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+***
+
+### queryEqual()
+
+> **queryEqual**\<`AppModelType`, `DbModelType`\>(`left`, `right`): `boolean`
+
+Defined in: [modular/query.ts:362](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L362)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### left
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+##### right
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+#### Returns
+
+`boolean`
+
+***
+
+### refEqual()
+
+> **refEqual**\<`AppModelType`, `DbModelType`\>(`left`, `right`): `boolean`
+
+Defined in: [modular.ts:184](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L184)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType`
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### left
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\> \| [`CollectionReference`](#collectionreference)\<`AppModelType`, `DbModelType`\>
+
+##### right
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\> \| [`CollectionReference`](#collectionreference)\<`AppModelType`, `DbModelType`\>
+
+#### Returns
+
+`boolean`
+
+***
+
+### runTransaction()
+
+> **runTransaction**\<`T`\>(`firestore`, `updateFunction`): `Promise`\<`T`\>
+
+Defined in: [modular.ts:373](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L373)
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+#### Parameters
+
+##### firestore
+
+[`Firestore`](#firestore-2)
+
+##### updateFunction
+
+(`transaction`) => `Promise`\<`T`\>
+
+#### Returns
+
+`Promise`\<`T`\>
+
+***
+
+### serverTimestamp()
+
+> **serverTimestamp**(): [`FieldValue`](#fieldvalue)
+
+Defined in: [modular/FieldValue.ts:26](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.ts#L26)
+
+#### Returns
+
+[`FieldValue`](#fieldvalue)
+
+***
+
+### setDoc()
+
+#### Call Signature
+
+> **setDoc**\<`AppModelType`, `DbModelType`\>(`reference`, `data`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:243](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L243)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+###### data
+
+[`WithFieldValue`](#withfieldvalue)\<`AppModelType`\>
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **setDoc**\<`AppModelType`, `DbModelType`\>(`reference`, `data`, `options`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:247](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L247)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+###### data
+
+[`PartialWithFieldValue`](#partialwithfieldvalue)\<`AppModelType`\>
+
+###### options
+
+[`SetOptions`](#setoptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setLogLevel()
+
+> **setLogLevel**(`logLevel`): `void`
+
+Defined in: [modular.ts:369](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L369)
+
+#### Parameters
+
+##### logLevel
+
+[`LogLevel`](#loglevel)
+
+#### Returns
+
+`void`
+
+***
+
+### snapshotEqual()
+
+> **snapshotEqual**\<`AppModelType`, `DbModelType`\>(`left`, `right`): `boolean`
+
+Defined in: [modular/snapshot.ts:131](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/snapshot.ts#L131)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType`
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### left
+
+`DocumentSnapshot`\<`AppModelType`, `DbModelType`\> \| `QuerySnapshot`\<`AppModelType`, `DbModelType`\>
+
+##### right
+
+`DocumentSnapshot`\<`AppModelType`, `DbModelType`\> \| `QuerySnapshot`\<`AppModelType`, `DbModelType`\>
+
+#### Returns
+
+`boolean`
+
+***
+
+### startAfter()
+
+#### Call Signature
+
+> **startAfter**\<`AppModelType`, `DbModelType`\>(`snapshot`): [`QueryStartAtConstraint`](#querystartatconstraint)
+
+Defined in: [modular/query.ts:264](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L264)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### snapshot
+
+`DocumentSnapshot`\<`AppModelType`, `DbModelType`\>
+
+##### Returns
+
+[`QueryStartAtConstraint`](#querystartatconstraint)
+
+#### Call Signature
+
+> **startAfter**(...`fieldValues`): [`QueryStartAtConstraint`](#querystartatconstraint)
+
+Defined in: [modular/query.ts:268](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L268)
+
+##### Parameters
+
+###### fieldValues
+
+...`unknown`[]
+
+##### Returns
+
+[`QueryStartAtConstraint`](#querystartatconstraint)
+
+***
+
+### startAt()
+
+#### Call Signature
+
+> **startAt**\<`AppModelType`, `DbModelType`\>(`snapshot`): [`QueryStartAtConstraint`](#querystartatconstraint)
+
+Defined in: [modular/query.ts:255](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L255)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### snapshot
+
+`DocumentSnapshot`\<`AppModelType`, `DbModelType`\>
+
+##### Returns
+
+[`QueryStartAtConstraint`](#querystartatconstraint)
+
+#### Call Signature
+
+> **startAt**(...`fieldValues`): [`QueryStartAtConstraint`](#querystartatconstraint)
+
+Defined in: [modular/query.ts:259](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L259)
+
+##### Parameters
+
+###### fieldValues
+
+...`unknown`[]
+
+##### Returns
+
+[`QueryStartAtConstraint`](#querystartatconstraint)
+
+***
+
+### sum()
+
+> **sum**(`field`): [`AggregateField`](#aggregatefield)\<`number`\>
+
+Defined in: [modular.ts:471](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L471)
+
+#### Parameters
+
+##### field
+
+`string` \| [`FieldPath`](#fieldpath)
+
+#### Returns
+
+[`AggregateField`](#aggregatefield)\<`number`\>
+
+***
+
+### terminate()
+
+> **terminate**(`firestore`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:332](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L332)
+
+#### Parameters
+
+##### firestore
+
+[`Firestore`](#firestore-2)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### updateDoc()
+
+#### Call Signature
+
+> **updateDoc**\<`AppModelType`, `DbModelType`\>(`reference`, `data`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:265](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L265)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+###### data
+
+[`UpdateData`](#updatedata)\<`DbModelType`\>
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **updateDoc**\<`AppModelType`, `DbModelType`\>(`reference`, `field`, `value`, ...`moreFieldsAndValues`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:269](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L269)
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+###### field
+
+`string` \| [`FieldPath`](#fieldpath)
+
+###### value
+
+`unknown`
+
+###### moreFieldsAndValues
+
+...`unknown`[]
+
+##### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### vector()
+
+> **vector**(`values?`): [`VectorValue`](#vectorvalue)
+
+Defined in: [modular/VectorValue.ts:22](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/VectorValue.ts#L22)
+
+#### Parameters
+
+##### values?
+
+`number`[]
+
+#### Returns
+
+[`VectorValue`](#vectorvalue)
+
+***
+
+### waitForPendingWrites()
+
+> **waitForPendingWrites**(`firestore`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:336](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L336)
+
+#### Parameters
+
+##### firestore
+
+[`Firestore`](#firestore-2)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### where()
+
+> **where**(`fieldPath`, `opStr`, `value`): [`QueryFieldFilterConstraint`](#queryfieldfilterconstraint)
+
+Defined in: [modular/query.ts:232](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L232)
+
+#### Parameters
+
+##### fieldPath
+
+`string` \| [`FieldPath`](#fieldpath)
+
+##### opStr
+
+[`WhereFilterOp`](#wherefilterop)
+
+##### value
+
+`unknown`
+
+#### Returns
+
+[`QueryFieldFilterConstraint`](#queryfieldfilterconstraint)
+
+***
+
+### writeBatch()
+
+> **writeBatch**(`firestore`): `WriteBatch`
+
+Defined in: [modular.ts:501](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L501)
+
+#### Parameters
+
+##### firestore
+
+[`Firestore`](#firestore-2)
+
+#### Returns
+
+`WriteBatch`
+
+## Classes
+
+### AggregateField
+
+Defined in: [FirestoreAggregate.ts:103](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L103)
+
+#### Type Parameters
+
+##### T
+
+`T` = `unknown`
+
+#### Constructors
+
+##### Constructor
+
+> **new AggregateField**\<`T`\>(`aggregateType?`, `fieldPath?`): [`AggregateField`](#aggregatefield)\<`T`\>
+
+Defined in: [FirestoreAggregate.ts:110](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L110)
+
+###### Parameters
+
+###### aggregateType?
+
+[`AggregateType`](#aggregatetype-1) = `'count'`
+
+###### fieldPath?
+
+[`FieldPath`](#fieldpath)
+
+###### Returns
+
+[`AggregateField`](#aggregatefield)\<`T`\>
+
+#### Properties
+
+##### \_internalFieldPath?
+
+> `readonly` `optional` **\_internalFieldPath?**: [`FieldPath`](#fieldpath)
+
+Defined in: [FirestoreAggregate.ts:106](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L106)
+
+##### \_phantomType?
+
+> `optional` **\_phantomType?**: `T`
+
+Defined in: [FirestoreAggregate.ts:108](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L108)
+
+##### aggregateType
+
+> `readonly` **aggregateType**: [`AggregateType`](#aggregatetype-1)
+
+Defined in: [FirestoreAggregate.ts:105](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L105)
+
+##### type
+
+> `readonly` **type**: `"AggregateField"` = `'AggregateField'`
+
+Defined in: [FirestoreAggregate.ts:104](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L104)
+
+***
+
+### AggregateQuerySnapshot
+
+Defined in: [FirestoreAggregate.ts:67](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L67)
+
+#### Type Parameters
+
+##### AggregateSpecType
+
+`AggregateSpecType` *extends* [`AggregateSpec`](#aggregatespec) = [`AggregateSpec`](#aggregatespec)
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Accessors
+
+##### query
+
+###### Get Signature
+
+> **get** **query**(): [`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [FirestoreAggregate.ts:87](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L87)
+
+###### Returns
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+#### Constructors
+
+##### Constructor
+
+> **new AggregateQuerySnapshot**\<`AggregateSpecType`, `AppModelType`, `DbModelType`\>(`query`, `data`, `isGetCountFromServer`): [`AggregateQuerySnapshot`](#aggregatequerysnapshot)\<`AggregateSpecType`, `AppModelType`, `DbModelType`\>
+
+Defined in: [FirestoreAggregate.ts:77](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L77)
+
+###### Parameters
+
+###### query
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### data
+
+###### count?
+
+`number`
+
+###### isGetCountFromServer
+
+`boolean`
+
+###### Returns
+
+[`AggregateQuerySnapshot`](#aggregatequerysnapshot)\<`AggregateSpecType`, `AppModelType`, `DbModelType`\>
+
+#### Methods
+
+##### \_fieldsProto()
+
+> **\_fieldsProto**(): `Record`\<`string`, `unknown`\>
+
+Defined in: [FirestoreAggregate.ts:98](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L98)
+
+###### Returns
+
+`Record`\<`string`, `unknown`\>
+
+##### data()
+
+> **data**(): [`AggregateSpecData`](#aggregatespecdata)\<`AggregateSpecType`\>
+
+Defined in: [FirestoreAggregate.ts:91](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L91)
+
+###### Returns
+
+[`AggregateSpecData`](#aggregatespecdata)\<`AggregateSpecType`\>
+
+#### Properties
+
+##### \_data
+
+> **\_data**: `object`
+
+Defined in: [FirestoreAggregate.ts:74](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L74)
+
+###### Index Signature
+
+\[`key`: `string`\]: `unknown`
+
+###### count?
+
+> `optional` **count?**: `number`
+
+##### \_isGetCountFromServer
+
+> **\_isGetCountFromServer**: `boolean`
+
+Defined in: [FirestoreAggregate.ts:75](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L75)
+
+##### \_query
+
+> **\_query**: [`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [FirestoreAggregate.ts:73](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L73)
+
+##### type
+
+> `readonly` **type**: `"AggregateQuerySnapshot"` = `'AggregateQuerySnapshot'`
+
+Defined in: [FirestoreAggregate.ts:72](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreAggregate.ts#L72)
+
+***
+
+### Bytes
+
+Defined in: [modular/Bytes.ts:21](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/Bytes.ts#L21)
+
+#### Extends
+
+- `default`
+
+#### Constructors
+
+##### Constructor
+
+> **new Bytes**(`blob`): [`Bytes`](#bytes)
+
+Defined in: [modular/Bytes.ts:22](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/Bytes.ts#L22)
+
+###### Parameters
+
+###### blob
+
+`FirestoreBlobInternal`
+
+###### Returns
+
+[`Bytes`](#bytes)
+
+###### Overrides
+
+`Blob.constructor`
+
+#### Methods
+
+##### isEqual()
+
+> **isEqual**(`other`): `boolean`
+
+Defined in: [modular/Bytes.ts:52](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/Bytes.ts#L52)
+
+###### Parameters
+
+###### other
+
+[`Bytes`](#bytes)
+
+###### Returns
+
+`boolean`
+
+###### Overrides
+
+`Blob.isEqual`
+
+##### toBase64()
+
+> **toBase64**(): `string`
+
+Defined in: [modular/Bytes.ts:40](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/Bytes.ts#L40)
+
+###### Returns
+
+`string`
+
+###### Overrides
+
+`Blob.toBase64`
+
+##### toJSON()
+
+> **toJSON**(): `object`
+
+Defined in: [modular/Bytes.ts:62](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/Bytes.ts#L62)
+
+###### Returns
+
+`object`
+
+###### bytes
+
+> **bytes**: `string`
+
+###### type
+
+> **type**: `string`
+
+##### toString()
+
+> **toString**(): `string`
+
+Defined in: [modular/Bytes.ts:48](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/Bytes.ts#L48)
+
+###### Returns
+
+`string`
+
+###### Overrides
+
+`Blob.toString`
+
+##### toUint8Array()
+
+> **toUint8Array**(): `Uint8Array`
+
+Defined in: [modular/Bytes.ts:44](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/Bytes.ts#L44)
+
+###### Returns
+
+`Uint8Array`
+
+###### Overrides
+
+`Blob.toUint8Array`
+
+##### fromBase64String()
+
+> `static` **fromBase64String**(`base64`): [`Bytes`](#bytes)
+
+Defined in: [modular/Bytes.ts:28](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/Bytes.ts#L28)
+
+###### Parameters
+
+###### base64
+
+`string`
+
+###### Returns
+
+[`Bytes`](#bytes)
+
+###### Overrides
+
+`Blob.fromBase64String`
+
+##### fromJSON()
+
+> `static` **fromJSON**(`json`): [`Bytes`](#bytes)
+
+Defined in: [modular/Bytes.ts:69](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/Bytes.ts#L69)
+
+###### Parameters
+
+###### json
+
+`object`
+
+###### Returns
+
+[`Bytes`](#bytes)
+
+##### fromUint8Array()
+
+> `static` **fromUint8Array**(`array`): [`Bytes`](#bytes)
+
+Defined in: [modular/Bytes.ts:36](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/Bytes.ts#L36)
+
+###### Parameters
+
+###### array
+
+`Uint8Array`
+
+###### Returns
+
+[`Bytes`](#bytes)
+
+###### Overrides
+
+`Blob.fromUint8Array`
+
+#### Properties
+
+##### \_binaryString
+
+> **\_binaryString**: `string`
+
+Defined in: [FirestoreBlob.ts:21](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreBlob.ts#L21)
+
+###### Inherited from
+
+`Blob._binaryString`
+
+##### \_jsonSchema
+
+> `static` **\_jsonSchema**: `object`
+
+Defined in: [modular/Bytes.ts:57](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/Bytes.ts#L57)
+
+###### bytes
+
+> **bytes**: `string` = `'string'`
+
+###### type
+
+> **type**: `string` = `Bytes._jsonSchemaVersion`
+
+##### \_jsonSchemaVersion
+
+> `static` **\_jsonSchemaVersion**: `string` = `'firestore/bytes/1.0'`
+
+Defined in: [modular/Bytes.ts:56](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/Bytes.ts#L56)
+
+***
+
+### DocumentSnapshot
+
+Defined in: [FirestoreDocumentSnapshot.ts:44](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L44)
+
+#### Accessors
+
+##### id
+
+###### Get Signature
+
+> **get** **id**(): `string`
+
+Defined in: [FirestoreDocumentSnapshot.ts:67](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L67)
+
+###### Returns
+
+`string`
+
+##### metadata
+
+###### Get Signature
+
+> **get** **metadata**(): [`SnapshotMetadata`](#snapshotmetadata)
+
+Defined in: [FirestoreDocumentSnapshot.ts:71](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L71)
+
+###### Returns
+
+[`SnapshotMetadata`](#snapshotmetadata)
+
+##### ref
+
+###### Get Signature
+
+> **get** **ref**(): `DocumentReference`
+
+Defined in: [FirestoreDocumentSnapshot.ts:75](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L75)
+
+###### Returns
+
+`DocumentReference`
+
+#### Constructors
+
+##### Constructor
+
+> **new DocumentSnapshot**(`firestore`, `nativeData`, `converter`): [`DocumentSnapshot`](#documentsnapshot)
+
+Defined in: [FirestoreDocumentSnapshot.ts:53](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L53)
+
+###### Parameters
+
+###### firestore
+
+`FirestoreInternal`
+
+###### nativeData
+
+`DocumentSnapshotNativeData`
+
+###### converter
+
+[`FirestoreDataConverter`](#firestoredataconverter)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\> \| `null`
+
+###### Returns
+
+[`DocumentSnapshot`](#documentsnapshot)
+
+#### Methods
+
+##### data()
+
+> **data**(`options?`): [`DocumentData`](#documentdata) \| `undefined`
+
+Defined in: [FirestoreDocumentSnapshot.ts:83](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L83)
+
+###### Parameters
+
+###### options?
+
+[`SnapshotOptions`](#snapshotoptions)
+
+###### Returns
+
+[`DocumentData`](#documentdata) \| `undefined`
+
+##### exists()
+
+> **exists**(): `boolean`
+
+Defined in: [FirestoreDocumentSnapshot.ts:79](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L79)
+
+###### Returns
+
+`boolean`
+
+##### get()
+
+> **get**(`fieldPath`, `_options?`): `DocumentFieldValueInternal`
+
+Defined in: [FirestoreDocumentSnapshot.ts:103](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L103)
+
+###### Parameters
+
+###### fieldPath
+
+`string` \| [`FieldPath`](#fieldpath)
+
+###### \_options?
+
+[`SnapshotOptions`](#snapshotoptions)
+
+###### Returns
+
+`DocumentFieldValueInternal`
+
+##### isEqual()
+
+> **isEqual**(`other`): `boolean`
+
+Defined in: [FirestoreDocumentSnapshot.ts:127](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L127)
+
+###### Parameters
+
+###### other
+
+[`DocumentSnapshot`](#documentsnapshot)
+
+###### Returns
+
+`boolean`
+
+#### Properties
+
+##### \_converter
+
+> **\_converter**: [`FirestoreDataConverter`](#firestoredataconverter)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\> \| `null`
+
+Defined in: [FirestoreDocumentSnapshot.ts:51](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L51)
+
+##### \_data
+
+> **\_data**: `Record`\<`string`, `unknown`\> \| `undefined`
+
+Defined in: [FirestoreDocumentSnapshot.ts:47](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L47)
+
+##### \_exists
+
+> **\_exists**: `boolean`
+
+Defined in: [FirestoreDocumentSnapshot.ts:50](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L50)
+
+##### \_firestore
+
+> **\_firestore**: `FirestoreInternal`
+
+Defined in: [FirestoreDocumentSnapshot.ts:45](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L45)
+
+##### \_metadata
+
+> **\_metadata**: [`SnapshotMetadata`](#snapshotmetadata)
+
+Defined in: [FirestoreDocumentSnapshot.ts:48](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L48)
+
+##### \_nativeData
+
+> **\_nativeData**: `DocumentSnapshotNativeData`
+
+Defined in: [FirestoreDocumentSnapshot.ts:46](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L46)
+
+##### \_ref
+
+> **\_ref**: `DocumentReference`
+
+Defined in: [FirestoreDocumentSnapshot.ts:49](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreDocumentSnapshot.ts#L49)
+
+***
+
+### FieldPath
+
+Defined in: [FieldPath.ts:22](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldPath.ts#L22)
+
+#### Constructors
+
+##### Constructor
+
+> **new FieldPath**(...`segments`): [`FieldPath`](#fieldpath)
+
+Defined in: [FieldPath.ts:25](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldPath.ts#L25)
+
+###### Parameters
+
+###### segments
+
+...`string`[]
+
+###### Returns
+
+[`FieldPath`](#fieldpath)
+
+#### Methods
+
+##### \_toArray()
+
+> **\_toArray**(): `string`[]
+
+Defined in: [FieldPath.ts:56](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldPath.ts#L56)
+
+###### Returns
+
+`string`[]
+
+##### \_toPath()
+
+> **\_toPath**(): `string`
+
+Defined in: [FieldPath.ts:52](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldPath.ts#L52)
+
+###### Returns
+
+`string`
+
+##### isEqual()
+
+> **isEqual**(`other`): `boolean`
+
+Defined in: [FieldPath.ts:42](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldPath.ts#L42)
+
+###### Parameters
+
+###### other
+
+[`FieldPath`](#fieldpath)
+
+###### Returns
+
+`boolean`
+
+#### Properties
+
+##### \_segments
+
+> **\_segments**: `string`[]
+
+Defined in: [FieldPath.ts:23](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldPath.ts#L23)
+
+***
+
+### FieldValue
+
+Defined in: [FieldValue.ts:41](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldValue.ts#L41)
+
+#### Constructors
+
+##### Constructor
+
+> **new FieldValue**(`internal?`, `type?`, `elements?`): [`FieldValue`](#fieldvalue)
+
+Defined in: [FieldValue.ts:45](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldValue.ts#L45)
+
+###### Parameters
+
+###### internal?
+
+`boolean` = `false`
+
+###### type?
+
+`string` = `''`
+
+###### elements?
+
+`unknown`
+
+###### Returns
+
+[`FieldValue`](#fieldvalue)
+
+#### Methods
+
+##### isEqual()
+
+> **isEqual**(`other`): `boolean`
+
+Defined in: [FieldValue.ts:96](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldValue.ts#L96)
+
+###### Parameters
+
+###### other
+
+[`FieldValue`](#fieldvalue)
+
+###### Returns
+
+`boolean`
+
+##### arrayRemove()
+
+> `static` **arrayRemove**(...`elements`): [`FieldValue`](#fieldvalue)
+
+Defined in: [FieldValue.ts:84](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldValue.ts#L84)
+
+###### Parameters
+
+###### elements
+
+...`unknown`[]
+
+###### Returns
+
+[`FieldValue`](#fieldvalue)
+
+##### arrayUnion()
+
+> `static` **arrayUnion**(...`elements`): [`FieldValue`](#fieldvalue)
+
+Defined in: [FieldValue.ts:72](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldValue.ts#L72)
+
+###### Parameters
+
+###### elements
+
+...`unknown`[]
+
+###### Returns
+
+[`FieldValue`](#fieldvalue)
+
+##### delete()
+
+> `static` **delete**(): [`FieldValue`](#fieldvalue)
+
+Defined in: [FieldValue.ts:56](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldValue.ts#L56)
+
+###### Returns
+
+[`FieldValue`](#fieldvalue)
+
+##### increment()
+
+> `static` **increment**(`n`): [`FieldValue`](#fieldvalue)
+
+Defined in: [FieldValue.ts:60](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldValue.ts#L60)
+
+###### Parameters
+
+###### n
+
+`number`
+
+###### Returns
+
+[`FieldValue`](#fieldvalue)
+
+##### serverTimestamp()
+
+> `static` **serverTimestamp**(): [`FieldValue`](#fieldvalue)
+
+Defined in: [FieldValue.ts:68](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldValue.ts#L68)
+
+###### Returns
+
+[`FieldValue`](#fieldvalue)
+
+#### Properties
+
+##### \_elements
+
+> **\_elements**: `unknown`
+
+Defined in: [FieldValue.ts:43](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldValue.ts#L43)
+
+##### \_type
+
+> **\_type**: `string`
+
+Defined in: [FieldValue.ts:42](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FieldValue.ts#L42)
+
+***
+
+### GeoPoint
+
+Defined in: [FirestoreGeoPoint.ts:25](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreGeoPoint.ts#L25)
+
+#### Accessors
+
+##### latitude
+
+###### Get Signature
+
+> **get** **latitude**(): `number`
+
+Defined in: [FirestoreGeoPoint.ts:60](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreGeoPoint.ts#L60)
+
+###### Returns
+
+`number`
+
+##### longitude
+
+###### Get Signature
+
+> **get** **longitude**(): `number`
+
+Defined in: [FirestoreGeoPoint.ts:64](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreGeoPoint.ts#L64)
+
+###### Returns
+
+`number`
+
+#### Constructors
+
+##### Constructor
+
+> **new GeoPoint**(`latitude`, `longitude`): [`GeoPoint`](#geopoint)
+
+Defined in: [FirestoreGeoPoint.ts:29](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreGeoPoint.ts#L29)
+
+###### Parameters
+
+###### latitude
+
+`number`
+
+###### longitude
+
+`number`
+
+###### Returns
+
+[`GeoPoint`](#geopoint)
+
+#### Methods
+
+##### \_compareTo()
+
+> **\_compareTo**(`other`): `number`
+
+Defined in: [FirestoreGeoPoint.ts:78](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreGeoPoint.ts#L78)
+
+###### Parameters
+
+###### other
+
+[`GeoPoint`](#geopoint)
+
+###### Returns
+
+`number`
+
+##### isEqual()
+
+> **isEqual**(`other`): `boolean`
+
+Defined in: [FirestoreGeoPoint.ts:68](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreGeoPoint.ts#L68)
+
+###### Parameters
+
+###### other
+
+[`GeoPoint`](#geopoint)
+
+###### Returns
+
+`boolean`
+
+##### toJSON()
+
+> **toJSON**(): `object`
+
+Defined in: [FirestoreGeoPoint.ts:93](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreGeoPoint.ts#L93)
+
+###### Returns
+
+`object`
+
+###### latitude
+
+> **latitude**: `number`
+
+###### longitude
+
+> **longitude**: `number`
+
+###### type
+
+> **type**: `string`
+
+##### fromJSON()
+
+> `static` **fromJSON**(`json`): [`GeoPoint`](#geopoint)
+
+Defined in: [FirestoreGeoPoint.ts:101](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreGeoPoint.ts#L101)
+
+###### Parameters
+
+###### json
+
+`object`
+
+###### Returns
+
+[`GeoPoint`](#geopoint)
+
+#### Properties
+
+##### \_latitude
+
+> **\_latitude**: `number`
+
+Defined in: [FirestoreGeoPoint.ts:26](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreGeoPoint.ts#L26)
+
+##### \_longitude
+
+> **\_longitude**: `number`
+
+Defined in: [FirestoreGeoPoint.ts:27](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreGeoPoint.ts#L27)
+
+##### \_jsonSchema
+
+> `static` **\_jsonSchema**: `object`
+
+Defined in: [FirestoreGeoPoint.ts:87](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreGeoPoint.ts#L87)
+
+###### latitude
+
+> **latitude**: `string` = `'number'`
+
+###### longitude
+
+> **longitude**: `string` = `'number'`
+
+###### type
+
+> **type**: `string` = `GeoPoint._jsonSchemaVersion`
+
+##### \_jsonSchemaVersion
+
+> `static` **\_jsonSchemaVersion**: `string` = `'firestore/geoPoint/1.0'`
+
+Defined in: [FirestoreGeoPoint.ts:86](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreGeoPoint.ts#L86)
+
+***
+
+### LoadBundleTask
+
+Defined in: [LoadBundleTask.ts:26](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/LoadBundleTask.ts#L26)
+
+#### Implements
+
+- `PromiseLike`\<[`LoadBundleTaskProgress`](#loadbundletaskprogress)\>
+
+#### Constructors
+
+##### Constructor
+
+> **new LoadBundleTask**(): [`LoadBundleTask`](#loadbundletask)
+
+Defined in: [LoadBundleTask.ts:39](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/LoadBundleTask.ts#L39)
+
+###### Returns
+
+[`LoadBundleTask`](#loadbundletask)
+
+#### Methods
+
+##### \_completeWith()
+
+> **\_completeWith**(`progress`): `void`
+
+Defined in: [LoadBundleTask.ts:65](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/LoadBundleTask.ts#L65)
+
+###### Parameters
+
+###### progress
+
+[`LoadBundleTaskProgress`](#loadbundletaskprogress)
+
+###### Returns
+
+`void`
+
+##### \_failWith()
+
+> **\_failWith**(`error`): `void`
+
+Defined in: [LoadBundleTask.ts:71](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/LoadBundleTask.ts#L71)
+
+###### Parameters
+
+###### error
+
+`Error`
+
+###### Returns
+
+`void`
+
+##### \_updateProgress()
+
+> **\_updateProgress**(`progress`): `void`
+
+Defined in: [LoadBundleTask.ts:78](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/LoadBundleTask.ts#L78)
+
+###### Parameters
+
+###### progress
+
+[`LoadBundleTaskProgress`](#loadbundletaskprogress)
+
+###### Returns
+
+`void`
+
+##### catch()
+
+> **catch**\<`R`\>(`onRejected`): `Promise`\<[`LoadBundleTaskProgress`](#loadbundletaskprogress) \| `R`\>
+
+Defined in: [LoadBundleTask.ts:54](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/LoadBundleTask.ts#L54)
+
+###### Type Parameters
+
+###### R
+
+`R`
+
+###### Parameters
+
+###### onRejected
+
+(`a`) => `R` \| `PromiseLike`\<`R`\>
+
+###### Returns
+
+`Promise`\<[`LoadBundleTaskProgress`](#loadbundletaskprogress) \| `R`\>
+
+##### onProgress()
+
+> **onProgress**(`next?`, `error?`, `complete?`): `void`
+
+Defined in: [LoadBundleTask.ts:46](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/LoadBundleTask.ts#L46)
+
+###### Parameters
+
+###### next?
+
+(`progress`) => `unknown`
+
+###### error?
+
+(`err`) => `unknown`
+
+###### complete?
+
+() => `void`
+
+###### Returns
+
+`void`
+
+##### then()
+
+> **then**\<`T`, `R`\>(`onFulfilled?`, `onRejected?`): `Promise`\<`T` \| `R`\>
+
+Defined in: [LoadBundleTask.ts:58](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/LoadBundleTask.ts#L58)
+
+Attaches callbacks for the resolution and/or rejection of the Promise.
+
+###### Type Parameters
+
+###### T
+
+`T`
+
+###### R
+
+`R`
+
+###### Parameters
+
+###### onFulfilled?
+
+(`a`) => `T` \| `PromiseLike`\<`T`\>
+
+###### onRejected?
+
+(`a`) => `R` \| `PromiseLike`\<`R`\>
+
+###### Returns
+
+`Promise`\<`T` \| `R`\>
+
+A Promise for the completion of which ever callback is executed.
+
+###### Implementation of
+
+`PromiseLike.then`
+
+***
+
+### QueryCompositeFilterConstraint
+
+Defined in: [modular/query.ts:93](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L93)
+
+#### Extends
+
+- `AppliableConstraint`
+
+#### Accessors
+
+##### \_filter
+
+###### Get Signature
+
+> **get** **\_filter**(): `_Filter`
+
+Defined in: [modular/query.ts:137](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L137)
+
+###### Returns
+
+`_Filter`
+
+#### Constructors
+
+##### Constructor
+
+> `protected` **new QueryCompositeFilterConstraint**(`type`, `_queryConstraints`): [`QueryCompositeFilterConstraint`](#querycompositefilterconstraint)
+
+Defined in: [modular/query.ts:97](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L97)
+
+**`Internal`**
+
+###### Parameters
+
+###### type
+
+`"or"` \| `"and"`
+
+The type of this query constraint
+
+###### \_queryConstraints
+
+[`QueryFilterConstraint`](#queryfilterconstraint)[]
+
+###### Returns
+
+[`QueryCompositeFilterConstraint`](#querycompositefilterconstraint)
+
+###### Overrides
+
+`AppliableConstraint.constructor`
+
+#### Methods
+
+##### \_apply()
+
+> **\_apply**\<`AppModelType`, `DbModelType`\>(`query`): [`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [modular/query.ts:123](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L123)
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### query
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Returns
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Overrides
+
+`AppliableConstraint._apply`
+
+##### \_create()
+
+> `static` **\_create**(`type`, `_queryConstraints`): [`QueryCompositeFilterConstraint`](#querycompositefilterconstraint)
+
+Defined in: [modular/query.ts:105](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L105)
+
+###### Parameters
+
+###### type
+
+`"or"` \| `"and"`
+
+###### \_queryConstraints
+
+[`QueryFilterConstraint`](#queryfilterconstraint)[]
+
+###### Returns
+
+[`QueryCompositeFilterConstraint`](#querycompositefilterconstraint)
+
+#### Properties
+
+##### type
+
+> `readonly` **type**: `"or"` \| `"and"`
+
+Defined in: [modular/query.ts:99](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L99)
+
+The type of this query constraint
+
+***
+
+### `abstract` QueryConstraint
+
+Defined in: [modular/query.ts:58](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L58)
+
+A `QueryConstraint` is used to narrow the set of documents returned by a
+Firestore query. `QueryConstraint`s are created by invoking [where](#where),
+[orderBy](#orderby), [startAt](#startat), [startAfter](#startafter), [endBefore](#endbefore),
+[endAt](#endat), [limit](#limit), [limitToLast](#limittolast) and can then be passed to
+[query](#query-3) to create a new query instance that also contains this `QueryConstraint`.
+
+#### Extends
+
+- `AppliableConstraint`
+
+#### Constructors
+
+##### Constructor
+
+> **new QueryConstraint**(): [`QueryConstraint`](#abstract-queryconstraint)
+
+###### Returns
+
+[`QueryConstraint`](#abstract-queryconstraint)
+
+###### Inherited from
+
+`AppliableConstraint.constructor`
+
+#### Methods
+
+##### \_apply()
+
+> **\_apply**\<`AppModelType`, `DbModelType`\>(`_queryRef`): [`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [modular/query.ts:61](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L61)
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### \_queryRef
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Returns
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Overrides
+
+`AppliableConstraint._apply`
+
+#### Properties
+
+##### type
+
+> `abstract` `readonly` **type**: [`QueryConstraintType`](#queryconstrainttype-1)
+
+Defined in: [modular/query.ts:59](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L59)
+
+***
+
+### QueryEndAtConstraint
+
+Defined in: [modular/query.ts:174](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L174)
+
+#### Extends
+
+- `QueryConstraintBase`
+
+#### Constructors
+
+##### Constructor
+
+> **new QueryEndAtConstraint**(`type`, ...`fieldValues`): [`QueryEndAtConstraint`](#queryendatconstraint)
+
+Defined in: [modular/query.ts:177](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L177)
+
+###### Parameters
+
+###### type
+
+`"endAt"` \| `"endBefore"`
+
+###### fieldValues
+
+...`unknown`[]
+
+###### Returns
+
+[`QueryEndAtConstraint`](#queryendatconstraint)
+
+###### Overrides
+
+`QueryConstraintBase.constructor`
+
+#### Methods
+
+##### \_apply()
+
+> **\_apply**\<`AppModelType`, `DbModelType`\>(`query`): [`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [modular/query.ts:80](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L80)
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### query
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Returns
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Inherited from
+
+`QueryConstraintBase._apply`
+
+#### Properties
+
+##### type
+
+> `readonly` **type**: `"endAt"` \| `"endBefore"`
+
+Defined in: [modular/query.ts:175](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L175)
+
+###### Overrides
+
+`QueryConstraintBase.type`
+
+***
+
+### QueryFieldFilterConstraint
+
+Defined in: [modular/query.ts:183](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L183)
+
+#### Extends
+
+- `QueryConstraintBase`
+
+#### Constructors
+
+##### Constructor
+
+> **new QueryFieldFilterConstraint**(`fieldPath`, `opStr`, `value`): [`QueryFieldFilterConstraint`](#queryfieldfilterconstraint)
+
+Defined in: [modular/query.ts:187](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L187)
+
+###### Parameters
+
+###### fieldPath
+
+`string` \| [`FieldPath`](#fieldpath)
+
+###### opStr
+
+[`WhereFilterOp`](#wherefilterop)
+
+###### value
+
+`unknown`
+
+###### Returns
+
+[`QueryFieldFilterConstraint`](#queryfieldfilterconstraint)
+
+###### Overrides
+
+`QueryConstraintBase.constructor`
+
+#### Methods
+
+##### \_apply()
+
+> **\_apply**\<`AppModelType`, `DbModelType`\>(`query`): [`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [modular/query.ts:80](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L80)
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### query
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Returns
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Inherited from
+
+`QueryConstraintBase._apply`
+
+#### Properties
+
+##### \_filter
+
+> `readonly` **\_filter**: `_Filter`
+
+Defined in: [modular/query.ts:185](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L185)
+
+##### type
+
+> `readonly` **type**: `"where"` = `'where'`
+
+Defined in: [modular/query.ts:184](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L184)
+
+###### Overrides
+
+`QueryConstraintBase.type`
+
+***
+
+### QueryLimitConstraint
+
+Defined in: [modular/query.ts:156](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L156)
+
+#### Extends
+
+- `QueryConstraintBase`
+
+#### Constructors
+
+##### Constructor
+
+> **new QueryLimitConstraint**(`type`, `limitValue`): [`QueryLimitConstraint`](#querylimitconstraint)
+
+Defined in: [modular/query.ts:159](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L159)
+
+###### Parameters
+
+###### type
+
+`"limit"` \| `"limitToLast"`
+
+###### limitValue
+
+`number`
+
+###### Returns
+
+[`QueryLimitConstraint`](#querylimitconstraint)
+
+###### Overrides
+
+`QueryConstraintBase.constructor`
+
+#### Methods
+
+##### \_apply()
+
+> **\_apply**\<`AppModelType`, `DbModelType`\>(`query`): [`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [modular/query.ts:80](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L80)
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### query
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Returns
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Inherited from
+
+`QueryConstraintBase._apply`
+
+#### Properties
+
+##### type
+
+> `readonly` **type**: `"limit"` \| `"limitToLast"`
+
+Defined in: [modular/query.ts:157](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L157)
+
+###### Overrides
+
+`QueryConstraintBase.type`
+
+***
+
+### QueryOrderByConstraint
+
+Defined in: [modular/query.ts:148](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L148)
+
+#### Extends
+
+- `QueryConstraintBase`
+
+#### Constructors
+
+##### Constructor
+
+> **new QueryOrderByConstraint**(`fieldPath`, `directionStr?`): [`QueryOrderByConstraint`](#queryorderbyconstraint)
+
+Defined in: [modular/query.ts:151](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L151)
+
+###### Parameters
+
+###### fieldPath
+
+`string` \| [`FieldPath`](#fieldpath)
+
+###### directionStr?
+
+[`OrderByDirection`](#orderbydirection)
+
+###### Returns
+
+[`QueryOrderByConstraint`](#queryorderbyconstraint)
+
+###### Overrides
+
+`QueryConstraintBase.constructor`
+
+#### Methods
+
+##### \_apply()
+
+> **\_apply**\<`AppModelType`, `DbModelType`\>(`query`): [`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [modular/query.ts:80](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L80)
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### query
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Returns
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Inherited from
+
+`QueryConstraintBase._apply`
+
+#### Properties
+
+##### type
+
+> `readonly` **type**: `"orderBy"` = `'orderBy'`
+
+Defined in: [modular/query.ts:149](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L149)
+
+###### Overrides
+
+`QueryConstraintBase.type`
+
+***
+
+### QuerySnapshot
+
+Defined in: [FirestoreQuerySnapshot.ts:52](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L52)
+
+#### Accessors
+
+##### docs
+
+###### Get Signature
+
+> **get** **docs**(): [`DocumentSnapshot`](#documentsnapshot)[]
+
+Defined in: [FirestoreQuerySnapshot.ts:78](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L78)
+
+###### Returns
+
+[`DocumentSnapshot`](#documentsnapshot)[]
+
+##### empty
+
+###### Get Signature
+
+> **get** **empty**(): `boolean`
+
+Defined in: [FirestoreQuerySnapshot.ts:82](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L82)
+
+###### Returns
+
+`boolean`
+
+##### metadata
+
+###### Get Signature
+
+> **get** **metadata**(): [`SnapshotMetadata`](#snapshotmetadata)
+
+Defined in: [FirestoreQuerySnapshot.ts:86](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L86)
+
+###### Returns
+
+[`SnapshotMetadata`](#snapshotmetadata)
+
+##### query
+
+###### Get Signature
+
+> **get** **query**(): `Query`
+
+Defined in: [FirestoreQuerySnapshot.ts:90](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L90)
+
+###### Returns
+
+`Query`
+
+##### size
+
+###### Get Signature
+
+> **get** **size**(): `number`
+
+Defined in: [FirestoreQuerySnapshot.ts:94](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L94)
+
+###### Returns
+
+`number`
+
+#### Constructors
+
+##### Constructor
+
+> **new QuerySnapshot**(`firestore`, `query`, `nativeData`, `converter`): [`QuerySnapshot`](#querysnapshot)
+
+Defined in: [FirestoreQuerySnapshot.ts:60](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L60)
+
+###### Parameters
+
+###### firestore
+
+`FirestoreInternal`
+
+###### query
+
+`Query`
+
+###### nativeData
+
+`QuerySnapshotNativeData`
+
+###### converter
+
+[`FirestoreDataConverter`](#firestoredataconverter)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\> \| `null`
+
+###### Returns
+
+[`QuerySnapshot`](#querysnapshot)
+
+#### Methods
+
+##### docChanges()
+
+> **docChanges**(`options?`): `DocumentChange`[]
+
+Defined in: [FirestoreQuerySnapshot.ts:98](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L98)
+
+###### Parameters
+
+###### options?
+
+###### includeMetadataChanges?
+
+`boolean`
+
+###### Returns
+
+`DocumentChange`[]
+
+##### forEach()
+
+> **forEach**(`callback`, `thisArg?`): `void`
+
+Defined in: [FirestoreQuerySnapshot.ts:135](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L135)
+
+###### Parameters
+
+###### callback
+
+(`doc`, `index`) => `void`
+
+###### thisArg?
+
+`unknown`
+
+###### Returns
+
+`void`
+
+##### isEqual()
+
+> **isEqual**(`other`, ...`args`): `boolean`
+
+Defined in: [FirestoreQuerySnapshot.ts:149](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L149)
+
+###### Parameters
+
+###### other
+
+[`QuerySnapshot`](#querysnapshot)
+
+###### args
+
+...`unknown`[]
+
+###### Returns
+
+`boolean`
+
+#### Properties
+
+##### \_changes
+
+> **\_changes**: `DocumentChange`[]
+
+Defined in: [FirestoreQuerySnapshot.ts:56](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L56)
+
+##### \_docs
+
+> **\_docs**: [`DocumentSnapshot`](#documentsnapshot)[]
+
+Defined in: [FirestoreQuerySnapshot.ts:57](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L57)
+
+##### \_excludesMetadataChanges
+
+> **\_excludesMetadataChanges**: `boolean` \| `undefined`
+
+Defined in: [FirestoreQuerySnapshot.ts:55](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L55)
+
+##### \_metadata
+
+> **\_metadata**: [`SnapshotMetadata`](#snapshotmetadata)
+
+Defined in: [FirestoreQuerySnapshot.ts:58](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L58)
+
+##### \_query
+
+> **\_query**: `Query`
+
+Defined in: [FirestoreQuerySnapshot.ts:53](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L53)
+
+##### \_source
+
+> **\_source**: `string` \| `undefined`
+
+Defined in: [FirestoreQuerySnapshot.ts:54](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreQuerySnapshot.ts#L54)
+
+***
+
+### QueryStartAtConstraint
+
+Defined in: [modular/query.ts:165](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L165)
+
+#### Extends
+
+- `QueryConstraintBase`
+
+#### Constructors
+
+##### Constructor
+
+> **new QueryStartAtConstraint**(`type`, ...`docOrFields`): [`QueryStartAtConstraint`](#querystartatconstraint)
+
+Defined in: [modular/query.ts:168](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L168)
+
+###### Parameters
+
+###### type
+
+`"startAt"` \| `"startAfter"`
+
+###### docOrFields
+
+...`unknown`[]
+
+###### Returns
+
+[`QueryStartAtConstraint`](#querystartatconstraint)
+
+###### Overrides
+
+`QueryConstraintBase.constructor`
+
+#### Methods
+
+##### \_apply()
+
+> **\_apply**\<`AppModelType`, `DbModelType`\>(`query`): [`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [modular/query.ts:80](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L80)
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### query
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Returns
+
+[`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+###### Inherited from
+
+`QueryConstraintBase._apply`
+
+#### Properties
+
+##### type
+
+> `readonly` **type**: `"startAt"` \| `"startAfter"`
+
+Defined in: [modular/query.ts:166](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L166)
+
+###### Overrides
+
+`QueryConstraintBase.type`
+
+***
+
+### SnapshotMetadata
+
+Defined in: [FirestoreSnapshotMetadata.ts:20](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreSnapshotMetadata.ts#L20)
+
+#### Accessors
+
+##### fromCache
+
+###### Get Signature
+
+> **get** **fromCache**(): `boolean`
+
+Defined in: [FirestoreSnapshotMetadata.ts:27](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreSnapshotMetadata.ts#L27)
+
+###### Returns
+
+`boolean`
+
+##### hasPendingWrites
+
+###### Get Signature
+
+> **get** **hasPendingWrites**(): `boolean`
+
+Defined in: [FirestoreSnapshotMetadata.ts:31](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreSnapshotMetadata.ts#L31)
+
+###### Returns
+
+`boolean`
+
+#### Constructors
+
+##### Constructor
+
+> **new SnapshotMetadata**(`metadata`): [`SnapshotMetadata`](#snapshotmetadata)
+
+Defined in: [FirestoreSnapshotMetadata.ts:23](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreSnapshotMetadata.ts#L23)
+
+###### Parameters
+
+###### metadata
+
+\[`boolean`, `boolean`\]
+
+###### Returns
+
+[`SnapshotMetadata`](#snapshotmetadata)
+
+#### Methods
+
+##### isEqual()
+
+> **isEqual**(`other`): `boolean`
+
+Defined in: [FirestoreSnapshotMetadata.ts:35](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreSnapshotMetadata.ts#L35)
+
+###### Parameters
+
+###### other
+
+[`SnapshotMetadata`](#snapshotmetadata)
+
+###### Returns
+
+`boolean`
+
+#### Properties
+
+##### \_metadata
+
+> **\_metadata**: \[`boolean`, `boolean`\]
+
+Defined in: [FirestoreSnapshotMetadata.ts:21](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreSnapshotMetadata.ts#L21)
+
+***
+
+### Timestamp
+
+Defined in: [FirestoreTimestamp.ts:23](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L23)
+
+#### Accessors
+
+##### nanoseconds
+
+###### Get Signature
+
+> **get** **nanoseconds**(): `number`
+
+Defined in: [FirestoreTimestamp.ts:80](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L80)
+
+###### Returns
+
+`number`
+
+##### seconds
+
+###### Get Signature
+
+> **get** **seconds**(): `number`
+
+Defined in: [FirestoreTimestamp.ts:76](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L76)
+
+###### Returns
+
+`number`
+
+#### Constructors
+
+##### Constructor
+
+> **new Timestamp**(`seconds`, `nanoseconds`): [`Timestamp`](#timestamp)
+
+Defined in: [FirestoreTimestamp.ts:47](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L47)
+
+###### Parameters
+
+###### seconds
+
+`number`
+
+###### nanoseconds
+
+`number`
+
+###### Returns
+
+[`Timestamp`](#timestamp)
+
+#### Methods
+
+##### \_compareTo()
+
+> **\_compareTo**(`other`): `number`
+
+Defined in: [FirestoreTimestamp.ts:102](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L102)
+
+###### Parameters
+
+###### other
+
+[`Timestamp`](#timestamp)
+
+###### Returns
+
+`number`
+
+##### isEqual()
+
+> **isEqual**(`other`): `boolean`
+
+Defined in: [FirestoreTimestamp.ts:84](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L84)
+
+###### Parameters
+
+###### other
+
+[`Timestamp`](#timestamp)
+
+###### Returns
+
+`boolean`
+
+##### toDate()
+
+> **toDate**(): `Date`
+
+Defined in: [FirestoreTimestamp.ts:94](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L94)
+
+###### Returns
+
+`Date`
+
+##### toJSON()
+
+> **toJSON**(): `object`
+
+Defined in: [FirestoreTimestamp.ts:122](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L122)
+
+###### Returns
+
+`object`
+
+###### nanoseconds
+
+> **nanoseconds**: `number`
+
+###### seconds
+
+> **seconds**: `number`
+
+###### type
+
+> **type**: `string`
+
+##### toMillis()
+
+> **toMillis**(): `number`
+
+Defined in: [FirestoreTimestamp.ts:98](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L98)
+
+###### Returns
+
+`number`
+
+##### toString()
+
+> **toString**(): `string`
+
+Defined in: [FirestoreTimestamp.ts:111](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L111)
+
+###### Returns
+
+`string`
+
+##### valueOf()
+
+> **valueOf**(): `string`
+
+Defined in: [FirestoreTimestamp.ts:149](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L149)
+
+Converts this object to a primitive string, which allows Timestamp objects to be compared
+using the `>`, `<=`, `>=` and `>` operators.
+
+###### Returns
+
+`string`
+
+##### fromDate()
+
+> `static` **fromDate**(`date`): [`Timestamp`](#timestamp)
+
+Defined in: [FirestoreTimestamp.ts:28](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L28)
+
+###### Parameters
+
+###### date
+
+`Date`
+
+###### Returns
+
+[`Timestamp`](#timestamp)
+
+##### fromJSON()
+
+> `static` **fromJSON**(`json`): [`Timestamp`](#timestamp)
+
+Defined in: [FirestoreTimestamp.ts:130](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L130)
+
+###### Parameters
+
+###### json
+
+`object`
+
+###### Returns
+
+[`Timestamp`](#timestamp)
+
+##### fromMillis()
+
+> `static` **fromMillis**(`milliseconds`): [`Timestamp`](#timestamp)
+
+Defined in: [FirestoreTimestamp.ts:38](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L38)
+
+###### Parameters
+
+###### milliseconds
+
+`number`
+
+###### Returns
+
+[`Timestamp`](#timestamp)
+
+##### now()
+
+> `static` **now**(): [`Timestamp`](#timestamp)
+
+Defined in: [FirestoreTimestamp.ts:24](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L24)
+
+###### Returns
+
+[`Timestamp`](#timestamp)
+
+#### Properties
+
+##### \_nanoseconds
+
+> **\_nanoseconds**: `number`
+
+Defined in: [FirestoreTimestamp.ts:45](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L45)
+
+##### \_seconds
+
+> **\_seconds**: `number`
+
+Defined in: [FirestoreTimestamp.ts:44](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L44)
+
+##### \_jsonSchema
+
+> `static` **\_jsonSchema**: `object`
+
+Defined in: [FirestoreTimestamp.ts:116](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L116)
+
+###### nanoseconds
+
+> **nanoseconds**: `string` = `'number'`
+
+###### seconds
+
+> **seconds**: `string` = `'number'`
+
+###### type
+
+> **type**: `string` = `Timestamp._jsonSchemaVersion`
+
+##### \_jsonSchemaVersion
+
+> `static` **\_jsonSchemaVersion**: `string` = `'firestore/timestamp/1.0'`
+
+Defined in: [FirestoreTimestamp.ts:115](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTimestamp.ts#L115)
+
+***
+
+### Transaction
+
+Defined in: [FirestoreTransaction.ts:43](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTransaction.ts#L43)
+
+#### Constructors
+
+##### Constructor
+
+> **new Transaction**(`firestore`, `meta`): [`Transaction`](#transaction)
+
+Defined in: [FirestoreTransaction.ts:50](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTransaction.ts#L50)
+
+###### Parameters
+
+###### firestore
+
+`FirestoreInternal`
+
+###### meta
+
+`TransactionMeta`
+
+###### Returns
+
+[`Transaction`](#transaction)
+
+#### Methods
+
+##### \_prepare()
+
+> **\_prepare**(): `void`
+
+Defined in: [FirestoreTransaction.ts:62](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTransaction.ts#L62)
+
+Clears the command buffer and any pending result in prep for
+the next transaction iteration attempt.
+
+###### Returns
+
+`void`
+
+##### delete()
+
+> **delete**(`documentRef`): `this`
+
+Defined in: [FirestoreTransaction.ts:157](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTransaction.ts#L157)
+
+###### Parameters
+
+###### documentRef
+
+`DocumentReference`
+
+###### Returns
+
+`this`
+
+##### get()
+
+> **get**(`documentRef`): `Promise`\<[`DocumentSnapshot`](#documentsnapshot)\>
+
+Defined in: [FirestoreTransaction.ts:71](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTransaction.ts#L71)
+
+Reads the document referenced by the provided DocumentReference.
+
+###### Parameters
+
+###### documentRef
+
+`DocumentReference`
+
+###### Returns
+
+`Promise`\<[`DocumentSnapshot`](#documentsnapshot)\>
+
+##### set()
+
+> **set**(`documentRef`, `data`, `options?`): `this`
+
+Defined in: [FirestoreTransaction.ts:91](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTransaction.ts#L91)
+
+Writes to the document referred to by the provided DocumentReference.
+
+###### Parameters
+
+###### documentRef
+
+`DocumentReference`
+
+###### data
+
+`Record`\<`string`, `unknown`\>
+
+###### options?
+
+[`SetOptions`](#setoptions)
+
+###### Returns
+
+`this`
+
+##### update()
+
+> **update**(`documentRef`, ...`args`): `this`
+
+Defined in: [FirestoreTransaction.ts:132](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTransaction.ts#L132)
+
+###### Parameters
+
+###### documentRef
+
+`DocumentReference`
+
+###### args
+
+...`unknown`[]
+
+###### Returns
+
+`this`
+
+#### Properties
+
+##### \_calledGetCount
+
+> **\_calledGetCount**: `number`
+
+Defined in: [FirestoreTransaction.ts:46](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTransaction.ts#L46)
+
+##### \_commandBuffer
+
+> **\_commandBuffer**: `TransactionCommand`[]
+
+Defined in: [FirestoreTransaction.ts:47](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTransaction.ts#L47)
+
+##### \_firestore
+
+> **\_firestore**: `FirestoreInternal`
+
+Defined in: [FirestoreTransaction.ts:44](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTransaction.ts#L44)
+
+##### \_meta
+
+> **\_meta**: `TransactionMeta`
+
+Defined in: [FirestoreTransaction.ts:45](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTransaction.ts#L45)
+
+##### \_pendingResult
+
+> **\_pendingResult**: `unknown`
+
+Defined in: [FirestoreTransaction.ts:48](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreTransaction.ts#L48)
+
+***
+
+### VectorValue
+
+Defined in: [FirestoreVectorValue.ts:22](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreVectorValue.ts#L22)
+
+#### Constructors
+
+##### Constructor
+
+> **new VectorValue**(`values?`): [`VectorValue`](#vectorvalue)
+
+Defined in: [FirestoreVectorValue.ts:25](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreVectorValue.ts#L25)
+
+###### Parameters
+
+###### values?
+
+`number`[]
+
+###### Returns
+
+[`VectorValue`](#vectorvalue)
+
+#### Methods
+
+##### isEqual()
+
+> **isEqual**(`other`): `boolean`
+
+Defined in: [FirestoreVectorValue.ts:73](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreVectorValue.ts#L73)
+
+###### Parameters
+
+###### other
+
+[`VectorValue`](#vectorvalue)
+
+###### Returns
+
+`boolean`
+
+##### toArray()
+
+> **toArray**(): `number`[]
+
+Defined in: [FirestoreVectorValue.ts:89](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreVectorValue.ts#L89)
+
+###### Returns
+
+`number`[]
+
+##### toJSON()
+
+> **toJSON**(): `object`
+
+Defined in: [FirestoreVectorValue.ts:93](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreVectorValue.ts#L93)
+
+###### Returns
+
+`object`
+
+###### type
+
+> **type**: `string`
+
+###### vectorValues
+
+> **vectorValues**: `number`[]
+
+##### fromJSON()
+
+> `static` **fromJSON**(`json`): [`VectorValue`](#vectorvalue)
+
+Defined in: [FirestoreVectorValue.ts:55](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreVectorValue.ts#L55)
+
+###### Parameters
+
+###### json
+
+`object`
+
+###### Returns
+
+[`VectorValue`](#vectorvalue)
+
+#### Properties
+
+##### \_values
+
+> **\_values**: `number`[]
+
+Defined in: [FirestoreVectorValue.ts:23](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreVectorValue.ts#L23)
+
+##### \_jsonSchema
+
+> `static` **\_jsonSchema**: `object`
+
+Defined in: [FirestoreVectorValue.ts:50](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreVectorValue.ts#L50)
+
+###### type
+
+> **type**: `string` = `VectorValue._jsonSchemaVersion`
+
+###### vectorValues
+
+> **vectorValues**: `string` = `'object'`
+
+##### \_jsonSchemaVersion
+
+> `static` **\_jsonSchemaVersion**: `string` = `'firestore/vectorValue/1.0'`
+
+Defined in: [FirestoreVectorValue.ts:49](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreVectorValue.ts#L49)
+
+***
+
+### WriteBatch
+
+Defined in: [FirestoreWriteBatch.ts:32](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreWriteBatch.ts#L32)
+
+#### Constructors
+
+##### Constructor
+
+> **new WriteBatch**(`firestore`): [`WriteBatch`](#writebatch)
+
+Defined in: [FirestoreWriteBatch.ts:37](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreWriteBatch.ts#L37)
+
+###### Parameters
+
+###### firestore
+
+`FirestoreInternal`
+
+###### Returns
+
+[`WriteBatch`](#writebatch)
+
+#### Methods
+
+##### \_verifyNotCommitted()
+
+> **\_verifyNotCommitted**(`method`): `void`
+
+Defined in: [FirestoreWriteBatch.ts:43](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreWriteBatch.ts#L43)
+
+###### Parameters
+
+###### method
+
+`string`
+
+###### Returns
+
+`void`
+
+##### commit()
+
+> **commit**(): `Promise`\<`void`\>
+
+Defined in: [FirestoreWriteBatch.ts:51](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreWriteBatch.ts#L51)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### delete()
+
+> **delete**(`documentRef`): `this`
+
+Defined in: [FirestoreWriteBatch.ts:62](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreWriteBatch.ts#L62)
+
+###### Parameters
+
+###### documentRef
+
+`DocumentReference`
+
+###### Returns
+
+`this`
+
+##### set()
+
+> **set**(`documentRef`, `data`, `options?`): `this`
+
+Defined in: [FirestoreWriteBatch.ts:84](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreWriteBatch.ts#L84)
+
+###### Parameters
+
+###### documentRef
+
+`DocumentReference`
+
+###### data
+
+`Record`\<`string`, `unknown`\>
+
+###### options?
+
+[`SetOptions`](#setoptions)
+
+###### Returns
+
+`this`
+
+##### update()
+
+> **update**(`documentRef`, ...`args`): `this`
+
+Defined in: [FirestoreWriteBatch.ts:128](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreWriteBatch.ts#L128)
+
+###### Parameters
+
+###### documentRef
+
+`DocumentReference`
+
+###### args
+
+...`unknown`[]
+
+###### Returns
+
+`this`
+
+#### Properties
+
+##### \_committed
+
+> **\_committed**: `boolean`
+
+Defined in: [FirestoreWriteBatch.ts:35](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreWriteBatch.ts#L35)
+
+##### \_firestore
+
+> **\_firestore**: `FirestoreInternal`
+
+Defined in: [FirestoreWriteBatch.ts:33](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreWriteBatch.ts#L33)
+
+##### \_writes
+
+> **\_writes**: `BatchWrite`[]
+
+Defined in: [FirestoreWriteBatch.ts:34](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/FirestoreWriteBatch.ts#L34)
+
+## Interfaces
+
+### AggregateSpec
+
+Defined in: [types/firestore.ts:92](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L92)
+
+#### Indexable
+
+> \[`field`: `string`\]: [`AggregateFieldType`](#aggregatefieldtype-1)
+
+***
+
+### CollectionReference
+
+Defined in: [types/firestore.ts:346](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L346)
+
+#### Extends
+
+- [`Query`](#query-2)\<`AppModelType`, `DbModelType`\>
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Methods
+
+##### withConverter()
+
+###### Call Signature
+
+> **withConverter**(`converter`): [`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [types/firestore.ts:354](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L354)
+
+###### Parameters
+
+###### converter
+
+`null`
+
+###### Returns
+
+[`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+###### Overrides
+
+[`Query`](#query-2).[`withConverter`](#withconverter-2)
+
+###### Call Signature
+
+> **withConverter**\<`NewAppModelType`, `NewDbModelType`\>(`converter`): [`CollectionReference`](#collectionreference)\<`NewAppModelType`, `NewDbModelType`\>
+
+Defined in: [types/firestore.ts:355](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L355)
+
+###### Type Parameters
+
+###### NewAppModelType
+
+`NewAppModelType`
+
+###### NewDbModelType
+
+`NewDbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### converter
+
+[`FirestoreDataConverter`](#firestoredataconverter)\<`NewAppModelType`, `NewDbModelType`\>
+
+###### Returns
+
+[`CollectionReference`](#collectionreference)\<`NewAppModelType`, `NewDbModelType`\>
+
+###### Overrides
+
+[`Query`](#query-2).[`withConverter`](#withconverter-2)
+
+#### Properties
+
+##### converter
+
+> `readonly` **converter**: [`FirestoreDataConverter`](#firestoredataconverter)\<`AppModelType`, `DbModelType`\> \| `null`
+
+Defined in: [types/firestore.ts:337](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L337)
+
+###### Inherited from
+
+[`Query`](#query-2).[`converter`](#converter-2)
+
+##### firestore
+
+> `readonly` **firestore**: [`Firestore`](#firestore-2)
+
+Defined in: [types/firestore.ts:339](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L339)
+
+###### Inherited from
+
+[`Query`](#query-2).[`firestore`](#firestore-3)
+
+##### id
+
+> **id**: `string`
+
+Defined in: [types/firestore.ts:351](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L351)
+
+##### parent
+
+> **parent**: [`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\> \| `null`
+
+Defined in: [types/firestore.ts:352](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L352)
+
+##### path
+
+> **path**: `string`
+
+Defined in: [types/firestore.ts:353](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L353)
+
+##### type
+
+> `readonly` **type**: `"collection"`
+
+Defined in: [types/firestore.ts:350](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L350)
+
+###### Overrides
+
+[`Query`](#query-2).[`type`](#type-13)
+
+***
+
+### DocumentChange
+
+Defined in: [types/firestore.ts:245](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L245)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Properties
+
+##### doc
+
+> `readonly` **doc**: [`QueryDocumentSnapshot`](#querydocumentsnapshot)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [types/firestore.ts:250](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L250)
+
+##### newIndex
+
+> `readonly` **newIndex**: `number`
+
+Defined in: [types/firestore.ts:252](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L252)
+
+##### oldIndex
+
+> `readonly` **oldIndex**: `number`
+
+Defined in: [types/firestore.ts:251](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L251)
+
+##### type
+
+> `readonly` **type**: [`DocumentChangeType`](#documentchangetype-1)
+
+Defined in: [types/firestore.ts:249](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L249)
+
+***
+
+### DocumentData
+
+Defined in: [types/firestore.ts:258](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L258)
+
+#### Indexable
+
+> \[`key`: `string`\]: `any`
+
+***
+
+### DocumentReference
+
+Defined in: [types/firestore.ts:360](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L360)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Methods
+
+##### withConverter()
+
+###### Call Signature
+
+> **withConverter**(`converter`): [`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [types/firestore.ts:370](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L370)
+
+###### Parameters
+
+###### converter
+
+`null`
+
+###### Returns
+
+[`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+###### Call Signature
+
+> **withConverter**\<`NewAppModelType`, `NewDbModelType`\>(`converter`): [`DocumentReference`](#documentreference)\<`NewAppModelType`, `NewDbModelType`\>
+
+Defined in: [types/firestore.ts:371](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L371)
+
+###### Type Parameters
+
+###### NewAppModelType
+
+`NewAppModelType`
+
+###### NewDbModelType
+
+`NewDbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### converter
+
+[`FirestoreDataConverter`](#firestoredataconverter)\<`NewAppModelType`, `NewDbModelType`\>
+
+###### Returns
+
+[`DocumentReference`](#documentreference)\<`NewAppModelType`, `NewDbModelType`\>
+
+#### Properties
+
+##### converter
+
+> **converter**: [`FirestoreDataConverter`](#firestoredataconverter)\<`AppModelType`, `DbModelType`\> \| `null`
+
+Defined in: [types/firestore.ts:366](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L366)
+
+##### firestore
+
+> **firestore**: [`Firestore`](#firestore-2)
+
+Defined in: [types/firestore.ts:365](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L365)
+
+##### id
+
+> **id**: `string`
+
+Defined in: [types/firestore.ts:367](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L367)
+
+##### parent
+
+> **parent**: [`CollectionReference`](#collectionreference)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [types/firestore.ts:368](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L368)
+
+##### path
+
+> **path**: `string`
+
+Defined in: [types/firestore.ts:369](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L369)
+
+##### type
+
+> `readonly` **type**: `"document"`
+
+Defined in: [types/firestore.ts:364](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L364)
+
+***
+
+### ExperimentalLongPollingOptions
+
+Defined in: [types/firestore.ts:43](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L43)
+
+#### Properties
+
+##### timeoutSeconds?
+
+> `optional` **timeoutSeconds?**: `number`
+
+Defined in: [types/firestore.ts:44](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L44)
+
+***
+
+### Firestore
+
+Defined in: [types/firestore.ts:26](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L26)
+
+**`Beta`**
+
+Creates and returns a new PipelineSource, which allows specifying the source stage of a `Pipeline`.
+
+#### Example
+
+```
+const myPipeline = firestore.pipeline().collection('books');
+```
+
+#### Accessors
+
+##### app
+
+###### Get Signature
+
+> **get** **app**(): [`FirebaseApp`](../../../@react-native-firebase/app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+Defined in: [types/firestore.ts:34](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L34)
+
+**`Beta`**
+
+The FirebaseApp associated with this Firestore instance.
+
+###### Returns
+
+[`FirebaseApp`](../../../@react-native-firebase/app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+#### Methods
+
+##### pipeline()
+
+> **pipeline**(): [`PipelineSource`](../../../@react-native-firebase/firestore/pipelines.mdx#pipelinesource)\<[`Pipeline`](../../../@react-native-firebase/firestore/pipelines.mdx#pipeline)\<[`DocumentData`](#documentdata)\>\>
+
+Defined in: [pipelines/index.ts:201](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/pipelines/index.ts#L201)
+
+**`Beta`**
+
+###### Returns
+
+[`PipelineSource`](../../../@react-native-firebase/firestore/pipelines.mdx#pipelinesource)\<[`Pipeline`](../../../@react-native-firebase/firestore/pipelines.mdx#pipeline)\<[`DocumentData`](#documentdata)\>\>
+
+##### toJSON()
+
+> **toJSON**(): `object`
+
+Defined in: [types/firestore.ts:38](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L38)
+
+**`Beta`**
+
+Returns a JSON-serializable representation of this Firestore instance.
+
+###### Returns
+
+`object`
+
+#### Properties
+
+##### type
+
+> **type**: `"firestore"`
+
+Defined in: [types/firestore.ts:30](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L30)
+
+**`Beta`**
+
+Whether it's a Firestore or Firestore Lite instance.
+
+***
+
+### FirestoreDataConverter
+
+Defined in: [types/firestore.ts:318](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L318)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType`
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Methods
+
+##### fromFirestore()
+
+> **fromFirestore**(`snapshot`, `options?`): `AppModelType`
+
+Defined in: [types/firestore.ts:327](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L327)
+
+###### Parameters
+
+###### snapshot
+
+[`QueryDocumentSnapshot`](#querydocumentsnapshot)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+###### options?
+
+[`SnapshotOptions`](#snapshotoptions)
+
+###### Returns
+
+`AppModelType`
+
+##### toFirestore()
+
+###### Call Signature
+
+> **toFirestore**(`modelObject`): [`WithFieldValue`](#withfieldvalue)\<`DbModelType`\>
+
+Defined in: [types/firestore.ts:322](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L322)
+
+###### Parameters
+
+###### modelObject
+
+[`WithFieldValue`](#withfieldvalue)\<`AppModelType`\>
+
+###### Returns
+
+[`WithFieldValue`](#withfieldvalue)\<`DbModelType`\>
+
+###### Call Signature
+
+> **toFirestore**(`modelObject`, `options`): [`PartialWithFieldValue`](#partialwithfieldvalue)\<`DbModelType`\>
+
+Defined in: [types/firestore.ts:323](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L323)
+
+###### Parameters
+
+###### modelObject
+
+[`PartialWithFieldValue`](#partialwithfieldvalue)\<`AppModelType`\>
+
+###### options
+
+[`SetOptions`](#setoptions)
+
+###### Returns
+
+[`PartialWithFieldValue`](#partialwithfieldvalue)\<`DbModelType`\>
+
+***
+
+### FirestoreSettings
+
+Defined in: [types/firestore.ts:69](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L69)
+
+#### Properties
+
+##### cacheSizeBytes?
+
+> `optional` **cacheSizeBytes?**: `number`
+
+Defined in: [types/firestore.ts:73](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L73)
+
+##### experimentalAutoDetectLongPolling?
+
+> `optional` **experimentalAutoDetectLongPolling?**: `boolean`
+
+Defined in: [types/firestore.ts:79](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L79)
+
+##### experimentalForceLongPolling?
+
+> `optional` **experimentalForceLongPolling?**: `boolean`
+
+Defined in: [types/firestore.ts:77](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L77)
+
+##### experimentalLongPollingOptions?
+
+> `optional` **experimentalLongPollingOptions?**: [`ExperimentalLongPollingOptions`](#experimentallongpollingoptions)
+
+Defined in: [types/firestore.ts:81](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L81)
+
+##### host?
+
+> `optional` **host?**: `string`
+
+Defined in: [types/firestore.ts:70](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L70)
+
+##### ignoreUndefinedProperties?
+
+> `optional` **ignoreUndefinedProperties?**: `boolean`
+
+Defined in: [types/firestore.ts:72](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L72)
+
+##### localCache?
+
+> `optional` **localCache?**: [`FirestoreLocalCache`](#firestorelocalcache)
+
+Defined in: [types/firestore.ts:75](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L75)
+
+##### persistence?
+
+> `optional` **persistence?**: `boolean`
+
+Defined in: [types/firestore.ts:83](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L83)
+
+##### serverTimestampBehavior?
+
+> `optional` **serverTimestampBehavior?**: `"estimate"` \| `"previous"` \| `"none"`
+
+Defined in: [types/firestore.ts:84](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L84)
+
+##### ssl?
+
+> `optional` **ssl?**: `boolean`
+
+Defined in: [types/firestore.ts:71](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L71)
+
+***
+
+### LoadBundleTaskProgress
+
+Defined in: [types/firestore.ts:151](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L151)
+
+#### Properties
+
+##### bytesLoaded
+
+> **bytesLoaded**: `number`
+
+Defined in: [types/firestore.ts:154](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L154)
+
+##### documentsLoaded
+
+> **documentsLoaded**: `number`
+
+Defined in: [types/firestore.ts:152](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L152)
+
+##### taskState
+
+> **taskState**: [`TaskState`](#taskstate-1)
+
+Defined in: [types/firestore.ts:156](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L156)
+
+##### totalBytes
+
+> **totalBytes**: `number`
+
+Defined in: [types/firestore.ts:155](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L155)
+
+##### totalDocuments
+
+> **totalDocuments**: `number`
+
+Defined in: [types/firestore.ts:153](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L153)
+
+***
+
+### PersistenceSettings
+
+Defined in: [types/firestore.ts:48](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L48)
+
+#### Properties
+
+##### forceOwnership?
+
+> `optional` **forceOwnership?**: `boolean`
+
+Defined in: [types/firestore.ts:49](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L49)
+
+***
+
+### Query
+
+Defined in: [types/firestore.ts:333](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L333)
+
+#### Extended by
+
+- [`CollectionReference`](#collectionreference)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Methods
+
+##### withConverter()
+
+###### Call Signature
+
+> **withConverter**(`converter`): [`Query`](#query-2)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [types/firestore.ts:340](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L340)
+
+###### Parameters
+
+###### converter
+
+`null`
+
+###### Returns
+
+[`Query`](#query-2)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+###### Call Signature
+
+> **withConverter**\<`NewAppModelType`, `NewDbModelType`\>(`converter`): [`Query`](#query-2)\<`NewAppModelType`, `NewDbModelType`\>
+
+Defined in: [types/firestore.ts:341](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L341)
+
+###### Type Parameters
+
+###### NewAppModelType
+
+`NewAppModelType`
+
+###### NewDbModelType
+
+`NewDbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### converter
+
+[`FirestoreDataConverter`](#firestoredataconverter)\<`NewAppModelType`, `NewDbModelType`\>
+
+###### Returns
+
+[`Query`](#query-2)\<`NewAppModelType`, `NewDbModelType`\>
+
+#### Properties
+
+##### converter
+
+> `readonly` **converter**: [`FirestoreDataConverter`](#firestoredataconverter)\<`AppModelType`, `DbModelType`\> \| `null`
+
+Defined in: [types/firestore.ts:337](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L337)
+
+##### firestore
+
+> `readonly` **firestore**: [`Firestore`](#firestore-2)
+
+Defined in: [types/firestore.ts:339](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L339)
+
+##### type
+
+> `readonly` **type**: `"query"` \| `"collection"`
+
+Defined in: [types/firestore.ts:338](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L338)
+
+***
+
+### QueryDocumentSnapshot
+
+Defined in: [types/firestore.ts:456](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L456)
+
+#### Extends
+
+- `DocumentSnapshot`\<`AppModelType`, `DbModelType`\>
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Accessors
+
+##### id
+
+###### Get Signature
+
+> **get** **id**(): `string`
+
+Defined in: [types/firestore.ts:452](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L452)
+
+###### Returns
+
+`string`
+
+###### Inherited from
+
+`DocumentSnapshot.id`
+
+##### ref
+
+###### Get Signature
+
+> **get** **ref**(): [`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [types/firestore.ts:453](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L453)
+
+###### Returns
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+###### Inherited from
+
+`DocumentSnapshot.ref`
+
+#### Methods
+
+##### data()
+
+> **data**(`options?`): `AppModelType`
+
+Defined in: [types/firestore.ts:460](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L460)
+
+###### Parameters
+
+###### options?
+
+[`SnapshotOptions`](#snapshotoptions)
+
+###### Returns
+
+`AppModelType`
+
+###### Overrides
+
+`DocumentSnapshot.data`
+
+##### exists()
+
+> **exists**(): `this is QueryDocumentSnapshot<AppModelType, DbModelType>`
+
+Defined in: [types/firestore.ts:449](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L449)
+
+###### Returns
+
+`this is QueryDocumentSnapshot<AppModelType, DbModelType>`
+
+###### Inherited from
+
+`DocumentSnapshot.exists`
+
+##### get()
+
+> **get**(`fieldPath`, `options?`): `any`
+
+Defined in: [types/firestore.ts:451](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L451)
+
+###### Parameters
+
+###### fieldPath
+
+`string` \| [`FieldPath`](#fieldpath)
+
+###### options?
+
+[`SnapshotOptions`](#snapshotoptions)
+
+###### Returns
+
+`any`
+
+###### Inherited from
+
+`DocumentSnapshot.get`
+
+#### Properties
+
+##### metadata
+
+> `readonly` **metadata**: `SnapshotMetadata`
+
+Defined in: [types/firestore.ts:448](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L448)
+
+###### Inherited from
+
+`DocumentSnapshot.metadata`
+
+***
+
+### SnapshotListenOptions
+
+Defined in: [types/firestore.ts:204](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L204)
+
+#### Properties
+
+##### includeMetadataChanges?
+
+> `readonly` `optional` **includeMetadataChanges?**: `boolean`
+
+Defined in: [types/firestore.ts:205](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L205)
+
+***
+
+### SnapshotOptions
+
+Defined in: [types/firestore.ts:213](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L213)
+
+Options that configure how data is retrieved from a `DocumentSnapshot` (for
+example the desired behavior for server timestamps that have not yet been set
+to their final value).
+
+#### Properties
+
+##### serverTimestamps?
+
+> `readonly` `optional` **serverTimestamps?**: `"estimate"` \| `"previous"` \| `"none"`
+
+Defined in: [types/firestore.ts:228](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L228)
+
+If set, controls the return value for server timestamps that have not yet
+been set to their final value.
+
+By specifying 'estimate', pending server timestamps return an estimate
+based on the local clock. This estimate will differ from the final value
+and cause these values to change once the server result becomes available.
+
+By specifying 'previous', pending timestamps will be ignored and return
+their previous value instead.
+
+If omitted or set to 'none', `null` will be returned by default until the
+server value becomes available.
+
+***
+
+### Unsubscribe()
+
+Defined in: [types/firestore.ts:241](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L241)
+
+> **Unsubscribe**(): `void`
+
+Defined in: [types/firestore.ts:242](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L242)
+
+#### Returns
+
+`void`
+
+## Namespaces
+
+- [FirebaseFirestoreTypes](namespaces/FirebaseFirestoreTypes.mdx)
+
+## Type Aliases
+
+### AddPrefixToKeys
+
+> **AddPrefixToKeys**\<`Prefix`, `T`\> = `` { [K in keyof T & string as `${Prefix}.${K}`]?: string extends K ? any : T[K] } ``
+
+Defined in: [types/firestore.ts:286](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L286)
+
+#### Type Parameters
+
+##### Prefix
+
+`Prefix` *extends* `string`
+
+##### T
+
+`T` *extends* `Record`\<`string`, `unknown`\>
+
+***
+
+### AggregateFieldType
+
+> **AggregateFieldType** = `ReturnType`\<*typeof* [`sum`](#sum)\> \| `ReturnType`\<*typeof* [`average`](#average)\> \| `ReturnType`\<*typeof* [`count`](#count)\>
+
+Defined in: [types/firestore.ts:88](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L88)
+
+***
+
+### AggregateSpecData
+
+> **AggregateSpecData**\<`T`\> = `{ [P in keyof T]: T[P] extends AggregateField<infer U> ? U : never }`
+
+Defined in: [types/firestore.ts:95](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L95)
+
+#### Type Parameters
+
+##### T
+
+`T` *extends* [`AggregateSpec`](#aggregatespec)
+
+***
+
+### AggregateType
+
+> **AggregateType** = `"count"` \| `"avg"` \| `"sum"`
+
+Defined in: [types/firestore.ts:87](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L87)
+
+***
+
+### ChildUpdateFields
+
+> **ChildUpdateFields**\<`K`, `V`\> = `V` *extends* `Record`\<`string`, `unknown`\> ? [`AddPrefixToKeys`](#addprefixtokeys)\<`K`, [`UpdateData`](#updatedata)\<`V`\>\> : `never`
+
+Defined in: [types/firestore.ts:293](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L293)
+
+#### Type Parameters
+
+##### K
+
+`K` *extends* `string`
+
+##### V
+
+`V`
+
+***
+
+### DocumentChangeType
+
+> **DocumentChangeType** = `"added"` \| `"removed"` \| `"modified"`
+
+Defined in: [types/firestore.ts:237](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L237)
+
+***
+
+### EmulatorMockTokenOptions
+
+> **EmulatorMockTokenOptions** = \{ `user_id`: `string`; \} \| \{ `sub`: `string`; \} & `Partial`\<`FirebaseIdToken`\>
+
+Defined in: [types/firestore.ts:146](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L146)
+
+Options for mock auth token when using the Firestore emulator.
+Must include either `user_id` or `sub`; may include other partial ID token claims.
+
+***
+
+### FirebaseApp
+
+> **FirebaseApp** = [`FirebaseApp`](../../../@react-native-firebase/app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+Defined in: [types/firestore.ts:25](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L25)
+
+***
+
+### FirestoreError
+
+> **FirestoreError** = `Error`
+
+Defined in: [types/firestore.ts:239](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L239)
+
+***
+
+### FirestoreLocalCache
+
+> **FirestoreLocalCache** = [`MemoryLocalCache`](#memorylocalcache) \| [`PersistentLocalCache`](#persistentlocalcache)
+
+Defined in: [types/firestore.ts:67](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L67)
+
+***
+
+### LogLevel
+
+> **LogLevel** = `"debug"` \| `"error"` \| `"silent"`
+
+Defined in: [types/firestore.ts:41](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L41)
+
+***
+
+### MemoryLocalCache
+
+> **MemoryLocalCache** = `object`
+
+Defined in: [types/firestore.ts:53](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L53)
+
+#### Properties
+
+##### \_offlineComponentProvider
+
+> **\_offlineComponentProvider**: `unknown`
+
+Defined in: [types/firestore.ts:56](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L56)
+
+##### \_onlineComponentProvider
+
+> **\_onlineComponentProvider**: `unknown`
+
+Defined in: [types/firestore.ts:55](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L55)
+
+##### kind
+
+> **kind**: `"memory"`
+
+Defined in: [types/firestore.ts:54](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L54)
+
+***
+
+### NestedUpdateFields
+
+> **NestedUpdateFields**\<`T`\> = [`UnionToIntersection`](#uniontointersection)\<`{ [K in keyof T & string]: ChildUpdateFields<K, T[K]> }`\[keyof `T` & `string`\]\>
+
+Defined in: [types/firestore.ts:296](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L296)
+
+#### Type Parameters
+
+##### T
+
+`T` *extends* `object`
+
+***
+
+### OrderByDirection
+
+> **OrderByDirection** = `"desc"` \| `"asc"`
+
+Defined in: [types/firestore.ts:192](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L192)
+
+***
+
+### PartialWithFieldValue
+
+> **PartialWithFieldValue**\<`T`\> = `Partial`\<`T`\> \| `T` *extends* [`Primitive`](#primitive) ? `T` : `T` *extends* `object` ? \{ \[K in keyof T\]?: PartialWithFieldValue\<T\[K\]\> \| FieldValue \} : `never`
+
+Defined in: [types/firestore.ts:262](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L262)
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+***
+
+### PersistentLocalCache
+
+> **PersistentLocalCache** = `object`
+
+Defined in: [types/firestore.ts:60](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L60)
+
+#### Properties
+
+##### \_offlineComponentProvider
+
+> **\_offlineComponentProvider**: `unknown`
+
+Defined in: [types/firestore.ts:63](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L63)
+
+##### \_onlineComponentProvider
+
+> **\_onlineComponentProvider**: `unknown`
+
+Defined in: [types/firestore.ts:62](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L62)
+
+##### kind
+
+> **kind**: `"persistent"`
+
+Defined in: [types/firestore.ts:61](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L61)
+
+***
+
+### Primitive
+
+> **Primitive** = `string` \| `number` \| `boolean` \| `undefined` \| `null`
+
+Defined in: [types/firestore.ts:256](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L256)
+
+***
+
+### QueryConstraintType
+
+> **QueryConstraintType** = `"where"` \| `"orderBy"` \| `"limit"` \| `"limitToLast"` \| `"startAt"` \| `"startAfter"` \| `"endAt"` \| `"endBefore"`
+
+Defined in: [types/firestore.ts:194](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L194)
+
+***
+
+### QueryFilterConstraint
+
+> **QueryFilterConstraint** = [`QueryFieldFilterConstraint`](#queryfieldfilterconstraint) \| [`QueryCompositeFilterConstraint`](#querycompositefilterconstraint)
+
+Defined in: [modular/query.ts:193](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L193)
+
+***
+
+### QueryNonFilterConstraint
+
+> **QueryNonFilterConstraint** = [`QueryOrderByConstraint`](#queryorderbyconstraint) \| [`QueryLimitConstraint`](#querylimitconstraint) \| [`QueryStartAtConstraint`](#querystartatconstraint) \| [`QueryEndAtConstraint`](#queryendatconstraint)
+
+Defined in: [modular/query.ts:194](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.ts#L194)
+
+***
+
+### SetOptions
+
+> **SetOptions** = \{ `merge?`: `boolean`; \} \| \{ `mergeFields?`: (`string` \| [`FieldPath`](#fieldpath))[]; \}
+
+Defined in: [types/firestore.ts:172](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L172)
+
+***
+
+### TaskState
+
+> **TaskState** = `"Error"` \| `"Running"` \| `"Success"`
+
+Defined in: [types/firestore.ts:149](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L149)
+
+***
+
+### UnionToIntersection
+
+> **UnionToIntersection**\<`U`\> = `U` *extends* `unknown` ? (`k`) => `void` : `never` *extends* (`k`) => `void` ? `I` : `never`
+
+Defined in: [types/firestore.ts:280](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L280)
+
+Given a union type `U = T1 | T2 | ...`, returns an intersected type
+`(T1 & T2 & ...)`.
+
+Uses distributive conditional types and inference from conditional types.
+This works because multiple candidates for the same type variable in
+contra-variant positions causes an intersection type to be inferred.
+https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-inference-in-conditional-types
+https://stackoverflow.com/questions/50374908/transform-union-type-to-intersection-type
+
+#### Type Parameters
+
+##### U
+
+`U`
+
+***
+
+### UpdateData
+
+> **UpdateData**\<`T`\> = `T` *extends* [`Primitive`](#primitive) ? `T` : `T` *extends* `object` ? \{ \[K in keyof T\]?: UpdateData\<T\[K\]\> \| FieldValue \} & [`NestedUpdateFields`](#nestedupdatefields)\<`T`\> : `Partial`\<`T`\>
+
+Defined in: [types/firestore.ts:302](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L302)
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+***
+
+### WhereFilterOp
+
+> **WhereFilterOp** = `"<"` \| `"<="` \| `"=="` \| `"!="` \| `">="` \| `">"` \| `"array-contains"` \| `"in"` \| `"array-contains-any"` \| `"not-in"`
+
+Defined in: [types/firestore.ts:180](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L180)
+
+***
+
+### WithFieldValue
+
+> **WithFieldValue**\<`T`\> = `T` \| `T` *extends* [`Primitive`](#primitive) ? `T` : `T` *extends* `object` ? \{ \[K in keyof T\]: WithFieldValue\<T\[K\]\> \| FieldValue \} : `never`
+
+Defined in: [types/firestore.ts:310](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/types/firestore.ts#L310)
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+## Variables
+
+### CACHE\_SIZE\_UNLIMITED
+
+> `const` **CACHE\_SIZE\_UNLIMITED**: `-1` = `-1`
+
+Defined in: [modular.ts:65](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular.ts#L65)
+
+***
+
+### default
+
+> **default**: `FirestoreNamespace`
+
+Defined in: [namespaced.ts:502](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/namespaced.ts#L502)
+
+***
+
+### firebase
+
+> `const` **firebase**: [`FirebaseNamespacedExport`](../../../@react-native-firebase/app/namespaces/ReactNativeFirebase.mdx#firebasenamespacedexport)\<`"firestore"`, [`Module`](namespaces/FirebaseFirestoreTypes.mdx#module), [`Statics`](namespaces/FirebaseFirestoreTypes.mdx#statics), `true`\>
+
+Defined in: [namespaced.ts:507](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/namespaced.ts#L507)
+
+***
+
+### SDK\_VERSION
+
+> `const` **SDK\_VERSION**: `"24.0.0"` = `version`
+
+Defined in: [namespaced.ts:475](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/namespaced.ts#L475)

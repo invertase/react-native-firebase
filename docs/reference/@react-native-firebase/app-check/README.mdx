@@ -1,0 +1,953 @@
+[**React Native Firebase**](../../README.mdx)
+
+***
+
+[React Native Firebase](../../packages.mdx) / @react-native-firebase/app-check
+
+# @react-native-firebase/app-check
+
+## Functions
+
+### getLimitedUseToken()
+
+> **getLimitedUseToken**(`appCheckInstance`): `Promise`\<[`AppCheckTokenResult`](#appchecktokenresult)\>
+
+Defined in: [modular.ts:80](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/modular.ts#L80)
+
+Get a limited-use (consumable) App Check token.
+For use with server calls to firebase functions or custom backends using the firebase admin SDK.
+
+#### Parameters
+
+##### appCheckInstance
+
+[`AppCheck`](#appcheck)
+
+The App Check instance.
+@returns`Promise<AppCheckTokenResult>`
+
+#### Returns
+
+`Promise`\<[`AppCheckTokenResult`](#appchecktokenresult)\>
+
+***
+
+### getToken()
+
+> **getToken**(`appCheckInstance`, `forceRefresh?`): `Promise`\<[`AppCheckTokenResult`](#appchecktokenresult)\>
+
+Defined in: [modular.ts:62](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/modular.ts#L62)
+
+Get the current App Check token. Attaches to the most recent in-flight request if one is present.
+Returns null if no token is present and no token requests are in-flight.
+
+#### Parameters
+
+##### appCheckInstance
+
+[`AppCheck`](#appcheck)
+
+The App Check instance.
+
+##### forceRefresh?
+
+`boolean`
+
+Whether to force refresh the token. Optional
+
+#### Returns
+
+`Promise`\<[`AppCheckTokenResult`](#appchecktokenresult)\>
+
+`Promise<AppCheckTokenResult>`
+
+***
+
+### initializeAppCheck()
+
+> **initializeAppCheck**(`app?`, `options?`): `Promise`\<[`AppCheck`](#appcheck)\>
+
+Defined in: [modular.ts:37](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/modular.ts#L37)
+
+Activate App Check for the given app. Can be called only once per app.
+
+#### Parameters
+
+##### app?
+
+[`FirebaseApp`](../app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+The app to initialize App Check for. Optional.
+
+##### options?
+
+[`AppCheckOptions`](#appcheckoptions)
+
+App Check options.
+
+#### Returns
+
+`Promise`\<[`AppCheck`](#appcheck)\>
+
+`Promise<AppCheck>`
+
+***
+
+### onTokenChanged()
+
+#### Call Signature
+
+> **onTokenChanged**(`appCheckInstance`, `listener`): [`Unsubscribe`](#unsubscribe)
+
+Defined in: [modular.ts:115](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/modular.ts#L115)
+
+Registers a listener to changes in the token state. There can be more
+than one listener registered at the same time for one or more
+App Check instances. The listeners call back on the UI thread whenever
+the current token associated with this App Check instance changes.
+
+##### Parameters
+
+###### appCheckInstance
+
+[`AppCheck`](#appcheck)
+
+The App Check instance.
+
+###### listener
+
+[`PartialObserver`](#partialobserver)\<[`AppCheckTokenResult`](#appchecktokenresult)\>
+
+The listener to register.
+
+##### Returns
+
+[`Unsubscribe`](#unsubscribe)
+
+Unsubscribe
+
+#### Call Signature
+
+> **onTokenChanged**(`appCheckInstance`, `onNext`, `onError?`, `onCompletion?`): [`Unsubscribe`](#unsubscribe)
+
+Defined in: [modular.ts:132](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/modular.ts#L132)
+
+Registers a listener to changes in the token state. There can be more
+than one listener registered at the same time for one or more
+App Check instances. The listeners call back on the UI thread whenever
+the current token associated with this App Check instance changes.
+
+##### Parameters
+
+###### appCheckInstance
+
+[`AppCheck`](#appcheck)
+
+The App Check instance.
+
+###### onNext
+
+(`tokenResult`) => `void`
+
+The callback function for token changes.
+
+###### onError?
+
+(`error`) => `void`
+
+Optional error callback.
+
+###### onCompletion?
+
+() => `void`
+
+Optional completion callback.
+
+##### Returns
+
+[`Unsubscribe`](#unsubscribe)
+
+Unsubscribe
+
+***
+
+### setTokenAutoRefreshEnabled()
+
+> **setTokenAutoRefreshEnabled**(`appCheckInstance`, `isAutoRefreshEnabled`): `void`
+
+Defined in: [modular.ts:93](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/modular.ts#L93)
+
+Set whether App Check will automatically refresh tokens as needed.
+
+#### Parameters
+
+##### appCheckInstance
+
+[`AppCheck`](#appcheck)
+
+The App Check instance.
+
+##### isAutoRefreshEnabled
+
+`boolean`
+
+Whether to enable auto-refresh.
+
+#### Returns
+
+`void`
+
+## Classes
+
+### CustomProvider
+
+Defined in: [namespaced.ts:56](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/namespaced.ts#L56)
+
+An App Check provider. This can be either the built-in reCAPTCHA provider
+or a custom provider. For more on custom providers, see
+https://firebase.google.com/docs/app-check/web-custom-provider
+
+#### Implements
+
+- [`AppCheckProvider`](#appcheckprovider)
+
+#### Constructors
+
+##### Constructor
+
+> **new CustomProvider**(`_customProviderOptions`): [`CustomProvider`](#customprovider)
+
+Defined in: [namespaced.ts:59](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/namespaced.ts#L59)
+
+###### Parameters
+
+###### \_customProviderOptions
+
+[`CustomProviderOptions`](#customprovideroptions)
+
+###### Returns
+
+[`CustomProvider`](#customprovider)
+
+#### Methods
+
+##### getToken()
+
+> **getToken**(): `Promise`\<[`AppCheckToken`](#appchecktoken)\>
+
+Defined in: [namespaced.ts:69](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/namespaced.ts#L69)
+
+Returns an AppCheck token.
+
+###### Returns
+
+`Promise`\<[`AppCheckToken`](#appchecktoken)\>
+
+###### Implementation of
+
+[`AppCheckProvider`](#appcheckprovider).[`getToken`](#gettoken-2)
+
+## Interfaces
+
+### AppCheck
+
+Defined in: [types/appcheck.ts:211](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L211)
+
+App Check module instance - returned from firebase.appCheck() or firebase.app().appCheck()
+
+#### Extends
+
+- [`FirebaseModule`](../app/namespaces/ReactNativeFirebase.mdx#abstract-firebasemodule)
+
+#### Methods
+
+##### ~~activate()~~
+
+> **activate**(`siteKeyOrProvider`, `isTokenAutoRefreshEnabled?`): `Promise`\<`void`\>
+
+Defined in: [types/appcheck.ts:248](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L248)
+
+Activate App Check
+On iOS App Check is activated with DeviceCheck provider simply by including the module, using the token auto refresh default or
+the specific value (if configured) in firebase.json, but calling this does no harm.
+On Android if you call this it will install the PlayIntegrity provider in release builds, the Debug provider if debuggable.
+On both platforms you may use this method to alter the token refresh setting after startup.
+On iOS if you want to set a specific AppCheckProviderFactory (for instance to FIRAppCheckDebugProviderFactory or
+FIRAppAttestProvider) you must manually do that in your AppDelegate.m prior to calling [FIRApp configure]
+
+###### Parameters
+
+###### siteKeyOrProvider
+
+`string` \| [`AppCheckProvider`](#appcheckprovider)
+
+This is ignored, Android uses DebugProviderFactory if the app is debuggable (https://firebase.google.com/docs/app-check/android/debug-provider)
+                           Android uses PlayIntegrityProviderFactory for release builds.
+                           iOS uses DeviceCheckProviderFactory by default unless altered in AppDelegate.m manually
+
+###### isTokenAutoRefreshEnabled?
+
+`boolean`
+
+If true, enables SDK to automatically
+refresh AppCheck token as needed. If undefined, the value will default
+to the value of `app.automaticDataCollectionEnabled`. That property
+defaults to false and can be set in the app config.
+
+###### Returns
+
+`Promise`\<`void`\>
+
+###### Deprecated
+
+use initializeAppCheck to gain access to all platform providers and firebase-js-sdk v9 compatibility
+
+##### getLimitedUseToken()
+
+> **getLimitedUseToken**(): `Promise`\<[`AppCheckTokenResult`](#appchecktokenresult)\>
+
+Defined in: [types/appcheck.ts:278](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L278)
+
+Requests a Firebase App Check token. This method should be used only if you need to authorize requests
+to a non-Firebase backend. Returns limited-use tokens that are intended for use with your non-Firebase
+backend endpoints that are protected with Replay Protection (https://firebase.google.com/docs/app-check/custom-resource-backend#replay-protection).
+This method does not affect the token generation behavior of the getAppCheckToken() method.
+
+###### Returns
+
+`Promise`\<[`AppCheckTokenResult`](#appchecktokenresult)\>
+
+##### getToken()
+
+> **getToken**(`forceRefresh?`): `Promise`\<[`AppCheckTokenResult`](#appchecktokenresult)\>
+
+Defined in: [types/appcheck.ts:270](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L270)
+
+Requests Firebase App Check token.
+This method should only be used if you need to authorize requests to a non-Firebase backend.
+Requests to Firebase backend are authorized automatically if configured.
+
+###### Parameters
+
+###### forceRefresh?
+
+`boolean`
+
+If true, a new Firebase App Check token is requested and the token cache is ignored.
+If false, the cached token is used if it exists and has not expired yet.
+In most cases, false should be used. True should only be used if the server explicitly returns an error, indicating a revoked token.
+
+###### Returns
+
+`Promise`\<[`AppCheckTokenResult`](#appchecktokenresult)\>
+
+##### initializeAppCheck()
+
+> **initializeAppCheck**(`options`): `Promise`\<`void`\>
+
+Defined in: [types/appcheck.ts:228](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L228)
+
+Initialize the AppCheck module. Note that in react-native-firebase AppCheckOptions must always
+be an object with a `provider` member containing `ReactNativeFirebaseAppCheckProvider` that has returned successfully
+from a call to the `configure` method, with sub-providers for the various platforms configured to meet your project
+requirements. This must be called prior to interacting with any firebase services protected by AppCheck
+
+###### Parameters
+
+###### options
+
+[`AppCheckOptions`](#appcheckoptions)
+
+an AppCheckOptions with a configured ReactNativeFirebaseAppCheckProvider as the provider
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### newReactNativeFirebaseAppCheckProvider()
+
+> **newReactNativeFirebaseAppCheckProvider**(): [`ReactNativeFirebaseAppCheckProvider`](#reactnativefirebaseappcheckprovider)
+
+Defined in: [types/appcheck.ts:218](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L218)
+
+Create a ReactNativeFirebaseAppCheckProvider option for use in react-native-firebase
+
+###### Returns
+
+[`ReactNativeFirebaseAppCheckProvider`](#reactnativefirebaseappcheckprovider)
+
+##### onTokenChanged()
+
+###### Call Signature
+
+> **onTokenChanged**(`observer`): () => `void`
+
+Defined in: [types/appcheck.ts:288](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L288)
+
+Registers a listener to changes in the token state. There can be more
+than one listener registered at the same time for one or more
+App Check instances. The listeners call back on the UI thread whenever
+the current token associated with this App Check instance changes.
+
+###### Parameters
+
+###### observer
+
+[`PartialObserver`](#partialobserver)\<[`AppCheckListenerResult`](#appchecklistenerresult)\>
+
+###### Returns
+
+A function that unsubscribes this listener.
+
+() => `void`
+
+###### Call Signature
+
+> **onTokenChanged**(`onNext`, `onError?`, `onCompletion?`): () => `void`
+
+Defined in: [types/appcheck.ts:307](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L307)
+
+Registers a listener to changes in the token state. There can be more
+than one listener registered at the same time for one or more
+App Check instances. The listeners call back on the UI thread whenever
+the current token associated with this App Check instance changes.
+
+Token listeners do not exist in the native SDK for iOS, no token change events will be emitted on that platform.
+This is not yet implemented on Android, no token change events will be emitted until implemented.
+
+NOTE: Although an `onError` callback can be provided, it will
+never be called, Android sdk code doesn't provide handling for onError function
+
+NOTE: Although an `onCompletion` callback can be provided, it will
+never be called because the token stream is never-ending.
+
+###### Parameters
+
+###### onNext
+
+(`tokenResult`) => `void`
+
+###### onError?
+
+(`error`) => `void`
+
+###### onCompletion?
+
+() => `void`
+
+###### Returns
+
+A function that unsubscribes this listener.
+
+() => `void`
+
+##### setTokenAutoRefreshEnabled()
+
+> **setTokenAutoRefreshEnabled**(`isTokenAutoRefreshEnabled`): `void`
+
+Defined in: [types/appcheck.ts:259](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L259)
+
+Alter the token auto refresh setting. By default it will take the value of automaticDataCollectionEnabled from Info.plist / AndroidManifest.xml
+
+###### Parameters
+
+###### isTokenAutoRefreshEnabled
+
+`boolean`
+
+If true, the SDK automatically
+refreshes App Check tokens as needed. This overrides any value set
+during `activate()` or taken by default from automaticDataCollectionEnabled in plist / android manifest
+
+###### Returns
+
+`void`
+
+#### Properties
+
+##### app
+
+> **app**: [`FirebaseApp`](../app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+Defined in: [types/appcheck.ts:213](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L213)
+
+The FirebaseApp this module is associated with
+
+###### Overrides
+
+[`FirebaseModule`](../app/namespaces/ReactNativeFirebase.mdx#abstract-firebasemodule).[`app`](../app/namespaces/ReactNativeFirebase.mdx#app)
+
+***
+
+### AppCheckOptions
+
+Defined in: [types/appcheck.ts:55](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L55)
+
+Options for App Check initialization.
+
+#### Properties
+
+##### isTokenAutoRefreshEnabled?
+
+> `optional` **isTokenAutoRefreshEnabled?**: `boolean`
+
+Defined in: [types/appcheck.ts:72](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L72)
+
+If true, enables SDK to automatically
+refresh AppCheck token as needed. If undefined, the value will default
+to the value of `app.automaticDataCollectionEnabled`. That property
+defaults to false and can be set in the app config.
+
+##### provider
+
+> **provider**: `CustomProvider` \| [`ReactNativeFirebaseAppCheckProvider`](#reactnativefirebaseappcheckprovider) \| `ReactNativeFirebaseAppCheckProviderConfig`
+
+Defined in: [types/appcheck.ts:61](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L61)
+
+The App Check provider to use. This can be either the built-in reCAPTCHA provider
+or a custom provider. For convenience, you can also pass an object with providerOptions
+directly, which will be accepted by the runtime.
+
+***
+
+### AppCheckProvider
+
+Defined in: [types/appcheck.ts:27](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L27)
+
+An App Check provider. This can be either the built-in reCAPTCHA provider
+or a custom provider. For more on custom providers, see
+https://firebase.google.com/docs/app-check/web-custom-provider
+
+#### Extended by
+
+- [`ReactNativeFirebaseAppCheckProvider`](#reactnativefirebaseappcheckprovider)
+
+#### Methods
+
+##### getToken()
+
+> **getToken**(): `Promise`\<[`AppCheckToken`](#appchecktoken)\>
+
+Defined in: [types/appcheck.ts:31](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L31)
+
+Returns an AppCheck token.
+
+###### Returns
+
+`Promise`\<[`AppCheckToken`](#appchecktoken)\>
+
+***
+
+### AppCheckToken
+
+Defined in: [types/appcheck.ts:78](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L78)
+
+The token returned from an `AppCheckProvider`.
+
+#### Properties
+
+##### expireTimeMillis
+
+> `readonly` **expireTimeMillis**: `number`
+
+Defined in: [types/appcheck.ts:86](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L86)
+
+The local timestamp after which the token will expire.
+
+##### token
+
+> `readonly` **token**: `string`
+
+Defined in: [types/appcheck.ts:82](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L82)
+
+The token string in JWT format.
+
+***
+
+### AppCheckTokenResult
+
+Defined in: [types/appcheck.ts:92](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L92)
+
+Result returned by `getToken()`.
+
+#### Properties
+
+##### token
+
+> `readonly` **token**: `string`
+
+Defined in: [types/appcheck.ts:96](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L96)
+
+The token string in JWT format.
+
+***
+
+### CustomProviderOptions
+
+Defined in: [types/appcheck.ts:37](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L37)
+
+Function to get an App Check token through a custom provider service.
+
+#### Properties
+
+##### getToken
+
+> **getToken**: () => `Promise`\<[`AppCheckToken`](#appchecktoken)\>
+
+Defined in: [types/appcheck.ts:38](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L38)
+
+###### Returns
+
+`Promise`\<[`AppCheckToken`](#appchecktoken)\>
+
+***
+
+### Observer
+
+Defined in: [types/appcheck.ts:110](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L110)
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+#### Properties
+
+##### complete
+
+> **complete**: [`CompleteFn`](#completefn)
+
+Defined in: [types/appcheck.ts:113](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L113)
+
+##### error
+
+> **error**: [`ErrorFn`](#errorfn)
+
+Defined in: [types/appcheck.ts:112](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L112)
+
+##### next
+
+> **next**: [`NextFn`](#nextfn)\<`T`\>
+
+Defined in: [types/appcheck.ts:111](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L111)
+
+***
+
+### ReactNativeFirebaseAppCheckProvider
+
+Defined in: [types/appcheck.ts:180](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L180)
+
+An App Check provider. This can be either the built-in reCAPTCHA provider
+or a custom provider. For more on custom providers, see
+https://firebase.google.com/docs/app-check/web-custom-provider
+
+#### Extends
+
+- [`AppCheckProvider`](#appcheckprovider)
+
+#### Methods
+
+##### configure()
+
+> **configure**(`options`): `void`
+
+Defined in: [types/appcheck.ts:195](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L195)
+
+Specify how the app check provider should be configured. The new configuration is
+in effect when this call returns. You must call `getToken()`
+after this call to get a token using the new configuration.
+This custom provider allows for delayed configuration and re-configuration on all platforms
+so AppCheck has the same experience across all platforms, with the only difference being the native
+providers you choose to use on each platform.
+
+###### Parameters
+
+###### options
+
+`ReactNativeFirebaseAppCheckProviderOptionsMap`
+
+###### Returns
+
+`void`
+
+##### getToken()
+
+> **getToken**(): `Promise`\<[`AppCheckToken`](#appchecktoken)\>
+
+Defined in: [types/appcheck.ts:31](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L31)
+
+Returns an AppCheck token.
+
+###### Returns
+
+`Promise`\<[`AppCheckToken`](#appchecktoken)\>
+
+###### Inherited from
+
+[`AppCheckProvider`](#appcheckprovider).[`getToken`](#gettoken-2)
+
+#### Properties
+
+##### providerOptions?
+
+> `optional` **providerOptions?**: `ReactNativeFirebaseAppCheckProviderOptionsMap`
+
+Defined in: [types/appcheck.ts:185](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L185)
+
+Provider options for platform-specific configuration.
+This is set when configure() is called.
+
+***
+
+### ReactNativeFirebaseAppCheckProviderAndroidOptions
+
+Defined in: [types/appcheck.ts:153](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L153)
+
+#### Extends
+
+- [`ReactNativeFirebaseAppCheckProviderOptions`](#reactnativefirebaseappcheckprovideroptions)
+
+#### Properties
+
+##### debugToken?
+
+> `optional` **debugToken?**: `string`
+
+Defined in: [types/appcheck.ts:129](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L129)
+
+debug token to use, if any. Defaults to undefined, pre-configure tokens in firebase web console if needed
+
+###### Inherited from
+
+[`ReactNativeFirebaseAppCheckProviderOptions`](#reactnativefirebaseappcheckprovideroptions).[`debugToken`](#debugtoken-2)
+
+##### provider?
+
+> `optional` **provider?**: `"debug"` \| `"playIntegrity"`
+
+Defined in: [types/appcheck.ts:157](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L157)
+
+The android provider to use, either `debug` or `playIntegrity`. default is `playIntegrity`.
+
+***
+
+### ReactNativeFirebaseAppCheckProviderAppleOptions
+
+Defined in: [types/appcheck.ts:144](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L144)
+
+#### Extends
+
+- [`ReactNativeFirebaseAppCheckProviderOptions`](#reactnativefirebaseappcheckprovideroptions)
+
+#### Properties
+
+##### debugToken?
+
+> `optional` **debugToken?**: `string`
+
+Defined in: [types/appcheck.ts:129](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L129)
+
+debug token to use, if any. Defaults to undefined, pre-configure tokens in firebase web console if needed
+
+###### Inherited from
+
+[`ReactNativeFirebaseAppCheckProviderOptions`](#reactnativefirebaseappcheckprovideroptions).[`debugToken`](#debugtoken-2)
+
+##### provider?
+
+> `optional` **provider?**: `"debug"` \| `"deviceCheck"` \| `"appAttest"` \| `"appAttestWithDeviceCheckFallback"`
+
+Defined in: [types/appcheck.ts:150](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L150)
+
+The apple provider to use, either `deviceCheck` or `appAttest`, or `appAttestWithDeviceCheckFallback`,
+defaults to `DeviceCheck`. `appAttest` requires iOS 14+ or will fail, `appAttestWithDeviceCheckFallback`
+will use `appAttest` for iOS14+ and fallback to `deviceCheck` on devices with ios13 and lower
+
+***
+
+### ReactNativeFirebaseAppCheckProviderOptions
+
+Defined in: [types/appcheck.ts:125](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L125)
+
+#### Extended by
+
+- [`ReactNativeFirebaseAppCheckProviderWebOptions`](#reactnativefirebaseappcheckproviderweboptions)
+- [`ReactNativeFirebaseAppCheckProviderAppleOptions`](#reactnativefirebaseappcheckproviderappleoptions)
+- [`ReactNativeFirebaseAppCheckProviderAndroidOptions`](#reactnativefirebaseappcheckproviderandroidoptions)
+
+#### Properties
+
+##### debugToken?
+
+> `optional` **debugToken?**: `string`
+
+Defined in: [types/appcheck.ts:129](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L129)
+
+debug token to use, if any. Defaults to undefined, pre-configure tokens in firebase web console if needed
+
+***
+
+### ReactNativeFirebaseAppCheckProviderWebOptions
+
+Defined in: [types/appcheck.ts:132](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L132)
+
+#### Extends
+
+- [`ReactNativeFirebaseAppCheckProviderOptions`](#reactnativefirebaseappcheckprovideroptions)
+
+#### Properties
+
+##### debugToken?
+
+> `optional` **debugToken?**: `string`
+
+Defined in: [types/appcheck.ts:129](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L129)
+
+debug token to use, if any. Defaults to undefined, pre-configure tokens in firebase web console if needed
+
+###### Inherited from
+
+[`ReactNativeFirebaseAppCheckProviderOptions`](#reactnativefirebaseappcheckprovideroptions).[`debugToken`](#debugtoken-2)
+
+##### provider?
+
+> `optional` **provider?**: `"debug"` \| `"reCaptchaV3"` \| `"reCaptchaEnterprise"`
+
+Defined in: [types/appcheck.ts:136](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L136)
+
+The web provider to use, either `reCaptchaV3` or `reCaptchaEnterprise`, defaults to `reCaptchaV3`
+
+##### siteKey?
+
+> `optional` **siteKey?**: `string`
+
+Defined in: [types/appcheck.ts:141](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L141)
+
+siteKey for use in web queries, defaults to `none`
+
+## Namespaces
+
+- [~~FirebaseAppCheckTypes~~](namespaces/FirebaseAppCheckTypes.mdx)
+
+## Type Aliases
+
+### AppCheckListenerResult
+
+> **AppCheckListenerResult** = [`AppCheckToken`](#appchecktoken) & `object`
+
+Defined in: [types/appcheck.ts:102](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L102)
+
+The result return from `onTokenChanged`
+
+#### Type Declaration
+
+##### appName
+
+> `readonly` **appName**: `string`
+
+***
+
+### CompleteFn
+
+> **CompleteFn** = () => `void`
+
+Defined in: [types/appcheck.ts:108](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L108)
+
+#### Returns
+
+`void`
+
+***
+
+### ErrorFn
+
+> **ErrorFn** = (`error`) => `void`
+
+Defined in: [types/appcheck.ts:107](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L107)
+
+#### Parameters
+
+##### error
+
+`Error`
+
+#### Returns
+
+`void`
+
+***
+
+### NextFn
+
+> **NextFn**\<`T`\> = (`value`) => `void`
+
+Defined in: [types/appcheck.ts:106](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L106)
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+#### Parameters
+
+##### value
+
+`T`
+
+#### Returns
+
+`void`
+
+***
+
+### PartialObserver
+
+> **PartialObserver**\<`T`\> = `Partial`\<[`Observer`](#observer)\<`T`\>\>
+
+Defined in: [types/appcheck.ts:116](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L116)
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+***
+
+### Unsubscribe
+
+> **Unsubscribe** = () => `void`
+
+Defined in: [types/appcheck.ts:121](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/types/appcheck.ts#L121)
+
+A function that unsubscribes from token changes.
+
+#### Returns
+
+`void`
+
+## Variables
+
+### default
+
+> **default**: `AppCheckNamespace`
+
+Defined in: [namespaced.ts:291](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/namespaced.ts#L291)
+
+***
+
+### firebase
+
+> `const` **firebase**: [`FirebaseNamespacedExport`](../app/namespaces/ReactNativeFirebase.mdx#firebasenamespacedexport)\<`"appCheck"`, [`AppCheck`](#appcheck), `AppCheckStatics`, `false`\>
+
+Defined in: [namespaced.ts:296](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/namespaced.ts#L296)
+
+***
+
+### SDK\_VERSION
+
+> `const` **SDK\_VERSION**: `"24.0.0"` = `version`
+
+Defined in: [namespaced.ts:267](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/namespaced.ts#L267)
