@@ -106,6 +106,8 @@
     "spellchecker-cli": "^7.0.2",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
+    "typedoc": "^0.28.18",
+    "typedoc-plugin-markdown": "^4.11.0",
     "typescript": "^5.9.3"
   },
   "resolutions": {
