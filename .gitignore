@@ -538,6 +538,7 @@ Pods/*
 packages/**/version.js
 packages/**/version.ts
 typedoc.raw.json
+reference/
 tests/ios/Firebase
 tests/ios/resetXcode.sh
 .tmp

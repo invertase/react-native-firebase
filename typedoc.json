@@ -1,0 +1,67 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "React Native Firebase",
+  "entryPointStrategy": "packages",
+  "entryPoints": [
+    "packages/app",
+    "packages/ai",
+    "packages/analytics",
+    "packages/app-check",
+    "packages/app-distribution",
+    "packages/auth",
+    "packages/crashlytics",
+    "packages/database",
+    "packages/firestore",
+    "packages/functions",
+    "packages/in-app-messaging",
+    "packages/installations",
+    "packages/messaging",
+    "packages/ml",
+    "packages/perf",
+    "packages/remote-config",
+    "packages/storage"
+  ],
+  "out": "reference",
+  "githubPages": true,
+  "router": "structure",
+  "navigation": {
+    "includeFolders": true,
+    "includeCategories": true,
+    "includeGroups": true,
+    "excludeReferences": false
+  },
+  "categorizeByGroup": false,
+  "sortEntryPoints": false,
+  "excludeExternals": true,
+  "useFirstParagraphOfCommentAsSummary": true,
+  "searchInComments": true,
+  "hideGenerator": true,
+  "cleanOutputDir": true,
+  "titleLink": "https://github.com/invertase/react-native-firebase",
+  "navigationLinks": {
+    "GitHub": "https://github.com/invertase/react-native-firebase",
+    "npm": "https://www.npmjs.com/search?q=scope%3Areact-native-firebase"
+  },
+  "sidebarLinks": {
+    "Documentation": "https://rnfirebase.io"
+  },
+  "readme": "docs/reference-api-readme.md",
+  "packageOptions": {
+    "excludeExternals": true,
+    "excludePrivate": true,
+    "readme": "none",
+    "skipErrorChecking": true,
+    "gitRevision": "main",
+    "groupOrder": [ "Functions", "*" ]
+  },
+  "externalSymbolLinkMappings": {
+    "@firebase/app": {
+      "FirebaseApp": "https://firebase.google.com/docs/reference/js/app.firebaseapp"
+    }
+  },
+  "validation": {
+    "notExported": false,
+    "invalidLink": false,
+    "notDocumented": false
+  }
+}
