@@ -87,7 +87,7 @@ export type BackendType = (typeof BackendType)[keyof typeof BackendType];
  */
 export interface AI {
   /**
-   * The {@link @firebase/app#FirebaseApp} this {@link AI} instance is associated with.
+   * The {@link @firebase/app!FirebaseApp} this {@link AI} instance is associated with.
    */
   app: ReactNativeFirebase.FirebaseApp;
   appCheck?: FirebaseAppCheckTypes.Module | null;

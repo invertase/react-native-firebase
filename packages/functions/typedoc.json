@@ -1,0 +1,14 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["lib/modular.ts", "lib/types/functions.ts"],
+  "tsconfig": "tsconfig.json",
+  "intentionallyNotExported": [
+    "_HttpsCallable",
+    "_HttpsCallableOptions",
+    "_HttpsCallableResult",
+    "_HttpsCallableStreamOptions",
+    "_HttpsCallableStreamResult",
+    "_HttpsError",
+    "_HttpsErrorCode"
+  ]
+}

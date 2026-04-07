@@ -49,7 +49,7 @@ export {
 
 /**
  * Returns the default {@link AI} instance that is associated with the provided
- * {@link @firebase/app#FirebaseApp}. If no instance exists, initializes a new instance with the
+ * {@link @firebase/app!FirebaseApp}. If no instance exists, initializes a new instance with the
  * default settings.
  *
  * @example
@@ -69,9 +69,9 @@ export {
  * const ai = getAI(app, { backend: new VertexAIBackend() });
  * ```
  *
- * @param app - The {@link @firebase/app#FirebaseApp} to use.
+ * @param app - The {@link @firebase/app!FirebaseApp} to use.
  * @param options - {@link AIOptions} that configure the AI instance.
- * @returns The default {@link AI} instance for the given {@link @firebase/app#FirebaseApp}.
+ * @returns The default {@link AI} instance for the given {@link @firebase/app!FirebaseApp}.
  *
  * @public
  */

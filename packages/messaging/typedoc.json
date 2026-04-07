@@ -1,0 +1,22 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["lib/modular.ts", "lib/types/messaging.ts"],
+  "tsconfig": "tsconfig.json",
+  "intentionallyNotExported": [
+    "_AuthorizationStatus",
+    "_FcmOptions",
+    "_GetTokenOptions",
+    "_IOSPermissions",
+    "_MessagePriority",
+    "_Messaging",
+    "_NativeTokenOptions",
+    "_Notification",
+    "_NotificationAndroidPriority",
+    "_NotificationAndroidVisibility",
+    "_NotificationIOSCriticalSound",
+    "_NotificationPayload",
+    "_RemoteMessage",
+    "_SendErrorEvent",
+    "_MessagingStatics"
+  ]
+}

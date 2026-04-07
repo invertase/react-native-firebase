@@ -55,7 +55,7 @@ export declare function getStorage(app?: FirebaseApp, bucketUrl?: string): Stora
  *
  * @param app - The {@link FirebaseApp} instance that the returned {@link Storage}
  * instance is associated with.
- * @returns The {@link Firestore} instance of the provided app.
+ * @returns The {@link Storage} instance of the provided app.
  */
 export declare function getStorage(app?: FirebaseApp): Storage;
 
@@ -67,7 +67,7 @@ export declare function getStorage(app?: FirebaseApp): Storage;
  * @param app - The {@link FirebaseApp} instance that the returned {@link Storage}
  * instance is associated with. If `null` the default app is used.
  * @param bucketUrl - The gs:// url to the Firebase Storage Bucket. If `null` the default bucket is used.
- * @returns The {@link Firestore} instance of the provided app.
+ * @returns The {@link Storage} instance of the provided app.
  */
 export declare function getStorage(app?: FirebaseApp, bucketUrl?: string): Storage;
 

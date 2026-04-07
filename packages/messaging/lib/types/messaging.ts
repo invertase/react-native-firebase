@@ -78,23 +78,17 @@ export interface RemoteMessage {
 
   /**
    * Whether the iOS APNs message was configured as a background update notification.
-   *
-   * @platform ios iOS
    */
   contentAvailable?: boolean;
 
   /**
    * Whether the iOS APNs `mutable-content` property on the message was set
    * allowing the app to modify the notification via app extensions.
-   *
-   * @platform ios iOS
    */
   mutableContent?: boolean;
 
   /**
    * The iOS category this notification is assigned to.
-   *
-   * @platform ios iOS
    */
   category?: string;
 
@@ -161,16 +155,12 @@ export interface FcmOptions {
  */
 export interface NativeTokenOptions {
   /**
-   * The app name of the FirebaseApp instance.
-   *
-   * @platform android Android
+   * On Android, the app name of the FirebaseApp instance.
    */
   appName?: string;
 
   /**
-   * The senderID for a particular Firebase project.
-   *
-   * @platform ios iOS
+   * On iOS, the senderID for a particular Firebase project.
    */
   senderId?: string;
 }
@@ -180,20 +170,16 @@ export interface NativeTokenOptions {
  */
 export interface GetTokenOptions {
   /**
-   * The VAPID key used to authenticate the push subscribers
+   * On Web, the VAPID key used to authenticate the push subscribers
    *  to receive push messages only from sending servers
    * that hold the corresponding private key.
-   *
-   * @platform web
    */
   vapidKey?: string;
 
   /**
-   * The service worker registration for receiving push messaging.
+   * On Web, the service worker registration for receiving push messaging.
    * If the registration is not provided explicitly, you need to
    * have a firebase-messaging-sw.js at your root location.
-   *
-   * @platform web
    */
   serviceWorkerRegistration?: any; // ServiceWorkerRegistration is a web API type
 }
@@ -404,11 +390,9 @@ export interface IOSPermissions {
   alert?: boolean;
 
   /**
-   * Request permission for Siri to automatically read out notification messages over AirPods.
+   * On iOS >= 13, request permission for Siri to automatically read out notification messages over AirPods.
    *
    * Defaults to false.
-   *
-   * @platform ios iOS >= 13
    */
   announcement?: boolean;
 
@@ -434,11 +418,9 @@ export interface IOSPermissions {
   carPlay?: boolean;
 
   /**
-   * Request permission to provisionally create non-interrupting notifications.
+   * On iOS, equest permission to provisionally create non-interrupting notifications.
    *
    * Defaults to false.
-   *
-   * @platform ios iOS >= 12
    */
   provisional?: boolean;
 
@@ -450,11 +432,9 @@ export interface IOSPermissions {
   sound?: boolean;
 
   /**
-   * Request permission to display a button for in-app notification settings.
+   * On iOS, request permission to display a button for in-app notification settings.
    *
    * Default to false
-   *
-   * @platform ios iOS >= 12
    */
   providesAppNotificationSettings?: boolean;
 }
@@ -520,16 +500,12 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
   /**
    * When the app is opened from iOS notifications settings from a quit state,
    * this method will return `true` or `false` if the app was opened via another method.
-   *
-   * @ios iOS >= 12
    */
   getDidOpenSettingsForNotification(): Promise<boolean>;
 
   /**
-   * Returns whether the root view is headless or not
+   * iOS only - Returns whether the root view is headless or not
    * i.e true if the app was launched in the background (for example, by data-only cloud message)
-   *
-   * @platform ios iOS
    */
   getIsHeadless(): Promise<boolean>;
 
@@ -584,8 +560,6 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
    * be received or sent.
    *
    * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `AuthorizationStatus.AUTHORIZED`.
-   *
-   * @ios
    */
   requestPermission(permissions?: IOSPermissions): Promise<AuthorizationStatus>;
 
@@ -598,12 +572,10 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
   registerDeviceForRemoteMessages(): Promise<void>;
 
   /**
-   * Returns a boolean value whether the user has registered for remote notifications via
+   * On iOS, returns a boolean value whether the user has registered for remote notifications via
    * `registerDeviceForRemoteMessages()`.
    *
    * > You can safely access this property on Android without platform checks. Android returns `true` only.
-   *
-   * @platform ios
    */
   isDeviceRegisteredForRemoteMessages: boolean;
 
@@ -620,11 +592,9 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
   isDeliveryMetricsExportToBigQueryEnabled: boolean;
 
   /**
-   * Unregisters the app from receiving remote notifications.
+   * On iOS, unregisters the app from receiving remote notifications.
    *
    * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `void`.
-   *
-   * @platform ios
    */
   unregisterDeviceForRemoteMessages(): Promise<void>;
 
@@ -633,8 +603,6 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
    * iOS devices without using the FCM service.
    *
    * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `null`.
-   *
-   * @platform ios
    */
   getAPNSToken(): Promise<string | null>;
 
@@ -645,7 +613,6 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
    *
    * @param token a hexadecimal string representing your APNS token
    * @param type optional string specifying 'prod', 'sandbox' or 'unknown' token type
-   * @platform ios
    */
   setAPNSToken(token: string, type?: string): Promise<void>;
 
@@ -655,22 +622,18 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
   hasPermission(): Promise<AuthorizationStatus>;
 
   /**
-   * Called when the FCM server deletes pending messages.
+   * On Android, called when the FCM server deletes pending messages.
    *
    * Returns an unsubscribe function to stop listening for deleted messages.
-   *
-   * NOTE: Android only
    *
    * @param listener Called when the FCM deletes pending messages.
    */
   onDeletedMessages(listener: () => void): () => void;
 
   /**
-   * When sending a `RemoteMessage`, this listener is called when the message has been sent to FCM.
+   * On Android, when sending a `RemoteMessage`, this listener is called when the message has been sent to FCM.
    *
    * Returns an unsubscribe function to stop listening for sent messages.
-   *
-   * NOTE: Android only
    *
    * @param listener Called when the FCM sends the remote message to FCM.
    */
@@ -697,17 +660,13 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
   setBackgroundMessageHandler(handler: (message: RemoteMessage) => Promise<any>): void;
 
   /**
-   * Set a handler function which is called when the `${App Name} notifications settings`
+   * On iOS, set a handler function which is called when the `${App Name} notifications settings`
    * link in iOS settings is clicked.
-   *
-   * @ios iOS >= 12
    */
   setOpenSettingsForNotificationsHandler(handler: (message: RemoteMessage) => any): void;
 
   /**
-   * Send a new `RemoteMessage` to the FCM server.
-   *
-   * NOTE: Android only
+   * On Android, send a new `RemoteMessage` to the FCM server.
    *
    * @param message A `RemoteMessage` interface.
    */
@@ -743,9 +702,7 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
   setNotificationDelegationEnabled(enabled: boolean): Promise<void>;
 
   /**
-   * Checks if all required APIs exist in the browser.
-   *
-   * @web
+   * On Web, checks if all required APIs exist in the browser.
    */
   isSupported(): Promise<boolean>;
 }

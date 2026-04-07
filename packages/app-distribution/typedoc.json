@@ -1,4 +1,8 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["lib/index.d.ts"]
+  "entryPoints": ["lib/modular/index.d.ts"],
+  "intentionallyNotExported": [
+    "FirebaseAppDistributionTypes.Module",
+    "FirebaseAppDistributionTypes.AppDistributionRelease"
+  ]
 }
