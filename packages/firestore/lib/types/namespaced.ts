@@ -44,8 +44,6 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * // firebase.firestore().X
  * ```
- *
- * @firebase firestore
  */
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace FirebaseFirestoreTypes {

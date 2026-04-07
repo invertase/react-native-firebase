@@ -52,16 +52,20 @@
     "readme": "none",
     "skipErrorChecking": true,
     "gitRevision": "main",
-    "groupOrder": [ "Functions", "*" ]
+    "groupOrder": ["Functions", "*"]
   },
   "externalSymbolLinkMappings": {
     "@firebase/app": {
       "FirebaseApp": "https://firebase.google.com/docs/reference/js/app.firebaseapp"
     }
   },
+  "treatWarningsAsErrors": true,
+  "treatValidationWarningsAsErrors": true,
   "validation": {
     "notExported": false,
-    "invalidLink": false,
+    "invalidLink": true,
+    "invalidPath": true,
+    "rewrittenLink": true,
     "notDocumented": false
   }
 }

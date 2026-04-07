@@ -71,8 +71,8 @@ export interface ImagenGenerationResponse<T extends ImagenInlineImage | ImagenGC
    * The reason that images were filtered out. This property will only be defined if one
    * or more images were filtered.
    *
-   * Images may be filtered out due to the {@link (ImagenSafetyFilterLevel:type)},
-   * {@link (ImagenPersonFilterLevel:type)}, or filtering included in the model.
+   * Images may be filtered out due to the {@link ImagenSafetyFilterLevel},
+   * {@link ImagenPersonFilterLevel}, or filtering included in the model.
    * The filter levels may be adjusted in your {@link ImagenSafetySettings}.
    *
    * See the {@link https://cloud.google.com/vertex-ai/generative-ai/docs/image/responsible-ai-imagen | Responsible AI and usage guidelines for Imagen}

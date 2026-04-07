@@ -1,0 +1,6 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["lib/modular.ts", "lib/types/crashlytics.ts"],
+  "tsconfig": "tsconfig.json",
+  "intentionallyNotExported": ["_Statics"]
+}

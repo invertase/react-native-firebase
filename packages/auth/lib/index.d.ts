@@ -102,7 +102,7 @@ export namespace FirebaseAuthTypes {
     /**
      * Creates a new `AuthCredential`.
      *
-     * @returns {@link auth.AuthCredential}.
+     * @returns {@link AuthCredential}.
      * @param token A provider token.
      * @param secret A provider secret.
      */
@@ -122,7 +122,7 @@ export namespace FirebaseAuthTypes {
     /**
      * Creates a new `AuthCredential`.
      *
-     * @returns {@link auth.AuthCredential}.
+     * @returns {@link AuthCredential}.
      * @param token A provider token.
      * @param secret A provider secret.
      */
@@ -166,7 +166,7 @@ export namespace FirebaseAuthTypes {
     /**
      * Creates a new `OIDCProvider`.
      *
-     * @returns {@link auth.AuthCredential}.
+     * @returns {@link AuthCredential}.
      * @param oidcSuffix this is the "Provider ID" value from the firebase console fx `azure_test`.
      * @param token A provider token.
      */
@@ -182,7 +182,7 @@ export namespace FirebaseAuthTypes {
      */
     PROVIDER_ID: string;
     /**
-     * This corresponds to the sign-in method identifier as returned in {@link auth#fetchSignInMethodsForEmail}.
+     * This corresponds to the sign-in method identifier as returned in {@link fetchSignInMethodsForEmail}.
      *
      * #### Example
      *
@@ -195,7 +195,7 @@ export namespace FirebaseAuthTypes {
      */
     EMAIL_LINK_SIGN_IN_METHOD: string;
     /**
-     * This corresponds to the sign-in method identifier as returned in {@link auth#fetchSignInMethodsForEmail}.
+     * This corresponds to the sign-in method identifier as returned in {@link fetchSignInMethodsForEmail}.
      *
      * #### Example
      *
@@ -216,7 +216,7 @@ export namespace FirebaseAuthTypes {
      * const authCredential = firebase.auth.EmailAuthProvider.credential('joe.bloggs@example.com', '123456');
      * ```
      *
-     * @returns {@link auth.AuthCredential}
+     * @returns {@link AuthCredential}
      * @param email Users email address.
      * @param password User account password.
      */
@@ -245,7 +245,7 @@ export namespace FirebaseAuthTypes {
      */
     CODE_SENT: 'sent';
     /**
-     * The timeout specified in {@link auth#verifyPhoneNumber} has expired.
+     * The timeout specified in {@link verifyPhoneNumber} has expired.
      */
     AUTO_VERIFY_TIMEOUT: 'timeout';
     /**
@@ -471,7 +471,7 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
-   * A structure containing additional user information from a federated identity provider via {@link auth.UserCredential}.
+   * A structure containing additional user information from a federated identity provider via {@link UserCredential}.
    *
    * #### Example
    *
@@ -515,13 +515,13 @@ export namespace FirebaseAuthTypes {
      */
     additionalUserInfo?: AdditionalUserInfo;
     /**
-     * Returns the {@link auth.User} interface of this credential.
+     * Returns the {@link User} interface of this credential.
      */
     user: User;
   }
 
   /**
-   * Holds the user metadata for the current {@link auth.User}.
+   * Holds the user metadata for the current {@link User}.
    *
    * #### Example
    *
@@ -747,7 +747,7 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
-   * Interface representing ID token result obtained from {@link auth.User#getIdTokenResult}.
+   * Interface representing ID token result obtained from {@link User#getIdTokenResult}.
    * It contains the ID token JWT string and other helper properties for getting different data
    * associated with the token as well as all the decoded payload claims.
    *
@@ -818,7 +818,7 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
-   * A result from a {@link auth#signInWithPhoneNumber} call.
+   * A result from a {@link signInWithPhoneNumber} call.
    *
    * #### Example
    *
@@ -843,8 +843,8 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
-   * Android specific options which can be attached to the {@link auth.ActionCodeSettings} object
-   * to be sent with requests such as {@link auth.User#sendEmailVerification}.
+   * Android specific options which can be attached to the {@link ActionCodeSettings} object
+   * to be sent with requests such as {@link User#sendEmailVerification}.
    *
    * #### Example
    *
@@ -873,7 +873,7 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
-   * Additional data returned from a {@link auth#checkActionCode} call.
+   * Additional data returned from a {@link checkActionCode} call.
    * For the PASSWORD_RESET, VERIFY_EMAIL, and RECOVER_EMAIL actions, this object contains an email field with the address the email was sent to.
    * For the RECOVER_EMAIL action, which allows a user to undo an email address change, this object also contains a fromEmail field with the user account's new email address. After the action completes, the user's email address will revert to the value in the email field from the value in fromEmail field.
    *
@@ -892,13 +892,13 @@ export namespace FirebaseAuthTypes {
      */
     email?: string;
     /**
-     * This signifies the current email associated with the account, which may have changed as a result of the {@link auth#checkActionCode} call performed.
+     * This signifies the current email associated with the account, which may have changed as a result of the {@link checkActionCode} call performed.
      */
     fromEmail?: string;
   }
 
   /**
-   * The interface returned from a {@link auth#checkActionCode} call.
+   * The interface returned from a {@link checkActionCode} call.
    *
    * #### Example
    *
@@ -919,8 +919,8 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
-   * iOS specific options which can be attached to the {@link auth.ActionCodeSettings} object
-   * to be sent with requests such as {@link auth.User#sendEmailVerification}.
+   * iOS specific options which can be attached to the {@link ActionCodeSettings} object
+   * to be sent with requests such as {@link User#sendEmailVerification}.
    *
    * #### Example
    *
@@ -940,7 +940,7 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
-   * Options to be sent with requests such as {@link auth.User#sendEmailVerification}.
+   * Options to be sent with requests such as {@link User#sendEmailVerification}.
    *
    * #### Example
    *
@@ -985,7 +985,7 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
-   * An auth listener callback function for {@link auth#onAuthStateChanged}.
+   * An auth listener callback function for {@link onAuthStateChanged}.
    *
    * #### Example
    *
@@ -1073,11 +1073,11 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
-   * The listener function returned from a {@link auth#verifyPhoneNumber} call.
+   * The listener function returned from a {@link verifyPhoneNumber} call.
    */
   export interface PhoneAuthListener {
     /**
-     * The phone auth state listener. See {@link auth.PhoneAuthState} for different event state types.
+     * The phone auth state listener. See {@link PhoneAuthState} for different event state types.
      *
      * #### Example
      *
@@ -1152,7 +1152,7 @@ export namespace FirebaseAuthTypes {
      *  });
      * ```
      *
-     * > Used when no `onRejected` handler is passed to {@link auth.PhoneAuthListener#then}.
+     * > Used when no `onRejected` handler is passed to {@link PhoneAuthListener#then}.
      *
      * @param onRejected Rejected promise handler.
      */
@@ -1253,24 +1253,24 @@ export namespace FirebaseAuthTypes {
     emailVerified: boolean;
     /**
      * Returns true if the user is anonymous; that is, the user account was created with
-     * {@link auth#signInAnonymously} and has not been linked to another account
-     * with {@link auth#linkWithCredential}.
+     * {@link signInAnonymously} and has not been linked to another account
+     * with {@link linkWithCredential}.
      */
     isAnonymous: boolean;
 
     /**
-     * Returns the {@link auth.UserMetadata} associated with this user.
+     * Returns the {@link UserMetadata} associated with this user.
      */
     metadata: UserMetadata;
 
     /**
-     * Returns the {@link auth.MultiFactor} associated with this user.
+     * Returns the {@link MultiFactor} associated with this user.
      */
     multiFactor: MultiFactor | null;
 
     /**
      * Returns the phone number of the user, as stored in the Firebase project's user database,
-     * or null if none exists. This can be updated at any time by calling {@link auth.User#updatePhoneNumber}.
+     * or null if none exists. This can be updated at any time by calling {@link User#updatePhoneNumber}.
      */
     phoneNumber: string | null;
 
@@ -1357,8 +1357,8 @@ export namespace FirebaseAuthTypes {
      * @error auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password.
      * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
      * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
-     * @throws on iOS {@link auth.NativeFirebaseAuthError}, on Android {@link auth.NativeFirebaseError}
-     * @param credential A created {@link auth.AuthCredential}.
+     * @throws on iOS {@link NativeFirebaseAuthError}, on Android {@link NativeFirebaseError}
+     * @param credential A created {@link AuthCredential}.
      */
     linkWithCredential(credential: AuthCredential): Promise<UserCredential>;
 
@@ -1383,8 +1383,8 @@ export namespace FirebaseAuthTypes {
      * @error auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password.
      * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
      * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
-     * @throws on iOS {@link auth.NativeFirebaseAuthError}, on Android {@link auth.NativeFirebaseError}
-     * @param provider A created {@link auth.AuthProvider}.
+     * @throws on iOS {@link NativeFirebaseAuthError}, on Android {@link NativeFirebaseError}
+     * @param provider A created {@link AuthProvider}.
      */
     linkWithPopup(provider: AuthProvider): Promise<UserCredential>;
 
@@ -1409,8 +1409,8 @@ export namespace FirebaseAuthTypes {
      * @error auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password.
      * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
      * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
-     * @throws on iOS {@link auth.NativeFirebaseAuthError}, on Android {@link auth.NativeFirebaseError}
-     * @param provider A created {@link auth.AuthProvider}.
+     * @throws on iOS {@link NativeFirebaseAuthError}, on Android {@link NativeFirebaseError}
+     * @param provider A created {@link AuthProvider}.
      */
     linkWithRedirect(provider: AuthProvider): Promise<UserCredential>;
 
@@ -1431,7 +1431,7 @@ export namespace FirebaseAuthTypes {
      * @error auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password.
      * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
      * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
-     * @param credential A created {@link auth.AuthCredential}.
+     * @param credential A created {@link AuthCredential}.
      */
     reauthenticateWithCredential(credential: AuthCredential): Promise<UserCredential>;
 
@@ -1451,7 +1451,7 @@ export namespace FirebaseAuthTypes {
      * @error auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password.
      * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
      * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
-     * @param provider A created {@link auth.AuthProvider}.
+     * @param provider A created {@link AuthProvider}.
      * @returns A promise that resolves with no value.
      */
     reauthenticateWithRedirect(provider: AuthProvider): Promise<void>;
@@ -1686,7 +1686,7 @@ export namespace FirebaseAuthTypes {
      * const user = firebase.auth().currentUser;
      * ```
      *
-     * > It is recommended to use {@link auth#onAuthStateChanged} to track whether the user is currently signed in.
+     * > It is recommended to use {@link onAuthStateChanged} to track whether the user is currently signed in.
      */
     currentUser: User | null;
     /**
@@ -1765,9 +1765,9 @@ export namespace FirebaseAuthTypes {
 
     /**
      * Adds a listener to observe changes to the User object. This is a superset of everything from
-     * {@link auth#onAuthStateChanged}, {@link auth#onIdTokenChanged} and user changes. The goal of this
+     * {@link onAuthStateChanged}, {@link onIdTokenChanged} and user changes. The goal of this
      * method is to provide easier listening to all user changes, such as when credentials are
-     * linked and unlinked, without manually having to call {@link auth.User#reload}.
+     * linked and unlinked, without manually having to call {@link User#reload}.
      *
      * #### Example
      *
@@ -1792,7 +1792,7 @@ export namespace FirebaseAuthTypes {
     /**
      * Signs the user out.
      *
-     * Triggers the {@link auth#onAuthStateChanged} listener.
+     * Triggers the {@link onAuthStateChanged} listener.
      *
      * #### Example
      *
@@ -2143,7 +2143,7 @@ export namespace FirebaseAuthTypes {
 
     /**
      * Completes the password reset process with the confirmation code and new password, via
-     * {@link auth#sendPasswordResetEmail}.
+     * {@link sendPasswordResetEmail}.
      *
      * #### Example
      *

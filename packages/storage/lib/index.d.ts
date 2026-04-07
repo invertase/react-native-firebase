@@ -632,7 +632,7 @@ export namespace FirebaseStorageTypes {
     put(data: Blob | Uint8Array | ArrayBuffer, metadata?: SettableMetadata): Task;
 
     /**
-     * Puts a string on the storage bucket. Depending on the string type, set a {@link storage.StringFormat} type.
+     * Puts a string on the storage bucket. Depending on the string type, set a {@link StringFormat} type.
      *
      * #### Example
      *
@@ -673,7 +673,7 @@ export namespace FirebaseStorageTypes {
   }
 
   /**
-   * The snapshot observer returned from a {@link storage.Task#on} listener.
+   * The snapshot observer returned from a {@link Task#on} listener.
    *
    * #### Example
    *
@@ -894,12 +894,12 @@ export namespace FirebaseStorageTypes {
     bytesTransferred: number;
 
     /**
-     * The metadata of the tasks via a {@link storage.FullMetadata} interface.
+     * The metadata of the tasks via a {@link FullMetadata} interface.
      */
     metadata: FullMetadata;
 
     /**
-     * The {@link storage.Reference} of the task.
+     * The {@link Reference} of the task.
      */
     ref: Reference;
 
@@ -909,7 +909,7 @@ export namespace FirebaseStorageTypes {
     state: 'cancelled' | 'error' | 'paused' | 'running' | 'success';
 
     /**
-     * The parent {@link storage.Task} of this snapshot.
+     * The parent {@link Task} of this snapshot.
      */
     task: Task;
 
@@ -919,7 +919,7 @@ export namespace FirebaseStorageTypes {
     totalBytes: number;
 
     /**
-     * If the {@link storage.TaskSnapshot#state} is `error`, returns a JavaScript error of the
+     * If the {@link TaskSnapshot#state} is `error`, returns a JavaScript error of the
      * current task snapshot.
      */
     error?: NativeFirebaseError;
@@ -930,12 +930,12 @@ export namespace FirebaseStorageTypes {
    */
   export interface TaskResult {
     /**
-     * The metadata of the tasks via a {@link storage.FullMetadata} interface.
+     * The metadata of the tasks via a {@link FullMetadata} interface.
      */
     metadata: FullMetadata;
 
     /**
-     * The {@link storage.Reference} of the task.
+     * The {@link Reference} of the task.
      */
     ref: Reference;
   }
@@ -1099,7 +1099,7 @@ export namespace FirebaseStorageTypes {
     setMaxOperationRetryTime(time: number): Promise<void>;
 
     /**
-     * Returns a new {@link storage.Reference} instance.
+     * Returns a new {@link Reference} instance.
      *
      * #### Example
      *
@@ -1113,7 +1113,7 @@ export namespace FirebaseStorageTypes {
     ref(path?: string): Reference;
 
     /**
-     * Returns a new {@link storage.Reference} instance from a storage bucket URL.
+     * Returns a new {@link Reference} instance from a storage bucket URL.
      *
      * #### Example
      *

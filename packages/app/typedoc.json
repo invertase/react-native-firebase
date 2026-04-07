@@ -1,5 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["lib/index.ts"],
-  "tsconfig": "tsconfig.json"
+  "tsconfig": "tsconfig.json",
+  "intentionallyNotExported": ["FirebaseRoot"]
 }
