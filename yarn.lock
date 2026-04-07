@@ -10950,9 +10950,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"detox@npm:20.46.0":
-  version: 20.46.0
-  resolution: "detox@npm:20.46.0"
+"detox@npm:20.50.1":
+  version: 20.50.1
+  resolution: "detox@npm:20.50.1"
   dependencies:
     "@wix-pilot/core": "npm:^3.4.2"
     "@wix-pilot/detox": "npm:^1.0.13"
@@ -10998,7 +10998,7 @@ __metadata:
       optional: true
   bin:
     detox: local-cli/cli.js
-  checksum: 10/b3bbeea8163105c645081406b4b0b19bbc997cfadbd15ac12ef9e4f58e86d6899bc8f5597a0cf6b1d0b5ad4803150101baf9899d408f4d2e26891ee77306d772
+  checksum: 10/4d8ec246e5314d6998d3f90273ce7943ba70829311d4c3d1736eed9e12be87f034c940fa0f0cf745b4e3fc395f3c505e543d8c7fa6e44347fc41e9a5883bf3f5
   languageName: node
   linkType: hard
 
@@ -21387,7 +21387,7 @@ __metadata:
     assert: "npm:^2.1.0"
     axios: "npm:^1.13.2"
     cpy-cli: "npm:^6.0.0"
-    detox: "npm:20.46.0"
+    detox: "npm:20.50.1"
     firebase: "npm:^12.7.0"
     firebase-tools: "npm:^14.27.0"
     jest-circus: "npm:^30.2.0"
