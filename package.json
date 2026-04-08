@@ -22,6 +22,7 @@
     "lint:spellcheck": "spellchecker --quiet --files=\"docs/**/*.md\" --dictionaries=\"./.spellcheck.dict.txt\" --reports=\"spelling.json\" --plugins spell indefinite-article repeated-words syntax-mentions syntax-urls frontmatter",
     "tsc:compile": "tsc --project .",
     "lint:all": "yarn lint && yarn lint:markdown && yarn lint:spellcheck && yarn tsc:compile",
+    "test:full": "bash ./scripts/run-full-tests.sh",
     "reference:api": "typedoc",
     "reference:api:gh-pages": "typedoc --out apidocs-out --hostedBaseUrl https://invertase.github.io/react-native-firebase/ --useHostedBaseUrlForAbsoluteLinks",
     "tests:ai:mocks": "yarn ts-node ./scripts/fetch_ai_mock_responses.ts && yarn ts-node ./packages/ai/__tests__/test-utils/convert-mocks.ts",
