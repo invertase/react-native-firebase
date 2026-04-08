@@ -271,6 +271,9 @@ RCT_EXPORT_METHOD(setConsent
           if (item[kFIRParameterQuantity]) {
             item[kFIRParameterQuantity] = @([item[kFIRParameterQuantity] integerValue]);
           }
+          if (item[kFIRParameterIndex]) {
+            item[kFIRParameterIndex] = @([item[kFIRParameterIndex] integerValue]);
+          }
           [newItems addObject:[item copy]];
         }];
     newParams[kFIRParameterItems] = [newItems copy];
