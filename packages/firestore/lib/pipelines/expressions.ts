@@ -1132,8 +1132,8 @@ export function constant(
  * @beta
  * Creates an expression that adds two or more expressions together.
  *
- * @param first - The first expression to add.
- * @param second - The second expression or literal to add.
+ * @param _first - The first expression to add.
+ * @param _second - The second expression or literal to add.
  * @returns A new Expression representing the addition operation.
  */
 export function add(_first: Expression, _second: Expression | unknown): FunctionExpression;
@@ -1141,8 +1141,8 @@ export function add(_first: Expression, _second: Expression | unknown): Function
  * @beta
  * Creates an expression that adds a field's value to an expression.
  *
- * @param fieldName - The name of the field containing the value to add.
- * @param second - The second expression or literal to add.
+ * @param _fieldName - The name of the field containing the value to add.
+ * @param _second - The second expression or literal to add.
  * @returns A new Expression representing the addition operation.
  */
 export function add(_fieldName: string, _second: Expression | unknown): FunctionExpression;
@@ -1230,7 +1230,7 @@ export function multiply(
  * @beta
  * Creates an expression that evaluates to the document ID (and optionally path).
  *
- * @param documentPath - Document path string or DocumentReference.
+ * @param _documentPath - Document path string or DocumentReference.
  * @returns A new Expression representing the document ID.
  */
 export function documentId(_documentPath: string | DocumentReference): FunctionExpression;

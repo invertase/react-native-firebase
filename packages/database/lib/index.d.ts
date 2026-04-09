@@ -273,7 +273,7 @@ export namespace FirebaseDatabaseTypes {
     /**
      * Sets a priority for the data at this Database location. Setting null removes any priority at this location.
      *
-     * See {@link database.Query#orderByPriority} to learn how to use priority values in your query.
+     * See {@link Query#orderByPriority} to learn how to use priority values in your query.
      *
      * #### Example
      *
@@ -413,7 +413,7 @@ export namespace FirebaseDatabaseTypes {
     push(value?: any, onComplete?: () => void): ThenableReference;
 
     /**
-     * Returns an {@link database.OnDisconnect} instance.
+     * Returns an {@link OnDisconnect} instance.
      *
      * #### Example
      *
@@ -497,7 +497,7 @@ export namespace FirebaseDatabaseTypes {
      * Returns whether or not the current and provided queries represent the same location, have the same query parameters.
      *
      * Two Reference objects are equivalent if they represent the same location and are from the same instance of
-     * {@link app}.  Equivalent queries share the same sort order, limits, and starting and ending points.
+     * {@link @firebase/app!FirebaseApp}.  Equivalent queries share the same sort order, limits, and starting and ending points.
      *
      * #### Example
      *

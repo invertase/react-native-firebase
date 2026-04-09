@@ -1,0 +1,31 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "lib/modular.ts",
+    "lib/FirestoreTransaction.ts",
+    "lib/FirestoreWriteBatch.ts",
+    "lib/FirestoreFilter.ts",
+    "lib/FirestoreDocumentChange.ts",
+    "lib/FirestoreDocumentSnapshot.ts",
+    "lib/FirestorePersistentCacheIndexManager.ts",
+    "lib/FirestoreQuerySnapshot.ts",
+    "lib/types/firestore.ts",
+    "lib/pipelines/index.ts",
+    "lib/pipelines/expressions.ts",
+    "lib/pipelines/stage_options.ts",
+    "lib/pipelines/pipeline-source.ts"
+  ],
+  "tsconfig": "tsconfig.json",
+  "intentionallyNotExported": [
+    "FirestoreInternal",
+    "FilterValue",
+    "default",
+    "FilterMap",
+    "DocumentFieldValueInternal",
+    "FirestorePipelineSerializedInternal",
+    "TimestampUnit",
+    "FilterOperator",
+    "SerializedFilterSpec",
+    "FirestoreBlobInternal"
+  ]
+}

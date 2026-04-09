@@ -78,6 +78,17 @@ export interface VariableShape {
   type: string;
 }
 
+export interface EnumMember {
+  name: string;
+  /** Normalized initializer text when present. */
+  value?: string;
+}
+
+export interface EnumShape {
+  kind: 'enum';
+  members: EnumMember[];
+}
+
 /** Class declarations (export declare class X) — compared by instance members. */
 export interface ClassShape {
   kind: 'class';
@@ -89,6 +100,7 @@ export type ExportShape =
   | InterfaceShape
   | TypeAliasShape
   | VariableShape
+  | EnumShape
   | ClassShape;
 
 export interface ExportEntry {

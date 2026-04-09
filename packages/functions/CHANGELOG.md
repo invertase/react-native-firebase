@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
+
+### ⚠ BREAKING CHANGES
+
+- **functions:** you must enable new architecture to use the functions module
+  All modules will be converted to new architecture soon, old architecture support
+  is deprecated in general for react-native-firebase
+
+### Features
+
+- **functions:** convert functions to new architecture / drop functions old architecture ([a2108bb](https://github.com/invertase/react-native-firebase/commit/a2108bb09ef87aa3b805697b4ed44a35cad8b203))
+- **functions:** httpsCallable.stream support ([#8799](https://github.com/invertase/react-native-firebase/issues/8799)) ([baae936](https://github.com/invertase/react-native-firebase/commit/baae936174935419bd327dda9f36b1198bacbb4f))
+
+### Bug Fixes
+
+- **functions:** make swift/objective-c interop work in non-use_frameworks! case ([e085ddd](https://github.com/invertase/react-native-firebase/commit/e085ddd28c325fe56ef261e36bac001512e3188d))
+
 ## [23.8.8](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.8) (2026-03-12)
 
 **Note:** Version bump only for package @react-native-firebase/functions

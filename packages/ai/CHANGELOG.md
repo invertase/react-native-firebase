@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
+
+### ⚠ BREAKING CHANGES
+
+- **firestore:** migrate to TypeScript and match firebase-js-sdk (#8892)
+
+### Features
+
+- **ai:** `CodeExecutionTool` types for allowing model to run code ([#8866](https://github.com/invertase/react-native-firebase/issues/8866)) ([81a0f19](https://github.com/invertase/react-native-firebase/commit/81a0f1910955a0295b6b308d5c08c17af0384b04))
+- **ai:** `SearchEntryPoint` in grounding metadata responses ([#8894](https://github.com/invertase/react-native-firebase/issues/8894)) ([6a35bec](https://github.com/invertase/react-native-firebase/commit/6a35bec5a252bd1d080cce6e0353956a74b860cf))
+- **ai:** `UrlContextTool` to inform responses from provided URLs ([#8893](https://github.com/invertase/react-native-firebase/issues/8893)) ([29cad20](https://github.com/invertase/react-native-firebase/commit/29cad202a1b9c08045d76f7b7ecf529fa3546c95))
+- **firestore:** Support for Firestore pipelines API ([#8931](https://github.com/invertase/react-native-firebase/issues/8931)) ([54021c4](https://github.com/invertase/react-native-firebase/commit/54021c4af427abc3c8e224b546d68661aa1fc590))
+
+### Bug Fixes
+
+- **web:** avoid react-native-specific polyfills on the web ([e5685a0](https://github.com/invertase/react-native-firebase/commit/e5685a0beecff912a92f9c9cb3cb508a6b9d7ae2))
+
+### Code Refactoring
+
+- **firestore:** migrate to TypeScript and match firebase-js-sdk ([#8892](https://github.com/invertase/react-native-firebase/issues/8892)) ([dba7a2a](https://github.com/invertase/react-native-firebase/commit/dba7a2accd55e7d9146c9abf38e6f31965a53c17))
+
 ## [23.8.8](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.8) (2026-03-12)
 
 ### Bug Fixes

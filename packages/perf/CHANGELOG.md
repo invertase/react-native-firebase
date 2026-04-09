@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
+
+### Bug Fixes
+
+- **messaging, expo:** retrieve expo-notification config if available, then deprecated notification ([#8663](https://github.com/invertase/react-native-firebase/issues/8663)) ([aa63174](https://github.com/invertase/react-native-firebase/commit/aa63174b997b62176964d9935929cb686b03f8b3))
+- **perf, android:** gracefully handle metric/trace/screentrace nulls during module teardown ([#8946](https://github.com/invertase/react-native-firebase/issues/8946)) ([ded0be2](https://github.com/invertase/react-native-firebase/commit/ded0be2420e4b3bf0c2e51818f6f2d3c3bd502f6))
+
 ## [23.8.8](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.8) (2026-03-12)
 
 ### Bug Fixes

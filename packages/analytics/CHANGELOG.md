@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
+
+### Features
+
+- **analytics, ios:** add support for `logTransaction` ([#8921](https://github.com/invertase/react-native-firebase/issues/8921)) ([1039e9a](https://github.com/invertase/react-native-firebase/commit/1039e9a9e6560d04ecaec7a04f7364b7a4dbf99c))
+
+### Bug Fixes
+
+- **analytics, android:** use Parcelable for items serialization in logEvent ([#8879](https://github.com/invertase/react-native-firebase/issues/8879)) ([96fad37](https://github.com/invertase/react-native-firebase/commit/96fad375969e2ff081c9b87f3792414421d0c1f9))
+
 ## [23.8.8](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.8) (2026-03-12)
 
 ### Bug Fixes

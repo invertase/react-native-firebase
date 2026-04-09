@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
+
+### ⚠ BREAKING CHANGES
+
+- **firestore:** migrate to TypeScript and match firebase-js-sdk (#8892)
+- **firestore:** typescript - firestore types now match modular firebase-js-sdk - see migration guide
+
+Please see https://rnfirebase.io/migrating-to-v24 for a guide on updating your types
+if you were using the previous firestore typescript types.
+
+It is always our goal to be a drop-in replacement for firebase-js-sdk, type for type, API for API.
+In general all firestore types should now be the same as the firestore modular types from firebase-js-sdk
+
+### Features
+
+- **firestore:** Support for Firestore pipelines API ([#8931](https://github.com/invertase/react-native-firebase/issues/8931)) ([54021c4](https://github.com/invertase/react-native-firebase/commit/54021c4af427abc3c8e224b546d68661aa1fc590))
+- **firestore:** implement withConverter ([#8744](https://github.com/invertase/react-native-firebase/issues/8744)) ([13d6bb3](https://github.com/invertase/react-native-firebase/commit/13d6bb3dfa3328fe987179d6e342d1551a208a38))
+
+### Bug Fixes
+
+- **firestore, android:** avoid native exception via reorder of listener detach before executor shutdown ([#8940](https://github.com/invertase/react-native-firebase/issues/8940)) ([649e7ee](https://github.com/invertase/react-native-firebase/commit/649e7eed3982dc406643552fba1c96b274c73b97)), closes [#8939](https://github.com/invertase/react-native-firebase/issues/8939)
+- **firestore:** add explicit \_apply to QueryConstraint subclasses ([#8928](https://github.com/invertase/react-native-firebase/issues/8928)) ([f3941a0](https://github.com/invertase/react-native-firebase/commit/f3941a03c75c802bb7dd0efeeb6ef1654419a03f))
+
+### Code Refactoring
+
+- **firestore:** migrate to TypeScript and match firebase-js-sdk ([#8892](https://github.com/invertase/react-native-firebase/issues/8892)) ([dba7a2a](https://github.com/invertase/react-native-firebase/commit/dba7a2accd55e7d9146c9abf38e6f31965a53c17))
+
 ## [23.8.8](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.8) (2026-03-12)
 
 **Note:** Version bump only for package @react-native-firebase/firestore

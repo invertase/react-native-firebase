@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
+
+### ⚠ BREAKING CHANGES
+
+- **firestore:** migrate to TypeScript and match firebase-js-sdk (#8892)
+
+### Features
+
+- **firestore:** Support for Firestore pipelines API ([#8931](https://github.com/invertase/react-native-firebase/issues/8931)) ([54021c4](https://github.com/invertase/react-native-firebase/commit/54021c4af427abc3c8e224b546d68661aa1fc590))
+- **functions:** httpsCallable.stream support ([#8799](https://github.com/invertase/react-native-firebase/issues/8799)) ([baae936](https://github.com/invertase/react-native-firebase/commit/baae936174935419bd327dda9f36b1198bacbb4f))
+
+### Bug Fixes
+
+- **app, ios:** adopt firebase-ios-sdk 12.9.0 ([ad03c4e](https://github.com/invertase/react-native-firebase/commit/ad03c4e5babf297447f7f2735701f7d33af515f6)), closes [/firebase.google.com/support/release-notes/ios#version*1290*-\_february_3_2026](https://github.com/invertase//firebase.google.com/support/release-notes/ios/issues/version_1290_-_february_3_2026)
+- **app, ios:** generate app package module map for swift interop ([58eb2ee](https://github.com/invertase/react-native-firebase/commit/58eb2eed3595ff1824aaa03887089c267776b79b))
+- **deps:** ios-sdk 12.10.0 / android-sdk 34.10.0 / js-sdk 12.10.0 ([8a7acf3](https://github.com/invertase/react-native-firebase/commit/8a7acf3925e6a69ef995c476d4c004400fcee18a))
+
+### Reverts
+
+- Revert "test: disable new architecture in the test app" ([27083d6](https://github.com/invertase/react-native-firebase/commit/27083d6c174b1eca952905a266cd747b2af74e18))
+
+### Code Refactoring
+
+- **firestore:** migrate to TypeScript and match firebase-js-sdk ([#8892](https://github.com/invertase/react-native-firebase/issues/8892)) ([dba7a2a](https://github.com/invertase/react-native-firebase/commit/dba7a2accd55e7d9146c9abf38e6f31965a53c17))
+
 ## [23.8.8](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.8) (2026-03-12)
 
 ### Bug Fixes

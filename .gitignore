@@ -538,6 +538,8 @@ Pods/*
 packages/**/version.js
 packages/**/version.ts
 typedoc.raw.json
+reference/
+apidocs-out/
 tests/ios/Firebase
 tests/ios/resetXcode.sh
 .tmp

@@ -43,14 +43,14 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
 
   @Override
   public void invalidate() {
-    super.invalidate();
-
     for (int i = 0, size = collectionSnapshotListeners.size(); i < size; i++) {
       int key = collectionSnapshotListeners.keyAt(i);
       ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(key);
       listenerRegistration.remove();
     }
     collectionSnapshotListeners.clear();
+
+    super.invalidate();
   }
 
   @ReactMethod
