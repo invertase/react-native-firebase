@@ -14,6 +14,7 @@ import path from 'path';
 import type { PackageConfig } from './types';
 
 import aiConfig from '../packages/ai/config';
+import appCheckConfig from '../packages/app-check/config';
 import firestoreConfig from '../packages/firestore/config';
 import firestorePipelinesConfig from '../packages/firestore-pipelines/config';
 
@@ -108,6 +109,21 @@ export const packages: PackageEntry[] = [
       path.join(rnDist('ai'), 'types', 'imagen', 'responses.d.ts'),
     ],
     config: aiConfig,
+  },
+  {
+    name: 'app-check',
+    firebaseSdkTypesPaths: [
+      path.join(SCRIPT_DIR, 'packages', 'app-check', 'app-check-sdk.d.ts'),
+    ],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('app-check'), 'types', 'appcheck.d.ts'),
+      path.join(rnDist('app-check'), 'modular.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('app-check'), 'providers.d.ts'),
+      path.join(rnDist('app-check'), 'types', 'internal.d.ts'),
+    ],
+    config: appCheckConfig,
   },
   {
     name: 'firestore',
