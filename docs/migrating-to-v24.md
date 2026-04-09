@@ -2,6 +2,7 @@
 title: Migrating to v24
 description: Migrate to React Native Firebase v24.
 previous: /migrate-to-v23
+next: /migrating-to-v25
 ---
 
 # Firestore
