@@ -41,7 +41,7 @@ describe('firestore.Transaction', function () {
 
     it('should return an instance of FirestoreTransaction', async function () {
       await firebase.firestore().runTransaction(async transaction => {
-        transaction.constructor.name.should.eql('FirestoreTransaction');
+        transaction.constructor.name.should.eql('Transaction');
         return null;
       });
     });
@@ -107,7 +107,7 @@ describe('firestore.Transaction', function () {
 
         await firebase.firestore().runTransaction(async t => {
           const docSnapshot = await t.get(docRef);
-          docSnapshot.constructor.name.should.eql('FirestoreDocumentSnapshot');
+          docSnapshot.constructor.name.should.eql('DocumentSnapshot');
           docSnapshot.exists().should.eql(true);
           docSnapshot.id.should.eql('get-delete');
 
@@ -412,7 +412,7 @@ describe('firestore.Transaction', function () {
     it('should return an instance of FirestoreTransaction', async function () {
       const { getFirestore, runTransaction } = firestoreModular;
       await runTransaction(getFirestore(), async transaction => {
-        transaction.constructor.name.should.eql('FirestoreTransaction');
+        transaction.constructor.name.should.eql('Transaction');
         return null;
       });
     });
@@ -483,7 +483,7 @@ describe('firestore.Transaction', function () {
 
         await runTransaction(db, async t => {
           const docSnapshot = await t.get(docRef);
-          docSnapshot.constructor.name.should.eql('FirestoreDocumentSnapshot');
+          docSnapshot.constructor.name.should.eql('DocumentSnapshot');
           docSnapshot.exists().should.eql(true);
           docSnapshot.id.should.eql('get-delete');
 

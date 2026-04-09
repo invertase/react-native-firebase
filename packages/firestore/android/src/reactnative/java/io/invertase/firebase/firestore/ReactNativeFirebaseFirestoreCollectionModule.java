@@ -43,14 +43,14 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
 
   @Override
   public void invalidate() {
-    super.invalidate();
-
     for (int i = 0, size = collectionSnapshotListeners.size(); i < size; i++) {
       int key = collectionSnapshotListeners.keyAt(i);
       ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(key);
       listenerRegistration.remove();
     }
     collectionSnapshotListeners.clear();
+
+    super.invalidate();
   }
 
   @ReactMethod
@@ -232,7 +232,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
         case "sum":
           aggregateFields.add(AggregateField.sum(fieldPath));
           break;
-        case "average":
+        case "avg":
           aggregateFields.add(AggregateField.average(fieldPath));
           break;
         default:
@@ -280,7 +280,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                       }
                       result.putDouble(key, sum.doubleValue());
                       break;
-                    case "average":
+                    case "avg":
                       Number average = snapshot.get(average(field));
                       if (average == null) {
                         result.putNull(key);
@@ -302,6 +302,19 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                 rejectPromiseFirestoreException(promise, task.getException());
               }
             });
+  }
+
+  @ReactMethod
+  public void pipelineExecute(
+      String appName,
+      String databaseId,
+      ReadableMap pipeline,
+      ReadableMap options,
+      Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
+    ReactNativeFirebaseFirestorePipelineExecutor pipelineExecutor =
+        new ReactNativeFirebaseFirestorePipelineExecutor(firebaseFirestore);
+    pipelineExecutor.execute(pipeline, options, promise);
   }
 
   @ReactMethod

@@ -1,0 +1,6 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["lib/index.d.ts"],
+  "intentionallyNotExported": ["DatabaseNamespace"]
+
+}

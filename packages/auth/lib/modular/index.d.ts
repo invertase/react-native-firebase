@@ -154,7 +154,6 @@ export function getRedirectResult(
   resolver?: PopupRedirectResolver,
 ): Promise<FirebaseAuthTypes.UserCredential | null>;
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface PopupRedirectResolver {}
 
 /**

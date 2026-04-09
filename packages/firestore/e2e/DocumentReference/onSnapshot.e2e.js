@@ -64,7 +64,7 @@ describe('firestore().doc().onSnapshot()', function () {
       await Utils.spyToBeCalledOnceAsync(callback);
 
       callback.should.be.calledOnce();
-      callback.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+      callback.args[0][0].constructor.name.should.eql('DocumentSnapshot');
       should.equal(callback.args[0][1], null);
       unsub();
     });
@@ -98,7 +98,7 @@ describe('firestore().doc().onSnapshot()', function () {
 
         onNext.should.be.calledOnce();
         onError.should.be.callCount(0);
-        onNext.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        onNext.args[0][0].constructor.name.should.eql('DocumentSnapshot');
         should.equal(onNext.args[0][1], undefined);
         unsub();
       });
@@ -138,7 +138,7 @@ describe('firestore().doc().onSnapshot()', function () {
 
         onNext.should.be.calledOnce();
         onError.should.be.callCount(0);
-        onNext.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        onNext.args[0][0].constructor.name.should.eql('DocumentSnapshot');
         should.equal(onNext.args[0][1], undefined);
         unsub();
       });
@@ -178,7 +178,7 @@ describe('firestore().doc().onSnapshot()', function () {
         await Utils.spyToBeCalledOnceAsync(callback);
 
         callback.should.be.calledOnce();
-        callback.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        callback.args[0][0].constructor.name.should.eql('DocumentSnapshot');
         should.equal(callback.args[0][1], null);
         unsub();
       });
@@ -215,7 +215,7 @@ describe('firestore().doc().onSnapshot()', function () {
 
         onNext.should.be.calledOnce();
         onError.should.be.callCount(0);
-        onNext.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        onNext.args[0][0].constructor.name.should.eql('DocumentSnapshot');
         should.equal(onNext.args[0][1], undefined);
         unsub();
       });
@@ -263,7 +263,7 @@ describe('firestore().doc().onSnapshot()', function () {
 
         onNext.should.be.calledOnce();
         onError.should.be.callCount(0);
-        onNext.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        onNext.args[0][0].constructor.name.should.eql('DocumentSnapshot');
         should.equal(onNext.args[0][1], undefined);
         unsub();
       });
@@ -380,7 +380,7 @@ describe('firestore().doc().onSnapshot()', function () {
       await Utils.spyToBeCalledOnceAsync(callback);
 
       callback.should.be.calledOnce();
-      callback.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+      callback.args[0][0].constructor.name.should.eql('DocumentSnapshot');
       should.equal(callback.args[0][1], null);
       unsub();
     });
@@ -404,7 +404,7 @@ describe('firestore().doc().onSnapshot()', function () {
 
         onNext.should.be.calledOnce();
         onError.should.be.callCount(0);
-        onNext.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        onNext.args[0][0].constructor.name.should.eql('DocumentSnapshot');
         should.equal(onNext.args[0][1], undefined);
         unsub();
       });
@@ -448,7 +448,7 @@ describe('firestore().doc().onSnapshot()', function () {
 
         onNext.should.be.calledOnce();
         onError.should.be.callCount(0);
-        onNext.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        onNext.args[0][0].constructor.name.should.eql('DocumentSnapshot');
         should.equal(onNext.args[0][1], undefined);
         unsub();
       });
@@ -493,7 +493,7 @@ describe('firestore().doc().onSnapshot()', function () {
         await Utils.spyToBeCalledOnceAsync(callback);
 
         callback.should.be.calledOnce();
-        callback.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        callback.args[0][0].constructor.name.should.eql('DocumentSnapshot');
         should.equal(callback.args[0][1], null);
         unsub();
       });
@@ -516,7 +516,7 @@ describe('firestore().doc().onSnapshot()', function () {
 
         onNext.should.be.calledOnce();
         onError.should.be.callCount(0);
-        onNext.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        onNext.args[0][0].constructor.name.should.eql('DocumentSnapshot');
         should.equal(onNext.args[0][1], undefined);
         unsub();
       });
@@ -570,7 +570,7 @@ describe('firestore().doc().onSnapshot()', function () {
 
         onNext.should.be.calledOnce();
         onError.should.be.callCount(0);
-        onNext.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        onNext.args[0][0].constructor.name.should.eql('DocumentSnapshot');
         should.equal(onNext.args[0][1], undefined);
         unsub();
       });

@@ -38,6 +38,10 @@ Pod::Spec.new do |s|
     Pod::UI.puts '[react-native-firebase] '.yellow + "Suppress this with environment variable RNFB_SUPPRESS_NEW_ARCHITECTURE_WARNING=1"
   end
 
+  # App must define modules for static framework integration of other packages to work
+  s.pod_target_xcconfig = {
+    "DEFINES_MODULE" => "YES",
+  }
 
   # React Native dependencies
   if defined?(install_modules_dependencies()) != nil

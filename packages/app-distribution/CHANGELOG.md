@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
+
+### Features
+
+- **firestore:** Support for Firestore pipelines API ([#8931](https://github.com/invertase/react-native-firebase/issues/8931)) ([54021c4](https://github.com/invertase/react-native-firebase/commit/54021c4af427abc3c8e224b546d68661aa1fc590))
+
+### Bug Fixes
+
+- **deps:** ios-sdk 12.10.0 / android-sdk 34.10.0 / js-sdk 12.10.0 ([8a7acf3](https://github.com/invertase/react-native-firebase/commit/8a7acf3925e6a69ef995c476d4c004400fcee18a))
+- **messaging, expo:** retrieve expo-notification config if available, then deprecated notification ([#8663](https://github.com/invertase/react-native-firebase/issues/8663)) ([aa63174](https://github.com/invertase/react-native-firebase/commit/aa63174b997b62176964d9935929cb686b03f8b3))
+
+## [23.8.8](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.8) (2026-03-12)
+
+### Bug Fixes
+
+- **deps:** ios-sdk 12.10.0 / android-sdk 34.10.0 / js-sdk 12.10.0 ([ff36c3d](https://github.com/invertase/react-native-firebase/commit/ff36c3d1ce49eed47e8ae5340edc5b56e97a2b81))
+- **messaging, expo:** retrieve expo-notification config if available, then deprecated notification ([#8663](https://github.com/invertase/react-native-firebase/issues/8663)) ([eb90301](https://github.com/invertase/react-native-firebase/commit/eb90301c49af807c4bd3eecadd9a67364c4a30a4))
+
+## [23.8.7](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.7) (2026-03-12)
+
+### Bug Fixes
+
+- **deps:** ios-sdk 12.10.0 / android-sdk 34.10.0 / js-sdk 12.10.0 ([ff36c3d](https://github.com/invertase/react-native-firebase/commit/ff36c3d1ce49eed47e8ae5340edc5b56e97a2b81))
+- **messaging, expo:** retrieve expo-notification config if available, then deprecated notification ([#8663](https://github.com/invertase/react-native-firebase/issues/8663)) ([eb90301](https://github.com/invertase/react-native-firebase/commit/eb90301c49af807c4bd3eecadd9a67364c4a30a4))
+
 ## [23.8.6](https://github.com/invertase/react-native-firebase/compare/v23.8.5...v23.8.6) (2026-02-03)
 
 **Note:** Version bump only for package @react-native-firebase/app-distribution

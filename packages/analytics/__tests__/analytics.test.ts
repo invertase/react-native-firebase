@@ -9,6 +9,7 @@ import analytics, {
   initializeAnalytics,
   getGoogleAnalyticsClientId,
   logEvent,
+  logTransaction,
   setAnalyticsCollectionEnabled,
   setSessionTimeoutDuration,
   getAppInstanceId,
@@ -1000,6 +1001,10 @@ describe('Analytics', function () {
 
     it('`settings` function is properly exposed to end user', function () {
       expect(settings).toBeDefined();
+    });
+
+    it('`logTransaction` function is properly exposed to end user', function () {
+      expect(logTransaction).toBeDefined();
     });
   });
 

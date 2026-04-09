@@ -15,7 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: 'main'
           fetch-depth: 0
           # Repository admin required to evade PR+checks branch protection
           token: ${{ secrets.GH_TOKEN }}
@@ -65,3 +64,12 @@ jobs:
           # org admin Github Token required for the changelog/tag commit+push
           # to work via an exception to branch protection rules
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  deploy-api-reference:
+    name: 'Deploy API Reference'
+    needs: publish_npm
+    uses: ./.github/workflows/deploy-api-reference.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

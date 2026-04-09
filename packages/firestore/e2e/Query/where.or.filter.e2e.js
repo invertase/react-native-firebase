@@ -440,17 +440,18 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('should throw an error if you use a FieldPath on a filter in conjunction with an orderBy() parameter that is not FieldPath', async function () {
       try {
+        const { documentId } = firestoreModular;
         firebase
           .firestore()
           .collection(COLLECTION)
           .where(
             Filter.or(
               Filter.and(
-                Filter(firebase.firestore.FieldPath.documentId(), '==', ['document-id']),
+                Filter(documentId(), '==', ['document-id']),
                 Filter('foo.bar', 'not-in', [1, 2, 3, 4]),
               ),
               Filter.and(
-                Filter(firebase.firestore.FieldPath.documentId(), '==', ['document-id']),
+                Filter(documentId(), '==', ['document-id']),
                 Filter('foo.bar', '==', 'something'),
               ),
             ),
@@ -1470,20 +1471,17 @@ describe('firestore().collection().where(OR Filters)', function () {
     });
 
     it('should throw an error if you use a FieldPath on a filter in conjunction with an orderBy() parameter that is not FieldPath', async function () {
-      const { getFirestore, collection, where, orderBy, or, and, query, FieldPath } =
+      const { getFirestore, collection, where, orderBy, or, and, query, documentId } =
         firestoreModular;
       try {
         query(
           collection(getFirestore(), COLLECTION),
           or(
             and(
-              where(FieldPath.documentId(), '==', ['document-id']),
+              where(documentId(), '==', ['document-id']),
               where('foo.bar', 'not-in', [1, 2, 3, 4]),
             ),
-            and(
-              where(FieldPath.documentId(), '==', ['document-id']),
-              where('foo.bar', '==', 'something'),
-            ),
+            and(where(documentId(), '==', ['document-id']), where('foo.bar', '==', 'something')),
           ),
           orderBy('differentOrderBy', 'desc'),
         );

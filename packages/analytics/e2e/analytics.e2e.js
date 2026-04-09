@@ -1172,6 +1172,68 @@ describe('analytics()', function () {
       });
     });
 
+    describe('logTransaction()', function () {
+      it('throws when transactionId is not a valid numeric string', async function () {
+        if (!Platform.ios) {
+          this.skip();
+        }
+        try {
+          const { getAnalytics, logTransaction } = analyticsModular;
+          await logTransaction(getAnalytics(), 'not_a_number');
+          fail('Should have thrown an error');
+        } catch (e) {
+          if (!(e && e.message && e.message.includes('Invalid transactionId'))) {
+            throw e;
+          }
+        }
+      });
+
+      it('throws when transactionId is valid format but transaction not found in StoreKit', async function () {
+        if (!Platform.ios) {
+          this.skip();
+        }
+        try {
+          const { getAnalytics, logTransaction } = analyticsModular;
+          await logTransaction(getAnalytics(), '12345');
+          fail('Should have thrown an error');
+        } catch (e) {
+          if (!(e && e.message && e.message.includes('Transaction not found'))) {
+            throw e;
+          }
+        }
+      });
+
+      it('rejects with unimplemented on Android', async function () {
+        if (!Platform.android) {
+          this.skip();
+        }
+        try {
+          const { getAnalytics, logTransaction } = analyticsModular;
+          await logTransaction(getAnalytics(), '12345');
+          fail('Should have thrown an error');
+        } catch (e) {
+          if (!(e && e.message && e.message.includes('logTransaction is only available on iOS'))) {
+            throw e;
+          }
+        }
+      });
+
+      it('rejects with unimplemented on web (other platform)', async function () {
+        if (!Platform.other) {
+          this.skip();
+        }
+        try {
+          const { getAnalytics, logTransaction } = analyticsModular;
+          await logTransaction(getAnalytics(), '12345');
+          fail('Should have thrown an error');
+        } catch (e) {
+          if (!(e && e.message && e.message.includes('logTransaction is only available on iOS'))) {
+            throw e;
+          }
+        }
+      });
+    });
+
     describe('getGoogleAnalyticsClientId()', function () {
       it('Error for getGoogleAnalyticsClientId() on non-other platforms', async function () {
         if (Platform.other) {

@@ -434,7 +434,7 @@ export namespace FirebaseRemoteConfigTypes {
      * and the config update process fetches the new config but does not automatically activate
      * it for you. Typically you will activate the config in your callback to use the new values.
      *
-     * @param remoteConfig - The {@link RemoteConfig} instance.
+     * @param remoteConfig - The RemoteConfig instance.
      * @param observer - The {@link ConfigUpdateObserver} to be notified of config updates.
      * @returns An {@link Unsubscribe} function to remove the listener.
      */

@@ -132,6 +132,7 @@ NoSQL
 Notifee
 notifee
 NPE
+npm
 NPM
 OAuth
 onboarding

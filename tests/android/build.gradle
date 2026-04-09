@@ -14,14 +14,14 @@ buildscript {
   ext.fragmentVersion = '1.8.9' // https://developer.android.com/jetpack/androidx/releases/fragment
   ext.vectordrawableVersion = '1.2.0' // https://developer.android.com/jetpack/androidx/releases/vectordrawable
   ext.androidxAnnotationVersion = '1.9.1' // https://developer.android.com/jetpack/androidx/releases/annotation
-  ext.googlePlayServicesLocationVersion = '21.3.0' // https://developers.google.com/android/guides/setup
-  ext.googlePlayServicesVersion = '18.9.0' // play-services-base
+  ext.googlePlayServicesLocationVersion = '21.5.1' // https://developers.google.com/android/guides/setup
+  ext.googlePlayServicesVersion = '18.10.0' // play-services-base
   ext.googlePlayServicesAuthVersion = '21.4.0' // play-services-auth
   ext.googlePlayServicesVisionVersion = '20.1.3' // play-services-vision
   ext.googlePlayServicesIidVersion = '17.0.0' // play-services-iid - deprecated, device-info only
   ext.mediaCompatVersion = '1.7.1' // https://developer.android.com/jetpack/androidx/releases/media
   ext.supportV4Version = '1.0.0' // https://developer.android.com/jetpack/androidx/releases/legacy androidx.legacy:legacy-support-v4
-  ext.swiperefreshlayoutVersion = '1.1.0' // https://developer.android.com/jetpack/androidx/releases/swiperefreshlayout
+  ext.swiperefreshlayoutVersion = '1.2.0' // https://developer.android.com/jetpack/androidx/releases/swiperefreshlayout
 
   // used to aggregate all modules for later reporting
   ext.firebaseModulePaths = []
@@ -37,7 +37,7 @@ buildscript {
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     classpath 'com.google.firebase:perf-plugin:2.0.2'
     classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.6'
-    classpath 'com.google.firebase:firebase-appdistribution-gradle:5.2.0'
+    classpath 'com.google.firebase:firebase-appdistribution-gradle:5.2.1'
   }
 }
 

@@ -375,9 +375,10 @@ describe('Second Database', function () {
 
       it('should throw an error if you use a FieldPath on a filter in conjunction with an orderBy() parameter that is not FieldPath', async function () {
         try {
+          const { documentId } = firestoreModular;
           firestore
             .collection(COLLECTION)
-            .where(firebase.firestore.FieldPath.documentId(), 'in', ['document-id'])
+            .where(documentId(), 'in', ['document-id'])
             .orderBy('differentOrderBy', 'desc');
 
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -921,11 +922,11 @@ describe('Second Database', function () {
       });
 
       it('should throw an error if you use a FieldPath on a filter in conjunction with an orderBy() parameter that is not FieldPath', async function () {
-        const { collection, query, where, orderBy, FieldPath } = firestoreModular;
+        const { collection, query, where, orderBy, documentId } = firestoreModular;
         try {
           query(
             collection(firestore, COLLECTION),
-            where(FieldPath.documentId(), 'in', ['document-id']),
+            where(documentId(), 'in', ['document-id']),
             orderBy('differentOrderBy', 'desc'),
           );
 

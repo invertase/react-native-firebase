@@ -1,6 +1,7 @@
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import { getApp } from '@react-native-firebase/app';
 import type { Analytics } from './types/analytics';
+import type { AnalyticsInternal } from './types/internal';
 import { Platform } from 'react-native';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import type {
@@ -414,6 +415,18 @@ export function logEvent(
 ): Promise<void> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return analytics.logEvent.call(analytics, name, params, options, MODULAR_DEPRECATION_ARG);
+}
+
+/** Logs verified in-app purchase events in Google Analytics for Firebase
+ * after a purchase is successful.
+ * Modular API only; iOS only (StoreKit 2). Throws on Android and web before reaching native.
+ */
+export function logTransaction(analytics: Analytics, transaction_id: string): Promise<void> {
+  if (Platform.OS !== 'ios') {
+    return Promise.reject(new Error('logTransaction is only available on iOS'));
+  }
+
+  return (analytics as AnalyticsInternal).native.logTransaction(transaction_id);
 }
 
 /**
@@ -935,10 +948,10 @@ export function initiateOnDeviceConversionMeasurementWithEmailAddress(
  * start privacy-sensitive on-device conversion management.
  * This is iOS-only.
  * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+ * {@link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials}
  *
  * @param analytics Analytics instance.
  * @param hashedEmailAddress sha256-hashed of normalized email address, properly formatted complete with domain name e.g, 'user@example.com'
- * @link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials
  */
 export function initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
   analytics: Analytics,
@@ -975,10 +988,10 @@ export function initiateOnDeviceConversionMeasurementWithPhoneNumber(
  * start privacy-sensitive on-device conversion management.
  * This is iOS-only.
  * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+ * {@link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials}
  *
  * @param analytics Analytics instance.
  * @param hashedPhoneNumber sha256-hashed of normalized phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
- * @link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials
  */
 export function initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
   analytics: Analytics,
@@ -1018,9 +1031,10 @@ export function setConsent(analytics: Analytics, consentSettings: ConsentSetting
 /**
  * Configures Firebase Analytics to use custom gtag or dataLayer names.
  * Intended to be used if gtag.js script has been installed on this page independently of Firebase Analytics, and is using non-default names for either the gtag function or for dataLayer. Must be called before calling `getAnalytics()` or it won't have any effect. Web only.
- * @param {SettingsOptions} options - See SettingsOptions.
+ * @param {SettingsOptions} _options - See SettingsOptions - currently unused.
  * @returns {void}
  */
+
 export function settings(_options: SettingsOptions): void {
   // Returns nothing until Web implemented.
 }

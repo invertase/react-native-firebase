@@ -66,7 +66,7 @@ describe('Second Database', function () {
         await Utils.spyToBeCalledOnceAsync(callback);
 
         callback.should.be.calledOnce();
-        callback.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+        callback.args[0][0].constructor.name.should.eql('QuerySnapshot');
         should.equal(callback.args[0][1], null);
         unsub();
       });
@@ -101,7 +101,7 @@ describe('Second Database', function () {
 
           onNext.should.be.calledOnce();
           onError.should.be.callCount(0);
-          onNext.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+          onNext.args[0][0].constructor.name.should.eql('QuerySnapshot');
           should.equal(onNext.args[0][1], undefined);
           unsub();
         });
@@ -141,7 +141,7 @@ describe('Second Database', function () {
 
           onNext.should.be.calledOnce();
           onError.should.be.callCount(0);
-          onNext.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+          onNext.args[0][0].constructor.name.should.eql('QuerySnapshot');
           should.equal(onNext.args[0][1], undefined);
           unsub();
         });
@@ -184,7 +184,7 @@ describe('Second Database', function () {
           await Utils.spyToBeCalledOnceAsync(callback);
 
           callback.should.be.calledOnce();
-          callback.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+          callback.args[0][0].constructor.name.should.eql('QuerySnapshot');
           should.equal(callback.args[0][1], null);
           unsub();
         });
@@ -225,7 +225,7 @@ describe('Second Database', function () {
 
           onNext.should.be.calledOnce();
           onError.should.be.callCount(0);
-          onNext.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+          onNext.args[0][0].constructor.name.should.eql('QuerySnapshot');
           should.equal(onNext.args[0][1], undefined);
           unsub();
         });
@@ -273,7 +273,7 @@ describe('Second Database', function () {
 
           onNext.should.be.calledOnce();
           onError.should.be.callCount(0);
-          onNext.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+          onNext.args[0][0].constructor.name.should.eql('QuerySnapshot');
           should.equal(onNext.args[0][1], undefined);
           unsub();
         });
@@ -406,7 +406,7 @@ describe('Second Database', function () {
         await Utils.spyToBeCalledOnceAsync(callback);
 
         callback.should.be.calledOnce();
-        callback.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+        callback.args[0][0].constructor.name.should.eql('QuerySnapshot');
         should.equal(callback.args[0][1], null);
         unsub();
       });
@@ -430,7 +430,7 @@ describe('Second Database', function () {
 
           onNext.should.be.calledOnce();
           onError.should.be.callCount(0);
-          onNext.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+          onNext.args[0][0].constructor.name.should.eql('QuerySnapshot');
           should.equal(onNext.args[0][1], undefined);
           unsub();
         });
@@ -469,7 +469,7 @@ describe('Second Database', function () {
 
           onNext.should.be.calledOnce();
           onError.should.be.callCount(0);
-          onNext.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+          onNext.args[0][0].constructor.name.should.eql('QuerySnapshot');
           should.equal(onNext.args[0][1], undefined);
           unsub();
         });
@@ -512,7 +512,7 @@ describe('Second Database', function () {
           await Utils.spyToBeCalledOnceAsync(callback);
 
           callback.should.be.calledOnce();
-          callback.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+          callback.args[0][0].constructor.name.should.eql('QuerySnapshot');
           should.equal(callback.args[0][1], null);
           unsub();
         });
@@ -543,7 +543,7 @@ describe('Second Database', function () {
 
           onNext.should.be.calledOnce();
           onError.should.be.callCount(0);
-          onNext.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+          onNext.args[0][0].constructor.name.should.eql('QuerySnapshot');
           should.equal(onNext.args[0][1], undefined);
           unsub();
         });
@@ -598,7 +598,7 @@ describe('Second Database', function () {
 
           onNext.should.be.calledOnce();
           onError.should.be.callCount(0);
-          onNext.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+          onNext.args[0][0].constructor.name.should.eql('QuerySnapshot');
           should.equal(onNext.args[0][1], undefined);
           unsub();
         });

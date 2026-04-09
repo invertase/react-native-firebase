@@ -62,7 +62,7 @@ describe('firestore().collection().get()', function () {
       const colRef = docRef.collection('get');
       const snapshot = await colRef.get();
 
-      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.constructor.name.should.eql('QuerySnapshot');
     });
 
     it('returns a correct cache setting (true)', async function () {
@@ -76,7 +76,7 @@ describe('firestore().collection().get()', function () {
         source: 'cache',
       });
 
-      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.constructor.name.should.eql('QuerySnapshot');
       snapshot.metadata.fromCache.should.be.True();
     });
 
@@ -88,7 +88,7 @@ describe('firestore().collection().get()', function () {
         source: 'server',
       });
 
-      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.constructor.name.should.eql('QuerySnapshot');
       snapshot.metadata.fromCache.should.be.False();
     });
   });
@@ -101,7 +101,7 @@ describe('firestore().collection().get()', function () {
       const colRef = collection(docRef, 'get');
       const snapshot = await getDocs(colRef);
 
-      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.constructor.name.should.eql('QuerySnapshot');
     });
 
     it('returns a correct cache setting (true)', async function () {
@@ -114,7 +114,7 @@ describe('firestore().collection().get()', function () {
       const colRef = collection(docRef, 'get');
       const snapshot = await getDocsFromCache(colRef);
 
-      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.constructor.name.should.eql('QuerySnapshot');
       snapshot.metadata.fromCache.should.be.True();
     });
 
@@ -125,7 +125,7 @@ describe('firestore().collection().get()', function () {
       await getDocs(colRef); // Puts it in cache
       const snapshot = await getDocsFromServer(colRef);
 
-      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.constructor.name.should.eql('QuerySnapshot');
       snapshot.metadata.fromCache.should.be.False();
     });
   });

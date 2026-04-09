@@ -26,7 +26,7 @@ export function StreamingCallableTestComponent(): React.JSX.Element {
       addOutput('Starting basic stream test...');
 
       const callable = httpsCallable(functions, 'testStreamingCallable');
-      const { stream, data } = await callable.stream({ count: 5, delay: 500 });
+      const { stream, data } = await callable.stream({ count: 5, delay: 5000 });
 
       for await (const chunk of stream) {
         addOutput(`Chunk: ${JSON.stringify(chunk)}`);

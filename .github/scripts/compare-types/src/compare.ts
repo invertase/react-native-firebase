@@ -1,0 +1,255 @@
+/**
+ * Core comparison logic: diff two export maps and classify each difference
+ * as missing / extra / different-shape, then cross-reference against the
+ * package config to distinguish documented from undocumented differences.
+ */
+
+import type {
+  ExportEntry,
+  ExportShape,
+  FunctionShape,
+  InterfaceShape,
+  TypeAliasShape,
+  VariableShape,
+  EnumShape,
+  ClassShape,
+  PackageConfig,
+  ComparisonResult,
+  MissingEntry,
+  ExtraEntry,
+  DifferentShapeEntry,
+} from './types';
+
+// ---------------------------------------------------------------------------
+// Shape serialisation (for human-readable diff output)
+// ---------------------------------------------------------------------------
+
+export function shapeToString(shape: ExportShape): string {
+  switch (shape.kind) {
+    case 'function':
+      return `(${shape.params.join(', ')}) => ${shape.returnType}`;
+    case 'interface':
+    case 'class': {
+      const members = shape.members
+        .map(m => `${m.name}${m.optional ? '?' : ''}: ${m.type}`)
+        .join('; ');
+      return `{ ${members} }`;
+    }
+    case 'typeAlias':
+      return shape.type;
+    case 'variable':
+      return shape.type;
+    case 'enum': {
+      const members = shape.members
+        .map(m => `${m.name}${m.value !== undefined ? `=${m.value}` : ''}`)
+        .join('; ');
+      return `{ ${members} }`;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Shape equality
+// ---------------------------------------------------------------------------
+
+function functionsMatch(a: FunctionShape, b: FunctionShape): boolean {
+  if (a.params.length !== b.params.length) return false;
+  if (a.returnType !== b.returnType) return false;
+  return a.params.every((p, i) => p === b.params[i]);
+}
+
+function interfacesMatch(a: InterfaceShape, b: InterfaceShape): boolean {
+  if (a.members.length !== b.members.length) return false;
+  // Group by name so overloaded methods (same name, different signatures) are compared correctly
+  const groupBy = (members: InterfaceShape['members']) => {
+    const map = new Map<string, Array<{ type: string; optional: boolean }>>();
+    for (const m of members) {
+      const list = map.get(m.name) ?? [];
+      list.push({ type: m.type, optional: m.optional });
+      map.set(m.name, list);
+    }
+    return map;
+  };
+  const aByNames = groupBy(a.members);
+  const bByNames = groupBy(b.members);
+  if (aByNames.size !== bByNames.size) return false;
+  const sortKey = (t: { type: string; optional: boolean }) => `${t.optional}:${t.type}`;
+  for (const [name, aList] of aByNames) {
+    const bList = bByNames.get(name);
+    if (!bList || aList.length !== bList.length) return false;
+    const aSorted = [...aList].sort((x, y) => sortKey(x).localeCompare(sortKey(y)));
+    const bSorted = [...bList].sort((x, y) => sortKey(x).localeCompare(sortKey(y)));
+    if (!aSorted.every((item, i) => item.type === bSorted[i].type && item.optional === bSorted[i].optional))
+      return false;
+  }
+  return true;
+}
+
+function enumsMatch(a: EnumShape, b: EnumShape): boolean {
+  if (a.members.length !== b.members.length) return false;
+
+  const aSorted = [...a.members].sort((x, y) => x.name.localeCompare(y.name));
+  const bSorted = [...b.members].sort((x, y) => x.name.localeCompare(y.name));
+
+  return aSorted.every(
+    (member, i) =>
+      member.name === bSorted[i].name && member.value === bSorted[i].value,
+  );
+}
+
+function enumLikeVariableShape(shape: VariableShape): EnumShape | null {
+  const trimmed = shape.type.trim();
+  if (!trimmed.startsWith('{') || !trimmed.endsWith('}')) return null;
+
+  const body = trimmed.slice(1, -1).trim();
+  if (!body) return { kind: 'enum', members: [] };
+
+  const members = body
+    .split(';')
+    .map(part => part.trim())
+    .filter(Boolean)
+    .map(part => {
+      const match = part.match(/^readonly\s+([^:]+):(.+)$/);
+      if (!match) return null;
+
+      return {
+        name: match[1].trim(),
+        value: match[2].trim(),
+      };
+    });
+
+  if (members.some(member => member === null)) return null;
+  return { kind: 'enum', members: members as EnumShape['members'] };
+}
+
+function shapesMatch(sdk: ExportShape, rn: ExportShape): boolean {
+  if (sdk.kind !== rn.kind) {
+    // When kinds differ, treat as match only across the class boundary (SDK class
+    // vs RN interface or type alias, etc.). We do not compare structure across
+    // that boundary.
+    if (sdk.kind === 'variable' && rn.kind === 'enum') {
+      const sdkEnumLike = enumLikeVariableShape(sdk as VariableShape);
+      return sdkEnumLike ? enumsMatch(sdkEnumLike, rn as EnumShape) : false;
+    }
+    if (sdk.kind === 'enum' && rn.kind === 'variable') {
+      const rnEnumLike = enumLikeVariableShape(rn as VariableShape);
+      return rnEnumLike ? enumsMatch(sdk as EnumShape, rnEnumLike) : false;
+    }
+    if (sdk.kind === 'class' || rn.kind === 'class') return true;
+    return false;
+  }
+  // Same kind: compare structure (class vs class, interface vs interface, etc.)
+  switch (sdk.kind) {
+    case 'function':
+      return functionsMatch(sdk, rn as FunctionShape);
+    case 'interface':
+    case 'class':
+      return interfacesMatch(sdk as InterfaceShape, rn as InterfaceShape);
+    case 'typeAlias':
+      return sdk.type === (rn as TypeAliasShape).type;
+    case 'variable':
+      return sdk.type === (rn as VariableShape).type;
+    case 'enum':
+      return enumsMatch(sdk, rn as EnumShape);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Public comparison function
+// ---------------------------------------------------------------------------
+
+export function compare(
+  packageName: string,
+  sdkExports: Map<string, ExportEntry>,
+  rnExports: Map<string, ExportEntry>,
+  config: PackageConfig,
+): ComparisonResult {
+  const nameMapping = config.nameMapping ?? {};
+  // Build a reverse map: rnName → sdkName
+  const reverseMapping: Record<string, string> = {};
+  for (const [sdkName, rnName] of Object.entries(nameMapping)) {
+    reverseMapping[rnName] = sdkName;
+  }
+
+  const missingInRN: string[] = [];
+  const extraInRN: string[] = [];
+  const differentShape: Array<{ name: string; sdkShape: string; rnShape: string }> = [];
+
+  // --- Pass 1: firebase-sdk → RN Firebase ---
+  for (const [sdkName, sdkEntry] of sdkExports) {
+    // Resolve the name this export has in RN Firebase (may be renamed)
+    const rnName = nameMapping[sdkName] ?? sdkName;
+    const rnEntry = rnExports.get(rnName);
+
+    if (!rnEntry) {
+      missingInRN.push(sdkName);
+    } else if (!shapesMatch(sdkEntry.shape, rnEntry.shape)) {
+      differentShape.push({
+        name: sdkName,
+        sdkShape: shapeToString(sdkEntry.shape),
+        rnShape: shapeToString(rnEntry.shape),
+      });
+    }
+  }
+
+  // --- Pass 2: RN Firebase → firebase-sdk (find extras) ---
+  for (const [rnName] of rnExports) {
+    // Resolve the name this export has in the firebase-sdk (may be reverse-mapped)
+    const sdkName = reverseMapping[rnName] ?? rnName;
+    if (!sdkExports.has(sdkName)) {
+      extraInRN.push(rnName);
+    }
+  }
+
+  // --- Cross-reference against config ---
+  const docMissing = new Set((config.missingInRN ?? []).map(d => d.name));
+  const docExtra = new Set((config.extraInRN ?? []).map(d => d.name));
+  const docDiff = new Set((config.differentShape ?? []).map(d => d.name));
+
+  const missingEntries: MissingEntry[] = missingInRN.map(name => ({
+    name,
+    reason: config.missingInRN?.find(d => d.name === name)?.reason,
+  }));
+
+  const extraEntries: ExtraEntry[] = extraInRN.map(name => ({
+    name,
+    reason: config.extraInRN?.find(d => d.name === name)?.reason,
+  }));
+
+  const diffEntries: DifferentShapeEntry[] = differentShape.map(d => ({
+    ...d,
+    reason: config.differentShape?.find(c => c.name === d.name)?.reason,
+  }));
+
+  // --- Stale config entries: documented but no longer a real difference ---
+  const actualMissingSet = new Set(missingInRN);
+  const actualExtraSet = new Set(extraInRN);
+  const actualDiffSet = new Set(differentShape.map(d => d.name));
+
+  const staleConfigMissing = (config.missingInRN ?? [])
+    .map(d => d.name)
+    .filter(name => !actualMissingSet.has(name));
+
+  const staleConfigExtra = (config.extraInRN ?? [])
+    .map(d => d.name)
+    .filter(name => !actualExtraSet.has(name));
+
+  const staleConfigDifferentShape = (config.differentShape ?? [])
+    .map(d => d.name)
+    .filter(name => !actualDiffSet.has(name));
+
+  return {
+    packageName,
+    missing: missingEntries,
+    extra: extraEntries,
+    differentShape: diffEntries,
+    undocumentedMissing: missingInRN.filter(n => !docMissing.has(n)),
+    undocumentedExtra: extraInRN.filter(n => !docExtra.has(n)),
+    undocumentedDifferentShape: differentShape
+      .map(d => d.name)
+      .filter(n => !docDiff.has(n)),
+    staleConfigMissing,
+    staleConfigExtra,
+    staleConfigDifferentShape,
+  };
+}

@@ -45,7 +45,7 @@ describe('firestore.DocumentChange', function () {
 
       const docChange = changes[0];
 
-      docChange.doc.constructor.name.should.eql('FirestoreDocumentSnapshot');
+      docChange.doc.constructor.name.should.eql('DocumentSnapshot');
     });
 
     it('returns the correct metadata when adding and removing', async function () {
@@ -154,7 +154,7 @@ describe('firestore.DocumentChange', function () {
 
       const docChange = changes[0];
 
-      docChange.doc.constructor.name.should.eql('FirestoreDocumentSnapshot');
+      docChange.doc.constructor.name.should.eql('DocumentSnapshot');
     });
 
     it('returns the correct metadata when adding and removing', async function () {

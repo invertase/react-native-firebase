@@ -17,8 +17,6 @@
 
 /**
  * Core React Native Firebase package types.
- *
- * @firebase app
  */
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace ReactNativeFirebase {
@@ -163,7 +161,6 @@ export namespace ReactNativeFirebase {
    * Module-specific methods (auth(), analytics(), etc.) are added here via declaration merging
    * from individual package .d.ts files.
    */
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface FirebaseApp extends FirebaseAppBase {
     // Module methods are added here via declaration merging, e.g.:
     // auth(): FirebaseAuthTypes.Module;
@@ -239,8 +236,6 @@ export namespace ReactNativeFirebase {
      * level is set to a higher (more verbose) setting.
      * Note that iOS is missing firebase-js-sdk log levels 'verbose' and 'silent'.
      * 'verbose' if used will map to 'debug', 'silent' has no valid mapping and will return an error if used.
-     *
-     * @ios
      */
     setLogLevel(logLevel: LogLevelString): void;
 
@@ -280,7 +275,6 @@ export namespace ReactNativeFirebase {
     abstract app: FirebaseApp;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export type FirebaseModuleWithStatics<M, S = {}> = {
     (): M;
 
@@ -290,7 +284,6 @@ export namespace ReactNativeFirebase {
     readonly SDK_VERSION: string;
   } & S;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export type FirebaseModuleWithStaticsAndApp<M, S = {}> = {
     (app?: FirebaseApp): M;
 
@@ -336,7 +329,7 @@ export namespace ReactNativeFirebase {
 }
 
 /**
- * @firebase utils
+ * A namespace used exlusively for native-related utilities
  */
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Utils {
@@ -353,13 +346,11 @@ export namespace Utils {
    */
   export interface FilePath {
     /**
-     * Returns an absolute path to the applications main bundle.
+     * Returns an absolute path to the applications main bundle - iOS only
      *
      * ```js
      * firebase.utils.FilePath.MAIN_BUNDLE;
      * ```
-     *
-     * @ios iOS only
      */
     MAIN_BUNDLE: string;
 
@@ -413,7 +404,7 @@ export namespace Utils {
     LIBRARY_DIRECTORY: string;
 
     /**
-     * Returns an absolute path to the directory on the primary shared/external storage device.
+     * Returns null on iOS, or on Android an absolute path to the directory on the primary shared/external storage device.
      *
      * Here your application can place persistent files it owns. These files are internal to the application, and not typically visible to the user as media.
      *
@@ -422,8 +413,6 @@ export namespace Utils {
      * ```js
      * firebase.utils.FilePath.EXTERNAL_DIRECTORY;
      * ```
-     *
-     * @android Android only - iOS returns null
      */
     EXTERNAL_DIRECTORY: string | null;
 
@@ -432,14 +421,12 @@ export namespace Utils {
      *
      * Traditionally this is an SD card, but it may also be implemented as built-in storage on a device.
      *
-     * Returns null if no external storage directory found, e.g. removable media has been ejected by the user.
+     * Returns null on iOS or if on android no external storage directory found, e.g. removable media has been ejected by the user.
      * Requires special permission granted by Play Store review team on Android, is unlikely to be a valid path.
      *
      * ```js
      * firebase.utils.FilePath.EXTERNAL_STORAGE_DIRECTORY;
      * ```
-     *
-     * @android Android only - iOS returns null
      */
     EXTERNAL_STORAGE_DIRECTORY: string | null;
 
@@ -500,57 +487,52 @@ export namespace Utils {
 
   export interface PlayServicesAvailability {
     /**
-     * Returns a numeric status code. Please refer to Android documentation
+     * Returns a numeric status code. Always 0 on iOS, For Android please refer to Android documentation
      * for further information:
      * https://developers.google.com/android/reference/com/google/android/gms/common/ConnectionResult
      *
      * ```js
      * firebase.utils().playServicesAvailability.status;
      * ```
-     *
-     * @android Android only - iOS returns 0
      */
     status: PlayServicesAvailabilityStatusCodes;
 
     /**
-     * Returns a boolean indicating whether Play Store is available on the device
+     * Returns a boolean indicating whether Play Store is available on the device, always true on iOS
      *
      * ```js
      * firebase.utils().playServicesAvailability.isAvailable;
      * ```
-     *
-     * @android Android only - iOS returns true
      */
     isAvailable: boolean;
 
     /**
      * If Play Services is not available on the device, hasResolution indicates
-     * whether it is possible to do something about it (e.g. install Play Services).
+     * whether it is possible to do something about it (e.g. install Play Services),
+     * always returns undefined on iOS
      *
      * ```js
      * firebase.utils().playServicesAvailability.hasResolution;
      * ```
-     * @android Android only - iOS returns undefined
      */
     hasResolution: boolean | undefined;
 
     /**
-     * If an error was received, this indicates whether the error is resolvable
+     * If an error was received, this indicates whether the error is resolvable,
+     * always returns undefined on iOS
      *
      * ```js
      * firebase.utils().playServicesAvailability.isUserResolvableError;
      * ```
-     * @android Android only - iOS returns undefined
      */
     isUserResolvableError: boolean | undefined;
 
     /**
-     * A human readable error string
+     * A human readable error string, always undefined on iOS
      *
      * ```js
      * firebase.utils().playServicesAvailability.error;
      * ```
-     * @android Android only - iOS returns undefined
      */
     error: string | undefined;
   }
@@ -570,76 +552,65 @@ export namespace Utils {
    */
   export abstract class Module extends FirebaseModule {
     /**
-     * Returns true if this app is running inside a Firebase Test Lab environment.
+     * Returns true if this app is running inside a Firebase Test Lab environment, always false on iOS
      *
      * #### Example
      *
      * ```js
      * const isRunningInTestLab = await firebase.utils().isRunningInTestLab;
      * ```
-     * @android Android only - iOS returns false
      */
     abstract isRunningInTestLab: boolean;
     /**
-     * Returns PlayServicesAvailability properties
+     * Returns PlayServicesAvailability properties, always `{ isAvailable: true, status: 0 }` on iOS
      *
      * #### Example
      *
      * ```js
      * const PlayServicesAvailability = await firebase.utils().playServicesAvailability;
      * ```
-     *
-     * @android Android only - iOS always returns { isAvailable: true, status: 0 }
      */
     abstract playServicesAvailability: PlayServicesAvailability;
 
     /**
-     * Returns PlayServicesAvailability properties
+     * Returns PlayServicesAvailability properties, always `{ isAvailable: true, status: 0 }` on iOS
      *
      * #### Example
      *
      * ```js
      * const PlayServicesAvailability = await firebase.utils().getPlayServicesStatus();
      * ```
-     *
-     * @android Android only - iOS always returns { isAvailable: true, status: 0 }
      */
     abstract getPlayServicesStatus(): Promise<PlayServicesAvailability>;
 
     /**
-     * A prompt appears on the device to ask the user to update play services
+     * A prompt appears on the device to ask the user to update play services, returns undefined on iOS
      *
      * #### Example
      *
      * ```js
      * await firebase.utils().promptForPlayServices();
      * ```
-     *
-     * @android Android only - iOS returns undefined
      */
     abstract promptForPlayServices(): Promise<void>;
     /**
-     * Attempts to make Google Play services available on this device
+     * Attempts to make Google Play services available on this device, returns undefined on iOS
      *
      * #### Example
      *
      * ```js
      * await firebase.utils().makePlayServicesAvailable();
      * ```
-     *
-     * @android Android only - iOS returns undefined
      */
     abstract makePlayServicesAvailable(): Promise<void>;
     /**
-     * Resolves an error by starting any intents requiring user interaction.
+     * Resolves an error by starting any intents requiring user interaction, returns undefined on iOS
      *
      * #### Example
      *
      * ```js
      * await firebase.utils().resolutionForPlayServices();
      * ```
-     *
-     * @android Android only - iOS returns undefined
      */
     abstract resolutionForPlayServices(): Promise<void>;
   }

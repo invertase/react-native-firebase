@@ -21,7 +21,6 @@ import type { ReactNativeFirebase } from '../types/app';
  * Base type for all React Native Firebase native modules.
  * Each package can extend this interface via module augmentation to add their own native methods.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ReactNativeFirebaseNativeModules {
   // Base interface - packages will augment this
 }

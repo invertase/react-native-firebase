@@ -939,6 +939,7 @@ export interface Analytics extends ReactNativeFirebase.FirebaseModule {
   logShare(object: ShareEventParameters): Promise<void>;
   logSignUp(object: SignUpEventParameters): Promise<void>;
   logSpendVirtualCurrency(object: SpendVirtualCurrencyEventParameters): Promise<void>;
+  logTransaction(transaction_id: string): Promise<void>;
   logTutorialBegin(): Promise<void>;
   logTutorialComplete(): Promise<void>;
   logUnlockAchievement(object: UnlockAchievementEventParameters): Promise<void>;

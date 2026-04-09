@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Role } from './enums';
+import { Language, Outcome, Role } from './enums';
 
 /**
  * Content type for both prompts and response candidates.
@@ -36,7 +36,9 @@ export type Part =
   | InlineDataPart
   | FunctionCallPart
   | FunctionResponsePart
-  | FileDataPart;
+  | FileDataPart
+  | ExecutableCodePart
+  | CodeExecutionResultPart;
 
 /**
  * Content part interface if the part represents a text string.
@@ -52,6 +54,8 @@ export interface TextPart {
    * @internal
    */
   thoughtSignature?: string;
+  executableCode?: never;
+  codeExecutionResult?: never;
 }
 
 /**
@@ -72,6 +76,8 @@ export interface InlineDataPart {
    * @internal
    */
   thoughtSignature?: never;
+  executableCode?: never;
+  codeExecutionResult?: never;
 }
 
 /**
@@ -105,6 +111,8 @@ export interface FunctionCallPart {
    * @internal
    */
   thoughtSignature?: never;
+  executableCode?: never;
+  codeExecutionResult?: never;
 }
 
 /**
@@ -121,6 +129,8 @@ export interface FunctionResponsePart {
    * @internal
    */
   thoughtSignature?: never;
+  executableCode?: never;
+  codeExecutionResult?: never;
 }
 
 /**
@@ -138,6 +148,8 @@ export interface FileDataPart {
    * @internal
    */
   thoughtSignature?: never;
+  executableCode?: never;
+  codeExecutionResult?: never;
 }
 
 /**
@@ -201,4 +213,77 @@ export interface GenerativeContentBlob {
 export interface FileData {
   mimeType: string;
   fileUri: string;
+}
+
+/**
+ * Represents the code that is executed by the model.
+ *
+ * @beta
+ */
+export interface ExecutableCodePart {
+  text?: never;
+  inlineData?: never;
+  functionCall?: never;
+  functionResponse?: never;
+  fileData: never;
+  thought?: never;
+  /**
+   * @internal
+   */
+  thoughtSignature?: never;
+  executableCode?: ExecutableCode;
+  codeExecutionResult?: never;
+}
+
+/**
+ * Represents the code execution result from the model.
+ *
+ * @beta
+ */
+export interface CodeExecutionResultPart {
+  text?: never;
+  inlineData?: never;
+  functionCall?: never;
+  functionResponse?: never;
+  fileData: never;
+  thought?: never;
+  /**
+   * @internal
+   */
+  thoughtSignature?: never;
+  executableCode?: never;
+  codeExecutionResult?: CodeExecutionResult;
+}
+
+/**
+ * An interface for executable code returned by the model.
+ *
+ * @beta
+ */
+export interface ExecutableCode {
+  /**
+   * The programming language of the code.
+   */
+  language?: Language;
+  /**
+   * The source code to be executed.
+   */
+  code?: string;
+}
+
+/**
+ * The results of code execution run by the model.
+ *
+ * @beta
+ */
+export interface CodeExecutionResult {
+  /**
+   * The result of the code execution.
+   */
+  outcome?: Outcome;
+  /**
+   * The output from the code execution, or an error message
+   * if it failed.
+   */
+  output?: string;
 }

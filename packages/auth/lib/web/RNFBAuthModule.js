@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import {
   getApp,
   initializeAuth,
@@ -263,9 +264,16 @@ function getCachedAuthInstance(appName) {
           '  await firebase.initializeApp({ ... });\n',
       );
     }
-    instances[appName] = initializeAuth(getApp(appName), {
-      persistence: getReactNativePersistence(getReactNativeAsyncStorageInternal()),
-    });
+
+    const authOptions = {};
+    if (Platform.OS !== 'web') {
+      // Non-web platforms pull the react-native export from package.json and
+      // get a bundle that defines `getReactNativePersistence` etc, but web platforms
+      // do *not* have that method defined. So we only call it for non-web platforms
+      authOptions.persistence = getReactNativePersistence(getReactNativeAsyncStorageInternal());
+    }
+
+    instances[appName] = initializeAuth(getApp(appName), authOptions);
   }
   return instances[appName];
 }

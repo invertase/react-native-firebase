@@ -66,8 +66,8 @@ describe('firestore.doc().collection()', function () {
         .collection(COLLECTION)
         .doc('bar')
         .collection(COLLECTION);
-      should.equal(instance1.constructor.name, 'FirestoreCollectionReference');
-      should.equal(instance2.constructor.name, 'FirestoreCollectionReference');
+      should.equal(instance1.constructor.name, 'CollectionReference');
+      should.equal(instance2.constructor.name, 'CollectionReference');
       instance1.id.should.equal(COLLECTION);
       instance2.id.should.equal(COLLECTION);
     });
@@ -112,8 +112,8 @@ describe('firestore.doc().collection()', function () {
       const db = getFirestore();
       const instance1 = collection(doc(db, `${COLLECTION}/bar`), COLLECTION);
       const instance2 = collection(doc(collection(db, COLLECTION), 'bar'), COLLECTION);
-      should.equal(instance1.constructor.name, 'FirestoreCollectionReference');
-      should.equal(instance2.constructor.name, 'FirestoreCollectionReference');
+      should.equal(instance1.constructor.name, 'CollectionReference');
+      should.equal(instance2.constructor.name, 'CollectionReference');
       instance1.id.should.equal(COLLECTION);
       instance2.id.should.equal(COLLECTION);
     });
