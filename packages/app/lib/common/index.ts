@@ -639,6 +639,31 @@ function getInstanceName(target: any): string {
   return target.constructor.name;
 }
 
+const MODULAR_INSTANCE_SYMBOL = Symbol('react-native-firebase-modular-instance');
+
+function isObjectLike(value: unknown): value is object | ((...args: any[]) => unknown) {
+  return (typeof value === 'object' && value !== null) || typeof value === 'function';
+}
+
+function isModularInstance(value: unknown): boolean {
+  return isObjectLike(value) && (value as any)[MODULAR_INSTANCE_SYMBOL] === true;
+}
+
+function markModularInstance<T>(value: T): T {
+  if (!isObjectLike(value) || isModularInstance(value)) {
+    return value;
+  }
+
+  Object.defineProperty(value, MODULAR_INSTANCE_SYMBOL, {
+    value: true,
+    configurable: true,
+    enumerable: false,
+    writable: false,
+  });
+
+  return value;
+}
+
 export function createDeprecationProxy<T extends object>(instance: T): T {
   return new Proxy(instance, {
     construct(target: any, args: any[]) {
@@ -647,13 +672,14 @@ export function createDeprecationProxy<T extends object>(instance: T): T {
     },
     get(target: any, prop: string | symbol, receiver: any) {
       const originalMethod = target[prop];
+      const modularAccess = _isModularCall || isModularInstance(target);
 
       if (prop === 'constructor') {
         return Reflect.get(target, prop, receiver);
       }
 
       if (target && target.constructor && target.constructor.name === 'Timestamp') {
-        deprecationConsoleWarning('firestore', prop as string, 'Timestamp', false);
+        deprecationConsoleWarning('firestore', prop as string, 'Timestamp', modularAccess);
         return Reflect.get(target, prop, receiver);
       }
 
@@ -725,14 +751,15 @@ export function createDeprecationProxy<T extends object>(instance: T): T {
 
         if (descriptor.get && nameSpace) {
           // Handle getter - call it and show deprecation warning
-          deprecationConsoleWarning(nameSpace, prop as string, instanceName, _isModularCall);
-          return descriptor.get.call(target);
+          deprecationConsoleWarning(nameSpace, prop as string, instanceName, modularAccess);
+          const result = descriptor.get.call(target);
+          return modularAccess ? markModularInstance(result) : result;
         }
 
         if (descriptor.set && nameSpace) {
           // Handle setter - return a function that calls the setter with deprecation warning
           return function (value: any) {
-            deprecationConsoleWarning(nameSpace, prop as string, instanceName, _isModularCall);
+            deprecationConsoleWarning(nameSpace, prop as string, instanceName, modularAccess);
             descriptor.set!.call(target, value);
           };
         }
@@ -740,7 +767,7 @@ export function createDeprecationProxy<T extends object>(instance: T): T {
 
       if (typeof originalMethod === 'function') {
         return function (...args: any[]) {
-          const isModularMethod = args.includes(MODULAR_DEPRECATION_ARG);
+          const isModularMethod = modularAccess || args.includes(MODULAR_DEPRECATION_ARG);
           const instanceName = getInstanceName(target);
           const nameSpace = getNamespace(target);
 
@@ -748,7 +775,8 @@ export function createDeprecationProxy<T extends object>(instance: T): T {
             deprecationConsoleWarning(nameSpace, prop as string, instanceName, isModularMethod);
           }
 
-          return originalMethod.apply(target, filterModularArgument(args));
+          const result = originalMethod.apply(target, filterModularArgument(args));
+          return isModularMethod ? markModularInstance(result) : result;
         };
       }
       return Reflect.get(target, prop, receiver);
