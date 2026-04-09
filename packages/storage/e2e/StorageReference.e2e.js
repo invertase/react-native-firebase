@@ -712,6 +712,33 @@ describe('storage() -> StorageReference', function () {
       secondStorage = getStorage(getApp(), secondStorageBucket);
     });
 
+    describe('strict modular deprecation mode', function () {
+      beforeEach(function () {
+        // @ts-ignore
+        globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = true;
+      });
+
+      afterEach(function () {
+        // @ts-ignore
+        globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = false;
+      });
+
+      it('does not treat modular reference instance APIs as namespaced', function () {
+        const { getApp } = modular;
+        const { getStorage, ref } = storageModular;
+        const storageReference = ref(getStorage(), '/foo/uploadNope.jpeg');
+
+        storageReference
+          .toString()
+          .should.equal(`gs://${getApp().options.storageBucket}/foo/uploadNope.jpeg`);
+        storageReference.fullPath.should.equal('foo/uploadNope.jpeg');
+        storageReference.bucket.should.equal(getApp().options.storageBucket);
+        storageReference.name.should.equal('uploadNope.jpeg');
+        storageReference.parent.fullPath.should.equal('foo');
+        storageReference.root.fullPath.should.equal('/');
+      });
+    });
+
     describe('second storage bucket writes to Storage emulator', function () {
       // Same bucket defined in app.js when setting up emulator
 
