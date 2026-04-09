@@ -18,7 +18,12 @@
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#else
+@import FirebaseCore;
+@import FirebasePerformance;
+#endif
 #import "RNFBPerfModule.h"
 
 static __strong NSMutableDictionary *traces;

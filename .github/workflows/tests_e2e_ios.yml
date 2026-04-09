@@ -75,9 +75,13 @@ jobs:
             // we want to test debug and release - they generate different code
             let buildmode = ['debug', 'release'];
 
+            // Test both SPM and CocoaPods dependency resolution modes
+            let depResolution = ['spm', 'cocoapods'];
+
             return {
               "iteration": iterationArray,
-              "buildmode": buildmode
+              "buildmode": buildmode,
+              "dep-resolution": depResolution
             }
       - name: Debug Output
         run: echo "${{ steps.build-matrix.outputs.result }}"
@@ -85,7 +89,7 @@ jobs:
   # This uses the matrix generated from the matrix-prep stage
   # it will run unit tests on whatever OS combinations are desired
   ios:
-    name: iOS (${{ matrix.buildmode }}, ${{ matrix.iteration }})
+    name: iOS (${{ matrix.buildmode }}, ${{ matrix.dep-resolution }}, ${{ matrix.iteration }})
     runs-on: macos-15
     needs: matrix_prep
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
@@ -182,7 +186,7 @@ jobs:
       - uses: hendrikmuhs/ccache-action@v1
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-${{ matrix.buildmode }}-ios-v3 # makes a unique key w/related restore key internally
+          key: ${{ runner.os }}-${{ matrix.buildmode }}-${{ matrix.dep-resolution }}-ios-v3 # makes a unique key w/related restore key internally
           save: "${{ github.ref == 'refs/heads/main' }}"
           create-symlink: true
           max-size: 1500M
@@ -214,8 +218,21 @@ jobs:
         continue-on-error: true
         with:
           path: tests/ios/Pods
-          key: ${{ runner.os }}-ios-pods-v3-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-ios-pods-v3
+          key: ${{ runner.os }}-ios-pods-v3-${{ matrix.dep-resolution }}-${{ hashFiles('tests/ios/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-ios-pods-v3-${{ matrix.dep-resolution }}
+
+      - name: Configure Dependency Resolution Mode
+        run: |
+          if [[ "${{ matrix.dep-resolution }}" == "cocoapods" ]]; then
+            echo "Configuring CocoaPods-only mode (disabling SPM)"
+            cd tests/ios
+            sed -i '' "s/^linkage = 'dynamic'/linkage = 'static'/" Podfile
+            printf '%s\n' '$RNFirebaseDisableSPM = true' | cat - Podfile > Podfile.tmp && mv Podfile.tmp Podfile
+            sed -i '' "/SWIFT_ENABLE_EXPLICIT_MODULES/d" Podfile
+            echo "Podfile configured for CocoaPods-only mode"
+          else
+            echo "Using default SPM mode (dynamic linkage)"
+          fi
 
       - name: Pod Install
         uses: nick-fields/retry@v3

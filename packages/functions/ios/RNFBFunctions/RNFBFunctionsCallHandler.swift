@@ -22,7 +22,31 @@ import FirebaseCore
 /// Swift wrapper for Firebase Functions callable methods that's accessible from Objective-C
 /// This encapsulates the logic for calling Firebase Functions (both by name and URL)
 @objcMembers public class RNFBFunctionsCallHandler: NSObject {
-  
+
+  // MARK: - Factory method for FIRFunctions (used by ObjC++ to avoid @import FirebaseFunctions)
+
+  /// Creates and configures a Functions instance.
+  /// This factory exists because FirebaseFunctions is a pure-Swift SPM module
+  /// and cannot be imported from .mm files without -fcxx-modules (which breaks JSI).
+  @objc public static func createFunctions(
+    forApp app: FirebaseApp,
+    customUrlOrRegion: String,
+    emulatorHost: String?,
+    emulatorPort: Int
+  ) -> Functions {
+    let functions: Functions
+    if let url = URL(string: customUrlOrRegion),
+       url.scheme != nil, url.host != nil {
+      functions = Functions.functions(app: app, customDomain: customUrlOrRegion)
+    } else {
+      functions = Functions.functions(app: app, region: customUrlOrRegion)
+    }
+    if let host = emulatorHost {
+      functions.useEmulator(withHost: host, port: emulatorPort)
+    }
+    return functions
+  }
+
   /// Call a Firebase Function by name
   /// - Parameters:
   ///   - app: Firebase App instance

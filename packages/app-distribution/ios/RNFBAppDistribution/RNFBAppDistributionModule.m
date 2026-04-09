@@ -15,7 +15,12 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#else
+@import FirebaseCore;
+@import FirebaseAppDistribution;
+#endif
 #import <React/RCTUtils.h>
 
 #import "RNFBApp/RNFBSharedUtils.h"

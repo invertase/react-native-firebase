@@ -17,7 +17,12 @@
  */
 
 #import "RNFBCrashlyticsNativeHelper.h"
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#else
+@import FirebaseCore;
+@import FirebaseCrashlytics;
+#endif
 
 @implementation RNFBCrashlyticsNativeHelper
 

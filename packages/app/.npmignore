@@ -68,3 +68,6 @@ android/.settings
 type-test.ts
 scripts
 __tests__
+
+# Force include generated version file (needed for linking)
+!ios/RNFBApp/RNFBVersion.m

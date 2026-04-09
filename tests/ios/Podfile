@@ -14,12 +14,16 @@ Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$Fireba
 # Everything will be static with `use_frameworks!`, but you can set it manually for testing if desired
 # $RNFirebaseAsStaticFramework = true # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
 
+# SPM mode: SPM dependency resolution enabled (no $RNFirebaseDisableSPM flag)
+# Works with dynamic linkage. For static linkage, set $RNFirebaseDisableSPM = true
+
 # Toggle this to true for the no-ad-tracking Analytics subspec. Useful at minimum for Kids category apps.
 # See: https://firebase.google.com/support/release-notes/ios#analytics - requires firebase-ios-sdk 7.11.0+
 #$RNFirebaseAnalyticsWithoutAdIdSupport = true # toggle this to true for the no-ad-tracking Analytics subspec
 
 # Toggle this to true if you want to include support for on device conversion measurement APIs
-$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
+# Disabled for SPM test: GoogleAdsOnDeviceConversion is a static xcframework incompatible with dynamic linkage
+# $RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
 
 # Toggle this to true if you want to include optional support for extended analytics features
 $RNFirebaseAnalyticsEnableAdSupport = true
@@ -41,7 +45,7 @@ platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
 # set this to static and toggle '$RNFirebaseAsStaticFramework' above to test static frameworks)
-linkage = 'static' # ENV['USE_FRAMEWORKS']
+linkage = 'dynamic' # SPM test: dynamic linkage avoids duplicate symbols
 if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
   use_frameworks! :linkage => linkage.to_sym
@@ -93,10 +97,15 @@ target 'testing' do
     end
 
     # Bumps minimum deploy target to ours (which is >12.4): https://github.com/facebook/react-native/issues/34106
+    # Xcode 26 enables explicit modules by default, but Firebase SPM internal targets
+    # (FirebaseCoreInternal, FirebaseSharedSwift) are not exposed as public products.
+    # This does NOT disable SPM — it only tells the Swift compiler to use implicit module
+    # discovery (the Xcode 16 default) so transitive SPM targets are found automatically.
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         config.build_settings["GCC_WARN_INHIBIT_ALL_WARNINGS"] = "YES"
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+        config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
       end
     end
   end

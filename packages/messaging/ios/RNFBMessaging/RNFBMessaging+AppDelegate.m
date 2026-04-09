@@ -15,7 +15,12 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#else
+@import FirebaseCore;
+@import FirebaseMessaging;
+#endif
 #import <GoogleUtilities/GULAppDelegateSwizzler.h>
 #import <objc/runtime.h>
 

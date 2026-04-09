@@ -15,7 +15,12 @@
  *
  */
 
+#if __has_include(<FirebaseCoreExtension/FIRLibrary.h>)
 #import <FirebaseCoreExtension/FIRLibrary.h>
+#else
+@import FirebaseCore;
+@import FirebaseCoreExtension;
+#endif
 #import <Foundation/Foundation.h>
 
 @interface RNFBCrashlyticsInitProvider : NSObject <FIRLibrary>

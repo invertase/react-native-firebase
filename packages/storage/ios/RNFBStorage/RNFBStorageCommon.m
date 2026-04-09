@@ -16,7 +16,12 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#else
+@import FirebaseCore;
+@import FirebaseStorage;
+#endif
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import "RNFBSharedUtils.h"

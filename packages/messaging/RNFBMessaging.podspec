@@ -1,4 +1,5 @@
 require 'json'
+require '../app/firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
@@ -42,8 +43,12 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/Messaging', firebase_sdk_version
-  s.dependency          'FirebaseCoreExtension'
+  # FirebaseCoreExtension is a transitive dependency of FirebaseMessaging in SPM,
+  # so it only needs to be declared explicitly for CocoaPods.
+  firebase_dependency(s, firebase_sdk_version,
+    ['FirebaseMessaging'],
+    ['Firebase/Messaging', 'FirebaseCoreExtension']
+  )
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
