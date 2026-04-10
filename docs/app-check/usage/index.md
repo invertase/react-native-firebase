@@ -185,6 +185,8 @@ It is through the use of a react-native-specific `ReactNativeFirebaseAppCheckPro
 
 So AppCheck module initialization is done in two steps in react-native-firebase - first you create and configure the custom provider, then you initialize AppCheck using that custom provider.
 
+Starting in v25, the modular App Check helpers and types are exported from `@react-native-firebase/app-check` at the package root to better match the Firebase JS SDK. For example, import `initializeAppCheck`, `AppCheck`, and `AppCheckTokenResult` directly from `@react-native-firebase/app-check` when using the modular API.
+
 ### Configure a Custom Provider
 
 To configure the react-native-firebase custom provider, first obtain one, then configure it according to the providers you want to use on each platform.
@@ -219,6 +221,35 @@ import { initializeAppCheck } from '@react-native-firebase/app-check';
 
 const appCheck = await initializeAppCheck(getApp(), {
   provider: rnfbProvider,
+  isTokenAutoRefreshEnabled: true,
+});
+```
+
+### Inline Provider Configuration
+
+If you do not need to keep a provider instance around, you can pass the React Native provider configuration inline using `providerOptions`:
+
+```javascript
+import { getApp } from '@react-native-firebase/app';
+import { initializeAppCheck } from '@react-native-firebase/app-check';
+
+const appCheck = await initializeAppCheck(getApp(), {
+  provider: {
+    providerOptions: {
+      android: {
+        provider: __DEV__ ? 'debug' : 'playIntegrity',
+        debugToken: 'some token you have configured for your project firebase web console',
+      },
+      apple: {
+        provider: __DEV__ ? 'debug' : 'appAttestWithDeviceCheckFallback',
+        debugToken: 'some token you have configured for your project firebase web console',
+      },
+      web: {
+        provider: 'reCaptchaV3',
+        siteKey: 'unknown',
+      },
+    },
+  },
   isTokenAutoRefreshEnabled: true,
 });
 ```
