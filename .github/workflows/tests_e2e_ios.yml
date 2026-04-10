@@ -97,9 +97,9 @@ jobs:
       CCACHE_DEPEND: true
       CCACHE_INODECACHE: true
       CCACHE_LIMIT_MULTIPLE: 0.95
-      # pin to 26.0.1 until newer Xcode/Simulators don't have awful performance
-      # Last tested with 26.2 on 20260130 and performance-based flakes made it unusable
-      XCODE_VERSION: 26.0.1
+      # possibly pin to higher-performance versions (e.g. 26.0.1 was better than 26.2)
+      # but firebase-ios-sdk requires Xcode 26.2+ now, so unpinned at the moment.
+      XCODE_VERSION: latest-stable
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
