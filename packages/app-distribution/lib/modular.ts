@@ -18,13 +18,16 @@
 import { getApp } from '@react-native-firebase/app';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
-import type { FirebaseAppDistributionTypes } from '..';
+import type { FirebaseAppDistributionTypes } from './namespaced';
+import type { AppDistributionWithDeprecationArg } from './types/internal';
 
 export type FirebaseAppDistribution = FirebaseAppDistributionTypes.Module;
 
-export function getAppDistribution(
-  app?: ReactNativeFirebase.FirebaseApp,
-): FirebaseAppDistribution {
+function ap(appDistribution: FirebaseAppDistribution): AppDistributionWithDeprecationArg {
+  return appDistribution as AppDistributionWithDeprecationArg;
+}
+
+export function getAppDistribution(app?: ReactNativeFirebase.FirebaseApp): FirebaseAppDistribution {
   if (app) {
     return getApp(app.name).appDistribution();
   }
@@ -32,26 +35,20 @@ export function getAppDistribution(
   return getApp().appDistribution();
 }
 
-export function isTesterSignedIn(
-  appDistribution: FirebaseAppDistribution,
-): Promise<boolean> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
-  return appDistribution.isTesterSignedIn.call(appDistribution, MODULAR_DEPRECATION_ARG);
+export function isTesterSignedIn(appDistribution: FirebaseAppDistribution): Promise<boolean> {
+  return ap(appDistribution).isTesterSignedIn.call(appDistribution, MODULAR_DEPRECATION_ARG);
 }
 
 export function signInTester(appDistribution: FirebaseAppDistribution): Promise<void> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
-  return appDistribution.signInTester.call(appDistribution, MODULAR_DEPRECATION_ARG);
+  return ap(appDistribution).signInTester.call(appDistribution, MODULAR_DEPRECATION_ARG);
 }
 
 export function checkForUpdate(
   appDistribution: FirebaseAppDistribution,
 ): Promise<FirebaseAppDistributionTypes.AppDistributionRelease> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
-  return appDistribution.checkForUpdate.call(appDistribution, MODULAR_DEPRECATION_ARG);
+  return ap(appDistribution).checkForUpdate.call(appDistribution, MODULAR_DEPRECATION_ARG);
 }
 
 export function signOutTester(appDistribution: FirebaseAppDistribution): Promise<void> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
-  return appDistribution.signOutTester.call(appDistribution, MODULAR_DEPRECATION_ARG);
+  return ap(appDistribution).signOutTester.call(appDistribution, MODULAR_DEPRECATION_ARG);
 }
