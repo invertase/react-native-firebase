@@ -22,6 +22,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/dist/module/internal';
+import { Platform } from 'react-native';
 import type { AppDistributionRelease } from './types/app-distribution';
 import type { FirebaseAppDistributionTypes } from './types/namespaced';
 import { version } from './version';
@@ -33,7 +34,9 @@ const namespace = 'appDistribution';
 const nativeModuleName = 'RNFBAppDistributionModule';
 
 function rejectUnsupportedPlatform<T>(): Promise<T> {
-  return Promise.reject(new Error('App Distribution is not supported on this platform.'));
+  return Promise.reject(
+    new Error(`App Distribution is not supported on the ${Platform.OS} platform.`),
+  );
 }
 
 class FirebaseAppDistributionModule extends FirebaseModule<typeof nativeModuleName> {
