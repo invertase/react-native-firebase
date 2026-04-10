@@ -479,15 +479,15 @@ describe('storage() -> StorageReference', function () {
         metadata.customMetadata.keepMe.should.equal('please');
       });
 
-      it('should error if updateMetadata includes md5hash', async function () {
+      it('should error if updateMetadata includes md5Hash', async function () {
         const storageReference = firebase.storage().ref(`${PATH}/list/file1.txt`);
         try {
           await storageReference.updateMetadata({
-            md5hash: '0xDEADBEEF',
+            md5Hash: '0xDEADBEEF',
           });
           return Promise.reject(new Error('Did not throw on invalid updateMetadata'));
         } catch (e) {
-          e.message.should.containEql('md5hash may only be set on upload, not on updateMetadata');
+          e.message.should.containEql('md5Hash may only be set on upload, not on updateMetadata');
           return Promise.resolve();
         }
       });
@@ -550,7 +550,7 @@ describe('storage() -> StorageReference', function () {
           return Promise.resolve();
         }
       });
-      // TODO check an metaData:md5hash property passes through correcty on putFile
+      // TODO check an metaData:md5Hash property passes through correcty on putFile
     });
 
     describe('putString', function () {
@@ -604,7 +604,7 @@ describe('storage() -> StorageReference', function () {
         const storageReference = firebase.storage().ref(`${PATH}/metadataTest.txt`);
         await storageReference.putString('foo', 'raw', {
           contentType: 'text/plain',
-          md5hash: '123412341234',
+          md5Hash: '123412341234',
           cacheControl: 'true',
           contentDisposition: 'disposed',
           contentEncoding: 'application/octet-stream',
@@ -667,7 +667,7 @@ describe('storage() -> StorageReference', function () {
         const storageReference = firebase.storage().ref(`${PATH}/metadataTest.jpeg`);
         await storageReference.put(new ArrayBuffer(), {
           contentType: 'image/jpg',
-          md5hash: '123412341234',
+          md5Hash: '123412341234',
           cacheControl: 'true',
           contentDisposition: 'disposed',
           contentEncoding: 'application/octet-stream',
@@ -687,7 +687,7 @@ describe('storage() -> StorageReference', function () {
           .ref(`${PATH}/metadataTest.jpeg`);
         await storageReference.put(new ArrayBuffer(), {
           contentType: 'image/jpg',
-          md5hash: '123412341234',
+          md5Hash: '123412341234',
           cacheControl: 'true',
           contentDisposition: 'disposed',
           contentEncoding: 'application/octet-stream',
@@ -1281,17 +1281,17 @@ describe('storage() -> StorageReference', function () {
         metadata.customMetadata.keepMe.should.equal('please');
       });
 
-      it('should error if updateMetadata includes md5hash', async function () {
+      it('should error if updateMetadata includes md5Hash', async function () {
         const { getStorage, ref, updateMetadata } = storageModular;
         const storageReference = ref(getStorage(), `${PATH}/list/file1.txt`);
 
         try {
           await updateMetadata(storageReference, {
-            md5hash: '0xDEADBEEF',
+            md5Hash: '0xDEADBEEF',
           });
           return Promise.reject(new Error('Did not throw on invalid updateMetadata'));
         } catch (e) {
-          e.message.should.containEql('md5hash may only be set on upload, not on updateMetadata');
+          e.message.should.containEql('md5Hash may only be set on upload, not on updateMetadata');
           return Promise.resolve();
         }
       });
@@ -1361,7 +1361,7 @@ describe('storage() -> StorageReference', function () {
         }
       });
 
-      // TODO check an metaData:md5hash property passes through correcty on putFile
+      // TODO check an metaData:md5Hash property passes through correcty on putFile
     });
 
     describe('putString', function () {
@@ -1421,7 +1421,7 @@ describe('storage() -> StorageReference', function () {
 
         await uploadString(storageReference, 'foo', 'raw', {
           contentType: 'text/plain',
-          md5hash: '123412341234',
+          md5Hash: '123412341234',
           cacheControl: 'true',
           contentDisposition: 'disposed',
           contentEncoding: 'application/octet-stream',
@@ -1497,7 +1497,7 @@ describe('storage() -> StorageReference', function () {
 
         await uploadBytesResumable(storageReference, new ArrayBuffer(), {
           contentType: 'image/jpg',
-          md5hash: '123412341234',
+          md5Hash: '123412341234',
           cacheControl: 'true',
           contentDisposition: 'disposed',
           contentEncoding: 'application/octet-stream',
@@ -1520,7 +1520,7 @@ describe('storage() -> StorageReference', function () {
 
         await uploadBytesResumable(storageReference, new ArrayBuffer(), {
           contentType: 'image/jpg',
-          md5hash: '123412341234',
+          md5Hash: '123412341234',
           cacheControl: 'true',
           contentDisposition: 'disposed',
           contentEncoding: 'application/octet-stream',
