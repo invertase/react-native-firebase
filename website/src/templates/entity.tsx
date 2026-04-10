@@ -165,16 +165,6 @@ export const pageQuery = graphql`
         hash
         mdx
         source
-
-        signatures {
-          name
-          description
-          type
-          parameters {
-            type
-            name
-          }
-        }
       }
 
       entities {
