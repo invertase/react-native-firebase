@@ -36,7 +36,7 @@ type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
   ? (...args: [...P, typeof MODULAR_DEPRECATION_ARG]) => R
   : never;
 
-export function isUrl(path?: string): boolean {
+function isUrl(path?: string): boolean {
   if (typeof path !== 'string') {
     return false;
   }
