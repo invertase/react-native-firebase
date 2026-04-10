@@ -30,6 +30,7 @@ import storage, {
 import {
   createCheckV9Deprecation,
   CheckV9DeprecationFunction,
+  withDeprecationWarningsSilenced,
 } from '../../app/lib/common/unitTestUtils';
 
 // @ts-ignore test
@@ -306,10 +307,12 @@ describe('Storage', function () {
       it('delete()', function () {
         const storage = getStorage();
         const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => deleteObject(storageRef),
-          // @ts-expect-error Combines modular and namespace API
-          () => storageRef.delete(),
+          () => namespacedStorageRef.delete(),
           'delete',
         );
       });
@@ -317,10 +320,12 @@ describe('Storage', function () {
       it('getDownloadURL()', function () {
         const storage = getStorage();
         const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => getDownloadURL(storageRef),
-          // @ts-expect-error Combines modular and namespace API
-          () => storageRef.getDownloadURL(),
+          () => namespacedStorageRef.getDownloadURL(),
           'getDownloadURL',
         );
       });
@@ -328,10 +333,12 @@ describe('Storage', function () {
       it('getMetadata()', function () {
         const storage = getStorage();
         const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => getMetadata(storageRef),
-          // @ts-expect-error Combines modular and namespace API
-          () => storageRef.getMetadata(),
+          () => namespacedStorageRef.getMetadata(),
           'getMetadata',
         );
       });
@@ -339,10 +346,12 @@ describe('Storage', function () {
       it('list()', function () {
         const storage = getStorage();
         const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => list(storageRef),
-          // @ts-expect-error Combines modular and namespace API
-          () => storageRef.list(),
+          () => namespacedStorageRef.list(),
           'list',
         );
       });
@@ -350,10 +359,12 @@ describe('Storage', function () {
       it('listAll()', function () {
         const storage = getStorage();
         const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => listAll(storageRef),
-          // @ts-expect-error Combines modular and namespace API
-          () => storageRef.listAll(),
+          () => namespacedStorageRef.listAll(),
           'listAll',
         );
       });
@@ -361,10 +372,12 @@ describe('Storage', function () {
       it('updateMetadata()', function () {
         const storage = getStorage();
         const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => updateMetadata(storageRef, {}),
-          // @ts-expect-error Combines modular and namespace API
-          () => storageRef.updateMetadata({}),
+          () => namespacedStorageRef.updateMetadata({}),
           'updateMetadata',
         );
       });
@@ -372,10 +385,12 @@ describe('Storage', function () {
       it('put()', function () {
         const storage = getStorage();
         const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => uploadBytesResumable(storageRef, new Blob(['foo']), {}),
-          // @ts-expect-error Combines modular and namespace API
-          () => storageRef.put(new Blob(['foo']), {}),
+          () => namespacedStorageRef.put(new Blob(['foo']), {}),
           'put',
         );
       });
@@ -383,10 +398,12 @@ describe('Storage', function () {
       it('putString()', function () {
         const storage = getStorage();
         const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => uploadString(storageRef, 'foo', StringFormat.RAW),
-          // @ts-expect-error Combines modular and namespace API
-          () => storageRef.putString('foo', StringFormat.RAW),
+          () => namespacedStorageRef.putString('foo', StringFormat.RAW),
           'putString',
         );
       });
@@ -394,10 +411,12 @@ describe('Storage', function () {
       it('putFile()', function () {
         const storage = getStorage();
         const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => putFile(storageRef, 'foo', {}),
-          // @ts-expect-error Combines modular and namespace API
-          () => storageRef.putFile('foo', {}),
+          () => namespacedStorageRef.putFile('foo', {}),
           'putFile',
         );
       });
@@ -405,10 +424,12 @@ describe('Storage', function () {
       it('writeToFile()', function () {
         const storage = getStorage();
         const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => writeToFile(storageRef, 'foo'),
-          // @ts-expect-error Combines modular and namespace API
-          () => storageRef.writeToFile('foo'),
+          () => namespacedStorageRef.writeToFile('foo'),
           'writeToFile',
         );
       });
@@ -423,10 +444,12 @@ describe('Storage', function () {
       it('ref() with child path', function () {
         const storage = getStorage();
         const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => ref(storageRef, 'bar'),
-          // @ts-expect-error Combines modular and namespace API
-          () => storageRef.child('bar'),
+          () => namespacedStorageRef.child('bar'),
           'child',
         );
       });
