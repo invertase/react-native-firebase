@@ -84,7 +84,6 @@ function wrapSnapshotEventListener(
       const taskSnapshot = Object.assign({}, snapshot);
       taskSnapshot.task = task as Task;
       taskSnapshot.ref = task._ref;
-      taskSnapshot.state = taskSnapshot.state;
 
       if (!taskSnapshot.metadata) {
         taskSnapshot.metadata = createEmptyMetadata(task._ref);
