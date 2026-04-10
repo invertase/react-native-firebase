@@ -22,6 +22,8 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/dist/module/internal';
+import type { AppDistributionRelease } from './types/app-distribution';
+import type { FirebaseAppDistributionTypes } from './types/namespaced';
 import { version } from './version';
 
 const statics = {};
@@ -34,7 +36,7 @@ function rejectUnsupportedPlatform<T>(): Promise<T> {
   return Promise.reject(new Error('App Distribution is not supported on this platform.'));
 }
 
-class FirebaseAppDistributionModule extends FirebaseModule {
+class FirebaseAppDistributionModule extends FirebaseModule<typeof nativeModuleName> {
   isTesterSignedIn(): Promise<boolean> {
     if (isIOS) {
       return this.native.isTesterSignedIn();
@@ -51,7 +53,7 @@ class FirebaseAppDistributionModule extends FirebaseModule {
     return rejectUnsupportedPlatform();
   }
 
-  checkForUpdate(): Promise<FirebaseAppDistributionTypes.AppDistributionRelease> {
+  checkForUpdate(): Promise<AppDistributionRelease> {
     if (isIOS) {
       return this.native.checkForUpdate();
     }
@@ -66,23 +68,6 @@ class FirebaseAppDistributionModule extends FirebaseModule {
 
     return rejectUnsupportedPlatform();
   }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace FirebaseAppDistributionTypes {
-  export interface AppDistributionRelease {
-    displayVersion: string;
-    buildVersion: string;
-    releaseNotes: string | null;
-    downloadURL: string;
-    isExpired: boolean;
-  }
-
-  export interface Statics {
-    // firebase.appDistribution.* static props go here
-  }
-
-  export type Module = FirebaseAppDistributionModule;
 }
 
 export const SDK_VERSION = version;
@@ -105,25 +90,7 @@ export default appDistributionNamespace;
 
 export const firebase = getFirebaseRoot() as unknown as ReactNativeFirebase.Module & {
   appDistribution: typeof appDistributionNamespace;
-  app(
-    name?: string,
-  ): ReactNativeFirebase.FirebaseApp & { appDistribution(): FirebaseAppDistributionTypes.Module };
+  app(name?: string): ReactNativeFirebase.FirebaseApp & {
+    appDistribution(): FirebaseAppDistributionTypes.Module;
+  };
 };
-
-declare module '@react-native-firebase/app' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace ReactNativeFirebase {
-    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
-
-    interface Module {
-      appDistribution: FirebaseModuleWithStaticsAndApp<
-        FirebaseAppDistributionTypes.Module,
-        FirebaseAppDistributionTypes.Statics
-      >;
-    }
-
-    interface FirebaseApp {
-      appDistribution(): FirebaseAppDistributionTypes.Module;
-    }
-  }
-}

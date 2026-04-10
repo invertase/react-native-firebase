@@ -15,6 +15,9 @@
  *
  */
 
+export type { AppDistribution, AppDistributionRelease } from './types/app-distribution';
+export type { FirebaseAppDistributionTypes } from './types/namespaced';
+
 export * from './modular';
 export * from './namespaced';
 export { default } from './namespaced';

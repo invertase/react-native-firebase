@@ -18,10 +18,10 @@
 import { getApp } from '@react-native-firebase/app';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
-import type { FirebaseAppDistributionTypes } from './namespaced';
+import type { AppDistribution, AppDistributionRelease } from './types/app-distribution';
 import type { AppDistributionWithDeprecationArg } from './types/internal';
 
-export type FirebaseAppDistribution = FirebaseAppDistributionTypes.Module;
+export type FirebaseAppDistribution = AppDistribution;
 
 function ap(appDistribution: FirebaseAppDistribution): AppDistributionWithDeprecationArg {
   return appDistribution as AppDistributionWithDeprecationArg;
@@ -45,7 +45,7 @@ export function signInTester(appDistribution: FirebaseAppDistribution): Promise<
 
 export function checkForUpdate(
   appDistribution: FirebaseAppDistribution,
-): Promise<FirebaseAppDistributionTypes.AppDistributionRelease> {
+): Promise<AppDistributionRelease> {
   return ap(appDistribution).checkForUpdate.call(appDistribution, MODULAR_DEPRECATION_ARG);
 }
 
