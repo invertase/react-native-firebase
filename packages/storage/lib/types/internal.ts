@@ -21,6 +21,7 @@ import type {
   StorageReference,
   EmulatorMockTokenOptions,
   SettableMetadata,
+  UploadMetadata,
   Task,
   TaskSnapshot,
   FullMetadata,
@@ -98,15 +99,15 @@ export type StorageReferenceInternal = StorageReference & {
   getMetadata(): Promise<FullMetadata>;
   list(options?: ListOptions): Promise<ListResult>;
   listAll(): Promise<ListResult>;
-  put(data: Blob | Uint8Array | ArrayBuffer, metadata?: SettableMetadata): Task;
+  put(data: Blob | Uint8Array | ArrayBuffer, metadata?: UploadMetadata): Task;
   putString(
     string: string,
     format?: 'raw' | 'base64' | 'base64url' | 'data_url',
-    metadata?: SettableMetadata,
+    metadata?: UploadMetadata,
   ): Task;
   updateMetadata(metadata: SettableMetadata): Promise<FullMetadata>;
   writeToFile(filePath: string): Task;
-  putFile(filePath: string, metadata?: SettableMetadata): Task;
+  putFile(filePath: string, metadata?: UploadMetadata): Task;
 };
 
 /**
@@ -154,13 +155,13 @@ export interface RNFBStorageModule {
     url: string,
     data: string,
     format: string,
-    metadata: SettableMetadata | undefined,
+    metadata: UploadMetadata | undefined,
     taskId: number,
   ): Promise<TaskSnapshot>;
   putFile(
     url: string,
     filePath: string,
-    metadata: SettableMetadata | undefined,
+    metadata: UploadMetadata | undefined,
     taskId: number,
   ): Promise<TaskSnapshot>;
   writeToFile(url: string, filePath: string, taskId: number): Promise<TaskSnapshot>;

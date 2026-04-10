@@ -269,7 +269,7 @@ export function updateMetadata(
  * Uploads data to this object's location. The upload is not resumable.
  * @param storageRef - Storage `Reference` instance.
  * @param data - The data (Blob | Uint8Array | ArrayBuffer) to upload to the storage bucket at the reference location.
- * @param metadata - A Storage `SettableMetadata` instance to update. Optional.
+ * @param metadata - A Storage `UploadMetadata` instance to update. Optional.
  * @returns {Promise<TaskResult>}
  */
 export async function uploadBytes(
@@ -284,7 +284,7 @@ export async function uploadBytes(
  * Uploads data to this object's location. The upload is not resumable.
  * @param storageRef - Storage `Reference` instance.
  * @param data - The data (Blob | Uint8Array | ArrayBuffer) to upload to the storage bucket at the reference location.
- * @param metadata - A Storage `SettableMetadata` instance to update. Optional.
+ * @param metadata - A Storage `UploadMetadata` instance to update. Optional.
  * @returns {Task}
  */
 export function uploadBytesResumable(
@@ -304,7 +304,7 @@ export function uploadBytesResumable(
  * @param storageRef - Storage `Reference` instance.
  * @param value - The string to upload.
  * @param format - The format of the string to upload ('raw' | 'base64' | 'base64url' | 'data_url'). Optional.
- * @param metadata - A Storage `SettableMetadata` instance to update. Optional.
+ * @param metadata - A Storage `UploadMetadata` instance to update. Optional.
  * @returns {Task}
  */
 export function uploadString(
@@ -354,13 +354,13 @@ export function setMaxUploadRetryTime(storage: FirebaseStorage, time: number): P
  * Puts a file from local disk onto the storage bucket.
  * @param storageRef - Storage Reference instance.
  * @param localFilePath The local file path to upload to the bucket at the reference location.
- * @param metadata Any additional `SettableMetadata` for this task.
+ * @param metadata Any additional `UploadMetadata` for this task.
  * @returns {Task}
  */
 export function putFile(
   storageRef: StorageReference,
   filePath: string,
-  metadata?: SettableMetadata,
+  metadata?: UploadMetadata,
 ): Task {
   return (
     (storageRef as StorageReferenceInternal).putFile as WithModularDeprecationArg<

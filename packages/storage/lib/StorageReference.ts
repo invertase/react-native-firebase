@@ -39,6 +39,7 @@ import { validateMetadata } from './utils';
 import type {
   StorageReference,
   SettableMetadata,
+  UploadMetadata,
   ListOptions,
   FullMetadata,
   Task,
@@ -202,17 +203,15 @@ export default class Reference extends ReferenceBase implements StorageReference
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#put
    */
-  put(data: Blob | Uint8Array | ArrayBuffer, metadata?: SettableMetadata): Task {
-    if (!isUndefined(metadata)) {
-      validateMetadata(metadata, false);
-    }
+  put(data: Blob | Uint8Array | ArrayBuffer, metadata?: UploadMetadata): Task {
+    const validatedMetadata = isUndefined(metadata) ? metadata : validateMetadata(metadata, false);
 
     return new StorageUploadTask(this, task =>
       Base64.fromData(data).then(({ string, format }) => {
         const { _string, _format, _metadata } = this._updateString(
           string as string,
           format,
-          metadata,
+          validatedMetadata,
           false,
         );
         return this._storage.native.putString(
@@ -232,7 +231,7 @@ export default class Reference extends ReferenceBase implements StorageReference
   putString(
     string: string,
     format: (typeof StringFormat)[keyof typeof StringFormat] = StringFormat.RAW,
-    metadata?: SettableMetadata,
+    metadata?: UploadMetadata,
   ): Task {
     const { _string, _format, _metadata } = this._updateString(string, format, metadata, false);
 
@@ -256,8 +255,8 @@ export default class Reference extends ReferenceBase implements StorageReference
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#updateMetadata
    */
   updateMetadata(metadata: SettableMetadata): Promise<FullMetadata> {
-    validateMetadata(metadata);
-    return this._storage.native.updateMetadata(this.toString(), metadata);
+    const validatedMetadata = validateMetadata(metadata);
+    return this._storage.native.updateMetadata(this.toString(), validatedMetadata);
   }
 
   /* ----------------------------------------
@@ -282,10 +281,8 @@ export default class Reference extends ReferenceBase implements StorageReference
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference
    */
-  putFile(filePath: string, metadata?: SettableMetadata): Task {
-    if (!isUndefined(metadata)) {
-      validateMetadata(metadata, false);
-    }
+  putFile(filePath: string, metadata?: UploadMetadata): Task {
+    const validatedMetadata = isUndefined(metadata) ? metadata : validateMetadata(metadata, false);
 
     if (!isString(filePath)) {
       throw new Error(
@@ -294,16 +291,21 @@ export default class Reference extends ReferenceBase implements StorageReference
     }
 
     return new StorageUploadTask(this, task =>
-      this._storage.native.putFile(this.toString(), toFilePath(filePath), metadata, task._id),
+      this._storage.native.putFile(
+        this.toString(),
+        toFilePath(filePath),
+        validatedMetadata,
+        task._id,
+      ),
     );
   }
 
   _updateString(
     string: string,
     format: (typeof StringFormat)[keyof typeof StringFormat],
-    metadata: SettableMetadata | undefined,
+    metadata: UploadMetadata | undefined,
     update = false,
-  ): { _string: string; _format: string; _metadata: SettableMetadata | undefined } {
+  ): { _string: string; _format: string; _metadata: UploadMetadata | undefined } {
     if (!isString(string)) {
       throw new Error(
         "firebase.storage.StorageReference.putString(*, _, _) 'string' expects a string value.",
@@ -319,7 +321,7 @@ export default class Reference extends ReferenceBase implements StorageReference
     }
 
     if (!isUndefined(metadata)) {
-      validateMetadata(metadata, update);
+      metadata = validateMetadata(metadata, update) as UploadMetadata;
     }
 
     let _string = string;

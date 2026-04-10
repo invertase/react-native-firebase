@@ -17,7 +17,7 @@
 
 import { isNull, isObject, isString } from '@react-native-firebase/app/dist/module/common';
 import { NativeFirebaseError } from '@react-native-firebase/app/dist/module/internal';
-import type { SettableMetadata } from './types/storage';
+import type { SettableMetadata, UploadMetadata } from './types/storage';
 import type { StorageInternal } from './types/internal';
 import type { NativeErrorUserInfo } from '@react-native-firebase/app/dist/module/types/internal';
 
@@ -28,8 +28,11 @@ const SETTABLE_FIELDS = [
   'contentLanguage',
   'contentType',
   'customMetadata',
-  'md5hash',
+  'md5Hash',
 ] as const;
+
+const LEGACY_MD5_HASH_FIELD = 'md5hash';
+const MD5_HASH_FIELD = 'md5Hash';
 
 export async function handleStorageEvent(
   storageInstance: StorageInternal,
@@ -76,33 +79,49 @@ export function getGsUrlParts(url: string): { bucket: string; path: string } {
   return { bucket, path };
 }
 
-export function validateMetadata(metadata: SettableMetadata, update = true): SettableMetadata {
+export function validateMetadata(
+  metadata: SettableMetadata | UploadMetadata,
+  update = true,
+): SettableMetadata | UploadMetadata {
   if (!isObject(metadata)) {
     throw new Error('firebase.storage.SettableMetadata must be an object value if provided.');
   }
 
   const metadataEntries = Object.entries(metadata);
+  const validatedMetadata: Record<string, unknown> = {};
+  let hasLegacyMd5Hash = false;
+  let hasMd5Hash = false;
 
   for (let i = 0; i < metadataEntries.length; i++) {
     const entry = metadataEntries[i];
     if (!entry) continue;
     const [key, value] = entry;
+    const normalizedKey = key === LEGACY_MD5_HASH_FIELD ? MD5_HASH_FIELD : key;
+
+    if (key === LEGACY_MD5_HASH_FIELD) {
+      hasLegacyMd5Hash = true;
+    }
+
+    if (key === MD5_HASH_FIELD) {
+      hasMd5Hash = true;
+    }
+
     // validate keys
-    if (!SETTABLE_FIELDS.includes(key as (typeof SETTABLE_FIELDS)[number])) {
+    if (!SETTABLE_FIELDS.includes(normalizedKey as (typeof SETTABLE_FIELDS)[number])) {
       throw new Error(
         `firebase.storage.SettableMetadata unknown property '${key}' provided for metadata.`,
       );
     }
 
     // md5 is only allowed on put, not on update
-    if (key === 'md5hash' && update === true) {
+    if (normalizedKey === MD5_HASH_FIELD && update === true) {
       throw new Error(
-        `firebase.storage.SettableMetadata md5hash may only be set on upload, not on updateMetadata`,
+        `firebase.storage.SettableMetadata ${MD5_HASH_FIELD} may only be set on upload, not on updateMetadata`,
       );
     }
 
     // validate values
-    if (key !== 'customMetadata') {
+    if (normalizedKey !== 'customMetadata') {
       if (!isString(value) && !isNull(value)) {
         throw new Error(
           `firebase.storage.SettableMetadata invalid property '${key}' should be a string or null value.`,
@@ -113,7 +132,15 @@ export function validateMetadata(metadata: SettableMetadata, update = true): Set
         'firebase.storage.SettableMetadata.customMetadata must be an object of keys and string values or null value.',
       );
     }
+
+    validatedMetadata[normalizedKey] = value;
   }
 
-  return metadata;
+  if (hasLegacyMd5Hash && hasMd5Hash) {
+    throw new Error(
+      "firebase.storage.SettableMetadata cannot contain both 'md5Hash' and legacy 'md5hash' properties.",
+    );
+  }
+
+  return validatedMetadata as SettableMetadata | UploadMetadata;
 }

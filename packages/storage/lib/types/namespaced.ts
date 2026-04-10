@@ -641,9 +641,9 @@ export namespace FirebaseStorageTypes {
      * ```
      *
      * @param localFilePath The local file path to upload to the bucket at the reference location.
-     * @param metadata Any additional `SettableMetadata` for this task.
+     * @param metadata Any additional `UploadMetadata` for this task.
      */
-    putFile(localFilePath: string, metadata?: SettableMetadata): Task;
+    putFile(localFilePath: string, metadata?: UploadMetadata): Task;
 
     /**
      * Downloads a file to the specified local file path on the device.
@@ -676,7 +676,7 @@ export namespace FirebaseStorageTypes {
      * @param data The data to upload to the storage bucket at the reference location.
      * @param metadata
      */
-    put(data: Blob | Uint8Array | ArrayBuffer, metadata?: SettableMetadata): Task;
+    put(data: Blob | Uint8Array | ArrayBuffer, metadata?: UploadMetadata): Task;
 
     /**
      * Puts a string on the storage bucket. Depending on the string type, set a {@link StringFormat} type.
@@ -692,12 +692,12 @@ export namespace FirebaseStorageTypes {
      *
      * @param data The string data, must match the format provided.
      * @param format The format type of the string, e.g. a Base64 format string.
-     * @param metadata Any additional `SettableMetadata` for this task.
+     * @param metadata Any additional `UploadMetadata` for this task.
      */
     putString(
       data: string,
       format?: 'raw' | 'base64' | 'base64url' | 'data_url',
-      metadata?: SettableMetadata,
+      metadata?: UploadMetadata,
     ): Task;
 
     /**
