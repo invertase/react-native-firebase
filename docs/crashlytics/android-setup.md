@@ -57,12 +57,30 @@ apply plugin: 'com.google.firebase.crashlytics'
 // ..
 ```
 
-## 4. (Optional) Enable Crashlytics NDK reporting
+## 4. (Optional) Configure Crashlytics NDK and GWP-ASan support
+
+### Enable NDK Crash Reporting
 
 Crashlytics NDK reporting allows you to capture Native Development Kit crashes, e.g. in React Native this will capture
 crashes originating from the Yoga layout engine.
 
-Add the `firebaseCrashlytics` block line to the `android/app/build.gradle` file:
+To enable NDK crash reporting, add the following to your `firebase.json` file:
+
+```json
+{
+  "react-native": {
+    "crashlytics_ndk_enabled": true
+  }
+}
+```
+
+When `crashlytics_ndk_enabled` is set to `true`, React Native Firebase will automatically:
+- Enable NDK crash reporting in the manifest
+- Configure automatic native symbol upload for all release build variants
+
+> **Note**: The automatic symbol upload configuration works with standard release builds and custom build flavors (e.g., `playRelease`, `premiumRelease`). Any build variant with "release" in its name will have symbol upload enabled.
+
+If you need to manually configure symbol upload or override the automatic configuration, you can add the `firebaseCrashlytics` block to your `android/app/build.gradle` file:
 
 ```groovy
 android {
@@ -70,10 +88,6 @@ android {
 
     buildTypes {
         release {
-            /* Add the firebaseCrashlytics extension (by default,
-            * it's disabled to improve build speeds) and set
-            * nativeSymbolUploadEnabled to true along with a pointer to native libs. */
-
             firebaseCrashlytics {
                 nativeSymbolUploadEnabled true
                 unstrippedNativeLibsDir 'build/intermediates/merged_native_libs/release/out/lib'
@@ -83,6 +97,25 @@ android {
     }
 }
 ```
+
+### Configure GWP-ASan Mode
+
+[GWP-ASan](https://developer.android.com/ndk/guides/gwp-asan) (GWP-AddressSanitizer) is a native memory allocator feature that helps detect heap memory errors. You can configure its behavior using `firebase.json`:
+
+```json
+{
+  "react-native": {
+    "crashlytics_gwp_asan_mode": "default"
+  }
+}
+```
+
+Available values:
+- `"default"` - The default behavior (system-determined, typically enabled for a small percentage of devices)
+- `"never"` - Disable GWP-ASan completely
+- `"always"` - Enable GWP-ASan on all devices (useful for testing, but not recommended for production due to performance impact)
+
+> **Recommended**: Use `"default"` for production builds to get memory error detection with minimal performance impact.
 
 ## 5. Rebuild the project
 
