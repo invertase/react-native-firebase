@@ -409,14 +409,14 @@ describe('storage() modular', function () {
       refObj.toString().should.equal(url);
     });
 
-    it('throws an error if url is not a string', async function () {
+    it('throws a path error if argument is not a string', async function () {
       try {
         const { getStorage, ref } = storageModular;
 
         ref(getStorage(), { derp: true });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql("'url' must be a string value");
+        error.message.should.containEql("'path' must be a string value");
         return Promise.resolve();
       }
     });
