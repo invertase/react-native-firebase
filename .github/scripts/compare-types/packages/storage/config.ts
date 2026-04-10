@@ -25,6 +25,19 @@ const config: PackageConfig = {
   // Missing in RN Firebase
   // ---------------------------------------------------------------------------
   missingInRN: [
+    {
+      name: 'StorageError',
+      reason:
+        'RN Firebase surfaces Storage failures as `NativeFirebaseError` instances from ' +
+        '`@react-native-firebase/app` rather than exporting the firebase-js-sdk web ' +
+        '`StorageError` subclass.',
+    },
+    {
+      name: 'StorageErrorCode',
+      reason:
+        'RN Firebase does not export the firebase-js-sdk `StorageErrorCode` enum. ' +
+        'Errors instead expose native bridge `code` strings via `NativeFirebaseError`.',
+    },
   ],
 
   // ---------------------------------------------------------------------------
