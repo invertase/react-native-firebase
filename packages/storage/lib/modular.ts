@@ -37,9 +37,12 @@ type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
   : never;
 
 export function isUrl(path?: string): boolean {
-  return /^[A-Za-z]+:\/\//.test(path as string);
-}
+  if (typeof path !== 'string') {
+    return false;
+  }
 
+  return /^[A-Za-z]+:\/\//.test(decodeURIComponent(path));
+}
 
 /**
  * Returns a Storage instance for the given app.
