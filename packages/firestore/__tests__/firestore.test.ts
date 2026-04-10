@@ -974,7 +974,9 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const query = collection(firestore, 'test');
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => getCountFromServer(query),
@@ -987,7 +989,9 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const query = collection(firestore, 'test');
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => getCountFromServer(query),
@@ -997,7 +1001,9 @@ describe('Firestore', function () {
       });
 
       it('CollectionReference.endAt()', function () {
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => endAt('foo'),
@@ -1007,7 +1013,9 @@ describe('Firestore', function () {
       });
 
       it('CollectionReference.endBefore()', function () {
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => endBefore('foo'),
@@ -1020,7 +1028,9 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const query = collection(firestore, 'test');
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => getDocs(query),
@@ -1030,7 +1040,9 @@ describe('Firestore', function () {
       });
 
       it('CollectionReference.isEqual()', function () {
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           // no equivalent method
@@ -1041,7 +1053,9 @@ describe('Firestore', function () {
       });
 
       it('CollectionReference.limit()', function () {
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => limit(9),
@@ -1051,7 +1065,9 @@ describe('Firestore', function () {
       });
 
       it('CollectionReference.limitToLast()', function () {
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => limitToLast(9),
@@ -1064,7 +1080,9 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const query = collection(firestore, 'test');
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => onSnapshot(query, () => {}),
@@ -1074,7 +1092,9 @@ describe('Firestore', function () {
       });
 
       it('CollectionReference.orderBy()', function () {
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => orderBy('foo', 'asc'),
@@ -1084,7 +1104,9 @@ describe('Firestore', function () {
       });
 
       it('CollectionReference.startAfter()', function () {
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => startAfter('foo'),
@@ -1094,7 +1116,9 @@ describe('Firestore', function () {
       });
 
       it('CollectionReference.startAt()', function () {
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => startAt('foo'),
@@ -1104,7 +1128,9 @@ describe('Firestore', function () {
       });
 
       it('CollectionReference.where()', function () {
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => where('foo', '==', 'bar'),
@@ -1117,7 +1143,9 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const query = collection(firestore, 'test');
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => addDoc(query, { foo: 'bar' }),
@@ -1130,7 +1158,9 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const query = collection(firestore, 'test');
-        const query2 = withDeprecationWarningsSilenced(() => firebase.firestore().collection('test'));
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => doc(query, 'bar'),
@@ -1454,7 +1484,9 @@ describe('Firestore', function () {
 
     describe('Timestamp', function () {
       it('Timestamp.seconds', function () {
-        const timestamp2 = withDeprecationWarningsSilenced(() => new firebase.firestore.Timestamp(2, 3));
+        const timestamp2 = withDeprecationWarningsSilenced(
+          () => new firebase.firestore.Timestamp(2, 3),
+        );
         timestampV9Deprecation(
           () => new Timestamp(2, 3).seconds,
           () => timestamp2.seconds,
