@@ -8,8 +8,10 @@
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
+    "build:plugin": "rimraf plugin/build && tsc --build plugin",
+    "lint:plugin": "eslint plugin/src/*",
     "compile": "bob build",
-    "prepare": "yarn run build && yarn compile"
+    "prepare": "yarn run build && yarn run build:plugin && yarn compile"
   },
   "repository": {
     "type": "git",
@@ -23,7 +25,8 @@
     "analytics"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "24.0.0"
+    "@react-native-firebase/app": "24.0.0",
+    "expo": ">=47.0.0"
   },
   "publishConfig": {
     "access": "public",
@@ -33,7 +36,14 @@
     "superstruct": "^2.0.2"
   },
   "devDependencies": {
-    "react-native-builder-bob": "^0.40.17"
+    "expo": "^55.0.5",
+    "react-native-builder-bob": "^0.40.17",
+    "typescript": "^5.9.3"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   },
   "exports": {
     ".": {
@@ -41,6 +51,7 @@
       "types": "./dist/typescript/lib/index.d.ts",
       "default": "./dist/module/index.js"
     },
+    "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json"
   },
   "react-native-builder-bob": {
