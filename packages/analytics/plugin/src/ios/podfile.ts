@@ -18,10 +18,6 @@ export function setAnalyticsPodfileWithoutAdIdSupport(
     return removeGeneratedContents(src, TAG) ?? src;
   }
 
-  if (src.includes(FLAG)) {
-    return src;
-  }
-
   return mergeContents({
     src,
     newSrc: FLAG,

@@ -13,5 +13,5 @@ const withRnFirebaseAnalytics: ConfigPlugin<PluginConfigType> = (config, props) 
   ]);
 };
 
-const pak = require('@react-native-firebase/analytics/package.json');
+const pak = require('../../package.json');
 export default createRunOncePlugin(withRnFirebaseAnalytics, pak.name, pak.version);
