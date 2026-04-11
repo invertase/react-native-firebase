@@ -32,7 +32,7 @@ export const withIosWithoutAdIdSupport: ConfigPlugin<PluginConfigType> = (config
   return withPodfile(config, config => {
     config.modResults.contents = setAnalyticsPodfileWithoutAdIdSupport(
       config.modResults.contents,
-      props.ios?.withoutAdIdSupport === true,
+      props?.ios?.withoutAdIdSupport === true,
     );
 
     return config;
