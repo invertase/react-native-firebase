@@ -38,6 +38,29 @@ Requires `@react-native-firebase/app` to be installed.
 yarn add @react-native-firebase/analytics
 ```
 
+### Expo
+
+If you use Expo, including EAS Build, and want to build iOS Analytics without Ad ID support, add the Analytics config plugin to your `app.json` / `app.config.js`:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "@react-native-firebase/analytics",
+        {
+          "ios": {
+            "withoutAdIdSupport": true
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+This adds `$RNFirebaseAnalyticsWithoutAdIdSupport = true` to the generated iOS `Podfile` during prebuild, which excludes `FirebaseAnalytics/IdentitySupport`.
+
 ## Documentation
 
 - [Quick Start](https://rnfirebase.io/analytics/usage)
