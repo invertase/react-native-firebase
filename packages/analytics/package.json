@@ -9,7 +9,7 @@
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "build:plugin": "rimraf plugin/build && tsc --build plugin",
-    "lint:plugin": "eslint plugin/src/*",
+    "lint:plugin": "eslint \"plugin/src/**/*.{ts,js}\"",
     "compile": "bob build",
     "prepare": "yarn run build && yarn run build:plugin && yarn compile"
   },
