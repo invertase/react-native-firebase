@@ -94,7 +94,7 @@ function App() {
       <Button
         title="Add To Basket"
         onPress={async () =>
-          await logEvent(analytics, ('basket', {
+          await logEvent(analytics, 'basket', {
             id: 3745092,
             item: 'mens grey t-shirt',
             description: ['round neck', 'long sleeved'],
