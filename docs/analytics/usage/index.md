@@ -377,10 +377,9 @@ import { name as appName } from './app.json';
 
 //    \/  Add these lines below
 import { setLogLevel } from '@react-native-firebase/app';
+
 // Enable debug mode for react-native-firebase v22:
-if (__DEV__) {
-  setLogLevel('debug'); // use 'debug' or 'verbose'
-}
+if (__DEV__) setLogLevel('debug'); // use 'debug' or 'verbose' 
 //    /\  Add these lines above
 
 AppRegistry.registerComponent(appName, () => App);
