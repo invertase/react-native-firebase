@@ -55,6 +55,7 @@ Different event types require different parameters (some require no parameters, 
 
 Below is an example showing how a custom event can be logged. Please be aware that primitive data types or arrays of primitive data types are logged in your Firebase Analytics console.
 
+For React Native Firebase <= v21 
 ```jsx
 import react, { useEffect } from 'react';
 import { View, Button } from 'react-native';
@@ -79,6 +80,33 @@ function App() {
 }
 ```
 
+For React Native Firebase >= v22 
+```jsx
+import react, { useEffect } from 'react';
+import { View, Button } from 'react-native';
+import { getAnalytics, logEvent } from '@react-native-firebase/analytics';
+
+const analytics = getAnalytics();
+
+function App() {
+  return (
+    <View>
+      <Button
+        title="Add To Basket"
+        onPress={async () =>
+          await logEvent(analytics, ('basket', {
+            id: 3745092,
+            item: 'mens grey t-shirt',
+            description: ['round neck', 'long sleeved'],
+            size: 'L',
+          })
+        }
+      />
+    </View>
+  );
+}
+```
+
 ## Predefined Events
 
 To help you get started, Analytics provides a number of [event methods](/reference/analytics) that are common among
@@ -88,6 +116,7 @@ articles in the Firebase Help Center.
 
 Below is a sample of how to use one of the predefined methods the Analytics module provides for you:
 
+For React Native Firebase <= v21 
 ```jsx
 import react, { useEffect } from 'react';
 import { View, Button } from 'react-native';
@@ -102,6 +131,33 @@ function App() {
         // only accepts the two object properties which accept strings.
         onPress={async () =>
           await analytics().logSelectContent({
+            content_type: 'clothing',
+            item_id: 'abcd',
+          })
+        }
+      />
+    </View>
+  );
+}
+```
+
+For React Native Firebase >= v22
+```jsx
+import react, { useEffect } from 'react';
+import { View, Button } from 'react-native';
+import { getAnalytics, logSelectContent } from '@react-native-firebase/analytics';
+
+const analytics = getAnalytics();
+
+function App() {
+  return (
+    <View>
+      <Button
+        title="Press me"
+        // Logs in the firebase analytics console as "select_content" event
+        // only accepts the two object properties which accept strings.
+        onPress={async () =>
+          await logSelectContent(analytics, {
             content_type: 'clothing',
             item_id: 'abcd',
           })
@@ -139,10 +195,19 @@ Below is an example showing how to retrieve the app instance id of the applicati
 if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on
 iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
 
+For React Native Firebase <= v21
 ```jsx
 import analytics from '@react-native-firebase/analytics';
 // ...
 const appInstanceId = await analytics().getAppInstanceId();
+```
+
+For React Native Firebase >= v22
+```jsx
+import { getAnalytics, getAppInstanceId } from '@react-native-firebase/analytics';
+const analytics = getAnalytics();
+// ...
+const appInstanceId = await getAppInstanceId(analytics);
 ```
 
 ### Web / Other platform instance id
@@ -202,18 +267,41 @@ on the `firebase.json` file at the root of your project directory.
 
 To re-enable analytics (e.g. once you have the users consent), call the `setAnalyticsCollectionEnabled` method:
 
+For React Native Firebase <= v21
 ```js
 import { firebase } from '@react-native-firebase/analytics';
 // ...
 await firebase.analytics().setAnalyticsCollectionEnabled(true);
 ```
 
+For React Native Firebase >= v22
+```js
+import { getAnalytics, setAnalyticsCollectionEnabled } from '@react-native-firebase/analytics';
+const analytics = getAnalytics();
+// ...
+await setAnalyticsCollectionEnabled(analytics, true);
+```
+
 To update user's consent (e.g. once you have the users consent), call the `setConsent` method:
 
+For React Native Firebase <= v21
 ```js
 import { firebase } from '@react-native-firebase/analytics';
 // ...
 await firebase.analytics().setConsent({
+  analytics_storage: true,
+  ad_storage: true,
+  ad_user_data: true,
+  ad_personalization: true,
+});
+```
+
+For React Native Firebase >= v22
+```js
+import { getAnalytics, setConsent } from '@react-native-firebase/analytics';
+const analytics = getAnalytics();
+// ...
+await setConsent(analytics, {
   analytics_storage: true,
   ad_storage: true,
   ad_user_data: true,
@@ -263,6 +351,7 @@ This toggle must be set to the value you want before accessing the analytics ins
 
 For example, you might modify your index.js file like so:
 
+For React Native Firebase <= v21
 ```javascript
 /**
  * @format
@@ -275,6 +364,24 @@ import { name as appName } from './app.json';
 //    \/  Add these lines below
 // Enable debug mode for react-native-firebase:
 if (__DEV__) globalThis.RNFBDebug = true;
+//    /\  Add these lines above
+
+AppRegistry.registerComponent(appName, () => App);
+```
+
+For React Native Firebase >= v22
+```javascript
+import { AppRegistry } from 'react-native';
+import App from './App';
+import { name as appName } from './app.json';
+
+//    \/  Add these lines below
+import { firebase } from '@react-native-firebase/app';
+// Enable debug mode for react-native-firebase v22:
+if (__DEV__) {
+  firebase.app().setAutomaticResourceManagementEnabled(true);   
+  firebase.app().utils().setLogLevel('debug'); // use setLogLevel to 'debug' or 'verbose'
+}
 //    /\  Add these lines above
 
 AppRegistry.registerComponent(appName, () => App);
