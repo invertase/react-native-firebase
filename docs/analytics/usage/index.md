@@ -376,11 +376,10 @@ import App from './App';
 import { name as appName } from './app.json';
 
 //    \/  Add these lines below
-import { firebase } from '@react-native-firebase/app';
+import { setLogLevel } from '@react-native-firebase/app';
 // Enable debug mode for react-native-firebase v22:
 if (__DEV__) {
-  firebase.app().setAutomaticResourceManagementEnabled(true);   
-  firebase.app().utils().setLogLevel('debug'); // use setLogLevel to 'debug' or 'verbose'
+  setLogLevel('debug'); // use 'debug' or 'verbose'
 }
 //    /\  Add these lines above
 
