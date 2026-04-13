@@ -57,7 +57,6 @@ import type {
   StoredConfigValueInternal,
 } from './types/internal';
 import { version } from './version';
-// @ts-expect-error Temporary JS support file during TS migration scaffolding.
 import fallBackModule from './web/RNFBConfigModule';
 
 function isSuccessEvent(
