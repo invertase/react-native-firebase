@@ -30,6 +30,7 @@ import type {
   LastFetchStatusType,
   RemoteConfig,
   RemoteConfigLogLevel,
+  Unsubscribe,
 } from './types/remote-config';
 import type { AppWithRemoteConfigInternal, RemoteConfigInternal } from './types/internal';
 import type { FirebaseRemoteConfigTypes } from './types/namespaced';
@@ -238,7 +239,7 @@ export function setDefaultsFromResource(
 export function onConfigUpdate(
   remoteConfig: RemoteConfig,
   observer: ConfigUpdateObserver,
-): () => void {
+): Unsubscribe {
   return ap(remoteConfig).onConfigUpdate.call(remoteConfig, observer, MODULAR_DEPRECATION_ARG);
 }
 
