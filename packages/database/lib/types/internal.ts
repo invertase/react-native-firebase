@@ -15,25 +15,17 @@
  *
  */
 
-export * from './modular';
+import type { Database, ServerValue } from './database';
 
-export type {
-  Database,
-  ServerValue,
-  TransactionResult,
-  DatabaseReference,
-  ThenableReference,
-  Query,
-  OnDisconnect,
-  EventType,
-  DataSnapshot,
-  Unsubscribe,
-  ListenOptions,
-  QueryConstraintType,
-  QueryConstraint,
-  TransactionOptions,
-} from './types/database';
-export type { FirebaseDatabaseTypes } from './types/namespaced';
+/** Optional final argument passed by modular API wrappers (MODULAR_DEPRECATION_ARG). */
+export type DatabaseModularDeprecationArg = string;
 
-export { SDK_VERSION, firebase } from './namespaced';
-export { default } from './namespaced';
+/** App instance with database() method (e.g. from getApp() when used for getDatabase()). */
+export interface AppWithDatabaseInternal {
+  database(url?: string): Database;
+}
+
+/** Runtime ServerValue object shape used by modular wrappers. */
+export interface ServerValueStaticInternal extends ServerValue {
+  increment(delta: number, deprecationArg?: DatabaseModularDeprecationArg): object;
+}

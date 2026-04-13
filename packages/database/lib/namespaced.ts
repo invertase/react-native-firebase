@@ -29,6 +29,8 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/dist/module/internal';
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseDatabaseTypes } from './types/namespaced';
 // @ts-expect-error Legacy JS module without declarations until type split step.
 import DatabaseReference from './DatabaseReference';
 // @ts-expect-error Legacy JS module without declarations until type split step.
@@ -206,9 +208,27 @@ const databaseNamespace = createModuleNamespace({
   ModuleClass: FirebaseDatabaseModule,
 });
 
-export default databaseNamespace;
+type DatabaseNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseDatabaseTypes.Module,
+  FirebaseDatabaseTypes.Statics
+> & {
+  database: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseDatabaseTypes.Module,
+    FirebaseDatabaseTypes.Statics
+  >;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
 
-export const firebase = getFirebaseRoot();
+export default databaseNamespace as unknown as DatabaseNamespace;
+
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'database',
+    FirebaseDatabaseTypes.Module,
+    FirebaseDatabaseTypes.Statics,
+    true
+  >;
 
 for (const moduleName of nativeModuleName) {
   setReactNativeModule(moduleName, fallBackModule);

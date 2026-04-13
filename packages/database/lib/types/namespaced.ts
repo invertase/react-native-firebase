@@ -53,6 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase database
  */
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace FirebaseDatabaseTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
@@ -1114,7 +1115,7 @@ export namespace FirebaseDatabaseTypes {
    * ```
    *
    */
-  export class Module extends FirebaseModule {
+  export declare class Module extends FirebaseModule {
     /**
      * The current `FirebaseApp` instance for this Firebase service.
      */
@@ -1297,31 +1298,12 @@ type DatabaseNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
 
 declare const defaultExport: DatabaseNamespace;
 
-export const firebase: ReactNativeFirebase.Module & {
+export declare const firebase: ReactNativeFirebase.Module & {
   database: typeof defaultExport;
   app(
     name?: string,
   ): ReactNativeFirebase.FirebaseApp & { database(): FirebaseDatabaseTypes.Module };
 };
-
-export type {
-  Database,
-  ServerValue,
-  TransactionResult,
-  DatabaseReference,
-  ThenableReference,
-  Query,
-  OnDisconnect,
-  EventType,
-  DataSnapshot,
-  Unsubscribe,
-  ListenOptions,
-  QueryConstraintType,
-  QueryConstraint,
-  TransactionOptions,
-} from './types/database';
-
-export * from './modular';
 
 export default defaultExport;
 
@@ -1329,6 +1311,7 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-namespace -- module augmentation uses namespace
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
