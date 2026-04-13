@@ -17,6 +17,7 @@
 
 // Export modular API functions
 export * from './modular';
+export type { FirebaseRemoteConfigTypes } from './types/namespaced';
 
 // Export namespaced API
 export { SDK_VERSION, firebase } from './namespaced';

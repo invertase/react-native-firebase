@@ -14,28 +14,30 @@
  * limitations under the License.
  *
  */
-import { ReactNativeFirebase } from '@react-native-firebase/app';
-import { FirebaseRemoteConfigTypes } from '..';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type {
+  ConfigDefaults,
+  ConfigSettings,
+  ConfigUpdateObserver,
+  ConfigValue,
+  ConfigValues,
+  CustomSignals,
+  LastFetchStatus as LastFetchStatusTypeInterface,
+  LastFetchStatusType,
+  RemoteConfig,
+  RemoteConfigLogLevel,
+  Unsubscribe,
+  ValueSource as ValueSourceTypeInterface,
+} from '../types/remote-config';
+import type { FirebaseRemoteConfigTypes } from '../types/namespaced';
 
-import RemoteConfig = FirebaseRemoteConfigTypes.Module;
-import ConfigValues = FirebaseRemoteConfigTypes.ConfigValues;
-import ConfigValue = FirebaseRemoteConfigTypes.ConfigValue;
-import ConfigDefaults = FirebaseRemoteConfigTypes.ConfigDefaults;
-import ConfigSettings = FirebaseRemoteConfigTypes.ConfigSettings;
-import LastFetchStatusType = FirebaseRemoteConfigTypes.LastFetchStatusType;
-import RemoteConfigLogLevel = FirebaseRemoteConfigTypes.RemoteConfigLogLevel;
-import FirebaseApp = ReactNativeFirebase.FirebaseApp;
-import LastFetchStatusInterface = FirebaseRemoteConfigTypes.LastFetchStatus;
-import ValueSourceInterface = FirebaseRemoteConfigTypes.ValueSource;
-import ConfigUpdateObserver = FirebaseRemoteConfigTypes.ConfigUpdateObserver;
-import Unsubscribe = FirebaseRemoteConfigTypes.Unsubscribe;
-// deprecated: from pre-Web realtime remote-config support - remove with onConfigUpdated
-import CallbackOrObserver = FirebaseRemoteConfigTypes.CallbackOrObserver;
-// deprecated: from pre-Web realtime remote-config support - remove with onConfigUpdated
-import OnConfigUpdatedListenerCallback = FirebaseRemoteConfigTypes.OnConfigUpdatedListenerCallback;
+type FirebaseApp = ReactNativeFirebase.FirebaseApp;
+type CallbackOrObserver<T extends (...args: any[]) => any> =
+  FirebaseRemoteConfigTypes.CallbackOrObserver<T>;
+type OnConfigUpdatedListenerCallback = FirebaseRemoteConfigTypes.OnConfigUpdatedListenerCallback;
 
-export const LastFetchStatus: LastFetchStatusInterface;
-export const ValueSource: ValueSourceInterface;
+export const LastFetchStatus: LastFetchStatusTypeInterface;
+export const ValueSource: ValueSourceTypeInterface;
 
 /**
  * Returns a RemoteConfig instance for the given app.
@@ -241,17 +243,14 @@ export function onConfigUpdated(
   callback: CallbackOrObserver<OnConfigUpdatedListenerCallback>,
 ): () => void;
 
+export type { CustomSignals } from '../types/remote-config';
+
 /**
  * Defines the type for representing custom signals and their values.
  * The values in CustomSignals must be one of the following types: string, number, or null.
  * There are additional limitations on key and value length, for a full description see https://firebase.google.com/docs/remote-config/parameters?template_type=client#custom_signal_conditions
  * Failing to stay within these limitations will result in a silent API failure with only a warning in device logs
  */
-
-export interface CustomSignals {
-  [key: string]: string | number | null;
-}
-
 /**
  * Sets the custom signals for the app instance.
  * @param {RemoteConfig} remoteConfig - RemoteConfig instance
