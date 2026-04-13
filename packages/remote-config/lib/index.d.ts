@@ -20,6 +20,20 @@ import type { FirebaseRemoteConfigTypes } from './types/namespaced';
 
 export type { FirebaseRemoteConfigTypes } from './types/namespaced';
 
+export type {
+  RemoteConfigLogLevel,
+  ConfigValue,
+  ConfigValues,
+  ConfigSettings,
+  ConfigDefaults,
+  LastFetchStatusType,
+  ConfigUpdate,
+  ConfigUpdateObserver,
+  Unsubscribe,
+  CustomSignals,
+  RemoteConfig,
+} from './types/remote-config';
+
 type RemoteConfigNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FirebaseRemoteConfigTypes.Module,
   FirebaseRemoteConfigTypes.Statics

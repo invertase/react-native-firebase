@@ -17,6 +17,19 @@
 
 // Export modular API functions
 export * from './modular';
+export type {
+  RemoteConfigLogLevel,
+  ConfigValue,
+  ConfigValues,
+  ConfigSettings,
+  ConfigDefaults,
+  LastFetchStatusType,
+  ConfigUpdate,
+  ConfigUpdateObserver,
+  Unsubscribe,
+  CustomSignals,
+  RemoteConfig,
+} from './types/remote-config';
 export type { FirebaseRemoteConfigTypes } from './types/namespaced';
 
 // Export namespaced API
