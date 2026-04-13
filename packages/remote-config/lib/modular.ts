@@ -1,4 +1,3 @@
-export * from '../modular';
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -230,4 +229,4 @@ export async function setCustomSignals(
 }
 
 // @ts-expect-error Temporary JS support file during TS migration scaffolding.
-export { LastFetchStatus, ValueSource } from '../statics';
+export { LastFetchStatus, ValueSource } from './statics';
