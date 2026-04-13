@@ -445,6 +445,7 @@ For React-Native-Firebase >= v22
 ```js
 import { getFirestore, collection, query, where, getDocs, Filter } from '@react-native-firebase/firestore';
 
+const db = getFirestore();
 const snapshot = await getDocs(query(
   collection(db, 'Users'),
   where(
