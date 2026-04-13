@@ -27,48 +27,56 @@ import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
+  type ModuleConfig,
 } from '@react-native-firebase/app/dist/module/internal';
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { DatabaseInternal, DatabaseReferenceInternal } from './types/internal';
 import type { FirebaseDatabaseTypes } from './types/namespaced';
-// @ts-expect-error Legacy JS module without declarations until type split step.
+import './types/internal';
 import DatabaseReference from './DatabaseReference';
-// @ts-expect-error Legacy JS module without declarations until type split step.
 import DatabaseStatics from './DatabaseStatics';
-// @ts-expect-error Legacy JS module without declarations until type split step.
 import DatabaseTransaction from './DatabaseTransaction';
-// @ts-expect-error Legacy JS module without declarations until type split step.
 import version from './version';
-// @ts-expect-error Legacy JS module without declarations until type split step.
 import fallBackModule from './web/RNFBDatabaseModule';
 
 const namespace = 'database';
 
-const nativeModuleName: string[] = [
-  'RNFBDatabaseModule',
+const nativeModuleName = 'RNFBDatabaseModule';
+
+const nativeModuleNames = [
+  nativeModuleName,
   'RNFBDatabaseReferenceModule',
   'RNFBDatabaseQueryModule',
   'RNFBDatabaseOnDisconnectModule',
   'RNFBDatabaseTransactionModule',
 ] as const;
 
-class FirebaseDatabaseModule extends FirebaseModule {
+function ap(reference: DatabaseReference): DatabaseReferenceInternal {
+  return reference as DatabaseReferenceInternal;
+}
+
+class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName> {
   _serverTimeOffset: number;
   _customUrlOrRegion: string | null;
   _transaction: DatabaseTransaction;
 
-  constructor(app: any, config: any, databaseUrl?: string | null) {
+  constructor(
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: ModuleConfig,
+    databaseUrl?: string | null,
+  ) {
     super(app, config, databaseUrl);
     this._serverTimeOffset = 0;
     this._customUrlOrRegion = databaseUrl || this.app.options.databaseURL || null;
-    this._transaction = new DatabaseTransaction(this);
+    this._transaction = new DatabaseTransaction(this as unknown as DatabaseInternal);
     setTimeout(() => {
       this._syncServerTimeOffset();
     }, 100);
   }
 
   _syncServerTimeOffset(): void {
-    this.ref('.info/serverTimeOffset').on(
+    ap(this.ref('.info/serverTimeOffset')).on(
       'value',
       (snapshot: { val(): number }) => {
         this._serverTimeOffset = snapshot.val();
@@ -201,7 +209,7 @@ const databaseNamespace = createModuleNamespace({
   statics: DatabaseStatics,
   version,
   namespace,
-  nativeModuleName,
+  nativeModuleName: [...nativeModuleNames],
   nativeEvents: ['database_transaction_event', 'database_sync_event'],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
@@ -230,6 +238,6 @@ export const firebase =
     true
   >;
 
-for (const moduleName of nativeModuleName) {
-  setReactNativeModule(moduleName, fallBackModule);
+for (const moduleName of nativeModuleNames) {
+  setReactNativeModule(moduleName, fallBackModule as unknown as Record<string, unknown>);
 }
