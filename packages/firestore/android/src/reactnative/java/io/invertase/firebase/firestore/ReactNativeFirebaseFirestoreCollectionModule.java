@@ -407,31 +407,36 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       int listenerId,
       QuerySnapshot querySnapshot,
       MetadataChanges metadataChanges) {
-    Tasks.call(
-            getTransactionalExecutor(Integer.toString(listenerId)),
-            () ->
-                snapshotToWritableMap(
-                    appName, databaseId, "onSnapshot", querySnapshot, metadataChanges))
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                WritableMap body = Arguments.createMap();
-                body.putMap("snapshot", task.getResult());
+    try {
+      Tasks.call(
+              getTransactionalExecutor(Integer.toString(listenerId)),
+              () ->
+                  snapshotToWritableMap(
+                      appName, databaseId, "onSnapshot", querySnapshot, metadataChanges))
+          .addOnCompleteListener(
+              task -> {
+                if (task.isSuccessful()) {
+                  WritableMap body = Arguments.createMap();
+                  body.putMap("snapshot", task.getResult());
 
-                ReactNativeFirebaseEventEmitter emitter =
-                    ReactNativeFirebaseEventEmitter.getSharedInstance();
+                  ReactNativeFirebaseEventEmitter emitter =
+                      ReactNativeFirebaseEventEmitter.getSharedInstance();
 
-                emitter.sendEvent(
-                    new ReactNativeFirebaseFirestoreEvent(
-                        ReactNativeFirebaseFirestoreEvent.COLLECTION_EVENT_SYNC,
-                        body,
-                        appName,
-                        databaseId,
-                        listenerId));
-              } else {
-                sendOnSnapshotError(appName, databaseId, listenerId, task.getException());
-              }
-            });
+                  emitter.sendEvent(
+                      new ReactNativeFirebaseFirestoreEvent(
+                          ReactNativeFirebaseFirestoreEvent.COLLECTION_EVENT_SYNC,
+                          body,
+                          appName,
+                          databaseId,
+                          listenerId));
+                } else {
+                  sendOnSnapshotError(appName, databaseId, listenerId, task.getException());
+                }
+              });
+    } catch (java.util.concurrent.RejectedExecutionException e) {
+      // Snapshot arrived after module invalidation shut down the executor.
+      // Safe to drop — the module is being torn down and no JS listener remains.
+    }
   }
 
   private void sendOnSnapshotError(
