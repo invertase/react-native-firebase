@@ -17,6 +17,8 @@ import database, {
   type Database as ModularDatabase,
   type DatabaseReference as ModularDatabaseReference,
   type DataSnapshot as ModularDataSnapshot,
+  type EmulatorMockTokenOptions,
+  type IteratedDataSnapshot,
   type Query as ModularQuery,
   type QueryConstraint,
   type QueryConstraintType,
@@ -135,6 +137,8 @@ rootRef.off('value');
 // checks modular API functions
 const dbModular1: ModularDatabase = getDatabase();
 console.log(dbModular1.app.name);
+const dbType: 'database' = dbModular1.type;
+void dbType;
 
 const dbModular2: ModularDatabase = getDatabase(firebase.app());
 console.log(dbModular2.app.name);
@@ -142,15 +146,12 @@ console.log(dbModular2.app.name);
 const dbModular3: ModularDatabase = getDatabase(firebase.app(), 'https://example.firebaseio.com');
 console.log(dbModular3.app.name);
 
-connectDatabaseEmulator(dbModular1, 'localhost', 9000);
+const mockUserToken: EmulatorMockTokenOptions = { user_id: 'test-user' };
+connectDatabaseEmulator(dbModular1, 'localhost', 9000, { mockUserToken });
 
-goOffline(dbModular1).then(() => {
-  console.log('Offline');
-});
+goOffline(dbModular1);
 
-goOnline(dbModular1).then(() => {
-  console.log('Online');
-});
+goOnline(dbModular1);
 
 const modularRef: ModularDatabaseReference = ref(dbModular1, 'users');
 const modularRef2: ModularDatabaseReference = ref(dbModular1);
@@ -188,6 +189,7 @@ console.log(testQuery);
 const queryConstraintType: QueryConstraintType = 'orderByKey';
 void queryConstraintType;
 const queryConstraint: QueryConstraint = orderByKey();
+console.log(queryConstraint.type);
 void queryConstraint;
 
 // Test all query constraint functions
@@ -276,6 +278,11 @@ setWithPriority(testRef, { foo: 'bar' }, 'high').then(() => {
 
 get(testQuery).then((snapshot: ModularDataSnapshot) => {
   console.log(snapshot.val());
+  console.log(snapshot.priority);
+  console.log(snapshot.size);
+  snapshot.forEach((child: IteratedDataSnapshot) => {
+    console.log(child.key);
+  });
 });
 
 const modularChildRef = child(testRef, 'child');
@@ -283,6 +290,7 @@ console.log(modularChildRef.key);
 
 const onDisconnectRef = onDisconnect(testRef);
 console.log(onDisconnectRef);
+onDisconnectRef.set('offline').then(() => {});
 
 keepSynced(testRef, true).then(() => {
   console.log('Keep synced set');
@@ -304,6 +312,7 @@ runTransaction(testRef, (currentData: any) => {
 }).then((result: ModularTransactionResult) => {
   console.log(result.committed);
   console.log(result.snapshot.val());
+  console.log(result.toJSON());
 });
 
 runTransaction(
@@ -315,3 +324,5 @@ runTransaction(
 ).then((result: ModularTransactionResult) => {
   console.log(result.committed);
 });
+
+console.log(testQuery.isEqual(null));

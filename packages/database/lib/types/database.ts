@@ -15,17 +15,109 @@
  *
  */
 
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import type { FirebaseDatabaseTypes } from './namespaced';
 
-export type Database = FirebaseDatabaseTypes.Module;
+type FirebaseApp = ReactNativeFirebase.FirebaseApp;
+
+type FirebaseSignInProvider =
+  | 'custom'
+  | 'email'
+  | 'password'
+  | 'phone'
+  | 'anonymous'
+  | 'google.com'
+  | 'facebook.com'
+  | 'github.com'
+  | 'twitter.com'
+  | 'microsoft.com'
+  | 'apple.com';
+
+interface FirebaseIdToken {
+  iss: string;
+  aud: string;
+  sub: string;
+  iat: number;
+  exp: number;
+  user_id: string;
+  auth_time: number;
+  provider_id?: 'anonymous';
+  email?: string;
+  email_verified?: boolean;
+  phone_number?: string;
+  name?: string;
+  picture?: string;
+  firebase: {
+    sign_in_provider: FirebaseSignInProvider;
+    identities?: { [provider in FirebaseSignInProvider]?: string[] };
+  };
+  [claim: string]: unknown;
+  uid?: never;
+}
+
+export type EmulatorMockTokenOptions = ({ user_id: string } | { sub: string }) &
+  Partial<FirebaseIdToken>;
+
+export declare class Database {
+  readonly app: FirebaseApp;
+  readonly type: 'database';
+}
+
 export type ServerValue = FirebaseDatabaseTypes.ServerValue;
-export type TransactionResult = FirebaseDatabaseTypes.TransactionResult;
-export type DatabaseReference = FirebaseDatabaseTypes.Reference;
-export type ThenableReference = FirebaseDatabaseTypes.ThenableReference;
-export type Query = FirebaseDatabaseTypes.Query;
-export type OnDisconnect = FirebaseDatabaseTypes.OnDisconnect;
+
+export declare class TransactionResult {
+  readonly committed: boolean;
+  readonly snapshot: DataSnapshot;
+  toJSON(): object;
+}
+
+export interface Query {
+  readonly ref: DatabaseReference;
+  isEqual(other: Query | null): boolean;
+  toJSON(): string;
+  toString(): string;
+}
+
+export interface DatabaseReference extends Query {
+  readonly key: string | null;
+  readonly parent: DatabaseReference | null;
+  readonly root: DatabaseReference;
+}
+
+export interface ThenableReference
+  extends DatabaseReference, Pick<Promise<DatabaseReference>, 'then' | 'catch'> {
+  key: string;
+  parent: DatabaseReference;
+}
+
 export type EventType = FirebaseDatabaseTypes.EventType;
-export type DataSnapshot = FirebaseDatabaseTypes.DataSnapshot;
+
+export interface IteratedDataSnapshot extends DataSnapshot {
+  key: string;
+}
+
+export declare class DataSnapshot {
+  readonly key: string | null;
+  readonly priority: string | number | null;
+  readonly ref: DatabaseReference;
+  readonly size: number;
+  child(path: string): DataSnapshot;
+  exists(): boolean;
+  exportVal(): any;
+  forEach(action: (child: IteratedDataSnapshot) => boolean | void): boolean;
+  hasChild(path: string): boolean;
+  hasChildren(): boolean;
+  toJSON(): object | null;
+  val(): any;
+}
+
+export declare class OnDisconnect {
+  cancel(): Promise<void>;
+  remove(): Promise<void>;
+  set(value: unknown): Promise<void>;
+  setWithPriority(value: unknown, priority: string | number | null): Promise<void>;
+  update(values: object): Promise<void>;
+}
 
 export type Unsubscribe = () => void;
 
@@ -46,9 +138,8 @@ export type QueryConstraintType =
   | 'orderByValue'
   | 'equalTo';
 
-export interface QueryConstraint {
-  readonly _type: QueryConstraintType;
-  _apply(query: Query): Query;
+export declare abstract class QueryConstraint {
+  abstract readonly type: QueryConstraintType;
 }
 
 export interface TransactionOptions {

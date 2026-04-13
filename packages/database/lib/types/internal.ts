@@ -119,7 +119,8 @@ export interface DatabaseTransactionInternal {
 export interface DatabaseModuleInternal {
   readonly native: RNFBDatabaseModule;
   readonly emitter: DatabaseEventEmitterInternal;
-  app: ReactNativeFirebase.FirebaseApp;
+  readonly app: ReactNativeFirebase.FirebaseApp;
+  readonly type: 'database';
   readonly firebaseJson: Record<string, unknown>;
   eventNameForApp(...args: Array<string | number>): string;
   _serverTimeOffset: number;

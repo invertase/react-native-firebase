@@ -1,5 +1,5 @@
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import type { Database, DatabaseReference } from '../types/database';
+import type { Database, DatabaseReference, EmulatorMockTokenOptions } from '../types/database';
 
 type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
@@ -33,11 +33,9 @@ export declare function connectDatabaseEmulator(
   db: Database,
   host: string,
   port: number,
-  // TODO: this exists in both the JS namespaced and modular versions of the SDK.
-  //       But the RNFB namespaced version doesn't have it.
-  // options?: {
-  //   mockUserToken?: EmulatorMockTokenOptions | string;
-  // },
+  options?: {
+    mockUserToken?: EmulatorMockTokenOptions | string;
+  },
 ): void;
 
 /**
@@ -62,7 +60,7 @@ export declare function connectDatabaseEmulator(
  * await goOnline(db);
  * ```
  */
-export declare function goOffline(db: Database): Promise<void>;
+export declare function goOffline(db: Database): void;
 
 /**
  * Reconnects to the server and synchronizes the offline Database state with the server state.
@@ -78,7 +76,7 @@ export declare function goOffline(db: Database): Promise<void>;
  * await goOnline(db);
  * ```
  */
-export declare function goOnline(db: Database): Promise<void>;
+export declare function goOnline(db: Database): void;
 
 /**
  * Returns a `Reference` representing the location in the Database corresponding to the provided path.
@@ -239,6 +237,7 @@ export const ServerValue: {
  * @param persistent
  */
 export declare function enableLogging(enabled: boolean, persistent?: boolean): any;
+export declare function enableLogging(logger: (message: string) => unknown): any;
 
 export * from './query';
 export * from './transaction';

@@ -57,6 +57,7 @@ function ap(reference: DatabaseReference): DatabaseReferenceInternal {
 }
 
 class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName> {
+  readonly type = 'database' as const;
   _serverTimeOffset: number;
   _customUrlOrRegion: string | null;
   _transaction: DatabaseTransaction;

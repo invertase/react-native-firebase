@@ -20,6 +20,7 @@ export { ServerValue } from './modular';
 
 export type {
   Database,
+  EmulatorMockTokenOptions,
   TransactionResult,
   DatabaseReference,
   ThenableReference,
@@ -27,6 +28,7 @@ export type {
   OnDisconnect,
   EventType,
   DataSnapshot,
+  IteratedDataSnapshot,
   Unsubscribe,
   ListenOptions,
   QueryConstraintType,
