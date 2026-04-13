@@ -14,6 +14,7 @@ import path from 'path';
 import type { PackageConfig } from './types';
 
 import aiConfig from '../packages/ai/config';
+import databaseConfig from '../packages/database/config';
 import firestoreConfig from '../packages/firestore/config';
 import firestorePipelinesConfig from '../packages/firestore-pipelines/config';
 
@@ -44,14 +45,7 @@ export interface PackageEntry {
 }
 
 function rnDist(packageName: string): string {
-  return path.join(
-    REPO_ROOT,
-    'packages',
-    packageName,
-    'dist',
-    'typescript',
-    'lib',
-  );
+  return path.join(REPO_ROOT, 'packages', packageName, 'dist', 'typescript', 'lib');
 }
 
 export const packages: PackageEntry[] = [
@@ -73,12 +67,8 @@ export const packages: PackageEntry[] = [
   // },
   {
     name: 'ai',
-    firebaseSdkTypesPaths: [
-      path.join(SCRIPT_DIR, 'packages', 'ai', 'ai-sdk.d.ts'),
-    ],
-    rnFirebaseModularFiles: [
-      path.join(rnDist('ai'), 'index.d.ts'),
-    ],
+    firebaseSdkTypesPaths: [path.join(SCRIPT_DIR, 'packages', 'ai', 'ai-sdk.d.ts')],
+    rnFirebaseModularFiles: [path.join(rnDist('ai'), 'index.d.ts')],
     rnFirebaseSupportFiles: [
       path.join(rnDist('ai'), 'backend.d.ts'),
       path.join(rnDist('ai'), 'errors.d.ts'),
@@ -110,14 +100,30 @@ export const packages: PackageEntry[] = [
     config: aiConfig,
   },
   {
+    name: 'database',
+    firebaseSdkTypesPaths: [path.join(SCRIPT_DIR, 'packages', 'database', 'firebase-sdk.d.ts')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('database'), 'types', 'database.d.ts'),
+      path.join(rnDist('database'), 'modular.d.ts'),
+      path.join(rnDist('database'), 'modular', 'query.d.ts'),
+      path.join(rnDist('database'), 'modular', 'transaction.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('database'), 'types', 'namespaced.d.ts'),
+      path.join(rnDist('database'), 'types', 'internal.d.ts'),
+      path.join(rnDist('database'), 'DatabaseDataSnapshot.d.ts'),
+      path.join(rnDist('database'), 'DatabaseOnDisconnect.d.ts'),
+      path.join(rnDist('database'), 'DatabaseQuery.d.ts'),
+      path.join(rnDist('database'), 'DatabaseReference.d.ts'),
+      path.join(rnDist('database'), 'DatabaseStatics.d.ts'),
+      path.join(rnDist('database'), 'DatabaseThenableReference.d.ts'),
+    ],
+    config: databaseConfig,
+  },
+  {
     name: 'firestore',
     firebaseSdkTypesPaths: [
-      path.join(
-        SCRIPT_DIR,
-        'packages',
-        'firestore',
-        'firestore-js-sdk.d.ts',
-      ),
+      path.join(SCRIPT_DIR, 'packages', 'firestore', 'firestore-js-sdk.d.ts'),
     ],
     rnFirebaseModularFiles: [
       path.join(rnDist('firestore'), 'types', 'firestore.d.ts'),
@@ -154,16 +160,9 @@ export const packages: PackageEntry[] = [
   {
     name: 'firestore-pipelines',
     firebaseSdkTypesPaths: [
-      path.join(
-        SCRIPT_DIR,
-        'packages',
-        'firestore-pipelines',
-        'pipelines.d.ts',
-      ),
+      path.join(SCRIPT_DIR, 'packages', 'firestore-pipelines', 'pipelines.d.ts'),
     ],
-    rnFirebaseModularFiles: [
-      path.join(rnDist('firestore'), 'pipelines', 'index.d.ts'),
-    ],
+    rnFirebaseModularFiles: [path.join(rnDist('firestore'), 'pipelines', 'index.d.ts')],
     rnFirebaseSupportFiles: [
       path.join(rnDist('firestore'), 'pipelines', 'expressions.d.ts'),
       path.join(rnDist('firestore'), 'pipelines', 'pipeline.d.ts'),
