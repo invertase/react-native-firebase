@@ -16,10 +16,10 @@
  */
 
 export * from './modular';
+export { ServerValue } from './modular';
 
 export type {
   Database,
-  ServerValue,
   TransactionResult,
   DatabaseReference,
   ThenableReference,

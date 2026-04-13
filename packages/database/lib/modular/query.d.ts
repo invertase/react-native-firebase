@@ -10,8 +10,7 @@ export type OnDisconnect = FirebaseDatabaseTypes.OnDisconnect;
  * {@link push}. The reference is available immediately and the `Promise` resolves
  * as the write to the backend completes.
  */
-export interface ThenableReference
-  extends DatabaseReference, Pick<Promise<DatabaseReference>, 'then' | 'catch'> {}
+export type ThenableReference = FirebaseDatabaseTypes.ThenableReference;
 
 export type Unsubscribe = () => void;
 
