@@ -74,6 +74,9 @@
     "lib": ["es2015", "es2016", "esnext", "dom"],
     "types": ["react-native", "node"],
     "paths": {
+      "@react-native-firebase/remote-config": [
+        "./packages/remote-config/dist/typescript/lib/index.d.ts"
+      ],
       "@react-native-firebase/firestore/pipelines": [
         "./packages/firestore/dist/typescript/lib/pipelines/index.d.ts"
       ],
