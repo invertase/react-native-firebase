@@ -16,6 +16,7 @@
  */
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseRemoteConfigTypes } from './namespaced';
 
 export type RemoteConfigLogLevel = 'debug' | 'error' | 'silent';
 
@@ -88,5 +89,9 @@ export interface RemoteConfig extends ReactNativeFirebase.FirebaseModule {
   getBoolean(key: string): boolean;
   getString(key: string): string;
   getNumber(key: string): number;
+  onConfigUpdate(observer: ConfigUpdateObserver): Unsubscribe;
+  onConfigUpdated(
+    callback: FirebaseRemoteConfigTypes.CallbackOrObserver<FirebaseRemoteConfigTypes.OnConfigUpdatedListenerCallback>,
+  ): Unsubscribe;
   reset(): Promise<void>;
 }

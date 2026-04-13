@@ -127,7 +127,7 @@ remoteConfigInstance.setDefaultsFromResource('config_resource').then(() => {
   console.log('Defaults from resource set');
 });
 
-const unsubscribeOnConfigUpdate = remoteConfigInstance.onConfigUpdate(remoteConfigInstance, {
+const unsubscribeOnConfigUpdate = remoteConfigInstance.onConfigUpdate({
   next: (configUpdate: FirebaseRemoteConfigTypes.ConfigUpdate) => {
     console.log(configUpdate.getUpdatedKeys());
   },

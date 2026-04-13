@@ -112,7 +112,7 @@ export namespace FirebaseRemoteConfigTypes {
     setConfigSettings(configSettings: ConfigSettings): Promise<void>;
     setDefaults(defaults: ConfigDefaults): Promise<null>;
     setDefaultsFromResource(resourceName: string): Promise<null>;
-    onConfigUpdate(remoteConfig: Module, observer: ConfigUpdateObserver): Unsubscribe;
+    onConfigUpdate(observer: ConfigUpdateObserver): Unsubscribe;
     onConfigUpdated(listener: CallbackOrObserver<OnConfigUpdatedListenerCallback>): () => void;
     activate(): Promise<boolean>;
     ensureInitialized(): Promise<void>;
