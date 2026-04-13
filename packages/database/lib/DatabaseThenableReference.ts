@@ -17,11 +17,11 @@
 
 import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 
-import type { DatabaseModuleInternal } from './types/internal';
+import type { DatabaseInternal } from './types/internal';
 import type { FirebaseDatabaseTypes } from './types/namespaced';
 
 type DatabaseReferenceConstructor = new (
-  database: DatabaseModuleInternal,
+  database: DatabaseInternal,
   path: string,
 ) => FirebaseDatabaseTypes.Reference;
 
@@ -39,7 +39,7 @@ export default class DatabaseThenableReference implements Pick<
   _promise: Promise<FirebaseDatabaseTypes.Reference>;
 
   constructor(
-    database: DatabaseModuleInternal,
+    database: DatabaseInternal,
     path: string,
     promise: Promise<FirebaseDatabaseTypes.Reference>,
   ) {

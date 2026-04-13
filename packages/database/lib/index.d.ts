@@ -379,7 +379,11 @@ export namespace FirebaseDatabaseTypes {
      */
     transaction(
       transactionUpdate: (currentData: any) => any | undefined,
-      onComplete?: (error: Error | null, committed: boolean, finalResult: DataSnapshot) => void,
+      onComplete?: (
+        error: Error | null,
+        committed: boolean,
+        finalResult: DataSnapshot | null,
+      ) => void,
       applyLocally?: boolean,
     ): Promise<TransactionResult>;
 
@@ -410,7 +414,7 @@ export namespace FirebaseDatabaseTypes {
      * @param value Optional value to be written at the generated location.
      * @param onComplete Callback called when write to server is complete.
      */
-    push(value?: any, onComplete?: () => void): ThenableReference;
+    push(value?: any, onComplete?: (error: Error | null) => void): ThenableReference;
 
     /**
      * Returns an {@link OnDisconnect} instance.
