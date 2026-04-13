@@ -1,9 +1,7 @@
-import { ReactNativeFirebase } from '@react-native-firebase/app';
-import { FirebaseDatabaseTypes } from '..';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { Database, DatabaseReference } from '../types/database';
 
-import FirebaseApp = ReactNativeFirebase.FirebaseApp;
-import Database = FirebaseDatabaseTypes.Module;
-import DatabaseReference = FirebaseDatabaseTypes.Reference;
+type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 /**
  * Returns the instance of the Realtime Database SDK that is associated with

@@ -1,54 +1,20 @@
-import { FirebaseDatabaseTypes } from '../..';
-
-export type Query = FirebaseDatabaseTypes.Query;
-export type DataSnapshot = FirebaseDatabaseTypes.DataSnapshot;
-export type DatabaseReference = FirebaseDatabaseTypes.Reference;
-export type OnDisconnect = FirebaseDatabaseTypes.OnDisconnect;
+import type {
+  DataSnapshot,
+  DatabaseReference,
+  EventType,
+  ListenOptions,
+  OnDisconnect,
+  Query,
+  QueryConstraint,
+  ThenableReference,
+  Unsubscribe,
+} from '../types/database';
 
 /**
  * A `Promise` that can also act as a `DatabaseReference` when returned by
  * {@link push}. The reference is available immediately and the `Promise` resolves
  * as the write to the backend completes.
  */
-export type ThenableReference = FirebaseDatabaseTypes.ThenableReference;
-
-export type Unsubscribe = () => void;
-
-export interface ListenOptions {
-  readonly onlyOnce?: boolean;
-}
-
-/** Describes the different query constraints available in this SDK. */
-export type QueryConstraintType =
-  | 'endAt'
-  | 'endBefore'
-  | 'startAt'
-  | 'startAfter'
-  | 'limitToFirst'
-  | 'limitToLast'
-  | 'orderByChild'
-  | 'orderByKey'
-  | 'orderByPriority'
-  | 'orderByValue'
-  | 'equalTo';
-
-/**
- * A `QueryConstraint` is used to narrow the set of documents returned by a
- * Database query. `QueryConstraint`s are created by invoking {@link endAt},
- * {@link endBefore}, {@link startAt}, {@link startAfter}, {@link
- * limitToFirst}, {@link limitToLast}, {@link orderByChild},
- * {@link orderByChild}, {@link orderByKey} , {@link orderByPriority} ,
- * {@link orderByValue}  or {@link equalTo} and
- * can then be passed to {@link query} to create a new query instance that
- * also contains this `QueryConstraint`.
- */
-export interface QueryConstraint {
-  /** The type of this query constraints */
-  readonly _type: QueryConstraintType;
-
-  _apply(query: Query): Query;
-}
-
 /**
  * Creates a `QueryConstraint` with the specified ending point.
  *

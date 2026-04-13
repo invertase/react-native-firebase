@@ -1,14 +1,4 @@
-import { FirebaseDatabaseTypes } from '../..';
-
-export type TransactionResult = FirebaseDatabaseTypes.TransactionResult;
-import DatabaseReference = FirebaseDatabaseTypes.Reference;
-
-/**
- * An options object to configure transactions.
- */
-export interface TransactionOptions {
-  readonly applyLocally?: boolean;
-}
+import type { DatabaseReference, TransactionOptions, TransactionResult } from '../types/database';
 
 /**
  * Atomically modifies the data at this location.
