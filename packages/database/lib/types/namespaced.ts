@@ -789,7 +789,7 @@ export namespace FirebaseDatabaseTypes {
     /**
      * Returns a JSON-serializable representation of this object.
      */
-    toJSON(): object;
+    toJSON(): string;
 
     /**
      * Gets the absolute URL for this location.

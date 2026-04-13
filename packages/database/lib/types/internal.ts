@@ -63,7 +63,7 @@ export interface RNFBDatabaseModule {
   ): Promise<unknown>;
   on(props: unknown): void;
   off(queryKey: string, eventRegistrationKey: string): void | Promise<void>;
-  keepSynced(path: string, modifiers: unknown, value: boolean): Promise<void>;
+  keepSynced(queryKey: string, path: string, modifiers: unknown, value: boolean): Promise<void>;
   onDisconnectCancel(path: string): Promise<void>;
   onDisconnectRemove(path: string): Promise<void>;
   onDisconnectSet(path: string, props: { value: unknown }): Promise<void>;

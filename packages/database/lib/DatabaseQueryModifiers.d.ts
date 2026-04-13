@@ -17,4 +17,21 @@
 
 export default class DatabaseQueryModifiers {
   constructor();
+  _copy(): DatabaseQueryModifiers;
+  hasEndAt(): boolean;
+  hasLimit(): boolean;
+  hasOrderBy(): boolean;
+  hasStartAt(): boolean;
+  isValidLimit(limit: number): boolean;
+  limitToFirst(limit: number): DatabaseQueryModifiers;
+  limitToLast(limit: number): DatabaseQueryModifiers;
+  orderByChild(path: string): DatabaseQueryModifiers;
+  orderByKey(): DatabaseQueryModifiers;
+  orderByPriority(): DatabaseQueryModifiers;
+  orderByValue(): DatabaseQueryModifiers;
+  startAt(value: number | string | boolean | null, key?: string): DatabaseQueryModifiers;
+  endAt(value: number | string | boolean | null, key?: string): DatabaseQueryModifiers;
+  toArray(): unknown;
+  toString(): string;
+  validateModifiers(prefix: string): void;
 }
