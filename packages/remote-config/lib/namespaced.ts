@@ -29,67 +29,56 @@ import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
+  type ModuleConfig,
 } from '@react-native-firebase/app/dist/module/internal';
+import NativeFirebaseError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
-// @ts-expect-error Temporary JS support file during TS migration scaffolding.
-import Value from './RemoteConfigValue';
-// @ts-expect-error Temporary JS support file during TS migration scaffolding.
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import RemoteConfigValue from './RemoteConfigValue';
 import { LastFetchStatus, ValueSource } from './statics';
+import type {
+  ConfigDefaults,
+  ConfigSettings,
+  ConfigUpdate,
+  ConfigUpdateObserver,
+  ConfigValue,
+  ConfigValues,
+  LastFetchStatusType,
+  RemoteConfig,
+} from './types/remote-config';
+import type { FirebaseRemoteConfigTypes } from './types/namespaced';
+import type {
+  ConfigSettingsStateInternal,
+  NativeRemoteConfigConstants,
+  NativeRemoteConfigResult,
+  RemoteConfigUpdateErrorEventInternal,
+  RemoteConfigUpdateErrorInternal,
+  RemoteConfigUpdateSuccessEventInternal,
+  StoredConfigValueInternal,
+} from './types/internal';
 import { version } from './version';
 // @ts-expect-error Temporary JS support file during TS migration scaffolding.
 import fallBackModule from './web/RNFBConfigModule';
 
-type ConfigValueSource = 'remote' | 'default' | 'static';
-type LastFetchStatusType = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
-
-interface ConfigSettingsState {
-  fetchTimeMillis: number;
-  minimumFetchIntervalMillis: number;
-}
-
-interface StoredConfigValue {
-  value: string | number | boolean;
-  source: ConfigValueSource;
-}
-
-interface NativeRemoteConfigConstants {
-  fetchTimeout?: number;
-  minimumFetchInterval?: number;
-  lastFetchTime?: number;
-  lastFetchStatus?: LastFetchStatusType;
-  values?: Record<string, StoredConfigValue>;
-}
-
-interface NativeRemoteConfigResult<T> {
-  result: T;
-  constants: NativeRemoteConfigConstants;
-}
-
-interface RemoteConfigUpdateError {
-  code?: string;
-  message?: string;
-  nativeErrorMessage?: string;
-}
-
-interface RemoteConfigUpdateSuccessEvent {
-  resultType: 'success';
-  updatedKeys: string[];
-}
-
-interface RemoteConfigUpdateErrorEvent extends RemoteConfigUpdateError {
-  resultType?: string;
-}
-
-interface ConfigUpdateObserver {
-  next: (configUpdate: { getUpdatedKeys(): Set<string> }) => void;
-  error: (error: RemoteConfigUpdateError) => void;
-  complete?: () => void;
-}
-
 function isSuccessEvent(
-  event: RemoteConfigUpdateSuccessEvent | RemoteConfigUpdateErrorEvent,
-): event is RemoteConfigUpdateSuccessEvent {
+  event: RemoteConfigUpdateSuccessEventInternal | RemoteConfigUpdateErrorEventInternal,
+): event is RemoteConfigUpdateSuccessEventInternal {
   return event.resultType === 'success';
+}
+
+function toConfigUpdate(updatedKeys: string[]): ConfigUpdate {
+  return {
+    getUpdatedKeys: () => new Set(updatedKeys),
+  };
+}
+
+function toNativeFirebaseError(
+  errorEvent: RemoteConfigUpdateErrorInternal,
+): ReactNativeFirebase.NativeFirebaseError {
+  return NativeFirebaseError.fromEvent(
+    errorEvent,
+    namespace,
+  ) as ReactNativeFirebase.NativeFirebaseError;
 }
 
 const statics = {
@@ -98,17 +87,21 @@ const statics = {
 };
 
 const namespace = 'remoteConfig';
-const nativeModuleName = 'RNFBConfigModule';
+const nativeModuleName = 'RNFBConfigModule' as const;
 
-class FirebaseConfigModule extends FirebaseModule {
-  private _settings: ConfigSettingsState;
+class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> implements RemoteConfig {
+  private _settings: ConfigSettingsStateInternal;
   private _lastFetchTime: number;
   private _lastFetchStatus: LastFetchStatusType;
-  private _values: Record<string, StoredConfigValue>;
+  private _values: Record<string, StoredConfigValueInternal>;
   private _configUpdateListenerCount: number;
 
-  constructor(...args: ConstructorParameters<typeof FirebaseModule>) {
-    super(...args);
+  constructor(
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: ModuleConfig,
+    customUrlOrRegion?: string | null,
+  ) {
+    super(app, config, customUrlOrRegion);
     this._settings = {
       // defaults to 1 minute.
       fetchTimeMillis: 60000,
@@ -121,8 +114,8 @@ class FirebaseConfigModule extends FirebaseModule {
     this._configUpdateListenerCount = 0;
   }
 
-  get defaultConfig(): Record<string, string | number | boolean> {
-    const updatedDefaultConfig: Record<string, string | number | boolean> = {};
+  get defaultConfig(): ConfigDefaults {
+    const updatedDefaultConfig: ConfigDefaults = {};
     Object.keys(this._values).forEach(key => {
       // Need to make it an object with key and literal value. Not `Value` instance.
       const configValue = this._values[key];
@@ -134,7 +127,7 @@ class FirebaseConfigModule extends FirebaseModule {
     return updatedDefaultConfig;
   }
 
-  set defaultConfig(defaults: Record<string, string | number | boolean>) {
+  set defaultConfig(defaults: ConfigDefaults) {
     if (!isObject(defaults)) {
       throw new Error("firebase.remoteConfig().defaultConfig: 'defaults' must be an object.");
     }
@@ -153,33 +146,36 @@ class FirebaseConfigModule extends FirebaseModule {
     void this.setDefaults(defaults, true);
   }
 
-  get settings(): ConfigSettingsState {
+  get settings(): ConfigSettings {
     return this._settings;
   }
 
-  set settings(settings: ConfigSettingsState) {
+  set settings(settings: ConfigSettings) {
     // To make Firebase web v9 API compatible, we update the settings first so it immediately
     // updates settings on the instance. We then pass to underlying SDK to update. We do this because
     // there is no way to "await" a setter. We can't delegate to `setConfigSettings()` as it is setup
     // for native.
-    this._settings = { ...settings };
+    this._settings = {
+      ...this._settings,
+      ...settings,
+    };
     void this.setConfigSettings(settings, true);
   }
 
-  getValue(key: string): any {
+  getValue(key: string): ConfigValue {
     if (!isString(key)) {
       throw new Error("firebase.remoteConfig().getValue(): 'key' must be a string value.");
     }
 
     if (typeof this._values === 'undefined' || !hasOwnProperty(this._values, key)) {
-      return new Value({
+      return new RemoteConfigValue({
         value: '',
         source: 'static',
       });
     }
 
     const configValue = this._values[key]!;
-    return new Value({ value: `${configValue.value}`, source: configValue.source });
+    return new RemoteConfigValue({ value: `${configValue.value}`, source: configValue.source });
   }
 
   getBoolean(key: string): boolean {
@@ -194,8 +190,8 @@ class FirebaseConfigModule extends FirebaseModule {
     return this.getValue(key).asString();
   }
 
-  getAll(): Record<string, any> {
-    const values: Record<string, any> = {};
+  getAll(): ConfigValues {
+    const values: ConfigValues = {};
     Object.keys(this._values).forEach(key => {
       values[key] = this.getValue(key);
     });
@@ -215,18 +211,15 @@ class FirebaseConfigModule extends FirebaseModule {
    * Deletes all activated, fetched and defaults configs and resets all Firebase Remote Config settings.
    * @returns {Promise<null>}
    */
-  reset(): Promise<null | void> {
+  reset(): Promise<void> {
     if (isIOS) {
-      return Promise.resolve(null);
+      return Promise.resolve(null as unknown as void);
     }
 
     return this._promiseWithConstants(this.native.reset());
   }
 
-  setConfigSettings(
-    settings: Partial<ConfigSettingsState>,
-    fromSettingsSetter = false,
-  ): Promise<void> {
+  setConfigSettings(settings: ConfigSettings, fromSettingsSetter = false): Promise<void> {
     const updatedSettings = {
       fetchTimeout: this._settings.fetchTimeMillis / 1000,
       minimumFetchInterval: this._settings.minimumFetchIntervalMillis / 1000,
@@ -299,10 +292,7 @@ class FirebaseConfigModule extends FirebaseModule {
    *
    * @param defaults
    */
-  setDefaults(
-    defaults: Record<string, string | number | boolean>,
-    fromDefaultConfigSetter = false,
-  ): Promise<null> {
+  setDefaults(defaults: ConfigDefaults, fromDefaultConfigSetter = false): Promise<null> {
     const apiCalled = fromDefaultConfigSetter ? 'defaultConfig' : 'setDefaults';
     if (!isObject(defaults)) {
       throw new Error(`firebase.remoteConfig().${apiCalled}(): 'defaults' must be an object.`);
@@ -342,22 +332,13 @@ class FirebaseConfigModule extends FirebaseModule {
     let unsubscribed = false;
     const subscription = this.emitter.addListener(
       this.eventNameForApp('on_config_updated'),
-      (event: RemoteConfigUpdateSuccessEvent | RemoteConfigUpdateErrorEvent) => {
+      (event: RemoteConfigUpdateSuccessEventInternal | RemoteConfigUpdateErrorEventInternal) => {
         if (isSuccessEvent(event)) {
-          observer.next({
-            getUpdatedKeys: () => {
-              return new Set(event.updatedKeys);
-            },
-          });
+          observer.next(toConfigUpdate(event.updatedKeys));
           return;
         }
 
-        const errorEvent = event as RemoteConfigUpdateErrorEvent;
-        observer.error({
-          code: errorEvent.code,
-          message: errorEvent.message,
-          nativeErrorMessage: errorEvent.nativeErrorMessage,
-        });
+        observer.error(toNativeFirebaseError(event));
       },
     );
 
@@ -392,24 +373,22 @@ class FirebaseConfigModule extends FirebaseModule {
    * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
    */
   onConfigUpdated(listenerOrObserver: unknown): () => void {
-    const listener = parseListenerOrObserver(listenerOrObserver as any) as (
-      event?: { updatedKeys: string[] },
-      error?: RemoteConfigUpdateError,
-    ) => void;
+    const listener = parseListenerOrObserver(
+      listenerOrObserver as FirebaseRemoteConfigTypes.CallbackOrObserver<FirebaseRemoteConfigTypes.OnConfigUpdatedListenerCallback>,
+    ) as (event?: { updatedKeys: string[] }, error?: RemoteConfigUpdateErrorInternal) => void;
     let unsubscribed = false;
     const subscription = this.emitter.addListener(
       this.eventNameForApp('on_config_updated'),
-      (event: RemoteConfigUpdateSuccessEvent | RemoteConfigUpdateErrorEvent) => {
+      (event: RemoteConfigUpdateSuccessEventInternal | RemoteConfigUpdateErrorEventInternal) => {
         if (isSuccessEvent(event)) {
           listener({ updatedKeys: event.updatedKeys }, undefined);
           return;
         }
 
-        const errorEvent = event as RemoteConfigUpdateErrorEvent;
         listener(undefined, {
-          code: errorEvent.code,
-          message: errorEvent.message,
-          nativeErrorMessage: errorEvent.nativeErrorMessage,
+          code: event.code,
+          message: event.message,
+          nativeErrorMessage: event.nativeErrorMessage,
         });
       },
     );
@@ -482,14 +461,28 @@ const remoteConfigNamespace = createModuleNamespace({
   ModuleClass: FirebaseConfigModule,
 });
 
+type RemoteConfigNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseRemoteConfigTypes.Module,
+  FirebaseRemoteConfigTypes.Statics
+> & {
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
 // import remoteConfig from '@react-native-firebase/remote-config';
 // remoteConfig().X(...);
-export default remoteConfigNamespace;
+export default remoteConfigNamespace as unknown as RemoteConfigNamespace;
 
 // import remoteConfig, { firebase } from '@react-native-firebase/remote-config';
 // remoteConfig().X(...);
 // firebase.remoteConfig().X(...);
-export const firebase = getFirebaseRoot();
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'remoteConfig',
+    FirebaseRemoteConfigTypes.Module,
+    FirebaseRemoteConfigTypes.Statics,
+    false
+  >;
 
 // Register the interop module for non-native platforms.
-setReactNativeModule(nativeModuleName, fallBackModule);
+setReactNativeModule(nativeModuleName, fallBackModule as unknown as Record<string, unknown>);

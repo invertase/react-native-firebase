@@ -228,5 +228,4 @@ export async function setCustomSignals(
   );
 }
 
-// @ts-expect-error Temporary JS support file during TS migration scaffolding.
 export { LastFetchStatus, ValueSource } from './statics';

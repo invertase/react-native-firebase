@@ -19,6 +19,11 @@ export type ConfigValueSourceInternal = 'remote' | 'default' | 'static';
 
 export type LastFetchStatusTypeInternal = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
 
+export interface ConfigSettingsStateInternal {
+  fetchTimeMillis: number;
+  minimumFetchIntervalMillis: number;
+}
+
 export interface StoredConfigValueInternal {
   value: string | number | boolean;
   source: ConfigValueSourceInternal;
