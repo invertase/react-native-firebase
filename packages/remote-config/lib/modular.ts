@@ -16,97 +16,118 @@
  */
 
 import { getApp, type ReactNativeFirebase } from '@react-native-firebase/app';
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
+import {
+  MODULAR_DEPRECATION_ARG,
+  withModularFlag,
+} from '@react-native-firebase/app/dist/module/common';
+import type {
+  ConfigDefaults,
+  ConfigSettings,
+  ConfigUpdateObserver,
+  ConfigValue,
+  ConfigValues,
+  CustomSignals,
+  LastFetchStatusType,
+  RemoteConfig,
+  RemoteConfigLogLevel,
+} from './types/remote-config';
+import type { AppWithRemoteConfigInternal, RemoteConfigInternal } from './types/internal';
+import type { FirebaseRemoteConfigTypes } from './types/namespaced';
 
-export interface CustomSignals {
-  [key: string]: string | number | null;
+function ap(remoteConfig: RemoteConfig): RemoteConfigInternal {
+  return remoteConfig as RemoteConfigInternal;
 }
 
-type RemoteConfigEnabledApp = ReactNativeFirebase.FirebaseApp & {
-  remoteConfig(): any;
-};
+export type { CustomSignals } from './types/remote-config';
 
 /**
  * Returns a RemoteConfig instance for the given app.
  * @param app - FirebaseApp. Optional.
  */
-export function getRemoteConfig(app?: ReactNativeFirebase.FirebaseApp): any {
+export function getRemoteConfig(app?: ReactNativeFirebase.FirebaseApp): RemoteConfig {
   if (app) {
-    return (getApp(app.name) as RemoteConfigEnabledApp).remoteConfig();
+    return withModularFlag(() =>
+      (getApp(app.name) as AppWithRemoteConfigInternal).remoteConfig(MODULAR_DEPRECATION_ARG),
+    );
   }
 
-  return (getApp() as RemoteConfigEnabledApp).remoteConfig();
+  return withModularFlag(() =>
+    (getApp() as AppWithRemoteConfigInternal).remoteConfig(MODULAR_DEPRECATION_ARG),
+  );
 }
 
 /**
  * Returns a Boolean which resolves to true if the current call
  * activated the fetched configs.
  */
-export function activate(remoteConfig: any): Promise<boolean> {
-  return remoteConfig.activate.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+export function activate(remoteConfig: RemoteConfig): Promise<boolean> {
+  return ap(remoteConfig).activate.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Ensures the last activated config are available to the getters.
  */
-export function ensureInitialized(remoteConfig: any): Promise<void> {
-  return remoteConfig.ensureInitialized.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+export function ensureInitialized(remoteConfig: RemoteConfig): Promise<void> {
+  return ap(remoteConfig).ensureInitialized.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Performs a fetch and returns a Boolean which resolves to true
  * if the current call activated the fetched configs.
  */
-export function fetchAndActivate(remoteConfig: any): Promise<boolean> {
-  return remoteConfig.fetchAndActivate.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+export function fetchAndActivate(remoteConfig: RemoteConfig): Promise<boolean> {
+  return ap(remoteConfig).fetchAndActivate.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Fetches and caches configuration from the Remote Config service.
  */
-export function fetchConfig(remoteConfig: any): Promise<void> {
-  return remoteConfig.fetchConfig.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+export function fetchConfig(remoteConfig: RemoteConfig): Promise<void> {
+  return ap(remoteConfig).fetch.call(remoteConfig, undefined, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Gets all config.
  */
-export function getAll(remoteConfig: any): any {
-  return remoteConfig.getAll.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+export function getAll(remoteConfig: RemoteConfig): ConfigValues {
+  return ap(remoteConfig).getAll.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Gets the value for the given key as a boolean.
  */
-export function getBoolean(remoteConfig: any, key: string): boolean {
-  return remoteConfig.getBoolean.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
+export function getBoolean(remoteConfig: RemoteConfig, key: string): boolean {
+  return ap(remoteConfig).getBoolean.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Gets the value for the given key as a number.
  */
-export function getNumber(remoteConfig: any, key: string): number {
-  return remoteConfig.getNumber.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
+export function getNumber(remoteConfig: RemoteConfig, key: string): number {
+  return ap(remoteConfig).getNumber.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Gets the value for the given key as a string.
  */
-export function getString(remoteConfig: any, key: string): string {
-  return remoteConfig.getString.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
+export function getString(remoteConfig: RemoteConfig, key: string): string {
+  return ap(remoteConfig).getString.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Gets the value for the given key.
  */
-export function getValue(remoteConfig: any, key: string): any {
-  return remoteConfig.getValue.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
+export function getValue(remoteConfig: RemoteConfig, key: string): ConfigValue {
+  return ap(remoteConfig).getValue.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Defines the log level to use.
  */
-export function setLogLevel(remoteConfig: any, logLevel: string): 'error' {
+export function setLogLevel(
+  remoteConfig: RemoteConfig,
+  logLevel: RemoteConfigLogLevel,
+): RemoteConfigLogLevel {
   void remoteConfig;
   void logLevel;
   // always return the "error" log level for now as the setter is ignored on native. Web only.
@@ -127,23 +148,23 @@ export function isSupported(): Promise<boolean> {
  * Indicates the default value in milliseconds to abandon a pending fetch
  * request made to the Remote Config server. Defaults to 60000 (One minute).
  */
-export function fetchTimeMillis(remoteConfig: any): number {
-  return remoteConfig.fetchTimeMillis.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+export function fetchTimeMillis(remoteConfig: RemoteConfig): number {
+  return withModularFlag(() => ap(remoteConfig).fetchTimeMillis);
 }
 
 /**
  * Returns a ConfigSettings object which provides the properties
  * `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set.
  */
-export function settings(remoteConfig: any): any {
-  return remoteConfig.settings.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+export function settings(remoteConfig: RemoteConfig): ConfigSettings {
+  return withModularFlag(() => ap(remoteConfig).settings);
 }
 
 /**
  * The status of the latest Remote Config fetch action.
  */
-export function lastFetchStatus(remoteConfig: any): any {
-  return remoteConfig.lastFetchStatus.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+export function lastFetchStatus(remoteConfig: RemoteConfig): LastFetchStatusType {
+  return withModularFlag(() => ap(remoteConfig).lastFetchStatus);
 }
 
 /**
@@ -151,37 +172,58 @@ export function lastFetchStatus(remoteConfig: any): any {
  * resets all Firebase Remote Config settings.
  * Android only. iOS does not reset anything.
  */
-export function reset(remoteConfig: any): Promise<void> {
-  return remoteConfig.reset.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+export function reset(remoteConfig: RemoteConfig): Promise<void> {
+  return ap(remoteConfig).reset.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Set the Remote Config settings, currently able to set
  * `fetchTimeMillis` & `minimumFetchIntervalMillis`.
  */
-export function setConfigSettings(remoteConfig: any, settingsValue: any): Promise<void> {
-  return remoteConfig.setConfigSettings.call(remoteConfig, settingsValue, MODULAR_DEPRECATION_ARG);
+export function setConfigSettings(
+  remoteConfig: RemoteConfig,
+  settingsValue: ConfigSettings,
+): Promise<void> {
+  return ap(remoteConfig).setConfigSettings.call(
+    remoteConfig,
+    settingsValue,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
  * Fetches parameter values for your app.
  */
-export function fetch(remoteConfig: any, expirationDurationSeconds?: number): Promise<void> {
-  return remoteConfig.fetch.call(remoteConfig, expirationDurationSeconds, MODULAR_DEPRECATION_ARG);
+export function fetch(
+  remoteConfig: RemoteConfig,
+  expirationDurationSeconds?: number,
+): Promise<void> {
+  return ap(remoteConfig).fetch.call(
+    remoteConfig,
+    expirationDurationSeconds,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
  * Sets defaults for your app.
  */
-export function setDefaults(remoteConfig: any, defaults: any): Promise<void> {
-  return remoteConfig.setDefaults.call(remoteConfig, defaults, MODULAR_DEPRECATION_ARG);
+export function setDefaults(remoteConfig: RemoteConfig, defaults: ConfigDefaults): Promise<void> {
+  return ap(remoteConfig).setDefaults.call(
+    remoteConfig,
+    defaults,
+    MODULAR_DEPRECATION_ARG,
+  ) as unknown as Promise<void>;
 }
 
 /**
  * Sets defaults based on a native resource.
  */
-export function setDefaultsFromResource(remoteConfig: any, resourceName: string): Promise<null> {
-  return remoteConfig.setDefaultsFromResource.call(
+export function setDefaultsFromResource(
+  remoteConfig: RemoteConfig,
+  resourceName: string,
+): Promise<null> {
+  return ap(remoteConfig).setDefaultsFromResource.call(
     remoteConfig,
     resourceName,
     MODULAR_DEPRECATION_ARG,
@@ -193,8 +235,11 @@ export function setDefaultsFromResource(remoteConfig: any, resourceName: string)
  *
  * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
  */
-export function onConfigUpdate(remoteConfig: any, observer: any): () => void {
-  return remoteConfig.onConfigUpdate.call(remoteConfig, observer, MODULAR_DEPRECATION_ARG);
+export function onConfigUpdate(
+  remoteConfig: RemoteConfig,
+  observer: ConfigUpdateObserver,
+): () => void {
+  return ap(remoteConfig).onConfigUpdate.call(remoteConfig, observer, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -202,15 +247,18 @@ export function onConfigUpdate(remoteConfig: any, observer: any): () => void {
  *
  * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
  */
-export function onConfigUpdated(remoteConfig: any, callback: any): () => void {
-  return remoteConfig.onConfigUpdated.call(remoteConfig, callback, MODULAR_DEPRECATION_ARG);
+export function onConfigUpdated(
+  remoteConfig: RemoteConfig,
+  callback: FirebaseRemoteConfigTypes.CallbackOrObserver<FirebaseRemoteConfigTypes.OnConfigUpdatedListenerCallback>,
+): () => void {
+  return ap(remoteConfig).onConfigUpdated.call(remoteConfig, callback, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Sets the custom signals for the app instance.
  */
 export async function setCustomSignals(
-  remoteConfig: any,
+  remoteConfig: RemoteConfig,
   customSignals: CustomSignals,
 ): Promise<void> {
   for (const [key, value] of Object.entries(customSignals)) {
@@ -221,10 +269,11 @@ export async function setCustomSignals(
     }
   }
 
-  return remoteConfig._promiseWithConstants.call(
-    remoteConfig,
-    remoteConfig.native.setCustomSignals(customSignals),
-    MODULAR_DEPRECATION_ARG,
+  return withModularFlag(() =>
+    ap(remoteConfig)._promiseWithConstants(
+      ap(remoteConfig).native.setCustomSignals(customSignals),
+      MODULAR_DEPRECATION_ARG,
+    ),
   );
 }
 

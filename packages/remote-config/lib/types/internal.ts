@@ -15,9 +15,22 @@
  *
  */
 
+import type { ConfigUpdateObserver, RemoteConfig, Unsubscribe } from './remote-config';
+import type { FirebaseRemoteConfigTypes } from './namespaced';
+
 export type ConfigValueSourceInternal = 'remote' | 'default' | 'static';
 
 export type LastFetchStatusTypeInternal = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
+
+export type RemoteConfigModularDeprecationArg = string;
+
+export type WithRemoteConfigDeprecationArg<F> = F extends (...args: infer P) => infer R
+  ? (...args: [...P, RemoteConfigModularDeprecationArg?]) => R
+  : never;
+
+export interface AppWithRemoteConfigInternal {
+  remoteConfig(deprecationArg?: RemoteConfigModularDeprecationArg): RemoteConfig;
+}
 
 export interface ConfigSettingsStateInternal {
   fetchTimeMillis: number;
@@ -76,6 +89,39 @@ export interface RNFBConfigModule {
   setCustomSignals(
     customSignals: Record<string, string | number | null>,
   ): Promise<NativeRemoteConfigResult<void>>;
+}
+
+export interface RemoteConfigInternal extends RemoteConfig {
+  activate: WithRemoteConfigDeprecationArg<RemoteConfig['activate']>;
+  ensureInitialized: WithRemoteConfigDeprecationArg<RemoteConfig['ensureInitialized']>;
+  fetchAndActivate: WithRemoteConfigDeprecationArg<RemoteConfig['fetchAndActivate']>;
+  fetch: WithRemoteConfigDeprecationArg<RemoteConfig['fetch']>;
+  getAll: WithRemoteConfigDeprecationArg<RemoteConfig['getAll']>;
+  getBoolean: WithRemoteConfigDeprecationArg<RemoteConfig['getBoolean']>;
+  getNumber: WithRemoteConfigDeprecationArg<RemoteConfig['getNumber']>;
+  getString: WithRemoteConfigDeprecationArg<RemoteConfig['getString']>;
+  getValue: WithRemoteConfigDeprecationArg<RemoteConfig['getValue']>;
+  reset: WithRemoteConfigDeprecationArg<RemoteConfig['reset']>;
+  setConfigSettings: WithRemoteConfigDeprecationArg<RemoteConfig['setConfigSettings']>;
+  setDefaults: WithRemoteConfigDeprecationArg<RemoteConfig['setDefaults']>;
+  setDefaultsFromResource: WithRemoteConfigDeprecationArg<RemoteConfig['setDefaultsFromResource']>;
+  onConfigUpdate(
+    observer: ConfigUpdateObserver,
+    deprecationArg?: RemoteConfigModularDeprecationArg,
+  ): Unsubscribe;
+  onConfigUpdated(
+    listenerOrObserver: FirebaseRemoteConfigTypes.CallbackOrObserver<FirebaseRemoteConfigTypes.OnConfigUpdatedListenerCallback>,
+    deprecationArg?: RemoteConfigModularDeprecationArg,
+  ): Unsubscribe;
+  readonly native: RNFBConfigModule;
+  _promiseWithConstants(
+    promise: Promise<NativeRemoteConfigResult<void>>,
+    deprecationArg?: RemoteConfigModularDeprecationArg,
+  ): Promise<void>;
+  _promiseWithConstants<T>(
+    promise: Promise<NativeRemoteConfigResult<T>>,
+    deprecationArg?: RemoteConfigModularDeprecationArg,
+  ): Promise<T>;
 }
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
