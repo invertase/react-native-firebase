@@ -572,6 +572,9 @@ firestore()
 
 For React-Native-Firebase >= v22
 ```js
+import { getFirestore, doc, getDoc, getDocs, query, collection, orderBy, startAt } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
 const userDocumentSnapshot = await getDoc(doc(db, 'Users', 'DEF'));
 
 getDocs(query(
