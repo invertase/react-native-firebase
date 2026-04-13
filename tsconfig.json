@@ -11,10 +11,6 @@
     "packages/auth/lib/modular/index.d.ts",
     "packages/crashlytics/lib/index.d.ts",
     "packages/crashlytics/lib/modular/index.d.ts",
-    "packages/database/lib/index.d.ts",
-    "packages/database/lib/modular/index.d.ts",
-    "packages/database/lib/modular/query.d.ts",
-    "packages/database/lib/modular/transaction.d.ts",
     "packages/firestore/lib/index.d.ts",
     "packages/firestore/lib/modular/Bytes.d.ts",
     "packages/firestore/lib/modular/FieldPath.d.ts",
@@ -76,7 +72,9 @@
     "lib": ["es2015", "es2016", "esnext", "dom"],
     "types": ["react-native", "node"],
     "paths": {
-      "@react-native-firebase/firestore/pipelines": ["./packages/firestore/dist/typescript/lib/pipelines/index.d.ts"],
+      "@react-native-firebase/firestore/pipelines": [
+        "./packages/firestore/dist/typescript/lib/pipelines/index.d.ts"
+      ],
       "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"]
     }
   },

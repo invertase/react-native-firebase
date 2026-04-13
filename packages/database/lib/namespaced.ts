@@ -37,7 +37,7 @@ import './types/internal';
 import DatabaseReference from './DatabaseReference';
 import DatabaseStatics from './DatabaseStatics';
 import DatabaseTransaction from './DatabaseTransaction';
-import version from './version';
+import { version } from './version';
 import fallBackModule from './web/RNFBDatabaseModule';
 
 const namespace = 'database';

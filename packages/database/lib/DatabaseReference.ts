@@ -69,7 +69,7 @@ export default class DatabaseReference
   extends DatabaseQuery
   implements FirebaseDatabaseTypes.Reference
 {
-  declare readonly _database: DatabaseInternal;
+  readonly _database: DatabaseInternal;
 
   constructor(database: DatabaseInternal, path: string) {
     if (!internalRefs.includes(path as (typeof internalRefs)[number]) && !isValidPath(path)) {
