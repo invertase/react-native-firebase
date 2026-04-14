@@ -28,53 +28,12 @@ import type {
   Unsubscribe,
 } from '../types/database';
 import { QueryConstraint as PublicQueryConstraint } from '../types/database';
-
-type QueryWithModifiersInternal = Query &
-  Record<QueryConstraintType, (...args: Array<unknown>) => Query>;
-
-type QueryWithSubscriptionMethodsInternal = Query & {
-  on(
-    eventType: EventType,
-    callback: (snapshot: DataSnapshot, previousChildName?: string | null) => unknown,
-    cancelCallbackOrContext?: ((error: Error) => unknown) | ListenOptions,
-    context?: ListenOptions | null,
-    deprecationArg?: string,
-  ): unknown;
-  off(
-    eventType?: EventType,
-    callback?: (snapshot: DataSnapshot, previousChildName?: string | null) => unknown,
-    context?: null,
-    deprecationArg?: string,
-  ): void;
-  once(
-    eventType: EventType,
-    successCallback?: (snapshot: DataSnapshot, previousChildName?: string | null) => unknown,
-    failureCallbackContext?: ((error: Error) => void) | null,
-    context?: ListenOptions,
-    deprecationArg?: string,
-  ): Promise<DataSnapshot>;
-};
-
-type DatabaseReferenceWithMethodsInternal = DatabaseReference & {
-  set(value: unknown, onComplete?: () => void, deprecationArg?: string): Promise<void>;
-  setPriority(
-    priority: string | number | null,
-    onComplete?: () => void,
-    deprecationArg?: string,
-  ): Promise<void>;
-  setWithPriority(
-    value: unknown,
-    priority: string | number | null,
-    onComplete?: () => void,
-    deprecationArg?: string,
-  ): Promise<void>;
-  child(path: string, deprecationArg?: string): DatabaseReference;
-  onDisconnect(deprecationArg?: string): OnDisconnect;
-  keepSynced(value: boolean, deprecationArg?: string): Promise<void>;
-  push(value?: unknown, onComplete?: undefined, deprecationArg?: string): ThenableReference;
-  remove(deprecationArg?: string): Promise<void>;
-  update(values: object, deprecationArg?: string): Promise<void>;
-};
+import type {
+  DatabaseReferenceWithMethodsInternal,
+  QueryConstraintWithApplyInternal,
+  QueryWithModifiersInternal,
+  QueryWithSubscriptionMethodsInternal,
+} from '../types/internal';
 
 class DatabaseQueryConstraint extends PublicQueryConstraint {
   readonly type: QueryConstraintType;
@@ -93,10 +52,6 @@ class DatabaseQueryConstraint extends PublicQueryConstraint {
     ]);
   }
 }
-
-type QueryConstraintInternal = PublicQueryConstraint & {
-  _apply(query: Query): Query;
-};
 
 type SnapshotCallbackInternal =
   | ((snapshot: DataSnapshot) => unknown)
@@ -163,7 +118,7 @@ export function equalTo(
 
 export function query(queryRef: Query, ...queryConstraints: PublicQueryConstraint[]): Query {
   let nextQuery = queryRef;
-  for (const queryConstraint of queryConstraints as QueryConstraintInternal[]) {
+  for (const queryConstraint of queryConstraints as QueryConstraintWithApplyInternal[]) {
     nextQuery = queryConstraint._apply(nextQuery);
   }
   return nextQuery;

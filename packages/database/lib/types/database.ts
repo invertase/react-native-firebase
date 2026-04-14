@@ -16,7 +16,6 @@
  */
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import type { FirebaseDatabaseTypes } from './namespaced';
 
 type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
@@ -63,7 +62,10 @@ export declare class Database {
   readonly type: 'database';
 }
 
-export type ServerValue = FirebaseDatabaseTypes.ServerValue;
+export interface ServerValue {
+  TIMESTAMP: object;
+  increment(delta: number): object;
+}
 
 export declare class TransactionResult {
   readonly committed: boolean;
@@ -90,7 +92,7 @@ export interface ThenableReference
   parent: DatabaseReference;
 }
 
-export type EventType = FirebaseDatabaseTypes.EventType;
+export type EventType = 'value' | 'child_added' | 'child_changed' | 'child_moved' | 'child_removed';
 
 export interface IteratedDataSnapshot extends DataSnapshot {
   key: string;

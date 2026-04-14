@@ -16,7 +16,21 @@
  */
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import type { Database, ServerValue } from './database';
+import type {
+  DataSnapshot,
+  Database,
+  DatabaseReference,
+  EmulatorMockTokenOptions,
+  EventType,
+  ListenOptions,
+  OnDisconnect,
+  Query,
+  QueryConstraint,
+  QueryConstraintType,
+  ServerValue,
+  ThenableReference,
+  TransactionResult,
+} from './database';
 import type { FirebaseDatabaseTypes } from './namespaced';
 
 /** Optional final argument passed by modular API wrappers (MODULAR_DEPRECATION_ARG). */
@@ -25,6 +39,27 @@ export type DatabaseModularDeprecationArg = string;
 /** App instance with database() method (e.g. from getApp() when used for getDatabase()). */
 export interface AppWithDatabaseInternal {
   database(url?: string): Database;
+}
+
+/** Public database instance viewed through the modular wrapper methods. */
+export interface DatabaseWithMethodsInternal extends Database {
+  useEmulator(
+    host: string,
+    port: number,
+    options?: { mockUserToken?: EmulatorMockTokenOptions | string },
+    deprecationArg?: DatabaseModularDeprecationArg,
+  ): unknown;
+  goOffline(deprecationArg?: DatabaseModularDeprecationArg): unknown;
+  goOnline(deprecationArg?: DatabaseModularDeprecationArg): unknown;
+  ref(path?: string, deprecationArg?: DatabaseModularDeprecationArg): DatabaseReference;
+  refFromURL(url: string, deprecationArg?: DatabaseModularDeprecationArg): DatabaseReference;
+  setPersistenceEnabled(enabled: boolean, deprecationArg?: DatabaseModularDeprecationArg): unknown;
+  setLoggingEnabled(enabled: boolean, deprecationArg?: DatabaseModularDeprecationArg): unknown;
+  setPersistenceCacheSizeBytes(
+    bytes: number,
+    deprecationArg?: DatabaseModularDeprecationArg,
+  ): unknown;
+  getServerTime(deprecationArg?: DatabaseModularDeprecationArg): Date;
 }
 
 /** Native emitter subscription returned by addListener. */
@@ -105,6 +140,72 @@ export interface DatabaseReferenceInternal {
   ): (a: FirebaseDatabaseTypes.DataSnapshot | null, b?: string | null) => void;
 }
 
+/** Query instance viewed through the chainable query modifier methods. */
+export type QueryWithModifiersInternal = Query &
+  Record<QueryConstraintType, (...args: Array<unknown>) => Query>;
+
+/** Query instance viewed through the subscription helpers used by modular wrappers. */
+export interface QueryWithSubscriptionMethodsInternal extends Query {
+  on(
+    eventType: EventType,
+    callback: (snapshot: DataSnapshot, previousChildName?: string | null) => unknown,
+    cancelCallbackOrContext?:
+      | ((error: Error) => unknown)
+      | ListenOptions
+      | DatabaseModularDeprecationArg,
+    context?: ListenOptions | null,
+    deprecationArg?: DatabaseModularDeprecationArg,
+  ): unknown;
+  off(
+    eventType?: EventType,
+    callback?: (snapshot: DataSnapshot, previousChildName?: string | null) => unknown,
+    context?: null,
+    deprecationArg?: DatabaseModularDeprecationArg,
+  ): void;
+  once(
+    eventType: EventType,
+    successCallback?: (snapshot: DataSnapshot, previousChildName?: string | null) => unknown,
+    failureCallbackContext?: ((error: Error) => void) | null,
+    context?: ListenOptions,
+    deprecationArg?: DatabaseModularDeprecationArg,
+  ): Promise<DataSnapshot>;
+}
+
+/** Query constraint instance that can apply itself to a query. */
+export interface QueryConstraintWithApplyInternal extends QueryConstraint {
+  _apply(query: Query): Query;
+}
+
+/** Database reference viewed through the mutating modular helpers. */
+export interface DatabaseReferenceWithMethodsInternal extends DatabaseReference {
+  set(
+    value: unknown,
+    onComplete?: () => void,
+    deprecationArg?: DatabaseModularDeprecationArg,
+  ): Promise<void>;
+  setPriority(
+    priority: string | number | null,
+    onComplete?: () => void,
+    deprecationArg?: DatabaseModularDeprecationArg,
+  ): Promise<void>;
+  setWithPriority(
+    value: unknown,
+    priority: string | number | null,
+    onComplete?: () => void,
+    deprecationArg?: DatabaseModularDeprecationArg,
+  ): Promise<void>;
+  child(path: string, deprecationArg?: DatabaseModularDeprecationArg): DatabaseReference;
+  onDisconnect(deprecationArg?: DatabaseModularDeprecationArg): OnDisconnect;
+  keepSynced(value: boolean, deprecationArg?: DatabaseModularDeprecationArg): Promise<void>;
+  push(
+    value?: unknown,
+    onComplete?: undefined,
+    deprecationArg?: DatabaseModularDeprecationArg,
+  ): ThenableReference;
+  remove(deprecationArg?: DatabaseModularDeprecationArg): Promise<void>;
+  update(values: object, deprecationArg?: DatabaseModularDeprecationArg): Promise<void>;
+}
+
 /** Minimal transaction handler contract used by DatabaseReference and namespaced module. */
 export interface DatabaseTransactionInternal {
   add(
@@ -130,6 +231,16 @@ export interface DatabaseModuleInternal {
 
 /** Public database module instance plus internal bridge fields. */
 export interface DatabaseInternal extends Database, DatabaseModuleInternal {}
+
+/** Database reference viewed through the transaction modular helper. */
+export interface DatabaseReferenceWithTransactionInternal extends DatabaseReference {
+  transaction(
+    transactionUpdate: (currentData: any) => unknown,
+    onComplete?: undefined,
+    applyLocally?: boolean,
+    deprecationArg?: DatabaseModularDeprecationArg,
+  ): Promise<TransactionResult>;
+}
 
 /** Runtime ServerValue object shape used by modular wrappers. */
 export interface ServerValueStaticInternal extends ServerValue {

@@ -53,12 +53,19 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase database
  */
+/**
+ * @deprecated Use the exported types directly instead.
+ * FirebaseDatabaseTypes namespace is kept for backwards compatibility.
+ */
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace FirebaseDatabaseTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   /**
    * The ServerValue interface provides access to Firebase server values.
+   */
+  /**
+   * @deprecated Use the exported `ServerValue` type instead.
    */
   export interface ServerValue {
     /**
@@ -100,6 +107,9 @@ export namespace FirebaseDatabaseTypes {
    * firebase.database;
    * ```
    */
+  /**
+   * @deprecated Use the exported runtime/statics directly instead.
+   */
   export interface Statics {
     /**
      * Returns server specific values, such as the server timestamp.
@@ -114,6 +124,9 @@ export namespace FirebaseDatabaseTypes {
     SDK_VERSION: string;
   }
 
+  /**
+   * @deprecated Use the exported `TransactionResult` type instead.
+   */
   export interface TransactionResult {
     committed: boolean;
     snapshot: DataSnapshot;
@@ -125,6 +138,9 @@ export namespace FirebaseDatabaseTypes {
    *
    * You can reference the root or child location in your Database by calling `firebase.database().ref()`
    * or `firebase.database().ref("child/path")`.
+   */
+  /**
+   * @deprecated Use the exported `DatabaseReference` type instead.
    */
   export interface Reference extends Query {
     /**
@@ -431,6 +447,9 @@ export namespace FirebaseDatabaseTypes {
     onDisconnect(): OnDisconnect;
   }
 
+  /**
+   * @deprecated Use the exported `ThenableReference` type instead.
+   */
   export interface ThenableReference
     extends Reference, Pick<Promise<Reference>, 'then' | 'catch'> {}
 
@@ -443,6 +462,9 @@ export namespace FirebaseDatabaseTypes {
    *
    * Just as with a `Reference`, you can receive data from a Query by using the on() method. You will
    * only receive events and `DataSnapshot`s for the subset of the data that matches your query.
+   */
+  /**
+   * @deprecated Use the exported `Query` type instead.
    */
   export interface Query {
     /**
@@ -843,6 +865,9 @@ export namespace FirebaseDatabaseTypes {
    * Note that `onDisconnect` operations are only triggered once. If you want an operation to occur each time a
    * disconnect occurs, you'll need to re-establish the `onDisconnect` operations each time you reconnect.
    */
+  /**
+   * @deprecated Use the exported `OnDisconnect` type instead.
+   */
   export interface OnDisconnect {
     /**
      * Cancels all previously queued `onDisconnect()` set or update events for this location and all children.
@@ -938,6 +963,9 @@ export namespace FirebaseDatabaseTypes {
     ): Promise<void>;
   }
 
+  /**
+   * @deprecated Use the exported `EventType` type instead.
+   */
   export type EventType =
     | 'value'
     | 'child_added'
@@ -952,6 +980,9 @@ export namespace FirebaseDatabaseTypes {
    * is passed to the event callbacks you attach with `on()` or `once()`. You can extract the contents
    * of the snapshot as a JavaScript object by calling the val() method. Alternatively, you can traverse
    * into the snapshot by calling `child()` to return child snapshots (which you could then call `val()` on).
+   */
+  /**
+   * @deprecated Use the exported `DataSnapshot` type instead.
    */
   export interface DataSnapshot {
     /**
@@ -1118,6 +1149,9 @@ export namespace FirebaseDatabaseTypes {
    * const databaseForOtherApp = firebase.database(otherApp);
    * ```
    *
+   */
+  /**
+   * @deprecated Use the exported `Database` type and modular API instead.
    */
   export declare class Module extends FirebaseModule {
     /**

@@ -15,9 +15,11 @@
  *
  */
 
+// Export modular API functions
 export * from './modular';
 export { ServerValue } from './modular';
 
+// Export modular/public type helpers
 export type {
   Database,
   EmulatorMockTokenOptions,
@@ -35,7 +37,9 @@ export type {
   QueryConstraint,
   TransactionOptions,
 } from './types/database';
+
+// Export namespaced API
 export type { FirebaseDatabaseTypes } from './types/namespaced';
 
-export { SDK_VERSION, firebase } from './namespaced';
+export * from './namespaced';
 export { default } from './namespaced';
