@@ -17,8 +17,21 @@
 
 import type { ServerValueStaticInternal } from './types/internal';
 
-declare const DatabaseStatics: {
+const DatabaseStatics: {
   ServerValue: ServerValueStaticInternal;
+} = {
+  ServerValue: {
+    TIMESTAMP: {
+      '.sv': 'timestamp',
+    },
+    increment(delta: number): object {
+      return {
+        '.sv': {
+          increment: delta,
+        },
+      };
+    },
+  },
 };
 
 export default DatabaseStatics;

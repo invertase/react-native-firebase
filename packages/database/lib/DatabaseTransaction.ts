@@ -2,7 +2,7 @@
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this library except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
@@ -15,21 +15,41 @@
  *
  */
 
-import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import { isOther } from '@react-native-firebase/app/dist/module/common';
+import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
+import type { DatabaseModuleInternal, DatabaseReferenceInternal } from './types/internal';
 
 let transactionId = 0;
 
-/**
- * Uses the push id generator to create a transaction id
- * @returns {number}
- * @private
- */
+type DatabaseTransactionRecordInternal = {
+  id: number;
+  reference: DatabaseReferenceInternal;
+  transactionUpdater: (currentData: unknown) => unknown;
+  onComplete: (error: Error | null, committed: boolean, snapshot: unknown | null) => void;
+  applyLocally: boolean;
+  completed: boolean;
+  started: boolean;
+};
 
-const generateTransactionId = () => transactionId++;
+type DatabaseTransactionEventInternal = {
+  id: number;
+  body: {
+    type: 'update' | 'error' | 'complete' | string;
+    value?: unknown;
+    error?: unknown;
+    committed?: boolean;
+    snapshot?: unknown;
+  };
+};
+
+const generateTransactionId = (): number => transactionId++;
 
 export default class DatabaseTransaction {
-  constructor(database) {
+  private readonly _database: DatabaseModuleInternal;
+  private readonly _emitter: DatabaseModuleInternal['emitter'];
+  private readonly _transactions: Record<number, DatabaseTransactionRecordInternal>;
+
+  constructor(database: DatabaseModuleInternal) {
     this._database = database;
     this._emitter = database.emitter;
     this._transactions = {};
@@ -40,14 +60,12 @@ export default class DatabaseTransaction {
     );
   }
 
-  /**
-   *
-   * @param reference
-   * @param transactionUpdater
-   * @param onComplete
-   * @param applyLocally
-   */
-  add(reference, transactionUpdater, onComplete, applyLocally = false) {
+  add(
+    reference: DatabaseReferenceInternal,
+    transactionUpdater: (currentData: unknown) => unknown,
+    onComplete: (error: Error | null, committed: boolean, snapshot: unknown | null) => void,
+    applyLocally = false,
+  ): void {
     const id = generateTransactionId();
 
     this._transactions[id] = {
@@ -67,54 +85,34 @@ export default class DatabaseTransaction {
     }
   }
 
-  /**
-   * Returns a transaction by ID
-   *
-   * @param id
-   * @return {*}
-   * @private
-   */
-  _getTransaction(id) {
+  private _getTransaction(id: number): DatabaseTransactionRecordInternal | undefined {
     return this._transactions[id];
   }
 
-  /**
-   * Removes a transaction by ID on the next event loop
-   *
-   * @param id
-   * @private
-   */
-  _removeTransaction(id) {
+  private _removeTransaction(id: number): void {
     setImmediate(() => {
       delete this._transactions[id];
     });
   }
 
-  /**
-   *
-   * @param event
-   * @private
-   */
-  _onTransactionEvent(event) {
+  private _onTransactionEvent(event: DatabaseTransactionEventInternal): void {
     switch (event.body.type) {
       case 'update':
-        return this._handleUpdate(event);
+        this._handleUpdate(event);
+        return;
       case 'error':
-        return this._handleError(event);
+        this._handleError(event);
+        return;
       case 'complete':
-        return this._handleComplete(event);
+        this._handleComplete(event);
+        return;
       default:
-        return undefined;
+        return;
     }
   }
 
-  /**
-   *
-   * @param event
-   * @private
-   */
-  _handleUpdate(event) {
-    let newValue;
+  private _handleUpdate(event: DatabaseTransactionEventInternal): void {
+    let newValue: unknown;
 
     const { id, body } = event;
     const { value } = body;
@@ -124,13 +122,10 @@ export default class DatabaseTransaction {
       if (!transaction) {
         return;
       }
+
       newValue = transaction.transactionUpdater(value);
     } finally {
-      let abort = false;
-
-      if (newValue === undefined) {
-        abort = true;
-      }
+      const abort = newValue === undefined;
 
       this._database.native.transactionTryCommit(id, {
         value: newValue,
@@ -139,20 +134,17 @@ export default class DatabaseTransaction {
     }
   }
 
-  /**
-   *
-   * @param event
-   * @private
-   */
-  _handleError(event) {
+  private _handleError(event: DatabaseTransactionEventInternal): void {
     const transaction = this._getTransaction(event.id);
 
     if (transaction && !transaction.completed) {
       transaction.completed = true;
 
       try {
-        // error, committed, snapshot
-        const error = NativeError.fromEvent(event.body.error, 'database');
+        const error = NativeError.fromEvent(
+          event.body.error as Parameters<typeof NativeError.fromEvent>[0],
+          'database',
+        ) as Error;
         transaction.onComplete(error, false, null);
       } finally {
         this._removeTransaction(event.id);
@@ -160,20 +152,18 @@ export default class DatabaseTransaction {
     }
   }
 
-  /**
-   *
-   * @param event
-   * @private
-   */
-  _handleComplete(event) {
+  private _handleComplete(event: DatabaseTransactionEventInternal): void {
     const transaction = this._getTransaction(event.id);
 
     if (transaction && !transaction.completed) {
       transaction.completed = true;
 
       try {
-        // error, committed, snapshot
-        transaction.onComplete(null, event.body.committed, Object.assign({}, event.body.snapshot));
+        transaction.onComplete(
+          null,
+          !!event.body.committed,
+          Object.assign({}, event.body.snapshot),
+        );
       } finally {
         this._removeTransaction(event.id);
       }

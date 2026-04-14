@@ -171,9 +171,8 @@ setPersistenceCacheSizeBytes(dbModular1, 2000000);
 const timestamp = serverTimestamp();
 console.log(timestamp);
 
-getServerTime(dbModular1).then((time: number) => {
-  console.log(time);
-});
+const modularServerTime: Date = getServerTime(dbModular1);
+console.log(modularServerTime);
 
 const incrementValue = increment(1);
 console.log(incrementValue);
