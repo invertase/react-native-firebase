@@ -13,16 +13,9 @@ import remoteConfig, {
   getValue,
   setLogLevel,
   isSupported,
-  fetchTimeMillis,
-  settings,
-  lastFetchStatus,
   reset,
-  setConfigSettings,
-  fetch,
-  setDefaults,
   setDefaultsFromResource,
   onConfigUpdate,
-  onConfigUpdated,
   setCustomSignals,
   LastFetchStatus,
   ValueSource,
@@ -265,31 +258,8 @@ isSupported().then((supported: boolean) => {
   console.log(supported);
 });
 
-console.log(fetchTimeMillis(modularRemoteConfig1));
-console.log(settings(modularRemoteConfig1));
-console.log(lastFetchStatus(modularRemoteConfig1));
-
 reset(modularRemoteConfig1).then(() => {
   console.log('Modular reset');
-});
-
-setConfigSettings(modularRemoteConfig1, {
-  minimumFetchIntervalMillis: 30000,
-  fetchTimeoutMillis: 60000,
-}).then(() => {
-  console.log('Modular config settings set');
-});
-
-fetch(modularRemoteConfig1).then(() => {
-  console.log('Modular fetch');
-});
-
-fetch(modularRemoteConfig1, 300).then(() => {
-  console.log('Modular fetch with expiration');
-});
-
-setDefaults(modularRemoteConfig1, { modularKey: 'modularValue' }).then(() => {
-  console.log('Modular defaults set');
 });
 
 setDefaultsFromResource(modularRemoteConfig1, 'modular_resource').then(() => {
@@ -298,22 +268,6 @@ setDefaultsFromResource(modularRemoteConfig1, 'modular_resource').then(() => {
 
 const modularUnsubscribeOnConfigUpdate = onConfigUpdate(modularRemoteConfig1, typedObserver);
 modularUnsubscribeOnConfigUpdate();
-
-const modularUnsubscribeOnConfigUpdated = onConfigUpdated(
-  modularRemoteConfig1,
-  (
-    event?: { updatedKeys: string[] },
-    error?: { code: string; message: string; nativeErrorMessage: string },
-  ) => {
-    if (event) {
-      console.log(event.updatedKeys);
-    }
-    if (error) {
-      console.log(error);
-    }
-  },
-);
-modularUnsubscribeOnConfigUpdated();
 
 setCustomSignals(modularRemoteConfig1, typedCustomSignals).then(() => {
   console.log('Modular custom signals set');

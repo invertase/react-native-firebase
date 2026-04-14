@@ -24,15 +24,12 @@ import {
 import type {
   ConfigUpdateObserver,
   CustomSignals,
-  FetchStatus,
   LogLevel,
   RemoteConfig,
-  RemoteConfigSettings,
   Unsubscribe,
   Value,
 } from './types/remote-config';
 import type { AppWithRemoteConfigInternal, RemoteConfigInternal } from './types/internal';
-import type { FirebaseRemoteConfigTypes } from './types/namespaced';
 
 function ap(remoteConfig: RemoteConfig): RemoteConfigInternal {
   return remoteConfig as RemoteConfigInternal;
@@ -143,80 +140,12 @@ export function isSupported(): Promise<boolean> {
 }
 
 /**
- * Indicates the default value in milliseconds to abandon a pending fetch
- * request made to the Remote Config server. Defaults to 60000 (One minute).
- */
-export function fetchTimeMillis(remoteConfig: RemoteConfig): number {
-  return withModularFlag(() => ap(remoteConfig).fetchTimeMillis);
-}
-
-/**
- * Returns a ConfigSettings object which provides the properties
- * `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set.
- */
-export function settings(remoteConfig: RemoteConfig): RemoteConfigSettings {
-  return withModularFlag(() => ap(remoteConfig).settings);
-}
-
-/**
- * The status of the latest Remote Config fetch action.
- */
-export function lastFetchStatus(remoteConfig: RemoteConfig): FetchStatus {
-  return withModularFlag(() => ap(remoteConfig).lastFetchStatus);
-}
-
-/**
  * Deletes all activated, fetched and defaults configs and
  * resets all Firebase Remote Config settings.
  * Android only. iOS does not reset anything.
  */
 export function reset(remoteConfig: RemoteConfig): Promise<void> {
   return ap(remoteConfig).reset.call(remoteConfig, MODULAR_DEPRECATION_ARG);
-}
-
-/**
- * Set the Remote Config settings, currently able to set
- * `fetchTimeMillis` & `minimumFetchIntervalMillis`.
- */
-export function setConfigSettings(
-  remoteConfig: RemoteConfig,
-  settingsValue: RemoteConfigSettings,
-): Promise<void> {
-  return ap(remoteConfig).setConfigSettings.call(
-    remoteConfig,
-    settingsValue,
-    MODULAR_DEPRECATION_ARG,
-  );
-}
-
-/**
- * Fetches parameter values for your app.
- */
-export function fetch(
-  remoteConfig: RemoteConfig,
-  expirationDurationSeconds?: number,
-): Promise<void> {
-  return ap(remoteConfig).fetch.call(
-    remoteConfig,
-    expirationDurationSeconds,
-    MODULAR_DEPRECATION_ARG,
-  );
-}
-
-/**
- * Sets defaults for your app.
- */
-export function setDefaults(
-  remoteConfig: RemoteConfig,
-  defaults: {
-    [key: string]: string | number | boolean;
-  },
-): Promise<void> {
-  return ap(remoteConfig).setDefaults.call(
-    remoteConfig,
-    defaults,
-    MODULAR_DEPRECATION_ARG,
-  ) as unknown as Promise<void>;
 }
 
 /**
@@ -236,25 +165,12 @@ export function setDefaultsFromResource(
 /**
  * Registers a listener to changes in the configuration.
  *
- * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
  */
 export function onConfigUpdate(
   remoteConfig: RemoteConfig,
   observer: ConfigUpdateObserver,
 ): Unsubscribe {
   return ap(remoteConfig).onConfigUpdate.call(remoteConfig, observer, MODULAR_DEPRECATION_ARG);
-}
-
-/**
- * Registers a listener to changes in the configuration.
- *
- * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
- */
-export function onConfigUpdated(
-  remoteConfig: RemoteConfig,
-  callback: FirebaseRemoteConfigTypes.CallbackOrObserver<FirebaseRemoteConfigTypes.OnConfigUpdatedListenerCallback>,
-): () => void {
-  return ap(remoteConfig).onConfigUpdated.call(remoteConfig, callback, MODULAR_DEPRECATION_ARG);
 }
 
 /**

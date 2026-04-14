@@ -53,59 +53,11 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   extraInRN: [
     {
-      name: 'fetch',
-      reason:
-        'Legacy RN Firebase fetch API that accepts an optional ' +
-        '`expirationDurationSeconds` parameter. Prefer `fetchConfig()` which ' +
-        'matches the firebase-js-sdk API. Kept for backwards compatibility.',
-    },
-    {
-      name: 'fetchTimeMillis',
-      reason:
-        'Getter function returning the last fetch timestamp. In the ' +
-        'firebase-js-sdk this value is accessed as the `fetchTimeMillis` ' +
-        'property on the `RemoteConfig` object rather than a standalone function.',
-    },
-    {
-      name: 'lastFetchStatus',
-      reason:
-        'Getter function returning the last fetch status. In the ' +
-        'firebase-js-sdk this value is accessed as the `lastFetchStatus` ' +
-        'property on the `RemoteConfig` object rather than a standalone function.',
-    },
-    {
-      name: 'settings',
-      reason:
-        'Getter function returning the current `ConfigSettings`. In the ' +
-        'firebase-js-sdk settings are accessed via the `settings` property ' +
-        'on the `RemoteConfig` object rather than a standalone function.',
-    },
-    {
-      name: 'onConfigUpdated',
-      reason:
-        'Deprecated RN Firebase listener for real-time config updates. ' +
-        'Replaced by `onConfigUpdate()` which matches the firebase-js-sdk API.',
-    },
-    {
       name: 'reset',
       reason:
         'Android-only API that deletes all activated, fetched and default ' +
         'configs and resets all Remote Config settings. No equivalent exists ' +
         'in the firebase-js-sdk.',
-    },
-    {
-      name: 'setConfigSettings',
-      reason:
-        'RN Firebase helper to update Remote Config settings asynchronously via the native module. In the ' +
-        'firebase-js-sdk these properties are set by direct property assignment ' +
-        'on the `RemoteConfig.settings` object.',
-    },
-    {
-      name: 'setDefaults',
-      reason:
-        'RN Firebase API for setting default config values programmatically. ' +
-        'The firebase-js-sdk uses direct assignment to `RemoteConfig.defaultConfig` ' +
-        'instead.',
     },
     {
       name: 'setDefaultsFromResource',
