@@ -15,22 +15,21 @@
  *
  */
 
-import { getApp, type ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseApp } from '@firebase/app';
+import { getApp } from '@react-native-firebase/app';
 import {
   MODULAR_DEPRECATION_ARG,
   withModularFlag,
 } from '@react-native-firebase/app/dist/module/common';
 import type {
-  ConfigDefaults,
-  ConfigSettings,
   ConfigUpdateObserver,
-  ConfigValue,
-  ConfigValues,
   CustomSignals,
-  LastFetchStatusType,
+  FetchStatus,
+  LogLevel,
   RemoteConfig,
-  RemoteConfigLogLevel,
+  RemoteConfigSettings,
   Unsubscribe,
+  Value,
 } from './types/remote-config';
 import type { AppWithRemoteConfigInternal, RemoteConfigInternal } from './types/internal';
 import type { FirebaseRemoteConfigTypes } from './types/namespaced';
@@ -45,15 +44,17 @@ export type { CustomSignals } from './types/remote-config';
  * Returns a RemoteConfig instance for the given app.
  * @param app - FirebaseApp. Optional.
  */
-export function getRemoteConfig(app?: ReactNativeFirebase.FirebaseApp): RemoteConfig {
+export function getRemoteConfig(app?: FirebaseApp): RemoteConfig {
   if (app) {
     return withModularFlag(() =>
-      (getApp(app.name) as AppWithRemoteConfigInternal).remoteConfig(MODULAR_DEPRECATION_ARG),
+      (getApp(app.name) as unknown as AppWithRemoteConfigInternal).remoteConfig(
+        MODULAR_DEPRECATION_ARG,
+      ),
     );
   }
 
   return withModularFlag(() =>
-    (getApp() as AppWithRemoteConfigInternal).remoteConfig(MODULAR_DEPRECATION_ARG),
+    (getApp() as unknown as AppWithRemoteConfigInternal).remoteConfig(MODULAR_DEPRECATION_ARG),
   );
 }
 
@@ -90,7 +91,7 @@ export function fetchConfig(remoteConfig: RemoteConfig): Promise<void> {
 /**
  * Gets all config.
  */
-export function getAll(remoteConfig: RemoteConfig): ConfigValues {
+export function getAll(remoteConfig: RemoteConfig): Record<string, Value> {
   return ap(remoteConfig).getAll.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
@@ -118,21 +119,17 @@ export function getString(remoteConfig: RemoteConfig, key: string): string {
 /**
  * Gets the value for the given key.
  */
-export function getValue(remoteConfig: RemoteConfig, key: string): ConfigValue {
+export function getValue(remoteConfig: RemoteConfig, key: string): Value {
   return ap(remoteConfig).getValue.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Defines the log level to use.
  */
-export function setLogLevel(
-  remoteConfig: RemoteConfig,
-  logLevel: RemoteConfigLogLevel,
-): RemoteConfigLogLevel {
+export function setLogLevel(remoteConfig: RemoteConfig, logLevel: LogLevel): void {
   void remoteConfig;
   void logLevel;
-  // always return the "error" log level for now as the setter is ignored on native. Web only.
-  return 'error';
+  // Intentionally ignored on native. The modular API matches the JS SDK and returns void.
 }
 
 /**
@@ -157,14 +154,14 @@ export function fetchTimeMillis(remoteConfig: RemoteConfig): number {
  * Returns a ConfigSettings object which provides the properties
  * `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set.
  */
-export function settings(remoteConfig: RemoteConfig): ConfigSettings {
+export function settings(remoteConfig: RemoteConfig): RemoteConfigSettings {
   return withModularFlag(() => ap(remoteConfig).settings);
 }
 
 /**
  * The status of the latest Remote Config fetch action.
  */
-export function lastFetchStatus(remoteConfig: RemoteConfig): LastFetchStatusType {
+export function lastFetchStatus(remoteConfig: RemoteConfig): FetchStatus {
   return withModularFlag(() => ap(remoteConfig).lastFetchStatus);
 }
 
@@ -183,7 +180,7 @@ export function reset(remoteConfig: RemoteConfig): Promise<void> {
  */
 export function setConfigSettings(
   remoteConfig: RemoteConfig,
-  settingsValue: ConfigSettings,
+  settingsValue: RemoteConfigSettings,
 ): Promise<void> {
   return ap(remoteConfig).setConfigSettings.call(
     remoteConfig,
@@ -209,7 +206,12 @@ export function fetch(
 /**
  * Sets defaults for your app.
  */
-export function setDefaults(remoteConfig: RemoteConfig, defaults: ConfigDefaults): Promise<void> {
+export function setDefaults(
+  remoteConfig: RemoteConfig,
+  defaults: {
+    [key: string]: string | number | boolean;
+  },
+): Promise<void> {
   return ap(remoteConfig).setDefaults.call(
     remoteConfig,
     defaults,
@@ -277,5 +279,3 @@ export async function setCustomSignals(
     ),
   );
 }
-
-export { LastFetchStatus, ValueSource } from './statics';

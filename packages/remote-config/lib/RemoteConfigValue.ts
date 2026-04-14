@@ -15,19 +15,19 @@
  *
  */
 
-import type { ConfigValue } from './types/remote-config';
+import type { Value } from './types/remote-config';
 
 // as per firebase web sdk specification
 const BOOL_VALUES = ['1', 'true', 't', 'yes', 'y', 'on'];
 
 interface ConfigValueInit {
   value: string;
-  source: ReturnType<ConfigValue['getSource']>;
+  source: ReturnType<Value['getSource']>;
 }
 
-export default class RemoteConfigValue implements ConfigValue {
+export default class RemoteConfigValue implements Value {
   private readonly _value: string;
-  private readonly _source: ReturnType<ConfigValue['getSource']>;
+  private readonly _source: ReturnType<Value['getSource']>;
 
   constructor({ value, source }: ConfigValueInit) {
     this._value = value;
@@ -76,7 +76,7 @@ export default class RemoteConfigValue implements ConfigValue {
     return this._value;
   }
 
-  getSource(): ReturnType<ConfigValue['getSource']> {
+  getSource(): ReturnType<Value['getSource']> {
     return this._source;
   }
 }

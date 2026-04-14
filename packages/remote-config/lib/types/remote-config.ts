@@ -15,45 +15,26 @@
  *
  */
 
+import type { FirebaseApp } from '@firebase/app';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import type { FirebaseRemoteConfigTypes } from './namespaced';
 
-export type RemoteConfigLogLevel = 'debug' | 'error' | 'silent';
+export type LogLevel = 'debug' | 'error' | 'silent';
 
-export interface LastFetchStatus {
-  SUCCESS: 'success';
-  FAILURE: 'failure';
-  THROTTLED: 'throttled';
-  NO_FETCH_YET: 'no_fetch_yet';
-}
+export type FetchStatus = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
 
-export interface ValueSource {
-  REMOTE: 'remote';
-  DEFAULT: 'default';
-  STATIC: 'static';
-}
+export type ValueSource = 'static' | 'default' | 'remote';
 
-export interface ConfigValue {
-  getSource(): 'remote' | 'default' | 'static';
-  asBoolean(): true | false;
+export interface Value {
+  getSource(): ValueSource;
+  asBoolean(): boolean;
   asNumber(): number;
   asString(): string;
 }
 
-export interface ConfigValues {
-  [key: string]: ConfigValue;
+export interface RemoteConfigSettings {
+  minimumFetchIntervalMillis: number;
+  fetchTimeoutMillis: number;
 }
-
-export interface ConfigSettings {
-  minimumFetchIntervalMillis?: number;
-  fetchTimeMillis?: number;
-}
-
-export interface ConfigDefaults {
-  [key: string]: number | string | boolean;
-}
-
-export type LastFetchStatusType = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
 
 export interface ConfigUpdate {
   getUpdatedKeys(): Set<string>;
@@ -71,27 +52,12 @@ export interface CustomSignals {
   [key: string]: string | number | null;
 }
 
-export interface RemoteConfig extends ReactNativeFirebase.FirebaseModule {
-  app: ReactNativeFirebase.FirebaseApp;
+export interface RemoteConfig {
+  app: FirebaseApp;
   fetchTimeMillis: number;
-  lastFetchStatus: LastFetchStatusType;
-  settings: ConfigSettings;
-  defaultConfig: ConfigDefaults;
-  setConfigSettings(configSettings: ConfigSettings): Promise<void>;
-  setDefaults(defaults: ConfigDefaults): Promise<null>;
-  setDefaultsFromResource(resourceName: string): Promise<null>;
-  activate(): Promise<boolean>;
-  ensureInitialized(): Promise<void>;
-  fetch(expirationDurationSeconds?: number): Promise<void>;
-  fetchAndActivate(): Promise<boolean>;
-  getAll(): ConfigValues;
-  getValue(key: string): ConfigValue;
-  getBoolean(key: string): boolean;
-  getString(key: string): string;
-  getNumber(key: string): number;
-  onConfigUpdate(observer: ConfigUpdateObserver): Unsubscribe;
-  onConfigUpdated(
-    callback: FirebaseRemoteConfigTypes.CallbackOrObserver<FirebaseRemoteConfigTypes.OnConfigUpdatedListenerCallback>,
-  ): Unsubscribe;
-  reset(): Promise<void>;
+  lastFetchStatus: FetchStatus;
+  settings: RemoteConfigSettings;
+  defaultConfig: {
+    [key: string]: string | number | boolean;
+  };
 }

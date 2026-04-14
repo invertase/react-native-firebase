@@ -16,7 +16,7 @@ import {
   getWebError,
   guard,
 } from '@react-native-firebase/app/dist/module/internal/web/utils';
-import type { ConfigDefaults, CustomSignals, RemoteConfig } from '../types/remote-config';
+import type { CustomSignals, RemoteConfig } from '../types/remote-config';
 import type {
   NativeRemoteConfigConstants,
   NativeRemoteConfigResult,
@@ -36,7 +36,7 @@ type RemoteConfigWithWebSettings = WebRemoteConfig &
   };
 
 type ConfigSettingsForInstance = Partial<Record<string, WebRemoteConfigSettings>>;
-type DefaultConfigForInstance = Partial<Record<string, ConfigDefaults>>;
+type DefaultConfigForInstance = Partial<Record<string, Record<string, string | number | boolean>>>;
 type ConfigUpdateListeners = Partial<Record<string, ReturnType<typeof onConfigUpdate>>>;
 
 type WithAppName<F> = F extends (...args: infer P) => infer R
@@ -79,7 +79,7 @@ function getRemoteConfigInstanceForApp(
     ...(configSettingsForInstance[appName] ?? DEFAULT_CONFIG_SETTINGS),
     ...overrides,
   };
-  const defaultConfig: ConfigDefaults = defaultConfigForInstance[appName] ?? {};
+  const defaultConfig = defaultConfigForInstance[appName] ?? {};
 
   const app = getApp(appName);
   const instance = getRemoteConfig(app) as unknown as RemoteConfigWithWebSettings;

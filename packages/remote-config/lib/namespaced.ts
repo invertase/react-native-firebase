@@ -37,14 +37,11 @@ import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import RemoteConfigValue from './RemoteConfigValue';
 import { LastFetchStatus, ValueSource } from './statics';
 import type {
-  ConfigDefaults,
-  ConfigSettings,
   ConfigUpdate,
   ConfigUpdateObserver,
-  ConfigValue,
-  ConfigValues,
-  LastFetchStatusType,
+  FetchStatus,
   RemoteConfig,
+  RemoteConfigSettings,
 } from './types/remote-config';
 import type { FirebaseRemoteConfigTypes } from './types/namespaced';
 import type {
@@ -58,6 +55,12 @@ import type {
 } from './types/internal';
 import { version } from './version';
 import fallBackModule from './web/RNFBConfigModule';
+
+type ConfigDefaults = FirebaseRemoteConfigTypes.ConfigDefaults;
+type ConfigSettings = FirebaseRemoteConfigTypes.ConfigSettings;
+type ConfigValue = FirebaseRemoteConfigTypes.ConfigValue;
+type ConfigValues = FirebaseRemoteConfigTypes.ConfigValues;
+type LastFetchStatusType = FirebaseRemoteConfigTypes.LastFetchStatusType;
 
 function isSuccessEvent(
   event: RemoteConfigUpdateSuccessEventInternal | RemoteConfigUpdateErrorEventInternal,
@@ -91,7 +94,7 @@ const nativeModuleName = 'RNFBConfigModule' as const;
 class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> implements RemoteConfig {
   private _settings: ConfigSettingsStateInternal;
   private _lastFetchTime: number;
-  private _lastFetchStatus: LastFetchStatusType;
+  private _lastFetchStatus: FetchStatus;
   private _values: Record<string, StoredConfigValueInternal>;
   private _configUpdateListenerCount: number;
 
@@ -103,7 +106,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
     super(app, config, customUrlOrRegion);
     this._settings = {
       // defaults to 1 minute.
-      fetchTimeMillis: 60000,
+      fetchTimeoutMillis: 60000,
       // defaults to 12 hours.
       minimumFetchIntervalMillis: 43200000,
     };
@@ -145,18 +148,26 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
     void this.setDefaults(defaults, true);
   }
 
-  get settings(): ConfigSettings {
-    return this._settings;
+  get settings(): RemoteConfigSettings & { fetchTimeMillis: number } {
+    return {
+      minimumFetchIntervalMillis: this._settings.minimumFetchIntervalMillis,
+      fetchTimeoutMillis: this._settings.fetchTimeoutMillis,
+      fetchTimeMillis: this._settings.fetchTimeoutMillis,
+    };
   }
 
-  set settings(settings: ConfigSettings) {
+  set settings(settings: ConfigSettings | RemoteConfigSettings) {
     // To make Firebase web v9 API compatible, we update the settings first so it immediately
     // updates settings on the instance. We then pass to underlying SDK to update. We do this because
     // there is no way to "await" a setter. We can't delegate to `setConfigSettings()` as it is setup
     // for native.
     this._settings = {
-      ...this._settings,
-      ...settings,
+      minimumFetchIntervalMillis:
+        settings.minimumFetchIntervalMillis ?? this._settings.minimumFetchIntervalMillis,
+      fetchTimeoutMillis:
+        ('fetchTimeoutMillis' in settings ? settings.fetchTimeoutMillis : undefined) ??
+        ('fetchTimeMillis' in settings ? settings.fetchTimeMillis : undefined) ??
+        this._settings.fetchTimeoutMillis,
     };
     void this.setConfigSettings(settings, true);
   }
@@ -218,9 +229,12 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
     return this._promiseWithConstants(this.native.reset());
   }
 
-  setConfigSettings(settings: ConfigSettings, fromSettingsSetter = false): Promise<void> {
+  setConfigSettings(
+    settings: ConfigSettings | RemoteConfigSettings,
+    fromSettingsSetter = false,
+  ): Promise<void> {
     const updatedSettings = {
-      fetchTimeout: this._settings.fetchTimeMillis / 1000,
+      fetchTimeout: this._settings.fetchTimeoutMillis / 1000,
       minimumFetchInterval: this._settings.minimumFetchIntervalMillis / 1000,
     };
 
@@ -239,14 +253,21 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
       }
     }
 
-    if (hasOwnProperty(settings, 'fetchTimeMillis')) {
-      if (!isNumber(settings.fetchTimeMillis)) {
+    if (
+      hasOwnProperty(settings, 'fetchTimeoutMillis') ||
+      hasOwnProperty(settings, 'fetchTimeMillis')
+    ) {
+      const fetchTimeoutMillis =
+        ('fetchTimeoutMillis' in settings ? settings.fetchTimeoutMillis : undefined) ??
+        ('fetchTimeMillis' in settings ? settings.fetchTimeMillis : undefined);
+
+      if (!isNumber(fetchTimeoutMillis)) {
         throw new Error(
-          `firebase.remoteConfig().${apiCalled}(): 'settings.fetchTimeMillis' must be a number type in milliseconds.`,
+          `firebase.remoteConfig().${apiCalled}(): 'settings.fetchTimeoutMillis' must be a number type in milliseconds.`,
         );
-      } else {
-        updatedSettings.fetchTimeout = settings.fetchTimeMillis / 1000;
       }
+
+      updatedSettings.fetchTimeout = fetchTimeoutMillis / 1000;
     }
 
     return this._promiseWithConstants(this.native.setConfigSettings(updatedSettings));
@@ -428,7 +449,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
 
     if (constants.fetchTimeout !== undefined && constants.minimumFetchInterval !== undefined) {
       this._settings = {
-        fetchTimeMillis: constants.fetchTimeout * 1000,
+        fetchTimeoutMillis: constants.fetchTimeout * 1000,
         minimumFetchIntervalMillis: constants.minimumFetchInterval * 1000,
       };
     }

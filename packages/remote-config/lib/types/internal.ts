@@ -15,12 +15,20 @@
  *
  */
 
-import type { ConfigUpdateObserver, RemoteConfig, Unsubscribe } from './remote-config';
+import type {
+  ConfigUpdateObserver,
+  FetchStatus,
+  RemoteConfig,
+  RemoteConfigSettings,
+  Unsubscribe,
+  Value,
+  ValueSource,
+} from './remote-config';
 import type { FirebaseRemoteConfigTypes } from './namespaced';
 
-export type ConfigValueSourceInternal = 'remote' | 'default' | 'static';
+export type ConfigValueSourceInternal = ValueSource;
 
-export type LastFetchStatusTypeInternal = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
+export type LastFetchStatusInternal = FetchStatus;
 
 export type RemoteConfigModularDeprecationArg = string;
 
@@ -33,7 +41,7 @@ export interface AppWithRemoteConfigInternal {
 }
 
 export interface ConfigSettingsStateInternal {
-  fetchTimeMillis: number;
+  fetchTimeoutMillis: number;
   minimumFetchIntervalMillis: number;
 }
 
@@ -46,7 +54,7 @@ export interface NativeRemoteConfigConstants {
   fetchTimeout?: number;
   minimumFetchInterval?: number;
   lastFetchTime?: number;
-  lastFetchStatus?: LastFetchStatusTypeInternal;
+  lastFetchStatus?: LastFetchStatusInternal;
   values?: Record<string, StoredConfigValueInternal>;
 }
 
@@ -92,19 +100,45 @@ export interface RNFBConfigModule {
 }
 
 export interface RemoteConfigInternal extends RemoteConfig {
-  activate: WithRemoteConfigDeprecationArg<RemoteConfig['activate']>;
-  ensureInitialized: WithRemoteConfigDeprecationArg<RemoteConfig['ensureInitialized']>;
-  fetchAndActivate: WithRemoteConfigDeprecationArg<RemoteConfig['fetchAndActivate']>;
-  fetch: WithRemoteConfigDeprecationArg<RemoteConfig['fetch']>;
-  getAll: WithRemoteConfigDeprecationArg<RemoteConfig['getAll']>;
-  getBoolean: WithRemoteConfigDeprecationArg<RemoteConfig['getBoolean']>;
-  getNumber: WithRemoteConfigDeprecationArg<RemoteConfig['getNumber']>;
-  getString: WithRemoteConfigDeprecationArg<RemoteConfig['getString']>;
-  getValue: WithRemoteConfigDeprecationArg<RemoteConfig['getValue']>;
-  reset: WithRemoteConfigDeprecationArg<RemoteConfig['reset']>;
-  setConfigSettings: WithRemoteConfigDeprecationArg<RemoteConfig['setConfigSettings']>;
-  setDefaults: WithRemoteConfigDeprecationArg<RemoteConfig['setDefaults']>;
-  setDefaultsFromResource: WithRemoteConfigDeprecationArg<RemoteConfig['setDefaultsFromResource']>;
+  settings: RemoteConfigSettings & {
+    fetchTimeMillis: number;
+  };
+  defaultConfig: {
+    [key: string]: string | number | boolean;
+  };
+  activate(deprecationArg?: RemoteConfigModularDeprecationArg): Promise<boolean>;
+  ensureInitialized(deprecationArg?: RemoteConfigModularDeprecationArg): Promise<void>;
+  fetchAndActivate(deprecationArg?: RemoteConfigModularDeprecationArg): Promise<boolean>;
+  fetch(
+    expirationDurationSeconds?: number,
+    deprecationArg?: RemoteConfigModularDeprecationArg,
+  ): Promise<void>;
+  getAll(deprecationArg?: RemoteConfigModularDeprecationArg): Record<string, Value>;
+  getBoolean(key: string, deprecationArg?: RemoteConfigModularDeprecationArg): boolean;
+  getNumber(key: string, deprecationArg?: RemoteConfigModularDeprecationArg): number;
+  getString(key: string, deprecationArg?: RemoteConfigModularDeprecationArg): string;
+  getValue(key: string, deprecationArg?: RemoteConfigModularDeprecationArg): Value;
+  reset(deprecationArg?: RemoteConfigModularDeprecationArg): Promise<void>;
+  setConfigSettings(
+    settings:
+      | RemoteConfigSettings
+      | {
+          minimumFetchIntervalMillis?: number;
+          fetchTimeMillis?: number;
+          fetchTimeoutMillis?: number;
+        },
+    deprecationArg?: RemoteConfigModularDeprecationArg,
+  ): Promise<void>;
+  setDefaults(
+    defaults: {
+      [key: string]: string | number | boolean;
+    },
+    deprecationArg?: RemoteConfigModularDeprecationArg,
+  ): Promise<null>;
+  setDefaultsFromResource(
+    resourceName: string,
+    deprecationArg?: RemoteConfigModularDeprecationArg,
+  ): Promise<null>;
   onConfigUpdate(
     observer: ConfigUpdateObserver,
     deprecationArg?: RemoteConfigModularDeprecationArg,
