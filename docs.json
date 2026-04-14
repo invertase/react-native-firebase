@@ -3,6 +3,7 @@
   "name": "React Native Firebase",
   "description": "A well-tested feature-rich modular Firebase implementation for React Native. Supports both iOS & Android platforms for all Firebase services.",
   "favicon": "/rnfb-logo.png",
+  "agent": "68400764-5d8a-44fa-8b05-87a0a166e110",
   "theme": {
     "primary": "#e88533"
   },
