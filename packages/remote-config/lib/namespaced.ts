@@ -223,7 +223,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
    */
   reset(): Promise<void> {
     if (isIOS) {
-      return Promise.resolve(null as unknown as void);
+      return Promise.resolve();
     }
 
     return this._promiseWithConstants(this.native.reset());
