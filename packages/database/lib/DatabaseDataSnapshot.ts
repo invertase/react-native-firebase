@@ -26,20 +26,8 @@ import {
 } from '@react-native-firebase/app/dist/module/common';
 import { deepGet } from '@react-native-firebase/app/dist/module/common/deeps';
 
+import type { DatabaseSnapshotInternal } from './types/internal';
 import type { FirebaseDatabaseTypes } from './types/namespaced';
-
-type DatabaseSnapshotPriority = string | number | null;
-
-type DatabaseSnapshotChildPriorities = Record<string, string | number | null | undefined>;
-
-interface SerializedDatabaseSnapshotInternal {
-  value: unknown;
-  key: string | null;
-  exists: boolean;
-  childKeys: string[];
-  priority?: DatabaseSnapshotPriority;
-  childPriorities?: DatabaseSnapshotChildPriorities;
-}
 
 type ReferenceWithDeprecationArg = FirebaseDatabaseTypes.Reference & {
   child(path: string, deprecationArg?: string): FirebaseDatabaseTypes.Reference;
@@ -50,13 +38,10 @@ function ap(reference: FirebaseDatabaseTypes.Reference): ReferenceWithDeprecatio
 }
 
 export default class DatabaseDataSnapshot implements FirebaseDatabaseTypes.DataSnapshot {
-  _snapshot: SerializedDatabaseSnapshotInternal;
+  _snapshot: DatabaseSnapshotInternal;
   _ref: FirebaseDatabaseTypes.Reference;
 
-  constructor(
-    reference: FirebaseDatabaseTypes.Reference,
-    snapshot: SerializedDatabaseSnapshotInternal,
-  ) {
+  constructor(reference: FirebaseDatabaseTypes.Reference, snapshot: DatabaseSnapshotInternal) {
     this._snapshot = snapshot;
 
     if (reference.key !== snapshot.key && isString(snapshot.key)) {
@@ -92,7 +77,7 @@ export default class DatabaseDataSnapshot implements FirebaseDatabaseTypes.DataS
 
     const childRef = ap(this._ref).child.call(this._ref, path, MODULAR_DEPRECATION_ARG);
 
-    let childPriority: DatabaseSnapshotPriority = null;
+    let childPriority: string | number | null = null;
     if (this._snapshot.childPriorities) {
       const childPriorityValue = this._snapshot.childPriorities[childRef.key as string];
       if (isString(childPriorityValue) || isNumber(childPriorityValue)) {

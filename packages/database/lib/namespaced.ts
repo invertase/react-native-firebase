@@ -31,7 +31,12 @@ import {
 } from '@react-native-firebase/app/dist/module/internal';
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import type { DatabaseInternal, DatabaseReferenceInternal } from './types/internal';
+import type {
+  DatabaseInternal,
+  DatabaseReferenceInternal,
+  DatabaseTransactionInternal,
+  RNFBDatabaseModule,
+} from './types/internal';
 import type { FirebaseDatabaseTypes } from './types/namespaced';
 import './types/internal';
 import DatabaseReference from './DatabaseReference';
@@ -60,7 +65,11 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName> {
   readonly type = 'database' as const;
   _serverTimeOffset: number;
   _customUrlOrRegion: string | null;
-  _transaction: DatabaseTransaction;
+  _transaction: DatabaseTransactionInternal;
+
+  private get nativeModule(): RNFBDatabaseModule {
+    return this.native as RNFBDatabaseModule;
+  }
 
   constructor(
     app: ReactNativeFirebase.FirebaseAppBase,
@@ -126,11 +135,11 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   goOnline(): Promise<void> {
-    return this.native.goOnline();
+    return this.nativeModule.goOnline();
   }
 
   goOffline(): Promise<void> {
-    return this.native.goOffline();
+    return this.nativeModule.goOffline();
   }
 
   setPersistenceEnabled(enabled: boolean): Promise<void> {
@@ -140,7 +149,7 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName> {
       );
     }
 
-    return this.native.setPersistenceEnabled(enabled);
+    return this.nativeModule.setPersistenceEnabled(enabled);
   }
 
   setLoggingEnabled(enabled: boolean): Promise<void> {
@@ -150,7 +159,7 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName> {
       );
     }
 
-    return this.native.setLoggingEnabled(enabled);
+    return this.nativeModule.setLoggingEnabled(enabled);
   }
 
   setPersistenceCacheSizeBytes(bytes: number): Promise<void> {
@@ -172,7 +181,7 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName> {
       );
     }
 
-    return this.native.setPersistenceCacheSizeBytes(bytes);
+    return this.nativeModule.setPersistenceCacheSizeBytes(bytes);
   }
 
   useEmulator(host: string, port: number): [string, number] {
@@ -199,7 +208,7 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName> {
         );
       }
     }
-    this.native.useEmulator(remappedHost, port);
+    this.nativeModule.useEmulator(remappedHost, port);
     return [remappedHost, port];
   }
 }

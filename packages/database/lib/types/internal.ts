@@ -20,8 +20,8 @@ import type {
   DataSnapshot,
   Database,
   DatabaseReference,
-  EmulatorMockTokenOptions,
   EventType,
+  EmulatorMockTokenOptions,
   ListenOptions,
   OnDisconnect,
   Query,
@@ -32,6 +32,7 @@ import type {
   TransactionResult,
 } from './database';
 import type { FirebaseDatabaseTypes } from './namespaced';
+import type { DatabaseQueryModifier } from '../DatabaseQueryModifiers';
 
 /** Optional final argument passed by modular API wrappers (MODULAR_DEPRECATION_ARG). */
 export type DatabaseModularDeprecationArg = string;
@@ -67,11 +68,74 @@ export interface DatabaseEmitterSubscriptionInternal {
   remove(): void;
 }
 
+/** Serialized database snapshot payload received from native or web fallback modules. */
+export interface DatabaseSnapshotInternal {
+  value: unknown;
+  key: string | null;
+  exists: boolean;
+  hasChildren?: boolean;
+  childrenCount?: number;
+  childKeys: string[];
+  priority?: string | number | null;
+  childPriorities?: Record<string, string | number | null | undefined>;
+}
+
+/** Child-event payload received from native once/on listeners. */
+export interface DatabaseChildSnapshotResultInternal {
+  snapshot: DatabaseSnapshotInternal;
+  previousChildName?: string | null;
+}
+
+/** Query listener registration bookkeeping passed to native. */
+export interface DatabaseListenRegistrationInternal {
+  eventRegistrationKey: string;
+  key: string;
+  registrationCancellationKey?: string;
+}
+
+/** Query subscription payload passed to native. */
+export interface DatabaseListenPropsInternal {
+  key: string;
+  modifiers: DatabaseQueryModifier[];
+  path: string;
+  eventType: EventType;
+  registration: DatabaseListenRegistrationInternal;
+}
+
+/** Transaction commit payload sent to native. */
+export interface DatabaseTransactionUpdatesInternal {
+  value: unknown;
+  abort: boolean;
+}
+
+/** Transaction bridge event payload received from native. */
+export interface DatabaseTransactionEventInternal {
+  id: number;
+  body:
+    | {
+        type: 'update';
+        value?: unknown;
+      }
+    | {
+        type: 'error';
+        error?: unknown;
+      }
+    | {
+        type: 'complete';
+        committed?: boolean;
+        snapshot?: DatabaseSnapshotInternal;
+      }
+    | {
+        type: string;
+        [key: string]: unknown;
+      };
+}
+
 /** Shared emitter shape used by database transaction listeners. */
 export interface DatabaseEventEmitterInternal {
   addListener(
     eventName: string,
-    listener: (event: { id: number; body: { type: string; [key: string]: unknown } }) => void,
+    listener: (event: DatabaseTransactionEventInternal) => void,
   ): DatabaseEmitterSubscriptionInternal;
 }
 
@@ -93,12 +157,17 @@ export interface RNFBDatabaseModule {
   setPriority(path: string, props: { priority: string | number | null }): Promise<void>;
   once(
     path: string,
-    modifiers: unknown,
+    modifiers: DatabaseQueryModifier[],
     eventType: FirebaseDatabaseTypes.EventType,
-  ): Promise<unknown>;
-  on(props: unknown): void;
+  ): Promise<DatabaseSnapshotInternal | DatabaseChildSnapshotResultInternal>;
+  on(props: DatabaseListenPropsInternal): void;
   off(queryKey: string, eventRegistrationKey: string): void | Promise<void>;
-  keepSynced(queryKey: string, path: string, modifiers: unknown, value: boolean): Promise<void>;
+  keepSynced(
+    queryKey: string,
+    path: string,
+    modifiers: DatabaseQueryModifier[],
+    value: boolean,
+  ): Promise<void>;
   onDisconnectCancel(path: string): Promise<void>;
   onDisconnectRemove(path: string): Promise<void>;
   onDisconnectSet(path: string, props: { value: unknown }): Promise<void>;
@@ -115,7 +184,7 @@ export interface RNFBDatabaseModule {
   ): void | Promise<void>;
   transactionTryCommit(
     id: number,
-    updates: { value: unknown; abort: boolean },
+    updates: DatabaseTransactionUpdatesInternal,
   ): void | Promise<void>;
 }
 

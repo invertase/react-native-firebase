@@ -17,7 +17,13 @@
 
 import { isOther } from '@react-native-firebase/app/dist/module/common';
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
-import type { DatabaseModuleInternal, DatabaseReferenceInternal } from './types/internal';
+import type {
+  DatabaseModuleInternal,
+  DatabaseReferenceInternal,
+  DatabaseSnapshotInternal,
+  DatabaseTransactionEventInternal,
+  DatabaseTransactionUpdatesInternal,
+} from './types/internal';
 
 let transactionId = 0;
 
@@ -29,17 +35,6 @@ type DatabaseTransactionRecordInternal = {
   applyLocally: boolean;
   completed: boolean;
   started: boolean;
-};
-
-type DatabaseTransactionEventInternal = {
-  id: number;
-  body: {
-    type: 'update' | 'error' | 'complete' | string;
-    value?: unknown;
-    error?: unknown;
-    committed?: boolean;
-    snapshot?: unknown;
-  };
 };
 
 const generateTransactionId = (): number => transactionId++;
@@ -115,7 +110,7 @@ export default class DatabaseTransaction {
     let newValue: unknown;
 
     const { id, body } = event;
-    const { value } = body;
+    const { value } = body as { value?: unknown };
 
     try {
       const transaction = this._getTransaction(id);
@@ -127,10 +122,12 @@ export default class DatabaseTransaction {
     } finally {
       const abort = newValue === undefined;
 
-      this._database.native.transactionTryCommit(id, {
+      const updates: DatabaseTransactionUpdatesInternal = {
         value: newValue,
         abort,
-      });
+      };
+
+      this._database.native.transactionTryCommit(id, updates);
     }
   }
 
@@ -142,7 +139,7 @@ export default class DatabaseTransaction {
 
       try {
         const error = NativeError.fromEvent(
-          event.body.error as Parameters<typeof NativeError.fromEvent>[0],
+          (event.body as { error?: unknown }).error as Parameters<typeof NativeError.fromEvent>[0],
           'database',
         ) as Error;
         transaction.onComplete(error, false, null);
@@ -161,8 +158,11 @@ export default class DatabaseTransaction {
       try {
         transaction.onComplete(
           null,
-          !!event.body.committed,
-          Object.assign({}, event.body.snapshot),
+          !!(event.body as { committed?: boolean }).committed,
+          Object.assign(
+            {},
+            (event.body as { snapshot?: DatabaseSnapshotInternal }).snapshot,
+          ) as DatabaseSnapshotInternal,
         );
       } finally {
         this._removeTransaction(event.id);

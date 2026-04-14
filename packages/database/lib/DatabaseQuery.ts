@@ -32,7 +32,11 @@ import {
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 import DatabaseSyncTree from './DatabaseSyncTree';
 import type DatabaseQueryModifiers from './DatabaseQueryModifiers';
-import type { DatabaseInternal } from './types/internal';
+import type {
+  DatabaseChildSnapshotResultInternal,
+  DatabaseInternal,
+  DatabaseListenPropsInternal,
+} from './types/internal';
 import type { FirebaseDatabaseTypes } from './types/namespaced';
 
 const eventTypes = [
@@ -59,11 +63,6 @@ type QueryWithDeprecationArgInternal = FirebaseDatabaseTypes.Query & {
     key?: string,
     deprecationArg?: string,
   ): FirebaseDatabaseTypes.Query;
-};
-
-type DatabaseOnceChildResultInternal = {
-  snapshot: ConstructorParameters<typeof DatabaseDataSnapshot>[1];
-  previousChildName?: string | null;
 };
 
 let DatabaseReferenceClass: DatabaseReferenceConstructor | null = null;
@@ -323,19 +322,19 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
       });
     }
 
-    this._database.native.on({
+    const listenProps: DatabaseListenPropsInternal = {
       eventType,
       path: this.path,
       key: queryKey,
-      appName: this._database.app.name,
       modifiers: this._modifiers.toArray(),
-      hasCancellationCallback: isFunction(cancelCallbackOrContext),
       registration: {
         eventRegistrationKey,
         key: queryKey,
         registrationCancellationKey,
       },
-    });
+    };
+
+    this._database.native.on(listenProps);
 
     listeners += 1;
 
@@ -390,7 +389,7 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
             ),
           ) as FirebaseDatabaseTypes.DataSnapshot;
         } else {
-          const childResult = result as DatabaseOnceChildResultInternal;
+          const childResult = result as DatabaseChildSnapshotResultInternal;
           dataSnapshot = createDeprecationProxy(
             new DatabaseDataSnapshot(this.ref, childResult.snapshot),
           ) as FirebaseDatabaseTypes.DataSnapshot;

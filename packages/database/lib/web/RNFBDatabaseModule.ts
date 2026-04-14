@@ -27,6 +27,11 @@ import {
 } from '@react-native-firebase/app/dist/module/internal/web/utils';
 import { getQueryInstance } from './query';
 import type { DatabaseQueryModifier } from '../DatabaseQueryModifiers';
+import type {
+  DatabaseListenPropsInternal,
+  DatabaseSnapshotInternal,
+  DatabaseTransactionUpdatesInternal,
+} from '../types/internal';
 
 type WebApp = ReturnType<typeof getApp>;
 type WebDatabase = ReturnType<typeof getDatabase>;
@@ -41,45 +46,20 @@ type DatabaseOperationPropsInternal =
   | { value: unknown; priority: string | number | null }
   | { priority: string | number | null };
 
-type DatabaseListenRegistrationInternal = {
-  eventRegistrationKey: string;
-  key: string;
-  registrationCancellationKey?: string;
-};
-
-type DatabaseListenPropsInternal = {
-  key: string;
-  modifiers: DatabaseQueryModifier[];
-  path: string;
-  eventType: string;
-  registration: DatabaseListenRegistrationInternal;
-};
-
-type SnapshotWithPreviousChildInternal = {
-  snapshot: WebDataSnapshot;
-  previousChildName: string | null;
-};
-
 function rejectWithCodeAndMessage(code: string, message: string): Promise<never> {
   const error = new Error(message) as Error & { code?: string };
   error.code = code;
   return Promise.reject(getWebError(error));
 }
 
-function snapshotToObject(snapshot: WebDataSnapshot): {
-  key: string | null;
-  exists: boolean;
-  hasChildren: boolean;
-  childrenCount: number;
-  childKeys: Array<string | null>;
-  priority: string | number | null;
-  value: unknown;
-} {
-  const childKeys: Array<string | null> = [];
+function snapshotToObject(snapshot: WebDataSnapshot): DatabaseSnapshotInternal {
+  const childKeys: string[] = [];
 
   if (snapshot.hasChildren()) {
     snapshot.forEach((childSnapshot: WebDataSnapshot) => {
-      childKeys.push(childSnapshot.key);
+      if (typeof childSnapshot.key === 'string') {
+        childKeys.push(childSnapshot.key);
+      }
     });
   }
 
@@ -101,15 +81,17 @@ function getDatabaseWebError(error: unknown): unknown {
 function snapshotWithPreviousChildToObject(
   snapshot: WebDataSnapshot,
   previousChildName: string | null,
-): {
-  snapshot: ReturnType<typeof snapshotToObject>;
-  previousChildName: string | null;
-} {
+): { snapshot: DatabaseSnapshotInternal; previousChildName: string | null } {
   return {
     snapshot: snapshotToObject(snapshot),
     previousChildName,
   };
 }
+
+type SnapshotWithPreviousChildInternal = {
+  snapshot: WebDataSnapshot;
+  previousChildName: string | null;
+};
 
 const appInstances: Record<string, WebApp> = {};
 const databaseInstances: Record<string, WebDatabase> = {};
@@ -333,7 +315,7 @@ const databaseFallbackModule: Record<string, unknown> = {
       }
 
       const snapshot = await get(dbRef);
-      return snapshot;
+      return snapshotToObject(snapshot);
     });
   },
 
@@ -541,7 +523,7 @@ const databaseFallbackModule: Record<string, unknown> = {
     _appName: string,
     _dbURL: string,
     _transactionId: string,
-    _updates: { value: unknown; abort: boolean },
+    _updates: DatabaseTransactionUpdatesInternal,
   ): Promise<never> {
     throw new Error('Not implemented');
   },
