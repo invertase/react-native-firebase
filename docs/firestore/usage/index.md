@@ -38,21 +38,13 @@ latency or Internet connectivity.
 
 # Usage
 
+> Note: All code examples below use the modular APIs (v22+).
+
 ## Collections & Documents
 
 Cloud Firestore stores data within "documents", which are contained within "collections", and documents can also contain
 collections. For example, we could store a list of our users documents within a "Users" collection. The `collection` method
 allows us to reference a collection within our code:
-
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-const usersCollection = firestore().collection("Users");
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import { getFirestore, collection } from "@react-native-firebase/firestore";
@@ -64,17 +56,6 @@ const usersCollection = collection(db, "Users");
 The `collection` method returns a [`CollectionReference`](/reference/firestore/collectionreference) class, which provides
 properties and methods to query and fetch the data from Cloud Firestore. We can also directly reference a single document
 on the collection by calling the `doc` method:
-
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-// Get user document with an ID of ABC
-const userDocument = firestore().collection("Users").doc("ABC");
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import { getFirestore, doc } from "@react-native-firebase/firestore";
@@ -100,17 +81,6 @@ realtime updates when the data within a query changes.
 To read a collection or document once, call the `get` method on a [`CollectionReference`](/reference/firestore/collectionreference)
 or [`DocumentReference`](/reference/firestore/documentreference):
 
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-const users = await firestore().collection("Users").get();
-const user = await firestore().collection("Users").doc("ABC").get();
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import {
   getFirestore,
@@ -129,24 +99,6 @@ const user = await getDoc(doc(db, "Users", "ABC"));
 
 To setup an active listener to react to any changes to the query, call the `onSnapshot` method with an event handler callback.
 For example, to watch the entire "Users" collection for when any documents are changed (removed, added, modified):
-
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-function onResult(QuerySnapshot) {
-  console.log("Got Users collection result.");
-}
-
-function onError(error) {
-  console.error(error);
-}
-
-firestore().collection("Users").onSnapshot(onResult, onError);
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import {
@@ -167,29 +119,6 @@ const unsubscribe = onSnapshot(
 
 The `onSnapshot` method also returns a function, allowing you to unsubscribe from events. This can be used within any
 `useEffect` hooks to automatically unsubscribe when the hook needs to unsubscribe itself:
-
-For React-Native-Firebase <= v21
-
-```js
-import React, { useEffect } from "react";
-import firestore from "@react-native-firebase/firestore";
-
-function User({ userId }) {
-  useEffect(() => {
-    const subscriber = firestore()
-      .collection("Users")
-      .doc(userId)
-      .onSnapshot((documentSnapshot) => {
-        console.log("User data: ", documentSnapshot.data());
-      });
-
-    // Stop listening for updates when no longer required
-    return () => subscriber();
-  }, [userId]);
-}
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import React, { useEffect } from "react";
@@ -230,25 +159,6 @@ and more.
 
 To access the documents within a `QuerySnapshot`, call the `forEach` method:
 
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-firestore()
-  .collection("Users")
-  .get()
-  .then((querySnapshot) => {
-    console.log("Total users: ", querySnapshot.size);
-
-    querySnapshot.forEach((documentSnapshot) => {
-      console.log("User ID: ", documentSnapshot.id, documentSnapshot.data());
-    });
-  });
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import {
   getFirestore,
@@ -277,26 +187,6 @@ to view a documents data, metadata and whether a document actually exists.
 
 To view a documents data, call the `data` method on the snapshot:
 
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-firestore()
-  .collection("Users")
-  .doc("ABC")
-  .get()
-  .then((documentSnapshot) => {
-    console.log("User exists: ", documentSnapshot.exists);
-
-    if (documentSnapshot.exists) {
-      console.log("User data: ", documentSnapshot.data());
-    }
-  });
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import { getFirestore, doc, getDoc } from "@react-native-firebase/firestore";
 
@@ -312,25 +202,6 @@ getDoc(doc(db, "Users", "ABC")).then((documentSnapshot) => {
 
 A snapshot also provides a helper function to easily access deeply nested data within a document. Call the `get` method
 with a dot-notated path:
-
-For React-Native-Firebase <= v21
-
-```js
-function getUserZipCode(documentSnapshot) {
-  return documentSnapshot.get("info.address.zipcode");
-}
-
-firestore()
-  .collection("Users")
-  .doc("ABC")
-  .get()
-  .then((documentSnapshot) => getUserZipCode(documentSnapshot))
-  .then((zipCode) => {
-    console.log("Users zip code is: ", zipCode);
-  });
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import { getFirestore, doc, getDoc } from "@react-native-firebase/firestore";
@@ -356,21 +227,6 @@ Cloud Firestore offers advanced capabilities for querying collections.
 To filter documents within a collection, the `where` method can be chained onto a collection reference. Filtering supports
 equality checks and "in" queries. For example, to filter users where their age is greater or equal than 18 years old:
 
-For React-Native-Firebase <= v21
-
-```js
-firestore()
-  .collection("Users")
-  // Filter results
-  .where("age", ">=", 18)
-  .get()
-  .then((querySnapshot) => {
-    /* ... */
-  });
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import {
   getFirestore,
@@ -390,21 +246,6 @@ getDocs(q).then((querySnapshot) => {
 
 Cloud Firestore also supports array membership queries. For example, to filter users who speak both English (en) or
 French (fr), use the `in` filter:
-
-For React-Native-Firebase <= v21
-
-```js
-firestore()
-  .collection("Users")
-  // Filter results
-  .where("languages", "in", ["en", "fr"])
-  .get()
-  .then((querySnapshot) => {
-    /* ... */
-  });
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import {
@@ -432,18 +273,6 @@ To learn more about all of the querying capabilities Cloud Firestore has to offe
 It is now possible to use the `Filter` instance to make queries. They can be used with the existing query API.
 For example, you could chain like so:
 
-For React-Native-Firebase <= v21
-
-```js
-const snapshot = await firestore()
-  .collection("Users")
-  .where(Filter("user", "==", "Tim"))
-  .where("email", "==", "tim@example.com")
-  .get();
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import {
   getFirestore,
@@ -464,22 +293,6 @@ const snapshot = await getDocs(q);
 ```
 
 You can use the `Filter.and()` static method to make logical AND queries:
-
-For React-Native-Firebase <= v21
-
-```js
-const snapshot = await firestore()
-  .collection("Users")
-  .where(
-    Filter.and(
-      Filter("user", "==", "Tim"),
-      Filter("email", "==", "tim@example.com"),
-    ),
-  )
-  .get();
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import {
@@ -505,28 +318,6 @@ const snapshot = await getDocs(
 ```
 
 You can use the `Filter.or()` static method to make logical OR queries:
-
-For React-Native-Firebase <= v21
-
-```js
-const snapshot = await firestore()
-  .collection("Users")
-  .where(
-    Filter.or(
-      Filter.and(
-        Filter("user", "==", "Tim"),
-        Filter("email", "==", "tim@example.com"),
-      ),
-      Filter.and(
-        Filter("user", "==", "Dave"),
-        Filter("email", "==", "dave@example.com"),
-      ),
-    ),
-  )
-  .get();
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import {
@@ -564,23 +355,6 @@ For an understanding of what queries are possible, please consult the query limi
 
 To limit the number of documents returned from a query, use the `limit` method on a collection reference:
 
-For React-Native-Firebase <= v21
-
-```js
-firestore()
-  .collection("Users")
-  // Filter results
-  .where("age", ">=", 18)
-  // Limit results
-  .limit(20)
-  .get()
-  .then((querySnapshot) => {
-    /* ... */
-  });
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import {
   getFirestore,
@@ -605,21 +379,6 @@ The above example both filters the users by age and limits the documents returne
 
 To order the documents by a specific value, use the `orderBy` method:
 
-For React-Native-Firebase <= v21
-
-```js
-firestore()
-  .collection("Users")
-  // Order results
-  .orderBy("age", "desc")
-  .get()
-  .then((querySnapshot) => {
-    /* ... */
-  });
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import {
   getFirestore,
@@ -643,22 +402,6 @@ The above example orders all user in the snapshot by age in descending order.
 
 To start and/or end the query at a specific point within the collection, you can pass either a value to the `startAt`,
 `endAt`, `startAfter` or `endBefore` methods. You must specify an order to use pointers, for example:
-
-For React-Native-Firebase <= v21
-
-```js
-firestore()
-  .collection("Users")
-  .orderBy("age", "desc")
-  .startAt(18)
-  .endAt(30)
-  .get()
-  .then((querySnapshot) => {
-    /* ... */
-  });
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import {
@@ -687,26 +430,6 @@ getDocs(q).then((querySnapshot) => {
 The above query orders the users by age in descending order, but only returns users whose age is between 18 and 30.
 
 You can further specify a [`DocumentSnapshot`](/reference/firestore/documentsnapshot) instead of a specific value. For example:
-
-For React-Native-Firebase <= v21
-
-```js
-const userDocumentSnapshot = await firestore()
-  .collection("Users")
-  .doc("DEF")
-  .get();
-
-firestore()
-  .collection("Users")
-  .orderBy("age", "desc")
-  .startAt(userDocumentSnapshot)
-  .get()
-  .then((querySnapshot) => {
-    /* ... */
-  });
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 const userDocumentSnapshot = await getDoc(doc(db, "Users", "DEF"));
@@ -742,24 +465,6 @@ For a more in-depth look at what is possible when writing data to Firestore plea
 
 To add a new document to a collection, use the `add` method on a [`CollectionReference`](/reference/firestore/collectionreference):
 
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-firestore()
-  .collection("Users")
-  .add({
-    name: "Ada Lovelace",
-    age: 30,
-  })
-  .then(() => {
-    console.log("User added!");
-  });
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import {
   getFirestore,
@@ -779,25 +484,6 @@ addDoc(collection(db, "Users"), {
 The `add` method adds the new document to your collection with a random unique ID. If you'd like to specify your own ID,
 call the `set` method on a [`DocumentReference`](/reference/firestore/documentreference) instead:
 
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-firestore()
-  .collection("Users")
-  .doc("ABC")
-  .set({
-    name: "Ada Lovelace",
-    age: 30,
-  })
-  .then(() => {
-    console.log("User added!");
-  });
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import { getFirestore, doc, setDoc } from "@react-native-firebase/firestore";
 
@@ -815,24 +501,6 @@ setDoc(doc(db, "Users", "ABC"), {
 The `set` method exampled above replaces any existing data on a given [`DocumentReference`](/reference/firestore/documentreference).
 if you'd like to update a document instead, use the `update` method:
 
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-firestore()
-  .collection("Users")
-  .doc("ABC")
-  .update({
-    age: 31,
-  })
-  .then(() => {
-    console.log("User updated!");
-  });
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import { getFirestore, doc, updateDoc } from "@react-native-firebase/firestore";
 
@@ -845,24 +513,6 @@ updateDoc(doc(db, "Users", "ABC"), {
 ```
 
 The method also provides support for updating deeply nested values via dot-notation:
-
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-firestore()
-  .collection("Users")
-  .doc("ABC")
-  .update({
-    "info.address.zipcode": 94040,
-  })
-  .then(() => {
-    console.log("User updated!");
-  });
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import { getFirestore, doc, updateDoc } from "@react-native-firebase/firestore";
@@ -883,18 +533,6 @@ Cloud Firestore supports storing and manipulating values on your database, such 
 To store [`GeoPoint`](/reference/firestore/geopoint) values, provide the latitude and longitude to a new instance of the
 class:
 
-For React-Native-Firebase <= v21
-
-```js
-firestore()
-  .doc("users/ABC")
-  .update({
-    "info.address.location": new firestore.GeoPoint(53.483959, -2.244644),
-  });
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import {
   getFirestore,
@@ -911,20 +549,6 @@ updateDoc(doc(db, "users", "ABC"), {
 
 To store a [Blob](/reference/firestore/blob) (for example of a `Base64` image string), provide the string to the static
 `fromBase64String` method on the class:
-
-For React-Native-Firebase <= v21
-
-```js
-firestore()
-  .doc("users/ABC")
-  .update({
-    "info.avatar": firestore.Blob.fromBase64String(
-      "data:image/png;base64,iVBOR...",
-    ),
-  });
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import {
@@ -946,16 +570,6 @@ When storing timestamps, it is recommended you use the `serverTimestamp` static 
 class. When written to the database, the Firebase servers will write a new timestamp based on their time, rather than the clients. This helps
 resolve any data consistency issues with different client timezones:
 
-For React-Native-Firebase <= v21
-
-```js
-firestore().doc("users/ABC").update({
-  createdAt: firestore.FieldValue.serverTimestamp(),
-});
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import {
   getFirestore,
@@ -975,18 +589,6 @@ exposes an `arrayUnion` and `arrayRemove` methods on the [`FieldValue`](/referen
 
 To add a new value to an array (if value does not exist, will not add duplicate values):
 
-For React-Native-Firebase <= v21
-
-```js
-firestore()
-  .doc("users/ABC")
-  .update({
-    fcmTokens: firestore.FieldValue.arrayUnion("ABCDE123456"),
-  });
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import {
   getFirestore,
@@ -1002,18 +604,6 @@ updateDoc(doc(db, "users", "ABC"), {
 ```
 
 To remove a value from the array (if the value exists):
-
-For React-Native-Firebase <= v21
-
-```js
-firestore()
-  .doc("users/ABC")
-  .update({
-    fcmTokens: firestore.FieldValue.arrayRemove("ABCDE123456"),
-  });
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import {
@@ -1035,22 +625,6 @@ await updateDoc(userDocRef, {
 
 You can delete documents within Cloud Firestore using the `delete` method on a [`DocumentReference`](/reference/firestore/documentreference):
 
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-firestore()
-  .collection("Users")
-  .doc("ABC")
-  .delete()
-  .then(() => {
-    console.log("User deleted!");
-  });
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import { getFirestore, doc, deleteDoc } from "@react-native-firebase/firestore";
 
@@ -1067,16 +641,6 @@ At this time, you cannot delete an entire collection without use of a Firebase A
 
 If you need to remove a specific property with a document, rather than the document itself, you can use the `delete`
 method on the [`FieldValue`](/reference/firestore/fieldvalue) class:
-
-For React-Native-Firebase <= v21
-
-```js
-firestore().collection("Users").doc("ABC").update({
-  fcmTokens: firestore.FieldValue.delete(),
-});
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import {
@@ -1121,36 +685,6 @@ is executing, it will retry. This always ensures the value on the server is used
 
 To execute a new transaction, call the `runTransaction` method:
 
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-function onPostLike(postId) {
-  // Create a reference to the post
-  const postReference = firestore().doc(`posts/${postId}`);
-
-  return firestore().runTransaction(async (transaction) => {
-    // Get post data first
-    const postSnapshot = await transaction.get(postReference);
-
-    if (!postSnapshot.exists) {
-      throw "Post does not exist!";
-    }
-
-    transaction.update(postReference, {
-      likes: postSnapshot.data().likes + 1,
-    });
-  });
-}
-
-onPostLike("ABC")
-  .then(() => console.log("Post likes incremented via a transaction"))
-  .catch((error) => console.error(error));
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import {
   getFirestore,
@@ -1184,32 +718,6 @@ write to multiple documents.
 
 First, create a new batch instance via the `batch` method, perform operations on the batch and finally commit it once ready.
 The example below shows how to delete all documents in a collection in a single operation:
-
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-async function massDeleteUsers() {
-  // Get all users
-  const usersQuerySnapshot = await firestore().collection("Users").get();
-
-  // Create a new batch instance
-  const batch = firestore().batch();
-
-  usersQuerySnapshot.forEach((documentSnapshot) => {
-    batch.delete(documentSnapshot.ref);
-  });
-
-  return batch.commit();
-}
-
-massDeleteUsers().then(() =>
-  console.log("All users deleted in a single batch operation."),
-);
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import {
@@ -1255,20 +763,6 @@ automatically handles data migration to the server when they regain connectivity
 This functionality is enabled by default, however it can be disabled if you need it to be disabled (e.g. on apps containing
 sensitive information). The `settings()` method must be called before any Firestore interaction is performed, otherwise it will only take effect on the next app launch:
 
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-async function bootstrap() {
-  await firestore().settings({
-    persistence: false, // disable offline persistence
-  });
-}
-```
-
-For React-Native-Firebase >= v22
-
 ```js
 import { getApp } from "@react-native-firebase/app";
 import {
@@ -1295,24 +789,6 @@ and published by you on a CDN, hosting service or other solution. Once a bundle 
 from the local cache or the backend.
 
 To load and query data bundles, use the `loadBundle` and `namedQuery` methods:
-
-For React-Native-Firebase <= v21
-
-```js
-import firestore from "@react-native-firebase/firestore";
-
-// load the bundle contents
-const response = await fetch("https://api.example.com/bundles/latest-stories");
-const bundle = await response.text();
-await firestore().loadBundle(bundle);
-
-// query the results from the cache
-// note: omitting "source: cache" will query the Firestore backend
-const query = firestore().namedQuery("latest-stories-query");
-const snapshot = await query.get({ source: "cache" });
-```
-
-For React-Native-Firebase >= v22
 
 ```js
 import {
