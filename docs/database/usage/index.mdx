@@ -42,7 +42,7 @@ To learn more, view the [Firebase Realtime Database documentation](https://fireb
 A core concept to understanding Realtime Database are references - a reference to a specific node within your database. A node
 can be a specific property or sub-nodes.
 
-To create a [`Reference`](/reference/database/reference), call the `ref` method:
+To create a [`Reference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/Reference.html), call the `ref` method:
 
 ```js
 import database from '@react-native-firebase/database';
@@ -64,7 +64,7 @@ const reference = firebase
 ## Reading data
 
 The Realtime Data provides the ability to read the value of a reference as a one-time read, or realtime changes to the node.
-When a value is read from the database, the API returns a [`DataSnapshot`](/reference/database/datasnapshot).
+When a value is read from the database, the API returns a [`DataSnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/DataSnapshot.html).
 
 The snapshot includes information such as whether the reference node exists, it's value or any children the node has and more.
 
@@ -126,7 +126,7 @@ function User({ userId }) {
 
 The above example demonstrates how to subscribe to events whenever a value within the node changes. In some cases, you
 may need to only subscribe to events whenever a child node is added/changed/moved/removed. This can be achieved by passing
-a different [`EventType`](/reference/database/eventtype) to the `on` method.
+a different [`EventType`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/EventType.html) to the `on` method.
 
 If you are listening to a node with many children, only listening to data you care about helps reduce network bandwidth
 and speeds up your application.
@@ -203,7 +203,7 @@ practices on how to structure your data. We highly recommend reading the guide b
 
 ### Setting data
 
-The `set` method on a [`Reference`](/reference/database/reference) overwrites all of the existing data at that reference node.
+The `set` method on a [`Reference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/Reference.html) overwrites all of the existing data at that reference node.
 The value can be anything; a string, number, object etc:
 
 ```js
@@ -240,7 +240,7 @@ database()
 
 Currently the examples have only demonstrated working with known reference node keys (e.g. `/users/123`). In some cases,
 you may not have a suitable id or may want Firebase to automatically create a node with a generated key. The `push` method
-returns a [`ThenableReference`](/reference/database/thenablereference), allowing you to observe a node before it is
+returns a [`ThenableReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/ThenableReference.html), allowing you to observe a node before it is
 sent to remote Firebase database.
 
 The `push` method will automatically generate a new key if one is not provided:
@@ -311,7 +311,7 @@ onPostLike('567').then(transaction => {
 ```
 
 Once the transaction is successful, a promise is resolved with a value containing whether the operation committed on the remote
-database and the new [`DataSnapshot`](/reference/database/datasnapshot) containing the new value.
+database and the new [`DataSnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/DataSnapshot.html) containing the new value.
 
 # Securing data
 

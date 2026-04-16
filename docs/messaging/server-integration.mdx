@@ -147,7 +147,7 @@ by default. To enable this functionality, you must set the "priority" to `high` 
 The `data` property can send an object of key-value pairs totaling `4KB` as string values (hence the `JSON.stringify`).
 
 Back within our application, as explained in the [Usage](/messaging/usage) documentation, our message handlers will receive a
-[`RemoteMessage`](/reference/messaging/remotemessage) payload containing the message details sent from the server:
+[`RemoteMessage`](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/types/messaging/RemoteMessage.html) payload containing the message details sent from the server:
 
 ```jsx
 function App() {
@@ -176,8 +176,8 @@ This means that by default, if your app has users and you allow them to log out 
 
 How and when you invalidate a token and generate a new one will be specific to your project, but a common pattern is to delete the FCM token during logout and update your back end to remove it, then to fetch the FCM token during login and update your back end systems to associate the new token with the logged in user.
 
-<https://rnfirebase.io/reference/messaging#deleteToken>
-<https://rnfirebase.io/reference/messaging#getToken>
+[deleteToken](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/modular/deleteToken.html)
+[getToken](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/modular/getToken.html)
 
 Note that when a token is deleted by calling the `deleteToken` method, it is immediately and permanently invalid.
 
