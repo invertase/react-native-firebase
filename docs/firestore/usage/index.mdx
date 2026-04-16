@@ -501,10 +501,9 @@ You can delete documents within Cloud Firestore using the `deleteDoc` method wit
 import { deleteDoc, doc, getFirestore } from '@react-native-firebase/firestore';
 
 const userDocRef = doc(getFirestore(), 'users/ExampleUser');
-deleteDoc(userDocRef)
-  .then(() => {
-    console.log('User deleted!');
-  });
+deleteDoc(userDocRef).then(() => {
+  console.log('User deleted!');
+});
 ```
 
 At this time, you cannot delete an entire collection without use of a Firebase Admin SDK.
