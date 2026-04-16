@@ -677,9 +677,9 @@ describe('remoteConfig()', function () {
     });
 
     describe('setLogLevel', function () {
-      it('should return "error" log level', function () {
+      it('should return void', function () {
         const { getRemoteConfig, setLogLevel } = remoteConfigModular;
-        setLogLevel(getRemoteConfig(), 'error').should.equal('error');
+        should(setLogLevel(getRemoteConfig(), 'error')).equal(undefined);
       });
     });
 
