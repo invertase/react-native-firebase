@@ -1204,8 +1204,8 @@ export namespace FirebaseStorageTypes {
      * If you want to use the emulator on a real android device, you will need to specify the actual host
      * computer IP address.
      *
-     * @param host: emulator host (eg, 'localhost')
-     * @param port: emulator port (eg, 9199)
+     * @param host emulator host (eg, 'localhost')
+     * @param port emulator port (eg, 9199)
      */
     useEmulator(host: string, port: number): void;
   }
