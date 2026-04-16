@@ -70,7 +70,7 @@ class FirebaseStorageModule extends FirebaseModule<typeof nativeModuleName> {
     }
 
     this.emitter.addListener(
-      this.eventNameForApp(nativeEvents[0]!),
+      this.eventNameForApp(nativeEvents[0] as string),
       handleStorageEvent.bind(null, this),
     );
 
