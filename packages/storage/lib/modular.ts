@@ -146,7 +146,8 @@ export function deleteObject(storageRef: StorageReference): Promise<void> {
 
 /**
  * Downloads the data at the object's location. Returns an error if the object is not found.
- * @param storageRef - Storage `Reference` instance.
+ * @param _storageRef - Storage `Reference` instance.
+ * @param _maxDownloadSizeBytes - The maximum allowed size in bytes to retrieve. Web only.
  * @returns {Promise<Blob>}
  */
 export function getBlob(
@@ -158,8 +159,8 @@ export function getBlob(
 
 /**
  * Downloads the data at the object's location. Returns an error if the object is not found.
- * @param storageRef - Storage `Reference` instance.
- * @param maxDownloadSizeBytes - The maximum allowed size in bytes to retrieve. Web only.
+ * @param _storageRef - Storage `Reference` instance.
+ * @param _maxDownloadSizeBytes - The maximum allowed size in bytes to retrieve. Web only.
  * @returns {Promise<ArrayBuffer>}
  */
 export function getBytes(
@@ -197,8 +198,8 @@ export function getMetadata(storageRef: StorageReference): Promise<FullMetadata>
 
 /**
  * Downloads the data at the object's location. This API is only available in Nodejs.
- * @param storageRef - Storage `Reference` instance.
- * @param maxDownloadSizeBytes - The maximum allowed size in bytes to retrieve. Web only.
+ * @param _storageRef - Storage `Reference` instance.
+ * @param _maxDownloadSizeBytes - The maximum allowed size in bytes to retrieve. Web only.
  * @returns {NodeJS.ReadableStream;}
  */
 export function getStream(
@@ -267,9 +268,9 @@ export function updateMetadata(
 
 /**
  * Uploads data to this object's location. The upload is not resumable.
- * @param storageRef - Storage `Reference` instance.
- * @param data - The data (Blob | Uint8Array | ArrayBuffer) to upload to the storage bucket at the reference location.
- * @param metadata - A Storage `UploadMetadata` instance to update. Optional.
+ * @param _storageRef - Storage `Reference` instance.
+ * @param _data - The data (Blob | Uint8Array | ArrayBuffer) to upload to the storage bucket at the reference location.
+ * @param _metadata - A Storage `UploadMetadata` instance to update. Optional.
  * @returns {Promise<TaskResult>}
  */
 export async function uploadBytes(
@@ -302,7 +303,7 @@ export function uploadBytesResumable(
 /**
  * Uploads data to this object's location. The upload is not resumable.
  * @param storageRef - Storage `Reference` instance.
- * @param value - The string to upload.
+ * @param data - The string to upload.
  * @param format - The format of the string to upload ('raw' | 'base64' | 'base64url' | 'data_url'). Optional.
  * @param metadata - A Storage `UploadMetadata` instance to update. Optional.
  * @returns {Task}
@@ -353,7 +354,7 @@ export function setMaxUploadRetryTime(storage: FirebaseStorage, time: number): P
 /**
  * Puts a file from local disk onto the storage bucket.
  * @param storageRef - Storage Reference instance.
- * @param localFilePath The local file path to upload to the bucket at the reference location.
+ * @param filePath The local file path to upload to the bucket at the reference location.
  * @param metadata Any additional `UploadMetadata` for this task.
  * @returns {Task}
  */
@@ -372,7 +373,7 @@ export function putFile(
 /**
  * Downloads a file to the specified local file path on the device.
  * @param storageRef - Storage Reference instance.
- * @param localFilePath The local file path to upload to on the device.
+ * @param filePath The local file path to upload to on the device.
  * @returns {Task}
  */
 export function writeToFile(storageRef: StorageReference, filePath: string): Task {
