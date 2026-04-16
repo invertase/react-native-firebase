@@ -38,7 +38,9 @@ Analytics automatically logs some [events](https://support.google.com/analytics/
 
 # Usage
 
-Analytics offers a wealth of [Predefined Events](#predefined-events) to track user behavior. Analytics also offers folks the ability to log [Custom Events](#custom-events) . If you're already familiar with Google Analytics, this method is equivalent to using the event command in [gtag.js](https://developers.google.com/gtagjs/).
+Analytics offers a wealth of [Predefined Events](#predefined-events) to track user behavior. Analytics also offers folks the ability to log [Custom Events](#custom-events) . If you're already familiar with Google Analytics, this method is equivalent to using the event command in [gtag.js](https://developers.google.com/gtagjs/). 
+
+> Note: All code examples below use the modular APIs (v22+).
 
 ## Event Parameters
 
@@ -56,9 +58,11 @@ Different event types require different parameters (some require no parameters, 
 Below is an example showing how a custom event can be logged. Please be aware that primitive data types or arrays of primitive data types are logged in your Firebase Analytics console.
 
 ```jsx
-import react, { useEffect } from 'react';
-import { View, Button } from 'react-native';
-import analytics from '@react-native-firebase/analytics';
+import react, { useEffect } from "react";
+import { View, Button } from "react-native";
+import { getAnalytics, logEvent } from "@react-native-firebase/analytics";
+
+const analytics = getAnalytics();
 
 function App() {
   return (
@@ -66,11 +70,11 @@ function App() {
       <Button
         title="Add To Basket"
         onPress={async () =>
-          await analytics().logEvent('basket', {
+          await logEvent(analytics, "basket", {
             id: 3745092,
-            item: 'mens grey t-shirt',
-            description: ['round neck', 'long sleeved'],
-            size: 'L',
+            item: "mens grey t-shirt",
+            description: ["round neck", "long sleeved"],
+            size: "L",
           })
         }
       />
@@ -89,9 +93,14 @@ articles in the Firebase Help Center.
 Below is a sample of how to use one of the predefined methods the Analytics module provides for you:
 
 ```jsx
-import react, { useEffect } from 'react';
-import { View, Button } from 'react-native';
-import analytics from '@react-native-firebase/analytics';
+import react, { useEffect } from "react";
+import { View, Button } from "react-native";
+import {
+  getAnalytics,
+  logSelectContent,
+} from "@react-native-firebase/analytics";
+
+const analytics = getAnalytics();
 
 function App() {
   return (
@@ -101,9 +110,9 @@ function App() {
         // Logs in the firebase analytics console as "select_content" event
         // only accepts the two object properties which accept strings.
         onPress={async () =>
-          await analytics().logSelectContent({
-            content_type: 'clothing',
-            item_id: 'abcd',
+          await logSelectContent(analytics, {
+            content_type: "clothing",
+            item_id: "abcd",
           })
         }
       />
@@ -140,9 +149,13 @@ if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnaly
 iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
 
 ```jsx
-import analytics from '@react-native-firebase/analytics';
+import {
+  getAnalytics,
+  getAppInstanceId,
+} from "@react-native-firebase/analytics";
+const analytics = getAnalytics();
 // ...
-const appInstanceId = await analytics().getAppInstanceId();
+const appInstanceId = await getAppInstanceId(analytics);
 ```
 
 ### Web / Other platform instance id
@@ -203,17 +216,22 @@ on the `firebase.json` file at the root of your project directory.
 To re-enable analytics (e.g. once you have the users consent), call the `setAnalyticsCollectionEnabled` method:
 
 ```js
-import { firebase } from '@react-native-firebase/analytics';
+import {
+  getAnalytics,
+  setAnalyticsCollectionEnabled,
+} from "@react-native-firebase/analytics";
+const analytics = getAnalytics();
 // ...
-await firebase.analytics().setAnalyticsCollectionEnabled(true);
+await setAnalyticsCollectionEnabled(analytics, true);
 ```
 
 To update user's consent (e.g. once you have the users consent), call the `setConsent` method:
 
 ```js
-import { firebase } from '@react-native-firebase/analytics';
+import { getAnalytics, setConsent } from "@react-native-firebase/analytics";
+const analytics = getAnalytics();
 // ...
-await firebase.analytics().setConsent({
+await setConsent(analytics, {
   analytics_storage: true,
   ad_storage: true,
   ad_user_data: true,
@@ -263,18 +281,14 @@ This toggle must be set to the value you want before accessing the analytics ins
 
 For example, you might modify your index.js file like so:
 
-```javascript
-/**
- * @format
- */
-
-import { AppRegistry } from 'react-native';
-import App from './App';
-import { name as appName } from './app.json';
+```js
+import { AppRegistry } from "react-native";
+import App from "./App";
+import { name as appName } from "./app.json";
 
 //    \/  Add these lines below
-// Enable debug mode for react-native-firebase:
-if (__DEV__) globalThis.RNFBDebug = true;
+import { setLogLevel } from "@react-native-firebase/app";
+if (__DEV__) setLogLevel("debug"); // use 'debug' or 'verbose'
 //    /\  Add these lines above
 
 AppRegistry.registerComponent(appName, () => App);
