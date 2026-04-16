@@ -97,6 +97,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
   private _lastFetchStatus: FetchStatus;
   private _values: Record<string, StoredConfigValueInternal>;
   private _configUpdateListenerCount: number;
+  private _nativeMutationQueue: Promise<void>;
 
   constructor(
     app: ReactNativeFirebase.FirebaseAppBase,
@@ -114,6 +115,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
     this._lastFetchStatus = 'no_fetch_yet';
     this._values = {};
     this._configUpdateListenerCount = 0;
+    this._nativeMutationQueue = Promise.resolve();
   }
 
   get defaultConfig(): ConfigDefaults {
@@ -226,7 +228,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
       return Promise.resolve();
     }
 
-    return this._promiseWithConstants(this.native.reset());
+    return this._enqueueNativeMutation(() => this._promiseWithConstants(this.native.reset()));
   }
 
   setConfigSettings(
@@ -277,7 +279,9 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
       minimumFetchIntervalMillis: updatedSettings.minimumFetchInterval * 1000,
     };
 
-    return this._promiseWithConstants(this.native.setConfigSettings(updatedSettings));
+    return this._enqueueNativeMutation(() =>
+      this._promiseWithConstants(this.native.setConfigSettings(updatedSettings)),
+    );
   }
 
   /**
@@ -325,7 +329,9 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
       throw new Error(`firebase.remoteConfig().${apiCalled}(): 'defaults' must be an object.`);
     }
 
-    return this._promiseWithConstants(this.native.setDefaults(defaults));
+    return this._enqueueNativeMutation(() =>
+      this._promiseWithConstants(this.native.setDefaults(defaults)),
+    );
   }
 
   /**
@@ -339,7 +345,9 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
       );
     }
 
-    return this._promiseWithConstants(this.native.setDefaultsFromResource(resourceName));
+    return this._enqueueNativeMutation(() =>
+      this._promiseWithConstants(this.native.setDefaultsFromResource(resourceName)),
+    );
   }
 
   /**
@@ -471,6 +479,15 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
       this._updateFromConstants(constants);
       return result;
     });
+  }
+
+  private _enqueueNativeMutation<T>(task: () => Promise<T>): Promise<T> {
+    const next = this._nativeMutationQueue.then(task, task);
+    this._nativeMutationQueue = next.then(
+      () => undefined,
+      () => undefined,
+    );
+    return next;
   }
 }
 
