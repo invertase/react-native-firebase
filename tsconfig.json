@@ -1,14 +1,10 @@
 {
   "include": [
     "packages/ai/lib/types/polyfills.d.ts",
-    "packages/app-check/lib/index.d.ts",
-    "packages/app-check/lib/modular/index.d.ts",
     "packages/app/lib/internal/global.d.ts",
     "packages/app/lib/internal/web/memidb/index.d.ts",
     "packages/auth/lib/index.d.ts",
     "packages/auth/lib/modular/index.d.ts",
-    "packages/crashlytics/lib/index.d.ts",
-    "packages/crashlytics/lib/modular/index.d.ts",
     "packages/database/lib/index.d.ts",
     "packages/database/lib/modular/index.d.ts",
     "packages/database/lib/modular/query.d.ts",
