@@ -139,14 +139,19 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
     // To make Firebase web v9 API compatible, we update the config first so it immediately
     // updates defaults on the instance. We then pass to underlying SDK to update. We do this because
     // there is no way to "await" a setter.
-    this._values = Object.freeze(
-      Object.fromEntries(
+    const nonDefaultValues = Object.fromEntries(
+      Object.entries(this._values).filter(([, configValue]) => configValue?.source !== 'default'),
+    );
+
+    this._values = Object.freeze({
+      ...Object.fromEntries(
         Object.entries(defaults).map(([key, value]) => [
           key,
           { value, source: 'default' as const },
         ]),
       ),
-    );
+      ...nonDefaultValues,
+    });
     void this.setDefaults(defaults, true);
   }
 
