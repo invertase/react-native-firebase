@@ -270,6 +270,13 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
       updatedSettings.fetchTimeout = fetchTimeoutMillis / 1000;
     }
 
+    // Keep the in-memory cache in sync immediately so namespaced reads behave the same
+    // way as the modular settings property setter while native applies the change.
+    this._settings = {
+      fetchTimeoutMillis: updatedSettings.fetchTimeout * 1000,
+      minimumFetchIntervalMillis: updatedSettings.minimumFetchInterval * 1000,
+    };
+
     return this._promiseWithConstants(this.native.setConfigSettings(updatedSettings));
   }
 
