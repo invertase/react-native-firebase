@@ -15,30 +15,11 @@
  *
  */
 
-import type { FirebaseRemoteConfigTypes } from './types/namespaced';
-
-// Export modular API functions
+// Export modular API
 export * from './modular';
-export type {
-  ConfigUpdate,
-  ConfigUpdateObserver,
-  CustomSignals,
-  FetchStatus,
-  LogLevel,
-  RemoteConfig,
-  RemoteConfigSettings,
-  Unsubscribe,
-  Value,
-} from './types/remote-config';
-export type { FirebaseRemoteConfigTypes } from './types/namespaced';
-export type ConfigSettings = FirebaseRemoteConfigTypes.ConfigSettings;
-export type ConfigDefaults = FirebaseRemoteConfigTypes.ConfigDefaults;
-export type ConfigValue = FirebaseRemoteConfigTypes.ConfigValue;
-export type ConfigValues = FirebaseRemoteConfigTypes.ConfigValues;
-export type LastFetchStatusType = FirebaseRemoteConfigTypes.LastFetchStatusType;
-export type RemoteConfigLogLevel = FirebaseRemoteConfigTypes.RemoteConfigLogLevel;
-export { LastFetchStatus, ValueSource } from './statics';
+export type * from './types/remote-config';
 
 // Export namespaced API
+export type { FirebaseRemoteConfigTypes } from './types/namespaced';
 export { SDK_VERSION, firebase } from './namespaced';
 export { default } from './namespaced';
