@@ -69,8 +69,14 @@ class FirebaseStorageModule extends FirebaseModule<typeof nativeModuleName> {
       );
     }
 
+    const storageEvent = nativeEvents[0];
+
+    if (!storageEvent) {
+      throw new Error('storage_event is not defined in nativeEvents');
+    }
+
     this.emitter.addListener(
-      this.eventNameForApp(nativeEvents[0] as string),
+      this.eventNameForApp(storageEvent),
       handleStorageEvent.bind(null, this),
     );
 
