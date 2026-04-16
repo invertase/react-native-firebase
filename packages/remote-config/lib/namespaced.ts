@@ -40,7 +40,6 @@ import type {
   ConfigUpdate,
   ConfigUpdateObserver,
   FetchStatus,
-  RemoteConfig,
   RemoteConfigSettings,
 } from './types/remote-config';
 import type { FirebaseRemoteConfigTypes } from './types/namespaced';
@@ -91,7 +90,7 @@ const statics = {
 const namespace = 'remoteConfig';
 const nativeModuleName = 'RNFBConfigModule' as const;
 
-class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> implements RemoteConfig {
+class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
   private _settings: ConfigSettingsStateInternal;
   private _lastFetchTime: number;
   private _lastFetchStatus: FetchStatus;
