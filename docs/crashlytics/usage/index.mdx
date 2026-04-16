@@ -47,11 +47,11 @@ To learn more, view the [Firebase Crashlytics documentation](https://firebase.go
 
 # Usage
 
-Use the `log` method throughout your app to accumulate extra context for possible crashes that can happen. For additional context, Crashlytics also offers [various methods](#crash-attributes) to set attributes for the crash report. You can also test Crashlytics by forcing a crash through the `crash` method.
+Use the `log` method throughout your app to accumulate extra context for possible crashes that can happen. For additional context, Crashlytics also offers [various methods](/crashlytics/usage#crash-attributes) to set attributes for the crash report. You can also test Crashlytics by forcing a crash through the `crash` method.
 
 Crashlytics also supports sending JavaScript stack traces to the Firebase console. This can be used in any situation where an error occurs but is caught by your own code to recover gracefully. To send a stack trace, pass a JavaScript Error to the `recordError` method.
 
-> Crash reporting is disabled by default whilst developing. To enable this, view the [enable debug crash logs](#enable-debug-crash-logs) documentation.
+> Crash reporting is disabled by default whilst developing. To enable this, view the [enable debug crash logs](/crashlytics/usage#enable-debug-crash-logs) documentation.
 
 ## Crash Attributes
 

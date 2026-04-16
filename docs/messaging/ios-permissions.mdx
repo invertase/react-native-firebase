@@ -60,7 +60,7 @@ The full list of permission settings can be seen in the table below along with t
 | `announcement`                    | `false` | If enabled, Siri will read the notification content out when devices are connected to AirPods.                                |
 | `badge`                           | `true`  | Sets whether a notification dot will appear next to the app icon on the device when there are unread notifications.           |
 | `carPlay`                         | `true`  | Sets whether notifications will appear when the device is connected to [CarPlay](https://www.apple.com/ios/carplay/).         |
-| `provisional`                     | `false` | Sets whether provisional permissions are granted. See [Provisional permission](#provisional-permission) for more information. |
+| `provisional`                     | `false` | Sets whether provisional permissions are granted. See [Provisional permission](/messaging/ios-permissions#provisional-permission) for more information. |
 | `sound`                           | `true`  | Sets whether a sound will be played when a notification is displayed on the device.                                           |
 | `providesAppNotificationSettings` | `false` | Indicates the system to display a button for in-app notification settings.                                                    |
 
@@ -97,7 +97,7 @@ The value returned is a number value, which can be mapped to one of the followin
 - `-1` = `messaging.AuthorizationStatus.NOT_DETERMINED`: Permission has not yet been requested for your application.
 - `0` = `messaging.AuthorizationStatus.DENIED`: The user has denied notification permissions.
 - `1` = `messaging.AuthorizationStatus.AUTHORIZED`: The user has accept the permission & it is enabled.
-- `2` = `messaging.AuthorizationStatus.PROVISIONAL`: [Provisional authorization](#provisional-authorization) has been granted.
+- `2` = `messaging.AuthorizationStatus.PROVISIONAL`: [Provisional authorization](/messaging/ios-permissions#provisional-authorization) has been granted.
 - `3` = `messaging.AuthorizationStatus.EPHEMERAL`: The app is authorized to create notifications for a limited amount of time. Used for app clips.
 
 To help improve the chances of the user granting your app permission, it is recommended that permission is requested at a time which makes
