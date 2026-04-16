@@ -17,20 +17,12 @@ import remoteConfig, {
   setDefaultsFromResource,
   onConfigUpdate,
   setCustomSignals,
-  LastFetchStatus,
-  ValueSource,
-  type ConfigSettings,
-  type ConfigDefaults,
   type ConfigUpdateObserver,
-  type ConfigValue,
-  type ConfigValues,
   type CustomSignals,
   type FetchStatus,
-  type LastFetchStatusType,
   type LogLevel,
   type RemoteConfig,
   type RemoteConfigSettings,
-  type RemoteConfigLogLevel,
   type Unsubscribe,
   type Value,
 } from '.';
@@ -40,7 +32,7 @@ const typedConfigSettings: RemoteConfigSettings = {
   minimumFetchIntervalMillis: 30000,
   fetchTimeoutMillis: 60000,
 };
-const typedLegacyConfigSettings: ConfigSettings = {
+const typedLegacyConfigSettings: FirebaseRemoteConfigTypes.ConfigSettings = {
   minimumFetchIntervalMillis: 30000,
   fetchTimeMillis: 60000,
 };
@@ -48,7 +40,11 @@ const typedNamespacedConfigSettings: FirebaseRemoteConfigTypes.ConfigSettings = 
   minimumFetchIntervalMillis: 30000,
   fetchTimeMillis: 60000,
 };
-const typedLegacyConfigDefaults: ConfigDefaults = { enabled: true, retries: 1, title: 'remote' };
+const typedLegacyConfigDefaults: FirebaseRemoteConfigTypes.ConfigDefaults = {
+  enabled: true,
+  retries: 1,
+  title: 'remote',
+};
 const typedConfigDefaults: Record<string, string | number | boolean> = {
   enabled: true,
   retries: 1,
@@ -56,13 +52,16 @@ const typedConfigDefaults: Record<string, string | number | boolean> = {
 };
 const typedConfigValue: Value = getValue(typedRemoteConfig, 'typed');
 const typedConfigValues: Record<string, Value> = getAll(typedRemoteConfig);
-const typedLegacyConfigValue: ConfigValue = remoteConfig().getValue('typed');
-const typedLegacyConfigValues: ConfigValues = remoteConfig().getAll();
+const typedLegacyConfigValue: FirebaseRemoteConfigTypes.ConfigValue = remoteConfig().getValue(
+  'typed',
+);
+const typedLegacyConfigValues: FirebaseRemoteConfigTypes.ConfigValues = remoteConfig().getAll();
 const typedCustomSignals: CustomSignals = { signal: 'value', number: 1, reset: null };
 const typedLastFetchStatus: FetchStatus = typedRemoteConfig.lastFetchStatus;
-const typedLegacyLastFetchStatus: LastFetchStatusType = remoteConfig().lastFetchStatus;
+const typedLegacyLastFetchStatus: FirebaseRemoteConfigTypes.LastFetchStatusType =
+  remoteConfig().lastFetchStatus;
 const typedLogLevel: LogLevel = 'debug';
-const typedLegacyLogLevel: RemoteConfigLogLevel = 'debug';
+const typedLegacyLogLevel: FirebaseRemoteConfigTypes.RemoteConfigLogLevel = 'debug';
 const typedUnsubscribe: Unsubscribe = () => {};
 const typedObserver: ConfigUpdateObserver = {
   next: configUpdate => {
@@ -91,8 +90,6 @@ console.log(typedLogLevel);
 console.log(typedLegacyLogLevel);
 typedUnsubscribe();
 onConfigUpdate(typedRemoteConfig, typedObserver);
-console.log(LastFetchStatus.SUCCESS);
-console.log(ValueSource.REMOTE);
 
 console.log(remoteConfig().app);
 
