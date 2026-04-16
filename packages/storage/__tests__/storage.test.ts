@@ -17,13 +17,10 @@ import storage, {
   uploadBytes,
   uploadBytesResumable,
   uploadString,
-  refFromURL,
   setMaxOperationRetryTime,
   setMaxUploadRetryTime,
   putFile,
   writeToFile,
-  toString,
-  child,
   setMaxDownloadRetryTime,
   StringFormat,
   TaskEvent,
@@ -33,6 +30,7 @@ import storage, {
 import {
   createCheckV9Deprecation,
   CheckV9DeprecationFunction,
+  withDeprecationWarningsSilenced,
 } from '../../app/lib/common/unitTestUtils';
 
 // @ts-ignore test
@@ -153,8 +151,12 @@ describe('Storage', function () {
       expect(uploadString).toBeDefined();
     });
 
-    it('`refFromURL` function is properly exposed to end user', function () {
-      expect(refFromURL).toBeDefined();
+    it('`ref` supports full URLs (gs:// or https://) like firebase-js-sdk', function () {
+      expect(ref).toBeDefined();
+      const storage = getStorage();
+      const refFromUrl = ref(storage, 'gs://bucket/path/to/file');
+      expect(refFromUrl).toBeDefined();
+      expect(refFromUrl.fullPath).toBeDefined();
     });
 
     it('`setMaxOperationRetryTime` function is properly exposed to end user', function () {
@@ -175,10 +177,6 @@ describe('Storage', function () {
 
     it('`toString` function is properly exposed to end user', function () {
       expect(toString).toBeDefined();
-    });
-
-    it('`child` function is properly exposed to end user', function () {
-      expect(child).toBeDefined();
     });
 
     it('`setMaxDownloadRetryTime` function is properly exposed to end user', function () {
@@ -213,7 +211,7 @@ describe('Storage', function () {
     beforeEach(function () {
       storageV9Deprecation = createCheckV9Deprecation(['storage']);
 
-      storageRefV9Deprecation = createCheckV9Deprecation(['storage', 'StorageReference']);
+      storageRefV9Deprecation = createCheckV9Deprecation(['storage', 'Reference']);
 
       staticsV9Deprecation = createCheckV9Deprecation(['storage', 'statics']);
 
@@ -250,6 +248,7 @@ describe('Storage', function () {
         const storage = getStorage();
         storageV9Deprecation(
           () => connectStorageEmulator(storage, 'localhost', 8080),
+          // @ts-expect-error Combines modular and namespace API
           () => storage.useEmulator('localhost', 8080),
           'useEmulator',
         );
@@ -259,163 +258,198 @@ describe('Storage', function () {
         const storage = getStorage();
         storageV9Deprecation(
           () => ref(storage, 'foo'),
+          // @ts-expect-error Combines modular and namespace API
           () => storage.ref('foo'),
           'ref',
         );
       });
 
-      it('refFromURL()', function () {
-        const storage = firebase.app().storage();
+      it('ref() with full URL', function () {
+        const storage = getStorage();
         storageV9Deprecation(
-          () => refFromURL(storage, 'gs://flutterfire-e2e-tests.appspot.com/flutter-tsts'),
+          () => ref(storage, 'gs://flutterfire-e2e-tests.appspot.com/flutter-tsts'),
+          // @ts-expect-error Combines modular and namespace API
           () => storage.refFromURL('gs://flutterfire-e2e-tests.appspot.com/flutter-tsts'),
           'refFromURL',
         );
       });
 
       it('setMaxOperationRetryTime()', function () {
-        const storage = firebase.app().storage();
+        const storage = getStorage();
         storageV9Deprecation(
           () => setMaxOperationRetryTime(storage, 1000),
+          // @ts-expect-error Combines modular and namespace API
           () => storage.setMaxOperationRetryTime(1000),
           'setMaxOperationRetryTime',
         );
       });
 
       it('setMaxUploadRetryTime()', function () {
-        const storage = firebase.app().storage();
+        const storage = getStorage();
         storageV9Deprecation(
           () => setMaxUploadRetryTime(storage, 1000),
+          // @ts-expect-error Combines modular and namespace API
           () => storage.setMaxUploadRetryTime(1000),
           'setMaxUploadRetryTime',
         );
       });
 
       it('setMaxDownloadRetryTime()', function () {
-        const storage = firebase.app().storage();
+        const storage = getStorage();
         storageV9Deprecation(
           () => setMaxDownloadRetryTime(storage, 1000),
+          // @ts-expect-error Combines modular and namespace API
           () => storage.setMaxDownloadRetryTime(1000),
           'setMaxDownloadRetryTime',
         );
       });
 
       it('delete()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => deleteObject(storageRef),
-          () => storageRef.delete(),
+          () => namespacedStorageRef.delete(),
           'delete',
         );
       });
 
       it('getDownloadURL()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => getDownloadURL(storageRef),
-          () => storageRef.getDownloadURL(),
+          () => namespacedStorageRef.getDownloadURL(),
           'getDownloadURL',
         );
       });
 
       it('getMetadata()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => getMetadata(storageRef),
-          () => storageRef.getMetadata(),
+          () => namespacedStorageRef.getMetadata(),
           'getMetadata',
         );
       });
 
       it('list()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => list(storageRef),
-          () => storageRef.list(),
+          () => namespacedStorageRef.list(),
           'list',
         );
       });
 
       it('listAll()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => listAll(storageRef),
-          () => storageRef.listAll(),
+          () => namespacedStorageRef.listAll(),
           'listAll',
         );
       });
 
       it('updateMetadata()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => updateMetadata(storageRef, {}),
-          () => storageRef.updateMetadata({}),
+          () => namespacedStorageRef.updateMetadata({}),
           'updateMetadata',
         );
       });
 
       it('put()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => uploadBytesResumable(storageRef, new Blob(['foo']), {}),
-          () => storageRef.put(new Blob(['foo']), {}),
+          () => namespacedStorageRef.put(new Blob(['foo']), {}),
           'put',
         );
       });
 
       it('putString()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => uploadString(storageRef, 'foo', StringFormat.RAW),
-          () => storageRef.putString('foo', StringFormat.RAW),
+          () => namespacedStorageRef.putString('foo', StringFormat.RAW),
           'putString',
         );
       });
 
       it('putFile()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => putFile(storageRef, 'foo', {}),
-          () => storageRef.putFile('foo', {}),
+          () => namespacedStorageRef.putFile('foo', {}),
           'putFile',
         );
       });
 
       it('writeToFile()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
           () => writeToFile(storageRef, 'foo'),
-          () => storageRef.writeToFile('foo'),
+          () => namespacedStorageRef.writeToFile('foo'),
           'writeToFile',
         );
       });
 
       it('toString()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
-        storageRefV9Deprecation(
-          () => toString(storageRef),
-          () => storageRef.toString(),
-          'toString',
-        );
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
+        expect(typeof storageRef.toString()).toBe('string');
+        expect(storageRef.toString()).toContain('gs://');
       });
 
-      it('child()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+      it('ref() with child path', function () {
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
+        const namespacedStorageRef = withDeprecationWarningsSilenced(() =>
+          firebase.storage().ref('foo'),
+        );
         storageRefV9Deprecation(
-          () => child(storageRef, 'bar'),
-          () => storageRef.child('bar'),
+          () => ref(storageRef, 'bar'),
+          () => namespacedStorageRef.child('bar'),
           'child',
         );
       });

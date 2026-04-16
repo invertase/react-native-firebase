@@ -29,8 +29,6 @@
     "packages/perf/lib/modular/index.d.ts",
     "packages/remote-config/lib/index.d.ts",
     "packages/remote-config/lib/modular/index.d.ts",
-    "packages/storage/lib/index.d.ts",
-    "packages/storage/lib/modular/index.d.ts",
     "packages/functions/type-test.ts",
     "packages/app/type-test.ts",
     "packages/app-check/type-test.ts",
@@ -71,10 +69,14 @@
     "lib": ["es2015", "es2016", "esnext", "dom"],
     "types": ["react-native", "node"],
     "paths": {
+      "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"],
+      "@react-native-firebase/app": ["packages/app/dist/typescript/lib"],
+      "@react-native-firebase/app/dist/module/types/common": [
+        "packages/app/dist/typescript/lib/types/common"
+      ],
       "@react-native-firebase/firestore/pipelines": [
         "./packages/firestore/dist/typescript/lib/pipelines/index.d.ts"
       ],
-      "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"]
     }
   },
   "exclude": ["node_modules", "**/*.spec.ts", "packages/**/dist"]

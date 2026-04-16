@@ -13,6 +13,7 @@
 import path from 'path';
 import type { PackageConfig } from './types';
 
+import storageConfig from '../packages/storage/config';
 import aiConfig from '../packages/ai/config';
 import firestoreConfig from '../packages/firestore/config';
 import firestorePipelinesConfig from '../packages/firestore-pipelines/config';
@@ -71,6 +72,25 @@ export const packages: PackageEntry[] = [
   //   ],
   //   config: remoteConfigConfig,
   // },
+  {
+    name: 'storage',
+    firebaseSdkTypesPaths: [path.join(
+      SCRIPT_DIR,
+      'packages',
+      'storage',
+      'storage-js-sdk.d.ts',
+    )],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('storage'), 'types', 'storage.d.ts'),
+      path.join(rnDist('storage'), 'modular.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('storage'), 'StorageStatics.d.ts'),
+      path.join(rnDist('storage'), 'types', 'namespaced.d.ts'),
+      path.join(rnDist('storage'), 'types', 'internal.d.ts'),
+    ],
+    config: storageConfig,
+  },
   {
     name: 'ai',
     firebaseSdkTypesPaths: [
@@ -177,3 +197,5 @@ export const packages: PackageEntry[] = [
     config: firestorePipelinesConfig,
   },
 ];
+
+

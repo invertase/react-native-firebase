@@ -13,6 +13,7 @@ import * as nativeModule from '@react-native-firebase/app/dist/module/internal/n
 import {
   createCheckV9Deprecation,
   CheckV9DeprecationFunction,
+  withDeprecationWarningsSilenced,
 } from '../../app/lib/common/unitTestUtils';
 
 import { getApp } from '../../app/lib/modular';
@@ -973,11 +974,13 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => getCountFromServer(query),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.count(),
+          () => query2.count(),
           'count',
         );
       });
@@ -986,37 +989,37 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => getCountFromServer(query),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.countFromServer(),
+          () => query2.countFromServer(),
           'countFromServer',
         );
       });
 
       it('CollectionReference.endAt()', function () {
-        const firestore = getFirestore();
-
-        const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => endAt('foo'),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.endAt('foo'),
+          () => query2.endAt('foo'),
           'endAt',
         );
       });
 
       it('CollectionReference.endBefore()', function () {
-        const firestore = getFirestore();
-
-        const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => endBefore('foo'),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.endBefore('foo'),
+          () => query2.endBefore('foo'),
           'endBefore',
         );
       });
@@ -1025,51 +1028,50 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => getDocs(query),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.get(),
+          () => query2.get(),
           'get',
         );
       });
 
       it('CollectionReference.isEqual()', function () {
-        const firestore = getFirestore();
-
-        const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           // no equivalent method
           () => {},
-          // @ts-expect-error Combines modular and namespace API
-          () => query.isEqual(query),
+          () => query2.isEqual(query2),
           'isEqual',
         );
       });
 
       it('CollectionReference.limit()', function () {
-        const firestore = getFirestore();
-
-        const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => limit(9),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.limit(9),
+          () => query2.limit(9),
           'limit',
         );
       });
 
       it('CollectionReference.limitToLast()', function () {
-        const firestore = getFirestore();
-
-        const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => limitToLast(9),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.limitToLast(9),
+          () => query2.limitToLast(9),
           'limitToLast',
         );
       });
@@ -1078,63 +1080,61 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => onSnapshot(query, () => {}),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.onSnapshot(() => {}),
+          () => query2.onSnapshot(() => {}),
           'onSnapshot',
         );
       });
 
       it('CollectionReference.orderBy()', function () {
-        const firestore = getFirestore();
-
-        const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => orderBy('foo', 'asc'),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.orderBy('foo', 'asc'),
+          () => query2.orderBy('foo', 'asc'),
           'orderBy',
         );
       });
 
       it('CollectionReference.startAfter()', function () {
-        const firestore = getFirestore();
-
-        const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => startAfter('foo'),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.startAfter('foo'),
+          () => query2.startAfter('foo'),
           'startAfter',
         );
       });
 
       it('CollectionReference.startAt()', function () {
-        const firestore = getFirestore();
-
-        const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => startAt('foo'),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.startAt('foo'),
+          () => query2.startAt('foo'),
           'startAt',
         );
       });
 
       it('CollectionReference.where()', function () {
-        const firestore = getFirestore();
-
-        const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => where('foo', '==', 'bar'),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.where('foo', '==', 'bar'),
+          () => query2.where('foo', '==', 'bar'),
           'where',
         );
       });
@@ -1143,11 +1143,13 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => addDoc(query, { foo: 'bar' }),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.add({ foo: 'bar' }),
+          () => query2.add({ foo: 'bar' }),
           'add',
         );
       });
@@ -1156,11 +1158,13 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const query = collection(firestore, 'test');
+        const query2 = withDeprecationWarningsSilenced(() =>
+          firebase.firestore().collection('test'),
+        );
 
         collectionRefV9Deprecation(
           () => doc(query, 'bar'),
-          // @ts-expect-error Combines modular and namespace API
-          () => query.doc('foo'),
+          () => query2.doc('foo'),
           'doc',
         );
       });
@@ -1169,13 +1173,11 @@ describe('Firestore', function () {
     describe('DocumentReference', function () {
       it('DocumentReference.collection()', function () {
         const firestore = getFirestore();
-
-        const docRef = doc(firestore, 'some/foo');
+        const docRef2 = withDeprecationWarningsSilenced(() => firebase.firestore().doc('some/foo'));
 
         docRefV9Deprecation(
           () => collection(firestore, 'bar'),
-          // @ts-expect-error Combines modular and namespace API
-          () => docRef.collection('bar'),
+          () => docRef2.collection('bar'),
           'collection',
         );
       });
@@ -1184,11 +1186,11 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const docRef = doc(firestore, 'some/foo');
+        const docRef2 = withDeprecationWarningsSilenced(() => firebase.firestore().doc('some/foo'));
 
         docRefV9Deprecation(
           () => deleteDoc(docRef),
-          // @ts-expect-error Combines modular and namespace API
-          () => docRef.delete(),
+          () => docRef2.delete(),
           'delete',
         );
       });
@@ -1197,25 +1199,22 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const docRef = doc(firestore, 'some/foo');
+        const docRef2 = withDeprecationWarningsSilenced(() => firebase.firestore().doc('some/foo'));
 
         docRefV9Deprecation(
           () => getDoc(docRef),
-          // @ts-expect-error Combines modular and namespace API
-          () => docRef.get(),
+          () => docRef2.get(),
           'get',
         );
       });
 
       it('DocumentReference.isEqual()', function () {
-        const firestore = getFirestore();
-
-        const docRef = doc(firestore, 'some/foo');
+        const docRef2 = withDeprecationWarningsSilenced(() => firebase.firestore().doc('some/foo'));
 
         docRefV9Deprecation(
           // no equivalent method
           () => {},
-          // @ts-expect-error Combines modular and namespace API
-          () => docRef.isEqual(docRef),
+          () => docRef2.isEqual(docRef2),
           'isEqual',
         );
       });
@@ -1224,11 +1223,11 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const docRef = doc(firestore, 'some/foo');
+        const docRef2 = withDeprecationWarningsSilenced(() => firebase.firestore().doc('some/foo'));
 
         docRefV9Deprecation(
           () => onSnapshot(docRef, () => {}),
-          // @ts-expect-error Combines modular and namespace API
-          () => docRef.onSnapshot(() => {}),
+          () => docRef2.onSnapshot(() => {}),
           'onSnapshot',
         );
       });
@@ -1237,11 +1236,11 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const docRef = doc(firestore, 'some/foo');
+        const docRef2 = withDeprecationWarningsSilenced(() => firebase.firestore().doc('some/foo'));
 
         docRefV9Deprecation(
           () => setDoc(docRef, { foo: 'bar' }),
-          // @ts-expect-error Combines modular and namespace API
-          () => docRef.set({ foo: 'bar' }),
+          () => docRef2.set({ foo: 'bar' }),
           'set',
         );
       });
@@ -1250,11 +1249,11 @@ describe('Firestore', function () {
         const firestore = getFirestore();
 
         const docRef = doc(firestore, 'some/foo');
+        const docRef2 = withDeprecationWarningsSilenced(() => firebase.firestore().doc('some/foo'));
 
         docRefV9Deprecation(
           () => updateDoc(docRef, { foo: 'bar' }),
-          // @ts-expect-error Combines modular and namespace API
-          () => docRef.update({ foo: 'bar' }),
+          () => docRef2.update({ foo: 'bar' }),
           'update',
         );
       });
@@ -1422,11 +1421,11 @@ describe('Firestore', function () {
     describe('FirestorePersistentCacheIndexManager', function () {
       it('firestore.persistentCacheIndexManager()', function () {
         const firestore = getFirestore();
+        const firestore2 = withDeprecationWarningsSilenced(() => firebase.firestore());
 
         firestoreRefV9Deprecation(
           () => getPersistentCacheIndexManager(firestore),
-          // @ts-expect-error Combines modular and namespace API
-          () => firestore.persistentCacheIndexManager(),
+          () => firestore2.persistentCacheIndexManager(),
           'persistentCacheIndexManager',
         );
       });
@@ -1435,11 +1434,15 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         // @ts-ignore test
         firestore._settings.persistence = true;
-        // @ts-expect-error Combines modular and namespace API
-        const indexManager = firestore.persistentCacheIndexManager();
+        const firestore2 = withDeprecationWarningsSilenced(() => firebase.firestore());
+        // @ts-ignore test
+        firestore2._settings.persistence = true;
+        const indexManager2 = withDeprecationWarningsSilenced(
+          () => firestore2.persistentCacheIndexManager()!,
+        );
         persistentCacheIndexManagerV9Deprecation(
-          () => enablePersistentCacheIndexAutoCreation(indexManager!),
-          () => indexManager!.enableIndexAutoCreation(),
+          () => enablePersistentCacheIndexAutoCreation(getPersistentCacheIndexManager(firestore)!),
+          () => indexManager2.enableIndexAutoCreation(),
           'enableIndexAutoCreation',
         );
       });
@@ -1448,11 +1451,15 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         // @ts-ignore test
         firestore._settings.persistence = true;
-        // @ts-expect-error Combines modular and namespace API
-        const indexManager = firestore.persistentCacheIndexManager();
+        const firestore2 = withDeprecationWarningsSilenced(() => firebase.firestore());
+        // @ts-ignore test
+        firestore2._settings.persistence = true;
+        const indexManager2 = withDeprecationWarningsSilenced(
+          () => firestore2.persistentCacheIndexManager()!,
+        );
         persistentCacheIndexManagerV9Deprecation(
-          () => disablePersistentCacheIndexAutoCreation(indexManager!),
-          () => indexManager!.disableIndexAutoCreation(),
+          () => disablePersistentCacheIndexAutoCreation(getPersistentCacheIndexManager(firestore)!),
+          () => indexManager2.disableIndexAutoCreation(),
           'disableIndexAutoCreation',
         );
       });
@@ -1461,11 +1468,15 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         // @ts-ignore test
         firestore._settings.persistence = true;
-        // @ts-expect-error Combines modular and namespace API
-        const indexManager = firestore.persistentCacheIndexManager();
+        const firestore2 = withDeprecationWarningsSilenced(() => firebase.firestore());
+        // @ts-ignore test
+        firestore2._settings.persistence = true;
+        const indexManager2 = withDeprecationWarningsSilenced(
+          () => firestore2.persistentCacheIndexManager()!,
+        );
         persistentCacheIndexManagerV9Deprecation(
-          () => deleteAllPersistentCacheIndexes(indexManager!),
-          () => indexManager!.deleteAllIndexes(),
+          () => deleteAllPersistentCacheIndexes(getPersistentCacheIndexManager(firestore)!),
+          () => indexManager2.deleteAllIndexes(),
           'deleteAllIndexes',
         );
       });
@@ -1473,21 +1484,23 @@ describe('Firestore', function () {
 
     describe('Timestamp', function () {
       it('Timestamp.seconds', function () {
-        const timestamp = new firestore.Timestamp(2, 3);
+        const timestamp2 = withDeprecationWarningsSilenced(
+          () => new firebase.firestore.Timestamp(2, 3),
+        );
         timestampV9Deprecation(
-          // no corresponding method
-          () => {},
-          () => timestamp.seconds,
+          () => new Timestamp(2, 3).seconds,
+          () => timestamp2.seconds,
           'seconds',
         );
       });
 
       it('Timestamp.nanoseconds', function () {
-        const timestamp = new firestore.Timestamp(2000, 3000000);
+        const timestamp2 = withDeprecationWarningsSilenced(
+          () => new firebase.firestore.Timestamp(2000, 3000000),
+        );
         timestampV9Deprecation(
-          // no corresponding method
-          () => {},
-          () => timestamp.nanoseconds,
+          () => new Timestamp(2000, 3000000).nanoseconds,
+          () => timestamp2.nanoseconds,
           'nanoseconds',
         );
       });
