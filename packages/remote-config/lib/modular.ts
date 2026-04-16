@@ -31,7 +31,7 @@ import type {
 } from './types/remote-config';
 import type { AppWithRemoteConfigInternal, RemoteConfigInternal } from './types/internal';
 
-function ap(remoteConfig: RemoteConfig): RemoteConfigInternal {
+function rc(remoteConfig: RemoteConfig): RemoteConfigInternal {
   return remoteConfig as RemoteConfigInternal;
 }
 
@@ -60,14 +60,14 @@ export function getRemoteConfig(app?: FirebaseApp): RemoteConfig {
  * activated the fetched configs.
  */
 export function activate(remoteConfig: RemoteConfig): Promise<boolean> {
-  return ap(remoteConfig).activate.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+  return rc(remoteConfig).activate.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Ensures the last activated config are available to the getters.
  */
 export function ensureInitialized(remoteConfig: RemoteConfig): Promise<void> {
-  return ap(remoteConfig).ensureInitialized.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+  return rc(remoteConfig).ensureInitialized.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -75,49 +75,49 @@ export function ensureInitialized(remoteConfig: RemoteConfig): Promise<void> {
  * if the current call activated the fetched configs.
  */
 export function fetchAndActivate(remoteConfig: RemoteConfig): Promise<boolean> {
-  return ap(remoteConfig).fetchAndActivate.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+  return rc(remoteConfig).fetchAndActivate.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Fetches and caches configuration from the Remote Config service.
  */
 export function fetchConfig(remoteConfig: RemoteConfig): Promise<void> {
-  return ap(remoteConfig).fetch.call(remoteConfig, undefined, MODULAR_DEPRECATION_ARG);
+  return rc(remoteConfig).fetch.call(remoteConfig, undefined, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Gets all config.
  */
 export function getAll(remoteConfig: RemoteConfig): Record<string, Value> {
-  return ap(remoteConfig).getAll.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+  return rc(remoteConfig).getAll.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Gets the value for the given key as a boolean.
  */
 export function getBoolean(remoteConfig: RemoteConfig, key: string): boolean {
-  return ap(remoteConfig).getBoolean.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
+  return rc(remoteConfig).getBoolean.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Gets the value for the given key as a number.
  */
 export function getNumber(remoteConfig: RemoteConfig, key: string): number {
-  return ap(remoteConfig).getNumber.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
+  return rc(remoteConfig).getNumber.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Gets the value for the given key as a string.
  */
 export function getString(remoteConfig: RemoteConfig, key: string): string {
-  return ap(remoteConfig).getString.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
+  return rc(remoteConfig).getString.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Gets the value for the given key.
  */
 export function getValue(remoteConfig: RemoteConfig, key: string): Value {
-  return ap(remoteConfig).getValue.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
+  return rc(remoteConfig).getValue.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -145,7 +145,7 @@ export function isSupported(): Promise<boolean> {
  * Android only. iOS does not reset anything.
  */
 export function reset(remoteConfig: RemoteConfig): Promise<void> {
-  return ap(remoteConfig).reset.call(remoteConfig, MODULAR_DEPRECATION_ARG);
+  return rc(remoteConfig).reset.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -155,7 +155,7 @@ export function setDefaultsFromResource(
   remoteConfig: RemoteConfig,
   resourceName: string,
 ): Promise<null> {
-  return ap(remoteConfig).setDefaultsFromResource.call(
+  return rc(remoteConfig).setDefaultsFromResource.call(
     remoteConfig,
     resourceName,
     MODULAR_DEPRECATION_ARG,
@@ -170,7 +170,7 @@ export function onConfigUpdate(
   remoteConfig: RemoteConfig,
   observer: ConfigUpdateObserver,
 ): Unsubscribe {
-  return ap(remoteConfig).onConfigUpdate.call(remoteConfig, observer, MODULAR_DEPRECATION_ARG);
+  return rc(remoteConfig).onConfigUpdate.call(remoteConfig, observer, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -189,8 +189,8 @@ export async function setCustomSignals(
   }
 
   return withModularFlag(() =>
-    ap(remoteConfig)._promiseWithConstants(
-      ap(remoteConfig).native.setCustomSignals(customSignals),
+    rc(remoteConfig)._promiseWithConstants(
+      rc(remoteConfig).native.setCustomSignals(customSignals),
       MODULAR_DEPRECATION_ARG,
     ),
   );
