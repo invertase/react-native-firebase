@@ -125,7 +125,7 @@ signInAnonymously(getAuth())
   });
 ```
 
-Once successfully signed in, any [`onAuthStateChanged`](#listening-to-authentication-state) listeners will trigger an event
+Once successfully signed in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger an event
 with the [`User`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html) details.
 
 In case any errors occur, the module provides support for identifying what specifically went wrong by attaching a code
@@ -162,7 +162,7 @@ createUserWithEmailAndPassword(getAuth(), 'jane.doe@example.com', 'SuperSecretPa
   });
 ```
 
-Once successfully created and/or signed in, any [`onAuthStateChanged`](#listening-to-authentication-state) listeners will trigger an event
+Once successfully created and/or signed in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger an event
 with the [`User`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html) details.
 
 In case any errors occur, the module provides support for identifying what specifically went wrong by attaching a code
@@ -182,7 +182,7 @@ import { getAuth, signOut } from '@react-native-firebase/auth';
 signOut(getAuth()).then(() => console.log('User signed out!'));
 ```
 
-Once successfully signed out, any [`onAuthStateChanged`](#listening-to-authentication-state) listeners will trigger an event
+Once successfully signed out, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger an event
 with the `user` parameter being a `null` value.
 
 Additionally, using `GoogleSignin.revokeAccess()` forgets the user. This means that the next time someone signs in, they will see the account selection popup. If you don't use this function, the last account will be automatically used without showing the account selection popup.
