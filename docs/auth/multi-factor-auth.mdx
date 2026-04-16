@@ -6,7 +6,7 @@ previous: /auth/oidc-auth
 ---
 
 > Before a user can enroll a second factor they need to verify their email. See
-> [`User`](/reference/auth/user#sendEmailVerification) interface is returned.
+> [`User`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html#sendemailverification) interface is returned.
 
 # TOTP MFA
 
@@ -26,7 +26,7 @@ to enable multi-factor authentication for your project and verify your app.
 
 ## Enroll a new factor
 
-Begin by obtaining a [`MultiFactorUser`](/reference/auth/multifactoruser)
+Begin by obtaining a [`MultiFactorUser`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/MultiFactorUser.html)
 instance for the current user. This is the entry point for most multi-factor
 operations:
 
@@ -64,7 +64,7 @@ const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
 await multiFactorUser.enroll(multiFactorAssertion, 'Optional display name for the user');
 ```
 
-You can inspect [`User#multiFactor`](/reference/auth/user#multiFactor) for
+You can inspect [`User#multiFactor`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html#multifactor) for
 information about the user's enrolled factors.
 
 ## Sign-in flow using phone multi-factor
@@ -98,7 +98,7 @@ signInWithEmailAndPassword(getAuth(), email, password)
 ```
 
 Using the error object you can obtain a
-[`MultiFactorResolver`](/reference/auth/multifactorresolver) instance and
+[`MultiFactorResolver`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/MultiFactorResolver.html) instance and
 continue the flow:
 
 ```js
