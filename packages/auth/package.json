@@ -42,5 +42,8 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
+  },
+  "expo": {
+    "plugin": "./app.plugin.js"
   }
 }

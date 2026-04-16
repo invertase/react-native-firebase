@@ -75,5 +75,8 @@
   "eslintIgnore": [
     "node_modules/",
     "dist/"
-  ]
+  ],
+  "expo": {
+    "plugin": "./app.plugin.js"
+  }
 }
