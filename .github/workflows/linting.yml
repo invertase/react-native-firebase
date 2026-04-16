@@ -124,15 +124,8 @@ jobs:
           retry_wait_seconds: 30
           max_attempts: 3
           command: yarn
-      - name: Yarn Install (Website)
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 3
-          retry_wait_seconds: 30
-          max_attempts: 3
-          command: cd website && yarn
       - name: Generate TypeDoc
-        run: cd website && yarn typedoc
+        run: yarn reference:api
       - uses: actions/cache/save@v4
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
