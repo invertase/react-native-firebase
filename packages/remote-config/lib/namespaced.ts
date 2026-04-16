@@ -281,8 +281,25 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
       updatedSettings.fetchTimeout = settings.fetchTimeoutMillis / 1000;
     }
 
+    const nextSettings = {
+      fetchTimeoutMillis: updatedSettings.fetchTimeout * 1000,
+      minimumFetchIntervalMillis: updatedSettings.minimumFetchInterval * 1000,
+    };
+
+    // Keep JS reads in sync immediately. Android can report stale settings constants
+    // for this call because native setConfigSettingsAsync completes after the bridge resolves.
+    this._settings = nextSettings;
+
     return this._enqueueNativeMutation(() =>
-      this._promiseWithConstants(this.native.setConfigSettings(updatedSettings)),
+      this.native.setConfigSettings(updatedSettings).then(({ result, constants }) => {
+        // Preserve the eagerly computed settings above and only refresh the rest of the cache.
+        this._updateFromConstants({
+          ...constants,
+          fetchTimeout: undefined,
+          minimumFetchInterval: undefined,
+        });
+        return result;
+      }),
     );
   }
 
@@ -484,6 +501,8 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
   }
 
   private _enqueueNativeMutation<T>(task: () => Promise<T>): Promise<T> {
+    // Some callers (like property setters) discard the returned promise; serialize all mutations
+    // so later writes like reset() cannot be overwritten by an earlier async completion.
     const next = this._nativeMutationQueue.then(task, task);
     this._nativeMutationQueue = next.then(
       () => undefined,
