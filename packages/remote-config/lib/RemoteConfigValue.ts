@@ -34,22 +34,6 @@ export default class RemoteConfigValue implements Value {
     this._source = source;
   }
 
-  get value(): undefined {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.remoteConfig().getValue(*).value has been removed. Please use one of the alternative methods such as firebase.remoteConfig().getValue(*).asString()',
-    );
-    return undefined;
-  }
-
-  get source(): undefined {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.remoteConfig().getValue(*).source has been removed. Please use firebase.remoteConfig().getValue(*).getSource()',
-    );
-    return undefined;
-  }
-
   asBoolean(): boolean {
     if (this._source === 'static') {
       return false;
