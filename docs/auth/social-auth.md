@@ -70,8 +70,8 @@ async function onAppleButtonPress() {
   }
 
   // Create a Firebase credential from the response
-  const { identityToken, nonce } = appleAuthRequestResponse;
-  const appleCredential = AppleAuthProvider.credential(identityToken, nonce);
+  const { identityToken, nonce, fullName } = appleAuthRequestResponse;
+  const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce, fullName);
 
   // Sign the user in with the credential
   return signInWithCredential(getAuth(), appleCredential);

@@ -250,6 +250,16 @@ export async function signInWithCredential(auth, credential) {
 }
 
 /**
+ * Asynchronously signs in with the given Apple credentials.
+ * @param {Auth} auth - The Auth instance.
+ * @param {AppleAuthCredential | AuthCredential} credential - The auth credentials.
+ * @returns {Promise<UserCredential>}
+ */
+export async function signInWithAppleCredential(auth, credential) {
+  return auth.signInWithAppleCredential(credential);
+}
+
+/**
  * Asynchronously signs in using a custom token.
  * @param {Auth} auth - The Auth instance.
  * @param {string} customToken - The custom token.
