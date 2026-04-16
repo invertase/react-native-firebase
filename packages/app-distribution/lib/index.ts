@@ -15,12 +15,9 @@
  *
  */
 
-import StorageTask from './StorageTask';
+export type { AppDistribution, AppDistributionRelease } from './types/app-distribution';
+export type { FirebaseAppDistributionTypes } from './types/namespaced';
 
-const UPLOAD_TASK = 'upload';
-
-export default class StorageUploadTask extends StorageTask {
-  constructor(storageRef, beginTaskFn) {
-    super(UPLOAD_TASK, storageRef, beginTaskFn);
-  }
-}
+export * from './modular';
+export * from './namespaced';
+export { default } from './namespaced';

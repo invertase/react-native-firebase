@@ -6134,10 +6134,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/analytics@workspace:packages/analytics"
   dependencies:
+    expo: "npm:^55.0.5"
     react-native-builder-bob: "npm:^0.40.17"
     superstruct: "npm:^2.0.2"
+    typescript: "npm:^5.9.3"
   peerDependencies:
     "@react-native-firebase/app": 24.0.0
+    expo: ">=47.0.0"
+  peerDependenciesMeta:
+    expo:
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -6162,6 +6168,7 @@ __metadata:
   resolution: "@react-native-firebase/app-distribution@workspace:packages/app-distribution"
   dependencies:
     expo: "npm:^55.0.5"
+    react-native-builder-bob: "npm:^0.40.13"
   peerDependencies:
     "@react-native-firebase/app": 24.0.0
     expo: ">=47.0.0"
@@ -6342,6 +6349,8 @@ __metadata:
 "@react-native-firebase/storage@npm:24.0.0, @react-native-firebase/storage@workspace:packages/storage":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/storage@workspace:packages/storage"
+  dependencies:
+    react-native-builder-bob: "npm:^0.40.13"
   peerDependencies:
     "@react-native-firebase/app": 24.0.0
   languageName: unknown

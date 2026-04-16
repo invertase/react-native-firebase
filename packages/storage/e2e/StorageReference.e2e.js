@@ -245,10 +245,10 @@ describe('storage() -> StorageReference', function () {
         result.should.have.property('nextPageToken');
         result.items.should.be.Array();
         result.items.length.should.be.greaterThan(0);
-        result.items[0].constructor.name.should.eql('StorageReference');
+        result.items[0].constructor.name.should.eql('Reference');
         result.prefixes.should.be.Array();
         result.prefixes.length.should.be.greaterThan(0);
-        result.prefixes[0].constructor.name.should.eql('StorageReference');
+        result.prefixes[0].constructor.name.should.eql('Reference');
       });
 
       it('throws if options is not an object', function () {
@@ -271,7 +271,7 @@ describe('storage() -> StorageReference', function () {
           result.nextPageToken.should.be.String();
           result.items.should.be.Array();
           result.items.length.should.eql(1);
-          result.items[0].constructor.name.should.eql('StorageReference');
+          result.items[0].constructor.name.should.eql('Reference');
           result.prefixes.should.be.Array();
           // todo length?
         });
@@ -344,10 +344,10 @@ describe('storage() -> StorageReference', function () {
         should.equal(result.nextPageToken, null);
         result.items.should.be.Array();
         result.items.length.should.be.greaterThan(0);
-        result.items[0].constructor.name.should.eql('StorageReference');
+        result.items[0].constructor.name.should.eql('Reference');
         result.prefixes.should.be.Array();
         result.prefixes.length.should.be.greaterThan(0);
-        result.prefixes[0].constructor.name.should.eql('StorageReference');
+        result.prefixes[0].constructor.name.should.eql('Reference');
       });
 
       it('should not crash if the user is not allowed to list the directory', async function () {
@@ -479,15 +479,15 @@ describe('storage() -> StorageReference', function () {
         metadata.customMetadata.keepMe.should.equal('please');
       });
 
-      it('should error if updateMetadata includes md5hash', async function () {
+      it('should error if updateMetadata includes md5Hash', async function () {
         const storageReference = firebase.storage().ref(`${PATH}/list/file1.txt`);
         try {
           await storageReference.updateMetadata({
-            md5hash: '0xDEADBEEF',
+            md5Hash: '0xDEADBEEF',
           });
           return Promise.reject(new Error('Did not throw on invalid updateMetadata'));
         } catch (e) {
-          e.message.should.containEql('md5hash may only be set on upload, not on updateMetadata');
+          e.message.should.containEql('md5Hash may only be set on upload, not on updateMetadata');
           return Promise.resolve();
         }
       });
@@ -550,7 +550,7 @@ describe('storage() -> StorageReference', function () {
           return Promise.resolve();
         }
       });
-      // TODO check an metaData:md5hash property passes through correcty on putFile
+      // TODO check an metaData:md5Hash property passes through correcty on putFile
     });
 
     describe('putString', function () {
@@ -604,7 +604,7 @@ describe('storage() -> StorageReference', function () {
         const storageReference = firebase.storage().ref(`${PATH}/metadataTest.txt`);
         await storageReference.putString('foo', 'raw', {
           contentType: 'text/plain',
-          md5hash: '123412341234',
+          md5Hash: '123412341234',
           cacheControl: 'true',
           contentDisposition: 'disposed',
           contentEncoding: 'application/octet-stream',
@@ -667,7 +667,7 @@ describe('storage() -> StorageReference', function () {
         const storageReference = firebase.storage().ref(`${PATH}/metadataTest.jpeg`);
         await storageReference.put(new ArrayBuffer(), {
           contentType: 'image/jpg',
-          md5hash: '123412341234',
+          md5Hash: '123412341234',
           cacheControl: 'true',
           contentDisposition: 'disposed',
           contentEncoding: 'application/octet-stream',
@@ -687,7 +687,7 @@ describe('storage() -> StorageReference', function () {
           .ref(`${PATH}/metadataTest.jpeg`);
         await storageReference.put(new ArrayBuffer(), {
           contentType: 'image/jpg',
-          md5hash: '123412341234',
+          md5Hash: '123412341234',
           cacheControl: 'true',
           contentDisposition: 'disposed',
           contentEncoding: 'application/octet-stream',
@@ -773,12 +773,12 @@ describe('storage() -> StorageReference', function () {
     describe('toString()', function () {
       it('returns the correct bucket path to the file', function () {
         const { getApp } = modular;
-        const { getStorage, ref, toString } = storageModular;
+        const { getStorage, ref } = storageModular;
         const storageReference = ref(getStorage(), `/uploadNope.jpeg`);
 
-        toString(storageReference).should.equal(
-          `gs://${getApp().options.storageBucket}/uploadNope.jpeg`,
-        );
+        storageReference
+          .toString()
+          .should.equal(`gs://${getApp().options.storageBucket}/uploadNope.jpeg`);
       });
     });
 
@@ -845,10 +845,10 @@ describe('storage() -> StorageReference', function () {
 
     describe('child()', function () {
       it('returns a reference to a child path', function () {
-        const { getStorage, ref, child } = storageModular;
+        const { getStorage, ref } = storageModular;
         const storageReference = ref(getStorage(), '/foo');
 
-        const childRef = child(storageReference, 'someFile.json');
+        const childRef = ref(storageReference, 'someFile.json');
         childRef.fullPath.should.equal('foo/someFile.json');
       });
     });
@@ -1010,18 +1010,18 @@ describe('storage() -> StorageReference', function () {
 
         result.items.should.be.Array();
         result.items.length.should.be.greaterThan(0);
-        result.items[0].constructor.name.should.eql('StorageReference');
+        result.items[0].constructor.name.should.eql('Reference');
 
         result.prefixes.should.be.Array();
         result.prefixes.length.should.be.greaterThan(0);
-        result.prefixes[0].constructor.name.should.eql('StorageReference');
+        result.prefixes[0].constructor.name.should.eql('Reference');
       });
 
-      it('throws if options is not an object', function () {
+      it('throws if options is not an object', async function () {
         try {
           const { getStorage, ref, list } = storageModular;
           const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
-          list(storageReference, 123);
+          await list(storageReference, 123);
           return Promise.reject(new Error('Did not throw'));
         } catch (error) {
           error.message.should.containEql("'options' expected an object value");
@@ -1042,18 +1042,18 @@ describe('storage() -> StorageReference', function () {
 
           result.items.should.be.Array();
           result.items.length.should.eql(1);
-          result.items[0].constructor.name.should.eql('StorageReference');
+          result.items[0].constructor.name.should.eql('Reference');
 
           result.prefixes.should.be.Array();
           // todo length?
         });
 
-        it('throws if maxResults is not a number', function () {
+        it('throws if maxResults is not a number', async function () {
           try {
             const { getStorage, ref, list } = storageModular;
             const storageReference = ref(getStorage(), `${PATH}/list`);
 
-            list(storageReference, {
+            await list(storageReference, {
               maxResults: '123',
             });
             return Promise.reject(new Error('Did not throw'));
@@ -1063,11 +1063,11 @@ describe('storage() -> StorageReference', function () {
           }
         });
 
-        it('throws if maxResults is not a valid number', function () {
+        it('throws if maxResults is not a valid number', async function () {
           try {
             const { getStorage, ref, list } = storageModular;
             const storageReference = ref(getStorage(), `${PATH}/list`);
-            list(storageReference, {
+            await list(storageReference, {
               maxResults: 2000,
             });
             return Promise.reject(new Error('Did not throw'));
@@ -1081,11 +1081,11 @@ describe('storage() -> StorageReference', function () {
       });
 
       describe('pageToken', function () {
-        it('throws if pageToken is not a string', function () {
+        it('throws if pageToken is not a string', async function () {
           try {
             const { getStorage, ref, list } = storageModular;
             const storageReference = ref(getStorage(), `${PATH}/list`);
-            list(storageReference, {
+            await list(storageReference, {
               pageToken: 123,
             });
             return Promise.reject(new Error('Did not throw'));
@@ -1128,11 +1128,11 @@ describe('storage() -> StorageReference', function () {
 
         result.items.should.be.Array();
         result.items.length.should.be.greaterThan(0);
-        result.items[0].constructor.name.should.eql('StorageReference');
+        result.items[0].constructor.name.should.eql('Reference');
 
         result.prefixes.should.be.Array();
         result.prefixes.length.should.be.greaterThan(0);
-        result.prefixes[0].constructor.name.should.eql('StorageReference');
+        result.prefixes[0].constructor.name.should.eql('Reference');
       });
 
       it('should not crash if the user is not allowed to list the directory', async function () {
@@ -1281,17 +1281,17 @@ describe('storage() -> StorageReference', function () {
         metadata.customMetadata.keepMe.should.equal('please');
       });
 
-      it('should error if updateMetadata includes md5hash', async function () {
+      it('should error if updateMetadata includes md5Hash', async function () {
         const { getStorage, ref, updateMetadata } = storageModular;
         const storageReference = ref(getStorage(), `${PATH}/list/file1.txt`);
 
         try {
           await updateMetadata(storageReference, {
-            md5hash: '0xDEADBEEF',
+            md5Hash: '0xDEADBEEF',
           });
           return Promise.reject(new Error('Did not throw on invalid updateMetadata'));
         } catch (e) {
-          e.message.should.containEql('md5hash may only be set on upload, not on updateMetadata');
+          e.message.should.containEql('md5Hash may only be set on upload, not on updateMetadata');
           return Promise.resolve();
         }
       });
@@ -1361,7 +1361,7 @@ describe('storage() -> StorageReference', function () {
         }
       });
 
-      // TODO check an metaData:md5hash property passes through correcty on putFile
+      // TODO check an metaData:md5Hash property passes through correcty on putFile
     });
 
     describe('putString', function () {
@@ -1421,7 +1421,7 @@ describe('storage() -> StorageReference', function () {
 
         await uploadString(storageReference, 'foo', 'raw', {
           contentType: 'text/plain',
-          md5hash: '123412341234',
+          md5Hash: '123412341234',
           cacheControl: 'true',
           contentDisposition: 'disposed',
           contentEncoding: 'application/octet-stream',
@@ -1497,7 +1497,7 @@ describe('storage() -> StorageReference', function () {
 
         await uploadBytesResumable(storageReference, new ArrayBuffer(), {
           contentType: 'image/jpg',
-          md5hash: '123412341234',
+          md5Hash: '123412341234',
           cacheControl: 'true',
           contentDisposition: 'disposed',
           contentEncoding: 'application/octet-stream',
@@ -1520,7 +1520,7 @@ describe('storage() -> StorageReference', function () {
 
         await uploadBytesResumable(storageReference, new ArrayBuffer(), {
           contentType: 'image/jpg',
-          md5hash: '123412341234',
+          md5Hash: '123412341234',
           cacheControl: 'true',
           contentDisposition: 'disposed',
           contentEncoding: 'application/octet-stream',

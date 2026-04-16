@@ -22,6 +22,16 @@ export type CheckV9DeprecationFunction = (
   ignoreFirebaseAppDeprecationWarning?: boolean,
 ) => void;
 
+export const withDeprecationWarningsSilenced = <T>(fn: () => T): T => {
+  const previous = globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS;
+  globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+  try {
+    return fn();
+  } finally {
+    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = previous;
+  }
+};
+
 export const createCheckV9Deprecation = (moduleNames: string[]): CheckV9DeprecationFunction => {
   return (
     modularFunction: () => void,

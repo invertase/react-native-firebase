@@ -15,19 +15,13 @@
  *
  */
 
-export const StringFormat = {
-  RAW: 'raw',
-  BASE64: 'base64',
-  BASE64URL: 'base64url',
-  DATA_URL: 'data_url',
-};
-export const TaskEvent = {
-  STATE_CHANGED: 'state_changed',
-};
-export const TaskState = {
-  RUNNING: 'running',
-  PAUSED: 'paused',
-  SUCCESS: 'success',
-  CANCELLED: 'cancelled',
-  ERROR: 'error',
-};
+// Export modular types from types/storage
+export type * from './types/storage';
+
+// Export modular API functions
+export * from './modular';
+
+// Export namespaced API
+export type { FirebaseStorageTypes } from './types/namespaced';
+export * from './namespaced';
+export { default } from './namespaced';
