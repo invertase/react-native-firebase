@@ -286,7 +286,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
       minimumFetchIntervalMillis: updatedSettings.minimumFetchInterval * 1000,
     };
 
-    // Keep JS reads in sync immediately. Android can report stale settings constants
+    // Keep JS reads in sync immediately. Native can report stale settings constants
     // for this call because native setConfigSettingsAsync completes after the bridge resolves.
     this._settings = nextSettings;
 
