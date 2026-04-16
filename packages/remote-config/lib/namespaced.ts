@@ -235,7 +235,10 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
     settings: ConfigSettings | RemoteConfigSettings,
     fromSettingsSetter = false,
   ): Promise<void> {
-    const updatedSettings = {
+    const updatedSettings: {
+      fetchTimeout: number;
+      minimumFetchInterval: number;
+    } = {
       fetchTimeout: this._settings.fetchTimeoutMillis / 1000,
       minimumFetchInterval: this._settings.minimumFetchIntervalMillis / 1000,
     };
@@ -255,29 +258,23 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> imple
       }
     }
 
-    if (
-      hasOwnProperty(settings, 'fetchTimeoutMillis') ||
-      hasOwnProperty(settings, 'fetchTimeMillis')
-    ) {
-      const fetchTimeoutMillis =
-        ('fetchTimeoutMillis' in settings ? settings.fetchTimeoutMillis : undefined) ??
-        ('fetchTimeMillis' in settings ? settings.fetchTimeMillis : undefined);
+    if (hasOwnProperty(settings, 'fetchTimeMillis')) {
+      if (!isNumber(settings.fetchTimeMillis)) {
+        throw new Error(
+          `firebase.remoteConfig().${apiCalled}(): 'settings.fetchTimeMillis' must be a number type in milliseconds.`,
+        );
+      }
 
-      if (!isNumber(fetchTimeoutMillis)) {
+      updatedSettings.fetchTimeout = settings.fetchTimeMillis / 1000;
+    } else if (hasOwnProperty(settings, 'fetchTimeoutMillis')) {
+      if (!isNumber(settings.fetchTimeoutMillis)) {
         throw new Error(
           `firebase.remoteConfig().${apiCalled}(): 'settings.fetchTimeoutMillis' must be a number type in milliseconds.`,
         );
       }
 
-      updatedSettings.fetchTimeout = fetchTimeoutMillis / 1000;
+      updatedSettings.fetchTimeout = settings.fetchTimeoutMillis / 1000;
     }
-
-    // Keep the in-memory cache in sync immediately so namespaced reads behave the same
-    // way as the modular settings property setter while native applies the change.
-    this._settings = {
-      fetchTimeoutMillis: updatedSettings.fetchTimeout * 1000,
-      minimumFetchIntervalMillis: updatedSettings.minimumFetchInterval * 1000,
-    };
 
     return this._enqueueNativeMutation(() =>
       this._promiseWithConstants(this.native.setConfigSettings(updatedSettings)),
