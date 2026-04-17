@@ -47,14 +47,13 @@ interface SharedEventSubscriptionInternal {
 
 interface DatabaseSyncEventBody {
   error?: unknown;
-  eventType: string;
-  data: DatabaseSnapshotInternal | DatabaseChildSnapshotResultInternal;
+  eventType?: string;
+  data?: DatabaseSnapshotInternal | DatabaseChildSnapshotResultInternal;
+  registration: DatabaseListenRegistrationInternal;
 }
 
 interface DatabaseSyncEventInternal {
   body: DatabaseSyncEventBody;
-  error?: Parameters<typeof NativeError.fromEvent>[0];
-  registration: DatabaseListenRegistrationInternal;
 }
 
 type DatabaseSyncTreeListener = DatabaseSyncTreeRegistration['listener'];
@@ -101,16 +100,16 @@ class DatabaseSyncTree {
   private _handleSyncEvent(event: DatabaseSyncEventInternal): void {
     const { body } = event;
     if (body.error) {
-      this._handleErrorEvent(event);
+      this._handleErrorEvent(body);
     } else {
-      this._handleValueEvent(event);
+      this._handleValueEvent(body);
     }
   }
 
   /**
    * Routes native database query listener cancellation events to their JS counterparts.
    */
-  private _handleErrorEvent(event: DatabaseSyncEventInternal): void {
+  private _handleErrorEvent(event: DatabaseSyncEventBody): void {
     const { eventRegistrationKey, registrationCancellationKey } = event.registration;
 
     if (!registrationCancellationKey) {
@@ -121,7 +120,7 @@ class DatabaseSyncTree {
 
     if (registration) {
       const error = NativeError.fromEvent(
-        (event.error ?? event.body.error) as Parameters<typeof NativeError.fromEvent>[0],
+        event.error as Parameters<typeof NativeError.fromEvent>[0],
         'database',
       ) as Error;
 
@@ -137,7 +136,7 @@ class DatabaseSyncTree {
    * Routes native database `on` events to their JS equivalents.
    * If there are no listeners left for the event, native is told to unsubscribe.
    */
-  private _handleValueEvent(event: DatabaseSyncEventInternal): void {
+  private _handleValueEvent(event: DatabaseSyncEventBody): void {
     const { key, eventRegistrationKey } = event.registration;
     const registration = this.getRegistration(eventRegistrationKey);
 
@@ -149,12 +148,16 @@ class DatabaseSyncTree {
     let snapshot: FirebaseDatabaseTypes.DataSnapshot;
     let previousChildName: string | null | undefined;
 
-    if (event.body.eventType === 'value') {
+    if (!event.data) {
+      return;
+    }
+
+    if (event.eventType === 'value') {
       snapshot = createDeprecationProxy(
-        new DatabaseDataSnapshot(registration.ref, event.body.data as DatabaseSnapshotInternal),
+        new DatabaseDataSnapshot(registration.ref, event.data as DatabaseSnapshotInternal),
       ) as FirebaseDatabaseTypes.DataSnapshot;
     } else {
-      const childData = event.body.data as DatabaseChildSnapshotResultInternal;
+      const childData = event.data as DatabaseChildSnapshotResultInternal;
       snapshot = createDeprecationProxy(
         new DatabaseDataSnapshot(registration.ref, childData.snapshot),
       ) as FirebaseDatabaseTypes.DataSnapshot;
