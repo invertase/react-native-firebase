@@ -343,9 +343,9 @@ describe('remoteConfig()', function () {
         }
       });
 
-      it('returns a "null" value as reset() API is not supported on iOS', async function () {
+      it('returns "undefined" as reset() API is not supported on iOS', async function () {
         if (Platform.ios) {
-          should(await firebase.remoteConfig().reset()).equal(null);
+          should(await firebase.remoteConfig().reset()).equal(undefined);
         }
       });
     });
@@ -655,12 +655,12 @@ describe('remoteConfig()', function () {
         }
       });
 
-      it('returns a "null" value for reset() API on unsupported SDKs', async function () {
+      it('returns "undefined" for reset() API on unsupported SDKs', async function () {
         const { getRemoteConfig, reset } = remoteConfigModular;
         // reset() only supported on firebase-android-sdk, and not even implemented on firebase-js-sdk
-        // so for Other this API does not even exist, but on iOS it returns null. Verify that.
+        // so for Other this API does not even exist, but on iOS it returns undefined. Verify that.
         if (Platform.ios) {
-          should(await reset(getRemoteConfig())).equal(null);
+          should(await reset(getRemoteConfig())).equal(undefined);
         }
       });
     });
