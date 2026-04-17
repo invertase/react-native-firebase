@@ -55,13 +55,6 @@ const config: PackageConfig = {
         'shape so compare-types does not treat the helper alias as an extra export. ' +
         'The two types are structurally equivalent.',
     },
-    {
-      name: 'EventType',
-      reason:
-        'RN Firebase re-exports the event union through the deprecated ' +
-        '`FirebaseDatabaseTypes.EventType` alias in its split type layout, so ' +
-        'the declaration text differs from the inline firebase-js-sdk union.',
-    },
   ],
 };
 
