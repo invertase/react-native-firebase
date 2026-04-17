@@ -225,7 +225,7 @@ export default class DatabaseReference
       ) => {
         if (isFunction(onComplete)) {
           if (error) {
-            onComplete(error, committed, null as unknown as FirebaseDatabaseTypes.DataSnapshot);
+            onComplete(error, committed, null);
           } else {
             onComplete(
               null,
