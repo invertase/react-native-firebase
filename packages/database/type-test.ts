@@ -13,7 +13,16 @@ import database, {
   serverTimestamp,
   getServerTime,
   increment,
-  ServerValue,
+  type Database as ModularDatabase,
+  type DatabaseReference as ModularDatabaseReference,
+  type DataSnapshot as ModularDataSnapshot,
+  type EmulatorMockTokenOptions,
+  type IteratedDataSnapshot,
+  type Query as ModularQuery,
+  type QueryConstraint,
+  type QueryConstraintType,
+  type ThenableReference as ModularThenableReference,
+  type TransactionResult as ModularTransactionResult,
   endAt,
   endBefore,
   startAt,
@@ -125,54 +134,58 @@ rootRef.on('value', (snapshot: FirebaseDatabaseTypes.DataSnapshot) => {
 rootRef.off('value');
 
 // checks modular API functions
-const dbModular1 = getDatabase();
+const dbModular1: ModularDatabase = getDatabase();
 console.log(dbModular1.app.name);
+const dbType: 'database' = dbModular1.type;
+void dbType;
 
-const dbModular2 = getDatabase(firebase.app());
+const dbModular2: ModularDatabase = getDatabase(firebase.app());
 console.log(dbModular2.app.name);
 
-const dbModular3 = getDatabase(firebase.app(), 'https://example.firebaseio.com');
+const dbModular3: ModularDatabase = getDatabase(firebase.app(), 'https://example.firebaseio.com');
 console.log(dbModular3.app.name);
 
-connectDatabaseEmulator(dbInstance, 'localhost', 9000);
+const mockUserToken: EmulatorMockTokenOptions = { user_id: 'test-user' };
+connectDatabaseEmulator(dbModular1, 'localhost', 9000, { mockUserToken });
 
-goOffline(dbInstance).then(() => {
-  console.log('Offline');
-});
+goOffline(dbModular1);
 
-goOnline(dbInstance).then(() => {
-  console.log('Online');
-});
+goOnline(dbModular1);
 
-const modularRef = ref(dbInstance, 'users');
-const modularRef2 = ref(dbInstance);
+const modularRef: ModularDatabaseReference = ref(dbModular1, 'users');
+const modularRef2: ModularDatabaseReference = ref(dbModular1);
 console.log(modularRef.key);
 console.log(modularRef2.key);
 
-const modularRefFromURL = refFromURL(dbInstance, 'https://example.firebaseio.com/users');
+const modularRefFromURL: ModularDatabaseReference = refFromURL(
+  dbModular1,
+  'https://example.firebaseio.com/users',
+);
 console.log(modularRefFromURL.key);
 
-setPersistenceEnabled(dbInstance, true);
-setLoggingEnabled(dbInstance, true);
-setPersistenceCacheSizeBytes(dbInstance, 2000000);
+setPersistenceEnabled(dbModular1, true);
+setLoggingEnabled(dbModular1, true);
+setPersistenceCacheSizeBytes(dbModular1, 2000000);
 
 const timestamp = serverTimestamp();
 console.log(timestamp);
 
-getServerTime(dbInstance).then((time: number) => {
-  console.log(time);
-});
+const modularServerTime: Date = getServerTime(dbModular1);
+console.log(modularServerTime);
 
 const incrementValue = increment(1);
 console.log(incrementValue);
 
-console.log(ServerValue.TIMESTAMP);
-console.log(ServerValue.increment(1));
-
 // checks modular query functions
-const testRef = ref(dbInstance, 'users');
-const testQuery = query(testRef, orderByChild('name'), limitToFirst(10));
+const testRef: ModularDatabaseReference = ref(dbModular1, 'users');
+const testQuery: ModularQuery = query(testRef, orderByChild('name'), limitToFirst(10));
 console.log(testQuery);
+
+const queryConstraintType: QueryConstraintType = 'orderByKey';
+void queryConstraintType;
+const queryConstraint: QueryConstraint = orderByKey();
+console.log(queryConstraint.type);
+void queryConstraint;
 
 // Test all query constraint functions
 console.log(query(testRef, endAt('value')));
@@ -187,13 +200,13 @@ console.log(query(testRef, orderByPriority()));
 console.log(query(testRef, orderByValue()));
 console.log(query(testRef, equalTo('value')));
 
-const modularUnsubscribe1 = onValue(testRef, (snapshot: FirebaseDatabaseTypes.DataSnapshot) => {
+const modularUnsubscribe1 = onValue(testRef, (snapshot: ModularDataSnapshot) => {
   console.log(snapshot.val());
 });
 
 const modularUnsubscribe2 = onValue(
   testRef,
-  (snapshot: FirebaseDatabaseTypes.DataSnapshot) => {
+  (snapshot: ModularDataSnapshot) => {
     console.log(snapshot.val());
   },
   (error: Error) => {
@@ -203,7 +216,7 @@ const modularUnsubscribe2 = onValue(
 
 const modularUnsubscribe3 = onValue(
   testRef,
-  (snapshot: FirebaseDatabaseTypes.DataSnapshot) => {
+  (snapshot: ModularDataSnapshot) => {
     console.log(snapshot.val());
   },
   { onlyOnce: true },
@@ -215,15 +228,18 @@ modularUnsubscribe3();
 
 const unsubscribeChildAdded = onChildAdded(
   testRef,
-  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName: string | null) => {
+  (snapshot: ModularDataSnapshot, previousChildName?: string | null) => {
     console.log(snapshot.val());
     console.log(previousChildName);
   },
 );
+const unsubscribeChildAddedOptionalPrev = onChildAdded(testRef, (snapshot: ModularDataSnapshot) => {
+  console.log(snapshot.val());
+});
 
 const unsubscribeChildChanged = onChildChanged(
   testRef,
-  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName: string | null) => {
+  (snapshot: ModularDataSnapshot, previousChildName: string | null) => {
     console.log(snapshot.val());
     console.log(previousChildName);
   },
@@ -231,20 +247,18 @@ const unsubscribeChildChanged = onChildChanged(
 
 const unsubscribeChildMoved = onChildMoved(
   testRef,
-  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName: string | null) => {
+  (snapshot: ModularDataSnapshot, previousChildName: string | null) => {
     console.log(snapshot.val());
     console.log(previousChildName);
   },
 );
 
-const unsubscribeChildRemoved = onChildRemoved(
-  testRef,
-  (snapshot: FirebaseDatabaseTypes.DataSnapshot) => {
-    console.log(snapshot.val());
-  },
-);
+const unsubscribeChildRemoved = onChildRemoved(testRef, (snapshot: ModularDataSnapshot) => {
+  console.log(snapshot.val());
+});
 
 unsubscribeChildAdded();
+unsubscribeChildAddedOptionalPrev();
 unsubscribeChildChanged();
 unsubscribeChildMoved();
 unsubscribeChildRemoved();
@@ -261,8 +275,13 @@ setWithPriority(testRef, { foo: 'bar' }, 'high').then(() => {
   console.log('Set with priority complete');
 });
 
-get(testQuery).then((snapshot: FirebaseDatabaseTypes.DataSnapshot) => {
+get(testQuery).then((snapshot: ModularDataSnapshot) => {
   console.log(snapshot.val());
+  console.log(snapshot.priority);
+  console.log(snapshot.size);
+  snapshot.forEach((child: IteratedDataSnapshot) => {
+    console.log(child.key);
+  });
 });
 
 const modularChildRef = child(testRef, 'child');
@@ -270,12 +289,13 @@ console.log(modularChildRef.key);
 
 const onDisconnectRef = onDisconnect(testRef);
 console.log(onDisconnectRef);
+onDisconnectRef.set('offline').then(() => {});
 
 keepSynced(testRef, true).then(() => {
   console.log('Keep synced set');
 });
 
-const modularPushRef = push(testRef, { name: 'test' });
+const modularPushRef: ModularThenableReference = push(testRef, { name: 'test' });
 console.log(modularPushRef.key);
 
 remove(testRef).then(() => {
@@ -288,9 +308,10 @@ update(testRef, { foo: 'bar' }).then(() => {
 
 runTransaction(testRef, (currentData: any) => {
   return { ...currentData, updated: true };
-}).then((result: FirebaseDatabaseTypes.TransactionResult) => {
+}).then((result: ModularTransactionResult) => {
   console.log(result.committed);
   console.log(result.snapshot.val());
+  console.log(result.toJSON());
 });
 
 runTransaction(
@@ -299,6 +320,8 @@ runTransaction(
     return { ...currentData, updated: true };
   },
   { applyLocally: true },
-).then((result: FirebaseDatabaseTypes.TransactionResult) => {
+).then((result: ModularTransactionResult) => {
   console.log(result.committed);
 });
+
+console.log(testQuery.isEqual(null));

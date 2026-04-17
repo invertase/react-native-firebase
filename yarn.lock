@@ -6239,6 +6239,8 @@ __metadata:
 "@react-native-firebase/database@npm:24.0.0, @react-native-firebase/database@workspace:packages/database":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/database@workspace:packages/database"
+  dependencies:
+    react-native-builder-bob: "npm:^0.40.17"
   peerDependencies:
     "@react-native-firebase/app": 24.0.0
   languageName: unknown

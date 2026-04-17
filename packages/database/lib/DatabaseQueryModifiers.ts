@@ -20,9 +20,63 @@ import { isNull, isNumber, isString } from '@react-native-firebase/app/dist/modu
 const CONSTANTS = {
   VIEW_FROM_LEFT: 'left',
   VIEW_FROM_RIGHT: 'right',
-};
+} as const;
+
+type QueryModifierValue = number | string | boolean | null;
+
+export interface DatabaseQueryLimitModifier {
+  id: string;
+  name: 'limitToFirst' | 'limitToLast';
+  type: 'limit';
+  value: number;
+  viewFrom: (typeof CONSTANTS)[keyof typeof CONSTANTS];
+}
+
+export interface DatabaseQueryOrderByModifier {
+  id: string;
+  type: 'orderBy';
+  name: 'orderByChild' | 'orderByKey' | 'orderByPriority' | 'orderByValue';
+  key?: string;
+}
+
+export interface DatabaseQueryFilterModifier {
+  id: string;
+  type: 'filter';
+  name: 'startAt' | 'endAt';
+  value: QueryModifierValue;
+  valueType: 'number' | 'string' | 'boolean' | 'object' | 'null';
+  key?: string;
+}
+
+export type DatabaseQueryModifier =
+  | DatabaseQueryLimitModifier
+  | DatabaseQueryOrderByModifier
+  | DatabaseQueryFilterModifier;
+
+function getFilterValueType(value: QueryModifierValue): DatabaseQueryFilterModifier['valueType'] {
+  if (value === null) {
+    return 'null';
+  }
+
+  switch (typeof value) {
+    case 'number':
+      return 'number';
+    case 'string':
+      return 'string';
+    case 'boolean':
+      return 'boolean';
+    default:
+      return 'object';
+  }
+}
 
 export default class DatabaseQueryModifiers {
+  private _limit: DatabaseQueryLimitModifier | undefined;
+  private _orderBy: DatabaseQueryOrderByModifier | undefined;
+  private _startAt: DatabaseQueryFilterModifier | undefined;
+  private _endAt: DatabaseQueryFilterModifier | undefined;
+  private _modifiers: DatabaseQueryModifier[];
+
   constructor() {
     this._limit = undefined;
     this._orderBy = undefined;
@@ -31,7 +85,7 @@ export default class DatabaseQueryModifiers {
     this._modifiers = [];
   }
 
-  _copy() {
+  _copy(): DatabaseQueryModifiers {
     const newInstance = new DatabaseQueryModifiers();
     newInstance._limit = this._limit;
     newInstance._orderBy = this._orderBy;
@@ -41,22 +95,16 @@ export default class DatabaseQueryModifiers {
     return newInstance;
   }
 
-  /**
-   *
-   * LIMIT
-   *
-   */
-
-  hasLimit() {
+  hasLimit(): boolean {
     return this._limit !== undefined;
   }
 
-  isValidLimit(limit) {
+  isValidLimit(limit: number): boolean {
     return !isNumber(limit) || Math.floor(limit) !== limit || limit <= 0;
   }
 
-  limitToFirst(limit) {
-    const newLimit = {
+  limitToFirst(limit: number): DatabaseQueryModifiers {
+    const newLimit: DatabaseQueryLimitModifier = {
       id: `limit-limitToFirst:${limit}`,
       name: 'limitToFirst',
       type: 'limit',
@@ -69,8 +117,8 @@ export default class DatabaseQueryModifiers {
     return this;
   }
 
-  limitToLast(limit) {
-    const newLimit = {
+  limitToLast(limit: number): DatabaseQueryModifiers {
+    const newLimit: DatabaseQueryLimitModifier = {
       id: `limit-limitToLast:${limit}`,
       name: 'limitToLast',
       type: 'limit',
@@ -83,18 +131,12 @@ export default class DatabaseQueryModifiers {
     return this;
   }
 
-  /**
-   *
-   * ORDER
-   *
-   */
-
-  hasOrderBy() {
+  hasOrderBy(): boolean {
     return this._orderBy !== undefined;
   }
 
-  orderByChild(path) {
-    const newOrder = {
+  orderByChild(path: string): DatabaseQueryModifiers {
+    const newOrder: DatabaseQueryOrderByModifier = {
       id: `order-orderByChild:${path}`,
       type: 'orderBy',
       name: 'orderByChild',
@@ -106,8 +148,8 @@ export default class DatabaseQueryModifiers {
     return this;
   }
 
-  orderByKey() {
-    const newOrder = {
+  orderByKey(): DatabaseQueryModifiers {
+    const newOrder: DatabaseQueryOrderByModifier = {
       id: 'order-orderByKey',
       type: 'orderBy',
       name: 'orderByKey',
@@ -118,12 +160,12 @@ export default class DatabaseQueryModifiers {
     return this;
   }
 
-  isValidPriority(priority) {
+  isValidPriority(priority: QueryModifierValue): boolean {
     return isNumber(priority) || isString(priority) || isNull(priority);
   }
 
-  orderByPriority() {
-    const newOrder = {
+  orderByPriority(): DatabaseQueryModifiers {
+    const newOrder: DatabaseQueryOrderByModifier = {
       id: 'order-orderByPriority',
       type: 'orderBy',
       name: 'orderByPriority',
@@ -134,8 +176,8 @@ export default class DatabaseQueryModifiers {
     return this;
   }
 
-  orderByValue() {
-    const newOrder = {
+  orderByValue(): DatabaseQueryModifiers {
+    const newOrder: DatabaseQueryOrderByModifier = {
       id: 'order-orderByValue',
       type: 'orderBy',
       name: 'orderByValue',
@@ -146,27 +188,21 @@ export default class DatabaseQueryModifiers {
     return this;
   }
 
-  /**
-   *
-   * FILTER
-   *
-   */
-
-  hasStartAt() {
+  hasStartAt(): boolean {
     return this._startAt !== undefined;
   }
 
-  hasEndAt() {
+  hasEndAt(): boolean {
     return this._endAt !== undefined;
   }
 
-  startAt(value, key) {
-    const newStart = {
+  startAt(value: QueryModifierValue, key?: string): DatabaseQueryModifiers {
+    const newStart: DatabaseQueryFilterModifier = {
       id: `filter-startAt:${value}:${key || ''}`,
       type: 'filter',
       name: 'startAt',
       value,
-      valueType: value === null ? 'null' : typeof value,
+      valueType: getFilterValueType(value),
       key,
     };
 
@@ -175,51 +211,46 @@ export default class DatabaseQueryModifiers {
     return this;
   }
 
-  endAt(value, key) {
-    const newStart = {
+  endAt(value: QueryModifierValue, key?: string): DatabaseQueryModifiers {
+    const newEnd: DatabaseQueryFilterModifier = {
       id: `filter-endAt:${value}:${key || ''}`,
       type: 'filter',
       name: 'endAt',
       value,
-      valueType: value === null ? 'null' : typeof value,
+      valueType: getFilterValueType(value),
       key,
     };
 
-    this._endAt = newStart;
-    this._modifiers.push(newStart);
+    this._endAt = newEnd;
+    this._modifiers.push(newEnd);
     return this;
   }
 
-  // Returns a modifier array
-  toArray() {
+  toArray(): DatabaseQueryModifier[] {
     return this._modifiers;
   }
 
-  // Converts the modifier list to a string representation
-  toString() {
-    const sorted = [].concat(this._modifiers).sort((a, b) => {
-      if (a.id < b.id) {
-        return -1;
-      }
-      if (a.id > b.id) {
-        return 1;
-      }
-      return 0;
-    });
-
+  toString(): string {
+    const sorted = [...this._modifiers].sort((a, b) => a.id.localeCompare(b.id));
     let key = '{';
-    for (let i = 0; i < sorted.length; i++) {
-      if (i !== 0) {
+
+    for (let index = 0; index < sorted.length; index++) {
+      const modifier = sorted[index];
+      if (!modifier) {
+        continue;
+      }
+      if (index !== 0) {
         key += ',';
       }
-      key += sorted[i].id;
+      key += modifier.id;
     }
+
     key += '}';
     return key;
   }
 
-  validateModifiers(prefix) {
-    if (this._orderBy && this._orderBy.name === 'orderByKey') {
+  validateModifiers(prefix: string): void {
+    if (this._orderBy?.name === 'orderByKey') {
       if ((this._startAt && !!this._startAt.key) || (this._endAt && !!this._endAt.key)) {
         throw new Error(
           `${prefix} When ordering by key, you may only pass a value argument to startAt(), endAt(), or equalTo().`,
@@ -227,7 +258,7 @@ export default class DatabaseQueryModifiers {
       }
     }
 
-    if (this._orderBy && this._orderBy.name === 'orderByKey') {
+    if (this._orderBy?.name === 'orderByKey') {
       if (
         (this._startAt && this._startAt.valueType !== 'string') ||
         (this._endAt && this._endAt.valueType !== 'string')
@@ -238,7 +269,7 @@ export default class DatabaseQueryModifiers {
       }
     }
 
-    if (this._orderBy && this._orderBy.name === 'orderByPriority') {
+    if (this._orderBy?.name === 'orderByPriority') {
       if (
         (this._startAt && !this.isValidPriority(this._startAt.value)) ||
         (this._endAt && !this.isValidPriority(this._endAt.value))
