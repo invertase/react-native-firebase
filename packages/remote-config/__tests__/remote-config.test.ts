@@ -338,7 +338,6 @@ describe('remoteConfig()', function () {
           );
         });
       });
-
     });
   });
 });
