@@ -232,11 +232,14 @@ modularUnsubscribe3();
 
 const unsubscribeChildAdded = onChildAdded(
   testRef,
-  (snapshot: ModularDataSnapshot, previousChildName: string | null) => {
+  (snapshot: ModularDataSnapshot, previousChildName?: string | null) => {
     console.log(snapshot.val());
     console.log(previousChildName);
   },
 );
+const unsubscribeChildAddedOptionalPrev = onChildAdded(testRef, (snapshot: ModularDataSnapshot) => {
+  console.log(snapshot.val());
+});
 
 const unsubscribeChildChanged = onChildChanged(
   testRef,
@@ -259,6 +262,7 @@ const unsubscribeChildRemoved = onChildRemoved(testRef, (snapshot: ModularDataSn
 });
 
 unsubscribeChildAdded();
+unsubscribeChildAddedOptionalPrev();
 unsubscribeChildChanged();
 unsubscribeChildMoved();
 unsubscribeChildRemoved();

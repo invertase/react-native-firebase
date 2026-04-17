@@ -19,7 +19,7 @@ import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import DatabaseStatics from './DatabaseStatics';
-import type { Database, EmulatorMockTokenOptions } from './types/database';
+import type { Database, DatabaseReference, EmulatorMockTokenOptions } from './types/database';
 import type { AppWithDatabaseInternal, DatabaseWithMethodsInternal } from './types/internal';
 
 const { ServerValue } = DatabaseStatics;
@@ -61,11 +61,11 @@ export function goOnline(db: Database): void {
   (db as DatabaseWithMethodsInternal).goOnline.call(db, MODULAR_DEPRECATION_ARG);
 }
 
-export function ref(db: Database, path?: string) {
+export function ref(db: Database, path?: string): DatabaseReference {
   return (db as DatabaseWithMethodsInternal).ref.call(db, path, MODULAR_DEPRECATION_ARG);
 }
 
-export function refFromURL(db: Database, url: string) {
+export function refFromURL(db: Database, url: string): DatabaseReference {
   return (db as DatabaseWithMethodsInternal).refFromURL.call(db, url, MODULAR_DEPRECATION_ARG);
 }
 

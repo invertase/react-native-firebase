@@ -27,7 +27,7 @@ import type {
   ThenableReference,
   Unsubscribe,
 } from '../types/database';
-import { QueryConstraint as PublicQueryConstraint } from '../types/database';
+import { QueryConstraint } from '../types/database';
 import type {
   DatabaseReferenceWithMethodsInternal,
   QueryConstraintWithApplyInternal,
@@ -35,7 +35,7 @@ import type {
   QueryWithSubscriptionMethodsInternal,
 } from '../types/internal';
 
-class DatabaseQueryConstraint extends PublicQueryConstraint {
+class DatabaseQueryConstraint extends QueryConstraint {
   readonly type: QueryConstraintType;
   private readonly args: unknown[];
 
@@ -57,66 +57,51 @@ type SnapshotCallbackInternal =
   | ((snapshot: DataSnapshot) => unknown)
   | ((snapshot: DataSnapshot, previousChildName: string | null) => unknown);
 
-export function endAt(
-  value: number | string | boolean | null,
-  key?: string,
-): PublicQueryConstraint {
+export function endAt(value: number | string | boolean | null, key?: string): QueryConstraint {
   return new DatabaseQueryConstraint('endAt', value, key);
 }
 
-export function endBefore(
-  value: number | string | boolean | null,
-  key?: string,
-): PublicQueryConstraint {
+export function endBefore(value: number | string | boolean | null, key?: string): QueryConstraint {
   return new DatabaseQueryConstraint('endBefore', value, key);
 }
 
-export function startAt(
-  value?: number | string | boolean | null,
-  key?: string,
-): PublicQueryConstraint {
+export function startAt(value?: number | string | boolean | null, key?: string): QueryConstraint {
   return new DatabaseQueryConstraint('startAt', value, key);
 }
 
-export function startAfter(
-  value: number | string | boolean | null,
-  key?: string,
-): PublicQueryConstraint {
+export function startAfter(value: number | string | boolean | null, key?: string): QueryConstraint {
   return new DatabaseQueryConstraint('startAfter', value, key);
 }
 
-export function limitToFirst(limit: number): PublicQueryConstraint {
+export function limitToFirst(limit: number): QueryConstraint {
   return new DatabaseQueryConstraint('limitToFirst', limit);
 }
 
-export function limitToLast(limit: number): PublicQueryConstraint {
+export function limitToLast(limit: number): QueryConstraint {
   return new DatabaseQueryConstraint('limitToLast', limit);
 }
 
-export function orderByChild(path: string): PublicQueryConstraint {
+export function orderByChild(path: string): QueryConstraint {
   return new DatabaseQueryConstraint('orderByChild', path);
 }
 
-export function orderByKey(): PublicQueryConstraint {
+export function orderByKey(): QueryConstraint {
   return new DatabaseQueryConstraint('orderByKey');
 }
 
-export function orderByPriority(): PublicQueryConstraint {
+export function orderByPriority(): QueryConstraint {
   return new DatabaseQueryConstraint('orderByPriority');
 }
 
-export function orderByValue(): PublicQueryConstraint {
+export function orderByValue(): QueryConstraint {
   return new DatabaseQueryConstraint('orderByValue');
 }
 
-export function equalTo(
-  value: number | string | boolean | null,
-  key?: string,
-): PublicQueryConstraint {
+export function equalTo(value: number | string | boolean | null, key?: string): QueryConstraint {
   return new DatabaseQueryConstraint('equalTo', value, key);
 }
 
-export function query(queryRef: Query, ...queryConstraints: PublicQueryConstraint[]): Query {
+export function query(queryRef: Query, ...queryConstraints: QueryConstraint[]): Query {
   let nextQuery = queryRef;
   for (const queryConstraint of queryConstraints as QueryConstraintWithApplyInternal[]) {
     nextQuery = queryConstraint._apply(nextQuery);
@@ -204,7 +189,7 @@ export function onValue(
 
 export function onChildAdded(
   queryRef: Query,
-  callback: (snapshot: DataSnapshot, previousChildName: string | null) => unknown,
+  callback: (snapshot: DataSnapshot, previousChildName?: string | null) => unknown,
   cancelCallback?: (error: Error) => unknown,
 ): Unsubscribe;
 export function onChildAdded(
