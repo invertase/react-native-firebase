@@ -377,7 +377,9 @@ const databaseFallbackModule: Record<string, unknown> = {
       } else if (eventType === 'child_removed') {
         listener = onChildRemoved(
           queryRef,
-          snapshot => sendEvent(snapshotToObject(snapshot)),
+          snapshot => {
+            sendEvent(snapshotWithPreviousChildToObject(snapshot, null));
+          },
           sendError,
         );
       } else if (eventType === 'child_moved') {
