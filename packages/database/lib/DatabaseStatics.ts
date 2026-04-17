@@ -15,11 +15,7 @@
  *
  */
 
-import type { ServerValueStaticInternal } from './types/internal';
-
-const DatabaseStatics: {
-  ServerValue: ServerValueStaticInternal;
-} = {
+const DatabaseStatics = {
   ServerValue: {
     TIMESTAMP: {
       '.sv': 'timestamp',

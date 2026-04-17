@@ -20,7 +20,11 @@ import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import DatabaseStatics from './DatabaseStatics';
 import type { Database, DatabaseReference, EmulatorMockTokenOptions } from './types/database';
-import type { AppWithDatabaseInternal, DatabaseWithMethodsInternal } from './types/internal';
+import type {
+  AppWithDatabaseInternal,
+  DatabaseWithMethodsInternal,
+  ServerValueStaticInternal,
+} from './types/internal';
 
 const { ServerValue } = DatabaseStatics;
 
@@ -110,7 +114,11 @@ export function getServerTime(db: Database): Date {
 }
 
 export function increment(delta: number): object {
-  return ServerValue.increment.call(ServerValue, delta, MODULAR_DEPRECATION_ARG);
+  return (ServerValue as ServerValueStaticInternal).increment.call(
+    ServerValue,
+    delta,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 export function enableLogging(enabled: boolean, persistent?: boolean): any;
