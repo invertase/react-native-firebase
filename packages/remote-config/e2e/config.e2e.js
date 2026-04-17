@@ -97,7 +97,7 @@ describe('remoteConfig()', function () {
         const ensure = await firebase.remoteConfig().ensureInitialized();
         const number = firebase.remoteConfig().getValue('number');
 
-        should(ensure).equal(null);
+        should(ensure).equal(undefined);
         number.getSource().should.equal('remote');
         number.asNumber().should.equal(1337);
       });
@@ -386,7 +386,7 @@ describe('remoteConfig()', function () {
 
         await fetchConfig(remoteConfig);
         remoteConfig.lastFetchStatus.should.equal('success');
-        should.equal(getRemoteConfig().fetchTimeMillis >= date, true);
+        should.equal(remoteConfig.fetchTimeMillis >= date, true);
       });
     });
 
@@ -436,7 +436,7 @@ describe('remoteConfig()', function () {
         const { getRemoteConfig, ensureInitialized, getValue } = remoteConfigModular;
         const ensure = await ensureInitialized(getRemoteConfig());
         const number = getValue(getRemoteConfig(), 'number');
-        should(ensure).equal(null);
+        should(ensure).equal(undefined);
         number.getSource().should.equal('remote');
         number.asNumber().should.equal(1337);
       });
@@ -933,7 +933,7 @@ describe('remoteConfig()', function () {
           null: null,
         };
 
-        should(await setCustomSignals(getRemoteConfig(), signals)).equal(null);
+        should(await setCustomSignals(getRemoteConfig(), signals)).equal(undefined);
       });
 
       it('should reject with invalid signal value', async function () {

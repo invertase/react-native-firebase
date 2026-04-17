@@ -225,7 +225,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
 
   /**
    * Deletes all activated, fetched and defaults configs and resets all Firebase Remote Config settings.
-   * @returns {Promise<null>}
+   * @returns {Promise<void>}
    */
   reset(): Promise<void> {
     if (isIOS) {

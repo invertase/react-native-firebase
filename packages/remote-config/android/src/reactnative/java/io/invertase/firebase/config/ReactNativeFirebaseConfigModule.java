@@ -80,7 +80,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
-                promise.resolve(resultWithConstants(task.getResult()));
+                promise.resolve(resultWithVoidConstants());
               } else {
                 rejectPromiseWithConfigException(promise, task.getException());
               }
@@ -108,7 +108,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
-                promise.resolve(resultWithConstants(task.getResult()));
+                promise.resolve(resultWithVoidConstants());
               } else {
                 rejectPromiseWithConfigException(promise, task.getException());
               }
@@ -122,7 +122,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
-                promise.resolve(resultWithConstants(task.getResult()));
+                promise.resolve(resultWithVoidConstants());
               } else {
                 rejectPromiseWithExceptionMap(promise, task.getException());
               }
@@ -169,7 +169,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
-                promise.resolve(resultWithConstants(null));
+                promise.resolve(resultWithVoidConstants());
               } else {
                 rejectPromiseWithExceptionMap(promise, task.getException());
               }
@@ -262,7 +262,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
-                promise.resolve(resultWithConstants(task.getResult()));
+                promise.resolve(resultWithVoidConstants());
               } else {
                 rejectPromiseWithExceptionMap(promise, task.getException());
               }
@@ -272,6 +272,12 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   private WritableMap resultWithConstants(Object result) {
     Map<String, Object> responseMap = new HashMap<>(2);
     responseMap.put("result", result);
+    responseMap.put("constants", module.getConstantsForApp(FirebaseApp.DEFAULT_APP_NAME));
+    return Arguments.makeNativeMap(responseMap);
+  }
+
+  private WritableMap resultWithVoidConstants() {
+    Map<String, Object> responseMap = new HashMap<>(1);
     responseMap.put("constants", module.getConstantsForApp(FirebaseApp.DEFAULT_APP_NAME));
     return Arguments.makeNativeMap(responseMap);
   }
