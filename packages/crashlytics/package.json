@@ -76,5 +76,8 @@
         }
       ]
     ]
+  },
+  "expo": {
+    "plugin": "./app.plugin.js"
   }
 }
