@@ -113,7 +113,7 @@ export default class DatabaseDataSnapshot implements FirebaseDatabaseTypes.DataS
     };
   }
 
-  forEach(action: (child: FirebaseDatabaseTypes.DataSnapshot) => true | undefined): boolean {
+  forEach(action: (child: FirebaseDatabaseTypes.DataSnapshot) => boolean | void): boolean {
     if (!isFunction(action)) {
       throw new Error("snapshot.forEach(*) 'action' must be a function.");
     }
@@ -121,7 +121,7 @@ export default class DatabaseDataSnapshot implements FirebaseDatabaseTypes.DataS
     const iterate = action as (
       child: FirebaseDatabaseTypes.DataSnapshot,
       index?: number,
-    ) => true | undefined;
+    ) => boolean | void;
 
     if (isArray(this._snapshot.value)) {
       return this._snapshot.value.some(

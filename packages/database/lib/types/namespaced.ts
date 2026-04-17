@@ -1063,7 +1063,7 @@ export namespace FirebaseDatabaseTypes {
      *
      * @param action A function that will be called for each child DataSnapshot. The callback can return true to cancel further enumeration.
      */
-    forEach(action: (child: DataSnapshot) => true | undefined): boolean;
+    forEach(action: (child: DataSnapshot) => boolean | void): boolean;
 
     /**
      * Gets the priority value of the data in this DataSnapshot.
