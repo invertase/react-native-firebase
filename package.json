@@ -24,7 +24,7 @@
     "lint:all": "yarn lint && yarn lint:markdown && yarn lint:spellcheck && yarn tsc:compile",
     "test:full": "bash ./scripts/run-full-tests.sh",
     "reference:api": "typedoc",
-    "reference:api:gh-pages": "typedoc --out apidocs-out --hostedBaseUrl https://invertase.github.io/react-native-firebase/ --useHostedBaseUrlForAbsoluteLinks",
+    "reference:api:gh-pages": "typedoc --out apidocs-out --hostedBaseUrl https://reference.rnfirebase.io/ --useHostedBaseUrlForAbsoluteLinks",
     "tests:ai:mocks": "yarn ts-node ./scripts/fetch_ai_mock_responses.ts && yarn ts-node ./packages/ai/__tests__/test-utils/convert-mocks.ts",
     "tests:jest": "jest",
     "tests:jest-watch": "jest --watch",
