@@ -1,5 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["lib/modular.ts", "lib/types/database.ts"],
-  "tsconfig": "tsconfig.json"
+  "tsconfig": "tsconfig.json",
+  "intentionallyNotExported": ["FirebaseIdToken", "ServerValueStaticInternal"]
 }
