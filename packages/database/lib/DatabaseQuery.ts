@@ -215,9 +215,10 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
     context?: Record<string, any>,
   ): void {
     if (arguments.length === 0) {
-      return DatabaseSyncTree.removeListenersForRegistrations(
+      DatabaseSyncTree.removeListenersForRegistrations(
         DatabaseSyncTree.getRegistrationsByPath(this.path),
-      ) as never;
+      );
+      return;
     }
 
     if (!isUndefined(eventType) && !eventTypes.includes(eventType)) {
@@ -241,11 +242,12 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
         callback,
       );
       if (!registration) {
-        return [] as never;
+        return;
       }
 
       DatabaseSyncTree.removeListenersForRegistrations([`${registration}$cancelled`]);
-      return DatabaseSyncTree.removeListenerRegistrations(callback, [registration]) as never;
+      DatabaseSyncTree.removeListenerRegistrations(callback, [registration]);
+      return;
     }
 
     const registrations = DatabaseSyncTree.getRegistrationsByPathEvent(this.path, eventType);
@@ -254,7 +256,8 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
       DatabaseSyncTree.getRegistrationsByPathEvent(this.path, `${eventType}$cancelled`),
     );
 
-    return DatabaseSyncTree.removeListenersForRegistrations(registrations) as never;
+    DatabaseSyncTree.removeListenersForRegistrations(registrations);
+    return;
   }
 
   on(
