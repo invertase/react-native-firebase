@@ -8,7 +8,7 @@
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
-    "compile": "bob build && node ./scripts/copy-dts-support.js",
+    "compile": "bob build",
     "prepare": "yarn run build && yarn compile"
   },
   "repository": {
