@@ -53,9 +53,9 @@ export default class DatabaseThenableReference implements Pick<
     this._promise = promise;
 
     return new Proxy(this, {
-      get(target, prop, receiver) {
+      get(target, prop) {
         if (prop === 'then' || prop === 'catch') {
-          return Reflect.get(target, prop, receiver);
+          return Reflect.get(target, prop, target);
         }
 
         return Reflect.get(target._ref as object, prop);
