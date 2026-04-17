@@ -46,7 +46,6 @@ import database, {
   push,
   remove,
   update,
-  ServerValue,
 } from '../lib';
 
 import {
@@ -294,12 +293,10 @@ describe('Database', function () {
 
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
     let databaseV9Deprecation: CheckV9DeprecationFunction;
-    let staticsV9Deprecation: CheckV9DeprecationFunction;
     let referenceV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
       databaseV9Deprecation = createCheckV9Deprecation(['database']);
-      staticsV9Deprecation = createCheckV9Deprecation(['database', 'statics']);
       referenceV9Deprecation = createCheckV9Deprecation(['database', 'DatabaseReference']);
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockReturnValue({
@@ -444,16 +441,6 @@ describe('Database', function () {
         () => db.getServerTime(),
         'getServerTime',
       );
-    });
-
-    describe('statics', function () {
-      it('ServerValue', function () {
-        staticsV9Deprecation(
-          () => ServerValue,
-          () => firebase.database.ServerValue,
-          'ServerValue',
-        );
-      });
     });
 
     describe('DatabaseReference', function () {

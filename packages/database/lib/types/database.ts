@@ -62,11 +62,6 @@ export declare class Database {
   readonly type: 'database';
 }
 
-export interface ServerValue {
-  TIMESTAMP: object;
-  increment(delta: number): object;
-}
-
 export declare class TransactionResult {
   readonly committed: boolean;
   readonly snapshot: DataSnapshot;

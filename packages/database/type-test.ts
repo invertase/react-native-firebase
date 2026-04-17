@@ -13,7 +13,6 @@ import database, {
   serverTimestamp,
   getServerTime,
   increment,
-  ServerValue,
   type Database as ModularDatabase,
   type DatabaseReference as ModularDatabaseReference,
   type DataSnapshot as ModularDataSnapshot,
@@ -176,9 +175,6 @@ console.log(modularServerTime);
 
 const incrementValue = increment(1);
 console.log(incrementValue);
-
-console.log(ServerValue.TIMESTAMP);
-console.log(ServerValue.increment(1));
 
 // checks modular query functions
 const testRef: ModularDatabaseReference = ref(dbModular1, 'users');

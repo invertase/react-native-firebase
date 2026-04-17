@@ -113,8 +113,6 @@ export function increment(delta: number): object {
   return ServerValue.increment.call(ServerValue, delta, MODULAR_DEPRECATION_ARG);
 }
 
-export { ServerValue };
-
 export function enableLogging(enabled: boolean, persistent?: boolean): any;
 export function enableLogging(logger: (message: string) => unknown): any;
 export function enableLogging(

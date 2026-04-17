@@ -27,7 +27,6 @@ import type {
   Query,
   QueryConstraint,
   QueryConstraintType,
-  ServerValue,
   ThenableReference,
   TransactionResult,
 } from './database';
@@ -312,6 +311,7 @@ export interface DatabaseReferenceWithTransactionInternal extends DatabaseRefere
 }
 
 /** Runtime ServerValue object shape used by modular wrappers. */
-export interface ServerValueStaticInternal extends ServerValue {
+export interface ServerValueStaticInternal {
+  TIMESTAMP: object;
   increment(delta: number, deprecationArg?: DatabaseModularDeprecationArg): object;
 }

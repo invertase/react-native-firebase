@@ -5,13 +5,6 @@ const config: PackageConfig = {
   missingInRN: [],
   extraInRN: [
     {
-      name: 'ServerValue',
-      reason:
-        'Legacy static helper retained for backwards compatibility with the ' +
-        'namespaced API. The firebase-js-sdk modular surface exposes only ' +
-        '`serverTimestamp()` and `increment()` instead.',
-    },
-    {
       name: 'setPersistenceEnabled',
       reason:
         'RN Firebase-specific helper for configuring native database ' +

@@ -15,31 +15,11 @@
  *
  */
 
-// Export modular API functions
+// Export modular API
 export * from './modular';
-export { ServerValue } from './modular';
-
-// Export modular/public type helpers
-export type {
-  Database,
-  EmulatorMockTokenOptions,
-  TransactionResult,
-  DatabaseReference,
-  ThenableReference,
-  Query,
-  OnDisconnect,
-  EventType,
-  DataSnapshot,
-  IteratedDataSnapshot,
-  Unsubscribe,
-  ListenOptions,
-  QueryConstraintType,
-  QueryConstraint,
-  TransactionOptions,
-} from './types/database';
+export type * from './types/database';
 
 // Export namespaced API
 export type { FirebaseDatabaseTypes } from './types/namespaced';
-
 export * from './namespaced';
 export { default } from './namespaced';
