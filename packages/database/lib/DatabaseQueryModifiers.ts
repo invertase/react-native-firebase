@@ -234,7 +234,11 @@ export default class DatabaseQueryModifiers {
     const sorted = [...this._modifiers].sort((a, b) => a.id.localeCompare(b.id));
     let key = '{';
 
-    for (const [index, modifier] of sorted.entries()) {
+    for (let index = 0; index < sorted.length; index++) {
+      const modifier = sorted[index];
+      if (!modifier) {
+        continue;
+      }
       if (index !== 0) {
         key += ',';
       }

@@ -140,7 +140,7 @@ export type QueryConstraintType =
   | 'orderByValue'
   | 'equalTo';
 
-export declare abstract class QueryConstraint {
+export abstract class QueryConstraint {
   abstract readonly type: QueryConstraintType;
 }
 
