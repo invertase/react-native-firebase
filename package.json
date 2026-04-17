@@ -17,7 +17,7 @@
     "lint:android": "(find packages/*/android/src -name '*.java' -not -path '*/generated/*' -print0 | xargs -0 google-java-format --set-exit-if-changed --replace || (echo \"\n\nandroid formatting error - please re-run\n\n\" && exit 1)) && (git diff --exit-code packages/*/android/src || (echo \"\n\nandroid files changed from linting, please examine and commit result\n\n\" && exit 1))",
     "lint:ios:check": "find packages/*/ios -type f \\( -name '*.h' -o -name '*.cpp' -o -name '*.m' -o -name '*.mm' \\) -not -path '*/generated/*' -print0 | xargs -0 clang-format --style=Google -n -Werror",
     "lint:ios:fix": "find packages/*/ios -type f \\( -name '*.h' -o -name '*.cpp' -o -name '*.m' -o -name '*.mm' \\) -not -path '*/generated/*' -print0 | xargs -0 clang-format -i --style=Google",
-    "lint:markdown": "prettier --check \"docs/**/*.md\"",
+    "lint:markdown": "prettier --check \"docs/**/*.md[x]\"",
     "lint:report": "eslint --output-file=eslint-report.json --format=json . --ext .js,.jsx,.ts,.tsx",
     "lint:spellcheck": "spellchecker --quiet --files=\"docs/**/*.md\" --dictionaries=\"./.spellcheck.dict.txt\" --reports=\"spelling.json\" --plugins spell indefinite-article repeated-words syntax-mentions syntax-urls frontmatter",
     "tsc:compile": "tsc --project .",
@@ -65,7 +65,7 @@
     "tests:macos:test": "cd tests && npx jet --target=macos --coverage",
     "tests:macos:test-cover": "cd tests && npx jet --target=macos --coverage",
     "format:js": "prettier --write \"packages/**/*.{js,ts,tsx}\"",
-    "format:markdown": "prettier --write \"docs/**/*.md\""
+    "format:markdown": "prettier --write \"docs/**/*.md[x]\""
   },
   "devDependencies": {
     "@babel/core": "^7.28.6",
