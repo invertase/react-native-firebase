@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { reload } from './modular';
 /**
  * Return a MultiFactorUser instance the gateway to multi-factor operations.

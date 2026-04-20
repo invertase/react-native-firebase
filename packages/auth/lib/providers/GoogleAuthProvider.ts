@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,22 +16,22 @@
  *
  */
 
-const providerId = 'oidc.';
+const providerId = 'google.com';
 
-export default class OIDCAuthProvider {
+export default class GoogleAuthProvider {
   constructor() {
-    throw new Error('`new OIDCAuthProvider()` is not supported on the native Firebase SDKs.');
+    throw new Error('`new GoogleAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
   static get PROVIDER_ID() {
     return providerId;
   }
 
-  static credential(oidcSuffix, idToken, accessToken) {
+  static credential(token, secret) {
     return {
-      token: idToken,
-      secret: accessToken,
-      providerId: providerId + oidcSuffix,
+      token,
+      secret,
+      providerId,
     };
   }
 }

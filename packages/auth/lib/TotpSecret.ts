@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -60,7 +61,7 @@ export class TotpSecret {
    * @param qrCodeUrl the URL to open in the app, from generateQrCodeUrl
    */
   openInOtpApp(qrCodeUrl) {
-    if (isString(qrCodeUrl) && !qrCodeUrl !== '') {
+    if (isString(qrCodeUrl) && qrCodeUrl !== '') {
       return this.auth.native.openInOtpApp(this.secretKey, qrCodeUrl);
     }
   }

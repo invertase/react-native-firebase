@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { isOther } from '@react-native-firebase/app/dist/module/common';
 import MultiFactorResolver from './MultiFactorResolver.js';
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -63,7 +64,7 @@ export class PasswordPolicyImpl {
     this.schemaVersion = response.schemaVersion;
   }
 
-  validatePassword(password) {
+  validatePassword(password): any {
     const status = {
       isValid: true,
       passwordPolicy: this,

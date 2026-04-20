@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,22 +16,19 @@
  *
  */
 
-const providerId = 'facebook.com';
-
-export default class FacebookAuthProvider {
-  constructor() {
-    throw new Error('`new FacebookAuthProvider()` is not supported on the native Firebase SDKs.');
+export default class ConfirmationResult {
+  constructor(auth, verificationId) {
+    this._auth = auth;
+    this._verificationId = verificationId;
   }
 
-  static get PROVIDER_ID() {
-    return providerId;
+  confirm(verificationCode) {
+    return this._auth.native
+      .confirmationResultConfirm(verificationCode)
+      .then(userCredential => this._auth._setUserCredential(userCredential));
   }
 
-  static credential(token, secret = '') {
-    return {
-      token,
-      secret,
-      providerId,
-    };
+  get verificationId() {
+    return this._verificationId;
   }
 }

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,39 +16,22 @@
  *
  */
 
-const linkProviderId = 'emailLink';
-const passwordProviderId = 'password';
+const providerId = 'apple.com';
 
-export default class EmailAuthProvider {
+export default class AppleAuthProvider {
   constructor() {
-    throw new Error('`new EmailAuthProvider()` is not supported on the native Firebase SDKs.');
-  }
-
-  static get EMAIL_LINK_SIGN_IN_METHOD() {
-    return linkProviderId;
-  }
-
-  static get EMAIL_PASSWORD_SIGN_IN_METHOD() {
-    return passwordProviderId;
+    throw new Error('`new AppleAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
   static get PROVIDER_ID() {
-    return passwordProviderId;
+    return providerId;
   }
 
-  static credential(email, password) {
+  static credential(token, secret) {
     return {
-      token: email,
-      secret: password,
-      providerId: passwordProviderId,
-    };
-  }
-
-  static credentialWithLink(email, emailLink) {
-    return {
-      token: email,
-      secret: emailLink,
-      providerId: linkProviderId,
+      token,
+      secret,
+      providerId,
     };
   }
 }

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,19 +16,22 @@
  *
  */
 
-export default class PhoneMultiFactorGenerator {
-  static FACTOR_ID = 'phone';
+const providerId = 'twitter.com';
 
+export default class TwitterAuthProvider {
   constructor() {
-    throw new Error(
-      '`new PhoneMultiFactorGenerator()` is not supported on the native Firebase SDKs.',
-    );
+    throw new Error('`new TwitterAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static assertion(credential) {
-    // There is no logic here, we mainly do this for API compatibility
-    // (following the Web API).
-    const { token, secret } = credential;
-    return { token, secret };
+  static get PROVIDER_ID() {
+    return providerId;
+  }
+
+  static credential(token, secret) {
+    return {
+      token,
+      secret,
+      providerId,
+    };
   }
 }

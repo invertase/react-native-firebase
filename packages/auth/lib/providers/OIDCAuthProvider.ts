@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,22 +16,22 @@
  *
  */
 
-const providerId = 'twitter.com';
+const providerId = 'oidc.';
 
-export default class TwitterAuthProvider {
+export default class OIDCAuthProvider {
   constructor() {
-    throw new Error('`new TwitterAuthProvider()` is not supported on the native Firebase SDKs.');
+    throw new Error('`new OIDCAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
   static get PROVIDER_ID() {
     return providerId;
   }
 
-  static credential(token, secret) {
+  static credential(oidcSuffix, idToken, accessToken) {
     return {
-      token,
-      secret,
-      providerId,
+      token: idToken,
+      secret: accessToken,
+      providerId: providerId + oidcSuffix,
     };
   }
 }

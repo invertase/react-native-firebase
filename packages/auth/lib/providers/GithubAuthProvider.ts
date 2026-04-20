@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,21 +16,21 @@
  *
  */
 
-const providerId = 'apple.com';
+const providerId = 'github.com';
 
-export default class AppleAuthProvider {
+export default class GithubAuthProvider {
   constructor() {
-    throw new Error('`new AppleAuthProvider()` is not supported on the native Firebase SDKs.');
+    throw new Error('`new GithubAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
   static get PROVIDER_ID() {
     return providerId;
   }
 
-  static credential(token, secret) {
+  static credential(token) {
     return {
       token,
-      secret,
+      secret: '',
       providerId,
     };
   }

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,22 +16,19 @@
  *
  */
 
-const providerId = 'google.com';
+export default class PhoneMultiFactorGenerator {
+  static FACTOR_ID = 'phone';
 
-export default class GoogleAuthProvider {
   constructor() {
-    throw new Error('`new GoogleAuthProvider()` is not supported on the native Firebase SDKs.');
+    throw new Error(
+      '`new PhoneMultiFactorGenerator()` is not supported on the native Firebase SDKs.',
+    );
   }
 
-  static get PROVIDER_ID() {
-    return providerId;
-  }
-
-  static credential(token, secret) {
-    return {
-      token,
-      secret,
-      providerId,
-    };
+  static assertion(credential) {
+    // There is no logic here, we mainly do this for API compatibility
+    // (following the Web API).
+    const { token, secret } = credential;
+    return { token, secret };
   }
 }

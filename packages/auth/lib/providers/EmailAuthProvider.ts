@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,22 +16,39 @@
  *
  */
 
-const providerId = 'github.com';
+const linkProviderId = 'emailLink';
+const passwordProviderId = 'password';
 
-export default class GithubAuthProvider {
+export default class EmailAuthProvider {
   constructor() {
-    throw new Error('`new GithubAuthProvider()` is not supported on the native Firebase SDKs.');
+    throw new Error('`new EmailAuthProvider()` is not supported on the native Firebase SDKs.');
+  }
+
+  static get EMAIL_LINK_SIGN_IN_METHOD() {
+    return linkProviderId;
+  }
+
+  static get EMAIL_PASSWORD_SIGN_IN_METHOD() {
+    return passwordProviderId;
   }
 
   static get PROVIDER_ID() {
-    return providerId;
+    return passwordProviderId;
   }
 
-  static credential(token) {
+  static credential(email, password) {
     return {
-      token,
-      secret: '',
-      providerId,
+      token: email,
+      secret: password,
+      providerId: passwordProviderId,
+    };
+  }
+
+  static credentialWithLink(email, emailLink) {
+    return {
+      token: email,
+      secret: emailLink,
+      providerId: linkProviderId,
     };
   }
 }

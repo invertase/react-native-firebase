@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Base class to facilitate multi-factor authentication.
  */

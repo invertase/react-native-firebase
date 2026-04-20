@@ -6210,6 +6210,7 @@ __metadata:
     "@types/plist": "npm:^3.0.5"
     expo: "npm:^55.0.5"
     plist: "npm:^3.1.0"
+    react-native-builder-bob: "npm:^0.40.13"
   peerDependencies:
     "@react-native-firebase/app": 24.0.0
     expo: ">=47.0.0"
