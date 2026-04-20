@@ -1,87 +1,28 @@
-import tsParser from '@typescript-eslint/parser';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
-import mochaPlugin from 'eslint-plugin-mocha';
+import eslintJs from '@eslint/js';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-});
+import eslintTypescriptParser from '@typescript-eslint/parser';
 
-export default [
-  mochaPlugin.configs.recommended,
+import eslintPluginJest from 'eslint-plugin-jest';
+import eslintPluginMocha from 'eslint-plugin-mocha';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import eslintPluginReact from 'eslint-plugin-react';
+import eslintPluginTypescript from 'typescript-eslint';
+
+export default defineConfig([
+  globalIgnores([
+    '**/node_modules/',
+    'packages/**/dist/',
+    '**/type-test.ts',
+    'packages/ai/__tests__/test-utils',
+  ]),
+
   {
-    ignores: [
-      'src/version.js',
-      'packages/**/node_modules/**/*',
-      'packages/**/plugin/build/**/*',
-      '**/node_modules',
-      '**/scripts/',
-      '**/coverage',
-      '**/docs',
-      'packages/template/project/**/*',
-      '**/app.playground.js',
-      '**/type-test.ts',
-      'packages/**/modular/dist/**/*',
-      'packages/**/dist/**/*',
-      'src/version.js',
-      'packages/**/node_modules/**/*',
-      'packages/**/plugin/build/**/*',
-      '**/node_modules',
-      '**/scripts/',
-      '**/coverage',
-      '**/docs',
-      'packages/template/project/**/*',
-      '**/app.playground.js',
-      '**/type-test.ts',
-      'packages/**/modular/dist/**/*',
-      'packages/ai/__tests__/test-utils',
-      'packages/**/dist/**/*',
-      'packages/vertexai/__tests__/test-utils',
-    ],
-  },
-  ...compat
-    .extends(
-      'plugin:react/recommended',
-      'plugin:@typescript-eslint/recommended',
-      'prettier',
-      'plugin:prettier/recommended',
-    )
-    .map(config => ({
-      ...config,
-      files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
-    })),
-  {
-    files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
-
-    languageOptions: {
-      globals: {
-        __DEV__: true,
-        __RNFB__: true,
-        firebase: true,
-        should: true,
-        Utils: true,
-        window: true,
-      },
-
-      parser: tsParser,
-      ecmaVersion: 2018,
-      sourceType: 'module',
-    },
-
-    settings: {
-      react: {
-        version: '17.0.20',
-      },
-    },
-
+    name: 'JavaScript',
+    ...eslintJs.configs.recommended,
+    ...eslintJs.configs.all,
     rules: {
-      'jest/no-identical-title': 0,
+      'prefer-const': ['error', { destructuring: 'all' }],
       'eslint-comments/no-unlimited-disable': 0,
       'no-new': 0,
       'no-continue': 0,
@@ -97,6 +38,41 @@ export default [
       'no-underscore-dangle': 'off',
       'no-use-before-define': 0,
       'import/no-unresolved': 0,
+      'no-unused-vars': 'off',
+    },
+  },
+  {
+    name: 'Jest',
+    ...eslintPluginJest.configs['flat/recommended'],
+    rules: {
+      'jest/expect-expect': 0,
+      'jest/no-disabled-tests': 0,
+      'jest/no-test-prefixes': 0,
+    },
+  },
+  {
+    name: 'Mocha',
+    ...eslintPluginMocha.configs.recommended,
+    rules: {
+      'mocha/no-pending-tests': 'off',
+      'mocha/no-top-level-hooks': 'off',
+      'mocha/no-hooks-for-single-case': 'off',
+      'mocha/no-setup-in-describe': 'off',
+    },
+  },
+  {
+    name: 'Prettier',
+    ...eslintPluginPrettierRecommended.recommended,
+  },
+  {
+    name: 'React',
+    ...eslintPluginReact.configs.flat.recommended,
+    ...eslintPluginReact.configs.flat['jsx-runtime'],
+  },
+  {
+    name: 'Typescript',
+    extends: [eslintPluginTypescript.configs.recommended],
+    rules: {
       'prefer-const': 0,
       'prefer-rest-params': 0,
       '@typescript-eslint/ban-ts-comment': 'off',
@@ -104,7 +80,6 @@ export default [
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-require-imports': 'off',
       '@typescript-eslint/no-unused-expressions': 'off',
-      'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -123,10 +98,7 @@ export default [
       '@typescript-eslint/camelcase': 'off',
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/ban-ts-ignore': 'off',
-      'mocha/no-pending-tests': 'off',
-      'mocha/no-top-level-hooks': 'off',
-      'mocha/no-hooks-for-single-case': 'off',
-      'mocha/no-setup-in-describe': 'off',
+
       // Allow `{}` in type positions and empty interfaces (e.g. T extends {}, placeholder pipeline types), matches firebase-js-sdk.
       '@typescript-eslint/no-empty-object-type': [
         'error',
@@ -134,4 +106,26 @@ export default [
       ],
     },
   },
-];
+  {
+    files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      globals: {
+        __DEV__: true,
+        __RNFB__: true,
+        firebase: true,
+        should: true,
+        Utils: true,
+        window: true,
+      },
+
+      parser: eslintTypescriptParser,
+      ecmaVersion: 2018,
+      sourceType: 'module',
+    },
+    settings: {
+      react: {
+        version: '17.0.20',
+      },
+    },
+  },
+]);
