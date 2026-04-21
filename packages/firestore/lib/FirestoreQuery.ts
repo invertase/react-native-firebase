@@ -44,22 +44,25 @@ import type {
 
 let _id = 0;
 
-export default class Query {
+export default class Query<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> {
   _firestore: FirestoreInternal;
   _collectionPath: FirestorePath;
   _modifiers: QueryModifiers;
   _queryName: string | undefined;
-  _converter: FirestoreDataConverter<DocumentData, DocumentData> | null;
+  _converter: FirestoreDataConverter<AppModelType, DbModelType> | null;
 
   /** Satisfies Query<DocumentData, DocumentData> for AggregateQuerySnapshot and similar. */
-  readonly type = 'query' as const;
+  readonly type: 'query' | 'collection' = 'query';
 
   constructor(
     firestore: FirestoreInternal,
     collectionPath: FirestorePath,
     modifiers: QueryModifiers,
     queryName?: string,
-    converter?: FirestoreDataConverter<DocumentData, DocumentData> | null,
+    converter?: FirestoreDataConverter<AppModelType, DbModelType> | null,
   ) {
     this._firestore = firestore;
     this._collectionPath = collectionPath;
@@ -72,13 +75,13 @@ export default class Query {
     return this._firestore;
   }
 
-  get converter(): FirestoreDataConverter<DocumentData, DocumentData> | null {
+  get converter(): FirestoreDataConverter<AppModelType, DbModelType> | null {
     return this._converter;
   }
 
   _handleQueryCursor(
     cursor: 'startAt' | 'startAfter' | 'endAt' | 'endBefore',
-    docOrField: DocumentSnapshot | DocumentFieldValueInternal,
+    docOrField: DocumentSnapshot<AppModelType, DbModelType> | DocumentFieldValueInternal,
     fields: DocumentFieldValueInternal[],
   ): QueryModifiers {
     const modifiers = this._modifiers._copy();
@@ -172,7 +175,12 @@ export default class Query {
 
   count(): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
-      new AggregateQuery(this._firestore, this, this._collectionPath, this._modifiers),
+      new AggregateQuery(
+        this._firestore,
+        this as unknown as Query<DocumentData, DocumentData>,
+        this._collectionPath,
+        this._modifiers,
+      ),
     );
   }
 
@@ -188,7 +196,11 @@ export default class Query {
       new Query(
         this._firestore,
         this._collectionPath,
-        this._handleQueryCursor('endAt', docOrField, filterModularArgument(fields)),
+        this._handleQueryCursor(
+          'endAt',
+          docOrField as DocumentSnapshot<AppModelType, DbModelType> | DocumentFieldValueInternal,
+          filterModularArgument(fields),
+        ),
         this._queryName,
         this._converter,
       ),
@@ -203,14 +215,20 @@ export default class Query {
       new Query(
         this._firestore,
         this._collectionPath,
-        this._handleQueryCursor('endBefore', docOrField, filterModularArgument(fields)),
+        this._handleQueryCursor(
+          'endBefore',
+          docOrField as DocumentSnapshot<AppModelType, DbModelType> | DocumentFieldValueInternal,
+          filterModularArgument(fields),
+        ),
         this._queryName,
         this._converter,
       ),
     );
   }
 
-  get(options?: { source?: 'default' | 'server' | 'cache' }): Promise<QuerySnapshot> {
+  get(options?: {
+    source?: 'default' | 'server' | 'cache';
+  }): Promise<QuerySnapshot<AppModelType, DbModelType>> {
     if (!isUndefined(options) && !isObject(options)) {
       throw new Error(
         "firebase.firestore().collection().get(*) 'options' must be an object is provided.",
@@ -272,7 +290,7 @@ export default class Query {
       );
   }
 
-  isEqual(other: Query): boolean {
+  isEqual(other: Query<AppModelType, DbModelType>): boolean {
     if (!(other instanceof Query)) {
       throw new Error(
         "firebase.firestore().collection().isEqual(*) 'other' expected a Query instance.",
@@ -332,8 +350,11 @@ export default class Query {
 
   onSnapshot(...args: unknown[]): () => void {
     let snapshotListenOptions: { includeMetadataChanges?: boolean };
-    let callback: (snapshot: QuerySnapshot | null, error: Error | null) => void;
-    let onNext: (snapshot: QuerySnapshot) => void;
+    let callback: (
+      snapshot: QuerySnapshot<AppModelType, DbModelType> | null,
+      error: Error | null,
+    ) => void;
+    let onNext: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void;
     let onError: (error: Error) => void;
 
     this._modifiers.validatelimitToLast();
@@ -348,7 +369,7 @@ export default class Query {
       throw new Error(`firebase.firestore().collection().onSnapshot(*) ${(e as Error).message}`);
     }
 
-    function handleSuccess(querySnapshot: QuerySnapshot): void {
+    function handleSuccess(querySnapshot: QuerySnapshot<AppModelType, DbModelType>): void {
       callback(querySnapshot, null);
       onNext(querySnapshot);
     }
@@ -464,7 +485,7 @@ export default class Query {
   }
 
   startAfter(
-    docOrField: DocumentSnapshot | DocumentFieldValueInternal,
+    docOrField: DocumentSnapshot<AppModelType, DbModelType> | DocumentFieldValueInternal,
     ...fields: DocumentFieldValueInternal[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
@@ -479,7 +500,7 @@ export default class Query {
   }
 
   startAt(
-    docOrField: DocumentSnapshot | DocumentFieldValueInternal,
+    docOrField: DocumentSnapshot<AppModelType, DbModelType> | DocumentFieldValueInternal,
     ...fields: DocumentFieldValueInternal[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
@@ -586,11 +607,15 @@ export default class Query {
     );
   }
 
-  withConverter(
-    converter: FirestoreDataConverter<DocumentData, DocumentData> | null | unknown,
-  ): Query {
+  withConverter(converter: null): Query<DocumentData, DocumentData>;
+  withConverter<NewAppModelType, NewDbModelType extends DocumentData = DocumentData>(
+    converter: FirestoreDataConverter<NewAppModelType, NewDbModelType>,
+  ): Query<NewAppModelType, NewDbModelType>;
+  withConverter<NewAppModelType, NewDbModelType extends DocumentData = DocumentData>(
+    converter: FirestoreDataConverter<NewAppModelType, NewDbModelType> | null | unknown,
+  ): Query<DocumentData, DocumentData> | Query<NewAppModelType, NewDbModelType> {
     if (isUndefined(converter) || isNull(converter)) {
-      return new Query(
+      return new Query<DocumentData, DocumentData>(
         this._firestore,
         this._collectionPath,
         this._modifiers,
@@ -605,12 +630,12 @@ export default class Query {
       throw new Error(`firebase.firestore().collection().withConverter() ${(e as Error).message}`);
     }
 
-    return new Query(
+    return new Query<NewAppModelType, NewDbModelType>(
       this._firestore,
       this._collectionPath,
       this._modifiers,
       this._queryName,
-      converter as FirestoreDataConverter<DocumentData, DocumentData>,
+      converter as FirestoreDataConverter<NewAppModelType, NewDbModelType>,
     );
   }
 }
