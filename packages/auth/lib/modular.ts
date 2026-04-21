@@ -16,7 +16,7 @@
 
 import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
-import { MultiFactorUser } from './multiFactor';
+import { MultiFactorUser as MultiFactorUserModule } from './multiFactor';
 import type { FirebaseApp } from '@react-native-firebase/app';
 import type {
   ActionCodeInfo,
@@ -34,17 +34,17 @@ import type {
   IdTokenResult,
   MultiFactorError,
   MultiFactorResolver,
-  MultiFactorUser as MultiFactorUserType,
-  NextFn,
-  Observer,
+  MultiFactorUser,
+  NextOrObserver,
   PasswordValidationStatus,
   Persistence,
   PhoneAuthListener,
   PopupRedirectResolver,
-  UpdateProfile,
+  Unsubscribe,
   User,
   UserCredential,
 } from './types/auth';
+import type { FirebaseAuthTypes } from './types/namespaced';
 import type { UserInternal } from './types/internal';
 
 type AnyFn = (...args: any[]) => any;
@@ -53,14 +53,68 @@ type WithModularDeprecationArg<F extends AnyFn> = (
   ...args: [...Parameters<F>, typeof MODULAR_DEPRECATION_ARG]
 ) => ReturnType<F>;
 
-type AuthWithPasswordValidationInternal = Auth & {
+type AuthModuleInternal = FirebaseAuthTypes.Module & {
   validatePassword(password: string): Promise<PasswordValidationStatus>;
+  getCustomAuthDomain(): Promise<string>;
 };
 
-type NextOrObserverInternal = NextFn<User | null> | Observer<User | null>;
+type UserModuleInternal = UserInternal;
+
+type AuthProviderWithObjectInternal = FirebaseAuthTypes.AuthProvider & {
+  toObject(): Record<string, unknown>;
+};
+
+function getAuthInternal(auth: Auth): AuthModuleInternal {
+  return auth as unknown as AuthModuleInternal;
+}
+
+function getUserInternal(user: User): UserModuleInternal {
+  return user as unknown as UserModuleInternal;
+}
+
+function asAuth(auth: FirebaseAuthTypes.Module): Auth {
+  return auth as unknown as Auth;
+}
+
+function asActionCodeInfo(
+  promise: Promise<FirebaseAuthTypes.ActionCodeInfo>,
+): Promise<ActionCodeInfo> {
+  return promise as unknown as Promise<ActionCodeInfo>;
+}
+
+function asUserCredential(
+  promise: Promise<FirebaseAuthTypes.UserCredential>,
+): Promise<UserCredential> {
+  return promise as unknown as Promise<UserCredential>;
+}
+
+function asIdTokenResult(
+  promise: Promise<FirebaseAuthTypes.IdTokenResult>,
+): Promise<IdTokenResult> {
+  return promise as unknown as Promise<IdTokenResult>;
+}
+
+function asUser(promise: Promise<FirebaseAuthTypes.User>): Promise<User> {
+  return promise as unknown as Promise<User>;
+}
+
+function normalizeAuthListener(
+  nextOrObserver: NextOrObserver<User>,
+): FirebaseAuthTypes.AuthListenerCallback | { next: FirebaseAuthTypes.AuthListenerCallback } {
+  if (typeof nextOrObserver === 'function') {
+    return nextOrObserver as unknown as FirebaseAuthTypes.AuthListenerCallback;
+  }
+
+  return {
+    next:
+      typeof nextOrObserver.next === 'function'
+        ? (nextOrObserver.next as unknown as FirebaseAuthTypes.AuthListenerCallback)
+        : () => {},
+  };
+}
 
 function callAuthMethod<F extends AnyFn>(
-  auth: Auth,
+  auth: AuthModuleInternal,
   method: F,
   ...args: Parameters<F>
 ): ReturnType<F> {
@@ -72,7 +126,7 @@ function callAuthMethod<F extends AnyFn>(
 }
 
 function callUserMethod<F extends AnyFn>(
-  user: User,
+  user: UserModuleInternal,
   method: F,
   ...args: Parameters<F>
 ): ReturnType<F> {
@@ -88,33 +142,35 @@ function callUserMethod<F extends AnyFn>(
  */
 export function getAuth(app?: FirebaseApp): Auth {
   if (app) {
-    return getApp(app.name).auth();
+    return asAuth(getApp(app.name).auth());
   }
 
-  return getApp().auth();
+  return asAuth(getApp().auth());
 }
 
 /**
  * This function allows more control over the Auth instance than getAuth().
  */
 export function initializeAuth(app: FirebaseApp, _deps?: Dependencies): Auth {
-  return getApp(app.name).auth();
+  return asAuth(getApp(app.name).auth());
 }
 
 export function applyActionCode(auth: Auth, oobCode: string): Promise<void> {
-  return callAuthMethod(auth, auth.applyActionCode, oobCode);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(authInternal, authInternal.applyActionCode, oobCode);
 }
 
 export function beforeAuthStateChanged(
   _auth: Auth,
   _callback: (user: User | null) => void | Promise<void>,
   _onAbort?: () => void,
-): () => void {
+): Unsubscribe {
   throw new Error('beforeAuthStateChanged is unsupported by the native Firebase SDKs');
 }
 
 export function checkActionCode(auth: Auth, oobCode: string): Promise<ActionCodeInfo> {
-  return callAuthMethod(auth, auth.checkActionCode, oobCode);
+  const authInternal = getAuthInternal(auth);
+  return asActionCodeInfo(callAuthMethod(authInternal, authInternal.checkActionCode, oobCode));
 }
 
 export function confirmPasswordReset(
@@ -122,7 +178,8 @@ export function confirmPasswordReset(
   oobCode: string,
   newPassword: string,
 ): Promise<void> {
-  return callAuthMethod(auth, auth.confirmPasswordReset, oobCode, newPassword);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(authInternal, authInternal.confirmPasswordReset, oobCode, newPassword);
 }
 
 export function connectAuthEmulator(
@@ -130,7 +187,8 @@ export function connectAuthEmulator(
   url: string,
   _options?: { disableWarnings?: boolean },
 ): void {
-  callAuthMethod(auth, auth.useEmulator, url);
+  const authInternal = getAuthInternal(auth);
+  callAuthMethod(authInternal, authInternal.useEmulator, url);
 }
 
 export function createUserWithEmailAndPassword(
@@ -138,15 +196,26 @@ export function createUserWithEmailAndPassword(
   email: string,
   password: string,
 ): Promise<UserCredential> {
-  return callAuthMethod(auth, auth.createUserWithEmailAndPassword, email, password);
+  const authInternal = getAuthInternal(auth);
+  return asUserCredential(
+    callAuthMethod(authInternal, authInternal.createUserWithEmailAndPassword, email, password),
+  );
 }
 
 export function fetchSignInMethodsForEmail(auth: Auth, email: string): Promise<string[]> {
-  return callAuthMethod(auth, auth.fetchSignInMethodsForEmail, email);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(authInternal, authInternal.fetchSignInMethodsForEmail, email);
 }
 
 export function getMultiFactorResolver(auth: Auth, error: MultiFactorError): MultiFactorResolver {
-  return callAuthMethod(auth, auth.getMultiFactorResolver, error);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(
+    authInternal,
+    authInternal.getMultiFactorResolver as unknown as (
+      error: MultiFactorError,
+    ) => FirebaseAuthTypes.MultiFactorResolver,
+    error,
+  ) as unknown as MultiFactorResolver;
 }
 
 export function getRedirectResult(
@@ -157,29 +226,48 @@ export function getRedirectResult(
 }
 
 export function isSignInWithEmailLink(auth: Auth, emailLink: string): Promise<boolean> {
-  return callAuthMethod(auth, auth.isSignInWithEmailLink, emailLink);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(authInternal, authInternal.isSignInWithEmailLink, emailLink);
 }
 
 export function onAuthStateChanged(
   auth: Auth,
-  nextOrObserver: NextOrObserverInternal,
+  nextOrObserver: NextOrObserver<User>,
   _error?: ErrorFn,
   _completed?: CompleteFn,
-): () => void {
+): Unsubscribe {
   // The legacy callback overload exists for JS SDK compatibility, but native auth listeners
   // never invoke separate error/completed callbacks.
-  return callAuthMethod(auth, auth.onAuthStateChanged, nextOrObserver);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(
+    authInternal,
+    authInternal.onAuthStateChanged as unknown as (
+      nextOrObserver:
+        | FirebaseAuthTypes.AuthListenerCallback
+        | { next: FirebaseAuthTypes.AuthListenerCallback },
+    ) => Unsubscribe,
+    normalizeAuthListener(nextOrObserver),
+  );
 }
 
 export function onIdTokenChanged(
   auth: Auth,
-  nextOrObserver: NextOrObserverInternal,
+  nextOrObserver: NextOrObserver<User>,
   _error?: ErrorFn,
   _completed?: CompleteFn,
-): () => void {
+): Unsubscribe {
   // The legacy callback overload exists for JS SDK compatibility, but native auth listeners
   // never invoke separate error/completed callbacks.
-  return callAuthMethod(auth, auth.onIdTokenChanged, nextOrObserver);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(
+    authInternal,
+    authInternal.onIdTokenChanged as unknown as (
+      nextOrObserver:
+        | FirebaseAuthTypes.AuthListenerCallback
+        | { next: FirebaseAuthTypes.AuthListenerCallback },
+    ) => Unsubscribe,
+    normalizeAuthListener(nextOrObserver),
+  );
 }
 
 export function revokeAccessToken(_auth: Auth, _token: string): Promise<void> {
@@ -191,7 +279,13 @@ export function sendPasswordResetEmail(
   email: string,
   actionCodeSettings?: ActionCodeSettings,
 ): Promise<void> {
-  return callAuthMethod(auth, auth.sendPasswordResetEmail, email, actionCodeSettings);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(
+    authInternal,
+    authInternal.sendPasswordResetEmail,
+    email,
+    actionCodeSettings,
+  );
 }
 
 export function sendSignInLinkToEmail(
@@ -199,7 +293,13 @@ export function sendSignInLinkToEmail(
   email: string,
   actionCodeSettings: ActionCodeSettings,
 ): Promise<void> {
-  return callAuthMethod(auth, auth.sendSignInLinkToEmail, email, actionCodeSettings);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(
+    authInternal,
+    authInternal.sendSignInLinkToEmail,
+    email,
+    actionCodeSettings,
+  );
 }
 
 export function setPersistence(_auth: Auth, _persistence: Persistence): Promise<void> {
@@ -207,18 +307,25 @@ export function setPersistence(_auth: Auth, _persistence: Persistence): Promise<
 }
 
 export function signInAnonymously(auth: Auth): Promise<UserCredential> {
-  return callAuthMethod(auth, auth.signInAnonymously);
+  const authInternal = getAuthInternal(auth);
+  return asUserCredential(callAuthMethod(authInternal, authInternal.signInAnonymously));
 }
 
 export function signInWithCredential(
   auth: Auth,
   credential: AuthCredential,
 ): Promise<UserCredential> {
-  return callAuthMethod(auth, auth.signInWithCredential, credential);
+  const authInternal = getAuthInternal(auth);
+  return asUserCredential(
+    callAuthMethod(authInternal, authInternal.signInWithCredential, credential),
+  );
 }
 
 export function signInWithCustomToken(auth: Auth, customToken: string): Promise<UserCredential> {
-  return callAuthMethod(auth, auth.signInWithCustomToken, customToken);
+  const authInternal = getAuthInternal(auth);
+  return asUserCredential(
+    callAuthMethod(authInternal, authInternal.signInWithCustomToken, customToken),
+  );
 }
 
 export function signInWithEmailAndPassword(
@@ -226,7 +333,10 @@ export function signInWithEmailAndPassword(
   email: string,
   password: string,
 ): Promise<UserCredential> {
-  return callAuthMethod(auth, auth.signInWithEmailAndPassword, email, password);
+  const authInternal = getAuthInternal(auth);
+  return asUserCredential(
+    callAuthMethod(authInternal, authInternal.signInWithEmailAndPassword, email, password),
+  );
 }
 
 export function signInWithEmailLink(
@@ -234,7 +344,10 @@ export function signInWithEmailLink(
   email: string,
   emailLink: string,
 ): Promise<UserCredential> {
-  return callAuthMethod(auth, auth.signInWithEmailLink, email, emailLink);
+  const authInternal = getAuthInternal(auth);
+  return asUserCredential(
+    callAuthMethod(authInternal, authInternal.signInWithEmailLink, email, emailLink),
+  );
 }
 
 export function signInWithPhoneNumber(
@@ -244,11 +357,12 @@ export function signInWithPhoneNumber(
 ): Promise<ConfirmationResult> {
   // Native SDKs own the verification flow, so the modular wrapper intentionally ignores the
   // JS SDK's optional ApplicationVerifier and forwards only the phone number.
-  const signInWithPhoneNumberInternal = auth.signInWithPhoneNumber as unknown as (
+  const authInternal = getAuthInternal(auth);
+  const signInWithPhoneNumberInternal = authInternal.signInWithPhoneNumber as unknown as (
     phoneNumber: string,
   ) => Promise<ConfirmationResult>;
 
-  return callAuthMethod(auth, signInWithPhoneNumberInternal, phoneNumber);
+  return callAuthMethod(authInternal, signInWithPhoneNumberInternal, phoneNumber);
 }
 
 export function verifyPhoneNumber(
@@ -257,15 +371,22 @@ export function verifyPhoneNumber(
   autoVerifyTimeoutOrForceResend?: number | boolean,
   forceResend?: boolean,
 ): PhoneAuthListener {
+  const authInternal = getAuthInternal(auth);
   return (
-    auth.verifyPhoneNumber as unknown as WithModularDeprecationArg<
+    authInternal.verifyPhoneNumber as unknown as WithModularDeprecationArg<
       (
         phoneNumber: string,
         autoVerifyTimeoutOrForceResend?: number | boolean,
         forceResend?: boolean,
       ) => PhoneAuthListener
     >
-  ).call(auth, phoneNumber, autoVerifyTimeoutOrForceResend, forceResend, MODULAR_DEPRECATION_ARG);
+  ).call(
+    authInternal,
+    phoneNumber,
+    autoVerifyTimeoutOrForceResend,
+    forceResend,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 export function signInWithPopup(
@@ -273,7 +394,14 @@ export function signInWithPopup(
   provider: AuthProvider,
   _resolver?: PopupRedirectResolver,
 ): Promise<UserCredential> {
-  return callAuthMethod(auth, auth.signInWithPopup, provider);
+  const authInternal = getAuthInternal(auth);
+  return asUserCredential(
+    callAuthMethod(
+      authInternal,
+      authInternal.signInWithPopup,
+      provider as unknown as AuthProviderWithObjectInternal,
+    ),
+  );
 }
 
 export function signInWithRedirect(
@@ -283,11 +411,19 @@ export function signInWithRedirect(
 ): Promise<UserCredential> {
   // Native provider flows complete immediately and return a credential instead of following the
   // browser redirect contract from the Firebase JS SDK.
-  return callAuthMethod(auth, auth.signInWithRedirect, provider);
+  const authInternal = getAuthInternal(auth);
+  return asUserCredential(
+    callAuthMethod(
+      authInternal,
+      authInternal.signInWithRedirect,
+      provider as unknown as AuthProviderWithObjectInternal,
+    ),
+  );
 }
 
 export function signOut(auth: Auth): Promise<void> {
-  return callAuthMethod(auth, auth.signOut);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(authInternal, authInternal.signOut);
 }
 
 export function updateCurrentUser(_auth: Auth, _user: User | null): Promise<void> {
@@ -299,15 +435,20 @@ export function useDeviceLanguage(_auth: Auth): void {
 }
 
 export function setLanguageCode(auth: Auth, languageCode: string | null): Promise<void> {
-  return callAuthMethod(auth, auth.setLanguageCode, languageCode);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(authInternal, authInternal.setLanguageCode, languageCode);
 }
 
 export function useUserAccessGroup(auth: Auth, userAccessGroup: string): Promise<void> {
-  return callAuthMethod(auth, auth.useUserAccessGroup, userAccessGroup).then(() => undefined);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(authInternal, authInternal.useUserAccessGroup, userAccessGroup).then(
+    () => undefined,
+  );
 }
 
 export function verifyPasswordResetCode(auth: Auth, code: string): Promise<string> {
-  return callAuthMethod(auth, auth.verifyPasswordResetCode, code);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(authInternal, authInternal.verifyPasswordResetCode, code);
 }
 
 export function parseActionCodeURL(_link: string): ActionCodeURL | null {
@@ -315,22 +456,28 @@ export function parseActionCodeURL(_link: string): ActionCodeURL | null {
 }
 
 export function deleteUser(user: User): Promise<void> {
-  return callUserMethod(user, user.delete);
+  const userInternal = getUserInternal(user);
+  return callUserMethod(userInternal, userInternal.delete);
 }
 
 export function getIdToken(user: User, forceRefresh?: boolean): Promise<string> {
-  return callUserMethod(user, user.getIdToken, forceRefresh);
+  const userInternal = getUserInternal(user);
+  return callUserMethod(userInternal, userInternal.getIdToken, forceRefresh);
 }
 
 export function getIdTokenResult(user: User, forceRefresh?: boolean): Promise<IdTokenResult> {
-  return callUserMethod(user, user.getIdTokenResult, forceRefresh);
+  const userInternal = getUserInternal(user);
+  return asIdTokenResult(callUserMethod(userInternal, userInternal.getIdTokenResult, forceRefresh));
 }
 
 export function linkWithCredential(
   user: User,
   credential: AuthCredential,
 ): Promise<UserCredential> {
-  return callUserMethod(user, user.linkWithCredential, credential);
+  const userInternal = getUserInternal(user);
+  return asUserCredential(
+    callUserMethod(userInternal, userInternal.linkWithCredential, credential),
+  );
 }
 
 export function linkWithPhoneNumber(
@@ -346,7 +493,14 @@ export function linkWithPopup(
   provider: AuthProvider,
   _resolver?: PopupRedirectResolver,
 ): Promise<UserCredential> {
-  return callUserMethod(user, user.linkWithPopup, provider);
+  const userInternal = getUserInternal(user);
+  return asUserCredential(
+    callUserMethod(
+      userInternal,
+      userInternal.linkWithPopup,
+      provider as unknown as AuthProviderWithObjectInternal,
+    ),
+  );
 }
 
 export function linkWithRedirect(
@@ -356,21 +510,31 @@ export function linkWithRedirect(
 ): Promise<UserCredential> {
   // Native provider flows complete immediately and return a credential instead of following the
   // browser redirect contract from the Firebase JS SDK.
-  return callUserMethod(user, user.linkWithRedirect, provider);
+  const userInternal = getUserInternal(user);
+  return asUserCredential(
+    callUserMethod(
+      userInternal,
+      userInternal.linkWithRedirect,
+      provider as unknown as AuthProviderWithObjectInternal,
+    ),
+  );
 }
 
-export function multiFactor(user: User): MultiFactorUserType {
-  return new MultiFactorUser(
-    (user as UserInternal)._auth || getAuth(),
+export function multiFactor(user: User): MultiFactorUser {
+  return new MultiFactorUserModule(
+    (user as unknown as UserInternal)._auth || getAuth(),
     user,
-  ) as MultiFactorUserType;
+  ) as MultiFactorUser;
 }
 
 export function reauthenticateWithCredential(
   user: User,
   credential: AuthCredential,
 ): Promise<UserCredential> {
-  return callUserMethod(user, user.reauthenticateWithCredential, credential);
+  const userInternal = getUserInternal(user);
+  return asUserCredential(
+    callUserMethod(userInternal, userInternal.reauthenticateWithCredential, credential),
+  );
 }
 
 export function reauthenticateWithPhoneNumber(
@@ -386,7 +550,14 @@ export function reauthenticateWithPopup(
   provider: AuthProvider,
   _resolver?: PopupRedirectResolver,
 ): Promise<UserCredential> {
-  return callUserMethod(user, user.reauthenticateWithPopup, provider);
+  const userInternal = getUserInternal(user);
+  return asUserCredential(
+    callUserMethod(
+      userInternal,
+      userInternal.reauthenticateWithPopup,
+      provider as unknown as AuthProviderWithObjectInternal,
+    ),
+  );
 }
 
 export function reauthenticateWithRedirect(
@@ -394,38 +565,57 @@ export function reauthenticateWithRedirect(
   provider: AuthProvider,
   _resolver?: PopupRedirectResolver,
 ): Promise<void> {
-  return callUserMethod(user, user.reauthenticateWithRedirect, provider);
+  const userInternal = getUserInternal(user);
+  return callUserMethod(
+    userInternal,
+    userInternal.reauthenticateWithRedirect,
+    provider as unknown as AuthProviderWithObjectInternal,
+  );
 }
 
 export function reload(user: User): Promise<void> {
-  return callUserMethod(user, user.reload);
+  const userInternal = getUserInternal(user);
+  return callUserMethod(userInternal, userInternal.reload);
 }
 
 export function sendEmailVerification(
   user: User,
-  actionCodeSettings?: ActionCodeSettings,
+  actionCodeSettings?: ActionCodeSettings | null,
 ): Promise<void> {
-  return callUserMethod(user, user.sendEmailVerification, actionCodeSettings);
+  const userInternal = getUserInternal(user);
+  return callUserMethod(
+    userInternal,
+    userInternal.sendEmailVerification,
+    actionCodeSettings ?? undefined,
+  );
 }
 
 export function unlink(user: User, providerId: string): Promise<User> {
-  return callUserMethod(user, user.unlink, providerId);
+  const userInternal = getUserInternal(user);
+  return asUser(callUserMethod(userInternal, userInternal.unlink, providerId));
 }
 
 export function updateEmail(user: User, newEmail: string): Promise<void> {
-  return callUserMethod(user, user.updateEmail, newEmail);
+  const userInternal = getUserInternal(user);
+  return callUserMethod(userInternal, userInternal.updateEmail, newEmail);
 }
 
 export function updatePassword(user: User, newPassword: string): Promise<void> {
-  return callUserMethod(user, user.updatePassword, newPassword);
+  const userInternal = getUserInternal(user);
+  return callUserMethod(userInternal, userInternal.updatePassword, newPassword);
 }
 
 export function updatePhoneNumber(user: User, credential: AuthCredential): Promise<void> {
-  return callUserMethod(user, user.updatePhoneNumber, credential);
+  const userInternal = getUserInternal(user);
+  return callUserMethod(userInternal, userInternal.updatePhoneNumber, credential);
 }
 
-export function updateProfile(user: User, profile: UpdateProfile): Promise<void> {
-  return callUserMethod(user, user.updateProfile, {
+export function updateProfile(
+  user: User,
+  profile: { displayName?: string | null; photoURL?: string | null },
+): Promise<void> {
+  const userInternal = getUserInternal(user);
+  return callUserMethod(userInternal, userInternal.updateProfile, {
     displayName: profile.displayName,
     photoURL: profile.photoURL,
   });
@@ -434,17 +624,34 @@ export function updateProfile(user: User, profile: UpdateProfile): Promise<void>
 export function verifyBeforeUpdateEmail(
   user: User,
   newEmail: string,
-  actionCodeSettings?: ActionCodeSettings,
+  actionCodeSettings?: ActionCodeSettings | null,
 ): Promise<void> {
-  return callUserMethod(user, user.verifyBeforeUpdateEmail, newEmail, actionCodeSettings);
+  const userInternal = getUserInternal(user);
+  return callUserMethod(
+    userInternal,
+    userInternal.verifyBeforeUpdateEmail,
+    newEmail,
+    actionCodeSettings ?? undefined,
+  );
 }
 
 export function getAdditionalUserInfo(userCredential: UserCredential): AdditionalUserInfo | null {
-  return userCredential.additionalUserInfo ?? null;
+  const info = (userCredential as unknown as FirebaseAuthTypes.UserCredential).additionalUserInfo;
+  if (!info) {
+    return null;
+  }
+
+  return {
+    isNewUser: info.isNewUser,
+    profile: info.profile ?? null,
+    providerId: info.providerId ?? null,
+    username: info.username ?? null,
+  };
 }
 
 export function getCustomAuthDomain(auth: Auth): Promise<string> {
-  return callAuthMethod(auth, auth.getCustomAuthDomain);
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(authInternal, authInternal.getCustomAuthDomain);
 }
 
 export function validatePassword(auth: Auth, password: string): Promise<PasswordValidationStatus> {
@@ -460,7 +667,7 @@ export function validatePassword(auth: Auth, password: string): Promise<Password
     );
   }
 
-  const authWithPasswordValidation = auth as AuthWithPasswordValidationInternal;
+  const authWithPasswordValidation = getAuthInternal(auth);
   return callAuthMethod(
     authWithPasswordValidation,
     authWithPasswordValidation.validatePassword,

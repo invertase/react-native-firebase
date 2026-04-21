@@ -7,6 +7,7 @@
 import auth, {
   firebase,
   applyActionCode,
+  ActionCodeOperation,
   beforeAuthStateChanged,
   checkActionCode,
   confirmPasswordReset,
@@ -14,6 +15,7 @@ import auth, {
   createUserWithEmailAndPassword,
   EmailAuthProvider,
   fetchSignInMethodsForEmail,
+  FactorId,
   getAdditionalUserInfo,
   getAuth,
   getCustomAuthDomain,
@@ -24,6 +26,7 @@ import auth, {
   multiFactor,
   onAuthStateChanged,
   onIdTokenChanged,
+  OperationType,
   parseActionCodeURL,
   PhoneAuthProvider,
   sendPasswordResetEmail,
@@ -38,6 +41,7 @@ import auth, {
   signInWithPopup,
   signInWithRedirect,
   signOut,
+  SignInMethod,
   updateCurrentUser,
   useDeviceLanguage,
   useUserAccessGroup,
@@ -47,7 +51,6 @@ import auth, {
   type ActionCodeSettings,
   type ApplicationVerifier,
   type Auth,
-  type AuthCredential,
   type AuthProvider,
   type AuthSettings,
   type Config,
@@ -90,11 +93,7 @@ const appVerifier: ApplicationVerifier = {
 };
 
 const popupRedirectResolver: PopupRedirectResolver = {};
-const redirectProvider: AuthProvider = {
-  PROVIDER_ID: 'oidc.test',
-  credential: (token: string | null, secret?: string) =>
-    ({ token, secret, providerId: 'oidc.test' }) as AuthCredential,
-};
+const redirectProvider = { providerId: 'oidc.test' } as AuthProvider;
 const authSettings: AuthSettings = { appVerificationDisabledForTesting: true };
 const persistence: Persistence = { type: 'NONE' };
 const authConfig: Config = {
@@ -123,6 +122,12 @@ console.log(authSettings.appVerificationDisabledForTesting);
 console.log(authConfig.apiHost);
 console.log(dependencies.persistence);
 console.log(passwordValidationStatus.passwordPolicy.enforcementState);
+console.log(
+  ActionCodeOperation.VERIFY_EMAIL,
+  FactorId.PHONE,
+  OperationType.SIGN_IN,
+  SignInMethod.EMAIL_LINK,
+);
 
 const modularAuth: Auth = getAuth();
 const modularAuthFromApp: Auth = getAuth(firebase.app());

@@ -15,57 +15,82 @@
  *
  */
 
+export type FirebaseApp = import('@react-native-firebase/app').ReactNativeFirebase.FirebaseApp;
+export type Observer<T> = {
+  next?: ((value: T) => void) | null;
+  error?: ((error: Error) => void) | null;
+  complete?: (() => void) | null;
+};
+export type ActionCodeInfoData = import('./types/namespaced').FirebaseAuthTypes.ActionCodeInfoData;
+export type ActionCodeSettingsAndroid =
+  import('./types/namespaced').FirebaseAuthTypes.ActionCodeSettingsAndroid;
+export type ActionCodeSettingsIos =
+  import('./types/namespaced').FirebaseAuthTypes.ActionCodeSettingsIos;
+export type AuthListenerCallback =
+  import('./types/namespaced').FirebaseAuthTypes.AuthListenerCallback;
+export type MultiFactor = import('./types/namespaced').FirebaseAuthTypes.MultiFactor;
+export type MultiFactorInfoCommon =
+  import('./types/namespaced').FirebaseAuthTypes.MultiFactorInfoCommon;
+export type UpdateProfile = import('./types/namespaced').FirebaseAuthTypes.UpdateProfile;
+
+export {
+  ActionCodeOperation,
+  FactorId,
+  OperationType,
+  ProviderId,
+  SignInMethod,
+} from './types/auth';
+
 export type {
   ActionCodeInfo,
-  ActionCodeInfoData,
   ActionCodeSettings,
-  ActionCodeSettingsAndroid,
-  ActionCodeSettingsIos,
   ActionCodeURL,
   AdditionalUserInfo,
   ApplicationVerifier,
   Auth,
+  AuthError,
   AuthErrorMap,
   AuthCredential,
-  AuthListenerCallback,
   AuthProvider,
   AuthSettings,
   CompleteFn,
   Config,
   ConfirmationResult,
   Dependencies,
+  EmulatorConfig,
   ErrorFn,
-  FactorId,
-  FirebaseApp,
   IdTokenResult,
-  MultiFactor,
   MultiFactorAssertion,
   MultiFactorError,
   MultiFactorInfo,
-  MultiFactorInfoCommon,
   MultiFactorResolver,
   MultiFactorSession,
   MultiFactorUser,
   NativeFirebaseAuthError,
+  NextOrObserver,
   NextFn,
   OIDCProvider,
-  Observer,
+  ParsedToken,
   PasswordPolicy,
   PasswordValidationStatus,
   Persistence,
   PhoneAuthError,
+  PhoneInfoOptions,
   PhoneAuthListener,
   PhoneAuthSnapshot,
+  PhoneMultiFactorAssertion,
   PhoneMultiFactorEnrollInfoOptions,
   PhoneMultiFactorInfo,
   PhoneMultiFactorSignInInfoOptions,
+  PhoneSingleFactorInfoOptions,
   PopupRedirectResolver,
+  TotpMultiFactorAssertion,
   TotpMultiFactorInfo,
-  UpdateProfile,
   User,
   UserCredential,
   UserInfo,
   UserMetadata,
+  UserProfile,
   Unsubscribe,
 } from './types/auth';
 export * from './types/namespaced';

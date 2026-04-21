@@ -16,62 +16,117 @@
  */
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import type {
-  CompleteFn,
-  ErrorFn,
-  NextFn,
-  Observer,
-  Unsubscribe,
-} from '@react-native-firebase/app/dist/module/types/common';
 import type { FirebaseAuthTypes } from './namespaced';
 
-export type { CompleteFn, ErrorFn, NextFn, Observer, Unsubscribe };
+export type CompleteFn = () => void;
+export type ErrorFn = (error: Error) => void;
+export type NextFn<T> = (value: T) => void;
+export type Unsubscribe = () => void;
 
-export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
-export type Auth = FirebaseAuthTypes.Module;
+interface Observer<T> {
+  next?: NextFn<T> | null;
+  error?: ErrorFn | null;
+  complete?: CompleteFn | null;
+}
+
+type FirebaseApp = ReactNativeFirebase.FirebaseApp;
+
+export const ActionCodeOperation = {
+  EMAIL_SIGNIN: 'EMAIL_SIGNIN',
+  PASSWORD_RESET: 'PASSWORD_RESET',
+  RECOVER_EMAIL: 'RECOVER_EMAIL',
+  REVERT_SECOND_FACTOR_ADDITION: 'REVERT_SECOND_FACTOR_ADDITION',
+  VERIFY_AND_CHANGE_EMAIL: 'VERIFY_AND_CHANGE_EMAIL',
+  VERIFY_EMAIL: 'VERIFY_EMAIL',
+} as const;
+
+export const FactorId = {
+  PHONE: 'phone',
+  TOTP: 'totp',
+} as const;
+
+export const OperationType = {
+  LINK: 'link',
+  REAUTHENTICATE: 'reauthenticate',
+  SIGN_IN: 'signIn',
+} as const;
+
+export const ProviderId = {
+  FACEBOOK: 'facebook.com',
+  GITHUB: 'github.com',
+  GOOGLE: 'google.com',
+  PASSWORD: 'password',
+  PHONE: 'phone',
+  TWITTER: 'twitter.com',
+} as const;
+
+export const SignInMethod = {
+  EMAIL_LINK: 'emailLink',
+  EMAIL_PASSWORD: 'password',
+  FACEBOOK: 'facebook.com',
+  GITHUB: 'github.com',
+  GOOGLE: 'google.com',
+  PHONE: 'phone',
+  TWITTER: 'twitter.com',
+} as const;
+
+export type Auth = {
+  readonly app: FirebaseApp;
+  readonly name: string;
+  readonly config: Config;
+  setPersistence(persistence: Persistence): Promise<void>;
+  languageCode: string | null;
+  tenantId: string | null;
+  readonly settings: AuthSettings;
+  onAuthStateChanged(
+    nextOrObserver: NextOrObserver<User>,
+    error?: ErrorFn,
+    completed?: CompleteFn,
+  ): Unsubscribe;
+  beforeAuthStateChanged(
+    callback: (user: User | null) => void | Promise<void>,
+    onAbort?: () => void,
+  ): Unsubscribe;
+  onIdTokenChanged(
+    nextOrObserver: NextOrObserver<User>,
+    error?: ErrorFn,
+    completed?: CompleteFn,
+  ): Unsubscribe;
+  authStateReady?: () => Promise<void>;
+  readonly currentUser: User | null;
+  readonly emulatorConfig?: EmulatorConfig | null;
+  updateCurrentUser(user: User | null): Promise<void>;
+  useDeviceLanguage(): void;
+  signOut(): Promise<void>;
+};
+
+export interface AuthError extends ReactNativeFirebase.NativeFirebaseError {
+  readonly customData: {
+    readonly appName: string;
+    readonly email?: string;
+    readonly phoneNumber?: string;
+    readonly tenantId?: string;
+  };
+}
+
 export type NativeFirebaseAuthError = FirebaseAuthTypes.NativeFirebaseAuthError;
 export type AuthCredential = FirebaseAuthTypes.AuthCredential;
-export type AuthProvider = FirebaseAuthTypes.AuthProvider;
 export type OAuthProvider = FirebaseAuthTypes.OAuthProvider;
 export type OIDCProvider = FirebaseAuthTypes.OIDCProvider;
 export type EmailAuthProvider = FirebaseAuthTypes.EmailAuthProvider;
 export type PhoneAuthState = FirebaseAuthTypes.PhoneAuthState;
-export type MultiFactorSession = FirebaseAuthTypes.MultiFactorSession;
 export type PhoneMultiFactorGenerator = FirebaseAuthTypes.PhoneMultiFactorGenerator;
 export type TotpSecret = FirebaseAuthTypes.TotpSecret;
 export type TotpMultiFactorGenerator = FirebaseAuthTypes.TotpMultiFactorGenerator;
-export type MultiFactorError = FirebaseAuthTypes.MultiFactorError;
-export type AdditionalUserInfo = FirebaseAuthTypes.AdditionalUserInfo;
-export type UserCredential = FirebaseAuthTypes.UserCredential;
-export type UserMetadata = FirebaseAuthTypes.UserMetadata;
-export type FactorId = FirebaseAuthTypes.FactorId;
-export type MultiFactorInfo = FirebaseAuthTypes.MultiFactorInfo;
-export type PhoneMultiFactorInfo = FirebaseAuthTypes.PhoneMultiFactorInfo;
-export type TotpMultiFactorInfo = FirebaseAuthTypes.TotpMultiFactorInfo;
-export type MultiFactorInfoCommon = FirebaseAuthTypes.MultiFactorInfoCommon;
-export type MultiFactorAssertion = FirebaseAuthTypes.MultiFactorAssertion;
-export type PhoneMultiFactorEnrollInfoOptions = FirebaseAuthTypes.PhoneMultiFactorEnrollInfoOptions;
-export type PhoneMultiFactorSignInInfoOptions = FirebaseAuthTypes.PhoneMultiFactorSignInInfoOptions;
-export type MultiFactorResolver = FirebaseAuthTypes.MultiFactorResolver;
-export type MultiFactorUser = FirebaseAuthTypes.MultiFactorUser;
-export type MultiFactor = FirebaseAuthTypes.MultiFactor;
-export type UserInfo = FirebaseAuthTypes.UserInfo;
-export type IdTokenResult = FirebaseAuthTypes.IdTokenResult;
-export type UpdateProfile = FirebaseAuthTypes.UpdateProfile;
-export type ConfirmationResult = FirebaseAuthTypes.ConfirmationResult;
-export type ActionCodeSettingsAndroid = FirebaseAuthTypes.ActionCodeSettingsAndroid;
-export type ActionCodeInfoData = FirebaseAuthTypes.ActionCodeInfoData;
-export type ActionCodeInfo = FirebaseAuthTypes.ActionCodeInfo;
-export type ActionCodeSettingsIos = FirebaseAuthTypes.ActionCodeSettingsIos;
-export type ActionCodeSettings = FirebaseAuthTypes.ActionCodeSettings;
-export type AuthListenerCallback = FirebaseAuthTypes.AuthListenerCallback;
-export type PhoneAuthSnapshot = FirebaseAuthTypes.PhoneAuthSnapshot;
-export type PhoneAuthError = FirebaseAuthTypes.PhoneAuthError;
+export interface MultiFactorError extends AuthError {
+  readonly customData: AuthError['customData'] & {
+    readonly operationType: (typeof OperationType)[keyof typeof OperationType];
+  };
+}
 export type PhoneAuthListener = FirebaseAuthTypes.PhoneAuthListener;
-export type User = FirebaseAuthTypes.User;
+export type PhoneAuthError = FirebaseAuthTypes.PhoneAuthError;
+export type PhoneAuthSnapshot = FirebaseAuthTypes.PhoneAuthSnapshot;
 export type ActionCodeURL = FirebaseAuthTypes.ActionCodeURL;
-export type getMultiFactorResolver = FirebaseAuthTypes.getMultiFactorResolver;
-export type multiFactor = FirebaseAuthTypes.multiFactor;
 
 export interface Config {
   apiKey: string;
@@ -97,12 +152,23 @@ export interface ApplicationVerifier {
   verify(): Promise<string>;
 }
 
-export type Persistence = {
-  readonly type: 'SESSION' | 'LOCAL' | 'NONE' | 'COOKIE';
-};
+export type CustomParameters = Record<string, string>;
+
+export interface AuthProvider {
+  readonly providerId: string;
+}
 
 export interface AuthSettings {
   appVerificationDisabledForTesting: boolean;
+}
+
+export interface EmulatorConfig {
+  readonly protocol: string;
+  readonly host: string;
+  readonly port: number | null;
+  readonly options: {
+    readonly disableWarnings: boolean;
+  };
 }
 
 export interface PasswordPolicy {
@@ -129,3 +195,160 @@ export interface PasswordValidationStatus {
   readonly containsNonAlphanumericCharacter?: boolean;
   readonly passwordPolicy: PasswordPolicy;
 }
+
+export interface Persistence {
+  readonly type: 'SESSION' | 'LOCAL' | 'NONE' | 'COOKIE';
+}
+
+export type NextOrObserver<T> = NextFn<T | null> | Observer<T | null>;
+
+export interface ParsedToken {
+  exp?: string;
+  sub?: string;
+  auth_time?: string;
+  iat?: string;
+  firebase?: {
+    sign_in_provider?: string;
+    sign_in_second_factor?: string;
+    identities?: Record<string, string>;
+  };
+  [key: string]: unknown;
+}
+
+export type UserProfile = Record<string, unknown>;
+
+export interface AdditionalUserInfo {
+  readonly isNewUser: boolean;
+  readonly profile: Record<string, unknown> | null;
+  readonly providerId: string | null;
+  readonly username?: string | null;
+}
+
+export interface UserInfo {
+  readonly displayName: string | null;
+  readonly email: string | null;
+  readonly phoneNumber: string | null;
+  readonly photoURL: string | null;
+  readonly providerId: string;
+  readonly uid: string;
+}
+
+export interface UserMetadata {
+  readonly creationTime?: string;
+  readonly lastSignInTime?: string;
+}
+
+export interface IdTokenResult {
+  authTime: string;
+  expirationTime: string;
+  issuedAtTime: string;
+  signInProvider: string | null;
+  signInSecondFactor: string | null;
+  token: string;
+  claims: ParsedToken;
+}
+
+export interface User extends UserInfo {
+  readonly emailVerified: boolean;
+  readonly isAnonymous: boolean;
+  readonly metadata: UserMetadata;
+  readonly providerData: UserInfo[];
+  readonly refreshToken: string;
+  readonly tenantId: string | null;
+  delete(): Promise<void>;
+  getIdToken(forceRefresh?: boolean): Promise<string>;
+  getIdTokenResult(forceRefresh?: boolean): Promise<IdTokenResult>;
+  reload(): Promise<void>;
+  toJSON(): object;
+}
+
+export interface UserCredential {
+  user: User;
+  providerId: string | null;
+  operationType: (typeof OperationType)[keyof typeof OperationType];
+}
+
+export interface ConfirmationResult {
+  readonly verificationId: string;
+  confirm(verificationCode: string): Promise<UserCredential>;
+}
+
+export interface ActionCodeSettings {
+  android?: {
+    installApp?: boolean;
+    minimumVersion?: string;
+    packageName: string;
+  };
+  handleCodeInApp?: boolean;
+  iOS?: {
+    bundleId: string;
+  };
+  url: string;
+  dynamicLinkDomain?: string;
+  linkDomain?: string;
+}
+
+export interface ActionCodeInfo {
+  data: {
+    email?: string | null;
+    multiFactorInfo?: MultiFactorInfo | null;
+    previousEmail?: string | null;
+  };
+  operation: (typeof ActionCodeOperation)[keyof typeof ActionCodeOperation];
+}
+
+export interface MultiFactorAssertion {
+  readonly factorId: (typeof FactorId)[keyof typeof FactorId];
+}
+
+export interface MultiFactorInfo {
+  readonly uid: string;
+  readonly displayName?: string | null;
+  readonly enrollmentTime: string;
+  readonly factorId: (typeof FactorId)[keyof typeof FactorId];
+}
+
+export interface MultiFactorSession {}
+
+export interface MultiFactorResolver {
+  readonly hints: MultiFactorInfo[];
+  readonly session: MultiFactorSession;
+  resolveSignIn(assertion: MultiFactorAssertion): Promise<UserCredential>;
+}
+
+export interface MultiFactorUser {
+  readonly enrolledFactors: MultiFactorInfo[];
+  getSession(): Promise<MultiFactorSession>;
+  enroll(assertion: MultiFactorAssertion, displayName?: string | null): Promise<void>;
+  unenroll(option: MultiFactorInfo | string): Promise<void>;
+}
+
+export interface PhoneMultiFactorAssertion extends MultiFactorAssertion {}
+
+export interface PhoneMultiFactorEnrollInfoOptions {
+  phoneNumber: string;
+  session: MultiFactorSession;
+}
+
+export interface PhoneMultiFactorInfo extends MultiFactorInfo {
+  readonly phoneNumber: string;
+}
+
+export interface PhoneMultiFactorSignInInfoOptions {
+  multiFactorHint?: MultiFactorInfo;
+  multiFactorUid?: string;
+  session: MultiFactorSession;
+}
+
+export interface PhoneSingleFactorInfoOptions {
+  phoneNumber: string;
+}
+
+export type PhoneInfoOptions =
+  | PhoneSingleFactorInfoOptions
+  | PhoneMultiFactorEnrollInfoOptions
+  | PhoneMultiFactorSignInInfoOptions;
+
+export interface TotpMultiFactorAssertion extends MultiFactorAssertion {}
+
+export interface TotpMultiFactorInfo extends MultiFactorInfo {}
