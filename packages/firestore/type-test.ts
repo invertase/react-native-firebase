@@ -78,9 +78,12 @@ import firestore, {
   CACHE_SIZE_UNLIMITED,
   AggregateField,
   AggregateQuerySnapshot,
+  DocumentSnapshot,
   DocumentReference,
   Query,
   QueryDocumentSnapshot,
+  Transaction,
+  WriteBatch,
 } from '.';
 import type {
   FirebaseFirestoreTypes,
@@ -540,6 +543,30 @@ runTransaction(modFirestore1, async tx => {
   }
   return 'done';
 }).then(() => {});
+
+// Root runtime exports must also carry the generic modular type surface.
+function acceptRootDocumentSnapshot(_snap: DocumentSnapshot<DocumentData>) {}
+function acceptRootTransaction(tx: Transaction, tRef: DocumentReference<DocumentData>) {
+  tx.update(tRef, { active: true });
+}
+runTransaction(modFirestore1, async tx => {
+  const rootTx: Transaction = tx;
+  const rootSnap: DocumentSnapshot<DocumentData> = await rootTx.get(modDoc);
+  acceptRootDocumentSnapshot(rootSnap);
+  acceptRootTransaction(rootTx, modDoc);
+  if (rootSnap.exists()) {
+    const rootData: DocumentData = rootSnap.data();
+    void rootData;
+  }
+  return rootSnap;
+}).then((rootSnap: DocumentSnapshot<DocumentData>) => {
+  acceptRootDocumentSnapshot(rootSnap);
+});
+const rootBatch: WriteBatch = writeBatch(modFirestore1);
+rootBatch.update(modDoc, { active: true });
+void acceptRootDocumentSnapshot;
+void acceptRootTransaction;
+void rootBatch;
 
 // ----- query, where, or, and, orderBy, startAt, startAfter, endAt, endBefore, limit, limitToLast -----
 const modQuery1 = query(modColl, where('name', '==', 'test'));
