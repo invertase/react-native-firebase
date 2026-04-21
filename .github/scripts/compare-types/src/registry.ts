@@ -15,6 +15,7 @@ import type { PackageConfig } from './types';
 
 import storageConfig from '../packages/storage/config';
 import aiConfig from '../packages/ai/config';
+import authConfig from '../packages/auth/config';
 import firestoreConfig from '../packages/firestore/config';
 import firestorePipelinesConfig from '../packages/firestore-pipelines/config';
 
@@ -45,17 +46,44 @@ export interface PackageEntry {
 }
 
 function rnDist(packageName: string): string {
-  return path.join(
-    REPO_ROOT,
-    'packages',
-    packageName,
-    'dist',
-    'typescript',
-    'lib',
-  );
+  return path.join(REPO_ROOT, 'packages', packageName, 'dist', 'typescript', 'lib');
 }
 
 export const packages: PackageEntry[] = [
+  {
+    name: 'auth',
+    firebaseSdkTypesPaths: [path.join(SCRIPT_DIR, 'packages', 'auth', 'auth-js-sdk.d.ts')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('auth'), 'types', 'auth.d.ts'),
+      path.join(rnDist('auth'), 'modular.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('auth'), 'index.d.ts'),
+      path.join(rnDist('auth'), 'namespaced.d.ts'),
+      path.join(rnDist('auth'), 'types', 'namespaced.d.ts'),
+      path.join(rnDist('auth'), 'types', 'internal.d.ts'),
+      path.join(rnDist('auth'), 'ConfirmationResult.d.ts'),
+      path.join(rnDist('auth'), 'MultiFactorResolver.d.ts'),
+      path.join(rnDist('auth'), 'PhoneAuthListener.d.ts'),
+      path.join(rnDist('auth'), 'PhoneMultiFactorGenerator.d.ts'),
+      path.join(rnDist('auth'), 'Settings.d.ts'),
+      path.join(rnDist('auth'), 'TotpMultiFactorGenerator.d.ts'),
+      path.join(rnDist('auth'), 'TotpSecret.d.ts'),
+      path.join(rnDist('auth'), 'User.d.ts'),
+      path.join(rnDist('auth'), 'getMultiFactorResolver.d.ts'),
+      path.join(rnDist('auth'), 'multiFactor.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'AppleAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'EmailAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'FacebookAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'GithubAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'GoogleAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'OAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'OIDCAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'PhoneAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'TwitterAuthProvider.d.ts'),
+    ],
+    config: authConfig,
+  },
   // {
   //   name: 'remote-config',
   //   firebaseSdkTypesPaths: [
@@ -74,12 +102,7 @@ export const packages: PackageEntry[] = [
   // },
   {
     name: 'storage',
-    firebaseSdkTypesPaths: [path.join(
-      SCRIPT_DIR,
-      'packages',
-      'storage',
-      'storage-js-sdk.d.ts',
-    )],
+    firebaseSdkTypesPaths: [path.join(SCRIPT_DIR, 'packages', 'storage', 'storage-js-sdk.d.ts')],
     rnFirebaseModularFiles: [
       path.join(rnDist('storage'), 'types', 'storage.d.ts'),
       path.join(rnDist('storage'), 'modular.d.ts'),
@@ -93,12 +116,8 @@ export const packages: PackageEntry[] = [
   },
   {
     name: 'ai',
-    firebaseSdkTypesPaths: [
-      path.join(SCRIPT_DIR, 'packages', 'ai', 'ai-sdk.d.ts'),
-    ],
-    rnFirebaseModularFiles: [
-      path.join(rnDist('ai'), 'index.d.ts'),
-    ],
+    firebaseSdkTypesPaths: [path.join(SCRIPT_DIR, 'packages', 'ai', 'ai-sdk.d.ts')],
+    rnFirebaseModularFiles: [path.join(rnDist('ai'), 'index.d.ts')],
     rnFirebaseSupportFiles: [
       path.join(rnDist('ai'), 'backend.d.ts'),
       path.join(rnDist('ai'), 'errors.d.ts'),
@@ -132,12 +151,7 @@ export const packages: PackageEntry[] = [
   {
     name: 'firestore',
     firebaseSdkTypesPaths: [
-      path.join(
-        SCRIPT_DIR,
-        'packages',
-        'firestore',
-        'firestore-js-sdk.d.ts',
-      ),
+      path.join(SCRIPT_DIR, 'packages', 'firestore', 'firestore-js-sdk.d.ts'),
     ],
     rnFirebaseModularFiles: [
       path.join(rnDist('firestore'), 'types', 'firestore.d.ts'),
@@ -174,16 +188,9 @@ export const packages: PackageEntry[] = [
   {
     name: 'firestore-pipelines',
     firebaseSdkTypesPaths: [
-      path.join(
-        SCRIPT_DIR,
-        'packages',
-        'firestore-pipelines',
-        'pipelines.d.ts',
-      ),
+      path.join(SCRIPT_DIR, 'packages', 'firestore-pipelines', 'pipelines.d.ts'),
     ],
-    rnFirebaseModularFiles: [
-      path.join(rnDist('firestore'), 'pipelines', 'index.d.ts'),
-    ],
+    rnFirebaseModularFiles: [path.join(rnDist('firestore'), 'pipelines', 'index.d.ts')],
     rnFirebaseSupportFiles: [
       path.join(rnDist('firestore'), 'pipelines', 'expressions.d.ts'),
       path.join(rnDist('firestore'), 'pipelines', 'pipeline.d.ts'),
@@ -197,5 +204,3 @@ export const packages: PackageEntry[] = [
     config: firestorePipelinesConfig,
   },
 ];
-
-

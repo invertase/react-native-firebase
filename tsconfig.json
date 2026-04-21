@@ -3,8 +3,6 @@
     "packages/ai/lib/types/polyfills.d.ts",
     "packages/app/lib/internal/global.d.ts",
     "packages/app/lib/internal/web/memidb/index.d.ts",
-    "packages/auth/lib/index.d.ts",
-    "packages/auth/lib/modular/index.d.ts",
     "packages/database/lib/index.d.ts",
     "packages/database/lib/modular/index.d.ts",
     "packages/database/lib/modular/query.d.ts",
@@ -76,7 +74,7 @@
       ],
       "@react-native-firebase/firestore/pipelines": [
         "./packages/firestore/dist/typescript/lib/pipelines/index.d.ts"
-      ],
+      ]
     }
   },
   "exclude": ["node_modules", "**/*.spec.ts", "packages/**/dist"]
