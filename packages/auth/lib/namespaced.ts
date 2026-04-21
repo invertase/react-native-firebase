@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -26,11 +25,13 @@ import {
   isValidUrl,
   parseListenerOrObserver,
 } from '@react-native-firebase/app/dist/module/common';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import {
   FirebaseModule,
   createModuleNamespace,
   getFirebaseRoot,
+  type ModuleConfig,
 } from '@react-native-firebase/app/dist/module/internal';
 import ConfirmationResult from './ConfirmationResult';
 import PhoneAuthListener from './PhoneAuthListener';
@@ -53,13 +54,35 @@ import { TotpSecret } from './TotpSecret';
 import { version } from './version';
 import fallBackModule from './web/RNFBAuthModule';
 import { PasswordPolicyMixin } from './password-policy/PasswordPolicyMixin';
+import type { CallbackOrObserver, FirebaseAuthTypes } from './types/namespaced';
+import type {
+  AuthIdTokenChangedEventInternal,
+  AuthInternal,
+  AuthStateChangedEventInternal,
+  NativePhoneAuthCredentialInternal,
+  NativeUserCredentialInternal,
+  NativeUserInternal,
+  PasswordPolicyInternal,
+  PasswordValidationStatusInternal,
+  PhoneAuthStateChangedEventInternal,
+} from './types/internal';
+
+type AuthProviderWithObjectInternal = FirebaseAuthTypes.AuthProvider & {
+  toObject(): Record<string, unknown>;
+};
+
+type AuthErrorWithCodeInternal = Error & {
+  code?: string;
+};
 
 const PhoneAuthState = {
   CODE_SENT: 'sent',
   AUTO_VERIFY_TIMEOUT: 'timeout',
   AUTO_VERIFIED: 'verified',
   ERROR: 'error',
-};
+} as const;
+
+const nativeEvents = ['auth_state_changed', 'auth_id_token_changed', 'phone_auth_state_changed'];
 
 export {
   AppleAuthProvider,
@@ -97,37 +120,57 @@ const statics = {
 const namespace = 'auth';
 const nativeModuleName = 'RNFBAuthModule';
 
-class FirebaseAuthModule extends FirebaseModule {
-  constructor(...args) {
-    super(...args);
+class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
+  _user: FirebaseAuthTypes.User | null;
+  _settings: FirebaseAuthTypes.AuthSettings | null;
+  _authResult: boolean;
+  _languageCode: string;
+  _tenantId: string | null;
+  _projectPasswordPolicy: PasswordPolicyInternal | null;
+  _tenantPasswordPolicies: Record<string, PasswordPolicyInternal | null>;
+  _getPasswordPolicyInternal!: () => PasswordPolicyInternal | null;
+  _updatePasswordPolicy!: () => Promise<void>;
+  _recachePasswordPolicy!: () => Promise<void>;
+  validatePassword!: (password: string) => Promise<PasswordValidationStatusInternal>;
+
+  constructor(
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: ModuleConfig,
+    customUrlOrRegion?: string | null,
+  ) {
+    super(app, config, customUrlOrRegion);
     this._user = null;
     this._settings = null;
     this._authResult = false;
-    this._languageCode = this.native.APP_LANGUAGE[this.app._name];
+    this._languageCode = this.native.APP_LANGUAGE[this.app.name] ?? '';
     this._tenantId = null;
     this._projectPasswordPolicy = null;
     this._tenantPasswordPolicies = {};
 
     if (!this.languageCode) {
-      this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
+      this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'] ?? '';
     }
 
-    if (this.native.APP_USER[this.app._name]) {
-      this._setUser(this.native.APP_USER[this.app._name]);
+    const initialUser = this.native.APP_USER[this.app.name];
+    if (initialUser) {
+      this._setUser(initialUser);
     }
 
     this.emitter.addListener(this.eventNameForApp('auth_state_changed'), event => {
-      this._setUser(event.user);
+      const authEvent = event as AuthStateChangedEventInternal;
+      this._setUser(authEvent.user);
       this.emitter.emit(this.eventNameForApp('onAuthStateChanged'), this._user);
     });
 
     this.emitter.addListener(this.eventNameForApp('phone_auth_state_changed'), event => {
-      const eventKey = `phone:auth:${event.requestKey}:${event.type}`;
-      this.emitter.emit(eventKey, event.state);
+      const phoneAuthEvent = event as PhoneAuthStateChangedEventInternal;
+      const eventKey = `phone:auth:${phoneAuthEvent.requestKey}:${phoneAuthEvent.type}`;
+      this.emitter.emit(eventKey, phoneAuthEvent.state);
     });
 
-    this.emitter.addListener(this.eventNameForApp('auth_id_token_changed'), auth => {
-      this._setUser(auth.user);
+    this.emitter.addListener(this.eventNameForApp('auth_id_token_changed'), event => {
+      const authEvent = event as AuthIdTokenChangedEventInternal;
+      this._setUser(authEvent.user);
       this.emitter.emit(this.eventNameForApp('onIdTokenChanged'), this._user);
     });
 
@@ -144,11 +187,11 @@ class FirebaseAuthModule extends FirebaseModule {
     }
   }
 
-  get languageCode() {
+  get languageCode(): string {
     return this._languageCode;
   }
 
-  set languageCode(code) {
+  set languageCode(code: string | null) {
     // For modular API, not recommended to set languageCode directly as it should be set in the native SDKs first
     if (!isString(code) && !isNull(code)) {
       throw new Error(
@@ -157,47 +200,57 @@ class FirebaseAuthModule extends FirebaseModule {
     }
     // as this is a setter, we can't use async/await. So we set it first so it is available immediately
     if (code === null) {
-      this._languageCode = this.native.APP_LANGUAGE[this.app._name];
+      this._languageCode = this.native.APP_LANGUAGE[this.app.name] ?? '';
 
       if (!this.languageCode) {
-        this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
+        this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'] ?? '';
       }
     } else {
       this._languageCode = code;
     }
     // This sets it natively
-    this.setLanguageCode(code);
+    void this.setLanguageCode(code);
   }
 
-  get config() {
+  get config(): Record<string, never> {
     // for modular API, firebase JS SDK has a config object which is not available in native SDKs
     return {};
   }
 
-  get tenantId() {
+  get tenantId(): string | null {
     return this._tenantId;
   }
 
-  get settings() {
+  get settings(): FirebaseAuthTypes.AuthSettings {
     if (!this._settings) {
-      this._settings = new Settings(this);
+      this._settings = new Settings(
+        this as unknown as AuthInternal,
+      ) as FirebaseAuthTypes.AuthSettings;
     }
     return this._settings;
   }
 
-  get currentUser() {
+  get currentUser(): FirebaseAuthTypes.User | null {
     return this._user;
   }
 
-  _setUser(user) {
-    this._user = user ? createDeprecationProxy(new User(this, user)) : null;
+  _setUser(user?: NativeUserInternal | null): FirebaseAuthTypes.User | null {
+    this._user = user
+      ? (createDeprecationProxy(
+          new User(this as unknown as AuthInternal, user),
+        ) as FirebaseAuthTypes.User)
+      : null;
     this._authResult = true;
     this.emitter.emit(this.eventNameForApp('onUserChanged'), this._user);
     return this._user;
   }
 
-  _setUserCredential(userCredential) {
-    const user = createDeprecationProxy(new User(this, userCredential.user));
+  _setUserCredential(
+    userCredential: NativeUserCredentialInternal,
+  ): FirebaseAuthTypes.UserCredential {
+    const user = createDeprecationProxy(
+      new User(this as unknown as AuthInternal, userCredential.user),
+    ) as FirebaseAuthTypes.User;
     this._user = user;
     this._authResult = true;
     this.emitter.emit(this.eventNameForApp('onUserChanged'), this._user);
@@ -207,7 +260,7 @@ class FirebaseAuthModule extends FirebaseModule {
     };
   }
 
-  async setLanguageCode(code) {
+  async setLanguageCode(code: string | null): Promise<void> {
     if (!isString(code) && !isNull(code)) {
       throw new Error(
         "firebase.auth().setLanguageCode(*) expected 'languageCode' to be a string or null value",
@@ -217,17 +270,17 @@ class FirebaseAuthModule extends FirebaseModule {
     await this.native.setLanguageCode(code);
 
     if (code === null) {
-      this._languageCode = this.native.APP_LANGUAGE[this.app._name];
+      this._languageCode = this.native.APP_LANGUAGE[this.app.name] ?? '';
 
       if (!this.languageCode) {
-        this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
+        this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'] ?? '';
       }
     } else {
       this._languageCode = code;
     }
   }
 
-  async setTenantId(tenantId) {
+  async setTenantId(tenantId: string): Promise<void> {
     if (!isString(tenantId)) {
       throw new Error("firebase.auth().setTenantId(*) expected 'tenantId' to be a string");
     }
@@ -235,8 +288,12 @@ class FirebaseAuthModule extends FirebaseModule {
     await this.native.setTenantId(tenantId);
   }
 
-  onAuthStateChanged(listenerOrObserver) {
-    const listener = parseListenerOrObserver(listenerOrObserver);
+  onAuthStateChanged(
+    listenerOrObserver: CallbackOrObserver<FirebaseAuthTypes.AuthListenerCallback>,
+  ): () => void {
+    const listener = parseListenerOrObserver(
+      listenerOrObserver,
+    ) as FirebaseAuthTypes.AuthListenerCallback;
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onAuthStateChanged'),
       listener,
@@ -250,8 +307,12 @@ class FirebaseAuthModule extends FirebaseModule {
     return () => subscription.remove();
   }
 
-  onIdTokenChanged(listenerOrObserver) {
-    const listener = parseListenerOrObserver(listenerOrObserver);
+  onIdTokenChanged(
+    listenerOrObserver: CallbackOrObserver<FirebaseAuthTypes.AuthListenerCallback>,
+  ): () => void {
+    const listener = parseListenerOrObserver(
+      listenerOrObserver,
+    ) as FirebaseAuthTypes.AuthListenerCallback;
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onIdTokenChanged'),
       listener,
@@ -265,8 +326,12 @@ class FirebaseAuthModule extends FirebaseModule {
     return () => subscription.remove();
   }
 
-  onUserChanged(listenerOrObserver) {
-    const listener = parseListenerOrObserver(listenerOrObserver);
+  onUserChanged(
+    listenerOrObserver: CallbackOrObserver<FirebaseAuthTypes.AuthListenerCallback>,
+  ): () => void {
+    const listener = parseListenerOrObserver(
+      listenerOrObserver,
+    ) as FirebaseAuthTypes.AuthListenerCallback;
     const subscription = this.emitter.addListener(this.eventNameForApp('onUserChanged'), listener);
     if (this._authResult) {
       Promise.resolve().then(() => {
@@ -279,33 +344,48 @@ class FirebaseAuthModule extends FirebaseModule {
     };
   }
 
-  signOut() {
+  signOut(): Promise<void> {
     return this.native.signOut().then(() => {
       this._setUser(null);
     });
   }
 
-  signInAnonymously() {
+  signInAnonymously(): Promise<FirebaseAuthTypes.UserCredential> {
     return this.native
       .signInAnonymously()
-      .then(userCredential => this._setUserCredential(userCredential));
+      .then((userCredential: NativeUserCredentialInternal) =>
+        this._setUserCredential(userCredential),
+      );
   }
 
-  signInWithPhoneNumber(phoneNumber, forceResend) {
+  signInWithPhoneNumber(
+    phoneNumber: string,
+    forceResend?: boolean,
+  ): Promise<FirebaseAuthTypes.ConfirmationResult> {
     if (isAndroid) {
       return this.native
         .signInWithPhoneNumber(phoneNumber, forceResend || false)
-        .then(result => new ConfirmationResult(this, result.verificationId));
+        .then(
+          (result: NativePhoneAuthCredentialInternal) =>
+            new ConfirmationResult(this as unknown as AuthInternal, result.verificationId),
+        );
     }
 
     return this.native
       .signInWithPhoneNumber(phoneNumber)
-      .then(result => new ConfirmationResult(this, result.verificationId));
+      .then(
+        (result: NativePhoneAuthCredentialInternal) =>
+          new ConfirmationResult(this as unknown as AuthInternal, result.verificationId),
+      );
   }
 
-  verifyPhoneNumber(phoneNumber, autoVerifyTimeoutOrForceResend, forceResend) {
+  verifyPhoneNumber(
+    phoneNumber: string,
+    autoVerifyTimeoutOrForceResend?: number | boolean,
+    forceResend?: boolean,
+  ): FirebaseAuthTypes.PhoneAuthListener {
     let _forceResend = forceResend;
-    let _autoVerifyTimeout = 60;
+    let _autoVerifyTimeout: number | undefined = 60;
 
     if (isBoolean(autoVerifyTimeoutOrForceResend)) {
       _forceResend = autoVerifyTimeoutOrForceResend;
@@ -313,39 +393,64 @@ class FirebaseAuthModule extends FirebaseModule {
       _autoVerifyTimeout = autoVerifyTimeoutOrForceResend;
     }
 
-    return new PhoneAuthListener(this, phoneNumber, _autoVerifyTimeout, _forceResend);
+    return new PhoneAuthListener(
+      this as unknown as AuthInternal,
+      phoneNumber,
+      _autoVerifyTimeout,
+      _forceResend,
+    ) as FirebaseAuthTypes.PhoneAuthListener;
   }
 
-  verifyPhoneNumberWithMultiFactorInfo(multiFactorHint, session) {
+  verifyPhoneNumberWithMultiFactorInfo(
+    multiFactorHint: FirebaseAuthTypes.MultiFactorInfo,
+    session: FirebaseAuthTypes.MultiFactorSession,
+  ): Promise<string> {
     return this.native.verifyPhoneNumberWithMultiFactorInfo(multiFactorHint.uid, session);
   }
 
-  verifyPhoneNumberForMultiFactor(phoneInfoOptions) {
+  verifyPhoneNumberForMultiFactor(
+    phoneInfoOptions: FirebaseAuthTypes.PhoneMultiFactorEnrollInfoOptions,
+  ): Promise<string> {
     const { phoneNumber, session } = phoneInfoOptions;
     return this.native.verifyPhoneNumberForMultiFactor(phoneNumber, session);
   }
 
-  resolveMultiFactorSignIn(session, verificationId, verificationCode) {
+  resolveMultiFactorSignIn(
+    session: FirebaseAuthTypes.MultiFactorSession,
+    verificationId: string,
+    verificationCode: string,
+  ): Promise<FirebaseAuthTypes.UserCredential> {
     return this.native
       .resolveMultiFactorSignIn(session, verificationId, verificationCode)
-      .then(userCredential => {
+      .then((userCredential: NativeUserCredentialInternal) => {
         return this._setUserCredential(userCredential);
       });
   }
 
-  resolveTotpSignIn(session, uid, totpSecret) {
-    return this.native.resolveTotpSignIn(session, uid, totpSecret).then(userCredential => {
-      return this._setUserCredential(userCredential);
-    });
+  resolveTotpSignIn(
+    session: FirebaseAuthTypes.MultiFactorSession,
+    uid: string,
+    totpSecret: string,
+  ): Promise<FirebaseAuthTypes.UserCredential> {
+    return this.native
+      .resolveTotpSignIn(session, uid, totpSecret)
+      .then((userCredential: NativeUserCredentialInternal) => {
+        return this._setUserCredential(userCredential);
+      });
   }
 
-  createUserWithEmailAndPassword(email, password) {
+  createUserWithEmailAndPassword(
+    email: string,
+    password: string,
+  ): Promise<FirebaseAuthTypes.UserCredential> {
     return (
       this.native
         .createUserWithEmailAndPassword(email, password)
-        .then(userCredential => this._setUserCredential(userCredential))
+        .then((userCredential: NativeUserCredentialInternal) =>
+          this._setUserCredential(userCredential),
+        )
         /* istanbul ignore next - native error handling cannot be unit tested */
-        .catch(error => {
+        .catch((error: AuthErrorWithCodeInternal) => {
           if (error.code === 'auth/password-does-not-meet-requirements') {
             return this._recachePasswordPolicy()
               .catch(() => {
@@ -360,13 +465,18 @@ class FirebaseAuthModule extends FirebaseModule {
     );
   }
 
-  signInWithEmailAndPassword(email, password) {
+  signInWithEmailAndPassword(
+    email: string,
+    password: string,
+  ): Promise<FirebaseAuthTypes.UserCredential> {
     return (
       this.native
         .signInWithEmailAndPassword(email, password)
-        .then(userCredential => this._setUserCredential(userCredential))
+        .then((userCredential: NativeUserCredentialInternal) =>
+          this._setUserCredential(userCredential),
+        )
         /* istanbul ignore next - native error handling cannot be unit tested */
-        .catch(error => {
+        .catch((error: AuthErrorWithCodeInternal) => {
           if (error.code === 'auth/password-does-not-meet-requirements') {
             return this._recachePasswordPolicy()
               .catch(() => {
@@ -381,46 +491,60 @@ class FirebaseAuthModule extends FirebaseModule {
     );
   }
 
-  signInWithCustomToken(customToken) {
+  signInWithCustomToken(customToken: string): Promise<FirebaseAuthTypes.UserCredential> {
     return this.native
       .signInWithCustomToken(customToken)
-      .then(userCredential => this._setUserCredential(userCredential));
+      .then((userCredential: NativeUserCredentialInternal) =>
+        this._setUserCredential(userCredential),
+      );
   }
 
-  signInWithCredential(credential) {
+  signInWithCredential(
+    credential: FirebaseAuthTypes.AuthCredential,
+  ): Promise<FirebaseAuthTypes.UserCredential> {
     return this.native
       .signInWithCredential(credential.providerId, credential.token, credential.secret)
-      .then(userCredential => this._setUserCredential(userCredential));
+      .then((userCredential: NativeUserCredentialInternal) =>
+        this._setUserCredential(userCredential),
+      );
   }
 
-  revokeToken(authorizationCode) {
+  revokeToken(authorizationCode: string): Promise<void> {
     return this.native.revokeToken(authorizationCode);
   }
 
-  sendPasswordResetEmail(email, actionCodeSettings = null) {
+  sendPasswordResetEmail(
+    email: string,
+    actionCodeSettings: FirebaseAuthTypes.ActionCodeSettings | null = null,
+  ): Promise<void> {
     return this.native.sendPasswordResetEmail(email, actionCodeSettings);
   }
 
-  sendSignInLinkToEmail(email, actionCodeSettings = {}) {
+  sendSignInLinkToEmail(
+    email: string,
+    actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
+  ): Promise<void> {
     return this.native.sendSignInLinkToEmail(email, actionCodeSettings);
   }
 
-  isSignInWithEmailLink(emailLink) {
+  isSignInWithEmailLink(emailLink: string): Promise<boolean> {
     return this.native.isSignInWithEmailLink(emailLink);
   }
 
-  signInWithEmailLink(email, emailLink) {
+  signInWithEmailLink(email: string, emailLink: string): Promise<FirebaseAuthTypes.UserCredential> {
     return this.native
       .signInWithEmailLink(email, emailLink)
-      .then(userCredential => this._setUserCredential(userCredential));
+      .then((userCredential: NativeUserCredentialInternal) =>
+        this._setUserCredential(userCredential),
+      );
   }
 
-  confirmPasswordReset(code, newPassword) {
+  confirmPasswordReset(code: string, newPassword: string): Promise<void> {
     return (
       this.native
         .confirmPasswordReset(code, newPassword)
         /* istanbul ignore next - native error handling cannot be unit tested */
-        .catch(error => {
+        .catch((error: AuthErrorWithCodeInternal) => {
           if (error.code === 'auth/password-does-not-meet-requirements') {
             return this._recachePasswordPolicy()
               .catch(() => {
@@ -435,61 +559,69 @@ class FirebaseAuthModule extends FirebaseModule {
     );
   }
 
-  applyActionCode(code) {
+  applyActionCode(code: string): Promise<void> {
     return this.native.applyActionCode(code).then(user => {
       this._setUser(user);
     });
   }
 
-  checkActionCode(code) {
+  checkActionCode(code: string): Promise<FirebaseAuthTypes.ActionCodeInfo> {
     return this.native.checkActionCode(code);
   }
 
-  fetchSignInMethodsForEmail(email) {
+  fetchSignInMethodsForEmail(email: string): Promise<string[]> {
     return this.native.fetchSignInMethodsForEmail(email);
   }
 
-  verifyPasswordResetCode(code) {
+  verifyPasswordResetCode(code: string): Promise<string> {
     return this.native.verifyPasswordResetCode(code);
   }
 
-  useUserAccessGroup(userAccessGroup) {
+  useUserAccessGroup(userAccessGroup: string): Promise<void> {
     if (isAndroid) {
       return Promise.resolve();
     }
-    return this.native.useUserAccessGroup(userAccessGroup);
+    return this.native.useUserAccessGroup(userAccessGroup).then(() => undefined);
   }
 
-  getRedirectResult() {
+  getRedirectResult(): Promise<FirebaseAuthTypes.UserCredential | null> {
     throw new Error(
       'firebase.auth().getRedirectResult() is unsupported by the native Firebase SDKs.',
     );
   }
 
-  setPersistence() {
+  setPersistence(): Promise<void> {
     throw new Error('firebase.auth().setPersistence() is unsupported by the native Firebase SDKs.');
   }
 
-  signInWithPopup(provider) {
+  signInWithPopup(
+    provider: FirebaseAuthTypes.AuthProvider,
+  ): Promise<FirebaseAuthTypes.UserCredential> {
     return this.native
-      .signInWithProvider(provider.toObject())
-      .then(userCredential => this._setUserCredential(userCredential));
+      .signInWithProvider((provider as AuthProviderWithObjectInternal).toObject())
+      .then((userCredential: NativeUserCredentialInternal) =>
+        this._setUserCredential(userCredential),
+      );
   }
 
-  signInWithRedirect(provider) {
+  signInWithRedirect(
+    provider: FirebaseAuthTypes.AuthProvider,
+  ): Promise<FirebaseAuthTypes.UserCredential> {
     return this.native
-      .signInWithProvider(provider.toObject())
-      .then(userCredential => this._setUserCredential(userCredential));
+      .signInWithProvider((provider as AuthProviderWithObjectInternal).toObject())
+      .then((userCredential: NativeUserCredentialInternal) =>
+        this._setUserCredential(userCredential),
+      );
   }
 
   // firebase issue - https://github.com/invertase/react-native-firebase/pull/655#issuecomment-349904680
-  useDeviceLanguage() {
+  useDeviceLanguage(): void {
     throw new Error(
       'firebase.auth().useDeviceLanguage() is unsupported by the native Firebase SDKs.',
     );
   }
 
-  useEmulator(url) {
+  useEmulator(url: string): [string, number] {
     if (!url || !isString(url) || !isValidUrl(url)) {
       throw new Error('firebase.auth().useEmulator() takes a non-empty string URL');
     }
@@ -522,23 +654,35 @@ class FirebaseAuthModule extends FirebaseModule {
       throw new Error('firebase.auth().useEmulator() unable to parse host and port from URL');
     }
     const host = urlMatches[1];
-    const port = parseInt(urlMatches[2], 10);
+    const portString = urlMatches[2];
+    if (!host || !portString) {
+      throw new Error('firebase.auth().useEmulator() unable to parse host and port from URL');
+    }
+    const port = parseInt(portString, 10);
     this.native.useEmulator(host, port);
     return [host, port]; // undocumented return, useful for unit testing
   }
 
-  getMultiFactorResolver(error) {
-    return getMultiFactorResolver(this, error);
+  getMultiFactorResolver(
+    error: FirebaseAuthTypes.MultiFactorError,
+  ): FirebaseAuthTypes.MultiFactorResolver {
+    return getMultiFactorResolver(
+      this as unknown as AuthInternal,
+      error,
+    ) as FirebaseAuthTypes.MultiFactorResolver;
   }
 
-  multiFactor(user) {
+  multiFactor(user: FirebaseAuthTypes.User): FirebaseAuthTypes.MultiFactorUser {
     if (!this.currentUser || user.uid !== this.currentUser.uid) {
       throw new Error('firebase.auth().multiFactor() only operates on currentUser');
     }
-    return new MultiFactorUser(this, user);
+    return new MultiFactorUser(
+      this as unknown as AuthInternal,
+      user,
+    ) as FirebaseAuthTypes.MultiFactorUser;
   }
 
-  getCustomAuthDomain() {
+  getCustomAuthDomain(): Promise<string> {
     return this.native.getCustomAuthDomain();
   }
 }
@@ -556,7 +700,7 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: ['auth_state_changed', 'auth_id_token_changed', 'phone_auth_state_changed'],
+  nativeEvents,
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAuthModule,
