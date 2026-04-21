@@ -16,7 +16,16 @@
  */
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type {
+  CompleteFn,
+  ErrorFn,
+  NextFn,
+  Observer,
+  Unsubscribe,
+} from '@react-native-firebase/app/dist/module/types/common';
 import type { FirebaseAuthTypes } from './namespaced';
+
+export type { CompleteFn, ErrorFn, NextFn, Observer, Unsubscribe };
 
 export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 export type Auth = FirebaseAuthTypes.Module;
@@ -59,14 +68,29 @@ export type AuthListenerCallback = FirebaseAuthTypes.AuthListenerCallback;
 export type PhoneAuthSnapshot = FirebaseAuthTypes.PhoneAuthSnapshot;
 export type PhoneAuthError = FirebaseAuthTypes.PhoneAuthError;
 export type PhoneAuthListener = FirebaseAuthTypes.PhoneAuthListener;
-export type AuthSettings = FirebaseAuthTypes.AuthSettings;
 export type User = FirebaseAuthTypes.User;
 export type ActionCodeURL = FirebaseAuthTypes.ActionCodeURL;
-export type PasswordPolicy = FirebaseAuthTypes.PasswordPolicy;
 export type getMultiFactorResolver = FirebaseAuthTypes.getMultiFactorResolver;
 export type multiFactor = FirebaseAuthTypes.multiFactor;
 
+export interface Config {
+  apiKey: string;
+  apiHost: string;
+  apiScheme: string;
+  tokenApiHost: string;
+  sdkClientVersion: string;
+  authDomain?: string;
+}
+
+export interface AuthErrorMap {}
+
 export interface PopupRedirectResolver {}
+
+export interface Dependencies {
+  persistence?: Persistence | Persistence[];
+  popupRedirectResolver?: PopupRedirectResolver;
+  errorMap?: AuthErrorMap;
+}
 
 export interface ApplicationVerifier {
   readonly type: string;
@@ -74,8 +98,26 @@ export interface ApplicationVerifier {
 }
 
 export type Persistence = {
-  readonly type: 'SESSION' | 'LOCAL' | 'NONE';
+  readonly type: 'SESSION' | 'LOCAL' | 'NONE' | 'COOKIE';
 };
+
+export interface AuthSettings {
+  appVerificationDisabledForTesting: boolean;
+}
+
+export interface PasswordPolicy {
+  readonly customStrengthOptions: {
+    readonly minPasswordLength?: number;
+    readonly maxPasswordLength?: number;
+    readonly containsLowercaseLetter?: boolean;
+    readonly containsUppercaseLetter?: boolean;
+    readonly containsNumericCharacter?: boolean;
+    readonly containsNonAlphanumericCharacter?: boolean;
+  };
+  readonly allowedNonAlphanumericCharacters: string;
+  readonly enforcementState: string;
+  readonly forceUpgradeOnSignin: boolean;
+}
 
 export interface PasswordValidationStatus {
   readonly isValid: boolean;
