@@ -84,7 +84,7 @@ export default class User {
 
   delete() {
     return this._auth.native.delete().then(() => {
-      this._auth._setUser();
+      this._auth._setUser(null);
     });
   }
 
