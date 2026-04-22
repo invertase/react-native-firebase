@@ -47,8 +47,9 @@ Pod::Spec.new do |s|
 
   # Firebase dependencies
   # Analytics has conditional dependencies that vary between SPM and CocoaPods.
-  # SPM: use FirebaseAnalyticsWithoutAdIdSupport when $RNFirebaseAnalyticsWithoutAdIdSupport = true
-  #      to avoid GoogleAppMeasurement APM symbols that require FirebaseRemoteConfig (linker error).
+  # SPM: use FirebaseAnalyticsCore when $RNFirebaseAnalyticsWithoutAdIdSupport = true
+  #      to avoid GoogleAppMeasurement APM symbols (APMETaskManager, APMMeasurement)
+  #      that require FirebasePerformance at link time.
   # CocoaPods: IdentitySupport is a separate subspec controlled by $RNFirebaseAnalyticsWithoutAdIdSupport.
   if defined?(spm_dependency) && !defined?($RNFirebaseDisableSPM) &&
      defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && $RNFirebaseAnalyticsWithoutAdIdSupport
@@ -80,10 +81,21 @@ Pod::Spec.new do |s|
     s.frameworks =       'AdSupport'
   end
 
-  # GoogleAdsOnDeviceConversion (CocoaPods only, not available in firebase-ios-sdk SPM)
+  # GoogleAdsOnDeviceConversion (CocoaPods only)
+  # This is a static xcframework distributed separately from firebase-ios-sdk.
+  # It is NOT available as an SPM product in the firebase-ios-sdk Package.swift.
+  # When using SPM (dynamic linkage), this static xcframework causes duplicate
+  # symbol errors. Use CocoaPods mode ($RNFirebaseDisableSPM = true) if you need
+  # on-device conversion measurement.
+  # See: https://developers.google.com/google-ads/api/docs/conversions/upload-identifiers
   if defined?($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion) && ($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion == true)
-    Pod::UI.puts "#{s.name}: GoogleAdsOnDeviceConversion pod added"
-    s.dependency          'GoogleAdsOnDeviceConversion'
+    if defined?(spm_dependency) && !defined?($RNFirebaseDisableSPM)
+      Pod::UI.warn "#{s.name}: GoogleAdsOnDeviceConversion is not available in SPM mode. " \
+        "Set $RNFirebaseDisableSPM = true in your Podfile to use this feature."
+    else
+      Pod::UI.puts "#{s.name}: GoogleAdsOnDeviceConversion pod added"
+      s.dependency          'GoogleAdsOnDeviceConversion'
+    end
   end
 
   if defined?($RNFirebaseAsStaticFramework)

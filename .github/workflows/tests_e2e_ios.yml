@@ -218,8 +218,8 @@ jobs:
         continue-on-error: true
         with:
           path: tests/ios/Pods
-          key: ${{ runner.os }}-ios-pods-v3-${{ matrix.dep-resolution }}-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-ios-pods-v3-${{ matrix.dep-resolution }}
+          key: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v3-${{ hashFiles('tests/ios/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v3
 
       - name: Configure Dependency Resolution Mode
         run: |

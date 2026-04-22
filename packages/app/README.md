@@ -38,7 +38,7 @@ yarn add @react-native-firebase/app
 
 ## iOS Dependency Resolution: SPM vs CocoaPods
 
-Starting with React Native >= 0.75, `@react-native-firebase` supports **Swift Package Manager (SPM)** for resolving Firebase iOS SDK dependencies. SPM is enabled by default — no configuration needed.
+Starting with React Native 0.75+, `@react-native-firebase` supports **Swift Package Manager (SPM)** for resolving Firebase iOS SDK dependencies. SPM is enabled by default when the `spm_dependency` macro is available (injected by React Native >= 0.75) — no configuration needed.
 
 ### How it works
 
@@ -46,13 +46,15 @@ Each RNFB module uses `firebase_dependency()` (defined in `firebase_spm.rb`) to 
 
 | Condition | Resolution | When to use |
 |-----------|-----------|-------------|
-| React Native >= 0.75 and `$RNFirebaseDisableSPM` **not set** | **SPM** (default) | Dynamic linkage (`use_frameworks! :linkage => :dynamic`) |
-| `$RNFirebaseDisableSPM = true` in Podfile | **CocoaPods** | Static linkage or projects that need CocoaPods-only resolution |
-| React Native < 0.75 | **CocoaPods** (automatic fallback) | Older React Native versions without `spm_dependency` support |
+| RN >= 0.75 and `$RNFirebaseDisableSPM` **not set** | **SPM** (default) | Dynamic linkage / pre-built RN core (`use_frameworks! :linkage => :dynamic`) |
+| `$RNFirebaseDisableSPM = true` in Podfile | **CocoaPods** | Static linkage / no pre-built RN core (`use_frameworks! :linkage => :static`) |
+| RN < 0.75 | **CocoaPods** (automatic fallback) | Older React Native versions without `spm_dependency` support |
+
+> **Note on linkage:** firebase-ios-sdk SPM products use dynamic linkage. When using `use_frameworks! :linkage => :static`, each pod embeds its own copy of Firebase SPM products, causing duplicate symbol errors. Use CocoaPods mode (`$RNFirebaseDisableSPM = true`) with static linkage.
 
 ### Configuration
 
-**Option A — SPM (default, recommended for Xcode 26+)**
+#### Option A — SPM (default, recommended for Xcode 26+)
 
 No changes needed. Just make sure your Podfile uses dynamic linkage:
 
@@ -69,7 +71,7 @@ use_frameworks! :linkage => :dynamic
 > This does NOT disable SPM — it only tells the Swift compiler to use implicit module discovery
 > (the Xcode 16 default) so transitive SPM targets are resolved automatically.
 
-**Option B — CocoaPods only**
+#### Option B — CocoaPods only
 
 Add this line at the top of your Podfile (before any `target` block):
 
@@ -80,6 +82,52 @@ $RNFirebaseDisableSPM = true
 
 This forces all RNFB modules to use traditional `s.dependency` CocoaPods declarations.
 You can use either static or dynamic linkage with this option.
+
+#### Expo
+
+For Expo managed projects, use `expo-build-properties` to configure linkage and Podfile directives:
+
+```json
+// app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "dynamic"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+To disable SPM in Expo, add a Podfile directive via a config plugin or `app.json`:
+
+```json
+// app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static",
+            "extraPods": []
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+Then create a small [config plugin](https://docs.expo.dev/config-plugins/introduction/) to prepend
+`$RNFirebaseDisableSPM = true` to the generated Podfile, or add it manually if you have ejected.
 
 ### How to verify
 
@@ -93,6 +141,14 @@ During `pod install`, you will see messages indicating which resolution mode is 
 # CocoaPods mode:
 [react-native-firebase] RNFBApp: SPM disabled ($RNFirebaseDisableSPM = true), using CocoaPods for Firebase dependencies
 ```
+
+### Monorepo / pnpm notes
+
+The `firebase_spm.rb` helper is loaded by each RNFB podspec via `require '../app/firebase_spm'`.
+This relative path assumes the standard `node_modules/@react-native-firebase/` layout. If your
+package manager hoists dependencies differently (e.g., pnpm strict mode), you may need to verify
+that the require path resolves correctly. The SPM URL is read from
+`@react-native-firebase/app/package.json` at the location of `firebase_spm.rb`.
 
 ## License
 
