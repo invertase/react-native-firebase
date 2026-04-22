@@ -546,6 +546,10 @@ tests/ios/resetXcode.sh
 
 google-services.json
 GoogleService-Info.plist
+apps/build-harness/android/app/google-services.json
+apps/build-harness/ios/BuildHarness/GoogleService-Info.plist
+apps/build-harness/.build-harness.local.json
+apps/build-harness/.bundle/
 
 # generated files
 RNFBVersion.m
