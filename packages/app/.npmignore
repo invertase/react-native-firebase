@@ -69,5 +69,8 @@ type-test.ts
 scripts
 __tests__
 
-# Force include generated version file (needed for linking)
+# Force include generated version file (needed for linking).
+# This file is in .gitignore but must be in the published npm package.
+# Note: this package does not use a "files" array in package.json,
+# so .npmignore is the sole mechanism controlling published file set.
 !ios/RNFBApp/RNFBVersion.m

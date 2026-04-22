@@ -18,7 +18,12 @@
 
 require 'json'
 
-# Read Firebase SPM URL from app package.json (single source of truth)
+# Read Firebase SPM URL from app package.json (single source of truth).
+# __dir__ resolves to the directory of this file (packages/app/).
+# In monorepos with hoisted dependencies or pnpm, the path from other packages
+# (e.g., `require '../app/firebase_spm'`) must resolve correctly to this location.
+# If your package manager hoists differently, you may need to adjust the require
+# path in individual podspecs.
 $firebase_spm_url ||= begin
   app_package_path = File.join(__dir__, 'package.json')
   app_package = JSON.parse(File.read(app_package_path))
@@ -32,9 +37,14 @@ end
 # the traditional CocoaPods `s.dependency` declaration.
 #
 # Set `$RNFirebaseDisableSPM = true` in your Podfile to force CocoaPods-only
-# dependency resolution. This is required when using `use_frameworks! :linkage => :static`
+# dependency resolution. You must disable SPM when using `use_frameworks! :linkage => :static`
 # because static frameworks cause each pod to embed Firebase SPM products,
 # resulting in duplicate symbol linker errors.
+#
+# firebase-ios-sdk SPM requires dynamic linkage. There is no upstream statement
+# from Google that SPM+static is supported. See:
+# https://github.com/firebase/firebase-ios-sdk/blob/main/Package.swift
+# (all products use .library(type: .dynamic))
 #
 # @param spec [Pod::Specification] The podspec object (the `s` in podspec DSL)
 # @param version [String] Firebase SDK version (e.g., '12.10.0')
