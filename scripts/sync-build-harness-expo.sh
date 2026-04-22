@@ -6,11 +6,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 source "${SCRIPT_DIR}/build-harness-common.sh"
 
-APP_DIR="${REPO_ROOT}/apps/build-harness"
+APP_DIR="${REPO_ROOT}/apps/build-harness-expo"
 LOCAL_CONFIG_PATH="${APP_DIR}/.build-harness.local.json"
-IOS_PROJECT_PATH="${APP_DIR}/ios/BuildHarness.xcodeproj"
-IOS_GOOGLE_SERVICES_DEST="${APP_DIR}/ios/BuildHarness/GoogleService-Info.plist"
-ANDROID_GOOGLE_SERVICES_DEST="${APP_DIR}/android/app/google-services.json"
+IOS_GOOGLE_SERVICES_DEST="${APP_DIR}/GoogleService-Info.plist"
+ANDROID_GOOGLE_SERVICES_DEST="${APP_DIR}/google-services.json"
 DEFAULT_IOS_GOOGLE_SERVICES_PATH="${HARNESS_DEFAULT_IOS_GOOGLE_SERVICES_PATH}"
 DEFAULT_ANDROID_GOOGLE_SERVICES_PATH="${HARNESS_DEFAULT_ANDROID_GOOGLE_SERVICES_PATH}"
 DEFAULT_IOS_BUNDLE_ID="${HARNESS_DEFAULT_IOS_BUNDLE_ID}"
@@ -22,7 +21,6 @@ if [[ $# -gt 0 ]]; then
 fi
 
 RUN_YARN_INSTALL=""
-RUN_POD_INSTALL=""
 RUN_CLEAN=0
 RNFB_SOURCE=""
 RNFB_VERSION=""
@@ -69,15 +67,15 @@ INFERRED_ANDROID_APPLICATION_ID=""
 
 usage() {
   cat <<'EOF'
-Usage: sync-build-harness.sh <command> [options] [-- extra react-native args]
+Usage: sync-build-harness-expo.sh <command> [options] [-- extra expo args]
 
 Commands:
   doctor        Show effective defaults, local overrides, and prerequisite status.
-  clean         Remove build products, Pods, and derived data for the harness app.
-  sync          Update harness dependencies, copy Firebase config, patch iOS metadata, install deps.
-  pod-install   Install iOS pods using the current or supplied overrides.
-  build-ios     Sync the harness and run the iOS app.
-  build-android Sync the harness and run the Android app.
+  clean         Remove generated native projects and local build artifacts for the Expo harness.
+  sync          Update harness dependencies, copy Firebase config, and validate Expo config.
+  start         Start the Expo bundler with the workspace plugin resolution path configured.
+  build-ios     Sync the harness, run expo prebuild for iOS, then build with expo run:ios.
+  build-android Sync the harness, run expo prebuild for Android, then build with expo run:android.
 
 Options:
   --rnfb-source <workspace|published>
@@ -93,24 +91,22 @@ Options:
   --app-distribution-gradle <version>   Override App Distribution Gradle plugin version.
   --ios-google-services <path>          Path to GoogleService-Info.plist.
   --android-google-services <path>      Path to google-services.json.
-  --ios-bundle-id <bundle_id>           Override iOS bundle identifier.
-  --android-application-id <id>         Override Android applicationId (namespace remains fixed).
-  --clean                               Clean build artifacts before syncing or building.
+  --ios-bundle-id <bundle_id>           Override Expo iOS bundle identifier.
+  --android-application-id <id>         Override Expo Android package/applicationId.
+  --clean                               Clean generated native projects before syncing or building.
   --yarn-install / --no-yarn-install    Control root dependency installation.
-  --pod-install / --no-pod-install      Control pod install for sync / build-ios.
   -h, --help                            Show this help text.
 
 Examples:
-  yarn app:sync
-  bash ./scripts/sync-build-harness.sh sync --firebase-ios 12.13.0 --firebase-android-bom 34.13.0
-  bash ./scripts/sync-build-harness.sh build-ios --ios-google-services "$HOME/Downloads/GoogleService-Info.plist"
-  bash ./scripts/sync-build-harness.sh build-android --rnfb-source published --rnfb-version 24.0.0
+  yarn app:expo:sync
+  bash ./scripts/sync-build-harness-expo.sh sync --firebase-ios 12.13.0 --firebase-android-bom 34.13.0
+  bash ./scripts/sync-build-harness-expo.sh build-ios --ios-google-services "$HOME/Downloads/GoogleService-Info.plist"
+  bash ./scripts/sync-build-harness-expo.sh build-android --rnfb-source published --rnfb-version 24.0.0
 EOF
 }
 
 die() {
-  echo "sync-build-harness: $*" >&2
-  exit 1
+  harness_die "$@"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -190,14 +186,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     --no-yarn-install)
       RUN_YARN_INSTALL=0
-      shift
-      ;;
-    --pod-install)
-      RUN_POD_INSTALL=1
-      shift
-      ;;
-    --no-pod-install)
-      RUN_POD_INSTALL=0
       shift
       ;;
     -h | --help)
@@ -301,16 +289,6 @@ resolve_effective_config() {
   if [[ -z "${RUN_YARN_INSTALL}" ]]; then
     RUN_YARN_INSTALL=1
   fi
-  if [[ -z "${RUN_POD_INSTALL}" ]]; then
-    case "${COMMAND}" in
-      sync | pod-install | build-ios)
-        RUN_POD_INSTALL=1
-        ;;
-      *)
-        RUN_POD_INSTALL=0
-        ;;
-    esac
-  fi
 
   if [[ "${RNFB_SOURCE}" != "workspace" && "${RNFB_SOURCE}" != "published" ]]; then
     die "--rnfb-source must be 'workspace' or 'published'"
@@ -332,35 +310,6 @@ ensure_google_services_files() {
     "${ANDROID_GOOGLE_SERVICES_DEST}"
 }
 
-apply_ios_project_config() {
-  (
-    cd "${APP_DIR}"
-    bundle check >/dev/null 2>&1 || bundle install
-    bundle exec ruby - "${IOS_PROJECT_PATH}" "${IOS_BUNDLE_ID}" <<'RUBY'
-require 'xcodeproj'
-
-project_path = ARGV.fetch(0)
-bundle_id = ARGV.fetch(1)
-project = Xcodeproj::Project.open(project_path)
-target = project.targets.find { |item| item.name == 'BuildHarness' }
-abort('Unable to locate BuildHarness target') unless target
-
-group = project.main_group.find_subpath('BuildHarness', true)
-file_ref = group.files.find { |file| file.path == 'GoogleService-Info.plist' } || group.new_file('GoogleService-Info.plist')
-
-unless target.resources_build_phase.files_references.any? { |reference| reference.path == 'GoogleService-Info.plist' }
-  target.resources_build_phase.add_file_reference(file_ref, true)
-end
-
-target.build_configurations.each do |config|
-  config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = bundle_id
-end
-
-project.save
-RUBY
-  )
-}
-
 update_harness_package_json() {
   harness_update_package_json "${APP_DIR}/package.json"
 }
@@ -375,16 +324,6 @@ install_dependencies() {
   )
 }
 
-pod_install() {
-  export_build_env
-  (
-    cd "${APP_DIR}"
-    bundle check >/dev/null 2>&1 || bundle install
-    cd ios
-    bundle exec pod install
-  )
-}
-
 export_build_env() {
   export RNFB_FIREBASE_IOS_SDK="${FIREBASE_IOS_VERSION}"
   export FIREBASE_SDK_VERSION="${FIREBASE_IOS_VERSION}"
@@ -393,21 +332,29 @@ export_build_env() {
   export RNFB_CRASHLYTICS_GRADLE="${CRASHLYTICS_GRADLE_VERSION}"
   export RNFB_PERF_GRADLE="${PERF_GRADLE_VERSION}"
   export RNFB_APP_DISTRIBUTION_GRADLE="${APP_DISTRIBUTION_GRADLE_VERSION}"
+  export RNFB_BUILD_HARNESS_IOS_BUNDLE_ID="${IOS_BUNDLE_ID}"
   export RNFB_BUILD_HARNESS_ANDROID_APPLICATION_ID="${ANDROID_APPLICATION_ID}"
+}
+
+export_expo_cli_env() {
+  export NODE_PATH="${APP_DIR}/node_modules${NODE_PATH:+:${NODE_PATH}}"
+}
+
+validate_expo_config() {
+  export_expo_cli_env
+  (
+    cd "${APP_DIR}"
+    yarn expo config --json >/dev/null
+  )
 }
 
 clean_harness() {
   rm -rf \
-    "${APP_DIR}/android/.gradle" \
-    "${APP_DIR}/android/app/build" \
-    "${APP_DIR}/android/build" \
-    "${APP_DIR}/ios/Pods" \
-    "${APP_DIR}/ios/build" \
-    "${APP_DIR}/ios/Podfile.lock"
-
-  if [[ "$(uname)" == "Darwin" ]]; then
-    rm -rf "${HOME}/Library/Developer/Xcode/DerivedData"/BuildHarness-*
-  fi
+    "${APP_DIR}/.expo" \
+    "${APP_DIR}/android" \
+    "${APP_DIR}/ios" \
+    "${APP_DIR}/dist" \
+    "${APP_DIR}/web-build"
 }
 
 prepare_harness() {
@@ -449,13 +396,8 @@ prepare_harness() {
   write_local_config
   install_dependencies
   ensure_google_services_files
-  if [[ "$(uname)" == "Darwin" ]]; then
-    apply_ios_project_config
-  fi
-
-  if [[ "${RUN_POD_INSTALL}" == "1" ]]; then
-    pod_install
-  fi
+  export_build_env
+  validate_expo_config
 }
 
 doctor() {
@@ -481,7 +423,7 @@ doctor() {
   echo "  Android GoogleService path: ${ANDROID_GOOGLE_SERVICES_PATH}"
   echo
   echo "Prerequisites:"
-  for command_name in node yarn ruby; do
+  for command_name in node yarn; do
     if command -v "${command_name}" >/dev/null 2>&1; then
       echo "  ${command_name}: ok"
     else
@@ -501,21 +443,47 @@ doctor() {
   [[ -f "${ANDROID_GOOGLE_SERVICES_PATH}" ]] && echo "  Android json: present" || echo "  Android json: missing"
 }
 
-build_ios() {
-  prepare_harness
-  export_build_env
+prebuild_ios() {
+  export_expo_cli_env
   (
     cd "${APP_DIR}"
-    yarn react-native run-ios "${EXTRA_ARGS[@]}"
+    yarn expo prebuild --clean --platform ios "${EXTRA_ARGS[@]}"
+  )
+}
+
+prebuild_android() {
+  export_expo_cli_env
+  (
+    cd "${APP_DIR}"
+    yarn expo prebuild --clean --platform android "${EXTRA_ARGS[@]}"
+  )
+}
+
+start_expo() {
+  resolve_effective_config
+  export_build_env
+  export_expo_cli_env
+  (
+    cd "${APP_DIR}"
+    yarn expo start --clear "${EXTRA_ARGS[@]}"
+  )
+}
+
+build_ios() {
+  prepare_harness
+  prebuild_ios
+  (
+    cd "${APP_DIR}"
+    yarn expo run:ios "${EXTRA_ARGS[@]}"
   )
 }
 
 build_android() {
   prepare_harness
-  export_build_env
+  prebuild_android
   (
     cd "${APP_DIR}"
-    yarn react-native run-android "${EXTRA_ARGS[@]}"
+    yarn expo run:android "${EXTRA_ARGS[@]}"
   )
 }
 
@@ -529,8 +497,8 @@ case "${COMMAND}" in
   sync)
     prepare_harness
     ;;
-  pod-install)
-    prepare_harness
+  start)
+    start_expo
     ;;
   build-ios)
     build_ios
