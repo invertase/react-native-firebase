@@ -34,6 +34,7 @@ import {
   type ModuleConfig,
 } from '@react-native-firebase/app/dist/module/internal';
 import ConfirmationResult from './ConfirmationResult';
+import { PhoneAuthState } from './PhoneAuthState';
 import PhoneAuthListener from './PhoneAuthListener';
 import PhoneMultiFactorGenerator from './PhoneMultiFactorGenerator';
 import TotpMultiFactorGenerator from './TotpMultiFactorGenerator';
@@ -75,30 +76,8 @@ type AuthErrorWithCodeInternal = Error & {
   code?: string;
 };
 
-const PhoneAuthState = {
-  CODE_SENT: 'sent',
-  AUTO_VERIFY_TIMEOUT: 'timeout',
-  AUTO_VERIFIED: 'verified',
-  ERROR: 'error',
-} as const;
-
 const nativeEvents = ['auth_state_changed', 'auth_id_token_changed', 'phone_auth_state_changed'];
 
-export {
-  AppleAuthProvider,
-  EmailAuthProvider,
-  PhoneAuthProvider,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  TwitterAuthProvider,
-  FacebookAuthProvider,
-  PhoneMultiFactorGenerator,
-  TotpMultiFactorGenerator,
-  TotpSecret,
-  OAuthProvider,
-  OIDCAuthProvider,
-  PhoneAuthState,
-};
 
 const statics = {
   AppleAuthProvider,

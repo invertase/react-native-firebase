@@ -53,21 +53,6 @@ const config: PackageConfig = {
         'RN Firebase does not yet expose the firebase-js-sdk EmailAuthCredential class as part of the modular public surface.',
     },
     {
-      name: 'FacebookAuthProvider',
-      reason:
-        'This provider class is still only reachable through the legacy namespaced export path, not the modular compare-types surface.',
-    },
-    {
-      name: 'GithubAuthProvider',
-      reason:
-        'This provider class is still only reachable through the legacy namespaced export path, not the modular compare-types surface.',
-    },
-    {
-      name: 'GoogleAuthProvider',
-      reason:
-        'This provider class is still only reachable through the legacy namespaced export path, not the modular compare-types surface.',
-    },
-    {
       name: 'indexedDBLocalPersistence',
       reason:
         'IndexedDB persistence is web-only and not applicable to React Native native-auth persistence.',
@@ -93,11 +78,6 @@ const config: PackageConfig = {
         'RN Firebase does not yet expose the firebase-js-sdk PhoneAuthCredential class as part of the modular public surface.',
     },
     {
-      name: 'PhoneAuthProvider',
-      reason:
-        'This provider class is still only reachable through the legacy namespaced export path, not the modular compare-types surface.',
-    },
-    {
       name: 'prodErrorMap',
       reason:
         'firebase-js-sdk web error-map helper. RN Firebase does not expose the SDK error-map selection API.',
@@ -121,18 +101,23 @@ const config: PackageConfig = {
       reason:
         'SAMLAuthProvider is not yet surfaced on the RN Firebase modular/public auth surface.',
     },
-    {
-      name: 'TwitterAuthProvider',
-      reason:
-        'This provider class is still only reachable through the legacy namespaced export path, not the modular compare-types surface.',
-    },
   ],
 
   extraInRN: [
     {
+      name: 'AppleAuthProvider',
+      reason:
+        'RN Firebase-specific Apple auth provider helper exposed for native Sign in with Apple flows; the firebase-js-sdk does not export a separate AppleAuthProvider class.',
+    },
+    {
       name: 'NativeFirebaseAuthError',
       reason:
         'RN Firebase-specific native bridge auth error type used in place of the firebase-js-sdk AuthError export.',
+    },
+    {
+      name: 'OIDCAuthProvider',
+      reason:
+        'RN Firebase-specific OIDC auth provider class retained for compatibility with the existing public package surface; the firebase-js-sdk exposes OAuthProvider instead of a separate OIDCAuthProvider class.',
     },
     {
       name: 'OIDCProvider',
@@ -216,9 +201,34 @@ const config: PackageConfig = {
         'The public Auth surface now matches structurally, but the emitted declaration text still differs from the firebase-js-sdk because RN Firebase uses its local FirebaseApp and NextOrObserver<User> spellings in the generated interface.',
     },
     {
+      name: 'FacebookAuthProvider',
+      reason:
+        'RN Firebase now exports FacebookAuthProvider from the modular surface, but its native helper class only exposes the credential factory used by RNFB and does not yet mirror the firebase-js-sdk static fields and credentialFromResult/credentialFromError helpers.',
+    },
+    {
+      name: 'GithubAuthProvider',
+      reason:
+        'RN Firebase now exports GithubAuthProvider from the modular surface, but its native helper class only exposes the credential factory used by RNFB and does not yet mirror the firebase-js-sdk static fields and credentialFromResult/credentialFromError helpers.',
+    },
+    {
+      name: 'GoogleAuthProvider',
+      reason:
+        'RN Firebase now exports GoogleAuthProvider from the modular surface, but its native helper class only exposes the credential factory used by RNFB and does not yet mirror the firebase-js-sdk static fields and credentialFromResult/credentialFromError helpers.',
+    },
+    {
       name: 'ParsedToken',
       reason:
         'TypeScript emits the parsed-token property keys without quotes in the generated declaration file, so compare-types reports a text-only difference even though the property set matches the firebase-js-sdk surface.',
+    },
+    {
+      name: 'PhoneAuthProvider',
+      reason:
+        'RN Firebase now exports PhoneAuthProvider from the modular surface, but the native helper class still exposes a reduced static API and looser signatures than the firebase-js-sdk PhoneAuthProvider class.',
+    },
+    {
+      name: 'TwitterAuthProvider',
+      reason:
+        'RN Firebase now exports TwitterAuthProvider from the modular surface, but its native helper class only exposes the credential factory used by RNFB and does not yet mirror the firebase-js-sdk static fields and credentialFromResult/credentialFromError helpers.',
     },
   ],
 };

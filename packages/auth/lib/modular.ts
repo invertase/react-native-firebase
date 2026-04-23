@@ -16,7 +16,20 @@
 
 import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
+import PhoneMultiFactorGenerator from './PhoneMultiFactorGenerator';
+import { PhoneAuthState } from './PhoneAuthState';
+import TotpMultiFactorGenerator from './TotpMultiFactorGenerator';
+import { TotpSecret } from './TotpSecret';
 import { MultiFactorUser as MultiFactorUserModule } from './multiFactor';
+import AppleAuthProvider from './providers/AppleAuthProvider';
+import EmailAuthProvider from './providers/EmailAuthProvider';
+import FacebookAuthProvider from './providers/FacebookAuthProvider';
+import GithubAuthProvider from './providers/GithubAuthProvider';
+import GoogleAuthProvider from './providers/GoogleAuthProvider';
+import OAuthProvider from './providers/OAuthProvider';
+import OIDCAuthProvider from './providers/OIDCAuthProvider';
+import PhoneAuthProvider from './providers/PhoneAuthProvider';
+import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import type { FirebaseApp } from '@react-native-firebase/app';
 import type {
   ActionCodeInfo,
@@ -97,6 +110,22 @@ function asIdTokenResult(
 function asUser(promise: Promise<FirebaseAuthTypes.User>): Promise<User> {
   return promise as unknown as Promise<User>;
 }
+
+export {
+  AppleAuthProvider,
+  EmailAuthProvider,
+  FacebookAuthProvider,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  OAuthProvider,
+  OIDCAuthProvider,
+  PhoneAuthProvider,
+  PhoneAuthState,
+  PhoneMultiFactorGenerator,
+  TotpMultiFactorGenerator,
+  TotpSecret,
+  TwitterAuthProvider,
+};
 
 function normalizeAuthListener(
   nextOrObserver: NextOrObserver<User>,
