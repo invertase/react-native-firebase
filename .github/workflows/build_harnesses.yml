@@ -1,0 +1,207 @@
+name: Build Harnesses
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - '**'
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
+  push:
+    branches:
+      - main
+      - v14-release
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    name: iOS (${{ matrix.harness }})
+    runs-on: macos-15
+    timeout-minutes: 80
+    strategy:
+      fail-fast: false
+      matrix:
+        harness:
+          - bare
+          - expo
+    env:
+      # Keep in sync with the existing iOS E2E workflow, which tracks latest-stable
+      # because Firebase iOS SDK updates can require newer Xcode versions.
+      XCODE_VERSION: latest-stable
+      IOS_GOOGLE_SERVICES_PATH: ${{ runner.temp }}/GoogleService-Info.plist
+      ANDROID_GOOGLE_SERVICES_PATH: ${{ runner.temp }}/google-services.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3
+
+      - name: Create CI Firebase config files
+        run: bash ./scripts/write-ci-firebase-configs.sh "${IOS_GOOGLE_SERVICES_PATH}" "${ANDROID_GOOGLE_SERVICES_PATH}"
+
+      - name: Cache CocoaPods and specs
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods/repos
+            apps/build-harness/ios/Pods
+          key: ${{ runner.os }}-harness-pods-v1-${{ hashFiles('yarn.lock', 'apps/build-harness/ios/Podfile.lock', 'apps/build-harness-expo/package.json', 'apps/build-harness-expo/app.config.js') }}
+          restore-keys: |
+            ${{ runner.os }}-harness-pods-v1-
+
+      - name: Yarn install
+        run: yarn
+
+      - name: Sync bare harness
+        if: matrix.harness == 'bare'
+        run: |
+          bash ./scripts/sync-build-harness.sh sync \
+            --ios-google-services "${IOS_GOOGLE_SERVICES_PATH}" \
+            --android-google-services "${ANDROID_GOOGLE_SERVICES_PATH}" \
+            --no-yarn-install \
+            --pod-install
+
+      - name: Build bare iOS harness
+        if: matrix.harness == 'bare'
+        working-directory: apps/build-harness/ios
+        run: |
+          xcodebuild \
+            -workspace BuildHarness.xcworkspace \
+            -scheme BuildHarness \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Sync Expo harness
+        if: matrix.harness == 'expo'
+        run: |
+          bash ./scripts/sync-build-harness-expo.sh sync \
+            --ios-google-services "${IOS_GOOGLE_SERVICES_PATH}" \
+            --android-google-services "${ANDROID_GOOGLE_SERVICES_PATH}" \
+            --no-yarn-install
+
+      - name: Prebuild Expo iOS harness
+        if: matrix.harness == 'expo'
+        working-directory: apps/build-harness-expo
+        run: |
+          export NODE_PATH="$PWD/node_modules"
+          CI=1 yarn expo prebuild --clean --platform ios
+
+      - name: Build Expo iOS harness
+        if: matrix.harness == 'expo'
+        working-directory: apps/build-harness-expo/ios
+        run: |
+          WORKSPACE="RNFBExpoHarness.xcworkspace"
+          SCHEME="RNFBExpoHarness"
+          xcodebuild \
+            -workspace "${WORKSPACE}" \
+            -scheme "${SCHEME}" \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+  android:
+    name: Android (${{ matrix.harness }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        harness:
+          - bare
+          - expo
+    env:
+      IOS_GOOGLE_SERVICES_PATH: ${{ runner.temp }}/GoogleService-Info.plist
+      ANDROID_GOOGLE_SERVICES_PATH: ${{ runner.temp }}/google-services.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Configure JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Create CI Firebase config files
+        run: bash ./scripts/write-ci-firebase-configs.sh "${IOS_GOOGLE_SERVICES_PATH}" "${ANDROID_GOOGLE_SERVICES_PATH}"
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-harness-gradle-v1-${{ hashFiles('yarn.lock', 'apps/build-harness/android/**/*.gradle', 'apps/build-harness/android/gradle.properties', 'apps/build-harness-expo/package.json', 'apps/build-harness-expo/app.config.js') }}
+          restore-keys: |
+            ${{ runner.os }}-harness-gradle-v1-
+
+      - name: Yarn install
+        run: yarn
+
+      - name: Sync bare harness
+        if: matrix.harness == 'bare'
+        run: |
+          bash ./scripts/sync-build-harness.sh sync \
+            --ios-google-services "${IOS_GOOGLE_SERVICES_PATH}" \
+            --android-google-services "${ANDROID_GOOGLE_SERVICES_PATH}" \
+            --no-yarn-install \
+            --no-pod-install
+
+      - name: Build bare Android harness
+        if: matrix.harness == 'bare'
+        working-directory: apps/build-harness/android
+        run: ./gradlew :app:assembleDebug
+
+      - name: Sync Expo harness
+        if: matrix.harness == 'expo'
+        run: |
+          bash ./scripts/sync-build-harness-expo.sh sync \
+            --ios-google-services "${IOS_GOOGLE_SERVICES_PATH}" \
+            --android-google-services "${ANDROID_GOOGLE_SERVICES_PATH}" \
+            --no-yarn-install
+
+      - name: Prebuild Expo Android harness
+        if: matrix.harness == 'expo'
+        working-directory: apps/build-harness-expo
+        run: |
+          export NODE_PATH="$PWD/node_modules"
+          CI=1 yarn expo prebuild --clean --platform android
+
+      - name: Build Expo Android harness
+        if: matrix.harness == 'expo'
+        working-directory: apps/build-harness-expo/android
+        run: ./gradlew :app:assembleDebug
