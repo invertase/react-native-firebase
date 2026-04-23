@@ -8,13 +8,14 @@ import eslintPluginMocha from 'eslint-plugin-mocha';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import eslintPluginReact from 'eslint-plugin-react';
 import eslintPluginTypescript from 'typescript-eslint';
+import * as eslintPluginMdx from 'eslint-plugin-mdx';
 
 export default defineConfig([
   globalIgnores([
-    '**/node_modules/',
     'packages/**/dist/',
     '**/type-test.ts',
     'packages/ai/__tests__/test-utils',
+    'docs/rnfb-logo.png',
   ]),
 
   {
@@ -72,6 +73,7 @@ export default defineConfig([
   {
     name: 'Typescript',
     extends: [eslintPluginTypescript.configs.recommended],
+    ignores: ['*.mdx'],
     rules: {
       'prefer-const': 0,
       'prefer-rest-params': 0,
@@ -105,6 +107,12 @@ export default defineConfig([
         { allowObjectTypes: 'always', allowInterfaces: 'always' },
       ],
     },
+  },
+
+  {
+    name: 'MDX',
+    files: ['**/*.mdx'],
+    ...eslintPluginMdx.flat,
   },
   {
     files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
