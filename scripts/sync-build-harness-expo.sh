@@ -340,6 +340,14 @@ export_expo_cli_env() {
   export NODE_PATH="${APP_DIR}/node_modules${NODE_PATH:+:${NODE_PATH}}"
 }
 
+run_with_extra_args() {
+  if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
+    "$@" "${EXTRA_ARGS[@]}"
+  else
+    "$@"
+  fi
+}
+
 validate_expo_config() {
   export_expo_cli_env
   (
@@ -447,7 +455,7 @@ prebuild_ios() {
   export_expo_cli_env
   (
     cd "${APP_DIR}"
-    yarn expo prebuild --clean --platform ios "${EXTRA_ARGS[@]}"
+    run_with_extra_args yarn expo prebuild --clean --platform ios
   )
 }
 
@@ -455,7 +463,7 @@ prebuild_android() {
   export_expo_cli_env
   (
     cd "${APP_DIR}"
-    yarn expo prebuild --clean --platform android "${EXTRA_ARGS[@]}"
+    run_with_extra_args yarn expo prebuild --clean --platform android
   )
 }
 
@@ -465,7 +473,7 @@ start_expo() {
   export_expo_cli_env
   (
     cd "${APP_DIR}"
-    yarn expo start --clear "${EXTRA_ARGS[@]}"
+    run_with_extra_args yarn expo start --clear
   )
 }
 
@@ -474,7 +482,7 @@ build_ios() {
   prebuild_ios
   (
     cd "${APP_DIR}"
-    yarn expo run:ios "${EXTRA_ARGS[@]}"
+    run_with_extra_args yarn expo run:ios
   )
 }
 
@@ -483,7 +491,7 @@ build_android() {
   prebuild_android
   (
     cd "${APP_DIR}"
-    yarn expo run:android "${EXTRA_ARGS[@]}"
+    run_with_extra_args yarn expo run:android
   )
 }
 
