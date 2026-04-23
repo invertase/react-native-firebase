@@ -51,6 +51,12 @@
       ]
     },
     {
+      "group": "AI Logic",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/social/firebase-logo.png",
+      "pages": [{ "title": "Usage", "href": "/ai/usage" }]
+    },
+    {
       "group": "Analytics",
       "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/analytics.svg",

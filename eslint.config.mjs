@@ -14,8 +14,7 @@ export default defineConfig([
   globalIgnores([
     'packages/**/dist/',
     '**/type-test.ts',
-    'packages/ai/__tests__/test-utils',
-    'docs/rnfb-logo.png',
+    'packages/ai/__tests__/test-utils'
   ]),
 
   {
