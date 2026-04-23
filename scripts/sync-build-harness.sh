@@ -406,7 +406,14 @@ clean_harness() {
     "${APP_DIR}/ios/Podfile.lock"
 
   if [[ "$(uname)" == "Darwin" ]]; then
-    rm -rf "${HOME}/Library/Developer/Xcode/DerivedData"/BuildHarness-*
+    if command -v xcodebuild >/dev/null 2>&1; then
+      xcodebuild \
+        -project "${IOS_PROJECT_PATH}" \
+        -scheme BuildHarness \
+        -configuration Debug \
+        -sdk iphonesimulator \
+        clean >/dev/null 2>&1 || true
+    fi
   fi
 }
 

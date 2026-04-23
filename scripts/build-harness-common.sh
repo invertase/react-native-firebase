@@ -306,7 +306,7 @@ harness_run_root_yarn_install() {
   set -e
 
   if [[ "${yarn_exit_code}" -ne 0 ]]; then
-    if rg -q "patches/@firebase\\+rules-unit-testing\\+|patches/react-native-macos\\+" "${install_log}"; then
+    if grep -qE "patches/@firebase\\+rules-unit-testing\\+|patches/react-native-macos\\+" "${install_log}"; then
       echo "build-harness: continuing after known tests workspace patch-package failures during yarn install" >&2
     else
       rm -f "${install_log}"
