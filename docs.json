@@ -3,7 +3,7 @@
   "name": "React Native Firebase",
   "description": "A well-tested feature-rich modular Firebase implementation for React Native. Supports both iOS & Android platforms for all Firebase services.",
   "favicon": "/rnfb-logo.png",
-  "agent": "5c03932b-7fc2-4dd0-b14a-13e784843e08",
+  "agent": "6e277cd7-0065-4ade-a14a-3ecfa3f369a4",
   "theme": {
     "primary": "#e88533"
   },
@@ -49,6 +49,12 @@
           "href": "https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md"
         }
       ]
+    },
+    {
+      "group": "AI Logic",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/social/firebase-logo.png",
+      "pages": [{ "title": "Usage", "href": "/ai/usage" }]
     },
     {
       "group": "Analytics",
