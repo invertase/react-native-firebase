@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { Platform } from 'react-native';
+import * as firebaseAuthModule from '@react-native-firebase/app/dist/module/internal/web/firebaseAuth';
 import {
   getApp,
   initializeAuth,
-  getReactNativePersistence,
   onAuthStateChanged,
   onIdTokenChanged,
   signInAnonymously,
@@ -45,6 +44,22 @@ import {
   PhoneAuthProvider,
   OAuthProvider,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseAuth';
+import type {
+  ActionCodeSettings,
+  Auth,
+  AuthCredential,
+  MultiFactorInfo,
+  MultiFactorError,
+  MultiFactorSession,
+  MultiFactorResolver,
+  PhoneAuthCredential,
+  TotpSecret as WebTotpSecret,
+  Unsubscribe,
+  User,
+  UserCredential,
+  UserInfo,
+  UserMetadata,
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseAuth';
 import {
   guard,
   getWebError,
@@ -54,13 +69,71 @@ import {
   getReactNativeAsyncStorageInternal,
   isMemoryStorage,
 } from '@react-native-firebase/app/dist/module/internal/asyncStorage';
+type UserInfoObject = {
+  providerId: string;
+  uid: string;
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
+  phoneNumber: string | null;
+};
+
+type WebErrorLike = {
+  name?: string;
+  code?: string;
+  message: string;
+  details?: unknown;
+  customData?: unknown;
+  userInfo?: Record<string, unknown>;
+};
+
+type MultiFactorInfoObject = {
+  displayName?: string | null;
+  enrollmentTime: string;
+  factorId: string;
+  uid: string;
+  phoneNumber?: string | null;
+};
+
+type UserMetadataObject = {
+  creationTime: string | null;
+  lastSignInTime: string | null;
+};
+
+type UserObject = UserInfoObject & {
+  emailVerified: boolean;
+  isAnonymous: boolean;
+  tenantId: string | null;
+  providerData: UserInfoObject[];
+  metadata: UserMetadataObject;
+  multiFactor: {
+    enrolledFactors: MultiFactorInfoObject[];
+  };
+};
+
+type AuthResultObject = {
+  user: UserObject;
+  additionalUserInfo: {
+    isNewUser: boolean;
+    profile: Record<string, unknown> | null;
+    providerId: string | null;
+    username?: string | null;
+  } | null;
+};
+
+const getReactNativePersistence =
+  (
+    firebaseAuthModule as unknown as {
+      getReactNativePersistence?: (storage: unknown) => unknown;
+    }
+  ).getReactNativePersistence ?? ((storage: unknown) => storage);
 
 /**
  * Resolves or rejects an auth method promise without a user (user was missing).
  * @param {boolean} isError whether to reject the promise.
  * @returns {Promise<void>} - Void promise.
  */
-function promiseNoUser(isError = false) {
+function promiseNoUser(isError = false): Promise<null> {
   if (isError) {
     return rejectPromiseWithCodeAndMessage('no-current-user', 'No user currently signed in.');
   }
@@ -74,13 +147,14 @@ function promiseNoUser(isError = false) {
  * @param {string} code - The error code.
  * @param {string} message - The error message.
  */
-function rejectPromiseWithCodeAndMessage(code, message) {
-  return rejectPromise(getWebError({ code: `auth/${code}`, message }));
+function rejectPromiseWithCodeAndMessage(code: string, message: string): Promise<never> {
+  return rejectPromise(getWebError({ name: 'FirebaseError', code: `auth/${code}`, message }));
 }
 
-function rejectWithCodeAndMessage(code, message) {
+function rejectWithCodeAndMessage(code: string, message: string): Promise<never> {
   return Promise.reject(
     getWebError({
+      name: 'FirebaseError',
       code,
       message,
     }),
@@ -92,10 +166,10 @@ function rejectWithCodeAndMessage(code, message) {
  * @param {error} error The error object.
  * @returns {never}
  */
-function rejectPromise(error) {
+function rejectPromise(error: WebErrorLike): Promise<never> {
   const { code, message, details } = error;
   const nativeError = {
-    code,
+    code: code ?? 'auth/unknown',
     message,
     userInfo: {
       code: code ? code.replace('auth/', '') : 'unknown',
@@ -111,7 +185,7 @@ function rejectPromise(error) {
  * @param {User} user - The User object to convert.
  * @returns {object}
  */
-function userToObject(user) {
+function userToObject(user: User): UserObject {
   return {
     ...userInfoToObject(user),
     emailVerified: user.emailVerified,
@@ -133,7 +207,12 @@ function userToObject(user) {
  * @param {string|null} secret - The secret to use for the credential.
  * @returns {AuthCredential|null} - The AuthCredential object.
  */
-function getAuthCredential(_auth, provider, token, secret) {
+function getAuthCredential(
+  _auth: Auth,
+  provider: string,
+  token: string,
+  secret?: string | null,
+): AuthCredential | null {
   if (provider.startsWith('oidc.')) {
     return new OAuthProvider(provider).credential({
       idToken: token,
@@ -142,29 +221,29 @@ function getAuthCredential(_auth, provider, token, secret) {
 
   switch (provider) {
     case 'facebook.com':
-      return FacebookAuthProvider().credential(token);
+      return FacebookAuthProvider.credential(token);
     case 'google.com':
-      return GoogleAuthProvider().credential(token, secret);
+      return GoogleAuthProvider.credential(token, secret ?? undefined);
     case 'twitter.com':
-      return TwitterAuthProvider().credential(token, secret);
+      return TwitterAuthProvider.credential(token, secret ?? '');
     case 'github.com':
-      return GithubAuthProvider().credential(token);
+      return GithubAuthProvider.credential(token);
     case 'apple.com':
       return new OAuthProvider(provider).credential({
         idToken: token,
-        rawNonce: secret,
+        rawNonce: secret ?? undefined,
       });
     case 'oauth':
-      return OAuthProvider(provider).credential({
+      return new OAuthProvider(provider).credential({
         idToken: token,
-        accessToken: secret,
+        accessToken: secret ?? undefined,
       });
     case 'phone':
-      return PhoneAuthProvider.credential(token, secret);
+      return PhoneAuthProvider.credential(token, secret ?? '');
     case 'password':
-      return EmailAuthProvider.credential(token, secret);
+      return EmailAuthProvider.credential(token, secret ?? '');
     case 'emailLink':
-      return EmailAuthProvider.credentialWithLink(token, secret);
+      return EmailAuthProvider.credentialWithLink(token, secret ?? '');
     default:
       return null;
   }
@@ -174,7 +253,7 @@ function getAuthCredential(_auth, provider, token, secret) {
  * Converts a user info object to a plain object.
  * @param {UserInfo} userInfo - The UserInfo object to convert.
  */
-function userInfoToObject(userInfo) {
+function userInfoToObject(userInfo: UserInfo): UserInfoObject {
   return {
     providerId: userInfo.providerId,
     uid: userInfo.uid,
@@ -191,7 +270,7 @@ function userInfoToObject(userInfo) {
  * Converts a user metadata object to a plain object.
  * @param {UserMetadata} metadata - The UserMetadata object to convert.
  */
-function userMetadataToObject(metadata) {
+function userMetadataToObject(metadata: UserMetadata): UserMetadataObject {
   return {
     creationTime: metadata.creationTime ? new Date(metadata.creationTime).toISOString() : null,
     lastSignInTime: metadata.lastSignInTime
@@ -204,8 +283,8 @@ function userMetadataToObject(metadata) {
  * Converts a MultiFactorInfo object to a plain object.
  * @param {MultiFactorInfo} multiFactorInfo - The MultiFactorInfo object to convert.
  */
-function multiFactorInfoToObject(multiFactorInfo) {
-  const obj = {
+function multiFactorInfoToObject(multiFactorInfo: MultiFactorInfo): MultiFactorInfoObject {
+  const obj: MultiFactorInfoObject = {
     displayName: multiFactorInfo.displayName,
     enrollmentTime: multiFactorInfo.enrollmentTime,
     factorId: multiFactorInfo.factorId,
@@ -214,7 +293,9 @@ function multiFactorInfoToObject(multiFactorInfo) {
 
   // If https://firebase.google.com/docs/reference/js/auth.phonemultifactorinfo
   if ('phoneNumber' in multiFactorInfo) {
-    obj.phoneNumber = multiFactorInfo.phoneNumber;
+    obj.phoneNumber = (
+      multiFactorInfo as MultiFactorInfo & { phoneNumber?: string | null }
+    ).phoneNumber;
   }
 
   return obj;
@@ -224,28 +305,30 @@ function multiFactorInfoToObject(multiFactorInfo) {
  * Converts a user credential object to a plain object.
  * @param {UserCredential} userCredential - The user credential object to convert.
  */
-function authResultToObject(userCredential) {
+function authResultToObject(userCredential: UserCredential): AuthResultObject {
   const additional = getAdditionalUserInfo(userCredential);
   return {
     user: userToObject(userCredential.user),
-    additionalUserInfo: {
-      isNewUser: additional.isNewUser,
-      profile: additional.profile,
-      providerId: additional.providerId,
-      username: additional.username,
-    },
+    additionalUserInfo: additional
+      ? {
+          isNewUser: additional.isNewUser,
+          profile: (additional.profile as Record<string, unknown> | null) ?? null,
+          providerId: additional.providerId,
+          username: additional.username,
+        }
+      : null,
   };
 }
 
-const instances = {};
-const authStateListeners = {};
-const idTokenListeners = {};
-const sessionMap = new Map();
-const totpSecretMap = new Map();
+const instances: Record<string, Auth | undefined> = {};
+const authStateListeners: Record<string, Unsubscribe | undefined> = {};
+const idTokenListeners: Record<string, Unsubscribe | undefined> = {};
+const sessionMap = new Map<string, MultiFactorSession>();
+const totpSecretMap = new Map<string, WebTotpSecret>();
 let sessionId = 0;
 
 // Returns a cached Firestore instance.
-function getCachedAuthInstance(appName) {
+function getCachedAuthInstance(appName: string): Auth {
   if (!instances[appName]) {
     if (isMemoryStorage()) {
       // Warn auth persistence is is disabled unless Async Storage implementation is provided.
@@ -266,7 +349,7 @@ function getCachedAuthInstance(appName) {
       );
     }
 
-    const authOptions = {};
+    const authOptions: { persistence?: unknown } = {};
     if (Platform.OS !== 'web') {
       // Non-web platforms pull the react-native export from package.json and
       // get a bundle that defines `getReactNativePersistence` etc, but web platforms
@@ -274,13 +357,16 @@ function getCachedAuthInstance(appName) {
       authOptions.persistence = getReactNativePersistence(getReactNativeAsyncStorageInternal());
     }
 
-    instances[appName] = initializeAuth(getApp(appName), authOptions);
+    instances[appName] = initializeAuth(getApp(appName), authOptions as never);
   }
   return instances[appName];
 }
 
 // getConstants
-const CONSTANTS = {
+const CONSTANTS: {
+  APP_LANGUAGE: Record<string, string | null | undefined>;
+  APP_USER: Record<string, UserObject | undefined>;
+} = {
   APP_LANGUAGE: {},
   APP_USER: {},
 };
@@ -329,7 +415,7 @@ export default {
    * @param {string} appName - The name of the app to get the auth instance for.
    * @returns {Promise<void>} - Void promise.
    */
-  addAuthStateListener(appName) {
+  addAuthStateListener(appName: string) {
     if (authStateListeners[appName]) {
       return;
     }
@@ -337,7 +423,7 @@ export default {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
-      authStateListeners[appName] = onAuthStateChanged(auth, user => {
+      authStateListeners[appName] = onAuthStateChanged(auth, (user: User | null) => {
         emitEvent('auth_state_changed', {
           appName,
           user: user ? userToObject(user) : null,
@@ -351,7 +437,7 @@ export default {
    * @param {string} appName - The name of the app to get the auth instance for.
    * @returns {Promise<void>} - Void promise.
    */
-  removeAuthStateListener(appName) {
+  removeAuthStateListener(appName: string) {
     if (authStateListeners[appName]) {
       authStateListeners[appName]();
       delete authStateListeners[appName];
@@ -363,7 +449,7 @@ export default {
    * @param {string} appName - The name of the app to get the auth instance for.
    * @returns {Promise<void>} - Void promise.
    */
-  addIdTokenListener(appName) {
+  addIdTokenListener(appName: string) {
     if (idTokenListeners[appName]) {
       return;
     }
@@ -371,7 +457,7 @@ export default {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
-      idTokenListeners[appName] = onIdTokenChanged(auth, user => {
+      idTokenListeners[appName] = onIdTokenChanged(auth, (user: User | null) => {
         emitEvent('auth_id_token_changed', {
           authenticated: !!user,
           appName,
@@ -386,28 +472,28 @@ export default {
    * @param {string} appName - The name of the app to get the auth instance for.
    * @returns {Promise<void>} - Void promise.
    */
-  removeIdTokenListener(appName) {
+  removeIdTokenListener(appName: string) {
     if (idTokenListeners[appName]) {
       idTokenListeners[appName]();
       delete idTokenListeners[appName];
     }
   },
 
-  async forceRecaptchaFlowForTesting() {
+  async forceRecaptchaFlowForTesting(): Promise<never> {
     return rejectPromiseWithCodeAndMessage(
       'unsupported',
       'This operation is not supported in this environment.',
     );
   },
 
-  async setAutoRetrievedSmsCodeForPhoneNumber() {
+  async setAutoRetrievedSmsCodeForPhoneNumber(): Promise<never> {
     return rejectPromiseWithCodeAndMessage(
       'unsupported',
       'This operation is not supported in this environment.',
     );
   },
 
-  async setAppVerificationDisabledForTesting() {
+  async setAppVerificationDisabledForTesting(): Promise<never> {
     return rejectPromiseWithCodeAndMessage(
       'unsupported',
       'This operation is not supported in this environment.',
@@ -419,7 +505,7 @@ export default {
    * @param {string} appName - The name of the app to get the auth instance for.
    * @returns {Promise<void>} - Void promise.
    */
-  signOut(appName) {
+  signOut(appName: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -437,7 +523,7 @@ export default {
    * @param {*} appName - The name of the app to get the auth instance for.
    * @returns
    */
-  signInAnonymously(appName) {
+  signInAnonymously(appName: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       const credential = await signInAnonymously(auth);
@@ -452,7 +538,7 @@ export default {
    * @param {string} password - The password to sign in with.
    * @returns {Promise<object>} - The result of the sign in.
    */
-  async createUserWithEmailAndPassword(appName, email, password) {
+  async createUserWithEmailAndPassword(appName: string, email: string, password: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       const credential = await createUserWithEmailAndPassword(auth, email, password);
@@ -467,7 +553,7 @@ export default {
    * @param {string} password - The password to sign in with.
    * @returns {Promise<object>} - The result of the sign in.
    */
-  async signInWithEmailAndPassword(appName, email, password) {
+  async signInWithEmailAndPassword(appName: string, email: string, password: string) {
     // The default guard / getWebError process doesn't work well here,
     // since it creates a new error object that is then passed through
     // a native module proxy and gets processed again.
@@ -481,13 +567,14 @@ export default {
         password,
       );
       return authResultToObject(credential);
-    } catch (e) {
-      e.userInfo = {
-        code: e.code.split('/')[1],
-        message: e.message,
-        customData: e.customData,
+    } catch (e: unknown) {
+      const error = e as WebErrorLike;
+      error.userInfo = {
+        code: error.code?.split('/')[1] ?? 'unknown',
+        message: error.message,
+        customData: error.customData,
       };
-      throw e;
+      throw error;
     }
     // });
   },
@@ -498,7 +585,7 @@ export default {
    * @param {string} emailLink - The email link to sign in with.
    * @returns {Promise<boolean>} - Whether the link is a valid sign in with email link.
    */
-  async isSignInWithEmailLink(appName, emailLink) {
+  async isSignInWithEmailLink(appName: string, emailLink: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       return await isSignInWithEmailLink(auth, emailLink);
@@ -512,7 +599,7 @@ export default {
    * @param {string} emailLink - The email link to sign in with.
    * @returns {Promise<object>} - The result of the sign in.
    */
-  async signInWithEmailLink(appName, email, emailLink) {
+  async signInWithEmailLink(appName: string, email: string, emailLink: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       const credential = await signInWithEmailLink(auth, email, emailLink);
@@ -526,7 +613,7 @@ export default {
    * @param {string} token - The token to sign in with.
    * @returns {Promise<object>} - The result of the sign in.
    */
-  async signInWithCustomToken(appName, token) {
+  async signInWithCustomToken(appName: string, token: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       const credential = await signInWithCustomToken(auth, token);
@@ -548,7 +635,7 @@ export default {
    * @param {ActionCodeSettings} settings - The settings to use for the password reset email.
    * @returns {Promise<null>}
    */
-  async sendPasswordResetEmail(appName, email, settings) {
+  async sendPasswordResetEmail(appName: string, email: string, settings?: ActionCodeSettings) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       await sendPasswordResetEmail(auth, email, settings);
@@ -563,7 +650,7 @@ export default {
    * @param {ActionCodeSettings} settings - The settings to use for the password reset email.
    * @returns {Promise<null>}
    */
-  async sendSignInLinkToEmail(appName, email, settings) {
+  async sendSignInLinkToEmail(appName: string, email: string, settings: ActionCodeSettings) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       await sendSignInLinkToEmail(auth, email, settings);
@@ -580,7 +667,7 @@ export default {
    * @param {string} appName - The name of the app to get the auth instance for.
    * @returns {Promise<null>}
    */
-  async delete(appName) {
+  async delete(appName: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -598,7 +685,7 @@ export default {
    * @param {string} appName - The name of the app to get the auth instance for.
    * @returns {Promise<object>} - The current user object.
    */
-  async reload(appName) {
+  async reload(appName: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -617,7 +704,7 @@ export default {
    * @param {ActionCodeSettings} actionCodeSettings - The settings to use for the email verification.
    * @returns {Promise<object>} - The current user object.
    */
-  async sendEmailVerification(appName, actionCodeSettings) {
+  async sendEmailVerification(appName: string, actionCodeSettings?: ActionCodeSettings | null) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -637,7 +724,11 @@ export default {
    * @param {ActionCodeSettings} actionCodeSettings - The settings to use for the email verification.
    * @returns {Promise<object>} - The current user object.
    */
-  async verifyBeforeUpdateEmail(appName, email, actionCodeSettings) {
+  async verifyBeforeUpdateEmail(
+    appName: string,
+    email: string,
+    actionCodeSettings?: ActionCodeSettings | null,
+  ) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -656,7 +747,7 @@ export default {
    * @param {string} email - The email to update.
    * @returns {Promise<object>} - The current user object.
    */
-  async updateEmail(appName, email) {
+  async updateEmail(appName: string, email: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -675,7 +766,7 @@ export default {
    * @param {string} password - The password to update.
    * @returns {Promise<object>} - The current user object.
    */
-  async updatePassword(appName, password) {
+  async updatePassword(appName: string, password: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -696,7 +787,12 @@ export default {
    * @param {string} authSecret - The auth secret to update the phone number with.
    * @returns {Promise<object>} - The current user object.
    */
-  async updatePhoneNumber(appName, provider, authToken, authSecret) {
+  async updatePhoneNumber(
+    appName: string,
+    provider: string,
+    authToken: string,
+    authSecret?: string | null,
+  ) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -720,7 +816,7 @@ export default {
         );
       }
 
-      await updatePhoneNumber(auth.currentUser, credential);
+      await updatePhoneNumber(auth.currentUser, credential as PhoneAuthCredential);
 
       return userToObject(auth.currentUser);
     });
@@ -732,7 +828,10 @@ export default {
    * @param {object} props - The properties to update.
    * @returns {Promise<object>} - The current user object.
    */
-  async updateProfile(appName, props) {
+  async updateProfile(
+    appName: string,
+    props: { displayName?: string | null; photoURL?: string | null },
+  ) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -757,7 +856,12 @@ export default {
    * @param {string} authSecret - The auth secret to sign in with.
    * @returns {Promise<object>} - The result of the sign in.
    */
-  async signInWithCredential(appName, provider, authToken, authSecret) {
+  async signInWithCredential(
+    appName: string,
+    provider: string,
+    authToken: string,
+    authSecret?: string | null,
+  ) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       const credential = getAuthCredential(auth, provider, authToken, authSecret);
@@ -793,7 +897,7 @@ export default {
    * @param {string} appName - The name of the app to get the auth instance for.
    * @returns {Promise<string>} - The session ID.
    */
-  async getSession(appName) {
+  async getSession(appName: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -854,7 +958,7 @@ export default {
    * @param {string} newPassword - The new password to set.
    * @returns {Promise<null>}
    */
-  async confirmPasswordReset(appName, code, newPassword) {
+  async confirmPasswordReset(appName: string, code: string, newPassword: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       await confirmPasswordReset(auth, code, newPassword);
@@ -868,7 +972,7 @@ export default {
    * @param {string} code - The code to apply.
    * @returns {Promise<void>} - Void promise.
    */
-  async applyActionCode(appName, code) {
+  async applyActionCode(appName: string, code: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       await applyActionCode(auth, code);
@@ -881,7 +985,7 @@ export default {
    * @param {string} code - The code to check.
    * @returns {Promise<object>} - The result of the check.
    */
-  async checkActionCode(appName, code) {
+  async checkActionCode(appName: string, code: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       const result = await checkActionCode(auth, code);
@@ -905,7 +1009,12 @@ export default {
    * @param {string} authSecret - The auth secret to link.
    * @returns {Promise<object>} - The current user object.
    */
-  async linkWithCredential(appName, provider, authToken, authSecret) {
+  async linkWithCredential(
+    appName: string,
+    provider: string,
+    authToken: string,
+    authSecret?: string | null,
+  ) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       const credential = getAuthCredential(auth, provider, authToken, authSecret);
@@ -939,7 +1048,7 @@ export default {
    * @param {string} providerId - The provider ID to unlink.
    * @returns {Promise<object>} - The current user object.
    */
-  async unlink(appName, providerId) {
+  async unlink(appName: string, providerId: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -960,7 +1069,12 @@ export default {
    * @param {string} authSecret - The auth secret to reauthenticate with.
    * @returns {Promise<object>} - The current user object.
    */
-  async reauthenticateWithCredential(appName, provider, authToken, authSecret) {
+  async reauthenticateWithCredential(
+    appName: string,
+    provider: string,
+    authToken: string,
+    authSecret?: string | null,
+  ) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       const credential = getAuthCredential(auth, provider, authToken, authSecret);
@@ -994,7 +1108,7 @@ export default {
    * @param {boolean} forceRefresh - Whether to force a token refresh.
    * @returns {Promise<string>} - The ID token.
    */
-  async getIdToken(appName, forceRefresh) {
+  async getIdToken(appName: string, forceRefresh: boolean) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -1013,7 +1127,7 @@ export default {
    * @param {boolean} forceRefresh - Whether to force a token refresh.
    * @returns {Promise<object>} - The ID token result.
    */
-  async getIdTokenResult(appName, forceRefresh) {
+  async getIdTokenResult(appName: string, forceRefresh: boolean) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -1042,7 +1156,7 @@ export default {
    * @param {*} code the code from the user TOTP app
    * @return TotpMultiFactorAssertion to use for resolving
    */
-  assertionForSignIn(_appName, uid, code) {
+  assertionForSignIn(_appName: string, uid: string, code: string) {
     return TotpMultiFactorGenerator.assertionForSignIn(uid, code);
   },
 
@@ -1052,7 +1166,7 @@ export default {
    * @param {*} error the MFA error returned from initial factor login attempt
    * @return MultiFactorResolver to use for verifying the second factor
    */
-  getMultiFactorResolver(appName, error) {
+  getMultiFactorResolver(appName: string, error: MultiFactorError): MultiFactorResolver | null {
     return getMultiFactorResolver(getCachedAuthInstance(appName), error);
   },
 
@@ -1062,9 +1176,16 @@ export default {
    * @param {*} session - The MultiFactorSession to associate with the secret
    * @returns object with secretKey to associate with TotpSecret
    */
-  async generateTotpSecret(_appName, session) {
+  async generateTotpSecret(_appName: string, session: string) {
     return guard(async () => {
-      const totpSecret = await TotpMultiFactorGenerator.generateSecret(sessionMap.get(session));
+      const mappedSession = sessionMap.get(session);
+      if (!mappedSession) {
+        return rejectPromiseWithCodeAndMessage(
+          'invalid-multi-factor-session',
+          'The supplied multi-factor session is invalid or has expired.',
+        );
+      }
+      const totpSecret = await TotpMultiFactorGenerator.generateSecret(mappedSession);
       totpSecretMap.set(totpSecret.secretKey, totpSecret);
       return { secretKey: totpSecret.secretKey };
     });
@@ -1076,13 +1197,14 @@ export default {
    * @param {*} enrollmentId - The ID to associate with the enrollment
    * @returns
    */
-  async unenrollMultiFactor(appName, enrollmentId) {
+  async unenrollMultiFactor(appName: string, enrollmentId: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       if (auth.currentUser === null) {
         return promiseNoUser(true);
       }
       await multiFactor(auth.currentUser).unenroll(enrollmentId);
+      return promiseNoUser();
     });
   },
 
@@ -1094,17 +1216,30 @@ export default {
    * @param {*} displayName - The name to associate as a hint
    * @returns
    */
-  async finalizeTotpEnrollment(appName, secretKey, verificationCode, displayName) {
+  async finalizeTotpEnrollment(
+    appName: string,
+    secretKey: string,
+    verificationCode: string,
+    displayName?: string | null,
+  ) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       if (auth.currentUser === null) {
         return promiseNoUser(true);
       }
+      const totpSecret = totpSecretMap.get(secretKey);
+      if (!totpSecret) {
+        return rejectPromiseWithCodeAndMessage(
+          'invalid-multi-factor-secret',
+          "can't find secret for provided key",
+        );
+      }
       const multiFactorAssertion = TotpMultiFactorGenerator.assertionForEnrollment(
-        totpSecretMap.get(secretKey),
+        totpSecret,
         verificationCode,
       );
       await multiFactor(auth.currentUser).enroll(multiFactorAssertion, displayName);
+      return promiseNoUser();
     });
   },
 
@@ -1116,8 +1251,15 @@ export default {
    * @param {*} issuer - The issuer to use in auth app
    * @returns QR Code URL
    */
-  generateQrCodeUrl(_appName, secretKey, accountName, issuer) {
-    return totpSecretMap.get(secretKey).generateQrCodeUrl(accountName, issuer);
+  generateQrCodeUrl(_appName: string, secretKey: string, accountName?: string, issuer?: string) {
+    const totpSecret = totpSecretMap.get(secretKey);
+    if (!totpSecret) {
+      return rejectPromiseWithCodeAndMessage(
+        'invalid-multi-factor-secret',
+        "can't find secret for provided key",
+      );
+    }
+    return totpSecret.generateQrCodeUrl(accountName, issuer);
   },
 
   /**
@@ -1143,7 +1285,7 @@ export default {
    * @param {string} email - The email to fetch the sign in methods for.
    * @returns {Promise<string[]>} - The sign in methods for the email.
    */
-  async fetchSignInMethodsForEmail(appName, email) {
+  async fetchSignInMethodsForEmail(appName: string, email: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       const methods = await fetchSignInMethodsForEmail(auth, email);
@@ -1157,7 +1299,7 @@ export default {
    * @param {string} code - The language code to set.
    * @returns {void}
    */
-  setLanguageCode(appName, code) {
+  setLanguageCode(appName: string, code: string | null) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       auth.languageCode = code;
@@ -1170,7 +1312,7 @@ export default {
    * @param {string} tenantId - The tenant ID to set.
    * @returns {void}
    */
-  setTenantId(appName, tenantId) {
+  setTenantId(appName: string, tenantId: string | null) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       auth.tenantId = tenantId;
@@ -1182,7 +1324,7 @@ export default {
    * @param {string} appName - The name of the app to get the auth instance for.
    * @returns void
    */
-  useDeviceLanguage(appName) {
+  useDeviceLanguage(appName: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       useDeviceLanguage(auth);
@@ -1193,7 +1335,7 @@ export default {
    * Verify the provided password reset code.
    * @returns {string} - The users email address if valid.
    */
-  verifyPasswordResetCode(appName, code) {
+  verifyPasswordResetCode(appName: string, code: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       const email = await verifyPasswordResetCode(auth, code);
@@ -1208,7 +1350,7 @@ export default {
    * @param {number} port - The port to use for the auth emulator.
    * @returns {void}
    */
-  useEmulator(appName, host, port) {
+  useEmulator(appName: string, host: string, port: number) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       connectAuthEmulator(auth, `http://${host}:${port}`);
