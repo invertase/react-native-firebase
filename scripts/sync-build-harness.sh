@@ -513,7 +513,11 @@ build_ios() {
   export_build_env
   (
     cd "${APP_DIR}"
-    yarn react-native run-ios "${EXTRA_ARGS[@]}"
+    if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
+      yarn react-native run-ios "${EXTRA_ARGS[@]}"
+    else
+      yarn react-native run-ios
+    fi
   )
 }
 
@@ -522,7 +526,11 @@ build_android() {
   export_build_env
   (
     cd "${APP_DIR}"
-    yarn react-native run-android "${EXTRA_ARGS[@]}"
+    if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
+      yarn react-native run-android "${EXTRA_ARGS[@]}"
+    else
+      yarn react-native run-android
+    fi
   )
 }
 
