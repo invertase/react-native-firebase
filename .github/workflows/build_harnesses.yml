@@ -38,12 +38,17 @@ jobs:
       # Keep in sync with the existing iOS E2E workflow, which tracks latest-stable
       # because Firebase iOS SDK updates can require newer Xcode versions.
       XCODE_VERSION: latest-stable
-      IOS_GOOGLE_SERVICES_PATH: ${{ runner.temp }}/GoogleService-Info.plist
-      ANDROID_GOOGLE_SERVICES_PATH: ${{ runner.temp }}/google-services.json
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 50
+
+      # `runner` is not valid in job-level `env`; set paths in a step so
+      # `${{ runner.temp }}` is evaluated in a context that supports it.
+      - name: Set CI Firebase config paths
+        run: |
+          echo "IOS_GOOGLE_SERVICES_PATH=${{ runner.temp }}/GoogleService-Info.plist" >> "$GITHUB_ENV"
+          echo "ANDROID_GOOGLE_SERVICES_PATH=${{ runner.temp }}/google-services.json" >> "$GITHUB_ENV"
 
       - uses: actions/setup-node@v4
         with:
@@ -137,13 +142,15 @@ jobs:
         harness:
           - bare
           - expo
-    env:
-      IOS_GOOGLE_SERVICES_PATH: ${{ runner.temp }}/GoogleService-Info.plist
-      ANDROID_GOOGLE_SERVICES_PATH: ${{ runner.temp }}/google-services.json
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 50
+
+      - name: Set CI Firebase config paths
+        run: |
+          echo "IOS_GOOGLE_SERVICES_PATH=${{ runner.temp }}/GoogleService-Info.plist" >> "$GITHUB_ENV"
+          echo "ANDROID_GOOGLE_SERVICES_PATH=${{ runner.temp }}/google-services.json" >> "$GITHUB_ENV"
 
       - uses: actions/setup-node@v4
         with:
