@@ -11,6 +11,7 @@ LOCAL_CONFIG_PATH="${APP_DIR}/.build-harness.local.json"
 IOS_PROJECT_PATH="${APP_DIR}/ios/BuildHarness.xcodeproj"
 IOS_GOOGLE_SERVICES_DEST="${APP_DIR}/ios/BuildHarness/GoogleService-Info.plist"
 ANDROID_GOOGLE_SERVICES_DEST="${APP_DIR}/android/app/google-services.json"
+DEFAULT_IOS_SIMULATOR="iPhone 16"
 DEFAULT_IOS_GOOGLE_SERVICES_PATH="${HARNESS_DEFAULT_IOS_GOOGLE_SERVICES_PATH}"
 DEFAULT_ANDROID_GOOGLE_SERVICES_PATH="${HARNESS_DEFAULT_ANDROID_GOOGLE_SERVICES_PATH}"
 DEFAULT_IOS_BUNDLE_ID="${HARNESS_DEFAULT_IOS_BUNDLE_ID}"
@@ -76,7 +77,7 @@ Commands:
   clean         Remove build products, Pods, and derived data for the harness app.
   sync          Update harness dependencies, copy Firebase config, patch iOS metadata, install deps.
   pod-install   Install iOS pods using the current or supplied overrides.
-  build-ios     Sync the harness and run the iOS app.
+  build-ios     Sync the harness and run the iOS app (defaults to simulator "iPhone 16").
   build-android Sync the harness and run the Android app.
 
 Options:
@@ -341,14 +342,20 @@ require 'xcodeproj'
 
 project_path = ARGV.fetch(0)
 bundle_id = ARGV.fetch(1)
+google_service_relative_path = 'BuildHarness/GoogleService-Info.plist'
 project = Xcodeproj::Project.open(project_path)
 target = project.targets.find { |item| item.name == 'BuildHarness' }
 abort('Unable to locate BuildHarness target') unless target
 
 group = project.main_group.find_subpath('BuildHarness', true)
-file_ref = group.files.find { |file| file.path == 'GoogleService-Info.plist' } || group.new_file('GoogleService-Info.plist')
+file_ref =
+  group.files.find do |file|
+    file.path == 'GoogleService-Info.plist' || file.path == google_service_relative_path
+  end || group.new_file(google_service_relative_path)
 
-unless target.resources_build_phase.files_references.any? { |reference| reference.path == 'GoogleService-Info.plist' }
+unless target.resources_build_phase.files_references.any? do |reference|
+  reference.path == 'GoogleService-Info.plist' || reference.path == google_service_relative_path
+end
   target.resources_build_phase.add_file_reference(file_ref, true)
 end
 
@@ -516,7 +523,7 @@ build_ios() {
     if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
       yarn react-native run-ios "${EXTRA_ARGS[@]}"
     else
-      yarn react-native run-ios
+      yarn react-native run-ios --simulator "${DEFAULT_IOS_SIMULATOR}"
     fi
   )
 }
