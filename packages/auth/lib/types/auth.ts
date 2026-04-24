@@ -111,13 +111,7 @@ export interface AuthError extends ReactNativeFirebase.NativeFirebaseError {
 
 export type NativeFirebaseAuthError = FirebaseAuthTypes.NativeFirebaseAuthError;
 export type AuthCredential = FirebaseAuthTypes.AuthCredential;
-export type OAuthProvider = FirebaseAuthTypes.OAuthProvider;
 export type OIDCProvider = FirebaseAuthTypes.OIDCProvider;
-export type EmailAuthProvider = FirebaseAuthTypes.EmailAuthProvider;
-export type PhoneAuthState = FirebaseAuthTypes.PhoneAuthState;
-export type PhoneMultiFactorGenerator = FirebaseAuthTypes.PhoneMultiFactorGenerator;
-export type TotpSecret = FirebaseAuthTypes.TotpSecret;
-export type TotpMultiFactorGenerator = FirebaseAuthTypes.TotpMultiFactorGenerator;
 export interface MultiFactorError extends AuthError {
   readonly customData: AuthError['customData'] & {
     readonly operationType: (typeof OperationType)[keyof typeof OperationType];

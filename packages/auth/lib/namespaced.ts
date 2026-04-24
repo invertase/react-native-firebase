@@ -51,7 +51,6 @@ import OAuthProvider from './providers/OAuthProvider';
 import OIDCAuthProvider from './providers/OIDCAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
-import { TotpSecret } from './TotpSecret';
 import { version } from './version';
 import fallBackModule from './web/RNFBAuthModule';
 import { PasswordPolicyMixin } from './password-policy/PasswordPolicyMixin';
@@ -77,7 +76,6 @@ type AuthErrorWithCodeInternal = Error & {
 };
 
 const nativeEvents = ['auth_state_changed', 'auth_id_token_changed', 'phone_auth_state_changed'];
-
 
 const statics = {
   AppleAuthProvider,

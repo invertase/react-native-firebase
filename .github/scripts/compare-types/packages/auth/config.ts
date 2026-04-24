@@ -171,6 +171,11 @@ const config: PackageConfig = {
         'RN Firebase models disableWarnings as an optional property, while the firebase-js-sdk emitted type text shows a required boolean property.',
     },
     {
+      name: 'EmailAuthProvider',
+      reason:
+        'RN Firebase now exports EmailAuthProvider from the modular surface, but its native helper class still exposes a reduced static API and RNFB credential objects rather than mirroring the firebase-js-sdk EmailAuthProvider class shape.',
+    },
+    {
       name: 'isSignInWithEmailLink',
       reason:
         'RN Firebase resolves this check asynchronously through the native bridge and returns Promise<boolean>, whereas the firebase-js-sdk returns a synchronous boolean.',
@@ -216,6 +221,11 @@ const config: PackageConfig = {
         'RN Firebase now exports GoogleAuthProvider from the modular surface, but its native helper class only exposes the credential factory used by RNFB and does not yet mirror the firebase-js-sdk static fields and credentialFromResult/credentialFromError helpers.',
     },
     {
+      name: 'OAuthProvider',
+      reason:
+        'RN Firebase now exports OAuthProvider from the modular surface, but its native helper class still differs from the firebase-js-sdk class by exposing RNFB-specific credential construction and omitting credentialFromJSON/credentialFromResult/credentialFromError helpers.',
+    },
+    {
       name: 'ParsedToken',
       reason:
         'TypeScript emits the parsed-token property keys without quotes in the generated declaration file, so compare-types reports a text-only difference even though the property set matches the firebase-js-sdk surface.',
@@ -224,6 +234,21 @@ const config: PackageConfig = {
       name: 'PhoneAuthProvider',
       reason:
         'RN Firebase now exports PhoneAuthProvider from the modular surface, but the native helper class still exposes a reduced static API and looser signatures than the firebase-js-sdk PhoneAuthProvider class.',
+    },
+    {
+      name: 'PhoneMultiFactorGenerator',
+      reason:
+        'RN Firebase now exports PhoneMultiFactorGenerator from the modular surface, but its helper class still returns RNFB credential/assertion shapes rather than the firebase-js-sdk PhoneMultiFactorGenerator static API exactly.',
+    },
+    {
+      name: 'TotpMultiFactorGenerator',
+      reason:
+        'RN Firebase now exports TotpMultiFactorGenerator from the modular surface, but its helper class still differs from the firebase-js-sdk static API in signatures and returned assertion/secret shapes.',
+    },
+    {
+      name: 'TotpSecret',
+      reason:
+        'RN Firebase now exports TotpSecret from the modular surface, but the native-backed helper class exposes a reduced field set plus async/native helper methods that do not match the firebase-js-sdk TotpSecret class shape.',
     },
     {
       name: 'TwitterAuthProvider',
