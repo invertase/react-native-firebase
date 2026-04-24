@@ -14,35 +14,11 @@
  * limitations under the License.
  *
  */
-
-export type FirebaseApp = import('@react-native-firebase/app').ReactNativeFirebase.FirebaseApp;
-export type Observer<T> = {
-  next?: ((value: T) => void) | null;
-  error?: ((error: Error) => void) | null;
-  complete?: (() => void) | null;
-};
-export type ActionCodeInfoData = import('./types/namespaced').FirebaseAuthTypes.ActionCodeInfoData;
-export type ActionCodeSettingsAndroid =
-  import('./types/namespaced').FirebaseAuthTypes.ActionCodeSettingsAndroid;
-export type ActionCodeSettingsIos =
-  import('./types/namespaced').FirebaseAuthTypes.ActionCodeSettingsIos;
-export type AuthListenerCallback =
-  import('./types/namespaced').FirebaseAuthTypes.AuthListenerCallback;
-export type MultiFactor = import('./types/namespaced').FirebaseAuthTypes.MultiFactor;
-export type MultiFactorInfoCommon =
-  import('./types/namespaced').FirebaseAuthTypes.MultiFactorInfoCommon;
-export type UpdateProfile = import('./types/namespaced').FirebaseAuthTypes.UpdateProfile;
-
-export {
-  ActionCodeOperation,
-  FactorId,
-  OperationType,
-  ProviderId,
-  SignInMethod,
-} from './types/auth';
-
+// modular API
 export type * from './types/auth';
-export * from './types/namespaced';
 export * from './modular';
-export { SDK_VERSION, firebase } from './namespaced';
+
+// namespaced API
+export * from './types/namespaced';
+export * from './namespaced';
 export { default } from './namespaced';
