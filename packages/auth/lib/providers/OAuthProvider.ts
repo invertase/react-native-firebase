@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,56 +15,58 @@
  *
  */
 
+import type { AuthCredential, CustomParameters } from '../types/auth';
+
 export default class OAuthProvider {
   /** @internal */
-  #providerId = null;
+  private providerId: string;
   /** @internal */
-  #customParameters = {};
+  private customParameters: CustomParameters = {};
   /** @internal */
-  #scopes = [];
+  private scopes: string[] = [];
 
-  constructor(providerId) {
-    this.#providerId = providerId;
+  constructor(providerId: string) {
+    this.providerId = providerId;
   }
 
-  static credential(idToken, accessToken) {
+  static credential(idToken: string, accessToken?: string): AuthCredential {
     return {
       token: idToken,
-      secret: accessToken,
+      secret: accessToken ?? '',
       providerId: 'oauth',
     };
   }
 
   get PROVIDER_ID() {
-    return this.#providerId;
+    return this.providerId;
   }
 
-  setCustomParameters(customOAuthParameters) {
-    this.#customParameters = customOAuthParameters;
+  setCustomParameters(customOAuthParameters: CustomParameters): OAuthProvider {
+    this.customParameters = customOAuthParameters;
     return this;
   }
 
-  getCustomParameters() {
-    return this.#customParameters;
+  getCustomParameters(): CustomParameters {
+    return this.customParameters;
   }
 
-  addScope(scope) {
-    if (!this.#scopes.includes(scope)) {
-      this.#scopes.push(scope);
+  addScope(scope: string): OAuthProvider {
+    if (!this.scopes.includes(scope)) {
+      this.scopes.push(scope);
     }
     return this;
   }
 
-  getScopes() {
-    return [...this.#scopes];
+  getScopes(): string[] {
+    return [...this.scopes];
   }
 
   /** @internal */
-  toObject() {
+  toObject(): { providerId: string; scopes: string[]; customParameters: CustomParameters } {
     return {
-      providerId: this.#providerId,
-      scopes: this.#scopes,
-      customParameters: this.#customParameters,
+      providerId: this.providerId,
+      scopes: this.scopes,
+      customParameters: this.customParameters,
     };
   }
 }

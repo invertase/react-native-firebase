@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,8 +15,10 @@
  *
  */
 
-const linkProviderId = 'emailLink';
-const passwordProviderId = 'password';
+import type { AuthCredential } from '../types/auth';
+
+const linkProviderId = 'emailLink' as const;
+const passwordProviderId = 'password' as const;
 
 export default class EmailAuthProvider {
   constructor() {
@@ -36,7 +37,7 @@ export default class EmailAuthProvider {
     return passwordProviderId;
   }
 
-  static credential(email, password) {
+  static credential(email: string, password: string): AuthCredential {
     return {
       token: email,
       secret: password,
@@ -44,7 +45,7 @@ export default class EmailAuthProvider {
     };
   }
 
-  static credentialWithLink(email, emailLink) {
+  static credentialWithLink(email: string, emailLink: string): AuthCredential {
     return {
       token: email,
       secret: emailLink,

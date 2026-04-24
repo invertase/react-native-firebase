@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,7 +15,9 @@
  *
  */
 
-const providerId = 'oidc.';
+import type { AuthCredential } from '../types/auth';
+
+const providerId = 'oidc.' as const;
 
 export default class OIDCAuthProvider {
   constructor() {
@@ -27,10 +28,10 @@ export default class OIDCAuthProvider {
     return providerId;
   }
 
-  static credential(oidcSuffix, idToken, accessToken) {
+  static credential(oidcSuffix: string, idToken: string, accessToken?: string): AuthCredential {
     return {
       token: idToken,
-      secret: accessToken,
+      secret: accessToken ?? '',
       providerId: providerId + oidcSuffix,
     };
   }

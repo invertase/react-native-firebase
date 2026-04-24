@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,7 +15,9 @@
  *
  */
 
-const providerId = 'facebook.com';
+import type { AuthCredential } from '../types/auth';
+
+const providerId = 'facebook.com' as const;
 
 export default class FacebookAuthProvider {
   constructor() {
@@ -27,10 +28,10 @@ export default class FacebookAuthProvider {
     return providerId;
   }
 
-  static credential(token, secret = '') {
+  static credential(token: string, secret?: string): AuthCredential {
     return {
       token,
-      secret,
+      secret: secret ?? '',
       providerId,
     };
   }

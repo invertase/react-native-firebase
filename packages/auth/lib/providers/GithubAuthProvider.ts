@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,7 +15,9 @@
  *
  */
 
-const providerId = 'github.com';
+import type { AuthCredential } from '../types/auth';
+
+const providerId = 'github.com' as const;
 
 export default class GithubAuthProvider {
   constructor() {
@@ -27,7 +28,7 @@ export default class GithubAuthProvider {
     return providerId;
   }
 
-  static credential(token) {
+  static credential(token: string): AuthCredential {
     return {
       token,
       secret: '',

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,7 +15,9 @@
  *
  */
 
-const providerId = 'twitter.com';
+import type { AuthCredential } from '../types/auth';
+
+const providerId = 'twitter.com' as const;
 
 export default class TwitterAuthProvider {
   constructor() {
@@ -27,7 +28,7 @@ export default class TwitterAuthProvider {
     return providerId;
   }
 
-  static credential(token, secret) {
+  static credential(token: string, secret: string): AuthCredential {
     return {
       token,
       secret,

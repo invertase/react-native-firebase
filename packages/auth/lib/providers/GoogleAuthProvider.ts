@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,7 +15,9 @@
  *
  */
 
-const providerId = 'google.com';
+import type { AuthCredential } from '../types/auth';
+
+const providerId = 'google.com' as const;
 
 export default class GoogleAuthProvider {
   constructor() {
@@ -27,10 +28,10 @@ export default class GoogleAuthProvider {
     return providerId;
   }
 
-  static credential(token, secret) {
+  static credential(token: string, secret?: string): AuthCredential {
     return {
       token,
-      secret,
+      secret: secret ?? '',
       providerId,
     };
   }

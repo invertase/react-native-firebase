@@ -1,5 +1,3 @@
-// @ts-nocheck
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -17,10 +15,56 @@
  *
  */
 
-const providerId = 'phone';
+import type {
+  ApplicationVerifier,
+  AuthCredential,
+  MultiFactorInfo,
+  PhoneMultiFactorEnrollInfoOptions,
+  PhoneMultiFactorSignInInfoOptions,
+} from '../types/auth';
+
+const providerId = 'phone' as const;
+
+type PhoneAuthProviderAuth = {
+  app: {
+    auth(): {
+      verifyPhoneNumberWithMultiFactorInfo(
+        hint: Pick<MultiFactorInfo, 'uid'>,
+        session: PhoneMultiFactorSignInInfoOptions['session'],
+      ): Promise<string>;
+      verifyPhoneNumberForMultiFactor(
+        phoneInfoOptions: PhoneMultiFactorEnrollInfoOptions,
+      ): Promise<string>;
+    };
+  };
+};
+
+type SupportedPhoneInfoOptions =
+  | PhoneMultiFactorEnrollInfoOptions
+  | PhoneMultiFactorSignInInfoOptions;
+
+function isPhoneMultiFactorSignInOptions(
+  phoneInfoOptions: SupportedPhoneInfoOptions,
+): phoneInfoOptions is PhoneMultiFactorSignInInfoOptions & { multiFactorHint: MultiFactorInfo } {
+  return 'multiFactorHint' in phoneInfoOptions && phoneInfoOptions.multiFactorHint !== undefined;
+}
+
+function isPhoneMultiFactorUidOptions(
+  phoneInfoOptions: SupportedPhoneInfoOptions,
+): phoneInfoOptions is PhoneMultiFactorSignInInfoOptions & { multiFactorUid: string } {
+  return 'multiFactorUid' in phoneInfoOptions && phoneInfoOptions.multiFactorUid !== undefined;
+}
+
+function isPhoneMultiFactorEnrollOptions(
+  phoneInfoOptions: SupportedPhoneInfoOptions,
+): phoneInfoOptions is PhoneMultiFactorEnrollInfoOptions {
+  return 'phoneNumber' in phoneInfoOptions;
+}
 
 export default class PhoneAuthProvider {
-  constructor(auth) {
+  private readonly _auth: PhoneAuthProviderAuth;
+
+  constructor(auth: PhoneAuthProviderAuth) {
     if (auth === undefined) {
       throw new Error('`new PhoneAuthProvider()` is not supported on the native Firebase SDKs.');
     }
@@ -31,7 +75,7 @@ export default class PhoneAuthProvider {
     return providerId;
   }
 
-  static credential(verificationId, code) {
+  static credential(verificationId: string, code: string): AuthCredential {
     return {
       token: verificationId,
       secret: code,
@@ -39,8 +83,11 @@ export default class PhoneAuthProvider {
     };
   }
 
-  verifyPhoneNumber(phoneInfoOptions, appVerifier) {
-    if (phoneInfoOptions.multiFactorHint) {
+  verifyPhoneNumber(
+    phoneInfoOptions: SupportedPhoneInfoOptions,
+    _appVerifier?: ApplicationVerifier,
+  ): Promise<string> {
+    if (isPhoneMultiFactorSignInOptions(phoneInfoOptions)) {
       return this._auth.app
         .auth()
         .verifyPhoneNumberWithMultiFactorInfo(
@@ -48,6 +95,23 @@ export default class PhoneAuthProvider {
           phoneInfoOptions.session,
         );
     }
-    return this._auth.app.auth().verifyPhoneNumberForMultiFactor(phoneInfoOptions);
+
+    if (isPhoneMultiFactorUidOptions(phoneInfoOptions)) {
+      // The native bridge only needs the enrollment uid for MFA sign-in verification.
+      return this._auth.app
+        .auth()
+        .verifyPhoneNumberWithMultiFactorInfo(
+          { uid: phoneInfoOptions.multiFactorUid },
+          phoneInfoOptions.session,
+        );
+    }
+
+    if (isPhoneMultiFactorEnrollOptions(phoneInfoOptions)) {
+      return this._auth.app.auth().verifyPhoneNumberForMultiFactor(phoneInfoOptions);
+    }
+
+    throw new Error(
+      '`PhoneAuthProvider.verifyPhoneNumber()` requires either a multi-factor hint, a multi-factor uid, or enrollment phone info.',
+    );
   }
 }
