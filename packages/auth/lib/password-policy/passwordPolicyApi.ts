@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,6 +15,16 @@
  *
  */
 
+import type { PasswordPolicyHostInternal, PasswordPolicyResponseInternal } from '../types/internal';
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return String(error);
+}
+
 /**
  * Performs an API request to Firebase Console to get password policy json.
  *
@@ -23,23 +32,29 @@
  * @returns {Promise<Response>} A promise that resolves to the API response.
  * @throws {Error} Throws an error if the request fails or encounters an issue.
  */
-export async function fetchPasswordPolicy(auth) {
+export async function fetchPasswordPolicy(
+  auth: PasswordPolicyHostInternal,
+): Promise<PasswordPolicyResponseInternal> {
+  let response: Response;
+
   try {
     // Identity toolkit API endpoint for password policy. Ensure this is enabled on Google cloud.
     const baseURL = 'https://identitytoolkit.googleapis.com/v2/passwordPolicy?key=';
     const apiKey = auth.app.options.apiKey;
 
-    const response = await fetch(`${baseURL}${apiKey}`);
-    if (!response.ok) {
-      const errorDetails = await response.text();
-      throw new Error(
-        `firebase.auth().validatePassword(*) failed to fetch password policy from Firebase Console: ${response.statusText}. Details: ${errorDetails}`,
-      );
-    }
-    return await response.json();
+    response = await fetch(`${baseURL}${apiKey}`);
   } catch (error) {
     throw new Error(
-      `firebase.auth().validatePassword(*) Failed to fetch password policy: ${error.message}`,
+      `firebase.auth().validatePassword(*) Failed to fetch password policy: ${getErrorMessage(error)}`,
     );
   }
+
+  if (!response.ok) {
+    const errorDetails = await response.text();
+    throw new Error(
+      `firebase.auth().validatePassword(*) failed to fetch password policy from Firebase Console: ${response.statusText}. Details: ${errorDetails}`,
+    );
+  }
+
+  return (await response.json()) as PasswordPolicyResponseInternal;
 }

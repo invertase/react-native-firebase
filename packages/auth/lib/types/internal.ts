@@ -82,7 +82,40 @@ export type AuthNativeEventInternal =
   | AuthIdTokenChangedEventInternal
   | PhoneAuthStateChangedEventInternal;
 
-export type PasswordPolicyInternal = FirebaseAuthTypes.PasswordPolicy;
+export interface PasswordPolicyCustomStrengthOptionsInternal {
+  minPasswordLength?: number;
+  maxPasswordLength?: number;
+  containsLowercaseLetter?: boolean;
+  containsUppercaseLetter?: boolean;
+  containsNumericCharacter?: boolean;
+  containsNonAlphanumericCharacter?: boolean;
+}
+
+export interface PasswordPolicyInternal {
+  readonly customStrengthOptions: PasswordPolicyCustomStrengthOptionsInternal;
+  readonly allowedNonAlphanumericCharacters: string;
+  readonly enforcementState: string;
+  readonly forceUpgradeOnSignin: boolean;
+  readonly schemaVersion: number;
+  validatePassword(password: string): PasswordValidationStatusInternal;
+}
+
+export interface PasswordPolicyResponseCustomStrengthOptionsInternal {
+  minPasswordLength?: number;
+  maxPasswordLength?: number;
+  containsLowercaseCharacter?: boolean;
+  containsUppercaseCharacter?: boolean;
+  containsNumericCharacter?: boolean;
+  containsNonAlphanumericCharacter?: boolean;
+}
+
+export interface PasswordPolicyResponseInternal {
+  customStrengthOptions?: PasswordPolicyResponseCustomStrengthOptionsInternal;
+  allowedNonAlphanumericCharacters?: string[];
+  enforcementState?: string;
+  forceUpgradeOnSignin?: boolean;
+  schemaVersion: number;
+}
 
 export type PasswordValidationStatusInternal = {
   isValid: boolean;

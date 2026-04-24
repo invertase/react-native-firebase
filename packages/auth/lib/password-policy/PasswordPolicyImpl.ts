@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,6 +15,13 @@
  *
  */
 
+import type {
+  PasswordPolicyCustomStrengthOptionsInternal,
+  PasswordPolicyInternal,
+  PasswordPolicyResponseInternal,
+  PasswordValidationStatusInternal,
+} from '../types/internal';
+
 // Minimum min password length enforced by the backend, even if no minimum length is set.
 const MINIMUM_MIN_PASSWORD_LENGTH = 6;
 
@@ -24,14 +30,20 @@ const MINIMUM_MIN_PASSWORD_LENGTH = 6;
  *
  * @internal
  */
-export class PasswordPolicyImpl {
-  constructor(response) {
+export class PasswordPolicyImpl implements PasswordPolicyInternal {
+  customStrengthOptions: PasswordPolicyCustomStrengthOptionsInternal;
+  allowedNonAlphanumericCharacters: string;
+  enforcementState: string;
+  forceUpgradeOnSignin: boolean;
+  schemaVersion: number;
+
+  constructor(response: PasswordPolicyResponseInternal) {
     // Only include custom strength options defined in the response.
-    const responseOptions = response.customStrengthOptions;
+    const responseOptions = response.customStrengthOptions ?? {};
     this.customStrengthOptions = {};
     this.customStrengthOptions.minPasswordLength =
       responseOptions.minPasswordLength ?? MINIMUM_MIN_PASSWORD_LENGTH;
-    if (responseOptions.maxPasswordLength) {
+    if (responseOptions.maxPasswordLength !== undefined) {
       this.customStrengthOptions.maxPasswordLength = responseOptions.maxPasswordLength;
     }
     if (responseOptions.containsLowercaseCharacter !== undefined) {
@@ -54,7 +66,7 @@ export class PasswordPolicyImpl {
     this.enforcementState =
       response.enforcementState === 'ENFORCEMENT_STATE_UNSPECIFIED'
         ? 'OFF'
-        : response.enforcementState;
+        : (response.enforcementState ?? 'OFF');
 
     // Use an empty string if no non-alphanumeric characters are specified in the response.
     this.allowedNonAlphanumericCharacters =
@@ -64,8 +76,8 @@ export class PasswordPolicyImpl {
     this.schemaVersion = response.schemaVersion;
   }
 
-  validatePassword(password): any {
-    const status = {
+  validatePassword(password: string): PasswordValidationStatusInternal {
+    const status: PasswordValidationStatusInternal = {
       isValid: true,
       passwordPolicy: this,
     };
@@ -83,18 +95,24 @@ export class PasswordPolicyImpl {
     return status;
   }
 
-  validatePasswordLengthOptions(password, status) {
+  private validatePasswordLengthOptions(
+    password: string,
+    status: PasswordValidationStatusInternal,
+  ): void {
     const minPasswordLength = this.customStrengthOptions.minPasswordLength;
     const maxPasswordLength = this.customStrengthOptions.maxPasswordLength;
-    if (minPasswordLength) {
+    if (minPasswordLength !== undefined) {
       status.meetsMinPasswordLength = password.length >= minPasswordLength;
     }
-    if (maxPasswordLength) {
+    if (maxPasswordLength !== undefined) {
       status.meetsMaxPasswordLength = password.length <= maxPasswordLength;
     }
   }
 
-  validatePasswordCharacterOptions(password, status) {
+  private validatePasswordCharacterOptions(
+    password: string,
+    status: PasswordValidationStatusInternal,
+  ): void {
     this.updatePasswordCharacterOptionsStatuses(status, false, false, false, false);
 
     for (let i = 0; i < password.length; i++) {
@@ -109,13 +127,13 @@ export class PasswordPolicyImpl {
     }
   }
 
-  updatePasswordCharacterOptionsStatuses(
-    status,
-    containsLowercaseCharacter,
-    containsUppercaseCharacter,
-    containsNumericCharacter,
-    containsNonAlphanumericCharacter,
-  ) {
+  private updatePasswordCharacterOptionsStatuses(
+    status: PasswordValidationStatusInternal,
+    containsLowercaseCharacter: boolean,
+    containsUppercaseCharacter: boolean,
+    containsNumericCharacter: boolean,
+    containsNonAlphanumericCharacter: boolean,
+  ): void {
     if (this.customStrengthOptions.containsLowercaseLetter) {
       status.containsLowercaseLetter ||= containsLowercaseCharacter;
     }
@@ -130,4 +148,3 @@ export class PasswordPolicyImpl {
     }
   }
 }
-export default PasswordPolicyImpl;

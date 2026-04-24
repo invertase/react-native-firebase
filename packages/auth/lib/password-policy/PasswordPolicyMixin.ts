@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -18,23 +17,32 @@
 
 import { fetchPasswordPolicy } from './passwordPolicyApi';
 import { PasswordPolicyImpl } from './PasswordPolicyImpl';
+import type {
+  PasswordPolicyHostInternal,
+  PasswordPolicyInternal,
+  PasswordPolicyMixinInternal,
+  PasswordValidationStatusInternal,
+} from '../types/internal';
 
 const EXPECTED_PASSWORD_POLICY_SCHEMA_VERSION = 1;
+
+type PasswordPolicyMixinTarget = PasswordPolicyHostInternal & PasswordPolicyMixinInternal;
+type PasswordPolicyMixinShape = PasswordPolicyMixinInternal & ThisType<PasswordPolicyMixinTarget>;
 
 /**
  * Password policy mixin - provides password policy caching and validation.
  * Expects the target object to have: _tenantId, _projectPasswordPolicy,
  * _tenantPasswordPolicies, and app.options.apiKey
  */
-export const PasswordPolicyMixin = {
-  _getPasswordPolicyInternal() {
+export const PasswordPolicyMixin: PasswordPolicyMixinShape = {
+  _getPasswordPolicyInternal(): PasswordPolicyInternal | null {
     if (this._tenantId === null) {
       return this._projectPasswordPolicy;
     }
-    return this._tenantPasswordPolicies[this._tenantId];
+    return this._tenantPasswordPolicies[this._tenantId] ?? null;
   },
 
-  async _updatePasswordPolicy() {
+  async _updatePasswordPolicy(): Promise<void> {
     const response = await fetchPasswordPolicy(this);
     const passwordPolicy = new PasswordPolicyImpl(response);
     if (this._tenantId === null) {
@@ -44,17 +52,25 @@ export const PasswordPolicyMixin = {
     }
   },
 
-  async _recachePasswordPolicy() {
+  async _recachePasswordPolicy(): Promise<void> {
     if (this._getPasswordPolicyInternal()) {
       await this._updatePasswordPolicy();
     }
   },
 
-  async validatePassword(password) {
-    if (!this._getPasswordPolicyInternal()) {
+  async validatePassword(password: string): Promise<PasswordValidationStatusInternal> {
+    let passwordPolicy = this._getPasswordPolicyInternal();
+
+    if (!passwordPolicy) {
       await this._updatePasswordPolicy();
+      passwordPolicy = this._getPasswordPolicyInternal();
     }
-    const passwordPolicy = this._getPasswordPolicyInternal();
+
+    if (!passwordPolicy) {
+      throw new Error(
+        'firebase.auth().validatePassword(*) Failed to load password policy for validation.',
+      );
+    }
 
     if (passwordPolicy.schemaVersion !== EXPECTED_PASSWORD_POLICY_SCHEMA_VERSION) {
       throw new Error(
