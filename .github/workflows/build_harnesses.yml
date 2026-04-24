@@ -1,4 +1,4 @@
-name: Build Harnesses
+name: 'Build Harnesses'
 
 on:
   workflow_dispatch:
