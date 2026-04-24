@@ -63,7 +63,12 @@ module.exports = ({config}) => {
       favicon: './assets/favicon.png',
     },
     plugins: [
-      ['expo-build-properties', {ios: {useFrameworks: 'static'}}],
+      [
+        'expo-build-properties',
+        // force static linking of RNFBApp to avoid issues with the static library being linked to the app's main executable
+        // See: https://github.com/invertase/react-native-firebase/issues/8657
+        {ios: {useFrameworks: 'static', forceStaticLinking: ['RNFBApp']}},
+      ],
       '@react-native-firebase/app',
       '@react-native-firebase/analytics',
       '@react-native-firebase/app-check',
