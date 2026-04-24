@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,6 +15,8 @@
  *
  */
 
+import type { AuthCredential, MultiFactorAssertion } from './types/auth';
+
 export default class PhoneMultiFactorGenerator {
   static FACTOR_ID = 'phone';
 
@@ -25,10 +26,14 @@ export default class PhoneMultiFactorGenerator {
     );
   }
 
-  static assertion(credential) {
+  static assertion(credential: AuthCredential): MultiFactorAssertion {
     // There is no logic here, we mainly do this for API compatibility
     // (following the Web API).
     const { token, secret } = credential;
-    return { token, secret };
+    return {
+      token,
+      secret,
+      factorId: 'phone',
+    } as MultiFactorAssertion;
   }
 }

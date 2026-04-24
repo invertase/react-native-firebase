@@ -551,8 +551,9 @@ export function linkWithRedirect(
 
 export function multiFactor(user: User): MultiFactorUser {
   return new MultiFactorUserModule(
-    (user as unknown as UserInternal)._auth || getAuth(),
-    user,
+    ((user as unknown as UserInternal)._auth ||
+      (getAuth() as unknown as UserInternal['_auth'])) as NonNullable<UserInternal['_auth']>,
+    user as unknown as FirebaseAuthTypes.User,
   ) as MultiFactorUser;
 }
 

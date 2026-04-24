@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,9 +15,13 @@
  */
 
 import { isString } from '@react-native-firebase/app/dist/module/common';
+import type { AuthInternal } from './types/internal';
 
 export class TotpSecret {
-  constructor(secretKey, auth) {
+  readonly secretKey: string;
+  private readonly auth: AuthInternal;
+
+  constructor(secretKey: string, auth: AuthInternal) {
     // The native TotpSecret has many more properties, but they are
     // internal to the native SDKs, we only maintain the secret in JS layer
     this.secretKey = secretKey;
@@ -30,8 +33,6 @@ export class TotpSecret {
   /**
    * Shared secret key/seed used for enrolling in TOTP MFA and generating OTPs.
    */
-  secretKey = null;
-
   /**
    * Returns a QR code URL as described in
    * https://github.com/google/google-authenticator/wiki/Key-Uri-Format
@@ -42,7 +43,7 @@ export class TotpSecret {
    * @param issuer issuer of the TOTP (likely the app name).
    * @returns A Promise that resolves to a QR code URL string.
    */
-  async generateQrCodeUrl(accountName, issuer) {
+  async generateQrCodeUrl(accountName?: string, issuer?: string): Promise<string> {
     // accountName and issure are nullable in the API specification but are
     // required by tha native SDK. The JS SDK returns '' if they are missing/empty.
     if (!isString(accountName) || !isString(issuer) || accountName === '' || issuer === '') {
@@ -60,7 +61,7 @@ export class TotpSecret {
    *
    * @param qrCodeUrl the URL to open in the app, from generateQrCodeUrl
    */
-  openInOtpApp(qrCodeUrl) {
+  openInOtpApp(qrCodeUrl: string): string | void {
     if (isString(qrCodeUrl) && qrCodeUrl !== '') {
       return this.auth.native.openInOtpApp(this.secretKey, qrCodeUrl);
     }

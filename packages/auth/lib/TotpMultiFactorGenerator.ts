@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -19,6 +18,8 @@
 import { isOther } from '@react-native-firebase/app/dist/module/common';
 import { TotpSecret } from './TotpSecret';
 import { getAuth } from './modular';
+import type { FirebaseAuthTypes } from './types/namespaced';
+import type { AuthInternal } from './types/internal';
 
 export default class TotpMultiFactorGenerator {
   static FACTOR_ID = 'totp';
@@ -29,20 +30,40 @@ export default class TotpMultiFactorGenerator {
     );
   }
 
-  static assertionForSignIn(uid, verificationCode) {
+  static assertionForSignIn(
+    uid: string,
+    verificationCode: string,
+  ): FirebaseAuthTypes.MultiFactorAssertion {
     if (isOther) {
       // we require the web native assertion when using firebase-js-sdk
       // as it has functions used by the SDK, a shim won't do
-      return getAuth().native.assertionForSignIn(uid, verificationCode);
+      return (getAuth() as unknown as AuthInternal).native.assertionForSignIn(
+        uid,
+        verificationCode,
+      ) as unknown as FirebaseAuthTypes.MultiFactorAssertion;
     }
-    return { uid, verificationCode };
+    return {
+      uid,
+      verificationCode,
+      factorId: 'totp',
+    } as unknown as FirebaseAuthTypes.MultiFactorAssertion;
   }
 
-  static assertionForEnrollment(totpSecret, verificationCode) {
-    return { totpSecret: totpSecret.secretKey, verificationCode };
+  static assertionForEnrollment(
+    totpSecret: TotpSecret,
+    verificationCode: string,
+  ): FirebaseAuthTypes.MultiFactorAssertion {
+    return {
+      totpSecret: totpSecret.secretKey,
+      verificationCode,
+      factorId: 'totp',
+    } as unknown as FirebaseAuthTypes.MultiFactorAssertion;
   }
 
-  static async generateSecret(session, auth) {
+  static async generateSecret(
+    session: FirebaseAuthTypes.MultiFactorSession,
+    auth: FirebaseAuthTypes.Module,
+  ): Promise<TotpSecret> {
     if (!session) {
       throw new Error('Session is required to generate a TOTP secret.');
     }
@@ -50,8 +71,8 @@ export default class TotpMultiFactorGenerator {
       secretKey,
       // Other properties are not publicly exposed in native APIs
       // hashingAlgorithm, codeLength, codeIntervalSeconds, enrollmentCompletionDeadline
-    } = await auth.native.generateTotpSecret(session);
+    } = await (auth as unknown as AuthInternal).native.generateTotpSecret(session);
 
-    return new TotpSecret(secretKey, auth);
+    return new TotpSecret(secretKey, auth as unknown as AuthInternal);
   }
 }
