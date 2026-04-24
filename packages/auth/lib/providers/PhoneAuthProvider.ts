@@ -96,16 +96,6 @@ export default class PhoneAuthProvider {
         );
     }
 
-    if (isPhoneMultiFactorUidOptions(phoneInfoOptions)) {
-      // The native bridge only needs the enrollment uid for MFA sign-in verification.
-      return this._auth.app
-        .auth()
-        .verifyPhoneNumberWithMultiFactorInfo(
-          { uid: phoneInfoOptions.multiFactorUid },
-          phoneInfoOptions.session,
-        );
-    }
-
     if (isPhoneMultiFactorEnrollOptions(phoneInfoOptions)) {
       return this._auth.app.auth().verifyPhoneNumberForMultiFactor(phoneInfoOptions);
     }
