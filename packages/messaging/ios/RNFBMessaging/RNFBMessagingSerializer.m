@@ -16,7 +16,7 @@
  */
 
 #import "RNFBMessagingSerializer.h"
-#import <React/RCTConvert.h>
+#import <RNFBApp/RCTConvert+FIRApp.h>
 
 @implementation RNFBMessagingSerializer
 

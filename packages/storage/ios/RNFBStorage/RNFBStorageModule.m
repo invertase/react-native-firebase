@@ -15,11 +15,16 @@
  *
  */
 
+
+#import <React/RCTBridgeModule.h>
+#import <RNFBApp/RCTConvert+FIRApp.h>
+#import <RNFBApp/RNFBAppModule.h>
+
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
-#import "RNFBRCTEventEmitter.h"
-#import "RNFBSharedUtils.h"
+#import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBStorageCommon.h"
 #import "RNFBStorageModule.h"
 

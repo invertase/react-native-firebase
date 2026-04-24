@@ -19,9 +19,9 @@
 #import <Firebase/Firebase.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
-#import "RNFBSharedUtils.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBStorageCommon.h"
-#import "RNFBUtilsModule.h"
+#import <RNFBApp/RNFBUtilsModule.h>
 
 @implementation RNFBStorageCommon
 

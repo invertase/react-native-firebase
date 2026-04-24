@@ -15,8 +15,9 @@
  *
  */
 
-#import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
+#import <RNFBApp/RNFBAppModule.h>
+#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN

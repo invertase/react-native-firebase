@@ -23,11 +23,11 @@
 #import <FirebaseCoreExtension/FIRComponentType.h>
 #import <FirebaseCoreExtension/FIRLibrary.h>
 #import <FirebaseCrashlytics/FIRCrashlytics.h>
-#import "RNFBJSON.h"
-#import "RNFBMeta.h"
-#import "RNFBPreferences.h"
-#import "RNFBSharedUtils.h"
-#import "RNFBVersion.h"
+#import <RNFBApp/RNFBJSON.h>
+#import <RNFBApp/RNFBMeta.h>
+#import <RNFBApp/RNFBPreferences.h>
+#import <RNFBApp/RNFBSharedUtils.h>
+#import <RNFBApp/RNFBVersion.h>
 
 NSString *const KEY_APP_DATA_COLLECTION_DEFAULT_ENABLED = @"app_data_collection_default_enabled";
 NSString *const KEY_CRASHLYTICS_DEBUG_ENABLED = @"crashlytics_debug_enabled";

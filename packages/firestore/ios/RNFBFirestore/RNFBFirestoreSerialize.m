@@ -20,7 +20,7 @@
 
 #import "RNFBFirestoreCommon.h"
 #import "RNFBFirestoreSerialize.h"
-#import "RNFBPreferences.h"
+#import <RNFBApp/RNFBPreferences.h>
 
 @implementation RNFBFirestoreSerialize
 

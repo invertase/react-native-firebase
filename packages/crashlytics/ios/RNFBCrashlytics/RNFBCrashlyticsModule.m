@@ -15,6 +15,11 @@
  *
  */
 
+
+#import <React/RCTBridgeModule.h>
+#import <RNFBApp/RCTConvert+FIRApp.h>
+#import <RNFBApp/RNFBAppModule.h>
+
 #include <Foundation/Foundation.h>
 #include <sys/sysctl.h>
 
@@ -23,10 +28,10 @@
 #import <React/RCTUtils.h>
 
 #import <Firebase/Firebase.h>
-#import "RNFBApp/RNFBSharedUtils.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBCrashlyticsInitProvider.h"
 #import "RNFBCrashlyticsModule.h"
-#import "RNFBPreferences.h"
+#import <RNFBApp/RNFBPreferences.h>
 
 @implementation RNFBCrashlyticsModule
 #pragma mark -

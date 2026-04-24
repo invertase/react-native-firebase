@@ -15,10 +15,11 @@
  *
  */
 
+#import <React/RCTBridgeModule.h>
 #import "RNFBFirestoreCommon.h"
 #import <RNFBApp/RNFBSharedUtils.h>
 #import <RNFBApp/RNFBVersion.h>
-#import "RNFBPreferences.h"
+#import <RNFBApp/RNFBPreferences.h>
 
 NSString *const FIRESTORE_CACHE_SIZE = @"firebase_firestore_cache_size";
 NSString *const FIRESTORE_HOST = @"firebase_firestore_host";

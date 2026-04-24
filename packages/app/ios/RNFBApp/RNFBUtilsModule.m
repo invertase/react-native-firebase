@@ -15,9 +15,14 @@
  *
  */
 
+
+#import <React/RCTBridgeModule.h>
+#import <RNFBApp/RCTConvert+FIRApp.h>
+#import <RNFBApp/RNFBAppModule.h>
+
 #import <React/RCTUtils.h>
 
-#import "RNFBApp/RNFBSharedUtils.h"
+#import "RNFBSharedUtils.h"
 #import "RNFBUtilsModule.h"
 
 @implementation RNFBUtilsModule

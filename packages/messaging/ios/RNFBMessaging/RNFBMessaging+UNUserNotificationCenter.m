@@ -17,7 +17,7 @@
 
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 
-#import "RNFBJSON.h"
+#import <RNFBApp/RNFBJSON.h>
 #import "RNFBMessaging+UNUserNotificationCenter.h"
 #import "RNFBMessagingSerializer.h"
 

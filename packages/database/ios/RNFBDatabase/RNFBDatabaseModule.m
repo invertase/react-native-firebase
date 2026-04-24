@@ -15,12 +15,17 @@
  *
  */
 
+
+#import <React/RCTBridgeModule.h>
+#import <RNFBApp/RCTConvert+FIRApp.h>
+#import <RNFBApp/RNFBAppModule.h>
+
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
 #import "RNFBDatabaseCommon.h"
 #import "RNFBDatabaseModule.h"
-#import "RNFBPreferences.h"
+#import <RNFBApp/RNFBPreferences.h>
 
 static __strong NSMutableDictionary *emulatorSettings;
 

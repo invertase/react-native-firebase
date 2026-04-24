@@ -15,10 +15,13 @@
  *
  */
 
+#import <React/RCTBridgeModule.h>
+#import <RNFBApp/RCTConvert+FIRApp.h>
+#import <RNFBApp/RNFBAppModule.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
-#import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBInstallationsModule.h"
 
 #import "FirebaseInstallations/FIRInstallations.h"
@@ -36,8 +39,7 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Installations Methods
 
-RCT_EXPORT_METHOD(delete
-                  : (FIRApp *)firebaseApp
+RCT_EXPORT_METHOD(delete:(FIRApp *)firebaseApp
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   FIRInstallations *installations = [FIRInstallations installationsWithApp:firebaseApp];
@@ -57,8 +59,7 @@ RCT_EXPORT_METHOD(delete
   }];
 }
 
-RCT_EXPORT_METHOD(getId
-                  : (FIRApp *)firebaseApp
+RCT_EXPORT_METHOD(getId:(FIRApp *)firebaseApp
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   FIRInstallations *installations = [FIRInstallations installationsWithApp:firebaseApp];
@@ -87,8 +88,7 @@ RCT_EXPORT_METHOD(getId
   }];
 }
 
-RCT_EXPORT_METHOD(getToken
-                  : (FIRApp *)firebaseApp
+RCT_EXPORT_METHOD(getToken:(FIRApp *)firebaseApp
                   : (BOOL)forceRefresh
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {

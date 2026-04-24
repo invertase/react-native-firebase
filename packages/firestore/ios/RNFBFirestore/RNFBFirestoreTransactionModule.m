@@ -15,6 +15,7 @@
  *
  */
 
+#import <React/RCTBridgeModule.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <React/RCTUtils.h>
 

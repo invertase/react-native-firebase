@@ -18,6 +18,7 @@
 #import <Firebase/Firebase.h>
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
+#import <RNFBApp/RNFBAppModule.h>
 
 @interface RNFBDatabaseQueryModule : NSObject <RCTBridgeModule>
 @end

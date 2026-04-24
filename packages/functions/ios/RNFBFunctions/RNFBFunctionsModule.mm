@@ -19,9 +19,9 @@
 #import <React/RCTUtils.h>
 
 #import "NativeRNFBTurboFunctions.h"
-#import "RNFBApp/RCTConvert+FIRApp.h"
-#import "RNFBApp/RNFBRCTEventEmitter.h"
-#import "RNFBApp/RNFBSharedUtils.h"
+#import <RNFBApp/RCTConvert+FIRApp.h>
+#import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBFunctionsModule.h"
 
 #if __has_include(<RNFBFunctions/RNFBFunctions-Swift.h>)

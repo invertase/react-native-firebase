@@ -15,11 +15,13 @@
  *
  */
 
+#import <React/RCTBridgeModule.h>
+#import <RNFBApp/RCTConvert+FIRApp.h>
+#import <RNFBApp/RNFBAppModule.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 #import <Firebase/Firebase.h>
-#import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 
-#import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBFiamModule.h"
 
 @implementation RNFBFiamModule
@@ -45,24 +47,24 @@ RCT_EXPORT_MODULE();
 #pragma mark Firebase Fiam Methods
 
 RCT_EXPORT_METHOD(setAutomaticDataCollectionEnabled
-                  : (BOOL)enabled resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (BOOL)enabled
+                  : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   [FIRInAppMessaging inAppMessaging].automaticDataCollectionEnabled = (BOOL)enabled;
   resolve([NSNull null]);
 }
 
 RCT_EXPORT_METHOD(setMessagesDisplaySuppressed
-                  : (BOOL)enabled resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (BOOL)enabled
+                  : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   [FIRInAppMessaging inAppMessaging].messageDisplaySuppressed = (BOOL)enabled;
   resolve([NSNull null]);
 }
 
 RCT_EXPORT_METHOD(triggerEvent
-                  : (NSString *)eventId resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSString *)eventId
+                  : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   [[FIRInAppMessaging inAppMessaging] triggerEvent:eventId];
   resolve([NSNull null]);

@@ -17,7 +17,7 @@
 #import <Firebase/Firebase.h>
 #import <RNFBApp/RNFBJSON.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
-#import <React/RCTConvert.h>
+#import <RNFBApp/RCTConvert+FIRApp.h>
 #import <React/RCTRootView.h>
 
 #import "RNFBMessaging+AppDelegate.h"

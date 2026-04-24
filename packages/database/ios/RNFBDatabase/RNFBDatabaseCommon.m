@@ -16,8 +16,8 @@
  */
 
 #import "RNFBDatabaseCommon.h"
-#import "RNFBApp/RNFBSharedUtils.h"
-#import "RNFBPreferences.h"
+#import <RNFBApp/RNFBSharedUtils.h>
+#import <RNFBApp/RNFBPreferences.h>
 
 static __strong NSMutableDictionary *references;
 static __strong NSMutableDictionary *configSettingsLock;

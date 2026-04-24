@@ -15,9 +15,10 @@
  *
  */
 
+#import <React/RCTBridgeModule.h>
 #import <Firebase/Firebase.h>
 #import <RNFBApp/RNFBSharedUtils.h>
-#import <React/RCTConvert.h>
+#import <RNFBApp/RCTConvert+FIRApp.h>
 #import <React/RCTUtils.h>
 
 #import "RNFBMessaging+AppDelegate.h"

@@ -15,12 +15,17 @@
  *
  */
 
+
+#import <React/RCTBridgeModule.h>
+#import <RNFBApp/RCTConvert+FIRApp.h>
+#import <RNFBApp/RNFBAppModule.h>
+
 #import <React/RCTUtils.h>
 
 #import "RNFBDatabaseCommon.h"
 #import "RNFBDatabaseQuery.h"
 #import "RNFBDatabaseQueryModule.h"
-#import "RNFBRCTEventEmitter.h"
+#import <RNFBApp/RNFBRCTEventEmitter.h>
 
 static __strong NSMutableDictionary *queryDictionary;
 static NSString *const RNFB_DATABASE_SYNC = @"database_sync_event";

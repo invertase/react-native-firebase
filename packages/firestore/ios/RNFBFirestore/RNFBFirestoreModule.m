@@ -15,12 +15,13 @@
  *
  */
 
+#import <React/RCTBridgeModule.h>
 #import "RNFBFirestoreModule.h"
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <React/RCTUtils.h>
 #import "FirebaseFirestoreInternal/FIRPersistentCacheIndexManager.h"
 #import "RNFBFirestoreCommon.h"
-#import "RNFBPreferences.h"
+#import <RNFBApp/RNFBPreferences.h>
 
 NSMutableDictionary *emulatorConfigs;
 static __strong NSMutableDictionary *snapshotsInSyncListeners;

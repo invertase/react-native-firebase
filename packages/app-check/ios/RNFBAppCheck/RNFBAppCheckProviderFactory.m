@@ -16,7 +16,7 @@
  */
 
 #import "RNFBAppCheckProviderFactory.h"
-#import "RNFBApp/RNFBSharedUtils.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 
 @implementation RNFBAppCheckProviderFactory
 

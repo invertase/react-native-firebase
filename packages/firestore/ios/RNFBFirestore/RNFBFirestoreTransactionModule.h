@@ -15,11 +15,12 @@
  *
  */
 
+#import <React/RCTBridgeModule.h>
+#import <RNFBApp/RNFBAppModule.h>
 #import <Firebase/Firebase.h>
 #import <Foundation/Foundation.h>
 #import <RNFBApp/RNFBSharedUtils.h>
 #import <RNFBFirestoreQuery.h>
-#import <React/RCTBridgeModule.h>
 #import "RNFBFirestoreCommon.h"
 #import "RNFBFirestoreSerialize.h"
 

@@ -15,12 +15,17 @@
  *
  */
 
+
+#import <React/RCTBridgeModule.h>
+#import <RNFBApp/RCTConvert+FIRApp.h>
+#import <RNFBApp/RNFBAppModule.h>
+
 #import <Firebase/Firebase.h>
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 
 #import "RNFBConfigModule.h"
-#import "RNFBSharedUtils.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 
 static NSString *const ON_CONFIG_UPDATED_EVENT = @"on_config_updated";
 

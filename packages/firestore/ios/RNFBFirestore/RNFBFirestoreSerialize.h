@@ -16,8 +16,8 @@
  *
  */
 
-#import <Firebase/Firebase.h>
 #import <React/RCTBridgeModule.h>
+#import <Firebase/Firebase.h>
 
 @interface RNFBFirestoreSerialize : NSObject
 

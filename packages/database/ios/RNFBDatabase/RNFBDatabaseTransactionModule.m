@@ -15,13 +15,18 @@
  *
  */
 
+
+#import <React/RCTBridgeModule.h>
+#import <RNFBApp/RCTConvert+FIRApp.h>
+#import <RNFBApp/RNFBAppModule.h>
+
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
 #import "RNFBDatabaseCommon.h"
 #import "RNFBDatabaseTransactionModule.h"
-#import "RNFBRCTEventEmitter.h"
-#import "RNFBSharedUtils.h"
+#import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 
 static __strong NSMutableDictionary *transactions;
 static NSString *const RNFB_DATABASE_TRANSACTION_EVENT = @"database_transaction_event";

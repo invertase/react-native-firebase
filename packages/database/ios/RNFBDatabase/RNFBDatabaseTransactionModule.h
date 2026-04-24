@@ -18,6 +18,7 @@
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
+#import <RNFBApp/RNFBAppModule.h>
 
 @interface RNFBDatabaseTransactionModule : NSObject <RCTBridgeModule>
 @property dispatch_queue_t transactionQueue;

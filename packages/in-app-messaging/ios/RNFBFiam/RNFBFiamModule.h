@@ -15,9 +15,9 @@
  *
  */
 
-#import <Foundation/Foundation.h>
-
 #import <React/RCTBridgeModule.h>
+#import <RNFBApp/RNFBAppModule.h>
+#import <Foundation/Foundation.h>
 
 @interface RNFBFiamModule : NSObject <RCTBridgeModule>
 

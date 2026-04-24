@@ -15,8 +15,9 @@
  *
  */
 
-#import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
+#import <RNFBApp/RNFBAppModule.h>
+#import <Foundation/Foundation.h>
 
 @interface RNFBMessagingModule : NSObject <RCTBridgeModule>
 + (NSDictionary *_Nonnull)addCustomPropsToUserProps:(NSDictionary *_Nullable)userProps
