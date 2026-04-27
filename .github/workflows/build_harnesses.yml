@@ -121,6 +121,7 @@ jobs:
         if: matrix.harness == 'expo'
         working-directory: apps/build-harness-expo/ios
         run: |
+          export NODE_PATH="$PWD/../node_modules"
           WORKSPACE="RNFBExpoHarness.xcworkspace"
           SCHEME="RNFBExpoHarness"
           xcodebuild \
