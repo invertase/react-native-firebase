@@ -49,12 +49,6 @@ function isPhoneMultiFactorSignInOptions(
   return 'multiFactorHint' in phoneInfoOptions && phoneInfoOptions.multiFactorHint !== undefined;
 }
 
-function isPhoneMultiFactorUidOptions(
-  phoneInfoOptions: SupportedPhoneInfoOptions,
-): phoneInfoOptions is PhoneMultiFactorSignInInfoOptions & { multiFactorUid: string } {
-  return 'multiFactorUid' in phoneInfoOptions && phoneInfoOptions.multiFactorUid !== undefined;
-}
-
 function isPhoneMultiFactorEnrollOptions(
   phoneInfoOptions: SupportedPhoneInfoOptions,
 ): phoneInfoOptions is PhoneMultiFactorEnrollInfoOptions {
