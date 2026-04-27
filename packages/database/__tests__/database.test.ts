@@ -52,6 +52,7 @@ import database, {
 import {
   createCheckV9Deprecation,
   CheckV9DeprecationFunction,
+  withDeprecationWarningsSilenced,
 } from '../../app/lib/common/unitTestUtils';
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
@@ -450,9 +451,10 @@ describe('Database', function () {
       it('child', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => child(testRef, 'child'),
-          () => testRef.child('child'),
+          () => testRef2.child('child'),
           'child',
         );
       });
@@ -460,9 +462,10 @@ describe('Database', function () {
       it('set', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => set(testRef, 'value'),
-          () => testRef.set('value'),
+          () => testRef2.set('value'),
           'set',
         );
       });
@@ -470,9 +473,10 @@ describe('Database', function () {
       it('update', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => update(testRef, { value: 'value' }),
-          () => testRef.update({ value: 'value' }),
+          () => testRef2.update({ value: 'value' }),
           'update',
         );
       });
@@ -480,9 +484,10 @@ describe('Database', function () {
       it('setWithPriority', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => setWithPriority(testRef, 'value', 1),
-          () => testRef.setWithPriority('value', 1),
+          () => testRef2.setWithPriority('value', 1),
           'setWithPriority',
         );
       });
@@ -490,9 +495,10 @@ describe('Database', function () {
       it('remove', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => remove(testRef),
-          () => testRef.remove(),
+          () => testRef2.remove(),
           'remove',
         );
       });
@@ -500,9 +506,10 @@ describe('Database', function () {
       it('onValue', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => onValue(testRef, () => {}),
-          () => testRef.on('value', () => {}),
+          () => testRef2.on('value', () => {}),
           'on',
         );
       });
@@ -510,9 +517,10 @@ describe('Database', function () {
       it('get', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => get(testRef),
-          () => testRef.once('value'),
+          () => testRef2.once('value'),
           'once',
         );
       });
@@ -520,9 +528,10 @@ describe('Database', function () {
       it('endAt', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => query(testRef, endAt('value')),
-          () => testRef.endAt('value'),
+          () => testRef2.endAt('value'),
           'endAt',
         );
       });
@@ -530,9 +539,10 @@ describe('Database', function () {
       it('startAt', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => query(testRef, startAt('value')),
-          () => testRef.startAt('value'),
+          () => testRef2.startAt('value'),
           'startAt',
         );
       });
@@ -540,9 +550,10 @@ describe('Database', function () {
       it('limitToFirst', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => query(testRef, limitToFirst(10)),
-          () => testRef.limitToFirst(10),
+          () => testRef2.limitToFirst(10),
           'limitToFirst',
         );
       });
@@ -550,9 +561,10 @@ describe('Database', function () {
       it('limitToLast', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => query(testRef, limitToLast(10)),
-          () => testRef.limitToLast(10),
+          () => testRef2.limitToLast(10),
           'limitToLast',
         );
       });
@@ -560,9 +572,10 @@ describe('Database', function () {
       it('orderByChild', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => query(testRef, orderByChild('name')),
-          () => testRef.orderByChild('name'),
+          () => testRef2.orderByChild('name'),
           'orderByChild',
         );
       });
@@ -570,9 +583,10 @@ describe('Database', function () {
       it('orderByKey', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => query(testRef, orderByKey()),
-          () => testRef.orderByKey(),
+          () => testRef2.orderByKey(),
           'orderByKey',
         );
       });
@@ -580,9 +594,10 @@ describe('Database', function () {
       it('orderByValue', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => query(testRef, orderByValue()),
-          () => testRef.orderByValue(),
+          () => testRef2.orderByValue(),
           'orderByValue',
         );
       });
@@ -590,9 +605,10 @@ describe('Database', function () {
       it('equalTo', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => query(testRef, equalTo('value')),
-          () => testRef.equalTo('value'),
+          () => testRef2.equalTo('value'),
           'equalTo',
         );
       });
@@ -600,9 +616,10 @@ describe('Database', function () {
       it('setPriority', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => setPriority(testRef, 'value'),
-          () => testRef.setPriority('value'),
+          () => testRef2.setPriority('value'),
           'setPriority',
         );
       });
@@ -610,9 +627,10 @@ describe('Database', function () {
       it('push', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => push(testRef, 'value'),
-          () => testRef.push('value'),
+          () => testRef2.push('value'),
           'push',
         );
       });
@@ -620,9 +638,10 @@ describe('Database', function () {
       it('onDisconnect', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => onDisconnect(testRef),
-          () => testRef.onDisconnect(),
+          () => testRef2.onDisconnect(),
           'onDisconnect',
         );
       });
@@ -630,9 +649,10 @@ describe('Database', function () {
       it('keepSynced', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => keepSynced(testRef, true),
-          () => testRef.keepSynced(true),
+          () => testRef2.keepSynced(true),
           'keepSynced',
         );
       });
@@ -642,9 +662,10 @@ describe('Database', function () {
       it('runTransaction', function () {
         const db = getDatabase();
         const testRef = ref(db, 'test');
+        const testRef2 = withDeprecationWarningsSilenced(() => firebase.database().ref('test'));
         referenceV9Deprecation(
           () => runTransaction(testRef, currentData => currentData, { applyLocally: true }),
-          () => testRef.transaction(currentData => currentData, undefined, true),
+          () => testRef2.transaction((currentData: any) => currentData, undefined, true),
           'transaction',
         );
       });
