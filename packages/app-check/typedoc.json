@@ -1,15 +1,5 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["lib/modular.ts", "lib/types/appcheck.ts"],
-  "tsconfig": "tsconfig.json",
-  "intentionallyNotExported": [
-    "_AppCheck",
-    "_AppCheckListenerResult",
-    "_AppCheckOptions",
-    "_AppCheckProvider",
-    "_AppCheckStatics",
-    "_AppCheckToken",
-    "_AppCheckTokenResult",
-    "_CustomProviderOptions"
-  ]
+  "tsconfig": "tsconfig.json"
 }
