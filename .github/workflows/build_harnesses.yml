@@ -211,4 +211,7 @@ jobs:
       - name: Build Expo Android harness
         if: matrix.harness == 'expo'
         working-directory: apps/build-harness-expo/android
-        run: ./gradlew :app:assembleDebug
+        run: |
+          export NODE_PATH="$PWD/../node_modules"
+          export NODE_ENV=production
+          ./gradlew :app:assembleDebug
