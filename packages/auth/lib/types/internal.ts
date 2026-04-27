@@ -257,7 +257,7 @@ export interface RNFBAuthModule {
   verifyPasswordResetCode(code: string): Promise<string>;
   useUserAccessGroup(userAccessGroup: string): Promise<null | void>;
   signInWithProvider(provider: Record<string, unknown>): Promise<NativeUserCredentialInternal>;
-  useEmulator(host: string, port: number): void;
+  useEmulator(host: string, port?: number): void;
   getCustomAuthDomain(): Promise<string>;
   confirmationResultConfirm(verificationCode: string): Promise<NativeUserCredentialInternal>;
   delete(): Promise<void>;

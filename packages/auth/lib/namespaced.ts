@@ -598,7 +598,7 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     );
   }
 
-  useEmulator(url: string): [string, number] {
+  useEmulator(url: string): void {
     if (!url || !isString(url) || !isValidUrl(url)) {
       throw new Error('firebase.auth().useEmulator() takes a non-empty string URL');
     }
@@ -632,12 +632,13 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     }
     const host = urlMatches[1];
     const portString = urlMatches[2];
-    if (!host || !portString) {
-      throw new Error('firebase.auth().useEmulator() unable to parse host and port from URL');
+    if (!host) {
+      throw new Error('firebase.auth().useEmulator() unable to parse host  from URL');
     }
-    const port = parseInt(portString, 10);
+    const port = portString ? parseInt(portString, 10) : undefined;
     this.native.useEmulator(host, port);
-    return [host, port]; // undocumented return, useful for unit testing
+    // @ts-ignore - undocumented return, useful for unit testing
+    return [host, port];
   }
 
   getMultiFactorResolver(
