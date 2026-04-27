@@ -61,7 +61,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3
+          ruby-version: '3.3'
 
       - name: Create CI Firebase config files
         run: bash ./scripts/write-ci-firebase-configs.sh "${IOS_GOOGLE_SERVICES_PATH}" "${ANDROID_GOOGLE_SERVICES_PATH}"
