@@ -16,7 +16,6 @@
  */
 
 import type { FirebaseApp, ReactNativeFirebase } from '@react-native-firebase/app';
-import type { FirebaseAuthTypes } from './namespaced';
 
 export type CompleteFn = () => void;
 export type ErrorFn = (error: Error) => void;
@@ -107,18 +106,64 @@ export interface AuthError extends ReactNativeFirebase.NativeFirebaseError {
   };
 }
 
-export type NativeFirebaseAuthError = FirebaseAuthTypes.NativeFirebaseAuthError;
-export type AuthCredential = FirebaseAuthTypes.AuthCredential;
-export type OIDCProvider = FirebaseAuthTypes.OIDCProvider;
+export interface NativeFirebaseAuthError extends ReactNativeFirebase.NativeFirebaseError {
+  readonly userInfo: {
+    readonly authCredential: AuthCredential | null;
+    readonly resolver: MultiFactorResolver | null;
+  };
+}
+
+export interface AuthCredential {
+  readonly providerId: string;
+  readonly token: string;
+  readonly secret: string;
+}
+
+export interface OIDCProvider {
+  readonly PROVIDER_ID: string;
+  credential(oidcSuffix: string, idToken: string): AuthCredential;
+}
 export interface MultiFactorError extends AuthError {
   readonly customData: AuthError['customData'] & {
     readonly operationType: (typeof OperationType)[keyof typeof OperationType];
   };
 }
-export type PhoneAuthListener = FirebaseAuthTypes.PhoneAuthListener;
-export type PhoneAuthError = FirebaseAuthTypes.PhoneAuthError;
-export type PhoneAuthSnapshot = FirebaseAuthTypes.PhoneAuthSnapshot;
-export type ActionCodeURL = FirebaseAuthTypes.ActionCodeURL;
+export interface PhoneAuthSnapshot {
+  readonly state: 'sent' | 'timeout' | 'verified' | 'error';
+  readonly verificationId: string;
+  readonly code: string | null;
+  readonly error: ReactNativeFirebase.NativeFirebaseError | null;
+}
+
+export interface PhoneAuthError {
+  readonly code: string | null;
+  readonly verificationId: string;
+  readonly message: string | null;
+  readonly stack: string | null;
+}
+
+export interface PhoneAuthListener {
+  on(
+    event: string,
+    observer: (snapshot: PhoneAuthSnapshot) => void,
+    errorCb?: (error: PhoneAuthError) => void,
+    successCb?: (snapshot: PhoneAuthSnapshot) => void,
+  ): PhoneAuthListener;
+  then(
+    onFulfilled?: ((value: PhoneAuthSnapshot) => any) | null,
+    onRejected?: ((error: ReactNativeFirebase.NativeFirebaseError) => any) | null,
+  ): Promise<any>;
+  catch(onRejected: (error: ReactNativeFirebase.NativeFirebaseError) => any): Promise<any>;
+}
+
+export interface ActionCodeURL {
+  readonly apiKey: string;
+  readonly code: string;
+  readonly continueUrl?: string | null;
+  readonly languageCode?: string | null;
+  readonly operation: string;
+  readonly tenantId?: string | null;
+}
 
 export interface Config {
   apiKey: string;
