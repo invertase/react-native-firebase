@@ -22,8 +22,40 @@ import type {
   NativeErrorUserInfo,
 } from '@react-native-firebase/app/dist/module/types/internal';
 import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
-import type { Auth } from './auth';
+import type {
+  ActionCodeInfo,
+  ActionCodeSettings,
+  Auth,
+  AuthCredential,
+  ConfirmationResult,
+  IdTokenResult,
+  MultiFactorResolver,
+  PhoneAuthListener,
+  User,
+  UserCredential,
+} from './auth';
 import type { CallbackOrObserver, FirebaseAuthTypes } from './namespaced';
+
+export type AuthModularDeprecationArg = string;
+
+export type WithAuthDeprecationArg<F> = F extends (...args: infer P) => infer R
+  ? (...args: [...P, AuthModularDeprecationArg]) => R
+  : never;
+
+export interface AppWithAuthInternal {
+  auth(deprecationArg?: AuthModularDeprecationArg): Auth;
+}
+
+export type AuthListenerCallbackInternal = (user: User | null) => void;
+
+export type AuthProviderWithObjectInternal = FirebaseAuthTypes.AuthProvider & {
+  toObject(): Record<string, unknown>;
+};
+
+export type UserCredentialWithAdditionalUserInfoInternal = UserCredential & {
+  user: FirebaseAuthTypes.User;
+  additionalUserInfo?: FirebaseAuthTypes.AdditionalUserInfo;
+};
 
 export interface NativeUserMetadataInternal {
   creationTime: string;
@@ -275,51 +307,52 @@ export type AuthInternal = Auth & {
   app: ReactNativeFirebase.FirebaseApp;
   currentUser: FirebaseAuthTypes.User | null;
   applyActionCode(code: string): Promise<void>;
-  checkActionCode(code: string): Promise<FirebaseAuthTypes.ActionCodeInfo>;
+  checkActionCode(code: string): Promise<ActionCodeInfo>;
   confirmPasswordReset(code: string, newPassword: string): Promise<void>;
   createUserWithEmailAndPassword(
     email: string,
     password: string,
-  ): Promise<FirebaseAuthTypes.UserCredential>;
+  ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   fetchSignInMethodsForEmail(email: string): Promise<string[]>;
   getCustomAuthDomain(): Promise<string>;
-  getMultiFactorResolver(error: unknown): FirebaseAuthTypes.MultiFactorResolver | null;
+  getMultiFactorResolver(error: unknown): MultiFactorResolver | null;
   isSignInWithEmailLink(emailLink: string): Promise<boolean>;
   onAuthStateChanged(
-    listenerOrObserver: CallbackOrObserver<FirebaseAuthTypes.AuthListenerCallback>,
+    listenerOrObserver: CallbackOrObserver<AuthListenerCallbackInternal>,
   ): () => void;
   onIdTokenChanged(
-    listenerOrObserver: CallbackOrObserver<FirebaseAuthTypes.AuthListenerCallback>,
+    listenerOrObserver: CallbackOrObserver<AuthListenerCallbackInternal>,
   ): () => void;
   sendPasswordResetEmail(
     email: string,
-    actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings | null,
+    actionCodeSettings?: ActionCodeSettings | null,
   ): Promise<void>;
   sendSignInLinkToEmail(
     email: string,
-    actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
+    actionCodeSettings?: ActionCodeSettings,
   ): Promise<void>;
   setLanguageCode(code: string | null): Promise<void>;
-  signInAnonymously(): Promise<FirebaseAuthTypes.UserCredential>;
-  signInWithCredential(
-    credential: FirebaseAuthTypes.AuthCredential,
-  ): Promise<FirebaseAuthTypes.UserCredential>;
-  signInWithCustomToken(customToken: string): Promise<FirebaseAuthTypes.UserCredential>;
+  signInAnonymously(): Promise<UserCredentialWithAdditionalUserInfoInternal>;
+  signInWithCredential(credential: AuthCredential): Promise<UserCredentialWithAdditionalUserInfoInternal>;
+  signInWithCustomToken(customToken: string): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   signInWithEmailAndPassword(
     email: string,
     password: string,
-  ): Promise<FirebaseAuthTypes.UserCredential>;
-  signInWithEmailLink(email: string, emailLink: string): Promise<FirebaseAuthTypes.UserCredential>;
+  ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
+  signInWithEmailLink(
+    email: string,
+    emailLink: string,
+  ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   signInWithPhoneNumber(
     phoneNumber: string,
     forceResend?: boolean,
-  ): Promise<FirebaseAuthTypes.ConfirmationResult>;
+  ): Promise<ConfirmationResult>;
   signInWithPopup(
-    provider: FirebaseAuthTypes.AuthProvider,
-  ): Promise<FirebaseAuthTypes.UserCredential>;
+    provider: AuthProviderWithObjectInternal,
+  ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   signInWithRedirect(
-    provider: FirebaseAuthTypes.AuthProvider,
-  ): Promise<FirebaseAuthTypes.UserCredential>;
+    provider: AuthProviderWithObjectInternal,
+  ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   signOut(): Promise<void>;
   useEmulator(url: string): void;
   useUserAccessGroup(userAccessGroup: string): Promise<void>;
@@ -327,7 +360,7 @@ export type AuthInternal = Auth & {
     phoneNumber: string,
     autoVerifyTimeoutOrForceResend?: number | boolean,
     forceResend?: boolean,
-  ): FirebaseAuthTypes.PhoneAuthListener;
+  ): PhoneAuthListener;
   verifyPasswordResetCode(code: string): Promise<string>;
   native: RNFBAuthModule;
   emitter: EventEmitter;
@@ -339,21 +372,41 @@ export type AuthInternal = Auth & {
   _setUser(user?: NativeUserInternal | null): FirebaseAuthTypes.User | null;
   _setUserCredential(
     userCredential: NativeUserCredentialInternal,
-  ): FirebaseAuthTypes.UserCredential;
+  ): UserCredentialWithAdditionalUserInfoInternal;
   resolveMultiFactorSignIn(
     session: FirebaseAuthTypes.MultiFactorSession,
     verificationId: string,
     verificationCode: string,
-  ): Promise<FirebaseAuthTypes.UserCredential>;
+  ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   resolveTotpSignIn(
     session: FirebaseAuthTypes.MultiFactorSession,
     uid: string,
     totpSecret: string,
-  ): Promise<FirebaseAuthTypes.UserCredential>;
+  ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
 } & PasswordPolicyMixinInternal;
 
 export type UserInternal = FirebaseAuthTypes.User & {
   _auth?: AuthInternal;
+  getIdTokenResult(forceRefresh?: boolean): Promise<IdTokenResult>;
+  linkWithCredential(credential: AuthCredential): Promise<UserCredentialWithAdditionalUserInfoInternal>;
+  linkWithPopup(provider: AuthProviderWithObjectInternal): Promise<UserCredentialWithAdditionalUserInfoInternal>;
+  linkWithRedirect(
+    provider: AuthProviderWithObjectInternal,
+  ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
+  reauthenticateWithCredential(
+    credential: AuthCredential,
+  ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
+  reauthenticateWithPopup(
+    provider: AuthProviderWithObjectInternal,
+  ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
+  reauthenticateWithRedirect(provider: AuthProviderWithObjectInternal): Promise<void>;
+  sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<void>;
+  unlink(providerId: string): Promise<User>;
+  updateEmail(email: string): Promise<void>;
+  updatePassword(password: string): Promise<void>;
+  updatePhoneNumber(credential: AuthCredential): Promise<void>;
+  updateProfile(updates: { displayName?: string | null; photoURL?: string | null }): Promise<void>;
+  verifyBeforeUpdateEmail(newEmail: string, actionCodeSettings?: ActionCodeSettings): Promise<void>;
 };
 
 export type ConfirmationResultInternal = FirebaseAuthTypes.ConfirmationResult;
