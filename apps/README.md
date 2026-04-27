@@ -384,6 +384,72 @@ bash ./scripts/sync-build-harness-expo.sh sync \
   --rnfb-version 24.0.0
 ```
 
+### Focused manual validation in either harness
+
+Each harness app now supports a small screen switch in `screenConfig.ts`:
+
+- set `ACTIVE_SCREEN` to `'reproduction'` to load `Reproduction.tsx`
+- set `ACTIVE_SCREEN` to `'home'` to restore the default smoke-test screen
+
+Use `Reproduction.tsx` as a small manual API sandbox when you want to validate
+one package in the running app:
+
+- add one or more buttons that call the package API you want to inspect
+- render loading, success, and error state directly in the screen
+- keep any focused listeners, returned payloads, or serialized output visible in the UI
+- use the same pattern in both the bare and Expo harnesses when comparing behavior
+
+For example, after switching to the reproduction screen in the bare harness:
+
+```bash
+bash ./scripts/sync-build-harness.sh sync \
+  --rnfb-source published \
+  --rnfb-version 24.0.0
+
+cd apps/build-harness
+yarn start
+```
+
+Then in another terminal:
+
+```bash
+yarn app:android
+```
+
+Or in the Expo harness:
+
+```bash
+bash ./scripts/sync-build-harness-expo.sh sync \
+  --rnfb-source published \
+  --rnfb-version 24.0.0
+
+cd apps/build-harness-expo
+yarn start
+```
+
+Then in another terminal:
+
+```bash
+yarn app:android:expo
+```
+
+If the issue is specifically about TypeScript declarations rather than runtime
+behavior, keep the compile-time probe in `Reproduction.tsx` and run `typecheck`
+instead. For example, to validate a published RNFB Firestore typing issue in the
+bare harness:
+
+```bash
+cd apps/build-harness
+yarn typecheck
+```
+
+Or in the Expo harness:
+
+```bash
+cd apps/build-harness-expo
+yarn typecheck
+```
+
 ## Notes
 
 - Defaults come from `packages/app/package.json` for Firebase JS, Firebase iOS SDK, Android BOM, and Gradle plugin versions.
@@ -391,4 +457,5 @@ bash ./scripts/sync-build-harness-expo.sh sync \
 - The Expo harness targets development builds, not Expo Go.
 - The Expo harness generates native folders via `expo prebuild --clean`; those generated folders stay ignored.
 - The module list in each app confirms the JavaScript layer loads, but real validation still requires native builds and runtime checks.
+- Type-only regressions should be validated with `yarn typecheck`; Metro and runtime rendering will not catch them.
 - These harnesses are intentionally separate from `tests/`, which remains the CI and Detox harness.

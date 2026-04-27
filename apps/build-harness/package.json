@@ -9,7 +9,8 @@
     "pod-install": "cd ios && bundle exec pod install",
     "start": "react-native start",
     "start:reset": "react-native start --reset-cache",
-    "test": "jest"
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@react-native-firebase/ai": "workspace:*",
