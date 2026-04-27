@@ -136,7 +136,7 @@ RCT_EXPORT_METHOD(ensureInitialized
     if (error) {
       [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
     } else {
-      resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
+      resolve([self resultWithVoidConstantsForApp:firebaseApp]);
     }
   };
 
@@ -160,7 +160,7 @@ RCT_EXPORT_METHOD(fetch
                                      convertFIRRemoteConfigFetchStatusToNSStringDescription(status)
                                } mutableCopy]];
         } else {
-          resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
+          resolve([self resultWithVoidConstantsForApp:firebaseApp]);
         }
       };
 
@@ -236,7 +236,7 @@ RCT_EXPORT_METHOD(setConfigSettings
   }
 
   [FIRRemoteConfig remoteConfigWithApp:firebaseApp].configSettings = remoteConfigSettings;
-  resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
+  resolve([self resultWithVoidConstantsForApp:firebaseApp]);
 }
 
 RCT_EXPORT_METHOD(setDefaults
@@ -316,7 +316,7 @@ RCT_EXPORT_METHOD(setCustomSignals
           if (error != nil) {
             [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
           } else {
-            resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
+            resolve([self resultWithVoidConstantsForApp:firebaseApp]);
           }
         }];
 }
@@ -327,6 +327,12 @@ RCT_EXPORT_METHOD(setCustomSignals
 - (NSDictionary *)resultWithConstants:(id)result firebaseApp:(FIRApp *)firebaseApp {
   NSMutableDictionary *responseDict = [NSMutableDictionary new];
   responseDict[@"result"] = result;
+  responseDict[@"constants"] = [self getConstantsForApp:firebaseApp];
+  return responseDict;
+}
+
+- (NSDictionary *)resultWithVoidConstantsForApp:(FIRApp *)firebaseApp {
+  NSMutableDictionary *responseDict = [NSMutableDictionary new];
   responseDict[@"constants"] = [self getConstantsForApp:firebaseApp];
   return responseDict;
 }
