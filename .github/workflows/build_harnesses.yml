@@ -73,7 +73,7 @@ jobs:
             ~/Library/Caches/CocoaPods
             ~/.cocoapods/repos
             apps/build-harness/ios/Pods
-          key: ${{ runner.os }}-harness-pods-v1-${{ hashFiles('yarn.lock', 'apps/build-harness/ios/Podfile.lock', 'apps/build-harness-expo/package.json', 'apps/build-harness-expo/app.config.js') }}
+          key: ${{ runner.os }}-harness-pods-v2-${{ hashFiles('yarn.lock', 'apps/build-harness/ios/Podfile.lock', 'apps/build-harness-expo/package.json', 'apps/build-harness-expo/app.config.js') }}
           restore-keys: |
             ${{ runner.os }}-harness-pods-v1-
 
