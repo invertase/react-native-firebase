@@ -384,6 +384,9 @@ export declare namespace FirebaseAuthTypes {
   /**
    * firebase.auth.X
    */
+  /**
+   * @deprecated Use the package default export or modular APIs instead.
+   */
   export interface Statics {
     /**
      * Return the #{@link MultiFactorUser} instance for the current user.
@@ -1680,6 +1683,9 @@ export declare namespace FirebaseAuthTypes {
    * ```
    *
    * TODO @salakar missing updateCurrentUser
+   */
+  /**
+   * @deprecated Use the package default export or modular APIs instead.
    */
   export class Module extends FirebaseModule {
     /**
