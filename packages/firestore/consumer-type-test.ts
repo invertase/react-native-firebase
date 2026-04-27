@@ -92,6 +92,7 @@ import type {
   FirestoreDataConverter,
   WithFieldValue,
   PartialWithFieldValue,
+  SetOptions,
 } from '@react-native-firebase/firestore';
 import {
   execute,
@@ -638,7 +639,7 @@ getDoc(modDoc).then(s1 => {
     console.log(snapshotEqual(s1, s2));
   });
 });
-console.log(queryEqual(modQuery1, modQuery2));
+console.log(queryEqual(modQuery1, modQuery2));  
 
 // ----- onSnapshotsInSync -----
 const unsubSync = onSnapshotsInSync(modFirestore1, () => {});
@@ -736,10 +737,20 @@ class TestObject {
   ) {}
 }
 
+function testObjectToFirestore(modelObject: WithFieldValue<TestObject>): WithFieldValue<TestObject>;
+function testObjectToFirestore(
+  modelObject: PartialWithFieldValue<TestObject>,
+  options: SetOptions,
+): PartialWithFieldValue<TestObject>;
+function testObjectToFirestore(
+  obj: WithFieldValue<TestObject> | PartialWithFieldValue<TestObject>,
+  _options?: SetOptions,
+): WithFieldValue<TestObject> | PartialWithFieldValue<TestObject> {
+  return { ...obj };
+}
+
 const testConverter: FirestoreDataConverter<TestObject, TestObject> = {
-  toFirestore(obj: WithFieldValue<TestObject>) {
-    return { ...obj };
-  },
+  toFirestore: testObjectToFirestore,
   fromFirestore(snap: QueryDocumentSnapshot): TestObject {
     const data = snap.data();
     return new TestObject(data.outerString, data.outerArr, data.nested);
