@@ -7,9 +7,10 @@ import {
   CustomProvider,
   onTokenChanged,
   makeIDBAvailable,
+  type AppCheckOptions,
+  type AppCheckTokenResult,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseAppCheck';
 import { guard, emitEvent } from '@react-native-firebase/app/dist/module/internal/web/utils';
-import type { FirebaseAppCheckTypes } from '../types/appcheck';
 
 let appCheckInstances: Record<string, any> = {};
 let listenersForApp: Record<string, () => void> = {};
@@ -24,16 +25,10 @@ function getAppCheckInstanceForApp(appName: string): any {
 }
 
 interface AppCheckModule {
-  initializeAppCheck(
-    appName: string,
-    options: FirebaseAppCheckTypes.AppCheckOptions,
-  ): Promise<void>;
+  initializeAppCheck(appName: string, options: AppCheckOptions): Promise<void>;
   setTokenAutoRefreshEnabled(appName: string, isTokenAutoRefreshEnabled: boolean): Promise<void>;
-  getLimitedUseToken(appName: string): Promise<FirebaseAppCheckTypes.AppCheckTokenResult>;
-  getToken(
-    appName: string,
-    forceRefresh: boolean,
-  ): Promise<FirebaseAppCheckTypes.AppCheckTokenResult>;
+  getLimitedUseToken(appName: string): Promise<AppCheckTokenResult>;
+  getToken(appName: string, forceRefresh: boolean): Promise<AppCheckTokenResult>;
   addAppCheckListener(appName: string): Promise<void>;
   removeAppCheckListener(appName: string): Promise<void>;
 }
@@ -45,7 +40,7 @@ interface AppCheckModule {
  * java methods on Android.
  */
 const module: AppCheckModule = {
-  initializeAppCheck(appName: string, options: FirebaseAppCheckTypes.AppCheckOptions) {
+  initializeAppCheck(appName: string, options: AppCheckOptions) {
     makeIDBAvailable();
     return guard(async () => {
       if (appCheckInstances[appName]) {
@@ -90,15 +85,12 @@ const module: AppCheckModule = {
         return;
       }
       const instance = getAppCheckInstanceForApp(appName);
-      listenersForApp[appName] = onTokenChanged(
-        instance,
-        (tokenResult: FirebaseAppCheckTypes.AppCheckTokenResult) => {
-          emitEvent('appCheck_token_changed', {
-            appName,
-            ...tokenResult,
-          });
-        },
-      );
+      listenersForApp[appName] = onTokenChanged(instance, (tokenResult: AppCheckTokenResult) => {
+        emitEvent('appCheck_token_changed', {
+          appName,
+          ...tokenResult,
+        });
+      });
     });
   },
   removeAppCheckListener(appName: string) {
