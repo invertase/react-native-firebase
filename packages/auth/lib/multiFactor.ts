@@ -1,17 +1,10 @@
 import { reload } from './modular';
 import type {
   MultiFactorAssertion as ModularMultiFactorAssertion,
-  User as ModularUser,
+  User,
 } from './types/auth';
 import type { FirebaseAuthTypes } from './types/namespaced';
-import type { AuthInternal } from './types/internal';
-
-type EnrollmentAssertion = {
-  token?: string;
-  secret?: string;
-  totpSecret?: string;
-  verificationCode?: string;
-};
+import type { AuthInternal, MultiFactorEnrollmentAssertionInternal } from './types/internal';
 
 type MultiFactorAuthHost = {
   currentUser: FirebaseAuthTypes.User | null;
@@ -54,27 +47,28 @@ export class MultiFactorUser {
     multiFactorAssertion: FirebaseAuthTypes.MultiFactorAssertion | ModularMultiFactorAssertion,
     displayName?: string | null,
   ): Promise<void> {
-    const assertion = multiFactorAssertion as EnrollmentAssertion;
-    const { token, secret, totpSecret, verificationCode } = assertion;
-    if (token && secret) {
+    const assertion = multiFactorAssertion as MultiFactorEnrollmentAssertionInternal;
+
+    if (assertion.factorId === 'phone') {
       await this._auth.native.finalizeMultiFactorEnrollment(
-        token,
-        secret,
+        assertion.token,
+        assertion.secret,
         displayName ?? undefined,
       );
-    } else if (totpSecret && verificationCode) {
+    } else if (assertion.factorId === 'totp') {
       await this._auth.native.finalizeTotpEnrollment(
-        totpSecret,
-        verificationCode,
+        assertion.totpSecret,
+        assertion.verificationCode,
         displayName ?? undefined,
       );
     } else {
+      // Runtime guard for callers that bypass the typed MFA assertion helpers.
       throw new Error('Invalid multi-factor assertion provided for enrollment.');
     }
 
     // We need to reload the user otherwise the changes are not visible
     // TODO reload not working on Other platform
-    await reload(this._auth.currentUser as unknown as ModularUser);
+    await reload(this._auth.currentUser as unknown as User);
   }
 
   async unenroll(enrollmentId: FirebaseAuthTypes.MultiFactorInfo | string): Promise<void> {
@@ -83,7 +77,7 @@ export class MultiFactorUser {
     );
 
     if (this._auth.currentUser) {
-      await reload(this._auth.currentUser as unknown as ModularUser);
+      await reload(this._auth.currentUser as unknown as User);
     }
   }
 }

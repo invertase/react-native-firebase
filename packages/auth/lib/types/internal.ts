@@ -57,6 +57,18 @@ export type UserCredentialWithAdditionalUserInfoInternal = UserCredential & {
   additionalUserInfo?: FirebaseAuthTypes.AdditionalUserInfo;
 };
 
+export type MultiFactorEnrollmentAssertionInternal =
+  | {
+      factorId: 'phone';
+      token: string;
+      secret: string;
+    }
+  | {
+      factorId: 'totp';
+      totpSecret: string;
+      verificationCode: string;
+    };
+
 export interface NativeUserMetadataInternal {
   creationTime: string;
   lastSignInTime: string;
