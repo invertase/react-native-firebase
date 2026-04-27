@@ -15,7 +15,7 @@
  *
  */
 
-import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseApp, ReactNativeFirebase } from '@react-native-firebase/app';
 import type { FirebaseAuthTypes } from './namespaced';
 
 export type CompleteFn = () => void;
@@ -28,8 +28,6 @@ interface Observer<T> {
   error?: ErrorFn | null;
   complete?: CompleteFn | null;
 }
-
-type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 export const ActionCodeOperation = {
   EMAIL_SIGNIN: 'EMAIL_SIGNIN',
@@ -70,7 +68,7 @@ export const SignInMethod = {
   TWITTER: 'twitter.com',
 } as const;
 
-export type Auth = {
+export interface Auth {
   readonly app: FirebaseApp;
   readonly name: string;
   readonly config: Config;
@@ -79,7 +77,7 @@ export type Auth = {
   tenantId: string | null;
   readonly settings: AuthSettings;
   onAuthStateChanged(
-    nextOrObserver: NextOrObserver<User>,
+    nextOrObserver: NextOrObserver<User | null>,
     error?: ErrorFn,
     completed?: CompleteFn,
   ): Unsubscribe;
@@ -88,17 +86,17 @@ export type Auth = {
     onAbort?: () => void,
   ): Unsubscribe;
   onIdTokenChanged(
-    nextOrObserver: NextOrObserver<User>,
+    nextOrObserver: NextOrObserver<User | null>,
     error?: ErrorFn,
     completed?: CompleteFn,
   ): Unsubscribe;
-  authStateReady?: () => Promise<void>;
+  authStateReady(): Promise<void>;
   readonly currentUser: User | null;
-  readonly emulatorConfig?: EmulatorConfig | null;
+  readonly emulatorConfig: EmulatorConfig | null;
   updateCurrentUser(user: User | null): Promise<void>;
   useDeviceLanguage(): void;
   signOut(): Promise<void>;
-};
+}
 
 export interface AuthError extends ReactNativeFirebase.NativeFirebaseError {
   readonly customData: {

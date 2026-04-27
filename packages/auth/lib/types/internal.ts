@@ -22,7 +22,8 @@ import type {
   NativeErrorUserInfo,
 } from '@react-native-firebase/app/dist/module/types/internal';
 import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
-import type { FirebaseAuthTypes } from './namespaced';
+import type { Auth } from './auth';
+import type { CallbackOrObserver, FirebaseAuthTypes } from './namespaced';
 
 export interface NativeUserMetadataInternal {
   creationTime: string;
@@ -270,9 +271,64 @@ export interface RNFBAuthModule {
   ): { uid: string; verificationCode: string };
 }
 
-export type AuthInternal = {
+export type AuthInternal = Auth & {
   app: ReactNativeFirebase.FirebaseApp;
   currentUser: FirebaseAuthTypes.User | null;
+  applyActionCode(code: string): Promise<void>;
+  checkActionCode(code: string): Promise<FirebaseAuthTypes.ActionCodeInfo>;
+  confirmPasswordReset(code: string, newPassword: string): Promise<void>;
+  createUserWithEmailAndPassword(
+    email: string,
+    password: string,
+  ): Promise<FirebaseAuthTypes.UserCredential>;
+  fetchSignInMethodsForEmail(email: string): Promise<string[]>;
+  getCustomAuthDomain(): Promise<string>;
+  getMultiFactorResolver(error: unknown): FirebaseAuthTypes.MultiFactorResolver | null;
+  isSignInWithEmailLink(emailLink: string): Promise<boolean>;
+  onAuthStateChanged(
+    listenerOrObserver: CallbackOrObserver<FirebaseAuthTypes.AuthListenerCallback>,
+  ): () => void;
+  onIdTokenChanged(
+    listenerOrObserver: CallbackOrObserver<FirebaseAuthTypes.AuthListenerCallback>,
+  ): () => void;
+  sendPasswordResetEmail(
+    email: string,
+    actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings | null,
+  ): Promise<void>;
+  sendSignInLinkToEmail(
+    email: string,
+    actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
+  ): Promise<void>;
+  setLanguageCode(code: string | null): Promise<void>;
+  signInAnonymously(): Promise<FirebaseAuthTypes.UserCredential>;
+  signInWithCredential(
+    credential: FirebaseAuthTypes.AuthCredential,
+  ): Promise<FirebaseAuthTypes.UserCredential>;
+  signInWithCustomToken(customToken: string): Promise<FirebaseAuthTypes.UserCredential>;
+  signInWithEmailAndPassword(
+    email: string,
+    password: string,
+  ): Promise<FirebaseAuthTypes.UserCredential>;
+  signInWithEmailLink(email: string, emailLink: string): Promise<FirebaseAuthTypes.UserCredential>;
+  signInWithPhoneNumber(
+    phoneNumber: string,
+    forceResend?: boolean,
+  ): Promise<FirebaseAuthTypes.ConfirmationResult>;
+  signInWithPopup(
+    provider: FirebaseAuthTypes.AuthProvider,
+  ): Promise<FirebaseAuthTypes.UserCredential>;
+  signInWithRedirect(
+    provider: FirebaseAuthTypes.AuthProvider,
+  ): Promise<FirebaseAuthTypes.UserCredential>;
+  signOut(): Promise<void>;
+  useEmulator(url: string): void;
+  useUserAccessGroup(userAccessGroup: string): Promise<void>;
+  verifyPhoneNumber(
+    phoneNumber: string,
+    autoVerifyTimeoutOrForceResend?: number | boolean,
+    forceResend?: boolean,
+  ): FirebaseAuthTypes.PhoneAuthListener;
+  verifyPasswordResetCode(code: string): Promise<string>;
   native: RNFBAuthModule;
   emitter: EventEmitter;
   eventNameForApp(...args: Array<string | number>): string;

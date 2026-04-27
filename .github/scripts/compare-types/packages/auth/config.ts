@@ -201,11 +201,6 @@ const config: PackageConfig = {
         'RN Firebase accepts the broader AuthCredential surface, while the firebase-js-sdk narrows this parameter to PhoneAuthCredential.',
     },
     {
-      name: 'Auth',
-      reason:
-        'The public Auth surface now matches structurally, but the emitted declaration text still differs from the firebase-js-sdk because RN Firebase uses its local FirebaseApp and NextOrObserver<User> spellings in the generated interface.',
-    },
-    {
       name: 'FacebookAuthProvider',
       reason:
         'RN Firebase now exports FacebookAuthProvider from the modular surface, but its native helper class only exposes the credential factory used by RNFB and does not yet mirror the firebase-js-sdk static fields and credentialFromResult/credentialFromError helpers.',

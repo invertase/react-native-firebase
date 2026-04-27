@@ -58,7 +58,7 @@ import type {
   UserCredential,
 } from './types/auth';
 import type { FirebaseAuthTypes } from './types/namespaced';
-import type { UserInternal } from './types/internal';
+import type { AuthInternal, UserInternal } from './types/internal';
 
 type AnyFn = (...args: any[]) => any;
 
@@ -66,27 +66,18 @@ type WithModularDeprecationArg<F extends AnyFn> = (
   ...args: [...Parameters<F>, typeof MODULAR_DEPRECATION_ARG]
 ) => ReturnType<F>;
 
-type AuthModuleInternal = FirebaseAuthTypes.Module & {
-  validatePassword(password: string): Promise<PasswordValidationStatus>;
-  getCustomAuthDomain(): Promise<string>;
-};
-
 type UserModuleInternal = UserInternal;
 
 type AuthProviderWithObjectInternal = FirebaseAuthTypes.AuthProvider & {
   toObject(): Record<string, unknown>;
 };
 
-function getAuthInternal(auth: Auth): AuthModuleInternal {
-  return auth as unknown as AuthModuleInternal;
+function getAuthInternal(auth: Auth): AuthInternal {
+  return auth as unknown as AuthInternal;
 }
 
 function getUserInternal(user: User): UserModuleInternal {
   return user as unknown as UserModuleInternal;
-}
-
-function asAuth(auth: FirebaseAuthTypes.Module): Auth {
-  return auth as unknown as Auth;
 }
 
 function asActionCodeInfo(
@@ -143,7 +134,7 @@ function normalizeAuthListener(
 }
 
 function callAuthMethod<F extends AnyFn>(
-  auth: AuthModuleInternal,
+  auth: AuthInternal,
   method: F,
   ...args: Parameters<F>
 ): ReturnType<F> {
@@ -171,17 +162,17 @@ function callUserMethod<F extends AnyFn>(
  */
 export function getAuth(app?: FirebaseApp): Auth {
   if (app) {
-    return asAuth(getApp(app.name).auth());
+    return getApp(app.name).auth() as unknown as Auth;
   }
 
-  return asAuth(getApp().auth());
+  return getApp().auth() as unknown as Auth;
 }
 
 /**
  * This function allows more control over the Auth instance than getAuth().
  */
 export function initializeAuth(app: FirebaseApp, _deps?: Dependencies): Auth {
-  return asAuth(getApp(app.name).auth());
+  return getApp(app.name).auth() as unknown as Auth;
 }
 
 export function applyActionCode(auth: Auth, oobCode: string): Promise<void> {
