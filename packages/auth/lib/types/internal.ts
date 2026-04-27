@@ -27,6 +27,7 @@ import type {
   ActionCodeSettings,
   Auth,
   AuthCredential,
+  AuthProvider,
   ConfirmationResult,
   IdTokenResult,
   MultiFactorResolver,
@@ -48,7 +49,7 @@ export interface AppWithAuthInternal {
 
 export type AuthListenerCallbackInternal = (user: User | null) => void;
 
-export type AuthProviderWithObjectInternal = FirebaseAuthTypes.AuthProvider & {
+export type AuthProviderWithObjectInternal = AuthProvider & {
   toObject(): Record<string, unknown>;
 };
 
@@ -74,10 +75,20 @@ export interface NativeUserMetadataInternal {
   lastSignInTime: string;
 }
 
+export interface NativeUserInfoInternal {
+  uid: string;
+  providerId: string;
+  displayName?: string | null;
+  email?: string | null;
+  phoneNumber?: string | null;
+  photoURL?: string | null;
+  tenantId?: string | null;
+}
+
 export interface NativeUserInternal {
   uid: string;
   providerId: string;
-  providerData: FirebaseAuthTypes.UserInfo[];
+  providerData: NativeUserInfoInternal[];
   displayName?: string | null;
   email?: string | null;
   emailVerified?: boolean;
@@ -262,7 +273,7 @@ export interface RNFBAuthModule {
   confirmationResultConfirm(verificationCode: string): Promise<NativeUserCredentialInternal>;
   delete(): Promise<void>;
   getIdToken(forceRefresh: boolean): Promise<string>;
-  getIdTokenResult(forceRefresh: boolean): Promise<FirebaseAuthTypes.IdTokenResult>;
+  getIdTokenResult(forceRefresh: boolean): Promise<IdTokenResult>;
   linkWithCredential(
     providerId: string,
     token: string,
@@ -289,7 +300,9 @@ export interface RNFBAuthModule {
     token: string,
     secret?: string | null,
   ): Promise<NativeUserInternal>;
-  updateProfile(updates: FirebaseAuthTypes.UpdateProfile): Promise<NativeUserInternal>;
+  updateProfile(
+    updates: { displayName?: string | null; photoURL?: string | null },
+  ): Promise<NativeUserInternal>;
   verifyBeforeUpdateEmail(
     newEmail: string,
     actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,

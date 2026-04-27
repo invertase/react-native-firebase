@@ -21,6 +21,7 @@ import {
   isUndefined,
   isBoolean,
 } from '@react-native-firebase/app/dist/module/common';
+import type { IdTokenResult, UserInfo, UserMetadata } from './types/auth';
 import type { FirebaseAuthTypes } from './types/namespaced';
 import type { AuthInternal, NativeUserInternal } from './types/internal';
 
@@ -53,7 +54,7 @@ export default class User {
     return this._user.isAnonymous || false;
   }
 
-  get metadata(): FirebaseAuthTypes.UserMetadata {
+  get metadata(): UserMetadata {
     const { metadata } = this._user;
 
     return {
@@ -78,8 +79,15 @@ export default class User {
     return this._user.photoURL || null;
   }
 
-  get providerData(): FirebaseAuthTypes.UserInfo[] {
-    return this._user.providerData;
+  get providerData(): UserInfo[] {
+    return this._user.providerData.map(provider => ({
+      displayName: provider.displayName ?? null,
+      email: provider.email ?? null,
+      phoneNumber: provider.phoneNumber ?? null,
+      photoURL: provider.photoURL ?? null,
+      providerId: provider.providerId,
+      uid: provider.uid,
+    }));
   }
 
   get providerId(): string {
@@ -100,10 +108,8 @@ export default class User {
     return this._auth.native.getIdToken(forceRefresh);
   }
 
-  getIdTokenResult(forceRefresh = false): Promise<FirebaseAuthTypes.IdTokenResult> {
-    return this._auth.native.getIdTokenResult(
-      forceRefresh,
-    ) as Promise<FirebaseAuthTypes.IdTokenResult>;
+  getIdTokenResult(forceRefresh = false): Promise<IdTokenResult> {
+    return this._auth.native.getIdTokenResult(forceRefresh) as Promise<IdTokenResult>;
   }
 
   linkWithCredential(
@@ -229,8 +235,8 @@ export default class User {
     }
 
     return this._auth.native.sendEmailVerification(actionCodeSettings).then(user => {
-      this._auth._setUser(user);
-    });
+        this._auth._setUser(user);
+      });
   }
 
   toJSON(): object {
@@ -240,7 +246,13 @@ export default class User {
   unlink(providerId: string): Promise<FirebaseAuthTypes.User> {
     return this._auth.native
       .unlink(providerId)
-      .then(user => this._auth._setUser(user) as FirebaseAuthTypes.User);
+      .then(user => {
+        const updatedUser = this._auth._setUser(user);
+        if (!updatedUser) {
+          throw new Error('firebase.auth.User.unlink() returned no user after unlinking provider.');
+        }
+        return updatedUser;
+      });
   }
 
   updateEmail(email: string): Promise<void> {
@@ -343,8 +355,8 @@ export default class User {
     }
 
     return this._auth.native.verifyBeforeUpdateEmail(newEmail, actionCodeSettings).then(user => {
-      this._auth._setUser(user);
-    });
+        this._auth._setUser(user);
+      });
   }
 
   /**
