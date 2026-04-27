@@ -108,7 +108,7 @@ export function setTokenAutoRefreshEnabled(
  * the current token associated with this App Check instance changes.
  *
  * @param appCheckInstance - The App Check instance.
- * @param listener - The listener to register.
+ * @param observer - The listener to register.
  * @returns Unsubscribe
  */
 export function onTokenChanged(
