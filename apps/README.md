@@ -22,10 +22,27 @@ Use the Expo harness when you need to validate RNFB Expo config plugins, `expo p
 Set up these local prerequisites before running either harness:
 
 - `node` and `yarn`
-- `ruby`
+- `ruby` via a user-managed install such as `rbenv`, `asdf`, or Homebrew Ruby
 - `pod` on macOS for iOS builds and Expo iOS prebuilds
 - Xcode and iOS simulator support for iOS
 - Android SDK, platform tools, emulator/device access, and a valid `ANDROID_HOME` or `ANDROID_SDK_ROOT` for Android
+
+Avoid using the macOS system Ruby for the harnesses. The bare harness uses Bundler for CocoaPods and Ruby helpers, and `apps/build-harness/Gemfile.lock` pins the Bundler version that must be available in your active Ruby environment.
+
+For example with `rbenv`:
+
+```bash
+rbenv install 3.3.3
+rbenv global 3.3.3
+```
+
+Then reload your shell and run `yarn app:doctor`. The doctor command reports the active Ruby path plus any Bundler mismatch against `apps/build-harness/Gemfile.lock`.
+
+Only install Bundler manually if `yarn app:doctor` reports that Bundler is missing or mismatched:
+
+```bash
+gem install bundler -v "$(awk '/^BUNDLED WITH$/{getline; gsub(/^[[:space:]]+/, "", $0); print $0}' apps/build-harness/Gemfile.lock)"
+```
 
 Place your local Firebase config files at the default locations:
 

@@ -495,7 +495,7 @@ doctor() {
   echo "  Android GoogleService path: ${ANDROID_GOOGLE_SERVICES_PATH}"
   echo
   echo "Prerequisites:"
-  for command_name in node yarn ruby; do
+  for command_name in node yarn; do
     if command -v "${command_name}" >/dev/null 2>&1; then
       echo "  ${command_name}: ok"
     else
@@ -503,6 +503,7 @@ doctor() {
     fi
   done
   if [[ "$(uname)" == "Darwin" ]]; then
+    harness_print_ruby_prereq_status "${APP_DIR}"
     if command -v pod >/dev/null 2>&1; then
       echo "  pod: ok"
     else

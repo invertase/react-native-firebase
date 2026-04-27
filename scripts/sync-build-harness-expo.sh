@@ -439,6 +439,9 @@ doctor() {
     fi
   done
   if [[ "$(uname)" == "Darwin" ]]; then
+    harness_print_ruby_prereq_status "${REPO_ROOT}/apps/build-harness"
+  fi
+  if [[ "$(uname)" == "Darwin" ]]; then
     if command -v pod >/dev/null 2>&1; then
       echo "  pod: ok"
     else

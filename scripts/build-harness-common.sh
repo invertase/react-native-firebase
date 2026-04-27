@@ -141,6 +141,67 @@ try {
 NODE
 }
 
+harness_print_ruby_prereq_status() {
+  local app_dir="$1"
+  local gemfile_lock_path="${app_dir}/Gemfile.lock"
+  local ruby_path=""
+  local ruby_version=""
+  local bundle_path=""
+  local bundle_version=""
+  local required_bundler_version=""
+
+  if command -v ruby >/dev/null 2>&1; then
+    ruby_path="$(command -v ruby)"
+    ruby_version="$(ruby --version 2>/dev/null | awk '{print $2}')"
+    if [[ "${ruby_path}" == "${HOME}"/.rbenv/shims/* ]]; then
+      echo "  ruby: ok (${ruby_version} via rbenv)"
+    elif [[ "${ruby_path}" == "/usr/bin/ruby" || "${ruby_path}" == /System/* ]]; then
+      echo "  ruby: ok (${ruby_version} via system Ruby; user-managed Ruby like rbenv recommended)"
+    else
+      echo "  ruby: ok (${ruby_version} at ${ruby_path})"
+    fi
+  else
+    echo "  ruby: missing"
+    return
+  fi
+
+  if command -v bundle >/dev/null 2>&1; then
+    bundle_path="$(command -v bundle)"
+    bundle_version="$(bundle --version 2>/dev/null | awk '{print $3}')"
+  fi
+
+  if [[ -f "${gemfile_lock_path}" ]]; then
+    required_bundler_version="$(
+      awk '
+        /^BUNDLED WITH$/ {
+          getline
+          gsub(/^[[:space:]]+/, "", $0)
+          print $0
+        }
+      ' "${gemfile_lock_path}"
+    )"
+  fi
+
+  if [[ -z "${bundle_path}" || -z "${bundle_version}" ]]; then
+    if [[ -n "${required_bundler_version}" ]]; then
+      echo "  bundle: missing (need ${required_bundler_version} from ${gemfile_lock_path})"
+    else
+      echo "  bundle: missing"
+    fi
+    return
+  fi
+
+  if [[ -n "${required_bundler_version}" && "${bundle_version}" != "${required_bundler_version}" ]]; then
+    echo "  bundle: mismatch (have ${bundle_version}, need ${required_bundler_version} from ${gemfile_lock_path})"
+  else
+    if [[ "${bundle_path}" == "${HOME}"/.rbenv/shims/* ]]; then
+      echo "  bundle: ok (${bundle_version} via rbenv)"
+    else
+      echo "  bundle: ok (${bundle_version})"
+    fi
+  fi
+}
+
 harness_write_local_config() {
   local local_config_path="$1"
 
