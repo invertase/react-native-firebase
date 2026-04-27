@@ -124,8 +124,8 @@ jobs:
           retry_wait_seconds: 30
           max_attempts: 3
           command: yarn
-      - name: Package Consumer Type Test
-        run: yarn workspace @react-native-firebase/firestore typecheck:consumer
+      - name: Consumer Type Test
+        run: yarn tsc:compile:consumer
       - uses: actions/cache/save@v4
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
