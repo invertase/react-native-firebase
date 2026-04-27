@@ -9,7 +9,8 @@
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "compile": "bob build",
-    "prepare": "yarn run build && yarn compile"
+    "prepare": "yarn run build && yarn compile",
+    "typecheck:consumer": "../../node_modules/.bin/tsc --project tsconfig.consumer.json"
   },
   "repository": {
     "type": "git",

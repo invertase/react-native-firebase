@@ -1,0 +1,41 @@
+{
+  "extends": "../../tsconfig.packages.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "rootDir": ".",
+    "verbatimModuleSyntax": false,
+    "paths": {
+      "@react-native-firebase/firestore": ["./dist/typescript/lib/index.d.ts"],
+      "@react-native-firebase/firestore/pipelines": [
+        "./dist/typescript/lib/pipelines/index.d.ts"
+      ],
+      "@react-native-firebase/app": ["../app/dist/typescript/lib"],
+      "@react-native-firebase/app/dist/module/common/*": [
+        "../app/dist/typescript/lib/common/*"
+      ],
+      "@react-native-firebase/app/dist/module/common": [
+        "../app/dist/typescript/lib/common"
+      ],
+      "@react-native-firebase/app/dist/module/internal/web/*": [
+        "../app/dist/typescript/lib/internal/web/*"
+      ],
+      "@react-native-firebase/app/dist/module/internal/*": [
+        "../app/dist/typescript/lib/internal/*"
+      ],
+      "@react-native-firebase/app/dist/module/internal": [
+        "../app/dist/typescript/lib/internal"
+      ],
+      "@react-native-firebase/app/dist/module/types/internal": [
+        "../app/dist/typescript/lib/types/internal"
+      ],
+      "@react-native-firebase/app/dist/module/types/common": [
+        "../app/dist/typescript/lib/types/common"
+      ]
+    }
+  },
+  "include": ["consumer-type-test.ts"],
+  "exclude": ["node_modules", "dist", "__tests__", "**/*.test.ts"]
+}
