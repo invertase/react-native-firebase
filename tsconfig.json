@@ -25,8 +25,6 @@
     "packages/ml/lib/modular/index.d.ts",
     "packages/perf/lib/index.d.ts",
     "packages/perf/lib/modular/index.d.ts",
-    "packages/remote-config/lib/index.d.ts",
-    "packages/remote-config/lib/modular/index.d.ts",
     "packages/functions/type-test.ts",
     "packages/app/type-test.ts",
     "packages/app-check/type-test.ts",

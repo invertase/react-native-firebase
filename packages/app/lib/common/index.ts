@@ -646,7 +646,11 @@ function isObjectLike(value: unknown): value is object | ((...args: any[]) => un
 }
 
 function isModularInstance(value: unknown): boolean {
-  return isObjectLike(value) && (value as any)[MODULAR_INSTANCE_SYMBOL] === true;
+  if (!isObjectLike(value)) {
+    return false;
+  }
+
+  return Object.getOwnPropertyDescriptor(value, MODULAR_INSTANCE_SYMBOL)?.value === true;
 }
 
 function markModularInstance<T>(value: T): T {
@@ -664,6 +668,10 @@ function markModularInstance<T>(value: T): T {
   return value;
 }
 
+function isModularAccess(target: unknown, receiver?: unknown): boolean {
+  return _isModularCall || isModularInstance(target) || isModularInstance(receiver);
+}
+
 export function createDeprecationProxy<T extends object>(instance: T): T {
   return new Proxy(instance, {
     construct(target: any, args: any[]) {
@@ -672,7 +680,7 @@ export function createDeprecationProxy<T extends object>(instance: T): T {
     },
     get(target: any, prop: string | symbol, receiver: any) {
       const originalMethod = target[prop];
-      const modularAccess = _isModularCall || isModularInstance(target);
+      const modularAccess = isModularAccess(target, receiver);
 
       if (prop === 'constructor') {
         return Reflect.get(target, prop, receiver);
@@ -780,6 +788,26 @@ export function createDeprecationProxy<T extends object>(instance: T): T {
         };
       }
       return Reflect.get(target, prop, receiver);
+    },
+    set(target: any, prop: string | symbol, value: unknown, receiver: unknown) {
+      const modularAccess = isModularAccess(target, receiver);
+      const descriptor =
+        Object.getOwnPropertyDescriptor(target, prop) ||
+        Object.getOwnPropertyDescriptor(Object.getPrototypeOf(target), prop);
+
+      if (descriptor?.set) {
+        const instanceName = getInstanceName(target);
+        const nameSpace = getNamespace(target);
+
+        if (nameSpace) {
+          deprecationConsoleWarning(nameSpace, prop as string, instanceName, modularAccess);
+        }
+
+        descriptor.set.call(target, value);
+        return true;
+      }
+
+      return Reflect.set(target, prop, value, receiver);
     },
   });
 }

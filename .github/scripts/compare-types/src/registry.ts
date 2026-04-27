@@ -16,8 +16,10 @@ import type { PackageConfig } from './types';
 import storageConfig from '../packages/storage/config';
 import aiConfig from '../packages/ai/config';
 import authConfig from '../packages/auth/config';
+import appCheckConfig from '../packages/app-check/config';
 import firestoreConfig from '../packages/firestore/config';
 import firestorePipelinesConfig from '../packages/firestore-pipelines/config';
+import remoteConfigConfig from '../packages/remote-config/config';
 
 const SCRIPT_DIR = path.resolve(__dirname, '..');
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
@@ -84,22 +86,6 @@ export const packages: PackageEntry[] = [
     ],
     config: authConfig,
   },
-  // {
-  //   name: 'remote-config',
-  //   firebaseSdkTypesPaths: [
-  //     path.join(SCRIPT_DIR, 'packages', 'remote-config', 'firebase-sdk.d.ts'),
-  //   ],
-  //   rnFirebaseModularFiles: [
-  //     path.join(rnDist('remote-config'), 'types', 'modular.d.ts'),
-  //     path.join(rnDist('remote-config'), 'modular.d.ts'),
-  //   ],
-  //   rnFirebaseSupportFiles: [
-  //     path.join(rnDist('remote-config'), 'statics.d.ts'),
-  //     path.join(rnDist('remote-config'), 'types', 'namespaced.d.ts'),
-  //     path.join(rnDist('remote-config'), 'types', 'internal.d.ts'),
-  //   ],
-  //   config: remoteConfigConfig,
-  // },
   {
     name: 'storage',
     firebaseSdkTypesPaths: [path.join(SCRIPT_DIR, 'packages', 'storage', 'storage-js-sdk.d.ts')],
@@ -113,6 +99,21 @@ export const packages: PackageEntry[] = [
       path.join(rnDist('storage'), 'types', 'internal.d.ts'),
     ],
     config: storageConfig,
+  },
+  {
+    name: 'remote-config',
+    firebaseSdkTypesPaths: [
+      path.join(SCRIPT_DIR, 'packages', 'remote-config', 'firebase-sdk.d.ts'),
+    ],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('remote-config'), 'types', 'remote-config.d.ts'),
+      path.join(rnDist('remote-config'), 'modular.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('remote-config'), 'statics.d.ts'),
+      path.join(rnDist('remote-config'), 'types', 'namespaced.d.ts'),
+    ],
+    config: remoteConfigConfig,
   },
   {
     name: 'ai',
@@ -147,6 +148,21 @@ export const packages: PackageEntry[] = [
       path.join(rnDist('ai'), 'types', 'imagen', 'responses.d.ts'),
     ],
     config: aiConfig,
+  },
+  {
+    name: 'app-check',
+    firebaseSdkTypesPaths: [
+      path.join(SCRIPT_DIR, 'packages', 'app-check', 'app-check-sdk.d.ts'),
+    ],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('app-check'), 'types', 'appcheck.d.ts'),
+      path.join(rnDist('app-check'), 'modular.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('app-check'), 'providers.d.ts'),
+      path.join(rnDist('app-check'), 'types', 'internal.d.ts'),
+    ],
+    config: appCheckConfig,
   },
   {
     name: 'firestore',

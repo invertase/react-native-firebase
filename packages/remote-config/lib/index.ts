@@ -15,13 +15,11 @@
  *
  */
 
-// Export types from types/appcheck
-export type * from './types/appcheck';
-
-// Export modular API functions
+// Export modular API
 export * from './modular';
+export type * from './types/remote-config';
 
 // Export namespaced API
-export type { FirebaseAppCheckTypes } from './types/namespaced';
-export * from './namespaced';
+export type { FirebaseRemoteConfigTypes } from './types/namespaced';
+export { SDK_VERSION, firebase } from './namespaced';
 export { default } from './namespaced';

@@ -13,20 +13,83 @@ import remoteConfig, {
   getValue,
   setLogLevel,
   isSupported,
-  fetchTimeMillis,
-  settings,
-  lastFetchStatus,
   reset,
-  setConfigSettings,
-  fetch,
-  setDefaults,
   setDefaultsFromResource,
   onConfigUpdate,
-  onConfigUpdated,
   setCustomSignals,
-  LastFetchStatus,
-  ValueSource,
+  type ConfigUpdateObserver,
+  type CustomSignals,
+  type FetchStatus,
+  type LogLevel,
+  type RemoteConfig,
+  type RemoteConfigSettings,
+  type Unsubscribe,
+  type Value,
 } from '.';
+
+const typedRemoteConfig: RemoteConfig = getRemoteConfig();
+const typedConfigSettings: RemoteConfigSettings = {
+  minimumFetchIntervalMillis: 30000,
+  fetchTimeoutMillis: 60000,
+};
+const typedLegacyConfigSettings: FirebaseRemoteConfigTypes.ConfigSettings = {
+  minimumFetchIntervalMillis: 30000,
+  fetchTimeMillis: 60000,
+};
+const typedNamespacedConfigSettings: FirebaseRemoteConfigTypes.ConfigSettings = {
+  minimumFetchIntervalMillis: 30000,
+  fetchTimeMillis: 60000,
+};
+const typedLegacyConfigDefaults: FirebaseRemoteConfigTypes.ConfigDefaults = {
+  enabled: true,
+  retries: 1,
+  title: 'remote',
+};
+const typedConfigDefaults: Record<string, string | number | boolean> = {
+  enabled: true,
+  retries: 1,
+  title: 'remote',
+};
+const typedConfigValue: Value = getValue(typedRemoteConfig, 'typed');
+const typedConfigValues: Record<string, Value> = getAll(typedRemoteConfig);
+const typedLegacyConfigValue: FirebaseRemoteConfigTypes.ConfigValue = remoteConfig().getValue(
+  'typed',
+);
+const typedLegacyConfigValues: FirebaseRemoteConfigTypes.ConfigValues = remoteConfig().getAll();
+const typedCustomSignals: CustomSignals = { signal: 'value', number: 1, reset: null };
+const typedLastFetchStatus: FetchStatus = typedRemoteConfig.lastFetchStatus;
+const typedLegacyLastFetchStatus: FirebaseRemoteConfigTypes.LastFetchStatusType =
+  remoteConfig().lastFetchStatus;
+const typedLogLevel: LogLevel = 'debug';
+const typedLegacyLogLevel: FirebaseRemoteConfigTypes.RemoteConfigLogLevel = 'debug';
+const typedUnsubscribe: Unsubscribe = () => {};
+const typedObserver: ConfigUpdateObserver = {
+  next: configUpdate => {
+    console.log(configUpdate.getUpdatedKeys());
+  },
+  error: error => {
+    console.log(error.code);
+  },
+  complete: () => {
+    console.log('typed observer complete');
+  },
+};
+
+console.log(typedConfigSettings);
+console.log(typedLegacyConfigSettings);
+console.log(typedLegacyConfigDefaults);
+console.log(typedConfigDefaults);
+console.log(typedConfigValue.asString());
+console.log(typedConfigValues);
+console.log(typedLegacyConfigValue.asString());
+console.log(typedLegacyConfigValues);
+console.log(typedCustomSignals);
+console.log(typedLastFetchStatus);
+console.log(typedLegacyLastFetchStatus);
+console.log(typedLogLevel);
+console.log(typedLegacyLogLevel);
+typedUnsubscribe();
+onConfigUpdate(typedRemoteConfig, typedObserver);
 
 console.log(remoteConfig().app);
 
@@ -70,13 +133,13 @@ console.log(remoteConfigInstance.lastFetchStatus);
 console.log(remoteConfigInstance.settings);
 console.log(remoteConfigInstance.defaultConfig);
 
-remoteConfigInstance.setConfigSettings({ minimumFetchIntervalMillis: 30000 }).then(() => {
+remoteConfigInstance.setConfigSettings(typedNamespacedConfigSettings).then(() => {
   console.log('Config settings set');
 });
 
 remoteConfigInstance.settings = { minimumFetchIntervalMillis: 60000 };
 
-remoteConfigInstance.setDefaults({ key: 'value' }).then(() => {
+remoteConfigInstance.setDefaults(typedConfigDefaults).then(() => {
   console.log('Defaults set');
 });
 
@@ -86,7 +149,7 @@ remoteConfigInstance.setDefaultsFromResource('config_resource').then(() => {
   console.log('Defaults from resource set');
 });
 
-const unsubscribeOnConfigUpdate = remoteConfigInstance.onConfigUpdate(remoteConfigInstance, {
+const unsubscribeOnConfigUpdate = remoteConfigInstance.onConfigUpdate({
   next: (configUpdate: FirebaseRemoteConfigTypes.ConfigUpdate) => {
     console.log(configUpdate.getUpdatedKeys());
   },
@@ -185,74 +248,26 @@ const modularConfigValue = getValue(modularRemoteConfig1, 'key');
 console.log(modularConfigValue.getSource());
 console.log(modularConfigValue.asBoolean());
 
-setLogLevel(modularRemoteConfig1, 'debug');
-console.log(setLogLevel(modularRemoteConfig1, 'error'));
+setLogLevel(modularRemoteConfig1, typedLogLevel);
+setLogLevel(modularRemoteConfig1, 'error');
 
 isSupported().then((supported: boolean) => {
   console.log(supported);
 });
 
-console.log(fetchTimeMillis(modularRemoteConfig1));
-console.log(settings(modularRemoteConfig1));
-console.log(lastFetchStatus(modularRemoteConfig1));
-
 reset(modularRemoteConfig1).then(() => {
   console.log('Modular reset');
-});
-
-setConfigSettings(modularRemoteConfig1, { minimumFetchIntervalMillis: 30000 }).then(() => {
-  console.log('Modular config settings set');
-});
-
-fetch(modularRemoteConfig1).then(() => {
-  console.log('Modular fetch');
-});
-
-fetch(modularRemoteConfig1, 300).then(() => {
-  console.log('Modular fetch with expiration');
-});
-
-setDefaults(modularRemoteConfig1, { modularKey: 'modularValue' }).then(() => {
-  console.log('Modular defaults set');
 });
 
 setDefaultsFromResource(modularRemoteConfig1, 'modular_resource').then(() => {
   console.log('Modular defaults from resource set');
 });
 
-const modularUnsubscribeOnConfigUpdate = onConfigUpdate(modularRemoteConfig1, {
-  next: (configUpdate: FirebaseRemoteConfigTypes.ConfigUpdate) => {
-    console.log(configUpdate.getUpdatedKeys());
-  },
-  error: (error: any) => {
-    console.log(error);
-  },
-  complete: () => {
-    console.log('Modular complete');
-  },
-});
+const modularUnsubscribeOnConfigUpdate = onConfigUpdate(modularRemoteConfig1, typedObserver);
 modularUnsubscribeOnConfigUpdate();
 
-const modularUnsubscribeOnConfigUpdated = onConfigUpdated(
-  modularRemoteConfig1,
-  (
-    event?: { updatedKeys: string[] },
-    error?: { code: string; message: string; nativeErrorMessage: string },
-  ) => {
-    if (event) {
-      console.log(event.updatedKeys);
-    }
-    if (error) {
-      console.log(error);
-    }
-  },
-);
-modularUnsubscribeOnConfigUpdated();
-
-setCustomSignals(modularRemoteConfig1, { signal1: 'value1', signal2: 123 }).then(() => {
+setCustomSignals(modularRemoteConfig1, typedCustomSignals).then(() => {
   console.log('Modular custom signals set');
 });
 
 // checks modular statics exports
-console.log(LastFetchStatus.SUCCESS);
-console.log(ValueSource.REMOTE);
