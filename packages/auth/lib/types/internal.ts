@@ -28,9 +28,8 @@ import type {
   Auth,
   AuthCredential,
   AuthProvider,
-  ConfirmationResult,
   IdTokenResult,
-  MultiFactorResolver,
+  MultiFactorAssertion,
   PhoneAuthListener,
   User,
   UserCredential,
@@ -56,6 +55,36 @@ export type AuthProviderWithObjectInternal = AuthProvider & {
 export type UserCredentialWithAdditionalUserInfoInternal = UserCredential & {
   user: FirebaseAuthTypes.User;
   additionalUserInfo?: FirebaseAuthTypes.AdditionalUserInfo;
+};
+
+export type UserCredentialResultInternal = FirebaseAuthTypes.UserCredential &
+  Partial<Pick<UserCredential, 'operationType' | 'providerId'>>;
+
+export type ActionCodeInfoResultInternal = FirebaseAuthTypes.ActionCodeInfo | ActionCodeInfo;
+
+export type ConfirmationResultResultInternal = {
+  verificationId: string | null;
+  confirm(verificationCode: string): Promise<UserCredentialResultInternal | null>;
+};
+
+export type MultiFactorResolverResultInternal = {
+  hints: FirebaseAuthTypes.MultiFactorInfo[];
+  session: FirebaseAuthTypes.MultiFactorSession;
+  resolveSignIn(
+    assertion: FirebaseAuthTypes.MultiFactorAssertion | MultiFactorAssertion,
+  ): Promise<UserCredentialResultInternal>;
+};
+
+export type MultiFactorUserSourceInternal = FirebaseAuthTypes.User;
+
+export type MultiFactorUserResultInternal = {
+  enrolledFactors: FirebaseAuthTypes.MultiFactorInfo[];
+  getSession(): Promise<FirebaseAuthTypes.MultiFactorSession>;
+  enroll(
+    assertion: FirebaseAuthTypes.MultiFactorAssertion | MultiFactorAssertion,
+    displayName?: string | null,
+  ): Promise<void>;
+  unenroll(option: FirebaseAuthTypes.MultiFactorInfo | string): Promise<void>;
 };
 
 export type MultiFactorEnrollmentAssertionInternal =
@@ -318,7 +347,7 @@ export interface RNFBAuthModule {
     displayName?: string,
   ): Promise<void>;
   unenrollMultiFactor(enrollmentId: string | FirebaseAuthTypes.MultiFactorInfo): Promise<void>;
-  getMultiFactorResolver(error: unknown): FirebaseAuthTypes.MultiFactorResolver | null;
+  getMultiFactorResolver(error: unknown): MultiFactorResolverResultInternal | null;
   generateTotpSecret(session: FirebaseAuthTypes.MultiFactorSession): Promise<{ secretKey: string }>;
   generateQrCodeUrl(secretKey: string, accountName: string, issuer: string): Promise<string>;
   openInOtpApp(secretKey: string, qrCodeUrl: string): string | void;
@@ -332,7 +361,7 @@ export type AuthInternal = Auth & {
   app: ReactNativeFirebase.FirebaseApp;
   currentUser: FirebaseAuthTypes.User | null;
   applyActionCode(code: string): Promise<void>;
-  checkActionCode(code: string): Promise<ActionCodeInfo>;
+  checkActionCode(code: string): Promise<ActionCodeInfoResultInternal>;
   confirmPasswordReset(code: string, newPassword: string): Promise<void>;
   createUserWithEmailAndPassword(
     email: string,
@@ -340,7 +369,7 @@ export type AuthInternal = Auth & {
   ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   fetchSignInMethodsForEmail(email: string): Promise<string[]>;
   getCustomAuthDomain(): Promise<string>;
-  getMultiFactorResolver(error: unknown): MultiFactorResolver | null;
+  getMultiFactorResolver(error: unknown): MultiFactorResolverResultInternal | null;
   isSignInWithEmailLink(emailLink: string): Promise<boolean>;
   onAuthStateChanged(
     listenerOrObserver: CallbackOrObserver<AuthListenerCallbackInternal>,
@@ -371,7 +400,7 @@ export type AuthInternal = Auth & {
   signInWithPhoneNumber(
     phoneNumber: string,
     forceResend?: boolean,
-  ): Promise<ConfirmationResult>;
+  ): Promise<ConfirmationResultResultInternal>;
   signInWithPopup(
     provider: AuthProviderWithObjectInternal,
   ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
