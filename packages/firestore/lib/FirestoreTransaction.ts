@@ -93,9 +93,9 @@ export default class Transaction {
             new DocumentSnapshot(
               this._firestore,
               data as DocumentSnapshotNativeData,
-              (documentRef as unknown as DocumentReference<AppModelType, DbModelType>).converter,
+              documentRef.converter,
             ),
-          ) as unknown as DocumentSnapshotType<AppModelType, DbModelType>,
+          ) as DocumentSnapshotType<AppModelType, DbModelType>,
       );
   }
 
