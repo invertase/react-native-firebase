@@ -774,7 +774,7 @@ async function bootstrap() {
   const app = getApp(); // Get the default firebase app
 
   // Initialize firestore with specific settings
-  initializeFirestore(app, {
+  await initializeFirestore(app, {
     persistence: false, // In v22, this disables the cache persistence
     // You can also set other settings here, like:
     // cacheSizeBytes: CACHE_SIZE_UNLIMITED
