@@ -15,29 +15,24 @@
  *
  */
 
-import type { FirebaseApp, ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseApp } from '@react-native-firebase/app';
+
+/**
+ * An user defined callback function that gets called when Installations ID changes.
+ */
+export type IdChangeCallbackFn = (installationId: string) => void;
+
+/**
+ * Unsubscribe a callback function previously added via {@link IdChangeCallbackFn}.
+ */
+export type IdChangeUnsubscribeFn = () => void;
 
 /**
  * Firebase Installations service instance.
  */
-export interface Installations extends ReactNativeFirebase.FirebaseModule {
+export interface Installations {
   /**
    * The current `FirebaseApp` instance for this Firebase service.
    */
   app: FirebaseApp;
-
-  /**
-   * Creates a Firebase Installation if there isn't one for the app and returns the Installation ID.
-   */
-  getId(): Promise<string>;
-
-  /**
-   * Retrieves a valid installation auth token.
-   */
-  getToken(forceRefresh?: boolean): Promise<string>;
-
-  /**
-   * Deletes the Firebase Installation and all associated data from the Firebase backend.
-   */
-  delete(): Promise<void>;
 }

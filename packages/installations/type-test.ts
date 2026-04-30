@@ -6,6 +6,7 @@ import installations, {
   getToken,
   onIdChange,
 } from '.';
+import type { IdChangeCallbackFn, IdChangeUnsubscribeFn } from '.';
 
 console.log(installations().app);
 
@@ -80,9 +81,14 @@ deleteInstallations(modularInstallations1).then(() => {
 
 // Note: onIdChange throws an error in React Native Firebase
 try {
-  onIdChange(modularInstallations1, (id: string) => {
+  const onInstallationsIdChange: IdChangeCallbackFn = id => {
     console.log(id);
-  });
+  };
+  const unsubscribe: IdChangeUnsubscribeFn = onIdChange(
+    modularInstallations1,
+    onInstallationsIdChange,
+  );
+  unsubscribe();
 } catch (error) {
   console.log('Modular onIdChange not supported');
 }

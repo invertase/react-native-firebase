@@ -18,15 +18,16 @@
 import { getApp } from '@react-native-firebase/app';
 import type { FirebaseApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
-import type { Installations } from './types/installations';
+import type {
+  IdChangeCallbackFn,
+  IdChangeUnsubscribeFn,
+  Installations,
+} from './types/installations';
 import type { InstallationsInternal } from './types/internal';
 
 function withModularDeprecationArg(installations: Installations): InstallationsInternal {
   return installations as InstallationsInternal;
 }
-
-type IdChangeCallbackFn = (installationId: string) => void;
-type IdChangeUnsubscribeFn = () => void;
 
 /**
  * Returns an instance of Installations associated with the given FirebaseApp instance.
@@ -41,8 +42,8 @@ export function getInstallations(app?: FirebaseApp): Installations {
 /**
  * Deletes the Firebase Installation and all associated data.
  */
-export function deleteInstallations(installations?: Installations): Promise<void> {
-  const internalInstallations = withModularDeprecationArg(installations as Installations);
+export function deleteInstallations(installations: Installations): Promise<void> {
+  const internalInstallations = withModularDeprecationArg(installations);
   return internalInstallations.delete.call(internalInstallations, MODULAR_DEPRECATION_ARG);
 }
 
