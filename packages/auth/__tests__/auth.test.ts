@@ -79,7 +79,7 @@ import auth, {
   PhoneAuthState,
 } from '../lib';
 
-const PasswordPolicyImpl = require('../lib/password-policy/PasswordPolicyImpl').default;
+const { PasswordPolicyImpl } = require('../lib/password-policy/PasswordPolicyImpl');
 
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
@@ -628,7 +628,14 @@ describe('Auth', function () {
 
         it('getMultiFactorResolver', function () {
           const auth = getAuth();
-          const error = new Error() as any;
+          const error = {
+            userInfo: {
+              resolver: {
+                hints: [],
+                session: {},
+              },
+            },
+          } as any;
           authV9Deprecation(
             () => getMultiFactorResolver(auth, error),
             // @ts-expect-error Combines modular and namespace API
@@ -1012,8 +1019,12 @@ describe('Auth', function () {
 
         it('unlink', function () {
           userV9Deprecation(
-            () => unlink(mockUser, 'google.com'),
-            () => mockUser.unlink('google.com'),
+            () => {
+              void unlink(mockUser, 'google.com').catch(() => {});
+            },
+            () => {
+              void mockUser.unlink('google.com').catch(() => {});
+            },
             'unlink',
           );
         });
