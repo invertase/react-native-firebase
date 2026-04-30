@@ -93,6 +93,7 @@ import type {
   WithFieldValue,
   PartialWithFieldValue,
   SetOptions,
+  Transaction,
 } from '@react-native-firebase/firestore';
 import {
   execute,
@@ -546,6 +547,34 @@ runTransaction(modFirestore1, async tx => {
   }
   return 'done';
 }).then(() => {});
+
+// Root runtime exports must also carry the public modular Transaction type surface.
+function acceptRootTransaction(tx: Transaction, tRef: DocumentReference<DocumentData>) {
+  const chainedTx: Transaction = tx
+    .set(tRef, { active: true })
+    .update(tRef, { active: false })
+    .delete(tRef);
+  return chainedTx;
+}
+
+function rootTransactionUpdateFunction(tx: Transaction): Promise<DocumentSnapshot<DocumentData>> {
+  return tx.get(modDoc);
+}
+
+runTransaction(modFirestore1, async (tx: Transaction) => {
+  const rootSnap: DocumentSnapshot<DocumentData> = await tx.get(modDoc);
+  const rootTx: Transaction = tx;
+  acceptRootTransaction(rootTx, modDoc);
+  if (rootSnap.exists()) {
+    const rootData: DocumentData = rootSnap.data();
+    void rootData;
+  }
+  return rootSnap;
+}).then((rootSnap: DocumentSnapshot<DocumentData>) => {
+  f(rootSnap);
+});
+runTransaction(modFirestore1, rootTransactionUpdateFunction).then(f);
+void acceptRootTransaction;
 
 // ----- query, where, or, and, orderBy, startAt, startAfter, endAt, endBefore, limit, limitToLast -----
 const modQuery1 = query(modColl, where('name', '==', 'test'));
