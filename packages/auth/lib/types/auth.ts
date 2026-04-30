@@ -28,44 +28,17 @@ interface Observer<T> {
   complete?: CompleteFn | null;
 }
 
-export const ActionCodeOperation = {
-  EMAIL_SIGNIN: 'EMAIL_SIGNIN',
-  PASSWORD_RESET: 'PASSWORD_RESET',
-  RECOVER_EMAIL: 'RECOVER_EMAIL',
-  REVERT_SECOND_FACTOR_ADDITION: 'REVERT_SECOND_FACTOR_ADDITION',
-  VERIFY_AND_CHANGE_EMAIL: 'VERIFY_AND_CHANGE_EMAIL',
-  VERIFY_EMAIL: 'VERIFY_EMAIL',
-} as const;
+type ActionCodeOperationValue =
+  | 'EMAIL_SIGNIN'
+  | 'PASSWORD_RESET'
+  | 'RECOVER_EMAIL'
+  | 'REVERT_SECOND_FACTOR_ADDITION'
+  | 'VERIFY_AND_CHANGE_EMAIL'
+  | 'VERIFY_EMAIL';
 
-export const FactorId = {
-  PHONE: 'phone',
-  TOTP: 'totp',
-} as const;
+type FactorIdValue = 'phone' | 'totp';
 
-export const OperationType = {
-  LINK: 'link',
-  REAUTHENTICATE: 'reauthenticate',
-  SIGN_IN: 'signIn',
-} as const;
-
-export const ProviderId = {
-  FACEBOOK: 'facebook.com',
-  GITHUB: 'github.com',
-  GOOGLE: 'google.com',
-  PASSWORD: 'password',
-  PHONE: 'phone',
-  TWITTER: 'twitter.com',
-} as const;
-
-export const SignInMethod = {
-  EMAIL_LINK: 'emailLink',
-  EMAIL_PASSWORD: 'password',
-  FACEBOOK: 'facebook.com',
-  GITHUB: 'github.com',
-  GOOGLE: 'google.com',
-  PHONE: 'phone',
-  TWITTER: 'twitter.com',
-} as const;
+type OperationTypeValue = 'link' | 'reauthenticate' | 'signIn';
 
 export interface Auth {
   readonly app: FirebaseApp;
@@ -125,7 +98,7 @@ export interface OIDCProvider {
 }
 export interface MultiFactorError extends AuthError {
   readonly customData: AuthError['customData'] & {
-    readonly operationType: (typeof OperationType)[keyof typeof OperationType];
+    readonly operationType: OperationTypeValue;
   };
 }
 export interface PhoneAuthSnapshot {
@@ -302,7 +275,7 @@ export interface User extends UserInfo {
 export interface UserCredential {
   user: User;
   providerId: string | null;
-  operationType: (typeof OperationType)[keyof typeof OperationType];
+  operationType: OperationTypeValue;
 }
 
 export interface ConfirmationResult {
@@ -331,18 +304,18 @@ export interface ActionCodeInfo {
     multiFactorInfo?: MultiFactorInfo | null;
     previousEmail?: string | null;
   };
-  operation: (typeof ActionCodeOperation)[keyof typeof ActionCodeOperation];
+  operation: ActionCodeOperationValue;
 }
 
 export interface MultiFactorAssertion {
-  readonly factorId: (typeof FactorId)[keyof typeof FactorId];
+  readonly factorId: FactorIdValue;
 }
 
 export interface MultiFactorInfo {
   readonly uid: string;
   readonly displayName?: string | null;
   readonly enrollmentTime: string;
-  readonly factorId: (typeof FactorId)[keyof typeof FactorId];
+  readonly factorId: FactorIdValue;
 }
 
 export interface MultiFactorSession {}

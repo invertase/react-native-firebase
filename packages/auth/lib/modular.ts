@@ -31,7 +31,6 @@ import OIDCAuthProvider from './providers/OIDCAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import type { FirebaseApp } from '@react-native-firebase/app';
-import { ActionCodeOperation, FactorId, OperationType, ProviderId } from './types/auth';
 import type {
   ActionCodeInfo,
   ActionCodeSettings,
@@ -82,6 +81,45 @@ type UserModuleInternal = UserInternal;
 type MultiFactorInfoInternal =
   | MultiFactorInfo
   | MultiFactorResolverResultInternal['hints'][number];
+
+export const ActionCodeOperation = {
+  EMAIL_SIGNIN: 'EMAIL_SIGNIN',
+  PASSWORD_RESET: 'PASSWORD_RESET',
+  RECOVER_EMAIL: 'RECOVER_EMAIL',
+  REVERT_SECOND_FACTOR_ADDITION: 'REVERT_SECOND_FACTOR_ADDITION',
+  VERIFY_AND_CHANGE_EMAIL: 'VERIFY_AND_CHANGE_EMAIL',
+  VERIFY_EMAIL: 'VERIFY_EMAIL',
+} as const;
+
+export const FactorId = {
+  PHONE: 'phone',
+  TOTP: 'totp',
+} as const;
+
+export const OperationType = {
+  LINK: 'link',
+  REAUTHENTICATE: 'reauthenticate',
+  SIGN_IN: 'signIn',
+} as const;
+
+export const ProviderId = {
+  FACEBOOK: 'facebook.com',
+  GITHUB: 'github.com',
+  GOOGLE: 'google.com',
+  PASSWORD: 'password',
+  PHONE: 'phone',
+  TWITTER: 'twitter.com',
+} as const;
+
+export const SignInMethod = {
+  EMAIL_LINK: 'emailLink',
+  EMAIL_PASSWORD: 'password',
+  FACEBOOK: 'facebook.com',
+  GITHUB: 'github.com',
+  GOOGLE: 'google.com',
+  PHONE: 'phone',
+  TWITTER: 'twitter.com',
+} as const;
 
 const actionCodeOperations = new Set<string>(Object.values(ActionCodeOperation));
 

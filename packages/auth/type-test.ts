@@ -19,6 +19,7 @@ import auth, {
   getAdditionalUserInfo,
   getAuth,
   getCustomAuthDomain,
+  getIdTokenResult,
   getMultiFactorResolver,
   getRedirectResult,
   initializeAuth,
@@ -56,6 +57,7 @@ import auth, {
   type Config,
   type ConfirmationResult,
   type Dependencies,
+  type FirebaseAuthTypes,
   type IdTokenResult,
   type MultiFactorError,
   type PasswordPolicy,
@@ -142,38 +144,38 @@ namespacedAuth.sendSignInLinkToEmail('test@example.com', actionCodeSettings);
 namespacedAuth.verifyPasswordResetCode('oob-code').then((email: string) => console.log(email));
 namespacedAuth
   .checkActionCode('oob-code')
-  .then((info: ActionCodeInfo) => console.log(info.operation));
+  .then((info: FirebaseAuthTypes.ActionCodeInfo) => console.log(info.operation));
 namespacedAuth.getCustomAuthDomain().then((domain: string) => console.log(domain));
 
 const namespacedUnsubscribe: Unsubscribe = namespacedAuth.onAuthStateChanged(
-  (user: User | null) => {
+  (user: FirebaseAuthTypes.User | null) => {
     console.log(user?.uid);
   },
 );
 namespacedUnsubscribe();
 
-namespacedAuth.onIdTokenChanged((user: User | null) => {
+namespacedAuth.onIdTokenChanged((user: FirebaseAuthTypes.User | null) => {
   console.log(user?.email);
 });
 
 namespacedAuth
   .signInAnonymously()
-  .then((credential: UserCredential) => console.log(credential.user.uid));
+  .then((credential: FirebaseAuthTypes.UserCredential) => console.log(credential.user.uid));
 namespacedAuth
   .createUserWithEmailAndPassword('new@example.com', 'password123')
-  .then((credential: UserCredential) => console.log(credential.user.email));
+  .then((credential: FirebaseAuthTypes.UserCredential) => console.log(credential.user.email));
 namespacedAuth
   .signInWithEmailAndPassword('test@example.com', 'password123')
-  .then((credential: UserCredential) => console.log(credential.user.email));
+  .then((credential: FirebaseAuthTypes.UserCredential) => console.log(credential.user.email));
 namespacedAuth
   .signInWithCustomToken('custom-token')
-  .then((credential: UserCredential) => console.log(credential.user.uid));
+  .then((credential: FirebaseAuthTypes.UserCredential) => console.log(credential.user.uid));
 namespacedAuth
   .signInWithEmailLink('test@example.com', 'email-link')
-  .then((credential: UserCredential) => console.log(credential.user.email));
+  .then((credential: FirebaseAuthTypes.UserCredential) => console.log(credential.user.email));
 namespacedAuth
   .signInWithPhoneNumber('+1234567890')
-  .then((result: ConfirmationResult) => console.log(result.verificationId));
+  .then((result: FirebaseAuthTypes.ConfirmationResult) => console.log(result.verificationId));
 namespacedAuth.signOut();
 
 const emailCredential = EmailAuthProvider.credential('test@example.com', 'password123');
@@ -258,13 +260,20 @@ const maybeUser = namespacedAuth.currentUser;
 if (maybeUser) {
   maybeUser.reload();
   maybeUser.getIdToken().then((token: string) => console.log(token));
-  maybeUser.getIdTokenResult().then((result: IdTokenResult) => console.log(result.claims));
+  maybeUser
+    .getIdTokenResult()
+    .then((result: FirebaseAuthTypes.IdTokenResult) => console.log(result.claims));
   maybeUser.sendEmailVerification(actionCodeSettings);
   maybeUser.updateEmail('new@example.com');
   maybeUser.updatePassword('new-password');
   maybeUser.updatePhoneNumber(phoneCredential);
   maybeUser.updateProfile({ displayName: 'New Name', photoURL: 'https://example.com/photo.png' });
 
-  const mfaUser = multiFactor(maybeUser);
-  mfaUser.getSession();
+  const namespacedMfaUser = namespacedAuth.multiFactor(maybeUser);
+  namespacedMfaUser.getSession();
 }
+
+const modularUser = {} as User;
+const modularMfaUser = multiFactor(modularUser);
+modularMfaUser.getSession();
+getIdTokenResult(modularUser).then((result: IdTokenResult) => console.log(result.claims));
