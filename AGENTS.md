@@ -17,7 +17,7 @@
 ## Testing instructions
 
 - Start with focused validation for the area you changed instead of running the entire suite.
-- For JavaScript and TypeScript changes, run `yarn lint:js`.
+- For code changes, run the relevant linting scripts (e.g., yarn lint:js, yarn lint:android, or yarn lint:ios:check).
 - For package behavior changes, run targeted Jest coverage with `yarn tests:jest <path-to-test-file>`.
 - For public API changes, update and run the relevant `packages/<name>/type-test.ts` checks and nearby Jest tests in `packages/<name>/__tests__/`.
 - Run platform-specific e2e commands in `tests/` only when the change affects Android, iOS, or macOS behavior.
