@@ -42,7 +42,7 @@
   ],
   "compilerOptions": {
     "noEmit": true,
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
     "declaration": true,
     "importHelpers": true,
@@ -53,20 +53,19 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
-    "baseUrl": ".",
     "lib": ["es2015", "es2016", "esnext", "dom"],
     "types": ["react-native", "node"],
     "paths": {
       "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"],
-      "@react-native-firebase/app": ["packages/app/dist/typescript/lib"],
+      "@react-native-firebase/app": ["./packages/app/dist/typescript/lib"],
       "@react-native-firebase/app/dist/module/types/common": [
-        "packages/app/dist/typescript/lib/types/common"
+        "./packages/app/dist/typescript/lib/types/common"
       ],
       "@react-native-firebase/firestore/pipelines": [
         "./packages/firestore/dist/typescript/lib/pipelines/index.d.ts"
