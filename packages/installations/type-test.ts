@@ -6,7 +6,12 @@ import installations, {
   getToken,
   onIdChange,
 } from '.';
-import type { IdChangeCallbackFn, IdChangeUnsubscribeFn } from '.';
+import type {
+  FirebaseInstallationsTypes,
+  IdChangeCallbackFn,
+  IdChangeUnsubscribeFn,
+  Installations,
+} from '.';
 
 console.log(installations().app);
 
@@ -56,6 +61,8 @@ installationsInstance.delete().then(() => {
 // checks modular API functions
 const modularInstallations1 = getInstallations();
 console.log(modularInstallations1.app.name);
+const typedInstallations: Installations = modularInstallations1;
+console.log(typedInstallations.app.name);
 
 const modularInstallations2 = getInstallations(firebase.app());
 console.log(modularInstallations2.app.name);
@@ -77,6 +84,11 @@ getToken(modularInstallations1, true).then((token: string) => {
 
 deleteInstallations(modularInstallations1).then(() => {
   console.log('Modular installation deleted');
+});
+
+const namespacedInstallations: FirebaseInstallationsTypes.Module = installationsInstance;
+namespacedInstallations.getId().then((id: string) => {
+  console.log(id);
 });
 
 // Note: onIdChange throws an error in React Native Firebase
