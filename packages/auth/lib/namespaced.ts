@@ -687,7 +687,13 @@ export default createModuleNamespace({
 // import auth, { firebase } from '@react-native-firebase/auth';
 // auth().X(...);
 // firebase.auth().X(...);
-export const firebase = getFirebaseRoot();
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'auth',
+    FirebaseAuthTypes.Module,
+    FirebaseAuthTypes.Statics,
+    false
+  >;
 
 // Register the interop module for non-native platforms.
 setReactNativeModule(nativeModuleName, fallBackModule);
