@@ -233,7 +233,7 @@ describe('Auth', function () {
       });
 
       it('should allow linkDomain as `ActionCodeSettings.linkDomain`', function () {
-        const auth = firebase.app().auth();
+        const auth = firebase.app().auth() as unknown as FirebaseAuthTypes.Module & AuthInternal;
         const actionCodeSettings = {
           url: 'https://example.com',
           handleCodeInApp: true,

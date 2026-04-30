@@ -671,9 +671,7 @@ Object.assign(FirebaseAuthModule.prototype, PasswordPolicyMixin);
 // import { SDK_VERSION } from '@react-native-firebase/auth';
 export const SDK_VERSION = version;
 
-// import auth from '@react-native-firebase/auth';
-// auth().X(...);
-export default createModuleNamespace({
+const authNamespace = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -683,6 +681,22 @@ export default createModuleNamespace({
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAuthModule,
 });
+
+type AuthNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseAuthTypes.Module,
+  FirebaseAuthTypes.Statics
+> & {
+  auth: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseAuthTypes.Module,
+    FirebaseAuthTypes.Statics
+  >;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+// import auth from '@react-native-firebase/auth';
+// auth().X(...);
+export default authNamespace as unknown as AuthNamespace;
 
 // import auth, { firebase } from '@react-native-firebase/auth';
 // auth().X(...);
