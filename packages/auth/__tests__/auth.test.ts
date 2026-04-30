@@ -91,6 +91,7 @@ import {
 } from '../../app/lib/common/unitTestUtils';
 // @ts-ignore
 import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
+import { AuthInternal } from '../lib/types/internal';
 
 describe('Auth', function () {
   describe('namespace', function () {
@@ -243,7 +244,34 @@ describe('Auth', function () {
         sendPasswordResetEmail(auth, email, actionCodeSettings);
         sendSignInLinkToEmail(auth, email, actionCodeSettings);
 
-        const user: FirebaseAuthTypes.User = new User(auth, {});
+        const user: FirebaseAuthTypes.User = new User(auth as AuthInternal, {
+          uid: 'test-user-id',
+          displayName: 'Test User',
+          email: 'test@example.com',
+          emailVerified: true,
+          isAnonymous: false,
+          metadata: {
+            lastSignInTime: '2023-01-01T00:00:00.000Z',
+            creationTime: '2023-01-01T00:00:00.000Z',
+          },
+          multiFactor: {
+            enrolledFactors: [],
+          },
+          phoneNumber: '+1234567890',
+          tenantId: null,
+          photoURL: 'https://example.com/photo.jpg',
+          providerData: [
+            {
+              uid: 'test-uid',
+              displayName: 'Test User',
+              email: 'test@example.com',
+              phoneNumber: '+1234567890',
+              photoURL: 'https://example.com/photo.jpg',
+              providerId: 'password',
+            },
+          ],
+          providerId: 'firebase',
+        });
 
         user.sendEmailVerification(actionCodeSettings);
         user.verifyBeforeUpdateEmail(email, actionCodeSettings);
@@ -551,6 +579,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => applyActionCode(auth, 'code'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.applyActionCode('code'),
             'applyActionCode',
           );
@@ -560,6 +589,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => checkActionCode(auth, 'code'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.checkActionCode('code'),
             'checkActionCode',
           );
@@ -569,6 +599,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => confirmPasswordReset(auth, 'code', 'newPassword'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.confirmPasswordReset('code', 'newPassword'),
             'confirmPasswordReset',
           );
@@ -578,6 +609,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => createUserWithEmailAndPassword(auth, 'test@example.com', 'password'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.createUserWithEmailAndPassword('test@example.com', 'password'),
             'createUserWithEmailAndPassword',
           );
@@ -587,6 +619,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => fetchSignInMethodsForEmail(auth, 'test@example.com'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.fetchSignInMethodsForEmail('test@example.com'),
             'fetchSignInMethodsForEmail',
           );
@@ -597,6 +630,7 @@ describe('Auth', function () {
           const error = new Error() as any;
           authV9Deprecation(
             () => getMultiFactorResolver(auth, error),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.getMultiFactorResolver(error),
             'getMultiFactorResolver',
           );
@@ -606,6 +640,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => isSignInWithEmailLink(auth, 'emailLink'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.isSignInWithEmailLink('emailLink'),
             'isSignInWithEmailLink',
           );
@@ -636,6 +671,7 @@ describe('Auth', function () {
           const provider = { toObject: () => ({}) } as any;
           authV9Deprecation(
             () => signInWithPopup(auth, provider),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithPopup(provider),
             'signInWithPopup',
           );
@@ -646,6 +682,7 @@ describe('Auth', function () {
           const provider = { toObject: () => ({}) } as any;
           authV9Deprecation(
             () => signInWithRedirect(auth, provider),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithRedirect(provider),
             'signInWithRedirect',
           );
@@ -655,6 +692,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => sendPasswordResetEmail(auth, 'test@example.com'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.sendPasswordResetEmail('test@example.com'),
             'sendPasswordResetEmail',
           );
@@ -665,6 +703,7 @@ describe('Auth', function () {
           const actionCodeSettings = { url: 'https://example.com' };
           authV9Deprecation(
             () => sendSignInLinkToEmail(auth, 'test@example.com', actionCodeSettings),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.sendSignInLinkToEmail('test@example.com', actionCodeSettings),
             'sendSignInLinkToEmail',
           );
@@ -674,6 +713,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => signInAnonymously(auth),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInAnonymously(),
             'signInAnonymously',
           );
@@ -684,6 +724,7 @@ describe('Auth', function () {
           const credential = {} as any;
           authV9Deprecation(
             () => signInWithCredential(auth, credential),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithCredential(credential),
             'signInWithCredential',
           );
@@ -693,6 +734,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => signInWithCustomToken(auth, 'customToken'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithCustomToken('customToken'),
             'signInWithCustomToken',
           );
@@ -702,6 +744,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => signInWithEmailAndPassword(auth, 'test@example.com', 'password'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithEmailAndPassword('test@example.com', 'password'),
             'signInWithEmailAndPassword',
           );
@@ -711,6 +754,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => signInWithEmailLink(auth, 'test@example.com', 'emailLink'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithEmailLink('test@example.com', 'emailLink'),
             'signInWithEmailLink',
           );
@@ -720,6 +764,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => signInWithPhoneNumber(auth, '+1234567890', undefined),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithPhoneNumber('+1234567890', false),
             'signInWithPhoneNumber',
           );
@@ -738,6 +783,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => useUserAccessGroup(auth, 'group'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.useUserAccessGroup('group'),
             'useUserAccessGroup',
           );
@@ -747,6 +793,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => verifyPasswordResetCode(auth, 'code'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.verifyPasswordResetCode('code'),
             'verifyPasswordResetCode',
           );
@@ -756,6 +803,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => getCustomAuthDomain(auth),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.getCustomAuthDomain(),
             'getCustomAuthDomain',
           );
@@ -765,6 +813,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => connectAuthEmulator(auth, 'http://localhost:9099'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.useEmulator('http://localhost:9099'),
             'useEmulator',
           );
@@ -774,6 +823,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => setLanguageCode(auth, 'en'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.setLanguageCode('en'),
             'setLanguageCode',
           );
@@ -798,6 +848,7 @@ describe('Auth', function () {
 
           authV9Deprecation(
             () => multiFactor(mockUser),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.multiFactor(mockUser),
             'multiFactor',
           );
@@ -808,7 +859,7 @@ describe('Auth', function () {
         let mockUser: User;
 
         beforeEach(function () {
-          mockUser = new User(getAuth(), {
+          mockUser = new User(getAuth() as AuthInternal, {
             uid: 'test-user-id',
             displayName: 'Test User',
             email: 'test@example.com',
