@@ -116,6 +116,14 @@ export function getApp(name?: string): ReactNativeFirebase.FirebaseApp {
 }
 
 /**
+ * Retrieves the default Firebase app instance.
+ * @returns The default Firebase app instance.
+ */
+export function getDefaultApp(): ReactNativeFirebase.FirebaseApp {
+  return getApp();
+}
+
+/**
  * Sets the log level across all Firebase SDKs.
  * @param logLevel - The log level to set ('debug', 'verbose', 'info', 'warn', 'error', 'silent').
  * @returns void
