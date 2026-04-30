@@ -49,33 +49,43 @@ export interface QuerySnapshotNativeData {
   metadata: [boolean, boolean];
 }
 
-export default class QuerySnapshot {
-  _query: Query;
+export default class QuerySnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> {
+  _query: Query<AppModelType, DbModelType>;
   _source: string | undefined;
   _excludesMetadataChanges: boolean | undefined;
   _changes: DocumentChange[];
-  _docs: DocumentSnapshot[];
+  _docs: DocumentSnapshot<AppModelType, DbModelType>[];
   _metadata: SnapshotMetadata;
 
   constructor(
     firestore: FirestoreInternal,
-    query: Query,
+    query: Query<AppModelType, DbModelType>,
     nativeData: QuerySnapshotNativeData,
-    converter: FirestoreDataConverter<DocumentData, DocumentData> | null,
+    converter: FirestoreDataConverter<AppModelType, DbModelType> | null,
   ) {
     this._query = query;
     this._source = nativeData.source;
     this._excludesMetadataChanges = nativeData.excludesMetadataChanges;
     this._changes = nativeData.changes.map(
-      (c: QuerySnapshotNativeData['changes'][0]) => new DocumentChange(firestore, c, converter),
+      (c: QuerySnapshotNativeData['changes'][0]) =>
+        new DocumentChange(
+          firestore,
+          c,
+          converter as unknown as FirestoreDataConverter<DocumentData, DocumentData> | null,
+        ),
     );
     this._docs = nativeData.documents.map((doc: QuerySnapshotNativeData['documents'][0]) =>
-      createDeprecationProxy(new DocumentSnapshot(firestore, doc, converter)),
-    ) as DocumentSnapshot[];
+      createDeprecationProxy(
+        new DocumentSnapshot<AppModelType, DbModelType>(firestore, doc, converter),
+      ),
+    ) as DocumentSnapshot<AppModelType, DbModelType>[];
     this._metadata = new SnapshotMetadata(nativeData.metadata ?? [false, false]);
   }
 
-  get docs(): DocumentSnapshot[] {
+  get docs(): DocumentSnapshot<AppModelType, DbModelType>[] {
     return this._docs;
   }
 
@@ -87,7 +97,7 @@ export default class QuerySnapshot {
     return this._metadata;
   }
 
-  get query(): Query {
+  get query(): Query<AppModelType, DbModelType> {
     return this._query;
   }
 
@@ -132,7 +142,10 @@ export default class QuerySnapshot {
     });
   }
 
-  forEach(callback: (doc: DocumentSnapshot, index: number) => void, thisArg?: unknown): void {
+  forEach(
+    callback: (doc: DocumentSnapshot<AppModelType, DbModelType>, index: number) => void,
+    thisArg?: unknown,
+  ): void {
     if (!isFunction(callback)) {
       throw new Error(
         "firebase.firestore() QuerySnapshot.forEach(*) 'callback' expected a function.",
@@ -146,7 +159,7 @@ export default class QuerySnapshot {
     }
   }
 
-  isEqual(other: QuerySnapshot, ...args: unknown[]): boolean {
+  isEqual(other: QuerySnapshot<AppModelType, DbModelType>, ...args: unknown[]): boolean {
     if (!(other instanceof QuerySnapshot)) {
       throw new Error(
         "firebase.firestore() QuerySnapshot.isEqual(*) 'other' expected a QuerySnapshot instance.",

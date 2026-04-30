@@ -20,7 +20,13 @@ import DocumentReference from './FirestoreDocumentReference';
 import { parseSetOptions, parseUpdateArgs, applyFirestoreDataConverter } from './utils';
 import { buildNativeMap } from './utils/serialize';
 import type { FirestoreInternal } from './types/internal';
-import type { SetOptions } from './types/firestore';
+import type {
+  DocumentData,
+  DocumentReference as DocumentReferenceType,
+  PartialWithFieldValue,
+  SetOptions,
+  WithFieldValue,
+} from './types/firestore';
 
 export interface BatchWrite {
   path: string;
@@ -59,7 +65,9 @@ export default class WriteBatch {
     );
   }
 
-  delete(documentRef: DocumentReference): this {
+  delete<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    documentRef: DocumentReferenceType<AppModelType, DbModelType>,
+  ): this {
     this._verifyNotCommitted('delete');
     if (!(documentRef instanceof DocumentReference)) {
       throw new Error(
@@ -81,7 +89,20 @@ export default class WriteBatch {
     return this;
   }
 
-  set(documentRef: DocumentReference, data: Record<string, unknown>, options?: SetOptions): this {
+  set<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    documentRef: DocumentReferenceType<AppModelType, DbModelType>,
+    data: WithFieldValue<AppModelType>,
+  ): this;
+  set<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    documentRef: DocumentReferenceType<AppModelType, DbModelType>,
+    data: PartialWithFieldValue<AppModelType>,
+    options: SetOptions,
+  ): this;
+  set<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    documentRef: DocumentReferenceType<AppModelType, DbModelType>,
+    data: Record<string, unknown>,
+    options?: SetOptions,
+  ): this {
     this._verifyNotCommitted('set');
     if (!(documentRef instanceof DocumentReference)) {
       throw new Error(
@@ -125,7 +146,10 @@ export default class WriteBatch {
     return this;
   }
 
-  update(documentRef: DocumentReference, ...args: unknown[]): this {
+  update<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    documentRef: DocumentReferenceType<AppModelType, DbModelType>,
+    ...args: unknown[]
+  ): this {
     this._verifyNotCommitted('update');
     if (!(documentRef instanceof DocumentReference)) {
       throw new Error(

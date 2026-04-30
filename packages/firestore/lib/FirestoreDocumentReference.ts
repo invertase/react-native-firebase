@@ -78,17 +78,21 @@ export function provideDocumentSnapshotClass(
 
 let _id = 0;
 
-export default class DocumentReference {
+export default class DocumentReference<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> {
+  readonly type = 'document' as const;
   _firestore: FirestoreInternal;
   _documentPath: FirestorePath;
-  _converter: FirestoreDataConverter<DocumentData, DocumentData> | null;
+  _converter: FirestoreDataConverter<AppModelType, DbModelType> | null;
 
   constructor(firestore: FirestoreInternal, documentPath: FirestorePath, converter?: unknown) {
     this._firestore = firestore;
     this._documentPath = documentPath;
     this._converter = (converter === undefined ? null : converter) as FirestoreDataConverter<
-      DocumentData,
-      DocumentData
+      AppModelType,
+      DbModelType
     > | null;
   }
 
@@ -96,7 +100,7 @@ export default class DocumentReference {
     return this._firestore;
   }
 
-  get converter(): unknown {
+  get converter(): FirestoreDataConverter<AppModelType, DbModelType> | null {
     return this._converter;
   }
 
@@ -106,7 +110,11 @@ export default class DocumentReference {
 
   get parent(): FirestoreCollectionReferenceClass {
     const parentPath = this._documentPath.parent();
-    return new FirestoreCollectionReference!(this._firestore, parentPath!, this._converter);
+    return new FirestoreCollectionReference!(
+      this._firestore,
+      parentPath!,
+      this._converter as unknown as FirestoreDataConverter<DocumentData, DocumentData> | null,
+    );
   }
 
   get path(): string {
@@ -141,7 +149,9 @@ export default class DocumentReference {
     return this._firestore.native.documentDelete(this.path);
   }
 
-  get(options?: { source?: 'default' | 'server' | 'cache' }): Promise<DocumentSnapshot> {
+  get(options?: {
+    source?: 'default' | 'server' | 'cache';
+  }): Promise<DocumentSnapshot<AppModelType, DbModelType>> {
     if (!isUndefined(options) && !isObject(options)) {
       throw new Error("firebase.firestore().doc().get(*) 'options' must be an object is provided.");
     }
@@ -166,13 +176,16 @@ export default class DocumentReference {
             new FirestoreDocumentSnapshotClass!(
               this._firestore,
               data as DocumentSnapshotNativeData,
-              this._converter,
+              this._converter as unknown as FirestoreDataConverter<
+                DocumentData,
+                DocumentData
+              > | null,
             ),
-          ) as DocumentSnapshot,
+          ) as DocumentSnapshot<AppModelType, DbModelType>,
       );
   }
 
-  isEqual(other: DocumentReference): boolean {
+  isEqual(other: DocumentReference<AppModelType, DbModelType>): boolean {
     if (!(other instanceof DocumentReference)) {
       throw new Error(
         "firebase.firestore().doc().isEqual(*) 'other' expected a DocumentReference instance.",
@@ -189,8 +202,11 @@ export default class DocumentReference {
 
   onSnapshot(...args: unknown[]): () => void {
     let snapshotListenOptions: { includeMetadataChanges?: boolean };
-    let callback: (snapshot: DocumentSnapshot | null, error: Error | null) => void;
-    let onNext: (snapshot: DocumentSnapshot) => void;
+    let callback: (
+      snapshot: DocumentSnapshot<AppModelType, DbModelType> | null,
+      error: Error | null,
+    ) => void;
+    let onNext: (snapshot: DocumentSnapshot<AppModelType, DbModelType>) => void;
     let onError: (error: Error) => void;
 
     try {
@@ -203,7 +219,7 @@ export default class DocumentReference {
       throw new Error(`firebase.firestore().doc().onSnapshot(*) ${(e as Error).message}`);
     }
 
-    function handleSuccess(documentSnapshot: DocumentSnapshot): void {
+    function handleSuccess(documentSnapshot: DocumentSnapshot<AppModelType, DbModelType>): void {
       callback(documentSnapshot, null);
       onNext(documentSnapshot);
     }
@@ -224,8 +240,15 @@ export default class DocumentReference {
           const snapshot = event.body.snapshot;
           if (!snapshot) return;
           const documentSnapshot = createDeprecationProxy(
-            new FirestoreDocumentSnapshotClass!(this._firestore, snapshot, this._converter),
-          );
+            new FirestoreDocumentSnapshotClass!(
+              this._firestore,
+              snapshot,
+              this._converter as unknown as FirestoreDataConverter<
+                DocumentData,
+                DocumentData
+              > | null,
+            ),
+          ) as DocumentSnapshot<AppModelType, DbModelType>;
           handleSuccess(documentSnapshot);
         }
       },
@@ -290,11 +313,21 @@ export default class DocumentReference {
     );
   }
 
-  withConverter(
-    converter: FirestoreDataConverter<DocumentData, DocumentData> | null,
-  ): DocumentReference {
+  withConverter(converter: null): DocumentReference<DocumentData, DocumentData>;
+  withConverter<NewAppModelType, NewDbModelType extends DocumentData = DocumentData>(
+    converter: FirestoreDataConverter<NewAppModelType, NewDbModelType>,
+  ): DocumentReference<NewAppModelType, NewDbModelType>;
+  withConverter<NewAppModelType, NewDbModelType extends DocumentData = DocumentData>(
+    converter: FirestoreDataConverter<NewAppModelType, NewDbModelType> | null,
+  ):
+    | DocumentReference<DocumentData, DocumentData>
+    | DocumentReference<NewAppModelType, NewDbModelType> {
     if (isUndefined(converter) || isNull(converter)) {
-      return new DocumentReference(this._firestore, this._documentPath, null);
+      return new DocumentReference<DocumentData, DocumentData>(
+        this._firestore,
+        this._documentPath,
+        null,
+      );
     }
 
     try {
@@ -303,7 +336,11 @@ export default class DocumentReference {
       throw new Error(`firebase.firestore().doc().withConverter() ${(e as Error).message}`);
     }
 
-    return new DocumentReference(this._firestore, this._documentPath, converter);
+    return new DocumentReference<NewAppModelType, NewDbModelType>(
+      this._firestore,
+      this._documentPath,
+      converter,
+    );
   }
 }
 

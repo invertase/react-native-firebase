@@ -19,8 +19,6 @@
 export * from './modular';
 
 // Export modular/public type helpers.
-// DocumentSnapshot, LoadBundleTask, QuerySnapshot, SnapshotMetadata, Transaction, WriteBatch
-// are excluded here because they are already exported as values from './modular'.
 export type {
   FirebaseApp,
   Firestore,
@@ -61,7 +59,13 @@ export type {
   Query,
   CollectionReference,
   DocumentReference,
+  DocumentSnapshot,
+  LoadBundleTask,
   QueryDocumentSnapshot,
+  QuerySnapshot,
+  SnapshotMetadata,
+  Transaction,
+  WriteBatch,
 } from './types/firestore';
 
 // Export namespaced API

@@ -30,11 +30,15 @@ import type FirestorePath from './FirestorePath';
 import type { DocumentData, FirestoreDataConverter } from './types/firestore';
 import type { FirestoreInternal } from './types/internal';
 
-export default class CollectionReference extends Query {
+export default class CollectionReference<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> extends Query<AppModelType, DbModelType> {
+  readonly type = 'collection' as const;
   constructor(
     firestore: FirestoreInternal,
     collectionPath: FirestorePath,
-    converter?: FirestoreDataConverter<DocumentData, DocumentData> | null,
+    converter?: FirestoreDataConverter<AppModelType, DbModelType> | null,
   ) {
     super(firestore, collectionPath, new QueryModifiers(), undefined, converter);
   }
@@ -43,19 +47,19 @@ export default class CollectionReference extends Query {
     return this._collectionPath.id;
   }
 
-  get parent(): DocumentReference | null {
+  get parent(): DocumentReference<DocumentData, DocumentData> | null {
     const parent = this._collectionPath.parent();
     if (!parent) {
       return null;
     }
-    return new DocumentReference(this._firestore, parent);
+    return new DocumentReference<DocumentData, DocumentData>(this._firestore, parent);
   }
 
   get path(): string {
     return this._collectionPath.relativeName;
   }
 
-  add(data: Record<string, unknown>): Promise<DocumentReference> {
+  add(data: AppModelType): Promise<DocumentReference<AppModelType, DbModelType>> {
     if (!isObject(data)) {
       throw new Error("firebase.firestore().collection().add(*) 'data' must be an object.");
     }
@@ -64,7 +68,7 @@ export default class CollectionReference extends Query {
     return documentRef.set(data).then(() => Promise.resolve(documentRef));
   }
 
-  doc(documentPath?: string): DocumentReference {
+  doc(documentPath?: string): DocumentReference<AppModelType, DbModelType> {
     const newPath = documentPath ?? generateFirestoreId();
     const path = this._collectionPath.child(newPath);
 
@@ -74,12 +78,24 @@ export default class CollectionReference extends Query {
       );
     }
 
-    return new DocumentReference(this._firestore, path, this._converter);
+    return new DocumentReference<AppModelType, DbModelType>(this._firestore, path, this._converter);
   }
 
-  withConverter(converter: unknown): CollectionReference {
+  withConverter(converter: null): CollectionReference<DocumentData, DocumentData>;
+  withConverter<NewAppModelType, NewDbModelType extends DocumentData = DocumentData>(
+    converter: FirestoreDataConverter<NewAppModelType, NewDbModelType>,
+  ): CollectionReference<NewAppModelType, NewDbModelType>;
+  withConverter<NewAppModelType, NewDbModelType extends DocumentData = DocumentData>(
+    converter: FirestoreDataConverter<NewAppModelType, NewDbModelType> | null | unknown,
+  ):
+    | CollectionReference<DocumentData, DocumentData>
+    | CollectionReference<NewAppModelType, NewDbModelType> {
     if (isUndefined(converter) || isNull(converter)) {
-      return new CollectionReference(this._firestore, this._collectionPath, null);
+      return new CollectionReference<DocumentData, DocumentData>(
+        this._firestore,
+        this._collectionPath,
+        null,
+      );
     }
 
     try {
@@ -88,10 +104,10 @@ export default class CollectionReference extends Query {
       throw new Error(`firebase.firestore().collection().withConverter() ${(e as Error).message}`);
     }
 
-    return new CollectionReference(
+    return new CollectionReference<NewAppModelType, NewDbModelType>(
       this._firestore,
       this._collectionPath,
-      converter as FirestoreDataConverter<DocumentData, DocumentData>,
+      converter as FirestoreDataConverter<NewAppModelType, NewDbModelType>,
     );
   }
 }
