@@ -47,10 +47,10 @@ collections. For example, we could store a list of our users documents within a 
 allows us to reference a collection within our code:
 
 ```js
-import { getFirestore, collection } from "@react-native-firebase/firestore";
+import { getFirestore, collection } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-const usersCollection = collection(db, "Users");
+const usersCollection = collection(db, 'Users');
 ```
 
 The `collection` method returns a [`CollectionReference`](/reference/firestore/collectionreference) class, which provides
@@ -58,11 +58,11 @@ properties and methods to query and fetch the data from Cloud Firestore. We can 
 on the collection by calling the `doc` method:
 
 ```js
-import { getFirestore, doc } from "@react-native-firebase/firestore";
+import { getFirestore, doc } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
 // Get user document with an ID of ABC
-const userDocument = doc(db, "Users", "ABC");
+const userDocument = doc(db, 'Users', 'ABC');
 ```
 
 The `doc` method returns a [`DocumentReference`](/reference/firestore/documentreference).
@@ -88,11 +88,11 @@ import {
   doc,
   getDocs,
   getDoc,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-const users = await getDocs(collection(db, "Users"));
-const user = await getDoc(doc(db, "Users", "ABC"));
+const users = await getDocs(collection(db, 'Users'));
+const user = await getDoc(doc(db, 'Users', 'ABC'));
 ```
 
 ### Realtime changes
@@ -105,14 +105,14 @@ import {
   getFirestore,
   collection,
   onSnapshot,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-const usersCollection = collection(db, "Users");
+const usersCollection = collection(db, 'Users');
 
 const unsubscribe = onSnapshot(
   usersCollection,
-  (querySnapshot) => console.log("Got Users collection result."),
+  (querySnapshot) => console.log('Got Users collection result.'),
   (error) => console.error(error),
 );
 ```
@@ -121,20 +121,20 @@ The `onSnapshot` method also returns a function, allowing you to unsubscribe fro
 `useEffect` hooks to automatically unsubscribe when the hook needs to unsubscribe itself:
 
 ```js
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 import {
   getFirestore,
   doc,
   onSnapshot,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 function User({ userId }) {
   useEffect(() => {
     const db = getFirestore();
-    const userDocRef = doc(db, "Users", userId);
+    const userDocRef = doc(db, 'Users', userId);
 
     const subscriber = onSnapshot(userDocRef, (documentSnapshot) => {
-      console.log("User data: ", documentSnapshot.data());
+      console.log('User data: ', documentSnapshot.data());
     });
 
     return () => subscriber();
@@ -164,14 +164,14 @@ import {
   getFirestore,
   collection,
   getDocs,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-getDocs(collection(db, "Users")).then((querySnapshot) => {
-  console.log("Total users: ", querySnapshot.size);
+getDocs(collection(db, 'Users')).then((querySnapshot) => {
+  console.log('Total users: ', querySnapshot.size);
 
   querySnapshot.forEach((documentSnapshot) => {
-    console.log("User ID: ", documentSnapshot.id, documentSnapshot.data());
+    console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
   });
 });
 ```
@@ -188,14 +188,14 @@ to view a documents data, metadata and whether a document actually exists.
 To view a documents data, call the `data` method on the snapshot:
 
 ```js
-import { getFirestore, doc, getDoc } from "@react-native-firebase/firestore";
+import { getFirestore, doc, getDoc } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-getDoc(doc(db, "Users", "ABC")).then((documentSnapshot) => {
-  console.log("User exists: ", documentSnapshot.exists());
+getDoc(doc(db, 'Users', 'ABC')).then((documentSnapshot) => {
+  console.log('User exists: ', documentSnapshot.exists());
 
   if (documentSnapshot.exists()) {
-    console.log("User data: ", documentSnapshot.data());
+    console.log('User data: ', documentSnapshot.data());
   }
 });
 ```
@@ -204,17 +204,17 @@ A snapshot also provides a helper function to easily access deeply nested data w
 with a dot-notated path:
 
 ```js
-import { getFirestore, doc, getDoc } from "@react-native-firebase/firestore";
+import { getFirestore, doc, getDoc } from '@react-native-firebase/firestore';
 
 function getUserZipCode(documentSnapshot) {
   // In v22, you typically access data() or use get() on the snapshot
-  return documentSnapshot.get("info.address.zipcode");
+  return documentSnapshot.get('info.address.zipcode');
 }
 
 const db = getFirestore();
-getDoc(doc(db, "Users", "ABC")).then((documentSnapshot) => {
+getDoc(doc(db, 'Users', 'ABC')).then((documentSnapshot) => {
   const zipCode = getUserZipCode(documentSnapshot);
-  console.log("Users zip code is: ", zipCode);
+  console.log('Users zip code is: ', zipCode);
 });
 ```
 
@@ -234,10 +234,10 @@ import {
   query,
   where,
   getDocs,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-const q = query(collection(db, "Users"), where("age", ">=", 18));
+const q = query(collection(db, 'Users'), where('age', '>=', 18));
 
 getDocs(q).then((querySnapshot) => {
   /* ... */
@@ -254,12 +254,12 @@ import {
   query,
   where,
   getDocs,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
 const q = query(
-  collection(db, "Users"),
-  where("languages", "in", ["en", "fr"]),
+  collection(db, 'Users'),
+  where('languages', 'in', ['en', 'fr']),
 );
 
 getDocs(q).then((querySnapshot) => {
@@ -281,13 +281,13 @@ import {
   where,
   getDocs,
   Filter,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
 const q = query(
-  collection(db, "Users"),
-  where(Filter("user", "==", "Tim")),
-  where("email", "==", "tim@example.com"),
+  collection(db, 'Users'),
+  where(Filter('user', '==', 'Tim')),
+  where('email', '==', 'tim@example.com'),
 );
 const snapshot = await getDocs(q);
 ```
@@ -302,15 +302,15 @@ import {
   where,
   getDocs,
   Filter,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const snapshot = await getDocs(
   query(
-    collection(db, "Users"),
+    collection(db, 'Users'),
     where(
       Filter.and(
-        Filter("user", "==", "Tim"),
-        Filter("email", "==", "tim@example.com"),
+        Filter('user', '==', 'Tim'),
+        Filter('email', '==', 'tim@example.com'),
       ),
     ),
   ),
@@ -327,20 +327,20 @@ import {
   where,
   getDocs,
   Filter,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const snapshot = await getDocs(
   query(
-    collection(db, "Users"),
+    collection(db, 'Users'),
     where(
       Filter.or(
         Filter.and(
-          Filter("user", "==", "Tim"),
-          Filter("email", "==", "tim@example.com"),
+          Filter('user', '==', 'Tim'),
+          Filter('email', '==', 'tim@example.com'),
         ),
         Filter.and(
-          Filter("user", "==", "Dave"),
-          Filter("email", "==", "dave@example.com"),
+          Filter('user', '==', 'Dave'),
+          Filter('email', '==', 'dave@example.com'),
         ),
       ),
     ),
@@ -363,10 +363,10 @@ import {
   where,
   limit,
   getDocs,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-const q = query(collection(db, "Users"), where("age", ">=", 18), limit(20));
+const q = query(collection(db, 'Users'), where('age', '>=', 18), limit(20));
 
 getDocs(q).then((querySnapshot) => {
   /* ... */
@@ -386,10 +386,10 @@ import {
   query,
   orderBy,
   getDocs,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-const q = query(collection(db, "Users"), orderBy("age", "desc"));
+const q = query(collection(db, 'Users'), orderBy('age', 'desc'));
 
 getDocs(q).then((querySnapshot) => {
   /* ... */
@@ -412,12 +412,12 @@ import {
   startAt,
   endAt,
   getDocs,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
 const q = query(
-  collection(db, "Users"),
-  orderBy("age", "desc"),
+  collection(db, 'Users'),
+  orderBy('age', 'desc'),
   startAt(18),
   endAt(30),
 );
@@ -432,12 +432,12 @@ The above query orders the users by age in descending order, but only returns us
 You can further specify a [`DocumentSnapshot`](/reference/firestore/documentsnapshot) instead of a specific value. For example:
 
 ```js
-const userDocumentSnapshot = await getDoc(doc(db, "Users", "DEF"));
+const userDocumentSnapshot = await getDoc(doc(db, 'Users', 'DEF'));
 
 getDocs(
   query(
-    collection(db, "Users"),
-    orderBy("age", "desc"),
+    collection(db, 'Users'),
+    orderBy('age', 'desc'),
     startAt(userDocumentSnapshot),
   ),
 ).then((querySnapshot) => {
@@ -470,14 +470,14 @@ import {
   getFirestore,
   collection,
   addDoc,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-addDoc(collection(db, "Users"), {
-  name: "Ada Lovelace",
+addDoc(collection(db, 'Users'), {
+  name: 'Ada Lovelace',
   age: 30,
 }).then(() => {
-  console.log("User added!");
+  console.log('User added!');
 });
 ```
 
@@ -485,14 +485,14 @@ The `add` method adds the new document to your collection with a random unique I
 call the `set` method on a [`DocumentReference`](/reference/firestore/documentreference) instead:
 
 ```js
-import { getFirestore, doc, setDoc } from "@react-native-firebase/firestore";
+import { getFirestore, doc, setDoc } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-setDoc(doc(db, "Users", "ABC"), {
-  name: "Ada Lovelace",
+setDoc(doc(db, 'Users', 'ABC'), {
+  name: 'Ada Lovelace',
   age: 30,
 }).then(() => {
-  console.log("User added!");
+  console.log('User added!');
 });
 ```
 
@@ -502,26 +502,26 @@ The `set` method exampled above replaces any existing data on a given [`Document
 if you'd like to update a document instead, use the `update` method:
 
 ```js
-import { getFirestore, doc, updateDoc } from "@react-native-firebase/firestore";
+import { getFirestore, doc, updateDoc } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-updateDoc(doc(db, "Users", "ABC"), {
+updateDoc(doc(db, 'Users', 'ABC'), {
   age: 31,
 }).then(() => {
-  console.log("User updated!");
+  console.log('User updated!');
 });
 ```
 
 The method also provides support for updating deeply nested values via dot-notation:
 
 ```js
-import { getFirestore, doc, updateDoc } from "@react-native-firebase/firestore";
+import { getFirestore, doc, updateDoc } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-updateDoc(doc(db, "Users", "ABC"), {
-  "info.address.zipcode": 94040,
+updateDoc(doc(db, 'Users', 'ABC'), {
+  'info.address.zipcode': 94040,
 }).then(() => {
-  console.log("User updated!");
+  console.log('User updated!');
 });
 ```
 
@@ -539,11 +539,11 @@ import {
   doc,
   updateDoc,
   GeoPoint,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-updateDoc(doc(db, "users", "ABC"), {
-  "info.address.location": new GeoPoint(53.483959, -2.244644),
+updateDoc(doc(db, 'users', 'ABC'), {
+  'info.address.location': new GeoPoint(53.483959, -2.244644),
 });
 ```
 
@@ -556,13 +556,13 @@ import {
   doc,
   updateDoc,
   Bytes,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-const userDocRef = doc(db, "users", "ABC");
+const userDocRef = doc(db, 'users', 'ABC');
 
 updateDoc(userDocRef, {
-  "info.avatar": Bytes.fromBase64String("data:image/png;base64,iVBOR..."),
+  'info.avatar': Bytes.fromBase64String('data:image/png;base64,iVBOR...'),
 });
 ```
 
@@ -576,10 +576,10 @@ import {
   doc,
   updateDoc,
   serverTimestamp,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-updateDoc(doc(db, "users", "ABC"), {
+updateDoc(doc(db, 'users', 'ABC'), {
   createdAt: serverTimestamp(),
 });
 ```
@@ -595,11 +595,11 @@ import {
   doc,
   updateDoc,
   arrayUnion,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-updateDoc(doc(db, "users", "ABC"), {
-  fcmTokens: arrayUnion("ABCDE123456"),
+updateDoc(doc(db, 'users', 'ABC'), {
+  fcmTokens: arrayUnion('ABCDE123456'),
 });
 ```
 
@@ -611,13 +611,13 @@ import {
   doc,
   updateDoc,
   arrayRemove,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-const userDocRef = doc(db, "users", "ABC");
+const userDocRef = doc(db, 'users', 'ABC');
 
 await updateDoc(userDocRef, {
-  fcmTokens: arrayRemove("ABCDE123456"),
+  fcmTokens: arrayRemove('ABCDE123456'),
 });
 ```
 
@@ -626,11 +626,11 @@ await updateDoc(userDocRef, {
 You can delete documents within Cloud Firestore using the `delete` method on a [`DocumentReference`](/reference/firestore/documentreference):
 
 ```js
-import { getFirestore, doc, deleteDoc } from "@react-native-firebase/firestore";
+import { getFirestore, doc, deleteDoc } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-deleteDoc(doc(db, "Users", "ABC")).then(() => {
-  console.log("User deleted!");
+deleteDoc(doc(db, 'Users', 'ABC')).then(() => {
+  console.log('User deleted!');
 });
 ```
 
@@ -648,10 +648,10 @@ import {
   doc,
   updateDoc,
   deleteField,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
-const userDocRef = doc(db, "Users", "ABC");
+const userDocRef = doc(db, 'Users', 'ABC');
 
 await updateDoc(userDocRef, {
   fcmTokens: deleteField(),
@@ -690,17 +690,17 @@ import {
   getFirestore,
   doc,
   runTransaction,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 function onPostLike(postId) {
   const db = getFirestore();
-  const postReference = doc(db, "posts", postId);
+  const postReference = doc(db, 'posts', postId);
 
   return runTransaction(db, async (transaction) => {
     const postSnapshot = await transaction.get(postReference);
 
     if (!postSnapshot.exists()) {
-      throw "Post does not exist!";
+      throw 'Post does not exist!';
     }
 
     transaction.update(postReference, {
@@ -725,13 +725,13 @@ import {
   collection,
   getDocs,
   writeBatch,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 async function massDeleteUsers() {
   const db = getFirestore();
 
   // Get all users
-  const usersQuerySnapshot = await getDocs(collection(db, "Users"));
+  const usersQuerySnapshot = await getDocs(collection(db, 'Users'));
 
   // Create a new batch instance using writeBatch
   const batch = writeBatch(db);
@@ -745,7 +745,7 @@ async function massDeleteUsers() {
 }
 
 massDeleteUsers().then(() =>
-  console.log("All users deleted in a single batch operation."),
+  console.log('All users deleted in a single batch operation.'),
 );
 ```
 
@@ -764,11 +764,11 @@ This functionality is enabled by default, however it can be disabled if you need
 sensitive information). The `settings()` method must be called before any Firestore interaction is performed, otherwise it will only take effect on the next app launch:
 
 ```js
-import { getApp } from "@react-native-firebase/app";
+import { getApp } from '@react-native-firebase/app';
 import {
   initializeFirestore,
   CACHE_SIZE_UNLIMITED,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 async function bootstrap() {
   const app = getApp(); // Get the default firebase app
@@ -796,18 +796,18 @@ import {
   loadBundle,
   namedQuery,
   getDocsFromCache,
-} from "@react-native-firebase/firestore";
+} from '@react-native-firebase/firestore';
 
 const db = getFirestore();
 
 // load the bundle contents
-const response = await fetch("https://api.example.com/bundles/latest-stories");
+const response = await fetch('https://api.example.com/bundles/latest-stories');
 const bundle = await response.text();
 // Pass the db instance as the first argument
 await loadBundle(db, bundle);
 
 // query the results from the cache
-const q = await namedQuery(db, "latest-stories-query");
+const q = await namedQuery(db, 'latest-stories-query');
 
 // Use getDocsFromCache to explicitly pull from the loaded bundle
 const snapshot = await getDocsFromCache(q);
