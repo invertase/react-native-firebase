@@ -38,6 +38,7 @@
   "hideGenerator": true,
   "cleanOutputDir": true,
   "titleLink": "https://github.com/invertase/react-native-firebase",
+  "favicon": "https://static.invertase.io/assets/react-native-firebase-favicon.png",
   "navigationLinks": {
     "GitHub": "https://github.com/invertase/react-native-firebase",
     "npm": "https://www.npmjs.com/search?q=scope%3Areact-native-firebase"

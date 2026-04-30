@@ -3,6 +3,7 @@
   "name": "React Native Firebase",
   "description": "A well-tested feature-rich modular Firebase implementation for React Native. Supports both iOS & Android platforms for all Firebase services.",
   "favicon": "/rnfb-logo.png",
+  "agent": "6e277cd7-0065-4ade-a14a-3ecfa3f369a4",
   "theme": {
     "primary": "#e88533"
   },
@@ -23,7 +24,7 @@
     {
       "id": "reference",
       "title": "Reference API",
-      "href": "https://invertase.github.io/react-native-firebase/modules.html"
+      "href": "https://reference.rnfirebase.io/modules.html"
     }
   ],
   "sidebar": [
@@ -35,6 +36,7 @@
         { "title": "Migration Guide to v22", "href": "/migrating-to-v22" },
         { "title": "Migration Guide to v23", "href": "/migrating-to-v23" },
         { "title": "Migration Guide to v24", "href": "/migrating-to-v24" },
+        { "title": "Migration Guide to v25", "href": "/migrating-to-v25" },
         { "title": "TypeScript", "href": "/typescript" },
         { "title": "Platforms", "href": "/platforms" },
         {
@@ -48,6 +50,12 @@
           "href": "https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md"
         }
       ]
+    },
+    {
+      "group": "AI Logic",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/social/firebase-logo.png",
+      "pages": [{ "title": "Usage", "href": "/ai/usage" }]
     },
     {
       "group": "Analytics",
