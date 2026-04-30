@@ -21,71 +21,85 @@ import {
   isNumber,
   isString,
   MODULAR_DEPRECATION_ARG,
+  createDeprecationProxy,
 } from '@react-native-firebase/app/dist/module/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
+  type ModuleConfig,
 } from '@react-native-firebase/app/dist/module/internal';
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type {
+  DatabaseInternal,
+  DatabaseReferenceInternal,
+  DatabaseTransactionInternal,
+  RNFBDatabaseModule,
+} from './types/internal';
+import type { FirebaseDatabaseTypes } from './types/namespaced';
+import './types/internal';
 import DatabaseReference from './DatabaseReference';
 import DatabaseStatics from './DatabaseStatics';
 import DatabaseTransaction from './DatabaseTransaction';
-import version from './version';
+import { version } from './version';
 import fallBackModule from './web/RNFBDatabaseModule';
-
-import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 
 const namespace = 'database';
 
-const nativeModuleName = [
-  'RNFBDatabaseModule',
+const nativeModuleName = 'RNFBDatabaseModule';
+
+const nativeModuleNames = [
+  nativeModuleName,
   'RNFBDatabaseReferenceModule',
   'RNFBDatabaseQueryModule',
   'RNFBDatabaseOnDisconnectModule',
   'RNFBDatabaseTransactionModule',
-];
+] as const;
 
-class FirebaseDatabaseModule extends FirebaseModule {
-  constructor(app, config, databaseUrl) {
+function ap(reference: DatabaseReference): DatabaseReferenceInternal {
+  return reference as DatabaseReferenceInternal;
+}
+
+class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName> {
+  readonly type = 'database' as const;
+  _serverTimeOffset: number;
+  _customUrlOrRegion: string | null;
+  _transaction: DatabaseTransactionInternal;
+
+  private get nativeModule(): RNFBDatabaseModule {
+    return this.native as RNFBDatabaseModule;
+  }
+
+  constructor(
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: ModuleConfig,
+    databaseUrl?: string | null,
+  ) {
     super(app, config, databaseUrl);
     this._serverTimeOffset = 0;
-    this._customUrlOrRegion = databaseUrl || this.app.options.databaseURL;
-    this._transaction = new DatabaseTransaction(this);
+    this._customUrlOrRegion = databaseUrl || this.app.options.databaseURL || null;
+    this._transaction = new DatabaseTransaction(this as unknown as DatabaseInternal);
     setTimeout(() => {
       this._syncServerTimeOffset();
     }, 100);
   }
 
-  /**
-   * Keep the server time offset in sync with the server time
-   * @private
-   */
-  _syncServerTimeOffset() {
-    this.ref('.info/serverTimeOffset').on(
+  _syncServerTimeOffset(): void {
+    ap(this.ref('.info/serverTimeOffset')).on(
       'value',
-      snapshot => {
+      (snapshot: { val(): number }) => {
         this._serverTimeOffset = snapshot.val();
       },
       MODULAR_DEPRECATION_ARG,
     );
   }
 
-  /**
-   *
-   * @returns {Date}
-   * @private
-   */
-  getServerTime() {
+  getServerTime(): Date {
     return new Date(Date.now() + this._serverTimeOffset);
   }
 
-  /**
-   * Returns a new Reference instance from a given path. Defaults to the root reference.
-   * @param path
-   * @returns {DatabaseReference}
-   */
-  ref(path = '/') {
+  ref(path = '/'): DatabaseReference {
     if (!isString(path)) {
       throw new Error("firebase.app().database().ref(*) 'path' must be a string value.");
     }
@@ -99,27 +113,20 @@ class FirebaseDatabaseModule extends FirebaseModule {
     return createDeprecationProxy(new DatabaseReference(this, path));
   }
 
-  /**
-   * Generates a Reference from a database URL.
-   * Note domain must be the same.
-   * Any query parameters are stripped as per the web SDK.
-   * @param url
-   * @returns {DatabaseReference}
-   */
-  refFromURL(url) {
+  refFromURL(url: string): DatabaseReference {
     if (!isString(url) || !url.startsWith('https://')) {
       throw new Error(
         "firebase.app().database().refFromURL(*) 'url' must be a valid database URL.",
       );
     }
 
-    if (!url.includes(this._customUrlOrRegion)) {
+    if (!url.includes(this._customUrlOrRegion as string)) {
       throw new Error(
         `firebase.app().database().refFromURL(*) 'url' must be the same domain as the current instance (${this._customUrlOrRegion}). To use a different database domain, create a new Firebase instance.`,
       );
     }
 
-    let path = url.replace(this._customUrlOrRegion, '');
+    let path = url.replace(this._customUrlOrRegion as string, '');
     if (path.includes('?')) {
       path = path.slice(0, path.indexOf('?'));
     }
@@ -127,53 +134,35 @@ class FirebaseDatabaseModule extends FirebaseModule {
     return createDeprecationProxy(new DatabaseReference(this, path || '/'));
   }
 
-  /**
-   * goOnline
-   */
-  goOnline() {
-    return this.native.goOnline();
+  goOnline(): Promise<void> {
+    return this.nativeModule.goOnline();
   }
 
-  /**
-   * goOffline
-   */
-  goOffline() {
-    return this.native.goOffline();
+  goOffline(): Promise<void> {
+    return this.nativeModule.goOffline();
   }
 
-  /**
-   *
-   * @param enabled
-   */
-  setPersistenceEnabled(enabled) {
+  setPersistenceEnabled(enabled: boolean): Promise<void> {
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.app().database().setPersistenceEnabled(*) 'enabled' must be a boolean value.",
       );
     }
 
-    return this.native.setPersistenceEnabled(enabled);
+    return this.nativeModule.setPersistenceEnabled(enabled);
   }
 
-  /**
-   *
-   * @param enabled
-   */
-  setLoggingEnabled(enabled) {
+  setLoggingEnabled(enabled: boolean): Promise<void> {
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.app().database().setLoggingEnabled(*) 'enabled' must be a boolean value.",
       );
     }
 
-    return this.native.setLoggingEnabled(enabled);
+    return this.nativeModule.setLoggingEnabled(enabled);
   }
 
-  /**
-   *
-   * @param bytes
-   */
-  setPersistenceCacheSizeBytes(bytes) {
+  setPersistenceCacheSizeBytes(bytes: number): Promise<void> {
     if (!isNumber(bytes)) {
       throw new Error(
         "firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be a number value.",
@@ -192,61 +181,73 @@ class FirebaseDatabaseModule extends FirebaseModule {
       );
     }
 
-    return this.native.setPersistenceCacheSizeBytes(bytes);
+    return this.nativeModule.setPersistenceCacheSizeBytes(bytes);
   }
 
-  useEmulator(host, port) {
+  useEmulator(host: string, port: number): [string, number] {
     if (!host || !isString(host) || !port || !isNumber(port)) {
       throw new Error('firebase.database().useEmulator() takes a non-empty host and port');
     }
-    let _host = host;
+    let remappedHost = host;
     const androidBypassEmulatorUrlRemap =
       typeof this.firebaseJson.android_bypass_emulator_url_remap === 'boolean' &&
       this.firebaseJson.android_bypass_emulator_url_remap;
-    if (!androidBypassEmulatorUrlRemap && isAndroid && _host) {
-      if (_host.startsWith('localhost')) {
-        _host = _host.replace('localhost', '10.0.2.2');
+    if (!androidBypassEmulatorUrlRemap && isAndroid && remappedHost) {
+      if (remappedHost.startsWith('localhost')) {
+        remappedHost = remappedHost.replace('localhost', '10.0.2.2');
         // eslint-disable-next-line no-console
         console.log(
           'Mapping database host "localhost" to "10.0.2.2" for android emulators. Use real IP on real devices. You can bypass this behaviour with "android_bypass_emulator_url_remap" flag.',
         );
       }
-      if (_host.startsWith('127.0.0.1')) {
-        _host = _host.replace('127.0.0.1', '10.0.2.2');
+      if (remappedHost.startsWith('127.0.0.1')) {
+        remappedHost = remappedHost.replace('127.0.0.1', '10.0.2.2');
         // eslint-disable-next-line no-console
         console.log(
           'Mapping database host "127.0.0.1" to "10.0.2.2" for android emulators. Use real IP on real devices. You can bypass this behaviour with "android_bypass_emulator_url_remap" flag.',
         );
       }
     }
-    this.native.useEmulator(_host, port);
-    return [_host, port]; // undocumented return, just used to unit test android host remapping
+    this.nativeModule.useEmulator(remappedHost, port);
+    return [remappedHost, port];
   }
 }
 
-// import { SDK_VERSION } from '@react-native-firebase/database';
 export const SDK_VERSION = version;
 
-// import database from '@react-native-firebase/database';
-// database().X(...);
-export default createModuleNamespace({
+const databaseNamespace = createModuleNamespace({
   statics: DatabaseStatics,
   version,
   namespace,
-  nativeModuleName,
+  nativeModuleName: [...nativeModuleNames],
   nativeEvents: ['database_transaction_event', 'database_sync_event'],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseDatabaseModule,
 });
 
-export * from './modular';
+type DatabaseNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseDatabaseTypes.Module,
+  FirebaseDatabaseTypes.Statics
+> & {
+  database: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseDatabaseTypes.Module,
+    FirebaseDatabaseTypes.Statics
+  >;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
 
-// import database, { firebase } from '@react-native-firebase/database';
-// database().X(...);
-// firebase.database().X(...);
-export const firebase = getFirebaseRoot();
+export default databaseNamespace as unknown as DatabaseNamespace;
 
-for (let i = 0; i < nativeModuleName.length; i++) {
-  setReactNativeModule(nativeModuleName[i], fallBackModule);
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'database',
+    FirebaseDatabaseTypes.Module,
+    FirebaseDatabaseTypes.Statics,
+    true
+  >;
+
+for (const moduleName of nativeModuleNames) {
+  setReactNativeModule(moduleName, fallBackModule as unknown as Record<string, unknown>);
 }

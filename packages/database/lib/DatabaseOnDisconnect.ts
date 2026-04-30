@@ -26,15 +26,22 @@ import {
   promiseWithOptionalCallback,
 } from '@react-native-firebase/app/dist/module/common';
 
-export default class DatabaseOnDisconnect {
-  constructor(reference) {
+import type { DatabaseModuleInternal } from './types/internal';
+import type { FirebaseDatabaseTypes } from './types/namespaced';
+
+interface DatabaseOnDisconnectReferenceInternal {
+  readonly path: string;
+  readonly _database: DatabaseModuleInternal;
+}
+
+export default class DatabaseOnDisconnect implements FirebaseDatabaseTypes.OnDisconnect {
+  _ref: DatabaseOnDisconnectReferenceInternal;
+
+  constructor(reference: DatabaseOnDisconnectReferenceInternal) {
     this._ref = reference;
   }
 
-  /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#cancel
-   */
-  cancel(onComplete) {
+  cancel(onComplete?: (error: Error | null) => void): Promise<void> {
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
         "firebase.database().ref().onDisconnect().cancel(*) 'onComplete' must be a function if provided.",
@@ -47,10 +54,7 @@ export default class DatabaseOnDisconnect {
     );
   }
 
-  /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#remove
-   */
-  remove(onComplete) {
+  remove(onComplete?: (error: Error | null) => void): Promise<void> {
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
         "firebase.database().ref().onDisconnect().remove(*) 'onComplete' must be a function if provided.",
@@ -63,10 +67,7 @@ export default class DatabaseOnDisconnect {
     );
   }
 
-  /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#set
-   */
-  set(value, onComplete) {
+  set(value: any, onComplete?: (error: Error | null) => void): Promise<void> {
     if (isUndefined(value)) {
       throw new Error("firebase.database().ref().value(*) 'value' must be defined.");
     }
@@ -83,10 +84,11 @@ export default class DatabaseOnDisconnect {
     );
   }
 
-  /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#setwithpriority
-   */
-  setWithPriority(value, priority, onComplete) {
+  setWithPriority(
+    value: any,
+    priority: string | number | null,
+    onComplete?: (error: Error | null) => void,
+  ): Promise<void> {
     if (isUndefined(value)) {
       throw new Error("firebase.database().ref().setWithPriority(*) 'value' must be defined.");
     }
@@ -109,17 +111,17 @@ export default class DatabaseOnDisconnect {
     );
   }
 
-  /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#update
-   */
-  update(values, onComplete) {
+  update(
+    values: { [key: string]: any },
+    onComplete?: (error: Error | null) => void,
+  ): Promise<void> {
     if (!isObject(values)) {
       throw new Error(
         "firebase.database().ref().onDisconnect().update(*) 'values' must be an object.",
       );
     }
 
-    if (!Object.keys(values).length) {
+    if (!Object.keys(values as Record<string, unknown>).length) {
       throw new Error(
         "firebase.database().ref().onDisconnect().update(*) 'values' must be an object containing multiple values.",
       );
