@@ -25,18 +25,13 @@ import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
 import { version } from './version';
 import type { FirebaseInstallationsTypes } from './types/namespaced';
-import type { RNFBInstallationsModule } from './types/internal';
 
 const statics = {};
 
 const namespace = 'installations';
 const nativeModuleName = 'RNFBInstallationsModule';
 
-class FirebaseInstallationsModule extends FirebaseModule {
-  get native(): RNFBInstallationsModule {
-    return super.native as unknown as RNFBInstallationsModule;
-  }
-
+class FirebaseInstallationsModule extends FirebaseModule<typeof nativeModuleName> {
   getId(): Promise<string> {
     return this.native.getId();
   }

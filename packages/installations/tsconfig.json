@@ -10,6 +10,9 @@
         "../app/dist/typescript/lib/internal/*"
       ],
       "@react-native-firebase/app/dist/module/internal": ["../app/dist/typescript/lib/internal"],
+      "@react-native-firebase/app/dist/module/internal/NativeModules": [
+        "../app/dist/typescript/lib/internal/NativeModules"
+      ],
       "@react-native-firebase/app": ["../app/dist/typescript/lib"]
     }
   },

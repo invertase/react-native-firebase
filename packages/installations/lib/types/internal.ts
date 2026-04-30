@@ -34,3 +34,9 @@ export interface RNFBInstallationsModule {
   getToken(forceRefresh: boolean): Promise<string>;
   delete(): Promise<void>;
 }
+
+declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
+  interface ReactNativeFirebaseNativeModules {
+    RNFBInstallationsModule: RNFBInstallationsModule;
+  }
+}
