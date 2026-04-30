@@ -1,0 +1,92 @@
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+import { isIOS } from '@react-native-firebase/app/dist/module/common';
+import {
+  createModuleNamespace,
+  FirebaseModule,
+  getFirebaseRoot,
+} from '@react-native-firebase/app/dist/module/internal';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+
+import { version } from './version';
+import type { FirebaseInstallationsTypes } from './types/namespaced';
+import type { RNFBInstallationsModule } from './types/internal';
+
+const statics = {};
+
+const namespace = 'installations';
+const nativeModuleName = 'RNFBInstallationsModule';
+
+class FirebaseInstallationsModule extends FirebaseModule {
+  get native(): RNFBInstallationsModule {
+    return super.native as unknown as RNFBInstallationsModule;
+  }
+
+  getId(): Promise<string> {
+    return this.native.getId();
+  }
+
+  getToken(forceRefresh?: boolean): Promise<string> {
+    if (!forceRefresh) {
+      return this.native.getToken(false);
+    } else {
+      return this.native.getToken(true);
+    }
+  }
+
+  delete(): Promise<void> {
+    return this.native.delete();
+  }
+
+  onIdChange(): () => void {
+    if (isIOS) {
+      return () => {};
+    }
+
+    // TODO implement change listener on Android
+    return () => {};
+  }
+}
+
+// import { SDK_VERSION } from '@react-native-firebase/installations';
+export const SDK_VERSION = version;
+
+// import installations from '@react-native-firebase/installations';
+// installations().X(...);
+const defaultExport = createModuleNamespace({
+  statics,
+  version,
+  namespace,
+  nativeModuleName,
+  nativeEvents: false, // TODO implement android id change listener: ['installations_id_changed'],
+  hasMultiAppSupport: true,
+  hasCustomUrlOrRegionSupport: false,
+  ModuleClass: FirebaseInstallationsModule,
+}) as unknown as FirebaseInstallationsTypes.InstallationsNamespace;
+
+export default defaultExport;
+
+// import installations, { firebase } from '@react-native-firebase/installations';
+// installations().X(...);
+// firebase.installations().X(...);
+export const firebase = getFirebaseRoot() as unknown as ReactNativeFirebase.Module & {
+  installations: typeof defaultExport;
+  app(
+    name?: string,
+  ): ReactNativeFirebase.FirebaseApp & { installations(): FirebaseInstallationsTypes.Module };
+};

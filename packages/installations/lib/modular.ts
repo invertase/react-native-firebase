@@ -16,28 +16,22 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
-import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
-import type { FirebaseInstallationsTypes } from '..';
+import type { Installations } from './types/installations';
+import type { InstallationsInternal } from './types/internal';
 
-type FirebaseInstallation = FirebaseInstallationsTypes.Module;
+function withModularDeprecationArg(installations: Installations): InstallationsInternal {
+  return installations as InstallationsInternal;
+}
+
 type IdChangeCallbackFn = (installationId: string) => void;
 type IdChangeUnsubscribeFn = () => void;
-type InstallationsModularDeprecationArg = string;
-
-interface FirebaseInstallationInternal extends FirebaseInstallation {
-  delete(deprecationArg?: InstallationsModularDeprecationArg): Promise<void>;
-  getId(deprecationArg?: InstallationsModularDeprecationArg): Promise<string>;
-  getToken(
-    forceRefresh?: boolean,
-    deprecationArg?: InstallationsModularDeprecationArg,
-  ): Promise<string>;
-}
 
 /**
  * Returns an instance of Installations associated with the given FirebaseApp instance.
  */
-export function getInstallations(app?: ReactNativeFirebase.FirebaseApp): FirebaseInstallation {
+export function getInstallations(app?: FirebaseApp): Installations {
   if (app) {
     return getApp(app.name).installations();
   }
@@ -47,27 +41,24 @@ export function getInstallations(app?: ReactNativeFirebase.FirebaseApp): Firebas
 /**
  * Deletes the Firebase Installation and all associated data.
  */
-export function deleteInstallations(installations?: FirebaseInstallation): Promise<void> {
-  const internalInstallations = installations as FirebaseInstallationInternal;
+export function deleteInstallations(installations?: Installations): Promise<void> {
+  const internalInstallations = withModularDeprecationArg(installations as Installations);
   return internalInstallations.delete.call(internalInstallations, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Creates a Firebase Installation if there isn't one for the app and returns the Installation ID.
  */
-export function getId(installations: FirebaseInstallation): Promise<string> {
-  const internalInstallations = installations as FirebaseInstallationInternal;
+export function getId(installations: Installations): Promise<string> {
+  const internalInstallations = withModularDeprecationArg(installations);
   return internalInstallations.getId.call(internalInstallations, MODULAR_DEPRECATION_ARG);
 }
 
 /**
  * Returns a Firebase Installations auth token, identifying the current Firebase Installation.
  */
-export function getToken(
-  installations: FirebaseInstallation,
-  forceRefresh?: boolean,
-): Promise<string> {
-  const internalInstallations = installations as FirebaseInstallationInternal;
+export function getToken(installations: Installations, forceRefresh?: boolean): Promise<string> {
+  const internalInstallations = withModularDeprecationArg(installations);
   return internalInstallations.getToken.call(
     internalInstallations,
     forceRefresh,
@@ -81,7 +72,7 @@ export function getToken(
  * Sets a new callback that will get called when Installation ID changes. Returns an unsubscribe function that will remove the callback when called.
  */
 export function onIdChange(
-  _installations: FirebaseInstallation,
+  _installations: Installations,
   _callback: IdChangeCallbackFn,
 ): IdChangeUnsubscribeFn {
   throw new Error('onIdChange() is unsupported by the React Native Firebase SDK.');
