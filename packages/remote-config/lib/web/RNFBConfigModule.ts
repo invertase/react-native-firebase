@@ -142,7 +142,7 @@ function resultAndConstants<T>(
   };
 }
 
-const module: RNFBConfigModuleWeb = {
+const remoteConfigWebModule: RNFBConfigModuleWeb = {
   activate(appName) {
     return guard(async () => {
       const remoteConfig = getRemoteConfigInstanceForApp(appName);
@@ -251,4 +251,4 @@ const module: RNFBConfigModuleWeb = {
   },
 };
 
-export default module;
+export default remoteConfigWebModule;

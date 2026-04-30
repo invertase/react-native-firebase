@@ -42,7 +42,7 @@ import type { PersistentCacheIndexManager } from '../FirestorePersistentCacheInd
 import type { QueryConstraint } from '../modular/query';
 import type { _Filter } from '../FirestoreFilter';
 import type FirestoreTimestamp from '../FirestoreTimestamp';
-import Blob from 'lib/FirestoreBlob';
+import Blob from '../FirestoreBlob';
 
 /** Optional final argument passed by modular API wrappers (MODULAR_DEPRECATION_ARG). */
 export type FirestoreModularDeprecationArg = string;

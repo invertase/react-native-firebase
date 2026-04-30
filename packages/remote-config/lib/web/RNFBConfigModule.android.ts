@@ -1,4 +1,4 @@
 // No-op for android.
-const module: Record<string, never> = {};
+const noopNativeModule: Record<string, never> = {};
 
-export default module;
+export default noopNativeModule;

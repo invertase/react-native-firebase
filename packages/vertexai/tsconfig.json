@@ -20,7 +20,6 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "baseUrl": ".",
     "paths": {
       "@react-native-firebase/app/lib/common/*": ["../app/dist/typescript/lib/common/*"],
       "@react-native-firebase/app/lib/common": ["../app/dist/typescript/lib/common"],

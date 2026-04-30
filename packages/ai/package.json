@@ -37,7 +37,7 @@
     "@react-native-firebase/auth": "24.0.0",
     "@types/text-encoding": "^0.0.40",
     "react-native-builder-bob": "^0.40.17",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "source": "./lib/index.ts",
   "exports": {
