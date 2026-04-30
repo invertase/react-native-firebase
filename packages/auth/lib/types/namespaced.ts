@@ -757,19 +757,19 @@ export declare namespace FirebaseAuthTypes {
     /**
      * Returns the user's display name, if available.
      */
-    displayName?: string;
+    displayName?: string | null;
     /**
      * Returns the email address corresponding to the user's account in the specified provider, if available.
      */
-    email?: string;
+    email?: string | null;
     /**
      * The phone number normalized based on the E.164 standard (e.g. +16505550101) for the current user. This is null if the user has no phone credential linked to the account.
      */
-    phoneNumber?: string;
+    phoneNumber?: string | null;
     /**
      * Returns a url to the user's profile picture, if available.
      */
-    photoURL?: string;
+    photoURL?: string | null;
     /**
      * Returns the unique identifier of the provider type that this instance corresponds to.
      */

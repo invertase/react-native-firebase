@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { FirebaseAuthTypes } from '../lib/index';
+import type { ActionCodeSettings, User as ModularUser } from '../lib';
 // @ts-ignore
 import User from '../lib/User';
 // @ts-ignore test
@@ -233,18 +234,18 @@ describe('Auth', function () {
 
       it('should allow linkDomain as `ActionCodeSettings.linkDomain`', function () {
         const auth = firebase.app().auth();
-        const actionCodeSettings: FirebaseAuthTypes.ActionCodeSettings = {
+        const actionCodeSettings = {
           url: 'https://example.com',
           handleCodeInApp: true,
           linkDomain: 'example.com',
-        };
+        } satisfies FirebaseAuthTypes.ActionCodeSettings & ActionCodeSettings;
         const email = 'fake@example.com';
         auth.sendSignInLinkToEmail(email, actionCodeSettings);
         auth.sendPasswordResetEmail(email, actionCodeSettings);
         sendPasswordResetEmail(auth, email, actionCodeSettings);
         sendSignInLinkToEmail(auth, email, actionCodeSettings);
 
-        const user: FirebaseAuthTypes.User = new User(auth as AuthInternal, {
+        const user: FirebaseAuthTypes.User & ModularUser = new User(auth as AuthInternal, {
           uid: 'test-user-id',
           displayName: 'Test User',
           email: 'test@example.com',
