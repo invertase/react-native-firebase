@@ -1,0 +1,104 @@
+diff --git a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
+index be01a0dbeeaebbada21810269e4e30d114bf4476..88af8da4545e4458d340c3b0b4e37f134efc33f7 100644
+--- a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
++++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
+@@ -50,23 +50,6 @@ class NetworkIdlingResource(private val dispatcher: Dispatcher) : DetoxIdlingRes
+ 
+     @Synchronized
+     override fun checkIdle(): Boolean {
+-        busyResources.clear()
+-
+-        val calls = dispatcher.runningCalls()
+-        for (call in calls) {
+-            val url = call.request().url.toString()
+-
+-            if (!isUrlBlacklisted(url)) {
+-                busyResources.add(url)
+-            }
+-        }
+-
+-        if (busyResources.isNotEmpty()) {
+-            Log.i(LOG_TAG, "Network is busy, with " + busyResources.size + " in-flight calls")
+-            Choreographer.getInstance().postFrameCallback(this)
+-            return false
+-        }
+-
+         notifyIdle()
+         return true
+     }
+diff --git a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
+index 462908c3427599bb06bf04ca2d4662d320519ff4..a367e18b34750a4f6d163be343fa3835a8b348ed 100644
+--- a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
++++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
+@@ -32,15 +32,8 @@ class TimersIdlingResource @JvmOverloads constructor(
+ 
+     @SuppressLint("VisibleForTests")
+     override fun checkIdle(): Boolean {
+-        val isIdle = !timingModule.hasActiveTimersInRange(BUSY_WINDOW_THRESHOLD)
+-
+-        if (isIdle) {
+-            notifyIdle()
+-        } else {
+-            getChoreographer().postFrameCallback(this)
+-        }
+-
+-        return isIdle
++        notifyIdle()
++        return true
+     }
+ 
+     override fun doFrame(frameTimeNanos: Long) {
+diff --git a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt
+index d6db5d5d7a4173eae88d97bf06eaeaf8b38c3b94..a85ebdf5a30607459be68463b3238b6ff1caf97a 100644
+--- a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt
++++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt
+@@ -20,47 +20,8 @@ class FabricUIManagerIdlingResources(
+     private var isSteadyState: Boolean = false
+ 
+     override fun checkIdle(): Boolean {
+-        val mountItemsCount = getMountItemsSize()
+-        val viewCommandMountItemsCount = getViewCommandMountItemsSize()
+-
+-        if (mountItemsCount == 0 && viewCommandMountItemsCount == 0) {
+-            firstBusyTimestamp = 0
+-            isSteadyState = false
+-            notifyIdle()
+-            return true
+-        }
+-
+-        // Once we've determined this is a steady-state (a stuck mount item that never
+-        // resolves), keep reporting idle as long as the count stays low.
+-        if (isSteadyState && mountItemsCount <= 1 && viewCommandMountItemsCount == 0) {
+-            notifyIdle()
+-            return true
+-        }
+-
+-        // Count increased beyond steady-state threshold — reset and treat as genuinely busy.
+-        if (isSteadyState) {
+-            isSteadyState = false
+-            firstBusyTimestamp = 0
+-        }
+-
+-        val now = SystemClock.uptimeMillis()
+-        if (firstBusyTimestamp == 0L) {
+-            firstBusyTimestamp = now
+-        }
+-
+-        // On API 36+, edge-to-edge enforcement can cause a single mount item to remain
+-        // permanently in the queue on older RN versions. If the count stays at 1 for over
+-        // 1.5s, treat it as a steady-state condition rather than a genuinely busy UI.
+-        if (now - firstBusyTimestamp >= BUSY_TOLERANCE_MS
+-            && mountItemsCount <= 1
+-            && viewCommandMountItemsCount == 0) {
+-            isSteadyState = true
+-            notifyIdle()
+-            return true
+-        }
+-
+-        Choreographer.getInstance().postFrameCallback(this)
+-        return false
++        notifyIdle()
++        return true
+     }
+ 
+     override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {

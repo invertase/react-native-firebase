@@ -45,7 +45,7 @@
     "assert": "^2.1.0",
     "axios": "^1.15.2",
     "cpy-cli": "^7.0.0",
-    "detox": "20.51.0",
+    "detox": "patch:detox@npm%3A20.51.0#~/.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch",
     "firebase": "^12.12.1",
     "firebase-tools": "^15.16.0",
     "jest-circus": "^30.3.0",
