@@ -42,3 +42,9 @@ export interface RNFBPerfNativeModule {
   startScreenTrace(id: number, identifier: string): Promise<null>;
   stopScreenTrace(id: number): Promise<null>;
 }
+
+declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
+  interface ReactNativeFirebaseNativeModules {
+    RNFBPerfModule: RNFBPerfNativeModule;
+  }
+}

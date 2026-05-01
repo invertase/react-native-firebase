@@ -20,6 +20,7 @@ import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
+  type ModuleConfig,
 } from '@react-native-firebase/app/dist/module/internal';
 import { Platform } from 'react-native';
 
@@ -29,8 +30,6 @@ import Trace from './Trace';
 import { version } from './version';
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import type { ModuleConfig } from '@react-native-firebase/app/dist/module/types/internal';
-import type { RNFBPerfNativeModule } from './types/internal';
 import type { FirebasePerformanceTypes } from './types/namespaced';
 
 const statics: FirebasePerformanceTypes.Statics = {
@@ -39,7 +38,7 @@ const statics: FirebasePerformanceTypes.Statics = {
 
 const namespace = 'perf';
 
-const nativeModuleName = 'RNFBPerfModule';
+const nativeModuleName = 'RNFBPerfModule' as const;
 
 const VALID_HTTP_METHODS: FirebasePerformanceTypes.HttpMethod[] = [
   'CONNECT',
@@ -53,7 +52,7 @@ const VALID_HTTP_METHODS: FirebasePerformanceTypes.HttpMethod[] = [
   'TRACE',
 ];
 
-class FirebasePerfModule extends FirebaseModule {
+class FirebasePerfModule extends FirebaseModule<typeof nativeModuleName> {
   private _isPerformanceCollectionEnabled: boolean;
   private _instrumentationEnabled: boolean;
 
@@ -63,12 +62,8 @@ class FirebasePerfModule extends FirebaseModule {
     customUrlOrRegion?: string | null,
   ) {
     super(app, config, customUrlOrRegion);
-    this._isPerformanceCollectionEnabled = this.perfNative.isPerformanceCollectionEnabled;
-    this._instrumentationEnabled = this.perfNative.isInstrumentationEnabled;
-  }
-
-  private get perfNative(): RNFBPerfNativeModule {
-    return this.native as RNFBPerfNativeModule;
+    this._isPerformanceCollectionEnabled = this.native.isPerformanceCollectionEnabled;
+    this._instrumentationEnabled = this.native.isInstrumentationEnabled;
   }
 
   get isPerformanceCollectionEnabled(): boolean {
@@ -87,7 +82,7 @@ class FirebasePerfModule extends FirebaseModule {
       // We don't change for android as it cannot be set from code, it is set at gradle build time.
       this._instrumentationEnabled = enabled;
       // No need to await, as it only takes effect on the next app run.
-      this.perfNative.instrumentationEnabled(enabled);
+      this.native.instrumentationEnabled(enabled);
     }
   }
 
@@ -101,7 +96,7 @@ class FirebasePerfModule extends FirebaseModule {
     }
     this._isPerformanceCollectionEnabled = enabled;
     // Keep setter behavior fire-and-forget; callers that need completion should use setPerformanceCollectionEnabled().
-    void this.perfNative.setPerformanceCollectionEnabled(enabled);
+    void this.native.setPerformanceCollectionEnabled(enabled);
   }
 
   async setPerformanceCollectionEnabled(enabled: boolean): Promise<null> {
@@ -115,11 +110,11 @@ class FirebasePerfModule extends FirebaseModule {
       // '_instrumentationEnabled' is updated here as well to maintain backward compatibility. See:
       // https://github.com/invertase/react-native-firebase/commit/b705622e64d6ebf4ee026d50841e2404cf692f85
       this._instrumentationEnabled = enabled;
-      await this.perfNative.instrumentationEnabled(enabled);
+      await this.native.instrumentationEnabled(enabled);
     }
 
     this._isPerformanceCollectionEnabled = enabled;
-    return this.perfNative.setPerformanceCollectionEnabled(enabled);
+    return this.native.setPerformanceCollectionEnabled(enabled);
   }
 
   newTrace(identifier: string): Trace {
@@ -130,7 +125,7 @@ class FirebasePerfModule extends FirebaseModule {
       );
     }
 
-    return new Trace(this.perfNative, identifier);
+    return new Trace(this.native, identifier);
   }
 
   startTrace(identifier: string): Promise<Trace> {
@@ -145,7 +140,7 @@ class FirebasePerfModule extends FirebaseModule {
       );
     }
 
-    return new ScreenTrace(this.perfNative, identifier);
+    return new ScreenTrace(this.native, identifier);
   }
 
   startScreenTrace(identifier: string): Promise<ScreenTrace> {
@@ -166,7 +161,7 @@ class FirebasePerfModule extends FirebaseModule {
       );
     }
 
-    return new HttpMetric(this.perfNative, url, httpMethod);
+    return new HttpMetric(this.native, url, httpMethod);
   }
 }
 
