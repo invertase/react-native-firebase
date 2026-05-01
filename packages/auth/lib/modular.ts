@@ -865,7 +865,7 @@ export function getCustomAuthDomain(auth: Auth): Promise<string> {
 export function validatePassword(auth: Auth, password: string): Promise<PasswordValidationStatus> {
   if (!auth || !('app' in auth)) {
     throw new Error(
-      "firebase.auth().validatePassword(*) 'auth' must be a valid Auth instance with an 'app' property. Received: undefined",
+      `firebase.auth().validatePassword(*) 'auth' must be a valid Auth instance with an 'app' property`,
     );
   }
 
