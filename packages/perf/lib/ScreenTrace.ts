@@ -17,10 +17,18 @@
 
 import { isIOS } from '@react-native-firebase/app/dist/module/common';
 
+import type { RNFBPerfNativeModule } from './index';
+
 let id = 0;
 
 export default class ScreenTrace {
-  constructor(native, identifier) {
+  readonly native: RNFBPerfNativeModule;
+  private readonly _identifier: string;
+  private readonly _id: number;
+  private _started: boolean;
+  private _stopped: boolean;
+
+  constructor(native: RNFBPerfNativeModule, identifier: string) {
     this.native = native;
     this._identifier = identifier;
     this._id = id++;
@@ -28,7 +36,7 @@ export default class ScreenTrace {
     this._stopped = false;
   }
 
-  start() {
+  start(): Promise<null> {
     if (isIOS) {
       return Promise.reject(new Error('Custom screentraces are currently not supported on iOS.'));
     }
@@ -40,7 +48,7 @@ export default class ScreenTrace {
     return this.native.startScreenTrace(this._id, this._identifier);
   }
 
-  stop() {
+  stop(): Promise<null> {
     if (!this._started || this._stopped) {
       return Promise.resolve(null);
     }

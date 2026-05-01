@@ -15,24 +15,38 @@
  *
  */
 
-/**
- * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
- * @typedef {import('..').FirebasePerformanceTypes.Module} Performance
- * @typedef {import('..').FirebasePerformanceTypes.Trace} Trace
- * @typedef {import('..').FirebasePerformanceTypes.ScreenTrace} ScreenTrace
- * @typedef {import('..').FirebasePerformanceTypes.HttpMetric} HttpMetric
- */
-
 import { getApp } from '@react-native-firebase/app';
-
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
+
+import type { FirebaseApp } from '@react-native-firebase/app';
+import type { FirebasePerformanceTypes } from '..';
+
+type Performance = FirebasePerformanceTypes.Module;
+type Trace = FirebasePerformanceTypes.Trace;
+type HttpMethod = FirebasePerformanceTypes.HttpMethod;
+type HttpMetric = FirebasePerformanceTypes.HttpMetric;
+type ScreenTrace = FirebasePerformanceTypes.ScreenTrace;
+
+type PerformanceSettings = {
+  dataCollectionEnabled: boolean;
+};
+
+type PerformanceSettingsInternal = Partial<
+  PerformanceSettings & {
+    instrumentationEnabled: boolean;
+  }
+>;
+
+type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
+  ? (...args: [...P, typeof MODULAR_DEPRECATION_ARG]) => R
+  : never;
 
 /**
  * Returns a Performance instance for the given app.
  * @param app - FirebaseApp. Optional.
  * @returns {Performance}
  */
-export function getPerformance(app) {
+export function getPerformance(app?: FirebaseApp): Performance {
   if (app) {
     return getApp(app.name).perf();
   }
@@ -46,14 +60,18 @@ export function getPerformance(app) {
  * @param settings - Optional PerformanceSettings. Set "dataCollectionEnabled" which will enable/disable Performance collection.
  * @returns {Performance}
  */
-export async function initializePerformance(app, settings) {
+export async function initializePerformance(
+  app: FirebaseApp,
+  settings?: PerformanceSettings,
+): Promise<Performance> {
   const perf = getApp(app.name).perf();
+  const resolvedSettings = settings as PerformanceSettingsInternal | undefined;
 
-  if (settings && settings.dataCollectionEnabled !== undefined) {
-    perf.dataCollectionEnabled = settings.dataCollectionEnabled;
+  if (resolvedSettings && resolvedSettings.dataCollectionEnabled !== undefined) {
+    perf.dataCollectionEnabled = resolvedSettings.dataCollectionEnabled;
   }
-  if (settings && settings.instrumentationEnabled !== undefined) {
-    perf.instrumentationEnabled = settings.instrumentationEnabled;
+  if (resolvedSettings && resolvedSettings.instrumentationEnabled !== undefined) {
+    perf.instrumentationEnabled = resolvedSettings.instrumentationEnabled;
   }
 
   return perf;
@@ -65,8 +83,12 @@ export async function initializePerformance(app, settings) {
  * @param identifier - A String to identify the Trace instance
  * @returns {Trace}
  */
-export function trace(perf, identifier) {
-  return perf.newTrace.call(perf, identifier, MODULAR_DEPRECATION_ARG);
+export function trace(perf: Performance, identifier: string): Trace {
+  return (perf.newTrace as WithModularDeprecationArg<Performance['newTrace']>).call(
+    perf,
+    identifier,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -75,8 +97,17 @@ export function trace(perf, identifier) {
  * @param identifier - A String to identify the HttpMetric instance
  * @returns {HttpMetric}
  */
-export function httpMetric(perf, identifier, httpMethod) {
-  return perf.newHttpMetric.call(perf, identifier, httpMethod, MODULAR_DEPRECATION_ARG);
+export function httpMetric(
+  perf: Performance,
+  identifier: string,
+  httpMethod: HttpMethod,
+): HttpMetric {
+  return (perf.newHttpMetric as WithModularDeprecationArg<Performance['newHttpMetric']>).call(
+    perf,
+    identifier,
+    httpMethod,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -87,9 +118,14 @@ export function httpMetric(perf, identifier, httpMethod) {
  * @param identifier Name of the trace, no leading or trailing whitespace allowed, no leading underscore '_' character allowed, max length is 100.
  * @returns {ScreenTrace}
  */
-export function newScreenTrace(perf, identifier) {
-  return perf.newScreenTrace.call(perf, identifier, MODULAR_DEPRECATION_ARG);
+export function newScreenTrace(perf: Performance, identifier: string): ScreenTrace {
+  return (perf.newScreenTrace as WithModularDeprecationArg<Performance['newScreenTrace']>).call(
+    perf,
+    identifier,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
+
 /**
  * Creates a ScreenTrace instance with the given identifier and immediately starts it.
  * Throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
@@ -98,6 +134,10 @@ export function newScreenTrace(perf, identifier) {
  * @param identifier Name of the screen
  * @returns {Promise<ScreenTrace>}
  */
-export function startScreenTrace(perf, identifier) {
-  return perf.startScreenTrace.call(perf, identifier, MODULAR_DEPRECATION_ARG);
+export function startScreenTrace(perf: Performance, identifier: string): Promise<ScreenTrace> {
+  return (perf.startScreenTrace as WithModularDeprecationArg<Performance['startScreenTrace']>).call(
+    perf,
+    identifier,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
