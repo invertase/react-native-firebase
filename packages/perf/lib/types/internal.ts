@@ -43,10 +43,6 @@ export interface PerfInternal extends FirebasePerformance {
   ): HttpMetric;
 }
 
-export function perfInternal(performance: FirebasePerformance): PerfInternal {
-  return performance as PerfInternal;
-}
-
 export interface RNFBPerfTraceData {
   metrics: Record<string, number>;
   attributes: Record<string, string>;

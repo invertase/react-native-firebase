@@ -28,7 +28,11 @@ import type {
   ScreenTrace,
 } from './types/perf';
 
-import { perfInternal as toPerfInternal } from './types/internal';
+import type { PerfInternal } from './types/internal';
+
+function perfInternal(performance: FirebasePerformance): PerfInternal {
+  return performance as PerfInternal;
+}
 
 /**
  * Returns a {@link FirebasePerformance} instance for the given app.
@@ -71,7 +75,7 @@ export function initializePerformance(
  * @param name - The name of the trace.
  */
 export function trace(performance: FirebasePerformance, name: string): PerformanceTrace {
-  return toPerfInternal(performance).newTrace(name, MODULAR_DEPRECATION_ARG);
+  return perfInternal(performance).newTrace(name, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -85,7 +89,7 @@ export function httpMetric(
   url: string,
   httpMethod: HttpMethod,
 ): HttpMetric {
-  return toPerfInternal(performance).newHttpMetric(url, httpMethod, MODULAR_DEPRECATION_ARG);
+  return perfInternal(performance).newHttpMetric(url, httpMethod, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -96,7 +100,7 @@ export function httpMetric(
  * @param screenName - Screen name; no leading/trailing whitespace, no leading `_`, max length 100.
  */
 export function newScreenTrace(performance: FirebasePerformance, screenName: string): ScreenTrace {
-  return toPerfInternal(performance).newScreenTrace(screenName, MODULAR_DEPRECATION_ARG);
+  return perfInternal(performance).newScreenTrace(screenName, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -109,5 +113,5 @@ export function startScreenTrace(
   performance: FirebasePerformance,
   screenName: string,
 ): Promise<ScreenTrace> {
-  return toPerfInternal(performance).startScreenTrace(screenName, MODULAR_DEPRECATION_ARG);
+  return perfInternal(performance).startScreenTrace(screenName, MODULAR_DEPRECATION_ARG);
 }
