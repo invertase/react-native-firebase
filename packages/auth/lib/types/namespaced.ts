@@ -203,7 +203,7 @@ export declare namespace FirebaseAuthTypes {
      *
      * @returns {@link AuthCredential}.
      * @param oidcSuffix this is the "Provider ID" value from the firebase console fx `azure_test`.
-     * @param token A provider token.
+     * @param idToken A provider ID token.
      */
     credential: (oidcSuffix: string, idToken: string) => AuthCredential;
   }
@@ -1753,7 +1753,7 @@ export declare namespace FirebaseAuthTypes {
      * await firebase.auth().setLanguageCode('fr');
      * ```
      *
-     * @param code An ISO language code.
+     * @param languageCode An ISO language code.
      * 'null' value will set the language code to the app's current language.
      */
     setLanguageCode(languageCode: string | null): Promise<void>;
@@ -1825,7 +1825,6 @@ export declare namespace FirebaseAuthTypes {
      *
      * > This is an experimental feature and is only part of React Native Firebase.
      *
-     * @react-native-firebase
      * @param listener A listener function which triggers when the users data changes.
      */
     onUserChanged(listener: CallbackOrObserver<AuthListenerCallback>): () => void;
@@ -2306,13 +2305,13 @@ export declare namespace FirebaseAuthTypes {
      * If you want to use the emulator on a real android device, you will need to specify the actual host
      * computer IP address.
      *
-     * @param url: emulator URL, must have host and port (eg, 'http://localhost:9099')
+     * @param url emulator URL, must have host and port (eg, 'http://localhost:9099')
      */
     useEmulator(url: string): void;
     /**
      * Provides a MultiFactorResolver suitable for completion of a multi-factor flow.
      *
-     * @param error: The MultiFactorError raised during a sign-in, or reauthentication operation.
+     * @param error The MultiFactorError raised during a sign-in, or reauthentication operation.
      */
     getMultiFactorResolver(error: MultiFactorError): MultiFactorResolver;
     /**
