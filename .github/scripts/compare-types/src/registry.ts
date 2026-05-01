@@ -19,6 +19,7 @@ import databaseConfig from '../packages/database/config';
 import appCheckConfig from '../packages/app-check/config';
 import firestoreConfig from '../packages/firestore/config';
 import firestorePipelinesConfig from '../packages/firestore-pipelines/config';
+import perfConfig from '../packages/perf/config';
 import remoteConfigConfig from '../packages/remote-config/config';
 
 const SCRIPT_DIR = path.resolve(__dirname, '..');
@@ -54,12 +55,7 @@ function rnDist(packageName: string): string {
 export const packages: PackageEntry[] = [
   {
     name: 'storage',
-    firebaseSdkTypesPaths: [path.join(
-      SCRIPT_DIR,
-      'packages',
-      'storage',
-      'storage-js-sdk.d.ts',
-    )],
+    firebaseSdkTypesPaths: [path.join(SCRIPT_DIR, 'packages', 'storage', 'storage-js-sdk.d.ts')],
     rnFirebaseModularFiles: [
       path.join(rnDist('storage'), 'types', 'storage.d.ts'),
       path.join(rnDist('storage'), 'modular.d.ts'),
@@ -143,9 +139,7 @@ export const packages: PackageEntry[] = [
   },
   {
     name: 'app-check',
-    firebaseSdkTypesPaths: [
-      path.join(SCRIPT_DIR, 'packages', 'app-check', 'app-check-sdk.d.ts'),
-    ],
+    firebaseSdkTypesPaths: [path.join(SCRIPT_DIR, 'packages', 'app-check', 'app-check-sdk.d.ts')],
     rnFirebaseModularFiles: [
       path.join(rnDist('app-check'), 'types', 'appcheck.d.ts'),
       path.join(rnDist('app-check'), 'modular.d.ts'),
@@ -211,6 +205,14 @@ export const packages: PackageEntry[] = [
     ],
     config: firestorePipelinesConfig,
   },
+  {
+    name: 'perf',
+    firebaseSdkTypesPaths: [path.join(SCRIPT_DIR, 'packages', 'perf', 'firebase-sdk.d.ts')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('perf'), 'types', 'perf.d.ts'),
+      path.join(rnDist('perf'), 'modular.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [],
+    config: perfConfig,
+  },
 ];
-
-

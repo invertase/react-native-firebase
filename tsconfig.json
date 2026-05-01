@@ -21,8 +21,6 @@
     "packages/installations/lib/modular/index.d.ts",
     "packages/ml/lib/index.d.ts",
     "packages/ml/lib/modular/index.d.ts",
-    "packages/perf/lib/index.d.ts",
-    "packages/perf/lib/modular/index.d.ts",
     "packages/functions/type-test.ts",
     "packages/app/type-test.ts",
     "packages/app-check/type-test.ts",
@@ -70,7 +68,7 @@
       ],
       "@react-native-firebase/firestore/pipelines": [
         "./packages/firestore/dist/typescript/lib/pipelines/index.d.ts"
-      ],
+      ]
     }
   },
   "exclude": ["node_modules", "**/*.spec.ts", "packages/**/dist"]

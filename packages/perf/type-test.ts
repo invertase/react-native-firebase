@@ -7,6 +7,9 @@ import perf, {
   httpMetric,
   newScreenTrace,
   startScreenTrace,
+  type Performance as ModularPerformance,
+  type PerformanceTrace,
+  type Trace as ModularTrace,
 } from '.';
 
 console.log(perf().app);
@@ -146,3 +149,9 @@ startScreenTrace(modularPerf1, 'modular-async-screen').then(startedModularScreen
   console.log(startedModularScreenTrace);
   startedModularScreenTrace.stop();
 });
+
+// Deprecated modular type aliases (still exported for compatibility)
+const _modularTraceAlias: ModularTrace = modularTrace;
+const _modularPerfAlias: ModularPerformance = modularPerf1;
+void (_modularTraceAlias satisfies PerformanceTrace);
+void (_modularPerfAlias satisfies typeof modularPerf1);
