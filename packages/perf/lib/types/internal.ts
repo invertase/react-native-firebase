@@ -29,6 +29,10 @@ export type PerfModularDeprecationArg = string;
  * Namespaced perf instance used by modular entrypoints; methods accept an optional modular deprecation token.
  */
 export interface PerfInternal extends FirebasePerformance {
+  /**
+   * @deprecated Prefer assigning {@link FirebasePerformance.dataCollectionEnabled}.
+   */
+  setPerformanceCollectionEnabled(enabled: boolean): Promise<null>;
   newTrace(name: string, deprecationArg?: PerfModularDeprecationArg): PerformanceTrace;
   startTrace(name: string, deprecationArg?: PerfModularDeprecationArg): Promise<PerformanceTrace>;
   newScreenTrace(screenName: string, deprecationArg?: PerfModularDeprecationArg): ScreenTrace;

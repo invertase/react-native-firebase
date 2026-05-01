@@ -96,13 +96,4 @@ export interface FirebasePerformance {
   dataCollectionEnabled: boolean;
   /** Whether performance data collection is enabled for this app instance (native). */
   isPerformanceCollectionEnabled: boolean;
-  /**
-   * @deprecated Prefer assigning {@link FirebasePerformance.dataCollectionEnabled}.
-   */
-  setPerformanceCollectionEnabled(enabled: boolean): Promise<null>;
-  newTrace(name: string): PerformanceTrace;
-  startTrace(name: string): Promise<PerformanceTrace>;
-  newScreenTrace(screenName: string): ScreenTrace;
-  startScreenTrace(screenName: string): Promise<ScreenTrace>;
-  newHttpMetric(url: string, httpMethod: HttpMethod): HttpMetric;
 }
