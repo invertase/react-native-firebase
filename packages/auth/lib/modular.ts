@@ -317,14 +317,16 @@ function callUserMethod<F extends AnyFn>(
  * Returns the Auth instance associated with the provided FirebaseApp.
  */
 export function getAuth(app?: FirebaseApp): Auth {
-  return appWithAuth(app).auth(MODULAR_DEPRECATION_ARG);
+  // Keep getAuth() on the shared namespaced instance; method wrappers add the modular sentinel.
+  return appWithAuth(app).auth();
 }
 
 /**
  * This function allows more control over the Auth instance than getAuth().
  */
 export function initializeAuth(app: FirebaseApp, _deps?: Dependencies): Auth {
-  return appWithAuth(app).auth(MODULAR_DEPRECATION_ARG);
+  // Keep initializeAuth() aligned with getAuth(); passing the sentinel here creates a second module.
+  return appWithAuth(app).auth();
 }
 
 export function applyActionCode(auth: Auth, oobCode: string): Promise<void> {

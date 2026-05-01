@@ -287,8 +287,30 @@ describe('Auth', function () {
       expect(getAuth).toBeDefined();
     });
 
+    it('getAuth returns the shared namespaced auth instance', function () {
+      const previousSilenceValue = globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS;
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
+      try {
+        expect(getAuth()).toBe(firebase.auth());
+      } finally {
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = previousSilenceValue;
+      }
+    });
+
     it('`initializeAuth` function is properly exposed to end user', function () {
       expect(initializeAuth).toBeDefined();
+    });
+
+    it('initializeAuth returns the shared namespaced auth instance', function () {
+      const previousSilenceValue = globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS;
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
+      try {
+        expect(initializeAuth(firebase.app())).toBe(firebase.auth());
+      } finally {
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = previousSilenceValue;
+      }
     });
 
     it('`applyActionCode` function is properly exposed to end user', function () {
