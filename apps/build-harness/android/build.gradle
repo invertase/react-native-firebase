@@ -1,0 +1,50 @@
+import groovy.json.JsonSlurper
+
+def appPackageJson = new JsonSlurper().parseText(
+    new File(rootDir, "../node_modules/@react-native-firebase/app/package.json").text
+)
+def sdkVersions = appPackageJson.sdkVersions.android
+def firebaseBomVersion = System.getenv("RNFB_FIREBASE_ANDROID_BOM") ?: sdkVersions.firebase
+
+buildscript {
+    def appPackageJson = new JsonSlurper().parseText(
+        new File(rootDir, "../node_modules/@react-native-firebase/app/package.json").text
+    )
+    def sdkVersions = appPackageJson.sdkVersions.android
+    def googleServicesGradleVersion = System.getenv("RNFB_GOOGLE_SERVICES_GRADLE") ?: sdkVersions.gmsGoogleServicesGradle
+    def crashlyticsGradleVersion = System.getenv("RNFB_CRASHLYTICS_GRADLE") ?: sdkVersions.firebaseCrashlyticsGradle
+    def perfGradleVersion = System.getenv("RNFB_PERF_GRADLE") ?: sdkVersions.firebasePerfGradle
+    def appDistributionGradleVersion =
+        System.getenv("RNFB_APP_DISTRIBUTION_GRADLE") ?: sdkVersions.firebaseAppDistributionGradle
+    ext {
+        buildToolsVersion = "35.0.0"
+        minSdkVersion = 24
+        compileSdkVersion = 35
+        targetSdkVersion = 35
+        ndkVersion = "27.1.12297006"
+        kotlinVersion = "2.0.21"
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+        classpath("com.google.gms:google-services:${googleServicesGradleVersion}")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:${crashlyticsGradleVersion}")
+        classpath("com.google.firebase:perf-plugin:${perfGradleVersion}")
+        classpath("com.google.firebase:firebase-appdistribution-gradle:${appDistributionGradleVersion}")
+    }
+}
+
+project.ext.set('react-native', [
+    versions: [
+        firebase: [
+            bom: firebaseBomVersion,
+        ],
+    ],
+])
+
+apply plugin: "com.facebook.react.rootproject"

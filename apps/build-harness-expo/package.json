@@ -1,0 +1,43 @@
+{
+  "name": "@rnfirebase/build-harness-expo",
+  "version": "0.0.1",
+  "main": "index.ts",
+  "scripts": {
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "prebuild": "expo prebuild --clean",
+    "start": "expo start --clear",
+    "typecheck": "tsc --noEmit",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@react-native-firebase/ai": "workspace:*",
+    "@react-native-firebase/analytics": "workspace:*",
+    "@react-native-firebase/app": "workspace:*",
+    "@react-native-firebase/app-check": "workspace:*",
+    "@react-native-firebase/app-distribution": "workspace:*",
+    "@react-native-firebase/auth": "workspace:*",
+    "@react-native-firebase/crashlytics": "workspace:*",
+    "@react-native-firebase/database": "workspace:*",
+    "@react-native-firebase/firestore": "workspace:*",
+    "@react-native-firebase/functions": "workspace:*",
+    "@react-native-firebase/in-app-messaging": "workspace:*",
+    "@react-native-firebase/installations": "workspace:*",
+    "@react-native-firebase/messaging": "workspace:*",
+    "@react-native-firebase/ml": "workspace:*",
+    "@react-native-firebase/perf": "workspace:*",
+    "@react-native-firebase/remote-config": "workspace:*",
+    "@react-native-firebase/storage": "workspace:*",
+    "expo": "~55.0.17",
+    "expo-build-properties": "^55.0.13",
+    "expo-status-bar": "~55.0.5",
+    "firebase": "12.12.0",
+    "react": "19.2.0",
+    "react-native": "0.83.6"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~5.9.2"
+  },
+  "private": true
+}

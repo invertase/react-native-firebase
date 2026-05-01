@@ -65,6 +65,19 @@
     "tests:macos:manual": "cd tests && yarn react-native run-macos",
     "tests:macos:test": "cd tests && npx jet --target=macos --coverage",
     "tests:macos:test-cover": "cd tests && npx jet --target=macos --coverage",
+    "app:doctor": "bash ./scripts/sync-build-harness.sh doctor",
+    "app:sync": "bash ./scripts/sync-build-harness.sh sync",
+    "app:clean": "bash ./scripts/sync-build-harness.sh clean",
+    "app:pod:install": "bash ./scripts/sync-build-harness.sh pod-install",
+    "app:start": "cd apps/build-harness && yarn react-native start --reset-cache",
+    "app:ios": "bash ./scripts/sync-build-harness.sh build-ios",
+    "app:android": "bash ./scripts/sync-build-harness.sh build-android",
+    "app:expo:doctor": "bash ./scripts/sync-build-harness-expo.sh doctor",
+    "app:expo:sync": "bash ./scripts/sync-build-harness-expo.sh sync",
+    "app:expo:clean": "bash ./scripts/sync-build-harness-expo.sh clean",
+    "app:expo:start": "bash ./scripts/sync-build-harness-expo.sh start",
+    "app:ios:expo": "bash ./scripts/sync-build-harness-expo.sh build-ios",
+    "app:android:expo": "bash ./scripts/sync-build-harness-expo.sh build-android",
     "format:js": "prettier --write \"packages/**/*.{js,ts,tsx}\"",
     "format:markdown": "prettier --write \"docs/**/*.md[x]\""
   },
@@ -121,7 +134,8 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "tests"
+      "tests",
+      "apps/*"
     ]
   },
   "packageManager": "yarn@4.12.0"
