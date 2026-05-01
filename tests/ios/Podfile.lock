@@ -1802,7 +1802,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNDeviceInfo (15.0.1):
+  - RNDeviceInfo (15.0.2):
     - React-Core
   - RNFBAnalytics (24.0.0):
     - DoubleConversion
@@ -2599,7 +2599,7 @@ SPEC CHECKSUMS:
   ReactCommon: c18c9308463e582898abcec12ffbd2df2b7e8fdd
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   RNCAsyncStorage: 6a8127b6987dc9fbce778669b252b14c8355c7ce
-  RNDeviceInfo: 36d7f232bfe7c9b5c494cb7793230424ed32c388
+  RNDeviceInfo: 4c852998208b60dc192ae3529e5867817719ad1e
   RNFBAnalytics: 474520619039cb536584ca4cf41264d8199d0d9c
   RNFBApp: b26b3c94412f6a1302df6c92ea1d43c0d72f1c38
   RNFBAppCheck: 94fe77ecd93b2dbded08a2f93421512b160fbc98

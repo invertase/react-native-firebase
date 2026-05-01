@@ -306,7 +306,7 @@ __metadata:
   resolution: "compare-types@workspace:."
   dependencies:
     ts-morph: "npm:^24.0.0"
-    tsx: "npm:^4.19.0"
+    tsx: "npm:^4.21.0"
     typescript: "npm:^6.0.3"
   languageName: unknown
   linkType: soft
@@ -853,7 +853,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.19.0":
+"tsx@npm:^4.21.0":
   version: 4.21.0
   resolution: "tsx@npm:4.21.0"
   dependencies:
