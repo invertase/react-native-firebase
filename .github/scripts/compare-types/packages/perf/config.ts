@@ -15,12 +15,6 @@ const config: PackageConfig = {
         'modular API does not expose HTTP metrics in the public tree-shakeable surface.',
     },
     {
-      name: 'Trace',
-      reason:
-        'Deprecated type alias for `PerformanceTrace` kept for older modular imports. The ' +
-        'firebase-js-sdk only exports `PerformanceTrace`.',
-    },
-    {
       name: 'ScreenTrace',
       reason:
         'React Native screen trace type for slow/frozen frame reporting. No equivalent exists ' +
@@ -31,12 +25,6 @@ const config: PackageConfig = {
       reason:
         'React Native HTTP request metric type backed by native instrumentation. The web SDK ' +
         'does not expose this type on the modular public surface.',
-    },
-    {
-      name: 'Performance',
-      reason:
-        'Deprecated type alias for `FirebasePerformance` kept for older modular imports. The ' +
-        'firebase-js-sdk only exports `FirebasePerformance`.',
     },
     {
       name: 'httpMetric',

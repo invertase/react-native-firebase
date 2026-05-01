@@ -15,7 +15,14 @@
  *
  */
 
-export type * from './types/perf';
+export type {
+  FirebasePerformance,
+  HttpMetric,
+  HttpMethod,
+  PerformanceSettings,
+  PerformanceTrace,
+  ScreenTrace,
+} from './types/perf';
 
 export * from './modular';
 

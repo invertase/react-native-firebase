@@ -59,11 +59,6 @@ export interface PerformanceTrace {
 }
 
 /**
- * @deprecated Use {@link PerformanceTrace} instead. Kept for older modular imports.
- */
-export type Trace = PerformanceTrace;
-
-/**
  * Screen trace for slow/frozen frames (React Native).
  */
 export interface ScreenTrace {
@@ -111,8 +106,3 @@ export interface FirebasePerformance {
   startScreenTrace(screenName: string): Promise<ScreenTrace>;
   newHttpMetric(url: string, httpMethod: HttpMethod): HttpMetric;
 }
-
-/**
- * @deprecated Use {@link FirebasePerformance} instead. Kept for older modular imports.
- */
-export type Performance = FirebasePerformance;
