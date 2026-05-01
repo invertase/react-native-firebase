@@ -31,13 +31,16 @@ jobs:
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      # https://github.com/actions/checkout/releases
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 50
-      - uses: actions/setup-node@v4
+      # https://github.com/actions/setup-node/releases
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
-      - uses: actions/cache/restore@v4
+      # https://github.com/actions/cache/releases
+      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         name: Yarn Cache Restore
         id: yarn-cache
         continue-on-error: true
@@ -46,7 +49,8 @@ jobs:
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
       - name: Yarn Install
-        uses: nick-fields/retry@v3
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: 15
           retry_wait_seconds: 60
@@ -54,10 +58,12 @@ jobs:
           command: yarn
       - name: Jest
         run: yarn tests:jest-coverage
-      - uses: codecov/codecov-action@v5
+      # https://github.com/codecov/codecov-action/releases
+      - uses: codecov/codecov-action@3f20e214133d0983f9a10f3d63b0faf9241a3daa # v6.0.0
         with:
           verbose: true
-      - uses: actions/cache/save@v4
+      # https://github.com/actions/cache/releases
+      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true

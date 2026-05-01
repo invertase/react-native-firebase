@@ -42,7 +42,8 @@ jobs:
       matrix: ${{ steps.build-matrix.outputs.result }}
     steps:
       - id: build-matrix
-        uses: actions/github-script@v7
+        # https://github.com/actions/github-script/releases
+        uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71 # v9.0.0
         with:
           script: |
             // by default, we will run one iteration
@@ -103,7 +104,8 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - name: Free Disk Space (Ubuntu)
-        uses: AdityaGarg8/remove-unwanted-software@v5
+        # https://github.com/AdityaGarg8/remove-unwanted-software/releases
+        uses: AdityaGarg8/remove-unwanted-software@90e01b21170618765a73370fcc3abbd1684a7793 # v5
         with:
           remove-dotnet: true
           remove-haskell: true
@@ -120,17 +122,20 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - uses: actions/checkout@v4
+      # https://github.com/actions/checkout/releases
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 50
 
       # Set up tool versions
-      - uses: actions/setup-node@v4
+      # https://github.com/actions/setup-node/releases
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
 
       - name: Configure JDK
-        uses: actions/setup-java@v4
+        # https://github.com/actions/setup-java/releases
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -143,7 +148,8 @@ jobs:
           echo "tempdir=$TMPDIR" >> $GITHUB_OUTPUT
 
       - name: Yarn Cache Restore
-        uses: actions/cache/restore@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: yarn-cache
         continue-on-error: true
         with:
@@ -152,7 +158,8 @@ jobs:
           restore-keys: ${{ runner.os }}-android-yarn-v1
 
       - name: Yarn Install
-        uses: nick-fields/retry@v3
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: 15
           retry_wait_seconds: 60
@@ -160,7 +167,8 @@ jobs:
           command: DETOX_DISABLE_POSTINSTALL=1 yarn
 
       - name: Firestore Emulator Restore
-        uses: actions/cache/restore@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: firestore-emulator-cache
         continue-on-error: true
         with:
@@ -174,7 +182,8 @@ jobs:
         run: yarn tests:emulator:start-ci
 
       - name: Gradle Cache Restore
-        uses: actions/cache/restore@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: gradle-cache
         continue-on-error: true
         with:
@@ -183,7 +192,8 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle-v1
 
       - name: Build Android App
-        uses: nick-fields/retry@v3
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: 25
           retry_wait_seconds: 60
@@ -191,7 +201,8 @@ jobs:
           command: yarn tests:android:build
 
       - name: Metro Bundler Cache Restore
-        uses: actions/cache/restore@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: metro-bundler-cache
         continue-on-error: true
         with:
@@ -220,7 +231,8 @@ jobs:
         shell: bash
 
       - name: Detox Tests
-        uses: reactivecircus/android-emulator-runner@v2
+        # https://github.com/reactivecircus/android-emulator-runner/releases
+        uses: reactivecircus/android-emulator-runner@0a638108440efd5c7f980e6ba145dbcdd8f32009 # v2.37.0
         timeout-minutes: 45
         with:
           api-level: ${{ matrix.api-level }}
@@ -240,19 +252,22 @@ jobs:
             yarn tests:android:test-cover --headless
             yarn tests:android:test:jacoco-report
 
-      - uses: codecov/codecov-action@v5
+      # https://github.com/codecov/codecov-action/releases
+      - uses: codecov/codecov-action@3f20e214133d0983f9a10f3d63b0faf9241a3daa # v6.0.0
         with:
           verbose: true
 
       - name: Upload Emulator Log
-        uses: actions/upload-artifact@v4
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: adb_logs_${{ matrix.api-level}}_${{ matrix.arch }}_${{ matrix.target }}_${{ matrix.iteration }}
           path: adb-*.txt
 
       - name: Yarn Cache Save
-        uses: actions/cache/save@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -260,7 +275,8 @@ jobs:
           key: ${{ steps.yarn-cache.outputs.cache-primary-key }}
 
       - name: Firestore Emulator Cache Save
-        uses: actions/cache/save@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -270,7 +286,8 @@ jobs:
           key: ${{ steps.firestore-emulator-cache.outputs.cache-primary-key }}
 
       - name: Gradle Cache Save
-        uses: actions/cache/save@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -278,7 +295,8 @@ jobs:
           key: ${{ steps.gradle-cache.outputs.cache-primary-key }}
 
       - name: Metro Bundler Cache Save
-        uses: actions/cache/save@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
