@@ -393,6 +393,15 @@ jobs:
           name: screenrecording-${{ matrix.buildmode }}-${{ matrix.iteration }}
           path: screenrecording.*
 
+      - name: Upload Firebase emulator script logs
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        continue-on-error: true
+        if: always()
+        with:
+          name: emulator-scripts-logs-${{ matrix.buildmode }}-${{ matrix.iteration }}
+          path: .github/workflows/scripts/*.log
+
       # https://github.com/codecov/codecov-action/releases
       - uses: codecov/codecov-action@3f20e214133d0983f9a10f3d63b0faf9241a3daa # v6.0.0
         if: contains(matrix.buildmode, 'debug')
