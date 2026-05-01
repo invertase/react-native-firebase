@@ -1,7 +1,8 @@
 /*
  * Consumer-facing API type tests for @react-native-firebase/firestore.
  * Part 1: Namespaced API (firebase.firestore(), default firestore()).
- * Part 2: Modular API (getFirestore, doc, collection, setDoc, etc. from lib/modular.ts).
+ * Part 2: Modular API (getFirestore, doc, collection, setDoc, etc. from the
+ * published/root package entrypoint).
  */
 
 // ---------------------------------------------------------------------------
@@ -82,9 +83,7 @@ import firestore, {
   DocumentReference,
   Query,
   QueryDocumentSnapshot,
-  Transaction,
-  WriteBatch,
-} from '.';
+} from '@react-native-firebase/firestore';
 import type {
   FirebaseFirestoreTypes,
   Firestore,
@@ -93,7 +92,9 @@ import type {
   FirestoreDataConverter,
   WithFieldValue,
   PartialWithFieldValue,
-} from '.';
+  SetOptions,
+  Transaction,
+} from '@react-native-firebase/firestore';
 import {
   execute,
   field,
@@ -263,46 +264,49 @@ import type {
   OneOf,
 } from '@react-native-firebase/firestore/pipelines';
 
+// Reproducer for issue #8975: this should compile for consumers.
+export function f(_snap: DocumentSnapshot<DocumentData>): void {}
+
 // ----- Default export and module access -----
-console.log(firestore().app);
-console.log(firestore.SDK_VERSION);
-console.log(firestore.firebase.SDK_VERSION);
+void firestore().app;
+void firestore.SDK_VERSION;
+void firestore.firebase.SDK_VERSION;
 
 // ----- firebase.firestore at root -----
-console.log(firebase.firestore().app.name);
-console.log(firebase.firestore().collection('foo'));
+void firebase.firestore().app.name;
+void firebase.firestore().collection('foo');
 
 // ----- firebase.firestore at app level -----
-console.log(firebase.app().firestore().app.name);
-console.log(firebase.app().firestore().collection('foo'));
+void firebase.app().firestore().app.name;
+void firebase.app().firestore().collection('foo');
 
 // ----- Multi-app and database ID -----
-console.log(firebase.firestore(firebase.app()).app.name);
-console.log(firebase.firestore(firebase.app('foo')).app.name);
+void firebase.firestore(firebase.app()).app.name;
+void firebase.firestore(firebase.app('foo')).app.name;
 // Database ID: firebase.app().firestore(databaseId)
-console.log(firebase.app().firestore('(default)').app.name);
-console.log(firebase.app().firestore('other-db').app.name);
+void firebase.app().firestore('(default)').app.name;
+void firebase.app().firestore('other-db').app.name;
 
 // ----- Default export with app arg -----
-console.log(firestore(firebase.app()).app.name);
+void firestore(firebase.app()).app.name;
 
 // ----- Statics (FirestoreStatics) -----
-console.log(firebase.firestore.Blob);
-console.log(firebase.firestore.FieldPath);
-console.log(firebase.firestore.FieldValue);
-console.log(firebase.firestore.GeoPoint);
-console.log(firebase.firestore.Timestamp);
-console.log(firebase.firestore.Filter);
-console.log(firebase.firestore.CACHE_SIZE_UNLIMITED);
+void firebase.firestore.Blob;
+void firebase.firestore.FieldPath;
+void firebase.firestore.FieldValue;
+void firebase.firestore.GeoPoint;
+void firebase.firestore.Timestamp;
+void firebase.firestore.Filter;
+void firebase.firestore.CACHE_SIZE_UNLIMITED;
 firebase.firestore.setLogLevel('debug');
 
 // ----- Firestore instance: references and batch -----
 const nsFirestore = firebase.firestore();
-console.log(nsFirestore.collection('users'));
-console.log(nsFirestore.collection('users').doc('alice'));
-console.log(nsFirestore.collection('users').doc('alice').collection('orders'));
-console.log(nsFirestore.collectionGroup('orders'));
-console.log(nsFirestore.batch());
+void nsFirestore.collection('users');
+void nsFirestore.collection('users').doc('alice');
+void nsFirestore.collection('users').doc('alice').collection('orders');
+void nsFirestore.collectionGroup('orders');
+void nsFirestore.batch();
 
 // ----- CollectionReference -----
 const nsColl = nsFirestore.collection('users');
@@ -320,39 +324,39 @@ nsDocRef.update('count', 3).then(() => {});
 nsDocRef.delete().then(() => {});
 
 nsColl.add({ name: 'Bob' }).then((ref: FirebaseFirestoreTypes.DocumentReference) => {
-  console.log(ref.id);
+  void ref.id;
 });
 
 nsDocRef.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
-  console.log(snap.exists());
-  console.log(snap.data());
-  console.log(snap.id);
-  console.log(snap.ref);
-  console.log(snap.metadata);
+  void snap.exists();
+  void snap.data();
+  void snap.id;
+  void snap.ref;
+  void snap.metadata;
 });
 nsDocRef.get({ source: 'cache' }).then(() => {});
 nsDocRef.get({ source: 'server' }).then(() => {});
 
 nsQuery.get().then((snap: FirebaseFirestoreTypes.QuerySnapshot) => {
-  console.log(snap.docs);
-  console.log(snap.empty);
-  console.log(snap.size);
-  console.log(snap.docChanges());
+  void snap.docs;
+  void snap.empty;
+  void snap.size;
+  void snap.docChanges();
 });
 
 // ----- DocumentSnapshot -----
 nsDocRef.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
   if (snap.exists()) {
     const d = snap.data();
-    console.log(d);
+    void d;
   }
-  console.log(snap.get('field'));
-  console.log(snap.metadata.isEqual(snap.metadata));
+  void snap.get('field');
+  void snap.metadata.isEqual(snap.metadata);
 });
 
 // ----- onSnapshot (document) -----
 const unsubDoc1 = nsDocRef.onSnapshot((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
-  console.log(snap.data());
+  void snap.data();
 });
 const unsubDoc2 = nsDocRef.onSnapshot(
   { includeMetadataChanges: true },
@@ -368,7 +372,7 @@ unsubDoc3();
 
 // ----- onSnapshot (query) -----
 const unsubQuery1 = nsQuery.onSnapshot((snap: FirebaseFirestoreTypes.QuerySnapshot) => {
-  console.log(snap.docs);
+  void snap.docs;
 });
 const unsubQuery2 = nsQuery.onSnapshot(
   { includeMetadataChanges: true },
@@ -392,10 +396,10 @@ void nsQuery2;
 
 // ----- Firestore instance: loadBundle, namedQuery, runTransaction -----
 const nsLoadTask = nsFirestore.loadBundle('bundle-data');
-console.log(nsLoadTask.then(() => {}));
+void nsLoadTask.then(() => {});
 
 const nsNamed = nsFirestore.namedQuery('my-query');
-console.log(nsNamed);
+void nsNamed;
 
 nsFirestore.runTransaction(async (tx: FirebaseFirestoreTypes.Transaction) => {
   const snap = await tx.get(nsDocRef);
@@ -474,19 +478,19 @@ const nsDocWithConv = nsCollWithConv.doc('alice');
 nsDocWithConv.set({ name: 'Alice', age: 30 }).then(() => {});
 nsDocWithConv.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot<User>) => {
   const u = snap.data();
-  if (u) console.log(u.name, u.age);
+  if (u) void [u.name, u.age];
 });
 
 
 // ----- getFirestore -----
 const modFirestore1 = getFirestore();
-console.log(modFirestore1.app.name);
+void modFirestore1.app.name;
 
 const modFirestore2 = getFirestore(firebase.app());
-console.log(modFirestore2.app.name);
+void modFirestore2.app.name;
 
 const modFirestore3 = getFirestore(firebase.app(), 'other-db');
-console.log(modFirestore3.app.name);
+void modFirestore3.app.name;
 
 // ----- connectFirestoreEmulator -----
 connectFirestoreEmulator(modFirestore1, 'localhost', 8080);
@@ -501,16 +505,16 @@ setLogLevel('debug');
 initializeFirestore(firebase.app(), {
   cacheSizeBytes: CACHE_SIZE_UNLIMITED,
 }).then((fs: Firestore) => {
-  console.log(fs.app.name);
+  void fs.app.name;
 });
 
 // ----- doc, collection, collectionGroup, refEqual -----
 const modColl = collection(modFirestore1, 'users');
 const modDoc = doc(modFirestore1, 'users', 'alice');
 const modDoc2 = doc(modColl, 'alice');
-console.log(collection(modDoc, 'orders'));
-console.log(collectionGroup(modFirestore1, 'orders'));
-console.log(refEqual(modDoc, modDoc2));
+void collection(modDoc, 'orders');
+void collectionGroup(modFirestore1, 'orders');
+void refEqual(modDoc, modDoc2);
 
 // ----- setDoc -----
 setDoc(modDoc, { name: 'Alice' }).then(() => {});
@@ -523,7 +527,7 @@ updateDoc(modDoc, 'name', 'Updated', 'age', 30).then(() => {});
 
 // ----- addDoc -----
 addDoc(modColl, { name: 'Bob' }).then((ref: DocumentReference) => {
-  console.log(ref.id);
+  void ref.id;
 });
 
 // ----- enableNetwork, disableNetwork, clearPersistence, clearIndexedDbPersistence, terminate, waitForPendingWrites -----
@@ -544,15 +548,22 @@ runTransaction(modFirestore1, async tx => {
   return 'done';
 }).then(() => {});
 
-// Root runtime exports must also carry the generic modular type surface.
-function acceptRootDocumentSnapshot(_snap: DocumentSnapshot<DocumentData>) {}
+// Root runtime exports must also carry the public modular Transaction type surface.
 function acceptRootTransaction(tx: Transaction, tRef: DocumentReference<DocumentData>) {
-  tx.update(tRef, { active: true });
+  const chainedTx: Transaction = tx
+    .set(tRef, { active: true })
+    .update(tRef, { active: false })
+    .delete(tRef);
+  return chainedTx;
 }
-runTransaction(modFirestore1, async tx => {
+
+function rootTransactionUpdateFunction(tx: Transaction): Promise<DocumentSnapshot<DocumentData>> {
+  return tx.get(modDoc);
+}
+
+runTransaction(modFirestore1, async (tx: Transaction) => {
+  const rootSnap: DocumentSnapshot<DocumentData> = await tx.get(modDoc);
   const rootTx: Transaction = tx;
-  const rootSnap: DocumentSnapshot<DocumentData> = await rootTx.get(modDoc);
-  acceptRootDocumentSnapshot(rootSnap);
   acceptRootTransaction(rootTx, modDoc);
   if (rootSnap.exists()) {
     const rootData: DocumentData = rootSnap.data();
@@ -560,13 +571,10 @@ runTransaction(modFirestore1, async tx => {
   }
   return rootSnap;
 }).then((rootSnap: DocumentSnapshot<DocumentData>) => {
-  acceptRootDocumentSnapshot(rootSnap);
+  f(rootSnap);
 });
-const rootBatch: WriteBatch = writeBatch(modFirestore1);
-rootBatch.update(modDoc, { active: true });
-void acceptRootDocumentSnapshot;
+runTransaction(modFirestore1, rootTransactionUpdateFunction).then(f);
 void acceptRootTransaction;
-void rootBatch;
 
 // ----- query, where, or, and, orderBy, startAt, startAfter, endAt, endBefore, limit, limitToLast -----
 const modQuery1 = query(modColl, where('name', '==', 'test'));
@@ -604,8 +612,8 @@ void testQuery;
 // ----- getCountFromServer -----
 getCountFromServer(modQuery1).then(
   (snap: AggregateQuerySnapshot<{ count: AggregateField<number> }>) => {
-    console.log(snap.query);
-    console.log(snap.data().count);
+    void snap.query;
+    void snap.data().count;
   },
 );
 
@@ -623,8 +631,8 @@ getAggregateFromServer(modQuery1, aggSpec).then(
       count: AggregateField<number>;
     }>,
   ) => {
-    console.log(snap.query);
-    console.log(snap.data());
+    void snap.query;
+    void snap.data();
   },
 );
 
@@ -657,10 +665,10 @@ unsubMod4();
 // ----- snapshotEqual, queryEqual -----
 getDoc(modDoc).then(s1 => {
   getDoc(modDoc).then(s2 => {
-    console.log(snapshotEqual(s1, s2));
+    void snapshotEqual(s1, s2);
   });
 });
-console.log(queryEqual(modQuery1, modQuery2));
+void queryEqual(modQuery1, modQuery2);
 
 // ----- onSnapshotsInSync -----
 const unsubSync = onSnapshotsInSync(modFirestore1, () => {});
@@ -689,45 +697,45 @@ setDoc(modDoc, {
 // ----- FieldPath, documentId (modular) -----
 const modFieldPath = new FieldPath('user', 'profile', 'name');
 const modDocumentId = documentId();
-console.log(query(modColl, where(modDocumentId, '==', 'id')));
-console.log(query(modColl, orderBy(modFieldPath)));
+void query(modColl, where(modDocumentId, '==', 'id'));
+void query(modColl, orderBy(modFieldPath));
 
 // ----- Bytes -----
 const bytes1 = Bytes.fromBase64String('dGVzdA==');
 const bytes2 = Bytes.fromUint8Array(new Uint8Array([1, 2, 3]));
-console.log(bytes1.toBase64());
-console.log(bytes2.toUint8Array());
-console.log(bytes1.isEqual(bytes2));
+void bytes1.toBase64();
+void bytes2.toUint8Array();
+void bytes1.isEqual(bytes2);
 
 // ----- GeoPoint (modular) -----
 const gp1 = new GeoPoint(37.7749, -122.4194);
-console.log(gp1.latitude);
-console.log(gp1.longitude);
-console.log(gp1.isEqual(gp1));
-console.log(gp1.toJSON());
+void gp1.latitude;
+void gp1.longitude;
+void gp1.isEqual(gp1);
+void gp1.toJSON();
 
 // ----- Timestamp (modular) -----
 const ts1 = Timestamp.now();
 const ts2 = Timestamp.fromDate(new Date());
-console.log(Timestamp.fromMillis(Date.now()));
-console.log(ts1.seconds);
-console.log(ts1.nanoseconds);
-console.log(ts1.toDate());
-console.log(ts1.toMillis());
-console.log(ts1.isEqual(ts2));
+void Timestamp.fromMillis(Date.now());
+void ts1.seconds;
+void ts1.nanoseconds;
+void ts1.toDate();
+void ts1.toMillis();
+void ts1.isEqual(ts2);
 
 // ----- VectorValue, vector -----
 const v1 = vector([1, 2, 3]);
 const v2 = VectorValue.fromJSON(v1.toJSON());
-console.log(v1.toArray());
-console.log(v1.isEqual(v2));
+void v1.toArray();
+void v1.isEqual(v2);
 
 // ----- loadBundle -----
 loadBundle(modFirestore1, 'bundle-data').then((_progress: LoadBundleTaskProgress) => {});
 
 // ----- namedQuery -----
 namedQuery(modFirestore1, 'my-query').then((q: Query | null) => {
-  if (q) console.log(q);
+  if (q) void q;
 });
 
 // ----- writeBatch -----
@@ -758,10 +766,20 @@ class TestObject {
   ) {}
 }
 
+function testObjectToFirestore(modelObject: WithFieldValue<TestObject>): WithFieldValue<TestObject>;
+function testObjectToFirestore(
+  modelObject: PartialWithFieldValue<TestObject>,
+  options: SetOptions,
+): PartialWithFieldValue<TestObject>;
+function testObjectToFirestore(
+  obj: WithFieldValue<TestObject> | PartialWithFieldValue<TestObject>,
+  _options?: SetOptions,
+): WithFieldValue<TestObject> | PartialWithFieldValue<TestObject> {
+  return { ...obj };
+}
+
 const testConverter: FirestoreDataConverter<TestObject, TestObject> = {
-  toFirestore(obj: WithFieldValue<TestObject>) {
-    return { ...obj };
-  },
+  toFirestore: testObjectToFirestore,
   fromFirestore(snap: QueryDocumentSnapshot): TestObject {
     const data = snap.data();
     return new TestObject(data.outerString, data.outerArr, data.nested);
@@ -1024,12 +1042,12 @@ const pipelineSampleAndUnnest = pipelineDb
 void pipelineSampleAndUnnest;
 
 execute(pipelineFromCollectionRef).then(snapshot => {
-  console.log(snapshot.executionTime.toMillis());
+  void snapshot.executionTime.toMillis();
   snapshot.results.forEach(result => {
-    console.log(result.id);
-    console.log(result?.ref?.path);
-    console.log(result.data());
-    console.log(result.get('rating'));
+    void result.id;
+    void result?.ref?.path;
+    void result.data();
+    void result.get('rating');
   });
 });
 
@@ -1038,7 +1056,7 @@ execute({
   indexMode: 'recommended',
   rawOptions: { requestLabel: 'type-test' },
 }).then(snapshot => {
-  console.log(snapshot.results.length);
+  void snapshot.results.length;
 });
 
 // ---------------------------------------------------------------------------

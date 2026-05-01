@@ -16,6 +16,7 @@ import type { PackageConfig } from './types';
 import storageConfig from '../packages/storage/config';
 import aiConfig from '../packages/ai/config';
 import authConfig from '../packages/auth/config';
+import databaseConfig from '../packages/database/config';
 import appCheckConfig from '../packages/app-check/config';
 import firestoreConfig from '../packages/firestore/config';
 import firestorePipelinesConfig from '../packages/firestore-pipelines/config';
@@ -148,6 +149,27 @@ export const packages: PackageEntry[] = [
       path.join(rnDist('ai'), 'types', 'imagen', 'responses.d.ts'),
     ],
     config: aiConfig,
+  },
+  {
+    name: 'database',
+    firebaseSdkTypesPaths: [path.join(SCRIPT_DIR, 'packages', 'database', 'firebase-sdk.d.ts')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('database'), 'types', 'database.d.ts'),
+      path.join(rnDist('database'), 'modular.d.ts'),
+      path.join(rnDist('database'), 'modular', 'query.d.ts'),
+      path.join(rnDist('database'), 'modular', 'transaction.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('database'), 'types', 'namespaced.d.ts'),
+      path.join(rnDist('database'), 'types', 'internal.d.ts'),
+      path.join(rnDist('database'), 'DatabaseDataSnapshot.d.ts'),
+      path.join(rnDist('database'), 'DatabaseOnDisconnect.d.ts'),
+      path.join(rnDist('database'), 'DatabaseQuery.d.ts'),
+      path.join(rnDist('database'), 'DatabaseReference.d.ts'),
+      path.join(rnDist('database'), 'DatabaseStatics.d.ts'),
+      path.join(rnDist('database'), 'DatabaseThenableReference.d.ts'),
+    ],
+    config: databaseConfig,
   },
   {
     name: 'app-check',

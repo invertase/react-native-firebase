@@ -1,19 +1,44 @@
 import {
-  query,
+  endAt,
+  endBefore,
+  limitToFirst,
+  limitToLast,
+  orderByChild,
   orderByKey,
   orderByPriority,
   orderByValue,
-  orderByChild,
-  limitToLast,
-  limitToFirst,
-  endAt,
-  endBefore,
-  startAt,
+  query,
   startAfter,
+  startAt,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseDatabase';
+import type { DatabaseQueryModifier } from '../DatabaseQueryModifiers';
 
-export function getQueryInstance(dbRef, modifiers) {
-  const constraints = [];
+type WebDatabaseReference = Parameters<typeof query>[0];
+type WebQueryConstraint = Parameters<typeof query>[1];
+type QueryFilterValue = number | string | boolean | null;
+type WebDatabaseQueryModifier =
+  | DatabaseQueryModifier
+  | {
+      type: 'filter';
+      name: 'endBefore' | 'startAfter';
+      value: QueryFilterValue;
+      key?: string;
+    };
+
+function isQueryFilterValue(value: unknown): value is QueryFilterValue {
+  return (
+    typeof value === 'number' ||
+    typeof value === 'string' ||
+    typeof value === 'boolean' ||
+    value === null
+  );
+}
+
+export function getQueryInstance(
+  dbRef: WebDatabaseReference,
+  modifiers: WebDatabaseQueryModifier[],
+): ReturnType<typeof query> {
+  const constraints: WebQueryConstraint[] = [];
 
   for (const modifier of modifiers) {
     const { type, name } = modifier;
@@ -30,7 +55,7 @@ export function getQueryInstance(dbRef, modifiers) {
           constraints.push(orderByValue());
           break;
         case 'orderByChild':
-          constraints.push(orderByChild(modifier.key));
+          constraints.push(orderByChild(modifier.key ?? ''));
           break;
       }
     }
@@ -48,7 +73,7 @@ export function getQueryInstance(dbRef, modifiers) {
       }
     }
 
-    if (type === 'filter') {
+    if (type === 'filter' && isQueryFilterValue(modifier.value)) {
       const { key, value } = modifier;
 
       switch (name) {
@@ -67,5 +92,6 @@ export function getQueryInstance(dbRef, modifiers) {
       }
     }
   }
+
   return query(dbRef, ...constraints);
 }

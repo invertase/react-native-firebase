@@ -19,89 +19,88 @@ import {
   createDeprecationProxy,
   isArray,
   isFunction,
+  isNumber,
   isObject,
   isString,
-  isNumber,
+  MODULAR_DEPRECATION_ARG,
 } from '@react-native-firebase/app/dist/module/common';
 import { deepGet } from '@react-native-firebase/app/dist/module/common/deeps';
 
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
-export default class DatabaseDataSnapshot {
-  constructor(reference, snapshot) {
+import type { DatabaseSnapshotInternal } from './types/internal';
+import type { FirebaseDatabaseTypes } from './types/namespaced';
+
+type ReferenceWithDeprecationArg = FirebaseDatabaseTypes.Reference & {
+  child(path: string, deprecationArg?: string): FirebaseDatabaseTypes.Reference;
+};
+
+function ap(reference: FirebaseDatabaseTypes.Reference): ReferenceWithDeprecationArg {
+  return reference as ReferenceWithDeprecationArg;
+}
+
+export default class DatabaseDataSnapshot implements FirebaseDatabaseTypes.DataSnapshot {
+  _snapshot: DatabaseSnapshotInternal;
+  _ref: FirebaseDatabaseTypes.Reference;
+
+  constructor(reference: FirebaseDatabaseTypes.Reference, snapshot: DatabaseSnapshotInternal) {
     this._snapshot = snapshot;
 
-    if (reference.key !== snapshot.key) {
-      // reference is a query?
-      this._ref = reference.ref.child.call(reference.ref, snapshot.key, MODULAR_DEPRECATION_ARG);
+    if (reference.key !== snapshot.key && isString(snapshot.key)) {
+      this._ref = ap(reference.ref).child.call(
+        reference.ref,
+        snapshot.key,
+        MODULAR_DEPRECATION_ARG,
+      );
     } else {
       this._ref = reference;
     }
-
-    // TODO #894
-    // if (this._ref.path === '.info/connected') {
-    //  Handle 1/0 vs true/false values on ios/android
-    // }
   }
 
-  get key() {
+  get key(): string | null {
     return this._snapshot.key;
   }
 
-  get ref() {
+  get ref(): FirebaseDatabaseTypes.Reference {
     return this._ref;
   }
 
-  /**
-   * Returns a new snapshot of the child location
-   * @param path
-   * @returns {DatabaseDataSnapshot}
-   */
-  child(path) {
+  child(path: string): FirebaseDatabaseTypes.DataSnapshot {
     if (!isString(path)) {
       throw new Error("snapshot().child(*) 'path' must be a string value");
     }
 
-    let value = deepGet(this._snapshot.value, path);
+    const rootValue = this._snapshot.value as Record<string, unknown> | unknown[];
+    let value = deepGet(rootValue, path);
 
     if (value === undefined) {
       value = null;
     }
 
-    const childRef = this._ref.child.call(this._ref, path, MODULAR_DEPRECATION_ARG);
+    const childRef = ap(this._ref).child.call(this._ref, path, MODULAR_DEPRECATION_ARG);
 
-    let childPriority = null;
+    let childPriority: string | number | null = null;
     if (this._snapshot.childPriorities) {
-      const childPriorityValue = this._snapshot.childPriorities[childRef.key];
+      const childPriorityValue = this._snapshot.childPriorities[childRef.key as string];
       if (isString(childPriorityValue) || isNumber(childPriorityValue)) {
         childPriority = childPriorityValue;
       }
     }
+
     return createDeprecationProxy(
       new DatabaseDataSnapshot(childRef, {
         value,
         key: childRef.key,
         exists: value !== null,
-        childKeys: isObject(value) ? Object.keys(value) : [],
+        childKeys: isObject(value) ? Object.keys(value as Record<string, unknown>) : [],
         priority: childPriority,
       }),
-    );
+    ) as FirebaseDatabaseTypes.DataSnapshot;
   }
 
-  /**
-   * Returns whether the value exists
-   *
-   * @returns {(function())|((path: PathLike, callback: (exists: boolean) => void) => void)|boolean|exists|(() => boolean)}
-   */
-  exists() {
+  exists(): boolean {
     return this._snapshot.exists;
   }
 
-  /**
-   * Exports value and priority
-   *
-   * @returns {{'.priority': *, '.value': *}}
-   */
-  exportVal() {
+  exportVal(): any {
     let { value } = this._snapshot;
 
     if (isObject(value) || isArray(value)) {
@@ -114,23 +113,20 @@ export default class DatabaseDataSnapshot {
     };
   }
 
-  /**
-   * Iterate over keys in order from Firebase
-   *
-   * @param action
-   * @return {boolean}
-   */
-  forEach(action) {
+  forEach(action: (child: FirebaseDatabaseTypes.DataSnapshot) => boolean | void): boolean {
     if (!isFunction(action)) {
       throw new Error("snapshot.forEach(*) 'action' must be a function.");
     }
 
-    // If the value is an array,
+    const iterate = action as (
+      child: FirebaseDatabaseTypes.DataSnapshot,
+      index?: number,
+    ) => boolean | void;
+
     if (isArray(this._snapshot.value)) {
-      return this._snapshot.value.some((_value, i) => {
-        const snapshot = this.child(i.toString());
-        return action(snapshot, i) === true;
-      });
+      return this._snapshot.value.some(
+        (_value, i) => iterate(this.child(i.toString()), i) === true,
+      );
     }
 
     if (!this._snapshot.childKeys.length) {
@@ -141,8 +137,11 @@ export default class DatabaseDataSnapshot {
 
     for (let i = 0; i < this._snapshot.childKeys.length; i++) {
       const key = this._snapshot.childKeys[i];
-      const snapshot = this.child.call(this, key, MODULAR_DEPRECATION_ARG);
-      const actionReturn = action(snapshot, i);
+      if (key === undefined) {
+        continue;
+      }
+      const snapshot = this.child(key);
+      const actionReturn = iterate(snapshot, i);
 
       if (actionReturn === true) {
         cancelled = true;
@@ -153,39 +152,24 @@ export default class DatabaseDataSnapshot {
     return cancelled;
   }
 
-  getPriority() {
-    return this._snapshot.priority;
+  getPriority(): string | number | null {
+    return this._snapshot.priority ?? null;
   }
 
-  /**
-   * Checks the returned value for a nested child path
-   *
-   * @param path
-   * @returns {boolean}
-   */
-  hasChild(path) {
+  hasChild(path: string): boolean {
     if (!isString(path)) {
       throw new Error("snapshot.hasChild(*) 'path' must be a string value.");
     }
 
-    return deepGet(this._snapshot.value, path) !== undefined;
+    const rootValue = this._snapshot.value as Record<string, unknown> | unknown[];
+    return deepGet(rootValue, path) !== undefined;
   }
 
-  /**
-   * Returns whether the snapshot has any children
-   *
-   * @returns {boolean}
-   */
-  hasChildren() {
+  hasChildren(): boolean {
     return this.numChildren() > 0;
   }
 
-  /**
-   * Returns the number of children this snapshot has
-   *
-   * @returns {number}
-   */
-  numChildren() {
+  numChildren(): number {
     const { value } = this._snapshot;
     if (isArray(value)) {
       return value.length;
@@ -193,24 +177,14 @@ export default class DatabaseDataSnapshot {
     if (!isObject(value)) {
       return 0;
     }
-    return Object.keys(value).length;
+    return Object.keys(value as Record<string, unknown>).length;
   }
 
-  /**
-   * Overrides the .toJSON implementation for snapshot
-   * Same as snapshot.val()
-   * @returns {any}
-   */
-  toJSON() {
-    return this.val();
+  toJSON(): object | null {
+    return this.val() as object | null;
   }
 
-  /**
-   * Returns the serialized value of the snapshot returned from Firebase
-   *
-   * @returns {any}
-   */
-  val() {
+  val(): any {
     const { value } = this._snapshot;
 
     if (isObject(value) || isArray(value)) {

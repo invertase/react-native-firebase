@@ -15,17 +15,11 @@
  *
  */
 
-export default {
-  ServerValue: {
-    TIMESTAMP: {
-      '.sv': 'timestamp',
-    },
-    increment(delta) {
-      return {
-        '.sv': {
-          increment: delta,
-        },
-      };
-    },
-  },
-};
+// Export modular API
+export * from './modular';
+export type * from './types/database';
+
+// Export namespaced API
+export type { FirebaseDatabaseTypes } from './types/namespaced';
+export * from './namespaced';
+export { default } from './namespaced';

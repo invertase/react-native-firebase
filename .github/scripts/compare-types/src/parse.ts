@@ -368,7 +368,7 @@ export function parseModularFiles(
     if (!sf) {
       throw new Error(
         `Could not load source file: ${filePath}\n` +
-          `Make sure the package has been built (yarn build:all:build).`,
+          `Make sure the package has been built (run 'yarn' in root of repository).`,
       );
     }
     collectExportsFromSourceFile(sf, result);
