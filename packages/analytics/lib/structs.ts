@@ -36,6 +36,7 @@ const Item = type({
   item_variant: optional(string()),
   quantity: optional(number()),
   price: optional(number()),
+  index: optional(number()),
 });
 
 export const ScreenView = type({
