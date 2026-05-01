@@ -94,8 +94,7 @@ export function httpMetric(
 
 /**
  * Creates a {@link ScreenTrace} with the given screen name.
- * Throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
- * @platform android Android !== 9.0.0 && Android !== 9.1.0
+ * Android only; throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
  * @param performance - The {@link FirebasePerformance} instance to use.
  * @param screenName - Screen name; no leading/trailing whitespace, no leading `_`, max length 100.
  */
@@ -105,7 +104,7 @@ export function newScreenTrace(performance: FirebasePerformance, screenName: str
 
 /**
  * Creates a {@link ScreenTrace} and starts it immediately.
- * @platform android Android !== 9.0.0 && Android !== 9.1.0
+ * Android only; throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
  * @param performance - The {@link FirebasePerformance} instance to use.
  * @param screenName - Name of the screen.
  */
