@@ -1070,6 +1070,45 @@ describe('storage() -> StorageTask', function () {
       });
     });
 
+    describe('uploadBytes()', function () {
+      it('resolves with ref and metadata whose size matches uploaded bytes', async function () {
+        const { getStorage, ref, uploadBytes } = storageModular;
+        const jsonDerulo = JSON.stringify({ foo: 'bar' });
+        const expectedByteLength = jsonDerulo.length;
+
+        const arrayBuffer = new ArrayBuffer(jsonDerulo.length);
+        const arrayBufferView = new Uint8Array(arrayBuffer);
+
+        for (let i = 0, strLen = jsonDerulo.length; i < strLen; i++) {
+          arrayBufferView[i] = jsonDerulo.charCodeAt(i);
+        }
+
+        const uploadResult = await uploadBytes(
+          ref(getStorage(), `${PATH}/uploadBytesModular.json`),
+          arrayBuffer,
+          {
+            contentType: 'application/json',
+          },
+        );
+
+        uploadResult.ref.fullPath.should.containEql('uploadBytesModular.json');
+        uploadResult.metadata.should.be.an.Object();
+        uploadResult.metadata.size.should.eql(expectedByteLength);
+        uploadResult.metadata.contentType.should.eql('application/json');
+      });
+
+      it('rejects when metadata is not an object', async function () {
+        const { getStorage, ref, uploadBytes } = storageModular;
+        try {
+          await uploadBytes(ref(getStorage(), `${PATH}/uploadBytesBadMeta.json`), new ArrayBuffer(), 123);
+          return Promise.reject(new Error('Did not error!'));
+        } catch (error) {
+          error.message.should.containEql('must be an object value');
+          return Promise.resolve();
+        }
+      });
+    });
+
     describe('upload tasks', function () {
       // before(async function () {
       //   // TODO we need some semi-large assets to upload and download I think?
