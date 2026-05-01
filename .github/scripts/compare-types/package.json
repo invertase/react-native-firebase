@@ -6,7 +6,7 @@
     "compare": "tsx src/index.ts"
   },
   "dependencies": {
-    "ts-morph": "^24.0.0"
+    "ts-morph": "^28.0.0"
   },
   "devDependencies": {
     "tsx": "^4.21.0",
