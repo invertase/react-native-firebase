@@ -281,12 +281,11 @@ function normalizeAuthListener(
     return nextOrObserver as AuthListenerCallbackInternal;
   }
 
-  return {
-    next:
-      typeof nextOrObserver.next === 'function'
-        ? (nextOrObserver.next as AuthListenerCallbackInternal)
-        : () => {},
-  };
+  if (typeof nextOrObserver.next !== 'function') {
+    return { next: () => {} };
+  }
+
+  return nextOrObserver as { next: AuthListenerCallbackInternal };
 }
 
 function callAuthMethod<F extends AnyFn>(
