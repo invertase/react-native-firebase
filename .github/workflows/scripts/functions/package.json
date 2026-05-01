@@ -22,5 +22,16 @@
     "typescript": "^6.0.3"
   },
   "private": true,
-  "packageManager": "yarn@4.12.0"
+  "packageManager": "yarn@4.14.1",
+  "dependenciesMeta": {
+    "@firebase/util": {
+      "built": true
+    },
+    "protobufjs": {
+      "built": true
+    },
+    "re2": {
+      "built": true
+    }
+  }
 }
