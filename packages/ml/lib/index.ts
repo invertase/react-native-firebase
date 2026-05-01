@@ -15,11 +15,11 @@
  *
  */
 
-export type { FirebaseML } from './types/ml';
+export * from './modular';
+
+export type { FirebaseApp, FirebaseML } from './types/ml';
 
 export type { FirebaseMLTypes } from './types/namespaced';
-
-export * from './modular';
 
 export * from './namespaced';
 export { default } from './namespaced';

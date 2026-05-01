@@ -15,12 +15,18 @@
  *
  */
 
-import type { FirebaseApp } from '@react-native-firebase/app';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+
+export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 /**
- * Firebase ML module instance for the modular API.
+ * Firebase ML service instance for the modular API.
+ *
+ * Current Firebase JS SDK releases do not ship a `firebase/ml` modular entry point; this interface
+ * follows the same modular service-instance pattern used elsewhere in React Native Firebase (see e.g.
+ * the Firestore package's `Firestore` type).
  */
-export interface FirebaseML {
+export interface FirebaseML extends ReactNativeFirebase.FirebaseModule {
   /** The FirebaseApp this module is associated with */
   app: FirebaseApp;
 }
