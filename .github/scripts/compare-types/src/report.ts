@@ -49,13 +49,70 @@ function printSection(
 }
 
 // ---------------------------------------------------------------------------
+// Stale registry (documented differences that no longer apply)
+// ---------------------------------------------------------------------------
+
+function countStale(result: ComparisonResult): number {
+  return (
+    result.staleConfigMissing.length +
+    result.staleConfigExtra.length +
+    result.staleConfigDifferentShape.length
+  );
+}
+
+/**
+ * Prints stale `config.ts` entries and returns how many were printed.
+ * These must run even when there are zero live diffs, otherwise a resolved
+ * API (e.g. an export removed from `missingInRN` in reality) would never
+ * force updating the comparison registry.
+ */
+function printStaleRegistrySection(result: ComparisonResult): number {
+  const totalStale = countStale(result);
+  if (totalStale === 0) {
+    return 0;
+  }
+
+  console.log(`\n  ${c(RED, `Stale registry / config entries`)} (${totalStale}):`);
+
+  for (const name of result.staleConfigMissing) {
+    console.log(
+      `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE missingInRN]')}${c(
+        DIM,
+        `  — ${name} exists in React Native Firebase but is still listed under missingInRN in config.ts; remove it or reclassify (e.g. differentShape) if types still differ.`,
+      )}`,
+    );
+  }
+
+  for (const name of result.staleConfigExtra) {
+    console.log(
+      `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE extraInRN]')}${c(
+        DIM,
+        `  — ${name} is no longer an extra export in React Native Firebase but is still listed under extraInRN; remove from config.ts.`,
+      )}`,
+    );
+  }
+
+  for (const name of result.staleConfigDifferentShape) {
+    console.log(
+      `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE differentShape]')}${c(
+        DIM,
+        `  — ${name} now matches the firebase-js-sdk shape; remove from differentShape in config.ts.`,
+      )}`,
+    );
+  }
+
+  return totalStale;
+}
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
 /**
  * Print a human-readable report to stdout.
  *
- * @returns `true` if there are any undocumented differences (CI failure).
+ * @returns `true` if there are undocumented differences or stale registry
+ *          entries (CI failure).
  */
 export function printReport(results: ComparisonResult[]): boolean {
   console.log(
@@ -72,9 +129,20 @@ export function printReport(results: ComparisonResult[]): boolean {
       result.extra.length +
       result.differentShape.length;
 
-    if (totalDiffs === 0) {
+    const totalStale = countStale(result);
+
+    if (totalDiffs === 0 && totalStale === 0) {
       console.log(c(GREEN, '  ✓ No differences found'));
       continue;
+    }
+
+    if (totalDiffs === 0 && totalStale > 0) {
+      console.log(
+        c(
+          GREEN,
+          '  ✓ Exported types match the firebase-js-sdk snapshot (no live diffs)',
+        ),
+      );
     }
 
     // --- Missing ---
@@ -117,25 +185,7 @@ export function printReport(results: ComparisonResult[]): boolean {
       );
     }
 
-    // --- Stale config entries ---
-    const totalStale =
-      result.staleConfigMissing.length +
-      result.staleConfigExtra.length +
-      result.staleConfigDifferentShape.length;
-
-    if (totalStale > 0) {
-      const staleNames = [
-        ...result.staleConfigMissing,
-        ...result.staleConfigExtra,
-        ...result.staleConfigDifferentShape,
-      ];
-      console.log(`\n  ${c(RED, `Stale config entries`)} (${totalStale}):`);
-      for (const name of staleNames) {
-        console.log(
-          `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE]')}${c(DIM, '  — now matches the firebase-js-sdk; remove from config.ts')}`,
-        );
-      }
-    }
+    const printedStale = printStaleRegistrySection(result);
 
     // --- Summary ---
     const totalUndoc =
@@ -143,16 +193,19 @@ export function printReport(results: ComparisonResult[]): boolean {
       result.undocumentedExtra.length +
       result.undocumentedDifferentShape.length;
 
-    if (totalUndoc > 0 || totalStale > 0) {
+    if (totalUndoc > 0 || printedStale > 0) {
       hasFailures = true;
       if (totalUndoc > 0) {
         console.log(
           `\n  ${c(RED, `✗ ${totalUndoc} undocumented difference(s) — add them to config.ts with a reason`)}`,
         );
       }
-      if (totalStale > 0) {
+      if (printedStale > 0) {
         console.log(
-          `\n  ${c(RED, `✗ ${totalStale} stale config entry/entries — remove them from config.ts`)}`,
+          `\n  ${c(
+            RED,
+            `✗ ${printedStale} stale registry entry/entries — update packages/<name>/config.ts for the type comparison tool`,
+          )}`,
         );
       }
     } else {

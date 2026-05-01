@@ -141,12 +141,6 @@ const config: PackageConfig = {
         'as setIndexConfiguration is not supported.',
     },
     {
-      name: 'ListenSource',
-      reason:
-        'Union type for snapshot listener source (default, server, cache). ' +
-        'Not yet implemented in RN Firebase; listeners always use default behaviour.',
-    },
-    {
       name: 'MemoryCacheSettings',
       reason:
         'Configuration interface for the memory local cache. The local cache ' +
@@ -319,12 +313,6 @@ const config: PackageConfig = {
         '`_offlineComponentProvider` members that are not part of the ' +
         'firebase-js-sdk public type. These are structural artifacts of the ' +
         'RN implementation.',
-    },
-    {
-      name: 'SnapshotListenOptions',
-      reason:
-        'The firebase-js-sdk includes an optional `source` property (of type ' +
-        '`ListenSource`) which is not yet supported in RN Firebase.',
     },
     // --- Wrapper classes (same public API, different structure: getters vs properties, readonly, toJSON/fromJSON) ---
     {
