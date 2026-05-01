@@ -19,15 +19,12 @@ import { isNull, isNumber, isString } from '@react-native-firebase/app/dist/modu
 
 import MetricWithAttributes from './MetricWithAttributes';
 
-import type {
-  FirebasePerformanceTypes,
-  RNFBPerfHttpMetricData,
-  RNFBPerfNativeModule,
-} from './index';
+import type { RNFBPerfHttpMetricData, RNFBPerfNativeModule } from './types/internal';
+import type { HttpMethod } from './types/perf';
 
 export default class HttpMetric extends MetricWithAttributes {
   private readonly _url: string;
-  private readonly _httpMethod: FirebasePerformanceTypes.HttpMethod;
+  private readonly _httpMethod: HttpMethod;
   private _httpResponseCode: number | null;
   private _requestPayloadSize: number | null;
   private _responsePayloadSize: number | null;
@@ -35,11 +32,7 @@ export default class HttpMetric extends MetricWithAttributes {
   private _started: boolean;
   private _stopped: boolean;
 
-  constructor(
-    native: RNFBPerfNativeModule,
-    url: string,
-    httpMethod: FirebasePerformanceTypes.HttpMethod,
-  ) {
+  constructor(native: RNFBPerfNativeModule, url: string, httpMethod: HttpMethod) {
     super(native);
 
     this._url = url;

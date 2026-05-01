@@ -19,13 +19,7 @@ import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 
 import type { FirebaseApp } from '@react-native-firebase/app';
-import type { FirebasePerformanceTypes } from '..';
-
-type Performance = FirebasePerformanceTypes.Module;
-type Trace = FirebasePerformanceTypes.Trace;
-type HttpMethod = FirebasePerformanceTypes.HttpMethod;
-type HttpMetric = FirebasePerformanceTypes.HttpMetric;
-type ScreenTrace = FirebasePerformanceTypes.ScreenTrace;
+import type { HttpMetric, HttpMethod, Performance, ScreenTrace, Trace } from './types/perf';
 
 type PerformanceSettings = {
   dataCollectionEnabled: boolean;

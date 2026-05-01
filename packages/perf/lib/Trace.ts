@@ -19,7 +19,7 @@ import { hasOwnProperty, isNumber, isString } from '@react-native-firebase/app/d
 
 import MetricWithAttributes from './MetricWithAttributes';
 
-import type { RNFBPerfNativeModule } from './index';
+import type { RNFBPerfNativeModule } from './types/internal';
 
 export default class Trace extends MetricWithAttributes {
   private readonly _identifier: string;

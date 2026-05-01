@@ -17,7 +17,7 @@
 
 import { hasOwnProperty, isString } from '@react-native-firebase/app/dist/module/common';
 
-import type { RNFBPerfNativeModule } from './index';
+import type { RNFBPerfNativeModule } from './types/internal';
 
 let id = 0;
 
