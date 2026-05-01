@@ -15,11 +15,12 @@
  *
  */
 
-export type { FirebaseML } from './types/ml';
+import type { FirebaseApp } from '@react-native-firebase/app';
 
-export type { FirebaseMLTypes } from './types/namespaced';
-
-export * from './modular';
-
-export * from './namespaced';
-export { default } from './namespaced';
+/**
+ * Firebase ML module instance for the modular API.
+ */
+export interface FirebaseML {
+  /** The FirebaseApp this module is associated with */
+  app: FirebaseApp;
+}
