@@ -282,7 +282,7 @@ export interface LevelEndEventParameters {
   /**
    * The result of an operation.
    */
-  success?: string;
+  success?: boolean;
 }
 
 export interface LevelStartEventParameters {
