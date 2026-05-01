@@ -200,6 +200,7 @@ describe('Performance Monitoring', function () {
       const perf = getPerformance();
       perfV9Deprecation(
         () => trace(perf, 'invertase'),
+        // @ts-expect-error Combines modular and namespace API
         () => perf.newTrace('invertase'),
         'newTrace',
       );
@@ -209,6 +210,7 @@ describe('Performance Monitoring', function () {
       const perf = getPerformance();
       perfV9Deprecation(
         () => httpMetric(perf, 'https://invertase.io', 'GET'),
+        // @ts-expect-error Combines modular and namespace API
         () => perf.newHttpMetric('https://invertase.io', 'GET'),
         'newHttpMetric',
       );
@@ -218,6 +220,7 @@ describe('Performance Monitoring', function () {
       const perf = getPerformance();
       perfV9Deprecation(
         () => newScreenTrace(perf, 'invertase'),
+        // @ts-expect-error Combines modular and namespace API
         () => perf.newScreenTrace('invertase'),
         'newScreenTrace',
       );
@@ -227,6 +230,7 @@ describe('Performance Monitoring', function () {
       const perf = getPerformance();
       perfV9Deprecation(
         () => startScreenTrace(perf, 'invertase'),
+        // @ts-expect-error Combines modular and namespace API
         () => perf.startScreenTrace('invertase'),
         'startScreenTrace',
       );
