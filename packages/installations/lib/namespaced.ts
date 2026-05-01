@@ -63,7 +63,7 @@ export const SDK_VERSION = version;
 
 // import installations from '@react-native-firebase/installations';
 // installations().X(...);
-const defaultExport = createModuleNamespace({
+const installationsNamespace = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -72,16 +72,29 @@ const defaultExport = createModuleNamespace({
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseInstallationsModule,
-}) as unknown as FirebaseInstallationsTypes.InstallationsNamespace;
+});
 
-export default defaultExport;
+type InstallationsNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseInstallationsTypes.Module,
+  FirebaseInstallationsTypes.Statics
+> & {
+  installations: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseInstallationsTypes.Module,
+    FirebaseInstallationsTypes.Statics
+  >;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+export default installationsNamespace as unknown as InstallationsNamespace;
 
 // import installations, { firebase } from '@react-native-firebase/installations';
 // installations().X(...);
 // firebase.installations().X(...);
-export const firebase = getFirebaseRoot() as unknown as ReactNativeFirebase.Module & {
-  installations: typeof defaultExport;
-  app(
-    name?: string,
-  ): ReactNativeFirebase.FirebaseApp & { installations(): FirebaseInstallationsTypes.Module };
-};
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'installations',
+    FirebaseInstallationsTypes.Module,
+    FirebaseInstallationsTypes.Statics,
+    false
+  >;

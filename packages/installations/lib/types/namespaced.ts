@@ -28,6 +28,9 @@ import type { ReactNativeFirebase } from '@react-native-firebase/app';
  */
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace FirebaseInstallationsTypes {
+  /**
+   * @deprecated Use the exported types directly instead.
+   */
   export interface Statics {
     SDK_VERSION: string;
   }
@@ -71,6 +74,7 @@ export namespace FirebaseInstallationsTypes {
     Module,
     Statics
   > & {
+    installations: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<Module, Statics>;
     firebase: ReactNativeFirebase.Module;
     app(name?: string): ReactNativeFirebase.FirebaseApp;
   };
