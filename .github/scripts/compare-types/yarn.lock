@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 8
+  version: 9
   cacheKey: 10
 
 "@esbuild/aix-ppc64@npm:0.27.3":
@@ -317,6 +317,9 @@ __metadata:
     ts-morph: "npm:^28.0.0"
     tsx: "npm:^4.21.0"
     typescript: "npm:^6.0.3"
+  dependenciesMeta:
+    esbuild:
+      built: true
   languageName: unknown
   linkType: soft
 

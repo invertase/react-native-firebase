@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 8
+  version: 9
   cacheKey: 10
 
 "@apidevtools/json-schema-ref-parser@npm:^9.0.3":
@@ -22129,6 +22129,23 @@ __metadata:
     typedoc: "npm:^0.28.19"
     typescript: "npm:^6.0.3"
     typescript-eslint: "npm:^8.59.1"
+  dependenciesMeta:
+    "@firebase/util":
+      built: true
+    detox:
+      built: true
+    dtrace-provider:
+      built: true
+    nx:
+      built: true
+    postinstall-postinstall:
+      built: true
+    protobufjs:
+      built: true
+    re2:
+      built: true
+    unrs-resolver:
+      built: true
   languageName: unknown
   linkType: soft
 

@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 8
+  version: 9
   cacheKey: 10
 
 "@apidevtools/json-schema-ref-parser@npm:^9.0.3":
@@ -3147,6 +3147,13 @@ __metadata:
     firebase-functions-test: "npm:^3.4.1"
     firebase-tools: "npm:^15.16.0"
     typescript: "npm:^6.0.3"
+  dependenciesMeta:
+    "@firebase/util":
+      built: true
+    protobufjs:
+      built: true
+    re2:
+      built: true
   languageName: unknown
   linkType: soft
 
