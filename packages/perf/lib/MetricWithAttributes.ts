@@ -65,12 +65,4 @@ export default class MetricWithAttributes {
 
     this._attributes[attribute] = value;
   }
-
-  removeAttribute(attribute: string): void {
-    if (!isString(attribute)) {
-      throw new Error("firebase.perf.*.removeAttribute(*) 'attribute' must be a string.");
-    }
-
-    delete this._attributes[attribute];
-  }
 }
