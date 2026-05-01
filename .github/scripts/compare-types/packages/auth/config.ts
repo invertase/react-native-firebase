@@ -171,6 +171,26 @@ const config: PackageConfig = {
         'RN Firebase models disableWarnings as an optional property, while the firebase-js-sdk emitted type text shows a required boolean property.',
     },
     {
+      name: 'ActionCodeInfo',
+      reason:
+        'Semantically the same action-code operation string union; RN Firebase types spell `operation` as `ActionCodeOperationValue`, while the firebase-js-sdk snapshot uses `(typeof ActionCodeOperation)[keyof typeof ActionCodeOperation]`, which compare-types treats as a different shape string.',
+    },
+    {
+      name: 'MultiFactorAssertion',
+      reason:
+        'Same factor-id string union as the SDK; RN Firebase exposes `FactorIdValue` on `factorId`, while the firebase-js-sdk snapshot uses `(typeof FactorId)[keyof typeof FactorId]`, which differs only in emitted type text.',
+    },
+    {
+      name: 'MultiFactorError',
+      reason:
+        'Same operation-type string union as the SDK; RN Firebase narrows `customData.operationType` to `OperationTypeValue`, while the firebase-js-sdk snapshot uses `(typeof OperationType)[keyof typeof OperationType]`, which compare-types compares textually.',
+    },
+    {
+      name: 'MultiFactorInfo',
+      reason:
+        'Same factor-id string union as the SDK; RN Firebase exposes `FactorIdValue` on `factorId`, while the firebase-js-sdk snapshot uses `(typeof FactorId)[keyof typeof FactorId]`, which differs only in emitted type text.',
+    },
+    {
       name: 'EmailAuthProvider',
       reason:
         'RN Firebase now exports EmailAuthProvider from the modular surface, but its native helper class still exposes a reduced static API and RNFB credential objects rather than mirroring the firebase-js-sdk EmailAuthProvider class shape.',
@@ -249,6 +269,11 @@ const config: PackageConfig = {
       name: 'TwitterAuthProvider',
       reason:
         'RN Firebase now exports TwitterAuthProvider from the modular surface, but its native helper class only exposes the credential factory used by RNFB and does not yet mirror the firebase-js-sdk static fields and credentialFromResult/credentialFromError helpers.',
+    },
+    {
+      name: 'UserCredential',
+      reason:
+        'Same operation-type string union as the SDK; RN Firebase exposes `operationType` as `OperationTypeValue`, while the firebase-js-sdk snapshot uses `(typeof OperationType)[keyof typeof OperationType]`, which compare-types treats as a different shape string.',
     },
   ],
 };
