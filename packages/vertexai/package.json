@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@types/text-encoding": "^0.0.40",
-    "react-native-builder-bob": "^0.40.17",
+    "react-native-builder-bob": "^0.41.0",
     "typescript": "^6.0.3"
   },
   "source": "./lib/index.ts",
