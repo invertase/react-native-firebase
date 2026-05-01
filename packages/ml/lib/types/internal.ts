@@ -16,7 +16,14 @@
  */
 
 /**
- * Internal bridge types for `@react-native-firebase/ml`.
- * Native module contracts are expanded in later migration stages.
+ * Wrapped native module contract for `RNFBMLModule`.
+ * The namespaced `FirebaseMLModule` implementation does not call into native from JS;
+ * this type anchors `FirebaseModule<typeof nativeModuleName>` and documents the bridge key.
  */
-export {};
+export interface RNFBMLModule {}
+
+declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
+  interface ReactNativeFirebaseNativeModules {
+    RNFBMLModule: RNFBMLModule;
+  }
+}

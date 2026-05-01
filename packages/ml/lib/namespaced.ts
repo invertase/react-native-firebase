@@ -21,6 +21,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/dist/module/internal';
+import './types/internal';
 import type { FirebaseMLTypes } from './types/namespaced';
 import { version } from './version';
 
@@ -32,7 +33,7 @@ const namespace = 'ml';
 
 const nativeModuleName = 'RNFBMLModule';
 
-class FirebaseMLModule extends FirebaseModule {}
+class FirebaseMLModule extends FirebaseModule<typeof nativeModuleName> {}
 
 type MLNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FirebaseMLTypes.Module,
