@@ -404,7 +404,7 @@ export function getRedirectResult(
   _auth: Auth,
   _resolver?: PopupRedirectResolver,
 ): Promise<UserCredential | null> {
-  throw new Error('getRedirectResult is unsupported by the native Firebase SDKs');
+  throw new Error('getRedirectResult is unsupported by the native Firebase SDKs.');
 }
 
 export function isSignInWithEmailLink(auth: Auth, emailLink: string): Promise<boolean> {
@@ -477,7 +477,7 @@ export function sendSignInLinkToEmail(
 }
 
 export function setPersistence(_auth: Auth, _persistence: Persistence): Promise<void> {
-  throw new Error('setPersistence is unsupported by the native Firebase SDKs');
+  throw new Error('setPersistence is unsupported by the native Firebase SDKs.');
 }
 
 export function signInAnonymously(auth: Auth): Promise<UserCredential> {
