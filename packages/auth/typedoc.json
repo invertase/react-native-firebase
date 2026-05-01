@@ -1,5 +1,15 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["lib/index.d.ts"],
-  "intentionallyNotExported": ["AuthNamespace"]
+  "entryPoints": ["lib/index.ts"],
+  "tsconfig": "tsconfig.json",
+  "intentionallyNotExported": [
+    "AuthNamespace",
+    "Observer",
+    "ActionCodeOperationValue",
+    "FactorIdValue",
+    "OperationTypeValue",
+    "PhoneAuthProviderAuth",
+    "SupportedPhoneInfoOptions",
+    "AuthInternal"
+  ]
 }

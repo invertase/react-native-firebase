@@ -1,5 +1,12 @@
 {
   "extends": "./tsconfig.json",
+  "include": [
+    "jest.setup.ts",
+    "packages/app/lib/internal/global.d.ts",
+    "packages/app/lib/internal/web/memidb/index.d.ts",
+    "packages/**/__tests__/**/*.test.ts"
+  ],
+  "exclude": ["node_modules", "packages/**/dist"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

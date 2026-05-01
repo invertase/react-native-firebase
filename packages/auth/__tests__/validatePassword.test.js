@@ -16,8 +16,9 @@
  */
 
 import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
-import { PasswordPolicyImpl } from '../lib/password-policy/PasswordPolicyImpl.js';
-import { PasswordPolicyMixin } from '../lib/password-policy/PasswordPolicyMixin.js';
+import { PasswordPolicyImpl } from '../lib/password-policy/PasswordPolicyImpl';
+import { PasswordPolicyMixin } from '../lib/password-policy/PasswordPolicyMixin';
+import { validatePassword as validatePasswordModular } from '../lib/modular';
 
 const mockPasswordPolicy = {
   schemaVersion: 1,
@@ -274,36 +275,34 @@ describe('validatePassword (modular API)', () => {
   let validatePassword;
   let mockAuth;
 
-  beforeEach(async () => {
-    const modular = await import('../lib/modular/index.js');
-    validatePassword = modular.validatePassword;
-
+  beforeEach(() => {
+    validatePassword = validatePasswordModular;
     mockAuth = {
       app: { name: '[DEFAULT]', options: { apiKey: 'test-api-key' } },
       validatePassword: jest.fn(),
     };
   });
 
-  it('should throw error for undefined auth', async () => {
-    await expect(validatePassword(undefined, 'Password123$')).rejects.toThrow(
+  it('should throw error for undefined auth', () => {
+    expect(() => validatePassword(undefined, 'Password123$')).toThrow(
       "firebase.auth().validatePassword(*) 'auth' must be a valid Auth instance with an 'app' property",
     );
   });
 
-  it('should throw error for auth without app property', async () => {
-    await expect(validatePassword({}, 'Password123$')).rejects.toThrow(
+  it('should throw error for auth without app property', () => {
+    expect(() => validatePassword({}, 'Password123$')).toThrow(
       "firebase.auth().validatePassword(*) 'auth' must be a valid Auth instance with an 'app' property",
     );
   });
 
-  it('should throw error for null password', async () => {
-    await expect(validatePassword(mockAuth, null)).rejects.toThrow(
+  it('should throw error for null password', () => {
+    expect(() => validatePassword(mockAuth, null)).toThrow(
       "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
     );
   });
 
-  it('should throw error for undefined password', async () => {
-    await expect(validatePassword(mockAuth, undefined)).rejects.toThrow(
+  it('should throw error for undefined password', () => {
+    expect(() => validatePassword(mockAuth, undefined)).toThrow(
       "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
     );
   });

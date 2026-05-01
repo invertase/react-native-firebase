@@ -1,0 +1,22 @@
+{
+  "extends": ["typedoc/tsdoc.json"],
+  "tagDefinitions": [
+    {
+      "tagName": "@error",
+      "syntaxKind": "block",
+      "allowMultiple": true
+    },
+    {
+      "tagName": "@android",
+      "syntaxKind": "block"
+    },
+    {
+      "tagName": "@salakar",
+      "syntaxKind": "block"
+    },
+    {
+      "tagName": "@platform",
+      "syntaxKind": "block"
+    }
+  ]
+}
