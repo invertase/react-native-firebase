@@ -3,6 +3,54 @@
 
 const { clearAllUsers, getLastSmsCode, getRandomPhoneNumber } = require('./helpers');
 
+function assertPhoneUserPublicSurface(user, phoneNumber) {
+  user.should.be.an.Object();
+  user.uid.should.be.a.String();
+  user.uid.length.should.be.greaterThan(0);
+  user.phoneNumber.should.equal(phoneNumber);
+  user.providerId.should.equal('firebase');
+  user.emailVerified.should.equal(false);
+  user.isAnonymous.should.equal(false);
+  should.equal(user.displayName, null);
+  should.equal(user.email, null);
+  should.equal(user.photoURL, null);
+  should.equal(user.tenantId, null);
+
+  user.metadata.should.be.an.Object();
+  user.metadata.creationTime.should.be.a.String();
+  user.metadata.lastSignInTime.should.be.a.String();
+
+  user.multiFactor.should.be.an.Object();
+  user.multiFactor.enrolledFactors.should.be.an.Array();
+
+  user.providerData.should.be.an.Array();
+  user.providerData.length.should.equal(1);
+  user.providerData[0].providerId.should.equal('phone');
+  user.providerData[0].phoneNumber.should.equal(phoneNumber);
+  should.equal(user.providerData[0].displayName, null);
+  should.equal(user.providerData[0].email, null);
+  should.equal(user.providerData[0].photoURL, null);
+
+  user.delete.should.be.a.Function();
+  user.getIdToken.should.be.a.Function();
+  user.getIdTokenResult.should.be.a.Function();
+  user.linkWithCredential.should.be.a.Function();
+  user.linkWithPopup.should.be.a.Function();
+  user.linkWithRedirect.should.be.a.Function();
+  user.reauthenticateWithCredential.should.be.a.Function();
+  user.reauthenticateWithPopup.should.be.a.Function();
+  user.reauthenticateWithRedirect.should.be.a.Function();
+  user.reload.should.be.a.Function();
+  user.sendEmailVerification.should.be.a.Function();
+  user.toJSON.should.be.a.Function();
+  user.unlink.should.be.a.Function();
+  user.updateEmail.should.be.a.Function();
+  user.updatePassword.should.be.a.Function();
+  user.updatePhoneNumber.should.be.a.Function();
+  user.updateProfile.should.be.a.Function();
+  user.verifyBeforeUpdateEmail.should.be.a.Function();
+}
+
 describe('auth() => Phone', function () {
   // Other platforms don't support phone auth
   if (Platform.other) {
@@ -46,12 +94,7 @@ describe('auth() => Phone', function () {
         confirmResult.confirm.should.be.a.Function();
         const lastSmsCode = await getLastSmsCode(testPhone);
         const userCredential = await confirmResult.confirm(lastSmsCode);
-        userCredential.user.should.be.instanceOf(
-          require('@react-native-firebase/auth/lib/User').default,
-        );
-
-        // Broken check, phone number is undefined
-        // userCredential.user.phoneNumber.should.equal(TEST_PHONE_A);
+        assertPhoneUserPublicSurface(userCredential.user, testPhone);
       });
 
       it('errors on invalid code', async function () {
@@ -237,12 +280,7 @@ describe('auth() => Phone', function () {
         confirmResult.confirm.should.be.a.Function();
         const lastSmsCode = await getLastSmsCode(testPhone);
         const userCredential = await confirmResult.confirm(lastSmsCode);
-        userCredential.user.should.be.instanceOf(
-          require('@react-native-firebase/auth/lib/User').default,
-        );
-
-        // Broken check, phone number is undefined
-        // userCredential.user.phoneNumber.should.equal(TEST_PHONE_A);
+        assertPhoneUserPublicSurface(userCredential.user, testPhone);
       });
 
       it('errors on invalid code', async function () {
