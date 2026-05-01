@@ -264,7 +264,7 @@ describe('analytics()', function () {
       it('calls logLevelEnd', async function () {
         await firebase.analytics().logLevelEnd({
           level: 123,
-          success: 'yes',
+          success: true,
         });
       });
     });
@@ -753,7 +753,7 @@ describe('analytics()', function () {
           const { getAnalytics, logLevelEnd } = analyticsModular;
           await logLevelEnd(getAnalytics(), {
             level: 123,
-            success: 'yes',
+            success: true,
           });
         });
       });
