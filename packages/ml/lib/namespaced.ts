@@ -15,29 +15,38 @@
  *
  */
 
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/dist/module/internal';
-import version from './version';
+import './types/internal';
+import type { FirebaseMLTypes } from './types/namespaced';
+import { version } from './version';
 
-const statics = {};
+const statics = {
+  SDK_VERSION: version,
+};
 
 const namespace = 'ml';
 
 const nativeModuleName = 'RNFBMLModule';
 
-class FirebaseMLModule extends FirebaseModule {}
+class FirebaseMLModule extends FirebaseModule<typeof nativeModuleName> {}
+
+type MLNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseMLTypes.Module,
+  FirebaseMLTypes.Statics
+> & {
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
 
 // import { SDK_VERSION } from '@react-native-firebase/ml';
 export const SDK_VERSION = version;
 
-export * from './modular';
-
-// import ML from '@react-native-firebase/ml';
-// ml().X(...);
-export default createModuleNamespace({
+const defaultExport = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -46,12 +55,14 @@ export default createModuleNamespace({
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseMLModule,
-});
+}) as unknown as MLNamespace;
+
+export default defaultExport;
 
 // import ml, { firebase } from '@react-native-firebase/ml';
 // ml().X(...);
 // firebase.ml().X(...);
-export const firebase = getFirebaseRoot();
-
-// e.g.
-// // import { MLCloudTextRecognizerModelType } from '@react-native-firebase/ml';
+export const firebase = getFirebaseRoot() as unknown as ReactNativeFirebase.Module & {
+  ml: typeof defaultExport;
+  app(name?: string): ReactNativeFirebase.FirebaseApp & { ml(): FirebaseMLTypes.Module };
+};

@@ -15,7 +15,8 @@
  *
  */
 
-import { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+
 /**
  * Firebase ML package for React Native.
  *
@@ -52,46 +53,40 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase ml
  */
+/**
+ * @deprecated Use the exported types directly instead.
+ * FirebaseMLTypes namespace is kept for backwards compatibility.
+ */
+/* eslint-disable @typescript-eslint/no-namespace */
 export namespace FirebaseMLTypes {
-  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+  /**
+   * @deprecated Use the exported types directly instead. FirebaseMLTypes namespace is kept for backwards compatibility.
+   */
+  type FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
+  /**
+   * @deprecated Use the default export statics instead.
+   */
   export interface Statics {
+    /** @deprecated Use the default export statics instead. */
     SDK_VERSION: string;
   }
 
-  export class Module extends FirebaseModule {
+  /**
+   * @deprecated Use the exported `FirebaseML` type instead.
+   */
+  export interface Module extends FirebaseModule {
     /**
+     * @deprecated Use the exported `FirebaseML` type instead.
+     *
      * The current `FirebaseApp` instance for this Firebase service.
      */
     app: ReactNativeFirebase.FirebaseApp;
   }
 }
 
-type MLNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  FirebaseMLTypes.Module,
-  FirebaseMLTypes.Statics
-> & {
-  firebase: ReactNativeFirebase.Module;
-  app(name?: string): ReactNativeFirebase.FirebaseApp;
-};
-
-declare const defaultExport: MLNamespace;
-
-export const firebase: ReactNativeFirebase.Module & {
-  ml: typeof defaultExport;
-  app(name?: string): ReactNativeFirebase.FirebaseApp & { ml(): FirebaseMLTypes.Module };
-};
-
-export default defaultExport;
-
-export * from './modular';
-
-/**
- * Attach namespace to `firebase.` and `FirebaseApp.`.
- */
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
-    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
       ml: FirebaseModuleWithStaticsAndApp<FirebaseMLTypes.Module, FirebaseMLTypes.Statics>;
     }
@@ -101,3 +96,4 @@ declare module '@react-native-firebase/app' {
     }
   }
 }
+/* eslint-enable @typescript-eslint/no-namespace */

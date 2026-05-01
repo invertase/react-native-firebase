@@ -1,4 +1,12 @@
-import ml, { firebase, getML } from '.';
+// Import from package sources so root `yarn tsc:compile` does not require `packages/ml/dist`.
+import ml, {
+  firebase,
+  getML,
+  SDK_VERSION,
+  type FirebaseApp,
+  type FirebaseML,
+  type FirebaseMLTypes,
+} from './lib/index';
 
 console.log(ml().app);
 
@@ -33,3 +41,22 @@ console.log(modularML1.app.name);
 
 const modularML2 = getML(firebase.app());
 console.log(modularML2.app.name);
+
+// modular public types
+const modularInstance: FirebaseML = getML();
+const modularWithNamedApp: FirebaseML = getML(firebase.app());
+console.log(modularInstance.app.name);
+console.log(modularWithNamedApp.app.name);
+
+const namedApp: FirebaseApp = firebase.app();
+console.log(getML(namedApp).app.name);
+
+// named SDK_VERSION export
+const sdkVersion: string = SDK_VERSION;
+console.log(sdkVersion);
+
+// deprecated namespace types remain assignable from runtime values
+const namespaceModule: FirebaseMLTypes.Module = firebase.ml();
+const namespaceStatics: FirebaseMLTypes.Statics = firebase.ml;
+console.log(namespaceModule.app.name);
+console.log(namespaceStatics.SDK_VERSION);
