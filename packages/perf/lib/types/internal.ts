@@ -15,7 +15,37 @@
  *
  */
 
-import type { HttpMethod } from './perf';
+import type {
+  FirebasePerformance,
+  HttpMetric,
+  HttpMethod,
+  PerformanceTrace,
+  ScreenTrace,
+} from './perf';
+
+export type PerfModularDeprecationArg = string;
+
+/**
+ * Namespaced perf instance used by modular entrypoints; methods accept an optional modular deprecation token.
+ */
+export interface PerfInternal extends FirebasePerformance {
+  newTrace(name: string, deprecationArg?: PerfModularDeprecationArg): PerformanceTrace;
+  startTrace(name: string, deprecationArg?: PerfModularDeprecationArg): Promise<PerformanceTrace>;
+  newScreenTrace(screenName: string, deprecationArg?: PerfModularDeprecationArg): ScreenTrace;
+  startScreenTrace(
+    screenName: string,
+    deprecationArg?: PerfModularDeprecationArg,
+  ): Promise<ScreenTrace>;
+  newHttpMetric(
+    url: string,
+    httpMethod: HttpMethod,
+    deprecationArg?: PerfModularDeprecationArg,
+  ): HttpMetric;
+}
+
+export function perfInternal(performance: FirebasePerformance): PerfInternal {
+  return performance as PerfInternal;
+}
 
 export interface RNFBPerfTraceData {
   metrics: Record<string, number>;

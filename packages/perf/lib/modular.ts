@@ -19,119 +19,95 @@ import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 
 import type { FirebaseApp } from '@react-native-firebase/app';
-import type { HttpMetric, HttpMethod, Performance, ScreenTrace, Trace } from './types/perf';
+import type {
+  FirebasePerformance,
+  HttpMetric,
+  HttpMethod,
+  PerformanceSettings,
+  PerformanceTrace,
+  ScreenTrace,
+} from './types/perf';
 
-type PerformanceSettings = {
-  dataCollectionEnabled: boolean;
-};
-
-type PerformanceSettingsInternal = Partial<
-  PerformanceSettings & {
-    instrumentationEnabled: boolean;
-  }
->;
-
-type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
-  ? (...args: [...P, typeof MODULAR_DEPRECATION_ARG]) => R
-  : never;
+import { perfInternal as toPerfInternal } from './types/internal';
 
 /**
- * Returns a Performance instance for the given app.
- * @param app - FirebaseApp. Optional.
- * @returns {Performance}
+ * Returns a {@link FirebasePerformance} instance for the given app.
+ * @param app - The FirebaseApp to use. Optional; defaults to the default app.
  */
-export function getPerformance(app?: FirebaseApp): Performance {
+export function getPerformance(app?: FirebaseApp): FirebasePerformance {
   if (app) {
-    return getApp(app.name).perf();
+    return getApp(app.name).perf() as FirebasePerformance;
   }
 
-  return getApp().perf();
+  return getApp().perf() as FirebasePerformance;
 }
 
 /**
- * Returns a Performance instance for the given app.
- * @param app - FirebaseApp. Required.
- * @param settings - Optional PerformanceSettings. Set "dataCollectionEnabled" which will enable/disable Performance collection.
- * @returns {Performance}
+ * Returns a {@link FirebasePerformance} instance for the given app (aligned with the Firebase JS SDK).
+ * Can only be called once per app during initialization in typical usage.
+ *
+ * @param app - The FirebaseApp to use.
+ * @param settings - Optional {@link PerformanceSettings}.
  */
-export async function initializePerformance(
+export function initializePerformance(
   app: FirebaseApp,
   settings?: PerformanceSettings,
-): Promise<Performance> {
-  const perf = getApp(app.name).perf();
-  const resolvedSettings = settings as PerformanceSettingsInternal | undefined;
+): FirebasePerformance {
+  const perf = getPerformance(app);
 
-  if (resolvedSettings && resolvedSettings.dataCollectionEnabled !== undefined) {
-    perf.dataCollectionEnabled = resolvedSettings.dataCollectionEnabled;
+  if (settings?.dataCollectionEnabled !== undefined) {
+    perf.dataCollectionEnabled = settings.dataCollectionEnabled;
   }
-  if (resolvedSettings && resolvedSettings.instrumentationEnabled !== undefined) {
-    perf.instrumentationEnabled = resolvedSettings.instrumentationEnabled;
+  if (settings?.instrumentationEnabled !== undefined) {
+    perf.instrumentationEnabled = settings.instrumentationEnabled;
   }
 
   return perf;
 }
 
 /**
- * Returns a Trace instance.
- * @param perf - Performance instance
- * @param identifier - A String to identify the Trace instance
- * @returns {Trace}
+ * Returns a new {@link PerformanceTrace} instance.
+ * @param performance - The {@link FirebasePerformance} instance to use.
+ * @param name - The name of the trace.
  */
-export function trace(perf: Performance, identifier: string): Trace {
-  return (perf.newTrace as WithModularDeprecationArg<Performance['newTrace']>).call(
-    perf,
-    identifier,
-    MODULAR_DEPRECATION_ARG,
-  );
+export function trace(performance: FirebasePerformance, name: string): PerformanceTrace {
+  return toPerfInternal(performance).newTrace(name, MODULAR_DEPRECATION_ARG);
 }
 
 /**
- * Returns a HttpMetric instance.
- * @param perf - Performance instance
- * @param identifier - A String to identify the HttpMetric instance
- * @returns {HttpMetric}
+ * Creates an {@link HttpMetric} for a URL and HTTP method (React Native).
+ * @param performance - The {@link FirebasePerformance} instance to use.
+ * @param url - Request URL.
+ * @param httpMethod - HTTP method.
  */
 export function httpMetric(
-  perf: Performance,
-  identifier: string,
+  performance: FirebasePerformance,
+  url: string,
   httpMethod: HttpMethod,
 ): HttpMetric {
-  return (perf.newHttpMetric as WithModularDeprecationArg<Performance['newHttpMetric']>).call(
-    perf,
-    identifier,
-    httpMethod,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return toPerfInternal(performance).newHttpMetric(url, httpMethod, MODULAR_DEPRECATION_ARG);
 }
 
 /**
- * Creates a ScreenTrace instance with the given identifier.
+ * Creates a {@link ScreenTrace} with the given screen name.
  * Throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
  * @platform android Android !== 9.0.0 && Android !== 9.1.0
- * @param perf - Performance instance
- * @param identifier Name of the trace, no leading or trailing whitespace allowed, no leading underscore '_' character allowed, max length is 100.
- * @returns {ScreenTrace}
+ * @param performance - The {@link FirebasePerformance} instance to use.
+ * @param screenName - Screen name; no leading/trailing whitespace, no leading `_`, max length 100.
  */
-export function newScreenTrace(perf: Performance, identifier: string): ScreenTrace {
-  return (perf.newScreenTrace as WithModularDeprecationArg<Performance['newScreenTrace']>).call(
-    perf,
-    identifier,
-    MODULAR_DEPRECATION_ARG,
-  );
+export function newScreenTrace(performance: FirebasePerformance, screenName: string): ScreenTrace {
+  return toPerfInternal(performance).newScreenTrace(screenName, MODULAR_DEPRECATION_ARG);
 }
 
 /**
- * Creates a ScreenTrace instance with the given identifier and immediately starts it.
- * Throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
+ * Creates a {@link ScreenTrace} and starts it immediately.
  * @platform android Android !== 9.0.0 && Android !== 9.1.0
- * @param perf - Performance instance
- * @param identifier Name of the screen
- * @returns {Promise<ScreenTrace>}
+ * @param performance - The {@link FirebasePerformance} instance to use.
+ * @param screenName - Name of the screen.
  */
-export function startScreenTrace(perf: Performance, identifier: string): Promise<ScreenTrace> {
-  return (perf.startScreenTrace as WithModularDeprecationArg<Performance['startScreenTrace']>).call(
-    perf,
-    identifier,
-    MODULAR_DEPRECATION_ARG,
-  );
+export function startScreenTrace(
+  performance: FirebasePerformance,
+  screenName: string,
+): Promise<ScreenTrace> {
+  return toPerfInternal(performance).startScreenTrace(screenName, MODULAR_DEPRECATION_ARG);
 }

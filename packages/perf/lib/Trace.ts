@@ -63,15 +63,17 @@ export default class Trace extends MetricWithAttributes {
     this._metrics[metricName] = value;
   }
 
-  incrementMetric(metricName: string, incrementBy: number): void {
+  incrementMetric(metricName: string, num?: number): void {
     // TODO(VALIDATION): metricName: no leading or trailing whitespace, no leading underscore '_' character, max length is 32 characters
     // TODO(VALIDATION): value: >= 0
     if (!isString(metricName)) {
       throw new Error("firebase.perf.Trace.incrementMetric(*, _) 'metricName' must be a string.");
     }
 
+    const incrementBy = num ?? 1;
+
     if (!isNumber(incrementBy)) {
-      throw new Error("firebase.perf.Trace.incrementMetric(_, *) 'incrementBy' must be a number.");
+      throw new Error("firebase.perf.Trace.incrementMetric(_, *) 'num' must be a number.");
     }
 
     this._metrics[metricName] = this.getMetric(metricName) + incrementBy;

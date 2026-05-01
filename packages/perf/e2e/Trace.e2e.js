@@ -92,10 +92,10 @@ describe('Trace modular', function () {
     //   });
     // });
     describe('getAttribute()', function () {
-      it('should return null if attribute does not exist', async function () {
+      it('should return undefined if attribute does not exist', async function () {
         const trace = firebase.perf().newTrace('invertase');
         const value = trace.getAttribute('inver');
-        should.equal(value, null);
+        should.equal(value, undefined);
       });
 
       it('should return an attribute string value', async function () {
@@ -417,12 +417,12 @@ describe('Trace modular', function () {
     //   });
     // });
     describe('getAttribute()', function () {
-      it('should return null if attribute does not exist', async function () {
+      it('should return undefined if attribute does not exist', async function () {
         const { getPerformance, trace } = perfModular;
         const perf = getPerformance();
         const traceInvertase = trace(perf, 'invertase');
         const value = traceInvertase.getAttribute('inver');
-        should.equal(value, null);
+        should.equal(value, undefined);
       });
 
       it('should return an attribute string value', async function () {

@@ -18,6 +18,16 @@
 import type { FirebaseApp } from '@react-native-firebase/app';
 
 /**
+ * Configuration options for Performance Monitoring (aligned with {@link https://firebase.google.com/docs/reference/js/performance.performancesettings | PerformanceSettings} in the Firebase JS SDK).
+ */
+export interface PerformanceSettings {
+  /** Whether to collect custom events. */
+  dataCollectionEnabled?: boolean;
+  /** Whether to collect out-of-the-box events. */
+  instrumentationEnabled?: boolean;
+}
+
+/**
  * Valid HTTP methods for HTTP metrics.
  */
 export type HttpMethod =
@@ -32,22 +42,29 @@ export type HttpMethod =
   | 'OPTIONS';
 
 /**
- * Trace allows you to time the beginning to end of a certain action in your app with additional metric values and attributes.
+ * A performance trace (aligned with {@link https://firebase.google.com/docs/reference/js/performance.performancetrace | PerformanceTrace} in the Firebase JS SDK).
+ *
+ * @remarks React Native uses async `start`/`stop` (native bridge). The web SDK uses synchronous `start`/`stop`. React Native also exposes `getMetrics` and `removeMetric`, which are not on the web `PerformanceTrace` type.
  */
-export interface Trace {
-  getAttribute(attribute: string): string | null;
-  putAttribute(attribute: string, value: string): void;
+export interface PerformanceTrace {
+  getAttribute(attr: string): string | undefined;
+  putAttribute(attr: string, value: string): void;
   getMetric(metricName: string): number;
   getMetrics(): { [key: string]: number };
-  putMetric(metricName: string, value: number): void;
-  incrementMetric(metricName: string, incrementBy: number): void;
+  putMetric(metricName: string, num: number): void;
+  incrementMetric(metricName: string, num?: number): void;
   removeMetric(metricName: string): void;
   start(): Promise<null>;
   stop(): Promise<null>;
 }
 
 /**
- * ScreenTrace allows you to record a custom screen rendering trace of slow and frozen frames.
+ * @deprecated Use {@link PerformanceTrace} instead. Kept for older modular imports.
+ */
+export type Trace = PerformanceTrace;
+
+/**
+ * Screen trace for slow/frozen frames (React Native).
  */
 export interface ScreenTrace {
   start(): Promise<null>;
@@ -55,13 +72,13 @@ export interface ScreenTrace {
 }
 
 /**
- * Metric used to collect data for network requests/responses. A new instance must be used for every request/response.
+ * Network request metric (React Native; not part of the web Performance modular surface).
  */
 export interface HttpMetric {
-  getAttribute(attribute: string): string | null;
+  getAttribute(attr: string): string | undefined;
   getAttributes(): { [key: string]: string };
-  putAttribute(attribute: string, value: string): void;
-  removeAttribute(attribute: string): void;
+  putAttribute(attr: string, value: string): void;
+  removeAttribute(attr: string): void;
   setHttpResponseCode(code: number | null): void;
   setRequestPayloadSize(bytes: number | null): void;
   setResponsePayloadSize(bytes: number | null): void;
@@ -71,23 +88,31 @@ export interface HttpMetric {
 }
 
 /**
- * The Firebase Performance Monitoring service interface (modular API).
+ * Firebase Performance Monitoring service (aligned with {@link https://firebase.google.com/docs/reference/js/performance.firebaseperformance | FirebasePerformance} in the Firebase JS SDK).
  *
- * > This module is available for the default app only.
+ * @remarks React Native adds collection/read APIs backed by native (`isPerformanceCollectionEnabled`, custom traces, HTTP metrics, screen traces).
  */
-export interface Performance {
-  /** The FirebaseApp this Performance instance is associated with */
+export interface FirebasePerformance {
+  /** The FirebaseApp this Performance instance is associated with. */
   app: FirebaseApp;
-  isPerformanceCollectionEnabled: boolean;
+  /** Controls logging of automatic traces and HTTP/S network monitoring. */
   instrumentationEnabled: boolean;
+  /** Controls logging of custom traces. */
   dataCollectionEnabled: boolean;
+  /** Whether performance data collection is enabled for this app instance (native). */
+  isPerformanceCollectionEnabled: boolean;
   /**
-   * @deprecated prefer setting `dataCollectionEnabled = boolean`.
+   * @deprecated Prefer assigning {@link FirebasePerformance.dataCollectionEnabled}.
    */
   setPerformanceCollectionEnabled(enabled: boolean): Promise<null>;
-  newTrace(identifier: string): Trace;
-  startTrace(identifier: string): Promise<Trace>;
-  newScreenTrace(identifier: string): ScreenTrace;
-  startScreenTrace(identifier: string): Promise<ScreenTrace>;
+  newTrace(name: string): PerformanceTrace;
+  startTrace(name: string): Promise<PerformanceTrace>;
+  newScreenTrace(screenName: string): ScreenTrace;
+  startScreenTrace(screenName: string): Promise<ScreenTrace>;
   newHttpMetric(url: string, httpMethod: HttpMethod): HttpMetric;
 }
+
+/**
+ * @deprecated Use {@link FirebasePerformance} instead. Kept for older modular imports.
+ */
+export type Performance = FirebasePerformance;

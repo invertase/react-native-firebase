@@ -76,15 +76,15 @@ export namespace FirebasePerformanceTypes {
     | 'OPTIONS';
 
   /**
-   * @deprecated Use the `Trace` type from the modular package exports instead.
+   * @deprecated Use the `PerformanceTrace` type from the modular package exports instead.
    */
   export interface Trace {
-    getAttribute(attribute: string): string | null;
+    getAttribute(attribute: string): string | undefined;
     putAttribute(attribute: string, value: string): void;
     getMetric(metricName: string): number;
     getMetrics(): { [key: string]: number };
     putMetric(metricName: string, value: number): void;
-    incrementMetric(metricName: string, incrementBy: number): void;
+    incrementMetric(metricName: string, incrementBy?: number): void;
     removeMetric(metricName: string): void;
     start(): Promise<null>;
     stop(): Promise<null>;
@@ -102,7 +102,7 @@ export namespace FirebasePerformanceTypes {
    * @deprecated Use the `HttpMetric` type from the modular package exports instead.
    */
   export interface HttpMetric {
-    getAttribute(attribute: string): string | null;
+    getAttribute(attribute: string): string | undefined;
     getAttributes(): { [key: string]: string };
     putAttribute(attribute: string, value: string): void;
     removeAttribute(attribute: string): void;
@@ -122,7 +122,7 @@ export namespace FirebasePerformanceTypes {
   }
 
   /**
-   * @deprecated Use the `Performance` type from the modular package exports instead.
+   * @deprecated Use the `FirebasePerformance` type from the modular package exports instead.
    */
   export interface Module extends FirebaseModule {
     app: ReactNativeFirebase.FirebaseApp;
