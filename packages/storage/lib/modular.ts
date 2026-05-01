@@ -17,6 +17,7 @@
 
 import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
+import { NativeFirebaseError } from '@react-native-firebase/app/dist/module/internal';
 import type { FirebaseApp } from '@react-native-firebase/app';
 import type {
   FirebaseStorage,
@@ -24,11 +25,11 @@ import type {
   FullMetadata,
   ListResult,
   ListOptions,
-  TaskResult,
   Task,
   SettableMetadata,
   UploadMetadata,
   EmulatorMockTokenOptions,
+  UploadResult,
 } from './types/storage';
 import { TaskEvent, TaskState } from './types/storage';
 import type { StorageReferenceInternal, StorageInternal } from './types/internal';
@@ -269,43 +270,67 @@ export function updateMetadata(
 
 /**
  * Uploads data to this object's location. The upload is not resumable. If the upload is canceled,
- * the Promise will reject with the TaskSnapshot. If there is an error it will reject with the StorageError
+ * the Promise rejects with a {@link ReactNativeFirebase.NativeFirebaseError} (typically `storage/cancelled`),
+ * matching other storage upload tasks. Other failures reject with the same error type as {@link uploadBytesResumable}.
  * @param storageRef - Storage `Reference` instance.
  * @param data - The data (Blob | Uint8Array | ArrayBuffer) to upload to the storage bucket at the reference location.
  * @param metadata - A Storage `UploadMetadata` instance to update. Optional.
- * @returns {Promise<TaskResult>}
+ * @returns {Promise<UploadResult>}
  */
 export async function uploadBytes(
   storageRef: StorageReference,
   data: Blob | Uint8Array | ArrayBuffer,
   metadata?: UploadMetadata,
-): Promise<TaskResult> {
+): Promise<UploadResult> {
   const task = uploadBytesResumable(storageRef, data, metadata);
   return new Promise((resolve, reject) => {
-    task.on(
+    let completed = false;
+    const subscription: { unsubscribe?: () => void } = {};
+
+    const settle = (fn: () => void) => {
+      if (completed) {
+        return;
+      }
+      completed = true;
+      subscription.unsubscribe?.();
+      fn();
+    };
+
+    subscription.unsubscribe = task.on(
       TaskEvent.STATE_CHANGED,
       taskSnapshot => {
         switch (taskSnapshot.state) {
           case TaskState.RUNNING:
             break;
           case TaskState.PAUSED:
+            // we are wrapping the resumable version, just resume if it pauses
             task.resume();
             break;
           case TaskState.SUCCESS:
-            resolve({ ref: taskSnapshot.ref, metadata: taskSnapshot.metadata });
+            settle(() => resolve({ ref: taskSnapshot.ref, metadata: taskSnapshot.metadata }));
             break;
           case TaskState.CANCELED:
-            // The TaskSnapshot may be useful to have if we reject due to cancel
-            reject(taskSnapshot);
+            settle(() =>
+              reject(
+                NativeFirebaseError.fromEvent(
+                  { code: 'cancelled', message: 'User cancelled the operation.' },
+                  'storage',
+                ),
+              ),
+            );
             break;
           case TaskState.ERROR:
-            // this will be handled in the dedicated error listener
+            // this is handled in the dedicated error listener below
             break;
           default:
-            throw new Error(`Unhandled task state in uploadBytes: ${taskSnapshot.state}`);
+            settle(() =>
+              reject(new Error(`Unhandled task state in uploadBytes: ${taskSnapshot.state}`)),
+            );
         }
       },
-      error => reject(error),
+      error => {
+        settle(() => reject(error));
+      },
     );
   });
 }

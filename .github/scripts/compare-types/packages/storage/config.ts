@@ -167,13 +167,6 @@ const config: PackageConfig = {
         'React Native environment does not have the Web Streams API.',
     },
     {
-      name: 'uploadBytes',
-      reason:
-        'Returns `Promise<TaskResult>` in RN Firebase instead of `Promise<UploadResult>`. ' +
-        '`TaskResult` is a type alias for `UploadResult`, so the runtime shape is identical; ' +
-        'the different name is for consistency with the native task system.',
-    },
-    {
       name: 'uploadBytesResumable',
       reason:
         'Returns `Task` in RN Firebase instead of `UploadTask`. `Task` is a type alias ' +
