@@ -292,6 +292,7 @@ RCT_EXPORT_METHOD(setConsent
     newParams[kFIRParameterItems] = [newItems copy];
   }
   [self rnfb_coerceLongNumericParametersInMutableDictionary:newParams];
+  [self rnfb_coerceSuccessParameterInMutableDictionary:newParams];
   NSNumber *extendSession = [newParams valueForKey:kFIRParameterExtendSession];
   if ([extendSession isEqualToNumber:@1]) {
     newParams[kFIRParameterExtendSession] = @YES;
@@ -306,6 +307,24 @@ RCT_EXPORT_METHOD(setConsent
       dict[key] = @([value integerValue]);
     }
   }
+}
+
+- (void)rnfb_coerceSuccessParameterInMutableDictionary:(NSMutableDictionary *)dict {
+  id value = dict[kFIRParameterSuccess];
+  if (value == nil || value == [NSNull null]) {
+    return;
+  }
+  int success = 0;
+  if ([value isKindOfClass:[NSString class]]) {
+    NSString *lower = [(NSString *)value lowercaseString];
+    if ([lower isEqualToString:@"true"] || [lower isEqualToString:@"yes"] ||
+        [lower isEqualToString:@"1"]) {
+      success = 1;
+    }
+  } else {
+    success = [value boolValue] ? 1 : 0;
+  }
+  dict[kFIRParameterSuccess] = @(success);
 }
 
 /// Converts null values received over the bridge from NSNull to nil

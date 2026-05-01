@@ -1390,7 +1390,7 @@ describe('Analytics', function () {
           () =>
             analytics.logLevelEnd({
               level: 12,
-              success: 'true',
+              success: true,
             }),
           'logLevelEnd',
         );
@@ -1401,7 +1401,7 @@ describe('Analytics', function () {
           () =>
             logLevelEnd(analytics, {
               level: 12,
-              success: 'true',
+              success: true,
             }),
           'logLevelEnd',
         );

@@ -26,6 +26,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import java.util.ArrayList;
+import java.util.Locale;
 import javax.annotation.Nullable;
 
 public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModule {
@@ -233,6 +234,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
     }
 
     coerceLongNumericParams(bundle);
+    coerceSuccessParamToLong(bundle);
 
     if (bundle.containsKey(FirebaseAnalytics.Param.EXTEND_SESSION)) {
       double number = bundle.getDouble(FirebaseAnalytics.Param.EXTEND_SESSION);
@@ -248,5 +250,23 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
         bundle.putLong(key, (long) number);
       }
     }
+  }
+
+  private static void coerceSuccessParamToLong(Bundle bundle) {
+    if (!bundle.containsKey(FirebaseAnalytics.Param.SUCCESS)) {
+      return;
+    }
+    Object value = bundle.get(FirebaseAnalytics.Param.SUCCESS);
+    bundle.remove(FirebaseAnalytics.Param.SUCCESS);
+    long asLong = 0L;
+    if (value instanceof Boolean) {
+      asLong = (Boolean) value ? 1L : 0L;
+    } else if (value instanceof Number) {
+      asLong = ((Number) value).longValue() != 0L ? 1L : 0L;
+    } else if (value instanceof String) {
+      String s = ((String) value).trim().toLowerCase(Locale.ROOT);
+      asLong = ("1".equals(s) || "true".equals(s) || "yes".equals(s)) ? 1L : 0L;
+    }
+    bundle.putLong(FirebaseAnalytics.Param.SUCCESS, asLong);
   }
 }
