@@ -30,6 +30,22 @@ import javax.annotation.Nullable;
 
 public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "Analytics";
+
+  /**
+   * GA4 parameters that must be sent as long values. React Native's bridge stores JS numbers as
+   * doubles in {@link Bundle}; Firebase Analytics expects integral types for these keys.
+   */
+  private static final String[] LONG_NUMERIC_PARAM_KEYS =
+      new String[] {
+        FirebaseAnalytics.Param.QUANTITY,
+        FirebaseAnalytics.Param.INDEX,
+        FirebaseAnalytics.Param.LEVEL,
+        FirebaseAnalytics.Param.NUMBER_OF_NIGHTS,
+        FirebaseAnalytics.Param.NUMBER_OF_PASSENGERS,
+        FirebaseAnalytics.Param.NUMBER_OF_ROOMS,
+        FirebaseAnalytics.Param.SCORE,
+      };
+
   private final UniversalFirebaseAnalyticsModule module;
 
   ReactNativeFirebaseAnalyticsModule(ReactApplicationContext reactContext) {
@@ -207,14 +223,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
         for (Object item : itemsArray) {
           if (item instanceof Bundle) {
             Bundle itemBundle = (Bundle) item;
-            if (itemBundle.containsKey(FirebaseAnalytics.Param.QUANTITY)) {
-              double number = itemBundle.getDouble(FirebaseAnalytics.Param.QUANTITY);
-              itemBundle.putInt(FirebaseAnalytics.Param.QUANTITY, (int) number);
-            }
-            if (itemBundle.containsKey(FirebaseAnalytics.Param.INDEX)) {
-              double number = itemBundle.getDouble(FirebaseAnalytics.Param.INDEX);
-              itemBundle.putLong(FirebaseAnalytics.Param.INDEX, (long) number);
-            }
+            coerceLongNumericParams(itemBundle);
             validBundles.add(itemBundle);
           }
         }
@@ -223,10 +232,21 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
       }
     }
 
+    coerceLongNumericParams(bundle);
+
     if (bundle.containsKey(FirebaseAnalytics.Param.EXTEND_SESSION)) {
       double number = bundle.getDouble(FirebaseAnalytics.Param.EXTEND_SESSION);
       bundle.putLong(FirebaseAnalytics.Param.EXTEND_SESSION, (long) number);
     }
     return bundle;
+  }
+
+  private static void coerceLongNumericParams(Bundle bundle) {
+    for (String key : LONG_NUMERIC_PARAM_KEYS) {
+      if (bundle.containsKey(key)) {
+        double number = bundle.getDouble(key);
+        bundle.putLong(key, (long) number);
+      }
+    }
   }
 }

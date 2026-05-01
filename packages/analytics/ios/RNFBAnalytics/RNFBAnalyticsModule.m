@@ -32,6 +32,24 @@
 #import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBAnalyticsModule.h"
 
+/** GA4 parameters that must be sent as integer NSNumber values (not doubles from JS). */
+static NSArray<NSString *> *RNFBAnalyticsLongNumericParameterKeys(void) {
+  static NSArray<NSString *> *keys;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    keys = @[
+      kFIRParameterQuantity,
+      kFIRParameterIndex,
+      kFIRParameterLevel,
+      kFIRParameterNumberOfNights,
+      kFIRParameterNumberOfPassengers,
+      kFIRParameterNumberOfRooms,
+      kFIRParameterScore,
+    ];
+  });
+  return keys;
+}
+
 @implementation RNFBAnalyticsModule
 #pragma mark -
 #pragma mark Module Setup
@@ -268,21 +286,26 @@ RCT_EXPORT_METHOD(setConsent
     [(NSArray *)newParams[kFIRParameterItems]
         enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
           NSMutableDictionary *item = [obj mutableCopy];
-          if (item[kFIRParameterQuantity]) {
-            item[kFIRParameterQuantity] = @([item[kFIRParameterQuantity] integerValue]);
-          }
-          if (item[kFIRParameterIndex]) {
-            item[kFIRParameterIndex] = @([item[kFIRParameterIndex] integerValue]);
-          }
+          [self rnfb_coerceLongNumericParametersInMutableDictionary:item];
           [newItems addObject:[item copy]];
         }];
     newParams[kFIRParameterItems] = [newItems copy];
   }
+  [self rnfb_coerceLongNumericParametersInMutableDictionary:newParams];
   NSNumber *extendSession = [newParams valueForKey:kFIRParameterExtendSession];
   if ([extendSession isEqualToNumber:@1]) {
     newParams[kFIRParameterExtendSession] = @YES;
   }
   return [newParams copy];
+}
+
+- (void)rnfb_coerceLongNumericParametersInMutableDictionary:(NSMutableDictionary *)dict {
+  for (NSString *key in RNFBAnalyticsLongNumericParameterKeys()) {
+    id value = dict[key];
+    if (value != nil && value != [NSNull null]) {
+      dict[key] = @([value integerValue]);
+    }
+  }
 }
 
 /// Converts null values received over the bridge from NSNull to nil
