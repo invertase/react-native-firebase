@@ -15,11 +15,20 @@
  *
  */
 
-export type { FirebaseML } from './types/ml';
+import { getApp } from '@react-native-firebase/app';
+import type { FirebaseApp } from '@react-native-firebase/app';
+import type { FirebaseML } from './types/ml';
 
-export type { FirebaseMLTypes } from './types/namespaced';
-
-export * from './modular';
-
-export * from './namespaced';
-export { default } from './namespaced';
+/**
+ * Returns the existing default {@link FirebaseML} instance that is associated with the
+ * default {@link @firebase/app!FirebaseApp}. If no instance exists, initializes a new
+ * instance with default settings.
+ *
+ * @returns The {@link FirebaseML} instance of the provided app.
+ */
+export function getML(app?: FirebaseApp): FirebaseML {
+  if (app) {
+    return getApp(app.name).ml();
+  }
+  return getApp().ml();
+}
