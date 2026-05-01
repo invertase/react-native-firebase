@@ -112,10 +112,10 @@ describe('HttpMetric modular', function () {
     // });
 
     describe('getAttribute()', function () {
-      it('should return undefined if attribute does not exist', async function () {
+      it('should return null if attribute does not exist', async function () {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         const value = httpMetric.getAttribute('inver');
-        should.equal(value, undefined);
+        should.equal(value, null);
       });
 
       it('should return an attribute string value', async function () {
@@ -415,12 +415,12 @@ describe('HttpMetric modular', function () {
     // });
 
     describe('getAttribute()', function () {
-      it('should return undefined if attribute does not exist', async function () {
+      it('should return null if attribute does not exist', async function () {
         const { getPerformance, httpMetric } = perfModular;
         const perf = getPerformance();
         const httpMetricRequest = httpMetric(perf, aCoolUrl, 'GET');
         const value = httpMetricRequest.getAttribute('inver');
-        should.equal(value, undefined);
+        should.equal(value, null);
       });
 
       it('should return an attribute string value', async function () {

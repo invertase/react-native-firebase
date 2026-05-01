@@ -32,11 +32,11 @@ export default class MetricWithAttributes {
     this._attributes = {};
   }
 
-  getAttribute(attribute: string): string | undefined {
+  getAttribute(attribute: string): string | null {
     if (!isString(attribute)) {
       throw new Error("firebase.perf.*.getAttribute(*) 'attribute' must be a string.");
     }
-    return hasOwnProperty(this._attributes, attribute) ? this._attributes[attribute]! : undefined;
+    return hasOwnProperty(this._attributes, attribute) ? this._attributes[attribute]! : null;
   }
 
   getAttributes(): Record<string, string> {
