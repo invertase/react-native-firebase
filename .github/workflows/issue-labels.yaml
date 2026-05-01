@@ -22,7 +22,8 @@ jobs:
 
       - name: Add 'Needs Attention' label if OP responded and it was open
         if: env.op_comment == 'true' && github.event.issue.state == 'open'
-        uses: actions-ecosystem/action-add-labels@v1
+        # https://github.com/actions-ecosystem/action-add-labels/releases
+        uses: actions-ecosystem/action-add-labels@18f1af5e3544586314bbe15c0273249c770b2daf # v1
         with:
           labels: 'Needs Attention'
         env:
@@ -30,7 +31,8 @@ jobs:
 
       - name: Remove 'blocked customer-response' label if OP responded and it was open
         if: env.op_comment == 'true' && github.event.issue.state == 'open'
-        uses: actions-ecosystem/action-remove-labels@v1
+        # https://github.com/actions-ecosystem/action-remove-labels/releases
+        uses: actions-ecosystem/action-remove-labels@2ce5d41b4b6aa8503e285553f75ed56e0a40bae0 # v1
         with:
           labels: 'blocked: customer-response'
         env:
@@ -38,7 +40,8 @@ jobs:
 
       - name: Add comment if OP responded but issue was closed
         if: env.op_comment == 'true' && github.event.issue.state == 'closed'
-        uses: actions-ecosystem/action-create-comment@v1
+        # https://github.com/actions-ecosystem/action-create-comment/releases
+        uses: actions-ecosystem/action-create-comment@e23bc59fbff7aac7f9044bd66c2dc0fe1286f80b # v1
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           body: |

@@ -42,7 +42,8 @@ jobs:
       matrix: ${{ steps.build-matrix.outputs.result }}
     steps:
       - id: build-matrix
-        uses: actions/github-script@v7
+        # https://github.com/actions/github-script/releases
+        uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71 # v9.0.0
         with:
           script: |
             // by default, we will run one iteration
@@ -97,34 +98,40 @@ jobs:
       matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
     steps:
       - name: Setup Environment for Screen Recording
-        uses: guidepup/setup-action@0.17.3
+        # https://github.com/guidepup/setup-action/releases
+        uses: guidepup/setup-action@4aa2ebd687ff687a31d7c17184beac3c606d64cd # v0.19.0
         continue-on-error: true
         with:
           record: true
 
       - name: Upload Screen Recording Environment Setup
-        uses: actions/upload-artifact@v4
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         continue-on-error: true
         if: always()
         with:
           name: screenrecording-setup-${{ matrix.iteration }}.mov
           path: ./recordings/
 
-      - uses: actions/setup-node@v4
+      # https://github.com/actions/setup-node/releases
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
 
       - name: Configure JDK
-        uses: actions/setup-java@v4
+        # https://github.com/actions/setup-java/releases
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      - uses: maxim-lobanov/setup-xcode@v1
+      # https://github.com/maxim-lobanov/setup-xcode/releases
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
           xcode-version: 'latest-stable'
 
-      - uses: actions/checkout@v4
+      # https://github.com/actions/checkout/releases
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 50
 
@@ -136,7 +143,8 @@ jobs:
           echo "xcode-version=$(xcodebuild -version|tail -1|cut -f3 -d' ')" >> $GITHUB_OUTPUT
 
       - name: Yarn Cache Restore
-        uses: actions/cache/restore@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: yarn-cache
         continue-on-error: true
         with:
@@ -144,7 +152,8 @@ jobs:
           key: ${{ runner.os }}-macos-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-macos-yarn-v1
 
-      - uses: hendrikmuhs/ccache-action@v1
+      # https://github.com/hendrikmuhs/ccache-action/releases
+      - uses: hendrikmuhs/ccache-action@d62db5f07c26379fc4b4e0916f098a92573c3b03 # v1.2.23
         name: Xcode Compile Cache
         with:
           key: ${{ runner.os }}-macos-v2
@@ -153,7 +162,8 @@ jobs:
           max-size: 1500M
 
       - name: Yarn Install
-        uses: nick-fields/retry@v3
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: 15
           retry_wait_seconds: 60
@@ -161,12 +171,14 @@ jobs:
           command: DETOX_DISABLE_POSTINSTALL=1 yarn
 
       - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+        # https://github.com/ruby/setup-ruby/releases
+        uses: ruby/setup-ruby@c4e5b1316158f92e3d49443a9d58b31d25ac0f8f # v1.306.0
         with:
           ruby-version: 3
 
       - name: Update Ruby build tools
-        uses: nick-fields/retry@v3
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: 2
           retry_wait_seconds: 60
@@ -174,7 +186,8 @@ jobs:
           command: gem update cocoapods xcodeproj
 
       - name: Pods Cache Restore
-        uses: actions/cache/restore@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: pods-cache
         continue-on-error: true
         with:
@@ -183,7 +196,8 @@ jobs:
           restore-keys: ${{ runner.os }}-macos-pods-v3
 
       - name: Pod Install
-        uses: nick-fields/retry@v3
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: 20
           retry_wait_seconds: 30
@@ -191,7 +205,8 @@ jobs:
           command: yarn tests:macos:pod:install
 
       - name: Firestore Emulator Cache Restore
-        uses: actions/cache/restore@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: firestore-emulator-cache
         continue-on-error: true
         with:
@@ -205,7 +220,8 @@ jobs:
         run: yarn tests:emulator:start-ci
 
       - name: Install brew utilities
-        uses: nick-fields/retry@v3
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: 5
           retry_wait_seconds: 60
@@ -225,7 +241,8 @@ jobs:
         shell: bash
 
       - name: Metro Bundler Cache Restore
-        uses: actions/cache/restore@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: metro-bundler-cache
         continue-on-error: true
         with:
@@ -255,7 +272,8 @@ jobs:
         timeout-minutes: 20
         run: yarn tests:macos:test-cover
 
-      - uses: codecov/codecov-action@v5
+      # https://github.com/codecov/codecov-action/releases
+      - uses: codecov/codecov-action@3f20e214133d0983f9a10f3d63b0faf9241a3daa # v6.0.0
         continue-on-error: true
         with:
           verbose: true
@@ -268,7 +286,8 @@ jobs:
           killall -int log
 
       - name: Upload Metro Log
-        uses: actions/upload-artifact@v4
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         continue-on-error: true
         if: always()
         with:
@@ -276,7 +295,8 @@ jobs:
           path: metro.log
 
       - name: Upload Screen Recording
-        uses: actions/upload-artifact@v4
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         continue-on-error: true
         if: always()
         with:
@@ -284,7 +304,8 @@ jobs:
           path: screenrecording.*
 
       - name: Upload System Log
-        uses: actions/upload-artifact@v4
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         continue-on-error: true
         if: always()
         with:
@@ -292,7 +313,8 @@ jobs:
           path: syslog.log
 
       - name: Yarn Cache Save
-        uses: actions/cache/save@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -300,7 +322,8 @@ jobs:
           key: ${{ steps.yarn-cache.outputs.cache-primary-key }}
 
       - name: Pods Cache Save
-        uses: actions/cache/save@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -308,7 +331,8 @@ jobs:
           key: ${{ steps.pods-cache.outputs.cache-primary-key }}
 
       - name: Firestore Emulator Cache Save
-        uses: actions/cache/save@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -318,7 +342,8 @@ jobs:
           key: ${{ steps.firestore-emulator-cache.outputs.cache-primary-key }}
 
       - name: Metro Bundler Cache Save
-        uses: actions/cache/save@v4
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
