@@ -1,6 +1,5 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["lib/index.d.ts"],
-  "intentionallyNotExported": ["InstallationsNamespace"]
-
+  "entryPoints": ["lib/modular.ts", "lib/types/installations.ts"],
+  "tsconfig": "tsconfig.json"
 }

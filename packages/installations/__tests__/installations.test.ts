@@ -109,6 +109,7 @@ describe('installations()', function () {
       const installations = getInstallations();
       installationsV9Deprecation(
         () => deleteInstallations(installations),
+        // @ts-expect-error Combines modular and namespace API
         () => installations.delete(),
         'delete',
       );
@@ -118,6 +119,7 @@ describe('installations()', function () {
       const installations = getInstallations();
       installationsV9Deprecation(
         () => getId(installations),
+        // @ts-expect-error Combines modular and namespace API
         () => installations.getId(),
         'getId',
       );
@@ -127,6 +129,7 @@ describe('installations()', function () {
       const installations = getInstallations();
       installationsV9Deprecation(
         () => getToken(installations),
+        // @ts-expect-error Combines modular and namespace API
         () => installations.getToken(),
         'getToken',
       );
