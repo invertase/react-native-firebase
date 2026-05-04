@@ -389,16 +389,20 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
 
   private void handleQueryGet(
       ReactNativeFirebaseFirestoreQuery firestoreQuery, Source source, Promise promise) {
-    firestoreQuery
-        .get(getExecutor(), source)
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                promise.resolve(task.getResult());
-              } else {
-                rejectPromiseFirestoreException(promise, task.getException());
-              }
-            });
+    try {
+      firestoreQuery
+          .get(getExecutor(), source)
+          .addOnCompleteListener(
+              task -> {
+                if (task.isSuccessful()) {
+                  promise.resolve(task.getResult());
+                } else {
+                  rejectPromiseFirestoreException(promise, task.getException());
+                }
+              });
+    } catch (java.util.concurrent.RejectedExecutionException e) {
+      rejectPromiseFirestoreException(promise, e);
+    }
   }
 
   private void sendOnSnapshotEvent(

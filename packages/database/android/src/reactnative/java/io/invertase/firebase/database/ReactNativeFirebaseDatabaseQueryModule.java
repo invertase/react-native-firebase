@@ -101,15 +101,19 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
         new ValueEventListener() {
           @Override
           public void onDataChange(@Nonnull DataSnapshot dataSnapshot) {
-            Tasks.call(getExecutor(), () -> snapshotToMap(dataSnapshot))
-                .addOnCompleteListener(
-                    task -> {
-                      if (task.isSuccessful()) {
-                        promise.resolve(task.getResult());
-                      } else {
-                        rejectPromiseWithExceptionMap(promise, task.getException());
-                      }
-                    });
+            try {
+              Tasks.call(getExecutor(), () -> snapshotToMap(dataSnapshot))
+                  .addOnCompleteListener(
+                      task -> {
+                        if (task.isSuccessful()) {
+                          promise.resolve(task.getResult());
+                        } else {
+                          rejectPromiseWithExceptionMap(promise, task.getException());
+                        }
+                      });
+            } catch (java.util.concurrent.RejectedExecutionException e) {
+              rejectPromiseWithExceptionMap(promise, e);
+            }
           }
 
           @Override
@@ -139,17 +143,21 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
           public void onChildAdded(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
             if ("child_added".equals(eventType)) {
               databaseQuery.removeEventListener(this);
-              Tasks.call(
-                      getExecutor(),
-                      () -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
-                  .addOnCompleteListener(
-                      task -> {
-                        if (task.isSuccessful()) {
-                          promise.resolve(task.getResult());
-                        } else {
-                          rejectPromiseWithExceptionMap(promise, task.getException());
-                        }
-                      });
+              try {
+                Tasks.call(
+                        getExecutor(),
+                        () -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
+                    .addOnCompleteListener(
+                        task -> {
+                          if (task.isSuccessful()) {
+                            promise.resolve(task.getResult());
+                          } else {
+                            rejectPromiseWithExceptionMap(promise, task.getException());
+                          }
+                        });
+              } catch (java.util.concurrent.RejectedExecutionException e) {
+                rejectPromiseWithExceptionMap(promise, e);
+              }
             }
           }
 
@@ -157,17 +165,21 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
           public void onChildChanged(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
             if ("child_changed".equals(eventType)) {
               databaseQuery.removeEventListener(this);
-              Tasks.call(
-                      getExecutor(),
-                      () -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
-                  .addOnCompleteListener(
-                      task -> {
-                        if (task.isSuccessful()) {
-                          promise.resolve(task.getResult());
-                        } else {
-                          rejectPromiseWithExceptionMap(promise, task.getException());
-                        }
-                      });
+              try {
+                Tasks.call(
+                        getExecutor(),
+                        () -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
+                    .addOnCompleteListener(
+                        task -> {
+                          if (task.isSuccessful()) {
+                            promise.resolve(task.getResult());
+                          } else {
+                            rejectPromiseWithExceptionMap(promise, task.getException());
+                          }
+                        });
+              } catch (java.util.concurrent.RejectedExecutionException e) {
+                rejectPromiseWithExceptionMap(promise, e);
+              }
             }
           }
 
@@ -175,15 +187,19 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
           public void onChildRemoved(@Nonnull DataSnapshot dataSnapshot) {
             if ("child_removed".equals(eventType)) {
               databaseQuery.removeEventListener(this);
-              Tasks.call(getExecutor(), () -> snapshotWithPreviousChildToMap(dataSnapshot, null))
-                  .addOnCompleteListener(
-                      task -> {
-                        if (task.isSuccessful()) {
-                          promise.resolve(task.getResult());
-                        } else {
-                          rejectPromiseWithExceptionMap(promise, task.getException());
-                        }
-                      });
+              try {
+                Tasks.call(getExecutor(), () -> snapshotWithPreviousChildToMap(dataSnapshot, null))
+                    .addOnCompleteListener(
+                        task -> {
+                          if (task.isSuccessful()) {
+                            promise.resolve(task.getResult());
+                          } else {
+                            rejectPromiseWithExceptionMap(promise, task.getException());
+                          }
+                        });
+              } catch (java.util.concurrent.RejectedExecutionException e) {
+                rejectPromiseWithExceptionMap(promise, e);
+              }
             }
           }
 
@@ -191,17 +207,21 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
           public void onChildMoved(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
             if ("child_moved".equals(eventType)) {
               databaseQuery.removeEventListener(this);
-              Tasks.call(
-                      getExecutor(),
-                      () -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
-                  .addOnCompleteListener(
-                      task -> {
-                        if (task.isSuccessful()) {
-                          promise.resolve(task.getResult());
-                        } else {
-                          rejectPromiseWithExceptionMap(promise, task.getException());
-                        }
-                      });
+              try {
+                Tasks.call(
+                        getExecutor(),
+                        () -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
+                    .addOnCompleteListener(
+                        task -> {
+                          if (task.isSuccessful()) {
+                            promise.resolve(task.getResult());
+                          } else {
+                            rejectPromiseWithExceptionMap(promise, task.getException());
+                          }
+                        });
+              } catch (java.util.concurrent.RejectedExecutionException e) {
+                rejectPromiseWithExceptionMap(promise, e);
+              }
             }
           }
 
@@ -315,34 +335,39 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       DataSnapshot dataSnapshot,
       @Nullable String previousChildName) {
     final String eventRegistrationKey = registration.getString("eventRegistrationKey");
-    Tasks.call(
-            getTransactionalExecutor(eventRegistrationKey),
-            () -> {
-              if (eventType.equals("value")) {
-                return snapshotToMap(dataSnapshot);
-              } else {
-                return snapshotWithPreviousChildToMap(dataSnapshot, previousChildName);
-              }
-            })
-        .addOnCompleteListener(
-            getExecutor(),
-            task -> {
-              if (task.isSuccessful()) {
-                WritableMap data = task.getResult();
-                WritableMap event = Arguments.createMap();
-                event.putMap("data", data);
-                event.putString("key", key);
-                event.putString("eventType", eventType);
-                event.putMap("registration", readableMapToWritableMap(registration));
+    try {
+      Tasks.call(
+              getTransactionalExecutor(eventRegistrationKey),
+              () -> {
+                if (eventType.equals("value")) {
+                  return snapshotToMap(dataSnapshot);
+                } else {
+                  return snapshotWithPreviousChildToMap(dataSnapshot, previousChildName);
+                }
+              })
+          .addOnCompleteListener(
+              getExecutor(),
+              task -> {
+                if (task.isSuccessful()) {
+                  WritableMap data = task.getResult();
+                  WritableMap event = Arguments.createMap();
+                  event.putMap("data", data);
+                  event.putString("key", key);
+                  event.putString("eventType", eventType);
+                  event.putMap("registration", readableMapToWritableMap(registration));
 
-                ReactNativeFirebaseEventEmitter emitter =
-                    ReactNativeFirebaseEventEmitter.getSharedInstance();
+                  ReactNativeFirebaseEventEmitter emitter =
+                      ReactNativeFirebaseEventEmitter.getSharedInstance();
 
-                emitter.sendEvent(
-                    new ReactNativeFirebaseDatabaseEvent(
-                        ReactNativeFirebaseDatabaseEvent.EVENT_SYNC, event));
-              }
-            });
+                  emitter.sendEvent(
+                      new ReactNativeFirebaseDatabaseEvent(
+                          ReactNativeFirebaseDatabaseEvent.EVENT_SYNC, event));
+                }
+              });
+    } catch (java.util.concurrent.RejectedExecutionException e) {
+      // Event arrived after module invalidation shut down an executor.
+      // Safe to drop when tearing down; no JS listener will consume the event.
+    }
   }
 
   /**
