@@ -43,8 +43,6 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
 
   @Override
   public void invalidate() {
-    super.invalidate();
-
     Iterator refIterator = queryMap.entrySet().iterator();
     while (refIterator.hasNext()) {
       Map.Entry pair = (Map.Entry) refIterator.next();
@@ -53,6 +51,8 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       databaseQuery.removeAllEventListeners();
       refIterator.remove(); // avoids a ConcurrentModificationException
     }
+
+    super.invalidate();
   }
 
   /**
