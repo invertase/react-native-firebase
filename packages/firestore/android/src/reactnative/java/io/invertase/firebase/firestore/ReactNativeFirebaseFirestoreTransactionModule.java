@@ -77,19 +77,23 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
-    Tasks.call(
-            getTransactionalExecutor(),
-            () ->
-                snapshotToWritableMap(
-                    appName, databaseId, transactionHandler.getDocument(documentReference)))
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                promise.resolve(task.getResult());
-              } else {
-                rejectPromiseWithExceptionMap(promise, task.getException());
-              }
-            });
+    try {
+      Tasks.call(
+              getTransactionalExecutor(),
+              () ->
+                  snapshotToWritableMap(
+                      appName, databaseId, transactionHandler.getDocument(documentReference)))
+          .addOnCompleteListener(
+              task -> {
+                if (task.isSuccessful()) {
+                  promise.resolve(task.getResult());
+                } else {
+                  rejectPromiseWithExceptionMap(promise, task.getException());
+                }
+              });
+    } catch (java.util.concurrent.RejectedExecutionException e) {
+      rejectPromiseWithExceptionMap(promise, e);
+    }
   }
 
   @ReactMethod
