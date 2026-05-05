@@ -1076,16 +1076,11 @@ describe('storage() -> StorageTask', function () {
         const jsonDerulo = JSON.stringify({ foo: 'bar' });
         const expectedByteLength = jsonDerulo.length;
 
-        const arrayBuffer = new ArrayBuffer(jsonDerulo.length);
-        const arrayBufferView = new Uint8Array(arrayBuffer);
-
-        for (let i = 0, strLen = jsonDerulo.length; i < strLen; i++) {
-          arrayBufferView[i] = jsonDerulo.charCodeAt(i);
-        }
+        const jsonDeruloBytes = new Uint8Array([...jsonDerulo].map(char => char.charCodeAt(0)));
 
         const uploadResult = await uploadBytes(
           ref(getStorage(), `${PATH}/uploadBytesModular.json`),
-          arrayBuffer,
+          jsonDeruloBytes,
           {
             contentType: 'application/json',
           },
@@ -1100,7 +1095,11 @@ describe('storage() -> StorageTask', function () {
       it('rejects when metadata is not an object', async function () {
         const { getStorage, ref, uploadBytes } = storageModular;
         try {
-          await uploadBytes(ref(getStorage(), `${PATH}/uploadBytesBadMeta.json`), new ArrayBuffer(), 123);
+          await uploadBytes(
+            ref(getStorage(), `${PATH}/uploadBytesBadMeta.json`),
+            new ArrayBuffer(),
+            123,
+          );
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql('must be an object value');

@@ -9,17 +9,18 @@ import {
   list,
   listAll,
   updateMetadata,
-  uploadBytesResumable,
+  uploadBytes,
   ref as firebaseStorageRef,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseStorage';
 import type {
   StorageReference,
-  UploadTask,
   UploadTaskSnapshot as FirebaseUploadTaskSnapshot,
   FullMetadata,
   ListResult as FirebaseListResult,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseStorage';
 import type { FirebaseApp } from '@react-native-firebase/app/dist/module/internal/web/firebaseApp';
+
+import { Platform } from 'react-native';
 
 import {
   guard,
@@ -157,6 +158,103 @@ function makeSettableMetadata(metadata: SettableMetadata): SettableMetadata {
   };
 }
 
+/** Binary string from `Base64.atob` → contiguous bytes. */
+function binaryStringToArrayBuffer(binary: string): ArrayBuffer {
+  const len = binary.length;
+  const u8 = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    u8[i] = binary.charCodeAt(i) & 0xff;
+  }
+  return u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength);
+}
+
+/**
+ * `@firebase/storage` multipart uploads call `new Blob([ … ])`. On React Native with Hermes
+ * runtimes (all but `Platform.OS === 'web'`)—that global `Blob` mishandles binary parts,
+ * so the wrong bytes are stored. Temporarily hiding `Blob` forces the SDK’s pure-JS merge path.
+ */
+async function runWithFirebaseStorageMultipartBlobFix<T>(work: () => Promise<T>): Promise<T> {
+  if (Platform.OS === 'web') {
+    return work();
+  }
+  const savedBlob = globalThis.Blob;
+  try {
+    Reflect.deleteProperty(globalThis, 'Blob');
+    return await work();
+  } finally {
+    if (savedBlob !== undefined) {
+      globalThis.Blob = savedBlob;
+    }
+  }
+}
+
+/** `uploadBytes` plus `storage_event` emissions expected by the RNFB task bridge. */
+async function firebaseUploadArrayBuffer(
+  ref: StorageReference,
+  buffer: ArrayBuffer,
+  uploadMetadata: SettableMetadata & { md5Hash?: string | undefined },
+  appName: string,
+  taskId: string,
+): Promise<UploadTaskSnapshot> {
+  const byteLength = buffer.byteLength;
+  emitEvent('storage_event', {
+    body: {
+      totalBytes: byteLength,
+      bytesTransferred: 0,
+      state: 'running',
+      metadata: {},
+    },
+    appName,
+    taskId,
+    eventName: 'state_changed',
+  });
+  try {
+    const result = await runWithFirebaseStorageMultipartBlobFix(() =>
+      uploadBytes(ref, buffer, uploadMetadata),
+    );
+    const snapshot = {
+      totalBytes: byteLength,
+      bytesTransferred: byteLength,
+      state: 'success',
+      metadata: result.metadata,
+      ref: result.ref,
+    } as FirebaseUploadTaskSnapshot;
+    const event = {
+      body: {
+        ...uploadTaskSnapshotToObject(snapshot),
+        state: 'success',
+      },
+      appName,
+      taskId,
+      eventName: 'state_changed',
+    };
+    emitEvent('storage_event', event);
+    emitEvent('storage_event', {
+      ...event,
+      eventName: 'upload_success',
+    });
+    return uploadTaskSnapshotToObject(snapshot);
+  } catch (error) {
+    const err = error as Error;
+    const errorSnapshot = uploadTaskErrorToObject(err, null);
+    const event = {
+      body: {
+        ...errorSnapshot,
+        state: 'error',
+      },
+      appName,
+      taskId,
+      eventName: 'state_changed',
+    };
+    emitEvent('storage_event', event);
+    emitEvent('storage_event', {
+      ...event,
+      eventName: 'upload_failure',
+    });
+    throw err;
+  }
+}
+
 function listResultToObject(result: FirebaseListResult) {
   return {
     nextPageToken: result.nextPageToken ?? undefined,
@@ -168,7 +266,6 @@ function listResultToObject(result: FirebaseListResult) {
 const emulatorForApp: Record<string, EmulatorConfig> = {};
 const appInstances: Record<string, FirebaseApp> = {};
 const storageInstances: Record<string, Storage> = {};
-const tasks: Record<string, UploadTask> = {};
 
 function getBucketFromUrl(url: string): string {
   // Check if the URL starts with "gs://"
@@ -407,6 +504,38 @@ export default {
   },
 
   /**
+   * Firebase-js-sdk upload for raw bytes (web fallback only; native uses `putString` after base64).
+   *
+   * @param appName - The app name.
+   * @param url - The path to the object.
+   * @param data - Decoded upload payload.
+   * @param metadata - The metadata (SettableMetadata).
+   * @param taskId - The task ID.
+   * @return {Promise<Object>} The upload snapshot.
+   */
+  uploadBinary(
+    appName: string,
+    url: string,
+    data: Uint8Array,
+    metadata: SettableMetadata = {},
+    taskId: string,
+  ): Promise<UploadTaskSnapshot> {
+    return guard(async () => {
+      const ref = getReferenceFromUrl(appName, url);
+      const payload = new Uint8Array(data);
+      const buffer = payload.buffer.slice(
+        payload.byteOffset,
+        payload.byteOffset + payload.byteLength,
+      );
+      const uploadMetadata = {
+        ...makeSettableMetadata(metadata),
+        md5Hash: metadata.md5Hash,
+      };
+      return firebaseUploadArrayBuffer(ref, buffer, uploadMetadata, appName, taskId);
+    });
+  },
+
+  /**
    * Put a string to the path.
    * @param appName - The app name.
    * @param url - The path to the object.
@@ -426,81 +555,27 @@ export default {
   ): Promise<UploadTaskSnapshot> {
     return guard(async () => {
       const ref = getReferenceFromUrl(appName, url);
-      let decodedString: string | null = null;
+      let decodedBinary: string | null = null;
 
-      // This is always either base64 or base64url
       switch (format) {
         case 'base64':
-          decodedString = Base64.atob(string);
+          decodedBinary = Base64.atob(string);
           break;
         case 'base64url':
-          decodedString = Base64.atob(string.replace(/_/g, '/').replace(/-/g, '+'));
+          decodedBinary = Base64.atob(string.replace(/_/g, '/').replace(/-/g, '+'));
           break;
+        default:
+          throw new Error(
+            `firebase.storage putString: unsupported format '${format}' on this platform.`,
+          );
       }
 
-      const arrayBuffer = new Uint8Array([...decodedString!].map(c => c.charCodeAt(0)));
-
-      const task = uploadBytesResumable(ref, arrayBuffer, {
+      const buffer = binaryStringToArrayBuffer(decodedBinary);
+      const uploadMetadata = {
         ...makeSettableMetadata(metadata),
         md5Hash: metadata.md5Hash,
-      });
-
-      // Store the task in the tasks map.
-      tasks[taskId] = task;
-
-      const snapshot = await new Promise<FirebaseUploadTaskSnapshot>((resolve, reject) => {
-        task.on(
-          'state_changed',
-          (snapshot: FirebaseUploadTaskSnapshot) => {
-            const event = {
-              body: uploadTaskSnapshotToObject(snapshot),
-              appName,
-              taskId,
-              eventName: 'state_changed',
-            };
-            emitEvent('storage_event', event);
-          },
-          (error: Error) => {
-            const errorSnapshot = uploadTaskErrorToObject(error, task.snapshot);
-            const event = {
-              body: {
-                ...errorSnapshot,
-                state: 'error',
-              },
-              appName,
-              taskId,
-              eventName: 'state_changed',
-            };
-            emitEvent('storage_event', event);
-            emitEvent('storage_event', {
-              ...event,
-              eventName: 'upload_failure',
-            });
-            delete tasks[taskId];
-            reject(error);
-          },
-          () => {
-            delete tasks[taskId];
-            const event = {
-              body: {
-                ...uploadTaskSnapshotToObject(task.snapshot),
-                state: 'success',
-              },
-              appName,
-              taskId,
-              eventName: 'state_changed',
-            };
-            emitEvent('storage_event', event);
-            emitEvent('storage_event', {
-              ...event,
-              eventName: 'upload_success',
-            });
-            resolve(task.snapshot);
-          },
-        );
-      });
-
-      return uploadTaskSnapshotToObject(snapshot);
+      };
+      return firebaseUploadArrayBuffer(ref, buffer, uploadMetadata, appName, taskId);
     });
   },
 
@@ -518,40 +593,8 @@ export default {
    * @param status - The status.
    * @return {Promise<boolean>} Whether the status was set.
    */
-  setTaskStatus(appName: string, taskId: string, status: number): Promise<boolean> {
-    // TODO this function implementation cannot
-    // be tested right now since we're unable
-    // to create a big enough upload to be able to
-    // pause/resume/cancel it in time.
-    return guard(async () => {
-      const task = tasks[taskId];
-
-      // If the task doesn't exist, return false.
-      if (!task) {
-        return false;
-      }
-
-      let result = false;
-
-      switch (status) {
-        case 0:
-          result = await task.pause();
-          break;
-        case 1:
-          result = await task.resume();
-          break;
-        case 2:
-          result = await task.cancel();
-          break;
-      }
-
-      emitEvent('storage_event', {
-        data: uploadTaskSnapshotToObject(task.snapshot),
-        appName,
-        taskId,
-      });
-
-      return result;
-    });
+  setTaskStatus(_appName: string, _taskId: string, _status: number): Promise<boolean> {
+    // Uploads use firebase-js `uploadBytes` (no resumable `UploadTask` registered on this path).
+    return guard(async () => false);
   },
 };

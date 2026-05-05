@@ -158,12 +158,22 @@ export interface RNFBStorageModule {
     metadata: UploadMetadata | undefined,
     taskId: number,
   ): Promise<TaskSnapshot>;
+
+  /** Optional on firebase-js fallback only; native modules use base64 + {@link putString}. */
+  uploadBinary?(
+    url: string,
+    data: Uint8Array,
+    metadata: UploadMetadata | undefined,
+    taskId: number,
+  ): Promise<TaskSnapshot>;
+
   putFile(
     url: string,
     filePath: string,
     metadata: UploadMetadata | undefined,
     taskId: number,
   ): Promise<TaskSnapshot>;
+
   writeToFile(url: string, filePath: string, taskId: number): Promise<TaskSnapshot>;
 
   /**
