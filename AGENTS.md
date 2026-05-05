@@ -3,7 +3,7 @@
 ## Project overview
 
 - This repository is a Yarn workspaces monorepo for React Native Firebase packages.
-- Most library code lives in `packages/*`.
+- Most library code lives in `packages/**/lib`.
 - The end-to-end test app lives in `tests/`.
 - Contributor expectations and review norms are documented in `CONTRIBUTING.md`.
 
