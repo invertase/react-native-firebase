@@ -47,6 +47,25 @@ import type {
 } from './types/storage';
 import type { ListResultInternal, StorageInternal } from './types/internal';
 
+async function putPayloadToUint8Array(data: Blob | Uint8Array | ArrayBuffer): Promise<Uint8Array> {
+  if (data instanceof Uint8Array) {
+    return data.byteOffset === 0 && data.byteLength === data.buffer.byteLength
+      ? data
+      : new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
+  }
+  if (data instanceof ArrayBuffer) {
+    return new Uint8Array(data);
+  }
+  return new Uint8Array(
+    await new Promise<ArrayBuffer>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as ArrayBuffer);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(data);
+    }),
+  );
+}
+
 export default class Reference extends ReferenceBase implements StorageReference {
   _storage: StorageInternal;
 
@@ -205,6 +224,21 @@ export default class Reference extends ReferenceBase implements StorageReference
    */
   put(data: Blob | Uint8Array | ArrayBuffer, metadata?: UploadMetadata): Task {
     const validatedMetadata = isUndefined(metadata) ? metadata : validateMetadata(metadata, false);
+
+    // Firebase-js fallback (e.g. macOS) exposes `uploadBinary`; iOS/Android native omit it.
+    const uploadBinary = this._storage.native.uploadBinary;
+    if (uploadBinary) {
+      return new StorageUploadTask(this, async task => {
+        const bytes = await putPayloadToUint8Array(data);
+        return uploadBinary.call(
+          this._storage.native,
+          this.toString(),
+          bytes,
+          validatedMetadata,
+          task._id,
+        );
+      });
+    }
 
     return new StorageUploadTask(this, task =>
       Base64.fromData(data).then(({ string, format }) => {

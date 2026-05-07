@@ -3,6 +3,7 @@ import storage, {
   // Types
   type FirebaseStorage,
   type FirebaseStorageTypes,
+  type StorageReference,
   // Modular API
   getStorage,
   connectStorageEmulator,
@@ -234,9 +235,19 @@ updateMetadata(modularRef1, { cacheControl: 'no-cache' }).then(
 
 uploadBytes(modularRef1, new Blob(), { cacheControl: 'no-cache' }).then(
   (result: TaskResult) => {
-    console.log(result);
+    const uploadBytesRef: StorageReference = result.ref;
+    const uploadBytesMeta: FullMetadata = result.metadata;
+    console.log(uploadBytesRef.fullPath, uploadBytesMeta.size);
   },
 );
+
+uploadBytes(modularRef1, new Uint8Array([1, 2, 3])).then((result: TaskResult) => {
+  console.log(result.ref.name, result.metadata.size);
+});
+
+uploadBytes(modularRef1, new ArrayBuffer(0)).then((result: TaskResult) => {
+  console.log(result.metadata.fullPath);
+});
 
 const modularUploadBytesResumable = uploadBytesResumable(modularRef1, new Blob(), {
   cacheControl: 'no-cache',
