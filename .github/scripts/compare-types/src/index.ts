@@ -36,7 +36,7 @@ async function main(): Promise<void> {
   for (const pkg of packages) {
     checkFilesExist(
       pkg.firebaseSdkTypesPaths,
-      `firebase-js-sdk snapshot(s) for "${pkg.name}"`,
+      `installed firebase-js-sdk type(s) for "${pkg.name}"`,
     );
     checkFilesExist(
       pkg.rnFirebaseModularFiles,

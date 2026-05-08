@@ -2,24 +2,22 @@
  * Package registry — defines which packages are compared and where to find
  * their type files.
  *
- * To add a new package:
- *  1. Create .github/scripts/compare-types/packages/<name>/firebase-sdk.d.ts
- *     with the public types copied from the firebase-js-sdk release.
- *  2. Create .github/scripts/compare-types/packages/<name>/config.ts
- *     documenting any known differences.
- *  3. Add an entry to the `packages` array below.
+ * Firebase JS SDK declarations are resolved from the repository root
+ * `node_modules/firebase` package, so the comparison always uses the installed
+ * SDK version instead of checked-in declaration snapshots.
  */
 
+import fs from 'fs';
 import path from 'path';
 import type { PackageConfig } from './types';
 
-import storageConfig from '../packages/storage/config';
-import aiConfig from '../packages/ai/config';
-import databaseConfig from '../packages/database/config';
-import appCheckConfig from '../packages/app-check/config';
-import firestoreConfig from '../packages/firestore/config';
-import firestorePipelinesConfig from '../packages/firestore-pipelines/config';
-import remoteConfigConfig from '../packages/remote-config/config';
+import storageConfig from '../configs/storage';
+import aiConfig from '../configs/ai';
+import databaseConfig from '../configs/database';
+import appCheckConfig from '../configs/app-check';
+import firestoreConfig from '../configs/firestore';
+import firestorePipelinesConfig from '../configs/firestore-pipelines';
+import remoteConfigConfig from '../configs/remote-config';
 
 const SCRIPT_DIR = path.resolve(__dirname, '..');
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
@@ -28,8 +26,7 @@ export interface PackageEntry {
   /** Short name used in reports (e.g. "remote-config"). */
   name: string;
   /**
-   * Paths to the firebase-js-sdk public type snapshot(s) (.d.ts).
-   * Kept in .github/scripts/compare-types/packages/<name>/.
+   * Paths to the installed firebase-js-sdk public type files.
    * Exports from all files are merged (first file wins for duplicate names).
    */
   firebaseSdkTypesPaths: string[];
@@ -51,15 +48,62 @@ function rnDist(packageName: string): string {
   return path.join(REPO_ROOT, 'packages', packageName, 'dist', 'typescript', 'lib');
 }
 
+const FIREBASE_PACKAGE_DIR = path.join(REPO_ROOT, 'node_modules', 'firebase');
+const FIREBASE_PACKAGE_JSON = path.join(FIREBASE_PACKAGE_DIR, 'package.json');
+
+interface FirebasePackageJson {
+  exports?: Record<string, string | { types?: string }>;
+}
+
+function readFirebasePackageJson(): FirebasePackageJson {
+  if (!fs.existsSync(FIREBASE_PACKAGE_JSON)) {
+    throw new Error(
+      `Firebase package not found at ${FIREBASE_PACKAGE_JSON}. Run \`yarn\` from the repository root before running compare-types.`,
+    );
+  }
+
+  return JSON.parse(fs.readFileSync(FIREBASE_PACKAGE_JSON, 'utf8')) as FirebasePackageJson;
+}
+
+const firebasePackageJson = readFirebasePackageJson();
+
+function firebaseTypes(packageName: string, optional = false): string | null {
+  const exportName = `./${packageName}`;
+  const exportEntry = firebasePackageJson.exports?.[exportName];
+  const typesPath = typeof exportEntry === 'object' ? exportEntry.types : undefined;
+
+  if (!typesPath) {
+    if (optional) {
+      console.warn(
+        `Skipping firebase/${packageName}: no public Firebase type export found in ${FIREBASE_PACKAGE_JSON}.`,
+      );
+      return null;
+    }
+
+    throw new Error(
+      `No public Firebase type export found for "firebase/${packageName}" in ${FIREBASE_PACKAGE_JSON}.`,
+    );
+  }
+
+  return path.resolve(FIREBASE_PACKAGE_DIR, typesPath);
+}
+
+function requiredFirebaseTypes(packageName: string): string {
+  return firebaseTypes(packageName) as string;
+}
+
+function optionalFirebasePackage(
+  packageName: string,
+  createEntry: (typesPath: string) => PackageEntry,
+): PackageEntry[] {
+  const typesPath = firebaseTypes(packageName, true);
+  return typesPath ? [createEntry(typesPath)] : [];
+}
+
 export const packages: PackageEntry[] = [
   {
     name: 'storage',
-    firebaseSdkTypesPaths: [path.join(
-      SCRIPT_DIR,
-      'packages',
-      'storage',
-      'storage-js-sdk.d.ts',
-    )],
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('storage')],
     rnFirebaseModularFiles: [
       path.join(rnDist('storage'), 'types', 'storage.d.ts'),
       path.join(rnDist('storage'), 'modular.d.ts'),
@@ -73,9 +117,7 @@ export const packages: PackageEntry[] = [
   },
   {
     name: 'remote-config',
-    firebaseSdkTypesPaths: [
-      path.join(SCRIPT_DIR, 'packages', 'remote-config', 'firebase-sdk.d.ts'),
-    ],
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('remote-config')],
     rnFirebaseModularFiles: [
       path.join(rnDist('remote-config'), 'types', 'remote-config.d.ts'),
       path.join(rnDist('remote-config'), 'modular.d.ts'),
@@ -88,7 +130,7 @@ export const packages: PackageEntry[] = [
   },
   {
     name: 'ai',
-    firebaseSdkTypesPaths: [path.join(SCRIPT_DIR, 'packages', 'ai', 'ai-sdk.d.ts')],
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('ai')],
     rnFirebaseModularFiles: [path.join(rnDist('ai'), 'index.d.ts')],
     rnFirebaseSupportFiles: [
       path.join(rnDist('ai'), 'backend.d.ts'),
@@ -122,7 +164,7 @@ export const packages: PackageEntry[] = [
   },
   {
     name: 'database',
-    firebaseSdkTypesPaths: [path.join(SCRIPT_DIR, 'packages', 'database', 'firebase-sdk.d.ts')],
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('database')],
     rnFirebaseModularFiles: [
       path.join(rnDist('database'), 'types', 'database.d.ts'),
       path.join(rnDist('database'), 'modular.d.ts'),
@@ -143,9 +185,7 @@ export const packages: PackageEntry[] = [
   },
   {
     name: 'app-check',
-    firebaseSdkTypesPaths: [
-      path.join(SCRIPT_DIR, 'packages', 'app-check', 'app-check-sdk.d.ts'),
-    ],
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('app-check')],
     rnFirebaseModularFiles: [
       path.join(rnDist('app-check'), 'types', 'appcheck.d.ts'),
       path.join(rnDist('app-check'), 'modular.d.ts'),
@@ -158,9 +198,7 @@ export const packages: PackageEntry[] = [
   },
   {
     name: 'firestore',
-    firebaseSdkTypesPaths: [
-      path.join(SCRIPT_DIR, 'packages', 'firestore', 'firestore-js-sdk.d.ts'),
-    ],
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('firestore')],
     rnFirebaseModularFiles: [
       path.join(rnDist('firestore'), 'types', 'firestore.d.ts'),
       path.join(rnDist('firestore'), 'modular.d.ts'),
@@ -193,11 +231,9 @@ export const packages: PackageEntry[] = [
     ],
     config: firestoreConfig,
   },
-  {
+  ...optionalFirebasePackage('firestore/pipelines', firebaseTypesPath => ({
     name: 'firestore-pipelines',
-    firebaseSdkTypesPaths: [
-      path.join(SCRIPT_DIR, 'packages', 'firestore-pipelines', 'pipelines.d.ts'),
-    ],
+    firebaseSdkTypesPaths: [firebaseTypesPath],
     rnFirebaseModularFiles: [path.join(rnDist('firestore'), 'pipelines', 'index.d.ts')],
     rnFirebaseSupportFiles: [
       path.join(rnDist('firestore'), 'pipelines', 'expressions.d.ts'),
@@ -210,7 +246,7 @@ export const packages: PackageEntry[] = [
       path.join(rnDist('firestore'), 'pipelines', 'types.d.ts'),
     ],
     config: firestorePipelinesConfig,
-  },
+  })),
 ];
 
 

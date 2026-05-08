@@ -61,7 +61,7 @@ function countStale(result: ComparisonResult): number {
 }
 
 /**
- * Prints stale `config.ts` entries and returns how many were printed.
+ * Prints stale config entries and returns how many were printed.
  * These must run even when there are zero live diffs, otherwise a resolved
  * API (e.g. an export removed from `missingInRN` in reality) would never
  * force updating the comparison registry.
@@ -78,7 +78,7 @@ function printStaleRegistrySection(result: ComparisonResult): number {
     console.log(
       `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE missingInRN]')}${c(
         DIM,
-        `  — ${name} exists in React Native Firebase but is still listed under missingInRN in config.ts; remove it or reclassify (e.g. differentShape) if types still differ.`,
+        `  — ${name} exists in React Native Firebase but is still listed under missingInRN in configs/<name>.ts; remove it or reclassify (e.g. differentShape) if types still differ.`,
       )}`,
     );
   }
@@ -87,7 +87,7 @@ function printStaleRegistrySection(result: ComparisonResult): number {
     console.log(
       `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE extraInRN]')}${c(
         DIM,
-        `  — ${name} is no longer an extra export in React Native Firebase but is still listed under extraInRN; remove from config.ts.`,
+        `  — ${name} is no longer an extra export in React Native Firebase but is still listed under extraInRN; remove from configs/<name>.ts.`,
       )}`,
     );
   }
@@ -96,7 +96,7 @@ function printStaleRegistrySection(result: ComparisonResult): number {
     console.log(
       `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE differentShape]')}${c(
         DIM,
-        `  — ${name} now matches the firebase-js-sdk shape; remove from differentShape in config.ts.`,
+        `  — ${name} now matches the firebase-js-sdk shape; remove from differentShape in configs/<name>.ts.`,
       )}`,
     );
   }
@@ -140,7 +140,7 @@ export function printReport(results: ComparisonResult[]): boolean {
       console.log(
         c(
           GREEN,
-          '  ✓ Exported types match the firebase-js-sdk snapshot (no live diffs)',
+          '  ✓ Exported types match the installed firebase-js-sdk types (no live diffs)',
         ),
       );
     }
@@ -197,20 +197,20 @@ export function printReport(results: ComparisonResult[]): boolean {
       hasFailures = true;
       if (totalUndoc > 0) {
         console.log(
-          `\n  ${c(RED, `✗ ${totalUndoc} undocumented difference(s) — add them to config.ts with a reason`)}`,
+          `\n  ${c(RED, `✗ ${totalUndoc} undocumented difference(s) — add them to configs/<name>.ts with a reason`)}`,
         );
       }
       if (printedStale > 0) {
         console.log(
           `\n  ${c(
             RED,
-            `✗ ${printedStale} stale registry entry/entries — update packages/<name>/config.ts for the type comparison tool`,
+            `✗ ${printedStale} stale registry entry/entries — update configs/<name>.ts for the type comparison tool`,
           )}`,
         );
       }
     } else {
       console.log(
-        `\n  ${c(GREEN, `✓ All ${totalDiffs} difference(s) are documented in config.ts`)}`,
+        `\n  ${c(GREEN, `✓ All ${totalDiffs} difference(s) are documented in configs/<name>.ts`)}`,
       );
     }
   }
