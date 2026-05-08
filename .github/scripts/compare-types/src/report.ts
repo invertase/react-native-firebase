@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 /**
  * Terminal output formatting for comparison results.
  *
@@ -61,7 +63,7 @@ function countStale(result: ComparisonResult): number {
 }
 
 /**
- * Prints stale `config.ts` entries and returns how many were printed.
+ * Prints stale config entries and returns how many were printed.
  * These must run even when there are zero live diffs, otherwise a resolved
  * API (e.g. an export removed from `missingInRN` in reality) would never
  * force updating the comparison registry.
@@ -78,7 +80,7 @@ function printStaleRegistrySection(result: ComparisonResult): number {
     console.log(
       `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE missingInRN]')}${c(
         DIM,
-        `  — ${name} exists in React Native Firebase but is still listed under missingInRN in config.ts; remove it or reclassify (e.g. differentShape) if types still differ.`,
+        `  — ${name} exists in React Native Firebase but is still listed under missingInRN in configs/${result.packageName}.ts; remove it or reclassify (e.g. differentShape) if types still differ.`,
       )}`,
     );
   }
@@ -87,7 +89,7 @@ function printStaleRegistrySection(result: ComparisonResult): number {
     console.log(
       `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE extraInRN]')}${c(
         DIM,
-        `  — ${name} is no longer an extra export in React Native Firebase but is still listed under extraInRN; remove from config.ts.`,
+        `  — ${name} is no longer an extra export in React Native Firebase but is still listed under extraInRN; remove from configs/${result.packageName}.ts.`,
       )}`,
     );
   }
@@ -96,12 +98,83 @@ function printStaleRegistrySection(result: ComparisonResult): number {
     console.log(
       `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE differentShape]')}${c(
         DIM,
-        `  — ${name} now matches the firebase-js-sdk shape; remove from differentShape in config.ts.`,
+        `  — ${name} now matches the firebase-js-sdk shape; remove from differentShape in configs/${result.packageName}.ts.`,
       )}`,
     );
   }
 
   return totalStale;
+}
+
+// ---------------------------------------------------------------------------
+// Final summary
+// ---------------------------------------------------------------------------
+
+function countUndocumented(result: ComparisonResult): number {
+  return (
+    result.undocumentedMissing.length +
+    result.undocumentedExtra.length +
+    result.undocumentedDifferentShape.length
+  );
+}
+
+function countDiffs(result: ComparisonResult): number {
+  return (
+    result.missing.length +
+    result.extra.length +
+    result.differentShape.length
+  );
+}
+
+function pad(value: string | number, width: number): string {
+  return String(value).padEnd(width, ' ');
+}
+
+function printPackageSummary(results: ComparisonResult[]): void {
+  const packageWidth = Math.max(
+    'Package'.length,
+    ...results.map(result => result.packageName.length),
+  );
+
+  console.log(`\n${c(BOLD, '📊 Package Summary')}`);
+  console.log(
+    c(
+      DIM,
+      [
+        pad('Package', packageWidth),
+        pad('Missing', 8),
+        pad('Extra', 6),
+        pad('Different', 10),
+        pad('Total', 7),
+        pad('Undoc', 7),
+        pad('Stale', 7),
+        'Status',
+      ].join('  '),
+    ),
+  );
+
+  for (const result of results) {
+    const totalDiffs = countDiffs(result);
+    const totalUndoc = countUndocumented(result);
+    const totalStale = countStale(result);
+    const hasFailures = totalUndoc > 0 || totalStale > 0;
+    const status = hasFailures
+      ? c(RED, '✗ needs config update')
+      : c(GREEN, '✓ documented');
+
+    console.log(
+      [
+        pad(result.packageName, packageWidth),
+        pad(result.missing.length, 8),
+        pad(result.extra.length, 6),
+        pad(result.differentShape.length, 10),
+        pad(totalDiffs, 7),
+        pad(totalUndoc, 7),
+        pad(totalStale, 7),
+        status,
+      ].join('  '),
+    );
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -124,11 +197,7 @@ export function printReport(results: ComparisonResult[]): boolean {
   for (const result of results) {
     console.log(`\n${c(BOLD, `📦 ${result.packageName}`)}`);
 
-    const totalDiffs =
-      result.missing.length +
-      result.extra.length +
-      result.differentShape.length;
-
+    const totalDiffs = countDiffs(result);
     const totalStale = countStale(result);
 
     if (totalDiffs === 0 && totalStale === 0) {
@@ -140,7 +209,7 @@ export function printReport(results: ComparisonResult[]): boolean {
       console.log(
         c(
           GREEN,
-          '  ✓ Exported types match the firebase-js-sdk snapshot (no live diffs)',
+          '  ✓ Exported types match the installed firebase-js-sdk types (no live diffs)',
         ),
       );
     }
@@ -188,33 +257,31 @@ export function printReport(results: ComparisonResult[]): boolean {
     const printedStale = printStaleRegistrySection(result);
 
     // --- Summary ---
-    const totalUndoc =
-      result.undocumentedMissing.length +
-      result.undocumentedExtra.length +
-      result.undocumentedDifferentShape.length;
+    const totalUndoc = countUndocumented(result);
 
     if (totalUndoc > 0 || printedStale > 0) {
       hasFailures = true;
       if (totalUndoc > 0) {
         console.log(
-          `\n  ${c(RED, `✗ ${totalUndoc} undocumented difference(s) — add them to config.ts with a reason`)}`,
+          `\n  ${c(RED, `✗ ${totalUndoc} undocumented difference(s) — add them to configs/${result.packageName}.ts with a reason`)}`,
         );
       }
       if (printedStale > 0) {
         console.log(
           `\n  ${c(
             RED,
-            `✗ ${printedStale} stale registry entry/entries — update packages/<name>/config.ts for the type comparison tool`,
+            `✗ ${printedStale} stale registry entry/entries — update configs/${result.packageName}.ts for the type comparison tool`,
           )}`,
         );
       }
     } else {
       console.log(
-        `\n  ${c(GREEN, `✓ All ${totalDiffs} difference(s) are documented in config.ts`)}`,
+        `\n  ${c(GREEN, `✓ All ${totalDiffs} difference(s) are documented in configs/${result.packageName}.ts`)}`,
       );
     }
   }
 
+  printPackageSummary(results);
   console.log('');
   return hasFailures;
 }

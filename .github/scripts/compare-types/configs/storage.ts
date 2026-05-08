@@ -13,7 +13,7 @@
  *  differentShape  — exports present in both but with differing signatures/members
  */
 
-import type { PackageConfig } from '../../src/types';
+import type { PackageConfig } from '../src/types';
 
 const config: PackageConfig = {
   // ---------------------------------------------------------------------------

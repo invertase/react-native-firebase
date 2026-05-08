@@ -13,7 +13,7 @@
  *  differentShape  — exports present in both but with differing signatures/members
  */
 
-import type { PackageConfig } from '../../src/types';
+import type { PackageConfig } from '../src/types';
 
 const config: PackageConfig = {
   // ---------------------------------------------------------------------------
@@ -218,6 +218,16 @@ const config: PackageConfig = {
         'Re-exported type alias for `ReactNativeFirebase.FirebaseApp` from ' +
         '`@react-native-firebase/app`. Used as the app parameter type in RN ' +
         'Firebase functions. Not part of the firebase-js-sdk public Firestore API.',
+    },
+    {
+      name: 'FirebaseSignInProvider',
+      reason:
+        'RN Firebase re-exports this helper type from shared app declarations for emulator mock-token support.',
+    },
+    {
+      name: 'FirebaseIdToken',
+      reason:
+        'RN Firebase re-exports this helper type from shared app declarations for emulator mock-token support.',
     },
     {
       name: 'LiteTransaction',

@@ -1,4 +1,4 @@
-import type { PackageConfig } from '../../src/types';
+import type { PackageConfig } from '../src/types';
 
 const config: PackageConfig = {
   nameMapping: {},
@@ -41,12 +41,19 @@ const config: PackageConfig = {
   ],
   differentShape: [
     {
-      name: 'EmulatorMockTokenOptions',
+      name: 'Database',
       reason:
-        'RN Firebase reuses the local `FirebaseIdToken` alias in ' +
-        '`Partial<FirebaseIdToken>`, while the snapshot inlines the token ' +
-        'shape so compare-types does not treat the helper alias as an extra export. ' +
-        'The two types are structurally equivalent.',
+        'RN Firebase narrows the public `type` member to the concrete `database` literal, while the firebase-js-sdk declaration leaves it less specific.',
+    },
+    {
+      name: 'DataSnapshot',
+      reason:
+        'RN Firebase exposes native snapshot metadata helpers such as `key`, `priority`, and `size` on the public snapshot type.',
+    },
+    {
+      name: 'OnDisconnect',
+      reason:
+        'The public method signatures are equivalent, but the generated declaration text differs in union ordering for the priority parameter.',
     },
   ],
 };

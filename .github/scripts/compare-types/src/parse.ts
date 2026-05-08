@@ -1,8 +1,9 @@
 /**
  * Uses ts-morph to parse .d.ts files and extract export shapes.
  * We use getTypeNode()?.getText() throughout to read the type text as-written
- * in the source file, so unresolved external imports (e.g. @firebase/app) are
- * not a problem — they simply appear as their short name strings.
+ * in the source file. External imports still need normal TypeScript module
+ * resolution so wrapper declarations like `firebase/storage` can re-export the
+ * public declarations from `@firebase/storage`.
  */
 
 import fs from 'fs';
@@ -10,6 +11,9 @@ import {
   Project,
   Node,
   SyntaxKind,
+  ModuleKind,
+  ModuleResolutionKind,
+  ScriptTarget,
   type ClassDeclaration,
   type ExportedDeclarations,
   type SourceFile,
@@ -296,6 +300,9 @@ function createProject(): Project {
   return new Project({
     skipAddingFilesFromTsConfig: true,
     compilerOptions: {
+      target: ScriptTarget.ES2022,
+      module: ModuleKind.NodeNext,
+      moduleResolution: ModuleResolutionKind.NodeNext,
       // Don't error on declaration files from libraries we can't resolve.
       skipLibCheck: true,
       // Allow JS files (won't be added, but prevents config errors).
@@ -323,7 +330,7 @@ function collectExportsFromSourceFile(
 // ---------------------------------------------------------------------------
 
 /**
- * Parses a single self-contained .d.ts file (e.g. the firebase-js-sdk snapshot)
+ * Parses a single .d.ts file from the installed Firebase JS SDK
  * and returns a map of export name → ExportEntry.
  */
 export function parseSingleFile(filePath: string): Map<string, ExportEntry> {
