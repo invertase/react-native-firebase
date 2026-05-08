@@ -220,6 +220,16 @@ const config: PackageConfig = {
         'Firebase functions. Not part of the firebase-js-sdk public Firestore API.',
     },
     {
+      name: 'FirebaseSignInProvider',
+      reason:
+        'RN Firebase re-exports this helper type from shared app declarations for emulator mock-token support.',
+    },
+    {
+      name: 'FirebaseIdToken',
+      reason:
+        'RN Firebase re-exports this helper type from shared app declarations for emulator mock-token support.',
+    },
+    {
       name: 'LiteTransaction',
       reason:
         'RN Firebase base class for Transaction (LiteTransaction). Not exported in the ' +

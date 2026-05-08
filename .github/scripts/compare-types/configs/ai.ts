@@ -122,6 +122,36 @@ const config: PackageConfig = {
         'RN Firebase does not currently expose per-call request overrides such as `AbortSignal`; requests are configured via model-level `RequestOptions` only.',
     },
     {
+      name: 'ChatSessionBase',
+      reason:
+        'Base class used by the firebase-js-sdk template chat implementation. RN Firebase exposes its concrete chat session surface instead.',
+    },
+    {
+      name: 'StartTemplateChatParams',
+      reason:
+        'Template chat startup parameters are part of the firebase-js-sdk template chat API, which RN Firebase does not currently expose.',
+    },
+    {
+      name: 'TemplateChatSession',
+      reason:
+        'Template chat sessions are not currently part of the RN Firebase public AI API.',
+    },
+    {
+      name: 'TemplateFunctionDeclaration',
+      reason:
+        'Template function declaration helpers are part of firebase-js-sdk template tooling that RN Firebase does not currently expose.',
+    },
+    {
+      name: 'TemplateFunctionDeclarationsTool',
+      reason:
+        'Template function declaration tools are part of firebase-js-sdk template tooling that RN Firebase does not currently expose.',
+    },
+    {
+      name: 'TemplateTool',
+      reason:
+        'Template tool unions are part of firebase-js-sdk template tooling that RN Firebase does not currently expose.',
+    },
+    {
       name: 'ThinkingLevel',
       reason:
         'RN Firebase supports thinking budgets but does not currently expose the JS SDK `ThinkingLevel` preset constants/type.',
@@ -194,6 +224,11 @@ const config: PackageConfig = {
       name: 'FunctionResponse',
       reason:
         'RN Firebase function responses omit the optional `parts` field from the JS SDK declaration and only expose the structured response payload.',
+    },
+    {
+      name: 'GenerationConfig',
+      reason:
+        'RN Firebase does not currently expose the JS SDK `responseJsonSchema` generation config field.',
     },
     {
       name: 'GenerativeModel',
