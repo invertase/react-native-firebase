@@ -70,7 +70,7 @@ const firebasePackageJson = readFirebasePackageJson();
 function firebaseTypes(packageName: string, optional = false): string | null {
   const exportName = `./${packageName}`;
   const exportEntry = firebasePackageJson.exports?.[exportName];
-  const typesPath = typeof exportEntry === 'object' ? exportEntry.types : undefined;
+  const typesPath = (exportEntry && typeof exportEntry === 'object') ? (exportEntry as any).types : undefined;
 
   if (!typesPath) {
     if (optional) {

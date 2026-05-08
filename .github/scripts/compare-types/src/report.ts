@@ -80,7 +80,7 @@ function printStaleRegistrySection(result: ComparisonResult): number {
     console.log(
       `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE missingInRN]')}${c(
         DIM,
-        `  — ${name} exists in React Native Firebase but is still listed under missingInRN in configs/<name>.ts; remove it or reclassify (e.g. differentShape) if types still differ.`,
+        `  — ${name} exists in React Native Firebase but is still listed under missingInRN in configs/${result.packageName}.ts; remove it or reclassify (e.g. differentShape) if types still differ.`,
       )}`,
     );
   }
@@ -89,7 +89,7 @@ function printStaleRegistrySection(result: ComparisonResult): number {
     console.log(
       `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE extraInRN]')}${c(
         DIM,
-        `  — ${name} is no longer an extra export in React Native Firebase but is still listed under extraInRN; remove from configs/<name>.ts.`,
+        `  — ${name} is no longer an extra export in React Native Firebase but is still listed under extraInRN; remove from configs/${result.packageName}.ts.`,
       )}`,
     );
   }
@@ -98,7 +98,7 @@ function printStaleRegistrySection(result: ComparisonResult): number {
     console.log(
       `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE differentShape]')}${c(
         DIM,
-        `  — ${name} now matches the firebase-js-sdk shape; remove from differentShape in configs/<name>.ts.`,
+        `  — ${name} now matches the firebase-js-sdk shape; remove from differentShape in configs/${result.packageName}.ts.`,
       )}`,
     );
   }
@@ -263,20 +263,20 @@ export function printReport(results: ComparisonResult[]): boolean {
       hasFailures = true;
       if (totalUndoc > 0) {
         console.log(
-          `\n  ${c(RED, `✗ ${totalUndoc} undocumented difference(s) — add them to configs/<name>.ts with a reason`)}`,
+          `\n  ${c(RED, `✗ ${totalUndoc} undocumented difference(s) — add them to configs/${result.packageName}.ts with a reason`)}`,
         );
       }
       if (printedStale > 0) {
         console.log(
           `\n  ${c(
             RED,
-            `✗ ${printedStale} stale registry entry/entries — update configs/<name>.ts for the type comparison tool`,
+            `✗ ${printedStale} stale registry entry/entries — update configs/${result.packageName}.ts for the type comparison tool`,
           )}`,
         );
       }
     } else {
       console.log(
-        `\n  ${c(GREEN, `✓ All ${totalDiffs} difference(s) are documented in configs/<name>.ts`)}`,
+        `\n  ${c(GREEN, `✓ All ${totalDiffs} difference(s) are documented in configs/${result.packageName}.ts`)}`,
       );
     }
   }
