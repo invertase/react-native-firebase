@@ -4,4 +4,8 @@ export interface PluginConfigType {
 
 export interface PluginConfigTypeIos {
   withoutAdIdSupport?: boolean;
+  /**
+   * @platform ios iOS
+   */
+  googleAppMeasurementOnDeviceConversion?: boolean;
 }

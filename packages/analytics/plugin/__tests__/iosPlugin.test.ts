@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { setAnalyticsPodfileWithoutAdIdSupport } from '../src/ios/podfile';
+import { setAnalyticsPodfileWithoutAdIdSupport, setAnalyticsPodfileGoogleAppMeasurementOnDeviceConversion } from '../src/ios/podfile';
 
 const podfileFixture = `platform :ios, '15.0'
 
@@ -26,6 +26,25 @@ describe('Analytics Config Plugin iOS Tests', function () {
   it('removes the generated Podfile flag when withoutAdIdSupport is disabled', function () {
     const onceModified = setAnalyticsPodfileWithoutAdIdSupport(podfileFixture, true);
     const restored = setAnalyticsPodfileWithoutAdIdSupport(onceModified, false);
+
+    expect(restored).toEqual(podfileFixture);
+  });
+
+  it('adds the Podfile flag when googleAppMeasurementOnDeviceConversion is enabled', function () {
+    const result = setAnalyticsPodfileGoogleAppMeasurementOnDeviceConversion(podfileFixture, true);
+    expect(result).toMatchSnapshot();
+  });
+
+  it('is idempotent when the ODM Podfile flag is already present', function () {
+    const onceModified = setAnalyticsPodfileGoogleAppMeasurementOnDeviceConversion(podfileFixture, true);
+    const twiceModified = setAnalyticsPodfileGoogleAppMeasurementOnDeviceConversion(onceModified, true);
+
+    expect(twiceModified).toEqual(onceModified);
+  });
+
+  it('removes the generated Podfile flag when googleAppMeasurementOnDeviceConversion is disabled', function () {
+    const onceModified = setAnalyticsPodfileGoogleAppMeasurementOnDeviceConversion(podfileFixture, true);
+    const restored = setAnalyticsPodfileGoogleAppMeasurementOnDeviceConversion(onceModified, false);
 
     expect(restored).toEqual(podfileFixture);
   });
