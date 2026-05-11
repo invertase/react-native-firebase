@@ -24,10 +24,6 @@ const config: PackageConfig = {
   nameMapping: {},
   missingInRN: [
     {
-      name: 'arrayFilter',
-      reason: 'Newer firebase-js-sdk array expression helper not yet exposed by RN Firebase pipelines.',
-    },
-    {
       name: 'arrayFirst',
       reason: 'Newer firebase-js-sdk array expression helper not yet exposed by RN Firebase pipelines.',
     },
