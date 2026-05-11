@@ -1,6 +1,6 @@
 ---
 name: ts-js-validation
-description: Validate TypeScript and JavaScript changes in React Native Firebase by formatting package JS/TS sources and running the root prepare, TypeScript compile, consumer TypeScript compile, and Jest test scripts. Use when a developer updates TS/JS code and wants the standard RNFB validation pass before handing off or committing.
+description: Validate TypeScript and JavaScript changes in React Native Firebase by running the root prepare, TypeScript compile, API reference, Jest, formatting, and compare-types scripts. Use when a developer updates TS/JS code and wants the standard RNFB validation pass before handing off or committing.
 metadata:
   owner_team: react-native-firebase
   maintainer: russell.wheatley
@@ -16,7 +16,7 @@ metadata:
 
 Use this skill to validate changes to TypeScript or JavaScript code in the React Native Firebase monorepo.
 
-It is for developer-facing validation after editing package JS/TS sources, type tests, Jest tests, or shared TypeScript configuration. It formats code and runs the standard root validation commands that catch generated package setup issues, TypeScript errors, consumer type regressions, and Jest failures.
+It is for developer-facing validation after editing package JS/TS sources, type tests, Jest tests, or shared TypeScript configuration. It runs the standard root validation commands that catch generated package setup issues, TypeScript errors, consumer type regressions, API reference regressions, Jest failures, formatting drift, and firebase-js-sdk type parity drift.
 
 ## Triggers
 
@@ -42,9 +42,9 @@ Do not use this skill for:
 
 Set one clear default path so the agent does not choose randomly between options.
 
-- Default tool or method: run the root Yarn scripts in this order from the repository root: `yarn lerna:prepare`, `yarn tsc:compile`, `yarn tsc:compile:consumer`, `yarn tests:jest`, and `yarn format:js`
+- Default tool or method: run the root Yarn scripts in this order from the repository root: `yarn lerna:prepare`, `yarn tsc:compile`, `yarn tsc:compile:consumer`, `yarn reference:api`, `yarn tests:jest`, `yarn format:js`, and `yarn compare:types`
 - Fallback when default fails: if a command fails, stop the sequence, inspect the failure, fix issues only when the user asked for fixes or the fix is clearly in the current change set, then rerun the failed command and any later commands
-- Why this default exists: `lerna:prepare`, both TypeScript compiles, and Jest cover the JS/TS surfaces most likely to regress in this monorepo, while `format:js` keeps package JS/TS sources normalized before handoff
+- Why this default exists: `lerna:prepare`, both TypeScript compiles, API reference generation, Jest, formatting, and compare-types cover the JS/TS surfaces most likely to regress in this monorepo
 
 ## Gotchas
 
@@ -52,7 +52,9 @@ Set one clear default path so the agent does not choose randomly between options
 - Run commands from the repository root so workspace resolution, root `tsconfig.json`, and Jest configuration are consistent.
 - `yarn lerna:prepare` may rebuild or refresh package artifacts needed before TypeScript or tests run.
 - `yarn tsc:compile` checks the repository TypeScript project, while `yarn tsc:compile:consumer` checks the consumer-facing TypeScript project. Run both.
+- `yarn reference:api` runs TypeDoc and should come after consumer TypeScript compilation.
 - `yarn tests:jest` is the root Jest entrypoint. If it fails, report the failing test file or suite and the first actionable error rather than dumping the full output.
+- `yarn compare:types` installs dependencies under `.github/scripts/compare-types` before running the type parity comparison. Keep it last.
 - If validation is slow, keep the command running rather than replacing it with a narrower command unless the user explicitly asks for targeted validation.
 
 ## Workflow
@@ -63,8 +65,10 @@ Set one clear default path so the agent does not choose randomly between options
    1. `yarn lerna:prepare`
    2. `yarn tsc:compile`
    3. `yarn tsc:compile:consumer`
-   4. `yarn tests:jest`
-   5. `yarn format:js`
+   4. `yarn reference:api`
+   5. `yarn tests:jest`
+   6. `yarn format:js`
+   7. `yarn compare:types`
 4. If `yarn format:js` changes files, include those formatting changes in the validation context and inspect the relevant diff before continuing.
 5. If a command fails:
    - stop before running later commands
@@ -80,11 +84,13 @@ Use this loop before finalizing:
    1. `yarn lerna:prepare`
    2. `yarn tsc:compile`
    3. `yarn tsc:compile:consumer`
-   4. `yarn tests:jest`
-   5. `yarn format:js`
+   4. `yarn reference:api`
+   5. `yarn tests:jest`
+   6. `yarn format:js`
+   7. `yarn compare:types`
 2. If validation fails because of current TS/JS changes and fixing is in scope, fix the issue and rerun the failed command plus all later commands.
 3. If validation fails for unrelated or environment-specific reasons, stop and report the blocker with the command that failed and the shortest useful error summary.
-4. Only report success when all five commands complete successfully.
+4. Only report success when all seven commands complete successfully.
 
 ## Output format
 
@@ -101,8 +107,10 @@ Use this template:
 - `yarn lerna:prepare`: passed | failed | not run
 - `yarn tsc:compile`: passed | failed | not run
 - `yarn tsc:compile:consumer`: passed | failed | not run
+- `yarn reference:api`: passed | failed | not run
 - `yarn tests:jest`: passed | failed | not run
 - `yarn format:js`: passed | failed | changed files
+- `yarn compare:types`: passed | failed | not run
 
 ## Findings
 - failing suite, compiler error, or setup blocker if any
@@ -115,7 +123,7 @@ Use this template:
 
 - Keep responses factual and grounded in command output.
 - Do not skip any command in the default sequence unless the user explicitly narrows validation.
-- Do not claim validation passed if formatting changed files but later commands were not rerun.
+- Do not claim validation passed unless `compare:types` ran after any formatting changes.
 - Do not revert unrelated local changes.
 - Avoid broad refactors while fixing validation failures.
 
@@ -125,8 +133,10 @@ Use this template:
   - `lerna:prepare`
   - `tsc:compile`
   - `tsc:compile:consumer`
+  - `reference:api`
   - `tests:jest`
   - `format:js`
+  - `compare:types`
 
 Load files only when needed:
 
