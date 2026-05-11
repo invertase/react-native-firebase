@@ -1,6 +1,7 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { firebase } from '../lib';
 import {
+  arrayFilter,
   arrayGet,
   and,
   conditional,
@@ -137,6 +138,68 @@ describe('Firestore pipelines runtime', function () {
           },
         },
         options: {},
+      },
+    });
+  });
+
+  it('serializes arrayFilter as a function expression helper and fluent method', function () {
+    const db: any = firebase.firestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select(
+        arrayFilter('scores', 'score', greaterThan(constant(1), constant(0))).as(
+          'passingScores',
+        ),
+        field('scores').arrayFilter('score', greaterThan(constant(2), constant(1))).as(
+          'topScores',
+        ),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          {
+            alias: 'passingScores',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayFilter',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Constant', value: 'score' },
+                {
+                  exprType: 'Function',
+                  name: 'greaterThan',
+                  args: [
+                    { exprType: 'Constant', value: 1 },
+                    { exprType: 'Constant', value: 0 },
+                  ],
+                },
+              ],
+            },
+          },
+          {
+            alias: 'topScores',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayFilter',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Constant', value: 'score' },
+                {
+                  exprType: 'Function',
+                  name: 'greaterThan',
+                  args: [
+                    { exprType: 'Constant', value: 2 },
+                    { exprType: 'Constant', value: 1 },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
       },
     });
   });

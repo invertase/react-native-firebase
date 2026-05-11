@@ -108,6 +108,7 @@ interface FluentExpressionMethods {
   sum(): AggregateFunction;
   arrayAgg(): AggregateFunction;
   arrayAggDistinct(): AggregateFunction;
+  arrayFilter(alias: string, filter: BooleanExpression): FunctionExpression;
 }
 
 export interface BooleanExpression extends Selectable, FluentExpressionMethods {
@@ -379,6 +380,7 @@ const EXPRESSION_METHOD_NAMES = [
   'arrayContains',
   'arrayContainsAny',
   'arrayContainsAll',
+  'arrayFilter',
   'startsWith',
   'endsWith',
   'add',
@@ -765,6 +767,7 @@ function normalizeGlobalArguments(name: string, args: unknown[]): RuntimeNode[] 
     case 'arrayContains':
     case 'arrayContainsAny':
     case 'arrayContainsAll':
+    case 'arrayFilter':
     case 'sum':
     case 'count':
     case 'average':
@@ -996,6 +999,31 @@ export function arrayContainsAll(
   _values: Array<Expression | unknown>,
 ): BooleanExpression {
   return callBooleanHelper('arrayContainsAll', arguments);
+}
+
+/**
+ * @beta
+ * Filters an array using a provided alias and predicate expression.
+ *
+ * The alias is serialized for native/web SDKs that support variable-bound
+ * predicates; RN Firebase does not yet expose the `variable()` helper.
+ */
+export function arrayFilter(
+  _fieldName: string,
+  _alias: string,
+  _filter: BooleanExpression,
+): FunctionExpression;
+export function arrayFilter(
+  _arrayExpression: Expression,
+  _alias: string,
+  _filter: BooleanExpression,
+): FunctionExpression;
+export function arrayFilter(
+  _arrayOrField: string | Expression,
+  _alias: string,
+  _filter: BooleanExpression,
+): FunctionExpression {
+  return callFunctionHelper('arrayFilter', arguments);
 }
 
 /**

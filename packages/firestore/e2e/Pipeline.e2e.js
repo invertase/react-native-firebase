@@ -1519,8 +1519,10 @@ describe('FirestorePipeline', function () {
           arrayLength,
           arrayGet,
           arrayConcat,
+          arrayFilter,
           arraySum,
           and,
+          greaterThan,
           arrayContains,
           arrayContainsAny,
           arrayContainsAll,
@@ -1563,6 +1565,9 @@ describe('FirestorePipeline', function () {
             arrayLength(field('tags')).as('tagCount'),
             arrayGet(field('items'), 0).as('firstItem'),
             arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
+            arrayFilter(field('items'), 'item', greaterThan(constant(1), constant(0))).as(
+              'filteredItems',
+            ),
             arraySum(field('scores')).as('totalScore'),
           );
 
@@ -1584,6 +1589,9 @@ describe('FirestorePipeline', function () {
                 array([constant(1), constant(2), constant(3)]).as('fixedArr'),
                 arrayLength(field('tags')).as('tagCount'),
                 arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
+                arrayFilter('items', 'item', greaterThan(constant(1), constant(0))).as(
+                  'filteredItems',
+                ),
                 arraySum(field('scores')).as('totalScore'),
               ),
           );
@@ -1593,6 +1601,7 @@ describe('FirestorePipeline', function () {
           iosData.fixedArr.should.eql([1, 2, 3]);
           iosData.tagCount.should.equal(2);
           iosData.allTags.should.eql(['a', 'b', 'c', 'd']);
+          iosData.filteredItems.should.eql(['x', 'y', 'z']);
           iosData.totalScore.should.equal(60);
           return;
         }
@@ -1605,6 +1614,7 @@ describe('FirestorePipeline', function () {
         data.tagCount.should.equal(2);
         data.firstItem.should.equal('x');
         data.allTags.should.eql(['a', 'b', 'c', 'd']);
+        data.filteredItems.should.eql(['x', 'y', 'z']);
         data.totalScore.should.equal(60);
       });
     });

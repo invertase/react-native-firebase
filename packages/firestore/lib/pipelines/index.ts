@@ -79,6 +79,7 @@ export {
   arrayContains,
   arrayContainsAny,
   arrayContainsAll,
+  arrayFilter,
   startsWith,
   endsWith,
   OrderingHelper as Ordering,
