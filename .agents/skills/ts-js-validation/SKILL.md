@@ -42,9 +42,21 @@ Do not use this skill for:
 
 Set one clear default path so the agent does not choose randomly between options.
 
-- Default tool or method: run the root Yarn scripts in this order from the repository root: `yarn lerna:prepare`, `yarn tsc:compile`, `yarn tsc:compile:consumer`, `yarn reference:api`, `yarn tests:jest`, `yarn format:js`, and `yarn compare:types`
+- Default tool or method: run the canonical command sequence below from the repository root
 - Fallback when default fails: if a command fails, stop the sequence, inspect the failure, fix issues only when the user asked for fixes or the fix is clearly in the current change set, then rerun the failed command and any later commands
 - Why this default exists: `lerna:prepare`, both TypeScript compiles, API reference generation, Jest, formatting, and compare-types cover the JS/TS surfaces most likely to regress in this monorepo
+
+## Command sequence
+
+Run these root `package.json` scripts in order:
+
+1. `yarn lerna:prepare`
+2. `yarn tsc:compile`
+3. `yarn tsc:compile:consumer`
+4. `yarn reference:api`
+5. `yarn tests:jest`
+6. `yarn format:js`
+7. `yarn compare:types`
 
 ## Gotchas
 
@@ -61,14 +73,7 @@ Set one clear default path so the agent does not choose randomly between options
 
 1. Confirm the task is TS/JS validation and note any specific changed package or test files the user mentioned.
 2. Check whether the worktree has unrelated dirty files if the current task includes code edits or commit preparation.
-3. Run the validation sequence from the repository root:
-   1. `yarn lerna:prepare`
-   2. `yarn tsc:compile`
-   3. `yarn tsc:compile:consumer`
-   4. `yarn reference:api`
-   5. `yarn tests:jest`
-   6. `yarn format:js`
-   7. `yarn compare:types`
+3. Run the command sequence from the repository root.
 4. If `yarn format:js` changes files, include those formatting changes in the validation context and inspect the relevant diff before continuing.
 5. If a command fails:
    - stop before running later commands
@@ -80,17 +85,10 @@ Set one clear default path so the agent does not choose randomly between options
 
 Use this loop before finalizing:
 
-1. Run the root validation sequence:
-   1. `yarn lerna:prepare`
-   2. `yarn tsc:compile`
-   3. `yarn tsc:compile:consumer`
-   4. `yarn reference:api`
-   5. `yarn tests:jest`
-   6. `yarn format:js`
-   7. `yarn compare:types`
+1. Run the command sequence.
 2. If validation fails because of current TS/JS changes and fixing is in scope, fix the issue and rerun the failed command plus all later commands.
 3. If validation fails for unrelated or environment-specific reasons, stop and report the blocker with the command that failed and the shortest useful error summary.
-4. Only report success when all seven commands complete successfully.
+4. Only report success when every command in the sequence completes successfully.
 
 ## Output format
 
@@ -128,15 +126,6 @@ Use this template:
 - Avoid broad refactors while fixing validation failures.
 
 ## Additional resources
-
-- See the root `package.json` scripts:
-  - `lerna:prepare`
-  - `tsc:compile`
-  - `tsc:compile:consumer`
-  - `reference:api`
-  - `tests:jest`
-  - `format:js`
-  - `compare:types`
 
 Load files only when needed:
 
