@@ -167,6 +167,7 @@ import {
   collectionId,
   type as pipelineType,
   currentTimestamp,
+  variable,
   // array
   array,
   arrayFilter,
@@ -1313,10 +1314,12 @@ void currentTimestamp();
 // array
 void array([1, 2, 3]);
 void array([field('a'), constant(2)]);
+// variable: (string) => Expression
+void variable('score');
 // arrayFilter: (string, alias, BooleanExpression) | (Expression, alias, BooleanExpression)
-void arrayFilter('scores', 'score', greaterThan(constant(1), constant(0)));
-void arrayFilter(field('scores'), 'score', greaterThan(constant(1), constant(0)));
-void field('scores').arrayFilter('score', greaterThan(constant(1), constant(0)));
+void arrayFilter('scores', 'score', greaterThan(variable('score'), constant(15)));
+void arrayFilter(field('scores'), 'score', greaterThan(variable('score'), constant(15)));
+void field('scores').arrayFilter('score', greaterThan(variable('score'), constant(15)));
 // arrayConcat: (Expression, ...) | (string, ...)
 void arrayConcat(field('tags'), field('moreTags'));
 void arrayConcat(field('tags'), ['extra']);
@@ -1696,8 +1699,12 @@ const pipelineArrayOps = xDb
     arrayGet('items', 0).as('firstItem2'),
     arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
     arrayConcat('primaryTags', ['extra']).as('allTags2'),
-    arrayFilter('scores', 'score', greaterThan(constant(1), constant(0))).as('passingScores'),
-    field('scores').arrayFilter('score', greaterThan(constant(2), constant(1))).as('topScores'),
+    arrayFilter('scores', 'score', greaterThan(variable('score'), constant(15))).as(
+      'passingScores',
+    ),
+    field('scores').arrayFilter('score', greaterThan(variable('score'), constant(20))).as(
+      'topScores',
+    ),
     arraySum(field('scores')).as('totalScore'),
     arraySum('scores').as('totalScore2'),
   );

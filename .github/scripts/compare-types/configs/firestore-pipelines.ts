@@ -124,10 +124,6 @@ const config: PackageConfig = {
       reason: 'Newer firebase-js-sdk timestamp expression helper not yet exposed by RN Firebase pipelines.',
     },
     {
-      name: 'variable',
-      reason: 'Newer firebase-js-sdk variable expression helper not yet exposed by RN Firebase pipelines.',
-    },
-    {
       name: 'DefineStageOptions',
       reason: 'Newer firebase-js-sdk stage options type not yet exposed by RN Firebase pipelines.',
     },
@@ -170,7 +166,7 @@ const config: PackageConfig = {
     },
     {
       name: 'ExpressionType',
-      reason: 'RN Firebase has not yet exposed the newer firebase-js-sdk `Variable` and `PipelineValue` expression kinds.',
+      reason: 'RN Firebase has not yet exposed the newer firebase-js-sdk `PipelineValue` expression kind.',
     },
     {
       name: 'StageOptions',

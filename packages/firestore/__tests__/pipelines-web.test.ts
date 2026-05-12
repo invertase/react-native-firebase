@@ -15,6 +15,7 @@ jest.mock('@react-native-firebase/app/dist/module/internal/web/firebaseFirestore
     conditional: jest.fn(actual.conditional as (...args: unknown[]) => unknown),
     isType: jest.fn(actual.isType as (...args: unknown[]) => unknown),
     mapGet: jest.fn(actual.mapGet as (...args: unknown[]) => unknown),
+    variable: jest.fn(actual.variable as (...args: unknown[]) => unknown),
     euclideanDistance: jest.fn(actual.euclideanDistance as (...args: unknown[]) => unknown),
   };
 });
@@ -70,7 +71,7 @@ describe('Firestore web pipeline bridge', function () {
                     exprType: 'Function',
                     name: 'greaterThan',
                     args: [
-                      { __kind: 'expression', exprType: 'Field', path: 'rating' },
+                      { __kind: 'expression', exprType: 'Variable', name: 'score' },
                       { __kind: 'expression', exprType: 'Constant', value: 3 },
                     ],
                   },
@@ -124,6 +125,7 @@ describe('Firestore web pipeline bridge', function () {
     const whereArg = (pipelineInstance.where as jest.Mock).mock.calls[0][0] as any;
     expect(whereArg).toBeDefined();
     expect(whereArg.__kind).toBeUndefined();
+    expect(firebaseFirestorePipelines.variable).toHaveBeenCalledWith('score');
 
     const selectArg = (pipelineInstance.select as jest.Mock).mock.calls[0][0] as any;
     expect(selectArg).toBeDefined();
