@@ -38,6 +38,9 @@ import type {
 export interface DocumentSnapshotNativeData {
   path: string;
   data?: unknown;
+  dataEstimate?: unknown;
+  dataPrevious?: unknown;
+  dataNone?: unknown;
   metadata?: [boolean, boolean];
   exists?: boolean;
 }
@@ -49,6 +52,9 @@ export default class DocumentSnapshot<
   _firestore: FirestoreInternal;
   _nativeData: DocumentSnapshotNativeData;
   _data: Record<string, unknown> | undefined;
+  _dataEstimate: Record<string, unknown> | undefined;
+  _dataPrevious: Record<string, unknown> | undefined;
+  _dataNone: Record<string, unknown> | undefined;
   _metadata: SnapshotMetadata;
   _ref: DocumentReference<AppModelType, DbModelType>;
   _exists: boolean;
@@ -63,6 +69,18 @@ export default class DocumentSnapshot<
     this._nativeData = nativeData;
     this._converter = converter;
     this._data = parseNativeMap(firestore, nativeData.data as Record<string, unknown> | undefined);
+    this._dataEstimate = parseNativeMap(
+      firestore,
+      nativeData.dataEstimate as Record<string, unknown> | undefined,
+    );
+    this._dataPrevious = parseNativeMap(
+      firestore,
+      nativeData.dataPrevious as Record<string, unknown> | undefined,
+    );
+    this._dataNone = parseNativeMap(
+      firestore,
+      nativeData.dataNone as Record<string, unknown> | undefined,
+    );
     this._metadata = new SnapshotMetadata(nativeData.metadata ?? [false, false]);
     this._ref = new DocumentReference<AppModelType, DbModelType>(
       firestore,
@@ -70,6 +88,20 @@ export default class DocumentSnapshot<
       this._converter,
     );
     this._exists = nativeData.exists ?? false;
+  }
+
+  _dataForOptions(options?: SnapshotOptions): Record<string, unknown> | undefined {
+    // Older native payloads only include `data`; fall back to it if an option-specific map is absent.
+    switch (options?.serverTimestamps) {
+      case 'estimate':
+        return this._dataEstimate ?? this._data;
+      case 'previous':
+        return this._dataPrevious ?? this._data;
+      case 'none':
+        return this._dataNone ?? this._data;
+      default:
+        return this._data;
+    }
   }
 
   get id(): string {
@@ -105,10 +137,10 @@ export default class DocumentSnapshot<
         );
       }
     }
-    return this._data as AppModelType | undefined;
+    return this._dataForOptions(options) as AppModelType | undefined;
   }
 
-  get(fieldPath: string | FieldPath, _options?: SnapshotOptions): DocumentFieldValueInternal {
+  get(fieldPath: string | FieldPath, options?: SnapshotOptions): DocumentFieldValueInternal {
     if (!isString(fieldPath) && !(fieldPath instanceof FieldPath)) {
       throw new Error(
         "firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' expected type string or FieldPath.",
@@ -129,7 +161,10 @@ export default class DocumentSnapshot<
       path = fieldPath;
     }
 
-    return extractFieldPathData(this._data, path._segments) as DocumentFieldValueInternal;
+    return extractFieldPathData(
+      this._dataForOptions(options),
+      path._segments,
+    ) as DocumentFieldValueInternal;
   }
 
   isEqual(other: DocumentSnapshot<AppModelType, DbModelType>): boolean {

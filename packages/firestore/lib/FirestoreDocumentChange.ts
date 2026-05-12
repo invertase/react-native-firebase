@@ -28,7 +28,15 @@ const TYPE_MAP: Record<string, 'added' | 'modified' | 'removed'> = {
 
 export interface DocumentChangeNativeData {
   type: string;
-  doc: { path: string; data?: unknown; metadata?: [boolean, boolean]; exists?: boolean };
+  doc: {
+    path: string;
+    data?: unknown;
+    dataEstimate?: unknown;
+    dataPrevious?: unknown;
+    dataNone?: unknown;
+    metadata?: [boolean, boolean];
+    exists?: boolean;
+  };
   ni: number;
   oi: number;
   isMetadataChange?: boolean;

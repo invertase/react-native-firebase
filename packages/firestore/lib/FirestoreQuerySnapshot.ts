@@ -35,7 +35,15 @@ export interface QuerySnapshotNativeData {
   excludesMetadataChanges?: boolean;
   changes: Array<{
     type: string;
-    doc: { path: string; data?: unknown; metadata?: [boolean, boolean]; exists?: boolean };
+    doc: {
+      path: string;
+      data?: unknown;
+      dataEstimate?: unknown;
+      dataPrevious?: unknown;
+      dataNone?: unknown;
+      metadata?: [boolean, boolean];
+      exists?: boolean;
+    };
     ni: number;
     oi: number;
     isMetadataChange?: boolean;
@@ -43,6 +51,9 @@ export interface QuerySnapshotNativeData {
   documents: Array<{
     path: string;
     data?: unknown;
+    dataEstimate?: unknown;
+    dataPrevious?: unknown;
+    dataNone?: unknown;
     metadata?: [boolean, boolean];
     exists?: boolean;
   }>;

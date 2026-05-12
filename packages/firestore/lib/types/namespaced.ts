@@ -642,7 +642,7 @@ export namespace FirebaseFirestoreTypes {
      * console.log('User', user.data());
      * ```
      */
-    data(): AppModelType | undefined;
+    data(options?: SnapshotOptions): AppModelType | undefined;
 
     /**
      * Retrieves the field specified by fieldPath. Returns undefined if the document or field doesn't exist.
@@ -659,6 +659,7 @@ export namespace FirebaseFirestoreTypes {
      */
     get<fieldType extends DocumentFieldType>(
       fieldPath: keyof AppModelType | string | FieldPath,
+      options?: SnapshotOptions,
     ): fieldType;
 
     /**
@@ -708,7 +709,7 @@ export namespace FirebaseFirestoreTypes {
      * }
      * ```
      */
-    data(): AppModelType;
+    data(options?: SnapshotOptions): AppModelType;
   }
 
   /**

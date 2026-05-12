@@ -386,6 +386,9 @@ export interface FirestoreDocumentSnapshotDataInternal {
   path: string;
   exists: boolean;
   data?: Record<string, unknown>;
+  dataEstimate?: Record<string, unknown>;
+  dataPrevious?: Record<string, unknown>;
+  dataNone?: Record<string, unknown>;
   metadata: [boolean, boolean];
 }
 
