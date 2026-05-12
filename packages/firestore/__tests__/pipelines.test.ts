@@ -526,6 +526,10 @@ describe('Firestore pipelines runtime', function () {
       .pipeline()
       .documents(['firestore/a'])
       .select(
+        arrayFirst(field('items')).as('firstArrayItem'),
+        arrayFirstN(field('items'), 2).as('firstArrayItems'),
+        field('items').arrayFirst().as('fluentFirstArrayItem'),
+        field('items').arrayFirstN(2).as('fluentFirstArrayItems'),
         arrayGet(field('items'), 0).as('firstItem'),
         conditional(
           field('value').greaterThan(0),
@@ -542,6 +546,8 @@ describe('Firestore pipelines runtime', function () {
       .serialize();
 
     expect(getIOSUnsupportedPipelineFunctions(serialized)).toEqual([
+      'arrayFirst',
+      'arrayFirstN',
       'arrayGet',
       'conditional',
       'round',

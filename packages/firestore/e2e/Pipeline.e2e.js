@@ -1577,7 +1577,11 @@ describe('FirestorePipeline', function () {
           );
 
         if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['arrayGet']);
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), [
+            'arrayFirst',
+            'arrayFirstN',
+            'arrayGet',
+          ]);
 
           const iosSnapshot = await execute(
             db
@@ -1593,8 +1597,6 @@ describe('FirestorePipeline', function () {
               .select(
                 array([constant(1), constant(2), constant(3)]).as('fixedArr'),
                 arrayLength(field('tags')).as('tagCount'),
-                arrayFirst(field('items')).as('firstItemByHelper'),
-                arrayFirstN('items', 2).as('firstTwoItems'),
                 arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
                 arrayFilter('scores', 'score', greaterThan(variable('score'), 15)).as(
                   'filteredItems',
@@ -1607,8 +1609,6 @@ describe('FirestorePipeline', function () {
           const iosData = iosSnapshot.results[0].data();
           iosData.fixedArr.should.eql([1, 2, 3]);
           iosData.tagCount.should.equal(2);
-          iosData.firstItemByHelper.should.equal('x');
-          iosData.firstTwoItems.should.eql(['x', 'y']);
           iosData.allTags.should.eql(['a', 'b', 'c', 'd']);
           iosData.filteredItems.should.eql([20, 30]);
           iosData.totalScore.should.equal(60);
