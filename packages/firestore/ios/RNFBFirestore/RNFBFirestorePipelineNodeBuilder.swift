@@ -747,6 +747,10 @@ final class RNFBFirestorePipelineNodeBuilder {
       return "array_contains_any"
     case "arraycontainsall":
       return "array_contains_all"
+    case "arrayfirst":
+      return "array_first"
+    case "arrayfirstn":
+      return "array_first_n"
     case "charlength", "characterlength":
       return "char_length"
     case "bytelength":
@@ -1139,6 +1143,31 @@ final class RNFBFirestorePipelineNodeBuilder {
                     argBoxes[index]
                   ))
                 }
+                break expressionLoop
+              }
+
+              if normalized == "arrayfirst" {
+                guard rawArgs.count == 1 else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).\(name) to include exactly 1 argument.")
+                }
+
+                let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
+                stack.append(.functionExit(box, "array_first", argBoxes, currentField))
+                stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expressionValue, argBoxes[0]))
+                break expressionLoop
+              }
+
+              if normalized == "arrayfirstn" {
+                guard rawArgs.count == 2 else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).\(name) to include exactly 2 arguments.")
+                }
+
+                let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
+                stack.append(.functionExit(box, "array_first_n", argBoxes, currentField))
+                stack.append(.enter(rawArgs[1], "\(currentField).args[1]", .expressionValue, argBoxes[1]))
+                stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expressionValue, argBoxes[0]))
                 break expressionLoop
               }
 
