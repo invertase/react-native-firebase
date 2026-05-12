@@ -62,7 +62,7 @@ Pod::Spec.new do |s|
     firebase_dependency(s, firebase_sdk_version, ['FirebaseAnalytics'], 'FirebaseAnalytics/Core')
   end
 
-  unless defined?(spm_dependency)
+  unless defined?(spm_dependency) && !defined?($RNFirebaseDisableSPM)
     # CocoaPods-only: conditional IdentitySupport subspec
     if defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && ($RNFirebaseAnalyticsWithoutAdIdSupport == true)
       Pod::UI.puts "#{s.name}: Not installing FirebaseAnalytics/IdentitySupport Pod, no IDFA will be collected."

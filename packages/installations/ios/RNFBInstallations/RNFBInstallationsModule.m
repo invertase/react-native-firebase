@@ -26,8 +26,6 @@
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBInstallationsModule.h"
 
-#import "FirebaseInstallations/FIRInstallations.h"
-
 @implementation RNFBInstallationsModule
 #pragma mark -
 #pragma mark Module Setup
