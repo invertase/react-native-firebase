@@ -81,6 +81,8 @@ export {
   arrayContainsAny,
   arrayContainsAll,
   arrayFilter,
+  arrayFirst,
+  arrayFirstN,
   startsWith,
   endsWith,
   OrderingHelper as Ordering,
