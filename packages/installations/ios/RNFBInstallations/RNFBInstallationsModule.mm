@@ -27,8 +27,6 @@
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBInstallationsModule.h"
 
-#import "FirebaseInstallations/FIRInstallations.h"
-
 @implementation RNFBInstallationsModule
 
 RCT_EXPORT_MODULE(NativeRNFBTurboInstallations)
