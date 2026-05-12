@@ -1314,6 +1314,90 @@ describe('Firestore', function () {
       );
     });
 
+    it('FirestoreDocumentSnapshot.data() respects SnapshotOptions.serverTimestamps', function () {
+      const firestore = getFirestore();
+      const snapshot = new FirestoreDocumentSnapshot(
+        // @ts-expect-error calling a private constructor directly which expects FirestoreInternal type
+        firestore,
+        {
+          data: { createdAt: [3] },
+          dataEstimate: { createdAt: [13, [123, 456]] },
+          dataPrevious: { createdAt: [13, [42, 0]] },
+          dataNone: { createdAt: [3] },
+          metadata: [false, true],
+          path: 'foo/bar',
+          exists: true,
+        },
+        null,
+      );
+
+      expect(snapshot.data()).toEqual({ createdAt: null });
+      expect(snapshot.data({ serverTimestamps: 'estimate' })?.createdAt).toBeInstanceOf(Timestamp);
+      expect(snapshot.data({ serverTimestamps: 'estimate' })?.createdAt).toMatchObject({
+        seconds: 123,
+        nanoseconds: 456,
+      });
+      expect(snapshot.data({ serverTimestamps: 'previous' })?.createdAt).toMatchObject({
+        seconds: 42,
+        nanoseconds: 0,
+      });
+      expect(snapshot.data({ serverTimestamps: 'none' })).toEqual({ createdAt: null });
+    });
+
+    it('FirestoreDocumentSnapshot.get() respects SnapshotOptions.serverTimestamps', function () {
+      const firestore = getFirestore();
+      const snapshot = new FirestoreDocumentSnapshot(
+        // @ts-expect-error calling a private constructor directly which expects FirestoreInternal type
+        firestore,
+        {
+          data: { nested: [16, { createdAt: [3] }] },
+          dataEstimate: { nested: [16, { createdAt: [13, [123, 456]] }] },
+          dataPrevious: { nested: [16, { createdAt: [13, [42, 0]] }] },
+          dataNone: { nested: [16, { createdAt: [3] }] },
+          metadata: [false, true],
+          path: 'foo/bar',
+          exists: true,
+        },
+        null,
+      );
+
+      expect(snapshot.get('nested.createdAt')).toBeNull();
+      expect(snapshot.get('nested.createdAt', { serverTimestamps: 'estimate' })).toMatchObject({
+        seconds: 123,
+        nanoseconds: 456,
+      });
+      expect(snapshot.get('nested.createdAt', { serverTimestamps: 'previous' })).toMatchObject({
+        seconds: 42,
+        nanoseconds: 0,
+      });
+      expect(snapshot.get('nested.createdAt', { serverTimestamps: 'none' })).toBeNull();
+    });
+
+    it('FirestoreDocumentSnapshot.data() passes SnapshotOptions through converter snapshots', function () {
+      const firestore = getFirestore();
+      const snapshot = new FirestoreDocumentSnapshot(
+        // @ts-expect-error calling a private constructor directly which expects FirestoreInternal type
+        firestore,
+        {
+          data: { createdAt: [3] },
+          dataEstimate: { createdAt: [13, [123, 456]] },
+          metadata: [false, true],
+          path: 'foo/bar',
+          exists: true,
+        },
+        {
+          toFirestore: data => data,
+          fromFirestore: converterSnapshot =>
+            converterSnapshot.data({ serverTimestamps: 'estimate' }),
+        },
+      );
+
+      expect(snapshot.data()?.createdAt).toMatchObject({
+        seconds: 123,
+        nanoseconds: 456,
+      });
+    });
+
     describe('FieldValue', function () {
       it('FieldValue.delete()', function () {
         const fieldValue = firestore.FieldValue;

@@ -25,11 +25,14 @@ const {
   addDoc,
   setDoc,
   getDoc,
+  onSnapshot,
   query,
   where,
   getDocs,
   writeBatch,
   increment,
+  serverTimestamp,
+  Timestamp,
   initializeFirestore,
 } = firestoreModular;
 
@@ -587,6 +590,52 @@ describe('firestore.withConverter', function () {
         await setDoc(ref2, [1, 2, 3]);
         const result2 = await getDoc(ref2);
         result2.data().should.deepEqual([1, 2, 3]);
+      });
+    });
+
+    it("passes data() serverTimestamps options through converter snapshots", function () {
+      const timestampConverter = {
+        toFirestore() {
+          return {
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          };
+        },
+        fromFirestore(snapshot) {
+          return snapshot.data({ serverTimestamps: 'estimate' });
+        },
+      };
+
+      return withTestCollection(async coll => {
+        const ref = doc(coll, 'timestampConverter').withConverter(timestampConverter);
+        await new Promise((resolve, reject) => {
+          const unsubscribe = onSnapshot(
+            ref,
+            { includeMetadataChanges: true },
+            snapshot => {
+              try {
+                if (!snapshot.exists() || !snapshot.metadata.hasPendingWrites) {
+                  return;
+                }
+
+                const data = snapshot.data();
+                data.createdAt.should.be.an.instanceOf(Timestamp);
+                data.updatedAt.should.be.an.instanceOf(Timestamp);
+                unsubscribe();
+                resolve();
+              } catch (error) {
+                unsubscribe();
+                reject(error);
+              }
+            },
+            reject,
+          );
+
+          setDoc(ref, {}).catch(error => {
+            unsubscribe();
+            reject(error);
+          });
+        });
       });
     });
 

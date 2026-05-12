@@ -348,9 +348,12 @@ nsQuery.get().then((snap: FirebaseFirestoreTypes.QuerySnapshot) => {
 nsDocRef.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
   if (snap.exists()) {
     const d = snap.data();
+    const estimate = snap.data({ serverTimestamps: 'estimate' });
     void d;
+    void estimate;
   }
   void snap.get('field');
+  void snap.get('field', { serverTimestamps: 'previous' });
   void snap.metadata.isEqual(snap.metadata);
 });
 
@@ -638,6 +641,8 @@ getAggregateFromServer(modQuery1, aggSpec).then(
 
 // ----- getDoc, getDocFromCache, getDocFromServer -----
 getDoc(modDoc).then(snap => snap.data());
+getDoc(modDoc).then(snap => snap.data({ serverTimestamps: 'estimate' }));
+getDoc(modDoc).then(snap => snap.get('field', { serverTimestamps: 'previous' }));
 getDocFromCache(modDoc).then(snap => snap.data());
 getDocFromServer(modDoc).then(snap => snap.data());
 
