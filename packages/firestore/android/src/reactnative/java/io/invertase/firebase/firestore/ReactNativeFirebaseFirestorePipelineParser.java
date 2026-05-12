@@ -943,6 +943,15 @@ final class ReactNativeFirebaseFirestorePipelineParser {
               stack.push(new ValueEnterFrame(map.get("value"), valueBox, fieldName + ".value"));
               continue;
             }
+            if ("variable".equals(normalizedType)) {
+              Object nameValue = map.get("name");
+              if (!(nameValue instanceof String) || ((String) nameValue).isEmpty()) {
+                throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                    "pipelineExecute() expected " + fieldName + ".name to be a non-empty string.");
+              }
+              enterFrame.box.value = new ParsedVariableExpressionNode((String) nameValue);
+              continue;
+            }
           }
 
           if (map.containsKey("name")) {
@@ -1633,6 +1642,14 @@ final class ReactNativeFirebaseFirestorePipelineParser {
 
     ParsedConstantExpressionNode(ParsedValueNode value) {
       this.value = value;
+    }
+  }
+
+  static final class ParsedVariableExpressionNode extends ParsedExpressionNode {
+    final String name;
+
+    ParsedVariableExpressionNode(String name) {
+      this.name = name;
     }
   }
 
