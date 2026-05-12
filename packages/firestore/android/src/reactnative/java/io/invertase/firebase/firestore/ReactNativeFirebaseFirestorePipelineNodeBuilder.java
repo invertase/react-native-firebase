@@ -994,6 +994,22 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             break;
           }
 
+          Object exprType = map.get("exprType");
+          if (exprType instanceof String
+              && "variable".equals(((String) exprType).toLowerCase(Locale.ROOT))) {
+            Object nameValue = map.get("name");
+            if (!(nameValue instanceof String) || ((String) nameValue).isEmpty()) {
+              throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                  "pipelineExecute() expected "
+                      + currentFieldName
+                      + ".name to be a non-empty string.");
+            }
+            enterFrame.box.value =
+                applyPendingUnaryExpressionFunctions(
+                    Expression.variable((String) nameValue), pendingUnaryFunctions);
+            break;
+          }
+
           Object name = map.get("name");
           if (name instanceof String) {
             String functionName = (String) name;
@@ -1022,7 +1038,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             break;
           }
 
-          Object exprType = map.get("exprType");
+          exprType = map.get("exprType");
           if (exprType instanceof String) {
             String normalizedType = ((String) exprType).toLowerCase(Locale.ROOT);
             if ("field".equals(normalizedType)) {
@@ -3287,6 +3303,19 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           continue;
         }
 
+        if (expression
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) {
+          Map<String, Object> output = new LinkedHashMap<>();
+          output.put("__kind", "expression");
+          output.put("exprType", "Variable");
+          output.put(
+              "name",
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) expression)
+                  .name);
+          enterFrame.box.value = output;
+          continue;
+        }
+
         ReactNativeFirebaseFirestorePipelineParser.ParsedFunctionExpressionNode function =
             (ReactNativeFirebaseFirestorePipelineParser.ParsedFunctionExpressionNode) expression;
         List<SerializedValueBox> argBoxes = new ArrayList<>(function.args.size());
@@ -3529,6 +3558,19 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
                           expression)
                       .value,
                   valueBox));
+          continue;
+        }
+
+        if (expression
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) {
+          Map<String, Object> output = new LinkedHashMap<>();
+          output.put("__kind", "expression");
+          output.put("exprType", "Variable");
+          output.put(
+              "name",
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) expression)
+                  .name);
+          enterFrame.box.value = output;
           continue;
         }
 
