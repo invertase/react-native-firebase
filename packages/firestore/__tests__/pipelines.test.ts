@@ -17,6 +17,7 @@ import {
   timestampAdd,
   timestampSubtract,
   trunc,
+  variable,
 } from '../lib/pipelines';
 import '../lib/pipelines';
 import { ConstantExpression } from '../lib/pipelines/expressions';
@@ -148,10 +149,10 @@ describe('Firestore pipelines runtime', function () {
       .pipeline()
       .collection('firestore')
       .select(
-        arrayFilter('scores', 'score', greaterThan(constant(1), constant(0))).as(
+        arrayFilter('scores', 'score', greaterThan(variable('score'), constant(15))).as(
           'passingScores',
         ),
-        field('scores').arrayFilter('score', greaterThan(constant(2), constant(1))).as(
+        field('scores').arrayFilter('score', greaterThan(variable('score'), constant(20))).as(
           'topScores',
         ),
       )
@@ -173,8 +174,8 @@ describe('Firestore pipelines runtime', function () {
                   exprType: 'Function',
                   name: 'greaterThan',
                   args: [
-                    { exprType: 'Constant', value: 1 },
-                    { exprType: 'Constant', value: 0 },
+                    { exprType: 'Variable', name: 'score' },
+                    { exprType: 'Constant', value: 15 },
                   ],
                 },
               ],
@@ -192,8 +193,8 @@ describe('Firestore pipelines runtime', function () {
                   exprType: 'Function',
                   name: 'greaterThan',
                   args: [
-                    { exprType: 'Constant', value: 2 },
-                    { exprType: 'Constant', value: 1 },
+                    { exprType: 'Variable', name: 'score' },
+                    { exprType: 'Constant', value: 20 },
                   ],
                 },
               ],
