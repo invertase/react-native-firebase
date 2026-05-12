@@ -57,6 +57,7 @@ function isExpressionNode(value: Record<string, unknown>): boolean {
     value.__kind === 'expression' ||
     value.exprType === 'Field' ||
     value.exprType === 'Constant' ||
+    value.exprType === 'Variable' ||
     value.exprType === 'Function'
   );
 }
@@ -165,6 +166,11 @@ function rebuildExpressionNode(
         revivedValue = result;
       },
     });
+    return;
+  }
+
+  if (node.exprType === 'Variable' && typeof node.name === 'string') {
+    resolve(getPipelineHelper('variable')(node.name) as Expression);
     return;
   }
 
