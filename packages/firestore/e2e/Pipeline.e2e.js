@@ -1510,13 +1510,15 @@ describe('FirestorePipeline', function () {
     });
 
     describe('array operators', function () {
-      it('evaluates array, arrayLength, arrayGet, arrayConcat, arraySum and array predicates', async function () {
+      it('evaluates array helpers and array predicates', async function () {
         const {
           execute,
           field,
           constant,
           array,
           arrayLength,
+          arrayFirst,
+          arrayFirstN,
           arrayGet,
           arrayConcat,
           arrayFilter,
@@ -1564,6 +1566,8 @@ describe('FirestorePipeline', function () {
           .select(
             array([constant(1), constant(2), constant(3)]).as('fixedArr'),
             arrayLength(field('tags')).as('tagCount'),
+            arrayFirst(field('items')).as('firstItemByHelper'),
+            arrayFirstN(field('items'), 2).as('firstTwoItems'),
             arrayGet(field('items'), 0).as('firstItem'),
             arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
             arrayFilter(field('scores'), 'score', greaterThan(variable('score'), 15)).as(
@@ -1589,6 +1593,8 @@ describe('FirestorePipeline', function () {
               .select(
                 array([constant(1), constant(2), constant(3)]).as('fixedArr'),
                 arrayLength(field('tags')).as('tagCount'),
+                arrayFirst(field('items')).as('firstItemByHelper'),
+                arrayFirstN('items', 2).as('firstTwoItems'),
                 arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
                 arrayFilter('scores', 'score', greaterThan(variable('score'), 15)).as(
                   'filteredItems',
@@ -1601,6 +1607,8 @@ describe('FirestorePipeline', function () {
           const iosData = iosSnapshot.results[0].data();
           iosData.fixedArr.should.eql([1, 2, 3]);
           iosData.tagCount.should.equal(2);
+          iosData.firstItemByHelper.should.equal('x');
+          iosData.firstTwoItems.should.eql(['x', 'y']);
           iosData.allTags.should.eql(['a', 'b', 'c', 'd']);
           iosData.filteredItems.should.eql([20, 30]);
           iosData.totalScore.should.equal(60);
@@ -1613,6 +1621,8 @@ describe('FirestorePipeline', function () {
         const data = snapshot.results[0].data();
         data.fixedArr.should.eql([1, 2, 3]);
         data.tagCount.should.equal(2);
+        data.firstItemByHelper.should.equal('x');
+        data.firstTwoItems.should.eql(['x', 'y']);
         data.firstItem.should.equal('x');
         data.allTags.should.eql(['a', 'b', 'c', 'd']);
         data.filteredItems.should.eql([20, 30]);
