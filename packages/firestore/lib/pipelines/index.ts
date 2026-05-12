@@ -67,6 +67,7 @@ export type { OneOf } from './types';
 export { execute } from './pipeline_impl';
 export {
   field,
+  variable,
   and,
   or,
   greaterThan,

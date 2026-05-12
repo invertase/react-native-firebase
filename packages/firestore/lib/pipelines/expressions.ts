@@ -26,6 +26,7 @@ import type { Bytes } from '../modular/Bytes';
 export type ExpressionType =
   | 'Field'
   | 'Constant'
+  | 'Variable'
   | 'Function'
   | 'AggregateFunction'
   | 'ListOfExpressions'
@@ -150,9 +151,23 @@ export interface ConstantExpression extends FluentExpressionMethods {
 
 /**
  * @beta
+ * Variable expression returned by `variable(...)`.
+ */
+export interface VariableExpression extends Selectable, FluentExpressionMethods {
+  readonly _brand?: 'VariableExpression';
+}
+
+/**
+ * @beta
  * Expression type for pipeline parameters (field refs, literals, function results).
  */
-export type Expression = Field | FunctionExpression | ConstantExpression | Selectable | string;
+export type Expression =
+  | Field
+  | FunctionExpression
+  | ConstantExpression
+  | VariableExpression
+  | Selectable
+  | string;
 
 /**
  * @beta
@@ -258,6 +273,7 @@ type BooleanExpressionNode = RuntimeExpressionNode & RuntimeExpressionMethods & 
 type RuntimeExpressionFluentNode =
   | (RuntimeExpressionNode & RuntimeExpressionMethods & Field)
   | (RuntimeExpressionNode & RuntimeExpressionMethods & FunctionExpression)
+  | (RuntimeExpressionNode & RuntimeExpressionMethods & VariableExpression)
   | BooleanExpressionNode
   | ConstantExpressionNode;
 type FieldNode = RuntimeExpressionFluentNode & Field;
@@ -547,6 +563,16 @@ function createConstant(value: unknown): ConstantExpressionNode {
     __kind: 'expression',
     exprType: 'Constant',
     value,
+  });
+}
+
+function createVariable(name: unknown): RuntimeExpressionFluentNode & VariableExpression {
+  return createNode(expressionProto, {
+    [RUNTIME_NODE_SYMBOL]: true,
+    __kind: 'expression',
+    exprType: 'Variable',
+    selectable: true,
+    name: String(name ?? ''),
   });
 }
 
@@ -844,6 +870,14 @@ export function field(_path: string): Field {
 
 /**
  * @beta
+ * Returns a variable reference for alias-bound pipeline expressions.
+ */
+export function variable(_name: string): Expression {
+  return createVariable(_name);
+}
+
+/**
+ * @beta
  * Logical AND of boolean expressions.
  */
 export function and(
@@ -1004,9 +1038,6 @@ export function arrayContainsAll(
 /**
  * @beta
  * Filters an array using a provided alias and predicate expression.
- *
- * The alias is serialized for native/web SDKs that support variable-bound
- * predicates; RN Firebase does not yet expose the `variable()` helper.
  */
 export function arrayFilter(
   _fieldName: string,
