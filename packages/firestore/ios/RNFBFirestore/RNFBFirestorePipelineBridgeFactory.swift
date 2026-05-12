@@ -353,6 +353,12 @@ final class RNFBFirestorePipelineBridgeFactory {
           let childBox = QuerySourceValueBox()
           stack.append(.expressionConstantExit(box, childBox))
           stack.append(.value(value, childBox))
+        case let .variable(name):
+          box.value = [
+            "__kind": "expression",
+            "exprType": "Variable",
+            "name": name,
+          ]
         case let .function(name, args):
           let childBoxes = args.map { _ in QuerySourceValueBox() }
           stack.append(.expressionFunctionExit(name, box, childBoxes))

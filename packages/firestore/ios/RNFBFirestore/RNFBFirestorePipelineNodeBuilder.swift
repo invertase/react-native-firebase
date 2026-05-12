@@ -1044,6 +1044,14 @@ final class RNFBFirestorePipelineNodeBuilder {
               break expressionLoop
             }
 
+            if let kind = (map["exprType"] as? String)?.lowercased(), kind == "variable" {
+              guard let name = map["name"] as? String, !name.isEmpty else {
+                throw PipelineValidationError("pipelineExecute() expected \(currentField).name to be a non-empty string.")
+              }
+              box.value = VariableBridge(name: name)
+              break expressionLoop
+            }
+
             if let name = map["name"] as? String {
               let rawArgs: [Any]
               if let args = map["args"] as? [Any] {
@@ -1237,6 +1245,14 @@ final class RNFBFirestorePipelineNodeBuilder {
               break expressionLoop
             }
 
+            if let kind = (map["exprType"] as? String)?.lowercased(), kind == "variable" {
+              guard let name = map["name"] as? String, !name.isEmpty else {
+                throw PipelineValidationError("pipelineExecute() expected \(currentField).name to be a non-empty string.")
+              }
+              box.value = VariableBridge(name: name)
+              break expressionLoop
+            }
+
             throw PipelineValidationError(
               "pipelineExecute() could not convert \(currentField) into a pipeline expression.")
           }
@@ -1357,6 +1373,12 @@ final class RNFBFirestorePipelineNodeBuilder {
           let valueBox = SerializedValueBox()
           stack.append(.expressionConstantExit(box, valueBox))
           stack.append(.valueEnter(constantValue, valueBox))
+        case let .variable(name):
+          box.value = [
+            "__kind": "expression",
+            "exprType": "Variable",
+            "name": name,
+          ]
         case let .function(name, args):
           let argBoxes = args.map { _ in SerializedValueBox() }
           stack.append(.expressionFunctionExit(box, name, argBoxes))
@@ -1463,6 +1485,12 @@ final class RNFBFirestorePipelineNodeBuilder {
           let valueBox = SerializedValueBox()
           stack.append(.expressionConstantExit(box, valueBox))
           stack.append(.valueEnter(constantValue, valueBox))
+        case let .variable(name):
+          box.value = [
+            "__kind": "expression",
+            "exprType": "Variable",
+            "name": name,
+          ]
         case let .function(name, args):
           let argBoxes = args.map { _ in SerializedValueBox() }
           stack.append(.expressionFunctionExit(box, name, argBoxes))
