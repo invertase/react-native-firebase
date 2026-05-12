@@ -18,6 +18,7 @@ import appCheckConfig from '../configs/app-check';
 import firestoreConfig from '../configs/firestore';
 import firestorePipelinesConfig from '../configs/firestore-pipelines';
 import remoteConfigConfig from '../configs/remote-config';
+import authConfig from '../configs/auth';
 
 const SCRIPT_DIR = path.resolve(__dirname, '..');
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
