@@ -25,7 +25,7 @@
     "auth"
   ],
   "dependencies": {
-    "plist": "^3.1.0"
+    "plist": "^3.1.1"
   },
   "peerDependencies": {
     "@react-native-firebase/app": "24.0.0",
@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@types/plist": "^3.0.5",
-    "expo": "^55.0.5",
+    "expo": "^55.0.18",
     "react-native-builder-bob": "^0.40.13"
   },
   "peerDependenciesMeta": {

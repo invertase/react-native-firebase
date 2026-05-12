@@ -39,7 +39,7 @@ interface AppCheckModule {
  * the native android/ios modules e.g. `@ReactMethod` annotated
  * java methods on Android.
  */
-const module: AppCheckModule = {
+const appCheckWebModule: AppCheckModule = {
   initializeAppCheck(appName: string, options: AppCheckOptions) {
     makeIDBAvailable();
     return guard(async () => {
@@ -104,4 +104,4 @@ const module: AppCheckModule = {
   },
 };
 
-export default module;
+export default appCheckWebModule;

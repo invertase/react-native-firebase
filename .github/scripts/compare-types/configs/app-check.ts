@@ -7,7 +7,7 @@
  * fail so that new drift is caught and deliberately acknowledged.
  */
 
-import type { PackageConfig } from '../../src/types';
+import type { PackageConfig } from '../src/types';
 
 const config: PackageConfig = {
   nameMapping: {},

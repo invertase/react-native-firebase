@@ -10,14 +10,16 @@ For each registered package it compares the **modular** public API exported by t
 | **Extra in RN Firebase** | Export exists in the RN package but not in the firebase-js-sdk |
 | **Different shape** | Same name, but the type signature or interface members differ |
 
-Every difference must have an entry in the package's `config.ts` explaining why it exists. The script exits with code 1, failing CI, if either:
+Every difference must have an entry in the package's `configs/<package-name>.ts` explaining why it exists. The script exits with code 1, failing CI, if either:
 
-- A difference is **undocumented** — add it to `config.ts` with a reason, or fix the RN Firebase types to match.
-- A config entry is **stale** — the API now matches the firebase-js-sdk, so the entry should be removed from `config.ts`.
+- A difference is **undocumented** — add it to `configs/<package-name>.ts` with a reason, or fix the RN Firebase types to match.
+- A config entry is **stale** — the API now matches the firebase-js-sdk, so the entry should be removed from `configs/<package-name>.ts`.
 
 ## Prerequisites
 
-The RN Firebase package(s) must be built before running the script, because the script reads from the compiled `dist/typescript/lib/` files:
+The root repository dependencies must be installed because the script reads the Firebase JS SDK types from the installed root `node_modules/firebase` package.
+
+The RN Firebase package(s) must also be built before running the script, because the script reads from the compiled `dist/typescript/lib/` files:
 
 ```sh
 yarn
@@ -54,16 +56,16 @@ yarn compare
      rn:  (RemoteConfig) => ConfigValues
   ...
 
-  ✓ All 17 difference(s) are documented in config.ts
+  ✓ All 17 difference(s) are documented in configs/<name>.ts
 ```
 
 ```
 📦 storage
 
   Stale config entries (1):
-  ✗ uploadString [STALE]  — now matches the firebase-js-sdk; remove from config.ts
+  ✗ uploadString [STALE]  — now matches the firebase-js-sdk; remove from configs/<name>.ts
 
-  ✗ 1 stale config entry/entries — remove them from config.ts
+  ✗ 1 stale config entry/entries — remove them from configs/<name>.ts
 ```
 
 `~` (yellow) = documented difference — CI passes.
@@ -76,8 +78,8 @@ yarn compare
 ```
 src/
   index.ts      Entry point. Iterates packages, calls parse → compare → report.
-  parse.ts      Uses ts-morph to read .d.ts files and extract typed export shapes
-                without needing to resolve external imports (reads type text as-written).
+  parse.ts      Uses ts-morph to read .d.ts files, resolve SDK re-export chains,
+                and extract typed export shapes.
   compare.ts    Diffs two export maps and classifies each difference.
                 Cross-references against the package config to split documented
                 from undocumented differences, and detects stale config entries
@@ -88,8 +90,10 @@ src/
 
 packages/
   <package-name>/
-    firebase-sdk.d.ts   Snapshot of the firebase-js-sdk public types for this package.
-    config.ts           Documented known differences for this package.
+    (obsolete snapshots should not be added here)
+
+configs/
+  <package-name>.ts     Documented known differences for this package.
 ```
 
 ### Type shapes
@@ -107,17 +111,17 @@ Shapes are compared as normalised strings. Semantically equivalent types that ar
 
 ## Adding a new package
 
-### 1. Get the firebase-js-sdk public types
+### 1. Confirm the firebase-js-sdk public types
 
-Copy the public type declarations for the package from the firebase-js-sdk release into a new file:
+The script reads Firebase JS SDK public declarations from the root `node_modules/firebase` package. Confirm the package exposes the modular public type entry in `node_modules/firebase/package.json`:
 
 ```
-packages/<package-name>/firebase-sdk.d.ts
+"./<package-name>": {
+  "types": "./<package-name>/dist/<package-name>/index.d.ts"
+}
 ```
 
-The file should contain only the **modular** (tree-shakeable) public exports — interfaces, type aliases, and `declare function` declarations. Strip internal/private types.
-
-> In the future this step will be automated: a CI job will clone the firebase-js-sdk, run `yarn && yarn build`, and extract the generated `.d.ts` files automatically.
+Those wrapper files often re-export public declarations from `@firebase/<package-name>`, and the parser resolves that chain through root `node_modules`.
 
 ### 2. Identify the RN Firebase modular files
 
@@ -134,10 +138,10 @@ Also note any **support files** — files that are re-exported from the modular 
 
 ### 3. Create the config file
 
-Create `packages/<package-name>/config.ts` with a `PackageConfig` object:
+Create `configs/<package-name>.ts` with a `PackageConfig` object:
 
 ```typescript
-import type { PackageConfig } from '../../src/types';
+import type { PackageConfig } from '../src/types';
 
 const config: PackageConfig = {
   // Rename mapping: sdkName → rnName (when an export has been renamed)
@@ -180,14 +184,12 @@ Leave any section as an empty array (or omit it) if there are no differences in 
 Add an entry to [`src/registry.ts`](src/registry.ts):
 
 ```typescript
-import newPackageConfig from '../packages/<package-name>/config';
+import newPackageConfig from '../configs/<package-name>';
 
 // inside the packages array:
 {
   name: '<package-name>',
-  firebaseSdkTypesPaths: [
-    path.join(SCRIPT_DIR, 'packages', '<package-name>', 'firebase-sdk.d.ts'),
-  ],
+  firebaseSdkTypesPaths: [firebaseTypes('<package-name>')],
   rnFirebaseModularFiles: [
     path.join(rnDist('<package-name>'), 'types', 'modular.d.ts'),
     path.join(rnDist('<package-name>'), 'modular.d.ts'),
@@ -202,7 +204,7 @@ import newPackageConfig from '../packages/<package-name>/config';
 
 ### 5. Verify
 
-Build the package and run the script. Any undocumented differences will be printed in red — add them to `config.ts` with a reason, or fix the RN Firebase types to match the SDK.
+Build the package and run the script. Any undocumented differences will be printed in red — add them to `configs/<package-name>.ts` with a reason, or fix the RN Firebase types to match the SDK.
 
 ```sh
 # from repo root
@@ -212,16 +214,16 @@ yarn compare:types
 
 ---
 
-## Updating a package's firebase-sdk snapshot
+## Updating the Firebase SDK reference
 
 When a new firebase-js-sdk version ships with type changes:
 
-1. Copy the updated public types from `node_modules/@firebase/<package>/dist/index.d.ts` (or the equivalent built output) into `packages/<package-name>/firebase-sdk.d.ts`.
+1. Update the root `firebase` dependency and run `yarn` from the repository root.
 2. Run `yarn compare:types`.
 3. Any newly introduced differences will be flagged as undocumented. Either:
    - Update the RN Firebase types to match, or
-   - Add a new entry to `config.ts` explaining why the difference is intentional.
-4. Any config entries that the SDK change has now made redundant will be flagged as **stale**. Remove them from `config.ts`.
+   - Add a new entry to `configs/<package-name>.ts` explaining why the difference is intentional.
+4. Any config entries that the SDK change has now made redundant will be flagged as **stale**. Remove them from `configs/<package-name>.ts`.
 
 ## Resolving a known difference in RN Firebase
 
@@ -229,4 +231,4 @@ When the RN Firebase types are updated to match the firebase-js-sdk for a previo
 
 1. Update the RN Firebase types and rebuild the package.
 2. Run `yarn compare:types`.
-3. The resolved entry will be flagged as **stale** (`✗ [STALE]`). Remove it from `config.ts`.
+3. The resolved entry will be flagged as **stale** (`✗ [STALE]`). Remove it from `configs/<package-name>.ts`.

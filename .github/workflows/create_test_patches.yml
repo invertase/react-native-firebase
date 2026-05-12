@@ -28,16 +28,19 @@ jobs:
     name: Create patch-package Patches
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # https://github.com/actions/checkout/releases
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       # Future ideas:
       # - make into an action, parameterize directories to pack, and package names to install
       # - name patches w/PR as "semver prerelease" and SHA as "semver build info". Needs patch-package enhancement.
-      - uses: actions/setup-node@v4
+      # https://github.com/actions/setup-node/releases
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
 
-      - uses: actions/cache/restore@v4
+      # https://github.com/actions/cache/releases
+      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         name: Yarn Cache Restore
         id: yarn-cache
         continue-on-error: true
@@ -47,7 +50,8 @@ jobs:
           restore-keys: ${{ runner.os }}-yarn-v1
 
       - name: Yarn Install
-        uses: nick-fields/retry@v3
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: 15
           retry_wait_seconds: 60
@@ -86,12 +90,14 @@ jobs:
         shell: bash
 
       - name: Upload Test Patches
-        uses: actions/upload-artifact@v4
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: patches
           path: ~/template/patches/
 
-      - uses: actions/cache/save@v4
+      # https://github.com/actions/cache/releases
+      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true

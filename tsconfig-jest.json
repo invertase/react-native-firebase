@@ -8,7 +8,6 @@
   ],
   "exclude": ["node_modules", "packages/**/dist"],
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@react-native-firebase/app": ["packages/app/lib"],
       "@react-native-firebase/app/dist/module/common": ["packages/app/lib/common"],

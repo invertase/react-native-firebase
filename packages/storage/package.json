@@ -37,7 +37,7 @@
     "provenance": true
   },
   "devDependencies": {
-    "react-native-builder-bob": "^0.40.13"
+    "react-native-builder-bob": "^0.41.0"
   },
   "exports": {
     ".": {

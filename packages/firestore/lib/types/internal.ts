@@ -36,12 +36,13 @@ import type {
   WithFieldValue,
   AggregateType,
   PartialWithFieldValue,
+  ListenSource,
 } from './firestore';
 import type { PersistentCacheIndexManager } from '../FirestorePersistentCacheIndexManager';
 import type { QueryConstraint } from '../modular/query';
 import type { _Filter } from '../FirestoreFilter';
 import type FirestoreTimestamp from '../FirestoreTimestamp';
-import Blob from 'lib/FirestoreBlob';
+import Blob from '../FirestoreBlob';
 
 /** Optional final argument passed by modular API wrappers (MODULAR_DEPRECATION_ARG). */
 export type FirestoreModularDeprecationArg = string;
@@ -357,9 +358,10 @@ export interface FirestorePipelineSnapshotInternal {
   executionTime: FirestorePipelineTimestampInternal;
 }
 
-/** Options for snapshot listeners (includeMetadataChanges). */
+/** Options for snapshot listeners (includeMetadataChanges, source). */
 export interface FirestoreSnapshotListenOptionsInternal {
   includeMetadataChanges?: boolean;
+  source?: ListenSource;
 }
 
 /** Settings state on the Firestore module instance (ignoreUndefinedProperties, persistence). */

@@ -13,7 +13,7 @@
  *  differentShape  — exports present in both but with differing signatures/members
  */
 
-import type { PackageConfig } from '../../src/types';
+import type { PackageConfig } from '../src/types';
 
 const config: PackageConfig = {
   // ---------------------------------------------------------------------------
@@ -141,12 +141,6 @@ const config: PackageConfig = {
         'as setIndexConfiguration is not supported.',
     },
     {
-      name: 'ListenSource',
-      reason:
-        'Union type for snapshot listener source (default, server, cache). ' +
-        'Not yet implemented in RN Firebase; listeners always use default behaviour.',
-    },
-    {
       name: 'MemoryCacheSettings',
       reason:
         'Configuration interface for the memory local cache. The local cache ' +
@@ -224,6 +218,16 @@ const config: PackageConfig = {
         'Re-exported type alias for `ReactNativeFirebase.FirebaseApp` from ' +
         '`@react-native-firebase/app`. Used as the app parameter type in RN ' +
         'Firebase functions. Not part of the firebase-js-sdk public Firestore API.',
+    },
+    {
+      name: 'FirebaseSignInProvider',
+      reason:
+        'RN Firebase re-exports this helper type from shared app declarations for emulator mock-token support.',
+    },
+    {
+      name: 'FirebaseIdToken',
+      reason:
+        'RN Firebase re-exports this helper type from shared app declarations for emulator mock-token support.',
     },
     {
       name: 'LiteTransaction',
@@ -319,12 +323,6 @@ const config: PackageConfig = {
         '`_offlineComponentProvider` members that are not part of the ' +
         'firebase-js-sdk public type. These are structural artifacts of the ' +
         'RN implementation.',
-    },
-    {
-      name: 'SnapshotListenOptions',
-      reason:
-        'The firebase-js-sdk includes an optional `source` property (of type ' +
-        '`ListenSource`) which is not yet supported in RN Firebase.',
     },
     // --- Wrapper classes (same public API, different structure: getters vs properties, readonly, toJSON/fromJSON) ---
     {

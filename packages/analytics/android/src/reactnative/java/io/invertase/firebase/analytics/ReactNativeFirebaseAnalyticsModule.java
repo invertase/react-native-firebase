@@ -26,10 +26,27 @@ import com.facebook.react.bridge.ReadableMap;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import java.util.ArrayList;
+import java.util.Locale;
 import javax.annotation.Nullable;
 
 public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "Analytics";
+
+  /**
+   * GA4 parameters that must be sent as long values. React Native's bridge stores JS numbers as
+   * doubles in {@link Bundle}; Firebase Analytics expects integral types for these keys.
+   */
+  private static final String[] LONG_NUMERIC_PARAM_KEYS =
+      new String[] {
+        FirebaseAnalytics.Param.QUANTITY,
+        FirebaseAnalytics.Param.INDEX,
+        FirebaseAnalytics.Param.LEVEL,
+        FirebaseAnalytics.Param.NUMBER_OF_NIGHTS,
+        FirebaseAnalytics.Param.NUMBER_OF_PASSENGERS,
+        FirebaseAnalytics.Param.NUMBER_OF_ROOMS,
+        FirebaseAnalytics.Param.SCORE,
+      };
+
   private final UniversalFirebaseAnalyticsModule module;
 
   ReactNativeFirebaseAnalyticsModule(ReactApplicationContext reactContext) {
@@ -207,10 +224,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
         for (Object item : itemsArray) {
           if (item instanceof Bundle) {
             Bundle itemBundle = (Bundle) item;
-            if (itemBundle.containsKey(FirebaseAnalytics.Param.QUANTITY)) {
-              double number = itemBundle.getDouble(FirebaseAnalytics.Param.QUANTITY);
-              itemBundle.putInt(FirebaseAnalytics.Param.QUANTITY, (int) number);
-            }
+            coerceLongNumericParams(itemBundle);
             validBundles.add(itemBundle);
           }
         }
@@ -219,10 +233,40 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
       }
     }
 
+    coerceLongNumericParams(bundle);
+    coerceSuccessParamToLong(bundle);
+
     if (bundle.containsKey(FirebaseAnalytics.Param.EXTEND_SESSION)) {
       double number = bundle.getDouble(FirebaseAnalytics.Param.EXTEND_SESSION);
       bundle.putLong(FirebaseAnalytics.Param.EXTEND_SESSION, (long) number);
     }
     return bundle;
+  }
+
+  private static void coerceLongNumericParams(Bundle bundle) {
+    for (String key : LONG_NUMERIC_PARAM_KEYS) {
+      if (bundle.containsKey(key)) {
+        double number = bundle.getDouble(key);
+        bundle.putLong(key, (long) number);
+      }
+    }
+  }
+
+  private static void coerceSuccessParamToLong(Bundle bundle) {
+    if (!bundle.containsKey(FirebaseAnalytics.Param.SUCCESS)) {
+      return;
+    }
+    Object value = bundle.get(FirebaseAnalytics.Param.SUCCESS);
+    bundle.remove(FirebaseAnalytics.Param.SUCCESS);
+    long asLong = 0L;
+    if (value instanceof Boolean) {
+      asLong = (Boolean) value ? 1L : 0L;
+    } else if (value instanceof Number) {
+      asLong = ((Number) value).longValue() != 0L ? 1L : 0L;
+    } else if (value instanceof String) {
+      String s = ((String) value).trim().toLowerCase(Locale.ROOT);
+      asLong = ("1".equals(s) || "true".equals(s) || "yes".equals(s)) ? 1L : 0L;
+    }
+    bundle.putLong(FirebaseAnalytics.Param.SUCCESS, asLong);
   }
 }

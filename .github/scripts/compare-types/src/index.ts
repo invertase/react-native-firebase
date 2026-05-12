@@ -9,7 +9,8 @@
  *
  * Exit codes:
  *   0 — all differences are documented in the package config files
- *   1 — undocumented differences found (or a required file is missing)
+ *   1 — undocumented differences, stale registry entries in config (resolved
+ *       APIs still listed as missing/extra/different), or a required file missing
  */
 
 import fs from 'fs';
@@ -35,7 +36,7 @@ async function main(): Promise<void> {
   for (const pkg of packages) {
     checkFilesExist(
       pkg.firebaseSdkTypesPaths,
-      `firebase-js-sdk snapshot(s) for "${pkg.name}"`,
+      `installed firebase-js-sdk type(s) for "${pkg.name}"`,
     );
     checkFilesExist(
       pkg.rnFirebaseModularFiles,

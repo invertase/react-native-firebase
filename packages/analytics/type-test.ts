@@ -189,7 +189,7 @@ const earnVirtualCurrencyParams: EarnVirtualCurrencyEventParameters = {
 };
 const generateLeadParams: GenerateLeadEventParameters = { value: 123, currency: 'USD' };
 const joinGroupParams: JoinGroupEventParameters = { group_id: 'group1' };
-const levelEndParams: LevelEndEventParameters = { level: 1, success: 'true' };
+const levelEndParams: LevelEndEventParameters = { level: 1, success: true };
 const levelStartParams: LevelStartEventParameters = { level: 1 };
 const levelUpParams: LevelUpEventParameters = { level: 5, character: 'character1' };
 const loginParams: LoginEventParameters = { method: 'email' };

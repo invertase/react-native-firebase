@@ -29,7 +29,7 @@
     "@react-native-firebase/app": "24.0.0"
   },
   "devDependencies": {
-    "react-native-builder-bob": "^0.40.17"
+    "react-native-builder-bob": "^0.41.0"
   },
   "publishConfig": {
     "access": "public",

@@ -37,9 +37,9 @@
     "stacktrace-js": "^2.0.2"
   },
   "devDependencies": {
-    "expo": "^55.0.5",
-    "react-native-builder-bob": "^0.40.17",
-    "typescript": "^5.9.3"
+    "expo": "^55.0.18",
+    "react-native-builder-bob": "^0.41.0",
+    "typescript": "^6.0.3"
   },
   "peerDependenciesMeta": {
     "expo": {

@@ -13,14 +13,25 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "firebase-admin": "^13.6.0",
-    "firebase-functions": "^7.0.1"
+    "firebase-admin": "^13.8.0",
+    "firebase-functions": "^7.2.5"
   },
   "devDependencies": {
     "firebase-functions-test": "^3.4.1",
-    "firebase-tools": "^14.27.0",
-    "typescript": "^5.9.3"
+    "firebase-tools": "^15.16.0",
+    "typescript": "^6.0.3"
   },
   "private": true,
-  "packageManager": "yarn@4.12.0"
+  "packageManager": "yarn@4.14.1",
+  "dependenciesMeta": {
+    "@firebase/util": {
+      "built": true
+    },
+    "protobufjs": {
+      "built": true
+    },
+    "re2": {
+      "built": true
+    }
+  }
 }

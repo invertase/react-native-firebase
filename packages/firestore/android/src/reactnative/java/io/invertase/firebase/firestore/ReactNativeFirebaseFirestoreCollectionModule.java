@@ -347,6 +347,8 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       int listenerId,
       ReadableMap listenerOptions) {
     MetadataChanges metadataChanges;
+    SnapshotListenOptions.Builder snapshotListenOptionsBuilder =
+        new SnapshotListenOptions.Builder();
 
     if (listenerOptions != null
         && listenerOptions.hasKey("includeMetadataChanges")
@@ -354,6 +356,15 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       metadataChanges = MetadataChanges.INCLUDE;
     } else {
       metadataChanges = MetadataChanges.EXCLUDE;
+    }
+    snapshotListenOptionsBuilder.setMetadataChanges(metadataChanges);
+
+    if (listenerOptions != null
+        && listenerOptions.hasKey("source")
+        && "cache".equals(listenerOptions.getString("source"))) {
+      snapshotListenOptionsBuilder.setSource(ListenSource.CACHE);
+    } else {
+      snapshotListenOptionsBuilder.setSource(ListenSource.DEFAULT);
     }
 
     final EventListener<QuerySnapshot> listener =
@@ -371,23 +382,27 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
         };
 
     ListenerRegistration listenerRegistration =
-        firestoreQuery.query.addSnapshotListener(metadataChanges, listener);
+        firestoreQuery.query.addSnapshotListener(snapshotListenOptionsBuilder.build(), listener);
 
     collectionSnapshotListeners.put(listenerId, listenerRegistration);
   }
 
   private void handleQueryGet(
       ReactNativeFirebaseFirestoreQuery firestoreQuery, Source source, Promise promise) {
-    firestoreQuery
-        .get(getExecutor(), source)
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                promise.resolve(task.getResult());
-              } else {
-                rejectPromiseFirestoreException(promise, task.getException());
-              }
-            });
+    try {
+      firestoreQuery
+          .get(getExecutor(), source)
+          .addOnCompleteListener(
+              task -> {
+                if (task.isSuccessful()) {
+                  promise.resolve(task.getResult());
+                } else {
+                  rejectPromiseFirestoreException(promise, task.getException());
+                }
+              });
+    } catch (java.util.concurrent.RejectedExecutionException e) {
+      rejectPromiseFirestoreException(promise, e);
+    }
   }
 
   private void sendOnSnapshotEvent(
@@ -396,31 +411,36 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       int listenerId,
       QuerySnapshot querySnapshot,
       MetadataChanges metadataChanges) {
-    Tasks.call(
-            getTransactionalExecutor(Integer.toString(listenerId)),
-            () ->
-                snapshotToWritableMap(
-                    appName, databaseId, "onSnapshot", querySnapshot, metadataChanges))
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                WritableMap body = Arguments.createMap();
-                body.putMap("snapshot", task.getResult());
+    try {
+      Tasks.call(
+              getTransactionalExecutor(Integer.toString(listenerId)),
+              () ->
+                  snapshotToWritableMap(
+                      appName, databaseId, "onSnapshot", querySnapshot, metadataChanges))
+          .addOnCompleteListener(
+              task -> {
+                if (task.isSuccessful()) {
+                  WritableMap body = Arguments.createMap();
+                  body.putMap("snapshot", task.getResult());
 
-                ReactNativeFirebaseEventEmitter emitter =
-                    ReactNativeFirebaseEventEmitter.getSharedInstance();
+                  ReactNativeFirebaseEventEmitter emitter =
+                      ReactNativeFirebaseEventEmitter.getSharedInstance();
 
-                emitter.sendEvent(
-                    new ReactNativeFirebaseFirestoreEvent(
-                        ReactNativeFirebaseFirestoreEvent.COLLECTION_EVENT_SYNC,
-                        body,
-                        appName,
-                        databaseId,
-                        listenerId));
-              } else {
-                sendOnSnapshotError(appName, databaseId, listenerId, task.getException());
-              }
-            });
+                  emitter.sendEvent(
+                      new ReactNativeFirebaseFirestoreEvent(
+                          ReactNativeFirebaseFirestoreEvent.COLLECTION_EVENT_SYNC,
+                          body,
+                          appName,
+                          databaseId,
+                          listenerId));
+                } else {
+                  sendOnSnapshotError(appName, databaseId, listenerId, task.getException());
+                }
+              });
+    } catch (java.util.concurrent.RejectedExecutionException e) {
+      // Snapshot arrived after module invalidation shut down the executor.
+      // Safe to drop — the module is being torn down and no JS listener remains.
+    }
   }
 
   private void sendOnSnapshotError(
