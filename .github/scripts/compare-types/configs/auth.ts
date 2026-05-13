@@ -6,7 +6,7 @@
  * difference or stale entry will fail `yarn compare:types`.
  */
 
-import type { PackageConfig } from '../../src/types';
+import type { PackageConfig } from '../src/types';
 
 const config: PackageConfig = {
   nameMapping: {},
