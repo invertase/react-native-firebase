@@ -110,9 +110,24 @@ interface FluentExpressionMethods {
   arrayAgg(): AggregateFunction;
   arrayAggDistinct(): AggregateFunction;
   arrayFilter(alias: string, filter: BooleanExpression): FunctionExpression;
+  arrayTransform(elementAlias: string, transform: Expression): FunctionExpression;
+  arrayTransformWithIndex(
+    elementAlias: string,
+    indexAlias: string,
+    transform: Expression,
+  ): FunctionExpression;
+  arraySlice(offset: number | Expression, length?: number | Expression): FunctionExpression;
   arrayFirst(): FunctionExpression;
-  arrayFirstN(n: number): FunctionExpression;
-  arrayFirstN(n: Expression): FunctionExpression;
+  arrayFirstN(n: number | Expression): FunctionExpression;
+  arrayLast(): FunctionExpression;
+  arrayLastN(n: number | Expression): FunctionExpression;
+  arrayMaximum(): FunctionExpression;
+  arrayMaximumN(n: number | Expression): FunctionExpression;
+  arrayMinimum(): FunctionExpression;
+  arrayMinimumN(n: number | Expression): FunctionExpression;
+  arrayIndexOf(search: unknown): FunctionExpression;
+  arrayLastIndexOf(search: unknown): FunctionExpression;
+  arrayIndexOfAll(search: unknown): FunctionExpression;
 }
 
 export interface BooleanExpression extends Selectable, FluentExpressionMethods {
@@ -400,8 +415,6 @@ const EXPRESSION_METHOD_NAMES = [
   'arrayContainsAny',
   'arrayContainsAll',
   'arrayFilter',
-  'arrayFirst',
-  'arrayFirstN',
   'startsWith',
   'endsWith',
   'add',
@@ -433,6 +446,20 @@ const EXPRESSION_METHOD_NAMES = [
   'trim',
   'substring',
   'arrayAggDistinct',
+  'arrayTransform',
+  'arrayTransformWithIndex',
+  'arraySlice',
+  'arrayFirst',
+  'arrayFirstN',
+  'arrayLast',
+  'arrayLastN',
+  'arrayMaximum',
+  'arrayMaximumN',
+  'arrayMinimum',
+  'arrayMinimumN',
+  'arrayIndexOf',
+  'arrayLastIndexOf',
+  'arrayIndexOfAll',
   'arrayConcat',
   'arrayGet',
   'arrayLength',
@@ -724,8 +751,20 @@ function normalizeGlobalArguments(name: string, args: unknown[]): RuntimeNode[] 
     case 'toUpper':
     case 'trim':
     case 'substring':
+    case 'arrayTransform':
+    case 'arrayTransformWithIndex':
+    case 'arraySlice':
     case 'arrayFirst':
     case 'arrayFirstN':
+    case 'arrayLast':
+    case 'arrayLastN':
+    case 'arrayMaximum':
+    case 'arrayMaximumN':
+    case 'arrayMinimum':
+    case 'arrayMinimumN':
+    case 'arrayIndexOf':
+    case 'arrayLastIndexOf':
+    case 'arrayIndexOfAll':
     case 'arrayGet':
     case 'arrayLength':
     case 'arraySum':
@@ -829,6 +868,14 @@ function createMethodResult(
 
   if (AGGREGATE_KINDS.has(canonicalName)) {
     return createAggregate(canonicalName, [base, ...rawArgs.map(arg => toExpressionArgument(arg))]);
+  }
+
+  if (canonicalName === 'arrayIndexOf' || canonicalName === 'arrayLastIndexOf') {
+    return createFunctionExpression(canonicalName, [
+      base,
+      toExpressionArgument(rawArgs[0]),
+      createConstant(canonicalName === 'arrayIndexOf' ? 'first' : 'last'),
+    ]);
   }
 
   return createFunctionExpression(canonicalName, [
@@ -1062,31 +1109,6 @@ export function arrayFilter(
   _filter: BooleanExpression,
 ): FunctionExpression {
   return callFunctionHelper('arrayFilter', arguments);
-}
-
-/**
- * @beta
- * Gets the first element in an array field or expression.
- */
-export function arrayFirst(_arrayField: string): FunctionExpression;
-export function arrayFirst(_arrayExpression: Expression): FunctionExpression;
-export function arrayFirst(_arrayOrField: string | Expression): FunctionExpression {
-  return callFunctionHelper('arrayFirst', arguments);
-}
-
-/**
- * @beta
- * Gets the first `n` elements in an array field or expression.
- */
-export function arrayFirstN(_arrayField: string, _n: number): FunctionExpression;
-export function arrayFirstN(_arrayField: string, _n: Expression): FunctionExpression;
-export function arrayFirstN(_arrayExpression: Expression, _n: number): FunctionExpression;
-export function arrayFirstN(_arrayExpression: Expression, _n: Expression): FunctionExpression;
-export function arrayFirstN(
-  _arrayOrField: string | Expression,
-  _n: number | Expression,
-): FunctionExpression {
-  return callFunctionHelper('arrayFirstN', arguments);
 }
 
 /**
@@ -1698,6 +1720,190 @@ export function arrayGet(
   _offset: number | Expression,
 ): FunctionExpression {
   return callFunctionHelper('arrayGet', arguments);
+}
+
+export function arrayTransform(
+  _arrayExpression: Expression,
+  _elementAlias: string,
+  _transform: Expression,
+): FunctionExpression;
+export function arrayTransform(
+  _arrayField: string,
+  _elementAlias: string,
+  _transform: Expression,
+): FunctionExpression;
+export function arrayTransform(
+  _arrayOrField: string | Expression,
+  _elementAlias: string,
+  _transform: Expression,
+): FunctionExpression {
+  return callFunctionHelper('arrayTransform', arguments);
+}
+
+export function arrayTransformWithIndex(
+  _arrayExpression: Expression,
+  _elementAlias: string,
+  _indexAlias: string,
+  _transform: Expression,
+): FunctionExpression;
+export function arrayTransformWithIndex(
+  _arrayField: string,
+  _elementAlias: string,
+  _indexAlias: string,
+  _transform: Expression,
+): FunctionExpression;
+export function arrayTransformWithIndex(
+  _arrayOrField: string | Expression,
+  _elementAlias: string,
+  _indexAlias: string,
+  _transform: Expression,
+): FunctionExpression {
+  return callFunctionHelper('arrayTransformWithIndex', arguments);
+}
+
+export function arraySlice(
+  _arrayField: string,
+  _offset: number | Expression,
+  _length?: number | Expression,
+): FunctionExpression;
+export function arraySlice(
+  _arrayExpression: Expression,
+  _offset: number | Expression,
+  _length?: number | Expression,
+): FunctionExpression;
+export function arraySlice(
+  _arrayOrField: string | Expression,
+  _offset: number | Expression,
+  _length?: number | Expression,
+): FunctionExpression {
+  return callFunctionHelper('arraySlice', arguments);
+}
+
+export function arrayFirst(_arrayField: string): FunctionExpression;
+export function arrayFirst(_arrayExpression: Expression): FunctionExpression;
+export function arrayFirst(_arrayOrField: string | Expression): FunctionExpression {
+  return callFunctionHelper('arrayFirst', arguments);
+}
+
+export function arrayFirstN(_arrayField: string, _n: number): FunctionExpression;
+export function arrayFirstN(_arrayField: string, _n: Expression): FunctionExpression;
+export function arrayFirstN(
+  _arrayExpression: Expression,
+  _n: number | Expression,
+): FunctionExpression;
+export function arrayFirstN(
+  _arrayOrField: string | Expression,
+  _n: number | Expression,
+): FunctionExpression {
+  return callFunctionHelper('arrayFirstN', arguments);
+}
+
+export function arrayLast(_arrayField: string): FunctionExpression;
+export function arrayLast(_arrayExpression: Expression): FunctionExpression;
+export function arrayLast(_arrayOrField: string | Expression): FunctionExpression {
+  return callFunctionHelper('arrayLast', arguments);
+}
+
+export function arrayLastN(_arrayField: string, _n: number): FunctionExpression;
+export function arrayLastN(_arrayField: string, _n: Expression): FunctionExpression;
+export function arrayLastN(
+  _arrayExpression: Expression,
+  _n: number | Expression,
+): FunctionExpression;
+export function arrayLastN(
+  _arrayOrField: string | Expression,
+  _n: number | Expression,
+): FunctionExpression {
+  return callFunctionHelper('arrayLastN', arguments);
+}
+
+export function arrayMaximum(_arrayField: string): FunctionExpression;
+export function arrayMaximum(_arrayExpression: Expression): FunctionExpression;
+export function arrayMaximum(_arrayOrField: string | Expression): FunctionExpression {
+  return callFunctionHelper('arrayMaximum', arguments);
+}
+
+export function arrayMaximumN(_arrayField: string, _n: number): FunctionExpression;
+export function arrayMaximumN(_arrayField: string, _n: Expression): FunctionExpression;
+export function arrayMaximumN(
+  _arrayExpression: Expression,
+  _n: number | Expression,
+): FunctionExpression;
+export function arrayMaximumN(
+  _arrayOrField: string | Expression,
+  _n: number | Expression,
+): FunctionExpression {
+  return callFunctionHelper('arrayMaximumN', arguments);
+}
+
+export function arrayMinimum(_arrayField: string): FunctionExpression;
+export function arrayMinimum(_arrayExpression: Expression): FunctionExpression;
+export function arrayMinimum(_arrayOrField: string | Expression): FunctionExpression {
+  return callFunctionHelper('arrayMinimum', arguments);
+}
+
+export function arrayMinimumN(_arrayField: string, _n: number): FunctionExpression;
+export function arrayMinimumN(_arrayField: string, _n: Expression): FunctionExpression;
+export function arrayMinimumN(
+  _arrayExpression: Expression,
+  _n: number | Expression,
+): FunctionExpression;
+export function arrayMinimumN(
+  _arrayOrField: string | Expression,
+  _n: number | Expression,
+): FunctionExpression {
+  return callFunctionHelper('arrayMinimumN', arguments);
+}
+
+export function arrayIndexOf(
+  _arrayField: string,
+  _search: unknown | Expression,
+): FunctionExpression;
+export function arrayIndexOf(
+  _arrayExpression: Expression,
+  _search: unknown | Expression,
+): FunctionExpression;
+export function arrayIndexOf(
+  _arrayOrField: string | Expression,
+  _search: unknown,
+): FunctionExpression {
+  return createFunctionExpression('arrayIndexOf', [
+    ...normalizeGlobalArguments('arrayIndexOf', Array.from(arguments).slice(0, 2)),
+    createConstant('first'),
+  ]);
+}
+
+export function arrayLastIndexOf(
+  _arrayField: string,
+  _search: unknown | Expression,
+): FunctionExpression;
+export function arrayLastIndexOf(
+  _arrayExpression: Expression,
+  _search: unknown | Expression,
+): FunctionExpression;
+export function arrayLastIndexOf(
+  _arrayOrField: string | Expression,
+  _search: unknown,
+): FunctionExpression {
+  return createFunctionExpression('arrayLastIndexOf', [
+    ...normalizeGlobalArguments('arrayLastIndexOf', Array.from(arguments).slice(0, 2)),
+    createConstant('last'),
+  ]);
+}
+
+export function arrayIndexOfAll(
+  _arrayField: string,
+  _search: unknown | Expression,
+): FunctionExpression;
+export function arrayIndexOfAll(
+  _arrayExpression: Expression,
+  _search: unknown | Expression,
+): FunctionExpression;
+export function arrayIndexOfAll(
+  _arrayOrField: string | Expression,
+  _search: unknown,
+): FunctionExpression {
+  return callFunctionHelper('arrayIndexOfAll', arguments);
 }
 
 /**
