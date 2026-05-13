@@ -173,6 +173,18 @@ import {
   arrayFilter,
   arrayFirst,
   arrayFirstN,
+  arrayIndexOf,
+  arrayIndexOfAll,
+  arrayLast,
+  arrayLastIndexOf,
+  arrayLastN,
+  arrayMaximum,
+  arrayMaximumN,
+  arrayMinimum,
+  arrayMinimumN,
+  arraySlice,
+  arrayTransform,
+  arrayTransformWithIndex,
   arrayConcat,
   arrayGet,
   arrayLength,
@@ -492,7 +504,6 @@ nsDocWithConv.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot<User>) =
   const u = snap.data();
   if (u) console.log(u.name, u.age);
 });
-
 
 // ----- getFirestore -----
 const modFirestore1 = getFirestore();
@@ -976,10 +987,7 @@ const pipelineUnion = pipelineDb
   .collection('cities/sf/restaurants')
   .where(field('type').equal('Chinese'))
   .union(
-    pipelineDb
-      .pipeline()
-      .collection('cities/ny/restaurants')
-      .where(field('type').equal('Italian')),
+    pipelineDb.pipeline().collection('cities/ny/restaurants').where(field('type').equal('Italian')),
   )
   .where(field('rating').greaterThanOrEqual(4.5))
   .sort(field('__name__').descending());
@@ -990,10 +998,7 @@ const pipelineWithTransforms = pipelineDb
   .collection('books')
   .where(
     pipelineOr(
-      pipelineAnd(
-        field('rating').greaterThan(4),
-        lessThan(field('price'), constant(10)),
-      ),
+      pipelineAnd(field('rating').greaterThan(4), lessThan(field('price'), constant(10))),
       field('genre').equal('Fantasy'),
     ),
   )
@@ -1002,9 +1007,7 @@ const pipelineWithTransforms = pipelineDb
   .select(
     field('fullTitle'),
     field('rating').greaterThan(4).as('isTopRated'),
-    arrayContainsAny(field('genre'), ['Fantasy', constant('Sci-Fi')]).as(
-      'matchesGenre',
-    ),
+    arrayContainsAny(field('genre'), ['Fantasy', constant('Sci-Fi')]).as('matchesGenre'),
   )
   .sort(Ordering.of(field('rating')).descending(), field('__name__').ascending())
   .offset(1)
@@ -1021,22 +1024,22 @@ const pipelineAggregateDistinct = pipelineDb
       pipelineAverage('population').as('populationAvg'),
       maximum('population').as('populationMax'),
     ],
-    groups: [
-      field('country').as('country'),
-      toLower(field('state')).as('normalizedState'),
-    ],
+    groups: [field('country').as('country'), toLower(field('state')).as('normalizedState')],
   })
   .where(field('populationTotal').greaterThan(1000))
   .distinct(field('normalizedState'), 'country');
 void pipelineAggregateDistinct;
 
-const pipelineFindNearest = pipelineDb.pipeline().collection('cities').findNearest({
-  field: 'embedding',
-  vectorValue: [1.5, 2.345],
-  distanceMeasure: 'COSINE',
-  distanceField: 'computedDistance',
-  limit: 10,
-});
+const pipelineFindNearest = pipelineDb
+  .pipeline()
+  .collection('cities')
+  .findNearest({
+    field: 'embedding',
+    vectorValue: [1.5, 2.345],
+    distanceMeasure: 'COSINE',
+    distanceField: 'computedDistance',
+    limit: 10,
+  });
 void pipelineFindNearest;
 
 const pipelineSampleAndUnnest = pipelineDb
@@ -1119,7 +1122,11 @@ const _cStr: Expression = constant('hello');
 const _cBool: BooleanExpression = constant(true);
 const _cNull: Expression = constant(null);
 const _cUnknown: Expression = constant({ nested: true });
-void _cNum; void _cStr; void _cBool; void _cNull; void _cUnknown;
+void _cNum;
+void _cStr;
+void _cBool;
+void _cNull;
+void _cUnknown;
 
 // ----- Comparison: standalone overloads -----
 // greaterThan(Expression, Expression) | greaterThan(Expression, value)
@@ -1322,17 +1329,62 @@ void variable('score');
 void arrayFilter('scores', 'score', greaterThan(variable('score'), constant(15)));
 void arrayFilter(field('scores'), 'score', greaterThan(variable('score'), constant(15)));
 void field('scores').arrayFilter('score', greaterThan(variable('score'), constant(15)));
-// arrayFirst: (string) | (Expression)
-void arrayFirst('items');
-void arrayFirst(field('items'));
-// arrayFirstN: 4 overloads
-void arrayFirstN('items', 2);
-void arrayFirstN('items', field('limit'));
-void arrayFirstN(field('items'), 2);
-void arrayFirstN(field('items'), field('limit'));
-void field('items').arrayFirst();
-void field('items').arrayFirstN(2);
-void field('items').arrayFirstN(field('limit'));
+// newer array helpers
+void arrayTransform('scores', 'score', add(variable('score'), 1));
+void arrayTransform(field('scores'), 'score', add(variable('score'), 1));
+void field('scores').arrayTransform('score', add(variable('score'), 1));
+void arrayTransformWithIndex('scores', 'score', 'index', add(variable('score'), variable('index')));
+void arrayTransformWithIndex(
+  field('scores'),
+  'score',
+  'index',
+  add(variable('score'), variable('index')),
+);
+void field('scores').arrayTransformWithIndex(
+  'score',
+  'index',
+  add(variable('score'), variable('index')),
+);
+void arraySlice('scores', 1, 2);
+void arraySlice(field('scores'), field('offset'), field('length'));
+void field('scores').arraySlice(1, 2);
+void arrayFirst('scores');
+void arrayFirst(field('scores'));
+void field('scores').arrayFirst();
+void arrayFirstN('scores', 2);
+void arrayFirstN('scores', field('limit'));
+void arrayFirstN(field('scores'), field('limit'));
+void field('scores').arrayFirstN(field('limit'));
+void arrayLast('scores');
+void arrayLast(field('scores'));
+void field('scores').arrayLast();
+void arrayLastN('scores', 2);
+void arrayLastN('scores', field('limit'));
+void arrayLastN(field('scores'), field('limit'));
+void field('scores').arrayLastN(field('limit'));
+void arrayMaximum('scores');
+void arrayMaximum(field('scores'));
+void field('scores').arrayMaximum();
+void arrayMaximumN('scores', 2);
+void arrayMaximumN('scores', field('limit'));
+void arrayMaximumN(field('scores'), field('limit'));
+void field('scores').arrayMaximumN(field('limit'));
+void arrayMinimum('scores');
+void arrayMinimum(field('scores'));
+void field('scores').arrayMinimum();
+void arrayMinimumN('scores', 2);
+void arrayMinimumN('scores', field('limit'));
+void arrayMinimumN(field('scores'), field('limit'));
+void field('scores').arrayMinimumN(field('limit'));
+void arrayIndexOf('scores', 20);
+void arrayIndexOf(field('scores'), field('needle'));
+void field('scores').arrayIndexOf(20);
+void arrayLastIndexOf('scores', 20);
+void arrayLastIndexOf(field('scores'), field('needle'));
+void field('scores').arrayLastIndexOf(20);
+void arrayIndexOfAll('scores', 20);
+void arrayIndexOfAll(field('scores'), field('needle'));
+void field('scores').arrayIndexOfAll(20);
 // arrayConcat: (Expression, ...) | (string, ...)
 void arrayConcat(field('tags'), field('moreTags'));
 void arrayConcat(field('tags'), ['extra']);
@@ -1559,11 +1611,9 @@ const pipelineComparisonOps = xDb
   )
   .select(
     field('sku'),
-    conditional(
-      field('stock').greaterThan(0),
-      constant('in-stock'),
-      constant('out-of-stock'),
-    ).as('availability'),
+    conditional(field('stock').greaterThan(0), constant('in-stock'), constant('out-of-stock')).as(
+      'availability',
+    ),
     isType(field('value'), 'string').as('isString'),
     logicalMaximum(field('bidA'), field('bidB')).as('topBid'),
     logicalMinimum(field('askA'), field('askB')).as('bottomAsk'),
@@ -1618,10 +1668,7 @@ const pipelineStringOps = xDb
       stringContains(field('bio'), 'developer'),
       like('role', 'eng%'),
       regexContains(field('phone'), '^\\+1'),
-      xor(
-        field('isPublic').equal(true),
-        field('isVerified').equal(true),
-      ),
+      xor(field('isPublic').equal(true), field('isVerified').equal(true)),
     ),
   )
   .addFields(
@@ -1719,9 +1766,29 @@ const pipelineArrayOps = xDb
     arrayFilter('scores', 'score', greaterThan(variable('score'), constant(15))).as(
       'passingScores',
     ),
-    field('scores').arrayFilter('score', greaterThan(variable('score'), constant(20))).as(
-      'topScores',
-    ),
+    field('scores')
+      .arrayFilter('score', greaterThan(variable('score'), constant(20)))
+      .as('topScores'),
+    arrayFirst('scores').as('firstScore'),
+    arrayFirstN('scores', 2).as('firstTwoScores'),
+    field('scores').arrayLast().as('lastScore'),
+    field('scores').arrayLastN(2).as('lastTwoScores'),
+    arraySlice('scores', 1, 2).as('middleScores'),
+    arrayTransform('scores', 'score', add(variable('score'), 1)).as('incrementedScores'),
+    arrayTransformWithIndex(
+      'scores',
+      'score',
+      'index',
+      add(variable('score'), variable('index')),
+    ).as('indexedScores'),
+    arrayMaximum('scores').as('maxScore'),
+    arrayMaximumN('scores', 2).as('topTwoScores'),
+    arrayMinimum('scores').as('minScore'),
+    arrayMinimumN('scores', 2).as('bottomTwoScores'),
+    arrayIndexOf('scores', 20).as('firstTwentyIndex'),
+    field('scores').arrayIndexOf(20).as('fluentFirstTwentyIndex'),
+    arrayLastIndexOf('scores', 20).as('lastTwentyIndex'),
+    arrayIndexOfAll('scores', 20).as('allTwentyIndexes'),
     arraySum(field('scores')).as('totalScore'),
     arraySum('scores').as('totalScore2'),
   );
@@ -1755,10 +1822,7 @@ const pipelineAllAggregates = xDb
       arrayAggDistinct(field('category')).as('distinctCategories'),
       arrayAggDistinct('category').as('distinctCategories2'),
     ],
-    groups: [
-      field('country').as('country'),
-      toLower(field('state')).as('normalizedState'),
-    ],
+    groups: [field('country').as('country'), toLower(field('state')).as('normalizedState')],
   });
 void pipelineAllAggregates;
 

@@ -1517,14 +1517,24 @@ describe('FirestorePipeline', function () {
           constant,
           array,
           arrayLength,
-          arrayFirst,
-          arrayFirstN,
           arrayGet,
           arrayConcat,
           arrayFilter,
+          arrayFirst,
+          arrayFirstN,
+          arrayIndexOf,
+          arrayIndexOfAll,
+          arrayLastIndexOf,
+          arrayMaximum,
+          arrayMaximumN,
+          arrayMinimumN,
+          arraySlice,
+          arrayTransform,
+          arrayTransformWithIndex,
           arraySum,
           variable,
           and,
+          add,
           greaterThan,
           arrayContains,
           arrayContainsAny,
@@ -1540,7 +1550,7 @@ describe('FirestorePipeline', function () {
             permissions: ['read', 'write'],
             primaryTags: ['a', 'b'],
             secondaryTags: ['c', 'd'],
-            scores: [10, 20, 30],
+            scores: [10, 20, 30, 20],
             items: ['x', 'y', 'z'],
           }),
           setDoc(doc(coll, 'p2'), {
@@ -1573,15 +1583,35 @@ describe('FirestorePipeline', function () {
             arrayFilter(field('scores'), 'score', greaterThan(variable('score'), 15)).as(
               'filteredItems',
             ),
+            arrayFirst('scores').as('firstScore'),
+            arrayFirstN('scores', 2).as('firstTwoScores'),
+            field('scores').arrayLast().as('lastScore'),
+            field('scores').arrayLastN(2).as('lastTwoScores'),
+            arraySlice('scores', 1, 2).as('middleScores'),
+            arrayTransform('scores', 'score', add(variable('score'), 1)).as('incrementedScores'),
+            arrayTransformWithIndex(
+              'scores',
+              'score',
+              'index',
+              add(variable('score'), variable('index')),
+            ).as('indexedScores'),
+            arrayMaximum('scores').as('maxScore'),
+            arrayMaximumN('scores', 2).as('topTwoScores'),
+            field('scores').arrayMinimum().as('minScore'),
+            arrayMinimumN('scores', 2).as('bottomTwoScores'),
+            arrayIndexOf('scores', 20).as('firstTwentyIndex'),
+            field('scores').arrayIndexOf(20).as('fluentFirstTwentyIndex'),
+            arrayLastIndexOf('scores', 20).as('lastTwentyIndex'),
+            field('scores').arrayLastIndexOf(20).as('fluentLastTwentyIndex'),
+            arrayIndexOfAll('scores', 20).as('allTwentyIndexes'),
             arraySum(field('scores')).as('totalScore'),
           );
 
         if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), [
-            'arrayFirst',
-            'arrayFirstN',
-            'arrayGet',
-          ]);
+          await expectIOSUnsupportedFunctions(
+            () => execute(pipeline),
+            ['arrayFirst', 'arrayFirstN', 'arrayGet'],
+          );
 
           const iosSnapshot = await execute(
             db
@@ -1601,6 +1631,29 @@ describe('FirestorePipeline', function () {
                 arrayFilter('scores', 'score', greaterThan(variable('score'), 15)).as(
                   'filteredItems',
                 ),
+                arrayFirst('scores').as('firstScore'),
+                arrayFirstN('scores', 2).as('firstTwoScores'),
+                field('scores').arrayLast().as('lastScore'),
+                field('scores').arrayLastN(2).as('lastTwoScores'),
+                arraySlice('scores', 1, 2).as('middleScores'),
+                arrayTransform('scores', 'score', add(variable('score'), 1)).as(
+                  'incrementedScores',
+                ),
+                arrayTransformWithIndex(
+                  'scores',
+                  'score',
+                  'index',
+                  add(variable('score'), variable('index')),
+                ).as('indexedScores'),
+                arrayMaximum('scores').as('maxScore'),
+                arrayMaximumN('scores', 2).as('topTwoScores'),
+                field('scores').arrayMinimum().as('minScore'),
+                arrayMinimumN('scores', 2).as('bottomTwoScores'),
+                arrayIndexOf('scores', 20).as('firstTwentyIndex'),
+                field('scores').arrayIndexOf(20).as('fluentFirstTwentyIndex'),
+                arrayLastIndexOf('scores', 20).as('lastTwentyIndex'),
+                field('scores').arrayLastIndexOf(20).as('fluentLastTwentyIndex'),
+                arrayIndexOfAll('scores', 20).as('allTwentyIndexes'),
                 arraySum(field('scores')).as('totalScore'),
               ),
           );
@@ -1610,8 +1663,24 @@ describe('FirestorePipeline', function () {
           iosData.fixedArr.should.eql([1, 2, 3]);
           iosData.tagCount.should.equal(2);
           iosData.allTags.should.eql(['a', 'b', 'c', 'd']);
-          iosData.filteredItems.should.eql([20, 30]);
-          iosData.totalScore.should.equal(60);
+          iosData.filteredItems.should.eql([20, 30, 20]);
+          iosData.firstScore.should.equal(10);
+          iosData.firstTwoScores.should.eql([10, 20]);
+          iosData.lastScore.should.equal(20);
+          iosData.lastTwoScores.should.eql([30, 20]);
+          iosData.middleScores.should.eql([20, 30]);
+          iosData.incrementedScores.should.eql([11, 21, 31, 21]);
+          iosData.indexedScores.should.eql([10, 21, 32, 23]);
+          iosData.maxScore.should.equal(30);
+          [...iosData.topTwoScores].sort((a, b) => a - b).should.eql([20, 30]);
+          iosData.minScore.should.equal(10);
+          [...iosData.bottomTwoScores].sort((a, b) => a - b).should.eql([10, 20]);
+          iosData.firstTwentyIndex.should.equal(1);
+          iosData.fluentFirstTwentyIndex.should.equal(1);
+          iosData.lastTwentyIndex.should.equal(3);
+          iosData.fluentLastTwentyIndex.should.equal(3);
+          iosData.allTwentyIndexes.should.eql([1, 3]);
+          iosData.totalScore.should.equal(80);
           return;
         }
 
@@ -1625,8 +1694,24 @@ describe('FirestorePipeline', function () {
         data.firstTwoItems.should.eql(['x', 'y']);
         data.firstItem.should.equal('x');
         data.allTags.should.eql(['a', 'b', 'c', 'd']);
-        data.filteredItems.should.eql([20, 30]);
-        data.totalScore.should.equal(60);
+        data.filteredItems.should.eql([20, 30, 20]);
+        data.firstScore.should.equal(10);
+        data.firstTwoScores.should.eql([10, 20]);
+        data.lastScore.should.equal(20);
+        data.lastTwoScores.should.eql([30, 20]);
+        data.middleScores.should.eql([20, 30]);
+        data.incrementedScores.should.eql([11, 21, 31, 21]);
+        data.indexedScores.should.eql([10, 21, 32, 23]);
+        data.maxScore.should.equal(30);
+        [...data.topTwoScores].sort((a, b) => a - b).should.eql([20, 30]);
+        data.minScore.should.equal(10);
+        [...data.bottomTwoScores].sort((a, b) => a - b).should.eql([10, 20]);
+        data.firstTwentyIndex.should.equal(1);
+        data.fluentFirstTwentyIndex.should.equal(1);
+        data.lastTwentyIndex.should.equal(3);
+        data.fluentLastTwentyIndex.should.equal(3);
+        data.allTwentyIndexes.should.eql([1, 3]);
+        data.totalScore.should.equal(80);
       });
     });
 
