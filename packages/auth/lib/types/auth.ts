@@ -16,6 +16,7 @@
  */
 
 import type { FirebaseApp, ReactNativeFirebase } from '@react-native-firebase/app';
+import type { ActionCodeOperation, FactorId, OperationType } from '../constants';
 
 export type CompleteFn = () => void;
 export type ErrorFn = (error: Error) => void;
@@ -27,18 +28,6 @@ interface Observer<T> {
   error?: ErrorFn | null;
   complete?: CompleteFn | null;
 }
-
-type ActionCodeOperationValue =
-  | 'EMAIL_SIGNIN'
-  | 'PASSWORD_RESET'
-  | 'RECOVER_EMAIL'
-  | 'REVERT_SECOND_FACTOR_ADDITION'
-  | 'VERIFY_AND_CHANGE_EMAIL'
-  | 'VERIFY_EMAIL';
-
-type FactorIdValue = 'phone' | 'totp';
-
-type OperationTypeValue = 'link' | 'reauthenticate' | 'signIn';
 
 export interface Auth {
   readonly app: FirebaseApp;
@@ -98,7 +87,7 @@ export interface OIDCProvider {
 }
 export interface MultiFactorError extends AuthError {
   readonly customData: AuthError['customData'] & {
-    readonly operationType: OperationTypeValue;
+    readonly operationType: (typeof OperationType)[keyof typeof OperationType];
   };
 }
 export interface PhoneAuthSnapshot {
@@ -212,6 +201,8 @@ export interface Persistence {
 
 export type NextOrObserver<T> = NextFn<T | null> | Observer<T | null>;
 
+// Keep these quoted to match the firebase-js-sdk declaration text used by compare-types.
+// prettier-ignore
 export interface ParsedToken {
   'exp'?: string;
   'sub'?: string;
@@ -275,7 +266,7 @@ export interface User extends UserInfo {
 export interface UserCredential {
   user: User;
   providerId: string | null;
-  operationType: OperationTypeValue;
+  operationType: (typeof OperationType)[keyof typeof OperationType];
 }
 
 export interface ConfirmationResult {
@@ -304,18 +295,18 @@ export interface ActionCodeInfo {
     multiFactorInfo?: MultiFactorInfo | null;
     previousEmail?: string | null;
   };
-  operation: ActionCodeOperationValue;
+  operation: (typeof ActionCodeOperation)[keyof typeof ActionCodeOperation];
 }
 
 export interface MultiFactorAssertion {
-  readonly factorId: FactorIdValue;
+  readonly factorId: (typeof FactorId)[keyof typeof FactorId];
 }
 
 export interface MultiFactorInfo {
   readonly uid: string;
   readonly displayName?: string | null;
   readonly enrollmentTime: string;
-  readonly factorId: FactorIdValue;
+  readonly factorId: (typeof FactorId)[keyof typeof FactorId];
 }
 
 export interface MultiFactorSession {}

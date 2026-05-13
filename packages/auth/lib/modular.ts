@@ -16,6 +16,13 @@
 
 import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
+import {
+  ActionCodeOperation,
+  FactorId,
+  OperationType,
+  ProviderId,
+  SignInMethod,
+} from './constants';
 import PhoneMultiFactorGenerator from './PhoneMultiFactorGenerator';
 import { PhoneAuthState } from './PhoneAuthState';
 import TotpMultiFactorGenerator from './TotpMultiFactorGenerator';
@@ -82,44 +89,13 @@ type MultiFactorInfoInternal =
   | MultiFactorInfo
   | MultiFactorResolverResultInternal['hints'][number];
 
-export const ActionCodeOperation = {
-  EMAIL_SIGNIN: 'EMAIL_SIGNIN',
-  PASSWORD_RESET: 'PASSWORD_RESET',
-  RECOVER_EMAIL: 'RECOVER_EMAIL',
-  REVERT_SECOND_FACTOR_ADDITION: 'REVERT_SECOND_FACTOR_ADDITION',
-  VERIFY_AND_CHANGE_EMAIL: 'VERIFY_AND_CHANGE_EMAIL',
-  VERIFY_EMAIL: 'VERIFY_EMAIL',
-} as const;
-
-export const FactorId = {
-  PHONE: 'phone',
-  TOTP: 'totp',
-} as const;
-
-export const OperationType = {
-  LINK: 'link',
-  REAUTHENTICATE: 'reauthenticate',
-  SIGN_IN: 'signIn',
-} as const;
-
-export const ProviderId = {
-  FACEBOOK: 'facebook.com',
-  GITHUB: 'github.com',
-  GOOGLE: 'google.com',
-  PASSWORD: 'password',
-  PHONE: 'phone',
-  TWITTER: 'twitter.com',
-} as const;
-
-export const SignInMethod = {
-  EMAIL_LINK: 'emailLink',
-  EMAIL_PASSWORD: 'password',
-  FACEBOOK: 'facebook.com',
-  GITHUB: 'github.com',
-  GOOGLE: 'google.com',
-  PHONE: 'phone',
-  TWITTER: 'twitter.com',
-} as const;
+export {
+  ActionCodeOperation,
+  FactorId,
+  OperationType,
+  ProviderId,
+  SignInMethod,
+};
 
 const actionCodeOperations = new Set<string>(Object.values(ActionCodeOperation));
 

@@ -110,6 +110,7 @@ export const packages: PackageEntry[] = [
     ],
     rnFirebaseSupportFiles: [
       path.join(rnDist('auth'), 'index.d.ts'),
+      path.join(rnDist('auth'), 'constants.d.ts'),
       path.join(rnDist('auth'), 'namespaced.d.ts'),
       path.join(rnDist('auth'), 'types', 'namespaced.d.ts'),
       path.join(rnDist('auth'), 'types', 'internal.d.ts'),
