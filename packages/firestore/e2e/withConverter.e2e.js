@@ -33,7 +33,6 @@ const {
   increment,
   serverTimestamp,
   Timestamp,
-  initializeFirestore,
 } = firestoreModular;
 
 // Used for testing the FirestoreDataConverter.
@@ -102,9 +101,12 @@ function withTestDb(fn) {
 async function withModifiedUndefinedPropertiesTestDb(fn) {
   const db = getFirestore();
   const previousValue = db._settings.ignoreUndefinedProperties;
-  initializeFirestore(db.app, { ignoreUndefinedProperties: false });
-  await fn(db);
-  initializeFirestore(db.app, { ignoreUndefinedProperties: previousValue });
+  db._settings.ignoreUndefinedProperties = false;
+  try {
+    await fn(db);
+  } finally {
+    db._settings.ignoreUndefinedProperties = previousValue;
+  }
 }
 
 function withTestCollection(fn) {
@@ -593,12 +595,14 @@ describe('firestore.withConverter', function () {
       });
     });
 
-    [
-      { serverTimestamps: 'estimate', expectTimestamp: true },
-      { serverTimestamps: 'previous', expectTimestamp: false },
-      { serverTimestamps: 'none', expectTimestamp: false },
-    ].forEach(({ serverTimestamps, expectTimestamp }) => {
-      it(`passes data() serverTimestamps '${serverTimestamps}' through converter snapshots`, function () {
+    it('passes data() serverTimestamps options through converter snapshots', async function () {
+      const timestampCases = [
+        { serverTimestamps: 'estimate', expectTimestamp: true },
+        { serverTimestamps: 'previous', expectTimestamp: false },
+        { serverTimestamps: 'none', expectTimestamp: false },
+      ];
+
+      for (const { serverTimestamps, expectTimestamp } of timestampCases) {
         const timestampConverter = {
           toFirestore() {
             return {
@@ -611,7 +615,7 @@ describe('firestore.withConverter', function () {
           },
         };
 
-        return withTestCollection(async coll => {
+        await withTestCollection(async coll => {
           const ref = doc(coll).withConverter(timestampConverter);
           await new Promise((resolve, reject) => {
             const unsubscribe = onSnapshot(
@@ -647,7 +651,7 @@ describe('firestore.withConverter', function () {
             });
           });
         });
-      });
+      }
     });
 
     it('supports partials with merge', async function () {
