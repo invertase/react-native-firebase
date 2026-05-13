@@ -15,24 +15,37 @@
  *
  */
 
-import type { AuthCredential } from '../types/auth';
+import type { OAuthCredential } from '../types/auth';
 
 const providerId = 'facebook.com' as const;
 
 export default class FacebookAuthProvider {
+  static readonly FACEBOOK_SIGN_IN_METHOD: 'facebook.com' = providerId;
+  static readonly PROVIDER_ID: 'facebook.com' = providerId;
+
   constructor() {
     throw new Error('`new FacebookAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static get PROVIDER_ID() {
-    return providerId;
-  }
-
-  static credential(token: string, secret?: string): AuthCredential {
+  static credential(token: string): OAuthCredential;
+  static credential(token: string, secret?: string): OAuthCredential {
     return {
       token,
       secret: secret ?? '',
       providerId,
+      signInMethod: providerId,
+      accessToken: token,
+      rawNonce: secret ?? undefined,
+      toJSON() {
+        return {
+          providerId: this.providerId,
+          signInMethod: this.signInMethod,
+          idToken: this.idToken,
+          accessToken: this.accessToken,
+          rawNonce: this.rawNonce,
+          nonce: this.rawNonce,
+        };
+      },
     };
   }
 }

@@ -79,8 +79,11 @@ describe('auth() -> Providers', function () {
           const token = '123456';
           const credential = firebase.auth.FacebookAuthProvider.credential(token);
           credential.providerId.should.equal('facebook.com');
+          credential.signInMethod.should.equal('facebook.com');
           credential.token.should.equal(token);
           credential.secret.should.equal('');
+          credential.accessToken.should.equal(token);
+          credential.toJSON().accessToken.should.equal(token);
         });
       });
 
@@ -92,12 +95,20 @@ describe('auth() -> Providers', function () {
           credential.providerId.should.equal('facebook.com');
           credential.token.should.equal(token);
           credential.secret.should.equal(nonce);
+          credential.rawNonce.should.equal(nonce);
+          credential.toJSON().nonce.should.equal(nonce);
         });
       });
 
       describe('PROVIDER_ID', function () {
         it('should return facebook.com', function () {
           firebase.auth.FacebookAuthProvider.PROVIDER_ID.should.equal('facebook.com');
+        });
+      });
+
+      describe('FACEBOOK_SIGN_IN_METHOD', function () {
+        it('should return facebook.com', function () {
+          firebase.auth.FacebookAuthProvider.FACEBOOK_SIGN_IN_METHOD.should.equal('facebook.com');
         });
       });
     });
@@ -385,8 +396,11 @@ describe('auth() -> Providers', function () {
           const token = '123456';
           const credential = FacebookAuthProvider.credential(token);
           credential.providerId.should.equal('facebook.com');
+          credential.signInMethod.should.equal('facebook.com');
           credential.token.should.equal(token);
           credential.secret.should.equal('');
+          credential.accessToken.should.equal(token);
+          credential.toJSON().accessToken.should.equal(token);
         });
       });
 
@@ -400,6 +414,8 @@ describe('auth() -> Providers', function () {
           credential.providerId.should.equal('facebook.com');
           credential.token.should.equal(token);
           credential.secret.should.equal(nonce);
+          credential.rawNonce.should.equal(nonce);
+          credential.toJSON().nonce.should.equal(nonce);
         });
       });
 
@@ -408,6 +424,14 @@ describe('auth() -> Providers', function () {
           const { FacebookAuthProvider } = authModular;
 
           FacebookAuthProvider.PROVIDER_ID.should.equal('facebook.com');
+        });
+      });
+
+      describe('FACEBOOK_SIGN_IN_METHOD', function () {
+        it('should return facebook.com', function () {
+          const { FacebookAuthProvider } = authModular;
+
+          FacebookAuthProvider.FACEBOOK_SIGN_IN_METHOD.should.equal('facebook.com');
         });
       });
     });

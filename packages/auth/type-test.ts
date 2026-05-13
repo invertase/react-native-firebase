@@ -14,6 +14,7 @@ import auth, {
   connectAuthEmulator,
   createUserWithEmailAndPassword,
   EmailAuthProvider,
+  FacebookAuthProvider,
   fetchSignInMethodsForEmail,
   FactorId,
   getAdditionalUserInfo,
@@ -143,6 +144,7 @@ const oauthCredentialOptions: OAuthCredentialOptions = {
 const oauthCredential: OAuthCredential = new OAuthProvider('apple.com').credential(
   oauthCredentialOptions,
 );
+const facebookCredential: OAuthCredential = FacebookAuthProvider.credential('facebook-token');
 const githubCredential: OAuthCredential = GithubAuthProvider.credential('github-token');
 const googleCredential: OAuthCredential = GoogleAuthProvider.credential('google-id-token', null);
 const twitterCredential: OAuthCredential = TwitterAuthProvider.credential(
@@ -160,6 +162,7 @@ console.log(phoneAuthCredential.signInMethod);
 console.log(oauthCredentialOptions.idToken);
 console.log(oauthCredential.providerId);
 console.log(oauthCredential.rawNonce);
+console.log(facebookCredential.accessToken);
 console.log(githubCredential.accessToken);
 console.log(googleCredential.idToken);
 console.log(twitterCredential.accessToken);
