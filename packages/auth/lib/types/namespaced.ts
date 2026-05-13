@@ -367,7 +367,7 @@ export declare namespace FirebaseAuthTypes {
      */
     generateSecret(
       session: FirebaseAuthTypes.MultiFactorSession,
-      auth: FirebaseAuthTypes.Module,
+      auth?: FirebaseAuthTypes.Module,
     ): Promise<TotpSecret>;
   }
 

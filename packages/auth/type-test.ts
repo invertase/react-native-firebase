@@ -47,6 +47,7 @@ import auth, {
   signInWithRedirect,
   signOut,
   SignInMethod,
+  TotpMultiFactorGenerator,
   TwitterAuthProvider,
   updateCurrentUser,
   useDeviceLanguage,
@@ -66,6 +67,7 @@ import auth, {
   type FirebaseAuthTypes,
   type IdTokenResult,
   type MultiFactorError,
+  type MultiFactorSession,
   type OAuthCredential,
   type OAuthCredentialOptions,
   type PasswordPolicy,
@@ -73,6 +75,8 @@ import auth, {
   type Persistence,
   type PhoneAuthCredential,
   type PopupRedirectResolver,
+  type TotpMultiFactorAssertion,
+  type TotpSecret,
   type Unsubscribe,
   type User,
   type UserCredential,
@@ -187,8 +191,17 @@ const phoneVerificationId: Promise<string> = new PhoneAuthProvider(modularAuth).
   '+16505550101',
   appVerifier,
 );
+const totpAssertionForSignIn: TotpMultiFactorAssertion =
+  TotpMultiFactorGenerator.assertionForSignIn('totp-uid', '123456');
+declare const multiFactorSession: MultiFactorSession;
+declare const totpSecret: TotpSecret;
+const totpAssertionForEnrollment: TotpMultiFactorAssertion =
+  TotpMultiFactorGenerator.assertionForEnrollment(totpSecret, '123456');
+const generatedTotpSecret: Promise<TotpSecret> =
+  TotpMultiFactorGenerator.generateSecret(multiFactorSession);
 console.log(modularAuth.app.name, modularAuthFromApp.app.name, initializedAuth.app.name);
 console.log(phoneVerificationId);
+console.log(totpAssertionForSignIn, totpAssertionForEnrollment, generatedTotpSecret);
 
 namespacedAuth.setTenantId('tenant-123');
 namespacedAuth.setLanguageCode('en');

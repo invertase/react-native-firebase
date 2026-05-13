@@ -18,11 +18,11 @@
 import { isOther } from '@react-native-firebase/app/dist/module/common';
 import { TotpSecret } from './TotpSecret';
 import { getAuth } from './modular';
-import type { FirebaseAuthTypes } from './types/namespaced';
+import type { Auth, MultiFactorSession, TotpMultiFactorAssertion } from './types/auth';
 import type { AuthInternal } from './types/internal';
 
 export default class TotpMultiFactorGenerator {
-  static FACTOR_ID = 'totp';
+  static readonly FACTOR_ID = 'totp' as const;
 
   constructor() {
     throw new Error(
@@ -30,39 +30,39 @@ export default class TotpMultiFactorGenerator {
     );
   }
 
-  static assertionForSignIn(
-    uid: string,
-    verificationCode: string,
-  ): FirebaseAuthTypes.MultiFactorAssertion {
+  static assertionForSignIn(uid: string, verificationCode: string): TotpMultiFactorAssertion {
     if (isOther) {
       // we require the web native assertion when using firebase-js-sdk
       // as it has functions used by the SDK, a shim won't do
       return (getAuth() as unknown as AuthInternal).native.assertionForSignIn(
         uid,
         verificationCode,
-      ) as unknown as FirebaseAuthTypes.MultiFactorAssertion;
+      ) as unknown as TotpMultiFactorAssertion;
     }
     return {
       uid,
       verificationCode,
       factorId: 'totp',
-    } as unknown as FirebaseAuthTypes.MultiFactorAssertion;
+    } as unknown as TotpMultiFactorAssertion;
   }
 
   static assertionForEnrollment(
     totpSecret: TotpSecret,
     verificationCode: string,
-  ): FirebaseAuthTypes.MultiFactorAssertion {
+  ): TotpMultiFactorAssertion {
     return {
       totpSecret: totpSecret.secretKey,
       verificationCode,
       factorId: 'totp',
-    } as unknown as FirebaseAuthTypes.MultiFactorAssertion;
+    } as unknown as TotpMultiFactorAssertion;
   }
 
+  static generateSecret(session: MultiFactorSession): Promise<TotpSecret>;
+  static generateSecret(session: MultiFactorSession, auth: Auth): Promise<TotpSecret>;
   static async generateSecret(
-    session: FirebaseAuthTypes.MultiFactorSession,
-    auth: FirebaseAuthTypes.Module,
+    session: MultiFactorSession,
+    // Defaulting to getAuth() preserves the firebase-js-sdk one-argument API for the default app.
+    auth: Auth = getAuth(),
   ): Promise<TotpSecret> {
     if (!session) {
       throw new Error('Session is required to generate a TOTP secret.');

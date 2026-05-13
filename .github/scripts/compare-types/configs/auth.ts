@@ -193,7 +193,7 @@ const config: PackageConfig = {
     {
       name: 'TotpMultiFactorGenerator',
       reason:
-        'RN Firebase now exports TotpMultiFactorGenerator from the modular surface, but its helper class still differs from the firebase-js-sdk static API in signatures and returned assertion/secret shapes.',
+        'RN Firebase now mirrors the firebase-js-sdk assertion return types and default-app generateSecret signature while retaining an RNFB auth overload for non-default native apps.',
     },
     {
       name: 'TotpSecret',
