@@ -235,7 +235,7 @@ function getAuthCredential(
       });
     case 'oauth':
       return new OAuthProvider(provider).credential({
-        idToken: token,
+        idToken: token || undefined,
         accessToken: secret ?? undefined,
       });
     case 'phone':

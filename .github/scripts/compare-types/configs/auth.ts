@@ -63,16 +63,6 @@ const config: PackageConfig = {
         'The firebase-js-sdk persistence object is not exported by RN Firebase because auth state is managed by the underlying native SDKs.',
     },
     {
-      name: 'OAuthCredential',
-      reason:
-        'RN Firebase does not yet expose the firebase-js-sdk OAuthCredential class as part of the modular public surface.',
-    },
-    {
-      name: 'OAuthCredentialOptions',
-      reason:
-        'RN Firebase does not yet export the firebase-js-sdk OAuthCredentialOptions interface.',
-    },
-    {
       name: 'PhoneAuthCredential',
       reason:
         'RN Firebase does not yet expose the firebase-js-sdk PhoneAuthCredential class as part of the modular public surface.',
@@ -213,7 +203,7 @@ const config: PackageConfig = {
     {
       name: 'OAuthProvider',
       reason:
-        'RN Firebase now exports OAuthProvider from the modular surface, but its native helper class still differs from the firebase-js-sdk class by exposing RNFB-specific credential construction and omitting credentialFromJSON/credentialFromResult/credentialFromError helpers.',
+        'RN Firebase supports the firebase-js-sdk credential(options) instance API, but its native helper class still differs by retaining RNFB provider configuration helpers and omitting credentialFromJSON/credentialFromResult/credentialFromError helpers.',
     },
     {
       name: 'PhoneAuthProvider',

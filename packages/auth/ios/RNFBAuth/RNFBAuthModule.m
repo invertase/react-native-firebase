@@ -1541,9 +1541,11 @@ RCT_EXPORT_METHOD(useEmulator
                         verificationCode:authTokenSecret];
 #endif
   } else if ([provider compare:@"oauth" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    NSString *IDToken = authToken.length > 0 ? authToken : nil;
+    NSString *accessToken = authTokenSecret.length > 0 ? authTokenSecret : nil;
     credential = [FIROAuthProvider credentialWithProviderID:@"oauth"
-                                                    IDToken:authToken
-                                                accessToken:authTokenSecret];
+                                                    IDToken:IDToken
+                                                accessToken:accessToken];
   } else if ([provider hasPrefix:@"oidc."]) {
     credential = [FIROAuthProvider credentialWithProviderID:provider
                                                     IDToken:authToken

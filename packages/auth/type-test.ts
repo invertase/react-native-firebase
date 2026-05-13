@@ -28,6 +28,7 @@ import auth, {
   onAuthStateChanged,
   onIdTokenChanged,
   OperationType,
+  OAuthProvider,
   parseActionCodeURL,
   PhoneAuthProvider,
   sendPasswordResetEmail,
@@ -60,6 +61,8 @@ import auth, {
   type FirebaseAuthTypes,
   type IdTokenResult,
   type MultiFactorError,
+  type OAuthCredential,
+  type OAuthCredentialOptions,
   type PasswordPolicy,
   type PasswordValidationStatus,
   type Persistence,
@@ -119,11 +122,22 @@ const passwordValidationStatus: PasswordValidationStatus = {
   isValid: true,
   passwordPolicy,
 };
+const oauthCredentialOptions: OAuthCredentialOptions = {
+  idToken: 'id-token',
+  accessToken: 'access-token',
+  rawNonce: 'nonce',
+};
+const oauthCredential: OAuthCredential = new OAuthProvider('apple.com').credential(
+  oauthCredentialOptions,
+);
 
 console.log(authSettings.appVerificationDisabledForTesting);
 console.log(authConfig.apiHost);
 console.log(dependencies.persistence);
 console.log(passwordValidationStatus.passwordPolicy.enforcementState);
+console.log(oauthCredentialOptions.idToken);
+console.log(oauthCredential.providerId);
+console.log(oauthCredential.rawNonce);
 console.log(
   ActionCodeOperation.VERIFY_EMAIL,
   FactorId.PHONE,

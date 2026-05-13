@@ -2056,6 +2056,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             .setIdTokenWithRawNonce(authToken, authSecret)
             .build();
       case "oauth":
+        if (authToken == null || authToken.isEmpty()) {
+          return OAuthProvider.newCredentialBuilder(provider).setAccessToken(authSecret).build();
+        }
+        if (authSecret == null || authSecret.isEmpty()) {
+          return OAuthProvider.newCredentialBuilder(provider).setIdToken(authToken).build();
+        }
         return OAuthProvider.getCredential(provider, authToken, authSecret);
       case "phone":
         return getPhoneAuthCredential(authToken, authSecret);

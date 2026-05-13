@@ -81,6 +81,14 @@ export interface AuthCredential {
   readonly secret: string;
 }
 
+export interface OAuthCredential extends AuthCredential {
+  readonly signInMethod: string;
+  readonly idToken?: string;
+  readonly accessToken?: string;
+  readonly rawNonce?: string;
+  toJSON(): object;
+}
+
 export interface OIDCProvider {
   readonly PROVIDER_ID: string;
   credential(oidcSuffix: string, idToken: string): AuthCredential;
@@ -152,6 +160,12 @@ export interface ApplicationVerifier {
 }
 
 export type CustomParameters = Record<string, string>;
+
+export interface OAuthCredentialOptions {
+  idToken?: string;
+  accessToken?: string;
+  rawNonce?: string;
+}
 
 export interface AuthProvider {
   readonly providerId: string;

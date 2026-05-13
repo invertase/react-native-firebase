@@ -160,10 +160,25 @@ describe('auth() -> Providers', function () {
         it('should return a credential object', function () {
           const idToken = '123456';
           const accessToken = '654321';
-          const credential = firebase.auth.OAuthProvider.credential(idToken, accessToken);
-          credential.providerId.should.equal('oauth');
+          const provider = new firebase.auth.OAuthProvider('apple.com');
+          const credential = provider.credential({ idToken, accessToken, rawNonce: 'nonce' });
+          credential.providerId.should.equal('apple.com');
           credential.token.should.equal(idToken);
+          credential.secret.should.equal('nonce');
+          credential.idToken.should.equal(idToken);
+          credential.accessToken.should.equal(accessToken);
+          credential.rawNonce.should.equal('nonce');
+          credential.toJSON().rawNonce.should.equal('nonce');
+        });
+
+        it('should map access-token-only credentials to the secret bridge field', function () {
+          const accessToken = '654321';
+          const provider = new firebase.auth.OAuthProvider('oauth');
+          const credential = provider.credential({ accessToken });
+          credential.providerId.should.equal('oauth');
+          credential.token.should.equal('');
           credential.secret.should.equal(accessToken);
+          credential.accessToken.should.equal(accessToken);
         });
       });
 
@@ -462,10 +477,27 @@ describe('auth() -> Providers', function () {
 
           const idToken = '123456';
           const accessToken = '654321';
-          const credential = OAuthProvider.credential(idToken, accessToken);
-          credential.providerId.should.equal('oauth');
+          const provider = new OAuthProvider('apple.com');
+          const credential = provider.credential({ idToken, accessToken, rawNonce: 'nonce' });
+          credential.providerId.should.equal('apple.com');
           credential.token.should.equal(idToken);
+          credential.secret.should.equal('nonce');
+          credential.idToken.should.equal(idToken);
+          credential.accessToken.should.equal(accessToken);
+          credential.rawNonce.should.equal('nonce');
+          credential.toJSON().rawNonce.should.equal('nonce');
+        });
+
+        it('should map access-token-only credentials to the secret bridge field', function () {
+          const { OAuthProvider } = authModular;
+
+          const accessToken = '654321';
+          const provider = new OAuthProvider('oauth');
+          const credential = provider.credential({ accessToken });
+          credential.providerId.should.equal('oauth');
+          credential.token.should.equal('');
           credential.secret.should.equal(accessToken);
+          credential.accessToken.should.equal(accessToken);
         });
       });
 

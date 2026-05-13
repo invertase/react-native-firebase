@@ -15,7 +15,12 @@
  *
  */
 
-import type { AuthCredential, CustomParameters } from '../types/auth';
+import type {
+  AuthCredential,
+  CustomParameters,
+  OAuthCredential,
+  OAuthCredentialOptions,
+} from '../types/auth';
 
 export default class OAuthProvider {
   /** @internal */
@@ -29,11 +34,37 @@ export default class OAuthProvider {
     this.providerId = providerId;
   }
 
+  /** @internal */
   static credential(idToken: string, accessToken?: string): AuthCredential {
+    return new OAuthProvider('oauth').credential({
+      idToken,
+      accessToken,
+    });
+  }
+
+  credential(params: OAuthCredentialOptions): OAuthCredential {
+    const token = params.idToken ?? '';
+    // RNFB's native bridge carries raw nonce/access token in the legacy secret slot.
+    const secret = params.rawNonce ?? params.accessToken ?? '';
+
     return {
-      token: idToken,
-      secret: accessToken ?? '',
-      providerId: 'oauth',
+      token,
+      secret,
+      providerId: this.providerId,
+      signInMethod: this.providerId,
+      idToken: params.idToken,
+      accessToken: params.accessToken,
+      rawNonce: params.rawNonce,
+      toJSON() {
+        return {
+          providerId: this.providerId,
+          signInMethod: this.signInMethod,
+          idToken: this.idToken,
+          accessToken: this.accessToken,
+          rawNonce: this.rawNonce,
+          nonce: this.rawNonce,
+        };
+      },
     };
   }
 
