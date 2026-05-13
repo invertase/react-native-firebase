@@ -241,11 +241,6 @@ const config: PackageConfig = {
         'RN Firebase now exports OAuthProvider from the modular surface, but its native helper class still differs from the firebase-js-sdk class by exposing RNFB-specific credential construction and omitting credentialFromJSON/credentialFromResult/credentialFromError helpers.',
     },
     {
-      name: 'ParsedToken',
-      reason:
-        'TypeScript emits the parsed-token property keys without quotes in the generated declaration file, so compare-types reports a text-only difference even though the property set matches the firebase-js-sdk surface.',
-    },
-    {
       name: 'PhoneAuthProvider',
       reason:
         'RN Firebase now exports PhoneAuthProvider from the modular surface, but the native helper class still exposes a reduced static API and looser signatures than the firebase-js-sdk PhoneAuthProvider class.',

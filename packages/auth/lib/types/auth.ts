@@ -213,14 +213,14 @@ export interface Persistence {
 export type NextOrObserver<T> = NextFn<T | null> | Observer<T | null>;
 
 export interface ParsedToken {
-  exp?: string;
-  sub?: string;
-  auth_time?: string;
-  iat?: string;
-  firebase?: {
-    sign_in_provider?: string;
-    sign_in_second_factor?: string;
-    identities?: Record<string, string>;
+  'exp'?: string;
+  'sub'?: string;
+  'auth_time'?: string;
+  'iat'?: string;
+  'firebase'?: {
+    'sign_in_provider'?: string;
+    'sign_in_second_factor'?: string;
+    'identities'?: Record<string, string>;
   };
   [key: string]: unknown;
 }
