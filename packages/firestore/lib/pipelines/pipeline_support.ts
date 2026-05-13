@@ -53,6 +53,8 @@ export const PIPELINE_UNSUPPORTED_BASE_MESSAGE =
 // `RNFBFirestorePipelineNodeBuilder.swift`.
 // Remove entries once the iOS node builder/runtime path supports them.
 const IOS_UNSUPPORTED_FUNCTION_NAMES = new Set<string>([
+  'arrayFirst',
+  'arrayFirstN',
   'arrayGet',
   'conditional',
   'round',

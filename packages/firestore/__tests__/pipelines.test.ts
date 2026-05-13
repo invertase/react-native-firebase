@@ -2,6 +2,8 @@ import { describe, expect, it, jest } from '@jest/globals';
 import { firebase } from '../lib';
 import {
   arrayFilter,
+  arrayFirst,
+  arrayFirstN,
   arrayGet,
   and,
   conditional,
@@ -197,6 +199,78 @@ describe('Firestore pipelines runtime', function () {
                     { exprType: 'Constant', value: 20 },
                   ],
                 },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('serializes arrayFirst and arrayFirstN as function expression helpers', function () {
+    const db: any = firebase.firestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select(
+        arrayFirst('items').as('firstItem'),
+        arrayFirstN(field('items'), 2).as('firstTwoItems'),
+        arrayFirstN('items', field('count')).as('dynamicFirstItems'),
+        field('items').arrayFirst().as('fluentFirstItem'),
+        field('items').arrayFirstN(2).as('fluentFirstTwoItems'),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          {
+            alias: 'firstItem',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayFirst',
+              args: [{ exprType: 'Field', path: 'items' }],
+            },
+          },
+          {
+            alias: 'firstTwoItems',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayFirstN',
+              args: [
+                { exprType: 'Field', path: 'items' },
+                { exprType: 'Constant', value: 2 },
+              ],
+            },
+          },
+          {
+            alias: 'dynamicFirstItems',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayFirstN',
+              args: [
+                { exprType: 'Field', path: 'items' },
+                { exprType: 'Field', path: 'count' },
+              ],
+            },
+          },
+          {
+            alias: 'fluentFirstItem',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayFirst',
+              args: [{ exprType: 'Field', path: 'items' }],
+            },
+          },
+          {
+            alias: 'fluentFirstTwoItems',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayFirstN',
+              args: [
+                { exprType: 'Field', path: 'items' },
+                { exprType: 'Constant', value: 2 },
               ],
             },
           },
@@ -452,6 +526,10 @@ describe('Firestore pipelines runtime', function () {
       .pipeline()
       .documents(['firestore/a'])
       .select(
+        arrayFirst(field('items')).as('firstArrayItem'),
+        arrayFirstN(field('items'), 2).as('firstArrayItems'),
+        field('items').arrayFirst().as('fluentFirstArrayItem'),
+        field('items').arrayFirstN(2).as('fluentFirstArrayItems'),
         arrayGet(field('items'), 0).as('firstItem'),
         conditional(
           field('value').greaterThan(0),
@@ -468,6 +546,8 @@ describe('Firestore pipelines runtime', function () {
       .serialize();
 
     expect(getIOSUnsupportedPipelineFunctions(serialized)).toEqual([
+      'arrayFirst',
+      'arrayFirstN',
       'arrayGet',
       'conditional',
       'round',

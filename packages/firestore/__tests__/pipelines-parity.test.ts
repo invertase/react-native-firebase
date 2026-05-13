@@ -13,9 +13,17 @@ const ANDROID_EXECUTOR_PATH = join(
   ROOT,
   'packages/firestore/android/src/reactnative/java/io/invertase/firebase/firestore/ReactNativeFirebaseFirestorePipelineParser.java',
 );
+const ANDROID_NODE_BUILDER_PATH = join(
+  ROOT,
+  'packages/firestore/android/src/reactnative/java/io/invertase/firebase/firestore/ReactNativeFirebaseFirestorePipelineNodeBuilder.java',
+);
 const IOS_EXECUTOR_PATH = join(
   ROOT,
   'packages/firestore/ios/RNFBFirestore/RNFBFirestorePipelineParser.swift',
+);
+const IOS_NODE_BUILDER_PATH = join(
+  ROOT,
+  'packages/firestore/ios/RNFBFirestore/RNFBFirestorePipelineNodeBuilder.swift',
 );
 
 function extractQuotedList(source: string, marker: string, endMarker: string): string[] {
@@ -78,5 +86,15 @@ describe('Firestore pipeline native parity', function () {
     expect(iosSource).toContain('does not support options.indexMode on iOS');
     expect(iosSource).toContain('does not support options.rawOptions on iOS');
     expect(iosSource).toContain('does not support pipeline.source.rawOptions');
+  });
+
+  it('keeps arrayFirst and arrayFirstN on native lowering paths', function () {
+    const androidSource = readFileSync(ANDROID_NODE_BUILDER_PATH, 'utf8');
+    const iosSource = readFileSync(IOS_NODE_BUILDER_PATH, 'utf8');
+
+    expect(androidSource).toContain('currentExpression.arrayFirst()');
+    expect(androidSource).toContain('arrayExpr.arrayFirstN');
+    expect(iosSource).toContain('"array_first"');
+    expect(iosSource).toContain('"array_first_n"');
   });
 });

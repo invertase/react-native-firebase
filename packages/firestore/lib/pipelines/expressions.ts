@@ -110,6 +110,9 @@ interface FluentExpressionMethods {
   arrayAgg(): AggregateFunction;
   arrayAggDistinct(): AggregateFunction;
   arrayFilter(alias: string, filter: BooleanExpression): FunctionExpression;
+  arrayFirst(): FunctionExpression;
+  arrayFirstN(n: number): FunctionExpression;
+  arrayFirstN(n: Expression): FunctionExpression;
 }
 
 export interface BooleanExpression extends Selectable, FluentExpressionMethods {
@@ -397,6 +400,8 @@ const EXPRESSION_METHOD_NAMES = [
   'arrayContainsAny',
   'arrayContainsAll',
   'arrayFilter',
+  'arrayFirst',
+  'arrayFirstN',
   'startsWith',
   'endsWith',
   'add',
@@ -719,6 +724,8 @@ function normalizeGlobalArguments(name: string, args: unknown[]): RuntimeNode[] 
     case 'toUpper':
     case 'trim':
     case 'substring':
+    case 'arrayFirst':
+    case 'arrayFirstN':
     case 'arrayGet':
     case 'arrayLength':
     case 'arraySum':
@@ -1055,6 +1062,31 @@ export function arrayFilter(
   _filter: BooleanExpression,
 ): FunctionExpression {
   return callFunctionHelper('arrayFilter', arguments);
+}
+
+/**
+ * @beta
+ * Gets the first element in an array field or expression.
+ */
+export function arrayFirst(_arrayField: string): FunctionExpression;
+export function arrayFirst(_arrayExpression: Expression): FunctionExpression;
+export function arrayFirst(_arrayOrField: string | Expression): FunctionExpression {
+  return callFunctionHelper('arrayFirst', arguments);
+}
+
+/**
+ * @beta
+ * Gets the first `n` elements in an array field or expression.
+ */
+export function arrayFirstN(_arrayField: string, _n: number): FunctionExpression;
+export function arrayFirstN(_arrayField: string, _n: Expression): FunctionExpression;
+export function arrayFirstN(_arrayExpression: Expression, _n: number): FunctionExpression;
+export function arrayFirstN(_arrayExpression: Expression, _n: Expression): FunctionExpression;
+export function arrayFirstN(
+  _arrayOrField: string | Expression,
+  _n: number | Expression,
+): FunctionExpression {
+  return callFunctionHelper('arrayFirstN', arguments);
 }
 
 /**

@@ -171,6 +171,8 @@ import {
   // array
   array,
   arrayFilter,
+  arrayFirst,
+  arrayFirstN,
   arrayConcat,
   arrayGet,
   arrayLength,
@@ -1320,6 +1322,17 @@ void variable('score');
 void arrayFilter('scores', 'score', greaterThan(variable('score'), constant(15)));
 void arrayFilter(field('scores'), 'score', greaterThan(variable('score'), constant(15)));
 void field('scores').arrayFilter('score', greaterThan(variable('score'), constant(15)));
+// arrayFirst: (string) | (Expression)
+void arrayFirst('items');
+void arrayFirst(field('items'));
+// arrayFirstN: 4 overloads
+void arrayFirstN('items', 2);
+void arrayFirstN('items', field('limit'));
+void arrayFirstN(field('items'), 2);
+void arrayFirstN(field('items'), field('limit'));
+void field('items').arrayFirst();
+void field('items').arrayFirstN(2);
+void field('items').arrayFirstN(field('limit'));
 // arrayConcat: (Expression, ...) | (string, ...)
 void arrayConcat(field('tags'), field('moreTags'));
 void arrayConcat(field('tags'), ['extra']);
@@ -1694,6 +1707,10 @@ const pipelineArrayOps = xDb
     array([constant(1), constant(2), constant(3)]).as('fixedArr'),
     arrayLength(field('comments')).as('commentCount'),
     arrayLength('comments').as('commentCount2'),
+    arrayFirst(field('items')).as('firstItemByHelper'),
+    arrayFirst('items').as('firstItemByField'),
+    arrayFirstN(field('items'), 2).as('firstItems'),
+    arrayFirstN('items', field('limit')).as('dynamicFirstItems'),
     arrayGet(field('items'), 0).as('firstItem'),
     arrayGet(field('items'), field('idx')).as('dynamicItem'),
     arrayGet('items', 0).as('firstItem2'),
