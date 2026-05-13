@@ -166,11 +166,6 @@ const config: PackageConfig = {
 
   differentShape: [
     {
-      name: 'connectAuthEmulator',
-      reason:
-        'RN Firebase models disableWarnings as an optional property, while the firebase-js-sdk emitted type text shows a required boolean property.',
-    },
-    {
       name: 'EmailAuthProvider',
       reason:
         'RN Firebase now exports EmailAuthProvider from the modular surface, but its native helper class still exposes a reduced static API and RNFB credential objects rather than mirroring the firebase-js-sdk EmailAuthProvider class shape.',

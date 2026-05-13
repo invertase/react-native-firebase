@@ -336,7 +336,7 @@ export function confirmPasswordReset(
 export function connectAuthEmulator(
   auth: Auth,
   url: string,
-  _options?: { disableWarnings?: boolean },
+  _options?: { disableWarnings: boolean },
 ): void {
   const authInternal = getAuthInternal(auth);
   callAuthMethod(authInternal, authInternal.useEmulator, url);
