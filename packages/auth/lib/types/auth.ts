@@ -81,6 +81,11 @@ export interface AuthCredential {
   readonly secret: string;
 }
 
+export interface EmailAuthCredential extends AuthCredential {
+  readonly signInMethod: string;
+  toJSON(): object;
+}
+
 export interface OAuthCredential extends AuthCredential {
   readonly signInMethod: string;
   readonly idToken?: string;

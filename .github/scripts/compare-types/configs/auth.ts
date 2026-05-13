@@ -48,11 +48,6 @@ const config: PackageConfig = {
         'firebase-js-sdk web error-map helper. RN Firebase does not expose the SDK error-map selection API.',
     },
     {
-      name: 'EmailAuthCredential',
-      reason:
-        'RN Firebase does not yet expose the firebase-js-sdk EmailAuthCredential class as part of the modular public surface.',
-    },
-    {
       name: 'indexedDBLocalPersistence',
       reason:
         'IndexedDB persistence is web-only and not applicable to React Native native-auth persistence.',
@@ -155,11 +150,6 @@ const config: PackageConfig = {
   ],
 
   differentShape: [
-    {
-      name: 'EmailAuthProvider',
-      reason:
-        'RN Firebase now exports EmailAuthProvider from the modular surface, but its native helper class still exposes a reduced static API and RNFB credential objects rather than mirroring the firebase-js-sdk EmailAuthProvider class shape.',
-    },
     {
       name: 'isSignInWithEmailLink',
       reason:

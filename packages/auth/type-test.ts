@@ -58,6 +58,7 @@ import auth, {
   type Config,
   type ConfirmationResult,
   type Dependencies,
+  type EmailAuthCredential,
   type FirebaseAuthTypes,
   type IdTokenResult,
   type MultiFactorError,
@@ -122,6 +123,10 @@ const passwordValidationStatus: PasswordValidationStatus = {
   isValid: true,
   passwordPolicy,
 };
+const emailAuthCredential: EmailAuthCredential = EmailAuthProvider.credential(
+  'email@example.com',
+  'password',
+);
 const oauthCredentialOptions: OAuthCredentialOptions = {
   idToken: 'id-token',
   accessToken: 'access-token',
@@ -135,6 +140,7 @@ console.log(authSettings.appVerificationDisabledForTesting);
 console.log(authConfig.apiHost);
 console.log(dependencies.persistence);
 console.log(passwordValidationStatus.passwordPolicy.enforcementState);
+console.log(emailAuthCredential.signInMethod);
 console.log(oauthCredentialOptions.idToken);
 console.log(oauthCredential.providerId);
 console.log(oauthCredential.rawNonce);

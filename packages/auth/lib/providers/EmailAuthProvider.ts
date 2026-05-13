@@ -15,41 +15,48 @@
  *
  */
 
-import type { AuthCredential } from '../types/auth';
+import type { EmailAuthCredential } from '../types/auth';
 
 const linkProviderId = 'emailLink' as const;
 const passwordProviderId = 'password' as const;
 
 export default class EmailAuthProvider {
+  static readonly EMAIL_LINK_SIGN_IN_METHOD: 'emailLink' = linkProviderId;
+  static readonly EMAIL_PASSWORD_SIGN_IN_METHOD: 'password' = passwordProviderId;
+  static readonly PROVIDER_ID: 'password' = passwordProviderId;
+
+  readonly providerId = passwordProviderId;
+
   constructor() {
     throw new Error('`new EmailAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static get EMAIL_LINK_SIGN_IN_METHOD() {
-    return linkProviderId;
+  static credential(email: string, password: string): EmailAuthCredential {
+    return createEmailCredential(email, password, passwordProviderId);
   }
 
-  static get EMAIL_PASSWORD_SIGN_IN_METHOD() {
-    return passwordProviderId;
+  static credentialWithLink(email: string, emailLink: string): EmailAuthCredential {
+    return createEmailCredential(email, emailLink, linkProviderId);
   }
+}
 
-  static get PROVIDER_ID() {
-    return passwordProviderId;
-  }
-
-  static credential(email: string, password: string): AuthCredential {
-    return {
-      token: email,
-      secret: password,
-      providerId: passwordProviderId,
-    };
-  }
-
-  static credentialWithLink(email: string, emailLink: string): AuthCredential {
-    return {
-      token: email,
-      secret: emailLink,
-      providerId: linkProviderId,
-    };
-  }
+function createEmailCredential(
+  token: string,
+  secret: string,
+  signInMethod: typeof linkProviderId | typeof passwordProviderId,
+): EmailAuthCredential {
+  return {
+    token,
+    secret,
+    providerId: signInMethod,
+    signInMethod,
+    toJSON() {
+      return {
+        email: this.token,
+        password: this.secret,
+        signInMethod: this.signInMethod,
+        tenantId: null,
+      };
+    },
+  };
 }

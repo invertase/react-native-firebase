@@ -317,8 +317,11 @@ describe('auth() -> Providers', function () {
           const password = 'password';
           const credential = EmailAuthProvider.credential(email, password);
           credential.providerId.should.equal('password');
+          credential.signInMethod.should.equal('password');
           credential.token.should.equal(email);
           credential.secret.should.equal(password);
+          credential.toJSON().email.should.equal(email);
+          credential.toJSON().password.should.equal(password);
         });
       });
 
@@ -330,8 +333,12 @@ describe('auth() -> Providers', function () {
           const link = 'link';
           const credential = EmailAuthProvider.credentialWithLink(email, link);
           credential.providerId.should.equal('emailLink');
+          credential.signInMethod.should.equal('emailLink');
           credential.token.should.equal(email);
           credential.secret.should.equal(link);
+          credential.toJSON().email.should.equal(email);
+          credential.toJSON().password.should.equal(link);
+          should.equal(credential.toJSON().tenantId, null);
         });
       });
 
