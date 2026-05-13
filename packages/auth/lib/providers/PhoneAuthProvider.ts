@@ -17,10 +17,14 @@
 
 import type {
   ApplicationVerifier,
+  Auth,
   MultiFactorInfo,
   PhoneAuthCredential,
+  PhoneAuthListener,
+  PhoneInfoOptions,
   PhoneMultiFactorEnrollInfoOptions,
   PhoneMultiFactorSignInInfoOptions,
+  PhoneSingleFactorInfoOptions,
 } from '../types/auth';
 
 const providerId = 'phone' as const;
@@ -28,6 +32,7 @@ const providerId = 'phone' as const;
 type PhoneAuthProviderAuth = {
   app: {
     auth(): {
+      verifyPhoneNumber(phoneNumber: string): PhoneAuthListener;
       verifyPhoneNumberWithMultiFactorInfo(
         hint: Pick<MultiFactorInfo, 'uid'>,
         session: PhoneMultiFactorSignInInfoOptions['session'],
@@ -39,20 +44,45 @@ type PhoneAuthProviderAuth = {
   };
 };
 
-type SupportedPhoneInfoOptions =
-  | PhoneMultiFactorEnrollInfoOptions
-  | PhoneMultiFactorSignInInfoOptions;
-
 function isPhoneMultiFactorSignInOptions(
-  phoneInfoOptions: SupportedPhoneInfoOptions,
-): phoneInfoOptions is PhoneMultiFactorSignInInfoOptions & { multiFactorHint: MultiFactorInfo } {
-  return 'multiFactorHint' in phoneInfoOptions && phoneInfoOptions.multiFactorHint !== undefined;
+  phoneInfoOptions: PhoneInfoOptions,
+): phoneInfoOptions is PhoneMultiFactorSignInInfoOptions {
+  return (
+    'session' in phoneInfoOptions &&
+    (('multiFactorHint' in phoneInfoOptions && phoneInfoOptions.multiFactorHint !== undefined) ||
+      ('multiFactorUid' in phoneInfoOptions && phoneInfoOptions.multiFactorUid !== undefined))
+  );
 }
 
 function isPhoneMultiFactorEnrollOptions(
-  phoneInfoOptions: SupportedPhoneInfoOptions,
+  phoneInfoOptions: PhoneInfoOptions,
 ): phoneInfoOptions is PhoneMultiFactorEnrollInfoOptions {
+  return 'phoneNumber' in phoneInfoOptions && 'session' in phoneInfoOptions;
+}
+
+function isPhoneSingleFactorOptions(
+  phoneInfoOptions: PhoneInfoOptions,
+): phoneInfoOptions is PhoneSingleFactorInfoOptions {
   return 'phoneNumber' in phoneInfoOptions;
+}
+
+function verificationIdFromListener(listener: PhoneAuthListener): Promise<string> {
+  return new Promise((resolve, reject) => {
+    listener.on(
+      'state_changed',
+      snapshot => {
+        if (snapshot.error) {
+          reject(snapshot.error);
+          return;
+        }
+
+        if (snapshot.verificationId) {
+          resolve(snapshot.verificationId);
+        }
+      },
+      error => reject(error),
+    );
+  });
 }
 
 export default class PhoneAuthProvider {
@@ -63,11 +93,11 @@ export default class PhoneAuthProvider {
 
   private readonly _auth: PhoneAuthProviderAuth;
 
-  constructor(auth: PhoneAuthProviderAuth) {
+  constructor(auth: Auth) {
     if (auth === undefined) {
       throw new Error('`new PhoneAuthProvider()` is not supported on the native Firebase SDKs.');
     }
-    this._auth = auth;
+    this._auth = auth as unknown as PhoneAuthProviderAuth;
   }
 
   static credential(verificationId: string, code: string): PhoneAuthCredential {
@@ -88,24 +118,43 @@ export default class PhoneAuthProvider {
   }
 
   verifyPhoneNumber(
-    phoneInfoOptions: SupportedPhoneInfoOptions,
+    phoneInfoOptions: PhoneInfoOptions | string,
+    appVerifier: ApplicationVerifier,
+  ): Promise<string>;
+  verifyPhoneNumber(
+    phoneInfoOptions: PhoneMultiFactorEnrollInfoOptions | PhoneMultiFactorSignInInfoOptions,
+  ): Promise<string>;
+  verifyPhoneNumber(
+    phoneInfoOptions: PhoneInfoOptions | string,
+    // Native SDKs own app verification, so the JS SDK verifier is accepted for type parity only.
     _appVerifier?: ApplicationVerifier,
   ): Promise<string> {
+    if (typeof phoneInfoOptions === 'string') {
+      return verificationIdFromListener(this._auth.app.auth().verifyPhoneNumber(phoneInfoOptions));
+    }
+
     if (isPhoneMultiFactorSignInOptions(phoneInfoOptions)) {
+      const multiFactorHint = phoneInfoOptions.multiFactorHint ?? {
+        uid: phoneInfoOptions.multiFactorUid!,
+      };
+
       return this._auth.app
         .auth()
-        .verifyPhoneNumberWithMultiFactorInfo(
-          phoneInfoOptions.multiFactorHint,
-          phoneInfoOptions.session,
-        );
+        .verifyPhoneNumberWithMultiFactorInfo(multiFactorHint, phoneInfoOptions.session);
     }
 
     if (isPhoneMultiFactorEnrollOptions(phoneInfoOptions)) {
       return this._auth.app.auth().verifyPhoneNumberForMultiFactor(phoneInfoOptions);
     }
 
+    if (isPhoneSingleFactorOptions(phoneInfoOptions)) {
+      return verificationIdFromListener(
+        this._auth.app.auth().verifyPhoneNumber(phoneInfoOptions.phoneNumber),
+      );
+    }
+
     throw new Error(
-      '`PhoneAuthProvider.verifyPhoneNumber()` requires either a multi-factor hint, a multi-factor uid, or enrollment phone info.',
+      '`PhoneAuthProvider.verifyPhoneNumber()` requires a phone number, phone info options, or multi-factor phone info.',
     );
   }
 }

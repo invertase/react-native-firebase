@@ -176,7 +176,12 @@ console.log(
 const modularAuth: Auth = getAuth();
 const modularAuthFromApp: Auth = getAuth(firebase.app());
 const initializedAuth: Auth = initializeAuth(firebase.app(), dependencies);
+const phoneVerificationId: Promise<string> = new PhoneAuthProvider(modularAuth).verifyPhoneNumber(
+  '+16505550101',
+  appVerifier,
+);
 console.log(modularAuth.app.name, modularAuthFromApp.app.name, initializedAuth.app.name);
+console.log(phoneVerificationId);
 
 namespacedAuth.setTenantId('tenant-123');
 namespacedAuth.setLanguageCode('en');

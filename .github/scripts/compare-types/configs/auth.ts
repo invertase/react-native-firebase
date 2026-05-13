@@ -188,7 +188,7 @@ const config: PackageConfig = {
     {
       name: 'PhoneAuthProvider',
       reason:
-        'RN Firebase now exports PhoneAuthProvider from the modular surface, but the native helper class still exposes a reduced static API and looser signatures than the firebase-js-sdk PhoneAuthProvider class.',
+        'RN Firebase now mirrors the firebase-js-sdk credential and single-factor verifyPhoneNumber signatures while retaining an RNFB multi-factor overload; it still omits credentialFromResult/credentialFromError helpers because native provider results do not expose web credential extraction.',
     },
     {
       name: 'TotpMultiFactorGenerator',
