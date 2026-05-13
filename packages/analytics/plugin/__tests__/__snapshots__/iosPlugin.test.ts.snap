@@ -1,5 +1,21 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`Analytics Config Plugin iOS Tests adds both iOS Podfile flags when both analytics options are enabled 1`] = `
+"platform :ios, '15.0'
+
+prepare_react_native_project!
+# @generated begin @react-native-firebase/analytics-googleAppMeasurementOnDeviceConversion - expo prebuild (DO NOT MODIFY) sync-6d1952a1f7b9ccb2d313cbd66659db4cdeae591f
+$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
+# @generated end @react-native-firebase/analytics-googleAppMeasurementOnDeviceConversion
+# @generated begin @react-native-firebase/analytics-withoutAdIdSupport - expo prebuild (DO NOT MODIFY) sync-06c0e725ab83bc834a9294f76fea47cf14bb6ac3
+$RNFirebaseAnalyticsWithoutAdIdSupport = true
+# @generated end @react-native-firebase/analytics-withoutAdIdSupport
+
+target 'ReactNativeFirebaseDemo' do
+end
+"
+`;
+
 exports[`Analytics Config Plugin iOS Tests adds the Podfile flag when googleAppMeasurementOnDeviceConversion is enabled 1`] = `
 "platform :ios, '15.0'
 
