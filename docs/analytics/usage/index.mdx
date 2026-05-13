@@ -169,7 +169,47 @@ During `pod install`, using that variable installs the `FirebaseAnalytics/Core` 
 or Firebase Analytics without needing the App Tracking Transparency handling (assuming no other parts
 of your app handle data in a way that requires ATT)
 
+If you use Expo, including EAS Build, add the Analytics config plugin to your `app.json` / `app.config.js` instead of editing the generated Podfile manually:
+
+```json
+[
+  "@react-native-firebase/analytics",
+  {
+    "ios": {
+      "withoutAdIdSupport": true
+    }
+  }
+]
+```
+
+This adds `$RNFirebaseAnalyticsWithoutAdIdSupport = true` to the generated iOS `Podfile` during prebuild.
+
 Note that for obvious reasons, configuring Firebase Analytics for use without IDFA is incompatible with AdMob
+
+# Google Analytics on-device conversion measurement
+
+If you would like to enable Google Analytics on-device conversion measurement APIs on iOS, define the following variable in your Podfile:
+
+```ruby
+$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
+```
+
+During `pod install`, using that variable adds the `GoogleAdsOnDeviceConversion` Pod.
+
+If you use Expo, including EAS Build, add the Analytics config plugin to your `app.json` / `app.config.js` instead of editing the generated Podfile manually:
+
+```json
+[
+  "@react-native-firebase/analytics",
+  {
+    "ios": {
+      "googleAppMeasurementOnDeviceConversion": true
+    }
+  }
+]
+```
+
+This adds `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true` to the generated iOS `Podfile` during prebuild.
 
 # Device Identification
 
