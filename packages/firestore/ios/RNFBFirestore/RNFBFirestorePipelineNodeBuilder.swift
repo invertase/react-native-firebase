@@ -721,10 +721,18 @@ final class RNFBFirestorePipelineNodeBuilder {
     switch normalized {
     case "conditional":
       return "cond"
+    case "arraytransformwithindex":
+      return "array_transform"
+    case "arraylastindexof":
+      return "array_index_of"
     case "logicalmaximum", "arraymaximum":
       return "maximum"
+    case "arraymaximumn":
+      return "maximum_n"
     case "logicalminimum", "arrayminimum":
       return "minimum"
+    case "arrayminimumn":
+      return "minimum_n"
     case "arraysum":
       return "sum"
     case "lower", "tolower":

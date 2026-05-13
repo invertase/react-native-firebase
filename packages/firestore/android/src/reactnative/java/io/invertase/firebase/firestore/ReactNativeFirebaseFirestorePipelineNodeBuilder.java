@@ -3724,6 +3724,18 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     switch (canonicalizeExpressionFunctionName(name)) {
       case "conditional":
         return "cond";
+      case "arraytransformwithindex":
+        return "array_transform";
+      case "arraylastindexof":
+        return "array_index_of";
+      case "arraymaximum":
+        return "maximum";
+      case "arraymaximumn":
+        return "maximum_n";
+      case "arrayminimum":
+        return "minimum";
+      case "arrayminimumn":
+        return "minimum_n";
       case "logicalmaximum":
         return "logical_max";
       case "logicalminimum":
