@@ -20,8 +20,7 @@ import firestorePipelinesConfig from '../configs/firestore-pipelines';
 import remoteConfigConfig from '../configs/remote-config';
 import authConfig from '../configs/auth';
 
-const SCRIPT_DIR = path.resolve(__dirname, '..');
-const REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
+const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
 
 export interface PackageEntry {
   /** Short name used in reports (e.g. "remote-config"). */
@@ -104,7 +103,7 @@ function optionalFirebasePackage(
 export const packages: PackageEntry[] = [
   {
     name: 'auth',
-    firebaseSdkTypesPaths: [path.join(SCRIPT_DIR, 'packages', 'auth', 'auth-js-sdk.d.ts')],
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('auth')],
     rnFirebaseModularFiles: [
       path.join(rnDist('auth'), 'types', 'auth.d.ts'),
       path.join(rnDist('auth'), 'modular.d.ts'),
