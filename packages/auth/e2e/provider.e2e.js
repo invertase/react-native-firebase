@@ -182,6 +182,69 @@ describe('auth() -> Providers', function () {
           credential.toJSON().rawNonce.should.equal('nonce');
         });
 
+        it('should return a credential object from json', function () {
+          const idToken = '123456';
+          const accessToken = '654321';
+          const credential = firebase.auth.OAuthProvider.credentialFromJSON({
+            providerId: 'apple.com',
+            idToken,
+            accessToken,
+            nonce: 'nonce',
+          });
+          credential.providerId.should.equal('apple.com');
+          credential.token.should.equal(idToken);
+          credential.secret.should.equal('nonce');
+          credential.idToken.should.equal(idToken);
+          credential.accessToken.should.equal(accessToken);
+          credential.rawNonce.should.equal('nonce');
+        });
+
+        it('should return a credential object from a json string', function () {
+          const idToken = '123456';
+          const accessToken = '654321';
+          const credential = firebase.auth.OAuthProvider.credentialFromJSON(
+            JSON.stringify({
+              providerId: 'apple.com',
+              idToken,
+              accessToken,
+              rawNonce: 'nonce',
+            }),
+          );
+          credential.providerId.should.equal('apple.com');
+          credential.token.should.equal(idToken);
+          credential.secret.should.equal('nonce');
+          credential.idToken.should.equal(idToken);
+          credential.accessToken.should.equal(accessToken);
+          credential.rawNonce.should.equal('nonce');
+        });
+
+        it('should map access-token-only json credentials to the secret bridge field', function () {
+          const accessToken = '654321';
+          const credential = firebase.auth.OAuthProvider.credentialFromJSON({
+            providerId: 'oauth',
+            accessToken,
+          });
+          credential.providerId.should.equal('oauth');
+          credential.token.should.equal('');
+          credential.secret.should.equal(accessToken);
+          credential.accessToken.should.equal(accessToken);
+        });
+
+        it('should throw if json is missing a provider id', function () {
+          (() =>
+            firebase.auth.OAuthProvider.credentialFromJSON({
+              idToken: '123456',
+            })).should.throw(
+            "firebase.auth.OAuthProvider.credentialFromJSON(*) expected 'providerId' to be a string value.",
+          );
+        });
+
+        it('should throw if string json is malformed', function () {
+          (() => firebase.auth.OAuthProvider.credentialFromJSON('{')).should.throw(
+            "firebase.auth.OAuthProvider.credentialFromJSON(*) expected 'json' to be a valid JSON string.",
+          );
+        });
+
         it('should map access-token-only credentials to the secret bridge field', function () {
           const accessToken = '654321';
           const provider = new firebase.auth.OAuthProvider('oauth');
@@ -549,6 +612,79 @@ describe('auth() -> Providers', function () {
           credential.accessToken.should.equal(accessToken);
           credential.rawNonce.should.equal('nonce');
           credential.toJSON().rawNonce.should.equal('nonce');
+        });
+
+        it('should return a credential object from json', function () {
+          const { OAuthProvider } = authModular;
+
+          const idToken = '123456';
+          const accessToken = '654321';
+          const credential = OAuthProvider.credentialFromJSON({
+            providerId: 'apple.com',
+            idToken,
+            accessToken,
+            nonce: 'nonce',
+          });
+          credential.providerId.should.equal('apple.com');
+          credential.token.should.equal(idToken);
+          credential.secret.should.equal('nonce');
+          credential.idToken.should.equal(idToken);
+          credential.accessToken.should.equal(accessToken);
+          credential.rawNonce.should.equal('nonce');
+        });
+
+        it('should return a credential object from a json string', function () {
+          const { OAuthProvider } = authModular;
+
+          const idToken = '123456';
+          const accessToken = '654321';
+          const credential = OAuthProvider.credentialFromJSON(
+            JSON.stringify({
+              providerId: 'apple.com',
+              idToken,
+              accessToken,
+              rawNonce: 'nonce',
+            }),
+          );
+          credential.providerId.should.equal('apple.com');
+          credential.token.should.equal(idToken);
+          credential.secret.should.equal('nonce');
+          credential.idToken.should.equal(idToken);
+          credential.accessToken.should.equal(accessToken);
+          credential.rawNonce.should.equal('nonce');
+        });
+
+        it('should map access-token-only json credentials to the secret bridge field', function () {
+          const { OAuthProvider } = authModular;
+
+          const accessToken = '654321';
+          const credential = OAuthProvider.credentialFromJSON({
+            providerId: 'oauth',
+            accessToken,
+          });
+          credential.providerId.should.equal('oauth');
+          credential.token.should.equal('');
+          credential.secret.should.equal(accessToken);
+          credential.accessToken.should.equal(accessToken);
+        });
+
+        it('should throw if json is missing a provider id', function () {
+          const { OAuthProvider } = authModular;
+
+          (() =>
+            OAuthProvider.credentialFromJSON({
+              idToken: '123456',
+            })).should.throw(
+            "firebase.auth.OAuthProvider.credentialFromJSON(*) expected 'providerId' to be a string value.",
+          );
+        });
+
+        it('should throw if string json is malformed', function () {
+          const { OAuthProvider } = authModular;
+
+          (() => OAuthProvider.credentialFromJSON('{')).should.throw(
+            "firebase.auth.OAuthProvider.credentialFromJSON(*) expected 'json' to be a valid JSON string.",
+          );
         });
 
         it('should map access-token-only credentials to the secret bridge field', function () {

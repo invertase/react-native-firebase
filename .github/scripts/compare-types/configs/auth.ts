@@ -183,7 +183,7 @@ const config: PackageConfig = {
     {
       name: 'OAuthProvider',
       reason:
-        'RN Firebase supports the firebase-js-sdk credential(options) instance API, but its native helper class still differs by retaining RNFB provider configuration helpers and omitting credentialFromJSON/credentialFromResult/credentialFromError helpers.',
+        'RN Firebase supports the firebase-js-sdk credential(options) and credentialFromJSON APIs, but its native helper class still differs by retaining RNFB provider configuration helpers and omitting credentialFromResult/credentialFromError helpers.',
     },
     {
       name: 'PhoneAuthProvider',

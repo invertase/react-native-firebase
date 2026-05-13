@@ -22,6 +22,46 @@ import type {
   OAuthCredentialOptions,
 } from '../types/auth';
 
+type OAuthCredentialJSON = OAuthCredentialOptions & {
+  providerId?: string;
+  nonce?: string;
+};
+
+type ParsedOAuthCredentialJSON = OAuthCredentialOptions & {
+  providerId: string;
+  nonce?: string;
+};
+
+function parseOAuthCredentialJSON(json: object | string): ParsedOAuthCredentialJSON {
+  let parsed: object;
+
+  if (typeof json === 'string') {
+    try {
+      parsed = JSON.parse(json);
+    } catch {
+      throw new Error(
+        "firebase.auth.OAuthProvider.credentialFromJSON(*) expected 'json' to be a valid JSON string.",
+      );
+    }
+  } else {
+    if (json === null || Array.isArray(json)) {
+      throw new Error(
+        "firebase.auth.OAuthProvider.credentialFromJSON(*) expected 'json' to be an object or string.",
+      );
+    }
+    parsed = json;
+  }
+
+  const credential = parsed as OAuthCredentialJSON;
+  if (typeof credential.providerId !== 'string') {
+    throw new Error(
+      "firebase.auth.OAuthProvider.credentialFromJSON(*) expected 'providerId' to be a string value.",
+    );
+  }
+
+  return credential as ParsedOAuthCredentialJSON;
+}
+
 export default class OAuthProvider {
   /** @internal */
   private providerId: string;
@@ -39,6 +79,16 @@ export default class OAuthProvider {
     return new OAuthProvider('oauth').credential({
       idToken,
       accessToken,
+    });
+  }
+
+  static credentialFromJSON(json: object | string): OAuthCredential {
+    const credential = parseOAuthCredentialJSON(json);
+
+    return new OAuthProvider(credential.providerId).credential({
+      idToken: credential.idToken,
+      accessToken: credential.accessToken,
+      rawNonce: credential.rawNonce ?? credential.nonce,
     });
   }
 

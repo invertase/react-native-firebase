@@ -144,6 +144,12 @@ const oauthCredentialOptions: OAuthCredentialOptions = {
 const oauthCredential: OAuthCredential = new OAuthProvider('apple.com').credential(
   oauthCredentialOptions,
 );
+const oauthCredentialFromJSON: OAuthCredential = OAuthProvider.credentialFromJSON({
+  providerId: 'apple.com',
+  idToken: 'apple-id-token',
+  accessToken: 'apple-access-token',
+  rawNonce: 'nonce',
+});
 const facebookCredential: OAuthCredential = FacebookAuthProvider.credential('facebook-token');
 const githubCredential: OAuthCredential = GithubAuthProvider.credential('github-token');
 const googleCredential: OAuthCredential = GoogleAuthProvider.credential('google-id-token', null);
@@ -162,6 +168,7 @@ console.log(phoneAuthCredential.signInMethod);
 console.log(oauthCredentialOptions.idToken);
 console.log(oauthCredential.providerId);
 console.log(oauthCredential.rawNonce);
+console.log(oauthCredentialFromJSON.accessToken);
 console.log(facebookCredential.accessToken);
 console.log(githubCredential.accessToken);
 console.log(googleCredential.idToken);
