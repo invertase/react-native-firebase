@@ -15,24 +15,35 @@
  *
  */
 
-import type { AuthCredential } from '../types/auth';
+import type { OAuthCredential } from '../types/auth';
 
 const providerId = 'github.com' as const;
 
 export default class GithubAuthProvider {
+  static readonly GITHUB_SIGN_IN_METHOD: 'github.com' = providerId;
+  static readonly PROVIDER_ID: 'github.com' = providerId;
+
   constructor() {
     throw new Error('`new GithubAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static get PROVIDER_ID() {
-    return providerId;
-  }
-
-  static credential(token: string): AuthCredential {
+  static credential(token: string): OAuthCredential {
     return {
       token,
       secret: '',
       providerId,
+      signInMethod: providerId,
+      accessToken: token,
+      toJSON() {
+        return {
+          providerId: this.providerId,
+          signInMethod: this.signInMethod,
+          idToken: this.idToken,
+          accessToken: this.accessToken,
+          rawNonce: this.rawNonce,
+          nonce: this.rawNonce,
+        };
+      },
     };
   }
 }

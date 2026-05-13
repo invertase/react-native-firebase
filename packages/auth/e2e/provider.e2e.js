@@ -430,8 +430,19 @@ describe('auth() -> Providers', function () {
           const token = '123456';
           const credential = GithubAuthProvider.credential(token);
           credential.providerId.should.equal('github.com');
+          credential.signInMethod.should.equal('github.com');
           credential.token.should.equal(token);
           credential.secret.should.equal('');
+          credential.accessToken.should.equal(token);
+          credential.toJSON().accessToken.should.equal(token);
+        });
+      });
+
+      describe('GITHUB_SIGN_IN_METHOD', function () {
+        it('should return github.com', function () {
+          const { GithubAuthProvider } = authModular;
+
+          GithubAuthProvider.GITHUB_SIGN_IN_METHOD.should.equal('github.com');
         });
       });
 
