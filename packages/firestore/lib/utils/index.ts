@@ -20,10 +20,12 @@ import {
   isArray,
   isBoolean,
   isFunction,
+  isOther,
   isObject,
   isString,
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
+import NativeFirebaseError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import type {
   ConverterWithOptionalMethodsInternal,
   ConverterWithOptionalToFirestoreInternal,
@@ -240,6 +242,20 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
   }
 
   return { snapshotListenOptions, callback, onNext, onError };
+}
+
+export function throwIfLiteSdkSnapshotListenerUnsupported(): void {
+  if (!isOther) {
+    return;
+  }
+
+  throw NativeFirebaseError.fromEvent(
+    {
+      code: 'unsupported',
+      message: 'Not supported in the lite SDK.',
+    },
+    'firestore',
+  );
 }
 
 export function validateWithConverter(converter: unknown): void {

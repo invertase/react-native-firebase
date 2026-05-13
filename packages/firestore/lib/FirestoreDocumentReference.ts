@@ -30,6 +30,7 @@ import {
   parseUpdateArgs,
   validateWithConverter,
   applyFirestoreDataConverter,
+  throwIfLiteSdkSnapshotListenerUnsupported,
 } from './utils';
 import { buildNativeMap, provideDocumentReferenceClass } from './utils/serialize';
 
@@ -201,6 +202,8 @@ export default class DocumentReference<
   }
 
   onSnapshot(...args: unknown[]): () => void {
+    throwIfLiteSdkSnapshotListenerUnsupported();
+
     let snapshotListenOptions: { includeMetadataChanges?: boolean; source?: ListenSource };
     let callback: (
       snapshot: DocumentSnapshot<AppModelType, DbModelType> | null,
