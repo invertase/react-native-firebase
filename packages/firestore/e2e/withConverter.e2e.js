@@ -593,47 +593,58 @@ describe('firestore.withConverter', function () {
       });
     });
 
-    it("passes data() serverTimestamps options through converter snapshots", function () {
-      const timestampConverter = {
-        toFirestore() {
-          return {
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          };
-        },
-        fromFirestore(snapshot) {
-          return snapshot.data({ serverTimestamps: 'estimate' });
-        },
-      };
+    [
+      { serverTimestamps: 'estimate', expectTimestamp: true },
+      { serverTimestamps: 'previous', expectTimestamp: false },
+      { serverTimestamps: 'none', expectTimestamp: false },
+    ].forEach(({ serverTimestamps, expectTimestamp }) => {
+      it(`passes data() serverTimestamps '${serverTimestamps}' through converter snapshots`, function () {
+        const timestampConverter = {
+          toFirestore() {
+            return {
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp(),
+            };
+          },
+          fromFirestore(snapshot) {
+            return snapshot.data({ serverTimestamps });
+          },
+        };
 
-      return withTestCollection(async coll => {
-        const ref = doc(coll, 'timestampConverter').withConverter(timestampConverter);
-        await new Promise((resolve, reject) => {
-          const unsubscribe = onSnapshot(
-            ref,
-            { includeMetadataChanges: true },
-            snapshot => {
-              try {
-                if (!snapshot.exists() || !snapshot.metadata.hasPendingWrites) {
-                  return;
+        return withTestCollection(async coll => {
+          const ref = doc(coll).withConverter(timestampConverter);
+          await new Promise((resolve, reject) => {
+            const unsubscribe = onSnapshot(
+              ref,
+              { includeMetadataChanges: true },
+              snapshot => {
+                try {
+                  if (!snapshot.exists() || !snapshot.metadata.hasPendingWrites) {
+                    return;
+                  }
+
+                  const data = snapshot.data();
+                  if (expectTimestamp) {
+                    data.createdAt.should.be.an.instanceOf(Timestamp);
+                    data.updatedAt.should.be.an.instanceOf(Timestamp);
+                  } else {
+                    should.equal(data.createdAt, null);
+                    should.equal(data.updatedAt, null);
+                  }
+                  unsubscribe();
+                  resolve();
+                } catch (error) {
+                  unsubscribe();
+                  reject(error);
                 }
+              },
+              reject,
+            );
 
-                const data = snapshot.data();
-                data.createdAt.should.be.an.instanceOf(Timestamp);
-                data.updatedAt.should.be.an.instanceOf(Timestamp);
-                unsubscribe();
-                resolve();
-              } catch (error) {
-                unsubscribe();
-                reject(error);
-              }
-            },
-            reject,
-          );
-
-          setDoc(ref, {}).catch(error => {
-            unsubscribe();
-            reject(error);
+            setDoc(ref, {}).catch(error => {
+              unsubscribe();
+              reject(error);
+            });
           });
         });
       });
