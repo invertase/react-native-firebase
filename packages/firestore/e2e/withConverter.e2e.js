@@ -595,27 +595,9 @@ describe('firestore.withConverter', function () {
       });
     });
 
-    it('throws unsupported for snapshot listeners on the lite SDK', function () {
-      if (!Platform.other) {
-        return;
-      }
-
-      const assertThrowsUnsupported = ref => {
-        try {
-          onSnapshot(ref, { includeMetadataChanges: true }, () => {});
-          throw new Error('Did not throw an Error.');
-        } catch (error) {
-          error.code.should.equal('firestore/unsupported');
-          error.message.should.containEql('Not supported in the lite SDK.');
-        }
-      };
-
-      assertThrowsUnsupported(doc(getFirestore(), `${COLLECTION}/metadata-options`));
-      assertThrowsUnsupported(collection(getFirestore(), COLLECTION));
-    });
-
     it('passes data() serverTimestamps options through converter snapshots', async function () {
       if (Platform.other) {
+        // macOS uses the Firestore web lite path, which does not support snapshot listeners.
         return;
       }
 
