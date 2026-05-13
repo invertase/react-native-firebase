@@ -46,6 +46,7 @@ import auth, {
   signInWithRedirect,
   signOut,
   SignInMethod,
+  TwitterAuthProvider,
   updateCurrentUser,
   useDeviceLanguage,
   useUserAccessGroup,
@@ -144,6 +145,10 @@ const oauthCredential: OAuthCredential = new OAuthProvider('apple.com').credenti
 );
 const githubCredential: OAuthCredential = GithubAuthProvider.credential('github-token');
 const googleCredential: OAuthCredential = GoogleAuthProvider.credential('google-id-token', null);
+const twitterCredential: OAuthCredential = TwitterAuthProvider.credential(
+  'twitter-token',
+  'twitter-secret',
+);
 
 console.log(authSettings.appVerificationDisabledForTesting);
 console.log(authConfig.apiHost);
@@ -157,6 +162,7 @@ console.log(oauthCredential.providerId);
 console.log(oauthCredential.rawNonce);
 console.log(githubCredential.accessToken);
 console.log(googleCredential.idToken);
+console.log(twitterCredential.accessToken);
 console.log(
   ActionCodeOperation.VERIFY_EMAIL,
   FactorId.PHONE,

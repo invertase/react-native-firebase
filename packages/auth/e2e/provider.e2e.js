@@ -617,8 +617,20 @@ describe('auth() -> Providers', function () {
           const secret = '654321';
           const credential = TwitterAuthProvider.credential(token, secret);
           credential.providerId.should.equal('twitter.com');
+          credential.signInMethod.should.equal('twitter.com');
           credential.token.should.equal(token);
           credential.secret.should.equal(secret);
+          credential.accessToken.should.equal(token);
+          credential.toJSON().accessToken.should.equal(token);
+          credential.toJSON().secret.should.equal(secret);
+        });
+      });
+
+      describe('TWITTER_SIGN_IN_METHOD', function () {
+        it('should return twitter.com', function () {
+          const { TwitterAuthProvider } = authModular;
+
+          TwitterAuthProvider.TWITTER_SIGN_IN_METHOD.should.equal('twitter.com');
         });
       });
 

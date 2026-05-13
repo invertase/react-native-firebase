@@ -15,24 +15,36 @@
  *
  */
 
-import type { AuthCredential } from '../types/auth';
+import type { OAuthCredential } from '../types/auth';
 
 const providerId = 'twitter.com' as const;
 
 export default class TwitterAuthProvider {
+  static readonly TWITTER_SIGN_IN_METHOD: 'twitter.com' = providerId;
+  static readonly PROVIDER_ID: 'twitter.com' = providerId;
+
   constructor() {
     throw new Error('`new TwitterAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static get PROVIDER_ID() {
-    return providerId;
-  }
-
-  static credential(token: string, secret: string): AuthCredential {
+  static credential(token: string, secret: string): OAuthCredential {
     return {
       token,
       secret,
       providerId,
+      signInMethod: providerId,
+      accessToken: token,
+      toJSON() {
+        return {
+          providerId: this.providerId,
+          signInMethod: this.signInMethod,
+          idToken: this.idToken,
+          accessToken: this.accessToken,
+          secret: this.secret,
+          rawNonce: this.rawNonce,
+          nonce: this.rawNonce,
+        };
+      },
     };
   }
 }
