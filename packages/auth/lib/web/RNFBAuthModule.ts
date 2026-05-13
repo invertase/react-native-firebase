@@ -223,7 +223,7 @@ function getAuthCredential(
     case 'facebook.com':
       return FacebookAuthProvider.credential(token);
     case 'google.com':
-      return GoogleAuthProvider.credential(token, secret ?? undefined);
+      return GoogleAuthProvider.credential(token, secret ?? null);
     case 'twitter.com':
       return TwitterAuthProvider.credential(token, secret ?? '');
     case 'github.com':

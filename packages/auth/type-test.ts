@@ -21,6 +21,7 @@ import auth, {
   getCustomAuthDomain,
   getIdTokenResult,
   GithubAuthProvider,
+  GoogleAuthProvider,
   getMultiFactorResolver,
   getRedirectResult,
   initializeAuth,
@@ -142,6 +143,7 @@ const oauthCredential: OAuthCredential = new OAuthProvider('apple.com').credenti
   oauthCredentialOptions,
 );
 const githubCredential: OAuthCredential = GithubAuthProvider.credential('github-token');
+const googleCredential: OAuthCredential = GoogleAuthProvider.credential('google-id-token', null);
 
 console.log(authSettings.appVerificationDisabledForTesting);
 console.log(authConfig.apiHost);
@@ -154,6 +156,7 @@ console.log(oauthCredentialOptions.idToken);
 console.log(oauthCredential.providerId);
 console.log(oauthCredential.rawNonce);
 console.log(githubCredential.accessToken);
+console.log(googleCredential.idToken);
 console.log(
   ActionCodeOperation.VERIFY_EMAIL,
   FactorId.PHONE,

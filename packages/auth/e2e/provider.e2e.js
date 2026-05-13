@@ -474,8 +474,29 @@ describe('auth() -> Providers', function () {
           const secret = '654321';
           const credential = GoogleAuthProvider.credential(token, secret);
           credential.providerId.should.equal('google.com');
+          credential.signInMethod.should.equal('google.com');
           credential.token.should.equal(token);
           credential.secret.should.equal(secret);
+          credential.idToken.should.equal(token);
+          credential.accessToken.should.equal(secret);
+          credential.toJSON().idToken.should.equal(token);
+          credential.toJSON().accessToken.should.equal(secret);
+        });
+
+        it('should require at least one token', function () {
+          const { GoogleAuthProvider } = authModular;
+
+          (() => GoogleAuthProvider.credential(null, null)).should.throw(
+            'At least one of ID token and access token must be non-null',
+          );
+        });
+      });
+
+      describe('GOOGLE_SIGN_IN_METHOD', function () {
+        it('should return google.com', function () {
+          const { GoogleAuthProvider } = authModular;
+
+          GoogleAuthProvider.GOOGLE_SIGN_IN_METHOD.should.equal('google.com');
         });
       });
 

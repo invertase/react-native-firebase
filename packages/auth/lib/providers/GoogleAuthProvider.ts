@@ -15,24 +15,43 @@
  *
  */
 
-import type { AuthCredential } from '../types/auth';
+import type { OAuthCredential } from '../types/auth';
 
 const providerId = 'google.com' as const;
 
 export default class GoogleAuthProvider {
+  static readonly GOOGLE_SIGN_IN_METHOD: 'google.com' = providerId;
+  static readonly PROVIDER_ID: 'google.com' = providerId;
+
   constructor() {
     throw new Error('`new GoogleAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static get PROVIDER_ID() {
-    return providerId;
-  }
+  static credential(idToken?: string | null, accessToken?: string | null): OAuthCredential {
+    if (idToken == null && accessToken == null) {
+      throw new Error('At least one of ID token and access token must be non-null');
+    }
 
-  static credential(token: string, secret?: string): AuthCredential {
+    const token = idToken ?? '';
+    const secret = accessToken ?? '';
+
     return {
       token,
-      secret: secret ?? '',
+      secret,
       providerId,
+      signInMethod: providerId,
+      idToken: idToken ?? undefined,
+      accessToken: accessToken ?? undefined,
+      toJSON() {
+        return {
+          providerId: this.providerId,
+          signInMethod: this.signInMethod,
+          idToken: this.idToken,
+          accessToken: this.accessToken,
+          rawNonce: this.rawNonce,
+          nonce: this.rawNonce,
+        };
+      },
     };
   }
 }

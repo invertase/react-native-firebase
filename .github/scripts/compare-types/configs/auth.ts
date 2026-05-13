@@ -178,7 +178,7 @@ const config: PackageConfig = {
     {
       name: 'GoogleAuthProvider',
       reason:
-        'RN Firebase now exports GoogleAuthProvider from the modular surface, but its native helper class only exposes the credential factory used by RNFB and does not yet mirror the firebase-js-sdk static fields and credentialFromResult/credentialFromError helpers.',
+        'RN Firebase now exposes the firebase-js-sdk static fields and OAuthCredential return type, but its native helper class still omits credentialFromResult/credentialFromError helpers because native provider results do not expose web credential extraction.',
     },
     {
       name: 'OAuthProvider',
