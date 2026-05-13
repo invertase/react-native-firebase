@@ -15,7 +15,10 @@
  *
  */
 
-import type { OAuthCredential } from '../types/auth';
+import type { AuthError, OAuthCredential, UserCredential } from '../types/auth';
+
+// Keep the SDK helper signature name while mapping to RNFB's native auth error type.
+type FirebaseError = AuthError;
 
 const providerId = 'github.com' as const;
 
@@ -45,5 +48,13 @@ export default class GithubAuthProvider {
         };
       },
     };
+  }
+
+  static credentialFromResult(_userCredential: UserCredential): OAuthCredential | null {
+    return null;
+  }
+
+  static credentialFromError(_error: FirebaseError): OAuthCredential | null {
+    return null;
   }
 }

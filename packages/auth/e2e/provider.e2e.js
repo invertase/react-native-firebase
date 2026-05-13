@@ -132,6 +132,13 @@ describe('auth() -> Providers', function () {
         });
       });
 
+      describe('credential extraction helpers', function () {
+        it('should return null for native provider results and errors', function () {
+          should.equal(firebase.auth.GithubAuthProvider.credentialFromResult({}), null);
+          should.equal(firebase.auth.GithubAuthProvider.credentialFromError({}), null);
+        });
+      });
+
       describe('PROVIDER_ID', function () {
         it('should return github.com', function () {
           firebase.auth.GithubAuthProvider.PROVIDER_ID.should.equal('github.com');
@@ -522,6 +529,15 @@ describe('auth() -> Providers', function () {
           credential.secret.should.equal('');
           credential.accessToken.should.equal(token);
           credential.toJSON().accessToken.should.equal(token);
+        });
+      });
+
+      describe('credential extraction helpers', function () {
+        it('should return null for native provider results and errors', function () {
+          const { GithubAuthProvider } = authModular;
+
+          should.equal(GithubAuthProvider.credentialFromResult({}), null);
+          should.equal(GithubAuthProvider.credentialFromError({}), null);
         });
       });
 

@@ -58,6 +58,7 @@ import auth, {
   type ActionCodeSettings,
   type ApplicationVerifier,
   type Auth,
+  type AuthError,
   type AuthProvider,
   type AuthSettings,
   type Config,
@@ -156,6 +157,12 @@ const oauthCredentialFromJSON: OAuthCredential = OAuthProvider.credentialFromJSO
 });
 const facebookCredential: OAuthCredential = FacebookAuthProvider.credential('facebook-token');
 const githubCredential: OAuthCredential = GithubAuthProvider.credential('github-token');
+const githubCredentialFromResult: OAuthCredential | null = GithubAuthProvider.credentialFromResult(
+  {} as UserCredential,
+);
+const githubCredentialFromError: OAuthCredential | null = GithubAuthProvider.credentialFromError(
+  {} as AuthError,
+);
 const googleCredential: OAuthCredential = GoogleAuthProvider.credential('google-id-token', null);
 const twitterCredential: OAuthCredential = TwitterAuthProvider.credential(
   'twitter-token',
@@ -175,6 +182,8 @@ console.log(oauthCredential.rawNonce);
 console.log(oauthCredentialFromJSON.accessToken);
 console.log(facebookCredential.accessToken);
 console.log(githubCredential.accessToken);
+console.log(githubCredentialFromResult?.accessToken);
+console.log(githubCredentialFromError?.accessToken);
 console.log(googleCredential.idToken);
 console.log(twitterCredential.accessToken);
 console.log(
