@@ -94,6 +94,11 @@ export interface OAuthCredential extends AuthCredential {
   toJSON(): object;
 }
 
+export interface PhoneAuthCredential extends AuthCredential {
+  readonly signInMethod: string;
+  toJSON(): object;
+}
+
 export interface OIDCProvider {
   readonly PROVIDER_ID: string;
   credential(oidcSuffix: string, idToken: string): AuthCredential;

@@ -67,6 +67,7 @@ import auth, {
   type PasswordPolicy,
   type PasswordValidationStatus,
   type Persistence,
+  type PhoneAuthCredential,
   type PopupRedirectResolver,
   type Unsubscribe,
   type User,
@@ -127,6 +128,10 @@ const emailAuthCredential: EmailAuthCredential = EmailAuthProvider.credential(
   'email@example.com',
   'password',
 );
+const phoneAuthCredential: PhoneAuthCredential = PhoneAuthProvider.credential(
+  'verification-id',
+  '123456',
+);
 const oauthCredentialOptions: OAuthCredentialOptions = {
   idToken: 'id-token',
   accessToken: 'access-token',
@@ -141,6 +146,8 @@ console.log(authConfig.apiHost);
 console.log(dependencies.persistence);
 console.log(passwordValidationStatus.passwordPolicy.enforcementState);
 console.log(emailAuthCredential.signInMethod);
+console.log(phoneAuthCredential.providerId);
+console.log(phoneAuthCredential.signInMethod);
 console.log(oauthCredentialOptions.idToken);
 console.log(oauthCredential.providerId);
 console.log(oauthCredential.rawNonce);

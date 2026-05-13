@@ -15,7 +15,7 @@
  *
  */
 
-import type { AuthCredential, MultiFactorAssertion } from './types/auth';
+import type { PhoneAuthCredential, PhoneMultiFactorAssertion } from './types/auth';
 
 export default class PhoneMultiFactorGenerator {
   static FACTOR_ID = 'phone';
@@ -26,7 +26,7 @@ export default class PhoneMultiFactorGenerator {
     );
   }
 
-  static assertion(credential: AuthCredential): MultiFactorAssertion {
+  static assertion(credential: PhoneAuthCredential): PhoneMultiFactorAssertion {
     // There is no logic here, we mainly do this for API compatibility
     // (following the Web API).
     const { token, secret } = credential;
@@ -34,6 +34,6 @@ export default class PhoneMultiFactorGenerator {
       token,
       secret,
       factorId: 'phone',
-    } as MultiFactorAssertion;
+    } as PhoneMultiFactorAssertion;
   }
 }

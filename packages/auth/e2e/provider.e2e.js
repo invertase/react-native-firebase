@@ -541,8 +541,19 @@ describe('auth() -> Providers', function () {
           const code = '654321';
           const credential = PhoneAuthProvider.credential(verificationId, code);
           credential.providerId.should.equal('phone');
+          credential.signInMethod.should.equal('phone');
           credential.token.should.equal(verificationId);
           credential.secret.should.equal(code);
+          credential.toJSON().verificationId.should.equal(verificationId);
+          credential.toJSON().verificationCode.should.equal(code);
+        });
+      });
+
+      describe('PHONE_SIGN_IN_METHOD', function () {
+        it('should return phone', function () {
+          const { PhoneAuthProvider } = authModular;
+
+          PhoneAuthProvider.PHONE_SIGN_IN_METHOD.should.equal('phone');
         });
       });
 

@@ -58,11 +58,6 @@ const config: PackageConfig = {
         'The firebase-js-sdk persistence object is not exported by RN Firebase because auth state is managed by the underlying native SDKs.',
     },
     {
-      name: 'PhoneAuthCredential',
-      reason:
-        'RN Firebase does not yet expose the firebase-js-sdk PhoneAuthCredential class as part of the modular public surface.',
-    },
-    {
       name: 'prodErrorMap',
       reason:
         'firebase-js-sdk web error-map helper. RN Firebase does not expose the SDK error-map selection API.',
@@ -171,11 +166,6 @@ const config: PackageConfig = {
         'Native provider flows resolve immediately with a UserCredential instead of following the browser redirect contract used by the firebase-js-sdk.',
     },
     {
-      name: 'updatePhoneNumber',
-      reason:
-        'RN Firebase accepts the broader AuthCredential surface, while the firebase-js-sdk narrows this parameter to PhoneAuthCredential.',
-    },
-    {
       name: 'FacebookAuthProvider',
       reason:
         'RN Firebase now exports FacebookAuthProvider from the modular surface, but its native helper class only exposes the credential factory used by RNFB and does not yet mirror the firebase-js-sdk static fields and credentialFromResult/credentialFromError helpers.',
@@ -199,11 +189,6 @@ const config: PackageConfig = {
       name: 'PhoneAuthProvider',
       reason:
         'RN Firebase now exports PhoneAuthProvider from the modular surface, but the native helper class still exposes a reduced static API and looser signatures than the firebase-js-sdk PhoneAuthProvider class.',
-    },
-    {
-      name: 'PhoneMultiFactorGenerator',
-      reason:
-        'RN Firebase now exports PhoneMultiFactorGenerator from the modular surface, but its helper class still returns RNFB credential/assertion shapes rather than the firebase-js-sdk PhoneMultiFactorGenerator static API exactly.',
     },
     {
       name: 'TotpMultiFactorGenerator',

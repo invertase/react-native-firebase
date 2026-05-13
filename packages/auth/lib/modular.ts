@@ -59,8 +59,9 @@ import type {
   NextOrObserver,
   PasswordValidationStatus,
   Persistence,
-  PhoneMultiFactorInfo,
+  PhoneAuthCredential,
   PhoneAuthListener,
+  PhoneMultiFactorInfo,
   PopupRedirectResolver,
   TotpMultiFactorInfo,
   Unsubscribe,
@@ -789,7 +790,7 @@ export function updatePassword(user: User, newPassword: string): Promise<void> {
   return callUserMethod(userInternal, userInternal.updatePassword, newPassword);
 }
 
-export function updatePhoneNumber(user: User, credential: AuthCredential): Promise<void> {
+export function updatePhoneNumber(user: User, credential: PhoneAuthCredential): Promise<void> {
   const userInternal = getUserInternal(user);
   return callUserMethod(userInternal, userInternal.updatePhoneNumber, credential);
 }

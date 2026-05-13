@@ -17,8 +17,8 @@
 
 import type {
   ApplicationVerifier,
-  AuthCredential,
   MultiFactorInfo,
+  PhoneAuthCredential,
   PhoneMultiFactorEnrollInfoOptions,
   PhoneMultiFactorSignInInfoOptions,
 } from '../types/auth';
@@ -56,6 +56,11 @@ function isPhoneMultiFactorEnrollOptions(
 }
 
 export default class PhoneAuthProvider {
+  static readonly PHONE_SIGN_IN_METHOD: 'phone' = providerId;
+  static readonly PROVIDER_ID: 'phone' = providerId;
+
+  readonly providerId = providerId;
+
   private readonly _auth: PhoneAuthProviderAuth;
 
   constructor(auth: PhoneAuthProviderAuth) {
@@ -65,15 +70,20 @@ export default class PhoneAuthProvider {
     this._auth = auth;
   }
 
-  static get PROVIDER_ID() {
-    return providerId;
-  }
-
-  static credential(verificationId: string, code: string): AuthCredential {
+  static credential(verificationId: string, code: string): PhoneAuthCredential {
     return {
       token: verificationId,
       secret: code,
       providerId,
+      signInMethod: providerId,
+      toJSON() {
+        return {
+          verificationId: this.token,
+          verificationCode: this.secret,
+          providerId: this.providerId,
+          signInMethod: this.signInMethod,
+        };
+      },
     };
   }
 
