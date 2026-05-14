@@ -18,6 +18,7 @@ import appCheckConfig from '../configs/app-check';
 import firestoreConfig from '../configs/firestore';
 import firestorePipelinesConfig from '../configs/firestore-pipelines';
 import remoteConfigConfig from '../configs/remote-config';
+import perfConfig from '../configs/perf-config';
 
 const SCRIPT_DIR = path.resolve(__dirname, '..');
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
@@ -247,6 +248,14 @@ export const packages: PackageEntry[] = [
     ],
     config: firestorePipelinesConfig,
   })),
+  {
+    name: 'perf',
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('performance')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('perf'), 'types', 'perf.d.ts'),
+      path.join(rnDist('perf'), 'modular.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [],
+    config: perfConfig,
+  },
 ];
-
-
