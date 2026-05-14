@@ -156,6 +156,10 @@ const oauthCredentialFromJSON: OAuthCredential = OAuthProvider.credentialFromJSO
   rawNonce: 'nonce',
 });
 const facebookCredential: OAuthCredential = FacebookAuthProvider.credential('facebook-token');
+const facebookCredentialFromResult: OAuthCredential | null =
+  FacebookAuthProvider.credentialFromResult({} as UserCredential);
+const facebookCredentialFromError: OAuthCredential | null =
+  FacebookAuthProvider.credentialFromError({} as AuthError);
 const githubCredential: OAuthCredential = GithubAuthProvider.credential('github-token');
 const githubCredentialFromResult: OAuthCredential | null = GithubAuthProvider.credentialFromResult(
   {} as UserCredential,
@@ -181,6 +185,8 @@ console.log(oauthCredential.providerId);
 console.log(oauthCredential.rawNonce);
 console.log(oauthCredentialFromJSON.accessToken);
 console.log(facebookCredential.accessToken);
+console.log(facebookCredentialFromResult?.accessToken);
+console.log(facebookCredentialFromError?.accessToken);
 console.log(githubCredential.accessToken);
 console.log(githubCredentialFromResult?.accessToken);
 console.log(githubCredentialFromError?.accessToken);

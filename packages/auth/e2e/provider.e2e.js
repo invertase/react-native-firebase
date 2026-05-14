@@ -100,6 +100,13 @@ describe('auth() -> Providers', function () {
         });
       });
 
+      describe('credential extraction helpers', function () {
+        it('should return null for native provider results and errors', function () {
+          should.equal(firebase.auth.FacebookAuthProvider.credentialFromResult({}), null);
+          should.equal(firebase.auth.FacebookAuthProvider.credentialFromError({}), null);
+        });
+      });
+
       describe('PROVIDER_ID', function () {
         it('should return facebook.com', function () {
           firebase.auth.FacebookAuthProvider.PROVIDER_ID.should.equal('facebook.com');
@@ -486,6 +493,15 @@ describe('auth() -> Providers', function () {
           credential.secret.should.equal(nonce);
           credential.rawNonce.should.equal(nonce);
           credential.toJSON().nonce.should.equal(nonce);
+        });
+      });
+
+      describe('credential extraction helpers', function () {
+        it('should return null for native provider results and errors', function () {
+          const { FacebookAuthProvider } = authModular;
+
+          should.equal(FacebookAuthProvider.credentialFromResult({}), null);
+          should.equal(FacebookAuthProvider.credentialFromError({}), null);
         });
       });
 

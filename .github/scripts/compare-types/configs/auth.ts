@@ -166,11 +166,6 @@ const config: PackageConfig = {
         'Native provider flows resolve immediately with a UserCredential instead of following the browser redirect contract used by the firebase-js-sdk.',
     },
     {
-      name: 'FacebookAuthProvider',
-      reason:
-        'RN Firebase now exposes the firebase-js-sdk static fields and OAuthCredential return type, but its native helper class still omits credentialFromResult/credentialFromError helpers because native provider results do not expose web credential extraction.',
-    },
-    {
       name: 'GoogleAuthProvider',
       reason:
         'RN Firebase now exposes the firebase-js-sdk static fields and OAuthCredential return type, but its native helper class still omits credentialFromResult/credentialFromError helpers because native provider results do not expose web credential extraction.',
