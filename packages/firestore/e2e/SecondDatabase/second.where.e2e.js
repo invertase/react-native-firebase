@@ -21,6 +21,127 @@ const COLLECTION = 'second-database';
 const SECOND_DATABASE_ID = 'second-rnfb';
 
 describe('Second Database', function () {
+  describe.only('getFirestore (same default app, multiple databaseIds)', function () {
+    describe('modular', function () {
+      beforeEach(async function () {
+        await wipe(false, '(default)');
+        await wipe(false, SECOND_DATABASE_ID);
+      });
+
+      it('returns distinct Firestore instances per databaseId (customUrlOrRegion)', function () {
+        const { getApp } = modular;
+        const { getFirestore } = firestoreModular;
+        const app = getApp();
+        const dbDefault = getFirestore(app, '(default)');
+        const dbSecond = getFirestore(app, SECOND_DATABASE_ID);
+
+        dbDefault.app.name.should.equal(dbSecond.app.name);
+        dbDefault.customUrlOrRegion.should.equal('(default)');
+        dbSecond.customUrlOrRegion.should.equal(SECOND_DATABASE_ID);
+      });
+
+      // Probes Android native cache in UniversalFirebaseFirestoreCommon (must key by app:databaseId).
+      // Uses the same emulator DB ids and wipe pattern as the rest of this directory.
+      it('isolates reads and writes per databaseId on Android', async function () {
+        if (!Platform.android) {
+          return;
+        }
+        const { getApp } = modular;
+        const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
+
+        const app = getApp();
+        const dbDefault = getFirestore(app, '(default)');
+        const dbSecond = getFirestore(app, SECOND_DATABASE_ID);
+
+        const pathDefault = 'firestore/multiDbIdentityProbe';
+        const pathSecond = `${COLLECTION}/multiDbIdentityProbe`;
+
+        await setDoc(doc(dbDefault, pathDefault), { marker: 'default-db' });
+        await setDoc(doc(dbSecond, pathSecond), { marker: 'second-db' });
+
+        (await getDoc(doc(dbDefault, pathDefault))).data().marker.should.eql('default-db');
+        (await getDoc(doc(dbSecond, pathSecond))).data().marker.should.eql('second-db');
+
+        await deleteDoc(doc(dbDefault, pathDefault));
+        await deleteDoc(doc(dbSecond, pathSecond));
+      });
+
+      // The broken map never stores entries under the composite firestoreKey, so CACHE_HIT on that key
+      // does not happen from getFirestoreForApp alone — simple read/write often still goes through
+      // FirebaseFirestore.getInstance and looks correct. These cases stress other paths: non-thread-safe
+      // WeakHashMap under parallel native calls, and terminate() which tries to remove(firestoreKey) but
+      // never matches entries stored under appName only.
+      it('stress: many parallel writes to both databases (Android)', async function () {
+        if (!Platform.android) {
+          return;
+        }
+        const { getApp } = modular;
+        const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
+        const app = getApp();
+        const dbDefault = getFirestore(app, '(default)');
+        const dbSecond = getFirestore(app, SECOND_DATABASE_ID);
+
+        // Two path segments each: rules allow `firestore/{document=**}` and
+        // `second-database/{document=**}` when database is second-rnfb. Deeper paths like
+        // `second-database/cacheStress/0` are not valid document paths (odd segment count).
+        const n = 25;
+        const batch = [];
+        for (let i = 0; i < n; i++) {
+          batch.push(
+            setDoc(doc(dbDefault, `firestore/cacheStressDoc_${i}`), { db: 'default', i }),
+            setDoc(doc(dbSecond, `${COLLECTION}/cacheStressDoc_${i}`), { db: 'second', i }),
+          );
+        }
+        await Promise.all(batch);
+
+        for (let i = 0; i < n; i++) {
+          (await getDoc(doc(dbDefault, `firestore/cacheStressDoc_${i}`))).data().db.should.eql(
+            'default',
+          );
+          (await getDoc(doc(dbSecond, `${COLLECTION}/cacheStressDoc_${i}`))).data().db.should.eql(
+            'second',
+          );
+        }
+
+        for (let i = 0; i < n; i++) {
+          await deleteDoc(doc(dbDefault, `firestore/cacheStressDoc_${i}`));
+          await deleteDoc(doc(dbSecond, `${COLLECTION}/cacheStressDoc_${i}`));
+        }
+      });
+
+      it('terminate then reconnect both databases still isolates data (Android)', async function () {
+        if (!Platform.android) {
+          return;
+        }
+        const { getApp } = modular;
+        const { getFirestore, doc, setDoc, getDoc, deleteDoc, terminate } = firestoreModular;
+
+        const app = getApp();
+        let dbDefault = getFirestore(app, '(default)');
+        let dbSecond = getFirestore(app, SECOND_DATABASE_ID);
+
+        await terminate(dbDefault);
+        await terminate(dbSecond);
+
+        dbDefault = getFirestore(app, '(default)');
+        dbSecond = getFirestore(app, SECOND_DATABASE_ID);
+
+        await setDoc(doc(dbDefault, 'firestore/afterTerminateProbe'), { tag: 'default' });
+        await setDoc(doc(dbSecond, `${COLLECTION}/afterTerminateProbe`), { tag: 'second' });
+
+        (await getDoc(doc(dbDefault, 'firestore/afterTerminateProbe'))).data().tag.should.eql(
+          'default',
+        );
+        (await getDoc(doc(dbSecond, `${COLLECTION}/afterTerminateProbe`))).data().tag.should.eql(
+          'second',
+        );
+
+        await deleteDoc(doc(dbDefault, 'firestore/afterTerminateProbe'));
+        await deleteDoc(doc(dbSecond, `${COLLECTION}/afterTerminateProbe`));
+      });
+    });
+  });
+
   describe('firestore().collection().where()', function () {
     describe('v8 compatibility', function () {
       let firestore;

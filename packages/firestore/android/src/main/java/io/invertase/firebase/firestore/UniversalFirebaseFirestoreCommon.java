@@ -37,11 +37,35 @@ public class UniversalFirebaseFirestoreCommon {
 
   static FirebaseFirestore getFirestoreForApp(String appName, String databaseId) {
     String firestoreKey = createFirestoreKey(appName, databaseId);
-    WeakReference<FirebaseFirestore> cachedInstance = instanceCache.get(firestoreKey);
+    System.err.println(
+        "RNFB_FIRESTORE_CACHE_TRACE ENTER thread="
+            + Thread.currentThread().getName()
+            + " appName="
+            + appName
+            + " databaseId="
+            + databaseId
+            + " lookupKey(firestoreKey)="
+            + firestoreKey
+            + " mapSize="
+            + instanceCache.size());
 
+    WeakReference<FirebaseFirestore> cachedInstance = instanceCache.get(firestoreKey);
     if (cachedInstance != null) {
-      return cachedInstance.get();
+      FirebaseFirestore resolved = cachedInstance.get();
+      System.err.println(
+          "RNFB_FIRESTORE_CACHE_TRACE CACHE_HIT lookupKey="
+              + firestoreKey
+              + " weakRefNonNull=true resolvedNonNull="
+              + (resolved != null)
+              + " identityHash="
+              + (resolved != null ? System.identityHashCode(resolved) : -1));
+      return resolved;
     }
+
+    System.err.println(
+        "RNFB_FIRESTORE_CACHE_TRACE CACHE_MISS lookupKey="
+            + firestoreKey
+            + " (no entry for composite key; note put() uses appName only, not firestoreKey)");
 
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirestoreChannel.setClientLanguage("gl-rn/" + ReactNativeFirebaseVersion.VERSION);
@@ -50,7 +74,25 @@ public class UniversalFirebaseFirestoreCommon {
 
     setFirestoreSettings(instance, firestoreKey);
 
+    System.err.println(
+        "RNFB_FIRESTORE_CACHE_TRACE PUT keyUsedForPut=APP_NAME_ONLY("
+            + appName
+            + ") NOT firestoreKey("
+            + firestoreKey
+            + ") newInstanceIdentityHash="
+            + System.identityHashCode(instance));
+
     instanceCache.put(appName, new WeakReference<FirebaseFirestore>(instance));
+
+    WeakReference<FirebaseFirestore> wrongKeyProbe = instanceCache.get(firestoreKey);
+    WeakReference<FirebaseFirestore> appNameProbe = instanceCache.get(appName);
+    System.err.println(
+        "RNFB_FIRESTORE_CACHE_TRACE POST_PUT get(firestoreKey)="
+            + (wrongKeyProbe != null)
+            + " get(appName)="
+            + (appNameProbe != null)
+            + " mapSize="
+            + instanceCache.size());
 
     return instance;
   }
