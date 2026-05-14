@@ -17,23 +17,33 @@
 
 import { hasOwnProperty, isString } from '@react-native-firebase/app/dist/module/common';
 
+import type { RNFBPerfNativeModule } from './types/internal';
+
 let id = 0;
 
 export default class MetricWithAttributes {
-  constructor(native) {
+  protected readonly native: RNFBPerfNativeModule;
+  protected readonly _id: number;
+  protected _attributes: Record<string, string>;
+
+  constructor(native: RNFBPerfNativeModule) {
     this._id = id++;
     this.native = native;
     this._attributes = {};
   }
 
-  getAttribute(attribute) {
+  getAttribute(attribute: string): string | null {
     if (!isString(attribute)) {
       throw new Error("firebase.perf.*.getAttribute(*) 'attribute' must be a string.");
     }
-    return this._attributes[attribute] || null;
+    return hasOwnProperty(this._attributes, attribute) ? this._attributes[attribute]! : null;
   }
 
-  putAttribute(attribute, value) {
+  getAttributes(): Record<string, string> {
+    return Object.assign({}, this._attributes);
+  }
+
+  putAttribute(attribute: string, value: string): void {
     // TODO(VALIDATION): attribute: no leading or trailing whitespace, no leading underscore '_'
     if (!isString(attribute) || attribute.length > 40) {
       throw new Error(

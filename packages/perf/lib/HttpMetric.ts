@@ -16,10 +16,23 @@
  */
 
 import { isNull, isNumber, isString } from '@react-native-firebase/app/dist/module/common';
+
 import MetricWithAttributes from './MetricWithAttributes';
 
+import type { RNFBPerfHttpMetricData, RNFBPerfNativeModule } from './types/internal';
+import type { HttpMethod } from './types/perf';
+
 export default class HttpMetric extends MetricWithAttributes {
-  constructor(native, url, httpMethod) {
+  private readonly _url: string;
+  private readonly _httpMethod: HttpMethod;
+  private _httpResponseCode: number | null;
+  private _requestPayloadSize: number | null;
+  private _responsePayloadSize: number | null;
+  private _responseContentType: string | null;
+  private _started: boolean;
+  private _stopped: boolean;
+
+  constructor(native: RNFBPerfNativeModule, url: string, httpMethod: HttpMethod) {
     super(native);
 
     this._url = url;
@@ -34,7 +47,7 @@ export default class HttpMetric extends MetricWithAttributes {
     this._stopped = false;
   }
 
-  setHttpResponseCode(code) {
+  setHttpResponseCode(code: number | null): void {
     if (!isNumber(code) && !isNull(code)) {
       throw new Error(
         "firebase.perf.HttpMetric.setHttpResponseCode(*) 'code' must be a number or null.",
@@ -44,7 +57,7 @@ export default class HttpMetric extends MetricWithAttributes {
     this._httpResponseCode = code;
   }
 
-  setRequestPayloadSize(bytes) {
+  setRequestPayloadSize(bytes: number | null): void {
     if (!isNumber(bytes) && !isNull(bytes)) {
       throw new Error(
         "firebase.perf.HttpMetric.setRequestPayloadSize(*) 'bytes' must be a number or null.",
@@ -54,7 +67,7 @@ export default class HttpMetric extends MetricWithAttributes {
     this._requestPayloadSize = bytes;
   }
 
-  setResponsePayloadSize(bytes) {
+  setResponsePayloadSize(bytes: number | null): void {
     if (!isNumber(bytes) && !isNull(bytes)) {
       throw new Error(
         "firebase.perf.HttpMetric.setResponsePayloadSize(*) 'bytes' must be a number or null.",
@@ -64,7 +77,7 @@ export default class HttpMetric extends MetricWithAttributes {
     this._responsePayloadSize = bytes;
   }
 
-  setResponseContentType(contentType) {
+  setResponseContentType(contentType: string | null): void {
     if (!isString(contentType) && !isNull(contentType)) {
       throw new Error(
         "firebase.perf.HttpMetric.setResponseContentType(*) 'contentType' must be a string or null.",
@@ -74,7 +87,7 @@ export default class HttpMetric extends MetricWithAttributes {
     this._responseContentType = contentType;
   }
 
-  start() {
+  start(): Promise<null> {
     if (this._started) {
       return Promise.resolve(null);
     }
@@ -83,13 +96,13 @@ export default class HttpMetric extends MetricWithAttributes {
     return this.native.startHttpMetric(this._id, this._url, this._httpMethod);
   }
 
-  stop() {
+  stop(): Promise<null> {
     if (this._stopped) {
       return Promise.resolve(null);
     }
     this._stopped = true;
 
-    const metricData = {
+    const metricData: RNFBPerfHttpMetricData = {
       attributes: Object.assign({}, this._attributes),
     };
 
