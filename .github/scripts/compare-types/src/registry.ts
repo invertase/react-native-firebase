@@ -19,6 +19,8 @@ import firestoreConfig from '../configs/firestore';
 import firestorePipelinesConfig from '../configs/firestore-pipelines';
 import remoteConfigConfig from '../configs/remote-config';
 import authConfig from '../configs/auth';
+import installationsConfig from '../configs/installations';
+import perfConfig from '../configs/perf-config';
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
 
@@ -232,6 +234,18 @@ export const packages: PackageEntry[] = [
     config: appCheckConfig,
   },
   {
+    name: 'installations',
+    firebaseSdkTypesPaths: [
+      requiredFirebaseTypes('installations'),
+    ],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('installations'), 'types', 'installations.d.ts'),
+      path.join(rnDist('installations'), 'modular.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [path.join(rnDist('installations'), 'types', 'internal.d.ts')],
+    config: installationsConfig,
+  },
+  {
     name: 'firestore',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('firestore')],
     rnFirebaseModularFiles: [
@@ -282,4 +296,14 @@ export const packages: PackageEntry[] = [
     ],
     config: firestorePipelinesConfig,
   })),
+  {
+    name: 'perf',
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('performance')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('perf'), 'types', 'perf.d.ts'),
+      path.join(rnDist('perf'), 'modular.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [],
+    config: perfConfig,
+  },
 ];

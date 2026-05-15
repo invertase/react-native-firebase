@@ -111,9 +111,8 @@ console.log(modularPerf1.app.name);
 const modularPerf2 = getPerformance(firebase.app());
 console.log(modularPerf2.app.name);
 
-initializePerformance(firebase.app(), { dataCollectionEnabled: true }).then(initializedPerf => {
-  console.log(initializedPerf.app.name);
-});
+const initializedPerf = initializePerformance(firebase.app(), { dataCollectionEnabled: true });
+console.log(initializedPerf.app.name);
 
 const modularTrace = trace(modularPerf1, 'modular-trace');
 modularTrace.putAttribute('modular-key', 'modular-value');

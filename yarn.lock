@@ -6120,6 +6120,8 @@ __metadata:
 "@react-native-firebase/installations@npm:24.0.0, @react-native-firebase/installations@workspace:packages/installations":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/installations@workspace:packages/installations"
+  dependencies:
+    react-native-builder-bob: "npm:^0.40.13"
   peerDependencies:
     "@react-native-firebase/app": 24.0.0
   languageName: unknown
@@ -6154,6 +6156,7 @@ __metadata:
   resolution: "@react-native-firebase/perf@workspace:packages/perf"
   dependencies:
     expo: "npm:^55.0.18"
+    react-native-builder-bob: "npm:^0.40.13"
   peerDependencies:
     "@react-native-firebase/app": 24.0.0
     expo: ">=47.0.0"

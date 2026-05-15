@@ -21,21 +21,22 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/dist/module/internal';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
-import version from './version';
+import { version } from './version';
+import type { FirebaseInstallationsTypes } from './types/namespaced';
 
 const statics = {};
 
 const namespace = 'installations';
-
 const nativeModuleName = 'RNFBInstallationsModule';
 
-class FirebaseInstallationsModule extends FirebaseModule {
-  getId() {
+class FirebaseInstallationsModule extends FirebaseModule<typeof nativeModuleName> {
+  getId(): Promise<string> {
     return this.native.getId();
   }
 
-  getToken(forceRefresh) {
+  getToken(forceRefresh?: boolean): Promise<string> {
     if (!forceRefresh) {
       return this.native.getToken(false);
     } else {
@@ -43,11 +44,11 @@ class FirebaseInstallationsModule extends FirebaseModule {
     }
   }
 
-  delete() {
+  delete(): Promise<void> {
     return this.native.delete();
   }
 
-  onIdChange() {
+  onIdChange(): () => void {
     if (isIOS) {
       return () => {};
     }
@@ -62,7 +63,7 @@ export const SDK_VERSION = version;
 
 // import installations from '@react-native-firebase/installations';
 // installations().X(...);
-export default createModuleNamespace({
+const installationsNamespace = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -73,9 +74,27 @@ export default createModuleNamespace({
   ModuleClass: FirebaseInstallationsModule,
 });
 
+type InstallationsNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseInstallationsTypes.Module,
+  FirebaseInstallationsTypes.Statics
+> & {
+  installations: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseInstallationsTypes.Module,
+    FirebaseInstallationsTypes.Statics
+  >;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+export default installationsNamespace as unknown as InstallationsNamespace;
+
 // import installations, { firebase } from '@react-native-firebase/installations';
 // installations().X(...);
 // firebase.installations().X(...);
-export const firebase = getFirebaseRoot();
-
-export * from './modular';
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'installations',
+    FirebaseInstallationsTypes.Module,
+    FirebaseInstallationsTypes.Statics,
+    false
+  >;
