@@ -178,6 +178,13 @@ describe('auth() -> Providers', function () {
           firebase.auth.GoogleAuthProvider.PROVIDER_ID.should.equal('google.com');
         });
       });
+
+      describe('credential extraction helpers', function () {
+        it('should return null for native provider results and errors', function () {
+          should.equal(firebase.auth.GoogleAuthProvider.credentialFromResult({}), null);
+          should.equal(firebase.auth.GoogleAuthProvider.credentialFromError({}), null);
+        });
+      });
     });
 
     describe('OAuthProvider', function () {
@@ -624,6 +631,15 @@ describe('auth() -> Providers', function () {
           const { GoogleAuthProvider } = authModular;
 
           GoogleAuthProvider.PROVIDER_ID.should.equal('google.com');
+        });
+      });
+
+      describe('credential extraction helpers', function () {
+        it('should return null for native provider results and errors', function () {
+          const { GoogleAuthProvider } = authModular;
+
+          should.equal(GoogleAuthProvider.credentialFromResult({}), null);
+          should.equal(GoogleAuthProvider.credentialFromError({}), null);
         });
       });
     });

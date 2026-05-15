@@ -168,6 +168,12 @@ const githubCredentialFromError: OAuthCredential | null = GithubAuthProvider.cre
   {} as AuthError,
 );
 const googleCredential: OAuthCredential = GoogleAuthProvider.credential('google-id-token', null);
+const googleCredentialFromResult: OAuthCredential | null = GoogleAuthProvider.credentialFromResult(
+  {} as UserCredential,
+);
+const googleCredentialFromError: OAuthCredential | null = GoogleAuthProvider.credentialFromError(
+  {} as AuthError,
+);
 const twitterCredential: OAuthCredential = TwitterAuthProvider.credential(
   'twitter-token',
   'twitter-secret',
@@ -191,6 +197,8 @@ console.log(githubCredential.accessToken);
 console.log(githubCredentialFromResult?.accessToken);
 console.log(githubCredentialFromError?.accessToken);
 console.log(googleCredential.idToken);
+console.log(googleCredentialFromResult?.idToken);
+console.log(googleCredentialFromError?.idToken);
 console.log(twitterCredential.accessToken);
 console.log(
   ActionCodeOperation.VERIFY_EMAIL,
