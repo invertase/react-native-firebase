@@ -44,6 +44,12 @@ Pod::Spec.new do |s|
     add_rncore_dependency(s)
   end
 
+  # RNFB public headers re-export non-modular <React/...> imports. Required so
+  # the framework module validates when consumers build with use_frameworks!.
+  s.pod_target_xcconfig = {
+    "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
+  }
+
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
     firebase_sdk_version = $FirebaseSDKVersion
