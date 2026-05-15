@@ -39,6 +39,12 @@ Pod::Spec.new do |s|
     s.dependency "React-Core"
   end
 
+  # Wire up prebuilt React-Core (RN 0.83+, default on 0.84+) so the legacy
+  # <React/...> header imports resolve when RCT_USE_PREBUILT_RNCORE=1.
+  if defined?(add_rncore_dependency)
+    add_rncore_dependency(s)
+  end
+
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
     firebase_sdk_version = $FirebaseSDKVersion
