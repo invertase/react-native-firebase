@@ -18,6 +18,7 @@ import appCheckConfig from '../configs/app-check';
 import firestoreConfig from '../configs/firestore';
 import firestorePipelinesConfig from '../configs/firestore-pipelines';
 import remoteConfigConfig from '../configs/remote-config';
+import installationsConfig from '../configs/installations';
 import perfConfig from '../configs/perf-config';
 
 const SCRIPT_DIR = path.resolve(__dirname, '..');
@@ -196,6 +197,18 @@ export const packages: PackageEntry[] = [
       path.join(rnDist('app-check'), 'types', 'internal.d.ts'),
     ],
     config: appCheckConfig,
+  },
+  {
+    name: 'installations',
+    firebaseSdkTypesPaths: [
+      requiredFirebaseTypes('installations'),
+    ],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('installations'), 'types', 'installations.d.ts'),
+      path.join(rnDist('installations'), 'modular.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [path.join(rnDist('installations'), 'types', 'internal.d.ts')],
+    config: installationsConfig,
   },
   {
     name: 'firestore',
