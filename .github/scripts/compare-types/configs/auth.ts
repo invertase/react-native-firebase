@@ -185,11 +185,6 @@ const config: PackageConfig = {
       reason:
         'RN Firebase now exports TotpSecret from the modular surface, but the native-backed helper class exposes a reduced field set plus async/native helper methods that do not match the firebase-js-sdk TotpSecret class shape.',
     },
-    {
-      name: 'TwitterAuthProvider',
-      reason:
-        'RN Firebase now exposes the firebase-js-sdk static fields and OAuthCredential return type, but its native helper class still omits credentialFromResult/credentialFromError helpers because native provider results do not expose web credential extraction.',
-    },
   ],
 };
 

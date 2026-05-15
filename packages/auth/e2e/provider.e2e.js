@@ -344,6 +344,13 @@ describe('auth() -> Providers', function () {
           firebase.auth.TwitterAuthProvider.PROVIDER_ID.should.equal('twitter.com');
         });
       });
+
+      describe('credential extraction helpers', function () {
+        it('should return null for native provider results and errors', function () {
+          should.equal(firebase.auth.TwitterAuthProvider.credentialFromResult({}), null);
+          should.equal(firebase.auth.TwitterAuthProvider.credentialFromError({}), null);
+        });
+      });
     });
 
     describe('OIDCAuthProvider', function () {
@@ -847,6 +854,15 @@ describe('auth() -> Providers', function () {
           const { TwitterAuthProvider } = authModular;
 
           TwitterAuthProvider.PROVIDER_ID.should.equal('twitter.com');
+        });
+      });
+
+      describe('credential extraction helpers', function () {
+        it('should return null for native provider results and errors', function () {
+          const { TwitterAuthProvider } = authModular;
+
+          should.equal(TwitterAuthProvider.credentialFromResult({}), null);
+          should.equal(TwitterAuthProvider.credentialFromError({}), null);
         });
       });
     });

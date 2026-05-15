@@ -178,6 +178,11 @@ const twitterCredential: OAuthCredential = TwitterAuthProvider.credential(
   'twitter-token',
   'twitter-secret',
 );
+const twitterCredentialFromResult: OAuthCredential | null =
+  TwitterAuthProvider.credentialFromResult({} as UserCredential);
+const twitterCredentialFromError: OAuthCredential | null = TwitterAuthProvider.credentialFromError(
+  {} as AuthError,
+);
 
 console.log(authSettings.appVerificationDisabledForTesting);
 console.log(authConfig.apiHost);
@@ -200,6 +205,8 @@ console.log(googleCredential.idToken);
 console.log(googleCredentialFromResult?.idToken);
 console.log(googleCredentialFromError?.idToken);
 console.log(twitterCredential.accessToken);
+console.log(twitterCredentialFromResult?.accessToken);
+console.log(twitterCredentialFromError?.accessToken);
 console.log(
   ActionCodeOperation.VERIFY_EMAIL,
   FactorId.PHONE,
