@@ -17,6 +17,7 @@
 
 #import <Firebase/Firebase.h>
 #import <RNFBApp/RNFBSharedUtils.h>
+#import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 

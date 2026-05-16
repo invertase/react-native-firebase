@@ -18,6 +18,7 @@
 #include <Foundation/Foundation.h>
 #include <sys/sysctl.h>
 
+#import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
