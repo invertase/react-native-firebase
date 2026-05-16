@@ -29,13 +29,17 @@ static NSString *const keyUid = @"uid";
 static NSString *const keyUser = @"user";
 static NSString *const keyEmail = @"email";
 static NSString *const keyAndroid = @"android";
+static NSString *const keyIdToken = @"idToken";
+static NSString *const keySecret = @"secret";
 static NSString *const keyProfile = @"profile";
 static NSString *const keyNewUser = @"isNewUser";
 static NSString *const keyUsername = @"username";
+static NSString *const keyCredential = @"credential";
 static NSString *const keyMultiFactor = @"multiFactor";
 static NSString *const keyPhotoUrl = @"photoURL";
 static NSString *const keyBundleId = @"bundleId";
 static NSString *const keyInstallApp = @"installApp";
+static NSString *const keyAccessToken = @"accessToken";
 static NSString *const keyProviderId = @"providerId";
 static NSString *const keyPhoneNumber = @"phoneNumber";
 static NSString *const keyDisplayName = @"displayName";
@@ -664,7 +668,8 @@ RCT_EXPORT_METHOD(signInWithProvider
 
                                                 [self promiseWithAuthResult:resolve
                                                                    rejecter:reject
-                                                                 authResult:authResult];
+                                                                 authResult:authResult
+                                                                 credential:credential];
                                               }];
                               }
                             }];
@@ -1304,7 +1309,8 @@ RCT_EXPORT_METHOD(linkWithProvider
 
                                                 [self promiseWithAuthResult:resolve
                                                                    rejecter:reject
-                                                                 authResult:authResult];
+                                                                 authResult:authResult
+                                                                 credential:credential];
                                               }];
                               }
                             }];
@@ -1433,7 +1439,8 @@ RCT_EXPORT_METHOD(reauthenticateWithProvider
 
                                                           [self promiseWithAuthResult:resolve
                                                                              rejecter:reject
-                                                                           authResult:authResult];
+                                                                           authResult:authResult
+                                                                           credential:credential];
                                                         }];
                               }
                             }];
@@ -1730,6 +1737,13 @@ RCT_EXPORT_METHOD(useEmulator
 - (void)promiseWithAuthResult:(RCTPromiseResolveBlock)resolve
                      rejecter:(RCTPromiseRejectBlock)reject
                    authResult:(FIRAuthDataResult *)authResult {
+  [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult credential:nil];
+}
+
+- (void)promiseWithAuthResult:(RCTPromiseResolveBlock)resolve
+                     rejecter:(RCTPromiseRejectBlock)reject
+                   authResult:(FIRAuthDataResult *)authResult
+                   credential:(FIRAuthCredential *)credential {
   if (authResult && authResult.user) {
     NSMutableDictionary *authResultDict = [NSMutableDictionary dictionary];
 
@@ -1761,11 +1775,35 @@ RCT_EXPORT_METHOD(useEmulator
       [authResultDict setValue:[NSNull null] forKey:keyAdditionalUserInfo];
     }
 
+    FIRAuthCredential *resultCredential = authResult.credential ?: credential;
+    NSDictionary *credentialDict = [self oauthResultCredentialToDict:resultCredential];
+    if (credentialDict) {
+      [authResultDict setValue:credentialDict forKey:keyCredential];
+    } else {
+      [authResultDict setValue:[NSNull null] forKey:keyCredential];
+    }
+
     [authResultDict setValue:[self firebaseUserToDict:authResult.user] forKey:keyUser];
     resolve(authResultDict);
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
+}
+
+- (NSDictionary *)oauthResultCredentialToDict:(FIRAuthCredential *)authCredential {
+  if (![authCredential isKindOfClass:[FIROAuthCredential class]]) {
+    return nil;
+  }
+
+  FIROAuthCredential *oauthCredential = (FIROAuthCredential *)authCredential;
+  NSMutableDictionary *credentialDict = [NSMutableDictionary dictionary];
+
+  [credentialDict setValue:oauthCredential.provider forKey:keyProviderId];
+  [credentialDict setValue:oauthCredential.accessToken ?: [NSNull null] forKey:keyAccessToken];
+  [credentialDict setValue:oauthCredential.IDToken ?: [NSNull null] forKey:keyIdToken];
+  [credentialDict setValue:oauthCredential.secret ?: [NSNull null] forKey:keySecret];
+
+  return credentialDict;
 }
 
 - (NSArray<NSObject *> *)convertProviderData:(NSArray<id<FIRUserInfo>> *)providerData {

@@ -59,6 +59,7 @@ import com.google.firebase.auth.MultiFactorAssertion;
 import com.google.firebase.auth.MultiFactorInfo;
 import com.google.firebase.auth.MultiFactorResolver;
 import com.google.firebase.auth.MultiFactorSession;
+import com.google.firebase.auth.OAuthCredential;
 import com.google.firebase.auth.OAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
@@ -2373,6 +2374,14 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
         authResultMap.putMap("additionalUserInfo", additionalUserInfoMap);
       }
+
+      WritableMap credentialMap = authCredentialToMap(authResult.getCredential());
+      if (credentialMap != null) {
+        authResultMap.putMap("credential", credentialMap);
+      } else {
+        authResultMap.putNull("credential");
+      }
+
       authResultMap.putMap("user", userMap);
 
       promise.resolve(authResultMap);
@@ -2380,6 +2389,37 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     } else {
       promiseNoUser(promise, true);
     }
+  }
+
+  @Nullable
+  private WritableMap authCredentialToMap(@Nullable AuthCredential authCredential) {
+    if (!(authCredential instanceof OAuthCredential)) {
+      return null;
+    }
+
+    OAuthCredential oauthCredential = (OAuthCredential) authCredential;
+    WritableMap credentialMap = Arguments.createMap();
+    credentialMap.putString("providerId", oauthCredential.getProvider());
+
+    if (oauthCredential.getAccessToken() != null) {
+      credentialMap.putString("accessToken", oauthCredential.getAccessToken());
+    } else {
+      credentialMap.putNull("accessToken");
+    }
+
+    if (oauthCredential.getIdToken() != null) {
+      credentialMap.putString("idToken", oauthCredential.getIdToken());
+    } else {
+      credentialMap.putNull("idToken");
+    }
+
+    if (oauthCredential.getSecret() != null) {
+      credentialMap.putString("secret", oauthCredential.getSecret());
+    } else {
+      credentialMap.putNull("secret");
+    }
+
+    return credentialMap;
   }
 
   /**

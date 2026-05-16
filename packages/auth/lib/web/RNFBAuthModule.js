@@ -225,6 +225,8 @@ function multiFactorInfoToObject(multiFactorInfo) {
  */
 function authResultToObject(userCredential) {
   const additional = getAdditionalUserInfo(userCredential);
+  const credential = OAuthProvider.credentialFromResult(userCredential);
+
   return {
     user: userToObject(userCredential.user),
     additionalUserInfo: {
@@ -233,6 +235,14 @@ function authResultToObject(userCredential) {
       providerId: additional.providerId,
       username: additional.username,
     },
+    credential: credential
+      ? {
+          providerId: credential.providerId,
+          accessToken: credential.accessToken ?? null,
+          idToken: credential.idToken ?? null,
+          secret: credential.secret ?? null,
+        }
+      : null,
   };
 }
 

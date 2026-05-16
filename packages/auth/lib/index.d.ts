@@ -92,6 +92,28 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
+   * Represents the OAuth credential returned by a sign-in, link, or reauthentication operation.
+   */
+  export interface OAuthCredential {
+    /**
+     * The authentication provider ID for the credential. For example, 'facebook.com', or 'google.com'.
+     */
+    providerId: string;
+    /**
+     * The OAuth access token associated with the credential, if one was returned by the provider.
+     */
+    accessToken?: string | null;
+    /**
+     * The OAuth ID token associated with the credential, if one was returned by the provider.
+     */
+    idToken?: string | null;
+    /**
+     * The OAuth access token secret associated with the credential, if one was returned by the provider.
+     */
+    secret?: string | null;
+  }
+
+  /**
    * Interface that represents an auth provider. Implemented by other providers.
    */
   export interface AuthProvider {
@@ -507,13 +529,17 @@ export namespace FirebaseAuthTypes {
    * information that was returned from the identity provider. operationType could be 'signIn' for
    * a sign-in operation, 'link' for a linking operation and 'reauthenticate' for a re-authentication operation.
    *
-   * TODO @salakar; missing credential, operationType
+   * TODO @salakar; missing operationType
    */
   export interface UserCredential {
     /**
      * Any additional user information assigned to the user.
      */
     additionalUserInfo?: AdditionalUserInfo;
+    /**
+     * The OAuth credential returned by the identity provider, if one was returned.
+     */
+    credential?: OAuthCredential | null;
     /**
      * Returns the {@link User} interface of this credential.
      */

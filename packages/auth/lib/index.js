@@ -202,6 +202,7 @@ class FirebaseAuthModule extends FirebaseModule {
     this.emitter.emit(this.eventNameForApp('onUserChanged'), this._user);
     return {
       additionalUserInfo: userCredential.additionalUserInfo,
+      credential: userCredential.credential ?? null,
       user,
     };
   }
