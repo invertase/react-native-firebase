@@ -16,6 +16,7 @@
  */
 
 #import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <React/RCTBridgeModule.h>
 #if __has_include(<RNFBFirestore/RNFBFirestore-Swift.h>)
 // This import will work in situations where `use_frameworks!` is in use
 #import <RNFBFirestore/RNFBFirestore-Swift.h>

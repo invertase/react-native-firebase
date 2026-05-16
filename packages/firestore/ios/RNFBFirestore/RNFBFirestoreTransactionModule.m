@@ -16,6 +16,7 @@
  */
 
 #import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <React/RCTBridgeModule.h>
 #import <React/RCTUtils.h>
 
 #import "RNFBFirestoreTransactionModule.h"

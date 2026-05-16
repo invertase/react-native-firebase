@@ -17,6 +17,7 @@
 
 #import "RNFBFirestoreModule.h"
 #import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <React/RCTBridgeModule.h>
 #import <React/RCTUtils.h>
 #import "FirebaseFirestoreInternal/FIRPersistentCacheIndexManager.h"
 #import "RNFBFirestoreCommon.h"
