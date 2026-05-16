@@ -2399,25 +2399,10 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
     OAuthCredential oauthCredential = (OAuthCredential) authCredential;
     WritableMap credentialMap = Arguments.createMap();
-    credentialMap.putString("providerId", oauthCredential.getProvider());
-
-    if (oauthCredential.getAccessToken() != null) {
-      credentialMap.putString("accessToken", oauthCredential.getAccessToken());
-    } else {
-      credentialMap.putNull("accessToken");
-    }
-
-    if (oauthCredential.getIdToken() != null) {
-      credentialMap.putString("idToken", oauthCredential.getIdToken());
-    } else {
-      credentialMap.putNull("idToken");
-    }
-
-    if (oauthCredential.getSecret() != null) {
-      credentialMap.putString("secret", oauthCredential.getSecret());
-    } else {
-      credentialMap.putNull("secret");
-    }
+    SharedUtils.mapPutValue("providerId", oauthCredential.getProvider(), credentialMap);
+    SharedUtils.mapPutValue("accessToken", oauthCredential.getAccessToken(), credentialMap);
+    SharedUtils.mapPutValue("idToken", oauthCredential.getIdToken(), credentialMap);
+    SharedUtils.mapPutValue("secret", oauthCredential.getSecret(), credentialMap);
 
     return credentialMap;
   }

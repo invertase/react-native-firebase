@@ -1798,7 +1798,7 @@ RCT_EXPORT_METHOD(useEmulator
   FIROAuthCredential *oauthCredential = (FIROAuthCredential *)authCredential;
   NSMutableDictionary *credentialDict = [NSMutableDictionary dictionary];
 
-  [credentialDict setValue:oauthCredential.provider forKey:keyProviderId];
+  [credentialDict setValue:oauthCredential.provider ?: [NSNull null] forKey:keyProviderId];
   [credentialDict setValue:oauthCredential.accessToken ?: [NSNull null] forKey:keyAccessToken];
   [credentialDict setValue:oauthCredential.IDToken ?: [NSNull null] forKey:keyIdToken];
   [credentialDict setValue:oauthCredential.secret ?: [NSNull null] forKey:keySecret];
