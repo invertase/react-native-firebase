@@ -17,7 +17,7 @@
 import { describe, expect, it, afterEach, jest } from '@jest/globals';
 
 import * as generateContentMethods from '../lib/methods/generate-content';
-import { GenerateContentStreamResult } from '../lib/types';
+import { EnhancedGenerateContentResponse, GenerateContentStreamResult } from '../lib/types';
 import { ChatSession } from '../lib/methods/chat-session';
 import { ApiSettings } from '../lib/types/internal';
 import { RequestOptions } from '../lib/types/requests';
@@ -34,6 +34,15 @@ const fakeApiSettings: ApiSettings = {
 const requestOptions: RequestOptions = {
   timeout: 1000,
 };
+
+function streamResult(response: EnhancedGenerateContentResponse): GenerateContentStreamResult {
+  return {
+    stream: (async function* () {
+      yield response;
+    })(),
+    response: Promise.resolve(response),
+  };
+}
 
 describe('ChatSession', () => {
   afterEach(() => {
@@ -127,6 +136,102 @@ describe('ChatSession', () => {
           signal: controller.signal,
         },
       );
+    });
+
+    it('automatically calls functionReference from stream function calls', async () => {
+      const getWeather = jest.fn<(args: object) => object>().mockReturnValue({ temperature: 72 });
+      const functionCallResponse = {
+        candidates: [
+          {
+            index: 0,
+            content: {
+              role: 'model',
+              parts: [
+                {
+                  functionCall: {
+                    name: 'getWeather',
+                    args: { city: 'London' },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+        functionCalls: () => [{ name: 'getWeather', args: { city: 'London' } }],
+      } as EnhancedGenerateContentResponse;
+      const finalResponse = {
+        candidates: [
+          {
+            index: 0,
+            content: {
+              role: 'model',
+              parts: [{ text: 'It is 72 degrees.' }],
+            },
+          },
+        ],
+        functionCalls: () => undefined,
+      } as EnhancedGenerateContentResponse;
+      const generateContentStreamStub = jest
+        .spyOn(generateContentMethods, 'generateContentStream')
+        .mockResolvedValueOnce(streamResult(functionCallResponse))
+        .mockResolvedValueOnce(streamResult(finalResponse));
+      const chatSession = new ChatSession(
+        fakeApiSettings,
+        'a-model',
+        {
+          tools: [
+            {
+              functionDeclarations: [
+                {
+                  name: 'getWeather',
+                  description: 'Gets weather for a city.',
+                  functionReference: getWeather,
+                },
+              ],
+            },
+          ],
+        },
+        requestOptions,
+      );
+
+      const result = await chatSession.sendMessageStream('weather in London');
+      await result.response;
+      const history = await chatSession.getHistory();
+
+      expect(getWeather).toHaveBeenCalledWith({ city: 'London' });
+      expect(generateContentStreamStub).toHaveBeenCalledTimes(2);
+      expect(history).toEqual([
+        {
+          role: 'user',
+          parts: [{ text: 'weather in London' }],
+        },
+        {
+          role: 'model',
+          parts: [
+            {
+              functionCall: {
+                name: 'getWeather',
+                args: { city: 'London' },
+              },
+            },
+          ],
+        },
+        {
+          role: 'function',
+          parts: [
+            {
+              functionResponse: {
+                name: 'getWeather',
+                response: { temperature: 72 },
+              },
+            },
+          ],
+        },
+        {
+          role: 'model',
+          parts: [{ text: 'It is 72 degrees.' }],
+        },
+      ]);
     });
 
     it('downstream sendPromise errors should log but not throw', async () => {
