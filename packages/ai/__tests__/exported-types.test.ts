@@ -80,6 +80,8 @@ import {
   Segment,
   StartChatParams,
   TextPart,
+  ThinkingConfig,
+  ThinkingLevel,
   ToolConfig,
   URLContext,
   URLContextMetadata,
@@ -114,6 +116,14 @@ describe('AI', function () {
 
     it('`POSSIBLE_ROLES` constant is properly exposed to end user', function () {
       expect(POSSIBLE_ROLES).toBeDefined();
+    });
+
+    it('`ThinkingLevel` constant is properly exposed to end user', function () {
+      expect(ThinkingLevel).toBeDefined();
+      expect(ThinkingLevel.MINIMAL).toBe('MINIMAL');
+      expect(ThinkingLevel.LOW).toBe('LOW');
+      expect(ThinkingLevel.MEDIUM).toBe('MEDIUM');
+      expect(ThinkingLevel.HIGH).toBe('HIGH');
     });
 
     it('`AIError` class is properly exposed to end user', function () {
@@ -167,6 +177,11 @@ describe('AI', function () {
     it('`Tool` type is properly exposed to end user', function () {
       const _typeCheck: Tool = {} as Tool;
       expect(typeof _typeCheck).toBeDefined();
+    });
+
+    it('`ThinkingConfig` type is properly exposed to end user', function () {
+      const _typeCheck: ThinkingConfig = { thinkingLevel: ThinkingLevel.LOW };
+      expect(typeof _typeCheck).toBe('object');
     });
 
     it('`TypedSchema` type is properly exposed to end user', function () {

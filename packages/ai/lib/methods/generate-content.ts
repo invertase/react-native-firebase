@@ -16,10 +16,12 @@
  */
 
 import {
+  AIErrorCode,
   GenerateContentRequest,
   GenerateContentResponse,
   GenerateContentResult,
   GenerateContentStreamResult,
+  GenerationConfig,
   RequestOptions,
 } from '../types';
 import { Task, makeRequest, ServerPromptTemplateTask } from '../requests/request';
@@ -28,6 +30,24 @@ import { processStream } from '../requests/stream-reader';
 import { ApiSettings } from '../types/internal';
 import { BackendType } from '../public-types';
 import * as GoogleAIMapper from '../googleai-mappers';
+import { AIError } from '../errors';
+
+/**
+ * Client-side validation of common `GenerationConfig` pitfalls, in order
+ * to save the developer a wasted request.
+ */
+function validateGenerationConfig(generationConfig?: GenerationConfig): void {
+  if (
+    // != allows for null and undefined. 0 is considered "set" by the model.
+    generationConfig?.thinkingConfig?.thinkingBudget != null &&
+    generationConfig.thinkingConfig?.thinkingLevel != null
+  ) {
+    throw new AIError(
+      AIErrorCode.UNSUPPORTED,
+      'Cannot set both thinkingBudget and thinkingLevel in a config.',
+    );
+  }
+}
 
 /**
  * Generates a content stream from a request body.
@@ -44,6 +64,7 @@ export async function generateContentStream(
   params: GenerateContentRequest,
   requestOptions?: RequestOptions,
 ): Promise<GenerateContentStreamResult> {
+  validateGenerationConfig(params.generationConfig);
   if (apiSettings.backend.backendType === BackendType.GOOGLE_AI) {
     params = GoogleAIMapper.mapGenerateContentRequest(params);
   }
@@ -76,6 +97,7 @@ export async function generateContent(
   params: GenerateContentRequest,
   requestOptions?: RequestOptions,
 ): Promise<GenerateContentResult> {
+  validateGenerationConfig(params.generationConfig);
   if (apiSettings.backend.backendType === BackendType.GOOGLE_AI) {
     params = GoogleAIMapper.mapGenerateContentRequest(params);
   }

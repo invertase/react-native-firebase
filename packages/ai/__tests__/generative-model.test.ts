@@ -17,7 +17,7 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { type ReactNativeFirebase } from '@react-native-firebase/app';
 import { GenerativeModel } from '../lib/models/generative-model';
-import { AI, FunctionCallingMode } from '../lib/public-types';
+import { AI, FunctionCallingMode, ThinkingLevel } from '../lib/public-types';
 import * as request from '../lib/requests/request';
 import { BackendName, getMockResponse } from './test-utils/mock-response';
 import { VertexAIBackend } from '../lib/backend';
@@ -121,6 +121,57 @@ describe('GenerativeModel', () => {
       }),
       expect.stringMatching(new RegExp(`myfunc|be friendly|${FunctionCallingMode.NONE}`)),
     );
+    makeRequestStub.mockRestore();
+  });
+
+  it('passes thinkingLevel through to generateContent', async () => {
+    const genModel = new GenerativeModel(fakeAI, {
+      model: 'my-model',
+      generationConfig: {
+        thinkingConfig: {
+          thinkingLevel: ThinkingLevel.LOW,
+        },
+      },
+    });
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+
+    await genModel.generateContent('hello');
+
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.GENERATE_CONTENT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: {},
+      }),
+      expect.stringContaining(`"thinkingLevel":"${ThinkingLevel.LOW}"`),
+    );
+    makeRequestStub.mockRestore();
+  });
+
+  it('throws when thinkingBudget and thinkingLevel are both set', async () => {
+    const genModel = new GenerativeModel(fakeAI, {
+      model: 'my-model',
+      generationConfig: {
+        thinkingConfig: {
+          thinkingBudget: 100,
+          thinkingLevel: ThinkingLevel.HIGH,
+        },
+      },
+    });
+    const makeRequestStub = jest.spyOn(request, 'makeRequest');
+
+    await expect(genModel.generateContent('hello')).rejects.toThrow(
+      'Cannot set both thinkingBudget and thinkingLevel in a config.',
+    );
+    expect(makeRequestStub).not.toHaveBeenCalled();
     makeRequestStub.mockRestore();
   });
 
