@@ -21,6 +21,7 @@ import { AI, FunctionCallingMode, ThinkingLevel } from '../lib/public-types';
 import * as request from '../lib/requests/request';
 import { BackendName, getMockResponse } from './test-utils/mock-response';
 import { VertexAIBackend } from '../lib/backend';
+import { GenerateContentResponse } from '../lib';
 
 const fakeAI: AI = {
   app: {
@@ -35,6 +36,10 @@ const fakeAI: AI = {
   backend: new VertexAIBackend('us-central1'),
   location: 'us-central1',
 };
+
+function responseFromJson(json: GenerateContentResponse): Response {
+  return { json: async () => json } as Response;
+}
 
 describe('GenerativeModel', () => {
   it('passes CodeExecutionTool and URLContextTool with other tools through to generateContent', async function () {
@@ -359,6 +364,151 @@ describe('GenerativeModel', () => {
       }),
       expect.stringMatching(new RegExp(`be formal|otherfunc|${FunctionCallingMode.AUTO}`)),
     );
+    makeRequestStub.mockRestore();
+  });
+
+  it('automatically calls functionReference from generateContent function calls', async () => {
+    const getWeather = jest.fn<(args: object) => object>().mockReturnValue({ temperature: 72 });
+    const genModel = new GenerativeModel(fakeAI, {
+      model: 'my-model',
+      tools: [
+        {
+          functionDeclarations: [
+            {
+              name: 'getWeather',
+              description: 'Gets weather for a city.',
+              functionReference: getWeather,
+            },
+          ],
+        },
+      ],
+    });
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValueOnce(
+        responseFromJson({
+          candidates: [
+            {
+              index: 0,
+              content: {
+                role: 'model',
+                parts: [
+                  {
+                    functionCall: {
+                      id: 'call-1',
+                      name: 'getWeather',
+                      args: { city: 'London' },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+      )
+      .mockResolvedValueOnce(
+        responseFromJson({
+          candidates: [
+            {
+              index: 0,
+              content: {
+                role: 'model',
+                parts: [{ text: 'It is 72 degrees.' }],
+              },
+            },
+          ],
+        }),
+      );
+
+    const result = await genModel.generateContent('weather in London');
+
+    expect(result.response.text()).toBe('It is 72 degrees.');
+    expect(getWeather).toHaveBeenCalledWith({ city: 'London' });
+    expect(makeRequestStub).toHaveBeenCalledTimes(2);
+    const followUpBody = JSON.parse(makeRequestStub.mock.calls[1]![1] as string);
+    expect(followUpBody.contents).toEqual([
+      {
+        role: 'user',
+        parts: [{ text: 'weather in London' }],
+      },
+      {
+        role: 'model',
+        parts: [
+          {
+            functionCall: {
+              id: 'call-1',
+              name: 'getWeather',
+              args: { city: 'London' },
+            },
+          },
+        ],
+      },
+      {
+        role: 'function',
+        parts: [
+          {
+            functionResponse: {
+              id: 'call-1',
+              name: 'getWeather',
+              response: { temperature: 72 },
+            },
+          },
+        ],
+      },
+    ]);
+    makeRequestStub.mockRestore();
+  });
+
+  it('returns the latest response when maxSequentialFunctionCalls is reached', async () => {
+    const getWeather = jest.fn<(args: object) => object>().mockReturnValue({ temperature: 72 });
+    const genModel = new GenerativeModel(
+      fakeAI,
+      {
+        model: 'my-model',
+        tools: [
+          {
+            functionDeclarations: [
+              {
+                name: 'getWeather',
+                description: 'Gets weather for a city.',
+                functionReference: getWeather,
+              },
+            ],
+          },
+        ],
+      },
+      { maxSequentialFunctionCalls: 1 },
+    );
+    const functionCallResponse: GenerateContentResponse = {
+      candidates: [
+        {
+          index: 0,
+          content: {
+            role: 'model',
+            parts: [
+              {
+                functionCall: {
+                  name: 'getWeather',
+                  args: { city: 'London' },
+                },
+              },
+            ],
+          },
+        },
+      ],
+    };
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValueOnce(responseFromJson(functionCallResponse))
+      .mockResolvedValueOnce(responseFromJson(functionCallResponse));
+
+    const result = await genModel.generateContent('weather in London');
+
+    expect(result.response.functionCalls()).toEqual([
+      { name: 'getWeather', args: { city: 'London' } },
+    ]);
+    expect(getWeather).toHaveBeenCalledTimes(1);
+    expect(makeRequestStub).toHaveBeenCalledTimes(2);
     makeRequestStub.mockRestore();
   });
 

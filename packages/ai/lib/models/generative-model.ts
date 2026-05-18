@@ -20,6 +20,9 @@ import {
   Content,
   CountTokensRequest,
   CountTokensResponse,
+  FunctionCall,
+  FunctionDeclaration,
+  FunctionResponse,
   GenerateContentRequest,
   GenerateContentResult,
   GenerateContentStreamResult,
@@ -39,6 +42,8 @@ import { formatGenerateContentInput, formatSystemInstruction } from '../requests
 import { mergeRequestOptions } from '../requests/request-options';
 import { AIModel } from './ai-model';
 import { AI } from '../public-types';
+
+const DEFAULT_MAX_SEQUENTIAL_FUNCTION_CALLS = 10;
 
 /**
  * Class for generative model APIs.
@@ -71,19 +76,17 @@ export class GenerativeModel extends AIModel {
     singleRequestOptions?: SingleRequestOptions,
   ): Promise<GenerateContentResult> {
     const formattedParams = formatGenerateContentInput(request);
-    return generateContent(
-      this._apiSettings,
-      this.model,
-      {
-        generationConfig: this.generationConfig,
-        safetySettings: this.safetySettings,
-        tools: this.tools,
-        toolConfig: this.toolConfig,
-        systemInstruction: this.systemInstruction,
-        ...formattedParams,
-      },
-      mergeRequestOptions(this.requestOptions, singleRequestOptions),
-    );
+    const params: GenerateContentRequest = {
+      generationConfig: this.generationConfig,
+      safetySettings: this.safetySettings,
+      tools: this.tools,
+      toolConfig: this.toolConfig,
+      systemInstruction: this.systemInstruction,
+      ...formattedParams,
+    };
+    const requestOptions = mergeRequestOptions(this.requestOptions, singleRequestOptions);
+    const result = await generateContent(this._apiSettings, this.model, params, requestOptions);
+    return this._generateContentWithAutomaticFunctionCalling(params, result, requestOptions);
   }
 
   /**
@@ -150,6 +153,94 @@ export class GenerativeModel extends AIModel {
       this.model,
       formattedParams,
       mergeRequestOptions(this.requestOptions, singleRequestOptions),
+    );
+  }
+
+  private async _generateContentWithAutomaticFunctionCalling(
+    params: GenerateContentRequest,
+    result: GenerateContentResult,
+    requestOptions?: SingleRequestOptions,
+  ): Promise<GenerateContentResult> {
+    let remainingFunctionCalls =
+      requestOptions?.maxSequentialFunctionCalls ?? DEFAULT_MAX_SEQUENTIAL_FUNCTION_CALLS;
+    let currentParams = params;
+    let currentResult = result;
+
+    while (remainingFunctionCalls > 0) {
+      const functionCalls = currentResult.response.functionCalls?.();
+      if (!functionCalls?.length) {
+        return currentResult;
+      }
+
+      const functionResponses = await this._callFunctionReferences(
+        currentParams.tools,
+        functionCalls,
+      );
+      if (!functionResponses) {
+        return currentResult;
+      }
+
+      const responseContent = currentResult.response.candidates?.[0]?.content;
+      if (!responseContent) {
+        return currentResult;
+      }
+
+      remainingFunctionCalls -= 1;
+      currentParams = {
+        ...currentParams,
+        contents: [
+          ...currentParams.contents,
+          responseContent,
+          {
+            role: 'function',
+            parts: functionResponses.map(functionResponse => ({ functionResponse })),
+          },
+        ],
+      };
+      currentResult = await generateContent(
+        this._apiSettings,
+        this.model,
+        currentParams,
+        requestOptions,
+      );
+    }
+
+    return currentResult;
+  }
+
+  private async _callFunctionReferences(
+    tools: Tool[] | undefined,
+    functionCalls: FunctionCall[],
+  ): Promise<FunctionResponse[] | undefined> {
+    const declarations = this._getFunctionDeclarationsWithReferences(tools);
+    if (!declarations.length) {
+      return undefined;
+    }
+
+    const functionResponses: FunctionResponse[] = [];
+    for (const functionCall of functionCalls) {
+      const declaration = declarations.find(candidate => candidate.name === functionCall.name);
+      if (!declaration?.functionReference) {
+        return undefined;
+      }
+
+      const response = (await declaration.functionReference(functionCall.args)) as object;
+      functionResponses.push({
+        id: functionCall.id,
+        name: functionCall.name,
+        response,
+      });
+    }
+    return functionResponses;
+  }
+
+  private _getFunctionDeclarationsWithReferences(tools: Tool[] | undefined): FunctionDeclaration[] {
+    return (
+      tools?.flatMap(tool =>
+        'functionDeclarations' in tool
+          ? (tool.functionDeclarations?.filter(declaration => declaration.functionReference) ?? [])
+          : [],
+      ) ?? []
     );
   }
 }
