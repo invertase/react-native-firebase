@@ -65,6 +65,7 @@ import {
   GroundingAttribution,
   GroundingMetadata,
   InlineDataPart,
+  LiveServerGoingAwayNotice,
   ModalityTokenCount,
   ModelParams,
   ObjectSchemaInterface,
@@ -102,6 +103,7 @@ import {
   HarmCategory,
   HarmProbability,
   HarmSeverity,
+  LiveResponseType,
   Modality,
   SchemaType,
 } from '../lib';
@@ -526,6 +528,18 @@ describe('AI', function () {
       expect(URLRetrievalStatus.URL_RETRIEVAL_STATUS_UNSPECIFIED).toBe(
         'URL_RETRIEVAL_STATUS_UNSPECIFIED',
       );
+    });
+
+    it('`LiveResponseType.GOING_AWAY_NOTICE` constant is properly exposed to end user', function () {
+      expect(LiveResponseType.GOING_AWAY_NOTICE).toBe('goingAwayNotice');
+    });
+
+    it('`LiveServerGoingAwayNotice` type is properly exposed to end user', function () {
+      const _typeCheck: LiveServerGoingAwayNotice = {
+        type: 'goingAwayNotice',
+        timeLeft: 10,
+      };
+      expect(typeof _typeCheck).toBe('object');
     });
   });
 });
