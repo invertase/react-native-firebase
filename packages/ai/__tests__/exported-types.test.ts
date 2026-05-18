@@ -298,6 +298,15 @@ describe('AI', function () {
       expect(typeof _typeCheck).toBeDefined();
     });
 
+    it('`FunctionResponse.parts` type is properly exposed to end user', function () {
+      const _typeCheck: FunctionResponse = {
+        name: 'getWeather',
+        response: { temperature: 72 },
+        parts: [{ text: 'Weather lookup complete.' }],
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
     it('`FunctionResponsePart` type is properly exposed to end user', function () {
       const _typeCheck: FunctionResponsePart = {} as FunctionResponsePart;
       expect(typeof _typeCheck).toBeDefined();
