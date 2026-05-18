@@ -117,6 +117,16 @@ export interface GenerationConfig {
    */
   responseSchema?: TypedSchema | SchemaRequest;
   /**
+   * Output schema of the generated response. This is an alternative to
+   * `responseSchema` that accepts [JSON Schema](https://json-schema.org/).
+   *
+   * If set, `responseSchema` must be omitted, but `responseMimeType`
+   * is required and must be set to `application/json`.
+   */
+  responseJsonSchema?: {
+    [key: string]: unknown;
+  };
+  /**
    * Generation modalities to be returned in generation responses.
    *
    * @remarks

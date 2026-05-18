@@ -194,6 +194,43 @@ describe('GenerativeModel', () => {
     makeRequestStub.mockRestore();
   });
 
+  it('passes responseJsonSchema through to generateContent', async () => {
+    const genModel = new GenerativeModel(fakeAI, {
+      model: 'my-model',
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseJsonSchema: {
+          type: 'object',
+          properties: {
+            answer: { type: 'string' },
+          },
+          required: ['answer'],
+        },
+      },
+    });
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+
+    await genModel.generateContent('hello');
+
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.GENERATE_CONTENT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: {},
+      }),
+      expect.stringContaining('"responseJsonSchema":{"type":"object"'),
+    );
+    makeRequestStub.mockRestore();
+  });
+
   it('throws when thinkingBudget and thinkingLevel are both set', async () => {
     const genModel = new GenerativeModel(fakeAI, {
       model: 'my-model',

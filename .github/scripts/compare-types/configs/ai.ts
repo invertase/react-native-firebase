@@ -68,8 +68,7 @@ const config: PackageConfig = {
     },
     {
       name: 'LanguageModelExpected',
-      reason:
-        'Chrome Prompt API type tied to browser-only on-device language model integration.',
+      reason: 'Chrome Prompt API type tied to browser-only on-device language model integration.',
     },
     {
       name: 'LanguageModelMessage',
@@ -159,11 +158,6 @@ const config: PackageConfig = {
       name: 'FunctionDeclaration',
       reason:
         'RN Firebase function declarations accept `ObjectSchemaInterface` only and do not expose the JS SDK `functionReference` auto-calling hook.',
-    },
-    {
-      name: 'GenerationConfig',
-      reason:
-        'RN Firebase does not currently expose the JS SDK `responseJsonSchema` generation config field.',
     },
     {
       name: 'RequestOptions',
