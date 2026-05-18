@@ -127,6 +127,42 @@ describe('generateContent()', () => {
     );
   });
 
+  it('passes FunctionResponse.parts through in request bodies', async () => {
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+    const params: GenerateContentRequest = {
+      contents: [
+        {
+          role: 'function',
+          parts: [
+            {
+              functionResponse: {
+                name: 'getWeather',
+                response: { temperature: 72 },
+                parts: [{ text: 'Weather lookup complete.' }],
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    await generateContent(fakeApiSettings, 'model', params);
+
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: 'model',
+        task: Task.GENERATE_CONTENT,
+      }),
+      expect.stringContaining('"parts":[{"text":"Weather lookup complete."}]'),
+    );
+  });
+
   it('long response with token details', async () => {
     const mockResponse = getMockResponse(
       BackendName.VertexAI,

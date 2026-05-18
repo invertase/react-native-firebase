@@ -186,11 +186,6 @@ const config: PackageConfig = {
         'RN Firebase function declarations accept `ObjectSchemaInterface` only and do not expose the JS SDK `functionReference` auto-calling hook.',
     },
     {
-      name: 'FunctionResponse',
-      reason:
-        'RN Firebase function responses omit the optional `parts` field from the JS SDK declaration and only expose the structured response payload.',
-    },
-    {
       name: 'GenerationConfig',
       reason:
         'RN Firebase does not currently expose the JS SDK `responseJsonSchema` generation config field.',
