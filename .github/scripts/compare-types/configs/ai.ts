@@ -102,11 +102,6 @@ const config: PackageConfig = {
         'Chrome Prompt API prompt options type used by browser-only on-device language model integration.',
     },
     {
-      name: 'SingleRequestOptions',
-      reason:
-        'RN Firebase does not currently expose per-call request overrides such as `AbortSignal`; requests are configured via model-level `RequestOptions` only.',
-    },
-    {
       name: 'ChatSessionBase',
       reason:
         'Base class used by the firebase-js-sdk template chat implementation. RN Firebase exposes its concrete chat session surface instead.',
@@ -193,7 +188,7 @@ const config: PackageConfig = {
     {
       name: 'ChatSession',
       reason:
-        'RN Firebase chat sessions do not currently accept per-call `SingleRequestOptions`, so `sendMessage` and `sendMessageStream` expose fewer parameters.',
+        'RN Firebase chat sessions expose `getHistory()` directly on the concrete class while the firebase-js-sdk inherits it from `ChatSessionBase`.',
     },
     {
       name: 'FunctionDeclaration',
@@ -211,29 +206,14 @@ const config: PackageConfig = {
         'RN Firebase does not currently expose the JS SDK `responseJsonSchema` generation config field.',
     },
     {
-      name: 'GenerativeModel',
-      reason:
-        'RN Firebase generative model methods do not currently accept per-call `SingleRequestOptions`, so request overrides are limited to model-level `RequestOptions`.',
-    },
-    {
-      name: 'ImagenModel',
-      reason:
-        'RN Firebase Imagen model requests do not currently accept per-call `SingleRequestOptions`, so request overrides are limited to model-level `RequestOptions`.',
-    },
-    {
       name: 'RequestOptions',
       reason:
-        'RN Firebase does not currently expose `maxSequentalFunctionCalls`, so its request options are limited to timeout and base URL.',
+        'RN Firebase does not currently expose `maxSequentialFunctionCalls`, so its request options are limited to timeout and base URL.',
     },
     {
       name: 'TemplateGenerativeModel',
       reason:
-        'RN Firebase template generative model methods do not currently accept per-call `SingleRequestOptions`, so request overrides are limited to model-level `RequestOptions`.',
-    },
-    {
-      name: 'TemplateImagenModel',
-      reason:
-        'RN Firebase template Imagen model methods do not currently accept per-call `SingleRequestOptions`, so request overrides are limited to model-level `RequestOptions`.',
+        'RN Firebase template generative models do not currently expose `startChat`, so template chat sessions remain absent.',
     },
     {
       name: 'UsageMetadata',

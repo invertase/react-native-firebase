@@ -124,6 +124,44 @@ describe('GenerativeModel', () => {
     makeRequestStub.mockRestore();
   });
 
+  it('merges per-call request options over model request options for generateContent', async () => {
+    const controller = new AbortController();
+    const genModel = new GenerativeModel(
+      fakeAI,
+      {
+        model: 'my-model',
+      },
+      {
+        timeout: 1000,
+        baseUrl: 'https://model.example.com',
+      },
+    );
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+
+    await genModel.generateContent('hello', {
+      timeout: 2000,
+      signal: controller.signal,
+    });
+
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      expect.objectContaining({
+        requestOptions: {
+          timeout: 2000,
+          baseUrl: 'https://model.example.com',
+          signal: controller.signal,
+        },
+      }),
+      expect.any(String),
+    );
+    makeRequestStub.mockRestore();
+  });
+
   it('passes thinkingLevel through to generateContent', async () => {
     const genModel = new GenerativeModel(fakeAI, {
       model: 'my-model',
@@ -172,6 +210,42 @@ describe('GenerativeModel', () => {
       'Cannot set both thinkingBudget and thinkingLevel in a config.',
     );
     expect(makeRequestStub).not.toHaveBeenCalled();
+    makeRequestStub.mockRestore();
+  });
+
+  it('merges per-call request options over model request options for countTokens', async () => {
+    const controller = new AbortController();
+    const genModel = new GenerativeModel(
+      fakeAI,
+      {
+        model: 'my-model',
+      },
+      {
+        timeout: 1000,
+        baseUrl: 'https://model.example.com',
+      },
+    );
+    const makeRequestStub = jest.spyOn(request, 'makeRequest').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ totalTokens: 1 }),
+    } as Response);
+
+    await genModel.countTokens('hello', {
+      timeout: 2000,
+      signal: controller.signal,
+    });
+
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      expect.objectContaining({
+        task: request.Task.COUNT_TOKENS,
+        requestOptions: {
+          timeout: 2000,
+          baseUrl: 'https://model.example.com',
+          signal: controller.signal,
+        },
+      }),
+      expect.any(String),
+    );
     makeRequestStub.mockRestore();
   });
 
@@ -433,7 +507,7 @@ describe('GenerativeModel', () => {
         task: request.Task.COUNT_TOKENS,
         apiSettings: expect.anything(),
         stream: false,
-        requestOptions: undefined,
+        requestOptions: {},
       }),
       expect.stringContaining('hello'),
     );

@@ -22,6 +22,7 @@ import {
   GenerateContentStreamResult,
   Part,
   RequestOptions,
+  SingleRequestOptions,
   StartChatParams,
   EnhancedGenerateContentResponse,
 } from '../types';
@@ -31,6 +32,7 @@ import { validateChatHistory } from './chat-session-helpers';
 import { generateContent, generateContentStream } from './generate-content';
 import { ApiSettings } from '../types/internal';
 import { logger } from '../logger';
+import { mergeRequestOptions } from '../requests/request-options';
 
 /**
  * Do not log a message for this error.
@@ -75,7 +77,10 @@ export class ChatSession {
    * Sends a chat message and receives a non-streaming
    * {@link GenerateContentResult}
    */
-  async sendMessage(request: string | Array<string | Part>): Promise<GenerateContentResult> {
+  async sendMessage(
+    request: string | Array<string | Part>,
+    singleRequestOptions?: SingleRequestOptions,
+  ): Promise<GenerateContentResult> {
     await this._sendPromise;
     const newContent = formatNewContent(request);
     const generateContentRequest: GenerateContentRequest = {
@@ -90,7 +95,12 @@ export class ChatSession {
     // Add onto the chain.
     this._sendPromise = this._sendPromise
       .then(() =>
-        generateContent(this._apiSettings, this.model, generateContentRequest, this.requestOptions),
+        generateContent(
+          this._apiSettings,
+          this.model,
+          generateContentRequest,
+          mergeRequestOptions(this.requestOptions, singleRequestOptions),
+        ),
       )
       .then((result: GenerateContentResult) => {
         if (result.response.candidates && result.response.candidates.length > 0) {
@@ -122,6 +132,7 @@ export class ChatSession {
    */
   async sendMessageStream(
     request: string | Array<string | Part>,
+    singleRequestOptions?: SingleRequestOptions,
   ): Promise<GenerateContentStreamResult> {
     await this._sendPromise;
     const newContent = formatNewContent(request);
@@ -137,7 +148,7 @@ export class ChatSession {
       this._apiSettings,
       this.model,
       generateContentRequest,
-      this.requestOptions,
+      mergeRequestOptions(this.requestOptions, singleRequestOptions),
     );
 
     // Add onto the chain.

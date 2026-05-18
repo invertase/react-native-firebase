@@ -28,6 +28,7 @@ import {
   Part,
   RequestOptions,
   SafetySetting,
+  SingleRequestOptions,
   StartChatParams,
   Tool,
   ToolConfig,
@@ -35,6 +36,7 @@ import {
 import { ChatSession } from '../methods/chat-session';
 import { countTokens } from '../methods/count-tokens';
 import { formatGenerateContentInput, formatSystemInstruction } from '../requests/request-helpers';
+import { mergeRequestOptions } from '../requests/request-options';
 import { AIModel } from './ai-model';
 import { AI } from '../public-types';
 
@@ -66,6 +68,7 @@ export class GenerativeModel extends AIModel {
    */
   async generateContent(
     request: GenerateContentRequest | string | Array<string | Part>,
+    singleRequestOptions?: SingleRequestOptions,
   ): Promise<GenerateContentResult> {
     const formattedParams = formatGenerateContentInput(request);
     return generateContent(
@@ -79,7 +82,7 @@ export class GenerativeModel extends AIModel {
         systemInstruction: this.systemInstruction,
         ...formattedParams,
       },
-      this.requestOptions,
+      mergeRequestOptions(this.requestOptions, singleRequestOptions),
     );
   }
 
@@ -91,6 +94,7 @@ export class GenerativeModel extends AIModel {
    */
   async generateContentStream(
     request: GenerateContentRequest | string | Array<string | Part>,
+    singleRequestOptions?: SingleRequestOptions,
   ): Promise<GenerateContentStreamResult> {
     const formattedParams = formatGenerateContentInput(request);
     return generateContentStream(
@@ -104,7 +108,7 @@ export class GenerativeModel extends AIModel {
         systemInstruction: this.systemInstruction,
         ...formattedParams,
       },
-      this.requestOptions,
+      mergeRequestOptions(this.requestOptions, singleRequestOptions),
     );
   }
 
@@ -138,8 +142,14 @@ export class GenerativeModel extends AIModel {
    */
   async countTokens(
     request: CountTokensRequest | string | Array<string | Part>,
+    singleRequestOptions?: SingleRequestOptions,
   ): Promise<CountTokensResponse> {
     const formattedParams = formatGenerateContentInput(request);
-    return countTokens(this._apiSettings, this.model, formattedParams);
+    return countTokens(
+      this._apiSettings,
+      this.model,
+      formattedParams,
+      mergeRequestOptions(this.requestOptions, singleRequestOptions),
+    );
   }
 }

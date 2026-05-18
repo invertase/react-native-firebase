@@ -22,7 +22,7 @@ import {
   GenerateContentResult,
   GenerateContentStreamResult,
   GenerationConfig,
-  RequestOptions,
+  SingleRequestOptions,
 } from '../types';
 import { Task, makeRequest, ServerPromptTemplateTask } from '../requests/request';
 import { createEnhancedContentResponse } from '../requests/response-helpers';
@@ -55,14 +55,14 @@ function validateGenerationConfig(generationConfig?: GenerationConfig): void {
  * @param apiSettings The {@link ApiSettings} to use for the request.
  * @param model The model to use for the request.
  * @param params The {@link GenerateContentRequest} to send.
- * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @param requestOptions The {@link SingleRequestOptions} to use for the request.
  * @returns The {@link GenerateContentStreamResult} from the request.
  */
 export async function generateContentStream(
   apiSettings: ApiSettings,
   model: string,
   params: GenerateContentRequest,
-  requestOptions?: RequestOptions,
+  requestOptions?: SingleRequestOptions,
 ): Promise<GenerateContentStreamResult> {
   validateGenerationConfig(params.generationConfig);
   if (apiSettings.backend.backendType === BackendType.GOOGLE_AI) {
@@ -87,7 +87,7 @@ export async function generateContentStream(
  * @param apiSettings The {@link ApiSettings} to use for the request.
  * @param model The model to use for the request.
  * @param params The {@link GenerateContentRequest} to send.
- * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @param requestOptions The {@link SingleRequestOptions} to use for the request.
  * @returns The {@link GenerateContentResult} from the request.
  */
 
@@ -95,7 +95,7 @@ export async function generateContent(
   apiSettings: ApiSettings,
   model: string,
   params: GenerateContentRequest,
-  requestOptions?: RequestOptions,
+  requestOptions?: SingleRequestOptions,
 ): Promise<GenerateContentResult> {
   validateGenerationConfig(params.generationConfig);
   if (apiSettings.backend.backendType === BackendType.GOOGLE_AI) {
@@ -143,7 +143,7 @@ async function processGenerateContentResponse(
  * @param apiSettings The {@link ApiSettings} to use for the request.
  * @param templateId The ID of the server-side template to execute.
  * @param templateParams The parameters to populate the template with.
- * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @param requestOptions The {@link SingleRequestOptions} to use for the request.
  * @returns The {@link GenerateContentResult} from the request.
  *
  * @beta
@@ -152,7 +152,7 @@ export async function templateGenerateContent(
   apiSettings: ApiSettings,
   templateId: string,
   templateParams: object,
-  requestOptions?: RequestOptions,
+  requestOptions?: SingleRequestOptions,
 ): Promise<GenerateContentResult> {
   const response = await makeRequest(
     {
@@ -177,7 +177,7 @@ export async function templateGenerateContent(
  * @param apiSettings The {@link ApiSettings} to use for the request.
  * @param templateId The ID of the server-side template to execute.
  * @param templateParams The parameters to populate the template with.
- * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @param requestOptions The {@link SingleRequestOptions} to use for the request.
  * @returns The {@link GenerateContentStreamResult} from the request.
  *
  * @beta
@@ -186,7 +186,7 @@ export async function templateGenerateContentStream(
   apiSettings: ApiSettings,
   templateId: string,
   templateParams: object,
-  requestOptions?: RequestOptions,
+  requestOptions?: SingleRequestOptions,
 ): Promise<GenerateContentStreamResult> {
   const response = await makeRequest(
     {
