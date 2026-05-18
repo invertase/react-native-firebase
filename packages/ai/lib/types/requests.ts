@@ -248,6 +248,21 @@ export interface RequestOptions {
 }
 
 /**
+ * Options that can be provided per-request.
+ *
+ * Options specified here will override any default {@link RequestOptions}
+ * configured on a model.
+ *
+ * @public
+ */
+export interface SingleRequestOptions extends RequestOptions {
+  /**
+   * An `AbortSignal` instance that allows cancelling ongoing requests.
+   */
+  signal?: AbortSignal;
+}
+
+/**
  * Defines a tool that model can call to access external knowledge.
  * @public
  */

@@ -81,6 +81,7 @@ import {
   SchemaShared,
   SearchEntrypoint,
   Segment,
+  SingleRequestOptions,
   StartChatParams,
   TextPart,
   ThinkingConfig,
@@ -395,6 +396,16 @@ describe('AI', function () {
     it('`RequestOptions` type is properly exposed to end user', function () {
       const _typeCheck: RequestOptions = {} as RequestOptions;
       expect(typeof _typeCheck).toBeDefined();
+    });
+
+    it('`SingleRequestOptions` type is properly exposed to end user', function () {
+      const controller = new AbortController();
+      const _typeCheck: SingleRequestOptions = {
+        timeout: 1000,
+        baseUrl: 'https://example.com',
+        signal: controller.signal,
+      };
+      expect(typeof _typeCheck).toBe('object');
     });
 
     it('`RetrievedContextAttribution` type is properly exposed to end user', function () {

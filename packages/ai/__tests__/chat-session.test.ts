@@ -57,6 +57,29 @@ describe('ChatSession', () => {
         requestOptions,
       );
     });
+
+    it('merges per-call request options over session request options', async () => {
+      const controller = new AbortController();
+      const generateContentStub = jest
+        .spyOn(generateContentMethods, 'generateContent')
+        .mockResolvedValue({ response: { candidates: [] } } as any);
+      const chatSession = new ChatSession(fakeApiSettings, 'a-model', {}, requestOptions);
+
+      await chatSession.sendMessage('hello', {
+        timeout: 2000,
+        signal: controller.signal,
+      });
+
+      expect(generateContentStub).toHaveBeenCalledWith(
+        fakeApiSettings,
+        'a-model',
+        expect.anything(),
+        {
+          timeout: 2000,
+          signal: controller.signal,
+        },
+      );
+    });
   });
 
   describe('sendMessageStream()', () => {
@@ -79,6 +102,31 @@ describe('ChatSession', () => {
       jest.runAllTimers();
       expect(consoleStub).not.toHaveBeenCalled();
       jest.useRealTimers();
+    });
+
+    it('merges per-call request options over session request options', async () => {
+      const controller = new AbortController();
+      const generateContentStreamStub = jest
+        .spyOn(generateContentMethods, 'generateContentStream')
+        .mockResolvedValue({
+          response: Promise.resolve({ candidates: [] }),
+        } as unknown as GenerateContentStreamResult);
+      const chatSession = new ChatSession(fakeApiSettings, 'a-model', {}, requestOptions);
+
+      await chatSession.sendMessageStream('hello', {
+        timeout: 2000,
+        signal: controller.signal,
+      });
+
+      expect(generateContentStreamStub).toHaveBeenCalledWith(
+        fakeApiSettings,
+        'a-model',
+        expect.anything(),
+        {
+          timeout: 2000,
+          signal: controller.signal,
+        },
+      );
     });
 
     it('downstream sendPromise errors should log but not throw', async () => {

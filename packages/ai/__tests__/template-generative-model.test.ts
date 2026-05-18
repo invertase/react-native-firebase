@@ -70,6 +70,33 @@ describe('TemplateGenerativeModel', function () {
         { timeout: 5000 },
       );
     });
+
+    it('should merge per-call request options over model request options', async function () {
+      const controller = new AbortController();
+      const templateGenerateContentSpy = jest
+        .spyOn(generateContentMethods, 'templateGenerateContent')
+        .mockResolvedValue({} as any);
+      const model = new TemplateGenerativeModel(fakeAI, {
+        timeout: 5000,
+        baseUrl: 'https://model.example.com',
+      });
+
+      await model.generateContent(TEMPLATE_ID, TEMPLATE_VARS, {
+        timeout: 2000,
+        signal: controller.signal,
+      });
+
+      expect(templateGenerateContentSpy).toHaveBeenCalledWith(
+        model._apiSettings,
+        TEMPLATE_ID,
+        { inputs: TEMPLATE_VARS },
+        {
+          timeout: 2000,
+          baseUrl: 'https://model.example.com',
+          signal: controller.signal,
+        },
+      );
+    });
   });
 
   describe('generateContentStream', function () {
@@ -87,6 +114,33 @@ describe('TemplateGenerativeModel', function () {
         TEMPLATE_ID,
         { inputs: TEMPLATE_VARS },
         { timeout: 5000 },
+      );
+    });
+
+    it('should merge per-call request options over model request options', async function () {
+      const controller = new AbortController();
+      const templateGenerateContentStreamSpy = jest
+        .spyOn(generateContentMethods, 'templateGenerateContentStream')
+        .mockResolvedValue({} as any);
+      const model = new TemplateGenerativeModel(fakeAI, {
+        timeout: 5000,
+        baseUrl: 'https://model.example.com',
+      });
+
+      await model.generateContentStream(TEMPLATE_ID, TEMPLATE_VARS, {
+        timeout: 2000,
+        signal: controller.signal,
+      });
+
+      expect(templateGenerateContentStreamSpy).toHaveBeenCalledWith(
+        model._apiSettings,
+        TEMPLATE_ID,
+        { inputs: TEMPLATE_VARS },
+        {
+          timeout: 2000,
+          baseUrl: 'https://model.example.com',
+          signal: controller.signal,
+        },
       );
     });
   });

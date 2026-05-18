@@ -141,6 +141,43 @@ describe('ImagenModel', () => {
     );
   });
 
+  it('generateImages merges per-call request options over model request options', async () => {
+    const controller = new AbortController();
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-generate-images-base64.json',
+    );
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+    const imagenModel = new ImagenModel(
+      fakeAI,
+      {
+        model: 'my-model',
+      },
+      {
+        timeout: 1000,
+        baseUrl: 'https://model.example.com',
+      },
+    );
+
+    await imagenModel.generateImages('A toy boat.', {
+      timeout: 2000,
+      signal: controller.signal,
+    });
+
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      expect.objectContaining({
+        requestOptions: {
+          timeout: 2000,
+          baseUrl: 'https://model.example.com',
+          signal: controller.signal,
+        },
+      }),
+      expect.any(String),
+    );
+  });
+
   it('throws if prompt blocked', async () => {
     const mockResponse = getMockResponse(
       BackendName.VertexAI,

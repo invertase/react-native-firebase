@@ -19,9 +19,10 @@ import {
   templateGenerateContent,
   templateGenerateContentStream,
 } from '../methods/generate-content';
-import { GenerateContentResult, RequestOptions } from '../types';
+import { GenerateContentResult, RequestOptions, SingleRequestOptions } from '../types';
 import { AI, GenerateContentStreamResult } from '../public-types';
 import { ApiSettings } from '../types/internal';
+import { mergeRequestOptions } from '../requests/request-options';
 import { initApiSettings } from './utils';
 
 /**
@@ -63,12 +64,13 @@ export class TemplateGenerativeModel {
   async generateContent(
     templateId: string,
     templateVariables: object, // anything!
+    singleRequestOptions?: SingleRequestOptions,
   ): Promise<GenerateContentResult> {
     return templateGenerateContent(
       this._apiSettings,
       templateId,
       { inputs: templateVariables },
-      this.requestOptions,
+      mergeRequestOptions(this.requestOptions, singleRequestOptions),
     );
   }
 
@@ -87,12 +89,13 @@ export class TemplateGenerativeModel {
   async generateContentStream(
     templateId: string,
     templateVariables: object,
+    singleRequestOptions?: SingleRequestOptions,
   ): Promise<GenerateContentStreamResult> {
     return templateGenerateContentStream(
       this._apiSettings,
       templateId,
       { inputs: templateVariables },
-      this.requestOptions,
+      mergeRequestOptions(this.requestOptions, singleRequestOptions),
     );
   }
 }
