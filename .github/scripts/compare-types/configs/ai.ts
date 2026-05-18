@@ -151,11 +151,6 @@ const config: PackageConfig = {
       reason:
         'Template tool unions are part of firebase-js-sdk template tooling that RN Firebase does not currently expose.',
     },
-    {
-      name: 'ThinkingLevel',
-      reason:
-        'RN Firebase supports thinking budgets but does not currently expose the JS SDK `ThinkingLevel` preset constants/type.',
-    },
   ],
   extraInRN: [
     {
@@ -284,11 +279,6 @@ const config: PackageConfig = {
       name: 'TemplateImagenModel',
       reason:
         'RN Firebase template Imagen model methods do not currently accept per-call `SingleRequestOptions`, so request overrides are limited to model-level `RequestOptions`.',
-    },
-    {
-      name: 'ThinkingConfig',
-      reason:
-        'RN Firebase thinking config supports `thinkingBudget` and `includeThoughts`, but does not currently expose the JS SDK `thinkingLevel` preset field.',
     },
     {
       name: 'TypedSchema',

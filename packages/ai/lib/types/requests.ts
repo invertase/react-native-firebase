@@ -23,6 +23,7 @@ import {
   HarmBlockThreshold,
   HarmCategory,
   ResponseModality,
+  ThinkingLevel,
 } from './enums';
 import { ObjectSchemaInterface, SchemaRequest } from './schema';
 
@@ -404,10 +405,25 @@ export interface ThinkingConfig {
    * If you don't specify a budget, the model will determine the appropriate amount
    * of thinking based on the complexity of the prompt.
    *
+   * The model will also error if `thinkingLevel` and `thinkingBudget` are
+   * both set.
+   *
    * An error will be thrown if you set a thinking budget for a model that does not support this
    * feature or if the specified budget is not within the model's supported range.
    */
   thinkingBudget?: number;
+
+  /**
+   * If not specified, Gemini will use the model's default dynamic thinking level.
+   *
+   * @remarks
+   * Note: The model will error if `thinkingLevel` and `thinkingBudget` are
+   * both set.
+   *
+   * Important: Gemini 2.5 series models do not support thinking levels; use
+   * `thinkingBudget` to set a thinking budget instead.
+   */
+  thinkingLevel?: ThinkingLevel;
 
   /**
    * Whether to include "thought summaries" in the model's response.
