@@ -69,6 +69,7 @@ import {
   ModalityTokenCount,
   ModelParams,
   ObjectSchemaInterface,
+  ObjectSchemaRequest,
   PromptFeedback,
   RequestOptions,
   RetrievedContextAttribution,
@@ -359,6 +360,31 @@ describe('AI', function () {
     it('`ObjectSchemaInterface` type is properly exposed to end user', function () {
       const _typeCheck: ObjectSchemaInterface = {} as ObjectSchemaInterface;
       expect(typeof _typeCheck).toBeDefined();
+    });
+
+    it('`ObjectSchemaRequest` type is properly exposed to end user', function () {
+      const _typeCheck: ObjectSchemaRequest = {
+        type: 'object',
+        properties: {},
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
+    it('`FunctionDeclaration.parameters` accepts ObjectSchemaRequest', function () {
+      const _typeCheck: FunctionDeclaration = {
+        name: 'getWeather',
+        description: 'Gets weather for a city.',
+        parameters: {
+          type: 'object',
+          properties: {
+            city: {
+              type: SchemaType.STRING,
+            },
+          },
+          required: ['city'],
+        },
+      };
+      expect(typeof _typeCheck).toBe('object');
     });
 
     it('`PromptFeedback` type is properly exposed to end user', function () {
