@@ -19,11 +19,17 @@ import {
   templateGenerateContent,
   templateGenerateContentStream,
 } from '../methods/generate-content';
-import { GenerateContentResult, RequestOptions, SingleRequestOptions } from '../types';
+import {
+  GenerateContentResult,
+  RequestOptions,
+  SingleRequestOptions,
+  StartTemplateChatParams,
+} from '../types';
 import { AI, GenerateContentStreamResult } from '../public-types';
 import { ApiSettings } from '../types/internal';
 import { mergeRequestOptions } from '../requests/request-options';
 import { initApiSettings } from './utils';
+import { TemplateChatSession } from '../methods/chat-session';
 
 /**
  * {@link GenerativeModel} APIs that execute on a server-side template.
@@ -63,7 +69,7 @@ export class TemplateGenerativeModel {
    */
   async generateContent(
     templateId: string,
-    templateVariables: object, // anything!
+    templateVariables: Record<string, unknown>,
     singleRequestOptions?: SingleRequestOptions,
   ): Promise<GenerateContentResult> {
     return templateGenerateContent(
@@ -88,7 +94,7 @@ export class TemplateGenerativeModel {
    */
   async generateContentStream(
     templateId: string,
-    templateVariables: object,
+    templateVariables: Record<string, unknown>,
     singleRequestOptions?: SingleRequestOptions,
   ): Promise<GenerateContentStreamResult> {
     return templateGenerateContentStream(
@@ -97,5 +103,18 @@ export class TemplateGenerativeModel {
       { inputs: templateVariables },
       mergeRequestOptions(this.requestOptions, singleRequestOptions),
     );
+  }
+
+  /**
+   * Starts a {@link TemplateChatSession} that will use this template to
+   * respond to messages.
+   *
+   * @param params - Configurations for the chat, including the template
+   * ID and input variables.
+   *
+   * @beta
+   */
+  startChat(params: StartTemplateChatParams): TemplateChatSession {
+    return new TemplateChatSession(this._apiSettings, params, this.requestOptions);
   }
 }

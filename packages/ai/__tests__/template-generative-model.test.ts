@@ -144,4 +144,94 @@ describe('TemplateGenerativeModel', function () {
       );
     });
   });
+
+  describe('startChat', function () {
+    it('should create a template chat session with the configured request options', function () {
+      const model = new TemplateGenerativeModel(fakeAI, { timeout: 5000 });
+      const chat = model.startChat({
+        templateId: TEMPLATE_ID,
+        templateVariables: TEMPLATE_VARS,
+      });
+
+      expect(chat.params).toEqual({
+        templateId: TEMPLATE_ID,
+        templateVariables: TEMPLATE_VARS,
+      });
+      expect(chat.requestOptions).toEqual({ timeout: 5000 });
+    });
+
+    it('should call templateGenerateContent with template chat parameters', async function () {
+      const templateGenerateContentSpy = jest
+        .spyOn(generateContentMethods, 'templateGenerateContent')
+        .mockResolvedValue({
+          response: {
+            candidates: [{ content: { parts: [{ text: 'hello back' }] } }],
+          },
+        } as any);
+      const model = new TemplateGenerativeModel(fakeAI, {
+        timeout: 5000,
+        baseUrl: 'https://model.example.com',
+      });
+      const chat = model.startChat({
+        templateId: TEMPLATE_ID,
+        templateVariables: TEMPLATE_VARS,
+      });
+      const controller = new AbortController();
+
+      await chat.sendMessage('hello', {
+        timeout: 2000,
+        signal: controller.signal,
+      });
+
+      expect(templateGenerateContentSpy).toHaveBeenCalledWith(
+        model._apiSettings,
+        TEMPLATE_ID,
+        expect.objectContaining({
+          inputs: TEMPLATE_VARS,
+          contents: [{ role: 'user', parts: [{ text: 'hello' }] }],
+        }),
+        {
+          timeout: 2000,
+          baseUrl: 'https://model.example.com',
+          signal: controller.signal,
+        },
+      );
+      await expect(chat.getHistory()).resolves.toEqual([
+        { role: 'user', parts: [{ text: 'hello' }] },
+        { role: 'model', parts: [{ text: 'hello back' }] },
+      ]);
+    });
+
+    it('should call templateGenerateContentStream with template chat parameters', async function () {
+      const templateGenerateContentStreamSpy = jest
+        .spyOn(generateContentMethods, 'templateGenerateContentStream')
+        .mockResolvedValue({
+          response: Promise.resolve({
+            candidates: [{ content: { parts: [{ text: 'stream back' }] } }],
+          }),
+        } as any);
+      const model = new TemplateGenerativeModel(fakeAI, { timeout: 5000 });
+      const chat = model.startChat({
+        templateId: TEMPLATE_ID,
+        templateVariables: TEMPLATE_VARS,
+      });
+
+      const result = await chat.sendMessageStream('hello');
+      await result.response;
+
+      expect(templateGenerateContentStreamSpy).toHaveBeenCalledWith(
+        model._apiSettings,
+        TEMPLATE_ID,
+        expect.objectContaining({
+          inputs: TEMPLATE_VARS,
+          contents: [{ role: 'user', parts: [{ text: 'hello' }] }],
+        }),
+        { timeout: 5000 },
+      );
+      await expect(chat.getHistory()).resolves.toEqual([
+        { role: 'user', parts: [{ text: 'hello' }] },
+        { role: 'model', parts: [{ text: 'stream back' }] },
+      ]);
+    });
+  });
 });

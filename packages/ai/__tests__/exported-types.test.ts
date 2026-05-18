@@ -28,6 +28,8 @@ import {
   getGenerativeModel,
   ChatSession,
   ChatSessionBase,
+  TemplateChatSession,
+  TemplateGenerativeModel,
   GoogleAIBackend,
   VertexAIBackend,
   // Types that exist - imported for type checking
@@ -84,6 +86,10 @@ import {
   Segment,
   SingleRequestOptions,
   StartChatParams,
+  StartTemplateChatParams,
+  TemplateFunctionDeclaration,
+  TemplateFunctionDeclarationsTool,
+  TemplateTool,
   TextPart,
   ThinkingConfig,
   ThinkingLevel,
@@ -162,6 +168,14 @@ describe('AI', function () {
 
     it('`ChatSessionBase` class is properly exposed to end user', function () {
       expect(ChatSessionBase).toBeDefined();
+    });
+
+    it('`TemplateChatSession` class is properly exposed to end user', function () {
+      expect(TemplateChatSession).toBeDefined();
+    });
+
+    it('`TemplateGenerativeModel` class is properly exposed to end user', function () {
+      expect(TemplateGenerativeModel).toBeDefined();
     });
 
     it('`GoogleAIBackend` class is properly exposed to end user', function () {
@@ -470,6 +484,44 @@ describe('AI', function () {
     it('`StartChatParams` type is properly exposed to end user', function () {
       const _typeCheck: StartChatParams = {} as StartChatParams;
       expect(typeof _typeCheck).toBeDefined();
+    });
+
+    it('`StartTemplateChatParams` type is properly exposed to end user', function () {
+      const _typeCheck: StartTemplateChatParams = {
+        templateId: 'my-template',
+        templateVariables: { city: 'London' },
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
+    it('`TemplateFunctionDeclaration` type is properly exposed to end user', function () {
+      const _typeCheck: TemplateFunctionDeclaration = {
+        name: 'getWeather',
+        parameters: {
+          type: 'object',
+          properties: {
+            city: {
+              type: SchemaType.STRING,
+            },
+          },
+        },
+        functionReference: () => ({ temperature: 72 }),
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
+    it('`TemplateFunctionDeclarationsTool` type is properly exposed to end user', function () {
+      const _typeCheck: TemplateFunctionDeclarationsTool = {
+        functionDeclarations: [{ name: 'getWeather' }],
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
+    it('`TemplateTool` type is properly exposed to end user', function () {
+      const _typeCheck: TemplateTool = {
+        functionDeclarations: [{ name: 'getWeather' }],
+      };
+      expect(typeof _typeCheck).toBe('object');
     });
 
     it('`TextPart` type is properly exposed to end user', function () {

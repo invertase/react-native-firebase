@@ -101,31 +101,6 @@ const config: PackageConfig = {
       reason:
         'Chrome Prompt API prompt options type used by browser-only on-device language model integration.',
     },
-    {
-      name: 'StartTemplateChatParams',
-      reason:
-        'Template chat startup parameters are part of the firebase-js-sdk template chat API, which RN Firebase does not currently expose.',
-    },
-    {
-      name: 'TemplateChatSession',
-      reason:
-        'Template chat sessions are not currently part of the RN Firebase public AI API.',
-    },
-    {
-      name: 'TemplateFunctionDeclaration',
-      reason:
-        'Template function declaration helpers are part of firebase-js-sdk template tooling that RN Firebase does not currently expose.',
-    },
-    {
-      name: 'TemplateFunctionDeclarationsTool',
-      reason:
-        'Template function declaration tools are part of firebase-js-sdk template tooling that RN Firebase does not currently expose.',
-    },
-    {
-      name: 'TemplateTool',
-      reason:
-        'Template tool unions are part of firebase-js-sdk template tooling that RN Firebase does not currently expose.',
-    },
   ],
   extraInRN: [
     {
@@ -194,11 +169,6 @@ const config: PackageConfig = {
       name: 'RequestOptions',
       reason:
         'RN Firebase does not currently expose `maxSequentialFunctionCalls`, so its request options are limited to timeout and base URL.',
-    },
-    {
-      name: 'TemplateGenerativeModel',
-      reason:
-        'RN Firebase template generative models do not currently expose `startChat`, so template chat sessions remain absent.',
     },
     {
       name: 'UsageMetadata',
