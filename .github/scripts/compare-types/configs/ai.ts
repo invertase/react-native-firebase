@@ -154,16 +154,6 @@ const config: PackageConfig = {
       reason:
         'Both packages expose the same URL retrieval status constants, but the generated declaration text differs (`string`-valued object in JS SDK vs readonly literal constants in RN).',
     },
-    {
-      name: 'FunctionDeclaration',
-      reason:
-        'RN Firebase function declarations accept `ObjectSchemaInterface` only and do not expose the JS SDK `functionReference` auto-calling hook.',
-    },
-    {
-      name: 'RequestOptions',
-      reason:
-        'RN Firebase does not currently expose `maxSequentialFunctionCalls`, so its request options are limited to timeout and base URL.',
-    },
   ],
 };
 

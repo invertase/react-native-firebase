@@ -73,6 +73,7 @@ import {
   ModelParams,
   ObjectSchemaInterface,
   ObjectSchemaRequest,
+  ObjectSchema,
   PromptFeedback,
   RequestOptions,
   RetrievedContextAttribution,
@@ -82,6 +83,7 @@ import {
   SchemaParams,
   SchemaRequest,
   SchemaShared,
+  Schema,
   SearchEntrypoint,
   Segment,
   SingleRequestOptions,
@@ -424,14 +426,33 @@ describe('AI', function () {
       expect(typeof _typeCheck).toBe('object');
     });
 
+    it('`FunctionDeclaration` accepts ObjectSchema and functionReference', function () {
+      const parameters: ObjectSchema = Schema.object({
+        properties: {
+          city: Schema.string(),
+        },
+      });
+      const _typeCheck: FunctionDeclaration = {
+        name: 'getWeather',
+        description: 'Gets weather for a city.',
+        parameters,
+        functionReference: () => ({ temperature: 72 }),
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
     it('`PromptFeedback` type is properly exposed to end user', function () {
       const _typeCheck: PromptFeedback = {} as PromptFeedback;
       expect(typeof _typeCheck).toBeDefined();
     });
 
     it('`RequestOptions` type is properly exposed to end user', function () {
-      const _typeCheck: RequestOptions = {} as RequestOptions;
-      expect(typeof _typeCheck).toBeDefined();
+      const _typeCheck: RequestOptions = {
+        timeout: 1000,
+        baseUrl: 'https://example.com',
+        maxSequentialFunctionCalls: 3,
+      };
+      expect(typeof _typeCheck).toBe('object');
     });
 
     it('`SingleRequestOptions` type is properly exposed to end user', function () {

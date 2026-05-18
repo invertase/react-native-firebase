@@ -25,7 +25,7 @@ import {
   ResponseModality,
   ThinkingLevel,
 } from './enums';
-import { ObjectSchemaInterface, ObjectSchemaRequest, SchemaRequest } from './schema';
+import { ObjectSchemaRequest, SchemaRequest } from './schema';
 
 /**
  * Base parameters for a number of methods.
@@ -271,6 +271,15 @@ export interface RequestOptions {
    * Base url for endpoint. Defaults to https://firebasevertexai.googleapis.com
    */
   baseUrl?: string;
+  /**
+   * Limits amount of sequential function calls the SDK can make during automatic
+   * function calling, in order to prevent infinite loops. If not specified,
+   * this value defaults to 10.
+   *
+   * When it reaches this limit, it will return the last response received
+   * from the model, whether it is a text response or further function calls.
+   */
+  maxSequentialFunctionCalls?: number;
 }
 
 /**
@@ -320,7 +329,13 @@ export interface FunctionDeclaration {
    * format. Reflects the Open API 3.03 Parameter Object. Parameter names are
    * case-sensitive. For a function with no parameters, this can be left unset.
    */
-  parameters?: ObjectSchemaInterface | ObjectSchemaRequest;
+  parameters?: ObjectSchema | ObjectSchemaRequest;
+  /**
+   * Reference to an actual function to call. Specifying this will cause the
+   * function to be called automatically when requested by the model.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- Matches firebase-js-sdk public API.
+  functionReference?: Function;
 }
 
 /**
