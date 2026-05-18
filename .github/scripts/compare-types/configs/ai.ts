@@ -164,11 +164,6 @@ const config: PackageConfig = {
       reason:
         'RN Firebase does not currently expose `maxSequentialFunctionCalls`, so its request options are limited to timeout and base URL.',
     },
-    {
-      name: 'UsageMetadata',
-      reason:
-        'RN Firebase usage metadata does not currently surface tool-use and cache token accounting fields that are present in the JS SDK declaration.',
-    },
   ],
 };
 

@@ -167,10 +167,19 @@ describe('generateContent()', () => {
     const mockResponse = getMockResponse(
       BackendName.VertexAI,
       'unary-success-basic-response-long-usage-metadata.json',
-    );
-    const makeRequestStub = jest
-      .spyOn(request, 'makeRequest')
-      .mockResolvedValue(mockResponse as Response);
+    ) as Response;
+    const mockResponseJson = await mockResponse.json();
+    mockResponseJson.usageMetadata = {
+      ...mockResponseJson.usageMetadata,
+      toolUsePromptTokenCount: 3,
+      toolUsePromptTokensDetails: [{ modality: 'TEXT', tokenCount: 3 }],
+      cachedContentTokenCount: 5,
+      cacheTokensDetails: [{ modality: 'TEXT', tokenCount: 5 }],
+    };
+    const makeRequestStub = jest.spyOn(request, 'makeRequest').mockResolvedValue({
+      ...mockResponse,
+      json: () => Promise.resolve(mockResponseJson),
+    } as Response);
     const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
     expect(result.response.usageMetadata?.totalTokenCount).toEqual(1913);
     expect(result.response.usageMetadata?.candidatesTokenCount).toEqual(76);
@@ -178,6 +187,12 @@ describe('generateContent()', () => {
     expect(result.response.usageMetadata?.promptTokensDetails?.[0]?.tokenCount).toEqual(1806);
     expect(result.response.usageMetadata?.candidatesTokensDetails?.[0]?.modality).toEqual('TEXT');
     expect(result.response.usageMetadata?.candidatesTokensDetails?.[0]?.tokenCount).toEqual(76);
+    expect(result.response.usageMetadata).toMatchObject({
+      toolUsePromptTokenCount: 3,
+      toolUsePromptTokensDetails: [{ modality: 'TEXT', tokenCount: 3 }],
+      cachedContentTokenCount: 5,
+      cacheTokensDetails: [{ modality: 'TEXT', tokenCount: 5 }],
+    });
     expect(makeRequestStub).toHaveBeenCalledWith(
       expect.objectContaining({
         model: 'model',

@@ -563,8 +563,16 @@ describe('AI', function () {
     });
 
     it('`UsageMetadata` type is properly exposed to end user', function () {
-      const _typeCheck: UsageMetadata = {} as UsageMetadata;
-      expect(typeof _typeCheck).toBeDefined();
+      const _typeCheck: UsageMetadata = {
+        promptTokenCount: 5,
+        candidatesTokenCount: 7,
+        totalTokenCount: 12,
+        toolUsePromptTokenCount: 3,
+        toolUsePromptTokensDetails: [{ modality: Modality.TEXT, tokenCount: 3 }],
+        cachedContentTokenCount: 2,
+        cacheTokensDetails: [{ modality: Modality.TEXT, tokenCount: 2 }],
+      };
+      expect(typeof _typeCheck).toBe('object');
     });
 
     it('`VideoMetadata` type is properly exposed to end user', function () {
