@@ -36,6 +36,7 @@ import {
   templateGenerateContent,
   templateGenerateContentStream,
 } from './generate-content';
+import { generateContentWithAutomaticFunctionCalling } from './automatic-function-calling';
 import { ApiSettings } from '../types/internal';
 import { logger } from '../logger';
 import { mergeRequestOptions } from '../requests/request-options';
@@ -116,17 +117,26 @@ export class ChatSession extends ChatSessionBase<StartChatParams> {
     let finalResult = {} as GenerateContentResult;
     // Add onto the chain.
     this._sendPromise = this._sendPromise
-      .then(() =>
-        generateContent(
+      .then(async () => {
+        const requestOptions = mergeRequestOptions(this.requestOptions, singleRequestOptions);
+        const result = await generateContent(
           this._apiSettings,
           this.model,
           generateContentRequest,
-          mergeRequestOptions(this.requestOptions, singleRequestOptions),
-        ),
-      )
-      .then((result: GenerateContentResult) => {
+          requestOptions,
+        );
+        return generateContentWithAutomaticFunctionCalling(
+          this._apiSettings,
+          this.model,
+          generateContentRequest,
+          result,
+          requestOptions,
+        );
+      })
+      .then(({ result, addedContents }) => {
         if (result.response.candidates && result.response.candidates.length > 0) {
           this._history.push(newContent);
+          this._history.push(...addedContents);
           const responseContent: Content = {
             parts: result.response.candidates?.[0]?.content.parts || [],
             // Response seems to come back without a role set.

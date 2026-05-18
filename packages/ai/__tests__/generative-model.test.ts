@@ -573,6 +573,100 @@ describe('GenerativeModel', () => {
     makeRequestStub.mockRestore();
   });
 
+  it('automatically calls functionReference from chat.sendMessage function calls', async () => {
+    const getWeather = jest.fn<(args: object) => object>().mockReturnValue({ temperature: 72 });
+    const genModel = new GenerativeModel(fakeAI, {
+      model: 'my-model',
+      tools: [
+        {
+          functionDeclarations: [
+            {
+              name: 'getWeather',
+              description: 'Gets weather for a city.',
+              functionReference: getWeather,
+            },
+          ],
+        },
+      ],
+    });
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValueOnce(
+        responseFromJson({
+          candidates: [
+            {
+              index: 0,
+              content: {
+                role: 'model',
+                parts: [
+                  {
+                    functionCall: {
+                      name: 'getWeather',
+                      args: { city: 'London' },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+      )
+      .mockResolvedValueOnce(
+        responseFromJson({
+          candidates: [
+            {
+              index: 0,
+              content: {
+                role: 'model',
+                parts: [{ text: 'It is 72 degrees.' }],
+              },
+            },
+          ],
+        }),
+      );
+    const chat = genModel.startChat();
+
+    const result = await chat.sendMessage('weather in London');
+    const history = await chat.getHistory();
+
+    expect(result.response.text()).toBe('It is 72 degrees.');
+    expect(getWeather).toHaveBeenCalledWith({ city: 'London' });
+    expect(makeRequestStub).toHaveBeenCalledTimes(2);
+    expect(history).toEqual([
+      {
+        role: 'user',
+        parts: [{ text: 'weather in London' }],
+      },
+      {
+        role: 'model',
+        parts: [
+          {
+            functionCall: {
+              name: 'getWeather',
+              args: { city: 'London' },
+            },
+          },
+        ],
+      },
+      {
+        role: 'function',
+        parts: [
+          {
+            functionResponse: {
+              name: 'getWeather',
+              response: { temperature: 72 },
+            },
+          },
+        ],
+      },
+      {
+        role: 'model',
+        parts: [{ text: 'It is 72 degrees.' }],
+      },
+    ]);
+    makeRequestStub.mockRestore();
+  });
+
   it('passes CodeExecutionTool through to chat.sendMessage', async function () {
     const genModel = new GenerativeModel(fakeAI, {
       model: 'my-model',
