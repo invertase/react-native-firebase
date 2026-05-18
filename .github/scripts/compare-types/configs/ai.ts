@@ -102,11 +102,6 @@ const config: PackageConfig = {
         'Chrome Prompt API prompt options type used by browser-only on-device language model integration.',
     },
     {
-      name: 'AnyOfSchema',
-      reason:
-        'RN Firebase schema-builder does not currently expose the `anyOf` helper class, so union-schema composition is not part of the public RN AI API.',
-    },
-    {
       name: 'LiveServerGoingAwayNotice',
       reason:
         'RN Firebase live sessions do not currently surface the server `goingAwayNotice` message type in the public API.',
@@ -251,26 +246,6 @@ const config: PackageConfig = {
         'RN Firebase does not currently expose `maxSequentalFunctionCalls`, so its request options are limited to timeout and base URL.',
     },
     {
-      name: 'Schema',
-      reason:
-        'RN Firebase schema-builder requires an explicit `type` and does not expose the JS SDK `anyOf` helper, so the public schema shape differs.',
-    },
-    {
-      name: 'SchemaInterface',
-      reason:
-        'RN Firebase schema interfaces require an explicit `type`, whereas the JS SDK declaration leaves `type` optional in the base interface.',
-    },
-    {
-      name: 'SchemaRequest',
-      reason:
-        'RN Firebase request-shaped schemas require an explicit `type`, whereas the JS SDK declaration leaves `type` optional.',
-    },
-    {
-      name: 'SchemaShared',
-      reason:
-        'RN Firebase shared schema typing omits the JS SDK `anyOf` property because `AnyOfSchema` is not currently part of the public RN API.',
-    },
-    {
       name: 'TemplateGenerativeModel',
       reason:
         'RN Firebase template generative model methods do not currently accept per-call `SingleRequestOptions`, so request overrides are limited to model-level `RequestOptions`.',
@@ -279,11 +254,6 @@ const config: PackageConfig = {
       name: 'TemplateImagenModel',
       reason:
         'RN Firebase template Imagen model methods do not currently accept per-call `SingleRequestOptions`, so request overrides are limited to model-level `RequestOptions`.',
-    },
-    {
-      name: 'TypedSchema',
-      reason:
-        'RN Firebase typed schema unions do not currently include `AnyOfSchema`, so the exported union is smaller than the JS SDK version.',
     },
     {
       name: 'UsageMetadata',
