@@ -36,7 +36,10 @@ import {
   templateGenerateContent,
   templateGenerateContentStream,
 } from './generate-content';
-import { generateContentWithAutomaticFunctionCalling } from './automatic-function-calling';
+import {
+  generateContentStreamWithAutomaticFunctionCalling,
+  generateContentWithAutomaticFunctionCalling,
+} from './automatic-function-calling';
 import { ApiSettings } from '../types/internal';
 import { logger } from '../logger';
 import { mergeRequestOptions } from '../requests/request-options';
@@ -176,11 +179,20 @@ export class ChatSession extends ChatSessionBase<StartChatParams> {
       systemInstruction: this.params?.systemInstruction,
       contents: [...this._history, newContent],
     };
+    const requestOptions = mergeRequestOptions(this.requestOptions, singleRequestOptions);
     const streamPromise = generateContentStream(
       this._apiSettings,
       this.model,
       generateContentRequest,
-      mergeRequestOptions(this.requestOptions, singleRequestOptions),
+      requestOptions,
+    ).then(result =>
+      generateContentStreamWithAutomaticFunctionCalling(
+        this._apiSettings,
+        this.model,
+        generateContentRequest,
+        result,
+        requestOptions,
+      ),
     );
 
     // Add onto the chain.
@@ -191,10 +203,13 @@ export class ChatSession extends ChatSessionBase<StartChatParams> {
       .catch(_ignored => {
         throw new Error(SILENT_ERROR);
       })
-      .then(streamResult => streamResult.response)
-      .then((response: EnhancedGenerateContentResponse) => {
+      .then(({ result, addedContents }) =>
+        result.response.then(response => ({ response, addedContents })),
+      )
+      .then(({ response, addedContents }) => {
         if (response.candidates && response.candidates.length > 0) {
           this._history.push(newContent);
+          this._history.push(...addedContents);
           const responseContent = { ...response.candidates[0]?.content };
           // Response seems to come back without a role set.
           if (!responseContent.role) {
@@ -220,7 +235,7 @@ export class ChatSession extends ChatSessionBase<StartChatParams> {
           logger.error(e);
         }
       });
-    return streamPromise;
+    return (await streamPromise).result;
   }
 }
 

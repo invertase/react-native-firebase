@@ -22,16 +22,23 @@ import {
   FunctionResponse,
   GenerateContentRequest,
   GenerateContentResult,
+  GenerateContentStreamResult,
+  EnhancedGenerateContentResponse,
   SingleRequestOptions,
   Tool,
 } from '../types';
 import { ApiSettings } from '../types/internal';
-import { generateContent } from './generate-content';
+import { generateContent, generateContentStream } from './generate-content';
 
 const DEFAULT_MAX_SEQUENTIAL_FUNCTION_CALLS = 10;
 
 export interface AutomaticFunctionCallingResult {
   result: GenerateContentResult;
+  addedContents: Content[];
+}
+
+export interface AutomaticFunctionCallingStreamResult {
+  result: GenerateContentStreamResult;
   addedContents: Content[];
 }
 
@@ -80,8 +87,61 @@ export async function generateContentWithAutomaticFunctionCalling(
   return { result: currentResult, addedContents };
 }
 
-function getModelResponseContent(result: GenerateContentResult): Content | undefined {
-  const responseContent = result.response.candidates?.[0]?.content;
+export async function generateContentStreamWithAutomaticFunctionCalling(
+  apiSettings: ApiSettings,
+  model: string,
+  params: GenerateContentRequest,
+  result: GenerateContentStreamResult,
+  requestOptions?: SingleRequestOptions,
+): Promise<AutomaticFunctionCallingStreamResult> {
+  if (!getFunctionDeclarationsWithReferences(params.tools).length) {
+    return { result, addedContents: [] };
+  }
+
+  let remainingFunctionCalls =
+    requestOptions?.maxSequentialFunctionCalls ?? DEFAULT_MAX_SEQUENTIAL_FUNCTION_CALLS;
+  let currentParams = params;
+  let currentResult = result;
+  const addedContents: Content[] = [];
+
+  while (remainingFunctionCalls > 0) {
+    const response = await currentResult.response;
+    const functionCalls = response.functionCalls?.();
+    if (!functionCalls?.length) {
+      return { result: currentResult, addedContents };
+    }
+
+    const functionResponses = await callFunctionReferences(currentParams.tools, functionCalls);
+    if (!functionResponses) {
+      return { result: currentResult, addedContents };
+    }
+
+    const responseContent = getModelResponseContent(response);
+    if (!responseContent) {
+      return { result: currentResult, addedContents };
+    }
+
+    remainingFunctionCalls -= 1;
+    const functionResponseContent: Content = {
+      role: 'function',
+      parts: functionResponses.map(functionResponse => ({ functionResponse })),
+    };
+    addedContents.push(responseContent, functionResponseContent);
+    currentParams = {
+      ...currentParams,
+      contents: [...currentParams.contents, responseContent, functionResponseContent],
+    };
+    currentResult = await generateContentStream(apiSettings, model, currentParams, requestOptions);
+  }
+
+  return { result: currentResult, addedContents };
+}
+
+function getModelResponseContent(
+  responseOrResult: GenerateContentResult | EnhancedGenerateContentResponse,
+): Content | undefined {
+  const response = 'response' in responseOrResult ? responseOrResult.response : responseOrResult;
+  const responseContent = response.candidates?.[0]?.content;
   if (!responseContent) {
     return undefined;
   }
