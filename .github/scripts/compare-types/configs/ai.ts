@@ -102,11 +102,6 @@ const config: PackageConfig = {
         'Chrome Prompt API prompt options type used by browser-only on-device language model integration.',
     },
     {
-      name: 'ChatSessionBase',
-      reason:
-        'Base class used by the firebase-js-sdk template chat implementation. RN Firebase exposes its concrete chat session surface instead.',
-    },
-    {
       name: 'StartTemplateChatParams',
       reason:
         'Template chat startup parameters are part of the firebase-js-sdk template chat API, which RN Firebase does not currently expose.',
@@ -184,11 +179,6 @@ const config: PackageConfig = {
       name: 'URLRetrievalStatus',
       reason:
         'Both packages expose the same URL retrieval status constants, but the generated declaration text differs (`string`-valued object in JS SDK vs readonly literal constants in RN).',
-    },
-    {
-      name: 'ChatSession',
-      reason:
-        'RN Firebase chat sessions expose `getHistory()` directly on the concrete class while the firebase-js-sdk inherits it from `ChatSessionBase`.',
     },
     {
       name: 'FunctionDeclaration',
