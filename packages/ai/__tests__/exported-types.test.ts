@@ -352,8 +352,16 @@ describe('AI', function () {
     });
 
     it('`GenerationConfig` type is properly exposed to end user', function () {
-      const _typeCheck: GenerationConfig = {} as GenerationConfig;
-      expect(typeof _typeCheck).toBeDefined();
+      const _typeCheck: GenerationConfig = {
+        responseMimeType: 'application/json',
+        responseJsonSchema: {
+          type: 'object',
+          properties: {
+            answer: { type: 'string' },
+          },
+        },
+      };
+      expect(typeof _typeCheck).toBe('object');
     });
 
     it('`GenerativeContentBlob` type is properly exposed to end user', function () {
