@@ -25,10 +25,17 @@ import {
   GenerateContentStreamResult,
   EnhancedGenerateContentResponse,
   SingleRequestOptions,
+  TemplateFunctionDeclaration,
+  TemplateTool,
   Tool,
 } from '../types';
 import { ApiSettings } from '../types/internal';
-import { generateContent, generateContentStream } from './generate-content';
+import {
+  generateContent,
+  generateContentStream,
+  templateGenerateContent,
+  templateGenerateContentStream,
+} from './generate-content';
 
 const DEFAULT_MAX_SEQUENTIAL_FUNCTION_CALLS = 10;
 
@@ -40,6 +47,12 @@ export interface AutomaticFunctionCallingResult {
 export interface AutomaticFunctionCallingStreamResult {
   result: GenerateContentStreamResult;
   addedContents: Content[];
+}
+
+export interface TemplateAutomaticFunctionCallingRequest {
+  contents: Content[];
+  tools?: TemplateTool[];
+  [key: string]: unknown;
 }
 
 export async function generateContentWithAutomaticFunctionCalling(
@@ -82,6 +95,56 @@ export async function generateContentWithAutomaticFunctionCalling(
       contents: [...currentParams.contents, responseContent, functionResponseContent],
     };
     currentResult = await generateContent(apiSettings, model, currentParams, requestOptions);
+  }
+
+  return { result: currentResult, addedContents };
+}
+
+export async function templateGenerateContentWithAutomaticFunctionCalling(
+  apiSettings: ApiSettings,
+  templateId: string,
+  params: TemplateAutomaticFunctionCallingRequest,
+  result: GenerateContentResult,
+  requestOptions?: SingleRequestOptions,
+): Promise<AutomaticFunctionCallingResult> {
+  let remainingFunctionCalls =
+    requestOptions?.maxSequentialFunctionCalls ?? DEFAULT_MAX_SEQUENTIAL_FUNCTION_CALLS;
+  let currentParams = params;
+  let currentResult = result;
+  const addedContents: Content[] = [];
+
+  while (remainingFunctionCalls > 0) {
+    const functionCalls = currentResult.response.functionCalls?.();
+    if (!functionCalls?.length) {
+      return { result: currentResult, addedContents };
+    }
+
+    const functionResponses = await callFunctionReferences(currentParams.tools, functionCalls);
+    if (!functionResponses) {
+      return { result: currentResult, addedContents };
+    }
+
+    const responseContent = getModelResponseContent(currentResult);
+    if (!responseContent) {
+      return { result: currentResult, addedContents };
+    }
+
+    remainingFunctionCalls -= 1;
+    const functionResponseContent: Content = {
+      role: 'function',
+      parts: functionResponses.map(functionResponse => ({ functionResponse })),
+    };
+    addedContents.push(responseContent, functionResponseContent);
+    currentParams = {
+      ...currentParams,
+      contents: [...currentParams.contents, responseContent, functionResponseContent],
+    };
+    currentResult = await templateGenerateContent(
+      apiSettings,
+      templateId,
+      currentParams,
+      requestOptions,
+    );
   }
 
   return { result: currentResult, addedContents };
@@ -137,6 +200,61 @@ export async function generateContentStreamWithAutomaticFunctionCalling(
   return { result: currentResult, addedContents };
 }
 
+export async function templateGenerateContentStreamWithAutomaticFunctionCalling(
+  apiSettings: ApiSettings,
+  templateId: string,
+  params: TemplateAutomaticFunctionCallingRequest,
+  result: GenerateContentStreamResult,
+  requestOptions?: SingleRequestOptions,
+): Promise<AutomaticFunctionCallingStreamResult> {
+  if (!getFunctionDeclarationsWithReferences(params.tools).length) {
+    return { result, addedContents: [] };
+  }
+
+  let remainingFunctionCalls =
+    requestOptions?.maxSequentialFunctionCalls ?? DEFAULT_MAX_SEQUENTIAL_FUNCTION_CALLS;
+  let currentParams = params;
+  let currentResult = result;
+  const addedContents: Content[] = [];
+
+  while (remainingFunctionCalls > 0) {
+    const response = await currentResult.response;
+    const functionCalls = response.functionCalls?.();
+    if (!functionCalls?.length) {
+      return { result: currentResult, addedContents };
+    }
+
+    const functionResponses = await callFunctionReferences(currentParams.tools, functionCalls);
+    if (!functionResponses) {
+      return { result: currentResult, addedContents };
+    }
+
+    const responseContent = getModelResponseContent(response);
+    if (!responseContent) {
+      return { result: currentResult, addedContents };
+    }
+
+    remainingFunctionCalls -= 1;
+    const functionResponseContent: Content = {
+      role: 'function',
+      parts: functionResponses.map(functionResponse => ({ functionResponse })),
+    };
+    addedContents.push(responseContent, functionResponseContent);
+    currentParams = {
+      ...currentParams,
+      contents: [...currentParams.contents, responseContent, functionResponseContent],
+    };
+    currentResult = await templateGenerateContentStream(
+      apiSettings,
+      templateId,
+      currentParams,
+      requestOptions,
+    );
+  }
+
+  return { result: currentResult, addedContents };
+}
+
 function getModelResponseContent(
   responseOrResult: GenerateContentResult | EnhancedGenerateContentResponse,
 ): Content | undefined {
@@ -152,7 +270,7 @@ function getModelResponseContent(
 }
 
 async function callFunctionReferences(
-  tools: Tool[] | undefined,
+  tools: Tool[] | TemplateTool[] | undefined,
   functionCalls: FunctionCall[],
 ): Promise<FunctionResponse[] | undefined> {
   const declarations = getFunctionDeclarationsWithReferences(tools);
@@ -177,7 +295,9 @@ async function callFunctionReferences(
   return functionResponses;
 }
 
-function getFunctionDeclarationsWithReferences(tools: Tool[] | undefined): FunctionDeclaration[] {
+function getFunctionDeclarationsWithReferences(
+  tools: Tool[] | TemplateTool[] | undefined,
+): Array<FunctionDeclaration | TemplateFunctionDeclaration> {
   return (
     tools?.flatMap(tool =>
       'functionDeclarations' in tool

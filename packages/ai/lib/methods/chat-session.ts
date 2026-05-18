@@ -25,7 +25,6 @@ import {
   SingleRequestOptions,
   StartChatParams,
   StartTemplateChatParams,
-  EnhancedGenerateContentResponse,
 } from '../types';
 import { formatNewContent } from '../requests/request-helpers';
 import { formatBlockErrorMessage } from '../requests/response-helpers';
@@ -39,6 +38,9 @@ import {
 import {
   generateContentStreamWithAutomaticFunctionCalling,
   generateContentWithAutomaticFunctionCalling,
+  TemplateAutomaticFunctionCallingRequest,
+  templateGenerateContentStreamWithAutomaticFunctionCalling,
+  templateGenerateContentWithAutomaticFunctionCalling,
 } from './automatic-function-calling';
 import { ApiSettings } from '../types/internal';
 import { logger } from '../logger';
@@ -271,17 +273,26 @@ export class TemplateChatSession extends ChatSessionBase<StartTemplateChatParams
     let finalResult = {} as GenerateContentResult;
     // Add onto the chain.
     this._sendPromise = this._sendPromise
-      .then(() =>
-        templateGenerateContent(
+      .then(async () => {
+        const requestOptions = mergeRequestOptions(this.requestOptions, singleRequestOptions);
+        const result = await templateGenerateContent(
           this._apiSettings,
           this.params.templateId,
           templateParams,
-          mergeRequestOptions(this.requestOptions, singleRequestOptions),
-        ),
-      )
-      .then((result: GenerateContentResult) => {
+          requestOptions,
+        );
+        return templateGenerateContentWithAutomaticFunctionCalling(
+          this._apiSettings,
+          this.params.templateId,
+          templateParams,
+          result,
+          requestOptions,
+        );
+      })
+      .then(({ result, addedContents }) => {
         if (result.response.candidates && result.response.candidates.length > 0) {
           this._history.push(newContent);
+          this._history.push(...addedContents);
           const responseContent: Content = {
             parts: result.response.candidates?.[0]?.content.parts || [],
             // Response seems to come back without a role set.
@@ -314,11 +325,20 @@ export class TemplateChatSession extends ChatSessionBase<StartTemplateChatParams
     await this._sendPromise;
     const newContent = formatNewContent(request);
     const templateParams = this._buildTemplateChatRequest(newContent);
+    const requestOptions = mergeRequestOptions(this.requestOptions, singleRequestOptions);
     const streamPromise = templateGenerateContentStream(
       this._apiSettings,
       this.params.templateId,
       templateParams,
-      mergeRequestOptions(this.requestOptions, singleRequestOptions),
+      requestOptions,
+    ).then(result =>
+      templateGenerateContentStreamWithAutomaticFunctionCalling(
+        this._apiSettings,
+        this.params.templateId,
+        templateParams,
+        result,
+        requestOptions,
+      ),
     );
 
     // Add onto the chain.
@@ -329,10 +349,13 @@ export class TemplateChatSession extends ChatSessionBase<StartTemplateChatParams
       .catch(_ignored => {
         throw new Error(SILENT_ERROR);
       })
-      .then(streamResult => streamResult.response)
-      .then((response: EnhancedGenerateContentResponse) => {
+      .then(({ result, addedContents }) =>
+        result.response.then(response => ({ response, addedContents })),
+      )
+      .then(({ response, addedContents }) => {
         if (response.candidates && response.candidates.length > 0) {
           this._history.push(newContent);
+          this._history.push(...addedContents);
           const responseContent = { ...response.candidates[0]?.content };
           // Response seems to come back without a role set.
           if (!responseContent.role) {
@@ -358,10 +381,10 @@ export class TemplateChatSession extends ChatSessionBase<StartTemplateChatParams
           logger.error(e);
         }
       });
-    return streamPromise;
+    return (await streamPromise).result;
   }
 
-  private _buildTemplateChatRequest(newContent: Content): object {
+  private _buildTemplateChatRequest(newContent: Content): TemplateAutomaticFunctionCallingRequest {
     return {
       ...(this.params.templateVariables !== undefined
         ? { inputs: this.params.templateVariables }
