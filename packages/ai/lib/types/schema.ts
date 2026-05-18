@@ -108,6 +108,23 @@ export interface SchemaRequest extends SchemaShared<SchemaRequest> {
 }
 
 /**
+ * Interface for JSON parameters in a schema of {@link SchemaType.OBJECT}
+ * when not using the `Schema.object()` helper.
+ * @public
+ */
+export interface ObjectSchemaRequest extends Omit<SchemaRequest, 'type'> {
+  type: 'object';
+  /**
+   * This is not a property accepted in the final request to the backend, but is
+   * a client-side convenience property that is only usable by constructing
+   * a schema through the `Schema.object()` helper method. Populating this
+   * property will cause response errors if the object is not wrapped with
+   * `Schema.object()`.
+   */
+  optionalProperties?: never;
+}
+
+/**
  * Interface for {@link Schema} class.
  * @public
  */

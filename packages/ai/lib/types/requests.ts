@@ -25,7 +25,7 @@ import {
   ResponseModality,
   ThinkingLevel,
 } from './enums';
-import { ObjectSchemaInterface, SchemaRequest } from './schema';
+import { ObjectSchemaInterface, ObjectSchemaRequest, SchemaRequest } from './schema';
 
 /**
  * Base parameters for a number of methods.
@@ -279,7 +279,7 @@ export interface FunctionDeclaration {
    * format. Reflects the Open API 3.03 Parameter Object. Parameter names are
    * case-sensitive. For a function with no parameters, this can be left unset.
    */
-  parameters?: ObjectSchemaInterface;
+  parameters?: ObjectSchemaInterface | ObjectSchemaRequest;
 }
 
 /**

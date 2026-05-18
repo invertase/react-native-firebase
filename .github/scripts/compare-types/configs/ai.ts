@@ -102,11 +102,6 @@ const config: PackageConfig = {
         'Chrome Prompt API prompt options type used by browser-only on-device language model integration.',
     },
     {
-      name: 'ObjectSchemaRequest',
-      reason:
-        'RN Firebase exposes `ObjectSchemaInterface` for schema helper typing, but does not separately export the raw request-shape `ObjectSchemaRequest` type.',
-    },
-    {
       name: 'SingleRequestOptions',
       reason:
         'RN Firebase does not currently expose per-call request overrides such as `AbortSignal`; requests are configured via model-level `RequestOptions` only.',
