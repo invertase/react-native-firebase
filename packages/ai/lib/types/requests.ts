@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { TypedSchema } from '../requests/schema-builder';
+import { ObjectSchema, TypedSchema } from '../requests/schema-builder';
 import { Content, Part } from './content';
 import {
   FunctionCallingMode,
@@ -213,6 +213,22 @@ export interface StartChatParams extends BaseParams {
 }
 
 /**
+ * Params for {@link TemplateGenerativeModel.startChat}.
+ * @beta
+ */
+export interface StartTemplateChatParams extends Omit<StartChatParams, 'tools'> {
+  /**
+   * The ID of the server-side template to execute.
+   */
+  templateId: string;
+  /**
+   * A key-value map of variables to populate the template with.
+   */
+  templateVariables?: Record<string, unknown>;
+  tools?: TemplateTool[];
+}
+
+/**
  * Params for calling {@link GenerativeModel.countTokens}
  * @public
  */
@@ -384,6 +400,53 @@ export interface FunctionDeclarationsTool {
    */
   functionDeclarations?: FunctionDeclaration[];
 }
+
+/**
+ * Structured representation of a template function declaration.
+ * @beta
+ */
+export interface TemplateFunctionDeclaration {
+  /**
+   * The name of the function to call. Must start with a letter or an
+   * underscore. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with
+   * a max length of 64.
+   */
+  name: string;
+  /**
+   * Description is intentionally unsupported for template function declarations.
+   */
+  description?: never;
+  /**
+   * Optional. Describes the parameters to this function in JSON Schema Object
+   * format.
+   */
+  parameters?: ObjectSchema | ObjectSchemaRequest;
+  /**
+   * Reference to an actual function to call. Specifying this will cause the
+   * function to be called automatically when requested by the model.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- Matches firebase-js-sdk public API.
+  functionReference?: Function;
+}
+
+/**
+ * A piece of code that enables the system to interact with external systems.
+ * @beta
+ */
+export interface TemplateFunctionDeclarationsTool {
+  /**
+   * Optional. One or more function declarations
+   * to be passed to the server-side template execution.
+   */
+  functionDeclarations?: TemplateFunctionDeclaration[];
+}
+
+/**
+ * Defines a tool that a {@link TemplateGenerativeModel} can call
+ * to access external knowledge.
+ * @beta
+ */
+export type TemplateTool = TemplateFunctionDeclarationsTool;
 
 /**
  * Tool config. This config is shared for all tools provided in the request.

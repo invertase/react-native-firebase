@@ -24,12 +24,18 @@ import {
   RequestOptions,
   SingleRequestOptions,
   StartChatParams,
+  StartTemplateChatParams,
   EnhancedGenerateContentResponse,
 } from '../types';
 import { formatNewContent } from '../requests/request-helpers';
 import { formatBlockErrorMessage } from '../requests/response-helpers';
 import { validateChatHistory } from './chat-session-helpers';
-import { generateContent, generateContentStream } from './generate-content';
+import {
+  generateContent,
+  generateContentStream,
+  templateGenerateContent,
+  templateGenerateContentStream,
+} from './generate-content';
 import { ApiSettings } from '../types/internal';
 import { logger } from '../logger';
 import { mergeRequestOptions } from '../requests/request-options';
@@ -49,7 +55,10 @@ export class ChatSessionBase<ParamsType extends { history?: Content[] } = StartC
   protected _history: Content[] = [];
   protected _sendPromise: Promise<void> = Promise.resolve();
 
-  constructor(public params?: ParamsType, public requestOptions?: RequestOptions) {
+  constructor(
+    public params?: ParamsType,
+    public requestOptions?: RequestOptions,
+  ) {
     if (params?.history) {
       validateChatHistory(params.history);
       this._history = params.history;
@@ -202,5 +211,142 @@ export class ChatSession extends ChatSessionBase<StartChatParams> {
         }
       });
     return streamPromise;
+  }
+}
+
+/**
+ * ChatSession class for server-side templates that enables sending chat
+ * messages and stores history of sent and received messages so far.
+ *
+ * @beta
+ */
+export class TemplateChatSession extends ChatSessionBase<StartTemplateChatParams> {
+  private _apiSettings: ApiSettings;
+
+  constructor(
+    apiSettings: ApiSettings,
+    public params: StartTemplateChatParams,
+    public requestOptions?: RequestOptions,
+  ) {
+    super(params, requestOptions);
+    this._apiSettings = apiSettings;
+  }
+
+  /**
+   * Sends a chat message and receives a non-streaming
+   * {@link GenerateContentResult}
+   */
+  async sendMessage(
+    request: string | Array<string | Part>,
+    singleRequestOptions?: SingleRequestOptions,
+  ): Promise<GenerateContentResult> {
+    await this._sendPromise;
+    const newContent = formatNewContent(request);
+    const templateParams = this._buildTemplateChatRequest(newContent);
+    let finalResult = {} as GenerateContentResult;
+    // Add onto the chain.
+    this._sendPromise = this._sendPromise
+      .then(() =>
+        templateGenerateContent(
+          this._apiSettings,
+          this.params.templateId,
+          templateParams,
+          mergeRequestOptions(this.requestOptions, singleRequestOptions),
+        ),
+      )
+      .then((result: GenerateContentResult) => {
+        if (result.response.candidates && result.response.candidates.length > 0) {
+          this._history.push(newContent);
+          const responseContent: Content = {
+            parts: result.response.candidates?.[0]?.content.parts || [],
+            // Response seems to come back without a role set.
+            role: result.response.candidates?.[0]?.content.role || 'model',
+          };
+          this._history.push(responseContent);
+        } else {
+          const blockErrorMessage = formatBlockErrorMessage(result.response);
+          if (blockErrorMessage) {
+            logger.warn(
+              `sendMessage() was unsuccessful. ${blockErrorMessage}. Inspect response object for details.`,
+            );
+          }
+        }
+        finalResult = result;
+      });
+    await this._sendPromise;
+    return finalResult;
+  }
+
+  /**
+   * Sends a chat message and receives the response as a
+   * {@link GenerateContentStreamResult} containing an iterable stream
+   * and a response promise.
+   */
+  async sendMessageStream(
+    request: string | Array<string | Part>,
+    singleRequestOptions?: SingleRequestOptions,
+  ): Promise<GenerateContentStreamResult> {
+    await this._sendPromise;
+    const newContent = formatNewContent(request);
+    const templateParams = this._buildTemplateChatRequest(newContent);
+    const streamPromise = templateGenerateContentStream(
+      this._apiSettings,
+      this.params.templateId,
+      templateParams,
+      mergeRequestOptions(this.requestOptions, singleRequestOptions),
+    );
+
+    // Add onto the chain.
+    this._sendPromise = this._sendPromise
+      .then(() => streamPromise)
+      // This must be handled to avoid unhandled rejection, but jump
+      // to the final catch block with a label to not log this error.
+      .catch(_ignored => {
+        throw new Error(SILENT_ERROR);
+      })
+      .then(streamResult => streamResult.response)
+      .then((response: EnhancedGenerateContentResponse) => {
+        if (response.candidates && response.candidates.length > 0) {
+          this._history.push(newContent);
+          const responseContent = { ...response.candidates[0]?.content };
+          // Response seems to come back without a role set.
+          if (!responseContent.role) {
+            responseContent.role = 'model';
+          }
+          this._history.push(responseContent as Content);
+        } else {
+          const blockErrorMessage = formatBlockErrorMessage(response);
+          if (blockErrorMessage) {
+            logger.warn(
+              `sendMessageStream() was unsuccessful. ${blockErrorMessage}. Inspect response object for details.`,
+            );
+          }
+        }
+      })
+      .catch(e => {
+        // Errors in streamPromise are already catchable by the user as
+        // streamPromise is returned.
+        // Avoid duplicating the error message in logs.
+        if (e.message !== SILENT_ERROR) {
+          // Users do not have access to _sendPromise to catch errors
+          // downstream from streamPromise, so they should not throw.
+          logger.error(e);
+        }
+      });
+    return streamPromise;
+  }
+
+  private _buildTemplateChatRequest(newContent: Content): object {
+    return {
+      ...(this.params.templateVariables !== undefined
+        ? { inputs: this.params.templateVariables }
+        : {}),
+      safetySettings: this.params.safetySettings,
+      generationConfig: this.params.generationConfig,
+      tools: this.params.tools,
+      toolConfig: this.params.toolConfig,
+      systemInstruction: this.params.systemInstruction,
+      contents: [...this._history, newContent],
+    };
   }
 }
