@@ -102,11 +102,6 @@ const config: PackageConfig = {
         'Chrome Prompt API prompt options type used by browser-only on-device language model integration.',
     },
     {
-      name: 'LiveServerGoingAwayNotice',
-      reason:
-        'RN Firebase live sessions do not currently surface the server `goingAwayNotice` message type in the public API.',
-    },
-    {
       name: 'ObjectSchemaRequest',
       reason:
         'RN Firebase exposes `ObjectSchemaInterface` for schema helper typing, but does not separately export the raw request-shape `ObjectSchemaRequest` type.',
@@ -229,16 +224,6 @@ const config: PackageConfig = {
       name: 'ImagenModel',
       reason:
         'RN Firebase Imagen model requests do not currently accept per-call `SingleRequestOptions`, so request overrides are limited to model-level `RequestOptions`.',
-    },
-    {
-      name: 'LiveResponseType',
-      reason:
-        'RN Firebase live response typing omits `GOING_AWAY_NOTICE` because `LiveServerGoingAwayNotice` is not currently surfaced in the public API.',
-    },
-    {
-      name: 'LiveSession',
-      reason:
-        'RN Firebase live sessions do not currently expose `LiveServerGoingAwayNotice` from `receive()`, so the response union is smaller than the JS SDK.',
     },
     {
       name: 'RequestOptions',

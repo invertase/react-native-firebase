@@ -21,6 +21,7 @@ import {
   GenerativeContentBlob,
   LiveResponseType,
   LiveServerContent,
+  LiveServerGoingAwayNotice,
   LiveServerToolCall,
   LiveServerToolCallCancellation,
   Part,
@@ -223,7 +224,10 @@ export class LiveSession {
    * @beta
    */
   async *receive(): AsyncGenerator<
-    LiveServerContent | LiveServerToolCall | LiveServerToolCallCancellation
+    | LiveServerContent
+    | LiveServerToolCall
+    | LiveServerToolCallCancellation
+    | LiveServerGoingAwayNotice
   > {
     if (this.isClosed) {
       throw new AIError(
@@ -252,6 +256,12 @@ export class LiveSession {
               }
             ).toolCallCancellation,
           } as LiveServerToolCallCancellation;
+        } else if ('goAway' in message) {
+          const notice = (message as { goAway: { timeLeft?: string } }).goAway;
+          yield {
+            type: LiveResponseType.GOING_AWAY_NOTICE,
+            timeLeft: parseDuration(notice.timeLeft),
+          } as LiveServerGoingAwayNotice;
         } else {
           logger.warn(
             `Received an unknown message type from the server: ${JSON.stringify(message)}`,
@@ -341,4 +351,15 @@ export class LiveSession {
       }
     }
   }
+}
+
+/**
+ * Parses a duration string (e.g. "3.000000001s") into a number of seconds.
+ */
+function parseDuration(duration?: string): number {
+  if (!duration || !duration.endsWith('s')) {
+    return 0;
+  }
+  const val = Number(duration.slice(0, -1));
+  return Number.isNaN(val) ? 0 : val;
 }
