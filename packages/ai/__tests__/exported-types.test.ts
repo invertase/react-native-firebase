@@ -27,6 +27,7 @@ import {
   getAI,
   getGenerativeModel,
   ChatSession,
+  ChatSessionBase,
   GoogleAIBackend,
   VertexAIBackend,
   // Types that exist - imported for type checking
@@ -157,6 +158,10 @@ describe('AI', function () {
 
     it('`ChatSession` class is properly exposed to end user', function () {
       expect(ChatSession).toBeDefined();
+    });
+
+    it('`ChatSessionBase` class is properly exposed to end user', function () {
+      expect(ChatSessionBase).toBeDefined();
     });
 
     it('`GoogleAIBackend` class is properly exposed to end user', function () {

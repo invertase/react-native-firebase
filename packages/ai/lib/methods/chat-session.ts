@@ -45,18 +45,11 @@ const SILENT_ERROR = 'SILENT_ERROR';
  *
  * @public
  */
-export class ChatSession {
-  private _apiSettings: ApiSettings;
-  private _history: Content[] = [];
-  private _sendPromise: Promise<void> = Promise.resolve();
+export class ChatSessionBase<ParamsType extends { history?: Content[] } = StartChatParams> {
+  protected _history: Content[] = [];
+  protected _sendPromise: Promise<void> = Promise.resolve();
 
-  constructor(
-    apiSettings: ApiSettings,
-    public model: string,
-    public params?: StartChatParams,
-    public requestOptions?: RequestOptions,
-  ) {
-    this._apiSettings = apiSettings;
+  constructor(public params?: ParamsType, public requestOptions?: RequestOptions) {
     if (params?.history) {
       validateChatHistory(params.history);
       this._history = params.history;
@@ -71,6 +64,26 @@ export class ChatSession {
   async getHistory(): Promise<Content[]> {
     await this._sendPromise;
     return this._history;
+  }
+}
+
+/**
+ * ChatSession class that enables sending chat messages and stores
+ * history of sent and received messages so far.
+ *
+ * @public
+ */
+export class ChatSession extends ChatSessionBase<StartChatParams> {
+  private _apiSettings: ApiSettings;
+
+  constructor(
+    apiSettings: ApiSettings,
+    public model: string,
+    public params?: StartChatParams,
+    public requestOptions?: RequestOptions,
+  ) {
+    super(params, requestOptions);
+    this._apiSettings = apiSettings;
   }
 
   /**
