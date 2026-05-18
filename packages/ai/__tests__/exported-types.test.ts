@@ -18,6 +18,7 @@
 import { describe, expect, it } from '@jest/globals';
 import {
   // Runtime values (classes, functions, constants)
+  AnyOfSchema,
   BackendType,
   POSSIBLE_ROLES,
   AIError,
@@ -116,6 +117,10 @@ describe('AI', function () {
 
     it('`POSSIBLE_ROLES` constant is properly exposed to end user', function () {
       expect(POSSIBLE_ROLES).toBeDefined();
+    });
+
+    it('`AnyOfSchema` class is properly exposed to end user', function () {
+      expect(AnyOfSchema).toBeDefined();
     });
 
     it('`ThinkingLevel` constant is properly exposed to end user', function () {
