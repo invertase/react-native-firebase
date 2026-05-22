@@ -40,7 +40,7 @@ yarn add @react-native-firebase/analytics
 
 ### Expo
 
-If you use Expo, including EAS Build, and want to build iOS Analytics without Ad ID support, add the Analytics config plugin to your `app.json` / `app.config.js`:
+If you use Expo, including EAS Build, and want to configure iOS Analytics Podfile flags, add the Analytics config plugin to your `app.json` / `app.config.js`:
 
 ```json
 {
@@ -50,7 +50,8 @@ If you use Expo, including EAS Build, and want to build iOS Analytics without Ad
         "@react-native-firebase/analytics",
         {
           "ios": {
-            "withoutAdIdSupport": true
+            "withoutAdIdSupport": true,
+            "googleAppMeasurementOnDeviceConversion": true
           }
         }
       ]
@@ -59,7 +60,7 @@ If you use Expo, including EAS Build, and want to build iOS Analytics without Ad
 }
 ```
 
-This adds `$RNFirebaseAnalyticsWithoutAdIdSupport = true` to the generated iOS `Podfile` during prebuild, which excludes `FirebaseAnalytics/IdentitySupport`.
+The `withoutAdIdSupport` option adds `$RNFirebaseAnalyticsWithoutAdIdSupport = true` during prebuild, which excludes `FirebaseAnalytics/IdentitySupport`. The `googleAppMeasurementOnDeviceConversion` option adds `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true`, which includes Google Analytics on-device conversion measurement support. You may omit either option if it is not needed.
 
 ## Documentation
 
