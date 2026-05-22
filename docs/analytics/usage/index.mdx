@@ -171,6 +171,31 @@ of your app handle data in a way that requires ATT)
 
 Note that for obvious reasons, configuring Firebase Analytics for use without IDFA is incompatible with AdMob
 
+# Google Analytics on-device conversion measurement
+
+If you would like to enable Google Analytics on-device conversion measurement APIs on iOS, define the following variable in your Podfile:
+
+```ruby
+$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
+```
+
+During `pod install`, using that variable adds the `GoogleAdsOnDeviceConversion` Pod.
+
+If you use Expo, including EAS Build, add the Analytics config plugin to your `app.json` / `app.config.js` instead of editing the generated Podfile manually:
+
+```json
+[
+  "@react-native-firebase/analytics",
+  {
+    "ios": {
+      "googleAppMeasurementOnDeviceConversion": true
+    }
+  }
+]
+```
+
+This adds `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true` to the generated iOS `Podfile` during prebuild.
+
 # Device Identification
 
 If you would like to enable Firebase Analytics to generate automatic audience metrics for iOS (as it does by default in Android), you must link additional iOS libraries, [as documented by the Google Firebase team](https://support.google.com/firebase/answer/6318039). Specifically you need to link in `AdSupport.framework`.
