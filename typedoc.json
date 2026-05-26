@@ -24,7 +24,7 @@
   ],
   "out": "reference",
   "githubPages": true,
-  "router": "structure-dir",
+  "router": "structure",
   "navigation": {
     "includeFolders": true,
     "includeCategories": true,
