@@ -2,9 +2,11 @@
   --light-color-background: lab(100% 0 0);
   --light-color-background-secondary: lab(100% 0 0);
   --light-color-accent: lab(90.952% 0 -.0000119209);
+  --light-color-active-menu-item: lab(96% 0 0);
   --dark-color-background: lab(2.75381% 0 0);
   --dark-color-background-secondary: lab(2.75381% 0 0);
   --dark-color-accent: lab(100% 0 0/.1);
+  --dark-color-active-menu-item: lab(100% 0 0 / 0.08);
   --reference-dark-body-text: lab(86% 0 0);
   --reference-light-body-text: lab(40% 0 0);
   --dim-footer-height: 0px;
@@ -16,6 +18,8 @@
   --reference-nav-item-padding-y: 0.3rem;
   --reference-header-logo: url("https://static.invertase.io/assets/react-native-firebase-favicon.png");
   --reference-header-logo-size: 1.75rem;
+  --reference-nav-active-radius: 0.375rem;
+  --reference-nav-hover-bg: lab(98% 0 0);
 }
 
 .tsd-toolbar-contents > .title {
@@ -64,6 +68,42 @@ footer, .tsd-filter-visibility {
 
 #tsd-sidebar-links a {
   margin-bottom: var(--reference-nav-item-padding-y);
+}
+
+.tsd-navigation a.current,
+.tsd-page-navigation a.current {
+  background: var(--color-active-menu-item);
+  color: var(--color-text);
+  border-radius: var(--reference-nav-active-radius);
+}
+
+.site-menu .tsd-navigation a,
+.site-menu .tsd-navigation .tsd-accordion-summary,
+#tsd-sidebar-links a {
+  border-radius: var(--reference-nav-active-radius);
+  text-decoration: none;
+}
+
+.site-menu .tsd-navigation a:hover,
+.site-menu .tsd-navigation .tsd-accordion-summary:hover,
+#tsd-sidebar-links a:hover {
+  text-decoration: none;
+  background: var(--reference-nav-hover-bg);
+}
+
+.site-menu .tsd-navigation a.current:hover,
+#tsd-sidebar-links a.current:hover {
+  background: var(--color-active-menu-item);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --reference-nav-hover-bg: lab(100% 0 0 / 0.05);
+  }
+}
+
+:root[data-theme="dark"] {
+  --reference-nav-hover-bg: lab(100% 0 0 / 0.05);
 }
 
 @media (prefers-color-scheme: dark) {
