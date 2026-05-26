@@ -1,12 +1,12 @@
 :root {
   --light-color-background: lab(100% 0 0);
   --light-color-background-secondary: lab(100% 0 0);
-  --light-color-accent: lab(90.952% 0 -.0000119209);
+  --light-color-accent: lab(91% 0 0);
   --light-color-active-menu-item: lab(96% 0 0);
-  --dark-color-background: lab(2.75381% 0 0);
-  --dark-color-background-secondary: lab(2.75381% 0 0);
-  --dark-color-accent: lab(100% 0 0/.1);
-  --dark-color-active-menu-item: lab(100% 0 0 / 0.08);
+  --dark-color-background: lab(3% 0 0);
+  --dark-color-background-secondary: lab(3% 0 0);
+  --dark-color-accent: lab(100% 0 0 / 10%);
+  --dark-color-active-menu-item: lab(100% 0 0 / 8%);
   --reference-dark-body-text: lab(86% 0 0);
   --reference-light-body-text: lab(40% 0 0);
   --dim-footer-height: 0px;
@@ -103,12 +103,12 @@ footer, .tsd-filter-visibility {
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --reference-nav-hover-bg: lab(100% 0 0 / 0.05);
+    --reference-nav-hover-bg: lab(100% 0 0 / 5%);
   }
 }
 
 :root[data-theme="dark"] {
-  --reference-nav-hover-bg: lab(100% 0 0 / 0.05);
+  --reference-nav-hover-bg: lab(100% 0 0 / 5%);
 }
 
 @media (prefers-color-scheme: dark) {
