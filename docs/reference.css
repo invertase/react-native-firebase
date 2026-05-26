@@ -5,6 +5,8 @@
   --dark-color-background: lab(2.75381% 0 0);
   --dark-color-background-secondary: lab(2.75381% 0 0);
   --dark-color-accent: lab(100% 0 0/.1);
+  --reference-dark-body-text: lab(86% 0 0);
+  --reference-light-body-text: lab(40% 0 0);
   --dim-footer-height: 0px;
   --dim-toolbar-contents-height: 3.5rem;
   --dim-container-main-margin-y: 0px;
@@ -62,6 +64,70 @@ footer, .tsd-filter-visibility {
 
 #tsd-sidebar-links a {
   margin-bottom: var(--reference-nav-item-padding-y);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .col-content,
+  :root:not([data-theme="light"]) .site-menu,
+  :root:not([data-theme="light"]) .page-menu,
+  :root:not([data-theme="light"]) #tsd-sidebar-links {
+    --color-text: var(--reference-dark-body-text);
+  }
+
+  :root:not([data-theme="light"]) .col-content {
+    color: var(--reference-dark-body-text);
+  }
+
+  :root:not([data-theme="light"]) .col-content :is(h1, h2, h3, h4, h5, h6) {
+    color: var(--dark-color-text);
+  }
+}
+
+:root[data-theme="dark"] .col-content,
+:root[data-theme="dark"] .site-menu,
+:root[data-theme="dark"] .page-menu,
+:root[data-theme="dark"] #tsd-sidebar-links {
+  --color-text: var(--reference-dark-body-text);
+}
+
+:root[data-theme="dark"] .col-content {
+  color: var(--reference-dark-body-text);
+}
+
+:root[data-theme="dark"] .col-content :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--dark-color-text);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .col-content,
+  :root:not([data-theme="dark"]) .site-menu,
+  :root:not([data-theme="dark"]) .page-menu,
+  :root:not([data-theme="dark"]) #tsd-sidebar-links {
+    --color-text: var(--reference-light-body-text);
+  }
+
+  :root:not([data-theme="dark"]) .col-content {
+    color: var(--reference-light-body-text);
+  }
+
+  :root:not([data-theme="dark"]) .col-content :is(h1, h2, h3, h4, h5, h6) {
+    color: var(--light-color-text);
+  }
+}
+
+:root[data-theme="light"] .col-content,
+:root[data-theme="light"] .site-menu,
+:root[data-theme="light"] .page-menu,
+:root[data-theme="light"] #tsd-sidebar-links {
+  --color-text: var(--reference-light-body-text);
+}
+
+:root[data-theme="light"] .col-content {
+  color: var(--reference-light-body-text);
+}
+
+:root[data-theme="light"] .col-content :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--light-color-text);
 }
 
 @media (min-width: 770px) {
