@@ -20,6 +20,7 @@
   --reference-header-logo-size: 1.75rem;
   --reference-nav-active-radius: 0.375rem;
   --reference-nav-hover-bg: lab(98% 0 0);
+  --reference-header-actions-font-size: 0.875rem;
 }
 
 .tsd-toolbar-contents > .title {
@@ -34,6 +35,10 @@
   height: var(--reference-header-logo-size);
   flex-shrink: 0;
   background: var(--reference-header-logo) center / contain no-repeat;
+}
+
+#tsd-toolbar-links a {
+  font-size: var(--reference-header-actions-font-size);
 }
 
 footer, .tsd-filter-visibility {
