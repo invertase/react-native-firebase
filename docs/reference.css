@@ -1,0 +1,104 @@
+:root {
+  --light-color-background: lab(100% 0 0);
+  --light-color-background-secondary: lab(100% 0 0);
+  --light-color-accent: lab(90.952% 0 -.0000119209);
+  --dark-color-background: lab(2.75381% 0 0);
+  --dark-color-background-secondary: lab(2.75381% 0 0);
+  --dark-color-accent: lab(100% 0 0/.1);
+  --dim-footer-height: 0px;
+  --dim-toolbar-contents-height: 3.5rem;
+  --dim-container-main-margin-y: 0px;
+  --reference-column-padding-top: 1.5rem;
+  --reference-content-padding-x: 2rem;
+  --reference-nav-nested-indent: .8rem;
+  --reference-nav-item-padding-y: 0.3rem;
+  --reference-header-logo: url("https://static.invertase.io/assets/react-native-firebase-favicon.png");
+  --reference-header-logo-size: 1.75rem;
+}
+
+.tsd-toolbar-contents > .title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.tsd-toolbar-contents > .title::before {
+  content: "";
+  width: var(--reference-header-logo-size);
+  height: var(--reference-header-logo-size);
+  flex-shrink: 0;
+  background: var(--reference-header-logo) center / contain no-repeat;
+}
+
+footer, .tsd-filter-visibility {
+  display: none;
+}
+
+.tsd-navigation.settings {
+  margin-bottom: 2rem;
+}
+
+.tsd-nested-navigation {
+  margin-left: calc(var(--reference-nav-nested-indent) * 2);
+}
+
+.tsd-nested-navigation > li > details {
+  margin-left: calc(-1 * var(--reference-nav-nested-indent));
+}
+
+.tsd-small-nested-navigation {
+  margin-left: var(--reference-nav-nested-indent);
+}
+
+.tsd-small-nested-navigation > li > details {
+  margin-left: calc(-1 * var(--reference-nav-nested-indent));
+}
+
+.site-menu .tsd-navigation a,
+.site-menu .tsd-navigation .tsd-accordion-summary {
+  padding-top: var(--reference-nav-item-padding-y);
+  padding-bottom: var(--reference-nav-item-padding-y);
+}
+
+#tsd-sidebar-links a {
+  margin-bottom: var(--reference-nav-item-padding-y);
+}
+
+@media (min-width: 770px) {
+  /* TypeDoc re-applies this at desktop breakpoints — override in the same query */
+  .container-main {
+    --dim-container-main-margin-y: 0px;
+    min-height: 0;
+  }
+
+  /*
+   * Sidebar max-height is computed from layout vars; padding must stay inside
+   * that box (TypeDoc defaults to content-box, which adds padding on top).
+   */
+  .col-sidebar,
+  .site-menu,
+  .page-menu {
+    box-sizing: border-box;
+  }
+
+  .site-menu {
+    margin-top: 0;
+    padding: var(--reference-column-padding-top) 0;
+  }
+
+  .col-content {
+    padding-top: var(--reference-column-padding-top);
+    padding-left: var(--reference-content-padding-x);
+    padding-right: var(--reference-content-padding-x);
+  }
+
+  .col-content .tsd-page-title h1 {
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .page-menu {
+    padding-top: var(--reference-column-padding-top);
+  }
+}
