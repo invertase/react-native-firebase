@@ -496,7 +496,7 @@ with the new authentication state of the user.
 
 To provide users with an additional login method, you can link their social media account (or an email & password) with their Firebase account.
 This is possible for any social provider that uses `signInWithCredential()`.
-To achieve this, you should replace sign-in method in any of the supported social sign-in code snippets with `getAuth().currentUser.linkWithCredential()`.
+To achieve this, you should replace the sign-in method in any of the supported social sign-in code snippets with `linkWithCredential()` on the signed-in user. Ensure `getAuth().currentUser` is not null before linking.
 
 This code demonstrates linking a Google provider to an account that is already signed in using Firebase authentication.
 
@@ -521,8 +521,13 @@ async function onGoogleLinkButtonPress() {
     throw new Error('Google Sign-In failed');
   }
 
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
   const googleCredential = GoogleAuthProvider.credential(response.data.idToken);
-  await getAuth().currentUser.linkWithCredential(googleCredential);
+  await user.linkWithCredential(googleCredential);
 }
 ```
 
@@ -541,7 +546,12 @@ async function onGoogleLinkButtonPress() {
     throw new Error('No ID token found');
   }
 
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
   const googleCredential = GoogleAuthProvider.credential(idToken);
-  await getAuth().currentUser.linkWithCredential(googleCredential);
+  await user.linkWithCredential(googleCredential);
 }
 ```
