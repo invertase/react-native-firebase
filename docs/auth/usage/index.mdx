@@ -185,7 +185,7 @@ signOut(getAuth()).then(() => console.log('User signed out!'));
 Once successfully signed out, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger an event
 with the `user` parameter being a `null` value.
 
-Additionally, using `GoogleSignin.revokeAccess()` forgets the user. This means that the next time someone signs in, they will see the account selection popup. If you don't use this function, the last account will be automatically used without showing the account selection popup.
+Additionally, calling `revokeAccess()` on your Google sign-in library forgets the user on the device (for example `GoogleOneTapSignIn.revokeAccess()` from [`react-native-nitro-google-signin`](https://www.npmjs.com/package/react-native-nitro-google-signin), or `GoogleSignin.revokeAccess()` from `@react-native-google-signin/google-signin`). The next sign-in will show the account picker again. Without it, the last account may be reused automatically.
 
 ## Other sign-in methods
 
