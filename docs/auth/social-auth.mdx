@@ -206,20 +206,112 @@ with the new authentication state of the user.
 
 ## Google
 
-The [`google-signin`](https://github.com/react-native-google-signin/google-signin) library provides a wrapper around the official Google login library,
-allowing you to create a credential and sign-in to Firebase.
+Firebase does not ship a Google sign-in UI. You install a community library to obtain a Google **ID token**, then pass it to `GoogleAuthProvider.credential()` and `signInWithCredential()`.
 
 Ensure the "Google" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
-### Configure an Expo project
+On **Android**, Google recommends [Credential Manager](https://developer.android.com/identity/sign-in/credential-manager-siwg-implementation) for Sign in with Google. Two maintained React Native libraries can provide that flow:
 
-For Expo projects, follow [the setup instructions for Expo](https://react-native-google-signin.github.io/docs/category/setting-up) from `react-native-google-signin`.
+| Library                                                                                                    | Credential Manager (Android)                                                                                                          | Cost                                                     | Notes                                                                                                               |
+| ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| [`react-native-nitro-google-signin`](https://www.npmjs.com/package/react-native-nitro-google-signin)       | Yes                                                                                                                                   | Free (MIT)                                               | Universal / One Tap-style API via [Nitro Modules](https://nitro.margelo.com); requires `react-native-nitro-modules` |
+| [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) | Yes with [Universal Sign-In](https://react-native-google-signin.github.io/docs/install); **no** on the free public `GoogleSignin` API | Paid for Credential Manager; free for legacy Android SDK | Universal Sign-In uses `GoogleOneTapSignIn`; the free public build is documented in the section below               |
 
-### Configure a React-Native (non-Expo) project
+The sections below show Firebase integration for each approach. For native setup (OAuth clients, SHA-1, Expo config plugins), follow that library's documentation.
+
+### react-native-nitro-google-signin
+
+[`react-native-nitro-google-signin`](https://www.npmjs.com/package/react-native-nitro-google-signin) is a free, MIT-licensed option that uses **Credential Manager** on Android and the Google Sign-In SDK on iOS. It is a good fit when you want modern Android sign-in without a paid Universal Sign-In license from `@react-native-google-signin/google-signin`.
+
+Install the package and its peer dependency:
+
+```bash
+yarn add react-native-nitro-google-signin react-native-nitro-modules
+```
+
+Then follow the [installation](https://react-native-nitro-google-signin.github.io/docs/getting-started/installation) and [Google Cloud setup](https://react-native-nitro-google-signin.github.io/docs/setup/google-cloud) guides. For Expo, use a [development build](https://docs.expo.dev/develop/development-builds/introduction/) and the [Expo config plugin](https://react-native-nitro-google-signin.github.io/docs/setup/expo) — it does not run in Expo Go.
+
+#### Using Google Sign-In with Firebase
+
+Configure once (with Firebase config files present, `webClientId: 'autoDetect'` reads the Web client ID from `google-services.json` / `GoogleService-Info.plist`):
+
+```js
+import { GoogleOneTapSignIn } from 'react-native-nitro-google-signin';
+
+GoogleOneTapSignIn.configure({ webClientId: 'autoDetect' });
+```
+
+Trigger sign-in from your UI, then exchange the ID token with Firebase:
+
+```jsx
+import { Button } from 'react-native';
+
+function GoogleSignIn() {
+  return (
+    <Button
+      title="Google Sign-In"
+      onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
+    />
+  );
+}
+```
+
+```js
+import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+import {
+  GoogleOneTapSignIn,
+  isNoSavedCredentialFoundResponse,
+  isSuccessResponse,
+} from 'react-native-nitro-google-signin';
+
+async function onGoogleButtonPress() {
+  await GoogleOneTapSignIn.checkPlayServices();
+
+  let response = await GoogleOneTapSignIn.signIn();
+
+  if (isNoSavedCredentialFoundResponse(response)) {
+    response = await GoogleOneTapSignIn.createAccount();
+  }
+  if (isNoSavedCredentialFoundResponse(response)) {
+    response = await GoogleOneTapSignIn.presentExplicitSignIn();
+  }
+
+  if (!isSuccessResponse(response)) {
+    throw new Error('Google Sign-In was cancelled or failed');
+  }
+
+  const { idToken } = response.data;
+  if (!idToken) {
+    throw new Error('No ID token found');
+  }
+
+  const googleCredential = GoogleAuthProvider.credential(idToken);
+  return signInWithCredential(getAuth(), googleCredential);
+}
+```
+
+Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger with the new authentication state.
+
+If you test on an Android emulator, use an image with **Google APIs** or **Google Play** system images.
+
+Full API details: [react-native-nitro-google-signin documentation](https://react-native-nitro-google-signin.github.io/).
+
+### @react-native-google-signin/google-signin
+
+The [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) package is widely used and offers two tiers:
+
+- **Universal Sign-In** ([paid](https://universal-sign-in.com/#pricing)): Cross-platform One Tap-style API (`GoogleOneTapSignIn`) with **Credential Manager** on Android. Licensed builds are installed from the package maintainer's registry — see [their installation guide](https://react-native-google-signin.github.io/docs/install).
+- **Public (free) version**: `GoogleSignin` API for Android and iOS using the **legacy** Android Google Sign-In SDK. Google has deprecated that stack; it does not use Credential Manager. The examples below use this free API.
+
+#### Configure an Expo project
+
+For Expo projects, follow [the setup instructions for Expo](https://react-native-google-signin.github.io/docs/category/setting-up) from `@react-native-google-signin/google-signin`.
+
+#### Configure a React-Native (non-Expo) project
 
 For bare React-Native projects, most configuration is already setup when using Google Sign-In with React-Native-Firebase's configuration, however you need to ensure your machines SHA1 key has been configured for use with Android. You can see how to generate the key on the [Getting Started](/) documentation.
 
-### Using Google Sign-In
+#### Using Google Sign-In
 
 Before triggering a sign-in request, you must initialize the Google SDK with any required scopes and the
 `webClientId`, which can be found in the `android/app/google-services.json` file as the `client/oauth_client/client_id` property (the id ends with `.apps.googleusercontent.com`). Make sure to pick the `client_id` with `client_type: 3`
@@ -281,6 +373,8 @@ Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-aut
 with the new authentication state of the user.
 
 If you are testing this feature on an android emulator ensure that the emulate is either the Google APIs or Google Play flavor.
+
+> If you need Credential Manager on Android without a paid license, use [`react-native-nitro-google-signin`](#react-native-nitro-google-signin) instead of upgrading to Universal Sign-In.
 
 ## Microsoft
 
@@ -402,26 +496,62 @@ with the new authentication state of the user.
 
 To provide users with an additional login method, you can link their social media account (or an email & password) with their Firebase account.
 This is possible for any social provider that uses `signInWithCredential()`.
-To achieve this, you should replace sign-in method in any of the supported social sign-in code snippets with `getAuth().currentUser.linkWithCredential()`.
+To achieve this, you should replace the sign-in method in any of the supported social sign-in code snippets with `linkWithCredential()` on the signed-in user. Ensure `getAuth().currentUser` is not null before linking.
 
 This code demonstrates linking a Google provider to an account that is already signed in using Firebase authentication.
+
+With [`react-native-nitro-google-signin`](https://www.npmjs.com/package/react-native-nitro-google-signin):
+
+```js
+import { GoogleAuthProvider, getAuth } from '@react-native-firebase/auth';
+import {
+  GoogleOneTapSignIn,
+  isNoSavedCredentialFoundResponse,
+  isSuccessResponse,
+} from 'react-native-nitro-google-signin';
+
+async function onGoogleLinkButtonPress() {
+  await GoogleOneTapSignIn.checkPlayServices();
+
+  let response = await GoogleOneTapSignIn.signIn();
+  if (isNoSavedCredentialFoundResponse(response)) {
+    response = await GoogleOneTapSignIn.presentExplicitSignIn();
+  }
+  if (!isSuccessResponse(response) || !response.data.idToken) {
+    throw new Error('Google Sign-In failed');
+  }
+
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  const googleCredential = GoogleAuthProvider.credential(response.data.idToken);
+  await user.linkWithCredential(googleCredential);
+}
+```
+
+With the free `@react-native-google-signin/google-signin` (`GoogleSignin`) API:
 
 ```js
 import { GoogleAuthProvider, getAuth } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 async function onGoogleLinkButtonPress() {
-  // Ensure the device supports Google Play services
   await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-  // Obtain the user's ID token
-  const { idToken } = await GoogleSignin.signIn();
+  const signInResult = await GoogleSignin.signIn();
 
-  // Create a Google credential with the token
+  const idToken = signInResult.data?.idToken ?? signInResult.idToken;
+  if (!idToken) {
+    throw new Error('No ID token found');
+  }
+
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
   const googleCredential = GoogleAuthProvider.credential(idToken);
-
-  // Link the user's account with the Google credential
-  const firebaseUserCredential = await getAuth().currentUser.linkWithCredential(googleCredential);
-  //  Handle the linked account as needed in your app
-  return;
+  await user.linkWithCredential(googleCredential);
 }
 ```
