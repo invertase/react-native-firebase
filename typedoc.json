@@ -1,6 +1,7 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "name": "React Native Firebase",
+  "customCss": "./docs/reference.css",
   "entryPointStrategy": "packages",
   "entryPoints": [
     "packages/app",
@@ -37,8 +38,10 @@
   "searchInComments": true,
   "hideGenerator": true,
   "cleanOutputDir": true,
-  "titleLink": "https://github.com/invertase/react-native-firebase",
+  "titleLink": "/",
+  "favicon": "https://static.invertase.io/assets/react-native-firebase-favicon.png",
   "navigationLinks": {
+    "Documentation": "https://rnfirebase.io",
     "GitHub": "https://github.com/invertase/react-native-firebase",
     "npm": "https://www.npmjs.com/search?q=scope%3Areact-native-firebase"
   },
