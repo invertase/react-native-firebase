@@ -280,7 +280,7 @@ async function onGoogleButtonPress() {
     throw new Error('Google Sign-In was cancelled or failed');
   }
 
-  const { idToken } = response.data;
+  const idToken = response.data?.idToken;
   if (!idToken) {
     throw new Error('No ID token found');
   }
