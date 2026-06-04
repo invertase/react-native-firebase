@@ -215,7 +215,7 @@ On **Android**, Google recommends [Credential Manager](https://developer.android
 | Library                                                                                                    | Credential Manager (Android)                                                                                                          | Cost                                                     | Notes                                                                                                               |
 | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | [`react-native-nitro-google-signin`](https://www.npmjs.com/package/react-native-nitro-google-signin)       | Yes                                                                                                                                   | Free (MIT)                                               | Universal / One Tap-style API via [Nitro Modules](https://nitro.margelo.com); requires `react-native-nitro-modules` |
-| [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) | Yes with [Universal Sign-In](https://react-native-google-signin.github.io/docs/install); **no** on the free public `GoogleSignin` API | Paid for Credential Manager; free for legacy Android SDK | Universal Sign-In uses `GoogleOneTapSignIn`; the free public build is documented in the section below               |
+| [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) | Yes with [Universal Sign-In](https://react-native-google-sign-in.github.io/docs/install); **no** on the free public `GoogleSignin` API | Paid for Credential Manager; free for legacy Android SDK | Universal Sign-In uses `GoogleOneTapSignIn`; the free public build is documented in the section below               |
 
 The sections below show Firebase integration for each approach. For native setup (OAuth clients, SHA-1, Expo config plugins), follow that library's documentation.
 
@@ -229,7 +229,7 @@ Install the package and its peer dependency:
 yarn add react-native-nitro-google-signin react-native-nitro-modules
 ```
 
-Then follow the [installation](https://react-native-nitro-google-signin.github.io/docs/getting-started/installation) and [Google Cloud setup](https://react-native-nitro-google-signin.github.io/docs/setup/google-cloud) guides. For Expo, use a [development build](https://docs.expo.dev/develop/development-builds/introduction/) and the [Expo config plugin](https://react-native-nitro-google-signin.github.io/docs/setup/expo) — it does not run in Expo Go.
+Then follow the [installation](https://react-native-nitro-google-sign-in.github.io/docs/getting-started/installation) and [Google Cloud setup](https://react-native-nitro-google-sign-in.github.io/docs/setup/google-cloud) guides. For Expo, use a [development build](https://docs.expo.dev/develop/development-builds/introduction/) and the [Expo config plugin](https://react-native-nitro-google-sign-in.github.io/docs/setup/expo) — it does not run in Expo Go.
 
 #### Using Google Sign-In with Firebase
 
@@ -294,7 +294,7 @@ Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-aut
 
 If you test on an Android emulator, use an image with **Google APIs** or **Google Play** system images.
 
-Full API details: [react-native-nitro-google-signin documentation](https://react-native-nitro-google-signin.github.io/).
+Full API details: [react-native-nitro-google-signin documentation](https://react-native-nitro-google-sign-in.github.io/).
 
 ### @react-native-google-signin/google-signin
 
