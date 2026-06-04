@@ -517,7 +517,7 @@ async function onGoogleLinkButtonPress() {
   if (isNoSavedCredentialFoundResponse(response)) {
     response = await GoogleOneTapSignIn.presentExplicitSignIn();
   }
-  if (!isSuccessResponse(response) || !response.data.idToken) {
+  if (!isSuccessResponse(response) || !response.data?.idToken) {
     throw new Error('Google Sign-In failed');
   }
 
