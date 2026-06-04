@@ -229,7 +229,7 @@ Install the package and its peer dependency:
 yarn add react-native-nitro-google-signin react-native-nitro-modules
 ```
 
-Then follow the [installation](https://react-native-nitro-google-signin.github.io/docs/getting-started/installation) and [Google Cloud setup](https://react-native-nitro-google-signin.github.io/docs/setup/google-cloud) guides. For Expo, use a [development build](https://docs.expo.dev/develop/development-builds/introduction/) and the [Expo config plugin](https://react-native-nitro-google-signin.github.io/docs/setup/expo) — it does not run in Expo Go.
+Then follow the [installation](https://react-native-nitro-google-sign-in.github.io/docs/getting-started/installation) and [Google Cloud setup](https://react-native-nitro-google-sign-in.github.io/docs/setup/google-cloud) guides. For Expo, use a [development build](https://docs.expo.dev/develop/development-builds/introduction/) and the [Expo config plugin](https://react-native-nitro-google-sign-in.github.io/docs/setup/expo) — it does not run in Expo Go.
 
 #### Using Google Sign-In with Firebase
 
@@ -280,7 +280,7 @@ async function onGoogleButtonPress() {
     throw new Error('Google Sign-In was cancelled or failed');
   }
 
-  const { idToken } = response.data;
+  const idToken = response.data?.idToken;
   if (!idToken) {
     throw new Error('No ID token found');
   }
@@ -294,7 +294,7 @@ Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-aut
 
 If you test on an Android emulator, use an image with **Google APIs** or **Google Play** system images.
 
-Full API details: [react-native-nitro-google-signin documentation](https://react-native-nitro-google-signin.github.io/).
+Full API details: [react-native-nitro-google-signin documentation](https://react-native-nitro-google-sign-in.github.io/).
 
 ### @react-native-google-signin/google-signin
 
@@ -517,7 +517,7 @@ async function onGoogleLinkButtonPress() {
   if (isNoSavedCredentialFoundResponse(response)) {
     response = await GoogleOneTapSignIn.presentExplicitSignIn();
   }
-  if (!isSuccessResponse(response) || !response.data.idToken) {
+  if (!isSuccessResponse(response) || !response.data?.idToken) {
     throw new Error('Google Sign-In failed');
   }
 
