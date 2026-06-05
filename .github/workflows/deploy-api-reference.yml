@@ -1,6 +1,7 @@
 name: Deploy API Reference
 on:
   workflow_dispatch:
+  workflow_call:
 
 # Allow one concurrent deployment
 concurrency:
