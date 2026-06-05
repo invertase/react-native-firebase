@@ -1608,10 +1608,7 @@ describe('FirestorePipeline', function () {
           );
 
         if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(
-            () => execute(pipeline),
-            ['arrayFirst', 'arrayFirstN', 'arrayGet'],
-          );
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['arrayGet']);
 
           const iosSnapshot = await execute(
             db
