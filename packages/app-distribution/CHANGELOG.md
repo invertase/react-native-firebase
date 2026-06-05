@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
+
+### Bug Fixes
+
+- firebase-android-sdk 34.14.0, firebase-ios-sdk 12.11.0, firebase-js-sdk 12.14.0 ([65bbe94](https://github.com/invertase/react-native-firebase/commit/65bbe9435fb78bbb2ee4cba25b44b0199a61f030))
+
 ## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
 
 ### Features
