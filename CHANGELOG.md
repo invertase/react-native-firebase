@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
+
+### Features
+
+- **analytics:** add Expo config plugin for withoutAdIdSupport ([#8969](https://github.com/invertase/react-native-firebase/issues/8969)) ([5af7a6a](https://github.com/invertase/react-native-firebase/commit/5af7a6ab3f6da77e299c92b833fc1267c8309f18))
+- **analytics:** add support for googleAppMeasurementOnDeviceConversion in iOS Expo plugin ([#9014](https://github.com/invertase/react-native-firebase/issues/9014)) ([a7a5125](https://github.com/invertase/react-native-firebase/commit/a7a512529ab7b40c9bc32d65cab1e6256556e68e))
+- **firestore:** add 'source' option to enable local cache firestore listeners ([e3ce410](https://github.com/invertase/react-native-firebase/commit/e3ce410ef655796a488a1c79003ec2d7b783bae9))
+
+### Bug Fixes
+
+- **analytics:** cast item INDEX param to integer ([915dc8a](https://github.com/invertase/react-native-firebase/commit/915dc8a37aeaf67424d773134e55c81223a65be3))
+- **analytics:** coerce all number params from js double to native integral ([760ddd2](https://github.com/invertase/react-native-firebase/commit/760ddd2fdba7004d3fb30d2321c89066a36e199b))
+- **analytics:** success param type now boolean - never worked before, now works ([7e122b2](https://github.com/invertase/react-native-firebase/commit/7e122b264196b86e25deedb03aff4580741b7345))
+- **android:** catch RejectedExecutionException on executor-backed Tasks ([375ade9](https://github.com/invertase/react-native-firebase/commit/375ade9a043d2fd8180572ecc75c518e4428be84))
+- **database, android:** remove RTDB listeners before shutting down executors ([25ed605](https://github.com/invertase/react-native-firebase/commit/25ed605cdb5b639f70ad7e96923d4a9acc2ff0d0))
+- **docs:** workflow to generate+publish API docs, call same on publish ([8222a96](https://github.com/invertase/react-native-firebase/commit/8222a9653794a44c37922f717358718b7ec5c653))
+- firebase-android-sdk 34.14.0, firebase-ios-sdk 12.11.0, firebase-js-sdk 12.14.0 ([65bbe94](https://github.com/invertase/react-native-firebase/commit/65bbe9435fb78bbb2ee4cba25b44b0199a61f030))
+- **firestore, android:** catch RejectedExecutionException in sendOnSnapshotEvent ([602d7ad](https://github.com/invertase/react-native-firebase/commit/602d7ad250635c31901290af6c5b0ce98f7448ad))
+- **firestore:** restore generic root type exports for `DocumentSnapshot`, `Transaction`, and `WriteBatch` ([#8997](https://github.com/invertase/react-native-firebase/issues/8997)) ([9809622](https://github.com/invertase/react-native-firebase/commit/9809622e0c6e2de21f17730bbf97dc5be33396bc))
+
 ## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
 
 ### ⚠ BREAKING CHANGES
@@ -13,7 +33,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 Please see https://rnfirebase.io/migrating-to-v24 for a guide on updating your types
 if you were using the previous firestore typescript types.
 
-*In general* everything should behave the same as v23 but the typescript types have changed. It is our hope you as a developer can adopt these changes easily and your app works exactly the same.
+_In general_ everything should behave the same as v23 but the typescript types have changed. It is our hope you as a developer can adopt these changes easily and your app works exactly the same.
 
 It is always our goal to be a drop-in replacement for firebase-js-sdk, type for type, API for API.
 In general all firestore types should now be the same as the firestore modular types from firebase-js-sdk
