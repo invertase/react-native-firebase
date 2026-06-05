@@ -45,36 +45,54 @@ run_yarn_script() {
   rm -f "$log_file"
 }
 
+# Run yarn scripts in parallel; fail if any child fails.
+# Uses job-control style: background jobs + wait, SIGINT kills the group.
+run_yarn_scripts_parallel() {
+  local scripts=("$@")
+  local pids=()
+  local pid failed=0
+
+  (
+    trap 'kill 0' SIGINT
+
+    for script_name in "${scripts[@]}"; do
+      run_yarn_script "$script_name" &
+      pids+=($!)
+    done
+
+    for pid in "${pids[@]}"; do
+      wait "$pid" || failed=1
+    done
+
+    exit "$failed"
+  ) || return 1
+}
+
 echo "Starting full test execution..."
 
 # 1. Dependency Installation
 echo "Installing dependencies..."
 run_yarn_script "install" || { echo "yarn install failed"; exit 1; }
-run_yarn_script "tests:ios:pod:install" || { echo "iOS pod install failed"; exit 1; }
-run_yarn_script "tests:macos:pod:install" || { echo "macOS pod install failed"; exit 1; }
 
-# 2. Build Verification
-echo "Verifying builds..."
-run_yarn_script "tests:ios:build" || { echo "iOS build failed"; exit 1; }
-run_yarn_script "tests:macos:build" || { echo "macOS build failed"; exit 1; }
-run_yarn_script "tests:android:build" || { echo "Android build failed"; exit 1; }
+echo "Installing iOS and macOS pods in parallel..."
+run_yarn_scripts_parallel \
+  "tests:ios:pod:install" \
+  "tests:macos:pod:install" \
+  || { echo "Pod install failed"; exit 1; }
 
-# 3. Typechecking
-echo "Running typechecks..."
-run_yarn_script "compare:types" || { echo "Type comparison failed"; exit 1; }
-
-# 4. Linting and Formatting
-echo "Running linting and formatting checks..."
-run_yarn_script "lint:js" || { echo "Javascript linting failed"; exit 1; }
-run_yarn_script "lint:ios:check" || { echo "iOS Linting failed"; exit 1; }
-# disabled lint:android because it is flaky at the moment?
-#yarn lint:android || { echo "Android Linting failed"; exit 1; }
-run_yarn_script "lint:markdown" || { echo  "Markdown linting failed"; exit 1; }
-run_yarn_script "lint:spellcheck" || { echo "Spellchecking failed"; exit 1; }
-
-# 5. Unit Tests
-echo "Running unit tests..."
-run_yarn_script "tests:jest" || { echo "Unit tests failed"; exit 1; }
+# 2–5. Builds, typechecks, lint, and unit tests (all parallel)
+echo "Running builds, typechecks, lint, and unit tests in parallel..."
+run_yarn_scripts_parallel \
+  "tests:ios:build" \
+  "tests:macos:build" \
+  "tests:android:build" \
+  "compare:types" \
+  "lint:js" \
+  "lint:ios:check" \
+  "lint:markdown" \
+  "lint:spellcheck" \
+  "tests:jest" \
+  || { echo "Parallel verification failed"; exit 1; }
 
 # 6. E2E Tests with Flakiness Tolerance
 echo "Running E2E tests..."
