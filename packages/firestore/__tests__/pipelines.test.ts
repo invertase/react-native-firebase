@@ -578,8 +578,6 @@ describe('Firestore pipelines runtime', function () {
       .serialize();
 
     expect(getIOSUnsupportedPipelineFunctions(serialized)).toEqual([
-      'arrayFirst',
-      'arrayFirstN',
       'arrayGet',
       'conditional',
       'round',
