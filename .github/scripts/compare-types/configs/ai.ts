@@ -100,6 +100,71 @@ const config: PackageConfig = {
       reason:
         'Chrome Prompt API prompt options type used by browser-only on-device language model integration.',
     },
+    {
+      name: 'ContextWindowCompressionConfig',
+      reason:
+        'Live session context window compression config added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'GoogleMaps',
+      reason:
+        'Google Maps grounding tool added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'GoogleMapsGroundingChunk',
+      reason:
+        'Google Maps grounding chunk type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'GoogleMapsTool',
+      reason:
+        'Google Maps tool type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'ImageConfig',
+      reason:
+        'Image generation config type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'ImageConfigAspectRatio',
+      reason:
+        'Image aspect ratio type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'ImageConfigImageSize',
+      reason:
+        'Image size type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'LatLng',
+      reason:
+        'Latitude/longitude type for Google Maps grounding added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'LiveSessionResumptionUpdate',
+      reason:
+        'Live session resumption update type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'RetrievalConfig',
+      reason:
+        'Tool retrieval config type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'SessionResumptionConfig',
+      reason:
+        'Live session resumption config added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'SlidingWindow',
+      reason:
+        'Context window compression sliding window type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'TemplateToolConfig',
+      reason:
+        'Template tool config type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
   ],
   extraInRN: [
     {
@@ -153,6 +218,61 @@ const config: PackageConfig = {
       name: 'URLRetrievalStatus',
       reason:
         'Both packages expose the same URL retrieval status constants, but the generated declaration text differs (`string`-valued object in JS SDK vs readonly literal constants in RN).',
+    },
+    {
+      name: 'FinishReason',
+      reason:
+        'firebase-js-sdk added image, tool, and response finish-reason constants; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'GenerationConfig',
+      reason:
+        'firebase-js-sdk added `imageConfig` to generation config; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'GroundingChunk',
+      reason:
+        'firebase-js-sdk added Google Maps grounding chunks; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'GroundingMetadata',
+      reason:
+        'firebase-js-sdk added `googleMapsWidgetContextToken`; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'LiveGenerationConfig',
+      reason:
+        'firebase-js-sdk added `contextWindowCompression`; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'LiveGenerativeModel',
+      reason:
+        'firebase-js-sdk added session resumption support to `connect()`; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'LiveResponseType',
+      reason:
+        'firebase-js-sdk added `SESSION_RESUMPTION_UPDATE`; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'LiveSession',
+      reason:
+        'firebase-js-sdk added session resumption APIs (`connectionPromise`, `resumeSession`, resumption updates in `receive()`); not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'TemplateGenerativeModel',
+      reason:
+        'firebase-js-sdk added `TemplateToolConfig` parameter to template generation methods; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'Tool',
+      reason:
+        'firebase-js-sdk added `GoogleMapsTool` to the tool union; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'ToolConfig',
+      reason:
+        'firebase-js-sdk added `retrievalConfig`; not yet implemented in React Native Firebase.',
     },
   ],
 };
