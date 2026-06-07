@@ -1,6 +1,4 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["lib/index.d.ts"],
-  "intentionallyNotExported": ["MLNamespace"]
-
+  "entryPoints": ["lib/modular.ts", "lib/types/ml.ts"]
 }
