@@ -6,6 +6,9 @@ import inAppMessaging, {
   isAutomaticDataCollectionEnabled,
   setAutomaticDataCollectionEnabled,
   triggerEvent,
+  SDK_VERSION,
+  type InAppMessaging,
+  type FirebaseInAppMessagingTypes,
 } from '.';
 
 console.log(inAppMessaging().app);
@@ -24,7 +27,7 @@ console.log(firebase.app().inAppMessaging().isAutomaticDataCollectionEnabled);
 console.log(firebase.inAppMessaging.SDK_VERSION);
 
 // checks statics exist on defaultExport
-console.log(inAppMessaging.firebase.SDK_VERSION);
+console.log(inAppMessaging.SDK_VERSION);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
@@ -36,7 +39,7 @@ console.log(firebase.inAppMessaging().app.name);
 console.log(inAppMessaging().app.name);
 
 // checks Module instance APIs
-const inAppMessagingInstance = firebase.inAppMessaging();
+const inAppMessagingInstance: InAppMessaging = firebase.inAppMessaging();
 console.log(inAppMessagingInstance.isMessagesDisplaySuppressed);
 console.log(inAppMessagingInstance.isAutomaticDataCollectionEnabled);
 
@@ -53,7 +56,7 @@ inAppMessagingInstance.triggerEvent('test-event').then(() => {
 });
 
 // checks modular API functions
-const modularInAppMessaging = getInAppMessaging();
+const modularInAppMessaging: InAppMessaging = getInAppMessaging();
 console.log(modularInAppMessaging.app.name);
 
 console.log(isMessagesDisplaySuppressed(modularInAppMessaging));
@@ -71,3 +74,13 @@ setAutomaticDataCollectionEnabled(modularInAppMessaging, false).then(() => {
 triggerEvent(modularInAppMessaging, 'modular-test-event').then(() => {
   console.log('Modular event triggered');
 });
+
+// named SDK_VERSION export
+const sdkVersion: string = SDK_VERSION;
+console.log(sdkVersion);
+
+// deprecated namespace types remain assignable from runtime values
+const namespaceModule: FirebaseInAppMessagingTypes.Module = firebase.inAppMessaging();
+const namespaceStatics: FirebaseInAppMessagingTypes.Statics = firebase.inAppMessaging;
+console.log(namespaceModule.app.name);
+console.log(namespaceStatics.SDK_VERSION);

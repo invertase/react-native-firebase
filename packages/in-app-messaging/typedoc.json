@@ -1,5 +1,4 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["lib/index.d.ts"],
-  "intentionallyNotExported": ["InAppMessagingNamespace"]
+  "entryPoints": ["lib/modular.ts", "lib/types/in-app-messaging.ts"]
 }
