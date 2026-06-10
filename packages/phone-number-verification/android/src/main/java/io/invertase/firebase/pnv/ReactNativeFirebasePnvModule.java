@@ -43,8 +43,7 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
       fpnv.enableTestSession(token);
       promise.resolve(null);
     } catch (Exception e) {
-      rejectPromiseWithCodeAndMessage(
-          promise, "enable-test-session-failed", e.getMessage());
+      rejectPromiseWithCodeAndMessage(promise, "enable-test-session-failed", e.getMessage());
     }
   }
 
@@ -65,8 +64,7 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
         .addOnFailureListener(
             getExecutor(),
             e -> {
-              rejectPromiseWithCodeAndMessage(
-                  promise, "get-support-info-failed", e.getMessage());
+              rejectPromiseWithCodeAndMessage(promise, "get-support-info-failed", e.getMessage());
             });
   }
 
@@ -74,8 +72,7 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
   public void getVerifiedPhoneNumber(Promise promise) {
     Activity activity = getCurrentActivity();
     if (activity == null) {
-      rejectPromiseWithCodeAndMessage(
-          promise, "no-activity", "Could not get current activity");
+      rejectPromiseWithCodeAndMessage(promise, "no-activity", "Could not get current activity");
       return;
     }
     fpnv.getVerifiedPhoneNumber(activity)
@@ -90,8 +87,7 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
         .addOnFailureListener(
             getExecutor(),
             e -> {
-              rejectPromiseWithCodeAndMessage(
-                  promise, "verification-failed", e.getMessage());
+              rejectPromiseWithCodeAndMessage(promise, "verification-failed", e.getMessage());
             });
   }
 
@@ -106,8 +102,7 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
         .addOnFailureListener(
             getExecutor(),
             e -> {
-              rejectPromiseWithCodeAndMessage(
-                  promise, "get-payload-failed", e.getMessage());
+              rejectPromiseWithCodeAndMessage(promise, "get-payload-failed", e.getMessage());
             });
   }
 
@@ -125,8 +120,7 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
         .addOnFailureListener(
             getExecutor(),
             e -> {
-              rejectPromiseWithCodeAndMessage(
-                  promise, "exchange-failed", e.getMessage());
+              rejectPromiseWithCodeAndMessage(promise, "exchange-failed", e.getMessage());
             });
   }
 }
