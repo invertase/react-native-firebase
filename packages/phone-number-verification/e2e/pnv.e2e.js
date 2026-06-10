@@ -16,19 +16,16 @@
  */
 
 describe('phoneNumberVerification()', function () {
-  describe('namespace', function () {
-    it('accessible from firebase.app()', function () {
-      const app = firebase.app();
-      should.exist(app.phoneNumberVerification);
-      app.phoneNumberVerification().enableTestSession.should.be.a.Function();
-      app.phoneNumberVerification().getVerificationSupportInfo.should.be.a.Function();
-      app.phoneNumberVerification().getVerifiedPhoneNumber.should.be.a.Function();
-      app
-        .phoneNumberVerification()
-        .getDigitalCredentialPayload.should.be.a.Function();
-      app
-        .phoneNumberVerification()
-        .exchangeCredentialResponseForPhoneNumber.should.be.a.Function();
+  describe('modular namespace access', function () {
+    it('accessible from getApp()', function () {
+      const { getPhoneNumberVerification } = pnvModular;
+      const pnv = getPhoneNumberVerification();
+      should.exist(pnv);
+      pnv.enableTestSession.should.be.a.Function();
+      pnv.getVerificationSupportInfo.should.be.a.Function();
+      pnv.getVerifiedPhoneNumber.should.be.a.Function();
+      pnv.getDigitalCredentialPayload.should.be.a.Function();
+      pnv.exchangeCredentialResponseForPhoneNumber.should.be.a.Function();
     });
   });
 
