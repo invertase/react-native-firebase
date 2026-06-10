@@ -21,6 +21,7 @@ import type {
 } from './pnv';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
+/* eslint-disable @typescript-eslint/no-namespace */
 export namespace FirebasePhoneNumberVerificationTypes {
   export interface Module {
     app: ReactNativeFirebase.FirebaseApp;
@@ -35,6 +36,7 @@ export namespace FirebasePhoneNumberVerificationTypes {
 
   export interface Statics {}
 }
+/* eslint-enable @typescript-eslint/no-namespace */
 
 type PnvNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FirebasePhoneNumberVerificationTypes.Module,
@@ -62,6 +64,7 @@ export declare const firebase: ReactNativeFirebase.Module & {
 export default defaultExport;
 
 declare module '@react-native-firebase/app' {
+  /* eslint-disable @typescript-eslint/no-namespace */
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
@@ -74,4 +77,5 @@ declare module '@react-native-firebase/app' {
       phoneNumberVerification(): FirebasePhoneNumberVerificationTypes.Module;
     }
   }
+  /* eslint-enable @typescript-eslint/no-namespace */
 }
