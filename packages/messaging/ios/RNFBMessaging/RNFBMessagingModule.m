@@ -15,11 +15,17 @@
  *
  */
 
-#import <Firebase/Firebase.h>
-#import <RNFBApp/RNFBSharedUtils.h>
+// clang-format off
+// React headers must be imported before any RNFBApp header: under
+// use_frameworks!, RNFBApp's framework module absorbs the React headers its
+// public headers include, hiding their declarations and macros from this file
+// if the RNFBApp module is loaded first.
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
+// clang-format on
+#import <Firebase/Firebase.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 
 #import "RNFBMessaging+AppDelegate.h"
 #import "RNFBMessaging+NSNotificationCenter.h"
