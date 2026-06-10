@@ -67,5 +67,5 @@ export const firebase =
     'ml',
     FirebaseMLTypes.Module,
     FirebaseMLTypes.Statics,
-    false
+    true
   >;
