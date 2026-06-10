@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
+
+### Bug Fixes
+
+- **ios:** revert to firebase-ios-sdk 12.10.0 to avoid startup crash ([b97bc26](https://github.com/invertase/react-native-firebase/commit/b97bc26af0a0d5314826d6cf42a0518e8dd37ada))
+
 ## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
 
 ### Features
