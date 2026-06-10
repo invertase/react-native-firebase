@@ -62,7 +62,10 @@ export default defaultExport;
 // import ml, { firebase } from '@react-native-firebase/ml';
 // ml().X(...);
 // firebase.ml().X(...);
-export const firebase = getFirebaseRoot() as unknown as ReactNativeFirebase.Module & {
-  ml: typeof defaultExport;
-  app(name?: string): ReactNativeFirebase.FirebaseApp & { ml(): FirebaseMLTypes.Module };
-};
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'ml',
+    FirebaseMLTypes.Module,
+    FirebaseMLTypes.Statics,
+    false
+  >;
