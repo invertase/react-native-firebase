@@ -33,6 +33,7 @@ import { AuthMFADemonstrator } from './auth/auth-mfa-demonstrator';
 import { HttpsCallableTestComponent } from './functions/https-callable';
 import { StorageTestComponent } from './storage/storage';
 import { StreamingCallableTestComponent } from './functions/streaming-callable';
+import { PnvTestComponent } from './pnv/pnv-test';
 
 const testComponents = {
   // List your imported components here...
@@ -48,6 +49,7 @@ const testComponents = {
   'HttpsCallable Test': HttpsCallableTestComponent,
   'Storage Test': StorageTestComponent,
   'Streaming Callable Test': StreamingCallableTestComponent,
+  'Phone Number Verification Test': PnvTestComponent,
 };
 
 export function TestComponents() {

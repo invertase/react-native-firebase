@@ -15,31 +15,21 @@
  *
  */
 
-export const APP_NATIVE_MODULE = 'RNFBAppModule';
+export interface VerificationSupportInfo {
+  isSupported: boolean;
+}
 
-export const DEFAULT_APP_NAME = '[DEFAULT]';
+export interface VerifiedPhoneNumberResult {
+  phoneNumber: string;
+  token: string;
+}
 
-export const KNOWN_NAMESPACES = [
-  'appCheck',
-  'appDistribution',
-  'auth',
-  'analytics',
-  'remoteConfig',
-  'crashlytics',
-  'database',
-  'inAppMessaging',
-  'installations',
-  'firestore',
-  'functions',
-  'indexing',
-  'storage',
-  'messaging',
-  'naturalLanguage',
-  'ml',
-  'notifications',
-  'perf',
-  'phoneNumberVerification',
-  'utils',
-] as const;
-
-export type KnownNamespace = (typeof KNOWN_NAMESPACES)[number];
+export interface PhoneNumberVerification {
+  enableTestSession(token: string): Promise<void>;
+  getVerificationSupportInfo(): Promise<VerificationSupportInfo[]>;
+  getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberResult>;
+  getDigitalCredentialPayload(nonce: string): Promise<string>;
+  exchangeCredentialResponseForPhoneNumber(
+    dcApiResponse: string,
+  ): Promise<VerifiedPhoneNumberResult>;
+}
