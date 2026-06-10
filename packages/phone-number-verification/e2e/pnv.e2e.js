@@ -1,0 +1,82 @@
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+describe('phoneNumberVerification()', function () {
+  describe('namespace', function () {
+    it('accessible from firebase.app()', function () {
+      const app = firebase.app();
+      should.exist(app.phoneNumberVerification);
+      app.phoneNumberVerification().enableTestSession.should.be.a.Function();
+      app.phoneNumberVerification().getVerificationSupportInfo.should.be.a.Function();
+      app.phoneNumberVerification().getVerifiedPhoneNumber.should.be.a.Function();
+      app
+        .phoneNumberVerification()
+        .getDigitalCredentialPayload.should.be.a.Function();
+      app
+        .phoneNumberVerification()
+        .exchangeCredentialResponseForPhoneNumber.should.be.a.Function();
+    });
+  });
+
+  describe('modular', function () {
+    it('getPhoneNumberVerification() returns an instance', function () {
+      const { getPhoneNumberVerification } = pnvModular;
+      const pnv = getPhoneNumberVerification();
+      should.exist(pnv);
+    });
+
+    it('exports all modular functions', function () {
+      const {
+        getPhoneNumberVerification,
+        enableTestSession,
+        getVerificationSupportInfo,
+        getVerifiedPhoneNumber,
+        getDigitalCredentialPayload,
+        exchangeCredentialResponseForPhoneNumber,
+      } = pnvModular;
+
+      getPhoneNumberVerification.should.be.a.Function();
+      enableTestSession.should.be.a.Function();
+      getVerificationSupportInfo.should.be.a.Function();
+      getVerifiedPhoneNumber.should.be.a.Function();
+      getDigitalCredentialPayload.should.be.a.Function();
+      exchangeCredentialResponseForPhoneNumber.should.be.a.Function();
+    });
+  });
+
+  describe('getVerificationSupportInfo()', function () {
+    android.it('returns an array of support info', async function () {
+      const { getPhoneNumberVerification, getVerificationSupportInfo } = pnvModular;
+      const pnv = getPhoneNumberVerification();
+      const supportInfo = await getVerificationSupportInfo(pnv);
+      supportInfo.should.be.an.Array();
+    });
+  });
+
+  describe('iOS unsupported', function () {
+    ios.it('rejects on iOS', async function () {
+      const { getPhoneNumberVerification, getVerificationSupportInfo } = pnvModular;
+      const pnv = getPhoneNumberVerification();
+      try {
+        await getVerificationSupportInfo(pnv);
+        throw new Error('should have thrown');
+      } catch (e) {
+        e.message.should.containEql('only supported on Android');
+      }
+    });
+  });
+});
