@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 import {
-  getPhoneNumberVerification,
   getVerificationSupportInfo,
   getVerifiedPhoneNumber,
   enableTestSession,
@@ -11,8 +10,6 @@ import {
 export function PnvTestComponent() {
   const [status, setStatus] = useState('Ready');
   const [result, setResult] = useState(null);
-
-  const pnv = getPhoneNumberVerification();
 
   const runTest = async (label, fn) => {
     setStatus(`Running: ${label}...`);
@@ -36,7 +33,7 @@ export function PnvTestComponent() {
         <Button
           title="Check Support Info"
           onPress={() =>
-            runTest('getVerificationSupportInfo', () => getVerificationSupportInfo(pnv))
+            runTest('getVerificationSupportInfo', () => getVerificationSupportInfo())
           }
         />
       </View>
@@ -45,7 +42,7 @@ export function PnvTestComponent() {
         <Button
           title="Get Verified Phone Number"
           onPress={() =>
-            runTest('getVerifiedPhoneNumber', () => getVerifiedPhoneNumber(pnv))
+            runTest('getVerifiedPhoneNumber', () => getVerifiedPhoneNumber())
           }
         />
       </View>
@@ -54,7 +51,7 @@ export function PnvTestComponent() {
         <Button
           title="Enable Test Session (demo token)"
           onPress={() =>
-            runTest('enableTestSession', () => enableTestSession(pnv, 'demo-test-token'))
+            runTest('enableTestSession', () => enableTestSession('demo-test-token'))
           }
         />
       </View>

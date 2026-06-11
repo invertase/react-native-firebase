@@ -16,8 +16,8 @@
  */
 
 describe('phoneNumberVerification()', function () {
-  describe('modular namespace access', function () {
-    it('accessible from getApp()', function () {
+  describe('modular', function () {
+    it('getPhoneNumberVerification() returns an object with all methods', function () {
       const { getPhoneNumberVerification } = pnvModular;
       const pnv = getPhoneNumberVerification();
       should.exist(pnv);
@@ -26,14 +26,6 @@ describe('phoneNumberVerification()', function () {
       pnv.getVerifiedPhoneNumber.should.be.a.Function();
       pnv.getDigitalCredentialPayload.should.be.a.Function();
       pnv.exchangeCredentialResponseForPhoneNumber.should.be.a.Function();
-    });
-  });
-
-  describe('modular', function () {
-    it('getPhoneNumberVerification() returns an instance', function () {
-      const { getPhoneNumberVerification } = pnvModular;
-      const pnv = getPhoneNumberVerification();
-      should.exist(pnv);
     });
 
     it('exports all modular functions', function () {
@@ -57,19 +49,17 @@ describe('phoneNumberVerification()', function () {
 
   describe('getVerificationSupportInfo()', function () {
     android.it('returns an array of support info', async function () {
-      const { getPhoneNumberVerification, getVerificationSupportInfo } = pnvModular;
-      const pnv = getPhoneNumberVerification();
-      const supportInfo = await getVerificationSupportInfo(pnv);
+      const { getVerificationSupportInfo } = pnvModular;
+      const supportInfo = await getVerificationSupportInfo();
       supportInfo.should.be.an.Array();
     });
   });
 
   describe('iOS unsupported', function () {
     ios.it('rejects on iOS', async function () {
-      const { getPhoneNumberVerification, getVerificationSupportInfo } = pnvModular;
-      const pnv = getPhoneNumberVerification();
+      const { getVerificationSupportInfo } = pnvModular;
       try {
-        await getVerificationSupportInfo(pnv);
+        await getVerificationSupportInfo();
         throw new Error('should have thrown');
       } catch (e) {
         e.message.should.containEql('only supported on Android');

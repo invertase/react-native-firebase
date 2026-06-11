@@ -15,7 +15,8 @@
  *
  */
 
-import { getApp, type FirebaseApp } from '@react-native-firebase/app';
+import { Platform } from 'react-native';
+import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 
 import type {
   PhoneNumberVerification,
@@ -23,77 +24,92 @@ import type {
   VerifiedPhoneNumberResult,
 } from './types/pnv';
 
+const UNSUPPORTED_MSG = 'Firebase Phone Number Verification is only supported on Android.';
+
+const NATIVE_MODULE_NAME = 'RNFBPnvModule';
+
+interface NativePnvModule {
+  enableTestSession(token: string): Promise<void>;
+  getVerificationSupportInfo(): Promise<VerificationSupportInfo[]>;
+  getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberResult>;
+  getDigitalCredentialPayload(nonce: string): Promise<string>;
+  exchangeCredentialResponseForPhoneNumber(dcApiResponse: string): Promise<VerifiedPhoneNumberResult>;
+}
+
+function getNativeModule(): NativePnvModule {
+  if (Platform.OS !== 'android') {
+    throw new Error(UNSUPPORTED_MSG);
+  }
+  const mod = getReactNativeModule(NATIVE_MODULE_NAME);
+  if (!mod) {
+    throw new Error(
+      `Could not find native module '${NATIVE_MODULE_NAME}'. Ensure @react-native-firebase/phone-number-verification is linked.`,
+    );
+  }
+  return mod as unknown as NativePnvModule;
+}
+
 /**
- * Returns the Phone Number Verification instance for the given app.
- * @param app - The Firebase app instance. Optional, defaults to the default app.
+ * Returns a PhoneNumberVerification instance.
  * @returns PhoneNumberVerification instance
  */
-export function getPhoneNumberVerification(
-  app?: FirebaseApp,
-): PhoneNumberVerification {
-  const appInstance = app ? (getApp(app.name) as FirebaseApp) : (getApp() as FirebaseApp);
-  return (appInstance as any).phoneNumberVerification() as PhoneNumberVerification;
+export function getPhoneNumberVerification(): PhoneNumberVerification {
+  return {
+    enableTestSession: (token: string) => enableTestSession(token),
+    getVerificationSupportInfo: () => getVerificationSupportInfo(),
+    getVerifiedPhoneNumber: () => getVerifiedPhoneNumber(),
+    getDigitalCredentialPayload: (nonce: string) => getDigitalCredentialPayload(nonce),
+    exchangeCredentialResponseForPhoneNumber: (dcApiResponse: string) =>
+      exchangeCredentialResponseForPhoneNumber(dcApiResponse),
+  };
 }
 
 /**
  * Enables a test session for SIM-less testing.
  * Must be called only once per instance; subsequent calls will throw.
- * @param pnv - The PhoneNumberVerification instance.
+ *
+ * In test mode, phone numbers follow the format: valid country code followed by all zeros.
+ *
  * @param token - The test token generated from the Firebase Console.
  */
-export function enableTestSession(
-  pnv: PhoneNumberVerification,
-  token: string,
-): Promise<void> {
-  return pnv.enableTestSession(token);
+export function enableTestSession(token: string): Promise<void> {
+  return getNativeModule().enableTestSession(token);
 }
 
 /**
  * Checks if the device's SIM card(s) support phone number verification.
- * @param pnv - The PhoneNumberVerification instance.
  * @returns Array of support info results, one per SIM slot.
  */
-export function getVerificationSupportInfo(
-  pnv: PhoneNumberVerification,
-): Promise<VerificationSupportInfo[]> {
-  return pnv.getVerificationSupportInfo();
+export function getVerificationSupportInfo(): Promise<VerificationSupportInfo[]> {
+  return getNativeModule().getVerificationSupportInfo();
 }
 
 /**
  * Initiates the phone number verification flow, including user consent and token generation.
- * @param pnv - The PhoneNumberVerification instance.
  * @returns The verified phone number and a token for server-side validation.
  */
-export function getVerifiedPhoneNumber(
-  pnv: PhoneNumberVerification,
-): Promise<VerifiedPhoneNumberResult> {
-  return pnv.getVerifiedPhoneNumber();
+export function getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberResult> {
+  return getNativeModule().getVerifiedPhoneNumber();
 }
 
 /**
  * Generates a digital credential payload for use with Android Credential Manager.
  * Part of the custom verification flow.
- * @param pnv - The PhoneNumberVerification instance.
  * @param nonce - A unique value to prevent replay attacks.
  * @returns The digital credential payload string.
  */
-export function getDigitalCredentialPayload(
-  pnv: PhoneNumberVerification,
-  nonce: string,
-): Promise<string> {
-  return pnv.getDigitalCredentialPayload(nonce);
+export function getDigitalCredentialPayload(nonce: string): Promise<string> {
+  return getNativeModule().getDigitalCredentialPayload(nonce);
 }
 
 /**
  * Exchanges a Credential Manager response for a verified phone number.
  * Part of the custom verification flow.
- * @param pnv - The PhoneNumberVerification instance.
  * @param dcApiResponse - The JWT from the Credential Manager response.
  * @returns The verified phone number and a token for server-side validation.
  */
 export function exchangeCredentialResponseForPhoneNumber(
-  pnv: PhoneNumberVerification,
   dcApiResponse: string,
 ): Promise<VerifiedPhoneNumberResult> {
-  return pnv.exchangeCredentialResponseForPhoneNumber(dcApiResponse);
+  return getNativeModule().exchangeCredentialResponseForPhoneNumber(dcApiResponse);
 }

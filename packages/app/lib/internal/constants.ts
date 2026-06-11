@@ -38,7 +38,6 @@ export const KNOWN_NAMESPACES = [
   'ml',
   'notifications',
   'perf',
-  'phoneNumberVerification',
   'utils',
 ] as const;
 

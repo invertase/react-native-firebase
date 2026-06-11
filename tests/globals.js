@@ -68,7 +68,6 @@ import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/installations';
 import '@react-native-firebase/messaging';
 import '@react-native-firebase/ml';
-import '@react-native-firebase/phone-number-verification';
 import '@react-native-firebase/remote-config';
 import '@react-native-firebase/storage';
 import firebase, * as modular from '@react-native-firebase/app';
