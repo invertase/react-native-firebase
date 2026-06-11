@@ -1,0 +1,132 @@
+---
+title: Phone Number Verification
+description: Installation and getting started with Phone Number Verification.
+icon: //static.invertase.io/assets/social/firebase-logo.png
+next: /vertexai/usage
+previous: /perf/usage
+---
+
+# Installation
+
+This module requires that the `@react-native-firebase/app` module is already setup and installed. To install the "app" module, view the
+[Getting Started](/) documentation.
+
+```bash
+# Install & setup the app module
+yarn add @react-native-firebase/app
+
+# Install the phone-number-verification module
+yarn add @react-native-firebase/phone-number-verification
+```
+
+> **Android only** - This module is only available on Android. The Firebase Phone Number Verification SDK does not support iOS or web platforms. Calling any method on a non-Android platform will throw an error.
+
+# What does it do
+
+Firebase Phone Number Verification (PNV) provides carrier-level phone number verification on Android devices without requiring SMS codes. It verifies the user's phone number directly through the device's SIM card and carrier network, providing a seamless and secure verification experience.
+
+<YouTube id="Rua4VNxGc6o" />
+
+Key capabilities:
+
+- **Carrier-level verification**: Verifies phone numbers directly with the mobile carrier, without SMS.
+- **No user interaction required**: The verification happens silently in the background using the device's SIM card.
+- **Support detection**: Check whether the device and carrier support phone number verification before attempting it.
+- **Digital Credential API**: Supports the Android Digital Credential API for custom verification flows.
+
+# Usage
+
+## Check verification support
+
+Before attempting verification, check if the device's SIM card and carrier support phone number verification:
+
+```js
+import { getVerificationSupportInfo } from '@react-native-firebase/phone-number-verification';
+
+const supportInfo = await getVerificationSupportInfo();
+
+for (const info of supportInfo) {
+  console.log('SIM supported:', info.isSupported);
+}
+```
+
+The method returns an array with one entry per SIM slot. Each entry indicates whether that SIM's carrier supports PNV.
+
+## Verify a phone number
+
+To initiate the full verification flow, which includes user consent and token generation:
+
+```js
+import { getVerifiedPhoneNumber } from '@react-native-firebase/phone-number-verification';
+
+try {
+  const result = await getVerifiedPhoneNumber();
+  console.log('Phone number:', result.phoneNumber);
+  console.log('Verification token:', result.token);
+} catch (error) {
+  console.error('Verification failed:', error);
+}
+```
+
+The returned `token` can be sent to your backend server to validate the verification with Firebase.
+
+## Custom verification with Digital Credentials
+
+For advanced use cases, you can use the Digital Credential API flow:
+
+```js
+import {
+  getDigitalCredentialPayload,
+  exchangeCredentialResponseForPhoneNumber,
+} from '@react-native-firebase/phone-number-verification';
+
+// Step 1: Get the credential payload
+const payload = await getDigitalCredentialPayload('your-unique-nonce');
+
+// Step 2: Use the payload with Android Credential Manager
+// ... (pass payload to CredentialManager API)
+
+// Step 3: Exchange the response for a verified phone number
+const result = await exchangeCredentialResponseForPhoneNumber(credentialResponse);
+console.log('Phone number:', result.phoneNumber);
+```
+
+## Testing
+
+For testing without a real SIM card, you can enable a test session using a token from the Firebase Console:
+
+```js
+import { enableTestSession } from '@react-native-firebase/phone-number-verification';
+
+// Enable test mode - call only once
+await enableTestSession('your-test-token-from-firebase-console');
+```
+
+In test mode, phone numbers follow the format: a valid country code followed by all zeros.
+
+## Using the convenience object
+
+You can also access all methods through a single object:
+
+```js
+import { getPhoneNumberVerification } from '@react-native-firebase/phone-number-verification';
+
+const pnv = getPhoneNumberVerification();
+
+const supportInfo = await pnv.getVerificationSupportInfo();
+const result = await pnv.getVerifiedPhoneNumber();
+```
+
+## Platform handling
+
+This module is Android-only. On non-Android platforms, all methods throw an error with the message "Firebase Phone Number Verification is only supported on Android." You can guard against this using `Platform.OS`:
+
+```js
+import { Platform } from 'react-native';
+import { getVerificationSupportInfo } from '@react-native-firebase/phone-number-verification';
+
+if (Platform.OS === 'android') {
+  const supportInfo = await getVerificationSupportInfo();
+  // ...
+}
+```
