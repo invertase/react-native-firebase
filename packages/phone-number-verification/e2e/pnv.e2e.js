@@ -35,9 +35,34 @@ describe('phoneNumberVerification()', function () {
   });
 
   describe('getVerificationSupportInfo()', function () {
-    android.it('returns an array of support info', async function () {
+    android.it('returns an array of support info with full fields', async function () {
       const { getVerificationSupportInfo } = pnvModular;
       const supportInfo = await getVerificationSupportInfo();
+      supportInfo.should.be.an.Array();
+
+      if (supportInfo.length > 0) {
+        const info = supportInfo[0];
+        info.should.have.property('isSupported');
+        info.isSupported.should.be.a.Boolean();
+        info.should.have.property('simSlot');
+        info.simSlot.should.be.a.Number();
+        info.should.have.property('carrierId');
+        info.carrierId.should.be.a.String();
+        info.should.have.property('reason');
+        info.reason.should.be.a.String();
+        [
+          'CAPABILITY_STATUS_UNSPECIFIED',
+          'CAPABLE',
+          'INCAPABLE_DUE_TO_CARRIER_UNSUPPORTED',
+          'INCAPABLE_DUE_TO_ANDROID_VERSION',
+          'INCAPABLE_DUE_TO_SIM_STATE',
+        ].should.containEql(info.reason);
+      }
+    });
+
+    android.it('accepts an optional simSlot parameter', async function () {
+      const { getVerificationSupportInfo } = pnvModular;
+      const supportInfo = await getVerificationSupportInfo(0);
       supportInfo.should.be.an.Array();
     });
   });

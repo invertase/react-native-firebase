@@ -25,7 +25,12 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.pnv.FirebasePhoneNumberVerification;
+import com.google.firebase.pnv.FirebasePhoneNumberVerificationException;
+import com.google.firebase.pnv.VerificationSupportResult;
+import com.google.firebase.pnv.VerifiedPhoneNumberTokenResult;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import java.util.List;
+import java.util.Map;
 
 public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Pnv";
@@ -37,13 +42,121 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
     fpnv = FirebasePhoneNumberVerification.getInstance();
   }
 
+  private static String reasonToString(int reason) {
+    switch (reason) {
+      case 1:
+        return "CAPABLE";
+      case 2:
+        return "INCAPABLE_DUE_TO_CARRIER_UNSUPPORTED";
+      case 3:
+        return "INCAPABLE_DUE_TO_ANDROID_VERSION";
+      case 4:
+        return "INCAPABLE_DUE_TO_SIM_STATE";
+      default:
+        return "CAPABILITY_STATUS_UNSPECIFIED";
+    }
+  }
+
+  private static String pnvErrorCode(Exception e) {
+    if (e instanceof FirebasePhoneNumberVerificationException) {
+      int code = ((FirebasePhoneNumberVerificationException) e).getErrorCode();
+      switch (code) {
+        case 55501:
+          return "carrier-not-supported";
+        case 55502:
+          return "invalid-digital-credential-response";
+        case 55503:
+          return "integrity-check-failed";
+        case 55504:
+          return "preflight-check-failed";
+        case 55505:
+          return "unsupported-operation";
+        case 55506:
+          return "credential-manager-error";
+        case 55507:
+          return "invalid-test-number-id";
+        case 55508:
+          return "test-session-already-enabled";
+        case 55509:
+          return "activity-context-required";
+        default:
+          return "unknown";
+      }
+    }
+    return "unknown";
+  }
+
+  private static WritableMap supportResultToMap(VerificationSupportResult result) {
+    WritableMap map = Arguments.createMap();
+    map.putBoolean("isSupported", result.isSupported());
+    map.putInt("simSlot", result.getSimSlot());
+    map.putString("carrierId", result.getCarrierId());
+    map.putString("reason", reasonToString(result.getReason()));
+    return map;
+  }
+
+  private static WritableArray supportResultsToArray(List<VerificationSupportResult> results) {
+    WritableArray array = Arguments.createArray();
+    for (int i = 0; i < results.size(); i++) {
+      array.pushMap(supportResultToMap(results.get(i)));
+    }
+    return array;
+  }
+
+  private static WritableMap tokenResultToMap(VerifiedPhoneNumberTokenResult result) {
+    WritableMap map = Arguments.createMap();
+    map.putString("phoneNumber", result.getPhoneNumber());
+    map.putString("token", result.getToken());
+    map.putDouble("expirationTimestamp", (double) result.getExpirationTimestamp());
+    map.putDouble("issuedAtTimestamp", (double) result.getIssuedAtTimestamp());
+    String nonce = result.getNonce();
+    if (nonce != null) {
+      map.putString("nonce", nonce);
+    } else {
+      map.putNull("nonce");
+    }
+    Map<String, Object> claims = result.getClaims();
+    if (claims != null) {
+      map.putMap("claims", claimsToWritableMap(claims));
+    } else {
+      map.putNull("claims");
+    }
+    return map;
+  }
+
+  private static WritableMap claimsToWritableMap(Map<String, Object> claims) {
+    WritableMap map = Arguments.createMap();
+    for (Map.Entry<String, Object> entry : claims.entrySet()) {
+      String key = entry.getKey();
+      Object value = entry.getValue();
+      if (value == null) {
+        map.putNull(key);
+      } else if (value instanceof String) {
+        map.putString(key, (String) value);
+      } else if (value instanceof Boolean) {
+        map.putBoolean(key, (Boolean) value);
+      } else if (value instanceof Integer) {
+        map.putInt(key, (Integer) value);
+      } else if (value instanceof Long) {
+        map.putDouble(key, ((Long) value).doubleValue());
+      } else if (value instanceof Double) {
+        map.putDouble(key, (Double) value);
+      } else if (value instanceof Float) {
+        map.putDouble(key, ((Float) value).doubleValue());
+      } else {
+        map.putString(key, value.toString());
+      }
+    }
+    return map;
+  }
+
   @ReactMethod
   public void enableTestSession(String token, Promise promise) {
     try {
       fpnv.enableTestSession(token);
       promise.resolve(null);
     } catch (Exception e) {
-      rejectPromiseWithCodeAndMessage(promise, "enable-test-session-failed", e.getMessage());
+      rejectPromiseWithCodeAndMessage(promise, pnvErrorCode(e), e.getMessage());
     }
   }
 
@@ -53,18 +166,27 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
         .addOnSuccessListener(
             getExecutor(),
             results -> {
-              WritableArray supportInfoArray = Arguments.createArray();
-              for (int i = 0; i < results.size(); i++) {
-                WritableMap info = Arguments.createMap();
-                info.putBoolean("isSupported", results.get(i).isSupported());
-                supportInfoArray.pushMap(info);
-              }
-              promise.resolve(supportInfoArray);
+              promise.resolve(supportResultsToArray(results));
             })
         .addOnFailureListener(
             getExecutor(),
             e -> {
-              rejectPromiseWithCodeAndMessage(promise, "get-support-info-failed", e.getMessage());
+              rejectPromiseWithCodeAndMessage(promise, pnvErrorCode(e), e.getMessage());
+            });
+  }
+
+  @ReactMethod
+  public void getVerificationSupportInfoForSimSlot(int simSlot, Promise promise) {
+    fpnv.getVerificationSupportInfo(simSlot)
+        .addOnSuccessListener(
+            getExecutor(),
+            results -> {
+              promise.resolve(supportResultsToArray(results));
+            })
+        .addOnFailureListener(
+            getExecutor(),
+            e -> {
+              rejectPromiseWithCodeAndMessage(promise, pnvErrorCode(e), e.getMessage());
             });
   }
 
@@ -72,22 +194,20 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
   public void getVerifiedPhoneNumber(Promise promise) {
     Activity activity = getCurrentActivity();
     if (activity == null) {
-      rejectPromiseWithCodeAndMessage(promise, "no-activity", "Could not get current activity");
+      rejectPromiseWithCodeAndMessage(
+          promise, "activity-context-required", "Could not get current activity");
       return;
     }
     fpnv.getVerifiedPhoneNumber(activity)
         .addOnSuccessListener(
             getExecutor(),
             result -> {
-              WritableMap resultMap = Arguments.createMap();
-              resultMap.putString("phoneNumber", result.getPhoneNumber());
-              resultMap.putString("token", result.getToken());
-              promise.resolve(resultMap);
+              promise.resolve(tokenResultToMap(result));
             })
         .addOnFailureListener(
             getExecutor(),
             e -> {
-              rejectPromiseWithCodeAndMessage(promise, "verification-failed", e.getMessage());
+              rejectPromiseWithCodeAndMessage(promise, pnvErrorCode(e), e.getMessage());
             });
   }
 
@@ -102,7 +222,7 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
         .addOnFailureListener(
             getExecutor(),
             e -> {
-              rejectPromiseWithCodeAndMessage(promise, "get-payload-failed", e.getMessage());
+              rejectPromiseWithCodeAndMessage(promise, pnvErrorCode(e), e.getMessage());
             });
   }
 
@@ -112,15 +232,12 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
         .addOnSuccessListener(
             getExecutor(),
             result -> {
-              WritableMap resultMap = Arguments.createMap();
-              resultMap.putString("phoneNumber", result.getPhoneNumber());
-              resultMap.putString("token", result.getToken());
-              promise.resolve(resultMap);
+              promise.resolve(tokenResultToMap(result));
             })
         .addOnFailureListener(
             getExecutor(),
             e -> {
-              rejectPromiseWithCodeAndMessage(promise, "exchange-failed", e.getMessage());
+              rejectPromiseWithCodeAndMessage(promise, pnvErrorCode(e), e.getMessage());
             });
   }
 }

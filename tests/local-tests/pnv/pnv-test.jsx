@@ -31,9 +31,18 @@ export function PnvTestComponent() {
 
       <View style={styles.buttonRow}>
         <Button
-          title="Check Support Info"
+          title="Check Support Info (all SIMs)"
           onPress={() =>
             runTest('getVerificationSupportInfo', () => getVerificationSupportInfo())
+          }
+        />
+      </View>
+
+      <View style={styles.buttonRow}>
+        <Button
+          title="Check Support Info (SIM slot 0)"
+          onPress={() =>
+            runTest('getVerificationSupportInfo(0)', () => getVerificationSupportInfo(0))
           }
         />
       </View>

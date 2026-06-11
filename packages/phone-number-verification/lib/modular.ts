@@ -27,6 +27,7 @@ const NATIVE_MODULE_NAME = 'RNFBPnvModule';
 interface NativePnvModule {
   enableTestSession(token: string): Promise<void>;
   getVerificationSupportInfo(): Promise<VerificationSupportInfo[]>;
+  getVerificationSupportInfoForSimSlot(simSlot: number): Promise<VerificationSupportInfo[]>;
   getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberResult>;
   getDigitalCredentialPayload(nonce: string): Promise<string>;
   exchangeCredentialResponseForPhoneNumber(dcApiResponse: string): Promise<VerifiedPhoneNumberResult>;
@@ -47,7 +48,8 @@ function getNativeModule(): NativePnvModule {
 
 /**
  * Enables a test session for SIM-less testing.
- * Must be called only once per instance; subsequent calls will throw.
+ * Must be called only once per app instance; subsequent calls will reject with
+ * error code `test-session-already-enabled`.
  *
  * In test mode, phone numbers follow the format: valid country code followed by all zeros.
  *
@@ -59,15 +61,22 @@ export function enableTestSession(token: string): Promise<void> {
 
 /**
  * Checks if the device's SIM card(s) support phone number verification.
- * @returns Array of support info results, one per SIM slot.
+ *
+ * @param simSlot - Optional SIM slot index to query a specific slot instead of all slots.
+ * @returns Array of support info results, one per SIM slot (or one entry if simSlot is specified).
  */
-export function getVerificationSupportInfo(): Promise<VerificationSupportInfo[]> {
+export function getVerificationSupportInfo(simSlot?: number): Promise<VerificationSupportInfo[]> {
+  if (simSlot !== undefined) {
+    return getNativeModule().getVerificationSupportInfoForSimSlot(simSlot);
+  }
   return getNativeModule().getVerificationSupportInfo();
 }
 
 /**
  * Initiates the phone number verification flow, including user consent and token generation.
- * @returns The verified phone number and a token for server-side validation.
+ * A consent dialog will be presented to the user.
+ *
+ * @returns The verified phone number and a JWT token with full claims for server-side validation.
  */
 export function getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberResult> {
   return getNativeModule().getVerifiedPhoneNumber();
@@ -76,6 +85,7 @@ export function getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberResult> {
 /**
  * Generates a digital credential payload for use with Android Credential Manager.
  * Part of the custom verification flow.
+ *
  * @param nonce - A unique value to prevent replay attacks.
  * @returns The digital credential payload string.
  */
@@ -86,8 +96,9 @@ export function getDigitalCredentialPayload(nonce: string): Promise<string> {
 /**
  * Exchanges a Credential Manager response for a verified phone number.
  * Part of the custom verification flow.
+ *
  * @param dcApiResponse - The JWT from the Credential Manager response.
- * @returns The verified phone number and a token for server-side validation.
+ * @returns The verified phone number and a JWT token with full claims for server-side validation.
  */
 export function exchangeCredentialResponseForPhoneNumber(
   dcApiResponse: string,
