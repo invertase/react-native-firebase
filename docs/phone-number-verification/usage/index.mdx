@@ -40,13 +40,13 @@ PNV depends on carrier cooperation. Not all carriers or regions are supported. B
 
 Common reasons verification may be unsupported:
 
-| Reason | Meaning |
-|---|---|
-| `CAPABLE` | The SIM's carrier supports PNV. |
-| `INCAPABLE_DUE_TO_CARRIER_UNSUPPORTED` | The carrier does not participate in PNV. |
-| `INCAPABLE_DUE_TO_ANDROID_VERSION` | The device's Android version is too old. |
-| `INCAPABLE_DUE_TO_SIM_STATE` | No SIM inserted, or SIM is in an unusable state. |
-| `CAPABILITY_STATUS_UNSPECIFIED` | The SDK could not determine the status. |
+| Reason                                 | Meaning                                          |
+| -------------------------------------- | ------------------------------------------------ |
+| `CAPABLE`                              | The SIM's carrier supports PNV.                  |
+| `INCAPABLE_DUE_TO_CARRIER_UNSUPPORTED` | The carrier does not participate in PNV.         |
+| `INCAPABLE_DUE_TO_ANDROID_VERSION`     | The device's Android version is too old.         |
+| `INCAPABLE_DUE_TO_SIM_STATE`           | No SIM inserted, or SIM is in an unusable state. |
+| `CAPABILITY_STATUS_UNSPECIFIED`        | The SDK could not determine the status.          |
 
 # Usage
 
@@ -90,7 +90,10 @@ If PNV is not supported, fall back to an alternative verification method:
 
 ```js
 import { Platform } from 'react-native';
-import { getVerificationSupportInfo, getVerifiedPhoneNumber } from '@react-native-firebase/phone-number-verification';
+import {
+  getVerificationSupportInfo,
+  getVerifiedPhoneNumber,
+} from '@react-native-firebase/phone-number-verification';
 
 async function verifyPhoneNumber() {
   if (Platform.OS !== 'android') {
@@ -172,17 +175,17 @@ console.log('Expires at:', new Date(result.expirationTimestamp * 1000));
 
 All methods reject with structured error codes from the Firebase PNV SDK. The `error.code` property contains one of these values:
 
-| Error Code | Meaning |
-|---|---|
-| `carrier-not-supported` | The SIM's carrier does not support PNV. |
-| `invalid-digital-credential-response` | The Digital Credential API response was invalid. |
-| `integrity-check-failed` | Device integrity check failed. |
-| `preflight-check-failed` | Server-side preflight check failed. |
-| `unsupported-operation` | The API call is not supported with the given parameters. |
-| `credential-manager-error` | Android Credential Manager failed unexpectedly. |
-| `invalid-test-number-id` | Test number IDs are empty, expired, or duplicated. |
-| `test-session-already-enabled` | `enableTestSession` was called more than once. |
-| `activity-context-required` | An Activity context is required (app may be in the background). |
+| Error Code                            | Meaning                                                         |
+| ------------------------------------- | --------------------------------------------------------------- |
+| `carrier-not-supported`               | The SIM's carrier does not support PNV.                         |
+| `invalid-digital-credential-response` | The Digital Credential API response was invalid.                |
+| `integrity-check-failed`              | Device integrity check failed.                                  |
+| `preflight-check-failed`              | Server-side preflight check failed.                             |
+| `unsupported-operation`               | The API call is not supported with the given parameters.        |
+| `credential-manager-error`            | Android Credential Manager failed unexpectedly.                 |
+| `invalid-test-number-id`              | Test number IDs are empty, expired, or duplicated.              |
+| `test-session-already-enabled`        | `enableTestSession` was called more than once.                  |
+| `activity-context-required`           | An Activity context is required (app may be in the background). |
 
 ```js
 import { getVerifiedPhoneNumber } from '@react-native-firebase/phone-number-verification';
