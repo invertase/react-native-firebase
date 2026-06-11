@@ -17,20 +17,8 @@
 
 describe('phoneNumberVerification()', function () {
   describe('modular', function () {
-    it('getPhoneNumberVerification() returns an object with all methods', function () {
-      const { getPhoneNumberVerification } = pnvModular;
-      const pnv = getPhoneNumberVerification();
-      should.exist(pnv);
-      pnv.enableTestSession.should.be.a.Function();
-      pnv.getVerificationSupportInfo.should.be.a.Function();
-      pnv.getVerifiedPhoneNumber.should.be.a.Function();
-      pnv.getDigitalCredentialPayload.should.be.a.Function();
-      pnv.exchangeCredentialResponseForPhoneNumber.should.be.a.Function();
-    });
-
     it('exports all modular functions', function () {
       const {
-        getPhoneNumberVerification,
         enableTestSession,
         getVerificationSupportInfo,
         getVerifiedPhoneNumber,
@@ -38,7 +26,6 @@ describe('phoneNumberVerification()', function () {
         exchangeCredentialResponseForPhoneNumber,
       } = pnvModular;
 
-      getPhoneNumberVerification.should.be.a.Function();
       enableTestSession.should.be.a.Function();
       getVerificationSupportInfo.should.be.a.Function();
       getVerifiedPhoneNumber.should.be.a.Function();
@@ -55,8 +42,22 @@ describe('phoneNumberVerification()', function () {
     });
   });
 
-  describe('iOS unsupported', function () {
+  describe('only Android supported', function () {
     ios.it('rejects on iOS', async function () {
+      const { getVerificationSupportInfo } = pnvModular;
+      try {
+        await getVerificationSupportInfo();
+        throw new Error('should have thrown');
+      } catch (e) {
+        e.message.should.containEql('only supported on Android');
+      }
+    });
+
+    it('rejects on Other platforms', async function () {
+      if (Platform.android || Platform.ios) {
+        this.skip();
+        return;
+      }
       const { getVerificationSupportInfo } = pnvModular;
       try {
         await getVerificationSupportInfo();

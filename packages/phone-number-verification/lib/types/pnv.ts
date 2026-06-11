@@ -23,13 +23,3 @@ export interface VerifiedPhoneNumberResult {
   phoneNumber: string;
   token: string;
 }
-
-export interface PhoneNumberVerification {
-  enableTestSession(token: string): Promise<void>;
-  getVerificationSupportInfo(): Promise<VerificationSupportInfo[]>;
-  getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberResult>;
-  getDigitalCredentialPayload(nonce: string): Promise<string>;
-  exchangeCredentialResponseForPhoneNumber(
-    dcApiResponse: string,
-  ): Promise<VerifiedPhoneNumberResult>;
-}

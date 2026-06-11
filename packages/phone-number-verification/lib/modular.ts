@@ -18,11 +18,7 @@
 import { Platform } from 'react-native';
 import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 
-import type {
-  PhoneNumberVerification,
-  VerificationSupportInfo,
-  VerifiedPhoneNumberResult,
-} from './types/pnv';
+import type { VerificationSupportInfo, VerifiedPhoneNumberResult } from './types/pnv';
 
 const UNSUPPORTED_MSG = 'Firebase Phone Number Verification is only supported on Android.';
 
@@ -47,21 +43,6 @@ function getNativeModule(): NativePnvModule {
     );
   }
   return mod as unknown as NativePnvModule;
-}
-
-/**
- * Returns a PhoneNumberVerification instance.
- * @returns PhoneNumberVerification instance
- */
-export function getPhoneNumberVerification(): PhoneNumberVerification {
-  return {
-    enableTestSession: (token: string) => enableTestSession(token),
-    getVerificationSupportInfo: () => getVerificationSupportInfo(),
-    getVerifiedPhoneNumber: () => getVerifiedPhoneNumber(),
-    getDigitalCredentialPayload: (nonce: string) => getDigitalCredentialPayload(nonce),
-    exchangeCredentialResponseForPhoneNumber: (dcApiResponse: string) =>
-      exchangeCredentialResponseForPhoneNumber(dcApiResponse),
-  };
 }
 
 /**
