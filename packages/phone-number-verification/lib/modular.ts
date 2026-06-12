@@ -71,7 +71,7 @@ export function enableTestSession(token: string): Promise<void> {
  *
  * @remarks
  * This method does not require user consent and can be called freely.
- * Returns one {@link VerificationSupportResult} per SIM slot (or one entry if `simSlot` is specified).
+ * Returns one `VerificationSupportResult` per SIM slot (or one entry if `simSlot` is specified).
  *
  * @param simSlot - Optional 0-based SIM slot index to query a specific slot instead of all slots.
  * @returns Array of support results, one per SIM slot.

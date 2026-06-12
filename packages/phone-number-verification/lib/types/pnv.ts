@@ -38,7 +38,7 @@ export type VerificationSupportStatus =
  *
  * @remarks
  * Mirrors the native `com.google.firebase.pnv.VerificationSupportResult` class.
- * One instance is returned per SIM slot when calling {@link getVerificationSupportInfo}.
+ * One instance is returned per SIM slot when calling `getVerificationSupportInfo()`.
  *
  * @see https://firebase.google.com/docs/phone-number-verification
  * @public
@@ -60,7 +60,7 @@ export interface VerificationSupportResult {
  *
  * @remarks
  * Mirrors the native `com.google.firebase.pnv.VerifiedPhoneNumberTokenResult` class.
- * Returned by {@link getVerifiedPhoneNumber} and {@link exchangeCredentialResponseForPhoneNumber}.
+ * Returned by `getVerifiedPhoneNumber()` and `exchangeCredentialResponseForPhoneNumber()`.
  *
  * @see https://firebase.google.com/docs/phone-number-verification
  * @public
