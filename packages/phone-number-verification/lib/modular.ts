@@ -61,7 +61,6 @@ function getNativeModule(): NativePnvModule {
  * @throws `pnv/test-session-already-enabled` if called more than once.
  * @throws `pnv/invalid-test-number-id` if the token is empty, expired, or duplicated.
  * @see https://firebase.google.com/docs/phone-number-verification
- * @android
  */
 export function enableTestSession(token: string): Promise<void> {
   return getNativeModule().enableTestSession(token);
@@ -77,7 +76,6 @@ export function enableTestSession(token: string): Promise<void> {
  * @param simSlot - Optional 0-based SIM slot index to query a specific slot instead of all slots.
  * @returns Array of support results, one per SIM slot.
  * @see https://firebase.google.com/docs/phone-number-verification
- * @android
  */
 export function getVerificationSupportInfo(
   simSlot?: number,
@@ -99,7 +97,6 @@ export function getVerificationSupportInfo(
  * @throws `pnv/carrier-not-supported` if the carrier does not support PNV.
  * @throws `pnv/activity-context-required` if no foreground Activity is available.
  * @see https://firebase.google.com/docs/phone-number-verification/android/get-started
- * @android
  */
 export function getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberTokenResult> {
   return getNativeModule().getVerifiedPhoneNumber();
@@ -112,7 +109,6 @@ export function getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberTokenResult
  * @param nonce - A unique value to prevent replay attacks.
  * @returns The digital credential payload string.
  * @see https://firebase.google.com/docs/phone-number-verification
- * @android
  */
 export function getDigitalCredentialPayload(nonce: string): Promise<string> {
   return getNativeModule().getDigitalCredentialPayload(nonce);
@@ -126,7 +122,6 @@ export function getDigitalCredentialPayload(nonce: string): Promise<string> {
  * @returns The verified phone number and a JWT token with full claims for server-side validation.
  * @throws `pnv/invalid-digital-credential-response` if the response is invalid.
  * @see https://firebase.google.com/docs/phone-number-verification
- * @android
  */
 export function exchangeCredentialResponseForPhoneNumber(
   dcApiResponse: string,
