@@ -18,7 +18,7 @@
 import { Platform } from 'react-native';
 import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 
-import type { VerificationSupportInfo, VerifiedPhoneNumberResult } from './types/pnv';
+import type { VerificationSupportResult, VerifiedPhoneNumberTokenResult } from './types/pnv';
 
 const UNSUPPORTED_MSG = 'Firebase Phone Number Verification is only supported on Android.';
 
@@ -26,11 +26,13 @@ const NATIVE_MODULE_NAME = 'RNFBPnvModule';
 
 interface NativePnvModule {
   enableTestSession(token: string): Promise<void>;
-  getVerificationSupportInfo(): Promise<VerificationSupportInfo[]>;
-  getVerificationSupportInfoForSimSlot(simSlot: number): Promise<VerificationSupportInfo[]>;
-  getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberResult>;
+  getVerificationSupportInfo(): Promise<VerificationSupportResult[]>;
+  getVerificationSupportInfoForSimSlot(simSlot: number): Promise<VerificationSupportResult[]>;
+  getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberTokenResult>;
   getDigitalCredentialPayload(nonce: string): Promise<string>;
-  exchangeCredentialResponseForPhoneNumber(dcApiResponse: string): Promise<VerifiedPhoneNumberResult>;
+  exchangeCredentialResponseForPhoneNumber(
+    dcApiResponse: string,
+  ): Promise<VerifiedPhoneNumberTokenResult>;
 }
 
 function getNativeModule(): NativePnvModule {
@@ -49,11 +51,17 @@ function getNativeModule(): NativePnvModule {
 /**
  * Enables a test session for SIM-less testing.
  * Must be called only once per app instance; subsequent calls will reject with
- * error code `test-session-already-enabled`.
+ * error code `pnv/test-session-already-enabled`.
  *
+ * @remarks
  * In test mode, phone numbers follow the format: valid country code followed by all zeros.
+ * Requires a test token generated from the Firebase Console (7-day TTL).
  *
  * @param token - The test token generated from the Firebase Console.
+ * @throws `pnv/test-session-already-enabled` if called more than once.
+ * @throws `pnv/invalid-test-number-id` if the token is empty, expired, or duplicated.
+ * @see https://firebase.google.com/docs/phone-number-verification
+ * @android
  */
 export function enableTestSession(token: string): Promise<void> {
   return getNativeModule().enableTestSession(token);
@@ -62,10 +70,18 @@ export function enableTestSession(token: string): Promise<void> {
 /**
  * Checks if the device's SIM card(s) support phone number verification.
  *
- * @param simSlot - Optional SIM slot index to query a specific slot instead of all slots.
- * @returns Array of support info results, one per SIM slot (or one entry if simSlot is specified).
+ * @remarks
+ * This method does not require user consent and can be called freely.
+ * Returns one {@link VerificationSupportResult} per SIM slot (or one entry if `simSlot` is specified).
+ *
+ * @param simSlot - Optional 0-based SIM slot index to query a specific slot instead of all slots.
+ * @returns Array of support results, one per SIM slot.
+ * @see https://firebase.google.com/docs/phone-number-verification
+ * @android
  */
-export function getVerificationSupportInfo(simSlot?: number): Promise<VerificationSupportInfo[]> {
+export function getVerificationSupportInfo(
+  simSlot?: number,
+): Promise<VerificationSupportResult[]> {
   if (simSlot !== undefined) {
     return getNativeModule().getVerificationSupportInfoForSimSlot(simSlot);
   }
@@ -76,9 +92,16 @@ export function getVerificationSupportInfo(simSlot?: number): Promise<Verificati
  * Initiates the phone number verification flow, including user consent and token generation.
  * A consent dialog will be presented to the user.
  *
+ * @remarks
+ * The app should prepare the user for the consent screen before calling this method.
+ *
  * @returns The verified phone number and a JWT token with full claims for server-side validation.
+ * @throws `pnv/carrier-not-supported` if the carrier does not support PNV.
+ * @throws `pnv/activity-context-required` if no foreground Activity is available.
+ * @see https://firebase.google.com/docs/phone-number-verification/android/get-started
+ * @android
  */
-export function getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberResult> {
+export function getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberTokenResult> {
   return getNativeModule().getVerifiedPhoneNumber();
 }
 
@@ -88,6 +111,8 @@ export function getVerifiedPhoneNumber(): Promise<VerifiedPhoneNumberResult> {
  *
  * @param nonce - A unique value to prevent replay attacks.
  * @returns The digital credential payload string.
+ * @see https://firebase.google.com/docs/phone-number-verification
+ * @android
  */
 export function getDigitalCredentialPayload(nonce: string): Promise<string> {
   return getNativeModule().getDigitalCredentialPayload(nonce);
@@ -99,9 +124,12 @@ export function getDigitalCredentialPayload(nonce: string): Promise<string> {
  *
  * @param dcApiResponse - The JWT from the Credential Manager response.
  * @returns The verified phone number and a JWT token with full claims for server-side validation.
+ * @throws `pnv/invalid-digital-credential-response` if the response is invalid.
+ * @see https://firebase.google.com/docs/phone-number-verification
+ * @android
  */
 export function exchangeCredentialResponseForPhoneNumber(
   dcApiResponse: string,
-): Promise<VerifiedPhoneNumberResult> {
+): Promise<VerifiedPhoneNumberTokenResult> {
   return getNativeModule().exchangeCredentialResponseForPhoneNumber(dcApiResponse);
 }

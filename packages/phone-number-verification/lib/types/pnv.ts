@@ -18,6 +18,13 @@
 /**
  * Status indicating why a SIM slot does or does not support phone number verification.
  * Maps to the native `VerificationSupportStatus` IntDef constants.
+ *
+ * @remarks
+ * Returned as the {@link VerificationSupportResult.reason} field. Use this to determine
+ * whether to fall back to an alternative verification method (e.g. SMS).
+ *
+ * @see https://firebase.google.com/docs/phone-number-verification
+ * @public
  */
 export type VerificationSupportStatus =
   | 'CAPABILITY_STATUS_UNSPECIFIED'
@@ -28,40 +35,57 @@ export type VerificationSupportStatus =
 
 /**
  * Result describing whether a specific SIM slot supports phone number verification.
+ *
+ * @remarks
+ * Mirrors the native `com.google.firebase.pnv.VerificationSupportResult` class.
+ * One instance is returned per SIM slot when calling {@link getVerificationSupportInfo}.
+ *
+ * @see https://firebase.google.com/docs/phone-number-verification
+ * @public
  */
-export interface VerificationSupportInfo {
+export interface VerificationSupportResult {
   /** Whether this SIM slot supports phone number verification. */
-  isSupported: boolean;
+  readonly isSupported: boolean;
   /** The SIM slot index (0-based). */
-  simSlot: number;
+  readonly simSlot: number;
   /** The carrier identifier string for this SIM slot. */
-  carrierId: string;
+  readonly carrierId: string;
   /** The detailed reason for the support status. */
-  reason: VerificationSupportStatus;
+  readonly reason: VerificationSupportStatus;
 }
 
 /**
  * Result of a successful phone number verification, containing the verified
  * phone number and a JWT token for server-side validation.
+ *
+ * @remarks
+ * Mirrors the native `com.google.firebase.pnv.VerifiedPhoneNumberTokenResult` class.
+ * Returned by {@link getVerifiedPhoneNumber} and {@link exchangeCredentialResponseForPhoneNumber}.
+ *
+ * @see https://firebase.google.com/docs/phone-number-verification
+ * @public
  */
-export interface VerifiedPhoneNumberResult {
-  /** The verified phone number (E.164 format). */
-  phoneNumber: string;
+export interface VerifiedPhoneNumberTokenResult {
+  /** The verified phone number in E.164 format. */
+  readonly phoneNumber: string;
   /** The raw JWT token string for server-side validation. */
-  token: string;
+  readonly token: string;
   /** Token expiration time as Unix epoch seconds. */
-  expirationTimestamp: number;
+  readonly expirationTimestamp: number;
   /** Token issued-at time as Unix epoch seconds. */
-  issuedAtTimestamp: number;
-  /** The nonce from the JWT payload, or null if not present. */
-  nonce: string | null;
-  /** All JWT claims as a key-value map, or null if unavailable. */
-  claims: Record<string, unknown> | null;
+  readonly issuedAtTimestamp: number;
+  /** The nonce from the JWT payload, or `null` if not present. */
+  readonly nonce: string | null;
+  /** All JWT claims as a key-value map, or `null` if unavailable. */
+  readonly claims: Record<string, unknown> | null;
 }
 
 /**
  * Error codes returned by the Firebase Phone Number Verification SDK.
- * These map to `FirebasePnvStatusCodes` constants.
+ * These map to `FirebasePnvStatusCodes` constants from the native SDK.
+ *
+ * @see https://firebase.google.com/docs/phone-number-verification
+ * @public
  */
 export type PnvErrorCode =
   | 'pnv/carrier-not-supported'
