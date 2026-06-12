@@ -62,28 +62,28 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
       int code = ((FirebasePhoneNumberVerificationException) e).getErrorCode();
       switch (code) {
         case 55501:
-          return "carrier-not-supported";
+          return "pnv/carrier-not-supported";
         case 55502:
-          return "invalid-digital-credential-response";
+          return "pnv/invalid-digital-credential-response";
         case 55503:
-          return "integrity-check-failed";
+          return "pnv/integrity-check-failed";
         case 55504:
-          return "preflight-check-failed";
+          return "pnv/preflight-check-failed";
         case 55505:
-          return "unsupported-operation";
+          return "pnv/unsupported-operation";
         case 55506:
-          return "credential-manager-error";
+          return "pnv/credential-manager-error";
         case 55507:
-          return "invalid-test-number-id";
+          return "pnv/invalid-test-number-id";
         case 55508:
-          return "test-session-already-enabled";
+          return "pnv/test-session-already-enabled";
         case 55509:
-          return "activity-context-required";
+          return "pnv/activity-context-required";
         default:
-          return "unknown";
+          return "pnv/unknown";
       }
     }
-    return "unknown";
+    return "pnv/unknown";
   }
 
   private static WritableMap supportResultToMap(VerificationSupportResult result) {
@@ -195,7 +195,7 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
     Activity activity = getCurrentActivity();
     if (activity == null) {
       rejectPromiseWithCodeAndMessage(
-          promise, "activity-context-required", "Could not get current activity");
+          promise, "pnv/activity-context-required", "Could not get current activity");
       return;
     }
     fpnv.getVerifiedPhoneNumber(activity)

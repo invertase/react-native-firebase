@@ -64,13 +64,13 @@ export interface VerifiedPhoneNumberResult {
  * These map to `FirebasePnvStatusCodes` constants.
  */
 export type PnvErrorCode =
-  | 'carrier-not-supported'
-  | 'invalid-digital-credential-response'
-  | 'integrity-check-failed'
-  | 'preflight-check-failed'
-  | 'unsupported-operation'
-  | 'credential-manager-error'
-  | 'invalid-test-number-id'
-  | 'test-session-already-enabled'
-  | 'activity-context-required'
-  | 'unknown';
+  | 'pnv/carrier-not-supported'
+  | 'pnv/invalid-digital-credential-response'
+  | 'pnv/integrity-check-failed'
+  | 'pnv/preflight-check-failed'
+  | 'pnv/unsupported-operation'
+  | 'pnv/credential-manager-error'
+  | 'pnv/invalid-test-number-id'
+  | 'pnv/test-session-already-enabled'
+  | 'pnv/activity-context-required'
+  | 'pnv/unknown';

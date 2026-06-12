@@ -175,17 +175,17 @@ console.log('Expires at:', new Date(result.expirationTimestamp * 1000));
 
 All methods reject with structured error codes from the Firebase PNV SDK. The `error.code` property contains one of these values:
 
-| Error Code                            | Meaning                                                         |
-| ------------------------------------- | --------------------------------------------------------------- |
-| `carrier-not-supported`               | The SIM's carrier does not support PNV.                         |
-| `invalid-digital-credential-response` | The Digital Credential API response was invalid.                |
-| `integrity-check-failed`              | Device integrity check failed.                                  |
-| `preflight-check-failed`              | Server-side preflight check failed.                             |
-| `unsupported-operation`               | The API call is not supported with the given parameters.        |
-| `credential-manager-error`            | Android Credential Manager failed unexpectedly.                 |
-| `invalid-test-number-id`              | Test number IDs are empty, expired, or duplicated.              |
-| `test-session-already-enabled`        | `enableTestSession` was called more than once.                  |
-| `activity-context-required`           | An Activity context is required (app may be in the background). |
+| Error Code                                | Meaning                                                         |
+| ----------------------------------------- | --------------------------------------------------------------- |
+| `pnv/carrier-not-supported`               | The SIM's carrier does not support PNV.                         |
+| `pnv/invalid-digital-credential-response` | The Digital Credential API response was invalid.                |
+| `pnv/integrity-check-failed`              | Device integrity check failed.                                  |
+| `pnv/preflight-check-failed`              | Server-side preflight check failed.                             |
+| `pnv/unsupported-operation`               | The API call is not supported with the given parameters.        |
+| `pnv/credential-manager-error`            | Android Credential Manager failed unexpectedly.                 |
+| `pnv/invalid-test-number-id`              | Test number IDs are empty, expired, or duplicated.              |
+| `pnv/test-session-already-enabled`        | `enableTestSession` was called more than once.                  |
+| `pnv/activity-context-required`           | An Activity context is required (app may be in the background). |
 
 ```js
 import { getVerifiedPhoneNumber } from '@react-native-firebase/phone-number-verification';
@@ -194,10 +194,10 @@ try {
   const result = await getVerifiedPhoneNumber();
 } catch (error) {
   switch (error.code) {
-    case 'carrier-not-supported':
+    case 'pnv/carrier-not-supported':
       // Fall back to SMS verification
       break;
-    case 'activity-context-required':
+    case 'pnv/activity-context-required':
       // Retry when app is in foreground
       break;
     default:
@@ -213,7 +213,7 @@ To test without a real SIM card and carrier, use Firebase's test mode. This requ
 1. **Generate a test token**: In the Firebase Console, navigate to Phone Number Verification and generate a test token. Test tokens have a 7-day TTL.
 2. **IAM permissions**: Ensure the service account has the required `firebasepnv.testSessions.create` permission.
 3. **Google system services beta**: On the test device, enroll the Google system services app into the beta channel via Google Play.
-4. **Call `enableTestSession` once**: Pass the token before any verification calls. This must be called only once per app instance — calling it again will reject with `test-session-already-enabled`.
+4. **Call `enableTestSession` once**: Pass the token before any verification calls. This must be called only once per app instance — calling it again will reject with `pnv/test-session-already-enabled`.
 
 ```js
 import {
