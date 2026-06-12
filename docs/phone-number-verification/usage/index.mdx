@@ -187,21 +187,27 @@ All methods reject with structured error codes from the Firebase PNV SDK. The `e
 | `pnv/test-session-already-enabled`        | `enableTestSession` was called more than once.                  |
 | `pnv/activity-context-required`           | An Activity context is required (app may be in the background). |
 
-```js
-import { getVerifiedPhoneNumber } from '@react-native-firebase/phone-number-verification';
+```ts
+import {
+  getVerifiedPhoneNumber,
+  PnvErrorCode,
+  type PnvError,
+} from '@react-native-firebase/phone-number-verification';
 
 try {
   const result = await getVerifiedPhoneNumber();
 } catch (error) {
-  switch (error.code) {
-    case 'pnv/carrier-not-supported':
+  const pnvError = error as PnvError;
+
+  switch (pnvError.code) {
+    case PnvErrorCode.CARRIER_NOT_SUPPORTED:
       // Fall back to SMS verification
       break;
-    case 'pnv/activity-context-required':
+    case PnvErrorCode.ACTIVITY_CONTEXT_REQUIRED:
       // Retry when app is in foreground
       break;
     default:
-      console.error('PNV error:', error.code, error.message);
+      console.error('PNV error:', pnvError.code, pnvError.message);
   }
 }
 ```

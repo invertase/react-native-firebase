@@ -15,6 +15,8 @@
  *
  */
 
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+
 /**
  * Status indicating why a SIM slot does or does not support phone number verification.
  * Maps to the native `VerificationSupportStatus` IntDef constants.
@@ -87,14 +89,36 @@ export interface VerifiedPhoneNumberTokenResult {
  * @see https://firebase.google.com/docs/phone-number-verification
  * @public
  */
-export type PnvErrorCode =
-  | 'pnv/carrier-not-supported'
-  | 'pnv/invalid-digital-credential-response'
-  | 'pnv/integrity-check-failed'
-  | 'pnv/preflight-check-failed'
-  | 'pnv/unsupported-operation'
-  | 'pnv/credential-manager-error'
-  | 'pnv/invalid-test-number-id'
-  | 'pnv/test-session-already-enabled'
-  | 'pnv/activity-context-required'
-  | 'pnv/unknown';
+export const PnvErrorCode = {
+  CARRIER_NOT_SUPPORTED: 'pnv/carrier-not-supported',
+  INVALID_DIGITAL_CREDENTIAL_RESPONSE: 'pnv/invalid-digital-credential-response',
+  INTEGRITY_CHECK_FAILED: 'pnv/integrity-check-failed',
+  PREFLIGHT_CHECK_FAILED: 'pnv/preflight-check-failed',
+  UNSUPPORTED_OPERATION: 'pnv/unsupported-operation',
+  CREDENTIAL_MANAGER_ERROR: 'pnv/credential-manager-error',
+  INVALID_TEST_NUMBER_ID: 'pnv/invalid-test-number-id',
+  TEST_SESSION_ALREADY_ENABLED: 'pnv/test-session-already-enabled',
+  ACTIVITY_CONTEXT_REQUIRED: 'pnv/activity-context-required',
+  UNKNOWN: 'pnv/unknown',
+} as const;
+
+/**
+ * Union of all {@link PnvErrorCode} string values.
+ *
+ * @public
+ */
+export type PnvErrorCode = (typeof PnvErrorCode)[keyof typeof PnvErrorCode];
+
+/**
+ * Error thrown when a Phone Number Verification operation fails.
+ *
+ * @remarks
+ * Native rejections from the Android bridge surface as {@link ReactNativeFirebase.NativeFirebaseError}
+ * with a narrowed {@link PnvErrorCode} on the `code` property.
+ *
+ * @see https://firebase.google.com/docs/phone-number-verification
+ * @public
+ */
+export interface PnvError extends ReactNativeFirebase.NativeFirebaseError {
+  readonly code: PnvErrorCode;
+}
