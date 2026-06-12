@@ -22,7 +22,7 @@ Additionally, current versions of firebase-ios-sdk have a minimum Xcode requirem
 
 ## Installation for Expo projects
 
-Integration with Expo is possible when using a [development build](https://docs.expo.dev/workflow/overview/#development-builds). You can configure the project via [config plugins](https://docs.expo.io/guides/config-plugins/) or manually configure the native projects yourself (the "bare workflow").
+Integration with Expo is possible when using a [development build](https://docs.expo.dev/workflow/overview/#development-builds). You can configure the project via [config plugins](https://docs.expo.dev/config-plugins/introduction/) or manually configure the native projects yourself (the "bare workflow").
 
 _NOTE:_ React Native Firebase cannot be used in the pre-compiled [Expo Go app](https://docs.expo.dev/workflow/overview/#expo-go-an-optional-tool-for-learning) because React Native Firebase uses native code that is not compiled into Expo Go.
 
@@ -113,7 +113,7 @@ The `withoutAdIdSupport` option adds `$RNFirebaseAnalyticsWithoutAdIdSupport = t
 
 ### Local app compilation
 
-If you are compiling your app locally, run [`npx expo prebuild --clean`](https://docs.expo.dev/workflow/prebuild/) to generate the native project directories. Then, follow the local app compilation steps described in [Local app development](https://docs.expo.dev/guides/local-app-development/) guide in Expo docs. If you prefer using a build service, refer to [EAS Build](https://docs.expo.dev/build/setup/).
+If you are compiling your app locally, run [`npx expo prebuild --clean`](https://docs.expo.dev/workflow/continuous-native-generation/) to generate the native project directories. Then, follow the local app compilation steps described in [Local app development](https://docs.expo.dev/guides/local-app-development/) guide in Expo docs. If you prefer using a build service, refer to [EAS Build](https://docs.expo.dev/build/setup/).
 
 Note: if you have already installed an Expo development build (using something like `npx expo run` after doing the `--prebuild` local development steps...) before installing react-native-firebase, then you must uninstall it first as it will not contain the react-native-firebase native modules and you will get errors with `RNFBAppModule not found` etc. If so, uninstall the previous development build, do a clean build using `npx expo prebuild --clean`, and then attempt `npx expo run:<platform>` again.
 
