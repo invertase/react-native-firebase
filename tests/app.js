@@ -56,6 +56,7 @@ if (!Platform.other) {
   platformSupportedModules.push('appCheck');
   platformSupportedModules.push('appDistribution');
   platformSupportedModules.push('ml');
+  platformSupportedModules.push('phoneNumberVerification');
   platformSupportedModules.push('ai');
 }
 // Registering an error handler that always throw unhandled exceptions
@@ -229,6 +230,14 @@ function loadTests(_) {
         /\.e2e\.js$/,
       );
       remoteConfigTests.keys().forEach(remoteConfigTests);
+    }
+    if (platformSupportedModules.includes('phoneNumberVerification')) {
+      const pnvTests = require.context(
+        '../packages/phone-number-verification/e2e',
+        true,
+        /\.e2e\.js$/,
+      );
+      pnvTests.keys().forEach(pnvTests);
     }
     if (platformSupportedModules.includes('ai')) {
       const aiTests = require.context('../packages/ai/e2e', true, /\.e2e\.js$/);

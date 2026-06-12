@@ -19,6 +19,7 @@
     "packages/messaging",
     "packages/ml",
     "packages/perf",
+    "packages/phone-number-verification",
     "packages/remote-config",
     "packages/storage"
   ],
