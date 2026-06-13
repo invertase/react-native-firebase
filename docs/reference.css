@@ -14,9 +14,9 @@
   --dim-container-main-margin-y: 0px;
   --reference-column-padding-top: 1.5rem;
   --reference-content-padding-x: 2rem;
-  --reference-nav-nested-indent: .8rem;
+  --reference-nav-nested-indent: 0.8rem;
   --reference-nav-item-padding-y: 0.3rem;
-  --reference-header-logo: url("https://static.invertase.io/assets/react-native-firebase-favicon.png");
+  --reference-header-logo: url('https://static.invertase.io/assets/react-native-firebase-favicon.png');
   --reference-header-logo-size: 1.75rem;
   --reference-nav-active-radius: 0.375rem;
   --reference-nav-hover-bg: lab(98% 0 0);
@@ -30,7 +30,7 @@
 }
 
 .tsd-toolbar-contents > .title::before {
-  content: "";
+  content: '';
   width: var(--reference-header-logo-size);
   height: var(--reference-header-logo-size);
   flex-shrink: 0;
@@ -41,7 +41,8 @@
   font-size: var(--reference-header-actions-font-size);
 }
 
-footer, .tsd-filter-visibility {
+footer,
+.tsd-filter-visibility {
   display: none;
 }
 
@@ -102,76 +103,76 @@ footer, .tsd-filter-visibility {
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme='light']) {
     --reference-nav-hover-bg: lab(100% 0 0 / 5%);
   }
 }
 
-:root[data-theme="dark"] {
+:root[data-theme='dark'] {
   --reference-nav-hover-bg: lab(100% 0 0 / 5%);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .col-content,
-  :root:not([data-theme="light"]) .site-menu,
-  :root:not([data-theme="light"]) .page-menu,
-  :root:not([data-theme="light"]) #tsd-sidebar-links {
+  :root:not([data-theme='light']) .col-content,
+  :root:not([data-theme='light']) .site-menu,
+  :root:not([data-theme='light']) .page-menu,
+  :root:not([data-theme='light']) #tsd-sidebar-links {
     --color-text: var(--reference-dark-body-text);
   }
 
-  :root:not([data-theme="light"]) .col-content {
+  :root:not([data-theme='light']) .col-content {
     color: var(--reference-dark-body-text);
   }
 
-  :root:not([data-theme="light"]) .col-content :is(h1, h2, h3, h4, h5, h6) {
+  :root:not([data-theme='light']) .col-content :is(h1, h2, h3, h4, h5, h6) {
     color: var(--dark-color-text);
   }
 }
 
-:root[data-theme="dark"] .col-content,
-:root[data-theme="dark"] .site-menu,
-:root[data-theme="dark"] .page-menu,
-:root[data-theme="dark"] #tsd-sidebar-links {
+:root[data-theme='dark'] .col-content,
+:root[data-theme='dark'] .site-menu,
+:root[data-theme='dark'] .page-menu,
+:root[data-theme='dark'] #tsd-sidebar-links {
   --color-text: var(--reference-dark-body-text);
 }
 
-:root[data-theme="dark"] .col-content {
+:root[data-theme='dark'] .col-content {
   color: var(--reference-dark-body-text);
 }
 
-:root[data-theme="dark"] .col-content :is(h1, h2, h3, h4, h5, h6) {
+:root[data-theme='dark'] .col-content :is(h1, h2, h3, h4, h5, h6) {
   color: var(--dark-color-text);
 }
 
 @media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) .col-content,
-  :root:not([data-theme="dark"]) .site-menu,
-  :root:not([data-theme="dark"]) .page-menu,
-  :root:not([data-theme="dark"]) #tsd-sidebar-links {
+  :root:not([data-theme='dark']) .col-content,
+  :root:not([data-theme='dark']) .site-menu,
+  :root:not([data-theme='dark']) .page-menu,
+  :root:not([data-theme='dark']) #tsd-sidebar-links {
     --color-text: var(--reference-light-body-text);
   }
 
-  :root:not([data-theme="dark"]) .col-content {
+  :root:not([data-theme='dark']) .col-content {
     color: var(--reference-light-body-text);
   }
 
-  :root:not([data-theme="dark"]) .col-content :is(h1, h2, h3, h4, h5, h6) {
+  :root:not([data-theme='dark']) .col-content :is(h1, h2, h3, h4, h5, h6) {
     color: var(--light-color-text);
   }
 }
 
-:root[data-theme="light"] .col-content,
-:root[data-theme="light"] .site-menu,
-:root[data-theme="light"] .page-menu,
-:root[data-theme="light"] #tsd-sidebar-links {
+:root[data-theme='light'] .col-content,
+:root[data-theme='light'] .site-menu,
+:root[data-theme='light'] .page-menu,
+:root[data-theme='light'] #tsd-sidebar-links {
   --color-text: var(--reference-light-body-text);
 }
 
-:root[data-theme="light"] .col-content {
+:root[data-theme='light'] .col-content {
   color: var(--reference-light-body-text);
 }
 
-:root[data-theme="light"] .col-content :is(h1, h2, h3, h4, h5, h6) {
+:root[data-theme='light'] .col-content :is(h1, h2, h3, h4, h5, h6) {
   color: var(--light-color-text);
 }
 
