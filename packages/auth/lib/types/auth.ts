@@ -17,6 +17,14 @@
 
 import type { FirebaseApp, ReactNativeFirebase } from '@react-native-firebase/app';
 import type { ActionCodeOperation, FactorId, OperationType } from '../constants';
+import type {
+  AuthCredential,
+  EmailAuthCredential,
+  OAuthCredential,
+  PhoneAuthCredential,
+} from '../credentials';
+
+export type { AuthCredential, EmailAuthCredential, OAuthCredential, PhoneAuthCredential };
 
 export type CompleteFn = () => void;
 export type ErrorFn = (error: Error) => void;
@@ -75,30 +83,6 @@ export interface NativeFirebaseAuthError extends ReactNativeFirebase.NativeFireb
   };
 }
 
-export interface AuthCredential {
-  readonly providerId: string;
-  readonly token: string;
-  readonly secret: string;
-}
-
-export interface EmailAuthCredential extends AuthCredential {
-  readonly signInMethod: string;
-  toJSON(): object;
-}
-
-export interface OAuthCredential extends AuthCredential {
-  readonly signInMethod: string;
-  readonly idToken?: string;
-  readonly accessToken?: string;
-  readonly rawNonce?: string;
-  toJSON(): object;
-}
-
-export interface PhoneAuthCredential extends AuthCredential {
-  readonly signInMethod: string;
-  toJSON(): object;
-}
-
 export interface OIDCProvider {
   readonly PROVIDER_ID: string;
   credential(oidcSuffix: string, idToken: string): AuthCredential;
@@ -136,15 +120,12 @@ export interface PhoneAuthListener {
   catch(onRejected: (error: ReactNativeFirebase.NativeFirebaseError) => any): Promise<any>;
 }
 
-export interface ActionCodeURL {
-  readonly apiKey: string;
-  readonly code: string;
-  readonly continueUrl?: string | null;
-  readonly languageCode?: string | null;
-  readonly operation: string;
-  readonly tenantId?: string | null;
-}
+export { ActionCodeURL } from '../ActionCodeURL';
 
+/**
+ * Firebase JS SDK auth configuration. Native iOS/Android Firebase Auth SDKs do not expose
+ * this object, so {@link Auth.config} always returns an empty object on React Native.
+ */
 export interface Config {
   apiKey: string;
   apiHost: string;

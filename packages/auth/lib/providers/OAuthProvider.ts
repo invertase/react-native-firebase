@@ -15,11 +15,13 @@
  *
  */
 
+import { OAuthCredential } from '../credentials';
 import type {
   AuthCredential,
+  AuthError,
   CustomParameters,
-  OAuthCredential,
   OAuthCredentialOptions,
+  UserCredential,
 } from '../types/auth';
 
 type OAuthCredentialJSON = OAuthCredentialOptions & {
@@ -62,6 +64,9 @@ function parseOAuthCredentialJSON(json: object | string): ParsedOAuthCredentialJ
   return credential as ParsedOAuthCredentialJSON;
 }
 
+// Keep the SDK helper signature name while mapping to RNFB's native auth error type.
+type FirebaseError = AuthError;
+
 export default class OAuthProvider {
   /** @internal */
   private providerId: string;
@@ -92,30 +97,20 @@ export default class OAuthProvider {
     });
   }
 
-  credential(params: OAuthCredentialOptions): OAuthCredential {
-    const token = params.idToken ?? '';
-    // RNFB's native bridge carries raw nonce/access token in the legacy secret slot.
-    const secret = params.rawNonce ?? params.accessToken ?? '';
+  static credentialFromResult(_userCredential: UserCredential): OAuthCredential | null {
+    return null;
+  }
 
-    return {
-      token,
-      secret,
-      providerId: this.providerId,
-      signInMethod: this.providerId,
+  static credentialFromError(_error: FirebaseError): OAuthCredential | null {
+    return null;
+  }
+
+  credential(params: OAuthCredentialOptions): OAuthCredential {
+    return new OAuthCredential(this.providerId, {
       idToken: params.idToken,
       accessToken: params.accessToken,
       rawNonce: params.rawNonce,
-      toJSON() {
-        return {
-          providerId: this.providerId,
-          signInMethod: this.signInMethod,
-          idToken: this.idToken,
-          accessToken: this.accessToken,
-          rawNonce: this.rawNonce,
-          nonce: this.rawNonce,
-        };
-      },
-    };
+    });
   }
 
   get PROVIDER_ID() {

@@ -31,7 +31,9 @@ import auth, {
   onAuthStateChanged,
   onIdTokenChanged,
   OperationType,
+  ProviderId,
   OAuthProvider,
+  ActionCodeURL,
   parseActionCodeURL,
   PhoneAuthProvider,
   sendPasswordResetEmail,
@@ -64,23 +66,39 @@ import auth, {
   type Config,
   type ConfirmationResult,
   type Dependencies,
-  type EmailAuthCredential,
   type FirebaseAuthTypes,
   type IdTokenResult,
   type MultiFactorError,
   type MultiFactorSession,
-  type OAuthCredential,
   type OAuthCredentialOptions,
   type PasswordPolicy,
   type PasswordValidationStatus,
   type Persistence,
-  type PhoneAuthCredential,
   type PopupRedirectResolver,
   type TotpMultiFactorAssertion,
   type TotpSecret,
   type Unsubscribe,
   type User,
   type UserCredential,
+  deleteUser,
+  getIdToken,
+  linkWithCredential,
+  linkWithPopup,
+  linkWithRedirect,
+  reauthenticateWithCredential,
+  reauthenticateWithPopup,
+  reauthenticateWithRedirect,
+  reload,
+  unlink,
+  updateEmail,
+  updatePassword,
+  updatePhoneNumber,
+  updateProfile,
+  verifyBeforeUpdateEmail,
+  sendEmailVerification,
+  EmailAuthCredential,
+  OAuthCredential,
+  PhoneAuthCredential,
 } from '.';
 
 const authModule = auth();
@@ -316,6 +334,9 @@ signInWithEmailAndPassword(modularAuth, 'test@example.com', 'password123').then(
 signInWithEmailLink(modularAuth, 'test@example.com', 'email-link').then(
   (credential: UserCredential) => console.log(credential.user.email),
 );
+signInWithEmailLink(modularAuth, 'test@example.com').then((credential: UserCredential) =>
+  console.log(credential.user.email),
+);
 signInWithPhoneNumber(modularAuth, '+1234567890', appVerifier).then((result: ConfirmationResult) =>
   console.log(result.verificationId),
 );
@@ -342,10 +363,13 @@ beforeAuthStateChanged(modularAuth, async (user: User | null) => {
 updateCurrentUser(modularAuth, null);
 useDeviceLanguage(modularAuth);
 
-const parsedActionCode = parseActionCodeURL(
-  'https://example.com/auth?mode=verifyEmail&oobCode=abc',
+void ActionCodeURL.parseLink('https://example.com/auth?mode=verifyEmail&oobCode=abc');
+
+void parseActionCodeURL('https://example.com/auth?mode=verifyEmail&oobCode=abc').then(
+  parsedActionCode => {
+    console.log(parsedActionCode?.code);
+  },
 );
-console.log(parsedActionCode?.code);
 
 const additionalUserInfo = getAdditionalUserInfo({
   additionalUserInfo: null,
@@ -374,3 +398,27 @@ const modularUser = {} as User;
 const modularMfaUser = multiFactor(modularUser);
 modularMfaUser.getSession();
 getIdTokenResult(modularUser).then((result: IdTokenResult) => console.log(result.claims));
+modularAuth.authStateReady().then(() => console.log('auth ready'));
+modularAuth.tenantId = 'tenant-id';
+console.log(modularAuth.emulatorConfig?.host);
+console.log(modularAuth.config);
+deleteUser(modularUser);
+getIdToken(modularUser);
+linkWithCredential(modularUser, emailCredential);
+linkWithPopup(modularUser, redirectProvider, popupRedirectResolver);
+linkWithRedirect(modularUser, redirectProvider, popupRedirectResolver);
+reauthenticateWithCredential(modularUser, emailCredential);
+reauthenticateWithPopup(modularUser, redirectProvider, popupRedirectResolver);
+reauthenticateWithRedirect(modularUser, redirectProvider, popupRedirectResolver);
+reload(modularUser);
+sendEmailVerification(modularUser, actionCodeSettings);
+unlink(modularUser, ProviderId.GOOGLE);
+updateEmail(modularUser, 'new@example.com');
+updatePassword(modularUser, 'new-password');
+updatePhoneNumber(modularUser, phoneCredential);
+updateProfile(modularUser, { displayName: 'Name', photoURL: 'https://example.com/photo.png' });
+verifyBeforeUpdateEmail(modularUser, 'new@example.com', actionCodeSettings);
+namespacedAuth.sendSignInLinkToEmail('test@example.com');
+EmailAuthCredential.fromJSON({ email: 'a@b.com', password: 'pw', signInMethod: 'password' });
+OAuthCredential.fromJSON({ providerId: 'google.com', idToken: 'token' });
+PhoneAuthCredential.fromJSON({ verificationId: 'vid', verificationCode: '123456' });

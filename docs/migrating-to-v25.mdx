@@ -2,85 +2,63 @@
 title: Migrating to v25
 description: Migrate to React Native Firebase v25.
 previous: /migrating-to-v24
-next: /typescript
 ---
 
-# App Check
+# Firebase Auth
 
-Version 25 aligns App Check's modular exports more closely with the Firebase JS SDK. If your app uses the modular API, import App Check types and helpers directly from `@react-native-firebase/app-check` instead of routing modular code through `FirebaseAppCheckTypes`.
+Version 25 aligns `@react-native-firebase/auth` TypeScript types with the firebase-js-sdk modular API. Runtime behavior is largely unchanged, but TypeScript consumers should review the following breaking changes.
 
-The most common updates are:
+## Modular types
 
-- Import modular helpers such as `initializeAppCheck`, `getToken`, `getLimitedUseToken`, `setTokenAutoRefreshEnabled`, and `onTokenChanged` from the package root.
-- Import modular types such as `AppCheck` and `AppCheckTokenResult` from the package root.
-- Keep using `ReactNativeFirebaseAppCheckProvider` on React Native when you need native provider selection for Android / Apple / web.
+Import modular types directly from `@react-native-firebase/auth` instead of `FirebaseAuthTypes` where possible. The namespaced `FirebaseAuthTypes` namespace remains available but is deprecated.
 
-```js
-// Previously
-import appCheck, { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
+## Removed modular export
 
-const instance = appCheck();
+- `initializeRecaptchaConfig` is not exported. React Native Firebase uses native SDK phone-auth verification rather than the browser reCAPTCHA bootstrap flow.
 
-instance.getToken().then((result: FirebaseAppCheckTypes.AppCheckTokenResult) => {
-  console.log(result.token);
-});
-```
+## Signature changes
 
-```js
-// Now
-import { getApp } from '@react-native-firebase/app';
-import {
-  AppCheckTokenResult,
-  ReactNativeFirebaseAppCheckProvider,
-  initializeAppCheck,
-  getToken,
-} from '@react-native-firebase/app-check';
+- `sendSignInLinkToEmail(auth, email, actionCodeSettings)` — `actionCodeSettings` is required in the modular API (matching firebase-js-sdk). The namespaced `firebase.auth().sendSignInLinkToEmail(email, settings?)` API still defaults `actionCodeSettings` to `{}` when omitted.
+- `signInWithEmailLink(auth, email, emailLink?)` — the third argument is optional, matching firebase-js-sdk.
+- `signInWithPhoneNumber(auth, phoneNumber, appVerifier?)` — the modular API no longer accepts RNFB's `forceResend` fourth argument. Use `verifyPhoneNumber(...)` for the native listener / force-resend flow.
+- `signInWithRedirect` / `linkWithRedirect` — return `Promise<UserCredential>` on native because provider flows resolve immediately with credentials instead of following the browser redirect contract.
+- `reauthenticateWithRedirect` — returns `Promise<void>` on native while still updating `currentUser` after the native provider flow completes.
+- `connectAuthEmulator(auth, url, options?)` — when `options` is provided, `disableWarnings` is required (matching firebase-js-sdk).
 
-const provider = new ReactNativeFirebaseAppCheckProvider();
+## Auth instance surface
 
-provider.configure({
-  android: {
-    provider: __DEV__ ? 'debug' : 'playIntegrity',
-  },
-  apple: {
-    provider: __DEV__ ? 'debug' : 'appAttestWithDeviceCheckFallback',
-  },
-  web: {
-    provider: 'reCaptchaV3',
-    siteKey: 'your-recaptcha-site-key',
-  },
-});
+- `auth.tenantId = 'tenant-id'` is now supported (delegates to `setTenantId`).
+- `auth.authStateReady()`, `auth.beforeAuthStateChanged(...)`, `auth.emulatorConfig`, and `auth.updateCurrentUser(user)` are implemented on the Auth instance.
+- `auth.config` is typed like firebase-js-sdk but always returns `{}` at runtime because native iOS/Android Firebase Auth SDKs do not expose the web config object.
 
-const appCheck = await initializeAppCheck(getApp(), {
-  provider,
-  isTokenAutoRefreshEnabled: true,
-});
+## Credential providers
 
-const result: AppCheckTokenResult = await getToken(appCheck);
-console.log(result.token);
-```
+Provider credential factories now return firebase-js-sdk-shaped credential classes with `toJSON()` and `static fromJSON()` where applicable. RN Firebase credentials retain internal `token` / `secret` bridge fields required by the native modules.
 
-If you do not need to reuse a provider instance, you can now also pass the React Native provider configuration inline through `providerOptions`:
+- `OAuthProvider.credentialFromResult` / `credentialFromError` and sibling provider helpers return `null` on native (credentials are not extractable from native provider results).
+- `GoogleAuthProvider.credential()` throws when both `idToken` and `accessToken` are absent (matching firebase-js-sdk).
+- `FacebookAuthProvider.credential(token)` is typed with a single access-token argument; limited-login nonce behavior is preserved at runtime through the optional second argument.
 
-```js
-import { getApp } from '@react-native-firebase/app';
-import { initializeAppCheck } from '@react-native-firebase/app-check';
+## Multi-factor
 
-await initializeAppCheck(getApp(), {
-  provider: {
-    providerOptions: {
-      android: {
-        provider: __DEV__ ? 'debug' : 'playIntegrity',
-      },
-      apple: {
-        provider: __DEV__ ? 'debug' : 'appAttestWithDeviceCheckFallback',
-      },
-      web: {
-        provider: 'reCaptchaV3',
-        siteKey: 'your-recaptcha-site-key',
-      },
-    },
-  },
-  isTokenAutoRefreshEnabled: true,
-});
-```
+- Modular `multiFactor(user)` now uses the user's auth instance instead of always calling `getAuth()`, fixing secondary Firebase app usage.
+- Namespaced `firebase.auth().multiFactor(user)` now correctly validates that `user` is the `currentUser`.
+- `TotpSecret.generateQrCodeUrl()` returns `Promise<string>` because QR code generation uses the React Native native bridge (firebase-js-sdk returns a synchronous string).
+
+## Normalized modular return values
+
+Modular helpers now normalize several return shapes toward firebase-js-sdk:
+
+- `UserCredential` includes top-level `providerId` and `operationType`; `additionalUserInfo` is non-enumerable.
+- `checkActionCode` normalizes `fromEmail` to `previousEmail` and coerces multi-factor info shapes.
+- `getAdditionalUserInfo(userCredential)` returns `{ isNewUser, profile, providerId, username }` or `null` instead of the raw native object.
+- `signInWithPhoneNumber` wraps confirmation results and validates `verificationId` presence.
+
+## initializeAuth
+
+`initializeAuth(app, deps?)` accepts the firebase-js-sdk `Dependencies` type for API parity, but persistence, popup redirect resolver, and error-map dependencies are ignored because native SDKs manage auth state.
+
+## Namespaced type adjustments
+
+- `FirebaseAuthTypes.UserInfo` profile fields are nullable.
+- `firebase.auth().config` is typed as `Record<string, never>`.

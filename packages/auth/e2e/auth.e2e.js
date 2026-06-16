@@ -1472,6 +1472,29 @@ describe('auth() modular', function () {
       });
     });
 
+    describe('auth instance SDK helpers', function () {
+      it('authStateReady resolves', async function () {
+        const { getAuth } = authModular;
+        const defaultAuth = getAuth();
+        await defaultAuth.authStateReady();
+      });
+
+      it('beforeAuthStateChanged can be registered and unsubscribed', function () {
+        const { getAuth } = authModular;
+        const defaultAuth = getAuth();
+        const unsubscribe = defaultAuth.beforeAuthStateChanged(() => {});
+        unsubscribe.should.be.a.Function();
+        unsubscribe();
+      });
+
+      it('tenantId setter updates tenantId', async function () {
+        const { getAuth } = authModular;
+        const defaultAuth = getAuth();
+        defaultAuth.tenantId = 'e2e-tenant-id';
+        defaultAuth.tenantId.should.equal('e2e-tenant-id');
+      });
+    });
+
     describe('onIdTokenChanged()', function () {
       it('calls callback with the current user and when auth state changes', async function () {
         const { getApp } = modular;

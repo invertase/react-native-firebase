@@ -30,8 +30,10 @@ type AuthProviderWithObject = FirebaseAuthTypes.AuthProvider & {
 };
 
 export default class User {
-  private readonly _auth: AuthInternal;
-  private readonly _user: NativeUserInternal;
+  /** @internal */
+  readonly _auth: AuthInternal;
+  /** @internal */
+  readonly _user: NativeUserInternal;
 
   constructor(auth: AuthInternal, user: NativeUserInternal) {
     this._auth = auth;
@@ -161,7 +163,11 @@ export default class User {
   }
 
   reauthenticateWithRedirect(provider: AuthProviderWithObject): Promise<void> {
-    return this._auth.native.reauthenticateWithProvider(provider.toObject()).then(() => {});
+    return this._auth.native
+      .reauthenticateWithProvider(provider.toObject())
+      .then(userCredential => {
+        this._auth._setUserCredential(userCredential);
+      });
   }
 
   reload(): Promise<void> {

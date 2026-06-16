@@ -41,6 +41,8 @@ import auth, {
   useUserAccessGroup,
   verifyPasswordResetCode,
   parseActionCodeURL,
+  ActionCodeURL,
+  ACTION_CODE_URL_PARSE_NOT_IMPLEMENTED,
   deleteUser,
   getIdToken,
   getIdTokenResult,
@@ -77,6 +79,9 @@ import auth, {
   TotpMultiFactorGenerator,
   TwitterAuthProvider,
   PhoneAuthState,
+  EmailAuthCredential,
+  OAuthCredential,
+  PhoneAuthCredential,
 } from '../lib';
 
 const { PasswordPolicyImpl } = require('../lib/password-policy/PasswordPolicyImpl');
@@ -149,6 +154,41 @@ describe('Auth', function () {
       it('useEmulator allows hyphens in the hostname', function () {
         const result = auth().useEmulator('http://my-host:9099');
         expect(result).toEqual(['my-host', 9099]);
+      });
+
+      it('useEmulator exposes emulatorConfig', function () {
+        const authInstance = getAuth();
+        connectAuthEmulator(authInstance, 'http://my-host:9099');
+        expect(authInstance.emulatorConfig).toEqual({
+          protocol: 'http',
+          host: 'my-host',
+          port: 9099,
+          options: { disableWarnings: false },
+        });
+      });
+
+      it('authStateReady resolves after auth result is known', async function () {
+        const authInstance = getAuth();
+        (authInstance as unknown as { _authResult: boolean })._authResult = true;
+        await expect(authInstance.authStateReady()).resolves.toBeUndefined();
+      });
+
+      it('tenantId setter delegates to setTenantId', async function () {
+        const authInstance = getAuth() as unknown as {
+          tenantId: string | null;
+          setTenantId(tenantId: string | null): Promise<void>;
+        };
+        const originalSetTenantId = authInstance.setTenantId.bind(authInstance);
+        const calls: Array<string | null> = [];
+        authInstance.setTenantId = async (tenantId: string | null) => {
+          calls.push(tenantId);
+        };
+
+        authInstance.tenantId = 'tenant-from-setter';
+        await Promise.resolve();
+        expect(calls).toEqual(['tenant-from-setter']);
+
+        authInstance.setTenantId = originalSetTenantId;
       });
 
       describe('tenantId', function () {
@@ -431,6 +471,17 @@ describe('Auth', function () {
 
     it('`parseActionCodeURL` function is properly exposed to end user', function () {
       expect(parseActionCodeURL).toBeDefined();
+    });
+
+    it('`parseActionCodeURL` and `ActionCodeURL.parseLink` reject with not-implemented error', async function () {
+      const link = 'https://example.com/auth?mode=verifyEmail&oobCode=abc';
+
+      await expect(parseActionCodeURL(link)).rejects.toThrow(
+        ACTION_CODE_URL_PARSE_NOT_IMPLEMENTED,
+      );
+      await expect(ActionCodeURL.parseLink(link)).rejects.toThrow(
+        ACTION_CODE_URL_PARSE_NOT_IMPLEMENTED,
+      );
     });
 
     it('`deleteUser` function is properly exposed to end user', function () {
@@ -1216,6 +1267,64 @@ describe('Auth', function () {
             'multiFactor',
           );
         });
+      });
+    });
+
+    describe('credential classes', function () {
+      it('EmailAuthCredential.fromJSON deserializes password credentials', function () {
+        const credential = EmailAuthCredential.fromJSON({
+          email: 'test@example.com',
+          password: 'secret',
+          signInMethod: 'password',
+        });
+        expect(credential?.token).toBe('test@example.com');
+        expect(credential?.secret).toBe('secret');
+      });
+
+      it('OAuthProvider credentialFromResult and credentialFromError return null', function () {
+        expect(OAuthProvider.credentialFromResult({} as any)).toBeNull();
+        expect(OAuthProvider.credentialFromError({} as any)).toBeNull();
+      });
+
+      it('PhoneAuthProvider credentialFromResult and credentialFromError return null', function () {
+        expect(PhoneAuthProvider.credentialFromResult({} as any)).toBeNull();
+        expect(PhoneAuthProvider.credentialFromError({} as any)).toBeNull();
+      });
+
+      it('OAuthCredential.fromJSON deserializes provider credentials', function () {
+        const credential = OAuthCredential.fromJSON({
+          providerId: 'google.com',
+          idToken: 'id-token',
+          accessToken: 'access-token',
+        });
+        expect(credential?.providerId).toBe('google.com');
+        expect(credential?.idToken).toBe('id-token');
+      });
+
+      it('PhoneAuthCredential.fromJSON deserializes phone credentials', function () {
+        const credential = PhoneAuthCredential.fromJSON({
+          verificationId: 'vid',
+          verificationCode: '123456',
+        });
+        expect(credential?.token).toBe('vid');
+        expect(credential?.secret).toBe('123456');
+      });
+    });
+
+    describe('User.reauthenticateWithRedirect', function () {
+      it('updates current user via _setUserCredential', async function () {
+        const setUserCredential = jest.fn();
+        const authInternal = {
+          native: {
+            reauthenticateWithProvider: jest.fn(() =>
+              Promise.resolve({ user: { uid: 'test-uid' }, additionalUserInfo: null }),
+            ),
+          },
+          _setUserCredential: setUserCredential,
+        };
+        const user = new User(authInternal as any, { uid: 'test-uid' } as any);
+        await user.reauthenticateWithRedirect({ toObject: () => ({ providerId: 'google.com' }) } as any);
+        expect(setUserCredential).toHaveBeenCalled();
       });
     });
 

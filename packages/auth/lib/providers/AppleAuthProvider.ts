@@ -15,7 +15,8 @@
  *
  */
 
-import type { AuthCredential } from '../types/auth';
+import { AuthCredential } from '../credentials';
+import type { AuthCredential as AuthCredentialType } from '../types/auth';
 
 const providerId = 'apple.com' as const;
 
@@ -28,11 +29,7 @@ export default class AppleAuthProvider {
     return providerId;
   }
 
-  static credential(token: string, secret?: string): AuthCredential {
-    return {
-      token,
-      secret: secret ?? '',
-      providerId,
-    };
+  static credential(token: string, secret?: string): AuthCredentialType {
+    return new AuthCredential(providerId, providerId, token, secret ?? '');
   }
 }

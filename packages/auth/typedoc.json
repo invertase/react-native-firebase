@@ -5,11 +5,6 @@
   "intentionallyNotExported": [
     "AuthNamespace",
     "Observer",
-    "ActionCodeOperationValue",
-    "FactorIdValue",
-    "OperationTypeValue",
-    "PhoneAuthProviderAuth",
-    "SupportedPhoneInfoOptions",
     "AuthInternal"
   ]
 }

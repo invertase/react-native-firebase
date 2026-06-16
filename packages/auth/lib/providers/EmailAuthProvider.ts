@@ -15,6 +15,7 @@
  *
  */
 
+import { createEmailAuthCredential } from '../credentials';
 import type { EmailAuthCredential } from '../types/auth';
 
 const linkProviderId = 'emailLink' as const;
@@ -32,31 +33,10 @@ export default class EmailAuthProvider {
   }
 
   static credential(email: string, password: string): EmailAuthCredential {
-    return createEmailCredential(email, password, passwordProviderId);
+    return createEmailAuthCredential(email, password, passwordProviderId);
   }
 
   static credentialWithLink(email: string, emailLink: string): EmailAuthCredential {
-    return createEmailCredential(email, emailLink, linkProviderId);
+    return createEmailAuthCredential(email, emailLink, linkProviderId);
   }
-}
-
-function createEmailCredential(
-  token: string,
-  secret: string,
-  signInMethod: typeof linkProviderId | typeof passwordProviderId,
-): EmailAuthCredential {
-  return {
-    token,
-    secret,
-    providerId: signInMethod,
-    signInMethod,
-    toJSON() {
-      return {
-        email: this.token,
-        password: this.secret,
-        signInMethod: this.signInMethod,
-        tenantId: null,
-      };
-    },
-  };
 }

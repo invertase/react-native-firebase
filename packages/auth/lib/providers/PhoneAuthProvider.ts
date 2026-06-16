@@ -15,9 +15,11 @@
  *
  */
 
+import { createPhoneAuthCredential } from '../credentials';
 import type {
   ApplicationVerifier,
   Auth,
+  AuthError,
   MultiFactorInfo,
   PhoneAuthCredential,
   PhoneAuthListener,
@@ -25,7 +27,11 @@ import type {
   PhoneMultiFactorEnrollInfoOptions,
   PhoneMultiFactorSignInInfoOptions,
   PhoneSingleFactorInfoOptions,
+  UserCredential,
 } from '../types/auth';
+
+// Keep the SDK helper signature name while mapping to RNFB's native auth error type.
+type FirebaseError = AuthError;
 
 const providerId = 'phone' as const;
 
@@ -101,20 +107,15 @@ export default class PhoneAuthProvider {
   }
 
   static credential(verificationId: string, code: string): PhoneAuthCredential {
-    return {
-      token: verificationId,
-      secret: code,
-      providerId,
-      signInMethod: providerId,
-      toJSON() {
-        return {
-          verificationId: this.token,
-          verificationCode: this.secret,
-          providerId: this.providerId,
-          signInMethod: this.signInMethod,
-        };
-      },
-    };
+    return createPhoneAuthCredential(verificationId, code);
+  }
+
+  static credentialFromResult(_userCredential: UserCredential): PhoneAuthCredential | null {
+    return null;
+  }
+
+  static credentialFromError(_error: FirebaseError): PhoneAuthCredential | null {
+    return null;
   }
 
   verifyPhoneNumber(

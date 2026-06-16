@@ -41,7 +41,9 @@ export class TotpSecret {
    *
    * @param accountName the name of the account/app along with a user identifier.
    * @param issuer issuer of the TOTP (likely the app name).
-   * @returns A Promise that resolves to a QR code URL string.
+   * @returns A Promise that resolves to a QR code URL string. Unlike the firebase-js-sdk synchronous
+   * return type, this method is async because QR code generation is performed through the React Native
+   * native auth bridge.
    */
   async generateQrCodeUrl(accountName?: string, issuer?: string): Promise<string> {
     // accountName and issure are nullable in the API specification but are

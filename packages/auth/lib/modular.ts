@@ -38,10 +38,10 @@ import OIDCAuthProvider from './providers/OIDCAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import type { FirebaseApp } from '@react-native-firebase/app';
+import { ActionCodeURL } from './ActionCodeURL';
 import type {
   ActionCodeInfo,
   ActionCodeSettings,
-  ActionCodeURL,
   AdditionalUserInfo,
   ApplicationVerifier,
   Auth,
@@ -98,8 +98,6 @@ export {
   SignInMethod,
 };
 
-const actionCodeOperations = new Set<string>(Object.values(ActionCodeOperation));
-
 function appWithAuth(app?: FirebaseApp): AppWithAuthInternal {
   return (app ? getApp(app.name) : getApp()) as unknown as AppWithAuthInternal;
 }
@@ -137,16 +135,6 @@ function normalizeUserCredential(
   return normalizedUserCredential;
 }
 
-function normalizeActionCodeOperation(operation: string): ActionCodeInfo['operation'] {
-  if (actionCodeOperations.has(operation)) {
-    return operation as ActionCodeInfo['operation'];
-  }
-
-  // Native auth may still surface the legacy 'ERROR' sentinel even though the modular public
-  // type does not model it. Preserve the native value instead of turning it into a new throw.
-  return operation as ActionCodeInfo['operation'];
-}
-
 function normalizeMultiFactorInfo(info: MultiFactorInfoInternal): MultiFactorInfo {
   const normalizedInfo = {
     uid: info.uid,
@@ -180,7 +168,7 @@ function normalizeActionCodeInfo(actionCodeInfo: ActionCodeInfoResultInternal): 
         ('fromEmail' in data ? data.fromEmail : undefined) ??
         null,
     },
-    operation: normalizeActionCodeOperation(actionCodeInfo.operation),
+    operation: actionCodeInfo.operation as ActionCodeInfo['operation'],
   };
 }
 
@@ -234,6 +222,14 @@ function normalizeMultiFactorUser(multiFactorUser: MultiFactorUserResultInternal
       ),
   };
 }
+
+export { ActionCodeURL } from './ActionCodeURL';
+export {
+  AuthCredential,
+  EmailAuthCredential,
+  OAuthCredential,
+  PhoneAuthCredential,
+} from './credentials';
 
 export {
   AppleAuthProvider,
@@ -299,6 +295,11 @@ export function getAuth(app?: FirebaseApp): Auth {
 
 /**
  * This function allows more control over the Auth instance than getAuth().
+ *
+ * @remarks
+ * The optional `deps` argument exists for firebase-js-sdk API parity. React Native Firebase
+ * ignores persistence, popup redirect resolver, and error-map dependencies because native
+ * iOS/Android SDKs manage auth state and do not support the web-only persistence stack.
  */
 export function initializeAuth(app: FirebaseApp, _deps?: Dependencies): Auth {
   // Keep initializeAuth() aligned with getAuth(); passing the sentinel here creates a second module.
@@ -311,11 +312,12 @@ export function applyActionCode(auth: Auth, oobCode: string): Promise<void> {
 }
 
 export function beforeAuthStateChanged(
-  _auth: Auth,
-  _callback: (user: User | null) => void | Promise<void>,
-  _onAbort?: () => void,
+  auth: Auth,
+  callback: (user: User | null) => void | Promise<void>,
+  onAbort?: () => void,
 ): Unsubscribe {
-  throw new Error('beforeAuthStateChanged is unsupported by the native Firebase SDKs');
+  const authInternal = getAuthInternal(auth);
+  return authInternal.beforeAuthStateChanged(callback, onAbort);
 }
 
 export function checkActionCode(auth: Auth, oobCode: string): Promise<ActionCodeInfo> {
@@ -337,10 +339,10 @@ export function confirmPasswordReset(
 export function connectAuthEmulator(
   auth: Auth,
   url: string,
-  _options?: { disableWarnings: boolean },
+  options?: { disableWarnings: boolean },
 ): void {
   const authInternal = getAuthInternal(auth);
-  callAuthMethod(authInternal, authInternal.useEmulator, url);
+  callAuthMethod(authInternal, authInternal.useEmulator, url, options);
 }
 
 export function createUserWithEmailAndPassword(
@@ -507,7 +509,7 @@ export function signInWithEmailAndPassword(
 export function signInWithEmailLink(
   auth: Auth,
   email: string,
-  emailLink: string,
+  emailLink?: string,
 ): Promise<UserCredential> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.signInWithEmailLink, email, emailLink).then(
@@ -591,8 +593,9 @@ export function signOut(auth: Auth): Promise<void> {
   return callAuthMethod(authInternal, authInternal.signOut);
 }
 
-export function updateCurrentUser(_auth: Auth, _user: User | null): Promise<void> {
-  throw new Error('updateCurrentUser is unsupported by the native Firebase SDKs');
+export function updateCurrentUser(auth: Auth, user: User | null): Promise<void> {
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(authInternal, authInternal.updateCurrentUser, user);
 }
 
 export function useDeviceLanguage(_auth: Auth): void {
@@ -616,8 +619,8 @@ export function verifyPasswordResetCode(auth: Auth, code: string): Promise<strin
   return callAuthMethod(authInternal, authInternal.verifyPasswordResetCode, code);
 }
 
-export function parseActionCodeURL(_link: string): ActionCodeURL | null {
-  throw new Error('parseActionCodeURL is unsupported by the native Firebase SDKs');
+export function parseActionCodeURL(link: string): Promise<ActionCodeURL | null> {
+  return ActionCodeURL.parseLink(link);
 }
 
 export function deleteUser(user: User): Promise<void> {

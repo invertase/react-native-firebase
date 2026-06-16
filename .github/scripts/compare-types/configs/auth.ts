@@ -146,6 +146,41 @@ const config: PackageConfig = {
 
   differentShape: [
     {
+      name: 'ActionCodeURL',
+      reason:
+        'RN Firebase exports the ActionCodeURL class with the same fields as firebase-js-sdk, but ActionCodeURL.parseLink is not implemented yet and returns Promise<ActionCodeURL | null> (rejecting with a not-implemented error) instead of the firebase-js-sdk synchronous ActionCodeURL | null result.',
+    },
+    {
+      name: 'parseActionCodeURL',
+      reason:
+        'RN Firebase parseActionCodeURL is not implemented yet and returns Promise<ActionCodeURL | null> (rejecting with a not-implemented error) instead of the firebase-js-sdk synchronous ActionCodeURL | null result.',
+    },
+    {
+      name: 'FacebookAuthProvider',
+      reason:
+        'Provider credential helpers are emitted with the RN Firebase OAuthCredential class return type alias; behavior matches firebase-js-sdk credentialFromResult/credentialFromError stubs.',
+    },
+    {
+      name: 'GithubAuthProvider',
+      reason:
+        'Provider credential helpers are emitted with the RN Firebase OAuthCredential class return type alias; behavior matches firebase-js-sdk credentialFromResult/credentialFromError stubs.',
+    },
+    {
+      name: 'GoogleAuthProvider',
+      reason:
+        'Provider credential helpers are emitted with the RN Firebase OAuthCredential class return type alias; behavior matches firebase-js-sdk credentialFromResult/credentialFromError stubs.',
+    },
+    {
+      name: 'OAuthCredential',
+      reason:
+        'RN Firebase OAuthCredential exposes rawNonce for native Sign in with Apple / limited-login flows instead of the firebase-js-sdk OAuth 1.0 secret field name, while retaining RNFB bridge fields internally.',
+    },
+    {
+      name: 'TwitterAuthProvider',
+      reason:
+        'Provider credential helpers are emitted with the RN Firebase OAuthCredential class return type alias; behavior matches firebase-js-sdk credentialFromResult/credentialFromError stubs.',
+    },
+    {
       name: 'isSignInWithEmailLink',
       reason:
         'RN Firebase resolves this check asynchronously through the native bridge and returns Promise<boolean>, whereas the firebase-js-sdk returns a synchronous boolean.',
@@ -168,12 +203,12 @@ const config: PackageConfig = {
     {
       name: 'OAuthProvider',
       reason:
-        'RN Firebase supports the firebase-js-sdk credential(options) and credentialFromJSON APIs, but its native helper class still differs by retaining RNFB provider configuration helpers and omitting credentialFromResult/credentialFromError helpers.',
+        'RN Firebase OAuthProvider retains native provider configuration helpers (scopes/custom parameters/toObject) used by the native auth bridge.',
     },
     {
       name: 'PhoneAuthProvider',
       reason:
-        'RN Firebase now mirrors the firebase-js-sdk credential and single-factor verifyPhoneNumber signatures while retaining an RNFB multi-factor overload; it still omits credentialFromResult/credentialFromError helpers because native provider results do not expose web credential extraction.',
+        'RN Firebase mirrors the firebase-js-sdk credential and single-factor verifyPhoneNumber signatures while retaining an RNFB multi-factor overload.',
     },
     {
       name: 'TotpMultiFactorGenerator',
@@ -183,7 +218,7 @@ const config: PackageConfig = {
     {
       name: 'TotpSecret',
       reason:
-        'RN Firebase now exports TotpSecret from the modular surface, but the native-backed helper class exposes a reduced field set plus async/native helper methods that do not match the firebase-js-sdk TotpSecret class shape.',
+        'RN Firebase TotpSecret.generateQrCodeUrl returns Promise<string> because QR code generation is performed through the React Native native bridge, and the class exposes native helper methods not present on the firebase-js-sdk TotpSecret class.',
     },
   ],
 };

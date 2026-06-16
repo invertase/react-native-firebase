@@ -289,7 +289,7 @@ export interface RNFBAuthModule {
     actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
   ): Promise<void>;
   isSignInWithEmailLink(emailLink: string): Promise<boolean>;
-  signInWithEmailLink(email: string, emailLink: string): Promise<NativeUserCredentialInternal>;
+  signInWithEmailLink(email: string, emailLink?: string): Promise<NativeUserCredentialInternal>;
   confirmPasswordReset(code: string, newPassword: string): Promise<void>;
   applyActionCode(code: string): Promise<NativeUserInternal | null | undefined>;
   checkActionCode(code: string): Promise<FirebaseAuthTypes.ActionCodeInfo>;
@@ -395,7 +395,7 @@ export type AuthInternal = Auth & {
   ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   signInWithEmailLink(
     email: string,
-    emailLink: string,
+    emailLink?: string,
   ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   signInWithPhoneNumber(
     phoneNumber: string,
@@ -408,7 +408,7 @@ export type AuthInternal = Auth & {
     provider: AuthProviderWithObjectInternal,
   ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   signOut(): Promise<void>;
-  useEmulator(url: string): void;
+  useEmulator(url: string, options?: { disableWarnings?: boolean }): void;
   useUserAccessGroup(userAccessGroup: string): Promise<void>;
   verifyPhoneNumber(
     phoneNumber: string,
@@ -441,6 +441,7 @@ export type AuthInternal = Auth & {
 
 export type UserInternal = FirebaseAuthTypes.User & {
   _auth?: AuthInternal;
+  _user?: NativeUserInternal;
   getIdTokenResult(forceRefresh?: boolean): Promise<IdTokenResult>;
   linkWithCredential(credential: AuthCredential): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   linkWithPopup(provider: AuthProviderWithObjectInternal): Promise<UserCredentialWithAdditionalUserInfoInternal>;

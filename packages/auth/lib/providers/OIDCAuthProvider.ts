@@ -15,7 +15,8 @@
  *
  */
 
-import type { AuthCredential } from '../types/auth';
+import { AuthCredential } from '../credentials';
+import type { AuthCredential as AuthCredentialType } from '../types/auth';
 
 const providerId = 'oidc.' as const;
 
@@ -28,11 +29,12 @@ export default class OIDCAuthProvider {
     return providerId;
   }
 
-  static credential(oidcSuffix: string, idToken: string, accessToken?: string): AuthCredential {
-    return {
-      token: idToken,
-      secret: accessToken ?? '',
-      providerId: providerId + oidcSuffix,
-    };
+  static credential(
+    oidcSuffix: string,
+    idToken: string,
+    accessToken?: string,
+  ): AuthCredentialType {
+    const resolvedProviderId = providerId + oidcSuffix;
+    return new AuthCredential(resolvedProviderId, resolvedProviderId, idToken, accessToken ?? '');
   }
 }

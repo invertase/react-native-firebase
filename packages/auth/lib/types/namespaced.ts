@@ -16,6 +16,7 @@
  */
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { ActionCodeURL as ActionCodeURLClass } from '../ActionCodeURL';
 
 /**
  * Firebase Authentication package for React Native.
@@ -67,14 +68,7 @@ export declare namespace FirebaseAuthTypes {
     SIGN_IN: 'signIn';
   };
 
-  export interface ActionCodeURL {
-    apiKey: string;
-    code: string;
-    continueUrl?: string | null;
-    languageCode?: string | null;
-    operation: string;
-    tenantId?: string | null;
-  }
+  export type ActionCodeURL = ActionCodeURLClass;
 
   export interface ApplicationVerifier {
     readonly type: string;

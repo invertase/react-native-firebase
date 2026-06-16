@@ -55,6 +55,7 @@ import { version } from './version';
 import fallBackModule from './web/RNFBAuthModule';
 import { PasswordPolicyMixin } from './password-policy/PasswordPolicyMixin';
 import type { CallbackOrObserver, FirebaseAuthTypes } from './types/namespaced';
+import type { EmulatorConfig, Unsubscribe, User as ModularUser } from './types/auth';
 import type {
   AuthIdTokenChangedEventInternal,
   AuthInternal,
@@ -97,6 +98,11 @@ const statics = {
 const namespace = 'auth';
 const nativeModuleName = 'RNFBAuthModule';
 
+type BeforeAuthStateChangedEntry = {
+  callback: (user: ModularUser | null) => void | Promise<void>;
+  onAbort?: () => void;
+};
+
 class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
   _user: FirebaseAuthTypes.User | null;
   _settings: FirebaseAuthTypes.AuthSettings | null;
@@ -105,6 +111,9 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
   _tenantId: string | null;
   _projectPasswordPolicy: PasswordPolicyInternal | null;
   _tenantPasswordPolicies: Record<string, PasswordPolicyInternal | null>;
+  _emulatorConfig: EmulatorConfig | null;
+  _authStateReadyPromise: Promise<void> | null;
+  _beforeAuthStateChangedCallbacks: BeforeAuthStateChangedEntry[];
   _getPasswordPolicyInternal!: () => PasswordPolicyInternal | null;
   _updatePasswordPolicy!: () => Promise<void>;
   _recachePasswordPolicy!: () => Promise<void>;
@@ -123,6 +132,9 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     this._tenantId = null;
     this._projectPasswordPolicy = null;
     this._tenantPasswordPolicies = {};
+    this._emulatorConfig = null;
+    this._authStateReadyPromise = null;
+    this._beforeAuthStateChangedCallbacks = [];
 
     if (!this.languageCode) {
       this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'] ?? '';
@@ -135,8 +147,7 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
 
     this.emitter.addListener(this.eventNameForApp('auth_state_changed'), event => {
       const authEvent = event as AuthStateChangedEventInternal;
-      this._setUser(authEvent.user);
-      this.emitter.emit(this.eventNameForApp('onAuthStateChanged'), this._user);
+      void this._handleAuthStateChanged(authEvent.user);
     });
 
     this.emitter.addListener(this.eventNameForApp('phone_auth_state_changed'), event => {
@@ -190,12 +201,103 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   get config(): Record<string, never> {
-    // for modular API, firebase JS SDK has a config object which is not available in native SDKs
+    // Native iOS/Android Firebase Auth SDKs do not expose the firebase-js-sdk config object.
     return {};
   }
 
   get tenantId(): string | null {
     return this._tenantId;
+  }
+
+  set tenantId(tenantId: string | null) {
+    void this.setTenantId(tenantId);
+  }
+
+  get emulatorConfig(): EmulatorConfig | null {
+    return this._emulatorConfig;
+  }
+
+  authStateReady(): Promise<void> {
+    if (this._authResult) {
+      return Promise.resolve();
+    }
+
+    if (!this._authStateReadyPromise) {
+      this._authStateReadyPromise = new Promise(resolve => {
+        const unsubscribe = this.onAuthStateChanged(() => {
+          if (this._authResult) {
+            unsubscribe();
+            resolve();
+          }
+        });
+
+        if (this._authResult) {
+          unsubscribe();
+          resolve();
+        }
+      });
+    }
+
+    return this._authStateReadyPromise;
+  }
+
+  beforeAuthStateChanged(
+    callback: (user: ModularUser | null) => void | Promise<void>,
+    onAbort?: () => void,
+  ): Unsubscribe {
+    const entry: BeforeAuthStateChangedEntry = { callback, onAbort };
+    this._beforeAuthStateChangedCallbacks.push(entry);
+
+    return () => {
+      const index = this._beforeAuthStateChangedCallbacks.indexOf(entry);
+      if (index >= 0) {
+        this._beforeAuthStateChangedCallbacks.splice(index, 1);
+      }
+    };
+  }
+
+  async updateCurrentUser(user: FirebaseAuthTypes.User | null): Promise<void> {
+    if (user === null) {
+      await this.signOut();
+      return;
+    }
+
+    const userInternal = user as unknown as {
+      _auth?: AuthInternal;
+      _user?: NativeUserInternal;
+    };
+
+    if (!userInternal._auth || userInternal._auth !== (this as unknown as AuthInternal)) {
+      throw new Error(
+        "firebase.auth().updateCurrentUser() expected 'user' to be an Auth instance from the same Firebase App",
+      );
+    }
+
+    if (!userInternal._user) {
+      throw new Error("firebase.auth().updateCurrentUser(*) expected 'user' to be a valid User");
+    }
+
+    this._setUser(userInternal._user);
+  }
+
+  async _handleAuthStateChanged(nativeUser?: NativeUserInternal | null): Promise<void> {
+    const pendingUser = nativeUser
+      ? (createDeprecationProxy(
+          new User(this as unknown as AuthInternal, nativeUser),
+        ) as FirebaseAuthTypes.User)
+      : null;
+
+    for (const { callback, onAbort } of [...this._beforeAuthStateChangedCallbacks]) {
+      try {
+        await callback(pendingUser as ModularUser | null);
+      } catch {
+        onAbort?.();
+        return;
+      }
+    }
+
+    this._setUser(nativeUser);
+    this.emitter.emit(this.eventNameForApp('onAuthStateChanged'), this._user);
   }
 
   get settings(): FirebaseAuthTypes.AuthSettings {
@@ -257,12 +359,12 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     }
   }
 
-  async setTenantId(tenantId: string): Promise<void> {
-    if (!isString(tenantId)) {
+  async setTenantId(tenantId: string | null): Promise<void> {
+    if (!isString(tenantId) && !isNull(tenantId)) {
       throw new Error("firebase.auth().setTenantId(*) expected 'tenantId' to be a string");
     }
     this._tenantId = tenantId;
-    await this.native.setTenantId(tenantId);
+    await this.native.setTenantId(tenantId ?? '');
   }
 
   onAuthStateChanged(
@@ -501,16 +603,22 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     email: string,
     actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
   ): Promise<void> {
-    return this.native.sendSignInLinkToEmail(email, actionCodeSettings);
+    return this.native.sendSignInLinkToEmail(
+      email,
+      actionCodeSettings ?? ({} as FirebaseAuthTypes.ActionCodeSettings),
+    );
   }
 
   isSignInWithEmailLink(emailLink: string): Promise<boolean> {
     return this.native.isSignInWithEmailLink(emailLink);
   }
 
-  signInWithEmailLink(email: string, emailLink: string): Promise<FirebaseAuthTypes.UserCredential> {
+  signInWithEmailLink(
+    email: string,
+    emailLink?: string,
+  ): Promise<FirebaseAuthTypes.UserCredential> {
     return this.native
-      .signInWithEmailLink(email, emailLink)
+      .signInWithEmailLink(email, emailLink ?? '')
       .then((userCredential: NativeUserCredentialInternal) =>
         this._setUserCredential(userCredential),
       );
@@ -598,7 +706,7 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     );
   }
 
-  useEmulator(url: string): void {
+  useEmulator(url: string, options?: { disableWarnings?: boolean }): void {
     if (!url || !isString(url) || !isValidUrl(url)) {
       throw new Error('firebase.auth().useEmulator() takes a non-empty string URL');
     }
@@ -633,9 +741,17 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     const host = urlMatches[1];
     const portString = urlMatches[2];
     if (!host) {
-      throw new Error('firebase.auth().useEmulator() unable to parse host  from URL');
+      throw new Error('firebase.auth().useEmulator() unable to parse host from URL');
     }
     const port = portString ? parseInt(portString, 10) : undefined;
+    this._emulatorConfig = {
+      protocol: 'http',
+      host,
+      port: port ?? null,
+      options: {
+        disableWarnings: options?.disableWarnings ?? false,
+      },
+    };
     this.native.useEmulator(host, port);
     // @ts-ignore - undocumented return, useful for unit testing
     return [host, port];

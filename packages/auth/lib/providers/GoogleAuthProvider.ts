@@ -15,7 +15,8 @@
  *
  */
 
-import type { AuthError, OAuthCredential, UserCredential } from '../types/auth';
+import { OAuthCredential } from '../credentials';
+import type { AuthError, OAuthCredential as OAuthCredentialType, UserCredential } from '../types/auth';
 
 // Keep the SDK helper signature name while mapping to RNFB's native auth error type.
 type FirebaseError = AuthError;
@@ -30,39 +31,22 @@ export default class GoogleAuthProvider {
     throw new Error('`new GoogleAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static credential(idToken?: string | null, accessToken?: string | null): OAuthCredential {
+  static credential(idToken?: string | null, accessToken?: string | null): OAuthCredentialType {
     if (idToken == null && accessToken == null) {
       throw new Error('At least one of ID token and access token must be non-null');
     }
 
-    const token = idToken ?? '';
-    const secret = accessToken ?? '';
-
-    return {
-      token,
-      secret,
-      providerId,
-      signInMethod: providerId,
+    return new OAuthCredential(providerId, {
       idToken: idToken ?? undefined,
       accessToken: accessToken ?? undefined,
-      toJSON() {
-        return {
-          providerId: this.providerId,
-          signInMethod: this.signInMethod,
-          idToken: this.idToken,
-          accessToken: this.accessToken,
-          rawNonce: this.rawNonce,
-          nonce: this.rawNonce,
-        };
-      },
-    };
+    });
   }
 
-  static credentialFromResult(_userCredential: UserCredential): OAuthCredential | null {
+  static credentialFromResult(_userCredential: UserCredential): OAuthCredentialType | null {
     return null;
   }
 
-  static credentialFromError(_error: FirebaseError): OAuthCredential | null {
+  static credentialFromError(_error: FirebaseError): OAuthCredentialType | null {
     return null;
   }
 }

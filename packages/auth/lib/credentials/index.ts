@@ -14,18 +14,8 @@
  * limitations under the License.
  *
  */
-// modular API
-export type * from './types/auth';
-export { ActionCodeURL, ACTION_CODE_URL_PARSE_NOT_IMPLEMENTED } from './ActionCodeURL';
-export {
-  AuthCredential,
-  EmailAuthCredential,
-  OAuthCredential,
-  PhoneAuthCredential,
-} from './credentials';
-export * from './modular';
 
-// namespaced API
-export * from './types/namespaced';
-export * from './namespaced';
-export { default } from './namespaced';
+export { AuthCredential, parseCredentialJSON } from './AuthCredential';
+export { EmailAuthCredential, createEmailAuthCredential } from './EmailAuthCredential';
+export { OAuthCredential } from './OAuthCredential';
+export { PhoneAuthCredential, createPhoneAuthCredential } from './PhoneAuthCredential';

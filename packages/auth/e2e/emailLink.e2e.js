@@ -65,14 +65,11 @@ describe('auth() -> emailLink Provider', function () {
       }
     });
 
-    xit('should send email with defaults', async function () {
-      const { getAuth, sendSignInLinkToEmail } = authModular;
-
-      const auth = getAuth();
+    it('namespaced sendSignInLinkToEmail works with default settings', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
 
-      await sendSignInLinkToEmail(auth, email);
+      await firebase.auth().sendSignInLinkToEmail(email);
     });
   });
 
