@@ -88,6 +88,8 @@ The module also provides basic support for displaying local notifications, to le
 
 ## iOS - Requesting permissions
 
+> **Deprecated:** `requestPermission`, `hasPermission`, and `AuthorizationStatus` are deprecated. Use [react-native-permissions](https://github.com/zoontek/react-native-permissions) or [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/) instead. See [issue #6283](https://github.com/invertase/react-native-firebase/issues/6283).
+
 iOS prevents messages containing notification (or 'alert') payloads from being displayed unless you have received explicit permission from the user.
 
 > To learn more about local notifications, view the [Notifications](/messaging/notifications) documentation.
@@ -114,7 +116,9 @@ application. To learn more, view the advanced [iOS Permissions](/messaging/ios-p
 
 ## Android - Requesting permissions
 
-On Android API level 32 and below, you do not need to request user permission. This method can still be called on Android devices; however, and will always resolve successfully. For API level 33+ you will need to request the permission manually using either the built-in react-native `PermissionsAndroid` APIs or a related module such as `react-native-permissions`
+> **Deprecated:** `requestPermission` and `hasPermission` are deprecated no-ops on Android API level 32 and below. Use [react-native-permissions](https://github.com/zoontek/react-native-permissions) or [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/) for notification permission requests on API level 33+. See [issue #6283](https://github.com/invertase/react-native-firebase/issues/6283).
+
+On Android API level 32 and below, you do not need to request user permission. This method can still be called on Android devices; however, and will always resolve successfully. For API level 33+ you will need to request the permission manually using either the built-in react-native `PermissionsAndroid` APIs or a related module such as `react-native-permissions` or `expo-notifications`
 
 ```
   import {PermissionsAndroid} from 'react-native';

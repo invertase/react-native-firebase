@@ -257,6 +257,10 @@ class FirebaseMessagingModule extends FirebaseModule implements Messaging {
 
   /**
    * @platform ios
+   * @deprecated Use {@link https://github.com/zoontek/react-native-permissions react-native-permissions} or
+   * {@link https://docs.expo.dev/versions/latest/sdk/notifications/ expo-notifications} for notification permission
+   * requests instead. These APIs will be removed in a future major release.
+   * See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}.
    */
   requestPermission(permissions?: IOSPermissions): Promise<AuthorizationStatusType> {
     if (isAndroid) {
@@ -360,6 +364,12 @@ class FirebaseMessagingModule extends FirebaseModule implements Messaging {
     return this.native.setAPNSToken(token, type);
   }
 
+  /**
+   * @deprecated Use {@link https://github.com/zoontek/react-native-permissions react-native-permissions} or
+   * {@link https://docs.expo.dev/versions/latest/sdk/notifications/ expo-notifications} for notification permission
+   * requests instead. These APIs will be removed in a future major release.
+   * See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}.
+   */
   hasPermission(): Promise<AuthorizationStatusType> {
     return this.native.hasPermission();
   }

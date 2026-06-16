@@ -120,6 +120,10 @@ export function onTokenRefresh(messaging: Messaging, listener: (token: string) =
  * @param messaging - Messaging instance.
  * @param iosPermissions - All the available permissions for iOS that can be requested.
  * @returns Promise that resolves with the authorization status.
+ * @deprecated Use {@link https://github.com/zoontek/react-native-permissions react-native-permissions} or
+ * {@link https://docs.expo.dev/versions/latest/sdk/notifications/ expo-notifications} for notification permission
+ * requests instead. These APIs will be removed in a future major release.
+ * See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}.
  */
 export function requestPermission(
   messaging: Messaging,
@@ -257,6 +261,10 @@ export function setAPNSToken(messaging: Messaging, token: string, type?: string)
  * Returns a `AuthorizationStatus` as to whether the user has messaging permission for this app.
  * @param messaging - Messaging instance.
  * @returns Promise that resolves with the authorization status.
+ * @deprecated Use {@link https://github.com/zoontek/react-native-permissions react-native-permissions} or
+ * {@link https://docs.expo.dev/versions/latest/sdk/notifications/ expo-notifications} for notification permission
+ * requests instead. These APIs will be removed in a future major release.
+ * See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}.
  */
 export function hasPermission(messaging: Messaging): Promise<AuthorizationStatus> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
