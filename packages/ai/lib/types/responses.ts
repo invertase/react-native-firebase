@@ -117,8 +117,28 @@ export interface UsageMetadata {
    */
   thoughtsTokenCount?: number;
   totalTokenCount: number;
+  /**
+   * The number of tokens used by tools.
+   */
+  toolUsePromptTokenCount?: number;
   promptTokensDetails?: ModalityTokenCount[];
   candidatesTokensDetails?: ModalityTokenCount[];
+  /**
+   * A list of tokens used by tools, broken down by modality.
+   */
+  toolUsePromptTokensDetails?: ModalityTokenCount[];
+  /**
+   * The number of tokens in the prompt that were served from the cache.
+   * If implicit caching is not active or no content was cached,
+   * this will be 0.
+   */
+  cachedContentTokenCount?: number;
+  /**
+   * Detailed breakdown of the cached tokens by modality (for example, text or
+   * image). This list provides granular insight into which parts of
+   * the content were cached.
+   */
+  cacheTokensDetails?: ModalityTokenCount[];
 }
 
 /**
@@ -592,6 +612,19 @@ export interface LiveServerToolCallCancellation {
 }
 
 /**
+ * Notification that the server will not be able to service the client soon.
+ *
+ * @beta
+ */
+export interface LiveServerGoingAwayNotice {
+  type: 'goingAwayNotice';
+  /**
+   * The remaining time (in seconds) before the connection will be terminated.
+   */
+  timeLeft: number;
+}
+
+/**
  * The types of responses that can be returned by {@link LiveSession.receive}.
  *
  * @beta
@@ -600,6 +633,7 @@ export const LiveResponseType = {
   SERVER_CONTENT: 'serverContent',
   TOOL_CALL: 'toolCall',
   TOOL_CALL_CANCELLATION: 'toolCallCancellation',
+  GOING_AWAY_NOTICE: 'goingAwayNotice',
 };
 
 /**

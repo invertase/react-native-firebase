@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
+
+### Features
+
+- **analytics:** add Expo config plugin for withoutAdIdSupport ([#8969](https://github.com/invertase/react-native-firebase/issues/8969)) ([5af7a6a](https://github.com/invertase/react-native-firebase/commit/5af7a6ab3f6da77e299c92b833fc1267c8309f18))
+- **analytics:** add support for googleAppMeasurementOnDeviceConversion in iOS Expo plugin ([#9014](https://github.com/invertase/react-native-firebase/issues/9014)) ([a7a5125](https://github.com/invertase/react-native-firebase/commit/a7a512529ab7b40c9bc32d65cab1e6256556e68e))
+
+### Bug Fixes
+
+- **analytics:** cast item INDEX param to integer ([915dc8a](https://github.com/invertase/react-native-firebase/commit/915dc8a37aeaf67424d773134e55c81223a65be3))
+- **analytics:** coerce all number params from js double to native integral ([760ddd2](https://github.com/invertase/react-native-firebase/commit/760ddd2fdba7004d3fb30d2321c89066a36e199b))
+- **analytics:** success param type now boolean - never worked before, now works ([7e122b2](https://github.com/invertase/react-native-firebase/commit/7e122b264196b86e25deedb03aff4580741b7345))
+
 ## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
 
 ### Features

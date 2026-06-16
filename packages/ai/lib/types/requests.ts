@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { TypedSchema } from '../requests/schema-builder';
+import { ObjectSchema, TypedSchema } from '../requests/schema-builder';
 import { Content, Part } from './content';
 import {
   FunctionCallingMode,
@@ -23,8 +23,9 @@ import {
   HarmBlockThreshold,
   HarmCategory,
   ResponseModality,
+  ThinkingLevel,
 } from './enums';
-import { ObjectSchemaInterface, SchemaRequest } from './schema';
+import { ObjectSchemaRequest, SchemaRequest } from './schema';
 
 /**
  * Base parameters for a number of methods.
@@ -115,6 +116,16 @@ export interface GenerationConfig {
    * this is limited to `application/json` and `text/x.enum`.
    */
   responseSchema?: TypedSchema | SchemaRequest;
+  /**
+   * Output schema of the generated response. This is an alternative to
+   * `responseSchema` that accepts [JSON Schema](https://json-schema.org/).
+   *
+   * If set, `responseSchema` must be omitted, but `responseMimeType`
+   * is required and must be set to `application/json`.
+   */
+  responseJsonSchema?: {
+    [key: string]: unknown;
+  };
   /**
    * Generation modalities to be returned in generation responses.
    *
@@ -212,6 +223,22 @@ export interface StartChatParams extends BaseParams {
 }
 
 /**
+ * Params for {@link TemplateGenerativeModel.startChat}.
+ * @beta
+ */
+export interface StartTemplateChatParams extends Omit<StartChatParams, 'tools'> {
+  /**
+   * The ID of the server-side template to execute.
+   */
+  templateId: string;
+  /**
+   * A key-value map of variables to populate the template with.
+   */
+  templateVariables?: Record<string, unknown>;
+  tools?: TemplateTool[];
+}
+
+/**
  * Params for calling {@link GenerativeModel.countTokens}
  * @public
  */
@@ -244,6 +271,30 @@ export interface RequestOptions {
    * Base url for endpoint. Defaults to https://firebasevertexai.googleapis.com
    */
   baseUrl?: string;
+  /**
+   * Limits amount of sequential function calls the SDK can make during automatic
+   * function calling, in order to prevent infinite loops. If not specified,
+   * this value defaults to 10.
+   *
+   * When it reaches this limit, it will return the last response received
+   * from the model, whether it is a text response or further function calls.
+   */
+  maxSequentialFunctionCalls?: number;
+}
+
+/**
+ * Options that can be provided per-request.
+ *
+ * Options specified here will override any default {@link RequestOptions}
+ * configured on a model.
+ *
+ * @public
+ */
+export interface SingleRequestOptions extends RequestOptions {
+  /**
+   * An `AbortSignal` instance that allows cancelling ongoing requests.
+   */
+  signal?: AbortSignal;
 }
 
 /**
@@ -278,7 +329,13 @@ export interface FunctionDeclaration {
    * format. Reflects the Open API 3.03 Parameter Object. Parameter names are
    * case-sensitive. For a function with no parameters, this can be left unset.
    */
-  parameters?: ObjectSchemaInterface;
+  parameters?: ObjectSchema | ObjectSchemaRequest;
+  /**
+   * Reference to an actual function to call. Specifying this will cause the
+   * function to be called automatically when requested by the model.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- Matches firebase-js-sdk public API.
+  functionReference?: Function;
 }
 
 /**
@@ -370,6 +427,53 @@ export interface FunctionDeclarationsTool {
 }
 
 /**
+ * Structured representation of a template function declaration.
+ * @beta
+ */
+export interface TemplateFunctionDeclaration {
+  /**
+   * The name of the function to call. Must start with a letter or an
+   * underscore. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with
+   * a max length of 64.
+   */
+  name: string;
+  /**
+   * Description is intentionally unsupported for template function declarations.
+   */
+  description?: never;
+  /**
+   * Optional. Describes the parameters to this function in JSON Schema Object
+   * format.
+   */
+  parameters?: ObjectSchema | ObjectSchemaRequest;
+  /**
+   * Reference to an actual function to call. Specifying this will cause the
+   * function to be called automatically when requested by the model.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- Matches firebase-js-sdk public API.
+  functionReference?: Function;
+}
+
+/**
+ * A piece of code that enables the system to interact with external systems.
+ * @beta
+ */
+export interface TemplateFunctionDeclarationsTool {
+  /**
+   * Optional. One or more function declarations
+   * to be passed to the server-side template execution.
+   */
+  functionDeclarations?: TemplateFunctionDeclaration[];
+}
+
+/**
+ * Defines a tool that a {@link TemplateGenerativeModel} can call
+ * to access external knowledge.
+ * @beta
+ */
+export type TemplateTool = TemplateFunctionDeclarationsTool;
+
+/**
  * Tool config. This config is shared for all tools provided in the request.
  * @public
  */
@@ -404,10 +508,25 @@ export interface ThinkingConfig {
    * If you don't specify a budget, the model will determine the appropriate amount
    * of thinking based on the complexity of the prompt.
    *
+   * The model will also error if `thinkingLevel` and `thinkingBudget` are
+   * both set.
+   *
    * An error will be thrown if you set a thinking budget for a model that does not support this
    * feature or if the specified budget is not within the model's supported range.
    */
   thinkingBudget?: number;
+
+  /**
+   * If not specified, Gemini will use the model's default dynamic thinking level.
+   *
+   * @remarks
+   * Note: The model will error if `thinkingLevel` and `thinkingBudget` are
+   * both set.
+   *
+   * Important: Gemini 2.5 series models do not support thinking levels; use
+   * `thinkingBudget` to set a thinking budget instead.
+   */
+  thinkingLevel?: ThinkingLevel;
 
   /**
    * Whether to include "thought summaries" in the model's response.

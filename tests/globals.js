@@ -87,6 +87,7 @@ import * as inAppMessagingModular from '@react-native-firebase/in-app-messaging'
 import * as installationsModular from '@react-native-firebase/installations';
 import * as crashlyticsModular from '@react-native-firebase/crashlytics';
 import * as mlModular from '@react-native-firebase/ml';
+import * as pnvModular from '@react-native-firebase/phone-number-verification';
 
 import { Platform } from 'react-native';
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
@@ -475,6 +476,12 @@ Object.defineProperty(global, 'firestorePipelinesModular', {
 Object.defineProperty(global, 'mlModular', {
   get() {
     return mlModular;
+  },
+});
+
+Object.defineProperty(global, 'pnvModular', {
+  get() {
+    return pnvModular;
   },
 });
 

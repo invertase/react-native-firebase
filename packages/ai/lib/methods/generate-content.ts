@@ -16,11 +16,13 @@
  */
 
 import {
+  AIErrorCode,
   GenerateContentRequest,
   GenerateContentResponse,
   GenerateContentResult,
   GenerateContentStreamResult,
-  RequestOptions,
+  GenerationConfig,
+  SingleRequestOptions,
 } from '../types';
 import { Task, makeRequest, ServerPromptTemplateTask } from '../requests/request';
 import { createEnhancedContentResponse } from '../requests/response-helpers';
@@ -28,6 +30,24 @@ import { processStream } from '../requests/stream-reader';
 import { ApiSettings } from '../types/internal';
 import { BackendType } from '../public-types';
 import * as GoogleAIMapper from '../googleai-mappers';
+import { AIError } from '../errors';
+
+/**
+ * Client-side validation of common `GenerationConfig` pitfalls, in order
+ * to save the developer a wasted request.
+ */
+function validateGenerationConfig(generationConfig?: GenerationConfig): void {
+  if (
+    // != allows for null and undefined. 0 is considered "set" by the model.
+    generationConfig?.thinkingConfig?.thinkingBudget != null &&
+    generationConfig.thinkingConfig?.thinkingLevel != null
+  ) {
+    throw new AIError(
+      AIErrorCode.UNSUPPORTED,
+      'Cannot set both thinkingBudget and thinkingLevel in a config.',
+    );
+  }
+}
 
 /**
  * Generates a content stream from a request body.
@@ -35,15 +55,16 @@ import * as GoogleAIMapper from '../googleai-mappers';
  * @param apiSettings The {@link ApiSettings} to use for the request.
  * @param model The model to use for the request.
  * @param params The {@link GenerateContentRequest} to send.
- * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @param requestOptions The {@link SingleRequestOptions} to use for the request.
  * @returns The {@link GenerateContentStreamResult} from the request.
  */
 export async function generateContentStream(
   apiSettings: ApiSettings,
   model: string,
   params: GenerateContentRequest,
-  requestOptions?: RequestOptions,
+  requestOptions?: SingleRequestOptions,
 ): Promise<GenerateContentStreamResult> {
+  validateGenerationConfig(params.generationConfig);
   if (apiSettings.backend.backendType === BackendType.GOOGLE_AI) {
     params = GoogleAIMapper.mapGenerateContentRequest(params);
   }
@@ -66,7 +87,7 @@ export async function generateContentStream(
  * @param apiSettings The {@link ApiSettings} to use for the request.
  * @param model The model to use for the request.
  * @param params The {@link GenerateContentRequest} to send.
- * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @param requestOptions The {@link SingleRequestOptions} to use for the request.
  * @returns The {@link GenerateContentResult} from the request.
  */
 
@@ -74,8 +95,9 @@ export async function generateContent(
   apiSettings: ApiSettings,
   model: string,
   params: GenerateContentRequest,
-  requestOptions?: RequestOptions,
+  requestOptions?: SingleRequestOptions,
 ): Promise<GenerateContentResult> {
+  validateGenerationConfig(params.generationConfig);
   if (apiSettings.backend.backendType === BackendType.GOOGLE_AI) {
     params = GoogleAIMapper.mapGenerateContentRequest(params);
   }
@@ -121,7 +143,7 @@ async function processGenerateContentResponse(
  * @param apiSettings The {@link ApiSettings} to use for the request.
  * @param templateId The ID of the server-side template to execute.
  * @param templateParams The parameters to populate the template with.
- * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @param requestOptions The {@link SingleRequestOptions} to use for the request.
  * @returns The {@link GenerateContentResult} from the request.
  *
  * @beta
@@ -130,7 +152,7 @@ export async function templateGenerateContent(
   apiSettings: ApiSettings,
   templateId: string,
   templateParams: object,
-  requestOptions?: RequestOptions,
+  requestOptions?: SingleRequestOptions,
 ): Promise<GenerateContentResult> {
   const response = await makeRequest(
     {
@@ -155,7 +177,7 @@ export async function templateGenerateContent(
  * @param apiSettings The {@link ApiSettings} to use for the request.
  * @param templateId The ID of the server-side template to execute.
  * @param templateParams The parameters to populate the template with.
- * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @param requestOptions The {@link SingleRequestOptions} to use for the request.
  * @returns The {@link GenerateContentStreamResult} from the request.
  *
  * @beta
@@ -164,7 +186,7 @@ export async function templateGenerateContentStream(
   apiSettings: ApiSettings,
   templateId: string,
   templateParams: object,
-  requestOptions?: RequestOptions,
+  requestOptions?: SingleRequestOptions,
 ): Promise<GenerateContentStreamResult> {
   const response = await makeRequest(
     {

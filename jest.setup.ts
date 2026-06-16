@@ -261,7 +261,7 @@ jest.doMock('react-native', () => {
           transactionBegin: jest.fn(),
           transactionDispose: jest.fn(),
         },
-        RNFBInAppMessagingModule: {
+        RNFBFiamModule: {
           isMessagesDisplaySuppressed: false,
           isAutomaticDataCollectionEnabled: true,
           setMessagesDisplaySuppressed: jest.fn(),

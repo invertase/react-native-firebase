@@ -20,7 +20,7 @@ on:
   push:
     branches:
       - main
-      - v14-release
+      - release-v*
     paths-ignore:
       - 'docs/**'
       - 'website/**'
@@ -121,6 +121,17 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
+
+      - name: Install emulator host dependencies
+        # Newer emulator builds dlopen host libs on Linux; package list from Android emulator
+        # container scripts (Ubuntu 24.04 noble package names on ubuntu-latest):
+        # https://github.com/jpcottin/android-emulator-container-scripts/blob/0ec0fd00ff51aa09f83b20809f842b2c45293d99/emu/templates/Dockerfile.emulator#L30-L36
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libdbus-1-3 libfontconfig1 libgcc-s1 libgl1 libncurses6 libnss3 libpulse0 \
+            libx11-6 libx11-xcb1 libxcb-cursor0 libxcb1 libxcomposite1 libxcursor1 libxdamage1 \
+            libxext6 libxfixes3 libxi6 libxkbfile1 pulseaudio socat zlib1g
 
       # https://github.com/actions/checkout/releases
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -240,7 +251,6 @@ jobs:
           target: ${{ matrix.target }}
           disable-spellchecker: true
           arch: ${{ matrix.arch }}
-          emulator-build: 14214601  # needed as of 20251205 when emulator 36.3.10.0 (build_id 14472402) released
           pre-emulator-launch-script: |
             sudo mkdir /mnt/avd
             sudo chown $USER:$USER /mnt/avd

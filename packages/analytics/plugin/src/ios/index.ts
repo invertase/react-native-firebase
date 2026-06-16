@@ -1,3 +1,3 @@
-import { withIosWithoutAdIdSupport } from './podfile';
+import { withIosWithoutAdIdSupport, withIosGoogleAppMeasurementOnDeviceConversion } from './podfile';
 
-export { withIosWithoutAdIdSupport };
+export { withIosWithoutAdIdSupport, withIosGoogleAppMeasurementOnDeviceConversion };

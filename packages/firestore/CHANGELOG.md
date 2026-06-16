@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
+
+### Features
+
+- **firestore:** add 'source' option to enable local cache firestore listeners ([e3ce410](https://github.com/invertase/react-native-firebase/commit/e3ce410ef655796a488a1c79003ec2d7b783bae9))
+
+### Bug Fixes
+
+- **android:** catch RejectedExecutionException on executor-backed Tasks ([375ade9](https://github.com/invertase/react-native-firebase/commit/375ade9a043d2fd8180572ecc75c518e4428be84))
+- **firestore, android:** catch RejectedExecutionException in sendOnSnapshotEvent ([602d7ad](https://github.com/invertase/react-native-firebase/commit/602d7ad250635c31901290af6c5b0ce98f7448ad))
+- **firestore:** restore generic root type exports for `DocumentSnapshot`, `Transaction`, and `WriteBatch` ([#8997](https://github.com/invertase/react-native-firebase/issues/8997)) ([9809622](https://github.com/invertase/react-native-firebase/commit/9809622e0c6e2de21f17730bbf97dc5be33396bc))
+
 ## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
 
 ### ⚠ BREAKING CHANGES

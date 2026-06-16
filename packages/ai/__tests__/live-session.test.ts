@@ -20,6 +20,7 @@ import {
   FunctionResponse,
   LiveResponseType,
   LiveServerContent,
+  LiveServerGoingAwayNotice,
   LiveServerToolCall,
   LiveServerToolCallCancellation,
 } from '../lib/types';
@@ -233,13 +234,16 @@ describe('LiveSession', function () {
         toolCallCancellation: { functionIds: ['123'] },
       });
       mockHandler.simulateServerMessage({
+        goAway: { timeLeft: '10.500s' },
+      });
+      mockHandler.simulateServerMessage({
         serverContent: { turnComplete: true },
       });
       await new Promise<void>(r => setTimeout(() => r(), 10)); // Wait for the listener to process messages
       mockHandler.endStream();
 
       const responses = await receivePromise;
-      expect(responses).toHaveLength(4);
+      expect(responses).toHaveLength(5);
       expect(responses[0]).toEqual({
         type: LiveResponseType.SERVER_CONTENT,
         modelTurn: { parts: [{ text: 'response 1' }] },
@@ -252,6 +256,34 @@ describe('LiveSession', function () {
         type: LiveResponseType.TOOL_CALL_CANCELLATION,
         functionIds: ['123'],
       } as LiveServerToolCallCancellation);
+      expect(responses[3]).toEqual({
+        type: LiveResponseType.GOING_AWAY_NOTICE,
+        timeLeft: 10.5,
+      } as LiveServerGoingAwayNotice);
+    });
+
+    it('should default malformed goAway timeLeft values to zero', async function () {
+      const receivePromise = (async () => {
+        const responses = [];
+        for await (const response of session.receive()) {
+          responses.push(response);
+        }
+        return responses;
+      })();
+
+      mockHandler.simulateServerMessage({
+        goAway: { timeLeft: 'invalid' },
+      });
+      await new Promise<void>(r => setTimeout(() => r(), 10)); // Wait for the listener to process messages
+      mockHandler.endStream();
+
+      const responses = await receivePromise;
+      expect(responses).toEqual([
+        {
+          type: LiveResponseType.GOING_AWAY_NOTICE,
+          timeLeft: 0,
+        },
+      ]);
     });
 
     it('should log a warning and skip messages that are not objects', async function () {

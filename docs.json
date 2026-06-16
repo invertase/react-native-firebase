@@ -3,7 +3,6 @@
   "name": "React Native Firebase",
   "description": "A well-tested feature-rich modular Firebase implementation for React Native. Supports both iOS & Android platforms for all Firebase services.",
   "favicon": "/rnfb-logo.png",
-  "agent": "6e277cd7-0065-4ade-a14a-3ecfa3f369a4",
   "theme": {
     "primary": "#e88533"
   },
@@ -14,6 +13,14 @@
   "social": {
     "x": "@invertaseio",
     "github": "invertase/react-native-firebase"
+  },
+  "agent": {
+    "key": "6e277cd7-0065-4ade-a14a-3ecfa3f369a4",
+    "questions": [
+      "How do I install react-native-firebase with Expo?",
+      "Can I do silent push notifications on iOS and Android?",
+      "When does it make sense to use react-native-firebase instead of firebase-js-sdk?"
+    ]
   },
   "tabs": [
     {
@@ -39,11 +46,11 @@
         { "title": "Migration Guide to v25", "href": "/migrating-to-v25" },
         { "title": "TypeScript", "href": "/typescript" },
         { "title": "Platforms", "href": "/platforms" },
+        { "title": "FAQs and Tips", "href": "/faqs-and-tips" },
         {
           "title": "Release Notes",
           "href": "https://github.com/invertase/react-native-firebase/blob/main/CHANGELOG.md"
         },
-        { "title": "FAQs and Tips", "href": "/faqs-and-tips" },
         { "title": "Feature Requests", "href": "https://invertase.canny.io/react-native-firebase" },
         {
           "title": "Contributing",
@@ -202,6 +209,12 @@
         { "title": "Axios Integration", "href": "/perf/axios-integration" },
         { "title": "KY Integration", "href": "/perf/ky-integration" }
       ]
+    },
+    {
+      "group": "Phone Number Verification",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/social/firebase-logo.png",
+      "pages": [{ "title": "Usage", "href": "/phone-number-verification/usage" }]
     },
     {
       "group": "VertexAi",

@@ -380,6 +380,11 @@ export type NotificationAndroidVisibility =
 /**
  * An interface representing all the available permissions that can be requested by your app via
  * the `requestPermission` API.
+ *
+ * @deprecated Use {@link https://github.com/zoontek/react-native-permissions react-native-permissions} or
+ * {@link https://docs.expo.dev/versions/latest/sdk/notifications/ expo-notifications} for notification permission
+ * requests instead. These APIs will be removed in a future major release.
+ * See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}.
  */
 export interface IOSPermissions {
   /**
@@ -444,6 +449,11 @@ export interface IOSPermissions {
  *
  * Value is truthy if authorized, compare against an exact status (e.g. iOS PROVISIONAL) for a more
  * granular status.
+ *
+ * @deprecated Use {@link https://github.com/zoontek/react-native-permissions react-native-permissions} or
+ * {@link https://docs.expo.dev/versions/latest/sdk/notifications/ expo-notifications} for notification permission
+ * requests instead. These APIs will be removed in a future major release.
+ * See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}.
  */
 export type AuthorizationStatus =
   | -1 // NOT_DETERMINED - The app user has not yet chosen whether to allow the application to create notifications. Usually this status is returned prior to the first call of `requestPermission`. @platform ios iOS
@@ -560,6 +570,11 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
    * be received or sent.
    *
    * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `AuthorizationStatus.AUTHORIZED`.
+   *
+   * @deprecated Use {@link https://github.com/zoontek/react-native-permissions react-native-permissions} or
+   * {@link https://docs.expo.dev/versions/latest/sdk/notifications/ expo-notifications} for notification permission
+   * requests instead. These APIs will be removed in a future major release.
+   * See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}.
    */
   requestPermission(permissions?: IOSPermissions): Promise<AuthorizationStatus>;
 
@@ -618,6 +633,11 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
 
   /**
    * Returns a `AuthorizationStatus` as to whether the user has messaging permission for this app.
+   *
+   * @deprecated Use {@link https://github.com/zoontek/react-native-permissions react-native-permissions} or
+   * {@link https://docs.expo.dev/versions/latest/sdk/notifications/ expo-notifications} for notification permission
+   * requests instead. These APIs will be removed in a future major release.
+   * See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}.
    */
   hasPermission(): Promise<AuthorizationStatus>;
 
@@ -715,6 +735,7 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
 
 export interface Statics {
   SDK_VERSION: string;
+  /** @deprecated See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}. */
   AuthorizationStatus: typeof AuthorizationStatusConst;
   NotificationAndroidPriority: typeof NotificationAndroidPriorityConst;
   NotificationAndroidVisibility: typeof NotificationAndroidVisibilityConst;
@@ -765,7 +786,9 @@ export namespace FirebaseMessagingTypes {
   export type NotificationIOSCriticalSound = _NotificationIOSCriticalSound;
   export type NotificationAndroidPriority = _NotificationAndroidPriority;
   export type NotificationAndroidVisibility = _NotificationAndroidVisibility;
+  /** @deprecated See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}. */
   export type IOSPermissions = _IOSPermissions;
+  /** @deprecated See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}. */
   export type AuthorizationStatus = _AuthorizationStatus;
   export type SendErrorEvent = _SendErrorEvent;
 }

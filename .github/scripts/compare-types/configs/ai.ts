@@ -68,8 +68,7 @@ const config: PackageConfig = {
     },
     {
       name: 'LanguageModelExpected',
-      reason:
-        'Chrome Prompt API type tied to browser-only on-device language model integration.',
+      reason: 'Chrome Prompt API type tied to browser-only on-device language model integration.',
     },
     {
       name: 'LanguageModelMessage',
@@ -102,59 +101,69 @@ const config: PackageConfig = {
         'Chrome Prompt API prompt options type used by browser-only on-device language model integration.',
     },
     {
-      name: 'AnyOfSchema',
+      name: 'ContextWindowCompressionConfig',
       reason:
-        'RN Firebase schema-builder does not currently expose the `anyOf` helper class, so union-schema composition is not part of the public RN AI API.',
+        'Live session context window compression config added in firebase-js-sdk; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'LiveServerGoingAwayNotice',
+      name: 'GoogleMaps',
       reason:
-        'RN Firebase live sessions do not currently surface the server `goingAwayNotice` message type in the public API.',
+        'Google Maps grounding tool added in firebase-js-sdk; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'ObjectSchemaRequest',
+      name: 'GoogleMapsGroundingChunk',
       reason:
-        'RN Firebase exposes `ObjectSchemaInterface` for schema helper typing, but does not separately export the raw request-shape `ObjectSchemaRequest` type.',
+        'Google Maps grounding chunk type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'SingleRequestOptions',
+      name: 'GoogleMapsTool',
       reason:
-        'RN Firebase does not currently expose per-call request overrides such as `AbortSignal`; requests are configured via model-level `RequestOptions` only.',
+        'Google Maps tool type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'ChatSessionBase',
+      name: 'ImageConfig',
       reason:
-        'Base class used by the firebase-js-sdk template chat implementation. RN Firebase exposes its concrete chat session surface instead.',
+        'Image generation config type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'StartTemplateChatParams',
+      name: 'ImageConfigAspectRatio',
       reason:
-        'Template chat startup parameters are part of the firebase-js-sdk template chat API, which RN Firebase does not currently expose.',
+        'Image aspect ratio type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'TemplateChatSession',
+      name: 'ImageConfigImageSize',
       reason:
-        'Template chat sessions are not currently part of the RN Firebase public AI API.',
+        'Image size type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'TemplateFunctionDeclaration',
+      name: 'LatLng',
       reason:
-        'Template function declaration helpers are part of firebase-js-sdk template tooling that RN Firebase does not currently expose.',
+        'Latitude/longitude type for Google Maps grounding added in firebase-js-sdk; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'TemplateFunctionDeclarationsTool',
+      name: 'LiveSessionResumptionUpdate',
       reason:
-        'Template function declaration tools are part of firebase-js-sdk template tooling that RN Firebase does not currently expose.',
+        'Live session resumption update type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'TemplateTool',
+      name: 'RetrievalConfig',
       reason:
-        'Template tool unions are part of firebase-js-sdk template tooling that RN Firebase does not currently expose.',
+        'Tool retrieval config type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'ThinkingLevel',
+      name: 'SessionResumptionConfig',
       reason:
-        'RN Firebase supports thinking budgets but does not currently expose the JS SDK `ThinkingLevel` preset constants/type.',
+        'Live session resumption config added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'SlidingWindow',
+      reason:
+        'Context window compression sliding window type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'TemplateToolConfig',
+      reason:
+        'Template tool config type added in firebase-js-sdk; not yet implemented in React Native Firebase.',
     },
   ],
   extraInRN: [
@@ -211,94 +220,59 @@ const config: PackageConfig = {
         'Both packages expose the same URL retrieval status constants, but the generated declaration text differs (`string`-valued object in JS SDK vs readonly literal constants in RN).',
     },
     {
-      name: 'ChatSession',
+      name: 'FinishReason',
       reason:
-        'RN Firebase chat sessions do not currently accept per-call `SingleRequestOptions`, so `sendMessage` and `sendMessageStream` expose fewer parameters.',
-    },
-    {
-      name: 'FunctionDeclaration',
-      reason:
-        'RN Firebase function declarations accept `ObjectSchemaInterface` only and do not expose the JS SDK `functionReference` auto-calling hook.',
-    },
-    {
-      name: 'FunctionResponse',
-      reason:
-        'RN Firebase function responses omit the optional `parts` field from the JS SDK declaration and only expose the structured response payload.',
+        'firebase-js-sdk added image, tool, and response finish-reason constants; not yet implemented in React Native Firebase.',
     },
     {
       name: 'GenerationConfig',
       reason:
-        'RN Firebase does not currently expose the JS SDK `responseJsonSchema` generation config field.',
+        'firebase-js-sdk added `imageConfig` to generation config; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'GenerativeModel',
+      name: 'GroundingChunk',
       reason:
-        'RN Firebase generative model methods do not currently accept per-call `SingleRequestOptions`, so request overrides are limited to model-level `RequestOptions`.',
+        'firebase-js-sdk added Google Maps grounding chunks; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'ImagenModel',
+      name: 'GroundingMetadata',
       reason:
-        'RN Firebase Imagen model requests do not currently accept per-call `SingleRequestOptions`, so request overrides are limited to model-level `RequestOptions`.',
+        'firebase-js-sdk added `googleMapsWidgetContextToken`; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'LiveGenerationConfig',
+      reason:
+        'firebase-js-sdk added `contextWindowCompression`; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'LiveGenerativeModel',
+      reason:
+        'firebase-js-sdk added session resumption support to `connect()`; not yet implemented in React Native Firebase.',
     },
     {
       name: 'LiveResponseType',
       reason:
-        'RN Firebase live response typing omits `GOING_AWAY_NOTICE` because `LiveServerGoingAwayNotice` is not currently surfaced in the public API.',
+        'firebase-js-sdk added `SESSION_RESUMPTION_UPDATE`; not yet implemented in React Native Firebase.',
     },
     {
       name: 'LiveSession',
       reason:
-        'RN Firebase live sessions do not currently expose `LiveServerGoingAwayNotice` from `receive()`, so the response union is smaller than the JS SDK.',
-    },
-    {
-      name: 'RequestOptions',
-      reason:
-        'RN Firebase does not currently expose `maxSequentalFunctionCalls`, so its request options are limited to timeout and base URL.',
-    },
-    {
-      name: 'Schema',
-      reason:
-        'RN Firebase schema-builder requires an explicit `type` and does not expose the JS SDK `anyOf` helper, so the public schema shape differs.',
-    },
-    {
-      name: 'SchemaInterface',
-      reason:
-        'RN Firebase schema interfaces require an explicit `type`, whereas the JS SDK declaration leaves `type` optional in the base interface.',
-    },
-    {
-      name: 'SchemaRequest',
-      reason:
-        'RN Firebase request-shaped schemas require an explicit `type`, whereas the JS SDK declaration leaves `type` optional.',
-    },
-    {
-      name: 'SchemaShared',
-      reason:
-        'RN Firebase shared schema typing omits the JS SDK `anyOf` property because `AnyOfSchema` is not currently part of the public RN API.',
+        'firebase-js-sdk added session resumption APIs (`connectionPromise`, `resumeSession`, resumption updates in `receive()`); not yet implemented in React Native Firebase.',
     },
     {
       name: 'TemplateGenerativeModel',
       reason:
-        'RN Firebase template generative model methods do not currently accept per-call `SingleRequestOptions`, so request overrides are limited to model-level `RequestOptions`.',
+        'firebase-js-sdk added `TemplateToolConfig` parameter to template generation methods; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'TemplateImagenModel',
+      name: 'Tool',
       reason:
-        'RN Firebase template Imagen model methods do not currently accept per-call `SingleRequestOptions`, so request overrides are limited to model-level `RequestOptions`.',
+        'firebase-js-sdk added `GoogleMapsTool` to the tool union; not yet implemented in React Native Firebase.',
     },
     {
-      name: 'ThinkingConfig',
+      name: 'ToolConfig',
       reason:
-        'RN Firebase thinking config supports `thinkingBudget` and `includeThoughts`, but does not currently expose the JS SDK `thinkingLevel` preset field.',
-    },
-    {
-      name: 'TypedSchema',
-      reason:
-        'RN Firebase typed schema unions do not currently include `AnyOfSchema`, so the exported union is smaller than the JS SDK version.',
-    },
-    {
-      name: 'UsageMetadata',
-      reason:
-        'RN Firebase usage metadata does not currently surface tool-use and cache token accounting fields that are present in the JS SDK declaration.',
+        'firebase-js-sdk added `retrievalConfig`; not yet implemented in React Native Firebase.',
     },
   ],
 };

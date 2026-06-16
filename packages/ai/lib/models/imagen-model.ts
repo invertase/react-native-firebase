@@ -24,11 +24,13 @@ import {
   ImagenGenerationConfig,
   ImagenInlineImage,
   RequestOptions,
+  SingleRequestOptions,
   ImagenModelParams,
   ImagenGenerationResponse,
   ImagenSafetySettings,
 } from '../types';
 import { AIModel } from './ai-model';
+import { mergeRequestOptions } from '../requests/request-options';
 
 /**
  * Class for Imagen model APIs.
@@ -101,7 +103,10 @@ export class ImagenModel extends AIModel {
    *
    * @beta
    */
-  async generateImages(prompt: string): Promise<ImagenGenerationResponse<ImagenInlineImage>> {
+  async generateImages(
+    prompt: string,
+    singleRequestOptions?: SingleRequestOptions,
+  ): Promise<ImagenGenerationResponse<ImagenInlineImage>> {
     const body = createPredictRequestBody(prompt, {
       ...this.generationConfig,
       ...this.safetySettings,
@@ -112,7 +117,7 @@ export class ImagenModel extends AIModel {
         task: Task.PREDICT,
         apiSettings: this._apiSettings,
         stream: false,
-        requestOptions: this.requestOptions,
+        requestOptions: mergeRequestOptions(this.requestOptions, singleRequestOptions),
       },
       JSON.stringify(body),
     );
@@ -141,6 +146,7 @@ export class ImagenModel extends AIModel {
   async generateImagesGCS(
     prompt: string,
     gcsURI: string,
+    singleRequestOptions?: SingleRequestOptions,
   ): Promise<ImagenGenerationResponse<ImagenGCSImage>> {
     const body = createPredictRequestBody(prompt, {
       gcsURI,
@@ -153,7 +159,7 @@ export class ImagenModel extends AIModel {
         task: Task.PREDICT,
         apiSettings: this._apiSettings,
         stream: false,
-        requestOptions: this.requestOptions,
+        requestOptions: mergeRequestOptions(this.requestOptions, singleRequestOptions),
       },
       JSON.stringify(body),
     );

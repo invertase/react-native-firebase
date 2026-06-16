@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import { Platform } from 'react-native';
-import { AIErrorCode, ErrorDetails, RequestOptions } from '../types';
+import { AIErrorCode, ErrorDetails, SingleRequestOptions } from '../types';
 import { AIError } from '../errors';
 import { ApiSettings } from '../types/internal';
 import {
@@ -48,7 +48,7 @@ export class RequestUrl {
     public task: Task,
     public apiSettings: ApiSettings,
     public stream: boolean,
-    public requestOptions?: RequestOptions,
+    public requestOptions?: SingleRequestOptions,
   ) {}
   toString(): string {
     // @ts-ignore
@@ -112,13 +112,29 @@ export class RequestUrl {
   }
 }
 
+function createAbortError(reason?: unknown): Error {
+  if (typeof DOMException !== 'undefined') {
+    return new DOMException(
+      reason == null ? 'Aborted' : String(reason),
+      'AbortError',
+    ) as unknown as Error;
+  }
+  const error = new Error(reason == null ? 'Aborted' : String(reason));
+  error.name = 'AbortError';
+  return error;
+}
+
+function getAbortSignalReason(signal?: AbortSignal): unknown {
+  return (signal as AbortSignal & { reason?: unknown } | undefined)?.reason;
+}
+
 export class TemplateRequestUrl {
   constructor(
     public templateId: string,
     public task: ServerPromptTemplateTask,
     public apiSettings: ApiSettings,
     public stream: boolean,
-    public requestOptions?: RequestOptions,
+    public requestOptions?: SingleRequestOptions,
   ) {}
 
   toString(): string {
@@ -227,7 +243,7 @@ export async function constructRequest(
   apiSettings: ApiSettings,
   stream: boolean,
   body: string,
-  requestOptions?: RequestOptions,
+  requestOptions?: SingleRequestOptions,
 ): Promise<{ url: string; fetchOptions: RequestInit }> {
   const url = new RequestUrl(model, task, apiSettings, stream, requestOptions);
   return {
@@ -246,7 +262,7 @@ export async function constructTemplateRequest(
   apiSettings: ApiSettings,
   stream: boolean,
   body: string,
-  requestOptions?: RequestOptions,
+  requestOptions?: SingleRequestOptions,
 ): Promise<{ url: string; fetchOptions: RequestInit }> {
   const url = new TemplateRequestUrl(templateId, task, apiSettings, stream, requestOptions);
   return {
@@ -266,7 +282,7 @@ export async function makeRequest(
     task: Task;
     apiSettings: ApiSettings;
     stream: boolean;
-    requestOptions?: RequestOptions;
+    requestOptions?: SingleRequestOptions;
   },
   body: string,
 ): Promise<Response>;
@@ -277,7 +293,7 @@ export async function makeRequest(
     task: ServerPromptTemplateTask;
     apiSettings: ApiSettings;
     stream: boolean;
-    requestOptions?: RequestOptions;
+    requestOptions?: SingleRequestOptions;
   },
   body: string,
 ): Promise<Response>;
@@ -289,14 +305,14 @@ export async function makeRequest(
         task: Task;
         apiSettings: ApiSettings;
         stream: boolean;
-        requestOptions?: RequestOptions;
+        requestOptions?: SingleRequestOptions;
       }
     | {
         templateId: string;
         task: ServerPromptTemplateTask;
         apiSettings: ApiSettings;
         stream: boolean;
-        requestOptions?: RequestOptions;
+        requestOptions?: SingleRequestOptions;
       },
   body: string,
 ): Promise<Response> {
@@ -320,6 +336,17 @@ export async function makeRequest(
 
   let response;
   let fetchTimeoutId: string | number | NodeJS.Timeout | undefined;
+  const externalSignal = params.requestOptions?.signal;
+  let externalAbortReason: unknown;
+  if (externalSignal?.aborted) {
+    throw createAbortError(getAbortSignalReason(externalSignal));
+  }
+  const abortController = new AbortController();
+  const abortFromExternalSignal = (): void => {
+    externalAbortReason = getAbortSignalReason(externalSignal);
+    abortController.abort();
+  };
+  externalSignal?.addEventListener('abort', abortFromExternalSignal, { once: true });
   try {
     const request = isTemplateRequest
       ? await constructTemplateRequest(
@@ -343,7 +370,6 @@ export async function makeRequest(
       params.requestOptions?.timeout != null && params.requestOptions.timeout >= 0
         ? params.requestOptions.timeout
         : DEFAULT_FETCH_TIMEOUT_MS;
-    const abortController = new AbortController();
     fetchTimeoutId = setTimeout(() => abortController.abort(), timeoutMillis);
     request.fetchOptions.signal = abortController.signal;
     const fetchOptions = params.stream
@@ -406,6 +432,9 @@ export async function makeRequest(
     }
   } catch (e) {
     let err = e as Error;
+    if (e instanceof Error && e.name === 'AbortError') {
+      throw createAbortError(externalAbortReason);
+    }
     if (
       (e as AIError).code !== AIErrorCode.FETCH_ERROR &&
       (e as AIError).code !== AIErrorCode.API_NOT_ENABLED &&
@@ -420,6 +449,7 @@ export async function makeRequest(
     if (fetchTimeoutId) {
       clearTimeout(fetchTimeoutId);
     }
+    externalSignal?.removeEventListener('abort', abortFromExternalSignal);
   }
   return response;
 }

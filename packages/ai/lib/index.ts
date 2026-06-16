@@ -32,7 +32,7 @@ import {
 import { WebSocketHandlerImpl } from './websocket';
 
 export * from './public-types';
-export { ChatSession } from './methods/chat-session';
+export { ChatSession, ChatSessionBase, TemplateChatSession } from './methods/chat-session';
 export { LiveSession } from './methods/live-session';
 export * from './requests/schema-builder';
 export { ImagenImageFormat } from './requests/imagen-image-format';

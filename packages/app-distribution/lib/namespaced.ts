@@ -91,9 +91,13 @@ const appDistributionNamespace = createModuleNamespace({
 
 export default appDistributionNamespace;
 
-export const firebase = getFirebaseRoot() as unknown as ReactNativeFirebase.Module & {
-  appDistribution: typeof appDistributionNamespace;
-  app(name?: string): ReactNativeFirebase.FirebaseApp & {
-    appDistribution(): FirebaseAppDistributionTypes.Module;
-  };
-};
+// import appDistribution, { firebase } from '@react-native-firebase/app-distribution';
+// appDistribution().X(...);
+// firebase.appDistribution().X(...);
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'appDistribution',
+    FirebaseAppDistributionTypes.Module,
+    FirebaseAppDistributionTypes.Statics,
+    false
+  >;
