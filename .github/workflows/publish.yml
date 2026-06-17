@@ -14,13 +14,13 @@ jobs:
       contents: read
     steps:
       # https://github.com/actions/checkout/releases
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           fetch-depth: 0
           # Repository admin required to evade PR+checks branch protection
           token: ${{ secrets.GH_TOKEN }}
       # https://github.com/actions/setup-node/releases
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: lts/*
           registry-url: 'https://registry.npmjs.org'
