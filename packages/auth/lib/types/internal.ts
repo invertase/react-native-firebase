@@ -234,7 +234,7 @@ export interface RNFBAuthModule {
   addIdTokenListener(): void | Promise<void>;
   configureAuthDomain(): void | Promise<void>;
   setLanguageCode(code: string | null): Promise<void>;
-  setTenantId(tenantId: string): Promise<void>;
+  setTenantId(tenantId: string | null): Promise<void>;
   signOut(): Promise<void>;
   signInAnonymously(): Promise<NativeUserCredentialInternal>;
   signInWithPhoneNumber(

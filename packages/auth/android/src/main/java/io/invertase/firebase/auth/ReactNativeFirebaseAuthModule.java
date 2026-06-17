@@ -2257,12 +2257,18 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    *
    * @param appName
    * @param tenantId
+   * @param promise
    */
   @ReactMethod
-  public void setTenantId(String appName, String tenantId) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-    firebaseAuth.setTenantId(tenantId);
+  public void setTenantId(String appName, String tenantId, final Promise promise) {
+    try {
+      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+      FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+      firebaseAuth.setTenantId(tenantId);
+      promise.resolve(null);
+    } catch (Exception exception) {
+      promiseRejectAuthException(promise, exception);
+    }
   }
 
   /**

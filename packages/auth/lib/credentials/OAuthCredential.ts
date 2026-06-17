@@ -27,30 +27,61 @@ type OAuthCredentialJSON = {
   secret?: string;
 };
 
+type OAuthCredentialParams = {
+  idToken?: string;
+  accessToken?: string;
+  rawNonce?: string;
+  secret?: string;
+  /** @internal RNFB native bridge token slot override */
+  bridgeToken?: string;
+  /** @internal RNFB native bridge secret slot override */
+  bridgeSecret?: string;
+};
+
+function resolveOAuthBridgeFields(params: OAuthCredentialParams): { token: string; secret: string } {
+  if (params.bridgeToken !== undefined || params.bridgeSecret !== undefined) {
+    return {
+      token: params.bridgeToken ?? '',
+      secret: params.bridgeSecret ?? '',
+    };
+  }
+
+  if (params.idToken) {
+    return {
+      token: params.idToken,
+      secret: params.rawNonce ?? params.secret ?? params.accessToken ?? '',
+    };
+  }
+
+  if (params.accessToken) {
+    // OAuthProvider access-token-only credentials use the secret bridge slot.
+    return {
+      token: '',
+      secret: params.accessToken,
+    };
+  }
+
+  return {
+    token: params.secret ?? '',
+    secret: params.rawNonce ?? '',
+  };
+}
+
 export class OAuthCredential extends AuthCredential {
   readonly idToken?: string;
   readonly accessToken?: string;
   readonly rawNonce?: string;
 
-  constructor(
-    providerId: string,
-    params: {
-      idToken?: string;
-      accessToken?: string;
-      rawNonce?: string;
-      secret?: string;
-    },
-  ) {
-    const token = params.idToken ?? '';
-    const secret = params.rawNonce ?? params.accessToken ?? params.secret ?? '';
-    super(providerId, providerId, token, secret);
+  constructor(providerId: string, params: OAuthCredentialParams) {
+    const bridge = resolveOAuthBridgeFields(params);
+    super(providerId, providerId, bridge.token, bridge.secret);
     this.idToken = params.idToken;
     this.accessToken = params.accessToken;
     this.rawNonce = params.rawNonce;
   }
 
   toJSON(): object {
-    return {
+    const json: Record<string, unknown> = {
       providerId: this.providerId,
       signInMethod: this.signInMethod,
       idToken: this.idToken,
@@ -58,6 +89,11 @@ export class OAuthCredential extends AuthCredential {
       rawNonce: this.rawNonce,
       nonce: this.rawNonce,
     };
+    // Twitter (and similar) store the token secret in the native bridge secret slot, not rawNonce.
+    if (this.secret && !this.rawNonce) {
+      json.secret = this.secret;
+    }
+    return json;
   }
 
   static fromJSON(json: object | string): OAuthCredential | null {

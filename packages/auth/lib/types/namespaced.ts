@@ -1734,9 +1734,9 @@ export declare namespace FirebaseAuthTypes {
      * ```
      *
      * @error auth/invalid-tenant-id if the tenant id is invalid for some reason
-     * @param tenantId the tenantID current app bind to.
+     * @param tenantId the tenantID current app bind to. Pass `null` to revert to project-level IdPs (firebase-js-sdk parity). On Android, clearing tenant ID may reject because the native Firebase Auth SDK does not support null tenant IDs ([firebase-android-sdk#3398](https://github.com/firebase/firebase-android-sdk/issues/3398)).
      */
-    setTenantId(tenantId: string): Promise<void>;
+    setTenantId(tenantId: string | null): Promise<void>;
     /**
      * Sets the language code.
      *

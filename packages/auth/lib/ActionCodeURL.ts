@@ -72,7 +72,8 @@ export class ActionCodeURL {
    * @param link - The email action link string.
    * @returns The {@link ActionCodeURL} object, or null if the link is invalid.
    */
-  static parseLink(_link: string): Promise<ActionCodeURL | null> {
+  static parseLink(link: string): Promise<ActionCodeURL | null> {
+    void link;
     return Promise.reject(new Error(ACTION_CODE_URL_PARSE_NOT_IMPLEMENTED));
   }
 }

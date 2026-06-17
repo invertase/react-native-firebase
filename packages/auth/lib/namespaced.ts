@@ -363,8 +363,8 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     if (!isString(tenantId) && !isNull(tenantId)) {
       throw new Error("firebase.auth().setTenantId(*) expected 'tenantId' to be a string");
     }
+    await this.native.setTenantId(tenantId);
     this._tenantId = tenantId;
-    await this.native.setTenantId(tenantId ?? '');
   }
 
   onAuthStateChanged(
@@ -599,14 +599,31 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     return this.native.sendPasswordResetEmail(email, actionCodeSettings);
   }
 
+  private _resolveActionCodeSettings(
+    actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
+  ): FirebaseAuthTypes.ActionCodeSettings {
+    if (actionCodeSettings && isString(actionCodeSettings.url)) {
+      return actionCodeSettings;
+    }
+
+    const authDomain = this.app.options.authDomain;
+    let url = 'https://localhost';
+    if (authDomain && isString(authDomain)) {
+      url = isValidUrl(authDomain) ? authDomain : `https://${authDomain}`;
+    }
+
+    return {
+      ...(actionCodeSettings ?? {}),
+      url,
+      handleCodeInApp: actionCodeSettings?.handleCodeInApp ?? true,
+    };
+  }
+
   sendSignInLinkToEmail(
     email: string,
     actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
   ): Promise<void> {
-    return this.native.sendSignInLinkToEmail(
-      email,
-      actionCodeSettings ?? ({} as FirebaseAuthTypes.ActionCodeSettings),
-    );
+    return this.native.sendSignInLinkToEmail(email, this._resolveActionCodeSettings(actionCodeSettings));
   }
 
   isSignInWithEmailLink(emailLink: string): Promise<boolean> {

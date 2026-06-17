@@ -33,9 +33,12 @@ export default class FacebookAuthProvider {
 
   static credential(token: string): OAuthCredentialType;
   static credential(token: string, secret?: string): OAuthCredentialType {
+    const nonce = secret ?? '';
     return new OAuthCredential(providerId, {
       accessToken: token,
-      rawNonce: secret,
+      rawNonce: nonce || undefined,
+      bridgeToken: token,
+      bridgeSecret: nonce,
     });
   }
 

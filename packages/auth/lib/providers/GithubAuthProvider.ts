@@ -34,6 +34,8 @@ export default class GithubAuthProvider {
   static credential(token: string): OAuthCredentialType {
     return new OAuthCredential(providerId, {
       accessToken: token,
+      bridgeToken: token,
+      bridgeSecret: '',
     });
   }
 

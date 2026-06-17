@@ -35,6 +35,8 @@ export default class TwitterAuthProvider {
     return new OAuthCredential(providerId, {
       accessToken: token,
       secret,
+      bridgeToken: token,
+      bridgeSecret: secret,
     });
   }
 

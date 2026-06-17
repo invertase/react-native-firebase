@@ -66,10 +66,16 @@ describe('auth() -> emailLink Provider', function () {
     });
 
     it('namespaced sendSignInLinkToEmail works with default settings', async function () {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
 
       await firebase.auth().sendSignInLinkToEmail(email);
+
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
     });
   });
 

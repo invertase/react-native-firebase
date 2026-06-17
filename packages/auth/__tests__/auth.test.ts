@@ -198,6 +198,14 @@ describe('Auth', function () {
             expect(auth.tenantId).toBe('test-id');
           });
         });
+
+        it('should clear JS tenantId when tenantId is null', async function () {
+          const auth = firebase.app().auth();
+          await auth.setTenantId('test-id');
+          expect(auth.tenantId).toBe('test-id');
+          await auth.setTenantId(null);
+          expect(auth.tenantId).toBeNull();
+        });
       });
 
       it('should throw error when tenantId is a non string object ', async function () {
