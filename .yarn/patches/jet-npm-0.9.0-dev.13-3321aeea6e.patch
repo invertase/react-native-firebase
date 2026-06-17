@@ -1,0 +1,174 @@
+diff --git a/lib/commonjs/cli.js b/lib/commonjs/cli.js
+index 35c04da87c63a79bc26707aaffe3156fb98eca79..435c9959f456318c5e0069fce1f3e922891acf56 100644
+--- a/lib/commonjs/cli.js
++++ b/lib/commonjs/cli.js
+@@ -72,6 +72,9 @@ function cleanup() {
+   });
+ }
+ async function startServer(server, config, after) {
++  let reconnectGraceTimer = null;
++  let pendingDisconnectCode = null;
++  let disconnectStartedAt = 0;
+   server.on('started', s => {
+     const url = s.url;
+     console.log(`[🟩] Jet remote server listening at "${url}".`);
+@@ -79,13 +82,46 @@ async function startServer(server, config, after) {
+   server.on('connection', (_, req) => {
+     console.log(`[🟩] Jet client connected from "${req.socket.remoteAddress + ':' + req.socket.remotePort}".`);
++    if (reconnectGraceTimer) {
++      const recoveredCode = pendingDisconnectCode;
++      const elapsedMs = Date.now() - disconnectStartedAt;
++      clearTimeout(reconnectGraceTimer);
++      reconnectGraceTimer = null;
++      pendingDisconnectCode = null;
++      console.warn(`[jet-ws] reconnect_recovered code=${recoveredCode} elapsed_ms=${elapsedMs}`);
++    }
+   });
+   server.on('disconnection', (_, code, reason) => {
+     const print = code === 1000 ? console.log : console.warn;
+     const msg = code === 1000 ? 'normal closure' : reason || 'for no particular reason';
+     print(`[🟨] Jet client disconnected - ${msg} (code = ${code}).`);
+-    if (code !== 1000 && config.exitOnError) {
++    if (code === 1000 || !config.exitOnError) {
++      return;
++    }
++    const graceMs = config.reconnectGraceMs ?? 15000;
++    const transientCodes = [1006, 1001];
++    if (transientCodes.includes(code)) {
++      if (reconnectGraceTimer) {
++        clearTimeout(reconnectGraceTimer);
++      }
++      pendingDisconnectCode = code;
++      disconnectStartedAt = Date.now();
++      console.warn(
++        `[jet-ws] transient_disconnect code=${code} reason="${reason || ''}" grace_ms=${graceMs} waiting_for_reconnect`,
++      );
++      reconnectGraceTimer = setTimeout(() => {
++        reconnectGraceTimer = null;
++        console.error(`[jet-ws] fatal_disconnect code=${code} grace_expired_ms=${graceMs}`);
++        console.error(`[jet-ws] RETRYABLE_DISCONNECT code=${code}`);
++        print(`[🟥] Exiting after an abnormal disconnect.`);
++        process.exitCode = 1;
++        cleanup();
++      }, graceMs);
++      return;
++    }
++    console.error(`[jet-ws] fatal_disconnect code=${code} reason="${reason || ''}" immediate=true`);
++    if (code !== 1000 && config.exitOnError) {
+       print(`[🟥] Exiting after an abnormal disconnect.`);
+       process.exitCode = 1;
+       cleanup();
+     }
+   });
+@@ -99,8 +138,16 @@ async function startServer(server, config, after) {
+     if (config.exitOnError) {
+       process.exitCode = 1;
+       cleanup();
+     }
+   });
++  server.on('coverage-data', coverage => {
++    const incomingKeys = Object.keys(coverage).length;
++    console.log(`[jet-coverage] WS received ${incomingKeys} file(s)`);
++    coverageMap.merge(coverage);
++    global.__coverage__ = coverageMap.toJSON();
++    const totalKeys = Object.keys(global.__coverage__).length;
++    console.log(`[jet-coverage] WS merged total ${totalKeys} file(s)`);
++  });
+   cleanupTasks.add(async () => {
+     if (server.listening) {
+       await server.stop();
+@@ -129,8 +137,13 @@ function attachHttpServer(wss) {
+       });
+       req.on('end', () => {
+         try {
+-          coverageMap.merge(JSON.parse(body));
++          const incoming = JSON.parse(body);
++          const incomingKeys = Object.keys(incoming).length;
++          console.log(`[jet-coverage] POST body ${body.length} bytes, ${incomingKeys} file(s)`);
++          coverageMap.merge(incoming);
+           global.__coverage__ = coverageMap.toJSON();
++          const totalKeys = Object.keys(global.__coverage__).length;
++          console.log(`[jet-coverage] POST received ${incomingKeys} file(s), merged total ${totalKeys}`);
+           res.end(JSON.stringify({
+             message: 'OK'
+           }));
+@@ -302,12 +315,11 @@ function attachHttpServer(wss) {
+     slow: finalConfig.slow
+   });
+   return startServer(server, finalConfig, target.after).then(() => {
+-    if (finalConfig.coverage) {
+-      attachHttpServer(server.wss);
+-    }
+     if (!finalConfig.watch) {
+       server.run(async failures => {
+         global.__coverage__ = coverageMap.toJSON();
++        const mergedKeys = Object.keys(global.__coverage__).length;
++        console.log(`[jet-coverage] merged ${mergedKeys} file(s) before NYC shutdown`);
+         await cleanup();
+         process.exit(failures > 0 ? 1 : 0);
+       });
+diff --git a/lib/commonjs/index.js b/lib/commonjs/index.js
+index a72380ed2ace01b19b028bb8e6f9d29dc3affbcd..030475cff75349b2b7f820cf8a3556fb1d7bea45 100644
+--- a/lib/commonjs/index.js
++++ b/lib/commonjs/index.js
+@@ -63,15 +63,7 @@ function JetProvider(props) {
+         });
+         after(async () => {
+           if (_config.coverage) {
+-            const coverage = global.__coverage__ ?? {};
+-            const url = (props.url ?? 'ws://localhost:8090').replace('ws://', 'http://') + '/coverage';
+-            return fetch(url, {
+-              method: 'POST',
+-              headers: {
+-                'Content-Type': 'application/json'
+-              },
+-              body: JSON.stringify(coverage)
+-            });
++            return client.uploadCoverage();
+           }
+           return Promise.resolve();
+         });
+diff --git a/lib/module/index.js b/lib/module/index.js
+index 897b62288ae128e1ce071142fa3de136caa99239..2f8dd9edf79f6c095b4357307bdac5ea1efa00eb 100644
+--- a/lib/module/index.js
++++ b/lib/module/index.js
+@@ -51,15 +51,7 @@ export function JetProvider(props) {
+         });
+         after(async () => {
+           if (_config.coverage) {
+-            const coverage = global.__coverage__ ?? {};
+-            const url = (props.url ?? 'ws://localhost:8090').replace('ws://', 'http://') + '/coverage';
+-            return fetch(url, {
+-              method: 'POST',
+-              headers: {
+-                'Content-Type': 'application/json'
+-              },
+-              body: JSON.stringify(coverage)
+-            });
++            return client.uploadCoverage();
+           }
+           return Promise.resolve();
+         });
+diff --git a/src/index.tsx b/src/index.tsx
+index 1b28aca3fe817fee3e8701ac5096df6fc608bc39..17c631309f88a8017a9fd01e3420df2b4bab140e 100644
+--- a/src/index.tsx
++++ b/src/index.tsx
+@@ -82,17 +82,7 @@ export function JetProvider(props: JetProviderProps): React.JSX.Element {
+         });
+         after(async () => {
+           if (_config.coverage) {
+-            const coverage = (global as any).__coverage__ ?? {};
+-            const url =
+-              (props.url ?? 'ws://localhost:8090').replace('ws://', 'http://') +
+-              '/coverage';
+-            return fetch(url, {
+-              method: 'POST',
+-              headers: {
+-                'Content-Type': 'application/json',
+-              },
+-              body: JSON.stringify(coverage),
+-            });
++            return client.uploadCoverage();
+           }
+           return Promise.resolve();
+         });

@@ -58,7 +58,9 @@
     "tests:ios:test:debug": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 yarn detox test --configuration ios.sim.debug --loglevel warn --inspect",
     "tests:ios:test-reuse": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 yarn detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "tests:ios:test-cover": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 yarn detox test --configuration ios.sim.debug --loglevel verbose",
-    "tests:ios:test-cover-reuse": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 node_modules/.bin/nyc yarn detox test --configuration ios.sim.debug --reuse --loglevel warn",
+    "tests:ios:test-cover-reuse": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 yarn detox test --configuration ios.sim.debug --reuse --loglevel warn",
+    "tests:ios:test:process-coverage": "node tests/scripts/process-ios-native-coverage.js",
+    "tests:ios:test-cover-and-process": "yarn tests:ios:test-cover && yarn tests:ios:test:process-coverage",
     "tests:ios:pod:install": "cd tests && rm -f ios/Podfile.lock && rm -rf ios/ReactNativeFirebaseDemo.xcworkspace && cd ios && pod install",
     "tests:macos:build": "cd tests && yarn build:macos",
     "tests:macos:pod:install": "cd tests && rm -f macos/Podfile.lock && cd macos && pod install",
@@ -116,7 +118,9 @@
     "typescript-eslint": "^8.59.1"
   },
   "resolutions": {
-    "@types/react": "~19.0.0"
+    "@types/react": "~19.0.0",
+    "mocha-remote-client@npm:^1.13.0": "patch:mocha-remote-client@npm%3A1.13.2#~/.yarn/patches/mocha-remote-client-npm-1.13.2-a2e7596aba.patch",
+    "mocha-remote-server@npm:^1.13.0": "patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch"
   },
   "workspaces": {
     "packages": [

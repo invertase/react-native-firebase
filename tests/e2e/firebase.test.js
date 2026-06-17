@@ -15,83 +15,158 @@
  * limitations under the License.
  *
  */
-const { execSync, spawn } = require('child_process');
+const { spawn } = require('child_process');
+const net = require('net');
+const path = require('path');
+
+const { pullAndroidCoverage, pullIosCoverage } = require('../scripts/pull-native-coverage');
+
+const JET_REMOTE_PORT = parseInt(process.env.JET_REMOTE_PORT || '8090', 10);
+const JET_RETRYABLE_WS_RE = /\[jet-ws\] RETRYABLE_DISCONNECT code=(1006|1001)\b/;
+
+function waitForTcpPort(port, host = '127.0.0.1', timeoutMs = 120000) {
+  const start = Date.now();
+
+  return new Promise((resolve, reject) => {
+    const tryConnect = () => {
+      if (Date.now() - start > timeoutMs) {
+        reject(new Error(`Timed out waiting for ${host}:${port} after ${timeoutMs}ms`));
+        return;
+      }
+
+      const socket = net.connect(port, host);
+      socket.once('connect', () => {
+        socket.end();
+        resolve();
+      });
+      socket.once('error', () => {
+        socket.destroy();
+        setTimeout(tryConnect, 250);
+      });
+    };
+
+    tryConnect();
+  });
+}
+
+function isRetryableJetDisconnect(output) {
+  return JET_RETRYABLE_WS_RE.test(output);
+}
+
+function runJetE2eAttempt(attempt) {
+  const platform = detox.device.getPlatform();
+  const testsDir = path.resolve(__dirname, '..');
+  const jetArgs =
+    process.platform === 'win32'
+      ? ['jet', `--target=${platform}`]
+      : ['jet', `--target=${platform}`, '--coverage'];
+
+  let output = '';
+  const jetProcess = spawn('yarn', jetArgs, {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    shell: true,
+    cwd: testsDir,
+  });
+
+  jetProcess.stdout.on('data', chunk => {
+    const text = chunk.toString();
+    output += text;
+    process.stdout.write(text);
+  });
+  jetProcess.stderr.on('data', chunk => {
+    const text = chunk.toString();
+    output += text;
+    process.stderr.write(text);
+  });
+
+  return new Promise(async (resolve, reject) => {
+    jetProcess.on('error', err => {
+      err.jetOutput = output;
+      reject(err);
+    });
+    jetProcess.on('close', code => {
+      if (code !== 0) {
+        const err = new Error('Jet tests failed!');
+        err.jetOutput = output;
+        err.jetExitCode = code;
+        reject(err);
+        return;
+      }
+      resolve({ output });
+    });
+
+    try {
+      console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for port ${JET_REMOTE_PORT}`);
+      await waitForTcpPort(JET_REMOTE_PORT);
+      console.log(`[rnfb-e2e] Jet attempt ${attempt}: launching app`);
+      await device.launchApp({
+        newInstance: true,
+        delete: true,
+        launchArgs: {
+          detoxURLBlacklistRegex: `.*`,
+          // Avoid sync/idling blocking the main queue while Detox WS login is pending.
+          detoxEnableSynchronization: 'NO',
+        },
+      });
+    } catch (err) {
+      jetProcess.kill();
+      err.jetOutput = output;
+      reject(err);
+    }
+  });
+}
 
 describe('Jet Tests', function () {
   jest.retryTimes(0, { logErrorsBeforeRetry: true });
 
   it('runs all tests', async function () {
-    return new Promise(async (resolve, reject) => {
-      const platform = detox.device.getPlatform();
-      const jetArgs =
-        process.platform === 'win32'
-          ? ['jet', `--target=${platform}`] // NYC / coverage does not work on windows.
-          : ['jet', `--target=${platform}`, '--coverage'];
-      const jetProcess = spawn('yarn', jetArgs, {
-        stdio: ['ignore', 'inherit', 'inherit'],
-        shell: true,
-      });
-      jetProcess.on('error', err => {
-        console.error(`Jet tests had an error: ${err}`);
-        reject(new Error(`Jet tests failed!`));
-      });
-      jetProcess.on('close', code => {
-        if (code === 0) {
-          resolve();
-        } else {
-          reject(new Error(`Jet tests failed!`));
+    const platform = detox.device.getPlatform();
+    const deviceId = detox.device.id;
+    const testsDir = path.resolve(__dirname, '..');
+
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        if (attempt > 1) {
+          console.warn('[rnfb-e2e] Retrying after transient Jet WS disconnect (1006/1001)');
+          try {
+            await device.terminateApp();
+          } catch (_) {
+            // No-op
+          }
         }
-      });
-      await device.launchApp({
-        newInstance: true,
-        delete: true,
-        launchArgs: { detoxURLBlacklistRegex: `.*` },
-      });
-    });
-  });
-});
 
-beforeAll(async function () {
-  // Nothing to do here.
-});
-
-beforeEach(async function () {
-  // Nothing to do here.
-});
-
-afterAll(async function () {
-  console.log(' ✨ Tests Complete ✨ ');
-  const isAndroid = detox.device.getPlatform() === 'android';
-  const deviceId = detox.device.id;
-
-  // emits 'cleanup' across socket, which goes native, terminates Detox test Looper
-  // This returns control to the java code in our instrumented test, and then Instrumentation lifecycle finishes cleanly
-  // await Utils.sleep(5000); // give async processes (like Firestore writes) time to complete
-  await detox.cleanup();
-  // await Utils.sleep(5000); // give client app time to dump coverage report
-
-  // Get the file off the device, into standard location for JaCoCo binary report
-  // It will still need processing via gradle jacocoAndroidTestReport task for codecov, but it's available now
-  if (isAndroid && process.platform !== 'win32') {
-    const pkg = 'com.invertase.testing';
-    const emuOrig = `/data/user/0/${pkg}/files/coverage.ec`;
-    const emuDest = '/data/local/tmp/detox/coverage.ec';
-    const localDestDir = './android/app/build/output/coverage/';
-    const adb = process.env.ANDROID_HOME ? `${process.env.ANDROID_HOME}/platform-tools/adb` : 'adb';
+        await runJetE2eAttempt(attempt);
+        break;
+      } catch (err) {
+        const jetOutput = err.jetOutput || '';
+        const retryable = attempt === 1 && isRetryableJetDisconnect(jetOutput);
+        console.warn(
+          `[rnfb-e2e] Jet attempt ${attempt} failed (retryable=${retryable}, exit=${err.jetExitCode ?? 'n/a'})`,
+        );
+        if (!retryable) {
+          throw err;
+        }
+      }
+    }
 
     try {
-      execSync(`${adb} -s ${deviceId} shell "run-as ${pkg} cat ${emuOrig} > ${emuDest}"`);
-      execSync(`mkdir -p ${localDestDir}`);
-      execSync(`${adb} -s ${deviceId} pull ${emuDest} ${localDestDir}/emulator_coverage.ec`);
-      console.log(`Coverage data downloaded to: ${localDestDir}/emulator_coverage.ec`);
+      if (platform === 'android' && process.platform !== 'win32') {
+        pullAndroidCoverage(deviceId, { testsDir, softFail: true });
+      }
+      if (platform === 'ios' && process.platform === 'darwin') {
+        pullIosCoverage(deviceId, { testsDir });
+      }
     } catch (e) {
-      console.log('Unable to download coverage data from device: ', JSON.stringify(e));
+      throw new Error(`Failed to download native coverage data: ${e.message}`);
     }
-  }
+  });
 
-  try {
-    await device.terminateApp();
-  } catch (_) {
-    // No-op
-  }
+  afterAll(async function () {
+    console.log(' ✨ Tests Complete ✨ ');
+    try {
+      await device.terminateApp();
+    } catch (_) {
+      // No-op
+    }
+  });
 });

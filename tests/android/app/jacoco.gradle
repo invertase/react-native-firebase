@@ -58,88 +58,72 @@ tasks.withType(Test) {
     jacoco.excludes = ['jdk.internal.*']
 }
 
-// Our merge report task
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'connectedDebugAndroidTest']) {
-    def htmlOutDir = layout.buildDirectory.dir("reports/jacoco/$name/html").get().asFile
-
-    doLast {
-        openReport htmlOutDir
-    }
-
-    reports {
-        xml.required = true
-        html.outputLocation = htmlOutDir
-    }
-
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter)
-    def debugTree2 = fileTree(dir: "$project.buildDir/../../node_modules/@react-native-firebase/android/build/intermediates/javac/debug/classes", excludes: fileFilter)
-    def mainSrc = "$project.projectDir/src/main/java"
-    def mainSrc2 = "$project.projectDir/../../node_modules/@react-native-firebase/android/src/main/java"
-
-    sourceDirectories.from = files([mainSrc, mainSrc2])
-    classDirectories.from = files([debugTree, debugTree2])
-    executionData.from = fileTree(dir: project.buildDir, includes: [
-            '**/*.exec',
-            '**/*.ec'
-    ])
-}
-
-// A unit-test only report task
-task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
-    def htmlOutDir = layout.buildDirectory.dir("reports/jacoco/$name/html").get().asFile
-
-    // Runs normal test but with this added:
-    // -javaagent:build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/jacocoagent.jar=destfile=build/jacoco/testPlayDebugUnitTest.exec,append=true,excludes=jdk.internal.*,inclnolocationclasses=true,dumponexit=true,output=file,jmx=false
-
-    doLast {
-        openReport htmlOutDir
-    }
-
-    reports {
-        xml.required = true
-        html.outputLocation = htmlOutDir
-    }
-
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter)
-    def mainSrc = "$project.projectDir/src/main/java"
-
-    sourceDirectories.from = files([mainSrc])
-    classDirectories.from = files([debugTree])
-    executionData.from = fileTree(dir: project.buildDir, includes: [
-            '**/*.exec'
-
-    ])
-}
-
-// A connected android tests only report task
-task jacocoAndroidTestReport(type: JacocoReport) {
-    def htmlOutDir = layout.buildDirectory.dir("reports/jacoco/$name/html").get().asFile
-
-    doLast {
-        openReport htmlOutDir
-    }
-
-    reports {
-        xml.required = true
-        html.outputLocation = htmlOutDir
-    }
-
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-
-    // use our collected firebase module names to aggregate source / class files for reporting
+def configureRnfbJacocoSourcesAndClasses(JacocoReport reportTask) {
+    def classFileFilter = [
+        '**/R.class',
+        '**/R$*.class',
+        '**/BuildConfig.*',
+        '**/Manifest*.*',
+        '**/*Test*.*',
+        'android/**/*.*',
+    ]
     def classFiles = []
     def srcFiles = []
+
     rootProject.ext.firebaseModulePaths.forEach { projectPath ->
-      classFiles << fileTree(dir: "$projectPath/build/intermediates/javac/debug/classes", excludes: fileFilter)
-      srcFiles << "$projectPath/src/main/java"
+        classFiles << fileTree(
+            dir: "$projectPath/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes",
+            excludes: classFileFilter,
+        )
+        srcFiles << "$projectPath/src/main/java"
+        def reactNativeSrc = file("$projectPath/src/reactnative/java")
+        if (reactNativeSrc.exists()) {
+            srcFiles << reactNativeSrc
+        }
     }
 
+    reportTask.sourceDirectories.from = files(srcFiles)
+    reportTask.classDirectories.from = files(classFiles)
+}
 
-    sourceDirectories.from = files(srcFiles)
-    classDirectories.from = files(classFiles)
-    executionData.from = fileTree(dir: project.buildDir, includes: [
-            '**/*.ec'
-    ])
+def rnfbJacocoExecutionData(List<String> includes) {
+    def executionTrees = [fileTree(dir: project.buildDir, includes: includes)]
+    rootProject.ext.firebaseModulePaths.forEach { projectPath ->
+        executionTrees << fileTree(dir: "$projectPath/build", includes: includes)
+    }
+    return files(executionTrees)
+}
+
+def configureJacocoReportTask(JacocoReport reportTask) {
+    def htmlOutDir = layout.buildDirectory.dir("reports/jacoco/${reportTask.name}/html").get().asFile
+
+    reportTask.doLast {
+        openReport htmlOutDir
+    }
+
+    reportTask.reports {
+        xml.required = true
+        html.outputLocation = htmlOutDir
+    }
+
+    configureRnfbJacocoSourcesAndClasses(reportTask)
+}
+
+// Unit + e2e (Detox) merged report. E2e coverage is pulled to build/output/coverage/*.ec
+// after Detox; unit tests produce *.exec under each module's build/ when added.
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+    configureJacocoReportTask(it)
+    executionData.from = rnfbJacocoExecutionData(['**/*.exec', '**/*.ec'])
+}
+
+// Unit-test only report (for when android unit tests are added to RNFB modules or the app).
+task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+    configureJacocoReportTask(it)
+    executionData.from = rnfbJacocoExecutionData(['**/*.exec'])
+}
+
+// Detox e2e report (connected instrumentation is not used — coverage.ec is dumped from the app).
+task jacocoAndroidTestReport(type: JacocoReport) {
+    configureJacocoReportTask(it)
+    executionData.from = rnfbJacocoExecutionData(['**/*.ec'])
 }

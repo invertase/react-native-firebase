@@ -11145,7 +11145,7 @@ __metadata:
 
 "detox@patch:detox@npm%3A20.51.0#~/.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch":
   version: 20.51.0
-  resolution: "detox@patch:detox@npm%3A20.51.0#~/.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch::version=20.51.0&hash=9a9476"
+  resolution: "detox@patch:detox@npm%3A20.51.0#~/.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch::version=20.51.0&hash=274e53"
   dependencies:
     "@wix-pilot/core": "npm:^3.4.2"
     "@wix-pilot/detox": "npm:^1.0.13"
@@ -11191,7 +11191,7 @@ __metadata:
       optional: true
   bin:
     detox: local-cli/cli.js
-  checksum: 10/cdf7cb647640107a3435e0d281db4c5eea421f0ebb8e9f5ea0e5e0016afcdf90a50fda63d2483e9552b878066b88b7ad1ec2f682f696a072f9865a7742a2feaa
+  checksum: 10/8654a18d87c44d699b2a1f79d35dc26faebde02a9149f65e9a1ac819abb82dd6d83bb1e9338858ff12cdb2ed2dab51fe187291ac1006ea9b4f3825ae3b523cc2
   languageName: node
   linkType: hard
 
@@ -16338,6 +16338,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jet@patch:jet@npm%3A0.9.0-dev.13#~/.yarn/patches/jet-npm-0.9.0-dev.13-3321aeea6e.patch":
+  version: 0.9.0-dev.13
+  resolution: "jet@patch:jet@npm%3A0.9.0-dev.13#~/.yarn/patches/jet-npm-0.9.0-dev.13-3321aeea6e.patch::version=0.9.0-dev.13&hash=735c11"
+  dependencies:
+    "@types/mocha": "npm:^10.0.10"
+    babel-plugin-istanbul: "npm:^7.0.0"
+    cosmiconfig: "npm:^9.0.0"
+    istanbul-lib-coverage: "npm:^3.2.2"
+    mocha: "npm:^11.1.0"
+    mocha-remote-client: "npm:^1.13.0"
+    mocha-remote-server: "npm:^1.13.0"
+    nyc: "npm:^17.1.0"
+    yargs: "npm:^17.7.2"
+    zod: "npm:^3.24.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  bin:
+    jet: jet.js
+  checksum: 10/86aedebdce97b4e1e5c312a4c521a80e482414ee868cc4a915ad6e83696b7403924b3f06bb6fe8b6d86055a441c1412986d7631ea272104710ed707433df64d0
+  languageName: node
+  linkType: hard
+
 "jimp-compact@npm:0.16.1":
   version: 0.16.1
   resolution: "jimp-compact@npm:0.16.1"
@@ -19484,7 +19507,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha-remote-client@npm:^1.13.0":
+"mocha-remote-client@npm:1.13.2":
   version: 1.13.2
   resolution: "mocha-remote-client@npm:1.13.2"
   dependencies:
@@ -19493,6 +19516,18 @@ __metadata:
     mocha-remote-common: "npm:1.13.2"
     ws: "npm:^8.17.1"
   checksum: 10/12aca734f30b43944b0d35b678e786ba1a0f2c7b4cf6456e02810a62858d19805217a07594e26ba45308705ea55f421b06f78deb25263655f4df1e945fbba36f
+  languageName: node
+  linkType: hard
+
+"mocha-remote-client@patch:mocha-remote-client@npm%3A1.13.2#~/.yarn/patches/mocha-remote-client-npm-1.13.2-a2e7596aba.patch":
+  version: 1.13.2
+  resolution: "mocha-remote-client@patch:mocha-remote-client@npm%3A1.13.2#~/.yarn/patches/mocha-remote-client-npm-1.13.2-a2e7596aba.patch::version=1.13.2&hash=fd012f"
+  dependencies:
+    debug: "npm:^4.3.4"
+    fast-equals: "npm:^5.0.1"
+    mocha-remote-common: "npm:1.13.2"
+    ws: "npm:^8.17.1"
+  checksum: 10/57f45130c7116b41a347ea516d932b890e8355ab1c8dd880f59957cb35b8f6eaf9bc94f62a2d21e1f1ef99d9883f01e6336554fae0a9fd565b18ec1553771aa1
   languageName: node
   linkType: hard
 
@@ -19505,7 +19540,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha-remote-server@npm:^1.13.0":
+"mocha-remote-server@npm:1.13.2":
   version: 1.13.2
   resolution: "mocha-remote-server@npm:1.13.2"
   dependencies:
@@ -19514,6 +19549,18 @@ __metadata:
     mocha-remote-common: "npm:1.13.2"
     ws: "npm:^8.17.1"
   checksum: 10/3d016f568df4cd80ddfc90d7646ca70ef99bfcd0580bc0c0497ce0b4ff0b5c3903db67ae0325858e30467a4e6c5c6f89530e6cc86d075f15023d32e2c00ead46
+  languageName: node
+  linkType: hard
+
+"mocha-remote-server@patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch":
+  version: 1.13.2
+  resolution: "mocha-remote-server@patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch::version=1.13.2&hash=5b470d"
+  dependencies:
+    debug: "npm:^4.3.4"
+    flatted: "npm:^3.3.1"
+    mocha-remote-common: "npm:1.13.2"
+    ws: "npm:^8.17.1"
+  checksum: 10/c5861226362636fac484237e3653e6442c88a7b0b12b240ab33482961b09b5c2a1a54190c03237b2c2274616be6fe7e5c8484b355a00bb28ee401cb7b81351b6
   languageName: node
   linkType: hard
 
@@ -22277,7 +22324,7 @@ __metadata:
     firebase-tools: "npm:^15.16.0"
     jest-circus: "npm:^30.3.0"
     jest-environment-node: "npm:^30.3.0"
-    jet: "npm:0.9.0-dev.13"
+    jet: "patch:jet@npm%3A0.9.0-dev.13#~/.yarn/patches/jet-npm-0.9.0-dev.13-3321aeea6e.patch"
     mocha: "npm:^11.7.5"
     nyc: "npm:^18.0.0"
     patch-package: "npm:^8.0.1"

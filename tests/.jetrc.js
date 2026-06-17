@@ -8,6 +8,8 @@ module.exports = {
     reporter: 'spec',
     timeout: 420000, // 7 minutes - fetchAndActivate takes 5+ sometimes
     exitOnError: true,
+    // Wait for mocha-remote client auto-reconnect before fatal exit (1006/1001).
+    reconnectGraceMs: 15000,
     coverage: true,
   },
   targets: {

@@ -247,6 +247,21 @@ function loadTests(_) {
       const storageTests = require.context('../packages/storage/e2e', true, /\.e2e\.js$/);
       storageTests.keys().forEach(storageTests);
     }
+
+    after(async function flushNativeCoverageProfile() {
+      if (Platform.OS === 'ios') {
+        const { NativeModules } = require('react-native');
+        const coverageModule = NativeModules.RNFBTestingCoverage;
+        if (coverageModule?.flush) {
+          console.log('[ios-native-coverage] flushing LLVM profile from Jet after hook');
+          await coverageModule.flush();
+        } else {
+          console.warn(
+            '[ios-native-coverage] RNFBTestingCoverage native module not available; skipping flush',
+          );
+        }
+      }
+    });
   });
 }
 

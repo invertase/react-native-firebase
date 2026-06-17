@@ -90,7 +90,7 @@ jobs:
     runs-on: macos-26
     needs: matrix_prep
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
-    timeout-minutes: 80
+    timeout-minutes: 87
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
@@ -98,8 +98,7 @@ jobs:
       CCACHE_DEPEND: true
       CCACHE_INODECACHE: true
       CCACHE_LIMIT_MULTIPLE: 0.95
-      # possibly pin to higher-performance versions (e.g. 26.0.1 was better than 26.2)
-      # but firebase-ios-sdk requires Xcode 26.2+ now, so unpinned at the moment.
+      # macos-26 + latest-stable matches local Xcode 26.5; firebase-ios-sdk requires Xcode 26.2+
       XCODE_VERSION: latest-stable
     strategy:
       fail-fast: false
@@ -107,7 +106,7 @@ jobs:
     steps:
       - name: Setup Environment for Screen Recording
         # https://github.com/guidepup/setup-action/releases
-        uses: guidepup/setup-action@4aa2ebd687ff687a31d7c17184beac3c606d64cd # v0.19.0
+        uses: guidepup/setup-action@5ab89fbb6641406f6f6c91057225f3fb397c2eea # v0.20.0
         continue-on-error: true
         with:
           record: true
@@ -123,13 +122,13 @@ jobs:
 
       # Set up tool versions
       # https://github.com/actions/setup-node/releases
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: 22
 
       - name: Configure JDK
         # https://github.com/actions/setup-java/releases
-        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -157,7 +156,7 @@ jobs:
           xcrun simctl list
 
       # https://github.com/actions/checkout/releases
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           fetch-depth: 50
 
@@ -208,7 +207,7 @@ jobs:
 
       - name: Setup Ruby
         # https://github.com/ruby/setup-ruby/releases
-        uses: ruby/setup-ruby@c4e5b1316158f92e3d49443a9d58b31d25ac0f8f # v1.306.0
+        uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # v1.313.0
         with:
           ruby-version: 3
 
@@ -265,6 +264,7 @@ jobs:
           launchctl unload -w /System/Library/LaunchAgents/com.apple.ReportCrash.plist
           sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.ReportCrash.Root.plist
 
+      # Vendored Homebrew formulae — pin/update: okf-bundle/ci-workflows/ios.md#pinned-homebrew-utilities
       - name: Install brew utilities
         # https://github.com/nick-fields/retry/releases
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -272,7 +272,7 @@ jobs:
           timeout_minutes: 5
           retry_wait_seconds: 60
           max_attempts: 3
-          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils xcbeautify
+          command: bash .github/workflows/scripts/install-homebrew-rnfb.sh applesimutils xcbeautify
 
       - name: Build iOS App Debug
         if: contains(matrix.buildmode, 'debug')
@@ -323,39 +323,43 @@ jobs:
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false&inlineSourceMap=true"
           echo "...javascript bundle ready"
 
-      - name: Start Screen and Simulator Recordings and System Logging
-        # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
+      - name: Start Screen and System Logging
         continue-on-error: true
         run: |
           nohup sh -c "sleep 314159265 | screencapture -v -C -k -T0 -g screenrecording.mov > screenrecording.log 2>&1 &"
           nohup sh -c "log stream --backtrace --color none --style syslog > syslog.log 2>&1 &"
-          nohup sh -c "sleep 110 && xcrun simctl io booted recordVideo --codec=h264 -f simulator.mp4 2>&1 &"
-
-      - name: Create Simulator Log
-        # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
-        # If you boot the simulator separately from detox, some other race fails and detox testee never sends ready to proxy
-        continue-on-error: true
-        run: nohup sh -c "sleep 110 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
 
       - name: Pre-Boot Simulator
-        # The goal here is to separate Simulator boot from Detox run,
-        # So that Simulator boot issues we seem to have may be handled separately
+        # Separate Simulator boot from Detox run. boot-simulator.sh polls bootstatus and logs
+        # migration progress so long first-boot waits are visible in the step log.
         # https://github.com/nick-fields/retry/releases
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: 5
+          timeout_minutes: 12
           retry_wait_seconds: 60
           max_attempts: 3
           command: ./.github/workflows/scripts/boot-simulator.sh
 
+      - name: Start Simulator Recordings and Log
+        # Start after Pre-Boot so booted exists and logging covers the Detox run (not a fixed delay).
+        continue-on-error: true
+        run: |
+          nohup sh -c "xcrun simctl io booted recordVideo --codec=h264 -f simulator.mp4 2>&1 &"
+          nohup sh -c "xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
+
       - name: Detox Test Debug
         if: contains(matrix.buildmode, 'debug')
-        timeout-minutes: 55
+        timeout-minutes: 62
         run: yarn tests:ios:test-cover
+
+      - name: Process iOS native coverage
+        if: always() && contains(matrix.buildmode, 'debug')
+        continue-on-error: true
+        run: yarn tests:ios:test:process-coverage
 
       - name: Detox Test Release
         if: contains(matrix.buildmode, 'release')
-        timeout-minutes: 55
+        timeout-minutes: 62
         run: yarn tests:ios:test:release
 
       - name: Stop Screen and App Video and System Logging
@@ -403,7 +407,7 @@ jobs:
           path: .github/workflows/scripts/*.log
 
       # https://github.com/codecov/codecov-action/releases
-      - uses: codecov/codecov-action@3f20e214133d0983f9a10f3d63b0faf9241a3daa # v6.0.0
+      - uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
         if: contains(matrix.buildmode, 'debug')
         continue-on-error: true
         with:

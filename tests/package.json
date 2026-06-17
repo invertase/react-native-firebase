@@ -51,7 +51,7 @@
     "firebase-tools": "^15.16.0",
     "jest-circus": "^30.3.0",
     "jest-environment-node": "^30.3.0",
-    "jet": "0.9.0-dev.13",
+    "jet": "patch:jet@npm%3A0.9.0-dev.13#~/.yarn/patches/jet-npm-0.9.0-dev.13-3321aeea6e.patch",
     "mocha": "^11.7.5",
     "nyc": "^18.0.0",
     "patch-package": "^8.0.1",
