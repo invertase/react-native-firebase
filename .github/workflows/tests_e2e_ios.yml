@@ -90,7 +90,7 @@ jobs:
     runs-on: macos-26
     needs: matrix_prep
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
-    timeout-minutes: 80
+    timeout-minutes: 87
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
@@ -322,34 +322,33 @@ jobs:
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false&inlineSourceMap=true"
           echo "...javascript bundle ready"
 
-      - name: Start Screen and Simulator Recordings and System Logging
-        # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
+      - name: Start Screen and System Logging
         continue-on-error: true
         run: |
           nohup sh -c "sleep 314159265 | screencapture -v -C -k -T0 -g screenrecording.mov > screenrecording.log 2>&1 &"
           nohup sh -c "log stream --backtrace --color none --style syslog > syslog.log 2>&1 &"
-          nohup sh -c "sleep 110 && xcrun simctl io booted recordVideo --codec=h264 -f simulator.mp4 2>&1 &"
-
-      - name: Create Simulator Log
-        # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
-        # If you boot the simulator separately from detox, some other race fails and detox testee never sends ready to proxy
-        continue-on-error: true
-        run: nohup sh -c "sleep 110 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
 
       - name: Pre-Boot Simulator
-        # The goal here is to separate Simulator boot from Detox run,
-        # So that Simulator boot issues we seem to have may be handled separately
+        # Separate Simulator boot from Detox run. boot-simulator.sh polls bootstatus and logs
+        # migration progress so long first-boot waits are visible in the step log.
         # https://github.com/nick-fields/retry/releases
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: 5
+          timeout_minutes: 12
           retry_wait_seconds: 60
           max_attempts: 3
           command: ./.github/workflows/scripts/boot-simulator.sh
 
+      - name: Start Simulator Recordings and Log
+        # Start after Pre-Boot so booted exists and logging covers the Detox run (not a fixed delay).
+        continue-on-error: true
+        run: |
+          nohup sh -c "xcrun simctl io booted recordVideo --codec=h264 -f simulator.mp4 2>&1 &"
+          nohup sh -c "xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
+
       - name: Detox Test Debug
         if: contains(matrix.buildmode, 'debug')
-        timeout-minutes: 55
+        timeout-minutes: 62
         run: yarn tests:ios:test-cover
 
       - name: Process iOS native coverage
@@ -359,7 +358,7 @@ jobs:
 
       - name: Detox Test Release
         if: contains(matrix.buildmode, 'release')
-        timeout-minutes: 55
+        timeout-minutes: 62
         run: yarn tests:ios:test:release
 
       - name: Stop Screen and App Video and System Logging
