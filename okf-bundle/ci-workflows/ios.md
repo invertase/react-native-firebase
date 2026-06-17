@@ -57,7 +57,7 @@ Artifacts are uploaded on every run (`if: always()`), even when tests fail.
 **When to use which log**
 
 - **Boot / migration / “simulator won’t start”** — read the **Pre-Boot Simulator** step log in GitHub Actions first. Look for `[boot-status]` lines and `bootstatus -d` migration output. That captures first-boot migration even though `simulator.log` starts only after pre-boot succeeds.
-- **Detox / app / test failures** — download `simulator-*_log` and search for `com.invertase.testing`, `SpringBoard`, `xctest`, or `Detox`.
+- **Detox / app / test failures** — download `simulator-*_log` and use [E2E test app orchestration](#e2e-test-app-orchestration-detox--jet) grep patterns (`[rnfb-lifecycle]`, `waitForActive`, SpringBoard foreground).
 - **UI regressions** — `simulator-*_video` or `screenrecording-*`.
 
 **Downloading artifacts**
@@ -83,6 +83,86 @@ A long gap with only `com.apple.datamigrator` activity and no `com.invertase.tes
 ### Detox configuration
 
 Device type is defined in `tests/.detoxrc.js` (`devices.simulator.device.type`). The boot script and Detox both use this name. CI does not hard-code a UDID.
+
+### E2E test app orchestration (Detox + Jet)
+
+After pre-boot succeeds, failures often move **inside** the test app process (`com.invertase.testing`, binary `testing`). Simulator boot and app install are fine; Detox `launchApp` stalls while the app stays alive. Three overlapping issues show up in CI logs.
+
+#### 1. Early `ready` race
+
+**Detox step symptom**
+
+```
+ws-server connection :50400<->:50415
+ws-server The app has dispatched "ready" action too early.
+```
+
+**Cause** — iOS `DetoxManager` sends proactive `ready` on `webSocketDidConnect` before the anonymous server handles `login`. Detox 20.x logs and drops that `ready`, leaving `device.launchApp()` stuck in `waitUntilReady`.
+
+**Mitigation** — `.yarn/patches/detox-npm-20.51.0-*.patch` buffers early `ready` and replays it after app `login` (`AnonymousConnectionHandler.js`).
+
+#### 2. Main-thread delay before WebSocket handshake
+
+**Symptom** — Long gap (~30–60s) between `device com.invertase.testing launched` (Detox step log) and the first `Connection 1: ready` / `handshake successful` lines in `simulator.log`. Firebase configure, RN bridge startup, and LLVM coverage instrumentation run on the main thread and can defer Detox’s `URLSessionWebSocketDelegate` callbacks.
+
+**Mitigations**
+
+| Change | Location |
+|--------|----------|
+| Wait for Jet (port 8090) before `launchApp` | `tests/e2e/firebase.test.js` |
+| `detoxEnableSynchronization: 'NO'` at launch | `tests/e2e/firebase.test.js` |
+| `detoxURLBlacklistRegex: '.*'` | `tests/e2e/firebase.test.js` (existing) |
+
+#### 3. `waitForActive` / scene never foreground-active
+
+**Symptom** — Detox reaches `isReady` and `waitForActive` but never logs `waitForActiveDone`. App process stays alive for the rest of the step timeout (~30+ min). In `simulator.log`, SpringBoard requests `foreground-interactive` while the app scene stays `UISceneActivationStateUnattached` and UIKit deactivation reasons (e.g. `3104`) never clear.
+
+**Instrumentation** — `tests/ios/testing/AppDelegate.mm` logs `[rnfb-lifecycle]` at launch, on UIApplication/UIScene lifecycle notifications, and at **+30s / +60s** one-shot probes if the app never becomes active. Confirms whether the stall is Detox-side or the app never reaching `UIApplicationStateActive` / `foregroundActive`.
+
+**Mitigations in this repo (summary)**
+
+| Change | Location |
+|--------|----------|
+| Buffer early `ready`, replay after app `login` | `.yarn/patches/detox-npm-20.51.0-*.patch` |
+| Jet wait + Detox launch args | `tests/e2e/firebase.test.js` |
+| Lifecycle logging for post-mortem | `tests/ios/testing/AppDelegate.mm` |
+| Pre-boot + `bootstatus` before install | `boot-simulator.sh` (orthogonal; fixes boot/migration only) |
+
+#### Diagnosing from `simulator.log`
+
+Download the artifact (`gh run download <run-id> -n simulator-debug-0_log`), unzip if needed, then search `simulator.log`.
+
+**Quick triage** — map Detox step timestamps to simulator log (`testing[<pid>]`):
+
+```bash
+# Detox orchestration inside the app process
+rg 'testing\[' simulator.log | rg -i 'waitForActive|waitForActiveDone|com\.wix\.Detox|ready action too early'
+
+# App lifecycle confirmation (AppDelegate instrumentation)
+rg '\[rnfb-lifecycle\]' simulator.log
+
+# SpringBoard launch intent vs app scene state
+rg 'com\.invertase\.testing' simulator.log | rg -i 'foreground-interactive|visibility.*Foreground|running-active'
+rg 'testing\[' simulator.log | rg -i 'Deactivation reason|activationState|UISceneActivationState'
+
+# WebSocket timing (main-thread block before handshake)
+rg 'testing\[' simulator.log | rg 'Connection 1: ready|handshake successful'
+
+# Heavy startup on main thread (often precedes WS delay)
+rg 'testing\[' simulator.log | rg -i 'FIRApp|RNFB|RCTBridge|configure'
+```
+
+**Sentinel patterns**
+
+| Pattern | Meaning |
+|---------|---------|
+| `ready action too early` in Detox step only | Early-ready race (patch should fix; check patch applied in `yarn install`) |
+| `waitForActive` without `waitForActiveDone` | Scene/active hang; check `[rnfb-lifecycle]` probes still `unattached` / not `active` |
+| `probe+30s` / `probe+60s` with `UIApplication.state=inactive` or scene `unattached` | App never became foreground-active; compare with SpringBoard `foreground-interactive` lines |
+| `handshake successful` 30–60s after `simctl launch` | Main-thread startup delay; not a boot failure |
+| Only `com.apple.datamigrator` activity, no `testing[` | Pre-boot / migration issue — use Actions `[boot-status]` log, not Detox orchestration |
+
+**Example healthy sequence** (abbreviated): `didFinishLaunching+after` → `UIApplicationDidBecomeActiveNotification` / scene `foregroundActive` → Detox `loginSuccess` → `isReady` → `waitForActiveDone`. A gap between SpringBoard foreground request and `[rnfb-lifecycle]` `active` is the smoking gun for issue 3.
 
 ### Operational notes
 

@@ -24,9 +24,104 @@
 
 #import <React/RCTBundleURLProvider.h>
 
+static NSString *RNFBTestingDescribeApplicationState(UIApplicationState state)
+{
+  switch (state) {
+    case UIApplicationStateActive:
+      return @"active";
+    case UIApplicationStateInactive:
+      return @"inactive";
+    case UIApplicationStateBackground:
+      return @"background";
+    default:
+      return @"unknown";
+  }
+}
+
+static NSString *RNFBTestingDescribeSceneActivationState(UISceneActivationState state)
+{
+  switch (state) {
+    case UISceneActivationStateUnattached:
+      return @"unattached";
+    case UISceneActivationStateForegroundInactive:
+      return @"foregroundInactive";
+    case UISceneActivationStateForegroundActive:
+      return @"foregroundActive";
+    case UISceneActivationStateBackground:
+      return @"background";
+    default:
+      return @"unknown";
+  }
+}
+
+static void RNFBTestingLogLifecycle(NSString *event)
+{
+  UIApplication *app = UIApplication.sharedApplication;
+  NSMutableString *sceneSummary = [NSMutableString string];
+  for (UIScene *scene in app.connectedScenes) {
+    if (![scene isKindOfClass:[UIWindowScene class]]) {
+      continue;
+    }
+    UIWindowScene *windowScene = (UIWindowScene *)scene;
+    [sceneSummary appendFormat:@" %@=%@",
+                              scene.session.persistentIdentifier,
+                              RNFBTestingDescribeSceneActivationState(windowScene.activationState)];
+  }
+  if (sceneSummary.length == 0) {
+    [sceneSummary appendString:@" (no UIWindowScene)"];
+  }
+  NSLog(@"[rnfb-lifecycle] event=%@ UIApplication.state=%@ scenes:%@",
+        event,
+        RNFBTestingDescribeApplicationState(app.applicationState),
+        sceneSummary);
+}
+
+static void RNFBTestingScheduleLifecycleProbes(void)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      RNFBTestingLogLifecycle(@"probe+30s");
+    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(60 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      RNFBTestingLogLifecycle(@"probe+60s");
+    });
+  });
+}
+
+static void RNFBTestingRegisterLifecycleObservers(id observer)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSNotificationCenter *center = NSNotificationCenter.defaultCenter;
+    NSArray<NSString *> *names = @[
+      UIApplicationDidBecomeActiveNotification,
+      UIApplicationWillResignActiveNotification,
+      UIApplicationDidEnterBackgroundNotification,
+      UIApplicationWillEnterForegroundNotification,
+      UISceneDidActivateNotification,
+      UISceneWillDeactivateNotification,
+      UISceneDidEnterBackgroundNotification,
+      UISceneWillEnterForegroundNotification,
+    ];
+    for (NSString *name in names) {
+      [center addObserver:observer selector:@selector(rnfb_applicationLifecycleNotification:) name:name object:nil];
+    }
+  });
+}
+
 @implementation AppDelegate
+- (void)rnfb_applicationLifecycleNotification:(NSNotification *)notification
+{
+  RNFBTestingLogLifecycle(notification.name);
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  RNFBTestingRegisterLifecycleObservers(self);
+  RNFBTestingScheduleLifecycleProbes();
+  RNFBTestingLogLifecycle(@"didFinishLaunching+before");
+
   RNFBTestingConfigureCoverageProfilePath();
 
   // Initialize RNFBAppCheckModule, it sets the custom RNFBAppCheckProviderFactory
@@ -50,7 +145,9 @@
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:@{}];
-  return [super application:application didFinishLaunchingWithOptions:launchOptions];
+  BOOL didFinish = [super application:application didFinishLaunchingWithOptions:launchOptions];
+  RNFBTestingLogLifecycle(@"didFinishLaunching+after");
+  return didFinish;
 }
 
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {

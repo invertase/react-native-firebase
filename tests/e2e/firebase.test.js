@@ -16,9 +16,37 @@
  *
  */
 const { spawn } = require('child_process');
+const net = require('net');
 const path = require('path');
 
 const { pullAndroidCoverage, pullIosCoverage } = require('../scripts/pull-native-coverage');
+
+const JET_REMOTE_PORT = parseInt(process.env.JET_REMOTE_PORT || '8090', 10);
+
+function waitForTcpPort(port, host = '127.0.0.1', timeoutMs = 120000) {
+  const start = Date.now();
+
+  return new Promise((resolve, reject) => {
+    const tryConnect = () => {
+      if (Date.now() - start > timeoutMs) {
+        reject(new Error(`Timed out waiting for ${host}:${port} after ${timeoutMs}ms`));
+        return;
+      }
+
+      const socket = net.connect(port, host);
+      socket.once('connect', () => {
+        socket.end();
+        resolve();
+      });
+      socket.once('error', () => {
+        socket.destroy();
+        setTimeout(tryConnect, 250);
+      });
+    };
+
+    tryConnect();
+  });
+}
 
 describe('Jet Tests', function () {
   jest.retryTimes(0, { logErrorsBeforeRetry: true });
@@ -61,10 +89,16 @@ describe('Jet Tests', function () {
 
         resolve();
       });
+
+      await waitForTcpPort(JET_REMOTE_PORT);
       await device.launchApp({
         newInstance: true,
         delete: true,
-        launchArgs: { detoxURLBlacklistRegex: `.*` },
+        launchArgs: {
+          detoxURLBlacklistRegex: `.*`,
+          // Avoid sync/idling blocking the main queue while Detox WS login is pending.
+          detoxEnableSynchronization: 'NO',
+        },
       });
     });
   });
