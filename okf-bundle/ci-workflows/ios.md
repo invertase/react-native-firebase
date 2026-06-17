@@ -57,7 +57,7 @@ Artifacts are uploaded on every run (`if: always()`), even when tests fail.
 **When to use which log**
 
 - **Boot / migration / “simulator won’t start”** — read the **Pre-Boot Simulator** step log in GitHub Actions first. Look for `[boot-status]` lines and `bootstatus -d` migration output. That captures first-boot migration even though `simulator.log` starts only after pre-boot succeeds.
-- **Detox / app / test failures** — download `simulator-*_log` and use [E2E test app orchestration](#e2e-test-app-orchestration-detox--jet) grep patterns (`[rnfb-lifecycle]`, `waitForActive`, SpringBoard foreground).
+- **Detox / app / test failures** — download `simulator-*_log` and use [E2E test app orchestration](#e2e-test-app-orchestration-detox--jet) grep patterns (`[rnfb-lifecycle]`, `waitForActive`, SpringBoard foreground). Jet WS drops (1006/1001) appear in the **Detox step log** (`[jet-ws]`, `[rnfb-e2e]`).
 - **UI regressions** — `simulator-*_video` or `screenrecording-*`.
 
 **Downloading artifacts**
@@ -163,6 +163,58 @@ rg 'testing\[' simulator.log | rg -i 'FIRApp|RNFB|RCTBridge|configure'
 | Only `com.apple.datamigrator` activity, no `testing[` | Pre-boot / migration issue — use Actions `[boot-status]` log, not Detox orchestration |
 
 **Example healthy sequence** (abbreviated): `didFinishLaunching+after` → `UIApplicationDidBecomeActiveNotification` / scene `foregroundActive` → Detox `loginSuccess` → `isReady` → `waitForActiveDone`. A gap between SpringBoard foreground request and `[rnfb-lifecycle]` `active` is the smoking gun for issue 3.
+
+#### 4. Jet WebSocket disconnect (1006 / 1001)
+
+**Symptom** (Detox Test Debug step, often debug build only):
+
+```
+[🟨] Jet client disconnected - for no particular reason (code = 1006).
+[🟥] Exiting after an abnormal disconnect.
+Coverage summary: Unknown% ( 0/0 )
+```
+
+Release on the same run may pass; the app process (`testing[<pid>]`) often stays alive in `simulator.log` — the break is the **simulator → host** mocha-remote WebSocket on port **8090**, not a native crash.
+
+**Cause** — Transient abnormal WebSocket closure (1006 = no close frame; 1001 = going away). Common in **debug CI** (live Metro on 8081 + Istanbul `__coverage__` growth + port 8090 forwarding). Jet’s `exitOnError: true` used to exit immediately; mocha-remote-client auto-reconnects in ~1s but the server had already shut down.
+
+**Mitigations in this repo**
+
+| Change | Location |
+|--------|----------|
+| 15s reconnect grace for 1006/1001 before fatal exit | `.yarn/patches/jet-npm-0.9.0-dev.13-*.patch` → `cli.js` |
+| `reconnectGraceMs: 15000` | `tests/.jetrc.js` |
+| One e2e retry when grace expires (`RETRYABLE_DISCONNECT`) | `tests/e2e/firebase.test.js` |
+| Structured WS logging | `[jet-ws]` / `[rnfb-e2e]` prefixes in Jet + e2e harness |
+
+**Diagnosing from CI logs** (Detox step; `simulator.log` rarely shows Jet WS):
+
+```bash
+# Jet WS lifecycle (Actions log)
+rg '\[jet-ws\]|\[rnfb-e2e\]|Jet client disconnected|RETRYABLE_DISCONNECT' detox-step.log
+
+# Grace window recovered (no e2e retry needed)
+rg '\[jet-ws\] reconnect_recovered' detox-step.log
+
+# Fatal transient disconnect → e2e retry eligible
+rg '\[jet-ws\] (transient_disconnect|fatal_disconnect|RETRYABLE_DISCONNECT)' detox-step.log
+
+# E2e harness retry
+rg '\[rnfb-e2e\] Retrying after transient Jet WS' detox-step.log
+
+# Coverage lost to abrupt Jet exit
+rg 'Coverage summary|jet-coverage' detox-step.log
+```
+
+**Sentinel patterns**
+
+| Pattern | Meaning |
+|---------|---------|
+| `transient_disconnect code=1006` then `reconnect_recovered` | Flaky WS; grace window saved the run |
+| `fatal_disconnect code=1006 grace_expired_ms=` + `RETRYABLE_DISCONNECT` | Grace failed; e2e should retry once |
+| `[rnfb-e2e] Retrying after transient Jet WS` | Second Jet attempt starting |
+| `Coverage summary.*0/0` after disconnect | JS coverage never reached NYC (check `[jet-coverage]` on release for contrast) |
+| Release passes, debug fails with 1006 | Points at Metro/debug+coverage, not test logic |
 
 ### Operational notes
 
