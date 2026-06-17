@@ -2,7 +2,67 @@ diff --git a/lib/commonjs/cli.js b/lib/commonjs/cli.js
 index 35c04da87c63a79bc26707aaffe3156fb98eca79..435c9959f456318c5e0069fce1f3e922891acf56 100644
 --- a/lib/commonjs/cli.js
 +++ b/lib/commonjs/cli.js
-@@ -100,6 +100,14 @@ async function startServer(server, config, after) {
+@@ -72,6 +72,9 @@ function cleanup() {
+   });
+ }
+ async function startServer(server, config, after) {
++  let reconnectGraceTimer = null;
++  let pendingDisconnectCode = null;
++  let disconnectStartedAt = 0;
+   server.on('started', s => {
+     const url = s.url;
+     console.log(`[🟩] Jet remote server listening at "${url}".`);
+@@ -79,13 +82,46 @@ async function startServer(server, config, after) {
+   server.on('connection', (_, req) => {
+     console.log(`[🟩] Jet client connected from "${req.socket.remoteAddress + ':' + req.socket.remotePort}".`);
++    if (reconnectGraceTimer) {
++      const recoveredCode = pendingDisconnectCode;
++      const elapsedMs = Date.now() - disconnectStartedAt;
++      clearTimeout(reconnectGraceTimer);
++      reconnectGraceTimer = null;
++      pendingDisconnectCode = null;
++      console.warn(`[jet-ws] reconnect_recovered code=${recoveredCode} elapsed_ms=${elapsedMs}`);
++    }
+   });
+   server.on('disconnection', (_, code, reason) => {
+     const print = code === 1000 ? console.log : console.warn;
+     const msg = code === 1000 ? 'normal closure' : reason || 'for no particular reason';
+     print(`[🟨] Jet client disconnected - ${msg} (code = ${code}).`);
+-    if (code !== 1000 && config.exitOnError) {
++    if (code === 1000 || !config.exitOnError) {
++      return;
++    }
++    const graceMs = config.reconnectGraceMs ?? 15000;
++    const transientCodes = [1006, 1001];
++    if (transientCodes.includes(code)) {
++      if (reconnectGraceTimer) {
++        clearTimeout(reconnectGraceTimer);
++      }
++      pendingDisconnectCode = code;
++      disconnectStartedAt = Date.now();
++      console.warn(
++        `[jet-ws] transient_disconnect code=${code} reason="${reason || ''}" grace_ms=${graceMs} waiting_for_reconnect`,
++      );
++      reconnectGraceTimer = setTimeout(() => {
++        reconnectGraceTimer = null;
++        console.error(`[jet-ws] fatal_disconnect code=${code} grace_expired_ms=${graceMs}`);
++        console.error(`[jet-ws] RETRYABLE_DISCONNECT code=${code}`);
++        print(`[🟥] Exiting after an abnormal disconnect.`);
++        process.exitCode = 1;
++        cleanup();
++      }, graceMs);
++      return;
++    }
++    console.error(`[jet-ws] fatal_disconnect code=${code} reason="${reason || ''}" immediate=true`);
++    if (code !== 1000 && config.exitOnError) {
+       print(`[🟥] Exiting after an abnormal disconnect.`);
+       process.exitCode = 1;
+       cleanup();
+     }
+   });
+@@ -99,8 +138,16 @@ async function startServer(server, config, after) {
+     if (config.exitOnError) {
+       process.exitCode = 1;
        cleanup();
      }
    });
