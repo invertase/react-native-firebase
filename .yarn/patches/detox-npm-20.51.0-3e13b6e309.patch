@@ -102,3 +102,47 @@ index d6db5d5d7a4173eae88d97bf06eaeaf8b38c3b94..a85ebdf5a30607459be68463b3238b6f
      }
  
      override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
+diff --git a/src/server/handlers/AnonymousConnectionHandler.js b/src/server/handlers/AnonymousConnectionHandler.js
+index 10743c87d17de135317e1bac3e65159b9872412f..abbb302307fbd5eabbbff875983f284a4bb9e738 100644
+--- a/src/server/handlers/AnonymousConnectionHandler.js
++++ b/src/server/handlers/AnonymousConnectionHandler.js
+@@ -8,6 +8,7 @@ const TesterConnectionHandler = require('./TesterConnectionHandler');
+ class AnonymousConnectionHandler {
+   constructor({ api }) {
+     this._api = api;
++    this._pendingEarlyReadyAction = null;
+   }
+ 
+   handle(action) {
+@@ -74,7 +75,17 @@ class AnonymousConnectionHandler {
+       },
+     });
+ 
++    const pendingEarlyReadyAction = this._pendingEarlyReadyAction;
++    this._pendingEarlyReadyAction = null;
++
+     session.notify();
++
++    // iOS DetoxManager sends proactive "ready" on webSocketDidConnect before the
++    // anonymous server's "login" handler runs; replay it after app login completes.
++    if (action.params.role === 'app' && pendingEarlyReadyAction && session.tester) {
++      this._api.log.debug('Replaying app "ready" action that arrived before login completed.');
++      session.tester.sendAction(pendingEarlyReadyAction);
++    }
+   }
+ 
+   _handleUnknownAction(action) {
+@@ -85,8 +96,11 @@ class AnonymousConnectionHandler {
+     });
+   }
+ 
+-  _handleEarlyReadyAction() {
+-    this._api.log.debug('The app has dispatched "ready" action too early.');
++  _handleEarlyReadyAction(action) {
++    this._api.log.debug(
++      'The app has dispatched "ready" action too early; buffering until login completes.',
++    );
++    this._pendingEarlyReadyAction = action;
+   }
+ }
+ 

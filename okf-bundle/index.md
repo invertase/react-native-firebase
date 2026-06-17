@@ -8,7 +8,7 @@ Knowledge documents for react-native-firebase development, testing, and maintena
 
 # CI workflows
 
-* [CI workflows](/ci-workflows/index.md) — GitHub Actions reliability, logging, and troubleshooting (iOS simulator boot documented; Android/other TBD)
+* [CI workflows](/ci-workflows/index.md) — GitHub Actions reliability, logging, and troubleshooting (iOS simulator boot and Detox/Jet e2e orchestration)
 
 # Testing
 
