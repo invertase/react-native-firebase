@@ -16,7 +16,7 @@
  */
 // modular API
 export type * from './types/auth';
-export { ActionCodeURL, ACTION_CODE_URL_PARSE_NOT_IMPLEMENTED } from './ActionCodeURL';
+export { ActionCodeURL } from './ActionCodeURL';
 export {
   AuthCredential,
   EmailAuthCredential,

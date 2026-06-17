@@ -365,11 +365,12 @@ useDeviceLanguage(modularAuth);
 
 void ActionCodeURL.parseLink('https://example.com/auth?mode=verifyEmail&oobCode=abc');
 
-void parseActionCodeURL('https://example.com/auth?mode=verifyEmail&oobCode=abc').then(
-  parsedActionCode => {
-    console.log(parsedActionCode?.code);
-  },
+const parsedActionCode = parseActionCodeURL(
+  'https://example.com/auth?mode=verifyEmail&oobCode=abc',
 );
+if (parsedActionCode) {
+  console.log(parsedActionCode.code);
+}
 
 const additionalUserInfo = getAdditionalUserInfo({
   additionalUserInfo: null,

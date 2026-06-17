@@ -97,10 +97,12 @@ export default class OAuthProvider {
     });
   }
 
+  /** @remarks Always returns `null` on React Native Firebase. */
   static credentialFromResult(_userCredential: UserCredential): OAuthCredential | null {
     return null;
   }
 
+  /** @remarks Always returns `null` on React Native Firebase. */
   static credentialFromError(_error: FirebaseError): OAuthCredential | null {
     return null;
   }

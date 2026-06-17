@@ -43,6 +43,7 @@ import type {
   ActionCodeInfo,
   ActionCodeSettings,
   AdditionalUserInfo,
+  AdditionalUserInfoNative,
   ApplicationVerifier,
   Auth,
   AuthCredential,
@@ -83,6 +84,16 @@ import type {
   WithAuthDeprecationArg,
 } from './types/internal';
 
+/**
+ * Modular Auth API for React Native Firebase.
+ *
+ * Most exports mirror the [firebase-js-sdk modular Auth API](https://firebase.google.com/docs/reference/js/auth).
+ * Remarks on individual symbols call out React Native-specific behavior, unsupported
+ * web-only APIs, and return-type differences.
+ *
+ * @packageDocumentation
+ */
+
 type AnyFn = (...args: any[]) => any;
 
 type UserModuleInternal = UserInternal;
@@ -110,6 +121,25 @@ function getUserInternal(user: User): UserModuleInternal {
   return user as unknown as UserModuleInternal;
 }
 
+type AdditionalUserInfoSource = {
+  isNewUser?: boolean;
+  profile?: Record<string, unknown> | null;
+  providerId?: string | null;
+  username?: string | null;
+} & Record<string, unknown>;
+
+function normalizeAdditionalUserInfo(
+  info: AdditionalUserInfoSource,
+): AdditionalUserInfoNative {
+  return {
+    ...info,
+    isNewUser: Boolean(info.isNewUser),
+    profile: info.profile ?? null,
+    providerId: info.providerId ?? null,
+    username: info.username ?? null,
+  };
+}
+
 function normalizeUserCredential(
   userCredential: UserCredentialResultInternal,
   overrides: Partial<Pick<UserCredential, 'operationType' | 'providerId'>> = {},
@@ -125,11 +155,9 @@ function normalizeUserCredential(
   };
 
   if (userCredential.additionalUserInfo) {
-    Object.defineProperty(normalizedUserCredential, 'additionalUserInfo', {
-      value: userCredential.additionalUserInfo,
-      enumerable: false,
-      configurable: true,
-    });
+    normalizedUserCredential.additionalUserInfo = normalizeAdditionalUserInfo(
+      userCredential.additionalUserInfo as AdditionalUserInfoSource,
+    );
   }
 
   return normalizedUserCredential;
@@ -287,6 +315,8 @@ function callUserMethod<F extends AnyFn>(
 
 /**
  * Returns the Auth instance associated with the provided FirebaseApp.
+ *
+ * @param app - The Firebase app instance. Defaults to the default app.
  */
 export function getAuth(app?: FirebaseApp): Auth {
   // Keep getAuth() on the shared namespaced instance; method wrappers add the modular sentinel.
@@ -296,21 +326,33 @@ export function getAuth(app?: FirebaseApp): Auth {
 /**
  * This function allows more control over the Auth instance than getAuth().
  *
+ * @param app - The Firebase app to initialize Auth for.
+ * @param _deps - Optional firebase-js-sdk dependency bag.
+ *
  * @remarks
  * The optional `deps` argument exists for firebase-js-sdk API parity. React Native Firebase
  * ignores persistence, popup redirect resolver, and error-map dependencies because native
  * iOS/Android SDKs manage auth state and do not support the web-only persistence stack.
+ * `initializeAuth()` returns the same shared Auth instance as {@link getAuth}.
  */
 export function initializeAuth(app: FirebaseApp, _deps?: Dependencies): Auth {
   // Keep initializeAuth() aligned with getAuth(); passing the sentinel here creates a second module.
   return appWithAuth(app).auth();
 }
 
+/**
+ * Applies an out-of-band email action code (for example from a password reset or email verification link).
+ */
 export function applyActionCode(auth: Auth, oobCode: string): Promise<void> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.applyActionCode, oobCode);
 }
 
+/**
+ * Registers a callback to run before an auth state change is committed.
+ *
+ * @returns An unsubscribe function.
+ */
 export function beforeAuthStateChanged(
   auth: Auth,
   callback: (user: User | null) => void | Promise<void>,
@@ -320,6 +362,12 @@ export function beforeAuthStateChanged(
   return authInternal.beforeAuthStateChanged(callback, onAbort);
 }
 
+/**
+ * Checks the validity of an out-of-band email action code and returns metadata about the pending operation.
+ *
+ * @remarks React Native Firebase normalizes native results toward firebase-js-sdk shapes, including mapping
+ * `fromEmail` to `previousEmail` and coercing multi-factor info objects.
+ */
 export function checkActionCode(auth: Auth, oobCode: string): Promise<ActionCodeInfo> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.checkActionCode, oobCode).then(
@@ -327,6 +375,9 @@ export function checkActionCode(auth: Auth, oobCode: string): Promise<ActionCode
   );
 }
 
+/**
+ * Confirms a password reset using the out-of-band code from the reset email.
+ */
 export function confirmPasswordReset(
   auth: Auth,
   oobCode: string,
@@ -336,6 +387,15 @@ export function confirmPasswordReset(
   return callAuthMethod(authInternal, authInternal.confirmPasswordReset, oobCode, newPassword);
 }
 
+/**
+ * Connects the Auth instance to the Auth emulator.
+ *
+ * @remarks Delegates to the native `useEmulator` bridge. Accepts the firebase-js-sdk
+ * `options.disableWarnings` flag for {@link Auth.emulatorConfig} parity. On web, that flag
+ * suppresses the emulator DOM warning banner; native iOS/Android SDKs do not surface that banner,
+ * so the value is recorded on `auth.emulatorConfig.options` only. When `options` is provided,
+ * `disableWarnings` is required (matching firebase-js-sdk).
+ */
 export function connectAuthEmulator(
   auth: Auth,
   url: string,
@@ -345,6 +405,12 @@ export function connectAuthEmulator(
   callAuthMethod(authInternal, authInternal.useEmulator, url, options);
 }
 
+/**
+ * Creates a new user with an email address and password.
+ *
+ * @remarks Returned {@link UserCredential} objects include top-level `providerId` and `operationType`
+ * fields. `additionalUserInfo`, when present, is attached as a non-enumerable property.
+ */
 export function createUserWithEmailAndPassword(
   auth: Auth,
   email: string,
@@ -359,11 +425,19 @@ export function createUserWithEmailAndPassword(
   );
 }
 
+/**
+ * Fetches the sign-in methods available for the given email address.
+ */
 export function fetchSignInMethodsForEmail(auth: Auth, email: string): Promise<string[]> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.fetchSignInMethodsForEmail, email);
 }
 
+/**
+ * Extracts a {@link MultiFactorResolver} from a {@link MultiFactorError}.
+ *
+ * @throws If the error does not contain resolver hints.
+ */
 export function getMultiFactorResolver(auth: Auth, error: MultiFactorError): MultiFactorResolver {
   const authInternal = getAuthInternal(auth);
   const resolver = callAuthMethod(
@@ -379,6 +453,13 @@ export function getMultiFactorResolver(auth: Auth, error: MultiFactorError): Mul
   return normalizeMultiFactorResolver(resolver);
 }
 
+/**
+ * Returns the redirect sign-in result after a browser redirect flow completes.
+ *
+ * @remarks
+ * **Not supported on React Native Firebase.** Always throws synchronously because native provider
+ * flows do not use the browser redirect contract from the firebase-js-sdk.
+ */
 export function getRedirectResult(
   _auth: Auth,
   _resolver?: PopupRedirectResolver,
@@ -386,11 +467,25 @@ export function getRedirectResult(
   throw new Error('getRedirectResult is unsupported by the native Firebase SDKs.');
 }
 
+/**
+ * Checks whether an email link is a valid sign-in with email link URL.
+ *
+ * @remarks React Native Firebase performs this check through the native bridge and returns
+ * `Promise<boolean>`. The firebase-js-sdk returns a synchronous `boolean`.
+ */
 export function isSignInWithEmailLink(auth: Auth, emailLink: string): Promise<boolean> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.isSignInWithEmailLink, emailLink);
 }
 
+/**
+ * Subscribes to auth state changes for the given Auth instance.
+ *
+ * @returns An unsubscribe function.
+ *
+ * @remarks The legacy `error` and `completed` callback overload exists for firebase-js-sdk API parity.
+ * Native auth listeners never invoke separate error or completed callbacks.
+ */
 export function onAuthStateChanged(
   auth: Auth,
   nextOrObserver: NextOrObserver<User>,
@@ -407,6 +502,14 @@ export function onAuthStateChanged(
   );
 }
 
+/**
+ * Subscribes to ID token changes for the given Auth instance.
+ *
+ * @returns An unsubscribe function.
+ *
+ * @remarks The legacy `error` and `completed` callback overload exists for firebase-js-sdk API parity.
+ * Native auth listeners never invoke separate error or completed callbacks.
+ */
 export function onIdTokenChanged(
   auth: Auth,
   nextOrObserver: NextOrObserver<User>,
@@ -423,10 +526,19 @@ export function onIdTokenChanged(
   );
 }
 
+/**
+ * Revokes the given OAuth access token for the current user.
+ *
+ * @remarks
+ * **Web only.** Always throws synchronously on React Native Firebase.
+ */
 export function revokeAccessToken(_auth: Auth, _token: string): Promise<void> {
   throw new Error('revokeAccessToken() is only supported on Web');
 }
 
+/**
+ * Sends a password reset email to the given address.
+ */
 export function sendPasswordResetEmail(
   auth: Auth,
   email: string,
@@ -441,6 +553,13 @@ export function sendPasswordResetEmail(
   );
 }
 
+/**
+ * Sends a sign-in with email link to the given address.
+ *
+ * @remarks `actionCodeSettings` is required in the modular API (matching firebase-js-sdk).
+ * The namespaced `firebase.auth().sendSignInLinkToEmail(email, settings?)` API still supplies
+ * defaults when settings are omitted.
+ */
 export function sendSignInLinkToEmail(
   auth: Auth,
   email: string,
@@ -455,10 +574,20 @@ export function sendSignInLinkToEmail(
   );
 }
 
+/**
+ * Sets the persistence type for the Auth instance.
+ *
+ * @remarks
+ * **Not supported on React Native Firebase.** Always throws synchronously because auth state is
+ * managed by the native iOS/Android SDKs rather than the web persistence stack.
+ */
 export function setPersistence(_auth: Auth, _persistence: Persistence): Promise<void> {
   throw new Error('setPersistence is unsupported by the native Firebase SDKs.');
 }
 
+/**
+ * Signs in anonymously.
+ */
 export function signInAnonymously(auth: Auth): Promise<UserCredential> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.signInAnonymously).then(userCredential =>
@@ -468,6 +597,9 @@ export function signInAnonymously(auth: Auth): Promise<UserCredential> {
   );
 }
 
+/**
+ * Signs in with the given auth credential.
+ */
 export function signInWithCredential(
   auth: Auth,
   credential: AuthCredential,
@@ -482,6 +614,9 @@ export function signInWithCredential(
   );
 }
 
+/**
+ * Signs in with a custom authentication token.
+ */
 export function signInWithCustomToken(auth: Auth, customToken: string): Promise<UserCredential> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.signInWithCustomToken, customToken).then(
@@ -492,6 +627,9 @@ export function signInWithCustomToken(auth: Auth, customToken: string): Promise<
   );
 }
 
+/**
+ * Signs in with an email address and password.
+ */
 export function signInWithEmailAndPassword(
   auth: Auth,
   email: string,
@@ -506,6 +644,11 @@ export function signInWithEmailAndPassword(
   );
 }
 
+/**
+ * Signs in using an email and sign-in with email link.
+ *
+ * @remarks The `emailLink` argument is optional, matching firebase-js-sdk.
+ */
 export function signInWithEmailLink(
   auth: Auth,
   email: string,
@@ -521,6 +664,14 @@ export function signInWithEmailLink(
   );
 }
 
+/**
+ * Signs in with a phone number and returns a confirmation result for SMS verification.
+ *
+ * @remarks
+ * Native SDKs own the phone verification flow. The optional `appVerifier` argument from the
+ * firebase-js-sdk is ignored. This modular API also does not accept RNFB's legacy `forceResend`
+ * argument — use {@link verifyPhoneNumber} for the native listener / force-resend flow instead.
+ */
 export function signInWithPhoneNumber(
   auth: Auth,
   phoneNumber: string,
@@ -534,6 +685,12 @@ export function signInWithPhoneNumber(
   );
 }
 
+/**
+ * Starts native phone number verification and returns a listener for verification events.
+ *
+ * @remarks React Native Firebase-specific API with no firebase-js-sdk equivalent. Use this for
+ * auto-verification, resend, and multi-step phone auth flows that require native callbacks.
+ */
 export function verifyPhoneNumber(
   auth: Auth,
   phoneNumber: string,
@@ -550,6 +707,9 @@ export function verifyPhoneNumber(
   );
 }
 
+/**
+ * Signs in with the given provider using a native popup-style flow where supported.
+ */
 export function signInWithPopup(
   auth: Auth,
   provider: AuthProvider,
@@ -568,6 +728,13 @@ export function signInWithPopup(
   );
 }
 
+/**
+ * Signs in with the given provider using a redirect-style flow.
+ *
+ * @remarks On React Native Firebase, native provider flows complete immediately and resolve with a
+ * {@link UserCredential} instead of following the browser redirect contract used by the
+ * firebase-js-sdk (which resolves later via {@link getRedirectResult}).
+ */
 export function signInWithRedirect(
   auth: Auth,
   provider: AuthProvider,
@@ -588,25 +755,49 @@ export function signInWithRedirect(
   );
 }
 
+/**
+ * Signs out the current user for the given Auth instance.
+ */
 export function signOut(auth: Auth): Promise<void> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.signOut);
 }
 
+/**
+ * Updates the currently signed-in user on the Auth instance.
+ */
 export function updateCurrentUser(auth: Auth, user: User | null): Promise<void> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.updateCurrentUser, user);
 }
 
+/**
+ * Sets the Auth `languageCode` from the device locale.
+ *
+ * @remarks
+ * **Not supported on React Native Firebase.** Always throws synchronously. Set `auth.languageCode`
+ * directly or use {@link setLanguageCode}.
+ */
 export function useDeviceLanguage(_auth: Auth): void {
   throw new Error('useDeviceLanguage is unsupported by the native Firebase SDKs');
 }
 
+/**
+ * Sets the Auth language code.
+ *
+ * @remarks React Native Firebase exposes this as a modular helper. The firebase-js-sdk only exposes
+ * the writable `auth.languageCode` property.
+ */
 export function setLanguageCode(auth: Auth, languageCode: string | null): Promise<void> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.setLanguageCode, languageCode);
 }
 
+/**
+ * Configures iOS keychain access group sharing for the Auth instance.
+ *
+ * @remarks React Native Firebase-specific iOS helper with no firebase-js-sdk equivalent.
+ */
 export function useUserAccessGroup(auth: Auth, userAccessGroup: string): Promise<void> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.useUserAccessGroup, userAccessGroup).then(
@@ -614,30 +805,54 @@ export function useUserAccessGroup(auth: Auth, userAccessGroup: string): Promise
   );
 }
 
+/**
+ * Verifies a password reset code and returns the associated email address.
+ */
 export function verifyPasswordResetCode(auth: Auth, code: string): Promise<string> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.verifyPasswordResetCode, code);
 }
 
-export function parseActionCodeURL(link: string): Promise<ActionCodeURL | null> {
+/**
+ * Parses an email action link string.
+ *
+ * @param link - The email action link to parse.
+ * @returns The {@link ActionCodeURL} object, or `null` if the link is invalid.
+ *
+ * @remarks Pure URL parsing (ported from firebase-js-sdk). Works on all platforms without a native
+ * bridge. See also {@link ActionCodeURL.parseLink}.
+ */
+export function parseActionCodeURL(link: string): ActionCodeURL | null {
   return ActionCodeURL.parseLink(link);
 }
 
+/**
+ * Deletes the given user account.
+ */
 export function deleteUser(user: User): Promise<void> {
   const userInternal = getUserInternal(user);
   return callUserMethod(userInternal, userInternal.delete);
 }
 
+/**
+ * Returns the current ID token for the user.
+ */
 export function getIdToken(user: User, forceRefresh?: boolean): Promise<string> {
   const userInternal = getUserInternal(user);
   return callUserMethod(userInternal, userInternal.getIdToken, forceRefresh);
 }
 
+/**
+ * Returns the decoded ID token result for the user.
+ */
 export function getIdTokenResult(user: User, forceRefresh?: boolean): Promise<IdTokenResult> {
   const userInternal = getUserInternal(user);
   return callUserMethod(userInternal, userInternal.getIdTokenResult, forceRefresh);
 }
 
+/**
+ * Links the user account with the given credential.
+ */
 export function linkWithCredential(
   user: User,
   credential: AuthCredential,
@@ -652,6 +867,12 @@ export function linkWithCredential(
   );
 }
 
+/**
+ * Links the user account with a phone number using SMS verification.
+ *
+ * @remarks
+ * **Not supported on React Native Firebase.** Always throws synchronously.
+ */
 export function linkWithPhoneNumber(
   _user: User,
   _phoneNumber: string,
@@ -660,6 +881,9 @@ export function linkWithPhoneNumber(
   throw new Error('linkWithPhoneNumber is unsupported by the native Firebase SDKs');
 }
 
+/**
+ * Links the user account with the given provider using a native popup-style flow where supported.
+ */
 export function linkWithPopup(
   user: User,
   provider: AuthProvider,
@@ -678,6 +902,13 @@ export function linkWithPopup(
   );
 }
 
+/**
+ * Links the user account with the given provider using a redirect-style flow.
+ *
+ * @remarks On React Native Firebase, native provider flows complete immediately and resolve with a
+ * {@link UserCredential} instead of following the browser redirect contract used by the
+ * firebase-js-sdk.
+ */
 export function linkWithRedirect(
   user: User,
   provider: AuthProvider,
@@ -698,6 +929,12 @@ export function linkWithRedirect(
   );
 }
 
+/**
+ * Returns the multi-factor interface for the given user.
+ *
+ * @remarks Uses the user's own Auth instance instead of always calling {@link getAuth}, which fixes
+ * secondary Firebase app usage compared with earlier RNFB behavior.
+ */
 export function multiFactor(user: User): MultiFactorUser {
   return normalizeMultiFactorUser(
     new MultiFactorUserModule(
@@ -708,6 +945,9 @@ export function multiFactor(user: User): MultiFactorUser {
   );
 }
 
+/**
+ * Reauthenticates the user with the given credential.
+ */
 export function reauthenticateWithCredential(
   user: User,
   credential: AuthCredential,
@@ -722,6 +962,12 @@ export function reauthenticateWithCredential(
   );
 }
 
+/**
+ * Reauthenticates the user with a phone number using SMS verification.
+ *
+ * @remarks
+ * **Not supported on React Native Firebase.** Always throws synchronously.
+ */
 export function reauthenticateWithPhoneNumber(
   _user: User,
   _phoneNumber: string,
@@ -730,6 +976,9 @@ export function reauthenticateWithPhoneNumber(
   throw new Error('reauthenticateWithPhoneNumber is unsupported by the native Firebase SDKs');
 }
 
+/**
+ * Reauthenticates the user with the given provider using a native popup-style flow where supported.
+ */
 export function reauthenticateWithPopup(
   user: User,
   provider: AuthProvider,
@@ -748,6 +997,13 @@ export function reauthenticateWithPopup(
   );
 }
 
+/**
+ * Reauthenticates the user with the given provider using a redirect-style flow.
+ *
+ * @remarks On React Native Firebase, native provider flows do not follow the browser redirect
+ * contract. This resolves with `void` after the native flow completes instead of the
+ * firebase-js-sdk `Promise<never>` signature used for unresolved browser redirects.
+ */
 export function reauthenticateWithRedirect(
   user: User,
   provider: AuthProvider,
@@ -761,11 +1017,17 @@ export function reauthenticateWithRedirect(
   );
 }
 
+/**
+ * Reloads the user's profile data from the server.
+ */
 export function reload(user: User): Promise<void> {
   const userInternal = getUserInternal(user);
   return callUserMethod(userInternal, userInternal.reload);
 }
 
+/**
+ * Sends an email verification message to the user.
+ */
 export function sendEmailVerification(
   user: User,
   actionCodeSettings?: ActionCodeSettings | null,
@@ -778,26 +1040,41 @@ export function sendEmailVerification(
   );
 }
 
+/**
+ * Unlinks a provider from the user account.
+ */
 export function unlink(user: User, providerId: string): Promise<User> {
   const userInternal = getUserInternal(user);
   return callUserMethod(userInternal, userInternal.unlink, providerId);
 }
 
+/**
+ * Updates the user's email address.
+ */
 export function updateEmail(user: User, newEmail: string): Promise<void> {
   const userInternal = getUserInternal(user);
   return callUserMethod(userInternal, userInternal.updateEmail, newEmail);
 }
 
+/**
+ * Updates the user's password.
+ */
 export function updatePassword(user: User, newPassword: string): Promise<void> {
   const userInternal = getUserInternal(user);
   return callUserMethod(userInternal, userInternal.updatePassword, newPassword);
 }
 
+/**
+ * Updates the user's phone number using a phone auth credential.
+ */
 export function updatePhoneNumber(user: User, credential: PhoneAuthCredential): Promise<void> {
   const userInternal = getUserInternal(user);
   return callUserMethod(userInternal, userInternal.updatePhoneNumber, credential);
 }
 
+/**
+ * Updates the user's display name and/or photo URL.
+ */
 export function updateProfile(
   user: User,
   profile: { displayName?: string | null; photoURL?: string | null },
@@ -809,6 +1086,9 @@ export function updateProfile(
   });
 }
 
+/**
+ * Sends a verification email to the new address before updating the user's email.
+ */
 export function verifyBeforeUpdateEmail(
   user: User,
   newEmail: string,
@@ -823,25 +1103,39 @@ export function verifyBeforeUpdateEmail(
   );
 }
 
-export function getAdditionalUserInfo(userCredential: UserCredential): AdditionalUserInfo | null {
+/**
+ * Returns additional OAuth / federated sign-in information from a {@link UserCredential}.
+ *
+ * @remarks Returns firebase-js-sdk core fields plus any extra native keys copied from the bridge.
+ */
+export function getAdditionalUserInfo(
+  userCredential: UserCredential,
+): AdditionalUserInfo | null {
+  if (userCredential.additionalUserInfo) {
+    return userCredential.additionalUserInfo;
+  }
+
   const info = (userCredential as unknown as UserCredentialResultInternal).additionalUserInfo;
   if (!info) {
     return null;
   }
 
-  return {
-    isNewUser: info.isNewUser,
-    profile: info.profile ?? null,
-    providerId: info.providerId ?? null,
-    username: info.username ?? null,
-  };
+  return normalizeAdditionalUserInfo(info as AdditionalUserInfoSource);
 }
 
+/**
+ * Returns the configured custom auth domain for the Auth instance.
+ *
+ * @remarks React Native Firebase-specific helper with no firebase-js-sdk equivalent.
+ */
 export function getCustomAuthDomain(auth: Auth): Promise<string> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.getCustomAuthDomain);
 }
 
+/**
+ * Validates a password against the project's password policy.
+ */
 export function validatePassword(auth: Auth, password: string): Promise<PasswordValidationStatus> {
   if (!auth || !('app' in auth)) {
     throw new Error(

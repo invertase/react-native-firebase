@@ -42,7 +42,6 @@ import auth, {
   verifyPasswordResetCode,
   parseActionCodeURL,
   ActionCodeURL,
-  ACTION_CODE_URL_PARSE_NOT_IMPLEMENTED,
   deleteUser,
   getIdToken,
   getIdTokenResult,
@@ -481,15 +480,25 @@ describe('Auth', function () {
       expect(parseActionCodeURL).toBeDefined();
     });
 
-    it('`parseActionCodeURL` and `ActionCodeURL.parseLink` reject with not-implemented error', async function () {
-      const link = 'https://example.com/auth?mode=verifyEmail&oobCode=abc';
+    it('`parseActionCodeURL` and `ActionCodeURL.parseLink` parse valid action links', function () {
+      const link =
+        'https://example.firebaseapp.com/__/auth/action?apiKey=test-api-key&mode=verifyEmail&oobCode=test-code&lang=en&continueUrl=https%3A%2F%2Fexample.com';
 
-      await expect(parseActionCodeURL(link)).rejects.toThrow(
-        ACTION_CODE_URL_PARSE_NOT_IMPLEMENTED,
-      );
-      await expect(ActionCodeURL.parseLink(link)).rejects.toThrow(
-        ACTION_CODE_URL_PARSE_NOT_IMPLEMENTED,
-      );
+      const parsedFromFunction = parseActionCodeURL(link);
+      const parsedFromClass = ActionCodeURL.parseLink(link);
+
+      expect(parsedFromFunction).not.toBeNull();
+      expect(parsedFromClass).toEqual(parsedFromFunction);
+      expect(parsedFromFunction?.apiKey).toBe('test-api-key');
+      expect(parsedFromFunction?.code).toBe('test-code');
+      expect(parsedFromFunction?.operation).toBe('VERIFY_EMAIL');
+      expect(parsedFromFunction?.languageCode).toBe('en');
+      expect(parsedFromFunction?.continueUrl).toBe('https://example.com');
+    });
+
+    it('`parseActionCodeURL` returns null for invalid action links', function () {
+      expect(parseActionCodeURL('https://example.com/not-an-action-link')).toBeNull();
+      expect(ActionCodeURL.parseLink('https://example.com/not-an-action-link')).toBeNull();
     });
 
     it('`deleteUser` function is properly exposed to end user', function () {

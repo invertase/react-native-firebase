@@ -64,18 +64,26 @@ describe('auth() -> emailLink Provider', function () {
         signInResponse.should.containEql(oobInfo.oobCode);
       }
     });
+  });
 
-    it('namespaced sendSignInLinkToEmail works with default settings', async function () {
+  describe('namespaced', function () {
+    before(function () {
       // @ts-ignore
       globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
 
-      const random = Utils.randString(12, '#aA');
-      const email = `${random}@${random}.com`;
-
-      await firebase.auth().sendSignInLinkToEmail(email);
-
+    after(function () {
       // @ts-ignore
       globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
+    describe('sendSignInLinkToEmail', function () {
+      it('works with default settings', async function () {
+        const random = Utils.randString(12, '#aA');
+        const email = `${random}@${random}.com`;
+
+        await firebase.auth().sendSignInLinkToEmail(email);
+      });
     });
   });
 

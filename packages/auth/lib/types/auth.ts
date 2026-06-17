@@ -40,9 +40,16 @@ interface Observer<T> {
 export interface Auth {
   readonly app: FirebaseApp;
   readonly name: string;
+  /** @remarks Always returns `{}` at runtime. Native iOS/Android Firebase Auth SDKs do not expose the web config object. */
   readonly config: Config;
+  /**
+   * @remarks
+   * **Not supported on React Native Firebase.** The modular {@link setPersistence} helper always throws
+   * synchronously because auth state is managed by the native SDKs.
+   */
   setPersistence(persistence: Persistence): Promise<void>;
   languageCode: string | null;
+  /** Writable tenant ID. Assigning a value delegates to `setTenantId`. */
   tenantId: string | null;
   readonly settings: AuthSettings;
   onAuthStateChanged(
@@ -59,10 +66,17 @@ export interface Auth {
     error?: ErrorFn,
     completed?: CompleteFn,
   ): Unsubscribe;
+  /** Resolves when the initial auth state has been determined. */
   authStateReady(): Promise<void>;
   readonly currentUser: User | null;
+  /** Populated after {@link connectAuthEmulator} is called; otherwise `null`. */
   readonly emulatorConfig: EmulatorConfig | null;
   updateCurrentUser(user: User | null): Promise<void>;
+  /**
+   * @remarks
+   * **Not supported on React Native Firebase.** Always throws synchronously. Set `languageCode`
+   * directly or use {@link setLanguageCode}.
+   */
   useDeviceLanguage(): void;
   signOut(): Promise<void>;
 }
@@ -83,6 +97,9 @@ export interface NativeFirebaseAuthError extends ReactNativeFirebase.NativeFireb
   };
 }
 
+/**
+ * @deprecated Use {@link OAuthProvider} with provider ID `oidc.<suffix>` instead.
+ */
 export interface OIDCProvider {
   readonly PROVIDER_ID: string;
   credential(oidcSuffix: string, idToken: string): AuthCredential;
@@ -230,6 +247,12 @@ export interface AdditionalUserInfo {
   readonly username?: string | null;
 }
 
+/**
+ * firebase-js-sdk `AdditionalUserInfo` fields plus any extra keys returned by the native bridge.
+ * Extra keys are preserved for backwards compatibility when native adds provider-specific fields.
+ */
+export type AdditionalUserInfoNative = AdditionalUserInfo & Record<string, unknown>;
+
 export interface UserInfo {
   readonly displayName: string | null;
   readonly email: string | null;
@@ -268,10 +291,20 @@ export interface User extends UserInfo {
   toJSON(): object;
 }
 
+/**
+ * @remarks Modular helpers populate top-level `providerId` and `operationType`. When present,
+ * `additionalUserInfo` is enumerable and includes firebase-js-sdk fields plus any extra native keys.
+ */
 export interface UserCredential {
   user: User;
   providerId: string | null;
   operationType: (typeof OperationType)[keyof typeof OperationType];
+  /**
+   * Present on modular sign-in results when the native bridge returns federated metadata.
+   * Includes firebase-js-sdk core fields; extra native keys are preserved at runtime — see
+   * {@link AdditionalUserInfoNative} and {@link getAdditionalUserInfo}.
+   */
+  additionalUserInfo?: AdditionalUserInfo;
 }
 
 export interface ConfirmationResult {

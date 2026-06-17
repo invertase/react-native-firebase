@@ -16,7 +16,7 @@
  */
 
 import { OAuthCredential } from '../credentials';
-import type { AuthError, OAuthCredential as OAuthCredentialType, UserCredential } from '../types/auth';
+import type { AuthError, UserCredential } from '../types/auth';
 
 // Keep the SDK helper signature name while mapping to RNFB's native auth error type.
 type FirebaseError = AuthError;
@@ -31,7 +31,7 @@ export default class GithubAuthProvider {
     throw new Error('`new GithubAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static credential(token: string): OAuthCredentialType {
+  static credential(token: string): OAuthCredential {
     return new OAuthCredential(providerId, {
       accessToken: token,
       bridgeToken: token,
@@ -39,11 +39,13 @@ export default class GithubAuthProvider {
     });
   }
 
-  static credentialFromResult(_userCredential: UserCredential): OAuthCredentialType | null {
+  /** @remarks Always returns `null` on React Native Firebase. */
+  static credentialFromResult(_userCredential: UserCredential): OAuthCredential | null {
     return null;
   }
 
-  static credentialFromError(_error: FirebaseError): OAuthCredentialType | null {
+  /** @remarks Always returns `null` on React Native Firebase. */
+  static credentialFromError(_error: FirebaseError): OAuthCredential | null {
     return null;
   }
 }

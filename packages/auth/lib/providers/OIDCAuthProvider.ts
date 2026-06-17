@@ -20,6 +20,15 @@ import type { AuthCredential as AuthCredentialType } from '../types/auth';
 
 const providerId = 'oidc.' as const;
 
+/**
+ * @deprecated Use {@link OAuthProvider} with provider ID `oidc.<your-provider-id>` instead.
+ *
+ * @example
+ * ```js
+ * const provider = new OAuthProvider('oidc.sample-provider');
+ * const credential = provider.credential({ idToken, accessToken });
+ * ```
+ */
 export default class OIDCAuthProvider {
   constructor() {
     throw new Error('`new OIDCAuthProvider()` is not supported on the native Firebase SDKs.');

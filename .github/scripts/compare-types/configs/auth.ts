@@ -4,6 +4,12 @@
  *
  * Each entry must have a `name` and a `reason`. Any undocumented
  * difference or stale entry will fail `yarn compare:types`.
+ *
+ * Platform shorthand used in reasons:
+ * - iOS/Android: native Firebase Auth SDK
+ * - Other/All: Other/Hermes + Other/Web (firebase-js-sdk JS bridge)
+ * - Other/Hermes: react-native-macos, Windows RN, etc. (no DOM)
+ * - Other/Web: true browser/DOM context
  */
 
 import type { PackageConfig } from '../src/types';
@@ -15,71 +21,72 @@ const config: PackageConfig = {
     {
       name: 'initializeRecaptchaConfig',
       reason:
-        'Web-only reCAPTCHA bootstrap helper from the firebase-js-sdk. RN Firebase does not expose browser reCAPTCHA initialization because native SDKs own the phone-auth verification flow.',
+        'iOS/Android: native SDKs own phone verification. Other/Hermes: not applicable (no DOM). Other/Web: not implemented yet; firebase-js-sdk support is possible.',
     },
     {
       name: 'AuthErrorCodes',
       reason:
-        'RN Firebase still relies on native auth error code strings and does not export the firebase-js-sdk AuthErrorCodes constant map.',
+        'iOS/Android: native auth error code strings. Other/All: not exported yet; firebase-js-sdk re-export is possible.',
     },
     {
       name: 'browserCookiePersistence',
       reason:
-        'Browser-only persistence implementation from the firebase-js-sdk. Not applicable to React Native native-auth persistence.',
+        'iOS/Android: not applicable. Other/Hermes: not applicable. Other/Web: not exported yet; firebase-js-sdk browser persistence is possible.',
     },
     {
       name: 'browserLocalPersistence',
       reason:
-        'Browser-only localStorage persistence implementation from the firebase-js-sdk. Not applicable to React Native native-auth persistence.',
+        'iOS/Android: not applicable. Other/Hermes: not applicable. Other/Web: not exported yet; firebase-js-sdk browser persistence is possible.',
     },
     {
       name: 'browserPopupRedirectResolver',
       reason:
-        'Browser-only popup/redirect resolver from the firebase-js-sdk. Native provider flows do not use the browser popup resolver stack.',
+        'iOS/Android: native provider flows. Other/Hermes: not applicable. Other/Web: not exported yet; firebase-js-sdk popup/redirect resolver is possible.',
     },
     {
       name: 'browserSessionPersistence',
       reason:
-        'Browser-only sessionStorage persistence implementation from the firebase-js-sdk. Not applicable to React Native native-auth persistence.',
+        'iOS/Android: not applicable. Other/Hermes: not applicable. Other/Web: not exported yet; firebase-js-sdk browser persistence is possible.',
     },
     {
       name: 'debugErrorMap',
       reason:
-        'firebase-js-sdk web error-map helper. RN Firebase does not expose the SDK error-map selection API.',
+        'iOS/Android: not exported. Other/All: not implemented yet; firebase-js-sdk error-map selection via initializeAuth is possible.',
     },
     {
       name: 'indexedDBLocalPersistence',
       reason:
-        'IndexedDB persistence is web-only and not applicable to React Native native-auth persistence.',
+        'iOS/Android: not applicable. Other/Hermes: not applicable. Other/Web: not exported yet; firebase-js-sdk IndexedDB persistence is possible.',
     },
     {
       name: 'inMemoryPersistence',
       reason:
-        'The firebase-js-sdk persistence object is not exported by RN Firebase because auth state is managed by the underlying native SDKs.',
+        'iOS/Android: native SDKs manage persistence. Other/All: not exported yet; firebase-js-sdk inMemoryPersistence via initializeAuth is possible.',
     },
     {
       name: 'prodErrorMap',
       reason:
-        'firebase-js-sdk web error-map helper. RN Firebase does not expose the SDK error-map selection API.',
+        'iOS/Android: not exported. Other/All: not implemented yet; firebase-js-sdk error-map selection via initializeAuth is possible.',
     },
     {
       name: 'ReactNativeAsyncStorage',
       reason:
-        'The firebase-js-sdk React Native persistence helper type is not exported by RN Firebase because persistence is delegated to the native iOS/Android SDKs rather than configured through initializeAuth().',
+        'iOS/Android: persistence delegated to native SDKs. Other/Hermes: not exported yet; firebase-js-sdk React Native persistence via initializeAuth is possible.',
     },
     {
       name: 'RecaptchaParameters',
-      reason: 'Browser reCAPTCHA configuration is not part of the RN Firebase native auth surface.',
+      reason:
+        'iOS/Android: not applicable. Other/Hermes: not applicable. Other/Web: not exported; browser reCAPTCHA configuration only.',
     },
     {
       name: 'RecaptchaVerifier',
       reason:
-        'Browser reCAPTCHA verifier implementation is not available in RN Firebase because native SDKs own application verification.',
+        'iOS/Android: native verification. Other/Hermes: not applicable (no DOM). Other/Web: not implemented yet; firebase-js-sdk RecaptchaVerifier is possible.',
     },
     {
       name: 'SAMLAuthProvider',
       reason:
-        'SAMLAuthProvider is not yet surfaced on the RN Firebase modular/public auth surface.',
+        'iOS/Android: not exported. Other/Hermes: not applicable. Other/Web: not exported yet; firebase-js-sdk SAML provider is possible.',
     },
   ],
 
@@ -87,7 +94,7 @@ const config: PackageConfig = {
     {
       name: 'AppleAuthProvider',
       reason:
-        'RN Firebase-specific Apple auth provider helper exposed for native Sign in with Apple flows; the firebase-js-sdk does not export a separate AppleAuthProvider class.',
+        'Deprecated RN Firebase helper for Sign in with Apple. Prefer OAuthProvider("apple.com"). Retained for compatibility; firebase-js-sdk uses OAuthProvider only.',
     },
     {
       name: 'NativeFirebaseAuthError',
@@ -97,128 +104,115 @@ const config: PackageConfig = {
     {
       name: 'OIDCAuthProvider',
       reason:
-        'RN Firebase-specific OIDC auth provider class retained for compatibility with the existing public package surface; the firebase-js-sdk exposes OAuthProvider instead of a separate OIDCAuthProvider class.',
+        'Deprecated RN Firebase OIDC helper. Prefer OAuthProvider("oidc.<suffix>"). Retained for compatibility; firebase-js-sdk uses OAuthProvider only.',
     },
     {
       name: 'OIDCProvider',
       reason:
-        'RN Firebase-specific OIDC provider class export retained for compatibility with the existing package surface.',
+        'Deprecated with OIDCAuthProvider. Prefer OAuthProvider for OIDC flows.',
     },
     {
       name: 'PhoneAuthState',
-      reason: 'RN Firebase-specific enum-like object describing native phone-auth listener states.',
+      reason:
+        'RN Firebase-specific enum-like object describing native phone-auth listener states. iOS/Android only; Other uses js-sdk phone flows instead of verifyPhoneNumber().',
     },
     {
       name: 'PhoneAuthListener',
-      reason: 'RN Firebase-specific listener object returned by verifyPhoneNumber().',
+      reason:
+        'RN Firebase-specific listener object returned by verifyPhoneNumber(). iOS/Android only.',
     },
     {
       name: 'PhoneAuthError',
       reason:
-        'RN Firebase-specific phone verification error snapshot type used by native phone-auth listeners.',
+        'RN Firebase-specific phone verification error snapshot type used by native phone-auth listeners. iOS/Android only.',
     },
     {
       name: 'PhoneAuthSnapshot',
       reason:
-        'RN Firebase-specific phone verification snapshot type used by native phone-auth listeners.',
+        'RN Firebase-specific phone verification snapshot type used by native phone-auth listeners. iOS/Android only.',
     },
     {
       name: 'verifyPhoneNumber',
       reason:
-        'RN Firebase-specific helper exposing the native phone verification listener flow; the firebase-js-sdk does not export this helper.',
+        'RN Firebase-specific native phone verification listener flow. iOS/Android only; Other/All: use signInWithPhoneNumber / PhoneAuthProvider via js-sdk instead.',
     },
     {
       name: 'setLanguageCode',
       reason:
-        'RN Firebase keeps a modular helper for setting auth.languageCode, while the firebase-js-sdk only exposes the writable property.',
+        'RN Firebase modular helper for auth.languageCode. iOS/Android: native. Other/All: not delegated yet; firebase-js-sdk languageCode / useDeviceLanguage is possible.',
     },
     {
       name: 'useUserAccessGroup',
       reason:
-        'RN Firebase-specific iOS keychain sharing helper with no firebase-js-sdk equivalent.',
+        'RN Firebase-specific iOS keychain sharing helper. iOS native only.',
     },
     {
       name: 'getCustomAuthDomain',
       reason:
-        'RN Firebase-specific helper that exposes the configured native auth domain; no firebase-js-sdk equivalent exists.',
+        'RN Firebase-specific native auth domain helper on iOS/Android. Other/All: auth.config from firebase-js-sdk may cover this instead (see auth.config in migration guide).',
+    },
+    {
+      name: 'AdditionalUserInfoNative',
+      reason:
+        'RN Firebase extension type: firebase-js-sdk AdditionalUserInfo core fields plus index signature for extra native bridge keys. Use when typing values from getAdditionalUserInfo or UserCredential.additionalUserInfo that may include provider-specific native fields.',
     },
   ],
 
   differentShape: [
     {
-      name: 'ActionCodeURL',
+      name: 'OAuthCredential',
       reason:
-        'RN Firebase exports the ActionCodeURL class with the same fields as firebase-js-sdk, but ActionCodeURL.parseLink is not implemented yet and returns Promise<ActionCodeURL | null> (rejecting with a not-implemented error) instead of the firebase-js-sdk synchronous ActionCodeURL | null result.',
-    },
-    {
-      name: 'parseActionCodeURL',
-      reason:
-        'RN Firebase parseActionCodeURL is not implemented yet and returns Promise<ActionCodeURL | null> (rejecting with a not-implemented error) instead of the firebase-js-sdk synchronous ActionCodeURL | null result.',
+        'RN Firebase OAuthCredential exposes rawNonce for Apple / limited-login flows. OAuth 1.0 token secrets use the inherited AuthCredential.secret field (firebase-js-sdk optional secret on OAuthCredential).',
     },
     {
       name: 'FacebookAuthProvider',
       reason:
-        'Provider credential helpers are emitted with the RN Firebase OAuthCredential class return type alias; behavior matches firebase-js-sdk credentialFromResult/credentialFromError stubs.',
+        'RN Firebase exports an extra credential(token, secret) overload for Facebook limited-login nonce behaviour. firebase-js-sdk public types only declare credential(accessToken). credentialFromResult / credentialFromError always return null at runtime today (types match js-sdk). iOS/Android: no native extraction planned. Other/Hermes: not delegated. Other/Web: future implementation should delegate to firebase-js-sdk in RNFBAuthModule — do not invest in native iOS/Android extraction.',
     },
     {
-      name: 'GithubAuthProvider',
+      name: 'UserCredential',
       reason:
-        'Provider credential helpers are emitted with the RN Firebase OAuthCredential class return type alias; behavior matches firebase-js-sdk credentialFromResult/credentialFromError stubs.',
-    },
-    {
-      name: 'GoogleAuthProvider',
-      reason:
-        'Provider credential helpers are emitted with the RN Firebase OAuthCredential class return type alias; behavior matches firebase-js-sdk credentialFromResult/credentialFromError stubs.',
-    },
-    {
-      name: 'OAuthCredential',
-      reason:
-        'RN Firebase OAuthCredential exposes rawNonce for native Sign in with Apple / limited-login flows instead of the firebase-js-sdk OAuth 1.0 secret field name, while retaining RNFB bridge fields internally.',
-    },
-    {
-      name: 'TwitterAuthProvider',
-      reason:
-        'Provider credential helpers are emitted with the RN Firebase OAuthCredential class return type alias; behavior matches firebase-js-sdk credentialFromResult/credentialFromError stubs.',
+        'RN Firebase modular UserCredential includes optional enumerable additionalUserInfo (firebase-js-sdk core fields plus preserved native bridge keys). firebase-js-sdk keeps additionalUserInfo off the public UserCredential interface — use getAdditionalUserInfo there.',
     },
     {
       name: 'isSignInWithEmailLink',
       reason:
-        'RN Firebase resolves this check asynchronously through the native bridge and returns Promise<boolean>, whereas the firebase-js-sdk returns a synchronous boolean.',
+        'iOS/Android: Promise<boolean> via native bridge. Other/All: not aligned yet; firebase-js-sdk synchronous boolean is possible on Other/Hermes and Other/Web.',
     },
     {
       name: 'linkWithRedirect',
       reason:
-        'Native provider flows resolve immediately with a UserCredential instead of following the browser redirect contract used by the firebase-js-sdk.',
+        'iOS/Android: resolves immediately with UserCredential. Other/Hermes: not applicable (no DOM). Other/Web: not delegated yet; firebase-js-sdk redirect flow is possible.',
     },
     {
       name: 'reauthenticateWithRedirect',
       reason:
-        'Native provider flows do not follow the browser redirect contract. RN Firebase models this as Promise<void> rather than the firebase-js-sdk Promise<never> signature.',
+        'iOS/Android: Promise<void> after native in-app provider flow. Other/Hermes: not applicable. Other/Web: not delegated yet; firebase-js-sdk redirect semantics are possible.',
     },
     {
       name: 'signInWithRedirect',
       reason:
-        'Native provider flows resolve immediately with a UserCredential instead of following the browser redirect contract used by the firebase-js-sdk.',
+        'iOS/Android: resolves immediately with UserCredential. Other/Hermes: not applicable. Other/Web: not delegated yet; firebase-js-sdk redirect flow is possible.',
     },
     {
       name: 'OAuthProvider',
       reason:
-        'RN Firebase OAuthProvider retains native provider configuration helpers (scopes/custom parameters/toObject) used by the native auth bridge.',
+        'iOS/Android: retains toObject() and native bridge configuration helpers. Other/Hermes: scopes/custom parameters via js-sdk are possible. Other/Web: full js-sdk OAuthProvider surface is possible; toObject() remains iOS/Android bridge-only. credentialFromResult / credentialFromError always return null at runtime today (types match js-sdk). Other/Web is the future delegation path via firebase-js-sdk; iOS/Android native extraction is not planned.',
     },
     {
       name: 'PhoneAuthProvider',
       reason:
-        'RN Firebase mirrors the firebase-js-sdk credential and single-factor verifyPhoneNumber signatures while retaining an RNFB multi-factor overload.',
+        'RN Firebase retains native multi-factor verifyPhoneNumber overloads for iOS/Android native bridge methods. MFA also works on Other via firebase-js-sdk through the web bridge (see tests/local-tests); this overload is an intentional RN extension, not a missing Other implementation. credentialFromResult / credentialFromError always return null at runtime today (types match js-sdk). Other/Web js-sdk delegation is the future path for non-null extraction.',
     },
     {
       name: 'TotpMultiFactorGenerator',
       reason:
-        'RN Firebase now mirrors the firebase-js-sdk assertion return types and default-app generateSecret signature while retaining an RNFB auth overload for non-default native apps.',
+        'RN Firebase extension: optional Auth overload for non-default native Firebase apps. firebase-js-sdk uses the default app only.',
     },
     {
       name: 'TotpSecret',
       reason:
-        'RN Firebase TotpSecret.generateQrCodeUrl returns Promise<string> because QR code generation is performed through the React Native native bridge, and the class exposes native helper methods not present on the firebase-js-sdk TotpSecret class.',
+        'iOS/Android: generateQrCodeUrl is Promise<string> via native bridge; openInOtpApp is an RN-only helper. Other/All: js-sdk synchronous generateQrCodeUrl is possible when MFA is supported on Other.',
     },
   ],
 };

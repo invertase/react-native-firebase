@@ -16,7 +16,7 @@
  */
 
 import { OAuthCredential } from '../credentials';
-import type { AuthError, OAuthCredential as OAuthCredentialType, UserCredential } from '../types/auth';
+import type { AuthError, UserCredential } from '../types/auth';
 
 // Keep the SDK helper signature name while mapping to RNFB's native auth error type.
 type FirebaseError = AuthError;
@@ -31,8 +31,12 @@ export default class FacebookAuthProvider {
     throw new Error('`new FacebookAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static credential(token: string): OAuthCredentialType;
-  static credential(token: string, secret?: string): OAuthCredentialType {
+  /**
+   * @remarks Optional `secret` for Facebook limited-login nonce behaviour (matches firebase-js-sdk).
+   */
+  static credential(token: string): OAuthCredential;
+  static credential(token: string, secret: string): OAuthCredential;
+  static credential(token: string, secret?: string): OAuthCredential {
     const nonce = secret ?? '';
     return new OAuthCredential(providerId, {
       accessToken: token,
@@ -42,11 +46,13 @@ export default class FacebookAuthProvider {
     });
   }
 
-  static credentialFromResult(_userCredential: UserCredential): OAuthCredentialType | null {
+  /** @remarks Always returns `null` on React Native Firebase. */
+  static credentialFromResult(_userCredential: UserCredential): OAuthCredential | null {
     return null;
   }
 
-  static credentialFromError(_error: FirebaseError): OAuthCredentialType | null {
+  /** @remarks Always returns `null` on React Native Firebase. */
+  static credentialFromError(_error: FirebaseError): OAuthCredential | null {
     return null;
   }
 }

@@ -20,6 +20,15 @@ import type { AuthCredential as AuthCredentialType } from '../types/auth';
 
 const providerId = 'apple.com' as const;
 
+/**
+ * @deprecated Use {@link OAuthProvider} with provider ID `apple.com` instead.
+ *
+ * @example
+ * ```js
+ * const provider = new OAuthProvider('apple.com');
+ * const credential = provider.credential({ idToken, rawNonce });
+ * ```
+ */
 export default class AppleAuthProvider {
   constructor() {
     throw new Error('`new AppleAuthProvider()` is not supported on the native Firebase SDKs.');

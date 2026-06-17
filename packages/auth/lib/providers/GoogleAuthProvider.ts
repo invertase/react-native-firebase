@@ -16,7 +16,7 @@
  */
 
 import { OAuthCredential } from '../credentials';
-import type { AuthError, OAuthCredential as OAuthCredentialType, UserCredential } from '../types/auth';
+import type { AuthError, UserCredential } from '../types/auth';
 
 // Keep the SDK helper signature name while mapping to RNFB's native auth error type.
 type FirebaseError = AuthError;
@@ -31,7 +31,7 @@ export default class GoogleAuthProvider {
     throw new Error('`new GoogleAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static credential(idToken?: string | null, accessToken?: string | null): OAuthCredentialType {
+  static credential(idToken?: string | null, accessToken?: string | null): OAuthCredential {
     if (idToken == null && accessToken == null) {
       throw new Error('At least one of ID token and access token must be non-null');
     }
@@ -42,11 +42,19 @@ export default class GoogleAuthProvider {
     });
   }
 
-  static credentialFromResult(_userCredential: UserCredential): OAuthCredentialType | null {
+  /**
+   * @remarks Always returns `null` on React Native Firebase. Credentials are not extractable from
+   * native provider sign-in results.
+   */
+  static credentialFromResult(_userCredential: UserCredential): OAuthCredential | null {
     return null;
   }
 
-  static credentialFromError(_error: FirebaseError): OAuthCredentialType | null {
+  /**
+   * @remarks Always returns `null` on React Native Firebase. Credentials are not extractable from
+   * native provider errors.
+   */
+  static credentialFromError(_error: FirebaseError): OAuthCredential | null {
     return null;
   }
 }
