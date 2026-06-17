@@ -221,3 +221,93 @@ rg 'Coverage summary|jet-coverage' detox-step.log
 - **Release vs debug** — matrix runs both; each has separate artifacts (`debug` / `release` in the artifact name).
 - **Retry** — Pre-Boot retries up to 3 times with 60s between attempts (clean shutdown + boot each time).
 - **Do not boot the simulator only inside Detox** — historical races where the testee never sent “ready” to the Detox proxy; pre-boot remains mandatory.
+
+### Pinned Homebrew utilities
+
+CI installs macOS build helpers from **vendored formulae** in `.github/homebrew-rnfb/Formula/` instead of live taps (`wix/brew`, `homebrew-core`). Each formula file is frozen in git with pinned `url`, source `sha256`, and bottle hashes — similar in spirit to SHA-pinned GitHub Actions.
+
+| Formula | Version | Upstream source | Used in |
+|---------|---------|-----------------|---------|
+| `applesimutils.rb` | 0.9.12 | [wix/homebrew-brew](https://github.com/wix/homebrew-brew) @ `8f636f84541e` | iOS e2e (`tests_e2e_ios.yml`) |
+| `xcbeautify.rb` | 3.2.1 | [homebrew-core](https://github.com/Homebrew/homebrew-core) @ `f2e343d17882` | iOS e2e + macOS e2e (`tests_e2e_other.yml`) |
+
+**Workflow install** — both workflows call `.github/workflows/scripts/install-homebrew-rnfb.sh` (from repo root). Homebrew 6+ refuses bare `brew install --formula path/to.rb`; the script copies formulae into a local `invertase/rnfb` tap, trusts it once per job, then installs:
+
+```bash
+# iOS e2e (tests_e2e_ios.yml)
+bash .github/workflows/scripts/install-homebrew-rnfb.sh applesimutils xcbeautify
+
+# macOS e2e (tests_e2e_other.yml)
+bash .github/workflows/scripts/install-homebrew-rnfb.sh xcbeautify
+```
+
+**Why** — Third-party taps can change formula definitions on every `brew update`. Vendoring avoids supply-chain drift and Brew 6 untrusted-tap warnings for live third-party taps. We still `brew trust invertase/rnfb` for the ephemeral local tap copy each job creates. The install script **uninstalls any existing `homebrew-core` (or other tap) install** of the same formula name first — GHA macOS images often preinstall `xcbeautify`, and Brew refuses same-name formulae from two taps.
+
+#### When to update a pinned formula
+
+- CI **Install brew utilities** fails after a macOS runner / Xcode image bump (common for `xcbeautify` Swift/`on_sequoia` conditionals).
+- You need a newer **applesimutils** or **xcbeautify** feature or bugfix.
+- A security advisory affects the pinned upstream release (bump `url` / version and checksums).
+
+#### How to update a pinned formula
+
+1. **Fetch the upstream formula** you want to vendor (usually `master`, or a specific commit if you need a known-good revision):
+
+   ```bash
+   # applesimutils (wix tap)
+   curl -fsSL "https://raw.githubusercontent.com/wix/homebrew-brew/master/Formula/applesimutils.rb" \
+     -o /tmp/applesimutils.rb
+
+   # xcbeautify (homebrew-core)
+   curl -fsSL "https://raw.githubusercontent.com/Homebrew/homebrew-core/master/Formula/x/xcbeautify.rb" \
+     -o /tmp/xcbeautify.rb
+   ```
+
+2. **Record the upstream commit** (for the table above and the file header):
+
+   ```bash
+   # applesimutils
+   gh api repos/wix/homebrew-brew/commits \
+     -f path=Formula/applesimutils.rb -f per_page=1 \
+     --jq '.[0].sha[:12]'
+
+   # xcbeautify
+   gh api repos/Homebrew/homebrew-core/commits \
+     -f path=Formula/x/xcbeautify.rb -f per_page=1 \
+     --jq '.[0].sha[:12]'
+   ```
+
+3. **Merge into `.github/homebrew-rnfb/Formula/<name>.rb`** — keep the RNFB header at the top (replace version + commit), then paste the upstream `class` body. Remove `head "..."` lines if present (frozen vendored formulae should not track moving branches). Example header:
+
+   ```ruby
+   # frozen_string_literal: true
+   # RNFB CI vendored formula — do not install from third-party taps in workflows.
+   # Upstream: wix/homebrew-brew @ <12-char-sha> — AppleSimulatorUtils <version>
+   # Update: see okf-bundle/ci-workflows/ios.md#pinned-homebrew-utilities
+   ```
+
+4. **Verify locally on macOS** (from repo root):
+
+   ```bash
+   bash .github/workflows/scripts/install-homebrew-rnfb.sh <name>
+   <name> --version    # xcbeautify
+   applesimutils --help # applesimutils (no --version)
+   ```
+
+   If upgrading a formula already in your Cellar, uninstall first: `brew uninstall <name>`.
+
+5. **Update this doc** — bump the version and upstream-commit columns in the table above.
+
+6. **Open a PR** — CI will exercise the same install script as production workflows. Watch the **Install brew utilities** step timing (`applesimutils` often builds from source on `macos-26`).
+
+#### Local dev (optional)
+
+Match CI with the install script, or install a single formula file via the script:
+
+```bash
+bash .github/workflows/scripts/install-homebrew-rnfb.sh applesimutils xcbeautify
+```
+
+See also `CONTRIBUTING.md` and `tests/README.md`.
+
+**`applesimutils` on modern runners** — upstream bottles target older macOS releases; GHA `macos-26` typically **builds from source** (needs Xcode). Expect a longer “Install brew utilities” step than `xcbeautify`, which usually installs from a matching bottle.

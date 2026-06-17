@@ -219,6 +219,7 @@ jobs:
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
 
+      # Vendored Homebrew formulae — pin/update: okf-bundle/ci-workflows/ios.md#pinned-homebrew-utilities
       - name: Install brew utilities
         # https://github.com/nick-fields/retry/releases
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -226,7 +227,7 @@ jobs:
           timeout_minutes: 5
           retry_wait_seconds: 60
           max_attempts: 3
-          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install xcbeautify
+          command: bash .github/workflows/scripts/install-homebrew-rnfb.sh xcbeautify
 
       - name: Build macos App
         run: |

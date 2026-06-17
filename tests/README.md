@@ -13,11 +13,10 @@ Our tests are powered by [Jet ✈️](https://github.com/invertase/jet).
   - [Apple Sim Utils](https://github.com/wix/AppleSimulatorUtils):
 
     ```bash
-    brew tap wix/brew
-    brew install wix/brew/applesimutils
+    bash .github/workflows/scripts/install-homebrew-rnfb.sh applesimutils
     ```
 
-> **Note**: If Homebrew complains about a conflict in the `wix/brew` tap, run `brew untap wix/brew && brew tap wix/brew` and try installing again
+    CI uses the same vendored formulae (see `okf-bundle/ci-workflows/ios.md#pinned-homebrew-utilities`).
 
 ---
 

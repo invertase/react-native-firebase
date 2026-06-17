@@ -99,8 +99,7 @@ cd react-native-firebase
 
 ```bash
 yarn
-brew tap wix/brew
-brew install applesimutils xcbeautify
+bash .github/workflows/scripts/install-homebrew-rnfb.sh applesimutils xcbeautify
 ```
 
 > Note that this project is a mono-repo, so you only need to install NPM dependencies once at the root of the project with `yarn`.
