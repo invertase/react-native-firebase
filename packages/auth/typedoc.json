@@ -5,6 +5,7 @@
   "intentionallyNotExported": [
     "AuthNamespace",
     "Observer",
-    "AuthInternal"
+    "AuthInternal",
+    "OAuthCredentialParams"
   ]
 }
