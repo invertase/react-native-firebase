@@ -71,12 +71,32 @@ target 'testing' do
       # :ccache_enabled => true
     )
 
+    apply_ios_native_coverage = lambda do |build_settings, link_profile:|
+      build_settings['CLANG_ENABLE_CODE_COVERAGE'] = 'YES'
+      build_settings['OTHER_CFLAGS'] = '$(inherited) -fprofile-instr-generate -fcoverage-mapping'
+      build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -profile-generate -profile-coverage-mapping'
+      if link_profile
+        # DT_TOOLCHAIN_DIR (not TOOLCHAIN_DIR) resolves in workspace OTHER_LDFLAGS on CI.
+        # Explicit -l flags satisfy Firebase static Swift pod autolink when clang/ccache links.
+        build_settings['OTHER_LDFLAGS'] = [
+          '$(inherited)',
+          '-fprofile-instr-generate',
+          '-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)',
+          '-L$(SDKROOT)/usr/lib/swift',
+          '-lswiftCompatibility56',
+          '-lswiftCompatibilityPacks',
+        ].join(' ')
+      end
+    end
+
     installer.aggregate_targets.each do |aggregate_target|
       aggregate_target.user_project.native_targets.each do |target|
         target.build_configurations.each do |config|
           # Arch selection is needed to work across M1/Intel macs, became necessary when App Check was added
           config.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
           config.build_settings['EXCLUDED_ARCHS'] = 'i386'
+          # LLVM coverage for e2e native export (see okf-bundle/testing/coverage-design.md)
+          apply_ios_native_coverage.call(config.build_settings, link_profile: true)
         end
       end
       aggregate_target.user_project.save
@@ -97,6 +117,11 @@ target 'testing' do
       target.build_configurations.each do |config|
         config.build_settings["GCC_WARN_INHIBIT_ALL_WARNINGS"] = "YES"
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+        # Instrument RNFB pods at compile time only. Do not add profile link flags to
+        # third-party / Firebase pods — that breaks Swift compatibility library linking on CI.
+        if target.name.include?('RNFB')
+          apply_ios_native_coverage.call(config.build_settings, link_profile: false)
+        end
       end
     end
   end

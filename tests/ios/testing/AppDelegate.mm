@@ -19,6 +19,7 @@
 
 #import "RNFBMessagingModule.h"
 #import "RNFBAppCheckModule.h"
+#import "RNFBTestingCoverageProfile.h"
 #import <Firebase.h>
 
 #import <React/RCTBundleURLProvider.h>
@@ -26,6 +27,8 @@
 @implementation AppDelegate
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  RNFBTestingConfigureCoverageProfilePath();
+
   // Initialize RNFBAppCheckModule, it sets the custom RNFBAppCheckProviderFactory
   // which lets us configure any of the available native platform providers,
   // and reconfigure if needed, dynamically after `[FIRApp configure]` just like the other platforms.
@@ -48,19 +51,6 @@
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:@{}];
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
-}
-
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
-  return NO;
-}
-
-- (BOOL)application:(nonnull UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
-    (nonnull void (^)(NSArray<id <UIUserActivityRestoring>> *_Nullable))restorationHandler {
-#else
-  (nonnull void (^)(NSArray *_Nullable))restorationHandler {
-#endif
-  return NO;
 }
 
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
