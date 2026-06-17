@@ -1,0 +1,22 @@
+diff --git a/dist/Server.js b/dist/Server.js
+index ad9debe2086ab9b96e97a69aec966da8114ad102..e3c1c964956023df876dfcac3f73000b4eaf1bba 100644
+--- a/dist/Server.js
++++ b/dist/Server.js
+@@ -130,6 +130,17 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
+                         throw new Error("Received a message from the client, but server wasn't running");
+                     }
+                 }
++                else if (msg.action === "coverage-ready") {
++                    this.send({ action: "pull-coverage" });
++                }
++                else if (msg.action === "coverage-data") {
++                    const coverage = msg.coverage || {};
++                    this.emit("coverage-data", coverage);
++                    this.send({
++                        action: "coverage-ack",
++                        fileCount: Object.keys(coverage).length,
++                    });
++                }
+                 else if (msg.action === "error") {
+                     if (typeof msg.message !== "string") {
+                         throw new Error("Expected 'error' action to have an error argument with a message");

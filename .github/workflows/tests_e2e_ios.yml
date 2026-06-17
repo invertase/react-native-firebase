@@ -353,6 +353,11 @@ jobs:
         timeout-minutes: 55
         run: yarn tests:ios:test-cover
 
+      - name: Process iOS native coverage
+        if: always() && contains(matrix.buildmode, 'debug')
+        continue-on-error: true
+        run: yarn tests:ios:test:process-coverage
+
       - name: Detox Test Release
         if: contains(matrix.buildmode, 'release')
         timeout-minutes: 55

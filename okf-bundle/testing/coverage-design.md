@@ -109,7 +109,7 @@ After a Detox/macOS e2e run, expect log lines like `[jet-coverage] WS received N
 
 1. Gradle enables `testCoverageEnabled` on RNFB Android library modules (`tests/android/build.gradle`).
 2. Detox e2e runs; the instrumented app writes `coverage.ec`.
-3. When the Jet process exits successfully, `tests/scripts/pull-native-coverage.js` (called from `tests/e2e/firebase.test.js`) copies the `.ec` file to `tests/android/app/build/output/coverage/emulator_coverage.ec`. **The test fails if this pull fails** (same pattern as iOS).
+3. When the Jet process exits successfully, `tests/scripts/pull-native-coverage.js` copies the `.ec` file to `tests/android/app/build/output/coverage/emulator_coverage.ec`. **A failed pull logs a warning and does not fail the Detox test** (intermittent on CI when `coverage.ec` is not flushed in time). Jacoco report may be empty for that run.
 4. `yarn tests:android:test:jacoco-report` runs `jacocoAndroidTestReport`, producing XML at:
 
    `tests/android/app/build/reports/jacoco/jacocoAndroidTestReport/jacocoAndroidTestReport.xml`
@@ -131,7 +131,9 @@ CI runs steps 3–4 in sequence inside the emulator job.
 
 ## Pipeline
 
-1. **Build-time instrumentation:** `CLANG_ENABLE_CODE_COVERAGE=YES` plus explicit LLVM flags on the test app and Pod targets (`-fprofile-instr-generate`, `-fcoverage-mapping`, Swift `-profile-generate`) are set in **`tests/ios/Podfile` `post_install`** only (not in `project.pbxproj` — that file should stay opaque; run `pod install` after checkout). Detox builds with `-derivedDataPath ios/build`. **Do not** pass `-enableCodeCoverage` to `xcodebuild build` — that flag is test-only.
+1. **Build-time instrumentation:** LLVM profile flags are set in **`tests/ios/Podfile` `post_install`** only (run `pod install` after checkout):
+   - **`testing` app target:** compile + link profile flags, plus Swift toolchain library search paths (needed when linking Firebase Swift static pods on CI)
+   - **`RNFB*` pod targets:** compile-time profile flags only — **not** `-fprofile-instr-generate` on `OTHER_LDFLAGS` for third-party / Firebase pods (breaks `swiftCompatibility56` linking on CI)
 2. **Runtime flush:** At app launch, `RNFBTestingConfigureCoverageProfilePath()` sets the profile output to `Documents/coverage.profraw`. After all Mocha tests complete, the Jet `after` hook in `tests/app.js` calls `NativeModules.RNFBTestingCoverage.flush()` (native module exported via `RCT_EXPORT_MODULE(RNFBTestingCoverage)`). **Do not use a custom URL scheme** — iOS shows an “Open in 'testing'?” dialog that blocks Detox.
 3. **Pull:** When the Jet process exits with code 0, `tests/scripts/pull-native-coverage.js` copies profraw from the simulator app container to `tests/ios/build/output/coverage/simulator_coverage.profraw`. **The Detox test fails if no profraw is found.** Pull happens on Jet `close` (not in `afterAll`) so it runs before Detox environment teardown.
 4. **Post-test export:** `yarn tests:ios:test:process-coverage` runs `tests/scripts/process-ios-native-coverage.js`, which:
@@ -216,7 +218,8 @@ These must all be true for native iOS coverage to work. If any break, the e2e te
 | No profraw after e2e; test still passes (old behaviour) | Pull in `afterAll` after `detox.cleanup()`, or wrong module name | Pull on Jet `close`; verify `RNFBTestingCoverage` export name |
 | Stale profraw uploaded | Re-processed old file without re-running e2e | Process step deletes profraw after export; missing file + exit 1 on next process |
 | `process-ios-native-coverage` succeeds but no `packages/` hits | Wrong binary / not instrumented | Rebuild with `yarn tests:ios:build`; check Podfile flags |
-| Empty Jacoco XML (~235 bytes) | AGP 8 class path or missing `src/reactnative/java` | See `jacocoAndroidTestReport` in `tests/android/app/jacoco.gradle` |
+| Empty Jacoco XML (~235 bytes) | AGP 8 class path, missing `src/reactnative/java`, or no `coverage.ec` pulled | See `jacocoAndroidTestReport`; check `[native-coverage] Android native coverage pull failed` warning |
+| iOS link: `swiftCompatibility56` undefined | Profile link flags applied to all Pods | Restrict `OTHER_LDFLAGS` profile flags to app target; RNFB pods compile-only |
 | No `[jet-coverage] WS received` lines | Patches not applied | `yarn install` from repo root; check `.yarn/patches/` |
 | NYC summary missing / empty `lcov.info` | Jet not run from `tests/` cwd | Detox spawns `yarn jet` inside `tests/`; macOS uses `cd tests && npx jet` |
 | Codecov upload **Unusable** | Wrong `SF:` paths | Confirm path rewrite in `process-ios-native-coverage.js`; check Uploads tab message |

@@ -8,7 +8,7 @@
         "instrument": true,
         "relativePath": true,
         "include": ["**/packages/**"],
-        "useInlineSourceMaps": false
+        "useInlineSourceMaps": true
       }
     ]
   ]

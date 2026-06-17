@@ -15,7 +15,10 @@
  * limitations under the License.
  *
  */
-const { execSync, spawn } = require('child_process');
+const { spawn } = require('child_process');
+const path = require('path');
+
+const { pullAndroidCoverage, pullIosCoverage } = require('../scripts/pull-native-coverage');
 
 describe('Jet Tests', function () {
   jest.retryTimes(0, { logErrorsBeforeRetry: true });
@@ -23,6 +26,8 @@ describe('Jet Tests', function () {
   it('runs all tests', async function () {
     return new Promise(async (resolve, reject) => {
       const platform = detox.device.getPlatform();
+      const deviceId = detox.device.id;
+      const testsDir = path.resolve(__dirname, '..');
       const jetArgs =
         process.platform === 'win32'
           ? ['jet', `--target=${platform}`] // NYC / coverage does not work on windows.
@@ -30,17 +35,31 @@ describe('Jet Tests', function () {
       const jetProcess = spawn('yarn', jetArgs, {
         stdio: ['ignore', 'inherit', 'inherit'],
         shell: true,
+        cwd: testsDir,
       });
       jetProcess.on('error', err => {
         console.error(`Jet tests had an error: ${err}`);
         reject(new Error(`Jet tests failed!`));
       });
       jetProcess.on('close', code => {
-        if (code === 0) {
-          resolve();
-        } else {
+        if (code !== 0) {
           reject(new Error(`Jet tests failed!`));
+          return;
         }
+
+        try {
+          if (platform === 'android' && process.platform !== 'win32') {
+            pullAndroidCoverage(deviceId, { testsDir, softFail: true });
+          }
+          if (platform === 'ios' && process.platform === 'darwin') {
+            pullIosCoverage(deviceId, { testsDir });
+          }
+        } catch (e) {
+          reject(new Error(`Failed to download native coverage data: ${e.message}`));
+          return;
+        }
+
+        resolve();
       });
       await device.launchApp({
         newInstance: true,
@@ -49,49 +68,13 @@ describe('Jet Tests', function () {
       });
     });
   });
-});
 
-beforeAll(async function () {
-  // Nothing to do here.
-});
-
-beforeEach(async function () {
-  // Nothing to do here.
-});
-
-afterAll(async function () {
-  console.log(' ✨ Tests Complete ✨ ');
-  const isAndroid = detox.device.getPlatform() === 'android';
-  const deviceId = detox.device.id;
-
-  // emits 'cleanup' across socket, which goes native, terminates Detox test Looper
-  // This returns control to the java code in our instrumented test, and then Instrumentation lifecycle finishes cleanly
-  // await Utils.sleep(5000); // give async processes (like Firestore writes) time to complete
-  await detox.cleanup();
-  // await Utils.sleep(5000); // give client app time to dump coverage report
-
-  // Get the file off the device, into standard location for JaCoCo binary report
-  // It will still need processing via gradle jacocoAndroidTestReport task for codecov, but it's available now
-  if (isAndroid && process.platform !== 'win32') {
-    const pkg = 'com.invertase.testing';
-    const emuOrig = `/data/user/0/${pkg}/files/coverage.ec`;
-    const emuDest = '/data/local/tmp/detox/coverage.ec';
-    const localDestDir = './android/app/build/output/coverage/';
-    const adb = process.env.ANDROID_HOME ? `${process.env.ANDROID_HOME}/platform-tools/adb` : 'adb';
-
+  afterAll(async function () {
+    console.log(' ✨ Tests Complete ✨ ');
     try {
-      execSync(`${adb} -s ${deviceId} shell "run-as ${pkg} cat ${emuOrig} > ${emuDest}"`);
-      execSync(`mkdir -p ${localDestDir}`);
-      execSync(`${adb} -s ${deviceId} pull ${emuDest} ${localDestDir}/emulator_coverage.ec`);
-      console.log(`Coverage data downloaded to: ${localDestDir}/emulator_coverage.ec`);
-    } catch (e) {
-      console.log('Unable to download coverage data from device: ', JSON.stringify(e));
+      await device.terminateApp();
+    } catch (_) {
+      // No-op
     }
-  }
-
-  try {
-    await device.terminateApp();
-  } catch (_) {
-    // No-op
-  }
+  });
 });
