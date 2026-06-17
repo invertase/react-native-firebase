@@ -4,11 +4,11 @@ Working document for sorting known differences between `@react-native-firebase/a
 
 **Related files**
 
-- [`.github/scripts/compare-types/configs/auth.ts`](.github/scripts/compare-types/configs/auth.ts) — machine-readable registry (`yarn compare:types auth`)
-- [`docs/migrating-to-v25.mdx`](docs/migrating-to-v25.mdx) — user-facing migration guide (also read by agents)
-- [`packages/auth/lib/modular.ts`](packages/auth/lib/modular.ts) — modular API
-- [`packages/auth/lib/web/RNFBAuthModule.ts`](packages/auth/lib/web/RNFBAuthModule.ts) — Other platform js-sdk bridge
-- [`tests/local-tests/`](tests/local-tests/) — mini-app exercising MFA / TOTP on Other platforms
+- [`.github/scripts/compare-types/configs/auth.ts`](../../../.github/scripts/compare-types/configs/auth.ts) — machine-readable registry (`yarn compare:types auth`)
+- [`docs/migrating-to-v25.mdx`](../../../docs/migrating-to-v25.mdx) — user-facing migration guide (also read by agents)
+- [`packages/auth/lib/modular.ts`](../../../packages/auth/lib/modular.ts) — modular API
+- [`packages/auth/lib/web/RNFBAuthModule.ts`](../../../packages/auth/lib/web/RNFBAuthModule.ts) — Other platform js-sdk bridge
+- [`tests/local-tests/`](../../../tests/local-tests/) — mini-app exercising MFA / TOTP on Other platforms
 
 ---
 
@@ -154,7 +154,7 @@ Documented in **#22**, provider JSDoc, `configs/auth.ts` (`OAuthProvider`, `Face
 | **29** | Provider credential return types | Emit `OAuthCredential` class name (not `OAuthCredentialType` alias) in provider static methods |
 | **31** | Provider `differentShape` cleanup | Removed stale type-only provider entries where declarations now match |
 | **33** | `additionalUserInfo` | Enumerable on modular `UserCredential`; native extras preserved; `AdditionalUserInfoNative` exported |
-| **24–27** | Provider deprecations | JSDoc + [`docs/migrating-to-v25.mdx`](docs/migrating-to-v25.mdx) |
+| **24–27** | Provider deprecations | JSDoc + [`docs/migrating-to-v25.mdx`](../../../docs/migrating-to-v25.mdx) |
 
 **#32 implementation** (narrow `auth.config` typing per platform) — **deferred**; see Document only above.
 
@@ -227,5 +227,6 @@ Other/Web: not delegated yet; firebase-js-sdk disableWarnings DOM suppression is
 | 5 | **Update compare:types note** table; **#8** reclassified; **#28** implemented; **#24–#27** deprecated |
 | 6 | **#8/#37** closed (MFA on Other verified in `tests/local-tests`); **#29/#31** provider typing aligned; **#33** enumerable `additionalUserInfo` + `AdditionalUserInfoNative`; **#32** option B + **#36** document-only; registry + migration guide updated |
 | 7 | **#40** document-only; `credentialFromResult` future path on **Other/Web** via `RNFBAuthModule`; triage **#1–#40** complete |
+| 8 | Moved to `okf-bundle/packages/auth/compare-types-triage.md` |
 
 **Future work (post–v25 typing):** Other/Web `credentialFromResult` delegation; optional per-platform `auth.config` typing; `missingInRN` browser/js-sdk exports per **#23a–#23h**.

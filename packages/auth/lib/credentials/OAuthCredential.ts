@@ -70,6 +70,7 @@ function resolveOAuthBridgeFields(params: OAuthCredentialParams): { token: strin
 export class OAuthCredential extends AuthCredential {
   readonly idToken?: string;
   readonly accessToken?: string;
+  /** @remarks Used for Sign in with Apple and Facebook limited-login flows. OAuth 1.0 token secrets (e.g. Twitter) use the inherited AuthCredential secret bridge field instead. */
   readonly rawNonce?: string;
 
   constructor(providerId: string, params: OAuthCredentialParams) {

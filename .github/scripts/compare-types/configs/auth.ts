@@ -167,7 +167,7 @@ const config: PackageConfig = {
     {
       name: 'FacebookAuthProvider',
       reason:
-        'RN Firebase exports an extra credential(token, secret) overload for Facebook limited-login nonce behaviour. firebase-js-sdk public types only declare credential(accessToken). credentialFromResult / credentialFromError always return null at runtime today (types match js-sdk). iOS/Android: no native extraction planned. Other/Hermes: not delegated. Other/Web: future implementation should delegate to firebase-js-sdk in RNFBAuthModule — do not invest in native iOS/Android extraction.',
+        'RN Firebase exports an extra credential(token, secret) overload for Facebook limited-login nonce behaviour. firebase-js-sdk public types only declare credential(accessToken). credentialFromResult / credentialFromError always return null at runtime today (types match js-sdk). Same runtime applies to GoogleAuthProvider, GithubAuthProvider, TwitterAuthProvider, OAuthProvider, and PhoneAuthProvider — see those entries. iOS/Android: no native extraction planned. Other/Hermes: not delegated. Other/Web: future implementation should delegate to firebase-js-sdk in RNFBAuthModule — do not invest in native iOS/Android extraction.',
     },
     {
       name: 'UserCredential',
@@ -197,12 +197,12 @@ const config: PackageConfig = {
     {
       name: 'OAuthProvider',
       reason:
-        'iOS/Android: retains toObject() and native bridge configuration helpers. Other/Hermes: scopes/custom parameters via js-sdk are possible. Other/Web: full js-sdk OAuthProvider surface is possible; toObject() remains iOS/Android bridge-only. credentialFromResult / credentialFromError always return null at runtime today (types match js-sdk). Other/Web is the future delegation path via firebase-js-sdk; iOS/Android native extraction is not planned.',
+        'iOS/Android: retains toObject() and native bridge configuration helpers. Other/Hermes: scopes/custom parameters via js-sdk are possible. Other/Web: full js-sdk OAuthProvider surface is possible; toObject() remains iOS/Android bridge-only. credentialFromResult / credentialFromError always return null at runtime today (types match js-sdk). Same runtime applies to GoogleAuthProvider, GithubAuthProvider, TwitterAuthProvider, FacebookAuthProvider, and PhoneAuthProvider. Other/Web is the future delegation path via firebase-js-sdk; iOS/Android native extraction is not planned.',
     },
     {
       name: 'PhoneAuthProvider',
       reason:
-        'RN Firebase retains native multi-factor verifyPhoneNumber overloads for iOS/Android native bridge methods. MFA also works on Other via firebase-js-sdk through the web bridge (see tests/local-tests); this overload is an intentional RN extension, not a missing Other implementation. credentialFromResult / credentialFromError always return null at runtime today (types match js-sdk). Other/Web js-sdk delegation is the future path for non-null extraction.',
+        'RN Firebase retains native multi-factor verifyPhoneNumber overloads for iOS/Android native bridge methods. MFA also works on Other via firebase-js-sdk through the web bridge (see tests/local-tests); this overload is an intentional RN extension, not a missing Other implementation. credentialFromResult / credentialFromError always return null at runtime today (types match js-sdk). Same runtime applies to GoogleAuthProvider, GithubAuthProvider, TwitterAuthProvider, FacebookAuthProvider, and OAuthProvider. Other/Web js-sdk delegation is the future path for non-null extraction.',
     },
     {
       name: 'TotpMultiFactorGenerator',
