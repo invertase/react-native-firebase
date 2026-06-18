@@ -49,6 +49,7 @@ Artifacts are uploaded on every run (`if: always()`), even when tests fail.
 | Artifact | Source | Use when |
 |----------|--------|----------|
 | `simulator-<buildmode>-<iteration>_log` | `xcrun simctl spawn booted log stream` → `simulator.log` | In-simulator system/app logs during Detox |
+| `metro-<buildmode>-<iteration>_log` | Metro stdout/stderr from `yarn tests:packager:jet-ci` → `metro.log` (debug only) | Metro hung, slow bundle, or unresponsive `/status` during app launch |
 | `simulator-<buildmode>-<iteration>_video` | `xcrun simctl io booted recordVideo` → `simulator.mp4` | Visual confirmation of UI state |
 | `screenrecording-<buildmode>-<iteration>` | `screencapture` of the Mac desktop | Includes Simulator.app window |
 | `screenrecording-setup-<buildmode>-<iteration>.mov` | Guidepup setup recording | Very early environment setup |
@@ -57,7 +58,7 @@ Artifacts are uploaded on every run (`if: always()`), even when tests fail.
 **When to use which log**
 
 - **Boot / migration / “simulator won’t start”** — read the **Pre-Boot Simulator** step log in GitHub Actions first. Look for `[boot-status]` lines and `bootstatus -d` migration output. That captures first-boot migration even though `simulator.log` starts only after pre-boot succeeds.
-- **Detox / app / test failures** — download `simulator-*_log` and use [E2E test app orchestration](#e2e-test-app-orchestration-detox--jet) grep patterns (`[rnfb-lifecycle]`, `waitForActive`, SpringBoard foreground). Jet WS drops (1006/1001) appear in the **Detox step log** (`[jet-ws]`, `[rnfb-e2e]`).
+- **Detox / app / test failures** — download `simulator-*_log` and use [E2E test app orchestration](#e2e-test-app-orchestration-detox--jet) grep patterns (`[rnfb-lifecycle]`, `waitForActive`, SpringBoard foreground). Jet WS drops (1006/1001) appear in the **Detox step log** (`[jet-ws]`, `[rnfb-e2e]`). For debug Metro issues, also download `metro-*_log`.
 - **UI regressions** — `simulator-*_video` or `screenrecording-*`.
 
 **Downloading artifacts**
@@ -86,7 +87,7 @@ Device type is defined in `tests/.detoxrc.js` (`devices.simulator.device.type`).
 
 ### E2E test app orchestration (Detox + Jet)
 
-After pre-boot succeeds, failures often move **inside** the test app process (`com.invertase.testing`, binary `testing`). Simulator boot and app install are fine; Detox `launchApp` stalls while the app stays alive. Three overlapping issues show up in CI logs.
+After pre-boot succeeds, failures often move **inside** the test app process (`com.invertase.testing`, binary `testing`). Simulator boot and app install are fine; Detox `launchApp` stalls while the app stays alive. Several overlapping issues show up in CI logs.
 
 #### 1. Early `ready` race
 
@@ -110,6 +111,8 @@ ws-server The app has dispatched "ready" action too early.
 | Change | Location |
 |--------|----------|
 | Wait for Jet (port 8090) before `launchApp` | `tests/e2e/firebase.test.js` |
+| Wait for Metro (`/status`) before `launchApp` | `tests/e2e/firebase.test.js` (debug Detox configs only) |
+| Bounded `launchApp` timeout (default 180s) | `tests/e2e/firebase.test.js` |
 | `detoxEnableSynchronization: 'NO'` at launch | `tests/e2e/firebase.test.js` |
 | `detoxURLBlacklistRegex: '.*'` | `tests/e2e/firebase.test.js` (existing) |
 
@@ -119,14 +122,39 @@ ws-server The app has dispatched "ready" action too early.
 
 **Instrumentation** — `tests/ios/testing/AppDelegate.mm` logs `[rnfb-lifecycle]` at launch, on UIApplication/UIScene lifecycle notifications, and at **+30s / +60s** one-shot probes if the app never becomes active. Confirms whether the stall is Detox-side or the app never reaching `UIApplicationStateActive` / `foregroundActive`.
 
-**Mitigations in this repo (summary)**
+**Distinguish from issue 4** — If `[rnfb-lifecycle]` probes show `UIApplication.state=active` / `foregroundActive` but Detox still hangs on `waitForActive`, the cause is likely Metro/JS bundle load failure (issue 4), not scene activation.
+
+#### 4. Metro unresponsive at launch → `waitForActive` hang (active app)
+
+**Symptom** — Same Detox-side pattern as issue 3 (`waitForActive` without `waitForActiveDone`, multi-minute hang in `device.launchApp()`), but **`[rnfb-lifecycle]` shows the app is already active**. Often seen on debug CI only; release on the same run passes (embedded bundle, no live Metro).
+
+**Cause chain** (observed on run [27727525262](https://github.com/invertase/react-native-firebase/actions/runs/27727525262)):
+
+1. Debug app requests `http://localhost:8081/status` from inside the simulator; TCP connects but Metro returns no bytes within ~10s (`NSURLErrorDomain Code=-1001`).
+2. RN logs `No script URL provided. Make sure the packager is running...` and shows RedBox; DetoxSync adds an RN-load idling resource that never clears.
+3. Detox WS login/`isReady` succeed (early-ready patch works), then `waitForActive` is received but **`waitForActiveDone` never arrives** even though UIKit is active.
+
+Metro can look healthy on the **host** during pre-fetch minutes earlier while being unresponsive when the app actually launches.
+
+**Instrumentation** — `AppDelegate.mm` observes `RCTJavaScriptDidFailToLoadNotification` and logs:
+
+- `event=RCTJavaScriptDidFailToLoad` with NSError domain/code/description
+- `event=packager-probe` — `[RCTBundleURLProvider isPackagerRunning:]`, `packagerServerHostPort`, resolved `bundleURL`
+- `event=packager-status-fetch` — direct `http://localhost:8081/status` fetch from inside the app with explicit timeout and HTTP status/body or error
+
+**Mitigations in this repo**
 
 | Change | Location |
 |--------|----------|
-| Buffer early `ready`, replay after app `login` | `.yarn/patches/detox-npm-20.51.0-*.patch` |
-| Jet wait + Detox launch args | `tests/e2e/firebase.test.js` |
-| Lifecycle logging for post-mortem | `tests/ios/testing/AppDelegate.mm` |
-| Pre-boot + `bootstatus` before install | `boot-simulator.sh` (orthogonal; fixes boot/migration only) |
+| Wait for Metro `/status` before `launchApp` | `tests/e2e/firebase.test.js` (debug Detox configs only) |
+| One in-process `launchApp` retry on Metro/bundle load timeout | `tests/e2e/firebase.test.js` (`RNFB_LAUNCH_APP_MAX_ATTEMPTS`, debug only) |
+| Full Jet e2e retry on launch failure (after in-process retries exhausted) | `tests/e2e/firebase.test.js` (debug Metro failures only) |
+| Bounded `launchApp` timeout (default 180s, env `RNFB_LAUNCH_APP_TIMEOUT_MS`) | `tests/e2e/firebase.test.js` |
+| Metro log artifact (`metro.log`) | `.github/workflows/tests_e2e_ios.yml` |
+| JS load failure + packager probe logging | `tests/ios/testing/AppDelegate.mm` |
+| Bundle URL pinned to `127.0.0.1` (bypasses RN `localhost` fallback) | `tests/ios/testing/AppDelegate.mm` |
+
+**Known intermittent pattern (community)** — RN iOS debug builds commonly hit `No script URL provided` when Metro is down, slow, or reachable from the host but not from the simulator process. Reported causes include: Metro event loop blocked under load (TCP connect succeeds, HTTP hangs — matches our `-1001` on `/status`), macOS network proxy intercepting `localhost:8081`, port 8081 contention, and `RCTBundleURLProvider` returning a nil bundle URL despite `isPackagerRunning=YES` ([react-native#49173](https://github.com/facebook/react-native/issues/49173)). On **iOS 26+ simulators**, hostname resolution for `localhost` vs `127.0.0.1` can be unreliable; hardcoding `127.0.0.1` in bundle URL resolution has been reported to fix intermittent Metro disconnects ([react-native#56447](https://github.com/facebook/react-native/issues/56447)). Our test app now pins the debug bundle URL to `127.0.0.1:8081` and the e2e harness retries `launchApp` once on Metro/bundle-load timeout before failing the Jet attempt (**debug CI only** — release uses an embedded bundle and does not start Metro). These are typically **environment/timing** flakes rather than app logic bugs; release builds avoid them by using embedded bundles.
 
 #### Diagnosing from `simulator.log`
 
@@ -140,6 +168,11 @@ rg 'testing\[' simulator.log | rg -i 'waitForActive|waitForActiveDone|com\.wix\.
 
 # App lifecycle confirmation (AppDelegate instrumentation)
 rg '\[rnfb-lifecycle\]' simulator.log
+
+# Metro / JS bundle load failure (issue 4)
+rg '\[rnfb-lifecycle\].*RCTJavaScriptDidFailToLoad|packager-probe|packager-status-fetch' simulator.log
+rg 'No script URL provided|com\.facebook\.react\.log' simulator.log
+rg 'testing\[' simulator.log | rg '8081/status|index\.bundle'
 
 # SpringBoard launch intent vs app scene state
 rg 'com\.invertase\.testing' simulator.log | rg -i 'foreground-interactive|visibility.*Foreground|running-active'
@@ -157,14 +190,33 @@ rg 'testing\[' simulator.log | rg -i 'FIRApp|RNFB|RCTBridge|configure'
 | Pattern | Meaning |
 |---------|---------|
 | `ready action too early` in Detox step only | Early-ready race (patch should fix; check patch applied in `yarn install`) |
-| `waitForActive` without `waitForActiveDone` | Scene/active hang; check `[rnfb-lifecycle]` probes still `unattached` / not `active` |
-| `probe+30s` / `probe+60s` with `UIApplication.state=inactive` or scene `unattached` | App never became foreground-active; compare with SpringBoard `foreground-interactive` lines |
+| `waitForActive` without `waitForActiveDone` | Scene/active hang (issue 3) **or** Metro/JS load failure (issue 4) — check `[rnfb-lifecycle]` probes |
+| `probe+30s` / `probe+60s` with `UIApplication.state=inactive` or scene `unattached` | App never became foreground-active (issue 3); compare with SpringBoard `foreground-interactive` lines |
+| `probe+30s` / `probe+60s` with `active` / `foregroundActive` but no `waitForActiveDone` | Metro/JS bundle failure despite active UIKit (issue 4); check `RCTJavaScriptDidFailToLoad` and `packager-status-fetch` |
+| `packager-status-fetch ... error domain=NSURLErrorDomain code=-1001` | Metro TCP reachable but HTTP timed out from simulator |
+| `No script URL provided` in `com.facebook.react.log` | RN never got bundle URL; only `/status` attempts, no `index.bundle` |
 | `handshake successful` 30–60s after `simctl launch` | Main-thread startup delay; not a boot failure |
 | Only `com.apple.datamigrator` activity, no `testing[` | Pre-boot / migration issue — use Actions `[boot-status]` log, not Detox orchestration |
 
-**Example healthy sequence** (abbreviated): `didFinishLaunching+after` → `UIApplicationDidBecomeActiveNotification` / scene `foregroundActive` → Detox `loginSuccess` → `isReady` → `waitForActiveDone`. A gap between SpringBoard foreground request and `[rnfb-lifecycle]` `active` is the smoking gun for issue 3.
+**Example healthy sequence** (abbreviated): `didFinishLaunching+after` → `UIApplicationDidBecomeActiveNotification` / scene `foregroundActive` → Detox `loginSuccess` → `isReady` → `waitForActiveDone`. A gap between SpringBoard foreground request and `[rnfb-lifecycle]` `active` is the smoking gun for issue 3. For issue 4, lifecycle probes show `active` but you will see `RCTJavaScriptDidFailToLoad` and/or `No script URL provided` before Detox stalls on `waitForActive`.
 
-#### 4. Jet WebSocket disconnect (1006 / 1001)
+For Metro-side post-mortem, also download `metro-*_log` and check whether Metro logged bundle requests or stalled around the launch timestamp:
+
+```bash
+rg -i 'BUNDLE|index\.bundle|8081|error|ECONN|transform' metro.log
+```
+
+**Mitigations in this repo (summary)**
+
+| Change | Location |
+|--------|----------|
+| Buffer early `ready`, replay after app `login` | `.yarn/patches/detox-npm-20.51.0-*.patch` |
+| Jet + Metro wait, bounded `launchApp` with retry, Detox launch args | `tests/e2e/firebase.test.js` |
+| Lifecycle + JS load / packager probe logging; bundle URL `127.0.0.1` | `tests/ios/testing/AppDelegate.mm` |
+| Pre-boot + `bootstatus` before install | `boot-simulator.sh` (orthogonal; fixes boot/migration only) |
+| Metro stdout/stderr artifact | `.github/workflows/tests_e2e_ios.yml` |
+
+#### 5. Jet WebSocket disconnect (1006 / 1001)
 
 **Symptom** (Detox Test Debug step, often debug build only):
 

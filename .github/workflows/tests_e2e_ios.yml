@@ -313,7 +313,7 @@ jobs:
       - name: Pre-fetch Javascript bundle
         if: contains(matrix.buildmode, 'debug')
         run: |
-          nohup yarn tests:packager:jet-ci &
+          nohup yarn tests:packager:jet-ci > metro.log 2>&1 &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
@@ -387,6 +387,15 @@ jobs:
         with:
           name: simulator-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
           path: simulator.log
+
+      - name: Upload Metro log
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        continue-on-error: true
+        if: always() && contains(matrix.buildmode, 'debug')
+        with:
+          name: metro-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
+          path: metro.log
 
       - name: Upload Screen Recording
         # https://github.com/actions/upload-artifact/releases

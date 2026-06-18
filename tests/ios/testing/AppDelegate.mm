@@ -23,6 +23,23 @@
 #import <Firebase.h>
 
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTConstants.h>
+#import <React/RCTDefines.h>
+
+static NSString *const RNFBTestingMetroHost = @"127.0.0.1";
+static const NSTimeInterval RNFBTestingMetroProbeTimeoutSec = 10.0;
+
+static NSString *RNFBTestingMetroHostPort(void)
+{
+  return [NSString stringWithFormat:@"%@:%lu", RNFBTestingMetroHost, (unsigned long)RCT_METRO_PORT];
+}
+
+#if DEBUG
+static void RNFBTestingConfigureMetroHost(void)
+{
+  [[RCTBundleURLProvider sharedSettings] setJsLocation:RNFBTestingMetroHostPort()];
+}
+#endif
 
 static NSString *RNFBTestingDescribeApplicationState(UIApplicationState state)
 {
@@ -110,15 +127,123 @@ static void RNFBTestingRegisterLifecycleObservers(id observer)
   });
 }
 
+#if DEBUG
+static void RNFBTestingLogPackagerProbe(NSString *context)
+{
+  NSString *hostPort = [[RCTBundleURLProvider sharedSettings] packagerServerHostPort] ?: @"(nil)";
+  BOOL isRunning = [RCTBundleURLProvider isPackagerRunning:RNFBTestingMetroHostPort()];
+  NSURL *bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+  NSLog(@"[rnfb-lifecycle] event=packager-probe context=%@ isPackagerRunning=%@ hostPort=%@ bundleURL=%@",
+        context,
+        isRunning ? @"YES" : @"NO",
+        hostPort,
+        bundleURL.absoluteString ?: @"(nil)");
+
+  NSString *statusURLString =
+      [NSString stringWithFormat:@"http://%@/status", RNFBTestingMetroHostPort()];
+  NSURL *statusURL = [NSURL URLWithString:statusURLString];
+  dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+  __block NSString *probeResult = @"pending";
+
+  NSURLSessionConfiguration *config = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+  config.timeoutIntervalForRequest = RNFBTestingMetroProbeTimeoutSec;
+  config.timeoutIntervalForResource = RNFBTestingMetroProbeTimeoutSec;
+  NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
+  NSURLSessionDataTask *task = [session dataTaskWithURL:statusURL
+                                      completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                        if (error) {
+                                          probeResult =
+                                              [NSString stringWithFormat:@"error domain=%@ code=%ld desc=%@",
+                                                                         error.domain,
+                                                                         (long)error.code,
+                                                                         error.localizedDescription ?: @""];
+                                        } else {
+                                          NSHTTPURLResponse *http = (NSHTTPURLResponse *)response;
+                                          NSString *body =
+                                              data ? [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]
+                                                   : @"";
+                                          if (body.length > 120) {
+                                            body = [[body substringToIndex:120] stringByAppendingString:@"..."];
+                                          }
+                                          probeResult = [NSString stringWithFormat:@"httpStatus=%ld body=%@",
+                                                                                   (long)http.statusCode,
+                                                                                   body ?: @""];
+                                        }
+                                        dispatch_semaphore_signal(sem);
+                                      }];
+  [task resume];
+
+  long wait = dispatch_semaphore_wait(
+      sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)((RNFBTestingMetroProbeTimeoutSec + 1) * NSEC_PER_SEC)));
+  if (wait != 0) {
+    probeResult =
+        [NSString stringWithFormat:@"probe-timed-out-after-%.0fs", RNFBTestingMetroProbeTimeoutSec];
+    [task cancel];
+  }
+
+  NSLog(@"[rnfb-lifecycle] event=packager-status-fetch context=%@ url=%@ result=%@",
+        context,
+        statusURLString,
+        probeResult);
+}
+
+static void RNFBTestingRegisterJavaScriptLoadObservers(id observer)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSNotificationCenter *center = NSNotificationCenter.defaultCenter;
+    [center addObserver:observer
+               selector:@selector(rnfb_javascriptWillStartLoading:)
+                   name:RCTJavaScriptWillStartLoadingNotification
+                 object:nil];
+    [center addObserver:observer
+               selector:@selector(rnfb_javascriptDidFailToLoad:)
+                   name:RCTJavaScriptDidFailToLoadNotification
+                 object:nil];
+  });
+}
+#endif
+
 @implementation AppDelegate
 - (void)rnfb_applicationLifecycleNotification:(NSNotification *)notification
 {
   RNFBTestingLogLifecycle(notification.name);
 }
 
+#if DEBUG
+- (void)rnfb_javascriptWillStartLoading:(NSNotification *)notification
+{
+  RNFBTestingLogLifecycle(@"RCTJavaScriptWillStartLoading");
+  dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+    RNFBTestingLogPackagerProbe(@"will-start-loading");
+  });
+}
+
+- (void)rnfb_javascriptDidFailToLoad:(NSNotification *)notification
+{
+  NSError *error = notification.userInfo[@"error"];
+  if ([error isKindOfClass:[NSError class]]) {
+    NSLog(@"[rnfb-lifecycle] event=RCTJavaScriptDidFailToLoad error domain=%@ code=%ld desc=%@",
+          error.domain,
+          (long)error.code,
+          error.localizedDescription ?: @"");
+  } else {
+    RNFBTestingLogLifecycle(@"RCTJavaScriptDidFailToLoad");
+  }
+
+  dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+    RNFBTestingLogPackagerProbe(@"did-fail-to-load");
+  });
+}
+#endif
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   RNFBTestingRegisterLifecycleObservers(self);
+#if DEBUG
+  RNFBTestingConfigureMetroHost();
+  RNFBTestingRegisterJavaScriptLoadObservers(self);
+#endif
   RNFBTestingScheduleLifecycleProbes();
   RNFBTestingLogLifecycle(@"didFinishLaunching+before");
 
@@ -168,7 +293,16 @@ static void RNFBTestingRegisterLifecycleObservers(id observer)
 - (NSURL *)bundleURL
 {
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+  RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
+  // Bypass RCTBundleURLProvider's localhost fallback — iOS 26 simulators resolve 127.0.0.1 more reliably.
+  return [RCTBundleURLProvider jsBundleURLForBundleRoot:@"index"
+                                           packagerHost:RNFBTestingMetroHostPort()
+                                         packagerScheme:settings.packagerScheme ?: @"http"
+                                              enableDev:settings.enableDev
+                                     enableMinification:settings.enableMinification
+                                        inlineSourceMap:settings.inlineSourceMap
+                                            modulesOnly:NO
+                                              runModule:YES];
 #else
   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
