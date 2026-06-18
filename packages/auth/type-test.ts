@@ -202,6 +202,8 @@ const emailCredential = EmailAuthProvider.credential('test@example.com', 'passwo
 signInWithCredential(authInstance, emailCredential).then(
   (credential: FirebaseAuthTypes.UserCredential) => {
     console.log(credential.user.email);
+    console.log(credential.credential?.accessToken);
+    console.log(credential.credential?.idToken);
   },
 );
 

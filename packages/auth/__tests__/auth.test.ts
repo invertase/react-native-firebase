@@ -171,6 +171,50 @@ describe('Auth', function () {
       });
     });
 
+    describe('UserCredential', function () {
+      it('should include OAuth credential data returned by native auth result', function () {
+        const returnedCredential = {
+          providerId: 'oidc.test-provider',
+          accessToken: 'access-token',
+          idToken: 'id-token',
+          secret: null,
+        };
+        const nativeUserCredential = {
+          additionalUserInfo: {
+            isNewUser: false,
+            profile: null,
+            providerId: 'oidc.test-provider',
+            username: null,
+          },
+          credential: returnedCredential,
+          user: {
+            uid: 'test-user-id',
+            displayName: null,
+            email: 'test@example.com',
+            emailVerified: true,
+            isAnonymous: false,
+            metadata: {
+              lastSignInTime: '2023-01-01T00:00:00.000Z',
+              creationTime: '2023-01-01T00:00:00.000Z',
+            },
+            multiFactor: {
+              enrolledFactors: [],
+            },
+            phoneNumber: null,
+            tenantId: null,
+            photoURL: null,
+            providerData: [],
+            providerId: 'firebase',
+          },
+        };
+        // @ts-ignore test
+        const userCredential = auth()._setUserCredential(nativeUserCredential);
+
+        expect(userCredential.user.uid).toBe('test-user-id');
+        expect(userCredential.credential).toEqual(returnedCredential);
+      });
+    });
+
     describe('getMultiFactorResolver', function () {
       it('should return null if no resolver object is found', function () {
         const unknownError = NativeFirebaseError.fromEvent(
