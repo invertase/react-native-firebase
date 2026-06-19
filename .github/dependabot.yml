@@ -14,7 +14,6 @@ updates:
       semver-major-days: 7
       semver-minor-days: 7
       semver-patch-days: 7
-    target-branch: dependency-updates
     labels:
       - 'dependencies'
 
@@ -24,6 +23,10 @@ updates:
     directory: '/'
     schedule:
       interval: 'daily'
-    target-branch: dependency-updates
+    cooldown:
+      default-days: 7
+      semver-major-days: 7
+      semver-minor-days: 7
+      semver-patch-days: 7
     labels:
       - 'dependencies'
