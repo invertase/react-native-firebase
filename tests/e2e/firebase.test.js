@@ -26,12 +26,52 @@ const METRO_PORT = parseInt(process.env.JET_METRO_PORT || process.env.RCT_METRO_
 const LAUNCH_APP_TIMEOUT_MS = parseInt(process.env.RNFB_LAUNCH_APP_TIMEOUT_MS || '180000', 10);
 const LAUNCH_APP_MAX_ATTEMPTS = parseInt(process.env.RNFB_LAUNCH_APP_MAX_ATTEMPTS || '2', 10);
 const JET_RETRYABLE_WS_RE = /\[jet-ws\] RETRYABLE_DISCONNECT code=(1006|1001)\b/;
+const JET_RECONNECT_RECOVERED_RE = /\[jet-ws\] reconnect_recovered code=(1006|1001)\b/;
+const JET_SERVER_NOT_RUNNING_RE = /server wasn't running/i;
+const JET_COVERAGE_LOST_RE = /Coverage summary:[\s\S]*?Unknown% \( 0\/0 \)/;
 const RETRYABLE_LAUNCH_RE =
   /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding/i;
 
+function resolveDetoxConfigurationName() {
+  if (process.env.DETOX_CONFIGURATION) {
+    return process.env.DETOX_CONFIGURATION;
+  }
+
+  if (typeof detox !== 'undefined' && detox?.config?.configurationName) {
+    return detox.config.configurationName;
+  }
+
+  return '';
+}
+
+function resolveAppBinaryPath() {
+  if (typeof detox === 'undefined' || !detox?.config?.apps) {
+    return '';
+  }
+
+  const apps = detox.config.apps;
+  const appConfig = apps.default || apps[Object.keys(apps)[0]];
+  return appConfig?.binaryPath || '';
+}
+
 function usesLiveMetro() {
-  const config = process.env.DETOX_CONFIGURATION || '';
-  return /debug/i.test(config);
+  const configName = resolveDetoxConfigurationName();
+  if (/debug/i.test(configName)) {
+    return true;
+  }
+  if (/release/i.test(configName)) {
+    return false;
+  }
+
+  const binaryPath = resolveAppBinaryPath();
+  if (/Debug-|app-debug/i.test(binaryPath)) {
+    return true;
+  }
+  if (/Release-|app-release/i.test(binaryPath)) {
+    return false;
+  }
+
+  return false;
 }
 
 function waitForTcpPort(port, host = '127.0.0.1', timeoutMs = 120000) {
@@ -63,6 +103,18 @@ function isRetryableJetDisconnect(output) {
   return JET_RETRYABLE_WS_RE.test(output);
 }
 
+function isRetryableJetSessionFailure(output) {
+  if (JET_SERVER_NOT_RUNNING_RE.test(output)) {
+    return true;
+  }
+
+  if (!JET_RECONNECT_RECOVERED_RE.test(output)) {
+    return false;
+  }
+
+  return JET_COVERAGE_LOST_RE.test(output) || /\[🟥\] Stopped the server/i.test(output);
+}
+
 function isRetryableLaunchFailure(err) {
   const message = err?.message || '';
   if (!usesLiveMetro()) {
@@ -73,7 +125,11 @@ function isRetryableLaunchFailure(err) {
 
 function isRetryableE2eFailure(err) {
   const jetOutput = err?.jetOutput || '';
-  return isRetryableJetDisconnect(jetOutput) || isRetryableLaunchFailure(err);
+  return (
+    isRetryableJetDisconnect(jetOutput) ||
+    isRetryableJetSessionFailure(jetOutput) ||
+    isRetryableLaunchFailure(err)
+  );
 }
 
 async function waitForMetro(port = METRO_PORT, timeoutMs = 120000) {
@@ -208,7 +264,7 @@ function runJetE2eAttempt(attempt) {
         await waitForMetro(METRO_PORT);
       } else {
         console.log(
-          `[rnfb-e2e] Jet attempt ${attempt}: skipping Metro wait (DETOX_CONFIGURATION=${process.env.DETOX_CONFIGURATION || 'unknown'})`,
+          `[rnfb-e2e] Jet attempt ${attempt}: skipping Metro wait (configuration=${resolveDetoxConfigurationName() || 'unknown'}, binary=${resolveAppBinaryPath() || 'unknown'})`,
         );
       }
       console.log(`[rnfb-e2e] Jet attempt ${attempt}: launching app`);
@@ -238,8 +294,13 @@ describe('Jet Tests', function () {
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
         if (attempt > 1) {
-          if (isRetryableJetDisconnect(lastFailure?.jetOutput || '')) {
+          const lastOutput = lastFailure?.jetOutput || '';
+          if (isRetryableJetDisconnect(lastOutput)) {
             console.warn('[rnfb-e2e] Retrying after transient Jet WS disconnect (1006/1001)');
+          } else if (isRetryableJetSessionFailure(lastOutput)) {
+            console.warn(
+              '[rnfb-e2e] Retrying after Jet session desync (reconnect recovered / server not running)',
+            );
           } else if (isRetryableLaunchFailure(lastFailure)) {
             console.warn('[rnfb-e2e] Retrying after Metro/bundle load launch failure');
           }
