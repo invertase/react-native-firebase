@@ -18,6 +18,8 @@ package io.invertase.firebase.analytics;
  */
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -27,10 +29,12 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 
 public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "Analytics";
+  private static final long GET_SESSION_ID_TIMEOUT_MS = 60_000L;
 
   /**
    * GA4 parameters that must be sent as long values. React Native's bridge stores JS numbers as
@@ -112,10 +116,24 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void getSessionId(Promise promise) {
+    final AtomicBoolean completed = new AtomicBoolean(false);
+    final Handler handler = new Handler(Looper.getMainLooper());
+    final Runnable timeoutRunnable =
+        () -> {
+          if (completed.compareAndSet(false, true)) {
+            promise.resolve(null);
+          }
+        };
+    handler.postDelayed(timeoutRunnable, GET_SESSION_ID_TIMEOUT_MS);
+
     module
         .getSessionId()
         .addOnCompleteListener(
             task -> {
+              handler.removeCallbacks(timeoutRunnable);
+              if (!completed.compareAndSet(false, true)) {
+                return;
+              }
               if (task.isSuccessful()) {
                 Long result = task.getResult();
                 promise.resolve(result != null ? result.doubleValue() : null);
