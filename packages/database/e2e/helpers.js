@@ -92,3 +92,41 @@ exports.wipe = function wipe(path) {
 exports.PATH = PATH;
 exports.CONTENT = CONTENT;
 exports.DB_RULES = DB_RULES;
+
+function resolveDbRef(dbRefOrPath) {
+  const { getDatabase, ref } = databaseModular;
+  if (typeof dbRefOrPath === 'string') {
+    return ref(getDatabase(), dbRefOrPath);
+  }
+  return dbRefOrPath;
+}
+
+/**
+ * Wait until native RTDB has registered a listener and can read the current value
+ * at `dbRefOrPath`. Child-event listeners (onChildChanged etc.) attach over the
+ * same bridge as onValue; use this after pre-seeding data and attaching the listener
+ * under test, before mutating.
+ */
+exports.waitForNativeDbListenerReady = async function waitForNativeDbListenerReady(
+  dbRefOrPath,
+  expectedValue,
+  timeoutMs = 5000,
+) {
+  const { onValue } = databaseModular;
+  const resolvedRef = resolveDbRef(dbRefOrPath);
+  const gate = sinon.spy();
+  const unsubGate = onValue(resolvedRef, $ => gate($.val()));
+  await Utils.spyToBeCalledOnceAsync(gate, timeoutMs);
+  if (expectedValue !== undefined) {
+    gate.should.be.calledWith(expectedValue);
+  }
+  unsubGate();
+};
+
+/** Wait until the native listener registration bridge round-trip completes. */
+exports.waitForNativeDbListenerRegistration = async function waitForNativeDbListenerRegistration(
+  dbRefOrPath,
+  timeoutMs = 5000,
+) {
+  return exports.waitForNativeDbListenerReady(dbRefOrPath, undefined, timeoutMs);
+};

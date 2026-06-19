@@ -15,7 +15,12 @@
  *
  */
 
-const { PATH, seed, wipe } = require('../helpers');
+const {
+  PATH,
+  seed,
+  wipe,
+  waitForNativeDbListenerRegistration,
+} = require('../helpers');
 
 const TEST_PATH = `${PATH}/on`;
 
@@ -43,7 +48,8 @@ describe('onChildAdded', function () {
       { onlyOnce: true },
     );
 
-    set(child(dbRef, 'child1'), 'foo');
+    await waitForNativeDbListenerRegistration(dbRef);
+    await set(child(dbRef, 'child1'), 'foo');
     await Utils.spyToBeCalledOnceAsync(callback, 5000);
     callback.should.be.calledWith('foo');
 
@@ -70,6 +76,7 @@ describe('onChildAdded', function () {
       },
     );
 
+    await waitForNativeDbListenerRegistration(dbRef);
     await set(child(dbRef, 'child1'), 'foo');
     await set(child(dbRef, 'child2'), 'bar');
     await Utils.spyToBeCalledTimesAsync(successCallback, 2);

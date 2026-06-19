@@ -15,7 +15,12 @@
  *
  */
 
-const { PATH, seed, wipe } = require('../helpers');
+const {
+  PATH,
+  seed,
+  wipe,
+  waitForNativeDbListenerRegistration,
+} = require('../helpers');
 
 const TEST_PATH = `${PATH}/on`;
 
@@ -57,6 +62,7 @@ describe('onChildMoved', function () {
       { onlyOnce: true },
     );
 
+    await waitForNativeDbListenerRegistration(dbRef);
     await set(dbRef, initial);
     await set(child(dbRef, 'greg/nuggets'), 57);
     await set(child(dbRef, 'rob/nuggets'), 61);
@@ -87,6 +93,7 @@ describe('onChildMoved', function () {
       callback($.val());
     });
 
+    await waitForNativeDbListenerRegistration(dbRef);
     await set(dbRef, initial);
     await set(child(dbRef, 'greg/nuggets'), 57);
     await set(child(dbRef, 'rob/nuggets'), 61);
