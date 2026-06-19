@@ -49,6 +49,8 @@
     "tests:android:test-reuse": "cd tests && yarn detox test --configuration android.emu.debug --reuse",
     "tests:android:test-cover": "cd tests && yarn detox test --configuration android.emu.debug --loglevel verbose",
     "tests:android:test-cover-reuse": "cd tests && yarn detox test --configuration android.emu.debug --reuse",
+    "tests:android:pull-native-coverage": "node tests/scripts/pull-native-coverage.js --android-pull",
+    "tests:android:post-e2e-coverage": "node tests/scripts/pull-native-coverage.js --android-post-e2e",
     "tests:android:test:jacoco-report": "cd tests/android && ./gradlew jacocoAndroidTestReport",
     "tests:ios:build": "cd tests && yarn detox build --configuration ios.sim.debug",
     "tests:ios:build:release": "cd tests && yarn detox build --configuration ios.sim.release",

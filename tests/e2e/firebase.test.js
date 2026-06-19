@@ -19,7 +19,7 @@ const { spawn } = require('child_process');
 const net = require('net');
 const path = require('path');
 
-const { pullAndroidCoverage, pullIosCoverage } = require('../scripts/pull-native-coverage');
+const { pullIosCoverage } = require('../scripts/pull-native-coverage');
 
 const JET_REMOTE_PORT = parseInt(process.env.JET_REMOTE_PORT || '8090', 10);
 const METRO_PORT = parseInt(process.env.JET_METRO_PORT || process.env.RCT_METRO_PORT || '8081', 10);
@@ -326,15 +326,12 @@ describe('Jet Tests', function () {
       }
     }
 
-    try {
-      if (platform === 'android' && process.platform !== 'win32') {
-        pullAndroidCoverage(deviceId, { testsDir, softFail: true });
-      }
-      if (platform === 'ios' && process.platform === 'darwin') {
+    if (platform === 'ios' && process.platform === 'darwin') {
+      try {
         pullIosCoverage(deviceId, { testsDir });
+      } catch (e) {
+        throw new Error(`Failed to download native coverage data: ${e.message}`);
       }
-    } catch (e) {
-      throw new Error(`Failed to download native coverage data: ${e.message}`);
     }
   });
 

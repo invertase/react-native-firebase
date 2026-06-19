@@ -108,13 +108,13 @@ After a Detox/macOS e2e run, expect log lines like `[jet-coverage] WS received N
 ## Pipeline
 
 1. Gradle enables `testCoverageEnabled` on RNFB Android library modules (`tests/android/build.gradle`).
-2. Detox e2e runs; the instrumented app writes `coverage.ec`.
-3. When the Jet process exits successfully, `tests/scripts/pull-native-coverage.js` copies the `.ec` file to `tests/android/app/build/output/coverage/emulator_coverage.ec`. **A failed pull logs a warning and does not fail the Detox test** (intermittent on CI when `coverage.ec` is not flushed in time). Jacoco report may be empty for that run.
-4. `yarn tests:android:test:jacoco-report` runs `jacocoAndroidTestReport`, producing XML at:
+2. Detox e2e runs; the instrumented app writes `coverage.ec` when instrumentation finishes (`DetoxTest.dumpCoverageData()` after `Detox.runTests()` returns).
+3. **After Detox exits**, `yarn tests:android:post-e2e-coverage` (CI) or `yarn tests:android:pull-native-coverage` polls for `coverage.ec`, pulls it to `tests/android/app/build/output/coverage/emulator_coverage.ec`, then runs `jacocoAndroidTestReport`. A missing file logs a warning and does **not** fail the Detox test or the CI job (`continue-on-error` on Codecov upload).
+4. Jacoco XML is produced at:
 
    `tests/android/app/build/reports/jacoco/jacocoAndroidTestReport/jacocoAndroidTestReport.xml`
 
-CI runs steps 3–4 in sequence inside the emulator job.
+CI runs step 3 inside the emulator job immediately after `yarn tests:android:test-cover`.
 
 ## Jacoco configuration notes
 
@@ -186,7 +186,7 @@ yarn tests:ios:test-cover-and-process   # clean Detox run + process (no --reuse)
 
 # Android (after e2e)
 yarn tests:android:test-cover-reuse
-yarn tests:android:test:jacoco-report
+yarn tests:android:post-e2e-coverage
 
 # Codecov CLI (optional)
 .codecov-venv/bin/codecovcli upload-process \
@@ -207,7 +207,8 @@ These must all be true for native iOS coverage to work. If any break, the e2e te
 | Profile path set at launch | `AppDelegate` → `RNFBTestingConfigureCoverageProfilePath()` |
 | JS module name matches native export | `RCT_EXPORT_MODULE(RNFBTestingCoverage)` + `NativeModules.RNFBTestingCoverage` in `tests/app.js` |
 | Flush runs after Mocha tests | Jet `after` hook in `tests/app.js` |
-| Profraw pulled before Detox teardown | `pull-native-coverage.js` on Jet `close` in `firebase.test.js` |
+| Profraw pulled before Detox teardown | `pull-native-coverage.js` on Jet `close` in `firebase.test.js` (iOS only) |
+| Android `coverage.ec` pulled after Detox | `yarn tests:android:post-e2e-coverage` in CI / local post-e2e step |
 | Fresh profraw processed after e2e | `process-ios-native-coverage.js` (deletes profraw after export) |
 
 # Troubleshooting

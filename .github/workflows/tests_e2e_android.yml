@@ -260,10 +260,11 @@ jobs:
             $ANDROID_HOME/platform-tools/adb devices
             nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
             yarn tests:android:test-cover --headless
-            yarn tests:android:test:jacoco-report
+            yarn tests:android:post-e2e-coverage
 
       # https://github.com/codecov/codecov-action/releases
       - uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        continue-on-error: true
         with:
           verbose: true
 
