@@ -19555,13 +19555,13 @@ __metadata:
 
 "mocha-remote-server@patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch":
   version: 1.13.2
-  resolution: "mocha-remote-server@patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch::version=1.13.2&hash=5b470d"
+  resolution: "mocha-remote-server@patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch::version=1.13.2&hash=9f1e51"
   dependencies:
     debug: "npm:^4.3.4"
     flatted: "npm:^3.3.1"
     mocha-remote-common: "npm:1.13.2"
     ws: "npm:^8.17.1"
-  checksum: 10/c5861226362636fac484237e3653e6442c88a7b0b12b240ab33482961b09b5c2a1a54190c03237b2c2274616be6fe7e5c8484b355a00bb28ee401cb7b81351b6
+  checksum: 10/026256e831efc672c04312c7083927de218b2cf911eb7710abbc3c9ccb76730241eefc5bfb1f93873120244c80cb29cbd447a7edfa99bc2ce8fdc937ddc15c8c
   languageName: node
   linkType: hard
 
