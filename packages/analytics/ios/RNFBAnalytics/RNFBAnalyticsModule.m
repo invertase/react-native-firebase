@@ -157,7 +157,24 @@ RCT_EXPORT_METHOD(getAppInstanceId
 RCT_EXPORT_METHOD(getSessionId
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
+  __block BOOL completed = NO;
+  const int64_t timeoutNs = (int64_t)(60 * NSEC_PER_SEC);
+
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timeoutNs), dispatch_get_main_queue(), ^{
+    if (completed) {
+      return;
+    }
+    completed = YES;
+    DLog(@"Error getting session ID: timed out after 60 seconds");
+    resolve([NSNull null]);
+  });
+
   [FIRAnalytics sessionIDWithCompletion:^(int64_t sessionID, NSError *_Nullable error) {
+    if (completed) {
+      return;
+    }
+    completed = YES;
+
     // Occasionally sessionID is 0 despite nil error, reject as if it were an error
     // https://github.com/firebase/firebase-ios-sdk/issues/15258
     if (!error && [NSNumber numberWithLongLong:sessionID] == 0) {

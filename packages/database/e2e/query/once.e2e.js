@@ -15,7 +15,14 @@
  *
  */
 
-const { PATH, CONTENT, seed, wipe } = require('../helpers');
+const {
+  PATH,
+  CONTENT,
+  seed,
+  wipe,
+  waitForNativeDbListenerReady,
+  waitForNativeDbListenerRegistration,
+} = require('../helpers');
 
 const TEST_PATH = `${PATH}/once`;
 
@@ -134,6 +141,7 @@ describe('database().ref().once()', function () {
       .once('child_added')
       .then($ => callback($.val()))
       .catch(e => callback(e));
+    await waitForNativeDbListenerRegistration(`${TEST_PATH}/childAdded`);
     await ref.child('foo').set(value);
     await Utils.spyToBeCalledOnceAsync(callback, 5000);
     callback.should.be.calledWith(value);
@@ -146,11 +154,11 @@ describe('database().ref().once()', function () {
     const ref = firebase.database().ref(`${TEST_PATH}/childChanged/${date}`);
 
     ref.once('child_added').then($ => callbackAdd($.val()));
-    await Utils.sleep(100);
+    await waitForNativeDbListenerRegistration(`${TEST_PATH}/childChanged/${date}`);
     await ref.child('foo').set(1);
     await Utils.spyToBeCalledOnceAsync(callbackAdd, 10000);
     ref.once('child_changed').then($ => callbackChange($.val()));
-    await Utils.sleep(100);
+    await waitForNativeDbListenerReady(`${TEST_PATH}/childChanged/${date}/foo`, 1);
     await ref.child('foo').set(2);
     await Utils.spyToBeCalledOnceAsync(callbackChange, 10000);
     callbackChange.should.be.calledWith(2);
@@ -162,7 +170,7 @@ describe('database().ref().once()', function () {
     const date = Date.now();
     const ref = firebase.database().ref(`${TEST_PATH}/childRemoved/${date}`);
     ref.once('child_added').then($ => callbackAdd($.val()));
-    await Utils.sleep(100);
+    await waitForNativeDbListenerRegistration(`${TEST_PATH}/childRemoved/${date}`);
     const child = ref.child('removeme');
     await child.set('foo');
     await Utils.spyToBeCalledOnceAsync(callbackAdd, 10000);
@@ -170,7 +178,7 @@ describe('database().ref().once()', function () {
       .once('child_removed')
       .then($ => callbackRemove($.val()))
       .catch(e => callback(e));
-    await Utils.sleep(100);
+    await waitForNativeDbListenerReady(`${TEST_PATH}/childRemoved/${date}/removeme`, 'foo');
     await child.remove();
     await Utils.spyToBeCalledOnceAsync(callbackRemove, 10000);
     callbackRemove.should.be.calledWith('foo');
@@ -197,6 +205,7 @@ describe('database().ref().once()', function () {
       .once('child_moved')
       .then($ => callback($.val()))
       .catch(e => callback(e));
+    await waitForNativeDbListenerRegistration(`${TEST_PATH}/childMoved`);
     await ref.set(initial);
     await ref.child('greg/nuggets').set(57);
     await Utils.spyToBeCalledOnceAsync(callback, 5000);

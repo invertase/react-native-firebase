@@ -31,7 +31,7 @@
       ],
       "@react-native-firebase/app/lib/internal": ["../app/dist/typescript/lib/internal"],
       "@react-native-firebase/app": ["../app/dist/typescript/lib"],
-      "@react-native-firebase/auth": ["../auth/lib"],
+      "@react-native-firebase/auth": ["../auth/dist/typescript/lib"],
       "@react-native-firebase/app-check": ["../app-check/dist/typescript/lib"]
     },
     "types": ["react-native", "node"]

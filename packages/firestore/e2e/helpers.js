@@ -18,30 +18,52 @@ const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers
  *
  */
 
-exports.wipe = async function wipe(debug = false, databaseId = '(default)') {
-  const deleteOptions = {
-    method: 'DELETE',
-    headers: {
-      // Undocumented, but necessary - from Emulator UI network requests
-      Authorization: 'Bearer owner',
-    },
-    port: 8080,
-    host: getE2eEmulatorHost(),
-    path: '/emulator/v1/projects/' + getE2eTestProject() + `/databases/${databaseId}/documents`,
-  };
+exports.wipe = async function wipe(debug = false, databaseId = '(default)', retries = 3) {
+  const host = getE2eEmulatorHost();
+  const url =
+    `http://${host}:8080/emulator/v1/projects/` +
+    getE2eTestProject() +
+    `/databases/${databaseId}/documents`;
 
-  try {
-    if (debug) {
-      console.time('wipe');
+  let lastError;
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      if (debug) {
+        console.time('wipe');
+      }
+
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          // Undocumented, but necessary - from Emulator UI network requests
+          Authorization: 'Bearer owner',
+        },
+      });
+
+      if (!response.ok) {
+        const body = await response.text();
+        throw new Error(
+          `Firestore wipe failed: HTTP ${response.status} ${body.slice(0, 200)}`,
+        );
+      }
+
+      if (debug) {
+        console.timeEnd('wipe');
+      }
+
+      return;
+    } catch (e) {
+      lastError = e;
+      const message = e?.message || String(e);
+      console.error(`Unable to wipe firestore (attempt ${attempt}/${retries}): ${message}`);
+      if (attempt < retries) {
+        await new Promise(resolve => setTimeout(resolve, 250 * attempt));
+      }
     }
-    await fetch(
-      `http://${deleteOptions.host}:${deleteOptions.port}${deleteOptions.path}`,
-      deleteOptions,
-    );
-  } catch (e) {
-    console.error('Unable to wipe firestore:', e);
-    throw e;
   }
+
+  throw lastError;
 };
 
 function toFirestoreValue(value) {

@@ -1070,6 +1070,18 @@ describe('auth() modular', function () {
         should.not.exist(firebase.auth().tenantId);
       });
 
+      if (!Platform.android) {
+        it('should set tenantId and clear back to null', async function () {
+          await firebase.auth().setTenantId('e2e-tenant-id');
+          firebase.auth().tenantId.should.equal('e2e-tenant-id');
+        });
+
+        after(async function () {
+          await firebase.auth().setTenantId(null);
+          should.not.exist(firebase.auth().tenantId);
+        });
+      }
+
       // multi-tenant is not supported by the firebase auth emulator, and requires a valid multi-tenant tenantid
       // After setting this, next user creation will result in internal error on emulator, or auth/invalid-tenant-id live
       // it('should return tenantId correctly after setting', async function () {
@@ -1472,6 +1484,22 @@ describe('auth() modular', function () {
       });
     });
 
+    describe('auth instance SDK helpers', function () {
+      it('authStateReady resolves', async function () {
+        const { getAuth } = authModular;
+        const defaultAuth = getAuth();
+        await defaultAuth.authStateReady();
+      });
+
+      it('beforeAuthStateChanged can be registered and unsubscribed', function () {
+        const { getAuth } = authModular;
+        const defaultAuth = getAuth();
+        const unsubscribe = defaultAuth.beforeAuthStateChanged(() => {});
+        unsubscribe.should.be.a.Function();
+        unsubscribe();
+      });
+    });
+
     describe('onIdTokenChanged()', function () {
       it('calls callback with the current user and when auth state changes', async function () {
         const { getApp } = modular;
@@ -1637,12 +1665,9 @@ describe('auth() modular', function () {
           return Promise.resolve();
         };
 
-        try {
-          await signInWithEmailAndPassword(defaultAuth, DISABLED_EMAIL, DISABLED_PASS);
-          await successCb();
-        } catch (error) {
-          await failureCb(error);
-        }
+        return signInWithEmailAndPassword(defaultAuth, DISABLED_EMAIL, DISABLED_PASS)
+          .then(successCb)
+          .catch(failureCb);
       });
 
       it('it should error on login if password incorrect', async function () {
@@ -2086,6 +2111,7 @@ describe('auth() modular', function () {
           const email = `${random}@${random}.com`;
 
           let credential = undefined;
+          let didError = false;
           try {
             credential = await createUserWithEmailAndPassword(defaultAuth, email, random);
             await sendPasswordResetEmail(defaultAuth, email);
@@ -2093,12 +2119,14 @@ describe('auth() modular', function () {
             await verifyPasswordResetCode(defaultAuth, oobCode + 'badcode');
             throw new Error('Invalid code should throw an error');
           } catch (error) {
-            error.message.should.containEql('[auth/invalid-action-code]');
+            didError = true;
+            error.code.should.equal('auth/invalid-action-code');
           } finally {
             if (credential) {
               await deleteUser(credential.user);
             }
           }
+          didError.should.equal(true);
         });
 
         it('should change password correctly OOB', async function () {
@@ -2228,6 +2256,24 @@ describe('auth() modular', function () {
 
           should.not.exist(defaultAuth.tenantId);
         });
+
+        if (!Platform.android) {
+          it('tenantId setter updates tenantId', async function () {
+            const { getApp } = modular;
+            const { getAuth } = authModular;
+            const defaultAuth = getAuth(getApp());
+            await defaultAuth.setTenantId('e2e-tenant-id');
+            defaultAuth.tenantId.should.equal('e2e-tenant-id');
+          });
+
+          after(async function () {
+            const { getApp } = modular;
+            const { getAuth } = authModular;
+            const defaultAuth = getAuth(getApp());
+            await defaultAuth.setTenantId(null);
+            should.not.exist(defaultAuth.tenantId);
+          });
+        }
 
         // multi-tenant is not supported by the firebase auth emulator, and requires a valid multi-tenant tenantid
         // After setting this, next user creation will result in internal error on emulator, or auth/invalid-tenant-id live

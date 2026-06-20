@@ -1,23 +1,69 @@
-const { execSync } = require('child_process');
+const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
 const TEST_APP_PACKAGE = 'com.invertase.testing';
+const ANDROID_COVERAGE_EMU_PATH = `/data/user/0/${TEST_APP_PACKAGE}/files/coverage.ec`;
+
+function getAdbBinary() {
+  return process.env.ANDROID_HOME
+    ? `${process.env.ANDROID_HOME}/platform-tools/adb`
+    : 'adb';
+}
+
+function resolveAndroidDeviceId(preferredDeviceId) {
+  if (preferredDeviceId) {
+    return preferredDeviceId;
+  }
+
+  if (process.env.ANDROID_SERIAL) {
+    return process.env.ANDROID_SERIAL;
+  }
+
+  const adb = getAdbBinary();
+  const output = execSync(`${adb} devices`, { encoding: 'utf8' });
+  const deviceLine = output
+    .split('\n')
+    .slice(1)
+    .map(line => line.trim())
+    .find(line => line.endsWith('\tdevice'));
+
+  if (!deviceLine) {
+    throw new Error('No online Android device found for native coverage pull');
+  }
+
+  return deviceLine.split('\t')[0];
+}
+
+function androidCoverageFileExists(deviceId) {
+  const adb = getAdbBinary();
+  const serial = deviceId ? `-s ${deviceId}` : '';
+
+  try {
+    execSync(
+      `${adb} ${serial} shell "run-as ${TEST_APP_PACKAGE} test -f ${ANDROID_COVERAGE_EMU_PATH}"`,
+      { stdio: 'pipe' },
+    );
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
 
 function pullAndroidCoverage(deviceId, options = {}) {
   const { softFail = false, testsDir = path.resolve(__dirname, '..') } = options;
-  const emuOrig = `/data/user/0/${TEST_APP_PACKAGE}/files/coverage.ec`;
   const emuDest = '/data/local/tmp/detox/coverage.ec';
   const localDestDir = path.join(testsDir, 'android/app/build/output/coverage');
   const localDestFile = path.join(localDestDir, 'emulator_coverage.ec');
-  const adb = process.env.ANDROID_HOME
-    ? `${process.env.ANDROID_HOME}/platform-tools/adb`
-    : 'adb';
+  const adb = getAdbBinary();
+  const serial = deviceId ? `-s ${deviceId}` : '';
 
   try {
-    execSync(`${adb} -s ${deviceId} shell "run-as ${TEST_APP_PACKAGE} cat ${emuOrig} > ${emuDest}"`);
+    execSync(
+      `${adb} ${serial} shell "run-as ${TEST_APP_PACKAGE} cat ${ANDROID_COVERAGE_EMU_PATH} > ${emuDest}"`,
+    );
     fs.mkdirSync(localDestDir, { recursive: true });
-    execSync(`${adb} -s ${deviceId} pull ${emuDest} ${localDestFile}`);
+    execSync(`${adb} ${serial} pull ${emuDest} ${localDestFile}`);
     console.log(`Coverage data downloaded to: ${localDestFile}`);
     return localDestFile;
   } catch (error) {
@@ -28,6 +74,39 @@ function pullAndroidCoverage(deviceId, options = {}) {
     }
     throw new Error(message);
   }
+}
+
+async function pullAndroidCoverageWithRetry(deviceId, options = {}) {
+  const {
+    softFail = true,
+    testsDir = path.resolve(__dirname, '..'),
+    retries = 15,
+    intervalMs = 2000,
+  } = options;
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    if (androidCoverageFileExists(deviceId)) {
+      const pulled = pullAndroidCoverage(deviceId, { softFail: true, testsDir });
+      if (pulled) {
+        return pulled;
+      }
+    } else if (attempt === 1 || attempt % 5 === 0) {
+      console.log(
+        `[native-coverage] Waiting for ${ANDROID_COVERAGE_EMU_PATH} (attempt ${attempt}/${retries})`,
+      );
+    }
+
+    if (attempt < retries) {
+      await new Promise(resolve => setTimeout(resolve, intervalMs));
+    }
+  }
+
+  const message = `Android native coverage file not found after ${retries} attempts`;
+  if (softFail) {
+    console.warn(`[native-coverage] ${message}`);
+    return null;
+  }
+  throw new Error(message);
 }
 
 function pullIosCoverage(deviceId, options = {}) {
@@ -63,7 +142,62 @@ function pullIosCoverage(deviceId, options = {}) {
   return destPaths;
 }
 
+function runJacocoAndroidTestReport() {
+  const androidDir = path.resolve(__dirname, '../android');
+  const result = spawnSync('./gradlew', ['jacocoAndroidTestReport'], {
+    cwd: androidDir,
+    stdio: 'inherit',
+    shell: true,
+  });
+
+  if (result.status !== 0) {
+    console.warn(
+      `[native-coverage] jacocoAndroidTestReport exited with status ${result.status ?? 'unknown'}`,
+    );
+    return false;
+  }
+
+  return true;
+}
+
+async function main() {
+  const args = process.argv.slice(2);
+
+  if (args.includes('--android-pull')) {
+    const deviceId = resolveAndroidDeviceId();
+    console.log(`[native-coverage] Pulling Android coverage from ${deviceId}`);
+    await pullAndroidCoverageWithRetry(deviceId, { softFail: true });
+    return;
+  }
+
+  if (args.includes('--android-post-e2e')) {
+    const deviceId = resolveAndroidDeviceId();
+    console.log(`[native-coverage] Post-e2e Android coverage on ${deviceId}`);
+    const pulled = await pullAndroidCoverageWithRetry(deviceId, { softFail: true });
+    runJacocoAndroidTestReport();
+    if (!pulled) {
+      console.warn('[native-coverage] Jacoco report may be empty (no coverage.ec pulled)');
+    }
+    return;
+  }
+
+  console.error(
+    'Usage: node tests/scripts/pull-native-coverage.js --android-pull|--android-post-e2e',
+  );
+  process.exit(1);
+}
+
+if (require.main === module) {
+  main().catch(error => {
+    console.warn(`[native-coverage] ${error.message}`);
+    process.exit(0);
+  });
+}
+
 module.exports = {
   pullAndroidCoverage,
+  pullAndroidCoverageWithRetry,
   pullIosCoverage,
+  resolveAndroidDeviceId,
+  runJacocoAndroidTestReport,
 };

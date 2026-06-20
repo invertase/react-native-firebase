@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { FirebaseAuthTypes } from '../lib/index';
+import type { ActionCodeSettings, User as ModularUser } from '../lib';
 // @ts-ignore
 import User from '../lib/User';
 // @ts-ignore test
@@ -40,6 +41,7 @@ import auth, {
   useUserAccessGroup,
   verifyPasswordResetCode,
   parseActionCodeURL,
+  ActionCodeURL,
   deleteUser,
   getIdToken,
   getIdTokenResult,
@@ -76,9 +78,12 @@ import auth, {
   TotpMultiFactorGenerator,
   TwitterAuthProvider,
   PhoneAuthState,
+  EmailAuthCredential,
+  OAuthCredential,
+  PhoneAuthCredential,
 } from '../lib';
 
-const PasswordPolicyImpl = require('../lib/password-policy/PasswordPolicyImpl').default;
+const { PasswordPolicyImpl } = require('../lib/password-policy/PasswordPolicyImpl');
 
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
@@ -91,6 +96,7 @@ import {
 } from '../../app/lib/common/unitTestUtils';
 // @ts-ignore
 import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
+import { AuthInternal } from '../lib/types/internal';
 
 describe('Auth', function () {
   describe('namespace', function () {
@@ -149,12 +155,55 @@ describe('Auth', function () {
         expect(result).toEqual(['my-host', 9099]);
       });
 
+      it('useEmulator exposes emulatorConfig', function () {
+        const authInstance = getAuth();
+        connectAuthEmulator(authInstance, 'http://my-host:9099');
+        expect(authInstance.emulatorConfig).toEqual({
+          protocol: 'http',
+          host: 'my-host',
+          port: 9099,
+          options: { disableWarnings: false },
+        });
+      });
+
+      it('authStateReady resolves after auth result is known', async function () {
+        const authInstance = getAuth();
+        (authInstance as unknown as { _authResult: boolean })._authResult = true;
+        await expect(authInstance.authStateReady()).resolves.toBeUndefined();
+      });
+
+      it('tenantId setter delegates to setTenantId', async function () {
+        const authInstance = getAuth() as unknown as {
+          tenantId: string | null;
+          setTenantId(tenantId: string | null): Promise<void>;
+        };
+        const originalSetTenantId = authInstance.setTenantId.bind(authInstance);
+        const calls: Array<string | null> = [];
+        authInstance.setTenantId = async (tenantId: string | null) => {
+          calls.push(tenantId);
+        };
+
+        authInstance.tenantId = 'tenant-from-setter';
+        await Promise.resolve();
+        expect(calls).toEqual(['tenant-from-setter']);
+
+        authInstance.setTenantId = originalSetTenantId;
+      });
+
       describe('tenantId', function () {
         it('should be able to set tenantId ', function () {
           const auth = firebase.app().auth();
           auth.setTenantId('test-id').then(() => {
             expect(auth.tenantId).toBe('test-id');
           });
+        });
+
+        it('should clear JS tenantId when tenantId is null', async function () {
+          const auth = firebase.app().auth();
+          await auth.setTenantId('test-id');
+          expect(auth.tenantId).toBe('test-id');
+          await auth.setTenantId(null);
+          expect(auth.tenantId).toBeNull();
         });
       });
 
@@ -231,19 +280,46 @@ describe('Auth', function () {
       });
 
       it('should allow linkDomain as `ActionCodeSettings.linkDomain`', function () {
-        const auth = firebase.app().auth();
-        const actionCodeSettings: FirebaseAuthTypes.ActionCodeSettings = {
+        const auth = firebase.app().auth() as unknown as FirebaseAuthTypes.Module & AuthInternal;
+        const actionCodeSettings = {
           url: 'https://example.com',
           handleCodeInApp: true,
           linkDomain: 'example.com',
-        };
+        } satisfies FirebaseAuthTypes.ActionCodeSettings & ActionCodeSettings;
         const email = 'fake@example.com';
         auth.sendSignInLinkToEmail(email, actionCodeSettings);
         auth.sendPasswordResetEmail(email, actionCodeSettings);
         sendPasswordResetEmail(auth, email, actionCodeSettings);
         sendSignInLinkToEmail(auth, email, actionCodeSettings);
 
-        const user: FirebaseAuthTypes.User = new User(auth, {});
+        const user: FirebaseAuthTypes.User & ModularUser = new User(auth as AuthInternal, {
+          uid: 'test-user-id',
+          displayName: 'Test User',
+          email: 'test@example.com',
+          emailVerified: true,
+          isAnonymous: false,
+          metadata: {
+            lastSignInTime: '2023-01-01T00:00:00.000Z',
+            creationTime: '2023-01-01T00:00:00.000Z',
+          },
+          multiFactor: {
+            enrolledFactors: [],
+          },
+          phoneNumber: '+1234567890',
+          tenantId: null,
+          photoURL: 'https://example.com/photo.jpg',
+          providerData: [
+            {
+              uid: 'test-uid',
+              displayName: 'Test User',
+              email: 'test@example.com',
+              phoneNumber: '+1234567890',
+              photoURL: 'https://example.com/photo.jpg',
+              providerId: 'password',
+            },
+          ],
+          providerId: 'firebase',
+        });
 
         user.sendEmailVerification(actionCodeSettings);
         user.verifyBeforeUpdateEmail(email, actionCodeSettings);
@@ -258,8 +334,30 @@ describe('Auth', function () {
       expect(getAuth).toBeDefined();
     });
 
+    it('getAuth returns the shared namespaced auth instance', function () {
+      const previousSilenceValue = globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS;
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
+      try {
+        expect(getAuth()).toBe(firebase.auth());
+      } finally {
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = previousSilenceValue;
+      }
+    });
+
     it('`initializeAuth` function is properly exposed to end user', function () {
       expect(initializeAuth).toBeDefined();
+    });
+
+    it('initializeAuth returns the shared namespaced auth instance', function () {
+      const previousSilenceValue = globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS;
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
+      try {
+        expect(initializeAuth(firebase.app())).toBe(firebase.auth());
+      } finally {
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = previousSilenceValue;
+      }
     });
 
     it('`applyActionCode` function is properly exposed to end user', function () {
@@ -380,6 +478,27 @@ describe('Auth', function () {
 
     it('`parseActionCodeURL` function is properly exposed to end user', function () {
       expect(parseActionCodeURL).toBeDefined();
+    });
+
+    it('`parseActionCodeURL` and `ActionCodeURL.parseLink` parse valid action links', function () {
+      const link =
+        'https://example.firebaseapp.com/__/auth/action?apiKey=test-api-key&mode=verifyEmail&oobCode=test-code&lang=en&continueUrl=https%3A%2F%2Fexample.com';
+
+      const parsedFromFunction = parseActionCodeURL(link);
+      const parsedFromClass = ActionCodeURL.parseLink(link);
+
+      expect(parsedFromFunction).not.toBeNull();
+      expect(parsedFromClass).toEqual(parsedFromFunction);
+      expect(parsedFromFunction?.apiKey).toBe('test-api-key');
+      expect(parsedFromFunction?.code).toBe('test-code');
+      expect(parsedFromFunction?.operation).toBe('VERIFY_EMAIL');
+      expect(parsedFromFunction?.languageCode).toBe('en');
+      expect(parsedFromFunction?.continueUrl).toBe('https://example.com');
+    });
+
+    it('`parseActionCodeURL` returns null for invalid action links', function () {
+      expect(parseActionCodeURL('https://example.com/not-an-action-link')).toBeNull();
+      expect(ActionCodeURL.parseLink('https://example.com/not-an-action-link')).toBeNull();
     });
 
     it('`deleteUser` function is properly exposed to end user', function () {
@@ -551,6 +670,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => applyActionCode(auth, 'code'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.applyActionCode('code'),
             'applyActionCode',
           );
@@ -560,6 +680,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => checkActionCode(auth, 'code'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.checkActionCode('code'),
             'checkActionCode',
           );
@@ -569,6 +690,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => confirmPasswordReset(auth, 'code', 'newPassword'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.confirmPasswordReset('code', 'newPassword'),
             'confirmPasswordReset',
           );
@@ -578,6 +700,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => createUserWithEmailAndPassword(auth, 'test@example.com', 'password'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.createUserWithEmailAndPassword('test@example.com', 'password'),
             'createUserWithEmailAndPassword',
           );
@@ -587,6 +710,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => fetchSignInMethodsForEmail(auth, 'test@example.com'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.fetchSignInMethodsForEmail('test@example.com'),
             'fetchSignInMethodsForEmail',
           );
@@ -594,9 +718,17 @@ describe('Auth', function () {
 
         it('getMultiFactorResolver', function () {
           const auth = getAuth();
-          const error = new Error() as any;
+          const error = {
+            userInfo: {
+              resolver: {
+                hints: [],
+                session: {},
+              },
+            },
+          } as any;
           authV9Deprecation(
             () => getMultiFactorResolver(auth, error),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.getMultiFactorResolver(error),
             'getMultiFactorResolver',
           );
@@ -606,6 +738,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => isSignInWithEmailLink(auth, 'emailLink'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.isSignInWithEmailLink('emailLink'),
             'isSignInWithEmailLink',
           );
@@ -636,6 +769,7 @@ describe('Auth', function () {
           const provider = { toObject: () => ({}) } as any;
           authV9Deprecation(
             () => signInWithPopup(auth, provider),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithPopup(provider),
             'signInWithPopup',
           );
@@ -646,6 +780,7 @@ describe('Auth', function () {
           const provider = { toObject: () => ({}) } as any;
           authV9Deprecation(
             () => signInWithRedirect(auth, provider),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithRedirect(provider),
             'signInWithRedirect',
           );
@@ -655,6 +790,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => sendPasswordResetEmail(auth, 'test@example.com'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.sendPasswordResetEmail('test@example.com'),
             'sendPasswordResetEmail',
           );
@@ -665,6 +801,7 @@ describe('Auth', function () {
           const actionCodeSettings = { url: 'https://example.com' };
           authV9Deprecation(
             () => sendSignInLinkToEmail(auth, 'test@example.com', actionCodeSettings),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.sendSignInLinkToEmail('test@example.com', actionCodeSettings),
             'sendSignInLinkToEmail',
           );
@@ -674,6 +811,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => signInAnonymously(auth),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInAnonymously(),
             'signInAnonymously',
           );
@@ -684,6 +822,7 @@ describe('Auth', function () {
           const credential = {} as any;
           authV9Deprecation(
             () => signInWithCredential(auth, credential),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithCredential(credential),
             'signInWithCredential',
           );
@@ -693,6 +832,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => signInWithCustomToken(auth, 'customToken'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithCustomToken('customToken'),
             'signInWithCustomToken',
           );
@@ -702,6 +842,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => signInWithEmailAndPassword(auth, 'test@example.com', 'password'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithEmailAndPassword('test@example.com', 'password'),
             'signInWithEmailAndPassword',
           );
@@ -711,6 +852,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => signInWithEmailLink(auth, 'test@example.com', 'emailLink'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithEmailLink('test@example.com', 'emailLink'),
             'signInWithEmailLink',
           );
@@ -720,6 +862,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => signInWithPhoneNumber(auth, '+1234567890', undefined),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.signInWithPhoneNumber('+1234567890', false),
             'signInWithPhoneNumber',
           );
@@ -738,6 +881,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => useUserAccessGroup(auth, 'group'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.useUserAccessGroup('group'),
             'useUserAccessGroup',
           );
@@ -747,6 +891,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => verifyPasswordResetCode(auth, 'code'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.verifyPasswordResetCode('code'),
             'verifyPasswordResetCode',
           );
@@ -756,6 +901,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => getCustomAuthDomain(auth),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.getCustomAuthDomain(),
             'getCustomAuthDomain',
           );
@@ -765,6 +911,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => connectAuthEmulator(auth, 'http://localhost:9099'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.useEmulator('http://localhost:9099'),
             'useEmulator',
           );
@@ -774,6 +921,7 @@ describe('Auth', function () {
           const auth = getAuth();
           authV9Deprecation(
             () => setLanguageCode(auth, 'en'),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.setLanguageCode('en'),
             'setLanguageCode',
           );
@@ -798,6 +946,7 @@ describe('Auth', function () {
 
           authV9Deprecation(
             () => multiFactor(mockUser),
+            // @ts-expect-error Combines modular and namespace API
             () => auth.multiFactor(mockUser),
             'multiFactor',
           );
@@ -808,7 +957,7 @@ describe('Auth', function () {
         let mockUser: User;
 
         beforeEach(function () {
-          mockUser = new User(getAuth(), {
+          mockUser = new User(getAuth() as AuthInternal, {
             uid: 'test-user-id',
             displayName: 'Test User',
             email: 'test@example.com',
@@ -960,8 +1109,12 @@ describe('Auth', function () {
 
         it('unlink', function () {
           userV9Deprecation(
-            () => unlink(mockUser, 'google.com'),
-            () => mockUser.unlink('google.com'),
+            () => {
+              void unlink(mockUser, 'google.com').catch(() => {});
+            },
+            () => {
+              void mockUser.unlink('google.com').catch(() => {});
+            },
             'unlink',
           );
         });
@@ -1131,6 +1284,64 @@ describe('Auth', function () {
             'multiFactor',
           );
         });
+      });
+    });
+
+    describe('credential classes', function () {
+      it('EmailAuthCredential.fromJSON deserializes password credentials', function () {
+        const credential = EmailAuthCredential.fromJSON({
+          email: 'test@example.com',
+          password: 'secret',
+          signInMethod: 'password',
+        });
+        expect(credential?.token).toBe('test@example.com');
+        expect(credential?.secret).toBe('secret');
+      });
+
+      it('OAuthProvider credentialFromResult and credentialFromError return null', function () {
+        expect(OAuthProvider.credentialFromResult({} as any)).toBeNull();
+        expect(OAuthProvider.credentialFromError({} as any)).toBeNull();
+      });
+
+      it('PhoneAuthProvider credentialFromResult and credentialFromError return null', function () {
+        expect(PhoneAuthProvider.credentialFromResult({} as any)).toBeNull();
+        expect(PhoneAuthProvider.credentialFromError({} as any)).toBeNull();
+      });
+
+      it('OAuthCredential.fromJSON deserializes provider credentials', function () {
+        const credential = OAuthCredential.fromJSON({
+          providerId: 'google.com',
+          idToken: 'id-token',
+          accessToken: 'access-token',
+        });
+        expect(credential?.providerId).toBe('google.com');
+        expect(credential?.idToken).toBe('id-token');
+      });
+
+      it('PhoneAuthCredential.fromJSON deserializes phone credentials', function () {
+        const credential = PhoneAuthCredential.fromJSON({
+          verificationId: 'vid',
+          verificationCode: '123456',
+        });
+        expect(credential?.token).toBe('vid');
+        expect(credential?.secret).toBe('123456');
+      });
+    });
+
+    describe('User.reauthenticateWithRedirect', function () {
+      it('updates current user via _setUserCredential', async function () {
+        const setUserCredential = jest.fn();
+        const authInternal = {
+          native: {
+            reauthenticateWithProvider: jest.fn(() =>
+              Promise.resolve({ user: { uid: 'test-uid' }, additionalUserInfo: null }),
+            ),
+          },
+          _setUserCredential: setUserCredential,
+        };
+        const user = new User(authInternal as any, { uid: 'test-uid' } as any);
+        await user.reauthenticateWithRedirect({ toObject: () => ({ providerId: 'google.com' }) } as any);
+        expect(setUserCredential).toHaveBeenCalled();
       });
     });
 

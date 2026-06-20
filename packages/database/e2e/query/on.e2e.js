@@ -15,7 +15,13 @@
  *
  */
 
-const { PATH, seed, wipe } = require('../helpers');
+const {
+  PATH,
+  seed,
+  wipe,
+  waitForNativeDbListenerReady,
+  waitForNativeDbListenerRegistration,
+} = require('../helpers');
 
 const TEST_PATH = `${PATH}/on`;
 
@@ -162,7 +168,7 @@ describe('database().ref().on()', function () {
       },
     );
 
-    await Utils.sleep(100);
+    await waitForNativeDbListenerRegistration(`${TEST_PATH}/childAdded/${date}`);
     await ref.child('child1').set('foo');
     await ref.child('child2').set('bar');
     await Utils.spyToBeCalledTimesAsync(successCallback, 2);
@@ -193,7 +199,7 @@ describe('database().ref().on()', function () {
         cancelCallback();
       },
     );
-    await Utils.sleep(100);
+    await waitForNativeDbListenerReady(`${TEST_PATH}/childChanged/${date}/changeme`, 'foo');
 
     const value1 = Date.now();
     const value2 = Date.now() + 123;
@@ -213,7 +219,6 @@ describe('database().ref().on()', function () {
     const ref = firebase.database().ref(`${TEST_PATH}/childRemoved`);
     const child = ref.child('removeme');
     await child.set('foo');
-    await Utils.sleep(250);
     ref.on(
       'child_removed',
       $ => {
@@ -223,7 +228,7 @@ describe('database().ref().on()', function () {
         cancelCallback();
       },
     );
-    await Utils.sleep(250);
+    await waitForNativeDbListenerReady(`${TEST_PATH}/childRemoved/removeme`, 'foo');
     await child.remove();
     await Utils.spyToBeCalledOnceAsync(successCallback, 5000);
     ref.off('child_removed');
@@ -252,6 +257,7 @@ describe('database().ref().on()', function () {
       // console.log($);
       callback($.val());
     });
+    await waitForNativeDbListenerRegistration(`${TEST_PATH}/childMoved`);
     await ref.set(initial);
     await ref.child('greg/nuggets').set(57);
     await ref.child('rob/nuggets').set(61);

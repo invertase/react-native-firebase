@@ -18,11 +18,11 @@ import appCheckConfig from '../configs/app-check';
 import firestoreConfig from '../configs/firestore';
 import firestorePipelinesConfig from '../configs/firestore-pipelines';
 import remoteConfigConfig from '../configs/remote-config';
+import authConfig from '../configs/auth';
 import installationsConfig from '../configs/installations';
 import perfConfig from '../configs/perf-config';
 
-const SCRIPT_DIR = path.resolve(__dirname, '..');
-const REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
+const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
 
 export interface PackageEntry {
   /** Short name used in reports (e.g. "remote-config"). */
@@ -103,6 +103,41 @@ function optionalFirebasePackage(
 }
 
 export const packages: PackageEntry[] = [
+  {
+    name: 'auth',
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('auth')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('auth'), 'types', 'auth.d.ts'),
+      path.join(rnDist('auth'), 'modular.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('auth'), 'index.d.ts'),
+      path.join(rnDist('auth'), 'constants.d.ts'),
+      path.join(rnDist('auth'), 'namespaced.d.ts'),
+      path.join(rnDist('auth'), 'types', 'namespaced.d.ts'),
+      path.join(rnDist('auth'), 'types', 'internal.d.ts'),
+      path.join(rnDist('auth'), 'ConfirmationResult.d.ts'),
+      path.join(rnDist('auth'), 'MultiFactorResolver.d.ts'),
+      path.join(rnDist('auth'), 'PhoneAuthListener.d.ts'),
+      path.join(rnDist('auth'), 'PhoneMultiFactorGenerator.d.ts'),
+      path.join(rnDist('auth'), 'Settings.d.ts'),
+      path.join(rnDist('auth'), 'TotpMultiFactorGenerator.d.ts'),
+      path.join(rnDist('auth'), 'TotpSecret.d.ts'),
+      path.join(rnDist('auth'), 'User.d.ts'),
+      path.join(rnDist('auth'), 'getMultiFactorResolver.d.ts'),
+      path.join(rnDist('auth'), 'multiFactor.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'AppleAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'EmailAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'FacebookAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'GithubAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'GoogleAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'OAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'OIDCAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'PhoneAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'TwitterAuthProvider.d.ts'),
+    ],
+    config: authConfig,
+  },
   {
     name: 'storage',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('storage')],

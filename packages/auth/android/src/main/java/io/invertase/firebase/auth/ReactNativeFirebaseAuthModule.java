@@ -2056,6 +2056,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             .setIdTokenWithRawNonce(authToken, authSecret)
             .build();
       case "oauth":
+        if (authToken == null || authToken.isEmpty()) {
+          return OAuthProvider.newCredentialBuilder(provider).setAccessToken(authSecret).build();
+        }
+        if (authSecret == null || authSecret.isEmpty()) {
+          return OAuthProvider.newCredentialBuilder(provider).setIdToken(authToken).build();
+        }
         return OAuthProvider.getCredential(provider, authToken, authSecret);
       case "phone":
         return getPhoneAuthCredential(authToken, authSecret);
@@ -2251,12 +2257,18 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    *
    * @param appName
    * @param tenantId
+   * @param promise
    */
   @ReactMethod
-  public void setTenantId(String appName, String tenantId) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-    firebaseAuth.setTenantId(tenantId);
+  public void setTenantId(String appName, String tenantId, final Promise promise) {
+    try {
+      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+      FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+      firebaseAuth.setTenantId(tenantId);
+      promise.resolve(null);
+    } catch (Exception exception) {
+      promiseRejectAuthException(promise, exception);
+    }
   }
 
   /**

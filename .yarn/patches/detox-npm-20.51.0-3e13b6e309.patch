@@ -146,3 +146,28 @@ index 10743c87d17de135317e1bac3e65159b9872412f..abbb302307fbd5eabbbff875983f284a
    }
  }
  
+diff --git a/src/devices/common/drivers/android/exec/ADB.js b/src/devices/common/drivers/android/exec/ADB.js
+index 1111111111111111111111111111111111111111..2222222222222222222222222222222222222222 100644
+--- a/src/devices/common/drivers/android/exec/ADB.js
++++ b/src/devices/common/drivers/android/exec/ADB.js
+@@ -379,7 +379,19 @@ class ADB {
+   }
+ 
+   async reverseRemove(deviceId, port) {
+-    return this.adbCmd(deviceId, `reverse --remove tcp:${port}`);
++    try {
++      return await this.adbCmd(deviceId, `reverse --remove tcp:${port}`);
++    } catch (error) {
++      const details = `${error.stderr || ''} ${error.message || ''}`;
++      if (/listener .* not found/i.test(details)) {
++        log.warn(
++          { deviceId, port },
++          'Ignoring missing adb reverse listener during Detox teardown',
++        );
++        return;
++      }
++      throw error;
++    }
+   }
+ 
+   async emuKill(deviceId) {

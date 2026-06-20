@@ -241,29 +241,36 @@ jobs:
           nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.2; done" &
         shell: bash
 
+      - name: Prepare AVD home on /mnt
+        # GitHub-hosted runners mount a ~74GB volume at /mnt. Set ANDROID_AVD_HOME before
+        # android-emulator-runner creates the AVD (pre-emulator-launch-script runs too late
+        # for ln -s ~/.android/avd to relocate an already-created AVD off root disk).
+        run: |
+          sudo mkdir -p /mnt/avd
+          sudo chown "$USER:$USER" /mnt/avd
+          df -h / /mnt
+
       - name: Detox Tests
         # https://github.com/reactivecircus/android-emulator-runner/releases
         uses: reactivecircus/android-emulator-runner@0a638108440efd5c7f980e6ba145dbcdd8f32009 # v2.37.0
         timeout-minutes: 45
+        env:
+          ANDROID_AVD_HOME: /mnt/avd
         with:
           api-level: ${{ matrix.api-level }}
           avd-name: TestingAVD
           target: ${{ matrix.target }}
           disable-spellchecker: true
           arch: ${{ matrix.arch }}
-          pre-emulator-launch-script: |
-            sudo mkdir /mnt/avd
-            sudo chown $USER:$USER /mnt/avd
-            mkdir -p $HOME/.android
-            ln -s /mnt/avd $HOME/.android/avd
           script: |
             $ANDROID_HOME/platform-tools/adb devices
             nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
             yarn tests:android:test-cover --headless
-            yarn tests:android:test:jacoco-report
+            yarn tests:android:post-e2e-coverage
 
       # https://github.com/codecov/codecov-action/releases
       - uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        continue-on-error: true
         with:
           verbose: true
 

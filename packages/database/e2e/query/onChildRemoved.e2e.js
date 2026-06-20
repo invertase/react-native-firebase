@@ -15,7 +15,12 @@
  *
  */
 
-const { PATH, seed, wipe } = require('../helpers');
+const {
+  PATH,
+  seed,
+  wipe,
+  waitForNativeDbListenerReady,
+} = require('../helpers');
 
 const TEST_PATH = `${PATH}/on`;
 
@@ -48,7 +53,7 @@ describe('onChildRemoved', function () {
       },
       { onlyOnce: true },
     );
-    await Utils.sleep(100);
+    await waitForNativeDbListenerReady(childRef, 'foo');
 
     await remove(childRef);
     await Utils.spyToBeCalledTimesAsync(callback, 1);
@@ -78,7 +83,7 @@ describe('onChildRemoved', function () {
       },
     );
 
-    await Utils.sleep(100);
+    await waitForNativeDbListenerReady(childRef, 'foo');
     await remove(childRef);
     await Utils.spyToBeCalledOnceAsync(successCallback, 10000);
     unsubscribe();

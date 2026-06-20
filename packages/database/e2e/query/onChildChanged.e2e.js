@@ -15,7 +15,12 @@
  *
  */
 
-const { PATH, seed, wipe } = require('../helpers');
+const {
+  PATH,
+  seed,
+  wipe,
+  waitForNativeDbListenerReady,
+} = require('../helpers');
 
 const TEST_PATH = `${PATH}/on`;
 
@@ -35,7 +40,8 @@ describe('onChildChanged', function () {
     const { getDatabase, ref, set, child, onChildChanged } = databaseModular;
     const date = Date.now();
     const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded/${date}`);
-    await set(child(dbRef, 'changeme'), 'foo');
+    const childRef = child(dbRef, 'changeme');
+    await set(childRef, 'foo');
 
     const callback = sinon.spy();
 
@@ -46,13 +52,13 @@ describe('onChildChanged', function () {
       },
       { onlyOnce: true },
     );
-    await Utils.sleep(100);
+    await waitForNativeDbListenerReady(childRef, 'foo');
 
-    await set(child(dbRef, 'changeme'), 'bar');
-    await Utils.spyToBeCalledOnceAsync(callback, 5000);
+    await set(childRef, 'bar');
+    await Utils.spyToBeCalledOnceAsync(callback, 10000);
     callback.should.be.calledWith('bar');
 
-    await set(child(dbRef, 'changeme'), 'baz');
+    await set(childRef, 'baz');
     callback.should.not.be.calledWith('baz');
   });
 
@@ -79,7 +85,7 @@ describe('onChildChanged', function () {
         cancelCallback();
       },
     );
-    await Utils.sleep(100);
+    await waitForNativeDbListenerReady(refChild, 'foo');
 
     const value1 = Date.now();
     const value2 = Date.now() + 123;

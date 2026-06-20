@@ -13,3 +13,7 @@ Knowledge documents for react-native-firebase development, testing, and maintena
 # Testing
 
 * [Coverage design](/testing/coverage-design.md) - unit and e2e coverage goals, pipelines, and Codecov uploads
+
+# Packages
+
+* [@react-native-firebase/auth](/packages/auth/index.md) — Auth modular API type parity, platform matrix, and compare:types triage
