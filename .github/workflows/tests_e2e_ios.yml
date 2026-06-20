@@ -420,10 +420,22 @@ jobs:
           path: .github/workflows/scripts/*.log
 
       # https://github.com/codecov/codecov-action/releases
-      - uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+      - name: Upload Codecov e2e TS (iOS)
+        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
         if: contains(matrix.buildmode, 'debug')
         continue-on-error: true
         with:
+          files: coverage/lcov.info
+          flags: e2e-ts-ios
+          verbose: true
+
+      - name: Upload Codecov iOS native
+        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        if: contains(matrix.buildmode, 'debug')
+        continue-on-error: true
+        with:
+          files: coverage/ios-native/lcov.info
+          flags: ios-native
           verbose: true
 
       - name: Yarn Cache Save

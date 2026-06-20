@@ -273,9 +273,20 @@ jobs:
             yarn tests:android:post-e2e-coverage
 
       # https://github.com/codecov/codecov-action/releases
-      - uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+      - name: Upload Codecov e2e TS (Android)
+        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
         continue-on-error: true
         with:
+          files: coverage/lcov.info
+          flags: e2e-ts-android
+          verbose: true
+
+      - name: Upload Codecov Android native
+        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        continue-on-error: true
+        with:
+          files: tests/android/app/build/reports/jacoco/jacocoAndroidTestReport/jacocoAndroidTestReport.xml
+          flags: android-native
           verbose: true
 
       - name: Upload Emulator Log

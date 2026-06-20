@@ -4,7 +4,7 @@
 
 1. `yarn tests:android:test-cover --headless` — Detox + Jet (pass/fail gate)
 2. `yarn tests:android:post-e2e-coverage` — poll/pull `coverage.ec`, Jacoco report (best-effort, never fails the job)
-3. Codecov upload — `continue-on-error: true`
+3. **Codecov upload** — two flagged uploads (`e2e-ts-android`, `android-native`); `continue-on-error: true` on the action steps. **`codecov/project/android-native`** fails if the native flag upload is missing (see [coverage design](../testing/coverage-design.md#native-upload-gates)).
 
 Native Android coverage is **not** pulled inside `tests/e2e/firebase.test.js`. The Jet `after` hook in `tests/app.js` calls `RNFBTestingCoverage.flush()` in the **app process** to write `coverage.ec` before Detox SIGINTs instrumentation. Post-e2e pull runs after Detox exits.
 
@@ -50,3 +50,4 @@ Full inventory: [detox-patches.md](detox-patches.md).
 | Empty Jacoco XML (~235 bytes) | No `.ec` pulled — check post-e2e logs |
 | `adb reverse --remove` in Detox logs | Expected on 1006; should be warn-only after Detox patch |
 | Detox red, tests green in log | Pre-patch: teardown adb error; re-run or check patch applied |
+| `codecov/project/android-native` fail | Jacoco XML not uploaded — check post-e2e logs and Codecov Uploads tab for `android-native` flag |

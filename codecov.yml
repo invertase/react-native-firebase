@@ -14,7 +14,27 @@ coverage:
     changes: no
 
 comment:
-  layout: 'header, diff'
+  layout: 'header, diff, flags'
   behavior: default
   require_changes: false
   after_n_builds: 3
+
+# Native upload gates. Flag names must match codecov-action `flags:` in CI workflows
+# (see okf-bundle/testing/coverage-design.md).
+flag_management:
+  individual_flags:
+    - name: ios-native
+      carryforward: false
+      statuses:
+        - type: project
+          target: 1%
+          threshold: 0%
+          informational: false
+
+    - name: android-native
+      carryforward: false
+      statuses:
+        - type: project
+          target: 1%
+          threshold: 0%
+          informational: false

@@ -14,4 +14,4 @@ Knowledge for GitHub Actions workflows in this repository: how jobs are structur
 
 ## Related
 
-* [Testing / coverage design](../testing/coverage-design.md) — e2e coverage collection that runs inside the iOS workflow
+* [Testing / coverage design](../testing/coverage-design.md) — e2e coverage collection, Codecov flags, and upload gates
