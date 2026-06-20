@@ -102,6 +102,31 @@ index d6db5d5d7a4173eae88d97bf06eaeaf8b38c3b94..a85ebdf5a30607459be68463b3238b6f
      }
  
      override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
+diff --git a/src/devices/common/drivers/android/exec/ADB.js b/src/devices/common/drivers/android/exec/ADB.js
+index 3954219065ca5ac7c3ea81cb801b37ae5b5ff2d1..a10727b16240a91ad382d08284b6c8cfe5dbf8e2 100644
+--- a/src/devices/common/drivers/android/exec/ADB.js
++++ b/src/devices/common/drivers/android/exec/ADB.js
+@@ -380,7 +380,19 @@ class ADB {
+   }
+ 
+   async reverseRemove(deviceId, port) {
+-    return this.adbCmd(deviceId, `reverse --remove tcp:${port}`);
++    try {
++      return await this.adbCmd(deviceId, `reverse --remove tcp:${port}`);
++    } catch (error) {
++      const details = `${error.stderr || ''} ${error.message || ''}`;
++      if (/listener .* not found/i.test(details)) {
++        log.warn(
++          { deviceId, port },
++          'Ignoring missing adb reverse listener during Detox teardown',
++        );
++        return;
++      }
++      throw error;
++    }
+   }
+ 
+   async emuKill(deviceId) {
 diff --git a/src/server/handlers/AnonymousConnectionHandler.js b/src/server/handlers/AnonymousConnectionHandler.js
 index 10743c87d17de135317e1bac3e65159b9872412f..abbb302307fbd5eabbbff875983f284a4bb9e738 100644
 --- a/src/server/handlers/AnonymousConnectionHandler.js
@@ -146,28 +171,28 @@ index 10743c87d17de135317e1bac3e65159b9872412f..abbb302307fbd5eabbbff875983f284a
    }
  }
  
-diff --git a/src/devices/common/drivers/android/exec/ADB.js b/src/devices/common/drivers/android/exec/ADB.js
-index 1111111111111111111111111111111111111111..2222222222222222222222222222222222222222 100644
---- a/src/devices/common/drivers/android/exec/ADB.js
-+++ b/src/devices/common/drivers/android/exec/ADB.js
-@@ -379,7 +379,19 @@ class ADB {
-   }
+diff --git a/src/utils/ExclusiveLockfile.js b/src/utils/ExclusiveLockfile.js
+index da29ae99c8b90877f15715cdeb692ed8a2b47569..f53f49bca03b3acca4c4d8b05d087a8c1b601815 100644
+--- a/src/utils/ExclusiveLockfile.js
++++ b/src/utils/ExclusiveLockfile.js
+@@ -6,6 +6,9 @@ const DetoxRuntimeError = require('../errors/DetoxRuntimeError');
  
-   async reverseRemove(deviceId, port) {
--    return this.adbCmd(deviceId, `reverse --remove tcp:${port}`);
-+    try {
-+      return await this.adbCmd(deviceId, `reverse --remove tcp:${port}`);
-+    } catch (error) {
-+      const details = `${error.stderr || ''} ${error.message || ''}`;
-+      if (/listener .* not found/i.test(details)) {
-+        log.warn(
-+          { deviceId, port },
-+          'Ignoring missing adb reverse listener during Detox teardown',
-+        );
-+        return;
-+      }
-+      throw error;
-+    }
-   }
+ const retry = require('./retry');
  
-   async emuKill(deviceId) {
++// proper-lockfile default stale is 10s; CI runners under load can miss lock heartbeats → ECOMPROMISED.
++const DEVICE_REGISTRY_LOCK_STALE_MS = 20000;
++
+ const DEFAULT_OPTIONS = {
+   retry: { retries: 10000, interval: 5 },
+   read: { encoding: 'utf8' },
+@@ -107,7 +110,9 @@ class ExclusiveLockfile {
+     this._ensureFileExists();
+ 
+     await retry(this._options.retry, () => {
+-      const operationResult = plockfile.lockSync(this._lockFilePath);
++      const operationResult = plockfile.lockSync(this._lockFilePath, {
++        stale: DEVICE_REGISTRY_LOCK_STALE_MS,
++      });
+ 
+       this._isLocked = true;
+       this._invalidate();

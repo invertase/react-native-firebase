@@ -100,9 +100,24 @@ ws-server The app has dispatched "ready" action too early.
 
 **Cause** — iOS `DetoxManager` sends proactive `ready` on `webSocketDidConnect` before the anonymous server handles `login`. Detox 20.x logs and drops that `ready`, leaving `device.launchApp()` stuck in `waitUntilReady`.
 
-**Mitigation** — `.yarn/patches/detox-npm-20.51.0-*.patch` buffers early `ready` and replays it after app `login` (`AnonymousConnectionHandler.js`).
+**Mitigation** — `.yarn/patches/detox-npm-20.51.0-*.patch` buffers early `ready` and replays it after app `login` (`AnonymousConnectionHandler.js`). Full patch list: [detox-patches.md](detox-patches.md).
 
-#### 2. Main-thread delay before WebSocket handshake
+#### 2. Device registry lock (`ECOMPROMISED`)
+
+**Detox step symptom** — failure before any test output, often within the first minute of `Detox Test Debug` / `Detox Test Release`:
+
+```
+Error: Unable to update lock within the stale threshold
+  code: 'ECOMPROMISED'
+```
+
+**Cause** — Detox locks `~/Library/Detox/device.registry.json` (device busy/available ledger) via `proper-lockfile`. Default stale window is 10s; under CI load (simulator logging, Firestore emulator, `yeetd`) lock heartbeats can miss it ([Detox #4210](https://github.com/wix/Detox/issues/4210)).
+
+**Mitigation** — same Detox patch doubles stale to 20s in `ExclusiveLockfile.js`. We do **not** use `detox reset-lock-file` in CI (wipes the ledger). See [detox-patches.md](detox-patches.md#device-registry-lock-ecompromised).
+
+**Sentinel** — `proper-lockfile` + `ECOMPROMISED` in the Detox step log; build and Pre-Boot steps green.
+
+#### 3. Main-thread delay before WebSocket handshake
 
 **Symptom** — Long gap (~30–60s) between `device com.invertase.testing launched` (Detox step log) and the first `Connection 1: ready` / `handshake successful` lines in `simulator.log`. Firebase configure, RN bridge startup, and LLVM coverage instrumentation run on the main thread and can defer Detox’s `URLSessionWebSocketDelegate` callbacks.
 
@@ -116,17 +131,17 @@ ws-server The app has dispatched "ready" action too early.
 | `detoxEnableSynchronization: 'NO'` at launch | `tests/e2e/firebase.test.js` |
 | `detoxURLBlacklistRegex: '.*'` | `tests/e2e/firebase.test.js` (existing) |
 
-#### 3. `waitForActive` / scene never foreground-active
+#### 4. `waitForActive` / scene never foreground-active
 
 **Symptom** — Detox reaches `isReady` and `waitForActive` but never logs `waitForActiveDone`. App process stays alive for the rest of the step timeout (~30+ min). In `simulator.log`, SpringBoard requests `foreground-interactive` while the app scene stays `UISceneActivationStateUnattached` and UIKit deactivation reasons (e.g. `3104`) never clear.
 
 **Instrumentation** — `tests/ios/testing/AppDelegate.mm` logs `[rnfb-lifecycle]` at launch, on UIApplication/UIScene lifecycle notifications, and at **+30s / +60s** one-shot probes if the app never becomes active. Confirms whether the stall is Detox-side or the app never reaching `UIApplicationStateActive` / `foregroundActive`.
 
-**Distinguish from issue 4** — If `[rnfb-lifecycle]` probes show `UIApplication.state=active` / `foregroundActive` but Detox still hangs on `waitForActive`, the cause is likely Metro/JS bundle load failure (issue 4), not scene activation.
+**Distinguish from issue 5** — If `[rnfb-lifecycle]` probes show `UIApplication.state=active` / `foregroundActive` but Detox still hangs on `waitForActive`, the cause is likely Metro/JS bundle load failure (issue 5), not scene activation.
 
-#### 4. Metro unresponsive at launch → `waitForActive` hang (active app)
+#### 5. Metro unresponsive at launch → `waitForActive` hang (active app)
 
-**Symptom** — Same Detox-side pattern as issue 3 (`waitForActive` without `waitForActiveDone`, multi-minute hang in `device.launchApp()`), but **`[rnfb-lifecycle]` shows the app is already active**. Often seen on debug CI only; release on the same run passes (embedded bundle, no live Metro).
+**Symptom** — Same Detox-side pattern as issue 4 (`waitForActive` without `waitForActiveDone`, multi-minute hang in `device.launchApp()`), but **`[rnfb-lifecycle]` shows the app is already active**. Often seen on debug CI only; release on the same run passes (embedded bundle, no live Metro).
 
 **Cause chain** (observed on run [27727525262](https://github.com/invertase/react-native-firebase/actions/runs/27727525262)):
 
@@ -169,7 +184,7 @@ rg 'testing\[' simulator.log | rg -i 'waitForActive|waitForActiveDone|com\.wix\.
 # App lifecycle confirmation (AppDelegate instrumentation)
 rg '\[rnfb-lifecycle\]' simulator.log
 
-# Metro / JS bundle load failure (issue 4)
+# Metro / JS bundle load failure (issue 5)
 rg '\[rnfb-lifecycle\].*RCTJavaScriptDidFailToLoad|packager-probe|packager-status-fetch' simulator.log
 rg 'No script URL provided|com\.facebook\.react\.log' simulator.log
 rg 'testing\[' simulator.log | rg '8081/status|index\.bundle'
@@ -190,15 +205,16 @@ rg 'testing\[' simulator.log | rg -i 'FIRApp|RNFB|RCTBridge|configure'
 | Pattern | Meaning |
 |---------|---------|
 | `ready action too early` in Detox step only | Early-ready race (patch should fix; check patch applied in `yarn install`) |
-| `waitForActive` without `waitForActiveDone` | Scene/active hang (issue 3) **or** Metro/JS load failure (issue 4) — check `[rnfb-lifecycle]` probes |
-| `probe+30s` / `probe+60s` with `UIApplication.state=inactive` or scene `unattached` | App never became foreground-active (issue 3); compare with SpringBoard `foreground-interactive` lines |
-| `probe+30s` / `probe+60s` with `active` / `foregroundActive` but no `waitForActiveDone` | Metro/JS bundle failure despite active UIKit (issue 4); check `RCTJavaScriptDidFailToLoad` and `packager-status-fetch` |
+| `ECOMPROMISED` / `Unable to update lock within the stale threshold` | Device registry lock heartbeat missed — see [detox-patches.md](detox-patches.md); check `ExclusiveLockfile.js` patch |
+| `waitForActive` without `waitForActiveDone` | Scene/active hang (issue 4) **or** Metro/JS load failure (issue 5) — check `[rnfb-lifecycle]` probes |
+| `probe+30s` / `probe+60s` with `UIApplication.state=inactive` or scene `unattached` | App never became foreground-active (issue 4); compare with SpringBoard `foreground-interactive` lines |
+| `probe+30s` / `probe+60s` with `active` / `foregroundActive` but no `waitForActiveDone` | Metro/JS bundle failure despite active UIKit (issue 5); check `RCTJavaScriptDidFailToLoad` and `packager-status-fetch` |
 | `packager-status-fetch ... error domain=NSURLErrorDomain code=-1001` | Metro TCP reachable but HTTP timed out from simulator |
 | `No script URL provided` in `com.facebook.react.log` | RN never got bundle URL; only `/status` attempts, no `index.bundle` |
 | `handshake successful` 30–60s after `simctl launch` | Main-thread startup delay; not a boot failure |
 | Only `com.apple.datamigrator` activity, no `testing[` | Pre-boot / migration issue — use Actions `[boot-status]` log, not Detox orchestration |
 
-**Example healthy sequence** (abbreviated): `didFinishLaunching+after` → `UIApplicationDidBecomeActiveNotification` / scene `foregroundActive` → Detox `loginSuccess` → `isReady` → `waitForActiveDone`. A gap between SpringBoard foreground request and `[rnfb-lifecycle]` `active` is the smoking gun for issue 3. For issue 4, lifecycle probes show `active` but you will see `RCTJavaScriptDidFailToLoad` and/or `No script URL provided` before Detox stalls on `waitForActive`.
+**Example healthy sequence** (abbreviated): `didFinishLaunching+after` → `UIApplicationDidBecomeActiveNotification` / scene `foregroundActive` → Detox `loginSuccess` → `isReady` → `waitForActiveDone`. A gap between SpringBoard foreground request and `[rnfb-lifecycle]` `active` is the smoking gun for issue 4. For issue 5, lifecycle probes show `active` but you will see `RCTJavaScriptDidFailToLoad` and/or `No script URL provided` before Detox stalls on `waitForActive`.
 
 For Metro-side post-mortem, also download `metro-*_log` and check whether Metro logged bundle requests or stalled around the launch timestamp:
 
@@ -210,13 +226,14 @@ rg -i 'BUNDLE|index\.bundle|8081|error|ECONN|transform' metro.log
 
 | Change | Location |
 |--------|----------|
-| Buffer early `ready`, replay after app `login` | `.yarn/patches/detox-npm-20.51.0-*.patch` |
+| Buffer early `ready`, replay after app `login` | `.yarn/patches/detox-npm-20.51.0-*.patch` → `AnonymousConnectionHandler.js` |
+| 2× device-registry lock stale (20s) | `.yarn/patches/detox-npm-20.51.0-*.patch` → `ExclusiveLockfile.js` |
 | Jet + Metro wait, bounded `launchApp` with retry, Detox launch args | `tests/e2e/firebase.test.js` |
 | Lifecycle + JS load / packager probe logging; bundle URL `127.0.0.1` | `tests/ios/testing/AppDelegate.mm` |
 | Pre-boot + `bootstatus` before install | `boot-simulator.sh` (orthogonal; fixes boot/migration only) |
 | Metro stdout/stderr artifact | `.github/workflows/tests_e2e_ios.yml` |
 
-#### 5. Jet WebSocket disconnect (1006 / 1001)
+#### 6. Jet WebSocket disconnect (1006 / 1001)
 
 **Symptom** (Detox Test Debug step, often debug build only):
 
