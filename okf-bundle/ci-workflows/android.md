@@ -6,7 +6,7 @@
 2. `yarn tests:android:post-e2e-coverage` — poll/pull `coverage.ec`, Jacoco report (best-effort, never fails the job)
 3. Codecov upload — `continue-on-error: true`
 
-Native Android coverage is **not** pulled inside `tests/e2e/firebase.test.js`. Pulling mid-Detox ran before `DetoxTest.dumpCoverageData()` and routinely missed the file.
+Native Android coverage is **not** pulled inside `tests/e2e/firebase.test.js`. The Jet `after` hook in `tests/app.js` calls `RNFBTestingCoverage.flush()` in the **app process** to write `coverage.ec` before Detox SIGINTs instrumentation. Post-e2e pull runs after Detox exits.
 
 ## CI failure: Jet 1006 → adb `reverse --remove` mid-run
 
@@ -40,7 +40,7 @@ When the Jet/app WebSocket drops (1006), Detox can treat the session as dead and
 
 | Symptom | Likely cause |
 |---------|----------------|
-| `[native-coverage] Android native coverage pull failed` | Detox exited before instrumentation wrote `coverage.ec`; post-e2e poll may still recover it |
+| `[native-coverage] Android native coverage file not found after N attempts` | App-process flush did not run or failed; check Jet log for `[native-coverage] flushing android coverage` |
 | Empty Jacoco XML (~235 bytes) | No `.ec` pulled — check post-e2e logs |
 | `adb reverse --remove` in Detox logs | Expected on 1006; should be warn-only after Detox patch |
 | Detox red, tests green in log | Pre-patch: teardown adb error; re-run or check patch applied |

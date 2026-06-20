@@ -17,7 +17,7 @@ function parseArgs(argv) {
     derivedData: path.join(testsDir, 'ios/build'),
     configuration: 'Debug',
     appName: 'testing',
-    output: path.join(repoRoot, 'coverage/ios-native.lcov.info'),
+    output: path.join(repoRoot, 'coverage/ios-native/lcov.info'),
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -42,7 +42,7 @@ Options:
   --derived-data <path>   Detox/Xcode derived data (default: tests/ios/build)
   --configuration <name>  Xcode configuration (default: Debug)
   --app-name <name>       App product name (default: testing)
-  --output <path>         lcov output path (default: coverage/ios-native.lcov.info)
+  --output <path>         lcov output path (default: coverage/ios-native/lcov.info)
 `);
       process.exit(0);
     }
@@ -182,7 +182,7 @@ async function main() {
 
   fs.mkdirSync(path.dirname(options.output), { recursive: true });
 
-  const profdataPath = path.join(path.dirname(options.output), 'ios-native.profdata');
+  const profdataPath = path.join(path.dirname(options.output), 'profdata');
   runOrThrow('xcrun', [
     'llvm-profdata',
     'merge',
@@ -192,7 +192,7 @@ async function main() {
     profdataPath,
   ]);
 
-  const rawLcovPath = path.join(path.dirname(options.output), 'ios-native.lcov.raw');
+  const rawLcovPath = path.join(path.dirname(options.output), 'lcov.raw');
   try {
     runToFileOrThrow('xcrun', [
       'llvm-cov',
