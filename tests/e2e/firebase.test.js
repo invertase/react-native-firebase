@@ -25,12 +25,19 @@ const JET_REMOTE_PORT = parseInt(process.env.JET_REMOTE_PORT || '8090', 10);
 const METRO_PORT = parseInt(process.env.JET_METRO_PORT || process.env.RCT_METRO_PORT || '8081', 10);
 const LAUNCH_APP_TIMEOUT_MS = parseInt(process.env.RNFB_LAUNCH_APP_TIMEOUT_MS || '180000', 10);
 const LAUNCH_APP_MAX_ATTEMPTS = parseInt(process.env.RNFB_LAUNCH_APP_MAX_ATTEMPTS || '2', 10);
+const REBOOT_IOS_SIMULATOR_TIMEOUT_MS = parseInt(
+  process.env.RNFB_REBOOT_IOS_SIMULATOR_TIMEOUT_MS || String(12 * 60 * 1000),
+  10,
+);
 const JET_RETRYABLE_WS_RE = /\[jet-ws\] RETRYABLE_DISCONNECT code=(1006|1001)\b/;
 const JET_RECONNECT_RECOVERED_RE = /\[jet-ws\] reconnect_recovered code=(1006|1001)\b/;
 const JET_SERVER_NOT_RUNNING_RE = /server wasn't running/i;
 const JET_COVERAGE_LOST_RE = /Coverage summary:[\s\S]*?Unknown% \( 0\/0 \)/;
 const RETRYABLE_LAUNCH_RE =
-  /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding/i;
+  /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding|Unknown application display identifier|Simulator device failed to launch/i;
+const PORT_CLOSED_ERROR_CODES = new Set(['ECONNREFUSED', 'ECONNRESET', 'EPIPE']);
+
+let cachedUsesLiveMetro;
 
 function resolveDetoxConfigurationName() {
   if (process.env.DETOX_CONFIGURATION) {
@@ -55,6 +62,10 @@ function resolveAppBinaryPath() {
 }
 
 function usesLiveMetro() {
+  if (cachedUsesLiveMetro !== undefined) {
+    return cachedUsesLiveMetro;
+  }
+
   const configName = resolveDetoxConfigurationName();
   if (/debug/i.test(configName)) {
     return true;
@@ -72,6 +83,40 @@ function usesLiveMetro() {
   }
 
   return false;
+}
+
+function cacheUsesLiveMetro() {
+  cachedUsesLiveMetro = usesLiveMetro();
+  console.log(`[rnfb-e2e] cached usesLiveMetro=${cachedUsesLiveMetro}`);
+}
+
+function rebootIosSimulator(testsDir) {
+  return new Promise((resolve, reject) => {
+    const repoRoot = path.resolve(testsDir, '..');
+    const bootScript = path.join(repoRoot, '.github/workflows/scripts/boot-simulator.sh');
+    console.warn(`[rnfb-e2e] Rebooting iOS simulator via ${bootScript}`);
+    const child = spawn('bash', [bootScript], {
+      cwd: repoRoot,
+      stdio: 'inherit',
+    });
+    const timer = setTimeout(() => {
+      child.kill('SIGTERM');
+      reject(new Error(`boot-simulator.sh timed out after ${REBOOT_IOS_SIMULATOR_TIMEOUT_MS}ms`));
+    }, REBOOT_IOS_SIMULATOR_TIMEOUT_MS);
+
+    child.on('close', code => {
+      clearTimeout(timer);
+      if (code === 0) {
+        resolve();
+        return;
+      }
+      reject(new Error(`boot-simulator.sh failed with code ${code}`));
+    });
+    child.on('error', err => {
+      clearTimeout(timer);
+      reject(err);
+    });
+  });
 }
 
 function waitForTcpPort(port, host = '127.0.0.1', timeoutMs = 120000) {
@@ -96,6 +141,49 @@ function waitForTcpPort(port, host = '127.0.0.1', timeoutMs = 120000) {
     };
 
     tryConnect();
+  });
+}
+
+function waitForTcpPortClosed(port, host = '127.0.0.1', timeoutMs = 120000) {
+  const start = Date.now();
+  let probes = 0;
+
+  return new Promise((resolve, reject) => {
+    const probe = () => {
+      if (Date.now() - start > timeoutMs) {
+        reject(
+          new Error(
+            `Timed out waiting for ${host}:${port} to close after ${timeoutMs}ms (probes=${probes})`,
+          ),
+        );
+        return;
+      }
+
+      probes += 1;
+      const socket = net.connect(port, host);
+      socket.once('connect', () => {
+        socket.end();
+        setTimeout(probe, 250);
+      });
+      socket.once('error', err => {
+        socket.destroy();
+        const elapsedMs = Date.now() - start;
+        const code = err?.code || 'UNKNOWN';
+        if (PORT_CLOSED_ERROR_CODES.has(code)) {
+          console.log(
+            `[rnfb-e2e] port ${host}:${port} closed (code=${code}, elapsed=${elapsedMs}ms, probes=${probes})`,
+          );
+          resolve();
+          return;
+        }
+        console.warn(
+          `[rnfb-e2e] port-probe non-close error code=${code} host=${host} port=${port} probe=${probes}`,
+        );
+        setTimeout(probe, 250);
+      });
+    };
+
+    probe();
   });
 }
 
@@ -240,7 +328,7 @@ function runJetE2eAttempt(attempt) {
     process.stderr.write(text);
   });
 
-  return new Promise(async (resolve, reject) => {
+  const exitPromise = new Promise((resolve, reject) => {
     jetProcess.on('error', err => {
       err.jetOutput = output;
       reject(err);
@@ -255,30 +343,37 @@ function runJetE2eAttempt(attempt) {
       }
       resolve({ output });
     });
-
-    try {
-      console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for port ${JET_REMOTE_PORT}`);
-      await waitForTcpPort(JET_REMOTE_PORT);
-      if (usesLiveMetro()) {
-        console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for Metro on port ${METRO_PORT}`);
-        await waitForMetro(METRO_PORT);
-      } else {
-        console.log(
-          `[rnfb-e2e] Jet attempt ${attempt}: skipping Metro wait (configuration=${resolveDetoxConfigurationName() || 'unknown'}, binary=${resolveAppBinaryPath() || 'unknown'})`,
-        );
-      }
-      console.log(`[rnfb-e2e] Jet attempt ${attempt}: launching app`);
-      await launchAppWithRetry({
-        detoxURLBlacklistRegex: `.*`,
-        // Avoid sync/idling blocking the main queue while Detox WS login is pending.
-        detoxEnableSynchronization: 'NO',
-      });
-    } catch (err) {
-      jetProcess.kill();
-      err.jetOutput = output;
-      reject(err);
-    }
   });
+
+  const orchestrate = async () => {
+    console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for port ${JET_REMOTE_PORT}`);
+    await waitForTcpPort(JET_REMOTE_PORT);
+    if (usesLiveMetro()) {
+      console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for Metro on port ${METRO_PORT}`);
+      await waitForMetro(METRO_PORT);
+    } else {
+      console.log(
+        `[rnfb-e2e] Jet attempt ${attempt}: skipping Metro wait (configuration=${resolveDetoxConfigurationName() || 'unknown'}, binary=${resolveAppBinaryPath() || 'unknown'})`,
+      );
+    }
+    console.log(`[rnfb-e2e] Jet attempt ${attempt}: launching app`);
+    await launchAppWithRetry({
+      detoxURLBlacklistRegex: `.*`,
+      // Avoid sync/idling blocking the main queue while Detox WS login is pending.
+      detoxEnableSynchronization: 'NO',
+    });
+  };
+
+  return Promise.race([
+    orchestrate()
+      .then(() => exitPromise)
+      .catch(err => {
+        jetProcess.kill();
+        err.jetOutput = output;
+        throw err;
+      }),
+    exitPromise,
+  ]);
 }
 
 describe('Jet Tests', function () {
@@ -288,6 +383,8 @@ describe('Jet Tests', function () {
     const platform = detox.device.getPlatform();
     const deviceId = detox.device.id;
     const testsDir = path.resolve(__dirname, '..');
+
+    cacheUsesLiveMetro();
 
     let lastFailure;
 
@@ -304,10 +401,18 @@ describe('Jet Tests', function () {
           } else if (isRetryableLaunchFailure(lastFailure)) {
             console.warn('[rnfb-e2e] Retrying after Metro/bundle load launch failure');
           }
-          try {
-            await device.terminateApp();
-          } catch (_) {
-            // No-op
+          console.log(
+            `[rnfb-e2e] Jet attempt ${attempt}: waiting for port ${JET_REMOTE_PORT} to close before retry`,
+          );
+          await waitForTcpPortClosed(JET_REMOTE_PORT);
+          if (platform === 'ios' && process.platform === 'darwin') {
+            await rebootIosSimulator(testsDir);
+          } else {
+            try {
+              await device.terminateApp();
+            } catch (_) {
+              // No-op
+            }
           }
         }
 

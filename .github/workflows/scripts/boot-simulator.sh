@@ -42,6 +42,51 @@ describe_booted_device() {
     || true
 }
 
+resolve_device_udid() {
+  local device="$1"
+  local udid
+
+  udid="$(
+    xcrun simctl list devices booted 2>/dev/null \
+      | grep -F "${device} (" \
+      | grep -v 'unavailable' \
+      | head -1 \
+      | sed -E 's/.*\(([A-F0-9-]+)\).*/\1/' \
+      || true
+  )"
+  if [[ -n "$udid" ]]; then
+    echo "$udid"
+    return 0
+  fi
+
+  udid="$(
+    xcrun simctl list devices available 2>/dev/null \
+      | grep -F "${device} (" \
+      | grep -v 'unavailable' \
+      | head -1 \
+      | sed -E 's/.*\(([A-F0-9-]+)\).*/\1/' \
+      || true
+  )"
+  echo "$udid"
+}
+
+kill_resolved_simulator() {
+  local device="$1"
+  local udid
+
+  udid="$(resolve_device_udid "$device")"
+  if [[ -z "$udid" ]]; then
+    log_boot_status "phase=kill_resolved device=\"${device}\" not found, skipping"
+    return 0
+  fi
+
+  log_boot_status "phase=kill_resolved udid=${udid} device=\"${device}\""
+  killall Simulator 2>/dev/null || true
+  xcrun simctl terminate "$udid" com.invertase.testing 2>/dev/null || true
+  xcrun simctl shutdown "$udid" 2>/dev/null || true
+  xcrun simctl shutdown "$device" 2>/dev/null || true
+}
+
 log_migration_status() {
   local device="$1"
   local migration_output probe_rc
@@ -117,10 +162,8 @@ popd >/dev/null || exit 1
 
 log_boot_status "phase=resolve_device name=\"${SIM}\" (from tests/.detoxrc.js)"
 
-# Clear up any existing attempts in case we are re-trying
-log_boot_status "phase=shutdown_existing killing Simulator.app if running..."
-killall Simulator 2>/dev/null || true
-xcrun simctl shutdown "$SIM" 2>/dev/null || true
+# Kill the resolved simulator first when present (CI pre-boot and e2e Jet retries).
+kill_resolved_simulator "$SIM"
 
 log_boot_status "phase=boot_command starting simctl boot..."
 set +e

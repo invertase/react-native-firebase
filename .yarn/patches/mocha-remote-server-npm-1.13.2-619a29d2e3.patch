@@ -1,8 +1,54 @@
 diff --git a/dist/Server.js b/dist/Server.js
-index ad9debe2086ab9b96e97a69aec966da8114ad102..e3c1c964956023df876dfcac3f73000b4eaf1bba 100644
+index ad9debe2086ab9b96e97a69aec966da8114ad102..c8f4e2a1b9d3f6e8a7c5d4b2e1f0a9c8b7d6e5f4 100644
 --- a/dist/Server.js
 +++ b/dist/Server.js
-@@ -130,6 +130,17 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
+@@ -73,6 +73,8 @@
+         /** The options to send to the next connecting running client */
+         this.clientOptions = {};
+         this._listening = false;
++        this._clientResetTimer = null;
++        this._awaitingInitialClientRun = false;
+         this.handleConnection = (ws, req) => {
+             this.debug("Client connected");
+             // Check that the protocol matches
+@@ -88,6 +90,11 @@
+                 ws.close(1002, `Expected "${expectedProtocol}" protocol got "${ws.protocol}"`);
+                 return;
+             }
++            if (this._clientResetTimer) {
++                clearTimeout(this._clientResetTimer);
++                this._clientResetTimer = null;
++                console.warn(`[mocha-remote-ws] reconnect_recovered preserving_runner`);
++            }
+             if (this.client) {
+                 this.debug("A client was already connected");
+                 this.client.close(1013 /* try again later */, "Got a connection from another client");
+@@ -97,14 +104,20 @@
+             // Hang onto the client
+             this.client = ws;
+             this.client.on("message", this.handleMessage.bind(this, this.client));
+-            this.client.once("close", this.handleReset);
++            this.client.once("close", (code) => this.handleClientDisconnect(code));
+             // If we already have a runner, it can run now that we have a client
+             if (this.runner) {
+-                if (this.clientOptions) {
+-                    this.send({ action: "run", options: this.clientOptions });
++                if (this._awaitingInitialClientRun) {
++                    if (this.clientOptions) {
++                        this.send({ action: "run", options: this.clientOptions });
++                        this._awaitingInitialClientRun = false;
++                    }
++                    else {
++                        throw new Error("Internal error: Expected a clientOptions");
++                    }
+                 }
+                 else {
+-                    throw new Error("Internal error: Expected a clientOptions");
++                    this.debug("Client reconnected while runner active; resuming without re-run");
+                 }
+             }
+             else if (this.config.autoRun) {
+@@ -130,6 +143,17 @@
                          throw new Error("Received a message from the client, but server wasn't running");
                      }
                  }
@@ -20,3 +66,58 @@ index ad9debe2086ab9b96e97a69aec966da8114ad102..e3c1c964956023df876dfcac3f73000b
                  else if (msg.action === "error") {
                      if (typeof msg.message !== "string") {
                          throw new Error("Expected 'error' action to have an error argument with a message");
+@@ -149,13 +173,46 @@
+                 }
+                 else {
+                     throw err;
++                }
++            }
++        };
++        this.handleClientDisconnect = (code) => {
++            const transientCodes = [1006, 1001];
++            const graceMs = this.config.reconnectGraceMs ?? 15000;
++            if (this.runner && transientCodes.includes(code)) {
++                if (this._clientResetTimer) {
++                    clearTimeout(this._clientResetTimer);
+                 }
++                console.warn(`[mocha-remote-ws] transient_disconnect code=${code} grace_ms=${graceMs} preserving_runner`);
++                const client = this.client;
++                delete this.client;
++                if (client) {
++                    client.removeAllListeners();
++                }
++                this._clientResetTimer = setTimeout(() => {
++                    this._clientResetTimer = null;
++                    if (!this.client) {
++                        console.error(`[mocha-remote-ws] fatal_disconnect code=${code} grace_expired_ms=${graceMs}`);
++                        this.handleReset();
++                    }
++                }, graceMs);
++                return;
+             }
++            if (this._clientResetTimer) {
++                clearTimeout(this._clientResetTimer);
++                this._clientResetTimer = null;
++            }
++            this.handleReset();
+         };
+         /**
+          * Resets the server for another test run.
+          */
+         this.handleReset = () => {
++            if (this._clientResetTimer) {
++                clearTimeout(this._clientResetTimer);
++                this._clientResetTimer = null;
++            }
++            this._awaitingInitialClientRun = false;
+             // Forget everything about the runner and the client
+             const { runner, client } = this;
+             delete this.runner;
+@@ -263,6 +320,7 @@
+         // this.runner = new Mocha.Runner(this.suite, this.options.delay || false);
+         // TODO: Stub this to match the Runner's interface even better
+         this.runner = new FakeRunner_1.FakeRunner();
++        this._awaitingInitialClientRun = true;
+         // Attach event listeners to update stats
+         (0, stats_collector_1.createStatsCollector)(this.runner);
+         // Set the client options, to be passed to the next running client
