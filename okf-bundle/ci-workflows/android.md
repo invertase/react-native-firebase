@@ -32,7 +32,13 @@ Observed on [run 27803881448](https://github.com/invertase/react-native-firebase
 
 When the Jet/app WebSocket drops (1006), Detox can treat the session as dead and tear down instrumentation **while Jet is still in its 15s reconnect grace**. That triggers `reverseRemove` before the orchestration retry's `terminateApp()`. If the listener was never established or was already removed, adb exits non-zero.
 
-**Mitigation (patched):** `.yarn/patches/detox-npm-20.51.0-*.patch` makes `ADB.reverseRemove` ignore `listener 'tcp:…' not found` during teardown.
+**Mitigation (patched):** `.yarn/patches/detox-npm-20.51.0-*.patch`:
+
+- `ADB.reverseRemove` — ignore `listener 'tcp:…' not found` during teardown (below)
+- Android idling resources — force idle (network/timers/Fabric)
+- `ExclusiveLockfile.js` — 2× lock stale for `ECOMPROMISED` flake ([detox-patches.md](detox-patches.md))
+
+Full inventory: [detox-patches.md](detox-patches.md).
 
 **Orchestration retry:** `firebase.test.js` still retries on `RETRYABLE_DISCONNECT`; attempt 2 can pass all tests even when attempt 1's teardown logged adb noise.
 
