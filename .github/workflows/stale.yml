@@ -5,12 +5,10 @@ on:
   schedule:
     - cron: 35 * * * *
 permissions:
-  contents: read
+  issues: write
+  pull-requests: write
 jobs:
   stale:
-    permissions:
-      issues: write
-      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       # https://github.com/actions/stale/releases
@@ -20,7 +18,9 @@ jobs:
           stale-issue-message: |
             Hello 👋, to help manage issues we automatically close stale issues.
 
-            This issue has been automatically marked as stale because it has not had activity for quite some time.Has this issue been fixed, or does it still require attention?
+            This issue has been automatically marked as stale because it has not had activity for quite some time.
+
+            Has this issue been fixed, or does it still require attention?
 
             > This issue will be closed in 15 days if no further activity occurs.
 
