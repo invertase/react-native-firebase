@@ -65,6 +65,8 @@ jobs:
       # https://github.com/codecov/codecov-action/releases
       - uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
         with:
+          files: coverage/lcov.info
+          flags: jest
           verbose: true
       # https://github.com/actions/cache/releases
       - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5

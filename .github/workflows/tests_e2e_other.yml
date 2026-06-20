@@ -281,6 +281,8 @@ jobs:
       - uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
         continue-on-error: true
         with:
+          files: coverage/lcov.info
+          flags: e2e-ts-macos
           verbose: true
 
       - name: Stop Screen Recording and System Logging

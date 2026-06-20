@@ -85,6 +85,10 @@ A long gap with only `com.apple.datamigrator` activity and no `com.invertase.tes
 
 Device type is defined in `tests/.detoxrc.js` (`devices.simulator.device.type`). The boot script and Detox both use this name. CI does not hard-code a UDID.
 
+### Codecov (debug matrix only)
+
+After Detox, the debug leg runs `yarn tests:ios:test:process-coverage` then two flagged Codecov uploads (`e2e-ts-ios`, `ios-native`). **`codecov/project/ios-native`** blocks if the native flag upload is missing. Release legs skip coverage. Details: [coverage design](../testing/coverage-design.md#codecov-uploads-ci).
+
 ### E2E test app orchestration (Detox + Jet)
 
 After pre-boot succeeds, failures often move **inside** the test app process (`com.invertase.testing`, binary `testing`). Simulator boot and app install are fine; Detox `launchApp` stalls while the app stays alive. Several overlapping issues show up in CI logs.
@@ -205,7 +209,8 @@ rg 'testing\[' simulator.log | rg -i 'FIRApp|RNFB|RCTBridge|configure'
 | Pattern | Meaning |
 |---------|---------|
 | `ready action too early` in Detox step only | Early-ready race (patch should fix; check patch applied in `yarn install`) |
-| `ECOMPROMISED` / `Unable to update lock within the stale threshold` | Device registry lock heartbeat missed — see [detox-patches.md](detox-patches.md); check `ExclusiveLockfile.js` patch |
+| `ECOMPROMISED` / `Unable to update lock within the stale threshold` | Device registry lock heartbeat missed — see [detox-patches.md](detox-patches.md) |
+| `codecov/project/ios-native` fail | Native lcov not uploaded — check process-coverage step and Codecov Uploads tab for `ios-native` flag |
 | `waitForActive` without `waitForActiveDone` | Scene/active hang (issue 4) **or** Metro/JS load failure (issue 5) — check `[rnfb-lifecycle]` probes |
 | `probe+30s` / `probe+60s` with `UIApplication.state=inactive` or scene `unattached` | App never became foreground-active (issue 4); compare with SpringBoard `foreground-interactive` lines |
 | `probe+30s` / `probe+60s` with `active` / `foregroundActive` but no `waitForActiveDone` | Metro/JS bundle failure despite active UIKit (issue 5); check `RCTJavaScriptDidFailToLoad` and `packager-status-fetch` |

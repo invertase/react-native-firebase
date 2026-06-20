@@ -161,22 +161,48 @@ The Podfile `post_install` coverage flags are temporary. When native dependencie
 
 # Codecov uploads (CI)
 
-CI uses [codecov-action](https://github.com/codecov/codecov-action) v7 with `verbose: true`. It auto-discovers coverage files under the repo, including:
+CI uses [codecov-action](https://github.com/codecov/codecov-action) v7 with explicit `files` and `flags` per upload (no auto-discovery for gated artifacts). Workflow steps use `continue-on-error: true` so a Codecov API hiccup does not fail the test job; **blocking gates** are the Codecov GitHub status checks configured in `codecov.yml`.
 
-| Workflow | Artifacts |
-|----------|-----------|
-| `tests_jest.yml` | `coverage/lcov.info`, `coverage-final.json`, `clover.xml` |
-| `tests_e2e_android.yml` | `coverage/lcov.info` + Jacoco XML |
-| `tests_e2e_other.yml` | `coverage/lcov.info` (macOS TS) |
-| `tests_e2e_ios.yml` (debug) | `coverage/lcov.info` + `coverage/ios-native/lcov.info` |
+## Flag inventory
 
-The iOS workflow runs `yarn tests:ios:test:process-coverage` after Detox (`if: always()`, `continue-on-error: true` for now). The process step exits 1 when profraw is missing.
+Flag names are defined in **`codecov.yml`** (`flag_management`) and must match **`flags:`** in the workflow step. Do not rename in one place without the other.
+
+| Flag | Workflow | File uploaded | Blocks PR? |
+|------|----------|---------------|------------|
+| `jest` | `tests_jest.yml` | `coverage/lcov.info` | No |
+| `e2e-ts-ios` | `tests_e2e_ios.yml` (debug only) | `coverage/lcov.info` | No |
+| `ios-native` | `tests_e2e_ios.yml` (debug only) | `coverage/ios-native/lcov.info` | **Yes** — `codecov/project/ios-native` |
+| `e2e-ts-android` | `tests_e2e_android.yml` | `coverage/lcov.info` | No |
+| `android-native` | `tests_e2e_android.yml` | `tests/android/app/build/reports/jacoco/jacocoAndroidTestReport/jacocoAndroidTestReport.xml` | **Yes** — `codecov/project/android-native` |
+| `e2e-ts-macos` | `tests_e2e_other.yml` | `coverage/lcov.info` | No |
+
+iOS **release** matrix legs do not upload coverage. macOS e2e has TS coverage only (no native gate).
+
+## Native upload gates
+
+Blocking flags use `carryforward: false` and `target: 1%` in `codecov.yml`:
+
+- **Upload present** with any reasonable native coverage → flag status **passes** (well above 1%).
+- **Upload missing** (file not produced, step skipped, or upload failed) → flag has **0%** → status **fails**.
+
+This gates **upload presence**, not native coverage percentage regressions. Overall `codecov/project` remains `informational: true`.
+
+PR comments include a **flags** table (`comment.layout: …, flags`).
+
+## Per-workflow artifacts
+
+| Workflow | Steps before Codecov |
+|----------|---------------------|
+| `tests_jest.yml` | `yarn tests:jest-coverage` |
+| `tests_e2e_ios.yml` (debug) | Detox → `yarn tests:ios:test:process-coverage` (`continue-on-error: true` on process step for now) |
+| `tests_e2e_android.yml` | Detox → `yarn tests:android:post-e2e-coverage` (soft-fail poll/pull in script) |
+| `tests_e2e_other.yml` | macOS Jet e2e |
 
 ## File naming
 
-The repo standard for JavaScript lcov is **`coverage/lcov.info`**. iOS native lcov is **`coverage/ios-native/lcov.info`** — the basename `lcov.info` is required for codecov-action auto-discovery (files like `ios-native.lcov.info` are not matched). Android native coverage is **Jacoco XML**, not lcov; codecov discovers `jacoco*.xml` once the report is generated.
+JavaScript lcov: **`coverage/lcov.info`**. iOS native lcov: **`coverage/ios-native/lcov.info`** (basename `lcov.info` required). Android native: **Jacoco XML** at the path in the table above after `jacocoAndroidTestReport`.
 
-Check the Codecov commit **Uploads** tab for **Processed** vs **Unusable** per upload — that is the authoritative signal, not small project percentage deltas.
+Check the Codecov commit **Uploads** tab: each flag should appear as **Processed**. **Unusable** means wrong format or paths — fix before relying on the gate.
 
 # Local iteration
 
@@ -231,8 +257,9 @@ These must all be true for native coverage to work. If any break, the e2e test s
 | iOS link: `swiftCompatibility56` undefined | Profile link flags applied to all Pods | Restrict `OTHER_LDFLAGS` profile flags to app target; RNFB pods compile-only |
 | No `[jet-coverage] WS received` lines | Patches not applied | `yarn install` from repo root; check `.yarn/patches/` |
 | NYC summary missing / empty `lcov.info` | Jet not run from `tests/` cwd | Detox spawns `yarn jet` inside `tests/`; macOS uses `cd tests && npx jet` |
-| Codecov missing iOS native files | Output not named `lcov.info` | Use `coverage/ios-native/lcov.info` (not `coverage/ios-native.lcov.info`) |
+| Codecov missing iOS native files | Output not named `lcov.info` or wrong path | Use `coverage/ios-native/lcov.info`; confirm `ios-native` flag upload in iOS debug workflow |
 | Codecov upload **Unusable** | Wrong `SF:` paths | Confirm path rewrite in `process-ios-native-coverage.js`; check Uploads tab message |
+| `codecov/project/ios-native` or `android-native` **fail** | Native flag upload missing (`carryforward: false` → 0%) | Check Uploads tab for that flag; iOS: process-coverage step + `coverage/ios-native/lcov.info`; Android: post-e2e Jacoco XML path |
 
 # Future cleanups (non-blocking)
 

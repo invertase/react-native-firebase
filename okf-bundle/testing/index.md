@@ -1,3 +1,3 @@
 # Testing
 
-* [Coverage design](coverage-design.md) - how unit and e2e coverage is collected, transformed, and uploaded
+* [Coverage design](coverage-design.md) — unit and e2e coverage collection, Codecov flags, and native upload gates
