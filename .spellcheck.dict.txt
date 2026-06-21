@@ -27,6 +27,7 @@ AVD
 axios
 Axios
 backend
+Backend
 backgrounded
 backoff
 barcode
@@ -34,6 +35,7 @@ Barcode
 barcodes
 bridgeless
 BUGFIX
+callables
 CarPlay
 CDN
 Changelog
@@ -58,6 +60,7 @@ DEVEX
 DeviceCheck
 Diarmid
 Distribution
+DOM
 dropdown
 EAS
 e2e
@@ -73,6 +76,8 @@ Firebase
 firebase-admin
 firebase-ios-sdk
 firebase-js-sdk
+firebase-js-sdk-shaped
+firebase-js-sdk.
 FirebaseApp
 FirebaseCore
 firestore
@@ -81,6 +86,7 @@ freeform
 GDPR
 GDPR-compliant
 getIdToken
+getters
 github
 globals
 gradle
@@ -109,11 +115,14 @@ Javascript
 JDK
 JS
 JSON
+JSDoc
+JWT
 lastDocument
 launchProperties
 learnt
 Lerna
 lifecycle
+lockfiles
 macOS
 MDX
 mlkit
@@ -122,6 +131,7 @@ mono-repo
 multidex
 Multidex
 namespace
+namespaces
 Namespaced
 namespaced
 natively
@@ -131,6 +141,7 @@ non-firebase
 NoSQL
 Notifee
 notifee
+nullable
 NPE
 npm
 NPM
@@ -140,6 +151,7 @@ onwards
 OpenID
 Perf
 perf
+parsers
 performant
 personalization
 plist
@@ -152,6 +164,7 @@ pre-rendered
 prebuild
 preflight
 preloaded
+prebuilt
 prepended
 programmatically
 PRs
@@ -160,6 +173,7 @@ qa
 react-native-app-auth
 react-native-firebase
 react-native-mlkit
+react-native-nitro-google-signin
 realtime
 Realtime
 reCAPTCHA
@@ -205,6 +219,7 @@ TOTP
 triaging
 TurboModule
 TurboModules
+typings
 TypeDoc
 UI
 uid
@@ -226,6 +241,8 @@ v6
 v7
 v9
 v22
+v23
+v24
 v25
 Ventura
 VertexAI
