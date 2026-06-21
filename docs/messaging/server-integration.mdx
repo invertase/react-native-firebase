@@ -176,8 +176,7 @@ This means that by default, if your app has users and you allow them to log out 
 
 How and when you invalidate a token and generate a new one will be specific to your project, but a common pattern is to delete the FCM token during logout and update your back end to remove it, then to fetch the FCM token during login and update your back end systems to associate the new token with the logged in user.
 
-[deleteToken](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/modular/deleteToken.html)
-[getToken](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/modular/getToken.html)
+Use [`deleteToken`](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/modular/deleteToken.html) and [`getToken`](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/modular/getToken.html) from the modular API.
 
 Note that when a token is deleted by calling the `deleteToken` method, it is immediately and permanently invalid.
 

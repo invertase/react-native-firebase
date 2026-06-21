@@ -23,7 +23,7 @@ yarn add @react-native-firebase/phone-number-verification
 
 # What does it do
 
-Firebase Phone Number Verification (PNV) provides carrier-level phone number verification on Android devices without requiring SMS codes. It verifies the user's phone number directly through the device's SIM card and carrier network, providing a seamless and secure verification experience.
+Firebase Phone Number Verification provides carrier-level phone number verification on Android devices without requiring SMS codes. It verifies the user's phone number directly through the device's SIM card and carrier network, providing a seamless and secure verification experience.
 
 To learn more, visit the [Firebase Phone Number Verification documentation](https://firebase.google.com/docs/phone-number-verification).
 
@@ -36,17 +36,17 @@ Key capabilities:
 
 ## Region & carrier limitations
 
-PNV depends on carrier cooperation. Not all carriers or regions are supported. Before relying on PNV, always call `getVerificationSupportInfo()` to check support. If a SIM slot returns `reason: 'INCAPABLE_DUE_TO_CARRIER_UNSUPPORTED'`, that carrier does not participate in PNV and you should fall back to another verification method (e.g. Firebase Auth SMS).
+Phone Number Verification depends on carrier cooperation. Not all carriers or regions are supported. Before relying on Phone Number Verification, always call `getVerificationSupportInfo()` to check support. If a SIM slot returns `reason: 'INCAPABLE_DUE_TO_CARRIER_UNSUPPORTED'`, that carrier does not participate in Phone Number Verification and you should fall back to another verification method (e.g. Firebase Auth SMS).
 
 Common reasons verification may be unsupported:
 
-| Reason                                 | Meaning                                          |
-| -------------------------------------- | ------------------------------------------------ |
-| `CAPABLE`                              | The SIM's carrier supports PNV.                  |
-| `INCAPABLE_DUE_TO_CARRIER_UNSUPPORTED` | The carrier does not participate in PNV.         |
-| `INCAPABLE_DUE_TO_ANDROID_VERSION`     | The device's Android version is too old.         |
-| `INCAPABLE_DUE_TO_SIM_STATE`           | No SIM inserted, or SIM is in an unusable state. |
-| `CAPABILITY_STATUS_UNSPECIFIED`        | The SDK could not determine the status.          |
+| Reason                                 | Meaning                                                        |
+| -------------------------------------- | -------------------------------------------------------------- |
+| `CAPABLE`                              | The SIM's carrier supports Phone Number Verification.          |
+| `INCAPABLE_DUE_TO_CARRIER_UNSUPPORTED` | The carrier does not participate in Phone Number Verification. |
+| `INCAPABLE_DUE_TO_ANDROID_VERSION`     | The device's Android version is too old.                       |
+| `INCAPABLE_DUE_TO_SIM_STATE`           | No SIM inserted, or SIM is in an unusable state.               |
+| `CAPABILITY_STATUS_UNSPECIFIED`        | The SDK could not determine the status.                        |
 
 # Usage
 
@@ -69,7 +69,7 @@ for (const info of supportInfo) {
 
 The method returns an array with one entry per SIM slot. Each entry includes:
 
-- `isSupported` — whether PNV is available for this SIM.
+- `isSupported` — whether Phone Number Verification is available for this SIM.
 - `simSlot` — the SIM slot index (0-based).
 - `carrierId` — the carrier identifier string.
 - `reason` — a `VerificationSupportStatus` string explaining why the SIM is or isn't supported.
@@ -86,7 +86,7 @@ const supportInfo = await getVerificationSupportInfo(0); // SIM slot 0
 
 ### Fallback when unsupported
 
-If PNV is not supported, fall back to an alternative verification method:
+If Phone Number Verification is not supported, fall back to an alternative verification method:
 
 ```js
 import { Platform } from 'react-native';
@@ -113,7 +113,7 @@ async function verifyPhoneNumber() {
     }
   }
 
-  // Carrier or device doesn't support PNV
+  // Carrier or device doesn't support Phone Number Verification
   return verifySms();
 }
 ```
@@ -122,7 +122,7 @@ async function verifyPhoneNumber() {
 
 To initiate the full verification flow, call `getVerifiedPhoneNumber()`. This will present a consent dialog to the user asking permission to share their phone number. Your app should prepare the user for this consent screen before calling the method — for example, by explaining why their phone number is needed.
 
-For guidance on handling user consent, see the [Firebase PNV getting started guide](https://firebase.google.com/docs/phone-number-verification/android/get-started).
+For guidance on handling user consent, see the [Firebase Phone Number Verification getting started guide](https://firebase.google.com/docs/phone-number-verification/android/get-started).
 
 ```js
 import { getVerifiedPhoneNumber } from '@react-native-firebase/phone-number-verification';
@@ -173,11 +173,11 @@ console.log('Expires at:', new Date(result.expirationTimestamp * 1000));
 
 ## Error handling
 
-All methods reject with structured error codes from the Firebase PNV SDK. The `error.code` property contains one of these values:
+All methods reject with structured error codes from the Firebase Phone Number Verification SDK. The `error.code` property contains one of these values:
 
 | Error Code                                | Meaning                                                         |
 | ----------------------------------------- | --------------------------------------------------------------- |
-| `pnv/carrier-not-supported`               | The SIM's carrier does not support PNV.                         |
+| `pnv/carrier-not-supported`               | The SIM's carrier does not support Phone Number Verification.   |
 | `pnv/invalid-digital-credential-response` | The Digital Credential API response was invalid.                |
 | `pnv/integrity-check-failed`              | Device integrity check failed.                                  |
 | `pnv/preflight-check-failed`              | Server-side preflight check failed.                             |
@@ -207,7 +207,7 @@ try {
       // Retry when app is in foreground
       break;
     default:
-      console.error('PNV error:', pnvError.code, pnvError.message);
+      console.error('Phone Number Verification error:', pnvError.code, pnvError.message);
   }
 }
 ```
@@ -216,8 +216,8 @@ try {
 
 To test without a real SIM card and carrier, use Firebase's test mode. This requires setup in the Firebase Console:
 
-1. **Generate a test token**: In the Firebase Console, navigate to Phone Number Verification and generate a test token. Test tokens have a 7-day TTL.
-2. **IAM permissions**: Ensure the service account has the required `firebasepnv.testSessions.create` permission.
+1. **Generate a test token**: In the Firebase Console, navigate to Phone Number Verification and generate a test token. Test tokens have a 7-day Time-To-Live.
+2. **Identity and Access Management permissions**: Ensure the service account has the required `firebasepnv.testSessions.create` permission.
 3. **Google system services beta**: On the test device, enroll the Google system services app into the beta channel via Google Play.
 4. **Call `enableTestSession` once**: Pass the token before any verification calls. This must be called only once per app instance — calling it again will reject with `pnv/test-session-already-enabled`.
 
