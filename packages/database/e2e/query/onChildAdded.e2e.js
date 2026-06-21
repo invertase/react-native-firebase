@@ -15,12 +15,7 @@
  *
  */
 
-const {
-  PATH,
-  seed,
-  wipe,
-  waitForNativeDbListenerRegistration,
-} = require('../helpers');
+const { PATH, seed, wipe, waitForNativeDbListenerRegistration } = require('../helpers');
 
 const TEST_PATH = `${PATH}/on`;
 

@@ -314,9 +314,7 @@ const nsDocRef = nsColl.doc('alice');
 const nsQuery = nsColl.where('name', '==', 'test');
 
 nsDocRef.set({ name: 'Alice', count: 1 }).then(() => {});
-nsDocRef
-  .set({ name: 'Alice' }, { merge: true })
-  .then(() => {});
+nsDocRef.set({ name: 'Alice' }, { merge: true }).then(() => {});
 
 nsDocRef.update({ count: 2 }).then(() => {});
 nsDocRef.update('count', 3).then(() => {});
@@ -401,13 +399,15 @@ void nsLoadTask.then(() => {});
 const nsNamed = nsFirestore.namedQuery('my-query');
 void nsNamed;
 
-nsFirestore.runTransaction(async (tx: FirebaseFirestoreTypes.Transaction) => {
-  const snap = await tx.get(nsDocRef);
-  if (snap.exists()) {
-    tx.update(nsDocRef, { count: ((snap.data() as { count?: number })?.count ?? 0) + 1 });
-  }
-  return null;
-}).then(() => {});
+nsFirestore
+  .runTransaction(async (tx: FirebaseFirestoreTypes.Transaction) => {
+    const snap = await tx.get(nsDocRef);
+    if (snap.exists()) {
+      tx.update(nsDocRef, { count: ((snap.data() as { count?: number })?.count ?? 0) + 1 });
+    }
+    return null;
+  })
+  .then(() => {});
 
 // ----- Firestore instance: persistence and network -----
 nsFirestore.clearPersistence().then(() => {});
@@ -452,13 +452,15 @@ const nsArrayRemove = firebase.firestore.FieldValue.arrayRemove(1);
 void nsArrayRemove;
 const nsIncrement = firebase.firestore.FieldValue.increment(1);
 
-nsDocRef.set({
-  name: 'x',
-  deleted: nsDelete,
-  ts: nsServerTs,
-  arr: nsArrayUnion,
-  cnt: nsIncrement,
-}).then(() => {});
+nsDocRef
+  .set({
+    name: 'x',
+    deleted: nsDelete,
+    ts: nsServerTs,
+    arr: nsArrayUnion,
+    cnt: nsIncrement,
+  })
+  .then(() => {});
 
 // ----- withConverter (namespaced) -----
 interface User {
@@ -480,7 +482,6 @@ nsDocWithConv.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot<User>) =
   const u = snap.data();
   if (u) void [u.name, u.age];
 });
-
 
 // ----- getFirestore -----
 const modFirestore1 = getFirestore();
@@ -970,10 +971,7 @@ const pipelineUnion = pipelineDb
   .collection('cities/sf/restaurants')
   .where(field('type').equal('Chinese'))
   .union(
-    pipelineDb
-      .pipeline()
-      .collection('cities/ny/restaurants')
-      .where(field('type').equal('Italian')),
+    pipelineDb.pipeline().collection('cities/ny/restaurants').where(field('type').equal('Italian')),
   )
   .where(field('rating').greaterThanOrEqual(4.5))
   .sort(field('__name__').descending());
@@ -984,10 +982,7 @@ const pipelineWithTransforms = pipelineDb
   .collection('books')
   .where(
     pipelineOr(
-      pipelineAnd(
-        field('rating').greaterThan(4),
-        lessThan(field('price'), constant(10)),
-      ),
+      pipelineAnd(field('rating').greaterThan(4), lessThan(field('price'), constant(10))),
       field('genre').equal('Fantasy'),
     ),
   )
@@ -996,9 +991,7 @@ const pipelineWithTransforms = pipelineDb
   .select(
     field('fullTitle'),
     field('rating').greaterThan(4).as('isTopRated'),
-    arrayContainsAny(field('genre'), ['Fantasy', constant('Sci-Fi')]).as(
-      'matchesGenre',
-    ),
+    arrayContainsAny(field('genre'), ['Fantasy', constant('Sci-Fi')]).as('matchesGenre'),
   )
   .sort(Ordering.of(field('rating')).descending(), field('__name__').ascending())
   .offset(1)
@@ -1015,22 +1008,22 @@ const pipelineAggregateDistinct = pipelineDb
       pipelineAverage('population').as('populationAvg'),
       maximum('population').as('populationMax'),
     ],
-    groups: [
-      field('country').as('country'),
-      toLower(field('state')).as('normalizedState'),
-    ],
+    groups: [field('country').as('country'), toLower(field('state')).as('normalizedState')],
   })
   .where(field('populationTotal').greaterThan(1000))
   .distinct(field('normalizedState'), 'country');
 void pipelineAggregateDistinct;
 
-const pipelineFindNearest = pipelineDb.pipeline().collection('cities').findNearest({
-  field: 'embedding',
-  vectorValue: [1.5, 2.345],
-  distanceMeasure: 'COSINE',
-  distanceField: 'computedDistance',
-  limit: 10,
-});
+const pipelineFindNearest = pipelineDb
+  .pipeline()
+  .collection('cities')
+  .findNearest({
+    field: 'embedding',
+    vectorValue: [1.5, 2.345],
+    distanceMeasure: 'COSINE',
+    distanceField: 'computedDistance',
+    limit: 10,
+  });
 void pipelineFindNearest;
 
 const pipelineSampleAndUnnest = pipelineDb
@@ -1113,7 +1106,11 @@ const _cStr: Expression = constant('hello');
 const _cBool: BooleanExpression = constant(true);
 const _cNull: Expression = constant(null);
 const _cUnknown: Expression = constant({ nested: true });
-void _cNum; void _cStr; void _cBool; void _cNull; void _cUnknown;
+void _cNum;
+void _cStr;
+void _cBool;
+void _cNull;
+void _cUnknown;
 
 // ----- Comparison: standalone overloads -----
 // greaterThan(Expression, Expression) | greaterThan(Expression, value)
@@ -1536,11 +1533,9 @@ const pipelineComparisonOps = xDb
   )
   .select(
     field('sku'),
-    conditional(
-      field('stock').greaterThan(0),
-      constant('in-stock'),
-      constant('out-of-stock'),
-    ).as('availability'),
+    conditional(field('stock').greaterThan(0), constant('in-stock'), constant('out-of-stock')).as(
+      'availability',
+    ),
     isType(field('value'), 'string').as('isString'),
     logicalMaximum(field('bidA'), field('bidB')).as('topBid'),
     logicalMinimum(field('askA'), field('askB')).as('bottomAsk'),
@@ -1595,10 +1590,7 @@ const pipelineStringOps = xDb
       stringContains(field('bio'), 'developer'),
       like('role', 'eng%'),
       regexContains(field('phone'), '^\\+1'),
-      xor(
-        field('isPublic').equal(true),
-        field('isVerified').equal(true),
-      ),
+      xor(field('isPublic').equal(true), field('isVerified').equal(true)),
     ),
   )
   .addFields(
@@ -1722,10 +1714,7 @@ const pipelineAllAggregates = xDb
       arrayAggDistinct(field('category')).as('distinctCategories'),
       arrayAggDistinct('category').as('distinctCategories2'),
     ],
-    groups: [
-      field('country').as('country'),
-      toLower(field('state')).as('normalizedState'),
-    ],
+    groups: [field('country').as('country'), toLower(field('state')).as('normalizedState')],
   });
 void pipelineAllAggregates;
 

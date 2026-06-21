@@ -25,11 +25,7 @@ type EmailCredentialJSON = {
 };
 
 export class EmailAuthCredential extends AuthCredential {
-  constructor(
-    signInMethod: 'password' | 'emailLink',
-    email: string,
-    password: string,
-  ) {
+  constructor(signInMethod: 'password' | 'emailLink', email: string, password: string) {
     super(signInMethod, signInMethod, email, password);
   }
 

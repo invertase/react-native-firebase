@@ -1,8 +1,5 @@
 import { reload } from './modular';
-import type {
-  MultiFactorAssertion as ModularMultiFactorAssertion,
-  User,
-} from './types/auth';
+import type { MultiFactorAssertion as ModularMultiFactorAssertion, User } from './types/auth';
 import type { FirebaseAuthTypes } from './types/namespaced';
 import type { AuthInternal, MultiFactorEnrollmentAssertionInternal } from './types/internal';
 

@@ -77,16 +77,16 @@ describe('analytics()', function () {
     });
 
     beforeEach(async function beforeEachTest() {
-        // @ts-ignore
-        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-      });
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
 
-      afterEach(async function afterEachTest() {
-        // @ts-ignore
-        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-      });
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
 
-      describe('logEvent()', function () {
+    describe('logEvent()', function () {
       it('log an event without parameters', async function () {
         await firebase.analytics().logEvent('invertase_event');
       });

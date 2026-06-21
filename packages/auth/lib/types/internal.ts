@@ -329,9 +329,10 @@ export interface RNFBAuthModule {
     token: string,
     secret?: string | null,
   ): Promise<NativeUserInternal>;
-  updateProfile(
-    updates: { displayName?: string | null; photoURL?: string | null },
-  ): Promise<NativeUserInternal>;
+  updateProfile(updates: {
+    displayName?: string | null;
+    photoURL?: string | null;
+  }): Promise<NativeUserInternal>;
   verifyBeforeUpdateEmail(
     newEmail: string,
     actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
@@ -381,13 +382,12 @@ export type AuthInternal = Auth & {
     email: string,
     actionCodeSettings?: ActionCodeSettings | null,
   ): Promise<void>;
-  sendSignInLinkToEmail(
-    email: string,
-    actionCodeSettings?: ActionCodeSettings,
-  ): Promise<void>;
+  sendSignInLinkToEmail(email: string, actionCodeSettings?: ActionCodeSettings): Promise<void>;
   setLanguageCode(code: string | null): Promise<void>;
   signInAnonymously(): Promise<UserCredentialWithAdditionalUserInfoInternal>;
-  signInWithCredential(credential: AuthCredential): Promise<UserCredentialWithAdditionalUserInfoInternal>;
+  signInWithCredential(
+    credential: AuthCredential,
+  ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   signInWithCustomToken(customToken: string): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   signInWithEmailAndPassword(
     email: string,
@@ -444,8 +444,12 @@ export type UserInternal = FirebaseAuthTypes.User & {
   _auth?: AuthInternal;
   _user?: NativeUserInternal;
   getIdTokenResult(forceRefresh?: boolean): Promise<IdTokenResult>;
-  linkWithCredential(credential: AuthCredential): Promise<UserCredentialWithAdditionalUserInfoInternal>;
-  linkWithPopup(provider: AuthProviderWithObjectInternal): Promise<UserCredentialWithAdditionalUserInfoInternal>;
+  linkWithCredential(
+    credential: AuthCredential,
+  ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
+  linkWithPopup(
+    provider: AuthProviderWithObjectInternal,
+  ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   linkWithRedirect(
     provider: AuthProviderWithObjectInternal,
   ): Promise<UserCredentialWithAdditionalUserInfoInternal>;

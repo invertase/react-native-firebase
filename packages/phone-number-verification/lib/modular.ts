@@ -77,9 +77,7 @@ export function enableTestSession(token: string): Promise<void> {
  * @returns Array of support results, one per SIM slot.
  * @see https://firebase.google.com/docs/phone-number-verification
  */
-export function getVerificationSupportInfo(
-  simSlot?: number,
-): Promise<VerificationSupportResult[]> {
+export function getVerificationSupportInfo(simSlot?: number): Promise<VerificationSupportResult[]> {
   if (simSlot !== undefined) {
     return getNativeModule().getVerificationSupportInfoForSimSlot(simSlot);
   }

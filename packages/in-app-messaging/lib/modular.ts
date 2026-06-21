@@ -23,7 +23,9 @@ import {
 import type { InAppMessaging } from './types/in-app-messaging';
 import type { InAppMessagingWithDeprecationArg } from './types/internal';
 
-function withModularDeprecationArg(inAppMessaging: InAppMessaging): InAppMessagingWithDeprecationArg {
+function withModularDeprecationArg(
+  inAppMessaging: InAppMessaging,
+): InAppMessagingWithDeprecationArg {
   return inAppMessaging as InAppMessagingWithDeprecationArg;
 }
 

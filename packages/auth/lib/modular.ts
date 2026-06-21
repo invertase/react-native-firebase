@@ -97,17 +97,9 @@ import type {
 type AnyFn = (...args: any[]) => any;
 
 type UserModuleInternal = UserInternal;
-type MultiFactorInfoInternal =
-  | MultiFactorInfo
-  | MultiFactorResolverResultInternal['hints'][number];
+type MultiFactorInfoInternal = MultiFactorInfo | MultiFactorResolverResultInternal['hints'][number];
 
-export {
-  ActionCodeOperation,
-  FactorId,
-  OperationType,
-  ProviderId,
-  SignInMethod,
-};
+export { ActionCodeOperation, FactorId, OperationType, ProviderId, SignInMethod };
 
 function appWithAuth(app?: FirebaseApp): AppWithAuthInternal {
   return (app ? getApp(app.name) : getApp()) as unknown as AppWithAuthInternal;
@@ -128,9 +120,7 @@ type AdditionalUserInfoSource = {
   username?: string | null;
 } & Record<string, unknown>;
 
-function normalizeAdditionalUserInfo(
-  info: AdditionalUserInfoSource,
-): AdditionalUserInfoNative {
+function normalizeAdditionalUserInfo(info: AdditionalUserInfoSource): AdditionalUserInfoNative {
   return {
     ...info,
     isNewUser: Boolean(info.isNewUser),
@@ -245,9 +235,7 @@ function normalizeMultiFactorUser(multiFactorUser: MultiFactorUserResultInternal
     getSession: () => multiFactorUser.getSession(),
     enroll: (assertion, displayName) => multiFactorUser.enroll(assertion, displayName),
     unenroll: option =>
-      multiFactorUser.unenroll(
-        option as Parameters<MultiFactorUserResultInternal['unenroll']>[0],
-      ),
+      multiFactorUser.unenroll(option as Parameters<MultiFactorUserResultInternal['unenroll']>[0]),
   };
 }
 
@@ -417,11 +405,15 @@ export function createUserWithEmailAndPassword(
   password: string,
 ): Promise<UserCredential> {
   const authInternal = getAuthInternal(auth);
-  return callAuthMethod(authInternal, authInternal.createUserWithEmailAndPassword, email, password).then(
-    userCredential =>
-      normalizeUserCredential(userCredential, {
-        operationType: OperationType.SIGN_IN,
-      }),
+  return callAuthMethod(
+    authInternal,
+    authInternal.createUserWithEmailAndPassword,
+    email,
+    password,
+  ).then(userCredential =>
+    normalizeUserCredential(userCredential, {
+      operationType: OperationType.SIGN_IN,
+    }),
   );
 }
 
@@ -650,11 +642,15 @@ export function signInWithEmailAndPassword(
   password: string,
 ): Promise<UserCredential> {
   const authInternal = getAuthInternal(auth);
-  return callAuthMethod(authInternal, authInternal.signInWithEmailAndPassword, email, password).then(
-    userCredential =>
-      normalizeUserCredential(userCredential, {
-        operationType: OperationType.SIGN_IN,
-      }),
+  return callAuthMethod(
+    authInternal,
+    authInternal.signInWithEmailAndPassword,
+    email,
+    password,
+  ).then(userCredential =>
+    normalizeUserCredential(userCredential, {
+      operationType: OperationType.SIGN_IN,
+    }),
   );
 }
 
@@ -1122,9 +1118,7 @@ export function verifyBeforeUpdateEmail(
  *
  * @remarks Returns firebase-js-sdk core fields plus any extra native keys copied from the bridge.
  */
-export function getAdditionalUserInfo(
-  userCredential: UserCredential,
-): AdditionalUserInfo | null {
+export function getAdditionalUserInfo(userCredential: UserCredential): AdditionalUserInfo | null {
   if (userCredential.additionalUserInfo) {
     return userCredential.additionalUserInfo;
   }

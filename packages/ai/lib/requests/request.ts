@@ -125,7 +125,7 @@ function createAbortError(reason?: unknown): Error {
 }
 
 function getAbortSignalReason(signal?: AbortSignal): unknown {
-  return (signal as AbortSignal & { reason?: unknown } | undefined)?.reason;
+  return (signal as (AbortSignal & { reason?: unknown }) | undefined)?.reason;
 }
 
 export class TemplateRequestUrl {
