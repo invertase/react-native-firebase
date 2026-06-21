@@ -5,6 +5,8 @@ previous: /migrating-to-v23
 next: /migrating-to-v25
 ---
 
+Version 24 includes breaking changes for Firestore TypeScript types and Cloud Functions native integration. Review the sections below for the modules you use.
+
 # Firestore
 
 Version 24 introduces `withConverter` functionality from Firebase JS SDK. Due to the differences in types between references and queries in namespace vs modular API, and the namespaced APIs deprecation cycle being effectively complete with the API set for removal, we have adopted the modular API typing in general for firestore APIs.
@@ -36,3 +38,50 @@ onSnapshot(doc(getFirestore(), 'foo', 'foo'), {
   },
 });
 ```
+
+# Cloud Functions
+
+**PR:** [#8603](https://github.com/invertase/react-native-firebase/pull/8603) / v24.0.0 ([#8799](https://github.com/invertase/react-native-firebase/issues/8799) streaming callables)
+
+From v24 onward, `@react-native-firebase/functions` is implemented as a **TurboModule** and **requires React Native's New Architecture**. The legacy bridge module was removed.
+
+## Who is affected
+
+| You use…                                                          | Action                                                                                                                                         |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@react-native-firebase/functions` on **New Architecture**        | No change required                                                                                                                             |
+| `@react-native-firebase/functions` on the **legacy architecture** | Enable New Architecture, or stay on v23 if you cannot migrate yet                                                                              |
+| Other RN Firebase modules only                                    | Functions is the first module with a hard requirement; `@react-native-firebase/app` prints a deprecation warning on legacy architecture builds |
+
+## Enable New Architecture
+
+**React Native CLI (Android)** — set in `android/gradle.properties`:
+
+```properties
+newArchEnabled=true
+```
+
+**React Native CLI (iOS)** — New Architecture is enabled when `RCT_NEW_ARCH_ENABLED=1` during `pod install` (React Native sets this from `newArchEnabled` on recent templates). Follow the [React Native New Architecture guide](https://reactnative.dev/docs/the-new-architecture/landing-page) for your RN version.
+
+**Expo** — enable in your app config (Expo SDK 52+):
+
+```json
+{
+  "expo": {
+    "newArchEnabled": true
+  }
+}
+```
+
+Rebuild native projects after changing this (`pod install`, clean Android build).
+
+## If New Architecture is disabled
+
+- **Android:** the Functions Gradle script fails the build with `New Architecture support is required for @react-native-firebase/functions`.
+- **iOS:** `pod install` fails with `RNFBFunctions requires New Architecture. Enable New Architecture to use this module`.
+
+## API notes
+
+The JavaScript API (`functions()`, `httpsCallable`, modular helpers) is unchanged. v24 also adds [`httpsCallable().stream()`](/functions/usage) support, which relies on the TurboModule implementation.
+
+Other React Native Firebase modules still run on legacy architecture in v24, but old architecture support is deprecated project-wide and will be required for additional modules in future releases.
