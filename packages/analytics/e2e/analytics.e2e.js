@@ -15,23 +15,78 @@
  *
  */
 describe('analytics()', function () {
-  beforeEach(async function () {
-    const { getAnalytics, logEvent } = analyticsModular;
-    await logEvent(getAnalytics(), 'screen_view');
+  // Probe session ID before any other analytics API usage (including suite beforeEach).
+  // Namespace APIs not tested here as only one set can run reliably, and modular-only is the future state.
+  describe('getSessionId() [modular — runs before all other analytics tests]', function () {
+    it('calls native fn without error', async function () {
+      const { getAnalytics, getSessionId } = analyticsModular;
+      await getSessionId(getAnalytics());
+    });
+
+    it('returns a non empty session ID', async function () {
+      if (Platform.other) {
+        this.skip();
+      }
+      const { getAnalytics, getSessionId } = analyticsModular;
+      let sessionId = await getSessionId(getAnalytics());
+      // On iOS it can take ~ 3 minutes for the session ID to be generated
+      // Otherwise, `Analytics uninitialized` error will be thrown
+      // On CI we're only going to give it a few tries
+      const retries = global.isCI ? 3 : 240;
+      let attemptsLeft = retries;
+      while (!sessionId && attemptsLeft > 0) {
+        await Utils.sleep(1000);
+        sessionId = await getSessionId(getAnalytics());
+        attemptsLeft -= 1;
+      }
+
+      // on CI this will be ignored so it doesn't flake
+      if (!sessionId && global.isCI) {
+        this.skip();
+        return;
+      }
+      if (!sessionId) {
+        return Promise.reject(
+          new Error('Firebase SDK did not return a session ID after 4 minutes'),
+        );
+      }
+
+      sessionId.should.not.equal(0);
+    });
+
+    it('returns a null value if session expires', async function () {
+      if (Platform.ios) {
+        // TODO - 20251030 iOS no longer correctly expires sessions
+        this.skip();
+      }
+      const { getAnalytics, getSessionId, setSessionTimeoutDuration } = analyticsModular;
+
+      // Set session duration to 1 millisecond
+      setSessionTimeoutDuration(getAnalytics(), 1);
+      // Wait 100 millisecond to ensure session expires
+      await Utils.sleep(100);
+      const sessionId = await getSessionId(getAnalytics());
+      should.equal(sessionId, null);
+    });
   });
 
   describe('firebase v8 compatibility', function () {
+    beforeEach(async function () {
+      const { getAnalytics, logEvent } = analyticsModular;
+      await logEvent(getAnalytics(), 'screen_view');
+    });
+
     beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+      });
 
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
+      afterEach(async function afterEachTest() {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+      });
 
-    describe('logEvent()', function () {
+      describe('logEvent()', function () {
       it('log an event without parameters', async function () {
         await firebase.analytics().logEvent('invertase_event');
       });
@@ -59,55 +114,6 @@ describe('analytics()', function () {
     describe('getAppInstanceId()', function () {
       it('calls native fn without error', async function () {
         await firebase.analytics().getAppInstanceId();
-      });
-    });
-
-    describe('getSessionId()', function () {
-      it('calls native fn without error', async function () {
-        await firebase.analytics().getSessionId();
-      });
-
-      it('returns a non empty session ID', async function () {
-        if (Platform.other) {
-          this.skip();
-        }
-        let sessionId = await firebase.analytics().getSessionId();
-        // On iOS it can take ~ 3 minutes for the session ID to be generated
-        // Otherwise, `Analytics uninitialized` error will be thrown
-        // On CI we're only going to give it a few tries
-        const retries = global.isCI ? 3 : 240;
-        let attemptsLeft = retries;
-        while (!sessionId && attemptsLeft > 0) {
-          await Utils.sleep(1000);
-          sessionId = await firebase.analytics().getSessionId();
-          attemptsLeft -= 1;
-        }
-
-        // on CI this will be ignored so it doesn't flake
-        if (!sessionId && global.isCI) {
-          this.skip();
-          return;
-        }
-        if (!sessionId) {
-          return Promise.reject(
-            new Error('Firebase SDK did not return a session ID after 4 minutes'),
-          );
-        }
-
-        sessionId.should.not.equal(0);
-      });
-
-      it('returns a null value if session expires', async function () {
-        if (Platform.ios) {
-          // TODO - 20251030 iOS no longer correctly expires sessions
-          this.skip();
-        }
-        // Set session duration to 1 millisecond
-        firebase.analytics().setSessionTimeoutDuration(1);
-        // Wait 100 millisecond to ensure session expires
-        await Utils.sleep(100);
-        const sessionId = await firebase.analytics().getSessionId();
-        should.equal(sessionId, null);
       });
     });
 
@@ -569,6 +575,11 @@ describe('analytics()', function () {
   });
 
   describe('modular', function () {
+    beforeEach(async function () {
+      const { getAnalytics, logEvent } = analyticsModular;
+      await logEvent(getAnalytics(), 'screen_view');
+    });
+
     describe('getAnalytics', function () {
       it('pass app as argument', function () {
         const { getApp } = modular;
@@ -994,59 +1005,6 @@ describe('analytics()', function () {
       it('calls native fn without error', async function () {
         const { getAnalytics, getAppInstanceId } = analyticsModular;
         await getAppInstanceId(getAnalytics());
-      });
-    });
-
-    describe('getSessionId()', function () {
-      it('calls native fn without error', async function () {
-        const { getAnalytics, getSessionId } = analyticsModular;
-        await getSessionId(getAnalytics());
-      });
-
-      it('returns a non empty session ID', async function () {
-        if (Platform.other) {
-          this.skip();
-        }
-        const { getAnalytics, getSessionId } = analyticsModular;
-        let sessionId = await getSessionId(getAnalytics());
-        // On iOS it can take ~ 3 minutes for the session ID to be generated
-        // Otherwise, `Analytics uninitialized` error will be thrown
-        // On CI we're only going to give it a few tries
-        const retries = global.isCI ? 3 : 240;
-        let attemptsLeft = retries;
-        while (!sessionId && attemptsLeft > 0) {
-          await Utils.sleep(1000);
-          sessionId = await getSessionId(getAnalytics());
-          attemptsLeft -= 1;
-        }
-
-        // on CI this will be ignored so it doesn't flake
-        if (!sessionId && global.isCI) {
-          this.skip();
-          return;
-        }
-        if (!sessionId) {
-          return Promise.reject(
-            new Error('Firebase SDK did not return a session ID after 4 minutes'),
-          );
-        }
-
-        sessionId.should.not.equal(0);
-      });
-
-      it('returns a null value if session expires', async function () {
-        if (Platform.ios) {
-          // TODO - 20251030 iOS no longer correctly expires sessions
-          this.skip();
-        }
-        const { getAnalytics, getSessionId, setSessionTimeoutDuration } = analyticsModular;
-
-        // Set session duration to 1 millisecond
-        setSessionTimeoutDuration(getAnalytics(), 1);
-        // Wait 100 millisecond to ensure session expires
-        await Utils.sleep(100);
-        const sessionId = await getSessionId(getAnalytics());
-        should.equal(sessionId, null);
       });
     });
 
