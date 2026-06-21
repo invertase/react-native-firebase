@@ -8766,6 +8766,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"babel-plugin-transform-inline-environment-variables@npm:^0.4.4":
+  version: 0.4.4
+  resolution: "babel-plugin-transform-inline-environment-variables@npm:0.4.4"
+  checksum: 10/fa361287411301237fd8ce332aff4f8e8ccb8db30e87a2ddc7224c8bf7cd792eda47aca24dc2e09e70bce4c027bc8cbe22f4999056be37a25d2472945df21ef5
+  languageName: node
+  linkType: hard
+
 "babel-preset-current-node-syntax@npm:^1.0.0, babel-preset-current-node-syntax@npm:^1.2.0":
   version: 1.2.0
   resolution: "babel-preset-current-node-syntax@npm:1.2.0"
@@ -22326,6 +22333,7 @@ __metadata:
     "@react-native/metro-config": "npm:^0.78.3"
     assert: "npm:^2.1.0"
     axios: "npm:^1.15.2"
+    babel-plugin-transform-inline-environment-variables: "npm:^0.4.4"
     cpy-cli: "npm:^7.0.0"
     detox: "patch:detox@npm%3A20.51.0#~/.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch"
     firebase: "npm:^12.15.0"
