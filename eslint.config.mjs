@@ -62,7 +62,7 @@ export default defineConfig([
   },
   {
     name: 'Prettier',
-    ...eslintPluginPrettierRecommended.recommended,
+    ...eslintPluginPrettierRecommended,
   },
   {
     name: 'React',
