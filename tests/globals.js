@@ -493,6 +493,6 @@ global.jet = {
 };
 
 // some tests flake in CI but we still run them locally
-global.isCI = process.env.CI === true;
+global.isCI = process.env.CI === 'true' || process.env.CI === true;
 // Used to tell our internals that we are running tests.
 globalThis.RNFBTest = true;

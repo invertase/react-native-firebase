@@ -165,7 +165,7 @@ RCT_EXPORT_METHOD(getSessionId
       return;
     }
     completed = YES;
-    DLog(@"Error getting session ID: timed out after 60 seconds");
+    DLog(@"getSessionId timed_out: no SDK callback within 60 seconds");
     resolve([NSNull null]);
   });
 
@@ -178,16 +178,18 @@ RCT_EXPORT_METHOD(getSessionId
     // Occasionally sessionID is 0 despite nil error, reject as if it were an error
     // https://github.com/firebase/firebase-ios-sdk/issues/15258
     if (!error && [NSNumber numberWithLongLong:sessionID] == 0) {
-      DLog(@"Error getting session ID: sessionID is zero despite nil error");
+      DLog(@"getSessionId zero_without_error: sessionID=0 (firebase-ios-sdk#15258)");
       return resolve([NSNull null]);
     }
 
     if (error) {
-      DLog(@"Error getting session ID: %@", error);
+      DLog(@"getSessionId sdk_error: domain=%@ code=%ld description=%@", error.domain,
+           (long)error.code, error.localizedDescription ?: @"(none)");
       return resolve([NSNull null]);
-    } else {
-      return resolve([NSNumber numberWithLongLong:sessionID]);
     }
+
+    DLog(@"getSessionId success: sessionID=%lld", sessionID);
+    return resolve([NSNumber numberWithLongLong:sessionID]);
   }];
 }
 
