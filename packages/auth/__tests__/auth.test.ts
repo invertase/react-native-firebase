@@ -1340,7 +1340,9 @@ describe('Auth', function () {
           _setUserCredential: setUserCredential,
         };
         const user = new User(authInternal as any, { uid: 'test-uid' } as any);
-        await user.reauthenticateWithRedirect({ toObject: () => ({ providerId: 'google.com' }) } as any);
+        await user.reauthenticateWithRedirect({
+          toObject: () => ({ providerId: 'google.com' }),
+        } as any);
         expect(setUserCredential).toHaveBeenCalled();
       });
     });

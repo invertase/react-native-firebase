@@ -241,8 +241,8 @@ export default class User {
     }
 
     return this._auth.native.sendEmailVerification(actionCodeSettings).then(user => {
-        this._auth._setUser(user);
-      });
+      this._auth._setUser(user);
+    });
   }
 
   toJSON(): object {
@@ -250,15 +250,13 @@ export default class User {
   }
 
   unlink(providerId: string): Promise<FirebaseAuthTypes.User> {
-    return this._auth.native
-      .unlink(providerId)
-      .then(user => {
-        const updatedUser = this._auth._setUser(user);
-        if (!updatedUser) {
-          throw new Error('firebase.auth.User.unlink() returned no user after unlinking provider.');
-        }
-        return updatedUser;
-      });
+    return this._auth.native.unlink(providerId).then(user => {
+      const updatedUser = this._auth._setUser(user);
+      if (!updatedUser) {
+        throw new Error('firebase.auth.User.unlink() returned no user after unlinking provider.');
+      }
+      return updatedUser;
+    });
   }
 
   updateEmail(email: string): Promise<void> {
@@ -361,8 +359,8 @@ export default class User {
     }
 
     return this._auth.native.verifyBeforeUpdateEmail(newEmail, actionCodeSettings).then(user => {
-        this._auth._setUser(user);
-      });
+      this._auth._setUser(user);
+    });
   }
 
   /**

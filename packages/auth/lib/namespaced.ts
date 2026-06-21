@@ -623,7 +623,10 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     email: string,
     actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
   ): Promise<void> {
-    return this.native.sendSignInLinkToEmail(email, this._resolveActionCodeSettings(actionCodeSettings));
+    return this.native.sendSignInLinkToEmail(
+      email,
+      this._resolveActionCodeSettings(actionCodeSettings),
+    );
   }
 
   isSignInWithEmailLink(emailLink: string): Promise<boolean> {

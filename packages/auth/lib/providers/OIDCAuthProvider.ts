@@ -38,11 +38,7 @@ export default class OIDCAuthProvider {
     return providerId;
   }
 
-  static credential(
-    oidcSuffix: string,
-    idToken: string,
-    accessToken?: string,
-  ): AuthCredentialType {
+  static credential(oidcSuffix: string, idToken: string, accessToken?: string): AuthCredentialType {
     const resolvedProviderId = providerId + oidcSuffix;
     return new AuthCredential(resolvedProviderId, resolvedProviderId, idToken, accessToken ?? '');
   }

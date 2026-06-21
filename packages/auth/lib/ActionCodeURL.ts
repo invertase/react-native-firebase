@@ -42,12 +42,8 @@ function querystringDecode(query: string): Record<string, string> {
     }
 
     const separatorIndex = part.indexOf('=');
-    const key = decodeURIComponent(
-      separatorIndex >= 0 ? part.slice(0, separatorIndex) : part,
-    );
-    const value = decodeURIComponent(
-      separatorIndex >= 0 ? part.slice(separatorIndex + 1) : '',
-    );
+    const key = decodeURIComponent(separatorIndex >= 0 ? part.slice(0, separatorIndex) : part);
+    const value = decodeURIComponent(separatorIndex >= 0 ? part.slice(separatorIndex + 1) : '');
 
     decoded[key] = value;
   }
@@ -81,9 +77,7 @@ function parseMode(mode: string | null): string | null {
  */
 function parseDeepLink(url: string): string {
   const link = querystringDecode(extractQuerystring(url)).link;
-  const doubleDeepLink = link
-    ? querystringDecode(extractQuerystring(link)).deep_link_id
-    : null;
+  const doubleDeepLink = link ? querystringDecode(extractQuerystring(link)).deep_link_id : null;
   const iOSDeepLink = querystringDecode(extractQuerystring(url)).deep_link_id;
   const iOSDoubleDeepLink = iOSDeepLink
     ? querystringDecode(extractQuerystring(iOSDeepLink)).link

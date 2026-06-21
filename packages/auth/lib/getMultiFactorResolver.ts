@@ -23,7 +23,9 @@ export function getMultiFactorResolver(
   error: ErrorWithResolver,
 ): FirebaseAuthTypes.MultiFactorResolver | null {
   if (isOther) {
-    return auth.native.getMultiFactorResolver(error) as FirebaseAuthTypes.MultiFactorResolver | null;
+    return auth.native.getMultiFactorResolver(
+      error,
+    ) as FirebaseAuthTypes.MultiFactorResolver | null;
   }
   if (
     error.hasOwnProperty('userInfo') &&

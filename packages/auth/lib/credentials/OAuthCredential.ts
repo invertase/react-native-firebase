@@ -38,7 +38,10 @@ type OAuthCredentialParams = {
   bridgeSecret?: string;
 };
 
-function resolveOAuthBridgeFields(params: OAuthCredentialParams): { token: string; secret: string } {
+function resolveOAuthBridgeFields(params: OAuthCredentialParams): {
+  token: string;
+  secret: string;
+} {
   if (params.bridgeToken !== undefined || params.bridgeSecret !== undefined) {
     return {
       token: params.bridgeToken ?? '',

@@ -15,12 +15,12 @@ To start using the new SDK, import the `@react-native-firebase/ai` package and u
 
 ```javascript
 // BEFORE - using firebase/vertexai
-import { initializeApp } from "firebase/app";
-import { getVertexAI, getGenerativeModel } from "firebase/vertexai"; // Remove this
+import { initializeApp } from 'firebase/app';
+import { getVertexAI, getGenerativeModel } from 'firebase/vertexai'; // Remove this
 
 // AFTER - using firebase/ai
-import { initializeApp } from "firebase/app";
-import { getAI, getGenerativeModel } from "firebase/ai"; // Add this
+import { initializeApp } from 'firebase/app';
+import { getAI, getGenerativeModel } from 'firebase/ai'; // Add this
 ```
 
 ---

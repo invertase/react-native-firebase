@@ -43,9 +43,7 @@ exports.wipe = async function wipe(debug = false, databaseId = '(default)', retr
 
       if (!response.ok) {
         const body = await response.text();
-        throw new Error(
-          `Firestore wipe failed: HTTP ${response.status} ${body.slice(0, 200)}`,
-        );
+        throw new Error(`Firestore wipe failed: HTTP ${response.status} ${body.slice(0, 200)}`);
       }
 
       if (debug) {
