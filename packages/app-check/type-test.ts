@@ -50,6 +50,22 @@ provider.configure({
   web: { provider: 'reCaptchaV3', siteKey: 'test' },
 });
 
+const recaptchaNativeProvider = appCheckInstance.newReactNativeFirebaseAppCheckProvider();
+recaptchaNativeProvider.configure({
+  android: { provider: 'recaptcha' },
+  apple: { provider: 'recaptcha' },
+  web: { provider: 'reCaptchaEnterprise', siteKey: 'test' },
+});
+
+appCheckInstance
+  .initializeAppCheck({
+    provider: recaptchaNativeProvider,
+    isTokenAutoRefreshEnabled: true,
+  })
+  .then(() => {
+    console.log('Recaptcha native provider initialized');
+  });
+
 appCheckInstance
   .initializeAppCheck({
     provider: provider,
@@ -176,6 +192,20 @@ const reCaptchaEnterpriseProvider = new ReCaptchaEnterpriseProvider('enterprise-
 console.log(reCaptchaV3Provider);
 console.log(reCaptchaEnterpriseProvider);
 
+initializeAppCheck(firebase.app(), {
+  provider: reCaptchaEnterpriseProvider,
+  isTokenAutoRefreshEnabled: true,
+}).then(() => {
+  console.log('ReCaptchaEnterpriseProvider initialized');
+});
+
+initializeAppCheck(firebase.app(), {
+  provider: reCaptchaV3Provider,
+  isTokenAutoRefreshEnabled: true,
+}).then(() => {
+  console.log('ReCaptchaV3Provider initialized');
+});
+
 // checks modular CustomProvider class
 const customProvider = new CustomProvider({
   getToken: async () => {
@@ -202,3 +232,18 @@ rnfbProvider.configure({
   apple: { provider: 'deviceCheck' },
   web: { provider: 'reCaptchaV3', siteKey: 'test' },
 });
+
+// checks provider-less initializeAppCheck when app has recaptchaSiteKey (js-sdk 12.15+)
+firebase
+  .initializeApp(
+    { apiKey: 'a', appId: 'b', projectId: 'c', recaptchaSiteKey: '6Le-test-site-key' },
+    'providerLessAppCheckApp',
+  )
+  .then(recaptchaSiteKeyApp =>
+    initializeAppCheck(recaptchaSiteKeyApp, {
+      isTokenAutoRefreshEnabled: true,
+    }),
+  )
+  .then((providerLessAppCheck: AppCheck) => {
+    console.log(providerLessAppCheck.app.options.recaptchaSiteKey);
+  });
