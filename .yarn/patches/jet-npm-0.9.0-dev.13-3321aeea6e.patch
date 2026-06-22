@@ -1,8 +1,8 @@
 diff --git a/lib/commonjs/cli.js b/lib/commonjs/cli.js
-index 35c04da87c63a79bc26707aaffe3156fb98eca79..435c9959f456318c5e0069fce1f3e922891acf56 100644
+index 35c04da87c63a79bc26707aaffe3156fb98eca79..5ef301146d35adf38a430f26d78a66f196d781f5 100644
 --- a/lib/commonjs/cli.js
 +++ b/lib/commonjs/cli.js
-@@ -72,6 +72,9 @@ function cleanup() {
+@@ -72,22 +72,68 @@ function cleanup() {
    });
  }
  async function startServer(server, config, after) {
@@ -12,7 +12,7 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..435c9959f456318c5e0069fce1f3e922
    server.on('started', s => {
      const url = s.url;
      console.log(`[🟩] Jet remote server listening at "${url}".`);
-@@ -79,13 +82,46 @@ async function startServer(server, config, after) {
+   });
    server.on('connection', (_, req) => {
      console.log(`[🟩] Jet client connected from "${req.socket.remoteAddress + ':' + req.socket.remotePort}".`);
 +    if (reconnectGraceTimer) {
@@ -22,6 +22,10 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..435c9959f456318c5e0069fce1f3e922
 +      reconnectGraceTimer = null;
 +      pendingDisconnectCode = null;
 +      console.warn(`[jet-ws] reconnect_recovered code=${recoveredCode} elapsed_ms=${elapsedMs}`);
++      if (config.coverage && server.send) {
++        console.warn(`[jet-coverage] proactive pull-coverage after reconnect`);
++        server.send({ action: 'pull-coverage' });
++      }
 +    }
    });
    server.on('disconnection', (_, code, reason) => {
@@ -29,10 +33,21 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..435c9959f456318c5e0069fce1f3e922
      const msg = code === 1000 ? 'normal closure' : reason || 'for no particular reason';
      print(`[🟨] Jet client disconnected - ${msg} (code = ${code}).`);
 -    if (code !== 1000 && config.exitOnError) {
+-      print(`[🟥] Exiting after an abnormal disconnect.`);
+-      process.exitCode = 1;
+-      cleanup();
++    try {
++      const os = require('os');
++      console.warn(
++        `[jet-ws] disconnect_context code=${code} loadavg=${os.loadavg().join(',')} mem=${JSON.stringify(process.memoryUsage())}`,
++      );
++    } catch (_) {
++      // Best-effort diagnostics only.
++    }
 +    if (code === 1000 || !config.exitOnError) {
 +      return;
-+    }
-+    const graceMs = config.reconnectGraceMs ?? 15000;
+     }
++    const graceMs = config.reconnectGraceMs ?? 30000;
 +    const transientCodes = [1006, 1001];
 +    if (transientCodes.includes(code)) {
 +      if (reconnectGraceTimer) {
@@ -54,15 +69,13 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..435c9959f456318c5e0069fce1f3e922
 +      return;
 +    }
 +    console.error(`[jet-ws] fatal_disconnect code=${code} reason="${reason || ''}" immediate=true`);
-+    if (code !== 1000 && config.exitOnError) {
-       print(`[🟥] Exiting after an abnormal disconnect.`);
-       process.exitCode = 1;
-       cleanup();
-     }
++    print(`[🟥] Exiting after an abnormal disconnect.`);
++    process.exitCode = 1;
++    cleanup();
    });
-@@ -99,8 +138,16 @@ async function startServer(server, config, after) {
-     if (config.exitOnError) {
-       process.exitCode = 1;
+   server.on('error', error => {
+     if (error instanceof _mochaRemoteServer.ClientError) {
+@@ -100,6 +146,14 @@ async function startServer(server, config, after) {
        cleanup();
      }
    });
@@ -77,7 +90,7 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..435c9959f456318c5e0069fce1f3e922
    cleanupTasks.add(async () => {
      if (server.listening) {
        await server.stop();
-@@ -129,8 +137,13 @@ function attachHttpServer(wss) {
+@@ -129,8 +183,13 @@ function attachHttpServer(wss) {
        });
        req.on('end', () => {
          try {
@@ -92,7 +105,7 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..435c9959f456318c5e0069fce1f3e922
            res.end(JSON.stringify({
              message: 'OK'
            }));
-@@ -302,12 +315,11 @@ function attachHttpServer(wss) {
+@@ -302,12 +361,11 @@ function attachHttpServer(wss) {
      slow: finalConfig.slow
    });
    return startServer(server, finalConfig, target.after).then(() => {
