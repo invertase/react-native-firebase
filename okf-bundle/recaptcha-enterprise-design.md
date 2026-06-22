@@ -328,8 +328,8 @@ With js-sdk 12.15 / #9991, both modules may use Enterprise concurrently on Other
 
 ## Phase 1 — App Check: TypeScript & web bridge
 
-- [ ] **1.1** Add `ReCaptchaV3Provider`, `ReCaptchaEnterpriseProvider` in `packages/app-check/lib/providers.ts` with js-sdk-matching public constructors; export from package root / `modular.ts`.
-- [ ] **1.2** Extend native provider unions with `'recaptcha'` in `packages/app-check/lib/types/appcheck.ts` and namespaced types.
+- [x] **1.1** Add `ReCaptchaV3Provider`, `ReCaptchaEnterpriseProvider` in `packages/app-check/lib/providers.ts` with js-sdk-matching public constructors; export from package root / `modular.ts`.
+- [x] **1.2** Extend native provider unions with `'recaptcha'` in `packages/app-check/lib/types/appcheck.ts` and namespaced types.
 - [ ] **1.3** Refactor `packages/app-check/lib/web/RNFBAppCheckModule.ts`:
   - Route `ReCaptchaEnterpriseProvider` / `ReCaptchaV3Provider` to real js-sdk imports from `packages/app/lib/internal/web/firebaseAppCheck.ts`.
   - Route `ReactNativeFirebaseAppCheckProvider` web config (`reCaptchaEnterprise`, `reCaptchaV3`) to same js-sdk providers.

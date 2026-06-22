@@ -54,8 +54,9 @@ const VALID_APPLE_PROVIDERS = [
   'deviceCheck',
   'appAttest',
   'appAttestWithDeviceCheckFallback',
+  'recaptcha',
 ];
-const VALID_ANDROID_PROVIDERS = ['debug', 'playIntegrity'];
+const VALID_ANDROID_PROVIDERS = ['debug', 'playIntegrity', 'recaptcha'];
 
 /**
  * Type guard to check if a provider has providerOptions.
@@ -280,7 +281,12 @@ const config: ModuleConfig = {
 
 export const SDK_VERSION = version;
 
-export { CustomProvider, ReactNativeFirebaseAppCheckProvider } from './providers';
+export {
+  CustomProvider,
+  ReactNativeFirebaseAppCheckProvider,
+  ReCaptchaV3Provider,
+  ReCaptchaEnterpriseProvider,
+} from './providers';
 
 function getModularAppCheck(app?: FirebaseApp): AppCheck {
   return getOrCreateModularInstance(FirebaseAppCheckModule, config, app) as unknown as AppCheck;
@@ -290,9 +296,9 @@ function getModularAppCheck(app?: FirebaseApp): AppCheck {
  * Initializes App Check for the given Firebase app.
  *
  * @remarks Returns synchronously for firebase-js-sdk parity; native provider setup continues in
- * the background. On native platforms use {@link ReactNativeFirebaseAppCheckProvider} to configure
- * Device Check, App Attest, Play Integrity, or debug providers. firebase-js-sdk
- * `ReCaptchaEnterpriseProvider` / `ReCaptchaV3Provider` are **web only** and have no RN equivalent.
+ * the background. On native platforms use {@link ReactNativeFirebaseAppCheckProvider} (including
+ * the `recaptcha` provider) or configure Device Check, App Attest, Play Integrity, or debug
+ * providers. On Other/Web, use {@link ReCaptchaEnterpriseProvider} / {@link ReCaptchaV3Provider}.
  */
 export function initializeAppCheck(app?: FirebaseApp, options?: AppCheckOptions): AppCheck {
   if (!isObject(options)) {
