@@ -216,6 +216,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
     if (![[options valueForKey:@"appGroupId"] isEqual:[NSNull null]]) {
       firOptions.appGroupID = [options valueForKey:@"appGroupId"];
     }
+    if ([options valueForKey:@"recaptchaSiteKey"] != nil &&
+        ![[options valueForKey:@"recaptchaSiteKey"] isEqual:[NSNull null]]) {
+      firOptions.recaptchaSiteKey = [options valueForKey:@"recaptchaSiteKey"];
+    }
 
     if ([options valueForKey:@"authDomain"] != nil) {
       DLog(@"RNFBAuth app: %@ customAuthDomain: %@", appName, [options valueForKey:@"authDomain"]);

@@ -60,6 +60,11 @@ public class RCTConvertFirebase {
     if (NativeRNFBTurboApp.authDomains.get(name) != null) {
       options.put("authDomain", NativeRNFBTurboApp.authDomains.get(name));
     }
+    // recaptchaSiteKey is read from FirebaseOptions (not a one-off app map like authDomain).
+
+    if (appOptions.getRecaptchaSiteKey() != null) {
+      options.put("recaptchaSiteKey", appOptions.getRecaptchaSiteKey());
+    }
 
     root.put("options", options);
     root.put("appConfig", appConfig);
@@ -84,6 +89,10 @@ public class RCTConvertFirebase {
 
     if (options.hasKey("measurementId")) {
       builder.setGaTrackingId(options.getString("measurementId"));
+    }
+
+    if (options.hasKey("recaptchaSiteKey")) {
+      builder.setRecaptchaSiteKey(options.getString("recaptchaSiteKey"));
     }
 
     builder.setStorageBucket(options.getString("storageBucket"));

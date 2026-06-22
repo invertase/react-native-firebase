@@ -37,6 +37,10 @@ console.log(FilePath.CACHES_DIRECTORY);
 // initialize app variants
 initializeApp({ apiKey: 'a', appId: 'b', projectId: 'c' });
 initializeApp({ apiKey: 'a', appId: 'b', projectId: 'c' }, 'foo');
+initializeApp(
+  { apiKey: 'a', appId: 'b', projectId: 'c', recaptchaSiteKey: '6Le-test-site-key' },
+  'recaptchaApp',
+);
 
 // utils instance API
 const modularUtils = getUtils();
