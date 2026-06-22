@@ -350,11 +350,17 @@ jobs:
         run: |
           nohup sh -c "xcrun simctl io booted recordVideo --codec=h264 -f simulator.mp4 2>&1 &"
           nohup sh -c "xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
+          nohup sh -c "xcrun simctl spawn booted log stream --level debug --style compact --predicate 'process == \"testing\"' > testing.log 2>&1 &"
+          nohup sh -c "xcrun simctl spawn booted log stream --level debug --style compact --predicate 'process == \"SpringBoard\" AND eventMessage CONTAINS \"invertase\"' > springboard-invertase.log 2>&1 &"
+          chmod +x ./.github/workflows/scripts/resource-monitor.sh
+          nohup ./.github/workflows/scripts/resource-monitor.sh &
 
       - name: Detox Test Debug
         if: contains(matrix.buildmode, 'debug')
         timeout-minutes: 62
-        run: yarn tests:ios:test-cover
+        run: |
+          yarn tests:ios:test-cover 2>&1 | tee detox-step.log
+          exit ${PIPESTATUS[0]}
 
       - name: Process iOS native coverage
         if: always() && contains(matrix.buildmode, 'debug')
@@ -364,7 +370,16 @@ jobs:
       - name: Detox Test Release
         if: contains(matrix.buildmode, 'release')
         timeout-minutes: 62
-        run: yarn tests:ios:test:release
+        run: |
+          yarn tests:ios:test:release 2>&1 | tee detox-step.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Write flake summary
+        if: always()
+        continue-on-error: true
+        run: |
+          chmod +x ./.github/workflows/scripts/flake-summary.sh
+          RNFB_DETOX_LOG=detox-step.log ./.github/workflows/scripts/flake-summary.sh
 
       - name: Stop Screen and App Video and System Logging
         if: always()
@@ -373,6 +388,7 @@ jobs:
           killall -int simctl
           killall -int screencapture
           killall -int log
+          pkill -f resource-monitor.sh || true
 
       - name: Upload App Video
         # https://github.com/actions/upload-artifact/releases
@@ -391,6 +407,46 @@ jobs:
         with:
           name: simulator-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
           path: simulator.log
+
+      - name: Upload testing process log
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        continue-on-error: true
+        if: always()
+        with:
+          name: testing-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
+          path: testing.log
+
+      - name: Upload SpringBoard invertase log
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        continue-on-error: true
+        if: always()
+        with:
+          name: springboard-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
+          path: springboard-invertase.log
+
+      - name: Upload resource monitor log
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        continue-on-error: true
+        if: always()
+        with:
+          name: resource-monitor-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
+          path: resource-monitor.log
+
+      - name: Upload flake summary
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        continue-on-error: true
+        if: always()
+        with:
+          name: flake-summary-${{ matrix.buildmode }}-${{ matrix.iteration }}
+          path: flake-summary.txt
+
+      - name: Upload Detox step log
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        continue-on-error: true
+        if: always()
+        with:
+          name: detox-step-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
+          path: detox-step.log
 
       - name: Upload Metro log
         # https://github.com/actions/upload-artifact/releases
