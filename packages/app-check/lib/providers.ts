@@ -53,7 +53,7 @@ export class CustomProvider implements AppCheckProvider {
  * @public
  */
 export class ReCaptchaV3Provider implements AppCheckProvider {
-  private readonly siteKey: string;
+  readonly siteKey: string;
 
   constructor(siteKey: string) {
     this.siteKey = siteKey;
@@ -72,7 +72,7 @@ export class ReCaptchaV3Provider implements AppCheckProvider {
  * @public
  */
 export class ReCaptchaEnterpriseProvider implements AppCheckProvider {
-  private readonly siteKey: string;
+  readonly siteKey: string;
 
   constructor(siteKey: string) {
     this.siteKey = siteKey;
