@@ -20,8 +20,8 @@ import {
   isIOS,
   isObject,
   isString,
-  isUndefined,
   isOther,
+  isOtherHermes,
   parseListenerOrObserver,
 } from '@react-native-firebase/app/dist/module/common';
 import type { FirebaseApp } from '@react-native-firebase/app';
@@ -46,6 +46,10 @@ import type {
 import type { AppCheckInternal, ProviderWithOptions } from './types/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { ReactNativeFirebaseAppCheckProvider } from './providers';
+import {
+  resolveNativeInitializeAppCheckRoute,
+  validateOtherHermesInitializeAppCheck,
+} from './appCheckInitializeRouting';
 
 const nativeModuleName = 'NativeRNFBTurboAppCheck';
 
@@ -124,15 +128,15 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   initializeAppCheck(options: AppCheckOptions): Promise<void> {
+    if (!isObject(options)) {
+      throw new Error('Invalid configuration: no options defined.');
+    }
+
     if (isOther) {
-      if (!isObject(options)) {
-        throw new Error('Invalid configuration: no options defined.');
-      }
-      if (isUndefined(options.provider)) {
-        throw new Error('Invalid configuration: no provider defined.');
-      }
+      validateOtherHermesInitializeAppCheck(options, { isOtherHermes });
       return this.native.initializeAppCheck(options);
     }
+
     // determine token refresh setting, if not specified
     if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
       const tokenRefresh = this.firebaseJson.app_check_token_auto_refresh;
@@ -155,33 +159,13 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
     }
     this.native.setTokenAutoRefreshEnabled(options.isTokenAutoRefreshEnabled);
 
-    if (!hasProviderOptions(options.provider)) {
-      throw new Error('Invalid configuration: no provider or no provider options defined.');
-    }
-    const provider = options.provider;
-    if (Platform.OS === 'android') {
-      if (!isString(provider.providerOptions?.android?.provider)) {
-        throw new Error(
-          'Invalid configuration: no android provider configured while on android platform.',
-        );
-      }
-      return this.native.configureProvider(
-        provider.providerOptions.android.provider,
-        provider.providerOptions.android.debugToken,
-      );
-    }
-    if (Platform.OS === 'ios' || Platform.OS === 'macos') {
-      if (!isString(provider.providerOptions?.apple?.provider)) {
-        throw new Error(
-          'Invalid configuration: no apple provider configured while on apple platform.',
-        );
-      }
-      return this.native.configureProvider(
-        provider.providerOptions.apple.provider,
-        provider.providerOptions.apple.debugToken,
-      );
-    }
-    throw new Error('Unsupported platform: ' + Platform.OS);
+    const route = resolveNativeInitializeAppCheckRoute(options, {
+      isOtherHermes,
+      platformOS: Platform.OS,
+      appOptions: this.app.options,
+    });
+
+    return this.native.configureProvider(route.providerName, route.debugToken);
   }
 
   activate(

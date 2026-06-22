@@ -335,7 +335,7 @@ With js-sdk 12.15 / #9991, both modules may use Enterprise concurrently on Other
   - Route `ReactNativeFirebaseAppCheckProvider` web config (`reCaptchaEnterprise`, `reCaptchaV3`) to same js-sdk providers.
   - Implement provider-less `initializeAppCheck` when `provider` omitted and `recaptchaSiteKey` present in Firebase options (js-sdk 12.15 behaviour).
   - Stop wrapping standard providers in `CustomProvider`.
-- [ ] **1.4** Update `packages/app-check/lib/namespaced.ts` `initializeAppCheck`:
+- [x] **1.4** Update `packages/app-check/lib/namespaced.ts` `initializeAppCheck`:
   - Accept js-sdk provider class instances on all platforms (native routing for Enterprise/recaptcha).
   - Throw on native when `provider` is omitted; provider-less init is Other/Web only.
   - On native `ReCaptchaEnterpriseProvider`, map to native `'recaptcha'` but read the site key from `FirebaseApp` options/native config. If the constructor site key and `app.options.recaptchaSiteKey` both exist and differ, throw or warn loudly.
