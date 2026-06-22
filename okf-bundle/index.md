@@ -30,6 +30,10 @@ okf_version: '0.1'
 - [TurboModule migration](/new-architecture/index.md) — Codegen TurboModules, coordinated New Architecture break, phase queue
 - [Monorepo tooling](/monorepo-tooling/index.md) — Nx local cache, deterministic prepare graph, declaration maps, dependency-cycle linting, dev watch; decisions (ADR) + rollout queue
 
+# Features
+
+* [reCAPTCHA Enterprise design](/recaptcha-enterprise-design.md) — App Check + Auth Enterprise feature design, platform matrix, and implementation plan
+
 # Packages
 
 - [Auth](/packages/auth/index.md) — modular API type parity, platform matrix, `compare:types`
