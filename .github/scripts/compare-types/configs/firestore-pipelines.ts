@@ -164,6 +164,11 @@ const config: PackageConfig = {
   ],
   differentShape: [
     {
+      name: 'constant',
+      reason:
+        'firebase-js-sdk added an optional `preferIntegers` option to pipeline constant expressions; not yet exposed by RN Firebase pipelines.',
+    },
+    {
       name: 'isType',
       reason: 'RN Firebase accepts its local `Type` alias where the firebase-js-sdk declaration accepts a string.',
     },

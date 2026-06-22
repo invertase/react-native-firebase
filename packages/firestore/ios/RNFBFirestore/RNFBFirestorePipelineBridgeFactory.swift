@@ -145,13 +145,13 @@ final class RNFBFirestorePipelineBridgeFactory {
       guard let path = source.path else {
         throw PipelineValidationError("pipelineExecute() expected pipeline.source.path to be a non-empty string.")
       }
-      return [CollectionSourceStageBridge(ref: firestore.collection(path), firestore: firestore)]
+      return [CollectionSourceStageBridge(ref: firestore.collection(path), firestore: firestore, forceIndex: nil)]
     case "collectionGroup":
       guard let collectionId = source.collectionId else {
         throw PipelineValidationError(
           "pipelineExecute() expected pipeline.source.collectionId to be a non-empty string.")
       }
-      return [CollectionGroupSourceStageBridge(collectionId: collectionId)]
+      return [CollectionGroupSourceStageBridge(collectionId: collectionId, forceIndex: nil)]
     case "database":
       return [DatabaseSourceStageBridge()]
     case "documents":

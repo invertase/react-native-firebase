@@ -67,6 +67,11 @@ const config: PackageConfig = {
         'Chrome Prompt API type for browser on-device language models. Not relevant to the React Native runtime.',
     },
     {
+      name: 'LanguageModelDownloadMonitor',
+      reason:
+        'Chrome Prompt API download monitor type for browser on-device language models. Not relevant to the React Native runtime.',
+    },
+    {
       name: 'LanguageModelExpected',
       reason: 'Chrome Prompt API type tied to browser-only on-device language model integration.',
     },
@@ -228,6 +233,11 @@ const config: PackageConfig = {
       name: 'GenerationConfig',
       reason:
         'firebase-js-sdk added `imageConfig` to generation config; not yet implemented in React Native Firebase.',
+    },
+    {
+      name: 'GenerativeModel',
+      reason:
+        'firebase-js-sdk added browser-only `initializeDeviceModel()` for Chrome on-device language models; not implemented in React Native Firebase.',
     },
     {
       name: 'GroundingChunk',

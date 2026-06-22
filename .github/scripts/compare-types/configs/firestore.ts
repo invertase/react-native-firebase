@@ -58,6 +58,11 @@ const config: PackageConfig = {
         'firebase-js-sdk. Not applicable to React Native.',
     },
     {
+      name: 'maximum',
+      reason:
+        'Aggregate field helper added in firebase-js-sdk; not yet implemented in RN Firebase.',
+    },
+    {
       name: 'memoryEagerGarbageCollector',
       reason:
         'Factory for the memory eager garbage collector used with memoryLocalCache. ' +
@@ -75,6 +80,11 @@ const config: PackageConfig = {
       reason:
         'Factory for the memory LRU garbage collector used with memoryLocalCache. ' +
         'The local cache configuration API is not yet implemented in RN Firebase.',
+    },
+    {
+      name: 'minimum',
+      reason:
+        'Aggregate field helper added in firebase-js-sdk; not yet implemented in RN Firebase.',
     },
     {
       name: 'onSnapshotResume',
