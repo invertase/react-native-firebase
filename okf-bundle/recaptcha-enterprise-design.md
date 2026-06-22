@@ -348,10 +348,10 @@ With js-sdk 12.15 / #9991, both modules may use Enterprise concurrently on Other
 
 ## Phase 2 — App Check: Android native
 
-- [ ] **2.1** Add `implementation 'com.google.firebase:firebase-appcheck-recaptcha'` to `packages/app-check/android/build.gradle` — always linked (Option A).
-- [ ] **2.2** Implement `'recaptcha'` branch in `ReactNativeFirebaseAppCheckProvider.java` via `RecaptchaAppCheckProviderFactory.getInstance().create(app)`.
-- [ ] **2.3** Ensure missing native `recaptchaSiteKey` errors surface clearly. The Android SDK throws “Missing site key from configuration. Verify your google-services.json file is updated.”; wrap/preserve that message rather than replacing it with a generic RNFB error.
-- [ ] **2.4** Native coverage: ensure e2e / JaCoCo exercises new provider branch (`okf-bundle/testing/coverage-design.md`).
+- [x] **2.1** Add `implementation 'com.google.firebase:firebase-appcheck-recaptcha'` to `packages/app-check/android/build.gradle` — always linked (Option A).
+- [x] **2.2** Implement `'recaptcha'` branch in `ReactNativeFirebaseAppCheckProvider.java` via `RecaptchaAppCheckProviderFactory.getInstance().create(app)`.
+- [x] **2.3** Ensure missing native `recaptchaSiteKey` errors surface clearly. The Android SDK throws “Missing site key from configuration. Verify your google-services.json file is updated.”; wrap/preserve that message rather than replacing it with a generic RNFB error.
+- [x] **2.4** Native coverage: no Android unit tests in `packages/app-check/android` — coverage is **e2e-only** via Phase 9.1 (`packages/app-check/e2e/appcheck.e2e.js` `'recaptcha'` smoke) and Phase 9.4 JaCoCo flush on the configureProvider/getToken path (`okf-bundle/testing/coverage-design.md`).
 
 ---
 
