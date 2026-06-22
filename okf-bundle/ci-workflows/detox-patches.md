@@ -17,7 +17,7 @@ Patches are maintained in-repo (including by agents). Prefer **editing the patch
 | Ignore missing adb reverse on teardown | `ADB.js` | Android | Jet WS 1006 triggers mid-run `reverse --remove` → adb exit 1 |
 | **2× device-registry lock stale** | `ExclusiveLockfile.js` | iOS, macOS, Android | `proper-lockfile` `ECOMPROMISED` before tests start |
 
-Related non-Detox patches: `jet`, `mocha-remote-client`, `mocha-remote-server` (coverage over WebSocket) — see [coverage design](../testing/coverage-design.md).
+Related non-Detox patches: `jet`, `mocha-remote-client`, `mocha-remote-server` — WS reconnect grace, coverage handshake (`coverage-ready` / `pull-coverage`), client keepalive. See [coverage design](../testing/coverage-design.md) and [iOS CI — issues 6–8](ios.md#6-jet-websocket-disconnect-1006--1001).
 
 ## Device registry lock (`ECOMPROMISED`)
 

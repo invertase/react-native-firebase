@@ -88,7 +88,7 @@ Android/iOS run Detox, which spawns Jet with `--coverage`. macOS runs Jet direct
 - **Metro** bundles `packages/*/dist/module/**` with inline source maps (`tests/.babelrc`: `useInlineSourceMaps: true`).
 - **NYC** (`tests/nyc.config.js`) collects coverage from instrumented bundles, remaps to `packages/*/lib/**` via source maps, and writes **`coverage/lcov.info`** (NYC `cwd: '..'`).
 - **Jet self-wrap:** When `--coverage` is passed, `tests/node_modules/jet/jet.js` re-invokes itself under `tests/node_modules/.bin/nyc` (checks `NYC_CONFIG` to avoid double-wrap). Detox/macOS do **not** need an extra `nyc` prefix on the yarn script — only Jet needs to run from the `tests/` directory so it can find NYC.
-- **Transfer:** Patched Jet / mocha-remote send coverage over the existing WebSocket (`coverage-data` event), replacing HTTP POST that failed on large (~4.5MB+) payloads. Patches live in `.yarn/patches/` (`jet`, `mocha-remote-client`, `mocha-remote-server`).
+- **Transfer:** Patched Jet / mocha-remote send coverage over the existing WebSocket (`coverage-ready` → `pull-coverage` → `coverage-data` → `coverage-ack`), replacing HTTP POST that failed on large (~4.5MB+) payloads. Patches live in `.yarn/patches/` (`jet`, `mocha-remote-client`, `mocha-remote-server`). On transient WS reconnect, server proactively sends `pull-coverage`; client `uploadCoverage()` retries with `readyState` logging. See [iOS issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00).
 
 ## Key NYC settings
 
@@ -256,6 +256,7 @@ These must all be true for native coverage to work. If any break, the e2e test s
 | Jet `after` hook logs coverage not enabled | Non-instrumented build (local release or no Jacoco/LLVM flags) | Expected on `tests:android:test` without debug Jacoco; use debug e2e builds for native coverage; hook catches errors so tests still pass |
 | iOS link: `swiftCompatibility56` undefined | Profile link flags applied to all Pods | Restrict `OTHER_LDFLAGS` profile flags to app target; RNFB pods compile-only |
 | No `[jet-coverage] WS received` lines | Patches not applied | `yarn install` from repo root; check `.yarn/patches/` |
+| `coverage-ready.*WebSocket is closed` after `reconnect_recovered` | Handshake lost on dead socket | Client retry + server `pull-coverage`; Jet e2e retry via `JET_COVERAGE_TEARDOWN_RE` — see [iOS issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00) |
 | NYC summary missing / empty `lcov.info` | Jet not run from `tests/` cwd | Detox spawns `yarn jet` inside `tests/`; macOS uses `cd tests && npx jet` |
 | Codecov missing iOS native files | Output not named `lcov.info` or wrong path | Use `coverage/ios-native/lcov.info`; confirm `ios-native` flag upload in iOS debug workflow |
 | Codecov upload **Unusable** | Wrong `SF:` paths | Confirm path rewrite in `process-ios-native-coverage.js`; check Uploads tab message |

@@ -19,9 +19,10 @@ On GitHub Actions macOS runners (currently `macos-26` with `XCODE_VERSION: lates
 | Phase | What happens |
 |--------|----------------|
 | `resolve_device` | Read simulator name from `tests/.detoxrc.js` (e.g. `iPhone 17`) |
-| `shutdown_existing` | Kill `Simulator.app` and `simctl shutdown` the target |
+| `kill_resolved` | Kill `Simulator.app`, terminate app, `simctl shutdown` the resolved UDID |
 | `boot_command` | `xcrun simctl boot <name>` |
 | `wait_for_full_boot` | Poll every 20s (up to 11 min) until `simctl bootstatus` reports ready |
+| `wait_shutdown` | If device is still `Booted` when install is about to run, poll up to 120s for `Shutdown` (avoids LaunchServices races after Jet retries) |
 | `install_app` | `simctl install` the built `testing.app` **only after** bootstatus succeeds |
 
 During `wait_for_full_boot`, the script logs to the **GitHub Actions step log** with the `[boot-status]` prefix:
@@ -49,6 +50,11 @@ Artifacts are uploaded on every run (`if: always()`), even when tests fail.
 | Artifact | Source | Use when |
 |----------|--------|----------|
 | `simulator-<buildmode>-<iteration>_log` | `xcrun simctl spawn booted log stream` → `simulator.log` | In-simulator system/app logs during Detox |
+| `testing-<buildmode>-<iteration>_log` | `log stream --predicate 'process == "testing"'` → `testing.log` | **Filtered** app-process log — much smaller than `simulator.log`; use for `[rnfb-lifecycle]`, Detox WS, Metro probes |
+| `springboard-<buildmode>-<iteration>_log` | `log stream` with SpringBoard + `invertase` predicate → `springboard-invertase.log` | FrontBoard / LaunchServices launch failures (`unknown to FrontBoard`, install races) |
+| `detox-step-<buildmode>-<iteration>_log` | Detox/Jet step stdout/stderr (`tee detox-step.log`) | `[jet-ws]`, `[rnfb-e2e]`, `[jet-coverage]`, Jest output — primary orchestration log |
+| `flake-summary-<buildmode>-<iteration>` | `.github/workflows/scripts/flake-summary.sh` → `flake-summary.txt` | Pre-digested `rg` hits across detox/simulator/testing/springboard/metro/resource-monitor logs |
+| `resource-monitor-<buildmode>-<iteration>_log` | `.github/workflows/scripts/resource-monitor.sh` → `resource-monitor.log` | Periodic `uptime` + `ps` snapshots (10s default) to correlate WS drops with CPU/memory pressure |
 | `metro-<buildmode>-<iteration>_log` | Metro stdout/stderr from `yarn tests:packager:jet-ci` → `metro.log` (debug only) | Metro hung, slow bundle, or unresponsive `/status` during app launch |
 | `simulator-<buildmode>-<iteration>_video` | `xcrun simctl io booted recordVideo` → `simulator.mp4` | Visual confirmation of UI state |
 | `screenrecording-<buildmode>-<iteration>` | `screencapture` of the Mac desktop | Includes Simulator.app window |
@@ -58,7 +64,9 @@ Artifacts are uploaded on every run (`if: always()`), even when tests fail.
 **When to use which log**
 
 - **Boot / migration / “simulator won’t start”** — read the **Pre-Boot Simulator** step log in GitHub Actions first. Look for `[boot-status]` lines and `bootstatus -d` migration output. That captures first-boot migration even though `simulator.log` starts only after pre-boot succeeds.
-- **Detox / app / test failures** — download `simulator-*_log` and use [E2E test app orchestration](#e2e-test-app-orchestration-detox--jet) grep patterns (`[rnfb-lifecycle]`, `waitForActive`, SpringBoard foreground). Jet WS drops (1006/1001) appear in the **Detox step log** (`[jet-ws]`, `[rnfb-e2e]`). For debug Metro issues, also download `metro-*_log`.
+- **Detox / app / test failures** — start with **`detox-step-*_log`** or **`flake-summary-*`** (fast triage). For native app instrumentation, download **`testing-*_log`** instead of searching all of `simulator.log`. Jet WS drops (1006/1001) appear in the Detox step (`[jet-ws]`, `[rnfb-e2e]`). For debug Metro issues, also download `metro-*_log`.
+- **FrontBoard / relaunch after terminate** — `springboard-*_log` plus `[rnfb-e2e] install-state` / `launchApp failure` lines in `detox-step-*_log`.
+- **Runner load during flake** — `resource-monitor-*_log` (correlate timestamps with `[jet-ws] disconnect_context` loadavg/mem lines).
 - **UI regressions** — `simulator-*_video` or `screenrecording-*`.
 
 **Downloading artifacts**
@@ -130,8 +138,8 @@ Error: Unable to update lock within the stale threshold
 | Change | Location |
 |--------|----------|
 | Wait for Jet (port 8090) before `launchApp` | `tests/e2e/firebase.test.js` |
-| Wait for Metro (`/status`) before `launchApp` | `tests/e2e/firebase.test.js` (debug Detox configs only) |
-| Bounded `launchApp` timeout (default 180s) | `tests/e2e/firebase.test.js` |
+| Wait for Metro (`/status`) before `launchApp` | `tests/e2e/firebase.test.js` (debug Detox configs only; release skips Metro wait) |
+| Bounded `launchApp` timeout (debug default 180s; release default 120s via `RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS`) | `tests/e2e/firebase.test.js` |
 | `detoxEnableSynchronization: 'NO'` at launch | `tests/e2e/firebase.test.js` |
 | `detoxURLBlacklistRegex: '.*'` | `tests/e2e/firebase.test.js` (existing) |
 
@@ -166,14 +174,17 @@ Metro can look healthy on the **host** during pre-fetch minutes earlier while be
 | Change | Location |
 |--------|----------|
 | Wait for Metro `/status` before `launchApp` | `tests/e2e/firebase.test.js` (debug Detox configs only) |
-| One in-process `launchApp` retry on Metro/bundle load timeout | `tests/e2e/firebase.test.js` (`RNFB_LAUNCH_APP_MAX_ATTEMPTS`, debug only) |
-| Full Jet e2e retry on launch failure (after in-process retries exhausted) | `tests/e2e/firebase.test.js` (debug Metro failures only) |
-| Bounded `launchApp` timeout (default 180s, env `RNFB_LAUNCH_APP_TIMEOUT_MS`) | `tests/e2e/firebase.test.js` |
+| In-process `launchApp` retry on launch failure (max 2 attempts; logs `launchApp failure reason=`) | `tests/e2e/firebase.test.js` (`RNFB_LAUNCH_APP_MAX_ATTEMPTS`) |
+| Keep install on inner retry (`delete: false` on attempt 2+) | `tests/e2e/firebase.test.js` |
+| Slow `terminateApp` (≥ `RNFB_SLOW_TERMINATE_MS`, default 10s) → reboot via `boot-simulator.sh` | `tests/e2e/firebase.test.js` |
+| Full Jet e2e retry when inner launch retries exhausted or WS/coverage teardown retryable | `tests/e2e/firebase.test.js` (`retryableAtJetLevel`, `isRetryableE2eFailure`) |
+| `simctl get_app_container` / `listapps` before and after each launch attempt | `tests/e2e/firebase.test.js` (`[rnfb-e2e] install-state`) |
+| Bounded `launchApp` timeout (debug `RNFB_LAUNCH_APP_TIMEOUT_MS` 180s; release `RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS` 120s) | `tests/e2e/firebase.test.js` |
 | Metro log artifact (`metro.log`) | `.github/workflows/tests_e2e_ios.yml` |
 | JS load failure + packager probe logging | `tests/ios/testing/AppDelegate.mm` |
 | Bundle URL pinned to `127.0.0.1` (bypasses RN `localhost` fallback) | `tests/ios/testing/AppDelegate.mm` |
 
-**Known intermittent pattern (community)** — RN iOS debug builds commonly hit `No script URL provided` when Metro is down, slow, or reachable from the host but not from the simulator process. Reported causes include: Metro event loop blocked under load (TCP connect succeeds, HTTP hangs — matches our `-1001` on `/status`), macOS network proxy intercepting `localhost:8081`, port 8081 contention, and `RCTBundleURLProvider` returning a nil bundle URL despite `isPackagerRunning=YES` ([react-native#49173](https://github.com/facebook/react-native/issues/49173)). On **iOS 26+ simulators**, hostname resolution for `localhost` vs `127.0.0.1` can be unreliable; hardcoding `127.0.0.1` in bundle URL resolution has been reported to fix intermittent Metro disconnects ([react-native#56447](https://github.com/facebook/react-native/issues/56447)). Our test app now pins the debug bundle URL to `127.0.0.1:8081` and the e2e harness retries `launchApp` once on Metro/bundle-load timeout before failing the Jet attempt (**debug CI only** — release uses an embedded bundle and does not start Metro). These are typically **environment/timing** flakes rather than app logic bugs; release builds avoid them by using embedded bundles.
+**Known intermittent pattern (community)** — RN iOS debug builds commonly hit `No script URL provided` when Metro is down, slow, or reachable from the host but not from the simulator process. Reported causes include: Metro event loop blocked under load (TCP connect succeeds, HTTP hangs — matches our `-1001` on `/status`), macOS network proxy intercepting `localhost:8081`, port 8081 contention, and `RCTBundleURLProvider` returning a nil bundle URL despite `isPackagerRunning=YES` ([react-native#49173](https://github.com/facebook/react-native/issues/49173)). On **iOS 26+ simulators**, hostname resolution for `localhost` vs `127.0.0.1` can be unreliable; hardcoding `127.0.0.1` in bundle URL resolution has been reported to fix intermittent Metro disconnects ([react-native#56447](https://github.com/facebook/react-native/issues/56447)). Our test app now pins the debug bundle URL to `127.0.0.1:8081` and the e2e harness retries `launchApp` on retryable launch failures (Metro/bundle timeout, FrontBoard errors) before failing the Jet attempt. Release uses an embedded bundle, shorter launch timeout, and no Metro wait. These are typically **environment/timing** flakes rather than app logic bugs.
 
 #### Diagnosing from `simulator.log`
 
@@ -216,6 +227,9 @@ rg 'testing\[' simulator.log | rg -i 'FIRApp|RNFB|RCTBridge|configure'
 | `probe+30s` / `probe+60s` with `active` / `foregroundActive` but no `waitForActiveDone` | Metro/JS bundle failure despite active UIKit (issue 5); check `RCTJavaScriptDidFailToLoad` and `packager-status-fetch` |
 | `packager-status-fetch ... error domain=NSURLErrorDomain code=-1001` | Metro TCP reachable but HTTP timed out from simulator |
 | `No script URL provided` in `com.facebook.react.log` | RN never got bundle URL; only `/status` attempts, no `index.bundle` |
+| `FBSOpenApplicationServiceErrorDomain` / `unknown to FrontBoard` | LaunchServices race after terminate — see [issue 7](#7-frontboard--launchservices-race-after-terminaterelaunch) |
+| `Failed to send 'coverage-ready' message` | Coverage handshake flake — see [issue 8](#8-coverage-teardown-handshake-failure-tests-pass-nyc-00) |
+| `[rnfb-e2e] retry-eligibility ... retryable=false` | Check `checks=` JSON for which sub-condition blocked Jet attempt 2 |
 | `handshake successful` 30–60s after `simctl launch` | Main-thread startup delay; not a boot failure |
 | Only `com.apple.datamigrator` activity, no `testing[` | Pre-boot / migration issue — use Actions `[boot-status]` log, not Detox orchestration |
 
@@ -233,51 +247,57 @@ rg -i 'BUNDLE|index\.bundle|8081|error|ECONN|transform' metro.log
 |--------|----------|
 | Buffer early `ready`, replay after app `login` | `.yarn/patches/detox-npm-20.51.0-*.patch` → `AnonymousConnectionHandler.js` |
 | 2× device-registry lock stale (20s) | `.yarn/patches/detox-npm-20.51.0-*.patch` → `ExclusiveLockfile.js` |
-| Jet + Metro wait, bounded `launchApp` with retry, Detox launch args | `tests/e2e/firebase.test.js` |
+| Jet + Metro wait, bounded `launchApp` with retry, Detox launch args, install-state + retry-eligibility logging | `tests/e2e/firebase.test.js` |
 | Lifecycle + JS load / packager probe logging; bundle URL `127.0.0.1` | `tests/ios/testing/AppDelegate.mm` |
-| Pre-boot + `bootstatus` before install | `boot-simulator.sh` (orthogonal; fixes boot/migration only) |
+| Pre-boot + `bootstatus` + shutdown wait before install | `boot-simulator.sh` |
+| Filtered logs, resource monitor, flake summary, Detox `tee` | `.github/workflows/tests_e2e_ios.yml`, `resource-monitor.sh`, `flake-summary.sh` |
 | Metro stdout/stderr artifact | `.github/workflows/tests_e2e_ios.yml` |
 
 #### 6. Jet WebSocket disconnect (1006 / 1001)
 
-**Symptom** (Detox Test Debug step, often debug build only):
+**Symptom** (Detox step, debug and release):
 
 ```
 [🟨] Jet client disconnected - for no particular reason (code = 1006).
-[🟥] Exiting after an abnormal disconnect.
-Coverage summary: Unknown% ( 0/0 )
+[jet-ws] transient_disconnect code=1006 grace_ms=30000 waiting_for_reconnect
 ```
 
-Release on the same run may pass; the app process (`testing[<pid>]`) often stays alive in `simulator.log` — the break is the **simulator → host** mocha-remote WebSocket on port **8090**, not a native crash.
+The app process (`testing[<pid>]`) often stays alive in `testing.log` / `simulator.log` — the break is the **simulator → host** mocha-remote WebSocket on port **8090**, not a native crash.
 
-**Cause** — Transient abnormal WebSocket closure (1006 = no close frame; 1001 = going away). Common in **debug CI** (live Metro on 8081 + Istanbul `__coverage__` growth + port 8090 forwarding). Jet’s `exitOnError: true` used to exit immediately; mocha-remote-client auto-reconnects in ~1s but the server had already shut down.
+**Cause** — Transient abnormal WebSocket closure (1006 = no close frame; 1001 = going away). Common in long debug+coverage runs (live Metro + Istanbul `__coverage__` growth + port 8090 forwarding). mocha-remote-client auto-reconnects in ~1s; Jet and mocha-remote-server now preserve the runner during a grace window instead of exiting immediately.
 
 **Mitigations in this repo**
 
 | Change | Location |
 |--------|----------|
-| 15s reconnect grace for 1006/1001 before fatal exit | `.yarn/patches/jet-npm-0.9.0-dev.13-*.patch` → `cli.js` |
-| `reconnectGraceMs: 15000` | `tests/.jetrc.js` |
-| One e2e retry when grace expires (`RETRYABLE_DISCONNECT`) | `tests/e2e/firebase.test.js` |
-| Structured WS logging | `[jet-ws]` / `[rnfb-e2e]` prefixes in Jet + e2e harness |
+| 30s reconnect grace for 1006/1001 before fatal exit | `.yarn/patches/jet-npm-0.9.0-dev.13-*.patch` → `cli.js` |
+| `reconnectGraceMs: 30000` | `tests/.jetrc.js` |
+| mocha-remote-server preserves runner + sends `pull-coverage` on reconnect | `.yarn/patches/mocha-remote-server-npm-1.13.2-*.patch` |
+| Client WS keepalive (`ping` when supported) + `readyState` logging on send failure | `.yarn/patches/mocha-remote-client-npm-1.13.2-*.patch` |
+| `disconnect_context` logs `loadavg` + `process.memoryUsage()` on disconnect | Jet patch → `cli.js` |
+| One Jet e2e retry when grace expires (`RETRYABLE_DISCONNECT`) or session/coverage retryable | `tests/e2e/firebase.test.js` |
+| Structured WS / orchestration logging | `[jet-ws]`, `[rnfb-e2e]`, `[mocha-remote-ws]` prefixes |
 
-**Diagnosing from CI logs** (Detox step; `simulator.log` rarely shows Jet WS):
+**Diagnosing from CI logs** (start with `detox-step-*_log` or `flake-summary-*`):
 
 ```bash
-# Jet WS lifecycle (Actions log)
-rg '\[jet-ws\]|\[rnfb-e2e\]|Jet client disconnected|RETRYABLE_DISCONNECT' detox-step.log
+# Jet WS lifecycle
+rg '\[jet-ws\]|\[rnfb-e2e\]|\[mocha-remote-ws\]|Jet client disconnected|RETRYABLE_DISCONNECT' detox-step.log
+
+# Disconnect resource context
+rg '\[jet-ws\] disconnect_context' detox-step.log
 
 # Grace window recovered (no e2e retry needed)
-rg '\[jet-ws\] reconnect_recovered' detox-step.log
+rg '\[jet-ws\] reconnect_recovered|\[mocha-remote-ws\] reconnect_recovered' detox-step.log
 
 # Fatal transient disconnect → e2e retry eligible
 rg '\[jet-ws\] (transient_disconnect|fatal_disconnect|RETRYABLE_DISCONNECT)' detox-step.log
 
-# E2e harness retry
-rg '\[rnfb-e2e\] Retrying after transient Jet WS' detox-step.log
+# Retry decision tree
+rg '\[rnfb-e2e\] retry-eligibility' detox-step.log
 
-# Coverage lost to abrupt Jet exit
-rg 'Coverage summary|jet-coverage' detox-step.log
+# Runner load at disconnect time
+rg 'disconnect_context|resource-monitor' detox-step.log resource-monitor.log
 ```
 
 **Sentinel patterns**
@@ -285,16 +305,99 @@ rg 'Coverage summary|jet-coverage' detox-step.log
 | Pattern | Meaning |
 |---------|---------|
 | `transient_disconnect code=1006` then `reconnect_recovered` | Flaky WS; grace window saved the run |
-| `fatal_disconnect code=1006 grace_expired_ms=` + `RETRYABLE_DISCONNECT` | Grace failed; e2e should retry once |
-| `[rnfb-e2e] Retrying after transient Jet WS` | Second Jet attempt starting |
-| `Coverage summary.*0/0` after disconnect | JS coverage never reached NYC (check `[jet-coverage]` on release for contrast) |
-| Release passes, debug fails with 1006 | Points at Metro/debug+coverage, not test logic |
+| `fatal_disconnect code=1006 grace_expired_ms=30000` + `RETRYABLE_DISCONNECT` | Grace failed; e2e should retry once |
+| `[rnfb-e2e] Retrying after transient Jet WS` | Second Jet attempt starting (simulator reboot) |
+| `disconnect_context` with high loadavg / RSS | Correlate with `resource-monitor-*_log` snapshot at same UTC timestamp |
+| Release passes, debug fails with 1006 | Points at Metro/debug+coverage load, not test logic |
+
+#### 7. FrontBoard / LaunchServices race after terminate+relaunch
+
+**Symptom** — Second `launchApp` attempt fails after a slow or failed first launch:
+
+```
+FBSOpenApplicationServiceErrorDomain
+Application "com.invertase.testing" is unknown to FrontBoard
+```
+
+Often preceded by `[rnfb-e2e] terminateApp ... elapsed=60000ms` (or similar) in `detox-step-*_log`.
+
+**Cause** — Detox `terminateApp` / `simctl` teardown left LaunchServices in a bad state, or `delete: true` on retry removed the install while SpringBoard still tracked the old bundle.
+
+**Mitigations in this repo**
+
+| Change | Location |
+|--------|----------|
+| `RETRYABLE_LAUNCH_RE` includes `unknown to FrontBoard` / `FBSOpenApplicationServiceErrorDomain` | `tests/e2e/firebase.test.js` |
+| Inner retry keeps install (`delete: false` on attempt 2+) | `tests/e2e/firebase.test.js` |
+| Slow terminate (≥ `RNFB_SLOW_TERMINATE_MS`) → full `boot-simulator.sh` reboot before relaunch | `tests/e2e/firebase.test.js` |
+| Exhausted inner launch retries escalate to **Jet attempt 2** (`retryableAtJetLevel`) | `tests/e2e/firebase.test.js` |
+| `simctl get_app_container` + `listapps` logging (`[rnfb-e2e] install-state`) | `tests/e2e/firebase.test.js` |
+| Filtered SpringBoard log artifact | `springboard-invertase.log` |
+| `wait_shutdown` before `simctl install` on reboot | `boot-simulator.sh` |
+
+**Diagnosing**
+
+```bash
+rg 'install-state|launchApp failure|FrontBoard|FBSOpenApplication|terminateApp' detox-step.log
+rg -i 'invertase|FrontBoard|unknown' springboard-invertase.log
+```
+
+#### 8. Coverage teardown handshake failure (tests pass, NYC 0/0)
+
+**Symptom** — Full Jet suite passes, then `"after all"` / coverage teardown fails:
+
+```
+Failed to send 'coverage-ready' message: WebSocket is closed
+[jet-coverage] merged 0 file(s)
+Coverage summary: Unknown% ( 0/0 )
+```
+
+May follow `[jet-ws] reconnect_recovered` mid-run — transport reconnected but the coverage upload socket was already dead.
+
+**Cause** — mocha-remote **transport** reconnect ≠ **coverage handshake** recovery (`coverage-ready` → server `pull-coverage` → `coverage-data` → `coverage-ack`).
+
+**Mitigations in this repo**
+
+| Change | Location |
+|--------|----------|
+| Server sends `pull-coverage` proactively after reconnect | Jet + mocha-remote-server patches |
+| Client `uploadCoverage()` retries up to 3× with backoff; logs `readyState` at send | mocha-remote-client patch |
+| `[jet-coverage] server recv coverage-ready` / client send logging | mocha-remote-server + client patches |
+| `JET_COVERAGE_TEARDOWN_RE` → retryable Jet session failure | `tests/e2e/firebase.test.js` |
+| Jet attempt 2 on reconnect + lost coverage (`JET_COVERAGE_LOST_RE`) | `tests/e2e/firebase.test.js` |
+
+**Diagnosing**
+
+```bash
+rg '\[jet-coverage\]|coverage-ready|coverage-ack|pull-coverage|merged 0 file' detox-step.log
+rg '\[rnfb-e2e\] retry-eligibility' detox-step.log
+```
+
+| Pattern | Meaning |
+|---------|---------|
+| `reconnect_recovered` then `coverage-ready.*WebSocket is closed` | Handshake flake; should be Jet-retryable |
+| `[jet-coverage] client send coverage-ready attempt=2` | Client retry in progress |
+| `merged 0 file(s)` after disconnect | NYC got no JS coverage — check handshake lines above |
+
+See also [coverage design — e2e TypeScript coverage](../testing/coverage-design.md#e2e-typescript-coverage-jet--nyc).
 
 ### Operational notes
 
 - **Release vs debug** — matrix runs both; each has separate artifacts (`debug` / `release` in the artifact name).
-- **Retry** — Pre-Boot retries up to 3 times with 60s between attempts (clean shutdown + boot each time).
+- **Retry** — Pre-Boot retries up to 3 times with 60s between attempts (clean shutdown + boot each time). Jet e2e retries once on retryable WS / launch / coverage teardown failures (simulator reboot via `boot-simulator.sh` on iOS).
 - **Do not boot the simulator only inside Detox** — historical races where the testee never sent “ready” to the Detox proxy; pre-boot remains mandatory.
+- **CI helper scripts** (repo root relative):
+
+| Script | Env vars | Role |
+|--------|----------|------|
+| `.github/workflows/scripts/resource-monitor.sh` | `RNFB_RESOURCE_MONITOR_INTERVAL_SEC` (default 10), `RNFB_RESOURCE_MONITOR_LOG` | Background `uptime` + `ps` snapshots during Detox |
+| `.github/workflows/scripts/flake-summary.sh` | `RNFB_DETOX_LOG`, `RNFB_FLAKE_SUMMARY_OUT` | Post-run `rg` digest → `flake-summary.txt` |
+
+Detox steps use `tee detox-step.log` and `exit ${PIPESTATUS[0]}` so the artifact preserves full output while the step still fails correctly.
+
+### Local stress iteration (optional)
+
+To deflake without pushing every change, run the same steps as CI on a macOS machine or VM (SSH is fine). Mirror: emulators → build → `boot-simulator.sh` → filtered log streams → `resource-monitor.sh` → `yarn tests:ios:test-cover` (or `:release`) → `flake-summary.sh`. Wrap in a loop over `iterations` and collect `local-e2e-artifacts/iter-N-*` directories. A self-hosted GHA runner on the same VM is optional when you need exact workflow YAML semantics; direct script iteration is faster for day-to-day patch work.
 
 ### Pinned Homebrew utilities
 
