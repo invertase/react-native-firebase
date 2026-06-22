@@ -87,6 +87,9 @@ run_yarn_scripts_parallel \
   "tests:macos:build" \
   "tests:android:build" \
   "compare:types" \
+  "tsc:compile" \
+  "tsc:compile:consumer" \
+  "reference:api" \
   "lint:js" \
   "lint:ios:check" \
   "lint:markdown" \
