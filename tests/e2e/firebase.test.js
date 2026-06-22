@@ -284,6 +284,20 @@ function isRetryableE2eFailure(err) {
   );
 }
 
+function logRetryEligibility(err, attempt) {
+  const jetOutput = err?.jetOutput || '';
+  const checks = {
+    jetDisconnect: isRetryableJetDisconnect(jetOutput),
+    jetSession: isRetryableJetSessionFailure(jetOutput),
+    coverageTeardown: JET_COVERAGE_TEARDOWN_RE.test(jetOutput),
+    launchFailure: isRetryableLaunchFailure(err),
+    launchJetLevel: Boolean(err?.retryableAtJetLevel),
+  };
+  console.warn(
+    `[rnfb-e2e] retry-eligibility attempt=${attempt} retryable=${attempt === 1 && isRetryableE2eFailure(err)} checks=${JSON.stringify(checks)}`,
+  );
+}
+
 async function waitForMetro(port = METRO_PORT, timeoutMs = 120000) {
   const start = Date.now();
 
@@ -494,10 +508,10 @@ describe('Jet Tests', function () {
             console.warn('[rnfb-e2e] Retrying after transient Jet WS disconnect (1006/1001)');
           } else if (isRetryableJetSessionFailure(lastOutput)) {
             console.warn(
-              '[rnfb-e2e] Retrying after Jet session desync (reconnect recovered / server not running)',
+              '[rnfb-e2e] Retrying after Jet session desync (reconnect recovered / coverage teardown / server not running)',
             );
           } else if (isRetryableLaunchFailure(lastFailure)) {
-            console.warn('[rnfb-e2e] Retrying after Metro/bundle load launch failure');
+            console.warn('[rnfb-e2e] Retrying after launch failure (Metro/bundle/FrontBoard)');
           }
           console.log(
             `[rnfb-e2e] Jet attempt ${attempt}: waiting for port ${JET_REMOTE_PORT} to close before retry`,
@@ -518,7 +532,7 @@ describe('Jet Tests', function () {
         break;
       } catch (err) {
         lastFailure = err;
-        const jetOutput = err.jetOutput || '';
+        logRetryEligibility(err, attempt);
         const retryable = attempt === 1 && isRetryableE2eFailure(err);
         console.warn(
           `[rnfb-e2e] Jet attempt ${attempt} failed (retryable=${retryable}, exit=${err.jetExitCode ?? 'n/a'})`,
