@@ -24,7 +24,12 @@ const { pullIosCoverage } = require('../scripts/pull-native-coverage');
 const JET_REMOTE_PORT = parseInt(process.env.JET_REMOTE_PORT || '8090', 10);
 const METRO_PORT = parseInt(process.env.JET_METRO_PORT || process.env.RCT_METRO_PORT || '8081', 10);
 const LAUNCH_APP_TIMEOUT_MS = parseInt(process.env.RNFB_LAUNCH_APP_TIMEOUT_MS || '180000', 10);
+const LAUNCH_APP_RELEASE_TIMEOUT_MS = parseInt(
+  process.env.RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS || '120000',
+  10,
+);
 const LAUNCH_APP_MAX_ATTEMPTS = parseInt(process.env.RNFB_LAUNCH_APP_MAX_ATTEMPTS || '2', 10);
+const SLOW_TERMINATE_MS = parseInt(process.env.RNFB_SLOW_TERMINATE_MS || '10000', 10);
 const REBOOT_IOS_SIMULATOR_TIMEOUT_MS = parseInt(
   process.env.RNFB_REBOOT_IOS_SIMULATOR_TIMEOUT_MS || String(12 * 60 * 1000),
   10,
@@ -297,6 +302,22 @@ async function waitForMetro(port = METRO_PORT, timeoutMs = 120000) {
   );
 }
 
+async function terminateAppWithTiming(label) {
+  const start = Date.now();
+  try {
+    await device.terminateApp();
+    const elapsedMs = Date.now() - start;
+    console.log(`[rnfb-e2e] terminateApp label=${label} elapsed=${elapsedMs}ms`);
+    return elapsedMs;
+  } catch (err) {
+    const elapsedMs = Date.now() - start;
+    console.warn(
+      `[rnfb-e2e] terminateApp label=${label} elapsed=${elapsedMs}ms error=${err?.message || err}`,
+    );
+    return elapsedMs;
+  }
+}
+
 async function launchAppWithTimeout(launchArgs, timeoutMs = LAUNCH_APP_TIMEOUT_MS) {
   console.log(`[rnfb-e2e] launchApp starting (timeout=${timeoutMs}ms)`);
   logLaunchInstallState('before-launch');
@@ -327,19 +348,23 @@ async function launchAppWithTimeout(launchArgs, timeoutMs = LAUNCH_APP_TIMEOUT_M
   }
 }
 
-async function launchAppWithRetry(launchArgs) {
+async function launchAppWithRetry(launchArgs, { testsDir } = {}) {
+  const liveMetro = usesLiveMetro();
+
   for (let launchAttempt = 1; launchAttempt <= LAUNCH_APP_MAX_ATTEMPTS; launchAttempt++) {
     try {
       if (launchAttempt > 1) {
         console.warn(
-          `[rnfb-e2e] Retrying launchApp after Metro/bundle load failure (attempt ${launchAttempt}/${LAUNCH_APP_MAX_ATTEMPTS})`,
+          `[rnfb-e2e] Retrying launchApp after launch failure (attempt ${launchAttempt}/${LAUNCH_APP_MAX_ATTEMPTS}) liveMetro=${liveMetro}`,
         );
-        try {
-          await device.terminateApp();
-        } catch (_) {
-          // No-op
+        const terminateMs = await terminateAppWithTiming(`retry-${launchAttempt}`);
+        if (terminateMs >= SLOW_TERMINATE_MS && testsDir && process.platform === 'darwin') {
+          console.warn(
+            `[rnfb-e2e] slow terminate (${terminateMs}ms >= ${SLOW_TERMINATE_MS}ms) — rebooting simulator before relaunch`,
+          );
+          await rebootIosSimulator(testsDir);
         }
-        if (usesLiveMetro()) {
+        if (liveMetro) {
           await waitForMetro(METRO_PORT);
         }
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -413,11 +438,14 @@ function runJetE2eAttempt(attempt) {
       );
     }
     console.log(`[rnfb-e2e] Jet attempt ${attempt}: launching app`);
-    await launchAppWithRetry({
-      detoxURLBlacklistRegex: `.*`,
-      // Avoid sync/idling blocking the main queue while Detox WS login is pending.
-      detoxEnableSynchronization: 'NO',
-    });
+    await launchAppWithRetry(
+      {
+        detoxURLBlacklistRegex: `.*`,
+        // Avoid sync/idling blocking the main queue while Detox WS login is pending.
+        detoxEnableSynchronization: 'NO',
+      },
+      { testsDir },
+    );
   };
 
   return Promise.race([
