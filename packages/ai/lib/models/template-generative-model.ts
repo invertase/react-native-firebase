@@ -24,6 +24,7 @@ import {
   RequestOptions,
   SingleRequestOptions,
   StartTemplateChatParams,
+  TemplateToolConfig,
 } from '../types';
 import { AI, GenerateContentStreamResult } from '../public-types';
 import { ApiSettings } from '../types/internal';
@@ -71,11 +72,15 @@ export class TemplateGenerativeModel {
     templateId: string,
     templateVariables: Record<string, unknown>,
     singleRequestOptions?: SingleRequestOptions,
+    templateToolConfig?: TemplateToolConfig,
   ): Promise<GenerateContentResult> {
     return templateGenerateContent(
       this._apiSettings,
       templateId,
-      { inputs: templateVariables },
+      {
+        inputs: templateVariables,
+        ...(templateToolConfig && { toolConfig: templateToolConfig }),
+      },
       mergeRequestOptions(this.requestOptions, singleRequestOptions),
     );
   }
@@ -96,11 +101,15 @@ export class TemplateGenerativeModel {
     templateId: string,
     templateVariables: Record<string, unknown>,
     singleRequestOptions?: SingleRequestOptions,
+    templateToolConfig?: TemplateToolConfig,
   ): Promise<GenerateContentStreamResult> {
     return templateGenerateContentStream(
       this._apiSettings,
       templateId,
-      { inputs: templateVariables },
+      {
+        inputs: templateVariables,
+        ...(templateToolConfig && { toolConfig: templateToolConfig }),
+      },
       mergeRequestOptions(this.requestOptions, singleRequestOptions),
     );
   }

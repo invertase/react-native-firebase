@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * See the License for the License for the specific language governing permissions and
  * limitations under the License.
  */
 
@@ -24,18 +24,23 @@ import {
   LiveServerGoingAwayNotice,
   LiveServerToolCall,
   LiveServerToolCallCancellation,
+  LiveSessionResumptionUpdate,
   Part,
+  SessionResumptionConfig,
 } from '../types';
 import { formatNewContent } from '../requests/request-helpers';
 import { AIError } from '../errors';
-import { WebSocketHandler } from '../websocket';
+import { WebSocketHandler, WebSocketHandlerImpl } from '../websocket';
 import { logger } from '../logger';
 import {
   _LiveClientContent,
   _LiveClientRealtimeInput,
+  _LiveClientSetup,
   _LiveClientToolResponse,
 } from '../types/live-responses';
 import { ReadableStream } from 'web-streams-polyfill';
+import { ApiSettings } from '../types/internal';
+import { WebSocketUrl } from '../requests/request';
 
 /**
  * Represents an active, real-time, bidirectional conversation with the model.
@@ -57,14 +62,95 @@ export class LiveSession {
    * @beta
    */
   inConversation = false;
+  /**
+   * Allows external code to await the opening of the WebSocket connection.
+   *
+   * @beta
+   */
+  connectionPromise: Promise<void>;
+
+  /**
+   * Generator yielding WebSocket messages from the server.
+   */
+  private _serverMessages: AsyncGenerator<unknown> | null = null;
 
   /**
    * @internal
    */
   constructor(
-    private webSocketHandler: WebSocketHandler,
-    private serverMessages: AsyncGenerator<unknown>,
-  ) {}
+    private _setupMessage: _LiveClientSetup,
+    private _apiSettings: ApiSettings,
+    private _sessionResumption?: SessionResumptionConfig,
+    private _webSocketHandler?: WebSocketHandler,
+  ) {
+    this._webSocketHandler = _webSocketHandler || new WebSocketHandlerImpl();
+    this.connectionPromise = this._connectSession(this._sessionResumption);
+  }
+
+  /**
+   * Initializes connection to the WebSocket. Should be called immediately
+   * after instantiation.
+   *
+   * @internal
+   */
+  async _connectSession(sessionResumption?: SessionResumptionConfig): Promise<void> {
+    const url = new WebSocketUrl(this._apiSettings);
+    try {
+      await this._webSocketHandler!.connect(url.toString());
+      this._serverMessages = this._webSocketHandler!.listen();
+      const setupMessage = {
+        ...this._setupMessage,
+        setup: {
+          ...this._setupMessage.setup,
+        },
+      };
+      if (sessionResumption) {
+        setupMessage.setup.sessionResumption = sessionResumption;
+      }
+      this._webSocketHandler!.send(JSON.stringify(setupMessage));
+
+      const firstMessage = (await this._serverMessages.next()).value;
+      if (
+        !firstMessage ||
+        !(typeof firstMessage === 'object') ||
+        !('setupComplete' in firstMessage)
+      ) {
+        await this._webSocketHandler!.close(1011, 'Handshake failure');
+        throw new AIError(
+          AIErrorCode.RESPONSE_ERROR,
+          'Server connection handshake failed. The server did not respond with a setupComplete message.',
+        );
+      }
+      this.isClosed = false;
+    } catch (e) {
+      this.isClosed = true;
+      await this._webSocketHandler!.close();
+      throw e;
+    }
+  }
+
+  /**
+   * Resumes an existing live session with the server.
+   *
+   * This closes the current WebSocket connection and establishes a new one using
+   * the same configuration (URI, headers, model, system instruction, tools, etc.)
+   * as the original session.
+   *
+   * @param sessionResumption - The configuration for session resumption, such as the handle to the previous session state to restore.
+   * @throws If the session resumption configuration is unsupported.
+   *
+   * @beta
+   */
+  async resumeSession(sessionResumption?: SessionResumptionConfig): Promise<void> {
+    if (!this._sessionResumption) {
+      throw new AIError(
+        AIErrorCode.UNSUPPORTED,
+        'Cannot resume session: no sessionResumption config provided',
+      );
+    }
+    await this.close();
+    await this._connectSession(sessionResumption);
+  }
 
   /**
    * Sends content to the server.
@@ -91,7 +177,7 @@ export class LiveSession {
         turnComplete,
       },
     };
-    this.webSocketHandler.send(JSON.stringify(message));
+    this._webSocketHandler!.send(JSON.stringify(message));
   }
 
   /**
@@ -120,7 +206,7 @@ export class LiveSession {
         text,
       },
     };
-    this.webSocketHandler.send(JSON.stringify(message));
+    this._webSocketHandler!.send(JSON.stringify(message));
   }
 
   /**
@@ -154,7 +240,7 @@ export class LiveSession {
         audio: blob,
       },
     };
-    this.webSocketHandler.send(JSON.stringify(message));
+    this._webSocketHandler!.send(JSON.stringify(message));
   }
 
   /**
@@ -187,7 +273,7 @@ export class LiveSession {
         video: blob,
       },
     };
-    this.webSocketHandler.send(JSON.stringify(message));
+    this._webSocketHandler!.send(JSON.stringify(message));
   }
 
   /**
@@ -211,7 +297,7 @@ export class LiveSession {
         functionResponses,
       },
     };
-    this.webSocketHandler.send(JSON.stringify(message));
+    this._webSocketHandler!.send(JSON.stringify(message));
   }
 
   /**
@@ -228,6 +314,7 @@ export class LiveSession {
     | LiveServerToolCall
     | LiveServerToolCallCancellation
     | LiveServerGoingAwayNotice
+    | LiveSessionResumptionUpdate
   > {
     if (this.isClosed) {
       throw new AIError(
@@ -235,7 +322,13 @@ export class LiveSession {
         'Cannot read from a Live session that is closed. Try starting a new Live session.',
       );
     }
-    for await (const message of this.serverMessages) {
+    if (!this._serverMessages) {
+      throw new AIError(
+        AIErrorCode.SESSION_CLOSED,
+        'Cannot read from a Live session that is not connected.',
+      );
+    }
+    for await (const message of this._serverMessages) {
       if (message && typeof message === 'object') {
         if (LiveResponseType.SERVER_CONTENT in message) {
           yield {
@@ -262,6 +355,11 @@ export class LiveSession {
             type: LiveResponseType.GOING_AWAY_NOTICE,
             timeLeft: parseDuration(notice.timeLeft),
           } as LiveServerGoingAwayNotice;
+        } else if (LiveResponseType.SESSION_RESUMPTION_UPDATE in message) {
+          yield {
+            type: LiveResponseType.SESSION_RESUMPTION_UPDATE,
+            ...(message as { sessionResumptionUpdate: object }).sessionResumptionUpdate,
+          } as LiveSessionResumptionUpdate;
         } else {
           logger.warn(
             `Received an unknown message type from the server: ${JSON.stringify(message)}`,
@@ -282,7 +380,7 @@ export class LiveSession {
   async close(): Promise<void> {
     if (!this.isClosed) {
       this.isClosed = true;
-      await this.webSocketHandler.close(1000, 'Client closed session.');
+      await this._webSocketHandler!.close(1000, 'Client closed session.');
     }
   }
 
@@ -310,7 +408,7 @@ export class LiveSession {
       const message: _LiveClientRealtimeInput = {
         realtimeInput: { mediaChunks: [mediaChunk] },
       };
-      this.webSocketHandler.send(JSON.stringify(message));
+      this._webSocketHandler!.send(JSON.stringify(message));
     });
   }
 
