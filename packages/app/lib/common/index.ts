@@ -240,6 +240,7 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       useUserAccessGroup: 'useUserAccessGroup()',
       verifyPasswordResetCode: 'verifyPasswordResetCode()',
       getCustomAuthDomain: 'getCustomAuthDomain()',
+      initializeRecaptchaConfig: 'initializeRecaptchaConfig()',
       useEmulator: 'connectAuthEmulator()',
       setLanguageCode: 'useDeviceLanguage()',
       multiFactor: 'multiFactor()',

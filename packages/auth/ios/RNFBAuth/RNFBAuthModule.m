@@ -184,6 +184,20 @@ RCT_EXPORT_METHOD(getCustomAuthDomain
   resolve([FIRAuth authWithApp:firebaseApp].customAuthDomain);
 }
 
+RCT_EXPORT_METHOD(initializeRecaptchaConfig
+                  : (FIRApp *)firebaseApp
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  [[FIRAuth authWithApp:firebaseApp]
+      initializeRecaptchaConfigWithCompletion:^(NSError *_Nullable error) {
+        if (error) {
+          [self promiseRejectAuthException:reject error:error];
+        } else {
+          resolve(nil);
+        }
+      }];
+}
+
 RCT_EXPORT_METHOD(setAppVerificationDisabledForTesting : (FIRApp *)firebaseApp : (BOOL)disabled) {
   [FIRAuth authWithApp:firebaseApp].settings.appVerificationDisabledForTesting = disabled;
 }

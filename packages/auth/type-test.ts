@@ -20,6 +20,7 @@ import auth, {
   getAdditionalUserInfo,
   getAuth,
   getCustomAuthDomain,
+  initializeRecaptchaConfig,
   getIdTokenResult,
   GithubAuthProvider,
   GoogleAuthProvider,
@@ -353,6 +354,7 @@ setLanguageCode(modularAuth, 'fr');
 useUserAccessGroup(modularAuth, 'group.example');
 verifyPasswordResetCode(modularAuth, 'oob-code').then((email: string) => console.log(email));
 getCustomAuthDomain(modularAuth).then((domain: string) => console.log(domain));
+initializeRecaptchaConfig(modularAuth).then(() => console.log('recaptcha initialized'));
 validatePassword(modularAuth, 'password123').then((status: PasswordValidationStatus) =>
   console.log(status.isValid),
 );

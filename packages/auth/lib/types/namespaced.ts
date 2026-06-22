@@ -2316,6 +2316,18 @@ export declare namespace FirebaseAuthTypes {
      */
     multiFactor(user: User): MultiFactorUser;
     /**
+     * Initializes the reCAPTCHA Enterprise client ahead of Enterprise-protected Auth flows.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.auth().initializeRecaptchaConfig();
+     * ```
+     *
+     * @remarks On Web, call before Enterprise phone verification ({@link signInWithPhoneNumber}).
+     */
+    initializeRecaptchaConfig(): Promise<void>;
+    /**
      * Returns the custom auth domain for the auth instance.
      */
     getCustomAuthDomain(): Promise<string>;

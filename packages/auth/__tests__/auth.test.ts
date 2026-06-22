@@ -64,6 +64,7 @@ import auth, {
   verifyBeforeUpdateEmail,
   getAdditionalUserInfo,
   getCustomAuthDomain,
+  initializeRecaptchaConfig,
   validatePassword,
   AppleAuthProvider,
   EmailAuthProvider,
@@ -587,6 +588,10 @@ describe('Auth', function () {
 
     it('`getCustomAuthDomain` function is properly exposed to end user', function () {
       expect(getCustomAuthDomain).toBeDefined();
+    });
+
+    it('`initializeRecaptchaConfig` function is properly exposed to end user', function () {
+      expect(initializeRecaptchaConfig).toBeDefined();
     });
 
     it('`validatePassword` function is properly exposed to end user', function () {

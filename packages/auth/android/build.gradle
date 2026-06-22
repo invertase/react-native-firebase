@@ -86,6 +86,8 @@ dependencies {
   api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-auth"
+  // reCAPTCHA Enterprise SDK for Auth phone/email Enterprise verification (Option A — always linked).
+  implementation 'com.google.android.recaptcha:recaptcha:18.7.0'
 }
 
 ReactNative.shared.applyPackageVersion()

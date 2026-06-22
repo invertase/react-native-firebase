@@ -796,6 +796,10 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
   getCustomAuthDomain(): Promise<string> {
     return this.native.getCustomAuthDomain();
   }
+
+  initializeRecaptchaConfig(): Promise<void> {
+    return this.native.initializeRecaptchaConfig();
+  }
 }
 
 // Apply password policy mixin to FirebaseAuthModule

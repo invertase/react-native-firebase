@@ -366,15 +366,15 @@ With js-sdk 12.15 / #9991, both modules may use Enterprise concurrently on Other
 
 ## Phase 4 — Auth: `initializeRecaptchaConfig`
 
-- [ ] **4.1** Add `initializeRecaptchaConfig(appName)` to Android `ReactNativeFirebaseAuthModule.java`.
-- [ ] **4.2** Add iOS bridge (`initializeRecaptchaConfigWithCompletion`). (macOS is Other/Hermes in RNFB, handled by the JS bridge in 4.5 — not the native iOS module.)
-- [ ] **4.3** Export `initializeRecaptchaConfig(auth)` from `packages/auth/lib/modular.ts`; wire namespaced if applicable.
-- [ ] **4.4** Implement Other/Web in `packages/auth/lib/web/RNFBAuthModule.ts` via js-sdk.
-- [ ] **4.5** Other/Hermes (incl. macOS): resolve no-op + `console.warn` (use `isOtherHermes`) — do not throw.
-- [ ] **4.6** Link the reCAPTCHA Enterprise SDK for Auth unconditionally (Option A): `com.google.android.recaptcha:recaptcha` 18.7.0+ on Android; Enterprise pod on iOS — see [Native dependency requirements](#native-dependency-requirements).
-- [ ] **4.7** Other/Web phone-auth tests: Enterprise phone examples call `initializeRecaptchaConfig(auth)` before `signInWithPhoneNumber` / `PhoneAuthProvider.verifyPhoneNumber`; add a negative test or note for the upstream failure when omitted.
-- [ ] **4.8** Update `.github/scripts/compare-types/configs/auth.ts` — remove `initializeRecaptchaConfig` from `missingInRN`.
-- [ ] **4.9** Update `packages/auth/type-test.ts`.
+- [x] **4.1** Add `initializeRecaptchaConfig(appName)` to Android `ReactNativeFirebaseAuthModule.java`.
+- [x] **4.2** Add iOS bridge (`initializeRecaptchaConfigWithCompletion`). (macOS is Other/Hermes in RNFB, handled by the JS bridge in 4.5 — not the native iOS module.)
+- [x] **4.3** Export `initializeRecaptchaConfig(auth)` from `packages/auth/lib/modular.ts`; wire namespaced if applicable.
+- [x] **4.4** Implement Other/Web in `packages/auth/lib/web/RNFBAuthModule.ts` via js-sdk.
+- [x] **4.5** Other/Hermes (incl. macOS): resolve no-op + `console.warn` (use `isOtherHermes`) — do not throw.
+- [x] **4.6** Link the reCAPTCHA Enterprise SDK for Auth unconditionally (Option A): `com.google.android.recaptcha:recaptcha` 18.7.0+ on Android; Enterprise pod on iOS — see [Native dependency requirements](#native-dependency-requirements).
+- [x] **4.7** Other/Web phone-auth tests: Enterprise phone examples call `initializeRecaptchaConfig(auth)` before `signInWithPhoneNumber` / `PhoneAuthProvider.verifyPhoneNumber`; add a negative test or note for the upstream failure when omitted.
+- [x] **4.8** Update `.github/scripts/compare-types/configs/auth.ts` — remove `initializeRecaptchaConfig` from `missingInRN`.
+- [x] **4.9** Update `packages/auth/type-test.ts`.
 
 ---
 
