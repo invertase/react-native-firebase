@@ -31,13 +31,13 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.google.gms:google-services:4.4.4' // https://developers.google.com/android/guides/google-services-plugin
+    classpath 'com.google.gms:google-services:4.5.0' // https://developers.google.com/android/guides/google-services-plugin
     classpath 'com.android.tools.build:gradle:8.13.1' // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
     classpath("com.facebook.react:react-native-gradle-plugin")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     classpath 'com.google.firebase:perf-plugin:2.0.2'
     classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.7'
-    classpath 'com.google.firebase:firebase-appdistribution-gradle:5.2.1'
+    classpath 'com.google.firebase:firebase-appdistribution-gradle:5.3.0'
   }
 }
 
