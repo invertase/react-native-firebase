@@ -20,10 +20,9 @@ import {
   isIOS,
   isString,
   isObject,
-  isUndefined,
-  isOther,
   parseListenerOrObserver,
 } from '@react-native-firebase/app/dist/module/common';
+import * as RNFBCommon from '@react-native-firebase/app/dist/module/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -40,10 +39,13 @@ import type {
   AppCheckTokenResult,
   PartialObserver,
 } from './types/appcheck';
-import type { ProviderWithOptions } from './types/internal';
 import type { FirebaseAppCheckTypes } from './types/namespaced';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { CustomProvider, ReactNativeFirebaseAppCheckProvider } from './providers';
+import {
+  validateOtherHermesInitializeAppCheck,
+  resolveNativeInitializeAppCheckRoute,
+} from './appCheckInitializeRouting';
 
 const namespace = 'appCheck';
 
@@ -53,18 +55,29 @@ const statics = {
   CustomProvider,
 };
 
-/**
- * Type guard to check if a provider has providerOptions.
- * This provides proper type narrowing for providers that support platform-specific configuration.
- */
-function hasProviderOptions(
-  provider: AppCheckOptions['provider'],
-): provider is ProviderWithOptions {
-  return (
-    provider !== undefined &&
-    'providerOptions' in provider &&
-    provider.providerOptions !== undefined
-  );
+function applyNativeTokenAutoRefreshDefaults(
+  module: FirebaseAppCheckModule,
+  options: AppCheckOptions,
+): void {
+  if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
+    const tokenRefresh = module.firebaseJson.app_check_token_auto_refresh;
+    if (isBoolean(tokenRefresh)) {
+      options.isTokenAutoRefreshEnabled = tokenRefresh;
+    }
+  }
+
+  if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
+    const dataCollection = module.firebaseJson.app_data_collection_default_enabled;
+    if (isBoolean(dataCollection)) {
+      options.isTokenAutoRefreshEnabled = dataCollection;
+    }
+  }
+
+  if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
+    options.isTokenAutoRefreshEnabled = true;
+  }
+
+  module.native.setTokenAutoRefreshEnabled(options.isTokenAutoRefreshEnabled);
 }
 
 class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
@@ -96,71 +109,34 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   initializeAppCheck(options: AppCheckOptions): Promise<void> {
-    if (isOther) {
-      if (!isObject(options)) {
-        throw new Error('Invalid configuration: no options defined.');
-      }
-      if (isUndefined(options.provider)) {
-        throw new Error('Invalid configuration: no provider defined.');
-      }
+    if (!isObject(options)) {
+      throw new Error('Invalid configuration: no options defined.');
+    }
+
+    if (RNFBCommon.isOther) {
+      validateOtherHermesInitializeAppCheck(options, {
+        isOtherHermes: RNFBCommon.isOtherHermes,
+      });
+
       return this.native.initializeAppCheck(options);
     }
-    // determine token refresh setting, if not specified
-    if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
-      const tokenRefresh = this.firebaseJson.app_check_token_auto_refresh;
-      if (isBoolean(tokenRefresh)) {
-        options.isTokenAutoRefreshEnabled = tokenRefresh;
-      }
-    }
 
-    // If that was not defined, attempt to use app-wide data collection setting per docs:
-    if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
-      const dataCollection = this.firebaseJson.app_data_collection_default_enabled;
-      if (isBoolean(dataCollection)) {
-        options.isTokenAutoRefreshEnabled = dataCollection;
-      }
-    }
+    applyNativeTokenAutoRefreshDefaults(this, options);
 
-    // If that also was not defined, the default is documented as true.
-    if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
-      options.isTokenAutoRefreshEnabled = true;
-    }
-    this.native.setTokenAutoRefreshEnabled(options.isTokenAutoRefreshEnabled);
+    const route = resolveNativeInitializeAppCheckRoute(options, {
+      isOtherHermes: RNFBCommon.isOtherHermes,
+      platformOS: Platform.OS,
+      appOptions: this.app.options,
+    });
 
-    if (!hasProviderOptions(options.provider)) {
-      throw new Error('Invalid configuration: no provider or no provider options defined.');
-    }
-    const provider = options.provider;
-    if (Platform.OS === 'android') {
-      if (!isString(provider.providerOptions?.android?.provider)) {
-        throw new Error(
-          'Invalid configuration: no android provider configured while on android platform.',
-        );
-      }
-      return this.native.configureProvider(
-        provider.providerOptions.android.provider,
-        provider.providerOptions.android.debugToken,
-      );
-    }
-    if (Platform.OS === 'ios' || Platform.OS === 'macos') {
-      if (!isString(provider.providerOptions?.apple?.provider)) {
-        throw new Error(
-          'Invalid configuration: no apple provider configured while on apple platform.',
-        );
-      }
-      return this.native.configureProvider(
-        provider.providerOptions.apple.provider,
-        provider.providerOptions.apple.debugToken,
-      );
-    }
-    throw new Error('Unsupported platform: ' + Platform.OS);
+    return this.native.configureProvider(route.providerName, route.debugToken);
   }
 
   activate(
     siteKeyOrProvider: string | AppCheckProvider,
     isTokenAutoRefreshEnabled?: boolean,
   ): Promise<void> {
-    if (isOther) {
+    if (RNFBCommon.isOther) {
       throw new Error('firebase.appCheck().activate(*) is not supported on other platforms');
     }
     if (!isString(siteKeyOrProvider)) {

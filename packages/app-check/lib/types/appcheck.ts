@@ -16,7 +16,12 @@
  */
 
 import type { FirebaseApp } from '@react-native-firebase/app';
-import type { CustomProvider, ReactNativeFirebaseAppCheckProvider } from '../providers';
+import type {
+  CustomProvider,
+  ReCaptchaEnterpriseProvider,
+  ReCaptchaV3Provider,
+  ReactNativeFirebaseAppCheckProvider,
+} from '../providers';
 
 export type {
   Unsubscribe,
@@ -59,8 +64,10 @@ export interface AppCheckOptions {
    * or a custom provider. For convenience, you can also pass an object with providerOptions
    * directly, which will be accepted by the runtime.
    */
-  provider:
+  provider?:
     | CustomProvider
+    | ReCaptchaV3Provider
+    | ReCaptchaEnterpriseProvider
     | ReactNativeFirebaseAppCheckProvider
     | ReactNativeFirebaseAppCheckProviderConfig;
 
