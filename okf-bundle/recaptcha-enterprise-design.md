@@ -340,7 +340,7 @@ With js-sdk 12.15 / #9991, both modules may use Enterprise concurrently on Other
   - Throw on native when `provider` is omitted; provider-less init is Other/Web only.
   - On native `ReCaptchaEnterpriseProvider`, map to native `'recaptcha'` but read the site key from `FirebaseApp` options/native config. If the constructor site key and `app.options.recaptchaSiteKey` both exist and differ, throw or warn loudly.
   - Preserve existing `ReactNativeFirebaseAppCheckProvider` path.
-- [ ] **1.5** Add `isWeb` / `isOtherHermes` to `packages/app/lib/common/index.ts`; use in web-only throws.
+- [x] **1.5** Add `isWeb` / `isOtherHermes` to `packages/app/lib/common/index.ts` with unit tests. *(Web-only throw/delegate usage lands in 1.3/1.4.)*
 - [ ] **1.6** Update `.github/scripts/compare-types/configs/app-check.ts` — remove `ReCaptchaEnterpriseProvider` / `ReCaptchaV3Provider` from `missingInRN`; narrow `AppCheckOptions` / `CustomProvider` `differentShape` reasons.
 - [ ] **1.7** Update `packages/app-check/type-test.ts` — provider classes, `'recaptcha'` options, provider-less init.
 
