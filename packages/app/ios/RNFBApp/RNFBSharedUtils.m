@@ -67,6 +67,9 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
   if ([RNFBAppModule getCustomDomain:name] != nil) {
     firAppOptions[@"authDomain"] = [RNFBAppModule getCustomDomain:name];
   }
+  if (firOptions.recaptchaSiteKey != nil) {
+    firAppOptions[@"recaptchaSiteKey"] = firOptions.recaptchaSiteKey;
+  }
 
   firAppDictionary[@"options"] = firAppOptions;
   firAppDictionary[@"appConfig"] = firAppConfig;
