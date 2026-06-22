@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-const { spawn } = require('child_process');
+const { execSync, spawn } = require('child_process');
 const net = require('net');
 const path = require('path');
 
@@ -90,6 +90,52 @@ function usesLiveMetro() {
 function cacheUsesLiveMetro() {
   cachedUsesLiveMetro = usesLiveMetro();
   console.log(`[rnfb-e2e] cached usesLiveMetro=${cachedUsesLiveMetro}`);
+}
+
+function resolveIosSimulatorUdid() {
+  try {
+    if (typeof device !== 'undefined' && device?.id) {
+      return device.id;
+    }
+  } catch (_) {
+    // Detox device may not be ready yet.
+  }
+  return '';
+}
+
+function logLaunchInstallState(label) {
+  const udid = resolveIosSimulatorUdid();
+  if (!udid || process.platform !== 'darwin') {
+    console.log(`[rnfb-e2e] install-state label=${label} udid=unknown skipped=non-darwin-or-no-udid`);
+    return;
+  }
+
+  try {
+    const container = execSync(
+      `/usr/bin/xcrun simctl get_app_container ${udid} com.invertase.testing 2>&1`,
+      { encoding: 'utf8', timeout: 15000 },
+    ).trim();
+    console.log(`[rnfb-e2e] install-state label=${label} udid=${udid} container=${container}`);
+  } catch (err) {
+    const detail = err?.stdout?.toString?.() || err?.message || String(err);
+    console.warn(`[rnfb-e2e] install-state label=${label} udid=${udid} container=missing detail=${detail}`);
+  }
+
+  try {
+    const apps = execSync(`/usr/bin/xcrun simctl listapps ${udid} 2>/dev/null`, {
+      encoding: 'utf8',
+      timeout: 30000,
+    });
+    const invertaseLine =
+      apps
+        .split('\n')
+        .find(line => line.includes('com.invertase.testing')) || '(not listed)';
+    console.log(`[rnfb-e2e] install-state label=${label} listapps=${invertaseLine.trim()}`);
+  } catch (err) {
+    console.warn(
+      `[rnfb-e2e] install-state label=${label} listapps=error detail=${err?.message || err}`,
+    );
+  }
 }
 
 function rebootIosSimulator(testsDir) {
@@ -253,6 +299,7 @@ async function waitForMetro(port = METRO_PORT, timeoutMs = 120000) {
 
 async function launchAppWithTimeout(launchArgs, timeoutMs = LAUNCH_APP_TIMEOUT_MS) {
   console.log(`[rnfb-e2e] launchApp starting (timeout=${timeoutMs}ms)`);
+  logLaunchInstallState('before-launch');
   let timer;
 
   try {
@@ -274,6 +321,7 @@ async function launchAppWithTimeout(launchArgs, timeoutMs = LAUNCH_APP_TIMEOUT_M
       }),
     ]);
     console.log('[rnfb-e2e] launchApp complete');
+    logLaunchInstallState('after-launch-success');
   } finally {
     clearTimeout(timer);
   }
@@ -300,6 +348,8 @@ async function launchAppWithRetry(launchArgs) {
       await launchAppWithTimeout(launchArgs);
       return;
     } catch (err) {
+      console.warn(`[rnfb-e2e] launchApp failure reason=${err?.message || err}`);
+      logLaunchInstallState(`after-launch-failure attempt=${launchAttempt}`);
       const retryable = launchAttempt < LAUNCH_APP_MAX_ATTEMPTS && isRetryableLaunchFailure(err);
       if (!retryable) {
         throw err;
