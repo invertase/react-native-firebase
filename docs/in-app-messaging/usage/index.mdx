@@ -60,16 +60,18 @@ a use case for controlling the flow of messages:
 > The suppressed state is not persisted between restarts, so ensure it is called as early as possible.
 
 ```jsx
-import inAppMessaging from '@react-native-firebase/in-app-messaging';
+import {
+  getInAppMessaging,
+  setMessagesDisplaySuppressed,
+} from '@react-native-firebase/in-app-messaging';
 
 async function bootstrap() {
-  await inAppMessaging().setMessagesDisplaySuppressed(true);
+  await setMessagesDisplaySuppressed(getInAppMessaging(), true);
 }
 
 async function onSetup(user) {
   await setupUser(user);
-  // Allow user to receive messages now setup is complete
-  inAppMessaging().setMessagesDisplaySuppressed(false);
+  await setMessagesDisplaySuppressed(getInAppMessaging(), false);
 }
 ```
 

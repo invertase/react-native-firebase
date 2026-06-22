@@ -9,33 +9,13 @@ React Native Firebase ships TypeScript declarations for every module. From v25 o
 
 If you are setting up TypeScript in a new React Native app, see the official [TypeScript documentation](https://reactnative.dev/docs/typescript).
 
-## Namespaced API (default export)
+## Modular API
 
-The namespaced API remains the default entry point. Types are inferred automatically for most call sites:
-
-```tsx
-import auth from '@react-native-firebase/auth';
-
-function App() {
-  const user = auth().currentUser;
-
-  if (!user) {
-    return null;
-  }
-
-  return user.email;
-}
-```
-
-TypeScript flags `user.email` when `currentUser` may be `null` — narrow with a guard as above.
-
-## Modular API (v22+ / v25 types)
-
-Import modular helpers and types from the package root. Prefer these over the deprecated `FirebaseAuthTypes` namespace for new code:
+Import modular helpers and types from the package root:
 
 ```tsx
 import { useEffect, useState } from 'react';
-import auth, { getAuth, onAuthStateChanged, type User } from '@react-native-firebase/auth';
+import { getAuth, onAuthStateChanged, type User } from '@react-native-firebase/auth';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);

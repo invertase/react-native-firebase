@@ -17,9 +17,10 @@ import React, { useState } from 'react';
 import type { Node } from 'react';
 import { Text, View, Button, Alert } from 'react-native';
 
-import firestore from '@react-native-firebase/firestore';
+import { collection, getFirestore } from '@react-native-firebase/firestore';
 
-const userCollection = firestore().collection('Users');
+const db = getFirestore();
+const usersRef = collection(db, 'Users');
 
 const App: () => Node = () => {
   const [lastDocument, setLastDocument] = useState();
@@ -39,9 +40,18 @@ import React, { useState } from 'react';
 import type { Node } from 'react';
 import { Text, View, Button, Alert } from 'react-native';
 
-import firestore from '@react-native-firebase/firestore';
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  limit,
+  orderBy,
+  query,
+  startAfter,
+} from '@react-native-firebase/firestore';
 
-const userCollection = firestore().collection('Users');
+const db = getFirestore();
+const usersRef = collection(db, 'Users');
 
 const App: () => Node = () => {
   const [lastDocument, setLastDocument] = useState();
@@ -49,17 +59,16 @@ const App: () => Node = () => {
 
   function LoadData() {
     console.log('LOAD');
-    let query = userCollection.orderBy('age'); // sort the data
+    const constraints = [orderBy('age')]; // sort the data
     if (lastDocument !== undefined) {
-      query = query.startAfter(lastDocument); // fetch data following the last document accessed
+      constraints.push(startAfter(lastDocument)); // fetch data following the last document accessed
     }
-    query.limit(3) // limit to your page size, 3 is just an example
-        .get()
-        .then(querySnapshot => {
-          setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
-          MakeUserData(querySnapshot.docs);
-        });
-    }
+    constraints.push(limit(3)); // limit to your page size, 3 is just an example
+
+    getDocs(query(usersRef, ...constraints)).then(querySnapshot => {
+      setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
+      MakeUserData(querySnapshot.docs);
+    });
   }
 
   return (
@@ -109,9 +118,18 @@ import React, { useState } from 'react';
 import type { Node } from 'react';
 import { Text, View, Button, Alert } from 'react-native';
 
-import firestore from '@react-native-firebase/firestore';
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  limit,
+  orderBy,
+  query,
+  startAfter,
+} from '@react-native-firebase/firestore';
 
-const userCollection = firestore().collection('Users');
+const db = getFirestore();
+const usersRef = collection(db, 'Users');
 
 const App: () => Node = () => {
   const [lastDocument, setLastDocument] = useState();
@@ -119,17 +137,16 @@ const App: () => Node = () => {
 
   function LoadData() {
     console.log('LOAD');
-    let query = userCollection.orderBy('age'); // sort the data
+    const constraints = [orderBy('age')]; // sort the data
     if (lastDocument !== undefined) {
-      query = query.startAfter(lastDocument); // fetch data following the last document accessed
+      constraints.push(startAfter(lastDocument)); // fetch data following the last document accessed
     }
-    query.limit(3) // limit to your page size, 3 is just an example
-        .get()
-        .then(querySnapshot => {
-          setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
-          MakeUserData(querySnapshot.docs);
-        });
-    }
+    constraints.push(limit(3)); // limit to your page size, 3 is just an example
+
+    getDocs(query(usersRef, ...constraints)).then(querySnapshot => {
+      setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
+      MakeUserData(querySnapshot.docs);
+    });
   }
 
   function MakeUserData(docs) {

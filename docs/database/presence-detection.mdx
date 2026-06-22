@@ -22,18 +22,18 @@ Whenever the application opens, [write a new value](/database/usage#writing-data
 
 ```jsx
 import React, { useEffect } from 'react';
-import auth from '@react-native-firebase/auth';
-import database from '@react-native-firebase/database';
+import { getAuth } from '@react-native-firebase/auth';
+import { getDatabase, ref, set } from '@react-native-firebase/database';
 
 function App() {
   useEffect(() => {
     // Assuming user is logged in
-    const userId = auth().currentUser.uid;
-
-    const reference = database().ref(`/online/${userId}`);
+    const userId = getAuth().currentUser.uid;
+    const db = getDatabase();
+    const reference = ref(db, `/online/${userId}`);
 
     // Set the /users/:userId value to true
-    reference.set(true).then(() => console.log('Online presence set'));
+    set(reference, true).then(() => console.log('Online presence set'));
   }, []);
 }
 ```
@@ -49,28 +49,27 @@ If the device suddenly goes offline, or is quit, the app can no longer execute c
 Realtime Database API provides a way to execute code on the Firebase servers whenever the connection between an app & server
 is lost.
 
-The `onDisconnect` method on a reference returns a new [`OnDisconnect`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/OnDisconnect.html) instance. This instance
+The `onDisconnect` function returns a new [`OnDisconnect`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/OnDisconnect.html) instance. This instance
 provides functionality to remove or set data whenever a client disconnects. Using the
 [`remove`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/OnDisconnect.html#remove) method we can remove the node on the database if the client disconnects:
 
 ```jsx
 import React, { useEffect } from 'react';
-import auth from '@react-native-firebase/auth';
-import database from '@react-native-firebase/database';
+import { getAuth } from '@react-native-firebase/auth';
+import { getDatabase, ref, set, onDisconnect } from '@react-native-firebase/database';
 
 function App() {
   useEffect(() => {
     // Assuming user is logged in
-    const userId = auth().currentUser.uid;
-
-    const reference = database().ref(`/online/${userId}`);
+    const userId = getAuth().currentUser.uid;
+    const db = getDatabase();
+    const reference = ref(db, `/online/${userId}`);
 
     // Set the /users/:userId value to true
-    reference.set(true).then(() => console.log('Online presence set'));
+    set(reference, true).then(() => console.log('Online presence set'));
 
     // Remove the node whenever the client disconnects
-    reference
-      .onDisconnect()
+    onDisconnect(reference)
       .remove()
       .then(() => console.log('On disconnect function configured.'));
   }, []);

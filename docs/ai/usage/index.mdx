@@ -444,8 +444,8 @@ For mobile and web apps, you need to protect the Gemini API and your project res
 import React from 'react';
 import { AppRegistry, Button, Text, View } from 'react-native';
 import { getApp } from '@react-native-firebase/app';
-import auth from '@react-native-firebase/auth';
-import appCheck from '@react-native-firebase/app-check';
+import { getAuth } from '@react-native-firebase/auth';
+import { initializeAppCheck } from '@react-native-firebase/app-check';
 import { getAI, getGenerativeModel, GoogleAIBackend } from '@react-native-firebase/ai';
 
 function App() {
@@ -455,10 +455,10 @@ function App() {
         title="use App Check and pass into getAI()"
         onPress={async () => {
           const app = getApp();
-          // Can also pass an instance of auth which will pass in an auth token if a user is signed-in
-          const authInstance = auth(app);
-          const appCheckInstance = appCheck(app);
-          // Configure appCheck instance as per docs....
+          const authInstance = getAuth(app);
+          const appCheckInstance = await initializeAppCheck(app, {
+            // Configure App Check as per docs...
+          });
           const options = {
             appCheck: appCheckInstance,
             auth: authInstance,

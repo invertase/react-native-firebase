@@ -192,15 +192,13 @@ https://us-central1-rnfirebase-demo-23aa8.cloudfunctions.net/listProducts
 Once your function has been deployed you can now call it through the React Native Firebase Functions SDK in your application:
 
 ```js
-import { firebase } from '@react-native-firebase/functions';
+import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
 
-// ...
-
-// note the name of our deployed function, 'listProducts', is referenced here:
-const { data } = await firebase.functions().httpsCallable('listProducts')({
+const { data } = await httpsCallable(
+  getFunctions(),
+  'listProducts',
+)({
   page: 1,
   limit: 15,
 });
-
-// ...
 ```

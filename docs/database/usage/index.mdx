@@ -41,23 +41,22 @@ To learn more, view the [Firebase Realtime Database documentation](https://fireb
 A core concept to understanding Realtime Database are references - a reference to a specific node within your database. A node
 can be a specific property or sub-nodes.
 
-To create a [`Reference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/Reference.html), call the `ref` method:
+To create a [`Reference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/Reference.html), use the `ref` function:
 
 ```js
-import database from '@react-native-firebase/database';
+import { getDatabase, ref } from '@react-native-firebase/database';
 
-const reference = database().ref('/users/123');
+const db = getDatabase();
+const reference = ref(db, '/users/123');
 ```
 
 NOTE: To get a reference to a database other than a 'us-central1' default database, you must pass the database URL. You can find your Realtime Database URL in the Realtime Database section of the Firebase console.
 
 ```js
-import { firebase } from '@react-native-firebase/database';
+import { getDatabase, ref } from '@react-native-firebase/database';
 
-const reference = firebase
-  .app()
-  .database('https://<databaseName>.<region>.firebasedatabase.app/')
-  .ref('/users/123');
+const db = getDatabase(undefined, 'https://<databaseName>.<region>.firebasedatabase.app/');
+const reference = ref(db, '/users/123');
 ```
 
 ## Reading data
@@ -69,54 +68,49 @@ The snapshot includes information such as whether the reference node exists, it'
 
 ### One-time read
 
-To read the value once, call the `once` method on a reference:
+To read the value once, use `get`:
 
 ```js
-import database from '@react-native-firebase/database';
+import { getDatabase, ref, get } from '@react-native-firebase/database';
 
-database()
-  .ref('/users/123')
-  .once('value')
-  .then(snapshot => {
-    console.log('User data: ', snapshot.val());
-  });
+const db = getDatabase();
+get(ref(db, '/users/123')).then(snapshot => {
+  console.log('User data: ', snapshot.val());
+});
 ```
 
 ### Realtime changes
 
-To setup an active listener to react to any changes to the node and it's children, call the `on` method with an event handler:
+To setup an active listener to react to any changes to the node and it's children, use `onValue`:
 
 ```js
-import database from '@react-native-firebase/database';
+import { getDatabase, ref, onValue } from '@react-native-firebase/database';
 
-database()
-  .ref('/users/123')
-  .on('value', snapshot => {
-    console.log('User data: ', snapshot.val());
-  });
+const db = getDatabase();
+onValue(ref(db, '/users/123'), snapshot => {
+  console.log('User data: ', snapshot.val());
+});
 ```
 
 The event handler will be called straight away with the snapshot data, and further called when any changes to the node
 occur.
 
-You can unsubscribe from events by calling the `off` method. To unsubscribe from specific events, call the `off` method
-with the function that the event handler returned. This can be used within any `useEffect` hooks to automatically unsubscribe
+You can unsubscribe by calling the function returned from `onValue`. This can be used within any `useEffect` hooks to automatically unsubscribe
 when the hook needs to unsubscribe itself:
 
 ```jsx
 import React, { useEffect } from 'react';
-import database from '@react-native-firebase/database';
+import { getDatabase, ref, onValue } from '@react-native-firebase/database';
 
 function User({ userId }) {
   useEffect(() => {
-    const onValueChange = database()
-      .ref(`/users/${userId}`)
-      .on('value', snapshot => {
-        console.log('User data: ', snapshot.val());
-      });
+    const db = getDatabase();
+    const unsubscribe = onValue(ref(db, `/users/${userId}`), snapshot => {
+      console.log('User data: ', snapshot.val());
+    });
 
     // Stop listening for updates when no longer required
-    return () => database().ref(`/users/${userId}`).off('value', onValueChange);
+    return () => unsubscribe();
   }, [userId]);
 }
 ```
@@ -124,26 +118,25 @@ function User({ userId }) {
 #### Additional events
 
 The above example demonstrates how to subscribe to events whenever a value within the node changes. In some cases, you
-may need to only subscribe to events whenever a child node is added/changed/moved/removed. This can be achieved by passing
-a different [`EventType`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/EventType.html) to the `on` method.
+may need to only subscribe to events whenever a child node is added/changed/moved/removed. This can be achieved using
+a different listener such as [`onChildAdded`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/EventType.html).
 
 If you are listening to a node with many children, only listening to data you care about helps reduce network bandwidth
 and speeds up your application.
 
 ```jsx
 import React, { useEffect } from 'react';
-import database from '@react-native-firebase/database';
+import { getDatabase, ref, onChildAdded } from '@react-native-firebase/database';
 
 function User({ userId }) {
   useEffect(() => {
-    const onChildAdd = database()
-      .ref('/users')
-      .on('child_added', snapshot => {
-        console.log('A new node has been added', snapshot.val());
-      });
+    const db = getDatabase();
+    const unsubscribe = onChildAdded(ref(db, '/users'), snapshot => {
+      console.log('A new node has been added', snapshot.val());
+    });
 
     // Stop listening for updates when no longer required
-    return () => database().ref('/users').off('child_added', onChildAdd);
+    return () => unsubscribe();
   }, [userId]);
 }
 ```
@@ -158,9 +151,9 @@ If your application requires more advanced query capabilities, it is recommended
 #### Ordering
 
 By default, results are ordered based on the node [keys](/database/usage#database-keys). If however you are using custom keys you can use
-one of the `orderByX` methods to order your data.
+the `orderByX` query constraints with `query` to order your data.
 
-For example, if all of the nodes children are scalar values (string, number or boolean) you can use the `orderByValue` method,
+For example, if all of the nodes children are scalar values (string, number or boolean) you can use `orderByValue`,
 and Firebase will automatically order the results. The example below would return the `def` node before the `abc` node:
 
 ```js
@@ -173,26 +166,42 @@ and Firebase will automatically order the results. The example below would retur
  * }
  */
 
-const scores = database().ref('scores').orderByValue().once('value');
+import { getDatabase, ref, query, orderByValue, get } from '@react-native-firebase/database';
+
+const db = getDatabase();
+const scores = get(query(ref(db, 'scores'), orderByValue()));
 ```
 
 Please note that the ordering will not be respected if you do not use the `forEach` method provided on the `DataSnapshot`.
 
 #### Limiting
 
-You can limit the number of results returned from a query by using one of the `limitToX` methods. For example, to limit to the
+You can limit the number of results returned from a query by using `limitToFirst` or `limitToLast` query constraints. For example, to limit to the
 first 10 results:
 
 ```js
-const users = database().ref('users').limitToFirst(10).once('value');
+import { getDatabase, ref, query, limitToFirst, get } from '@react-native-firebase/database';
+
+const db = getDatabase();
+const users = get(query(ref(db, 'users'), limitToFirst(10)));
 ```
 
-Firebase also provides the ability to return the last set of results in a query via the `limitToLast` method.
+Firebase also provides the ability to return the last set of results in a query via `limitToLast`.
 
 Instead of limiting to a specific number of documents, you can also start from, or end at a specific reference node value:
 
 ```js
-await database().ref('users').orderByChild('age').startAt(21).once('value');
+import {
+  getDatabase,
+  ref,
+  query,
+  orderByChild,
+  startAt,
+  get,
+} from '@react-native-firebase/database';
+
+const db = getDatabase();
+await get(query(ref(db, 'users'), orderByChild('age'), startAt(21)));
 ```
 
 ## Writing data
@@ -202,58 +211,55 @@ practices on how to structure your data. We highly recommend reading the guide b
 
 ### Setting data
 
-The `set` method on a [`Reference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/Reference.html) overwrites all of the existing data at that reference node.
+The `set` function overwrites all of the existing data at that reference node.
 The value can be anything; a string, number, object etc:
 
 ```js
-import database from '@react-native-firebase/database';
+import { getDatabase, ref, set } from '@react-native-firebase/database';
 
-database()
-  .ref('/users/123')
-  .set({
-    name: 'Ada Lovelace',
-    age: 31,
-  })
-  .then(() => console.log('Data set.'));
+const db = getDatabase();
+set(ref(db, '/users/123'), {
+  name: 'Ada Lovelace',
+  age: 31,
+}).then(() => console.log('Data set.'));
 ```
 
 If you set the value to `null`, Firebase will automatically class the node as removed, and delete it from the database.
 
 ### Updating data
 
-Rather than overwriting all existing data, the `update` method provides the ability to update any existing data on the reference node.
+Rather than overwriting all existing data, the `update` function provides the ability to update any existing data on the reference node.
 Firebase will automatically merge the data depending on what currently exists.
 
 ```js
-import database from '@react-native-firebase/database';
+import { getDatabase, ref, update } from '@react-native-firebase/database';
 
-database()
-  .ref('/users/123')
-  .update({
-    age: 32,
-  })
-  .then(() => console.log('Data updated.'));
+const db = getDatabase();
+update(ref(db, '/users/123'), {
+  age: 32,
+}).then(() => console.log('Data updated.'));
 ```
 
 ### Pushing data
 
 Currently the examples have only demonstrated working with known reference node keys (e.g. `/users/123`). In some cases,
-you may not have a suitable id or may want Firebase to automatically create a node with a generated key. The `push` method
+you may not have a suitable id or may want Firebase to automatically create a node with a generated key. The `push` function
 returns a [`ThenableReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/ThenableReference.html), allowing you to observe a node before it is
 sent to remote Firebase database.
 
-The `push` method will automatically generate a new key if one is not provided:
+`push` will automatically generate a new key if one is not provided:
 
 ```js
-const newReference = database().ref('/users').push();
+import { getDatabase, ref, push, set } from '@react-native-firebase/database';
+
+const db = getDatabase();
+const newReference = push(ref(db, '/users'));
 
 console.log('Auto generated key: ', newReference.key);
 
-newReference
-  .set({
-    age: 32,
-  })
-  .then(() => console.log('Data updated.'));
+set(newReference, {
+  age: 32,
+}).then(() => console.log('Data updated.'));
 ```
 
 The keys generated are ordered to the current time, so the list of items returned from Firebase will be chronologically
@@ -261,16 +267,20 @@ sorted by default.
 
 ## Removing data
 
-To remove data, you can call the `remove` method on a reference:
+To remove data, use the `remove` function:
 
 ```js
-await database().ref('/users/123').remove();
+import { getDatabase, ref, remove } from '@react-native-firebase/database';
+
+await remove(ref(getDatabase(), '/users/123'));
 ```
 
 Optionally, you can also set the value of a reference node to `null` to remove it from the database:
 
 ```js
-await database().ref('/users/123').set(null);
+import { getDatabase, ref, set } from '@react-native-firebase/database';
+
+await set(ref(getDatabase(), '/users/123'), null);
 ```
 
 ## Transactions
@@ -288,16 +298,16 @@ causing the actual number to not be consistent.
 Transactions remove this issue by atomically updating the value on the server. If the value changes whilst the transaction
 is executing, it will retry. This always ensures the value on the server is used rather than the client value.
 
-To execute a new transaction, call the `transaction` method on a reference:
+To execute a new transaction, call `runTransaction`:
 
 ```js
-import database from '@react-native-firebase/database';
+import { getDatabase, ref, runTransaction } from '@react-native-firebase/database';
 
 function onPostLike(postId) {
-  const reference = database().ref(`/likes/${postId}`);
+  const db = getDatabase();
+  const reference = ref(db, `/likes/${postId}`);
 
-  // Execute transaction
-  return reference.transaction(currentLikes => {
+  return runTransaction(reference, currentLikes => {
     if (currentLikes === null) return 1;
     return currentLikes + 1;
   });
@@ -319,15 +329,15 @@ Please follow the Firebase Realtime Database documentation on [security](https:/
 
 # Using a secondary database
 
-If the default installed Firebase instance needs to address a different database within the same project, call the database method on the default app with passing the database URL.
+If the default installed Firebase instance needs to address a different database within the same project, pass the database URL to `getDatabase`.
 For example:
 
 ```js
-import { firebase } from '@react-native-firebase/database';
+import { getDatabase, ref } from '@react-native-firebase/database';
 
-const database = firebase.app().database('https://path-to-database.firebaseio.com');
+const db = getDatabase(undefined, 'https://path-to-database.firebaseio.com');
 
-database.ref();
+ref(db);
 ```
 
 ## Connect to a database of a secondary app
@@ -337,15 +347,15 @@ If you want to address a database from a different Firebase project, you will ne
 For example:
 
 ```js
-import database, { firebase } from '@react-native-firebase/database';
+import { initializeApp } from '@react-native-firebase/app';
+import { getDatabase, ref } from '@react-native-firebase/database';
 
 // create a secondary app
-const secondaryApp = await firebase.initializeApp(credentials, config);
+const secondaryApp = await initializeApp(credentials, config);
 
-// pass the secondary app instance to the database module
-const secondaryDatabase = database(secondaryApp);
+const secondaryDb = getDatabase(secondaryApp);
 
-secondaryDatabase.ref();
+ref(secondaryDb);
 ```
 
 # firebase.json

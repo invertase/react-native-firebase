@@ -42,18 +42,18 @@ the "Users" collection documents:
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { ActivityIndicator } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
+import { collection, getFirestore, onSnapshot } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
 
 function Users() {
   const [loading, setLoading] = useState(true); // Set loading to true on component mount
   const [users, setUsers] = useState([]); // Initial empty array of users
 
   useEffect(() => {
-    const subscriber = firestore()
-      .collection('Users')
-      .onSnapshot(() => {
-        // see next step
-      });
+    const subscriber = onSnapshot(collection(db, 'Users'), () => {
+      // see next step
+    });
 
     // Unsubscribe from events when no longer in use
     return () => subscriber();
@@ -75,21 +75,19 @@ we can use the `id` of a document:
 
 ```js
 useEffect(() => {
-  const subscriber = firestore()
-    .collection('Users')
-    .onSnapshot(querySnapshot => {
-      const users = [];
+  const subscriber = onSnapshot(collection(db, 'Users'), querySnapshot => {
+    const users = [];
 
-      querySnapshot.forEach(documentSnapshot => {
-        users.push({
-          ...documentSnapshot.data(),
-          key: documentSnapshot.id,
-        });
+    querySnapshot.forEach(documentSnapshot => {
+      users.push({
+        ...documentSnapshot.data(),
+        key: documentSnapshot.id,
       });
-
-      setUsers(users);
-      setLoading(false);
     });
+
+    setUsers(users);
+    setLoading(false);
+  });
 
   // Unsubscribe from events when no longer in use
   return () => subscriber();
@@ -106,7 +104,9 @@ With the raw user data in local state, we can now pass this to the `FlatList`:
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { ActivityIndicator, FlatList, View, Text } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
+import { collection, getFirestore, onSnapshot } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
 
 function Users() {
   // ...

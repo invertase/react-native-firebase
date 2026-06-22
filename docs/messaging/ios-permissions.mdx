@@ -24,10 +24,11 @@ must be requested from your users in order to display remote notifications from 
 `requestPermission` API:
 
 ```js
-import messaging from '@react-native-firebase/messaging';
+import { getMessaging, requestPermission } from '@react-native-firebase/messaging';
 
 async function requestUserPermission() {
-  const authorizationStatus = await messaging().requestPermission();
+  const messaging = getMessaging();
+  const authorizationStatus = await requestPermission(messaging);
 
   if (authorizationStatus) {
     console.log('Permission status:', authorizationStatus);
@@ -47,7 +48,11 @@ Although overall notification permission can be granted, the permissions can be 
 Settings are used by the device to control notifications behavior, for example alerting the user with sound. When requesting permission, you can provide a custom object of settings if you wish to override the defaults. This is demonstrated in the following example:
 
 ```js
-await messaging().requestPermission({
+import { getMessaging, requestPermission } from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
+
+await requestPermission(messaging, {
   sound: false,
   announcement: true,
   // ... other permission settings
@@ -79,14 +84,19 @@ API used above resolves an enum that returns the current status.
 For example:
 
 ```js
-import messaging from '@react-native-firebase/messaging';
+import {
+  getMessaging,
+  requestPermission,
+  AuthorizationStatus,
+} from '@react-native-firebase/messaging';
 
 async function checkApplicationPermission() {
-  const authorizationStatus = await messaging().requestPermission();
+  const messaging = getMessaging();
+  const authorizationStatus = await requestPermission(messaging);
 
-  if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+  if (authorizationStatus === AuthorizationStatus.AUTHORIZED) {
     console.log('User has notification permissions enabled.');
-  } else if (authorizationStatus === messaging.AuthorizationStatus.PROVISIONAL) {
+  } else if (authorizationStatus === AuthorizationStatus.PROVISIONAL) {
     console.log('User has provisional notification permissions.');
   } else {
     console.log('User has notification permissions disabled');
@@ -94,13 +104,13 @@ async function checkApplicationPermission() {
 }
 ```
 
-The value returned is a number value, which can be mapped to one of the following values from `messaging.AuthorizationStatus`:
+The value returned is a number value, which can be mapped to one of the following values from `AuthorizationStatus`:
 
-- `-1` = `messaging.AuthorizationStatus.NOT_DETERMINED`: Permission has not yet been requested for your application.
-- `0` = `messaging.AuthorizationStatus.DENIED`: The user has denied notification permissions.
-- `1` = `messaging.AuthorizationStatus.AUTHORIZED`: The user has accept the permission & it is enabled.
-- `2` = `messaging.AuthorizationStatus.PROVISIONAL`: [Provisional authorization](/messaging/ios-permissions#provisional-authorization) has been granted.
-- `3` = `messaging.AuthorizationStatus.EPHEMERAL`: The app is authorized to create notifications for a limited amount of time. Used for app clips.
+- `-1` = `AuthorizationStatus.NOT_DETERMINED`: Permission has not yet been requested for your application.
+- `0` = `AuthorizationStatus.DENIED`: The user has denied notification permissions.
+- `1` = `AuthorizationStatus.AUTHORIZED`: The user has accept the permission & it is enabled.
+- `2` = `AuthorizationStatus.PROVISIONAL`: [Provisional authorization](/messaging/ios-permissions#provisional-authorization) has been granted.
+- `3` = `AuthorizationStatus.EPHEMERAL`: The app is authorized to create notifications for a limited amount of time. Used for app clips.
 
 To help improve the chances of the user granting your app permission, it is recommended that permission is requested at a time which makes
 sense during the flow of your application (e.g. starting a new chat), where the user would expect to receive such notifications.
@@ -117,7 +127,9 @@ permission to be instantly granted without displaying a dialog to your user. The
 To enable provisional notifications, pass an object to the `requestPermission` method, with the `provisional` key set to `true`:
 
 ```js
-await messaging().requestPermission({
+import { getMessaging, requestPermission } from '@react-native-firebase/messaging';
+
+await requestPermission(getMessaging(), {
   provisional: true,
 });
 ```
@@ -131,7 +143,9 @@ Devices on iOS 12+ can provide a button in iOS Notifications Settings _(at OS le
 1. Request `providesAppNotificationSettings` permissions:
 
 ```typescript
-await messaging().requestPermission({ providesAppNotificationSettings: true });
+import { getMessaging, requestPermission } from '@react-native-firebase/messaging';
+
+await requestPermission(getMessaging(), { providesAppNotificationSettings: true });
 ```
 
 2. Handle interaction when app is in background state:
@@ -139,11 +153,13 @@ await messaging().requestPermission({ providesAppNotificationSettings: true });
 ```typescript
 // index.js
 import { AppRegistry } from 'react-native'
-import messaging from '@react-native-firebase/messaging'
+import { getMessaging, setOpenSettingsForNotificationsHandler } from '@react-native-firebase/messaging'
+
+const messaging = getMessaging();
 
 ...
 
-messaging().setOpenSettingsForNotificationsHandler(async () => {
+setOpenSettingsForNotificationsHandler(messaging, async () => {
     // Set persistent value, using the MMKV package just as an example of how you might do it
     MMKV.setBool(openSettingsForNotifications, true)
 })
@@ -173,11 +189,13 @@ const App = () => {
 
 ```typescript
 // App.tsx
+import { getMessaging, getDidOpenSettingsForNotification } from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
 
 const App = () => {
   useEffect(() => {
-        messaging()
-            .getDidOpenSettingsForNotification()
+        getDidOpenSettingsForNotification(messaging)
             .then(async didOpenSettingsForNotification => {
                 if (didOpenSettingsForNotification) {
                     navigate('NotificationsSettingsScreen')

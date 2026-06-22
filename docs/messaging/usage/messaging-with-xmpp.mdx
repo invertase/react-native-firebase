@@ -27,19 +27,29 @@ So what are we going to do?
 A common instance involves an implementation similar to the following.
 
 ```js
-firebase.messaging().onMessage(message => {
+import {
+  getMessaging,
+  onMessage,
+  onMessageSent,
+  onSendError,
+  sendMessage,
+} from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
+
+onMessage(messaging, message => {
   console.log('Received a message');
 });
 
-firebase.messaging().onMessageSent(message => {
+onMessageSent(messaging, message => {
   console.log('Sent a message');
 });
 
-firebase.messaging().onSendError(message => {
+onSendError(messaging, message => {
   console.log('Received an Error');
 });
 
-firebase.messaging().sendMessage({
+sendMessage(messaging, {
   data: {
     foo: 'bar',
   },

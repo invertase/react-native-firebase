@@ -35,39 +35,36 @@ device token (if using a different push notification provider, such as Amazon SN
 
 ```jsx
 import React, { useEffect } from 'react';
-import messaging from '@react-native-firebase/messaging';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
+import { getMessaging, getToken, onTokenRefresh } from '@react-native-firebase/messaging';
+import { getAuth } from '@react-native-firebase/auth';
+import { getFirestore, doc, updateDoc, arrayUnion } from '@react-native-firebase/firestore';
 import { Platform } from 'react-native';
 
 async function saveTokenToDatabase(token) {
   // Assume user is already signed in
-  const userId = auth().currentUser.uid;
+  const userId = getAuth().currentUser.uid;
 
   // Add the token to the users datastore
-  await firestore()
-    .collection('users')
-    .doc(userId)
-    .update({
-      tokens: firestore.FieldValue.arrayUnion(token),
-    });
+  await updateDoc(doc(getFirestore(), 'users', userId), {
+    tokens: arrayUnion(token),
+  });
 }
 
 function App() {
   useEffect(() => {
+    const messaging = getMessaging();
+
     // Get the device token
-    messaging()
-      .getToken()
-      .then(token => {
-        return saveTokenToDatabase(token);
-      });
+    getToken(messaging).then(token => {
+      return saveTokenToDatabase(token);
+    });
 
     // If using other push notification providers (ie Amazon SNS, etc)
     // you may need to get the APNs token instead for iOS:
-    // if(Platform.OS == 'ios') { messaging().getAPNSToken().then(token => { return saveTokenToDatabase(token); }); }
+    // if(Platform.OS == 'ios') { getAPNSToken(messaging).then(token => { return saveTokenToDatabase(token); }); }
 
     // Listen to whether the token changes
-    return messaging().onTokenRefresh(token => {
+    return onTokenRefresh(messaging, token => {
       saveTokenToDatabase(token);
     });
   }, []);
@@ -79,7 +76,7 @@ when the `App` component runs and immediately gets the token. It also listens to
 the token.
 
 Inside of the `saveTokenToDatabase` method, we store the token on a record specifically relating to the current user. You may also
-notice that the token is being added via the `FieldValue.arrayUnion` method. A user can have more than one token (for example using 2 devices)
+notice that the token is being added via the `arrayUnion` method. A user can have more than one token (for example using 2 devices)
 so it's important to ensure that we store all tokens in the database.
 
 ## Using tokens
@@ -150,9 +147,13 @@ Back within our application, as explained in the [Usage](/messaging/usage) docum
 [`RemoteMessage`](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/types/messaging/RemoteMessage.html) payload containing the message details sent from the server:
 
 ```jsx
+import { useEffect } from 'react';
+import { getMessaging, onMessage } from '@react-native-firebase/messaging';
+
 function App() {
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
+    const messaging = getMessaging();
+    const unsubscribe = onMessage(messaging, async remoteMessage => {
       const owner = JSON.parse(remoteMessage.data.owner);
       const user = JSON.parse(remoteMessage.data.user);
       const picture = JSON.parse(remoteMessage.data.picture);

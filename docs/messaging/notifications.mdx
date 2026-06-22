@@ -113,12 +113,17 @@ we can set an initial route when the app is opened from a quit state, and push t
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { Linking, ActivityIndicator } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
+import {
+  getMessaging,
+  getInitialNotification,
+  onNotificationOpenedApp,
+} from '@react-native-firebase/messaging';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
 const NAVIGATION_IDS = ['home', 'post', 'settings'];
+const messaging = getMessaging();
 
 function buildDeepLinkFromNotificationData(data): string | null {
   const navigationId = data?.navigationId;
@@ -156,7 +161,7 @@ const linking = {
       return url;
     }
     //getInitialNotification: When the application is opened from a quit state.
-    const message = await messaging().getInitialNotification();
+    const message = await getInitialNotification(messaging);
     const deeplinkURL = buildDeepLinkFromNotificationData(message?.data);
     if (typeof deeplinkURL === 'string') {
       return deeplinkURL;
@@ -169,7 +174,7 @@ const linking = {
     const linkingSubscription = Linking.addEventListener('url', onReceiveURL);
 
     //onNotificationOpenedApp: When the application is running, but in the background.
-    const unsubscribe = messaging().onNotificationOpenedApp(remoteMessage => {
+    const unsubscribe = onNotificationOpenedApp(messaging, remoteMessage => {
       const url = buildDeepLinkFromNotificationData(remoteMessage.data)
       if (typeof url === 'string') {
         listener(url)
@@ -200,11 +205,18 @@ function App() {
 
 # Getting a Device Token
 
-To send messages to a device, you would need the FCM token for it, which you can get using the `messaging().getToken()` method. An example is available on '[Notifee pages](https://notifee.app/react-native/docs/integrations/fcm)'.
+To send messages to a device, you would need the FCM token for it, which you can get using the `getToken(messaging)` method. An example is available on '[Notifee pages](https://notifee.app/react-native/docs/integrations/fcm)'.
 
 ```jsx
-await messaging().registerDeviceForRemoteMessages();
-const token = await messaging().getToken();
+import {
+  getMessaging,
+  registerDeviceForRemoteMessages,
+  getToken,
+} from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
+await registerDeviceForRemoteMessages(messaging);
+const token = await getToken(messaging);
 // save the token to the db
 ```
 

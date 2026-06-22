@@ -70,18 +70,16 @@ app code. All performance metrics are available on your Firebase [console](https
 Below is how you would measure the amount of time it would take to complete a specific task in your app code.
 
 ```jsx
-import perf from '@react-native-firebase/perf';
+import { getPerformance, trace } from '@react-native-firebase/perf';
 
 async function customTrace() {
-  // Define & start a trace
-  const trace = await perf().startTrace('custom_trace');
+  const perf = getPerformance();
+  const t = trace(perf, 'custom_trace');
 
-  // Define trace meta details
-  trace.putAttribute('user', 'abcd');
-  trace.putMetric('credits', 30);
-
-  // Stop the trace
-  await trace.stop();
+  await t.start();
+  t.putAttribute('user', 'abcd');
+  t.putMetric('credits', 30);
+  await t.stop();
 }
 ```
 
@@ -90,14 +88,12 @@ async function customTrace() {
 Record a custom screen rendering trace (slow frames / frozen frames)
 
 ```jsx
-import perf from '@react-native-firebase/perf';
+import { getPerformance, startScreenTrace } from '@react-native-firebase/perf';
 
 async function screenTrace() {
-  // Define & start a screen trace
   try {
-    const trace = await perf().startScreenTrace('FooScreen');
-    // Stop the trace
-    await trace.stop();
+    const screenTrace = await startScreenTrace(getPerformance(), 'FooScreen');
+    await screenTrace.stop();
   } catch (e) {
     // rejects if iOS or (Android == 8 || Android == 8.1)
     // or if hardware acceleration is off
@@ -110,31 +106,25 @@ async function screenTrace() {
 Below illustrates you would measure the latency of a HTTP request.
 
 ```jsx
-import perf from '@react-native-firebase/perf';
+import { getPerformance, httpMetric } from '@react-native-firebase/perf';
 
 async function getRequest(url) {
-  // Define the network metric
-  const metric = await perf().newHttpMetric(url, 'GET');
+  const metric = httpMetric(getPerformance(), url, 'GET');
 
-  // Define meta details
   metric.putAttribute('user', 'abcd');
 
-  // Start the metric
   await metric.start();
 
-  // Perform a HTTP request and provide response information
   const response = await fetch(url);
   metric.setHttpResponseCode(response.status);
   metric.setResponseContentType(response.headers.get('Content-Type'));
   metric.setResponsePayloadSize(response.headers.get('Content-Length'));
 
-  // Stop the metric
   await metric.stop();
 
   return response.json();
 }
 
-// Call API
 getRequest('https://api.com').then(json => {
   console.log(json);
 });
@@ -159,7 +149,7 @@ set the `perf_auto_collection_enabled` flag to `false`:
 To re-enable collection (e.g. once you have the users consent), call the `setPerformanceCollectionEnabled` method:
 
 ```js
-import { firebase } from '@react-native-firebase/perf';
+import { getPerformance } from '@react-native-firebase/perf';
 // ...
-await firebase.perf().setPerformanceCollectionEnabled(true);
+getPerformance().dataCollectionEnabled = true;
 ```
