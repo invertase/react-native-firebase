@@ -192,6 +192,27 @@ if [[ -z "$BUILDDIR" || ! -d "$BUILDDIR" ]]; then
   exit 1
 fi
 
+install_udid="$(resolve_device_udid "$SIM")"
+if [[ -n "$install_udid" ]]; then
+  booted_line="$(describe_booted_device "$SIM")"
+  if [[ -z "$booted_line" ]]; then
+    log_boot_status "phase=wait_shutdown udid=${install_udid} waiting for Shutdown before install..."
+    shutdown_wait=0
+    while (( shutdown_wait < 120 )); do
+      booted_line="$(describe_booted_device "$SIM")"
+      if [[ -z "$booted_line" ]]; then
+        log_boot_status "phase=wait_shutdown udid=${install_udid} device not Booted after ${shutdown_wait}s"
+        break
+      fi
+      sleep 2
+      shutdown_wait=$((shutdown_wait + 2))
+    done
+    if [[ -n "$(describe_booted_device "$SIM")" ]]; then
+      log_boot_status "phase=wait_shutdown udid=${install_udid} still Booted after ${shutdown_wait}s — proceeding with install anyway"
+    fi
+  fi
+fi
+
 log_boot_status "phase=install_app bundle=\"${BUILDDIR}\""
 install_start=$SECONDS
 xcrun simctl install "$SIM" "$BUILDDIR"
