@@ -55,17 +55,15 @@ Setting default values helps to ensure that both the local device & Firebase ser
 
 ```js
 import React, { useEffect } from 'react';
-import remoteConfig from '@react-native-firebase/remote-config';
+import { getRemoteConfig } from '@react-native-firebase/remote-config';
 
 function App() {
   useEffect(() => {
-    remoteConfig()
-      .setDefaults({
-        awesome_new_feature: 'disabled',
-      })
-      .then(() => {
-        console.log('Default values set.');
-      });
+    const remoteConfig = getRemoteConfig();
+    remoteConfig.defaultConfig = {
+      awesome_new_feature: 'disabled',
+    };
+    console.log('Default values set.');
   }, []);
 }
 ```
@@ -76,22 +74,22 @@ Before reading the values from Firebase, we first need to pull them from Firebas
 the device (activating). The `fetchAndActivate` API combines both tasks into a single flow:
 
 ```js
-import remoteConfig from '@react-native-firebase/remote-config';
+import { getRemoteConfig, fetchAndActivate } from '@react-native-firebase/remote-config';
 
-remoteConfig()
-  .setDefaults({
-    awesome_new_feature: 'disabled',
-  })
-  .then(() => remoteConfig().fetchAndActivate())
-  .then(fetchedRemotely => {
-    if (fetchedRemotely) {
-      console.log('Configs were retrieved from the backend and activated.');
-    } else {
-      console.log(
-        'No configs were fetched from the backend, and the local configs were already activated',
-      );
-    }
-  });
+const remoteConfig = getRemoteConfig();
+remoteConfig.defaultConfig = {
+  awesome_new_feature: 'disabled',
+};
+
+fetchAndActivate(remoteConfig).then(fetchedRemotely => {
+  if (fetchedRemotely) {
+    console.log('Configs were retrieved from the backend and activated.');
+  } else {
+    console.log(
+      'No configs were fetched from the backend, and the local configs were already activated',
+    );
+  }
+});
 ```
 
 ## Reading values
@@ -100,7 +98,9 @@ With the defaults set and the remote values fetched from Firebase, we can now us
 value and use a number of methods to retrieve the value (same API as Firebase Remote Config web SDK)
 
 ```js
-const awesomeNewFeature = remoteConfig().getValue('awesome_new_feature');
+import { getRemoteConfig, getValue } from '@react-native-firebase/remote-config';
+
+const awesomeNewFeature = getValue(getRemoteConfig(), 'awesome_new_feature');
 
 // resolves value to string
 if (awesomeNewFeature.asString() === 'enabled') {
@@ -122,7 +122,9 @@ if (awesomeNewFeature.asBoolean() === true) {
 The API also provides a `getAll` method to read all parameters at once rather than by key:
 
 ```js
-const parameters = remoteConfig().getAll();
+import { getAll, getRemoteConfig } from '@react-native-firebase/remote-config';
+
+const parameters = getAll(getRemoteConfig());
 
 Object.entries(parameters).forEach($ => {
   const [key, entry] = $;
@@ -139,7 +141,9 @@ been fetched & activated then the value will fallback to the default value set. 
 returned from the module was local or remote, the `getSource()` method can be conditionally checked:
 
 ```js
-const awesomeNewFeature = remoteConfig().getValue('awesome_new_feature');
+import { getRemoteConfig, getValue } from '@react-native-firebase/remote-config';
+
+const awesomeNewFeature = getValue(getRemoteConfig(), 'awesome_new_feature');
 
 if (awesomeNewFeature.getSource() === 'remote') {
   console.log('Parameter value was from the Firebase servers.');
@@ -159,8 +163,12 @@ You can however specify your own cache length by specifically calling the `fetch
 cache the values for:
 
 ```js
+import { fetchConfig, getRemoteConfig } from '@react-native-firebase/remote-config';
+
 // Fetch and cache for 5 minutes
-await remoteConfig().fetch(300);
+const remoteConfig = getRemoteConfig();
+remoteConfig.settings = { minimumFetchIntervalMillis: 300000 };
+await fetchConfig(remoteConfig);
 ```
 
 To bypass caching fully, you can pass a value of `0`. Be warned Firebase may start to reject your requests
@@ -169,9 +177,12 @@ if values are requested too frequently.
 You can also apply a global cache frequency by calling the `setConfigSettings` method with the `minimumFetchIntervalMillis` property:
 
 ```js
-await remoteConfig().setConfigSettings({
+import { getRemoteConfig } from '@react-native-firebase/remote-config';
+
+const remoteConfig = getRemoteConfig();
+remoteConfig.settings = {
   minimumFetchIntervalMillis: 30000,
-});
+};
 ```
 
 ## Real-time updates
@@ -193,20 +204,22 @@ in applications that attach one or more listeners for them.
 Here is an example of how to use the feature, with comments emphasizing the key points to know:
 
 ```js
+import { activate, getRemoteConfig, onConfigUpdate } from '@react-native-firebase/remote-config';
+
 // Add a config update listener where appropriate, perhaps in app startup, or a specific app area.
 // Multiple listeners are supported, so listeners may be screen-specific and only handle certain keys
 // depending on application requirements
 let remoteConfigListenerUnsubscriber = onConfigUpdate(getRemoteConfig(), {
-  next: (update) => {
+  next: update => {
     console.log('remote-config keys updated: ' + Array.from(update.getUpdatedKeys()));
 
     // If you use realtime updates, the SDK fetches the new config for you.
     // However, you must activate the new config so it is in effect
     activate(getRemoteConfig());
-  }
-  error: (error) => {
+  },
+  error: error => {
     console.log('remote-config listener subscription error: ' + error);
-  }
+  },
 });
 
 // unsubscribe the listener when no longer needed - remote config will close the network socket if there

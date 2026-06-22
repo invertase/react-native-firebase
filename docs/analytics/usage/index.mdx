@@ -57,7 +57,7 @@ Below is an example showing how a custom event can be logged. Please be aware th
 ```jsx
 import react, { useEffect } from 'react';
 import { View, Button } from 'react-native';
-import analytics from '@react-native-firebase/analytics';
+import { getAnalytics, logEvent } from '@react-native-firebase/analytics';
 
 function App() {
   return (
@@ -65,7 +65,7 @@ function App() {
       <Button
         title="Add To Basket"
         onPress={async () =>
-          await analytics().logEvent('basket', {
+          await logEvent(getAnalytics(), 'basket', {
             id: 3745092,
             item: 'mens grey t-shirt',
             description: ['round neck', 'long sleeved'],
@@ -90,7 +90,7 @@ Below is a sample of how to use one of the predefined methods the Analytics modu
 ```jsx
 import react, { useEffect } from 'react';
 import { View, Button } from 'react-native';
-import analytics from '@react-native-firebase/analytics';
+import { getAnalytics, logSelectContent } from '@react-native-firebase/analytics';
 
 function App() {
   return (
@@ -100,7 +100,7 @@ function App() {
         // Logs in the firebase analytics console as "select_content" event
         // only accepts the two object properties which accept strings.
         onPress={async () =>
-          await analytics().logSelectContent({
+          await logSelectContent(getAnalytics(), {
             content_type: 'clothing',
             item_id: 'abcd',
           })
@@ -139,9 +139,9 @@ if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnaly
 iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
 
 ```jsx
-import analytics from '@react-native-firebase/analytics';
+import { getAnalytics, getAppInstanceId } from '@react-native-firebase/analytics';
 // ...
-const appInstanceId = await analytics().getAppInstanceId();
+const appInstanceId = await getAppInstanceId(getAnalytics());
 ```
 
 ### Web / Other platform instance id
@@ -227,17 +227,17 @@ on the `firebase.json` file at the root of your project directory.
 To re-enable analytics (e.g. once you have the users consent), call the `setAnalyticsCollectionEnabled` method:
 
 ```js
-import { firebase } from '@react-native-firebase/analytics';
+import { getAnalytics, setAnalyticsCollectionEnabled } from '@react-native-firebase/analytics';
 // ...
-await firebase.analytics().setAnalyticsCollectionEnabled(true);
+await setAnalyticsCollectionEnabled(getAnalytics(), true);
 ```
 
 To update user's consent (e.g. once you have the users consent), call the `setConsent` method:
 
 ```js
-import { firebase } from '@react-native-firebase/analytics';
+import { getAnalytics, setConsent } from '@react-native-firebase/analytics';
 // ...
-await firebase.analytics().setConsent({
+await setConsent(getAnalytics(), {
   analytics_storage: true,
   ad_storage: true,
   ad_user_data: true,

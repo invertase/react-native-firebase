@@ -18,17 +18,21 @@ property on the axios instance. At this point, a new HTTP metric can be defined 
 
 ```js
 import axios from 'axios';
-import perf from '@react-native-firebase/perf';
+import { getPerformance, httpMetric } from '@react-native-firebase/perf';
 
 axios.interceptors.request.use(async function (config) {
   try {
-    const httpMetric = perf().newHttpMetric(config.url, config.method.toUpperCase());
-    config.metadata = { httpMetric };
+    const httpMetricInstance = httpMetric(
+      getPerformance(),
+      config.url,
+      config.method.toUpperCase(),
+    );
+    config.metadata = { httpMetric: httpMetricInstance };
 
     // add any extra metric attributes, if required
-    // httpMetric.putAttribute('userId', '12345678');
+    // httpMetricInstance.putAttribute('userId', '12345678');
 
-    await httpMetric.start();
+    await httpMetricInstance.start();
   } finally {
     return config;
   }

@@ -76,15 +76,12 @@ implementation require a Async Storage implementation to be provided to
 enable persistence, React Native Firebase provides an API to set this implementation:
 
 ```js
-import firebase from '@react-native-firebase/app';
+import { initializeApp, setReactNativeAsyncStorage } from '@react-native-firebase/app';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Before initializing Firebase set the Async Storage implementation
-// that will be used to persist user sessions.
-firebase.setReactNativeAsyncStorage(AsyncStorage);
+setReactNativeAsyncStorage(AsyncStorage);
 
-// Then initialize Firebase as normal.
-await firebase.initializeApp({ ... });
+await initializeApp({ ... });
 ```
 
 > Note: we use `@react-native-async-storage/async-storage` as an example, you should use the Async Storage implementation that is appropriate for your platform that you are targeting.
@@ -107,13 +104,13 @@ App Check for other platforms only supports the `CustomProvider` provider. Here'
 - Create a custom provider in your app:
 
 ```js
-import firebase, { CustomProvider, initializeAppCheck } from '@react-native-firebase/app-check';
+import { getApp } from '@react-native-firebase/app';
+import { CustomProvider, initializeAppCheck } from '@react-native-firebase/app-check';
 
 const myCustomProvider = new CustomProvider({
   async getToken: () => {
-    // TODO: Get the token from your server, e.g. if using a cloud function call the function.
     const tokenFromServer = 'some-token-from-server';
-    const expirationFromServer = 1000 * 60 * 60; // 1 hour
+    const expirationFromServer = 1000 * 60 * 60;
     const appCheckToken = {
       token: tokenFromServer,
       expireTimeMillis: expirationFromServer * 1000
@@ -122,13 +119,9 @@ const myCustomProvider = new CustomProvider({
   }
 });
 
-// Configure the provider (modular API)
-initializeAppCheck(firebaseApp, {
+await initializeAppCheck(getApp(), {
   provider: myCustomProvider
 });
-
-// Or configure the provider (v8 API)
-firebase.appCheck().initializeAppCheck({ provider: myCustomProvider });
 ```
 
 ### Authentication

@@ -17,7 +17,7 @@ Before HTTP requests are sent out of the React Native environment, a number of f
 We can use this `beforeRequest` hook to create our HTTP metric.
 
 ```js
-import perf from '@react-native-firebase/perf';
+import { getPerformance, httpMetric } from '@react-native-firebase/perf';
 import ky from 'ky';
 
 const getContentLength = headers => {
@@ -32,7 +32,7 @@ const api = ky.create({
     beforeRequest: [
       async (request, options) => {
         const { url, method } = request;
-        options.metric = await perf().newHttpMetric(url, method);
+        options.metric = httpMetric(getPerformance(), url, method);
 
         // add any extra metric attributes, if required
         // options.metric.putAttribute('userId', '12345678');
@@ -90,7 +90,7 @@ how long the request took, response codes & more. Such data can give you greater
 A working example is provided below. Please adjust and extend according to your use case.
 
 ```js
-import perf from '@react-native-firebase/perf';
+import { getPerformance, httpMetric } from '@react-native-firebase/perf';
 import ky from 'ky';
 
 const getContentLength = headers => {
@@ -107,7 +107,7 @@ const api = ky.create({
     beforeRequest: [
       async (request, options) => {
         const { url, method } = request;
-        options.metric = await perf().newHttpMetric(url, method);
+        options.metric = httpMetric(getPerformance(), url, method);
 
         // add any extra metric attributes, if required
         // options.metric.putAttribute('userId', '12345678');
