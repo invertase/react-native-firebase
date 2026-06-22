@@ -262,8 +262,15 @@ function isRetryableJetSessionFailure(output) {
 
 function isRetryableLaunchFailure(err) {
   const message = err?.message || '';
+  if (err?.retryableAtJetLevel) {
+    return true;
+  }
   if (!usesLiveMetro()) {
-    return /launchApp timed out/i.test(message);
+    return (
+      /launchApp timed out/i.test(message) ||
+      RETRYABLE_LAUNCH_RE.test(message) ||
+      /FrontBoard|unknown to FrontBoard|FBSOpenApplication/i.test(message)
+    );
   }
   return RETRYABLE_LAUNCH_RE.test(message);
 }
@@ -380,8 +387,10 @@ async function launchAppWithRetry(launchArgs, { testsDir } = {}) {
     } catch (err) {
       console.warn(`[rnfb-e2e] launchApp failure reason=${err?.message || err}`);
       logLaunchInstallState(`after-launch-failure attempt=${launchAttempt}`);
-      const retryable = launchAttempt < LAUNCH_APP_MAX_ATTEMPTS && isRetryableLaunchFailure(err);
-      if (!retryable) {
+      const innerRetryable =
+        launchAttempt < LAUNCH_APP_MAX_ATTEMPTS && isRetryableLaunchFailure(err);
+      if (!innerRetryable) {
+        err.retryableAtJetLevel = isRetryableLaunchFailure(err);
         throw err;
       }
     }
