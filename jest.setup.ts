@@ -178,6 +178,7 @@ jest.doMock('react-native', () => {
           useUserAccessGroup: jest.fn(() => Promise.resolve()),
           useEmulator: jest.fn(),
           getCustomAuthDomain: jest.fn(() => Promise.resolve(null)),
+          initializeRecaptchaConfig: jest.fn(() => Promise.resolve()),
           configureAuthDomain: jest.fn(() => Promise.resolve()),
           delete: jest.fn(() => Promise.resolve()),
           getIdToken: jest.fn(() => Promise.resolve('mock-token')),

@@ -10,6 +10,7 @@ export interface Spec extends TurboModule {
 
   configureAuthDomain(appName: string): void;
   getCustomAuthDomain(appName: string): Promise<string | null>;
+  initializeRecaptchaConfig(appName: string): Promise<void>;
   addAuthStateListener(appName: string): void;
   removeAuthStateListener(appName: string): void;
   addIdTokenListener(appName: string): void;

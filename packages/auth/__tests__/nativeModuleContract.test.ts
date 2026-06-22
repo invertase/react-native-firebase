@@ -4,6 +4,7 @@ import { assertTurboContract } from '../../app/__tests__/turboModuleContractHelp
 const SPEC_METHODS = [
   'configureAuthDomain',
   'getCustomAuthDomain',
+  'initializeRecaptchaConfig',
   'addAuthStateListener',
   'removeAuthStateListener',
   'addIdTokenListener',
