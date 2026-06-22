@@ -27,7 +27,12 @@ import type {
 } from './types/appcheck';
 import type { AppCheckInternal } from './types/internal';
 
-export { CustomProvider, ReactNativeFirebaseAppCheckProvider } from './providers';
+export {
+  CustomProvider,
+  ReactNativeFirebaseAppCheckProvider,
+  ReCaptchaV3Provider,
+  ReCaptchaEnterpriseProvider,
+} from './providers';
 
 type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
   ? (...args: [...P, typeof MODULAR_DEPRECATION_ARG]) => R

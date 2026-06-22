@@ -7,6 +7,8 @@ import appCheck, {
   setTokenAutoRefreshEnabled,
   onTokenChanged,
   CustomProvider,
+  ReCaptchaV3Provider,
+  ReCaptchaEnterpriseProvider,
   AppCheck,
   AppCheckTokenResult,
 } from '.';
@@ -107,9 +109,9 @@ unsubscribe2();
 // checks modular API functions
 const modularProvider = appCheckInstance.newReactNativeFirebaseAppCheckProvider();
 modularProvider.configure({
-  android: { provider: 'playIntegrity' },
-  apple: { provider: 'deviceCheck' },
-  web: { provider: 'reCaptchaV3', siteKey: 'test' },
+  android: { provider: 'recaptcha' },
+  apple: { provider: 'recaptcha' },
+  web: { provider: 'reCaptchaEnterprise', siteKey: 'test' },
 });
 
 initializeAppCheck(firebase.app(), {
@@ -167,6 +169,12 @@ const modularUnsubscribe2 = onTokenChanged(
 
 modularUnsubscribe1();
 modularUnsubscribe2();
+
+// checks modular reCAPTCHA provider classes
+const reCaptchaV3Provider = new ReCaptchaV3Provider('v3-site-key');
+const reCaptchaEnterpriseProvider = new ReCaptchaEnterpriseProvider('enterprise-site-key');
+console.log(reCaptchaV3Provider);
+console.log(reCaptchaEnterpriseProvider);
 
 // checks modular CustomProvider class
 const customProvider = new CustomProvider({

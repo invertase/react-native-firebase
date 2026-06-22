@@ -20,6 +20,8 @@ import {
   setTokenAutoRefreshEnabled,
   onTokenChanged,
   CustomProvider,
+  ReCaptchaV3Provider,
+  ReCaptchaEnterpriseProvider,
   ReactNativeFirebaseAppCheckProviderOptions,
   ReactNativeFirebaseAppCheckProviderAndroidOptions,
   ReactNativeFirebaseAppCheckProviderAppleOptions,
@@ -82,6 +84,13 @@ describe('appCheck()', function () {
       expect(CustomProvider).toBeDefined();
     });
 
+    it('`ReCaptchaV3Provider` and `ReCaptchaEnterpriseProvider` are properly exposed to end user', function () {
+      expect(ReCaptchaV3Provider).toBeDefined();
+      expect(ReCaptchaEnterpriseProvider).toBeDefined();
+      expect(new ReCaptchaV3Provider('v3-site-key')).toBeDefined();
+      expect(new ReCaptchaEnterpriseProvider('enterprise-site-key')).toBeDefined();
+    });
+
     it('`ReactNativeAppCheckProvider objects are properly exposed to end user', function () {
       expect(firebase.appCheck().newReactNativeFirebaseAppCheckProvider).toBeDefined();
       const provider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
@@ -93,10 +102,15 @@ describe('appCheck()', function () {
       } as ReactNativeFirebaseAppCheckProviderAppleOptions;
       expect(appleOptions).toBeDefined();
       const androidOptions = {
-        provider: 'debug',
+        provider: 'recaptcha',
         ...options,
       } as ReactNativeFirebaseAppCheckProviderAndroidOptions;
       expect(androidOptions).toBeDefined();
+      const appleRecaptchaOptions = {
+        provider: 'recaptcha',
+        ...options,
+      } as ReactNativeFirebaseAppCheckProviderAppleOptions;
+      expect(appleRecaptchaOptions).toBeDefined();
       const webOptions = {
         provider: 'debug',
         ...options,
