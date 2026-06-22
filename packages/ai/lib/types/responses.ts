@@ -328,6 +328,12 @@ export interface GroundingMetadata {
    * @deprecated Use {@link GroundingSupport} instead.
    */
   retrievalQueries?: string[];
+  /**
+   * Resource name of the Google Maps widget context token that can be used with the
+   * `PlacesContextElement` widget in order to render contextual data. Only populated in the case
+   * that grounding with Google Maps is enabled.
+   */
+  googleMapsWidgetContextToken?: string;
 }
 
 /**
@@ -365,6 +371,38 @@ export interface GroundingChunk {
    * Contains details if the grounding chunk is from a web source.
    */
   web?: WebGroundingChunk;
+  /**
+   * Contains details if the grounding chunk is from a Google Maps source.
+   */
+  maps?: GoogleMapsGroundingChunk;
+}
+
+/**
+ * A grounding chunk from Google Maps.
+ *
+ * Important: If using Grounding with Google Maps, you are required to comply with the
+ * {@link https://cloud.google.com/terms/service-terms | Service Specific Terms} for "Grounding with Google Maps".
+ *
+ * @public
+ */
+export interface GoogleMapsGroundingChunk {
+  /**
+   * The URI of the place.
+   */
+  uri?: string;
+  /**
+   * The title of the place.
+   */
+  title?: string;
+  /**
+   * The text of the place answer.
+   */
+  text?: string;
+  /**
+   * This Place's resource name, in `places/{place_id}` format. This can be used to look up the
+   * place in the Google Maps API.
+   */
+  placeId?: string;
 }
 
 /**
@@ -625,6 +663,30 @@ export interface LiveServerGoingAwayNotice {
 }
 
 /**
+ * An update of the session resumption state.
+ *
+ * This message is only sent if {@link SessionResumptionConfig} was set in the
+ * session setup.
+ *
+ * @beta
+ */
+export interface LiveSessionResumptionUpdate {
+  type: 'sessionResumptionUpdate';
+  /**
+   * The new handle that represents the state that can be resumed. Empty if `resumable` is false.
+   */
+  newHandle?: string;
+  /**
+   * Indicates if the session can be resumed at this point.
+   */
+  resumable?: boolean;
+  /**
+   * The index of the last client message that is included in the state represented by this update.
+   */
+  lastConsumedClientMessageIndex?: number;
+}
+
+/**
  * The types of responses that can be returned by {@link LiveSession.receive}.
  *
  * @beta
@@ -634,6 +696,7 @@ export const LiveResponseType = {
   TOOL_CALL: 'toolCall',
   TOOL_CALL_CANCELLATION: 'toolCallCancellation',
   GOING_AWAY_NOTICE: 'goingAwayNotice',
+  SESSION_RESUMPTION_UPDATE: 'sessionResumptionUpdate',
 };
 
 /**

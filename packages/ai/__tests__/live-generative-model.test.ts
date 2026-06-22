@@ -178,4 +178,28 @@ describe('LiveGenerativeModel', function () {
     mockHandler.simulateServerMessage({ setupComplete: true });
     await connectPromise;
   });
+
+  it('connect() should hoist contextWindowCompression and sessionResumption to setup', async function () {
+    const model = new LiveGenerativeModel(
+      fakeAI,
+      {
+        model: 'gemini-pro',
+        generationConfig: {
+          temperature: 0.8,
+          contextWindowCompression: { triggerTokens: 1000 },
+        },
+      },
+      mockHandler,
+    );
+    const connectPromise = model.connect({ handle: 'previous-handle' });
+
+    await jest.runAllTimersAsync();
+
+    const sentData = JSON.parse((mockHandler.send as jest.Mock).mock.calls[0]![0] as string);
+    expect(sentData.setup.generationConfig).toEqual({ temperature: 0.8 });
+    expect(sentData.setup.contextWindowCompression).toEqual({ triggerTokens: 1000 });
+    expect(sentData.setup.sessionResumption).toEqual({ handle: 'previous-handle' });
+    mockHandler.simulateServerMessage({ setupComplete: true });
+    await connectPromise;
+  });
 });

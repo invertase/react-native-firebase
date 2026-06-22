@@ -16,7 +16,14 @@
  */
 
 import { Content, FunctionResponse, GenerativeContentBlob, Part } from './content';
-import { AudioTranscriptionConfig, LiveGenerationConfig, Tool, ToolConfig } from './requests';
+import {
+  AudioTranscriptionConfig,
+  ContextWindowCompressionConfig,
+  LiveGenerationConfig,
+  SessionResumptionConfig,
+  Tool,
+  ToolConfig,
+} from './requests';
 import { Transcription } from './responses';
 
 /**
@@ -69,11 +76,13 @@ export interface _LiveClientSetup {
   setup: {
     model: string;
     generationConfig?: _LiveGenerationConfig;
+    contextWindowCompression?: ContextWindowCompressionConfig;
     tools?: Tool[];
     toolConfig?: ToolConfig;
     systemInstruction?: string | Part | Content;
     inputAudioTranscription?: AudioTranscriptionConfig;
     outputAudioTranscription?: AudioTranscriptionConfig;
+    sessionResumption?: SessionResumptionConfig;
   };
 }
 
