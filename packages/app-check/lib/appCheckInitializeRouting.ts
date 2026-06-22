@@ -79,12 +79,13 @@ export function resolveNativeInitializeAppCheckRoute(
 
   if (provider instanceof ReCaptchaEnterpriseProvider) {
     assertNativeRecaptchaSiteKeyConsistency(context.appOptions, provider.siteKey);
-    if (
-      context.platformOS === 'android' ||
-      context.platformOS === 'ios' ||
-      context.platformOS === 'macos'
-    ) {
+    if (context.platformOS === 'android' || context.platformOS === 'ios') {
       return { providerName: 'recaptcha' };
+    }
+    if (context.platformOS === 'macos') {
+      throw new Error(
+        'ReCaptcha App Check provider is not supported on macOS. Native recaptcha is iOS-only.',
+      );
     }
     throw new Error('Unsupported platform: ' + context.platformOS);
   }
@@ -117,8 +118,14 @@ export function resolveNativeInitializeAppCheckRoute(
         'Invalid configuration: no apple provider configured while on apple platform.',
       );
     }
+    const appleProvider = provider.providerOptions.apple.provider;
+    if (context.platformOS === 'macos' && appleProvider === 'recaptcha') {
+      throw new Error(
+        'ReCaptcha App Check provider is not supported on macOS. Native recaptcha is iOS-only.',
+      );
+    }
     return {
-      providerName: provider.providerOptions.apple.provider,
+      providerName: appleProvider,
       debugToken: provider.providerOptions.apple.debugToken,
     };
   }

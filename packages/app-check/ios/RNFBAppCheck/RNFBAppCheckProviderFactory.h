@@ -21,8 +21,8 @@
 
 @property NSMutableDictionary *_Nullable providers;
 
-- (void)configure:(FIRApp *_Nonnull)app
-     providerName:(NSString *_Nonnull)providerName
-       debugToken:(NSString *_Nullable)debugToken;
+- (nullable NSError *)configure:(FIRApp *_Nonnull)app
+                   providerName:(NSString *_Nonnull)providerName
+                     debugToken:(NSString *_Nullable)debugToken;
 
 @end

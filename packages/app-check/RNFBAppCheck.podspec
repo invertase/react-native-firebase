@@ -46,6 +46,11 @@ Pod::Spec.new do |s|
   # Firebase dependencies
   s.dependency          'Firebase/AppCheck', firebase_sdk_version
 
+  # reCAPTCHA Enterprise SDK (required at runtime for FIRRecaptchaProvider token generation).
+  # Provider code lives in FirebaseAppCheck; this pod supplies the Enterprise engine (Option A).
+  # Users must redownload GoogleService-Info.plist so FIROptions.recaptchaSiteKey is present.
+  s.ios.dependency      'RecaptchaEnterprise', '>= 18.7.0'
+
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
     s.static_framework = $RNFirebaseAsStaticFramework

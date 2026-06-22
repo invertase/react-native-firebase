@@ -28,9 +28,9 @@
   return self;
 }
 
-- (void)configure:(FIRApp *)app
-     providerName:(NSString *)providerName
-       debugToken:(NSString *)debugToken {
+- (nullable NSError *)configure:(FIRApp *)app
+                   providerName:(NSString *)providerName
+                     debugToken:(NSString *)debugToken {
   DLog(@"appName/providerName/debugToken: %@/%@/%@", app.name, providerName,
        (debugToken == nil ? @"null" : @"(not shown)"));
 
@@ -75,25 +75,74 @@
     }
   }
 
-  if (self.delegateProvider == nil) {
-    NSString *message =
-        [NSString stringWithFormat:@"Unknown provider name \"%@\". Valid providers are: debug, "
-                                    "deviceCheck, appAttest, appAttestWithDeviceCheckFallback.",
-                                   providerName ?: @"(null)"];
-    NSLog(@"RNFBAppCheck: %@", message);
-    @throw [NSException exceptionWithName:@"RNFBAppCheckException" reason:message userInfo:nil];
+  if ([providerName isEqualToString:@"recaptcha"]) {
+#if TARGET_OS_IOS
+    // Site key is read from FIROptions.recaptchaSiteKey by the native SDK (redownload
+    // GoogleService-Info.plist after enabling reCAPTCHA in Firebase Console).
+    self.delegateProvider = [[FIRRecaptchaProvider alloc] initWithApp:app];
+    if (self.delegateProvider == nil) {
+      return [NSError
+          errorWithDomain:RNFBErrorDomain
+                     code:666
+                 userInfo:@{
+                   NSLocalizedDescriptionKey :
+                       @"Failed to initialize FIRRecaptchaProvider. Ensure recaptchaSiteKey is "
+                       @"present in GoogleService-Info.plist."
+                 }];
+    }
+#else
+    return [NSError
+        errorWithDomain:RNFBErrorDomain
+                   code:666
+               userInfo:@{
+                 NSLocalizedDescriptionKey :
+                     @"Firebase App Check: recaptcha provider is iOS-only and is not supported on "
+                     @"this Apple platform."
+               }];
+#endif
   }
+
+  if (self.delegateProvider == nil) {
+    NSString *message = [NSString
+        stringWithFormat:@"Unknown provider name \"%@\". Valid providers are: debug, deviceCheck, "
+                          "appAttest, appAttestWithDeviceCheckFallback, recaptcha.",
+                         providerName ?: @"(null)"];
+    NSLog(@"RNFBAppCheck: %@", message);
+    return [NSError errorWithDomain:RNFBErrorDomain
+                               code:666
+                           userInfo:@{NSLocalizedDescriptionKey : message}];
+  }
+
+  return nil;
 }
 
 - (void)getTokenWithCompletion:(nonnull void (^)(FIRAppCheckToken *_Nullable,
                                                  NSError *_Nullable))handler {
   DLog(@"proxying getTokenWithCompletion to delegateProvider...");
+  if (self.delegateProvider == nil) {
+    handler(nil,
+            [NSError errorWithDomain:RNFBErrorDomain
+                                code:666
+                            userInfo:@{
+                              NSLocalizedDescriptionKey : @"App Check provider is not configured."
+                            }]);
+    return;
+  }
   [self.delegateProvider getTokenWithCompletion:handler];
 }
 
 - (void)getLimitedUseTokenWithCompletion:(nonnull void (^)(FIRAppCheckToken *_Nullable,
                                                            NSError *_Nullable))handler {
   DLog(@"proxying getLimitedUseTokenWithCompletion to delegateProvider...");
+  if (self.delegateProvider == nil) {
+    handler(nil,
+            [NSError errorWithDomain:RNFBErrorDomain
+                                code:666
+                            userInfo:@{
+                              NSLocalizedDescriptionKey : @"App Check provider is not configured."
+                            }]);
+    return;
+  }
   [self.delegateProvider getLimitedUseTokenWithCompletion:handler];
 }
 
