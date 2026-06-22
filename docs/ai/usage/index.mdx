@@ -433,6 +433,326 @@ You can ask an Imagen model to generate a single image or multiple image by prom
 />
 ```
 
+## Generate images with Gemini models
+
+Some Gemini models can return generated images in addition to text. Configure `generationConfig.responseModalities` and `generationConfig.imageConfig` on `getGenerativeModel()` to control output format, aspect ratio, and size.
+
+See the [Firebase AI Logic image generation guide](https://firebase.google.com/docs/ai-logic/generate-images-gemini) for supported models and limits.
+
+```js
+import React from 'react';
+import { Button, View } from 'react-native';
+import { getApp } from '@react-native-firebase/app';
+import {
+  getAI,
+  getGenerativeModel,
+  ImageConfigAspectRatio,
+  ImageConfigImageSize,
+  ResponseModality,
+} from '@react-native-firebase/ai';
+
+function App() {
+  return (
+    <View>
+      <Button
+        title="generate image with Gemini"
+        onPress={async () => {
+          const app = getApp();
+          const ai = getAI(app);
+          const model = getGenerativeModel(ai, {
+            model: 'gemini-2.0-flash-preview-image-generation',
+            generationConfig: {
+              responseModalities: [ResponseModality.IMAGE],
+              imageConfig: {
+                aspectRatio: ImageConfigAspectRatio.LANDSCAPE_16x9,
+                imageSize: ImageConfigImageSize.SIZE_1K,
+              },
+            },
+          });
+
+          const result = await model.generateContent('Draw a red bicycle on a beach at sunset');
+          const parts = result.response.candidates?.[0]?.content?.parts ?? [];
+          const imagePart = parts.find(part => part.inlineData?.mimeType?.startsWith('image/'));
+          console.log('Generated image mime type', imagePart?.inlineData?.mimeType);
+        }}
+      />
+    </View>
+  );
+}
+```
+
+## Ground responses with Google Maps
+
+You can give Gemini access to Google Maps grounding by adding a `googleMaps` tool. Pass `toolConfig.retrievalConfig` with the user's location and language so responses can incorporate location-aware information.
+
+When using Grounding with Google Maps you must comply with the [Gemini API terms](https://ai.google.dev/gemini-api/terms#grounding-with-google-maps) for your API provider.
+
+```js
+import React from 'react';
+import { Button, View } from 'react-native';
+import { getApp } from '@react-native-firebase/app';
+import { getAI, getGenerativeModel } from '@react-native-firebase/ai';
+
+function App() {
+  return (
+    <View>
+      <Button
+        title="ask with Google Maps grounding"
+        onPress={async () => {
+          const app = getApp();
+          const ai = getAI(app);
+          const model = getGenerativeModel(ai, {
+            model: 'gemini-2.0-flash',
+            tools: [{ googleMaps: {} }],
+            toolConfig: {
+              retrievalConfig: {
+                latLng: { latitude: 37.7749, longitude: -122.4194 },
+                languageCode: 'en-US',
+              },
+            },
+          });
+
+          const result = await model.generateContent(
+            'What are some highly rated coffee shops within walking distance?',
+          );
+          console.log(result.response.text());
+          console.log(result.response.candidates?.[0]?.groundingMetadata);
+        }}
+      />
+    </View>
+  );
+}
+```
+
+## Retrieval config for tools
+
+`toolConfig.retrievalConfig` applies to all tools on a request. Use it to pass the user's `latLng` and `languageCode` when tools need geographic or locale context (for example Google Maps grounding or retrieval-backed tools).
+
+```js
+import React from 'react';
+import { Button, View } from 'react-native';
+import { getApp } from '@react-native-firebase/app';
+import { getAI, getGenerativeModel } from '@react-native-firebase/ai';
+
+function App() {
+  return (
+    <View>
+      <Button
+        title="generate with retrieval config"
+        onPress={async () => {
+          const app = getApp();
+          const ai = getAI(app);
+          const model = getGenerativeModel(ai, {
+            model: 'gemini-2.0-flash',
+            tools: [{ googleSearch: {} }],
+            toolConfig: {
+              retrievalConfig: {
+                latLng: { latitude: 51.5074, longitude: -0.1278 },
+                languageCode: 'en-GB',
+              },
+            },
+          });
+
+          const result = await model.generateContent(
+            'What events are happening nearby this weekend?',
+          );
+          console.log(result.response.text());
+        }}
+      />
+    </View>
+  );
+}
+```
+
+## Live sessions
+
+The Live API enables low-latency, bidirectional interaction with Gemini over a persistent connection. Use `getLiveGenerativeModel()` and `connect()` to obtain a `LiveSession`, then send and receive messages in real time.
+
+Browser-only helpers such as `startAudioConversation()` and `AudioConversationController` are not available in React Native. Use `sendTextRealtime()`, `sendAudioRealtime()`, and `sendVideoRealtime()` on `LiveSession` instead.
+
+See the [Firebase Live API documentation](https://firebase.google.com/docs/ai-logic/live-api) for model availability and audio format requirements.
+
+```js
+import React from 'react';
+import { Button, View } from 'react-native';
+import { getApp } from '@react-native-firebase/app';
+import { getAI, getLiveGenerativeModel } from '@react-native-firebase/ai';
+
+function App() {
+  return (
+    <View>
+      <Button
+        title="start live session"
+        onPress={async () => {
+          const app = getApp();
+          const ai = getAI(app);
+          const liveModel = getLiveGenerativeModel(ai, {
+            model: 'gemini-2.0-flash-live-preview-04-09',
+            generationConfig: { temperature: 0.8 },
+          });
+
+          const session = await liveModel.connect();
+
+          (async () => {
+            for await (const message of session.receive()) {
+              if (message.type === 'serverContent' && message.modelTurn) {
+                const text = message.modelTurn.parts?.map(part => part.text).join('');
+                if (text) {
+                  console.log('Model:', text);
+                }
+              } else if (message.type === 'toolCall') {
+                console.log('Tool call', message.functionCalls);
+              } else if (message.type === 'goingAwayNotice') {
+                console.log('Connection closing in', message.timeLeft, 'seconds');
+              }
+            }
+          })();
+
+          await session.sendTextRealtime('Hello! Can you hear me?');
+          await session.close();
+        }}
+      />
+    </View>
+  );
+}
+```
+
+## Context window compression (Live API)
+
+Long-running Live sessions can exceed the model context window. Set `generationConfig.contextWindowCompression` on `getLiveGenerativeModel()` to enable server-side sliding-window compression when token usage crosses a threshold.
+
+```js
+import React from 'react';
+import { Button, View } from 'react-native';
+import { getApp } from '@react-native-firebase/app';
+import { getAI, getLiveGenerativeModel } from '@react-native-firebase/ai';
+
+function App() {
+  return (
+    <View>
+      <Button
+        title="live session with context compression"
+        onPress={async () => {
+          const app = getApp();
+          const ai = getAI(app);
+          const liveModel = getLiveGenerativeModel(ai, {
+            model: 'gemini-2.0-flash-live-preview-04-09',
+            generationConfig: {
+              contextWindowCompression: {
+                triggerTokens: 100000,
+                slidingWindow: { targetTokens: 80000 },
+              },
+            },
+          });
+
+          const session = await liveModel.connect();
+          await session.send('Start a long conversation...');
+          await session.close();
+        }}
+      />
+    </View>
+  );
+}
+```
+
+## Session resumption (Live API)
+
+Live sessions can be resumed after a disconnect. Pass a `SessionResumptionConfig` to `connect()` (use `{}` to opt in to resumption updates). The server sends `sessionResumptionUpdate` messages on `LiveSession.receive()` with a handle you can pass to a later `connect()` call or to `LiveSession.resumeSession()`.
+
+`resumeSession()` requires that the original session was opened with session resumption enabled.
+
+```js
+import React from 'react';
+import { Button, View } from 'react-native';
+import { getApp } from '@react-native-firebase/app';
+import { getAI, getLiveGenerativeModel } from '@react-native-firebase/ai';
+
+function App() {
+  return (
+    <View>
+      <Button
+        title="resume live session"
+        onPress={async () => {
+          const app = getApp();
+          const ai = getAI(app);
+          const liveModel = getLiveGenerativeModel(ai, {
+            model: 'gemini-2.0-flash-live-preview-04-09',
+          });
+
+          let resumptionHandle;
+          const session = await liveModel.connect({});
+
+          (async () => {
+            for await (const message of session.receive()) {
+              if (message.type === 'sessionResumptionUpdate' && message.resumable) {
+                resumptionHandle = message.newHandle;
+              }
+            }
+          })();
+
+          await session.send('Start a conversation we can resume later.');
+
+          // After a disconnect or `goingAwayNotice`, reconnect with the saved handle:
+          if (resumptionHandle) {
+            await session.resumeSession({ handle: resumptionHandle });
+            await session.send('Pick up where we left off.');
+          }
+
+          await session.close();
+        }}
+      />
+    </View>
+  );
+}
+```
+
+Alternatively, call `resumeSession({ handle })` on an open session after a `goingAwayNotice` without closing first:
+
+```js
+await session.resumeSession({ handle: resumptionHandle });
+await session.connectionPromise;
+```
+
+## Template models and retrieval config
+
+`TemplateGenerativeModel` executes server-side prompt templates. You can pass an optional `templateToolConfig` with `retrievalConfig` to `generateContent()`, `generateContentStream()`, or `startChat()`.
+
+```js
+import React from 'react';
+import { Button, View } from 'react-native';
+import { getApp } from '@react-native-firebase/app';
+import { getAI, getTemplateGenerativeModel } from '@react-native-firebase/ai';
+
+function App() {
+  return (
+    <View>
+      <Button
+        title="run template with retrieval config"
+        onPress={async () => {
+          const app = getApp();
+          const ai = getAI(app);
+          const templateModel = getTemplateGenerativeModel(ai);
+
+          const result = await templateModel.generateContent(
+            'weather-assistant-template',
+            { city: 'Boston' },
+            undefined,
+            {
+              retrievalConfig: {
+                latLng: { latitude: 42.3601, longitude: -71.0589 },
+                languageCode: 'en-US',
+              },
+            },
+          );
+
+          console.log(result.response.text());
+        }}
+      />
+    </View>
+  );
+}
+```
+
 ## Getting ready for production
 
 For mobile and web apps, you need to protect the Gemini API and your project resources (like tuned models) from abuse by unauthorized clients. You can use Firebase App Check to verify that all API calls are from your actual app. See [Firebase docs for further information](https://firebase.google.com/docs/ai-logic/app-check).
