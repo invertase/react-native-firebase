@@ -318,27 +318,30 @@ async function terminateAppWithTiming(label) {
   }
 }
 
-async function launchAppWithTimeout(launchArgs, timeoutMs = LAUNCH_APP_TIMEOUT_MS) {
-  console.log(`[rnfb-e2e] launchApp starting (timeout=${timeoutMs}ms)`);
-  logLaunchInstallState('before-launch');
+async function launchAppWithTimeout(launchArgs, { deleteApp = true, timeoutMs } = {}) {
+  const effectiveTimeout = timeoutMs ?? (usesLiveMetro() ? LAUNCH_APP_TIMEOUT_MS : LAUNCH_APP_RELEASE_TIMEOUT_MS);
+  console.log(
+    `[rnfb-e2e] launchApp starting timeout=${effectiveTimeout}ms delete=${deleteApp} liveMetro=${usesLiveMetro()}`,
+  );
+  logLaunchInstallState(`before-launch delete=${deleteApp}`);
   let timer;
 
   try {
     await Promise.race([
       device.launchApp({
         newInstance: true,
-        delete: true,
+        delete: deleteApp,
         launchArgs,
       }),
       new Promise((_, reject) => {
         timer = setTimeout(() => {
           const err = new Error(
-            `[rnfb-e2e] launchApp timed out after ${timeoutMs}ms — check simulator.log for ` +
+            `[rnfb-e2e] launchApp timed out after ${effectiveTimeout}ms — check simulator.log for ` +
               `[rnfb-lifecycle] packager-probe / RCTJavaScriptDidFailToLoad and Detox waitForActive`,
           );
           err.retryableLaunchFailure = true;
           reject(err);
-        }, timeoutMs);
+        }, effectiveTimeout);
       }),
     ]);
     console.log('[rnfb-e2e] launchApp complete');
@@ -370,7 +373,9 @@ async function launchAppWithRetry(launchArgs, { testsDir } = {}) {
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
 
-      await launchAppWithTimeout(launchArgs);
+      await launchAppWithTimeout(launchArgs, {
+        deleteApp: launchAttempt === 1,
+      });
       return;
     } catch (err) {
       console.warn(`[rnfb-e2e] launchApp failure reason=${err?.message || err}`);
