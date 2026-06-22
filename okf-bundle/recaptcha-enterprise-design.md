@@ -357,10 +357,10 @@ With js-sdk 12.15 / #9991, both modules may use Enterprise concurrently on Other
 
 ## Phase 3 — App Check: iOS native (CocoaPods)
 
-- [ ] **3.1** Implement `'recaptcha'` in `RNFBAppCheckProvider.m` via `FIRRecaptchaProvider` (iOS-only `#if`; clear error on other Apple platforms).
-- [ ] **3.2** Link the reCAPTCHA Enterprise SDK pod unconditionally (Option A; provider code already lives in `FirebaseAppCheck`); document the redownloaded `GoogleService-Info.plist` / `FIROptions.recaptchaSiteKey` requirement.
-- [ ] **3.3** Confirm `RNFBAppCheckModule` early init (`sharedInstance` before `FirebaseApp.configure()`) is compatible with the Recaptcha provider.
-- [ ] **3.4** iOS native coverage via LLVM profraw pipeline on e2e path.
+- [x] **3.1** Implement `'recaptcha'` in `RNFBAppCheckProvider.m` via `FIRRecaptchaProvider` (iOS-only `#if`; reject `configureProvider` with JS-visible error on other Apple platforms or failed init).
+- [x] **3.2** Link the reCAPTCHA Enterprise SDK pod unconditionally (Option A; provider code already lives in `FirebaseAppCheck`); document the redownloaded `GoogleService-Info.plist` / `FIROptions.recaptchaSiteKey` requirement.
+- [x] **3.3** Confirm `RNFBAppCheckModule` early init (`sharedInstance` before `FirebaseApp.configure()`) is compatible with the Recaptcha provider.
+- [x] **3.4** Native coverage: no iOS unit tests in `packages/app-check/ios` — runtime e2e is **Phase 9** (`packages/app-check/e2e/appcheck.e2e.js` `'recaptcha'` smoke) and Phase 9.4 LLVM profraw flush on the configureProvider/getToken path (`okf-bundle/testing/coverage-design.md`). JS routing tests cover macOS recaptcha rejection.
 
 ---
 

@@ -41,9 +41,9 @@
   return self.providers[app.name];
 }
 
-- (void)configure:(FIRApp *)app
-     providerName:(NSString *)providerName
-       debugToken:(NSString *)debugToken {
+- (nullable NSError *)configure:(FIRApp *)app
+                   providerName:(NSString *)providerName
+                     debugToken:(NSString *)debugToken {
   DLog(@"appName/providerName/debugToken: %@/%@/%@", app.name, providerName,
        (debugToken == nil ? @"null" : @"(not shown)"));
   if (self.providers == nil) {
@@ -55,7 +55,7 @@
   }
 
   RNFBAppCheckProvider *provider = self.providers[app.name];
-  [provider configure:app providerName:providerName debugToken:debugToken];
+  return [provider configure:app providerName:providerName debugToken:debugToken];
 }
 
 @end

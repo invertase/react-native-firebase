@@ -32,6 +32,37 @@ describe('initializeAppCheck routing', function () {
       ).toEqual({ providerName: 'recaptcha' });
     });
 
+    it('maps ReCaptchaEnterpriseProvider to recaptcha on iOS', function () {
+      expect(
+        resolveNativeInitializeAppCheckRoute(
+          { provider: new ReCaptchaEnterpriseProvider('enterprise-key') },
+          { ...nativeContext, platformOS: 'ios' },
+        ),
+      ).toEqual({ providerName: 'recaptcha' });
+    });
+
+    it('throws for ReCaptchaEnterpriseProvider on macOS', function () {
+      expect(() =>
+        resolveNativeInitializeAppCheckRoute(
+          { provider: new ReCaptchaEnterpriseProvider('enterprise-key') },
+          { ...nativeContext, platformOS: 'macos' },
+        ),
+      ).toThrow('ReCaptcha App Check provider is not supported on macOS');
+    });
+
+    it('throws for ReactNativeFirebaseAppCheckProvider recaptcha on macOS', function () {
+      const provider = new ReactNativeFirebaseAppCheckProvider({
+        apple: { provider: 'recaptcha' },
+      });
+
+      expect(() =>
+        resolveNativeInitializeAppCheckRoute(
+          { provider },
+          { ...nativeContext, platformOS: 'macos' },
+        ),
+      ).toThrow('ReCaptcha App Check provider is not supported on macOS');
+    });
+
     it('throws for ReCaptchaV3Provider on native', function () {
       expect(() =>
         resolveNativeInitializeAppCheckRoute(

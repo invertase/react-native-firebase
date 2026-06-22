@@ -39,6 +39,8 @@ RCT_EXPORT_MODULE();
   dispatch_once(&once, ^{
     sharedInstance = [[RNFBAppCheckModule alloc] init];
     sharedInstance.providerFactory = [[RNFBAppCheckProviderFactory alloc] init];
+    // Must run before [FIRApp configure]. Registers the factory only; provider delegates
+    // (including FIRRecaptchaProvider) are created lazily in configureProvider once FIRApp exists.
     [FIRAppCheck setAppCheckProviderFactory:sharedInstance.providerFactory];
   });
   return sharedInstance;
@@ -72,9 +74,18 @@ RCT_EXPORT_METHOD(configureProvider
                   : (RCTPromiseRejectBlock)reject) {
   DLog(@"appName/providerName/debugToken: %@/%@/%@", firebaseApp.name, providerName,
        (debugToken == nil ? @"null" : @"(not shown)"));
-  [[RNFBAppCheckModule sharedInstance].providerFactory configure:firebaseApp
-                                                    providerName:providerName
-                                                      debugToken:debugToken];
+  NSError *configureError =
+      [[RNFBAppCheckModule sharedInstance].providerFactory configure:firebaseApp
+                                                        providerName:providerName
+                                                          debugToken:debugToken];
+  if (configureError != nil) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                      userInfo:(NSMutableDictionary *)@{
+                                        @"code" : @"internal-error",
+                                        @"message" : configureError.localizedDescription,
+                                      }];
+    return;
+  }
   resolve([NSNull null]);
 }
 
