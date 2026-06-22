@@ -33,8 +33,10 @@ const JET_RETRYABLE_WS_RE = /\[jet-ws\] RETRYABLE_DISCONNECT code=(1006|1001)\b/
 const JET_RECONNECT_RECOVERED_RE = /\[jet-ws\] reconnect_recovered code=(1006|1001)\b/;
 const JET_SERVER_NOT_RUNNING_RE = /server wasn't running/i;
 const JET_COVERAGE_LOST_RE = /Coverage summary:[\s\S]*?Unknown% \( 0\/0 \)/;
+const JET_COVERAGE_TEARDOWN_RE =
+  /Failed to send 'coverage-ready' message: WebSocket is closed|coverage upload timed out waiting for coverage-ack/i;
 const RETRYABLE_LAUNCH_RE =
-  /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding|Unknown application display identifier|Simulator device failed to launch/i;
+  /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding|Unknown application display identifier|Simulator device failed to launch|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain/i;
 const PORT_CLOSED_ERROR_CODES = new Set(['ECONNREFUSED', 'ECONNRESET', 'EPIPE']);
 
 let cachedUsesLiveMetro;
@@ -193,6 +195,10 @@ function isRetryableJetDisconnect(output) {
 
 function isRetryableJetSessionFailure(output) {
   if (JET_SERVER_NOT_RUNNING_RE.test(output)) {
+    return true;
+  }
+
+  if (JET_COVERAGE_TEARDOWN_RE.test(output)) {
     return true;
   }
 
