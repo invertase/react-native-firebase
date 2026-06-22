@@ -11,6 +11,7 @@ Knowledge for GitHub Actions workflows in this repository: how jobs are structur
 ## Shared E2E dependencies
 
 * [Detox yarn patches](detox-patches.md) — inventory, `ECOMPROMISED` lock flake, headless patch update workflow
+* [iOS diagnostic scripts](ios.md#operational-notes) — `resource-monitor.sh`, `flake-summary.sh` (artifact helpers for flake triage)
 
 ## Related
 
