@@ -1,4 +1,4 @@
-import { getApp } from '@react-native-firebase/app';
+import { getApp, initializeApp } from '@react-native-firebase/app';
 import {
   initializeAppCheck,
   getToken,
@@ -10,6 +10,7 @@ import {
   ReCaptchaEnterpriseProvider,
   ReactNativeFirebaseAppCheckProvider,
   SDK_VERSION,
+  type AppCheck,
   type AppCheckOptions,
   type AppCheckTokenResult,
 } from '.';
@@ -43,6 +44,16 @@ const reCaptchaEnterpriseProvider = new ReCaptchaEnterpriseProvider('enterprise-
 console.log(reCaptchaV3Provider);
 console.log(reCaptchaEnterpriseProvider);
 
+initializeAppCheck(getApp(), {
+  provider: reCaptchaEnterpriseProvider,
+  isTokenAutoRefreshEnabled: true,
+});
+
+initializeAppCheck(getApp(), {
+  provider: reCaptchaV3Provider,
+  isTokenAutoRefreshEnabled: true,
+});
+
 const rnfbProvider = new ReactNativeFirebaseAppCheckProvider();
 rnfbProvider.configure({
   android: { provider: 'recaptcha' },
@@ -52,4 +63,16 @@ rnfbProvider.configure({
 initializeAppCheck(getApp(), {
   provider: rnfbProvider,
   isTokenAutoRefreshEnabled: true,
+});
+
+// provider-less initializeAppCheck when app has recaptchaSiteKey (js-sdk 12.15+)
+initializeApp(
+  { apiKey: 'a', appId: 'b', projectId: 'c', recaptchaSiteKey: '6Le-test-site-key' },
+  'providerLessAppCheckApp',
+).then(recaptchaSiteKeyApp =>
+  initializeAppCheck(recaptchaSiteKeyApp, {
+    isTokenAutoRefreshEnabled: true,
+  }),
+).then((providerLessAppCheck: AppCheck) => {
+  console.log(providerLessAppCheck.app.options.recaptchaSiteKey);
 });
