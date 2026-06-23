@@ -1172,4 +1172,22 @@ describe('auth() modular', function () {
       });
     });
   });
+
+  /*
+   * initializeRecaptchaConfig smoke — FlutterFire pattern: assert the bridge completes without
+   * throw. Native SDKs pre-warm Enterprise config; Other/Web delegates to firebase-js-sdk;
+   * Other/Hermes (macOS) resolves no-op + warn.
+   *
+   * Combined App Check + Auth Enterprise (#9991): on Other/Web, call initializeRecaptchaConfig
+   * before Enterprise phone verification, then initialize App Check with ReCaptchaEnterpriseProvider
+   * (or provider-less init when recaptchaSiteKey is set). See appcheck.e2e.js and
+   * okf-bundle/recaptcha-enterprise-design.md for the full dual-init manual scenario.
+   */
+  describe('initializeRecaptchaConfig()', function () {
+    it('completes without throw', async function () {
+      const { getApp } = modular;
+      const { getAuth, initializeRecaptchaConfig } = authModular;
+      await initializeRecaptchaConfig(getAuth(getApp()));
+    });
+  });
 });
