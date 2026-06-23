@@ -20,4 +20,5 @@ Knowledge documents for react-native-firebase development, testing, and maintena
 
 # Packages
 
+* [@react-native-firebase/app-check](/packages/app-check/index.md) — App Check provider routing matrix and compare:types registry
 * [@react-native-firebase/auth](/packages/auth/index.md) — Auth modular API type parity, platform matrix, and compare:types triage

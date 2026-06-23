@@ -43,7 +43,7 @@ Permanent on iOS/Android, or verified elsewhere; no further work this round.
 
 ---
 
-## Update compare:types note (#3–#4, #6, #9–#10, #12–#22, #23a–#23h)
+## Update compare:types note (#3–#4, #6, #9–#10, #12–#22, #23b–#23h)
 
 Won't change on **iOS/Android** now, but `configs/auth.ts` reasons should document future **Other/Hermes**, **Other/Web**, or **Other/All** support. Registry updated unless noted.
 
@@ -65,7 +65,6 @@ Won't change on **iOS/Android** now, but `configs/auth.ts` reasons should docume
 | **20** | `reauthenticateWithPhoneNumber` | Same as **#19**. |
 | **21** | `initializeAuth(deps)` ignored | iOS/Android: deps ignored. **Other/All:** js-sdk persistence/error-map deps possible. *(Types match; runtime note only.)* |
 | **22** | `credentialFromResult` / `credentialFromError` → `null` | Signatures match js-sdk on all providers. **Runtime:** always `null` today. **iOS/Android:** no native extraction planned. **Other/Hermes:** not delegated. **Other/Web:** future work — delegate to firebase-js-sdk in `RNFBAuthModule` (see **#40**). Documented on `OAuthProvider`, `FacebookAuthProvider`, and `PhoneAuthProvider` in `configs/auth.ts`; same runtime applies to `GoogleAuthProvider`, `GithubAuthProvider`, `TwitterAuthProvider`. |
-| **23a** | `initializeRecaptchaConfig` | **Other/Web** only. |
 | **23b** | `RecaptchaVerifier` | **Other/Web** only. |
 | **23c** | `SAMLAuthProvider` | **Other/Web** only. |
 | **23d** | `AuthErrorCodes` | **Other/All** re-export possible. |
@@ -146,10 +145,11 @@ Documented in **#22**, provider JSDoc, `configs/auth.ts` (`OAuthProvider`, `Face
 
 ---
 
-## Done (#28–#31, #33)
+## Done (#23a, #28–#31, #33)
 
 | # | Item | What changed |
 |---|------|--------------|
+| **23a** | `initializeRecaptchaConfig` | Exported from `packages/auth/lib/modular.ts` with js-sdk signature on all platforms. **iOS/Android:** native bridge (`ReactNativeFirebaseAuthModule` / `RNFBAuthModule`). **Other/Web:** js-sdk delegation in `RNFBAuthModule`. **Other/Hermes** (incl. macOS): resolve no-op + `console.warn`. Removed from `missingInRN` in `configs/auth.ts`. Web phone Enterprise verification must call it before phone flows — see [`docs/auth/phone-auth.mdx`](../../../docs/auth/phone-auth.mdx). |
 | **28** | `ActionCodeURL.parseLink` / `parseActionCodeURL` | Pure JS port from firebase-js-sdk; **sync** `ActionCodeURL \| null` on all platforms |
 | **29** | Provider credential return types | Emit `OAuthCredential` class name (not `OAuthCredentialType` alias) in provider static methods |
 | **31** | Provider `differentShape` cleanup | Removed stale type-only provider entries where declarations now match |
@@ -167,9 +167,9 @@ All **#1–#40** items are classified. `yarn compare:types auth` passes with doc
 | Outcome | Items |
 |---------|-------|
 | **Won't change** | #1, #2, #5, #7, #8, #11, #37 |
-| **Implemented** | #28, #29, #31, #33, #24–#27 |
+| **Implemented** | #23a, #28, #29, #31, #33, #24–#27 |
 | **Document only** | #32, #36, #40 (+ runtime-only **#15–#22** where types already match) |
-| **Deferred implementation** | #32 per-platform `auth.config` typing; **#23a–#23h** / `missingInRN` Other/Web exports; **#40** Other/Web `credentialFromResult` delegation |
+| **Deferred implementation** | #32 per-platform `auth.config` typing; **#23b–#23h** / `missingInRN` Other/Web exports; **#40** Other/Web `credentialFromResult` delegation |
 | **RN extensions (documented)** | #3, #4, #6, #9–#14, #30, #38, #39, `extraInRN` helpers |
 
 ---
@@ -204,7 +204,7 @@ Other/Web: not delegated yet; firebase-js-sdk disableWarnings DOM suppression is
 
 ### Other/Web only (**W**)
 
-**#9, #12, #13, #14, #15, #22, #23a, #23b, #23c, #23e, #23f**
+**#9, #12, #13, #14, #15, #22, #23b, #23c, #23e, #23f**
 
 ### Other/All (**H+W**)
 
@@ -228,5 +228,6 @@ Other/Web: not delegated yet; firebase-js-sdk disableWarnings DOM suppression is
 | 6 | **#8/#37** closed (MFA on Other verified in `tests/local-tests`); **#29/#31** provider typing aligned; **#33** enumerable `additionalUserInfo` + `AdditionalUserInfoNative`; **#32** option B + **#36** document-only; registry + migration guide updated |
 | 7 | **#40** document-only; `credentialFromResult` future path on **Other/Web** via `RNFBAuthModule`; triage **#1–#40** complete |
 | 8 | Moved to `okf-bundle/packages/auth/compare-types-triage.md` |
+| 9 | **#23a** `initializeRecaptchaConfig` implemented (native + Other/Web; Other/Hermes no-op+warn); removed from `missingInRN` |
 
-**Future work (post–v25 typing):** Other/Web `credentialFromResult` delegation; optional per-platform `auth.config` typing; `missingInRN` browser/js-sdk exports per **#23a–#23h**.
+**Future work (post–v25 typing):** Other/Web `credentialFromResult` delegation; optional per-platform `auth.config` typing; `missingInRN` browser/js-sdk exports per **#23b–#23h**.

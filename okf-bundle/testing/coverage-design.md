@@ -155,6 +155,19 @@ Both languages are covered by the same LLVM pipeline. Swift files (e.g. under `p
 
 Most entries in the raw llvm-cov export are Pods/SDK/system code; only paths under `packages/` matter for Codecov. A healthy full e2e run typically reports on the order of **~50–60 `packages/*/ios/**` files** among ~2000 total source entries.
 
+## reCAPTCHA Enterprise native sources (App Check + Auth)
+
+reCAPTCHA Enterprise support adds branches to **existing** native module files — no new source files and **no new Codecov upload paths** are required. Jacoco (Android) and LLVM (iOS) already include these paths via `firebaseModulePaths` / static app linking:
+
+| Package | File | What e2e exercises |
+|---------|------|-------------------|
+| **app-check** | `packages/app-check/android/src/main/java/io/invertase/firebase/appcheck/ReactNativeFirebaseAppCheckProvider.java` | `'recaptcha'` → `RecaptchaAppCheckProviderFactory` |
+| **app-check** | `packages/app-check/ios/RNFBAppCheck/RNFBAppCheckProvider.m` | `'recaptcha'` → `FIRRecaptchaProvider` (iOS only) |
+| **auth** | `packages/auth/android/src/main/java/io/invertase/firebase/auth/ReactNativeFirebaseAuthModule.java` | `initializeRecaptchaConfig` bridge |
+| **auth** | `packages/auth/ios/RNFBAuth/RNFBAuthModule.m` | `initializeRecaptchaConfigWithCompletion` bridge |
+
+Planned e2e smoke tests (Phase 9) hit `configureProvider` / `getToken` for App Check recaptcha and `initializeRecaptchaConfig` for Auth. Until those e2e tests land, new lines may show as uncovered in Codecov — that is expected, not a missing upload configuration.
+
 ## CocoaPods → SPM
 
 The Podfile `post_install` coverage flags are temporary. When native dependencies move to SPM, enable the same build settings on SPM targets; the post-test script remains unchanged.
