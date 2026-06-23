@@ -109,6 +109,7 @@ export {
   last,
   arrayAgg,
   concat,
+  coalesce,
   sqrt,
   currentTimestamp,
   not,
