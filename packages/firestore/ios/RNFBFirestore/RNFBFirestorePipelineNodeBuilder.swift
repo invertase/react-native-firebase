@@ -263,6 +263,20 @@ final class RNFBFirestorePipelineNodeBuilder {
     }
     let normalizedKind = normalizeAggregateKind(kind)
 
+    if normalizedKind == "count_if" {
+      var predicate = aggregate["expr"] ?? aggregate["field"] ?? aggregate["value"]
+      if predicate == nil, let extraArgs = aggregate["args"] as? [Any], let first = extraArgs.first {
+        predicate = first
+      }
+      guard let predicate else {
+        throw PipelineValidationError("pipelineExecute() expected \(fieldName) to include an expression for countIf.")
+      }
+      return AggregateFunctionBridge(
+        name: "count_if",
+        args: [try coerceBooleanExpression(predicate, fieldName: "\(fieldName).expr")]
+      )
+    }
+
     var args: [ExprBridge] = []
     if let expr = aggregate["expr"] ?? aggregate["field"] ?? aggregate["value"] {
       args.append(try coerceExpression(expr, fieldName: "\(fieldName).expr"))
@@ -1227,7 +1241,7 @@ final class RNFBFirestorePipelineNodeBuilder {
                 break expressionLoop
               }
 
-              if normalized == "and" || normalized == "or" {
+              if normalized == "and" || normalized == "or" || normalized == "xor" || normalized == "nor" {
                 guard !rawArgs.isEmpty else {
                   throw PipelineValidationError(
                     "pipelineExecute() expected \(currentField).args to contain boolean expressions.")

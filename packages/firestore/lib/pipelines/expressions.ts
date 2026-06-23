@@ -523,6 +523,7 @@ const EXPRESSION_METHOD_NAMES = [
   'unixSecondsToTimestamp',
   'vectorLength',
   'xor',
+  'nor',
   'length',
 ] as const;
 
@@ -2605,6 +2606,14 @@ export function xor(
   ..._additionalConditions: BooleanExpression[]
 ): BooleanExpression {
   return callBooleanHelper('xor', arguments);
+}
+
+export function nor(
+  _first: BooleanExpression,
+  _second: BooleanExpression,
+  ..._additionalConditions: BooleanExpression[]
+): BooleanExpression {
+  return callBooleanHelper('nor', arguments);
 }
 
 /**

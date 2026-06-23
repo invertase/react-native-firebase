@@ -47,11 +47,6 @@ const config: PackageConfig = {
         'Newer firebase-js-sdk null-handling expression helper not yet exposed by RN Firebase pipelines.',
     },
     {
-      name: 'nor',
-      reason:
-        'Newer firebase-js-sdk boolean expression helper not yet exposed by RN Firebase pipelines.',
-    },
-    {
       name: 'score',
       reason:
         'Newer firebase-js-sdk search score expression helper not yet exposed by RN Firebase pipelines.',

@@ -196,6 +196,7 @@ export {
   unixSecondsToTimestamp,
   vectorLength,
   xor,
+  nor,
   length,
 } from './expressions';
 export { pipelineResultEqual } from './pipeline-result';
