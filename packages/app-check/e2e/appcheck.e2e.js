@@ -17,6 +17,8 @@
 
 import { Base64 } from '@react-native-firebase/app/dist/module/common';
 
+const { getRecaptchaSiteKey } = require('../../app/e2e/helpers');
+
 const tokenUUIDs = [
   'fd650953-e806-4293-b5df-edfe544d82a8',
   '91794ec5-0746-4017-abd3-f26d2be221b3',
@@ -91,20 +93,6 @@ function decodeJWT(token) {
   const payload = JSON.parse(base64UrlDecode(parts[1]));
 
   return payload;
-}
-
-/**
- * reCAPTCHA Enterprise site key from the default Firebase app (native config files) or e2e
- * helpers. CI skips recaptcha smoke tests when absent — enable App Check reCAPTCHA in Firebase
- * console and redownload google-services.json / GoogleService-Info.plist first.
- */
-function getRecaptchaSiteKey() {
-  const { getApp } = modular;
-  const fromDefaultApp = getApp().options.recaptchaSiteKey;
-  if (fromDefaultApp) {
-    return fromDefaultApp;
-  }
-  return FirebaseHelpers.app.config().recaptchaSiteKey;
 }
 
 function isWebPlatform() {

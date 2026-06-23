@@ -2,14 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>AD_UNIT_ID_FOR_BANNER_TEST</key>
-	<string>ca-app-pub-3940256099942544/2934735716</string>
-	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
-	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
 	<string>448618578101-28tsenal97nceuij1msj7iuqinv48t02.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
 	<string>com.googleusercontent.apps.448618578101-28tsenal97nceuij1msj7iuqinv48t02</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>448618578101-a9p7bj5jlakabp22fo3cbkj7nsmag24e.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyAHAsf51D0A407EklG1bs-5wA7EbyfNFg0</string>
 	<key>GCM_SENDER_ID</key>
@@ -23,11 +21,11 @@
 	<key>STORAGE_BUCKET</key>
 	<string>react-native-firebase-testing.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<true></true>
+	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
 	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<false></false>
+	<true></true>
 	<key>IS_GCM_ENABLED</key>
 	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>

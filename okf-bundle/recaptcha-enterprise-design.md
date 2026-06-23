@@ -448,6 +448,8 @@ firebase-js-sdk 12.15+ ([#9991](https://github.com/firebase/firebase-js-sdk/pull
 
 E2e smoke comments in `packages/app-check/e2e/appcheck.e2e.js` and `packages/auth/e2e/auth.e2e.js` cross-reference this section.
 
+> **Test project bootstrap:** Full verification design (iteration 5) — steady project **AUDIT**, tiered e2e, dual App Check + Auth setup, `secondaryFromNative` cloud Auth, quotas, **`firebase-recaptcha-enterprise-doctor.sh`**: [reCAPTCHA Enterprise test setup](/recaptcha-enterprise-test-setup.md).
+
 ### Phase 9.4 — Native coverage flush
 
 No new Codecov upload paths or flush hooks are required. reCAPTCHA Enterprise branches live in **existing** native module files already covered by JaCoCo (Android) and LLVM profraw (iOS) via `NativeModules.RNFBTestingCoverage.flush()` in `tests/app.js` after Jet e2e completes. See [`okf-bundle/testing/coverage-design.md`](testing/coverage-design.md) — “reCAPTCHA Enterprise native sources (App Check + Auth)”. Phase 9 e2e smokes exercise `configureProvider` / `getToken` (App Check recaptcha) and `initializeRecaptchaConfig` (Auth) so those lines flush into native coverage on the next CI e2e run.
@@ -466,14 +468,63 @@ No new Codecov upload paths or flush hooks are required. reCAPTCHA Enterprise br
 
 ---
 
+## Phase 11 — Verification & test strategy (in progress)
+
+Canonical detail: [reCAPTCHA Enterprise test setup](/recaptcha-enterprise-test-setup.md) (iteration 5).
+
+### Goals
+
+1. **Maximize default Jet e2e coverage** without breaking emulator-based Auth/Firestore suites.
+2. Validate **App Check `recaptcha` `getToken()`** against cloud (Tier 1) with **App Check product enforcement UNENFORCED**.
+3. Validate **Auth Enterprise phone path** in **`AUDIT`** + fictional test numbers (Tier 2) via **`getAuth(getApp('secondaryFromNative'))`** in the **same Jet run** — default app stays on Auth emulator; **no env toggles**.
+4. Prove **both** App Check and Auth Enterprise when native config is present — dual setup in Phase C/D; shared `getRecaptchaSiteKey()` gate.
+5. Defer **Web** and **SMS `ENFORCE`** — welcome community reports.
+
+### Tier summary
+
+| Tier | Jet e2e default? | Emulators | Primary proof |
+|------|------------------|-----------|----------------|
+| 0–1 | Yes | ON (default Auth/Firestore) | `initializeRecaptchaConfig` smoke; App Check recaptcha JWT mint |
+| 2 | Yes (skip only if no native site key) | Default Auth ON; **`secondaryFromNative` cloud** | Phone sign-in under steady project **AUDIT** + test number |
+| 3 | No | None (local-tests UI) | Manual debug / demos |
+
+### Emulator vs cloud (decisions)
+
+| Capability | Emulator? | Notes |
+|------------|-----------|-------|
+| App Check recaptcha `getToken()` | **Cloud** | Independent of Firestore emulator; Tier 1 in default e2e |
+| Auth phone Enterprise AUDIT | **Cloud** (secondary app) | Default app stays on emulator; `getAuth(getApp('secondaryFromNative'))` never calls `useEmulator` — see [test setup](/recaptcha-enterprise-test-setup.md) § `useEmulator` ordering |
+| App Check ENFORCE on Firestore | N/A | **Not used** on shared project; cannot scope per-database |
+
+### Identity Platform SMS defense (steady state)
+
+`phoneEnforcementState`: **`AUDIT`** on `react-native-firebase-testing` at all times for e2e. One-time bootstrap via Identity Toolkit `projects.updateConfig` (script in test-setup doc). **No CI AUDIT/OFF wrapper** (YAGNI). **`ENFORCE`** not used.
+
+### Quota
+
+~**10,000 Enterprise assessments/month/org** free; billing instrument required. Steady AUDIT + default e2e ≈ 2 assessments/platform/run when config present — acceptable; org budget alerts; revisit OFF only if volume grows.
+
+### Implementation backlog (from test-setup doc)
+
+- [ ] **11.1** `packages/auth/e2e/recaptchaPhoneCloud.e2e.js` — Tier 2 on **`secondaryFromNative`** only (no env toggles; no `tests/app.js` changes)
+- [ ] **11.2** `tests/local-tests/recaptcha-enterprise/` manual UI (Tier 3)
+- [ ] **11.3** `firebase-recaptcha-enterprise-doctor.sh` — one-time AUDIT bootstrap + verify/fix (Phases B–D)
+- [ ] **11.4** Shared `getRecaptchaSiteKey()` in `packages/app/e2e/helpers.js`; doctor Phase D verification
+- [ ] **11.5** User-facing `docs/recaptcha-enterprise/testing.mdx` after tiers proven
+- [ ] **11.6** Execute Tier 1 + Tier 2 on `react-native-firebase-testing`; fill iteration log
+
+---
+
 ## Risks & testability
 
 | Risk | Mitigation |
 |------|------------|
 | Mobile App Check `recaptcha` needs Firebase console + often real device | E2e `this.skip()` gates; debug provider remains default in CI |
 | Native default app already configured before JS can supply `recaptchaSiteKey` | Document native config-file requirement; JS option plumbing applies to JS-created secondary apps and Other/Web |
-| Auth emulator lacks `initializeRecaptchaConfig` | Smoke “does not throw” only (FlutterFire) |
-| Web phone Enterprise fails if `initializeRecaptchaConfig` is omitted | Docs/examples call it first; tests cover expected upstream failure path |
+| Auth emulator lacks `initializeRecaptchaConfig` | Smoke “does not throw” only (FlutterFire); Tier 2 cloud Auth for real Enterprise path — see [test setup](/recaptcha-enterprise-test-setup.md) |
+| **`connectAuthEmulator` blocks phone Enterprise on default app** | Tier 2 uses **`getAuth(getApp('secondaryFromNative'))`** only — cloud Auth in same Jet run; no env toggles |
+| Enterprise assessment quota (10k/mo/org) | Steady **`AUDIT`**; ~2 assessments/platform/e2e run; budget alerts; OFF rollback only if cost grows |
+| Web phone Enterprise fails if `initializeRecaptchaConfig` is omitted | Docs/examples call it first; Web testing deferred with welcome reports |
 | iOS `ERROR_RECAPTCHA_SDK_NOT_LINKED` after Console toggling | Document Cloud Identity Platform disable steps in phone-auth docs |
 | `ReCaptchaV3Provider` on native | Runtime throw with clear message — native attestation uses Enterprise recaptcha factory, not v3 |
 | DOM polyfills on Hermes confuse feature detection | Use `Platform.OS === 'web'`, not `typeof document` |

@@ -33,6 +33,7 @@ okf_version: '0.1'
 # Features
 
 * [reCAPTCHA Enterprise design](/recaptcha-enterprise-design.md) — App Check + Auth Enterprise feature design, platform matrix, and implementation plan
+* [reCAPTCHA Enterprise test setup](/recaptcha-enterprise-test-setup.md) — tiered verification, agent runbook, adversarial review checklist
 
 # Packages
 

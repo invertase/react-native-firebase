@@ -15,6 +15,38 @@
       },
       "oauth_client": [
         {
+          "client_id": "448618578101-a9p7bj5jlakabp22fo3cbkj7nsmag24e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.invertase.testing",
+            "certificate_hash": "889b4292c735f371168a372cc7778992cd8a5052"
+          }
+        },
+        {
+          "client_id": "448618578101-f50e0ln93159r9nlhr1ktmf125nf64g1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.invertase.testing",
+            "certificate_hash": "a094b2938a1d0cdcbb9b7a6611d1731cbdb641d8"
+          }
+        },
+        {
+          "client_id": "448618578101-gva3jv7cr8qquj04k0o7cni674j65kha.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.invertase.testing",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "448618578101-h0o9b94jnhcoal2qgjn7s7ckkc2n7okq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.invertase.testing",
+            "certificate_hash": "909ca1482ef022bbae45a2db6b6d05d807a4c4aa"
+          }
+        },
+        {
           "client_id": "448618578101-pdjje2lkv3p941e03hkrhfa7459cr2v8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -33,20 +65,21 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "448618578101-sg12d2qin42cpr00f8b0gehs5s7inm0v.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "448618578101-28tsenal97nceuij1msj7iuqinv48t02.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.invertase.testing",
+                "app_store_id": "123456789"
+              }
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     }
