@@ -114,6 +114,8 @@ interface FluentExpressionMethods {
     replacement: Expression | unknown,
     ...others: Array<Expression | unknown>
   ): FunctionExpression;
+  ifNull(elseExpression: Expression): FunctionExpression;
+  ifNull(elseValue: unknown): FunctionExpression;
   arrayTransform(elementAlias: string, transform: Expression): FunctionExpression;
   arrayTransformWithIndex(
     elementAlias: string,
@@ -441,6 +443,7 @@ const EXPRESSION_METHOD_NAMES = [
   'arrayAgg',
   'concat',
   'coalesce',
+  'ifNull',
   'sqrt',
   'currentTimestamp',
   'not',
@@ -785,6 +788,7 @@ function normalizeGlobalArguments(name: string, args: unknown[]): RuntimeNode[] 
     case 'byteLength':
     case 'charLength':
     case 'coalesce':
+    case 'ifNull':
     case 'collectionId':
     case 'exp':
     case 'ifAbsent':
@@ -1613,6 +1617,28 @@ export function ifAbsent(
   _elseValue: Expression | unknown,
 ): Expression {
   return callExpressionHelper('ifAbsent', arguments);
+}
+
+/**
+ * @beta
+ * Returns the fallback when the first argument is null or absent.
+ */
+export function ifNull(_ifExpr: Expression, _elseExpr: Expression): FunctionExpression;
+export function ifNull(_ifExpr: Expression, _elseValue: unknown): FunctionExpression;
+export function ifNull(_ifFieldName: string, _elseExpr: Expression): FunctionExpression;
+export function ifNull(
+  _ifFieldName: string,
+  _elseValue: Expression | unknown,
+): FunctionExpression;
+export function ifNull(
+  _ifFieldName: string | Expression,
+  _elseValue: Expression | unknown,
+): FunctionExpression;
+export function ifNull(
+  _ifExpr: string | Expression,
+  _elseValue: Expression | unknown,
+): FunctionExpression {
+  return callFunctionHelper('ifNull', arguments);
 }
 
 /**

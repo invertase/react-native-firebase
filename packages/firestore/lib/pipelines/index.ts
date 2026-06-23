@@ -115,6 +115,7 @@ export {
   currentTimestamp,
   not,
   ifAbsent,
+  ifNull,
   ifError,
   toLower,
   toUpper,

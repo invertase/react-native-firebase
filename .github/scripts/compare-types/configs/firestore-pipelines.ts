@@ -33,11 +33,6 @@ const config: PackageConfig = {
         'Newer firebase-js-sdk geospatial expression helper not yet exposed by RN Firebase pipelines.',
     },
     {
-      name: 'ifNull',
-      reason:
-        'Newer firebase-js-sdk null-handling expression helper not yet exposed by RN Firebase pipelines.',
-    },
-    {
       name: 'score',
       reason:
         'Newer firebase-js-sdk search score expression helper not yet exposed by RN Firebase pipelines.',

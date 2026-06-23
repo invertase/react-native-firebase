@@ -1,0 +1,53 @@
+---
+title: ifNull
+description: Pipeline expression helper that returns a fallback when a value is null or absent.
+next: /firestore/pipelines/sdk-compatibility
+previous: /firestore/pipelines/current-document
+---
+
+`ifNull()` returns a fallback when the first argument evaluates to **null** or is **absent**. Unlike [`ifAbsent()`](/firestore/pipelines), which only substitutes missing fields, `ifNull()` also replaces explicit `null` values stored on the document.
+
+Import from the pipelines entry point:
+
+```js
+import { ifNull, field, constant } from '@react-native-firebase/firestore/pipelines';
+```
+
+# Basic example
+
+```js
+import { getFirestore } from '@react-native-firebase/firestore';
+import { execute, field, constant, ifNull } from '@react-native-firebase/firestore/pipelines';
+
+const db = getFirestore('your-enterprise-database-id');
+
+const snapshot = await execute(
+  db
+    .pipeline()
+    .collection('users')
+    .select(ifNull(field('displayName'), constant('Anonymous')).as('displayName')),
+);
+
+snapshot.results.forEach(row => {
+  console.log(row.data().displayName);
+});
+```
+
+# Fluent form
+
+```js
+field('displayName').ifNull(constant('Anonymous')).as('displayName');
+```
+
+# Comparison with ifAbsent
+
+| Helper     | Missing field | Explicit `null` on document |
+| ---------- | ------------- | --------------------------- |
+| `ifAbsent` | fallback      | keeps `null`                |
+| `ifNull`   | fallback      | fallback                    |
+
+Use `ifNull` when you want one expression to cover both absent and null values.
+
+# Upstream reference
+
+See the [firebase-js-sdk `ifNull` declaration](https://firebase.google.com/docs/reference/js/firestore_pipelines#ifnull) for full overload signatures.
