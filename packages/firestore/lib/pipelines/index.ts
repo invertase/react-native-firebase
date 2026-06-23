@@ -104,6 +104,7 @@ export {
   mod,
   round,
   conditional,
+  switchOn,
   countDistinct,
   first,
   last,

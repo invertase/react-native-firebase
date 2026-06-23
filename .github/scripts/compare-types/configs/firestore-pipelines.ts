@@ -43,11 +43,6 @@ const config: PackageConfig = {
         'Newer firebase-js-sdk subcollection stage helper not yet exposed by RN Firebase pipelines.',
     },
     {
-      name: 'switchOn',
-      reason:
-        'Newer firebase-js-sdk conditional expression helper not yet exposed by RN Firebase pipelines.',
-    },
-    {
       name: 'timestampDiff',
       reason:
         'Newer firebase-js-sdk timestamp expression helper not yet exposed by RN Firebase pipelines.',

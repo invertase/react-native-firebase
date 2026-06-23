@@ -109,6 +109,7 @@
         { "title": "Pipelines", "href": "/firestore/pipelines" },
         { "title": "currentDocument", "href": "/firestore/pipelines/current-document" },
         { "title": "ifNull", "href": "/firestore/pipelines/if-null" },
+        { "title": "switchOn", "href": "/firestore/pipelines/switch-on" },
         {
           "title": "Pipeline SDK compatibility",
           "href": "/firestore/pipelines/sdk-compatibility"

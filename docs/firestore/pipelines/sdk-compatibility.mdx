@@ -2,7 +2,7 @@
 title: Pipeline SDK compatibility
 description: How React Native Firebase Firestore pipelines compare to the firebase-js-sdk pipelines API.
 next: /functions/usage
-previous: /firestore/pipelines/if-null
+previous: /firestore/pipelines/switch-on
 ---
 
 React Native Firebase aims to be a **drop-in replacement** for the [firebase-js-sdk Firestore pipelines module](https://firebase.google.com/docs/reference/js/firestore_pipelines) on React Native targets. Most expression helpers, stage builders, and types match the JS SDK. This page summarizes deliberate gaps so you can plan migrations from web samples.
@@ -27,7 +27,6 @@ These firebase-js-sdk pipeline exports are **not** exposed yet. They are listed 
 | `documentMatches`           | Expression | Document matching helper (requires `search` stage) |
 | `geoDistance`               | Expression | Geospatial distance (requires `search` stage)      |
 | `score`                     | Expression | Full-text search score                             |
-| `switchOn`                  | Expression | Conditional switch                                 |
 | `timestampDiff`             | Expression | Timestamp arithmetic                               |
 | `timestampExtract`          | Expression | Timestamp field extraction                         |
 | `subcollection`             | Stage      | Subcollection source stage                         |

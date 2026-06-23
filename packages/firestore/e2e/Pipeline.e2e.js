@@ -1081,6 +1081,45 @@ describe('FirestorePipeline', function () {
         snapshot.results[0].data().isVerified.should.equal(false);
       });
 
+      it('evaluates switchOn with multiple conditions and a default', async function () {
+        const { execute, field, constant, switchOn, equal } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/switch-on`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'a'), { status: 1 }),
+          setDoc(doc(coll, 'b'), { status: 2 }),
+          setDoc(doc(coll, 'c'), { status: 99 }),
+        ]);
+
+        const pipeline = db
+          .pipeline()
+          .collection(coll)
+          .sort(field('__name__').ascending())
+          .select(
+            switchOn(
+              equal(field('status'), constant(1)),
+              constant('Active'),
+              equal(field('status'), constant(2)),
+              constant('Pending'),
+              constant('Unknown'),
+            ).as('statusLabel'),
+          );
+
+        if (Platform.ios) {
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['switchOn']);
+          return;
+        }
+
+        const snapshot = await execute(pipeline);
+
+        snapshot.results.should.have.length(3);
+        snapshot.results[0].data().statusLabel.should.equal('Active');
+        snapshot.results[1].data().statusLabel.should.equal('Pending');
+        snapshot.results[2].data().statusLabel.should.equal('Unknown');
+      });
+
       it('evaluates ifNull for null, present, and missing field values', async function () {
         const { execute, field, constant, ifNull } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;

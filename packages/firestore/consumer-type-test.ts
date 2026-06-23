@@ -130,6 +130,7 @@ import {
   isType,
   ifAbsent,
   ifNull,
+  switchOn,
   coalesce,
   currentDocument,
   ifError,
@@ -1214,6 +1215,14 @@ void ifError(field('riskScore'), field('defaultScore'));
 void ifError(field('riskScore'), 0);
 // conditional
 void conditional(field('active').equal(true), field('price'), constant(0));
+// switchOn: (BooleanExpression, Expression, ...BooleanExpression | Expression)
+void switchOn(
+  equal(field('status'), constant(1)),
+  constant('Active'),
+  equal(field('status'), constant(2)),
+  constant('Pending'),
+  constant('Unknown'),
+);
 
 // ----- Ordering: standalone ascending / descending -----
 void ascending(field('createdAt'));

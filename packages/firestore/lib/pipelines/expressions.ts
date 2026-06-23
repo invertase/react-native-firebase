@@ -1507,6 +1507,18 @@ export function conditional(
 
 /**
  * @beta
+ * Evaluates to the result for the first true condition (switch-style).
+ */
+export function switchOn(
+  _condition: BooleanExpression,
+  _result: Expression,
+  ..._others: Array<BooleanExpression | Expression>
+): FunctionExpression {
+  return callFunctionHelper('switchOn', arguments);
+}
+
+/**
+ * @beta
  * Count distinct values of an expression or field.
  */
 export function countDistinct(_expr: Expression | string): AggregateFunction {
