@@ -84,7 +84,7 @@ For instructions on how to generate required keys and register an app for the de
 - [Android `RecaptchaAppCheckProviderFactory` reference](https://firebase.google.com/docs/reference/android/com/google/firebase/appcheck/recaptcha/RecaptchaAppCheckProviderFactory) (mobile reCAPTCHA Enterprise)
 - [iOS `FIRRecaptchaProvider` reference](https://firebase.google.com/docs/reference/ios/firebaseappcheck/api/reference/Classes/FIRRecaptchaProvider) (mobile reCAPTCHA Enterprise, iOS only)
 
-After enabling the reCAPTCHA Enterprise App Check provider in the Firebase console, redownload `google-services.json` and `GoogleService-Info.plist` so they include `recaptchaSiteKey`. Native default apps read the site key from these files at startup.
+After enabling the reCAPTCHA Enterprise App Check provider in the Firebase console, redownload `google-services.json` and `GoogleService-Info.plist` so they include `recaptchaSiteKey`. Native default apps read the site key from these files at startup. Expo config plugins copy these files from `app.json` and do not generate keys — see [Expo and config plugins](/app/json-config#expo-and-config-plugins).
 
 > Additionally, You can reference the iOS private key creation and registrations steps outlined in the [Cloud Messaging iOS Setup](/messaging/usage/ios-setup#linking-apns-with-fcm-ios).
 

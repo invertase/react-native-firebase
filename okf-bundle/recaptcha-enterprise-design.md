@@ -322,7 +322,7 @@ With js-sdk 12.15 / #9991, both modules may use Enterprise concurrently on Other
 - [x] **0.4** iOS native app initialization: set `firOptions.recaptchaSiteKey` when provided, and include `firOptions.recaptchaSiteKey` in `RNFBSharedUtils` app option maps.
 - [x] **0.5** Add focused app tests for default native-app config exposure, JS-created secondary app propagation, and Other/Web option preservation. The native default app test should document that JS cannot retroactively mutate startup-configured native options.
 - [x] **0.6** Add implementation notes for future `authDomain` cleanup: prefer generalized Firebase option propagation over additional one-off app→package maps. *(Note: `recaptchaSiteKey` uses native `FirebaseOptions` / `FIROptions` plumbing; `authDomain` still uses the legacy `authDomains` side map — future work should migrate `authDomain` to the same pattern.)*
-- [ ] **0.7** Expo/config-plugin docs: users must redownload `google-services.json` / `GoogleService-Info.plist` after enabling App Check reCAPTCHA so native default apps contain `recaptchaSiteKey`; plugins copy these files and should not synthesize keys.
+- [x] **0.7** Expo/config-plugin docs: users must redownload `google-services.json` / `GoogleService-Info.plist` after enabling App Check reCAPTCHA so native default apps contain `recaptchaSiteKey`; plugins copy these files and should not synthesize keys.
 
 ---
 
@@ -406,7 +406,7 @@ With js-sdk 12.15 / #9991, both modules may use Enterprise concurrently on Other
 - [x] **7.3** Tests for `isWeb` / `isOtherHermes` guards (throw vs delegate). *(Already satisfied: `packages/app/__tests__/platformHelpers.test.ts` for helper detection; `packages/app-check/__tests__/namespacedRouting.test.ts` for App Check throw vs delegate; `packages/auth/__tests__/initializeRecaptchaConfig.hermes.test.ts` for Auth Hermes no-op+warn.)*
 - [x] **7.4** `packages/auth/__tests__/auth.test.ts` — `initializeRecaptchaConfig` export and modular wiring. *(Already satisfied: modular export exposure test in `auth.test.ts`.)*
 - [x] **7.5** Auth web bridge test for js-sdk delegation and Web phone Enterprise initialization ordering. *(Already satisfied: `packages/auth/__tests__/initializeRecaptchaConfig.test.ts` — js-sdk delegation, modular bridge, Enterprise phone call-order regression.)*
-- [x] **7.6** Plugin tests only if Expo config changes. *(N/A — no Expo config-plugin changes in this feature; Phase 0.7 docs-only item remains open.)*
+- [x] **7.6** Plugin tests only if Expo config changes. *(N/A — no Expo config-plugin code changes in this feature; Phase 0.7 Expo/docs note added in `docs/app/json-config.mdx`.)*
 
 ---
 
