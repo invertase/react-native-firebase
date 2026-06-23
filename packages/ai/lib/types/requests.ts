@@ -204,8 +204,7 @@ export const ImageConfigImageSize = {
  * Sizes for generated images.
  * @public
  */
-export type ImageConfigImageSize =
-  (typeof ImageConfigImageSize)[keyof typeof ImageConfigImageSize];
+export type ImageConfigImageSize = (typeof ImageConfigImageSize)[keyof typeof ImageConfigImageSize];
 
 /**
  * An object that represents a latitude/longitude pair.
