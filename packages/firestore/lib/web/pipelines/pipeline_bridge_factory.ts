@@ -131,11 +131,7 @@ function normalizeWebDistanceMeasure(value: unknown, fieldName: string): WebDist
     throw new Error(`pipelineExecute() expected ${fieldName} to be a string.`);
   }
 
-  const normalized = value
-    .trim()
-    .replace(/-/g, '_')
-    .replace(/ /g, '_')
-    .toUpperCase();
+  const normalized = value.trim().replace(/-/g, '_').replace(/ /g, '_').toUpperCase();
 
   switch (normalized) {
     case 'COSINE':

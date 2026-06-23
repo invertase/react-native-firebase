@@ -389,10 +389,7 @@ describe('FirestorePipeline', function () {
           .pipeline()
           .collection(collectionRef)
           .where(and(f('genre').equal('Fantasy'), f('rating').greaterThan(3)))
-          .select(
-            f('title').as('title'),
-            f('rating').add(constant(1)).as('boostedRating'),
-          )
+          .select(f('title').as('title'), f('rating').add(constant(1)).as('boostedRating'))
           .sort(Ordering.of(f('rating')).descending());
 
         const snapshot = await execute(pipeline);
@@ -1874,7 +1871,8 @@ describe('FirestorePipeline', function () {
       });
 
       it('evaluates arrayFirstN and arraySlice with expression count/offset', async function () {
-        const { execute, field, arrayFirstN, arraySlice, arrayMaximumN } = firestorePipelinesModular;
+        const { execute, field, arrayFirstN, arraySlice, arrayMaximumN } =
+          firestorePipelinesModular;
         const { getFirestore, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
         const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
@@ -1998,7 +1996,10 @@ describe('FirestorePipeline', function () {
         const { execute, field, countIf } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
-        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/agg-count-if-false`);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/agg-count-if-false`,
+        );
 
         await Promise.all([
           setDoc(doc(coll, 'a1'), { converted: true }),
