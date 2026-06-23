@@ -1,11 +1,45 @@
 #import "AppDelegate.h"
 
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTConstants.h>
+
+static NSString *const RNFBTestingMetroHost = @"127.0.0.1";
+
+static NSString *RNFBTestingMetroHostPort(void)
+{
+  return [NSString stringWithFormat:@"%@:%lu", RNFBTestingMetroHost, (unsigned long)RCT_METRO_PORT];
+}
+
+#if DEBUG
+static void RNFBTestingConfigureMetroHost(void)
+{
+  RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
+  [settings setJsLocation:RNFBTestingMetroHostPort()];
+  // NYC/babel-istanbul remap needs inline source maps in the dev bundle.
+  [settings setInlineSourceMap:YES];
+}
+
+static NSURL *RNFBTestingDebugBundleURL(void)
+{
+  RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
+  return [RCTBundleURLProvider jsBundleURLForBundleRoot:@"index"
+                                           packagerHost:RNFBTestingMetroHostPort()
+                                         packagerScheme:settings.packagerScheme ?: @"http"
+                                              enableDev:settings.enableDev
+                                     enableMinification:settings.enableMinification
+                                        inlineSourceMap:YES
+                                            modulesOnly:NO
+                                              runModule:YES];
+}
+#endif
 
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
+#if DEBUG
+  RNFBTestingConfigureMetroHost();
+#endif
   self.moduleName = @"testing";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
@@ -17,7 +51,7 @@
 - (NSURL *)bundleURL
 {
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+  return RNFBTestingDebugBundleURL();
 #else
   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
@@ -25,9 +59,8 @@
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-  
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+  return RNFBTestingDebugBundleURL();
 #else
   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
