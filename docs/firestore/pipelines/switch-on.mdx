@@ -1,0 +1,61 @@
+---
+title: switchOn
+description: Pipeline expression helper that picks a result from the first matching condition.
+next: /firestore/pipelines/sdk-compatibility
+previous: /firestore/pipelines/if-null
+---
+
+`switchOn()` behaves like a `switch` statement: pass alternating **condition / result** pairs, plus an optional default result as the final argument when no condition matches.
+
+Import from the pipelines entry point:
+
+```js
+import { switchOn, field, constant, equal } from '@react-native-firebase/firestore/pipelines';
+```
+
+# Basic example
+
+```js
+import { getFirestore } from '@react-native-firebase/firestore';
+import {
+  execute,
+  field,
+  constant,
+  equal,
+  switchOn,
+} from '@react-native-firebase/firestore/pipelines';
+
+const db = getFirestore('your-enterprise-database-id');
+
+const snapshot = await execute(
+  db
+    .pipeline()
+    .collection('orders')
+    .select(
+      switchOn(
+        equal(field('status'), constant(1)),
+        constant('Active'),
+        equal(field('status'), constant(2)),
+        constant('Pending'),
+        constant('Unknown'),
+      ).as('statusLabel'),
+    ),
+);
+
+snapshot.results.forEach(row => {
+  console.log(row.data().statusLabel);
+});
+```
+
+# Comparison with conditional
+
+| Helper        | Use when                                          |
+| ------------- | ------------------------------------------------- |
+| `conditional` | One boolean test with explicit then/else branches |
+| `switchOn`    | Multiple discrete cases plus optional default     |
+
+On **iOS**, `switchOn` is serialized like other pipeline helpers but the native pipeline runtime does not execute it yet (same class of limitation as `conditional`). macOS and Android evaluate it against the Enterprise database in e2e.
+
+# Upstream reference
+
+See the [firebase-js-sdk `switchOn` declaration](https://firebase.google.com/docs/reference/js/firestore_pipelines#switchon) for full overload signatures.

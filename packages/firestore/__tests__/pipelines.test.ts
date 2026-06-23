@@ -16,7 +16,9 @@ import {
   conditional,
   constant,
   currentDocument,
+  equal,
   ifNull,
+  switchOn,
   descending,
   execute,
   field,
@@ -289,6 +291,59 @@ describe('Firestore pipelines runtime', function () {
               args: [
                 { exprType: 'Field', path: 'displayName' },
                 { exprType: 'Field', path: 'fullName' },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('serializes switchOn as a function expression helper', function () {
+    const db: any = firebase.firestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select(
+        switchOn(
+          equal(field('status'), constant(1)),
+          constant('Active'),
+          equal(field('status'), constant(2)),
+          constant('Pending'),
+          constant('Unknown'),
+        ).as('statusLabel'),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          {
+            alias: 'statusLabel',
+            expr: {
+              exprType: 'Function',
+              name: 'switchOn',
+              args: [
+                {
+                  exprType: 'Function',
+                  name: 'equal',
+                  args: [
+                    { exprType: 'Field', path: 'status' },
+                    { exprType: 'Constant', value: 1 },
+                  ],
+                },
+                { exprType: 'Constant', value: 'Active' },
+                {
+                  exprType: 'Function',
+                  name: 'equal',
+                  args: [
+                    { exprType: 'Field', path: 'status' },
+                    { exprType: 'Constant', value: 2 },
+                  ],
+                },
+                { exprType: 'Constant', value: 'Pending' },
+                { exprType: 'Constant', value: 'Unknown' },
               ],
             },
           },
@@ -711,6 +766,11 @@ describe('Firestore pipelines runtime', function () {
           constant('positive'),
           constant('non-positive'),
         ).as('bucket'),
+        switchOn(
+          field('value').greaterThan(0),
+          constant('positive'),
+          constant('non-positive'),
+        ).as('switchBucket'),
         round(field('score'), 2).as('roundedScore'),
         stringRepeat(field('separator'), 3).as('divider'),
         substring(field('label'), 0, 4).as('labelPrefix'),
@@ -726,6 +786,7 @@ describe('Firestore pipelines runtime', function () {
       'round',
       'stringRepeat',
       'substring',
+      'switchOn',
       'timestampAdd',
       'timestampSubtract',
       'trunc',

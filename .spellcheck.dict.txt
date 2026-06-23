@@ -220,6 +220,8 @@ SPII
 src
 SSV
 stacktrace
+substring
+switchOn
 SVG
 TestLab
 TFUA

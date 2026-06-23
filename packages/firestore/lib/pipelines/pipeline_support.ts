@@ -58,6 +58,7 @@ const IOS_UNSUPPORTED_FUNCTION_NAMES = new Set<string>([
   'round',
   'stringRepeat',
   'substring',
+  'switchOn',
   'timestampAdd',
   'timestampSubtract',
   'trunc',
