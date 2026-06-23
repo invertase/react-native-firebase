@@ -591,12 +591,19 @@ function createField(path: unknown): FieldNode {
 }
 
 function createConstant(value: unknown): ConstantExpressionNode {
-  return createNode(expressionProto, {
+  const node = createNode(expressionProto, {
     [RUNTIME_NODE_SYMBOL]: true,
     __kind: 'expression',
     exprType: 'Constant',
     value,
-  });
+  }) as ConstantExpressionNode;
+
+  if (typeof value === 'number' && Number.isInteger(value)) {
+    // iOS RN bridge can coerce 0/1 integer constants to booleans; tag explicit integers.
+    (node as unknown as Record<string, unknown>).integerLiteral = true;
+  }
+
+  return node;
 }
 
 function createVariable(name: unknown): RuntimeExpressionFluentNode & VariableExpression {

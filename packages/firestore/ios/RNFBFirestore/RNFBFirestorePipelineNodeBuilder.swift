@@ -39,6 +39,7 @@ final class RNFBFirestorePipelineNodeBuilder {
     case booleanExpression
     case expressionValue
     case comparisonOperand
+    case numericOperand
     case vectorExpressionValue
   }
 
@@ -698,11 +699,61 @@ final class RNFBFirestorePipelineNodeBuilder {
       throw PipelineValidationError("pipelineExecute() expected \(fieldName).value to be provided.")
     }
 
+    if map["integerLiteral"] as? Bool == true {
+      if let boolValue = value as? Bool {
+        return boolValue ? 1 : 0
+      }
+      if let number = value as? NSNumber {
+        if isBooleanNSNumber(number) {
+          return number.boolValue ? 1 : 0
+        }
+        if let intValue = wholeNumberInt(from: number) {
+          return intValue
+        }
+      }
+      if let intValue = value as? Int {
+        return intValue
+      }
+    }
+
     return value
   }
 
+  private func scalarConstantBridge(fromConstantMap map: [String: Any], fieldName: String) throws -> ExprBridge {
+    guard let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be a constant expression.")
+    }
+
+    if map["integerLiteral"] as? Bool == true {
+      if let boolValue = map["value"] as? Bool {
+        return ConstantBridge(boolValue ? 1 : 0)
+      }
+      if let number = map["value"] as? NSNumber {
+        if isBooleanNSNumber(number) {
+          return ConstantBridge(number.boolValue ? 1 : 0)
+        }
+        if let intValue = wholeNumberInt(from: number) {
+          return ConstantBridge(intValue)
+        }
+      }
+      if let intValue = map["value"] as? Int {
+        return ConstantBridge(intValue)
+      }
+    }
+
+    guard let value = map["value"] else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName).value to be provided.")
+    }
+
+    return scalarConstantBridge(from: value)
+  }
+
   private func isSerializedExpressionLike(_ map: [String: Any]) -> Bool {
-    map["exprType"] != nil || map["operator"] != nil || map["name"] != nil || map["expr"] != nil ||
+    if let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
+      return false
+    }
+
+    return map["exprType"] != nil || map["operator"] != nil || map["name"] != nil || map["expr"] != nil ||
       map["expression"] != nil || map["fieldPath"] != nil || map["path"] != nil ||
       map["segments"] != nil || map["_segments"] != nil
   }
@@ -920,6 +971,12 @@ final class RNFBFirestorePipelineNodeBuilder {
       "equal", "notequal", "greaterthan", "greaterthanorequal", "lessthan", "lessthanorequal",
       "arraycontains", "arraycontainsany", "arraycontainsall", "equalany", "notequalany",
     ]
+    let orderingComparisonFunctions: Set<String> = [
+      "greaterthan", "greaterthanorequal", "lessthan", "lessthanorequal",
+    ]
+    let arithmeticFunctions: Set<String> = [
+      "add", "subtract", "multiply", "divide", "mod", "pow",
+    ]
 
     let rootBox = ExprBridgeBox()
     var stack: [ExpressionCoercionFrame] = [
@@ -931,6 +988,11 @@ final class RNFBFirestorePipelineNodeBuilder {
       case let .enter(value, currentFieldName, currentMode, box):
         switch currentMode {
         case .expressionValue:
+          if let map = value as? [String: Any],
+             let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
+            box.value = try scalarConstantBridge(fromConstantMap: map, fieldName: currentFieldName)
+            continue
+          }
           if containsSerializedExpression(value) {
             stack.append(.enter(value, currentFieldName, .expression, box))
           } else {
@@ -943,7 +1005,7 @@ final class RNFBFirestorePipelineNodeBuilder {
             continue
           }
           if let values = value as? [Any] {
-            box.value = ConstantBridge(values)
+            box.value = ConstantBridge(try resolveConstantValue(values, fieldName: currentFieldName))
             continue
           }
           if let stringValue = value as? String {
@@ -1005,7 +1067,7 @@ final class RNFBFirestorePipelineNodeBuilder {
             }
 
             if isImmediateExpressionConstant(currentValue) {
-              box.value = ConstantBridge(currentValue)
+              box.value = scalarConstantBridge(from: currentValue)
               break expressionLoop
             }
 
@@ -1268,7 +1330,9 @@ final class RNFBFirestorePipelineNodeBuilder {
 
                 let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
                 stack.append(.functionExit(box, canonicalComparisonFunctionName(normalized), argBoxes, currentField))
-                stack.append(.enter(rawArgs[1], "\(currentField).args[1]", .comparisonOperand, argBoxes[1]))
+                let rightOperandMode: ExpressionCoercionMode =
+                  orderingComparisonFunctions.contains(normalized) ? .numericOperand : .comparisonOperand
+                stack.append(.enter(rawArgs[1], "\(currentField).args[1]", rightOperandMode, argBoxes[1]))
                 stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expression, argBoxes[0]))
                 break expressionLoop
               }
@@ -1276,10 +1340,14 @@ final class RNFBFirestorePipelineNodeBuilder {
               let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
               stack.append(.functionExit(box, normalizeExpressionFunctionName(name), argBoxes, currentField))
               for index in rawArgs.indices.reversed() {
+                let argMode: ExpressionCoercionMode =
+                  arithmeticFunctions.contains(normalized) && index > 0
+                    ? .numericOperand
+                    : .expressionValue
                 stack.append(.enter(
                   rawArgs[index],
                   "\(currentField).args[\(index)]",
-                  .expressionValue,
+                  argMode,
                   argBoxes[index]
                 ))
               }
@@ -1292,7 +1360,7 @@ final class RNFBFirestorePipelineNodeBuilder {
             }
 
             if let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
-              box.value = ConstantBridge(map["value"] as Any)
+              box.value = try scalarConstantBridge(fromConstantMap: map, fieldName: currentField)
               break expressionLoop
             }
 
@@ -1315,6 +1383,12 @@ final class RNFBFirestorePipelineNodeBuilder {
             try requireExpressionValue(argBox, fieldName: "\(currentFieldName).args[\(index)]")
           }
         )
+        if RNFBFirestorePipelineDebug.enabled,
+           name == "add" || name.contains("array") || name.contains("equal") || name.contains("greater") {
+          RNFBFirestorePipelineDebug.log(
+            "built \(name) at \(currentFieldName) -> \(RNFBFirestorePipelineDebug.describeExpr(box.value!))"
+          )
+        }
       case let .conditionalExit(box, conditionBox, trueBox, falseBox, currentFieldName):
         box.value = FunctionExprBridge(name: "cond", args: [
           try requireExpressionValue(conditionBox, fieldName: "\(currentFieldName).args[0]"),
@@ -1370,6 +1444,40 @@ final class RNFBFirestorePipelineNodeBuilder {
   private func isImmediateExpressionConstant(_ value: Any) -> Bool {
     value is NSNull || value is NSNumber || value is Date || value is Timestamp ||
       value is GeoPoint || value is DocumentReference || value is VectorValue
+  }
+
+  private func isBooleanNSNumber(_ number: NSNumber) -> Bool {
+    CFGetTypeID(number) == CFBooleanGetTypeID()
+  }
+
+  private func wholeNumberInt(from number: NSNumber) -> Int? {
+    if isBooleanNSNumber(number) {
+      return nil
+    }
+    let doubleValue = number.doubleValue
+    guard doubleValue.isFinite,
+          doubleValue.rounded() == doubleValue,
+          doubleValue >= Double(Int.min),
+          doubleValue <= Double(Int.max) else {
+      return nil
+    }
+    return number.intValue
+  }
+
+  private func scalarConstantBridge(from value: Any) -> ExprBridge {
+    if let boolValue = value as? Bool {
+      return ConstantBridge(boolValue)
+    }
+    if let number = value as? NSNumber, isBooleanNSNumber(number) {
+      return ConstantBridge(number.boolValue)
+    }
+    if let number = value as? NSNumber, let intValue = wholeNumberInt(from: number) {
+      return ConstantBridge(intValue)
+    }
+    if let intValue = value as? Int {
+      return ConstantBridge(intValue)
+    }
+    return ConstantBridge(value)
   }
 
   func coerceAlias(from value: Any) -> String? {

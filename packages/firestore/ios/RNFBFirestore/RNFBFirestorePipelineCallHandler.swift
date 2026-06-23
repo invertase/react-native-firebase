@@ -34,6 +34,11 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
       let metadata = snapshotSerializer.buildExecutionMetadata(request)
       let stageBridges = try bridgeFactory.buildStageBridges(firestore: firestore, request: request)
 
+      RNFBFirestorePipelineDebug.log(
+        "execute source=\(request.source.sourceType) collectionId=\(request.source.collectionId ?? "nil") path=\(request.source.path ?? "nil") stageNames=\(request.stages.map(\.stageName).joined(separator: ","))"
+      )
+      RNFBFirestorePipelineDebug.log("execute bridges=\(RNFBFirestorePipelineDebug.describeStages(stageBridges))")
+
       // FirebaseFirestoreInternal currently exposes only PipelineBridge.executeWithCompletion() and
       // source-stage initializers without execute/source options. Reject these inputs on iOS until
       // the native SDK exposes an options-bearing pipeline execution/source API.
@@ -41,6 +46,10 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
 
       bridge.execute { snapshot, error in
         if let error {
+          let nsError = error as NSError
+          RNFBFirestorePipelineDebug.log(
+            "execute failed domain=\(nsError.domain) code=\(nsError.code) message=\(nsError.localizedDescription) userInfo=\(nsError.userInfo)"
+          )
           completion(nil, [
             "code": "firestore/native",
             "message": error.localizedDescription,
@@ -50,6 +59,7 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
         }
 
         do {
+          RNFBFirestorePipelineDebug.log("execute succeeded")
           completion(try self.snapshotSerializer.serializeSnapshot(snapshot, metadata: metadata), nil)
         } catch let error as PipelineValidationError {
           completion(nil, [
@@ -64,6 +74,7 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
         }
       }
     } catch let error as PipelineValidationError {
+      RNFBFirestorePipelineDebug.log("validation error: \(error.message)")
       completion(nil, [
         "code": "firestore/invalid-argument",
         "message": error.message,
@@ -82,5 +93,24 @@ struct PipelineValidationError: Error {
 
   init(_ message: String) {
     self.message = message
+  }
+}
+
+enum RNFBFirestorePipelineDebug {
+  static let enabled = false
+
+  static func log(_ message: String) {
+    guard enabled else { return }
+    NSLog("[RNFB-Pipeline] %@", message)
+  }
+
+  static func describeExpr(_ expr: ExprBridge) -> String {
+    String(describing: expr)
+  }
+
+  static func describeStages(_ stages: [StageBridge]) -> String {
+    stages.enumerated().map { index, stage in
+      "\(index):\(String(describing: type(of: stage)))"
+    }.joined(separator: " -> ")
   }
 }
