@@ -1,0 +1,4 @@
+# Local iOS e2e reproduction run outputs (see okf-bundle/testing/local-ios-e2e-reproduction.md)
+artifacts/
+manifests/golden-baked.json
+manifests/warmed-main.json
