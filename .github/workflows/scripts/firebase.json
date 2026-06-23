@@ -1,8 +1,16 @@
 {
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
+  "firestore": [
+    {
+      "database": "(default)",
+      "rules": "firestore.rules",
+      "indexes": "firestore.indexes.json"
+    },
+    {
+      "database": "pipelines-e2e",
+      "rules": "firestore.pipelines-e2e.rules",
+      "indexes": "firestore.pipelines-e2e.indexes.json"
+    }
+  ],
   "functions": {
     "predeploy": ["cd functions && yarn", "cd functions && yarn --cwd \"$RESOURCE_DIR\" build"],
     "source": "functions",

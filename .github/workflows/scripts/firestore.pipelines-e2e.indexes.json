@@ -1,0 +1,18 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "find-nearest",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "embedding",
+          "vectorConfig": {
+            "dimension": 3,
+            "flat": {}
+          }
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
