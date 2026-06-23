@@ -30,6 +30,26 @@ final class RNFBFirestorePipelineNodeBuilder {
     var value: ExprBridge?
   }
 
+  private final class ArrayCountLiteralBox {
+    var literalCount: Int?
+    var expressionCountBox: ExprBridgeBox?
+  }
+
+  private final class ArraySliceLiteralBox {
+    var literalOffset: Int?
+    var expressionOffsetBox: ExprBridgeBox?
+    var hasLengthArg = false
+    var literalLength: Int?
+    var expressionLengthBox: ExprBridgeBox?
+  }
+
+  private enum ArrayCountExpressionMethod: String {
+    case arrayFirstN
+    case arrayLastN
+    case arrayMaximumN
+    case arrayMinimumN
+  }
+
   private final class RawParamBox {
     var value: Any?
   }
@@ -89,6 +109,19 @@ final class RNFBFirestorePipelineNodeBuilder {
       String,
       String,
       ExprBridgeBox,
+      String
+    )
+    case arrayCountExit(
+      ExprBridgeBox,
+      ExprBridgeBox,
+      ArrayCountLiteralBox,
+      ArrayCountExpressionMethod,
+      String
+    )
+    case arraySliceExit(
+      ExprBridgeBox,
+      ExprBridgeBox,
+      ArraySliceLiteralBox,
       String
     )
   }
@@ -1013,7 +1046,39 @@ final class RNFBFirestorePipelineNodeBuilder {
             continue
           }
           if isImmediateExpressionConstant(value) {
-            box.value = ConstantBridge(value)
+            box.value = scalarConstantBridge(from: value)
+            continue
+          }
+          stack.append(.enter(value, currentFieldName, .expression, box))
+          continue
+        case .numericOperand:
+          if let map = value as? [String: Any],
+             let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
+            if let boolValue = map["value"] as? Bool {
+              box.value = ConstantBridge(boolValue ? 1 : 0)
+              continue
+            }
+            box.value = try scalarConstantBridge(fromConstantMap: map, fieldName: currentFieldName)
+            continue
+          }
+          if let values = value as? [Any] {
+            box.value = ConstantBridge(try resolveConstantValue(values, fieldName: currentFieldName))
+            continue
+          }
+          if let stringValue = value as? String {
+            box.value = ConstantBridge(stringValue)
+            continue
+          }
+          if let boolValue = value as? Bool {
+            box.value = ConstantBridge(boolValue ? 1 : 0)
+            continue
+          }
+          if let number = value as? NSNumber, isBooleanNSNumber(number) {
+            box.value = ConstantBridge(number.boolValue ? 1 : 0)
+            continue
+          }
+          if isImmediateExpressionConstant(value) {
+            box.value = scalarConstantBridge(from: value)
             continue
           }
           stack.append(.enter(value, currentFieldName, .expression, box))
@@ -1243,15 +1308,56 @@ final class RNFBFirestorePipelineNodeBuilder {
               }
 
               if normalized == "arrayfirstn" {
-                guard rawArgs.count == 2 else {
-                  throw PipelineValidationError(
-                    "pipelineExecute() expected \(currentField).\(name) to include exactly 2 arguments.")
-                }
+                try pushArrayCountExpressionFrame(
+                  stack: &stack,
+                  box: box,
+                  rawArgs: rawArgs,
+                  currentField: currentField,
+                  method: .arrayFirstN
+                )
+                break expressionLoop
+              }
 
-                let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
-                stack.append(.functionExit(box, "array_first_n", argBoxes, currentField))
-                stack.append(.enter(rawArgs[1], "\(currentField).args[1]", .expressionValue, argBoxes[1]))
-                stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expressionValue, argBoxes[0]))
+              if normalized == "arraylastn" {
+                try pushArrayCountExpressionFrame(
+                  stack: &stack,
+                  box: box,
+                  rawArgs: rawArgs,
+                  currentField: currentField,
+                  method: .arrayLastN
+                )
+                break expressionLoop
+              }
+
+              if normalized == "arraymaximumn" {
+                try pushArrayCountExpressionFrame(
+                  stack: &stack,
+                  box: box,
+                  rawArgs: rawArgs,
+                  currentField: currentField,
+                  method: .arrayMaximumN
+                )
+                break expressionLoop
+              }
+
+              if normalized == "arrayminimumn" {
+                try pushArrayCountExpressionFrame(
+                  stack: &stack,
+                  box: box,
+                  rawArgs: rawArgs,
+                  currentField: currentField,
+                  method: .arrayMinimumN
+                )
+                break expressionLoop
+              }
+
+              if normalized == "arrayslice" {
+                try pushArraySliceExpressionFrame(
+                  stack: &stack,
+                  box: box,
+                  rawArgs: rawArgs,
+                  currentField: currentField
+                )
                 break expressionLoop
               }
 
@@ -1389,6 +1495,51 @@ final class RNFBFirestorePipelineNodeBuilder {
             "built \(name) at \(currentFieldName) -> \(RNFBFirestorePipelineDebug.describeExpr(box.value!))"
           )
         }
+      case let .arrayCountExit(box, arrayBox, countBox, method, currentFieldName):
+        let arrayBridge = try requireExpressionValue(arrayBox, fieldName: "\(currentFieldName).args[0]")
+        if let literalCount = countBox.literalCount {
+          box.value = buildArrayCountFunctionBridge(
+            arrayBridge: arrayBridge,
+            count: literalCount,
+            method: method
+          )
+        } else if let countExprBox = countBox.expressionCountBox {
+          let countBridge = try requireExpressionValue(
+            countExprBox,
+            fieldName: "\(currentFieldName).args[1]"
+          )
+          box.value = FunctionExprBridge(
+            name: normalizedArrayCountFunctionName(method),
+            args: [arrayBridge, countBridge],
+            options: nil
+          )
+        } else {
+          throw PipelineValidationError(
+            "pipelineExecute() expected \(currentFieldName).args[1] to be provided.")
+        }
+      case let .arraySliceExit(box, arrayBox, sliceBox, currentFieldName):
+        var args = [try requireExpressionValue(arrayBox, fieldName: "\(currentFieldName).args[0]")]
+        if let literalOffset = sliceBox.literalOffset {
+          args.append(scalarConstantBridge(from: literalOffset))
+        } else if let offsetBox = sliceBox.expressionOffsetBox {
+          args.append(try requireExpressionValue(offsetBox, fieldName: "\(currentFieldName).args[1]"))
+        } else {
+          throw PipelineValidationError(
+            "pipelineExecute() expected \(currentFieldName).args[1] to be provided.")
+        }
+
+        if sliceBox.hasLengthArg {
+          if let literalLength = sliceBox.literalLength {
+            args.append(scalarConstantBridge(from: literalLength))
+          } else if let lengthBox = sliceBox.expressionLengthBox {
+            args.append(try requireExpressionValue(lengthBox, fieldName: "\(currentFieldName).args[2]"))
+          } else {
+            throw PipelineValidationError(
+              "pipelineExecute() expected \(currentFieldName).args[2] to be provided.")
+          }
+        }
+
+        box.value = FunctionExprBridge(name: "array_slice", args: args, options: nil)
       case let .conditionalExit(box, conditionBox, trueBox, falseBox, currentFieldName):
         box.value = FunctionExprBridge(name: "cond", args: [
           try requireExpressionValue(conditionBox, fieldName: "\(currentFieldName).args[0]"),
@@ -1446,6 +1597,26 @@ final class RNFBFirestorePipelineNodeBuilder {
       value is GeoPoint || value is DocumentReference || value is VectorValue
   }
 
+  private func tryIntegerLiteral(from value: Any) -> Int? {
+    if let number = value as? NSNumber {
+      return wholeNumberInt(from: number)
+    }
+    if let intValue = value as? Int {
+      return intValue
+    }
+    guard let map = value as? [String: Any],
+          (map["exprType"] as? String)?.lowercased() == "constant" else {
+      return nil
+    }
+    if let number = map["value"] as? NSNumber {
+      return wholeNumberInt(from: number)
+    }
+    if let intValue = map["value"] as? Int {
+      return intValue
+    }
+    return nil
+  }
+
   private func isBooleanNSNumber(_ number: NSNumber) -> Bool {
     CFGetTypeID(number) == CFBooleanGetTypeID()
   }
@@ -1478,6 +1649,98 @@ final class RNFBFirestorePipelineNodeBuilder {
       return ConstantBridge(intValue)
     }
     return ConstantBridge(value)
+  }
+
+  private func pushArrayCountExpressionFrame(
+    stack: inout [ExpressionCoercionFrame],
+    box: ExprBridgeBox,
+    rawArgs: [Any],
+    currentField: String,
+    method: ArrayCountExpressionMethod
+  ) throws {
+    guard rawArgs.count == 2 else {
+      throw PipelineValidationError(
+        "pipelineExecute() expected \(currentField) to include exactly 2 arguments.")
+    }
+
+    let arrayBox = ExprBridgeBox()
+    let countBox = ArrayCountLiteralBox()
+    if let literalCount = tryIntegerLiteral(from: rawArgs[1]) {
+      countBox.literalCount = literalCount
+      stack.append(.arrayCountExit(box, arrayBox, countBox, method, currentField))
+      stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expressionValue, arrayBox))
+      return
+    }
+
+    let countExprBox = ExprBridgeBox()
+    countBox.expressionCountBox = countExprBox
+    stack.append(.arrayCountExit(box, arrayBox, countBox, method, currentField))
+    stack.append(.enter(rawArgs[1], "\(currentField).args[1]", .expressionValue, countExprBox))
+    stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expressionValue, arrayBox))
+  }
+
+  private func pushArraySliceExpressionFrame(
+    stack: inout [ExpressionCoercionFrame],
+    box: ExprBridgeBox,
+    rawArgs: [Any],
+    currentField: String
+  ) throws {
+    guard rawArgs.count == 2 || rawArgs.count == 3 else {
+      throw PipelineValidationError(
+        "pipelineExecute() expected \(currentField) to include 2 or 3 arguments.")
+    }
+
+    let arrayBox = ExprBridgeBox()
+    let sliceBox = ArraySliceLiteralBox()
+
+    if let literalOffset = tryIntegerLiteral(from: rawArgs[1]) {
+      sliceBox.literalOffset = literalOffset
+    } else {
+      sliceBox.expressionOffsetBox = ExprBridgeBox()
+    }
+
+    if rawArgs.count == 3 {
+      sliceBox.hasLengthArg = true
+      if let literalLength = tryIntegerLiteral(from: rawArgs[2]) {
+        sliceBox.literalLength = literalLength
+      } else {
+        sliceBox.expressionLengthBox = ExprBridgeBox()
+      }
+    }
+
+    stack.append(.arraySliceExit(box, arrayBox, sliceBox, currentField))
+    if rawArgs.count == 3, sliceBox.expressionLengthBox != nil {
+      stack.append(.enter(rawArgs[2], "\(currentField).args[2]", .expressionValue, sliceBox.expressionLengthBox!))
+    }
+    if sliceBox.expressionOffsetBox != nil {
+      stack.append(.enter(rawArgs[1], "\(currentField).args[1]", .expressionValue, sliceBox.expressionOffsetBox!))
+    }
+    stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expressionValue, arrayBox))
+  }
+
+  private func buildArrayCountFunctionBridge(
+    arrayBridge: ExprBridge,
+    count: Int,
+    method: ArrayCountExpressionMethod
+  ) -> ExprBridge {
+    FunctionExprBridge(
+      name: normalizedArrayCountFunctionName(method),
+      args: [arrayBridge, scalarConstantBridge(from: count)],
+      options: nil
+    )
+  }
+
+  private func normalizedArrayCountFunctionName(_ method: ArrayCountExpressionMethod) -> String {
+    switch method {
+    case .arrayFirstN:
+      return "array_first_n"
+    case .arrayLastN:
+      return "array_last_n"
+    case .arrayMaximumN:
+      return "maximum_n"
+    case .arrayMinimumN:
+      return "minimum_n"
+    }
   }
 
   func coerceAlias(from value: Any) -> String? {
