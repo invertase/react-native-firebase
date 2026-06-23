@@ -412,12 +412,7 @@ describe('LiveSession', function () {
       const handler = new MockWebSocketHandler();
       handler.connect.mockRejectedValueOnce(new Error('Connection refused'));
 
-      const failedSession = new LiveSession(
-        testSetupMessage,
-        fakeApiSettings,
-        undefined,
-        handler,
-      );
+      const failedSession = new LiveSession(testSetupMessage, fakeApiSettings, undefined, handler);
 
       await expect(failedSession.connectionPromise).rejects.toThrow('Connection refused');
       expect(failedSession.isClosed).toBe(true);
@@ -425,12 +420,7 @@ describe('LiveSession', function () {
 
     it('should set isClosed when handshake fails', async function () {
       const handler = new MockWebSocketHandler();
-      const failedSession = new LiveSession(
-        testSetupMessage,
-        fakeApiSettings,
-        undefined,
-        handler,
-      );
+      const failedSession = new LiveSession(testSetupMessage, fakeApiSettings, undefined, handler);
       handler.simulateServerMessage({ serverContent: { turnComplete: true } });
 
       await expect(failedSession.connectionPromise).rejects.toThrow(/handshake failed/i);
