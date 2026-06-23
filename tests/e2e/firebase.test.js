@@ -34,12 +34,17 @@ const REBOOT_IOS_SIMULATOR_TIMEOUT_MS = parseInt(
   process.env.RNFB_REBOOT_IOS_SIMULATOR_TIMEOUT_MS || String(12 * 60 * 1000),
   10,
 );
+const REBOOT_ANDROID_EMULATOR_TIMEOUT_MS = parseInt(
+  process.env.RNFB_REBOOT_ANDROID_EMULATOR_TIMEOUT_MS || '300000',
+  10,
+);
 const JET_RETRYABLE_WS_RE = /\[jet-ws\] RETRYABLE_DISCONNECT code=(1006|1001)\b/;
 const JET_RECONNECT_RECOVERED_RE = /\[jet-ws\] reconnect_recovered code=(1006|1001)\b/;
 const JET_SERVER_NOT_RUNNING_RE = /server wasn't running/i;
 const JET_COVERAGE_LOST_RE = /Coverage summary:[\s\S]*?Unknown% \( 0\/0 \)/;
 const JET_COVERAGE_TEARDOWN_RE =
   /Failed to send 'coverage-ready' message: WebSocket is closed|coverage upload timed out waiting for coverage-ack/i;
+const JET_PROTOCOL_ERROR_RE = /\[🟥\] Unexpected end of JSON input/i;
 const RETRYABLE_LAUNCH_RE =
   /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding|Unknown application display identifier|Simulator device failed to launch|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain/i;
 const PORT_CLOSED_ERROR_CODES = new Set(['ECONNREFUSED', 'ECONNRESET', 'EPIPE']);
@@ -172,6 +177,61 @@ function rebootIosSimulator(testsDir) {
   });
 }
 
+function resolveAdbPath() {
+  const sdkRoot = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT;
+  return sdkRoot ? path.join(sdkRoot, 'platform-tools', 'adb') : 'adb';
+}
+
+function resolveAndroidSerial() {
+  try {
+    if (typeof device !== 'undefined' && device?.id) {
+      return device.id;
+    }
+  } catch (_) {
+    // Detox device may not be ready yet.
+  }
+  return process.env.ANDROID_SERIAL || 'emulator-5554';
+}
+
+async function rebootAndroidEmulator() {
+  const adb = resolveAdbPath();
+  const serial = resolveAndroidSerial();
+  console.warn(`[rnfb-e2e] Rebooting Android emulator serial=${serial} via adb reboot`);
+
+  execSync(`${adb} -s ${serial} reboot`, { stdio: 'inherit' });
+  execSync(`${adb} -s ${serial} wait-for-device`, {
+    stdio: 'inherit',
+    timeout: REBOOT_ANDROID_EMULATOR_TIMEOUT_MS,
+  });
+
+  const deadline = Date.now() + REBOOT_ANDROID_EMULATOR_TIMEOUT_MS;
+  while (Date.now() < deadline) {
+    try {
+      const booted = execSync(`${adb} -s ${serial} shell getprop sys.boot_completed`, {
+        encoding: 'utf8',
+        timeout: 15000,
+      }).trim();
+      if (booted === '1') {
+        const anim = execSync(`${adb} -s ${serial} shell getprop init.svc.bootanim`, {
+          encoding: 'utf8',
+          timeout: 15000,
+        }).trim();
+        if (anim === 'stopped') {
+          console.log(`[rnfb-e2e] Android emulator boot complete serial=${serial}`);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn(`[rnfb-e2e] Android boot-wait probe: ${err?.message || err}`);
+    }
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+
+  throw new Error(
+    `Android emulator did not finish booting within ${REBOOT_ANDROID_EMULATOR_TIMEOUT_MS}ms (serial=${serial})`,
+  );
+}
+
 function waitForTcpPort(port, host = '127.0.0.1', timeoutMs = 120000) {
   const start = Date.now();
 
@@ -253,6 +313,10 @@ function isRetryableJetSessionFailure(output) {
     return true;
   }
 
+  if (JET_PROTOCOL_ERROR_RE.test(output)) {
+    return true;
+  }
+
   if (!JET_RECONNECT_RECOVERED_RE.test(output)) {
     return false;
   }
@@ -289,6 +353,7 @@ function logRetryEligibility(err, attempt) {
   const checks = {
     jetDisconnect: isRetryableJetDisconnect(jetOutput),
     jetSession: isRetryableJetSessionFailure(jetOutput),
+    jetProtocol: JET_PROTOCOL_ERROR_RE.test(jetOutput),
     coverageTeardown: JET_COVERAGE_TEARDOWN_RE.test(jetOutput),
     launchFailure: isRetryableLaunchFailure(err),
     launchJetLevel: Boolean(err?.retryableAtJetLevel),
@@ -507,9 +572,13 @@ describe('Jet Tests', function () {
           if (isRetryableJetDisconnect(lastOutput)) {
             console.warn('[rnfb-e2e] Retrying after transient Jet WS disconnect (1006/1001)');
           } else if (isRetryableJetSessionFailure(lastOutput)) {
-            console.warn(
-              '[rnfb-e2e] Retrying after Jet session desync (reconnect recovered / coverage teardown / server not running)',
-            );
+            if (JET_PROTOCOL_ERROR_RE.test(lastOutput)) {
+              console.warn('[rnfb-e2e] Retrying after Jet protocol error (JSON/WS desync)');
+            } else {
+              console.warn(
+                '[rnfb-e2e] Retrying after Jet session desync (reconnect recovered / coverage teardown / server not running)',
+              );
+            }
           } else if (isRetryableLaunchFailure(lastFailure)) {
             console.warn('[rnfb-e2e] Retrying after launch failure (Metro/bundle/FrontBoard)');
           }
@@ -519,6 +588,8 @@ describe('Jet Tests', function () {
           await waitForTcpPortClosed(JET_REMOTE_PORT);
           if (platform === 'ios' && process.platform === 'darwin') {
             await rebootIosSimulator(testsDir);
+          } else if (platform === 'android') {
+            await rebootAndroidEmulator();
           } else {
             try {
               await device.terminateApp();
