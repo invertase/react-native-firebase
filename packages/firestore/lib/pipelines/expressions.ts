@@ -908,6 +908,13 @@ function createMethodResult(
     ]);
   }
 
+  if (
+    (canonicalName === 'currentTimestamp' || canonicalName === 'rand') &&
+    rawArgs.length === 0
+  ) {
+    return createFunctionExpression(canonicalName, []);
+  }
+
   return createFunctionExpression(canonicalName, [
     base,
     ...rawArgs.map(arg => toExpressionArgument(arg)),

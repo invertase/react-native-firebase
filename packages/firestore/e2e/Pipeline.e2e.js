@@ -2227,6 +2227,116 @@ describe('FirestorePipeline', function () {
       });
     });
 
+    describe('fluent construction parity', function () {
+      it('evaluates fluent chains equivalently to global helpers', async function () {
+        const {
+          execute,
+          field,
+          mapGet,
+          stringReplaceAll,
+          regexMatch,
+          arrayGet,
+          ifNull,
+          coalesce,
+          timestampTruncate,
+        } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc, Timestamp } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          label: 'aaa',
+          code: 'ABC',
+          metadata: { theme: 'light' },
+          scores: [10, 20, 30],
+          displayName: null,
+          preferredName: 'Ada',
+          eventTime: new Timestamp(1700000000, 0),
+        });
+
+        const pipeline = db
+          .pipeline()
+          .documents([docPath])
+          .select(
+            mapGet(field('metadata'), 'theme').as('globalTheme'),
+            field('metadata').mapGet('theme').as('fluentTheme'),
+            stringReplaceAll(field('label'), 'a', 'b').as('globalLabel'),
+            field('label').stringReplaceAll('a', 'b').as('fluentLabel'),
+            regexMatch(field('code'), '^[A-Z]{3}$').as('globalRegex'),
+            field('code').regexMatch('^[A-Z]{3}$').as('fluentRegex'),
+            arrayGet(field('scores'), 1).as('globalScore'),
+            field('scores').arrayGet(1).as('fluentScore'),
+            ifNull(field('displayName'), 'Anonymous').as('globalIfNull'),
+            field('displayName').ifNull('Anonymous').as('fluentIfNull'),
+            coalesce(field('preferredName'), 'Unknown').as('globalCoalesce'),
+            field('preferredName').coalesce('Unknown').as('fluentCoalesce'),
+            timestampTruncate(field('eventTime'), 'day').as('globalDayBucket'),
+            field('eventTime').timestampTruncate('day').as('fluentDayBucket'),
+          );
+
+        if (Platform.ios) {
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['arrayGet']);
+
+          const iosSnapshot = await execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(
+                mapGet(field('metadata'), 'theme').as('globalTheme'),
+                field('metadata').mapGet('theme').as('fluentTheme'),
+                stringReplaceAll(field('label'), 'a', 'b').as('globalLabel'),
+                field('label').stringReplaceAll('a', 'b').as('fluentLabel'),
+                regexMatch(field('code'), '^[A-Z]{3}$').as('globalRegex'),
+                field('code').regexMatch('^[A-Z]{3}$').as('fluentRegex'),
+                ifNull(field('displayName'), 'Anonymous').as('globalIfNull'),
+                field('displayName').ifNull('Anonymous').as('fluentIfNull'),
+                coalesce(field('preferredName'), 'Unknown').as('globalCoalesce'),
+                field('preferredName').coalesce('Unknown').as('fluentCoalesce'),
+                timestampTruncate(field('eventTime'), 'day').as('globalDayBucket'),
+                field('eventTime').timestampTruncate('day').as('fluentDayBucket'),
+              ),
+          );
+
+          iosSnapshot.results.should.have.length(1);
+          const iosData = iosSnapshot.results[0].data();
+          iosData.globalTheme.should.equal('light');
+          iosData.fluentTheme.should.equal('light');
+          iosData.globalLabel.should.equal('bbb');
+          iosData.fluentLabel.should.equal('bbb');
+          iosData.globalRegex.should.equal(true);
+          iosData.fluentRegex.should.equal(true);
+          iosData.globalIfNull.should.equal('Anonymous');
+          iosData.fluentIfNull.should.equal('Anonymous');
+          iosData.globalCoalesce.should.equal('Ada');
+          iosData.fluentCoalesce.should.equal('Ada');
+          iosData.globalDayBucket.constructor.name.should.equal('Timestamp');
+          iosData.fluentDayBucket.constructor.name.should.equal('Timestamp');
+          iosData.globalDayBucket.seconds.should.equal(iosData.fluentDayBucket.seconds);
+          return;
+        }
+
+        const snapshot = await execute(pipeline);
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.globalTheme.should.equal('light');
+        data.fluentTheme.should.equal('light');
+        data.globalLabel.should.equal('bbb');
+        data.fluentLabel.should.equal('bbb');
+        data.globalRegex.should.equal(true);
+        data.fluentRegex.should.equal(true);
+        data.globalScore.should.equal(20);
+        data.fluentScore.should.equal(20);
+        data.globalIfNull.should.equal('Anonymous');
+        data.fluentIfNull.should.equal('Anonymous');
+        data.globalCoalesce.should.equal('Ada');
+        data.fluentCoalesce.should.equal('Ada');
+        data.globalDayBucket.constructor.name.should.equal('Timestamp');
+        data.fluentDayBucket.constructor.name.should.equal('Timestamp');
+        data.globalDayBucket.seconds.should.equal(data.fluentDayBucket.seconds);
+      });
+    });
+
     describe('timestamp functions', function () {
       it('evaluates timestampDiff across all global overload classes', async function () {
         const { execute, field, timestampDiff } = firestorePipelinesModular;
