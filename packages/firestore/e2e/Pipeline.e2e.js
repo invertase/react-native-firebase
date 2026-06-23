@@ -1105,6 +1105,36 @@ describe('FirestorePipeline', function () {
         data.absent.should.equal('fallback');
       });
 
+      it('evaluates coalesce for present, missing, and fallback values', async function () {
+        const { execute, field, constant, coalesce } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/coalesce`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'a'), { preferredName: 'Alice', fullName: 'Alice Smith' }),
+          setDoc(doc(coll, 'b'), { fullName: 'Bob Jones' }),
+          setDoc(doc(coll, 'c'), {}),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .sort(field('__name__').ascending())
+            .select(
+              coalesce(field('preferredName'), field('fullName'), constant('Anonymous')).as(
+                'displayName',
+              ),
+            ),
+        );
+
+        snapshot.results.should.have.length(3);
+        snapshot.results[0].data().displayName.should.equal('Alice');
+        snapshot.results[1].data().displayName.should.equal('Bob Jones');
+        snapshot.results[2].data().displayName.should.equal('Anonymous');
+      });
+
       it('evaluates ifError and isError', async function () {
         const { execute, field, constant, ifError, isError } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;

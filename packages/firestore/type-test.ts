@@ -128,6 +128,7 @@ import {
   isError,
   isType,
   ifAbsent,
+  coalesce,
   ifError,
   conditional,
   logicalMaximum,
@@ -1191,6 +1192,11 @@ void isType('value', 'number');
 void ifAbsent(field('optionalName'), field('defaultName'));
 void ifAbsent(field('optionalName'), 'Unknown');
 void ifAbsent('optionalName', field('defaultName'));
+// coalesce: (Expression, Expression | unknown, ...others) | (string, Expression | unknown, ...others)
+void coalesce(field('preferredName'), field('fullName'), constant('Anonymous'));
+void coalesce(field('preferredName'), 'Unknown');
+void coalesce('preferredName', field('fullName'), constant('Anonymous'));
+void field('preferredName').coalesce(field('fullName'), constant('Anonymous'));
 // ifError: (BooleanExpression, BooleanExpression) | (Expression, Expression) | (Expression, unknown)
 void ifError(field('flag').equal(true), field('fallback').equal(false));
 void ifError(field('riskScore'), field('defaultScore'));

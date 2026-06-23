@@ -110,6 +110,10 @@ interface FluentExpressionMethods {
   arrayAgg(): AggregateFunction;
   arrayAggDistinct(): AggregateFunction;
   arrayFilter(alias: string, filter: BooleanExpression): FunctionExpression;
+  coalesce(
+    replacement: Expression | unknown,
+    ...others: Array<Expression | unknown>
+  ): FunctionExpression;
   arrayTransform(elementAlias: string, transform: Expression): FunctionExpression;
   arrayTransformWithIndex(
     elementAlias: string,
@@ -436,6 +440,7 @@ const EXPRESSION_METHOD_NAMES = [
   'last',
   'arrayAgg',
   'concat',
+  'coalesce',
   'sqrt',
   'currentTimestamp',
   'not',
@@ -779,8 +784,10 @@ function normalizeGlobalArguments(name: string, args: unknown[]): RuntimeNode[] 
     case 'arrayConcat':
     case 'byteLength':
     case 'charLength':
+    case 'coalesce':
     case 'collectionId':
     case 'exp':
+    case 'ifAbsent':
     case 'ln':
     case 'log':
     case 'log10':
@@ -1598,6 +1605,28 @@ export function ifAbsent(
   _elseValue: Expression | unknown,
 ): Expression {
   return callExpressionHelper('ifAbsent', arguments);
+}
+
+/**
+ * @beta
+ * Returns the first non-null, non-absent argument without evaluating later arguments.
+ */
+export function coalesce(
+  _expression: Expression,
+  _replacement: Expression | unknown,
+  ..._others: Array<Expression | unknown>
+): FunctionExpression;
+export function coalesce(
+  _fieldName: string,
+  _replacement: Expression | unknown,
+  ..._others: Array<Expression | unknown>
+): FunctionExpression;
+export function coalesce(
+  _expression: string | Expression,
+  _replacement: Expression | unknown,
+  ..._others: Array<Expression | unknown>
+): FunctionExpression {
+  return callExpressionHelper('coalesce', arguments);
 }
 
 /**

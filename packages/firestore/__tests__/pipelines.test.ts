@@ -12,6 +12,7 @@ import {
   arrayMinimumN,
   arrayTransform,
   and,
+  coalesce,
   conditional,
   constant,
   descending,
@@ -205,6 +206,65 @@ describe('Firestore pipelines runtime', function () {
                     { exprType: 'Constant', value: 20 },
                   ],
                 },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('serializes coalesce as a function expression helper and fluent method', function () {
+    const db: any = firebase.firestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select(
+        coalesce(field('preferredName'), field('fullName'), constant('Anonymous')).as('displayName'),
+        coalesce('preferredName', field('fullName'), constant('Anonymous')).as('stringFieldCoalesce'),
+        field('preferredName')
+          .coalesce(field('fullName'), constant('Anonymous'))
+          .as('fluentDisplayName'),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          {
+            alias: 'displayName',
+            expr: {
+              exprType: 'Function',
+              name: 'coalesce',
+              args: [
+                { exprType: 'Field', path: 'preferredName' },
+                { exprType: 'Field', path: 'fullName' },
+                { exprType: 'Constant', value: 'Anonymous' },
+              ],
+            },
+          },
+          {
+            alias: 'stringFieldCoalesce',
+            expr: {
+              exprType: 'Function',
+              name: 'coalesce',
+              args: [
+                { exprType: 'Field', path: 'preferredName' },
+                { exprType: 'Field', path: 'fullName' },
+                { exprType: 'Constant', value: 'Anonymous' },
+              ],
+            },
+          },
+          {
+            alias: 'fluentDisplayName',
+            expr: {
+              exprType: 'Function',
+              name: 'coalesce',
+              args: [
+                { exprType: 'Field', path: 'preferredName' },
+                { exprType: 'Field', path: 'fullName' },
+                { exprType: 'Constant', value: 'Anonymous' },
               ],
             },
           },
