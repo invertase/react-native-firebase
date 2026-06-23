@@ -88,7 +88,7 @@ describe('Firestore pipeline native parity', function () {
     expect(iosSource).toContain('does not support pipeline.source.rawOptions');
   });
 
-  it('keeps arrayFirst and arrayFirstN on native lowering paths', function () {
+  it('keeps arrayFirst, arrayFirstN, and arraySlice on native lowering paths', function () {
     const androidSource = readFileSync(ANDROID_NODE_BUILDER_PATH, 'utf8');
     const iosSource = readFileSync(IOS_NODE_BUILDER_PATH, 'utf8');
 
@@ -96,5 +96,21 @@ describe('Firestore pipeline native parity', function () {
     expect(androidSource).toContain('arrayExpr.arrayFirstN');
     expect(iosSource).toContain('"array_first"');
     expect(iosSource).toContain('"array_first_n"');
+    expect(iosSource).toContain('"array_slice"');
+    expect(iosSource).toContain('pushArraySliceExpressionFrame');
+  });
+
+  it('preserves boolean constants and boolean logical/aggregate lowering on iOS', function () {
+    const androidSource = readFileSync(ANDROID_NODE_BUILDER_PATH, 'utf8');
+    const iosSource = readFileSync(IOS_NODE_BUILDER_PATH, 'utf8');
+
+    expect(iosSource).toContain('CFBooleanGetTypeID');
+    expect(iosSource).toContain('"xor"');
+    expect(iosSource).toContain('"nor"');
+    expect(iosSource).toContain('normalizedKind == "count_if"');
+    expect(iosSource).toContain('coerceBooleanExpression');
+
+    expect(androidSource).toContain('count_if');
+    expect(androidSource).toContain('coerceBooleanValueNode');
   });
 });

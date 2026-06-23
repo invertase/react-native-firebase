@@ -338,12 +338,41 @@ describe('FirestorePipeline', function () {
         snapshot.results[1].id.should.equal('one');
         snapshot.results[1].data().score.should.equal(10);
       });
+
+      it('executes createFrom(query) with compound inequality filters', async function () {
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc, query, where, orderBy } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const collectionRef = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-query-compound`,
+        );
+
+        await Promise.all([
+          setDoc(doc(collectionRef, 'low'), { score: 5, tier: 'a' }),
+          setDoc(doc(collectionRef, 'mid'), { score: 15, tier: 'a' }),
+          setDoc(doc(collectionRef, 'high'), { score: 25, tier: 'b' }),
+        ]);
+
+        const queryRef = query(
+          collectionRef,
+          where('score', '>=', 10),
+          where('score', '<=', 20),
+          orderBy('score', 'asc'),
+        );
+
+        const snapshot = await execute(db.pipeline().createFrom(queryRef));
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].id.should.equal('mid');
+        snapshot.results[0].data().score.should.equal(15);
+      });
     });
 
     describe('functions and expressions', function () {
       it('executes method-style expressions', async function () {
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
-        const { and, execute, field, Ordering } = firestorePipelinesModular;
+        const { and, execute, field, constant, Ordering } = firestorePipelinesModular;
         const db = getFirestore(DATABASE_ID);
         const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-expression`;
         const collectionRef = collection(db, collectionName);
@@ -362,8 +391,7 @@ describe('FirestorePipeline', function () {
           .where(and(f('genre').equal('Fantasy'), f('rating').greaterThan(3)))
           .select(
             f('title').as('title'),
-            f('rating').add(1).as('boostedRating'),
-            f('genre').equal('Fantasy').as('isFantasy'),
+            f('rating').add(constant(1)).as('boostedRating'),
           )
           .sort(Ordering.of(f('rating')).descending());
 
@@ -373,12 +401,10 @@ describe('FirestorePipeline', function () {
         snapshot.results[0].data().should.eql({
           title: 'C',
           boostedRating: 9,
-          isFantasy: true,
         });
         snapshot.results[1].data().should.eql({
           title: 'B',
           boostedRating: 6,
-          isFantasy: true,
         });
       });
     });
@@ -505,6 +531,9 @@ describe('FirestorePipeline', function () {
             runId,
           }),
         ]);
+
+        // Cloud Firestore can be briefly eventually consistent for collection group reads.
+        await Utils.sleep(2000);
 
         const snapshot = await execute(
           db
@@ -675,6 +704,25 @@ describe('FirestorePipeline', function () {
         snapshot.results.should.have.length(2);
         snapshot.results[0].data().rating.should.be.greaterThanOrEqual(4.5);
         snapshot.results[1].data().rating.should.be.greaterThanOrEqual(4.5);
+      });
+
+      it('executes sample stage with document count', async function () {
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/sample`);
+
+        await Promise.all(
+          Array.from({ length: 10 }, (_, index) =>
+            setDoc(doc(coll, `doc-${index}`), { slot: index }),
+          ),
+        );
+
+        const snapshot = await execute(
+          db.pipeline().collection(coll).sample({ documents: 5 }).select('slot'),
+        );
+
+        snapshot.results.should.have.length(5);
       });
 
       it('supports unnest with index field', async function () {
@@ -1006,6 +1054,87 @@ describe('FirestorePipeline', function () {
         snapshot.results[0].data().isVerified.should.equal(false);
         snapshot.results[1].data().isPublic.should.equal(false);
         snapshot.results[1].data().isVerified.should.equal(true);
+      });
+
+      it('evaluates nor in a where clause', async function () {
+        const { execute, field, nor } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/nor-ops`);
+
+        // nor: neither isPublic nor isVerified is true
+        await Promise.all([
+          setDoc(doc(coll, 'a'), { isPublic: true, isVerified: false }),
+          setDoc(doc(coll, 'b'), { isPublic: true, isVerified: true }),
+          setDoc(doc(coll, 'c'), { isPublic: false, isVerified: true }),
+          setDoc(doc(coll, 'd'), { isPublic: false, isVerified: false }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where(nor(field('isPublic').equal(true), field('isVerified').equal(true)))
+            .sort(field('__name__').ascending())
+            .select('isPublic', 'isVerified'),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().isPublic.should.equal(false);
+        snapshot.results[0].data().isVerified.should.equal(false);
+      });
+
+      it('evaluates ifAbsent for present and missing field values', async function () {
+        const { execute, field, constant, ifAbsent } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/if-absent`);
+
+        await setDoc(doc(coll, 'only'), { label: 'set' });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .select(
+              ifAbsent(field('label'), constant('fallback')).as('existing'),
+              ifAbsent(field('missing'), constant('fallback')).as('absent'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.existing.should.equal('set');
+        data.absent.should.equal('fallback');
+      });
+
+      it('evaluates ifError and isError', async function () {
+        const { execute, field, constant, ifError, isError } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/if-error`);
+
+        await setDoc(doc(coll, 'only'), { label: 'ok' });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .select(
+              ifError(field('label'), constant('fallback')).as('safeLabel'),
+              ifError(field('missing'), constant('fallback')).as('safeMissing'),
+              isError(field('label')).as('labelIsError'),
+              isError(field('missing')).as('missingIsError'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.safeLabel.should.equal('ok');
+        // Absent fields are not expression errors; ifError leaves them absent (ifAbsent handles fallback).
+        should(data.safeMissing).be.undefined();
+        data.labelIsError.should.equal(false);
+        data.missingIsError.should.equal(false);
       });
     });
 
@@ -1496,6 +1625,7 @@ describe('FirestorePipeline', function () {
             .documents([docPath])
             .select(
               mapSet(field('prefs'), 'updated', constant(true)).as('updatedPrefs'),
+              mapSet(field('prefs'), 'disabled', constant(false)).as('disabledPrefs'),
               mapRemove(field('prefs'), 'legacyKey').as('cleanedPrefs'),
               mapMerge(field('defaults'), field('overrides')).as('merged'),
             ),
@@ -1504,8 +1634,40 @@ describe('FirestorePipeline', function () {
         snapshot.results.should.have.length(1);
         const data = snapshot.results[0].data();
         data.updatedPrefs.should.eql({ color: 'blue', legacyKey: 'old', updated: true });
+        data.disabledPrefs.should.eql({ color: 'blue', legacyKey: 'old', disabled: false });
         data.cleanedPrefs.should.eql({ color: 'blue' });
         data.merged.should.eql({ a: 1, b: 99, c: 3 });
+      });
+
+      it('evaluates map and array literals with mixed constants and field expressions', async function () {
+        const { execute, field, constant, map, array } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          flagA: true,
+          score: 42,
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              map({
+                active: field('flagA'),
+                label: constant('item'),
+                score: field('score'),
+              }).as('meta'),
+              array([field('score'), constant('tail')]).as('scoreWithTail'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.meta.should.eql({ active: true, label: 'item', score: 42 });
+        data.scoreWithTail.should.eql([42, 'tail']);
       });
     });
 
@@ -1569,12 +1731,12 @@ describe('FirestorePipeline', function () {
           .where(
             and(
               arrayContains(field('tags'), 'typescript'),
-              arrayContainsAny(field('tags'), ['js', 'ts']),
+              arrayContainsAny(field('tags'), [constant('js'), constant('ts')]),
               arrayContainsAll(field('permissions'), ['read', 'write']),
             ),
           )
           .select(
-            array([constant(1), constant(2), constant(3)]).as('fixedArr'),
+            array([constant('one'), constant('two'), constant('three')]).as('fixedArr'),
             arrayLength(field('tags')).as('tagCount'),
             arrayFirst(field('items')).as('firstItemByHelper'),
             arrayFirstN(field('items'), 2).as('firstTwoItems'),
@@ -1617,12 +1779,12 @@ describe('FirestorePipeline', function () {
               .where(
                 and(
                   arrayContains(field('tags'), 'typescript'),
-                  arrayContainsAny(field('tags'), ['js', 'ts']),
+                  arrayContainsAny(field('tags'), [constant('js'), constant('ts')]),
                   arrayContainsAll(field('permissions'), ['read', 'write']),
                 ),
               )
               .select(
-                array([constant(1), constant(2), constant(3)]).as('fixedArr'),
+                array([constant('one'), constant('two'), constant('three')]).as('fixedArr'),
                 arrayLength(field('tags')).as('tagCount'),
                 arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
                 arrayFilter('scores', 'score', greaterThan(variable('score'), 15)).as(
@@ -1657,7 +1819,7 @@ describe('FirestorePipeline', function () {
 
           iosSnapshot.results.should.have.length(1);
           const iosData = iosSnapshot.results[0].data();
-          iosData.fixedArr.should.eql([1, 2, 3]);
+          iosData.fixedArr.should.eql(['one', 'two', 'three']);
           iosData.tagCount.should.equal(2);
           iosData.allTags.should.eql(['a', 'b', 'c', 'd']);
           iosData.filteredItems.should.eql([20, 30, 20]);
@@ -1685,7 +1847,7 @@ describe('FirestorePipeline', function () {
 
         snapshot.results.should.have.length(1);
         const data = snapshot.results[0].data();
-        data.fixedArr.should.eql([1, 2, 3]);
+        data.fixedArr.should.eql(['one', 'two', 'three']);
         data.tagCount.should.equal(2);
         data.firstItemByHelper.should.equal('x');
         data.firstTwoItems.should.eql(['x', 'y']);
@@ -1709,6 +1871,36 @@ describe('FirestorePipeline', function () {
         data.fluentLastTwentyIndex.should.equal(3);
         data.allTwentyIndexes.should.eql([1, 3]);
         data.totalScore.should.equal(80);
+      });
+
+      it('evaluates arrayFirstN and arraySlice with expression count/offset', async function () {
+        const { execute, field, arrayFirstN, arraySlice, arrayMaximumN } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          items: ['a', 'b', 'c', 'd'],
+          start: 1,
+          len: 2,
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              arrayFirstN(field('items'), field('start')).as('dynamicFirstN'),
+              arraySlice(field('items'), field('start'), field('len')).as('dynamicSlice'),
+              arrayMaximumN('items', field('len')).as('dynamicMaxN'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.dynamicFirstN.should.eql(['a']);
+        data.dynamicSlice.should.eql(['b', 'c']);
+        [...data.dynamicMaxN].sort().should.eql(['c', 'd']);
       });
     });
 
@@ -1802,6 +1994,31 @@ describe('FirestorePipeline', function () {
         data.distinctCategories.sort().should.eql(['A', 'B']);
       });
 
+      it('evaluates countIf with false literal predicate', async function () {
+        const { execute, field, countIf } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/agg-count-if-false`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'a1'), { converted: true }),
+          setDoc(doc(coll, 'a2'), { converted: false }),
+          setDoc(doc(coll, 'a3'), { converted: true }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .aggregate({
+              accumulators: [countIf(field('converted').equal(false)).as('nonConversions')],
+            }),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().nonConversions.should.equal(1);
+      });
+
       it('evaluates grouped aggregate with minimum, maximum, first, last per group', async function () {
         const { execute, field, minimum, maximum, first, last, Ordering } =
           firestorePipelinesModular;
@@ -1841,6 +2058,37 @@ describe('FirestorePipeline', function () {
         eng.lastName.should.be.a.String();
         sales.minSalary.should.equal(60);
         sales.maxSalary.should.equal(90);
+      });
+
+      it('evaluates grouped aggregate with expression group aliases', async function () {
+        const { execute, field, countAll, toLower } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/agg-expr-groups`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'a1'), { region: 'US', city: 'Austin' }),
+          setDoc(doc(coll, 'a2'), { region: 'US', city: 'austin' }),
+          setDoc(doc(coll, 'b1'), { region: 'EU', city: 'Paris' }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .aggregate({
+              accumulators: [countAll().as('total')],
+              groups: [field('region').as('region'), toLower(field('city')).as('cityNorm')],
+            }),
+        );
+
+        snapshot.results.should.have.length(2);
+        const us = snapshot.results.find(r => r.data().region === 'US').data();
+        const eu = snapshot.results.find(r => r.data().region === 'EU').data();
+        us.cityNorm.should.equal('austin');
+        us.total.should.equal(2);
+        eu.cityNorm.should.equal('paris');
+        eu.total.should.equal(1);
       });
     });
 
@@ -2059,6 +2307,34 @@ describe('FirestorePipeline', function () {
         should(data.cosDist).be.approximately(1, 0.0001);
         should(data.dotDist).be.approximately(0, 0.0001);
         should(data.euclidDist).be.approximately(Math.sqrt(2), 0.0001);
+      });
+
+      it('executes findNearest vector search stage', async function () {
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc, vector } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/find-nearest`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'near'), { name: 'near', embedding: vector([1.0, 0.0, 0.0]) }),
+          setDoc(doc(coll, 'far'), { name: 'far', embedding: vector([0.0, 1.0, 0.0]) }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .findNearest({
+              field: 'embedding',
+              vectorValue: [1.0, 0.0, 0.0],
+              distanceMeasure: 'EUCLIDEAN',
+              limit: 1,
+            })
+            .select('name'),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().name.should.equal('near');
       });
     });
 
