@@ -1,6 +1,34 @@
 const { execSync, spawn } = require('child_process');
+const { promisify } = require('util');
+const execFile = promisify(require('child_process').execFile);
 
 let macOsRetries = 0;
+
+const MACOS_BUNDLE_QUERY =
+  'platform=macos&dev=true&lazy=true&minify=false&inlineSourceMap=true&modulesOnly=false&runModule=true&app=org.reactjs.native.io-invertase-testing';
+
+async function waitForMetroMacosBundle(metroPort = 8081, timeoutMs = 600000) {
+  const host = '127.0.0.1';
+  const statusUrl = `http://${host}:${metroPort}/status`;
+  const bundleUrl = `http://${host}:${metroPort}/index.bundle?${MACOS_BUNDLE_QUERY}`;
+  const started = Date.now();
+
+  while (Date.now() - started < timeoutMs) {
+    try {
+      const { stdout } = await execFile('curl', ['-sf', statusUrl]);
+      if (stdout.includes('packager-status:running')) {
+        break;
+      }
+    } catch (_e) {
+      // Metro still starting.
+    }
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+
+  const remainingSec = Math.max(60, Math.ceil((timeoutMs - (Date.now() - started)) / 1000));
+  await execFile('curl', ['-sf', '--max-time', String(remainingSec), '-o', '/dev/null', bundleUrl]);
+  console.warn(`[rnfb-e2e] macOS Metro bundle prefetched from ${bundleUrl}`);
+}
 
 module.exports = {
   config: {
@@ -36,6 +64,7 @@ module.exports = {
         } catch (_e) {
           // noop
         }
+        await waitForMetroMacosBundle(config.metroPort ?? 8081);
         const macApp = spawn(
           'open',
           ['./macos/build/Build/Products/Debug/io.invertase.testing.app'],

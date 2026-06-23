@@ -191,3 +191,39 @@ index ad9debe2086ab9b96e97a69aec966da8114ad102..51cc18658e11d5aec5d5a76c4eb5f965
          }
      }
      /**
+diff --git a/dist/serialization.js b/dist/serialization.js
+index b2dd290111197907d125e3151a4a965e9fe0528d..7a29ad98febf3ec7dbffe02b9d555fa40340e325 100644
+--- a/dist/serialization.js
++++ b/dist/serialization.js
+@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+     return (mod && mod.__esModule) ? mod : { "default": mod };
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+-exports.deserialize = exports.createReviver = void 0;
++exports.tryDeserialize = exports.deserialize = exports.createReviver = void 0;
+ const flatted_1 = __importDefault(require("flatted"));
+ const debug_1 = require("./debug");
+ const debug = (0, debug_1.extend)("serialization");
+@@ -45,6 +45,22 @@ function createReviver() {
+     };
+ }
+ exports.createReviver = createReviver;
++function tryDeserialize(text, reviver = createReviver()) {
++    if (!text) {
++        return { ok: false, incomplete: true, error: new Error("empty buffer") };
++    }
++    try {
++        const value = flatted_1.default.parse(text, reviver);
++        return { ok: true, value };
++    }
++    catch (error) {
++        const err = error instanceof Error ? error : new Error(String(error));
++        const message = err.message || "";
++        const incomplete = /unexpected end of (json )?input|end of data/i.test(message);
++        return { ok: false, incomplete, error: err };
++    }
++}
++exports.tryDeserialize = tryDeserialize;
+ function deserialize(text, reviver = createReviver()) {
+     debug("Deserializing %s", text);
+     return flatted_1.default.parse(text, reviver);

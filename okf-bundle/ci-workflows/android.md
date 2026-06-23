@@ -59,7 +59,7 @@ Observed on Android CI under load (e.g. [run 28044822049](https://github.com/inv
 
 | Change | Location |
 |--------|----------|
-| Inbound parse buffer + `tryDeserialize` / `parse_skip` logging | mocha-remote-server patch → `Server.js` |
+| Inbound parse buffer + `tryDeserialize` in `serialization.js` / `parse_skip` logging | mocha-remote-server patch |
 | Outbound queue flushed on reconnect | mocha-remote-client patch |
 | `JET_PROTOCOL_ERROR_RE` → retryable Jet session (attempt 2) | `tests/e2e/firebase.test.js` |
 | Cold-boot ready wait + post-boot settle before Jet attempt 1 | `firebase.test.js` (`waitForAndroidEmulatorReady`, `RNFB_ANDROID_BOOT_SETTLE_MS`) |

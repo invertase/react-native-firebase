@@ -264,7 +264,7 @@ jobs:
             sleep 2
           done
           echo "Packager is online! Preparing bundle..."
-          curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=macos&dev=true&minify=false&inlineSourceMap=true"
+          curl --output /dev/null --silent --head --fail "http://127.0.0.1:8081/index.bundle?platform=macos&dev=true&lazy=true&minify=false&inlineSourceMap=true&modulesOnly=false&runModule=true&app=org.reactjs.native.io-invertase-testing"
           echo "...javascript bundle ready"
 
       - name: Start Screen Recording and System Logging

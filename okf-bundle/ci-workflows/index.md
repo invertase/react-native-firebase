@@ -6,7 +6,7 @@ Knowledge for GitHub Actions workflows in this repository: how jobs are structur
 
 * [iOS](ios.md) — simulator boot reliability, logging, and troubleshooting
 * [Android](android.md) — idling resources, adb teardown, native coverage pull
-* [Other](other.md) — macOS Detox (non-iOS), Windows, and shared workflow concerns — TBD
+* [Other](other.md) — macOS Jet e2e (Metro bundle startup), Windows, and shared workflow concerns
 
 ## Shared E2E dependencies
 
