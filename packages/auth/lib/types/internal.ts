@@ -416,6 +416,7 @@ export type AuthInternal = Auth & {
     forceResend?: boolean,
   ): PhoneAuthListener;
   verifyPasswordResetCode(code: string): Promise<string>;
+  revokeToken(authorizationCode: string): Promise<void>;
   native: RNFBAuthModule;
   emitter: EventEmitter;
   eventNameForApp(...args: Array<string | number>): string;

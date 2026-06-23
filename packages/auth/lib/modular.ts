@@ -537,6 +537,20 @@ export function revokeAccessToken(_auth: Auth, _token: string): Promise<void> {
 }
 
 /**
+ * Revokes a user's Sign in with Apple token.
+ *
+ * @remarks
+ * React Native Firebase-specific API required by Apple's account-deletion guidelines.
+ * **Supported on iOS** via the native `revokeTokenWithAuthorizationCode` bridge.
+ * On Android and Web the bridge resolves without performing revocation (no-op).
+ * Distinct from firebase-js-sdk {@link revokeAccessToken}, which revokes OAuth access tokens on Web only.
+ */
+export function revokeToken(auth: Auth, authorizationCode: string): Promise<void> {
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(authInternal, authInternal.revokeToken, authorizationCode);
+}
+
+/**
  * Sends a password reset email to the given address.
  */
 export function sendPasswordResetEmail(
