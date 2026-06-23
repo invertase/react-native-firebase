@@ -23,6 +23,7 @@ authenticator
 AuthSettings
 autolinking
 Autolinking
+allowlist
 AVD
 axios
 Axios
@@ -39,10 +40,12 @@ callables
 CarPlay
 CDN
 Changelog
+changelogs
 checkForUpdate
 CLI
 CocoaPods
 codebase
+composable
 config
 Config
 config-plugin
@@ -50,6 +53,8 @@ CP-User
 crashlytics
 Crashlytics
 CustomProvider
+deduplicate
+Deduplicate
 datastore
 debugToken
 DebugView
@@ -82,6 +87,8 @@ FirebaseApp
 FirebaseCore
 firestore
 Firestore
+geospatial
+Geospatial
 freeform
 GDPR
 GDPR-compliant
@@ -100,6 +107,7 @@ IDFA
 Imagen
 installable
 integrations
+interop
 Intellisense
 IntelliSense
 interstitials
@@ -191,6 +199,8 @@ screenview
 scrollable
 SDK
 SDK.
+subcollection
+Subcollection
 SDK51
 SDKs
 SDKs.

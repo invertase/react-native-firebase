@@ -106,6 +106,11 @@
         { "title": "Usage with Emulator", "href": "/firestore/emulator" },
         { "title": "Usage with FlatLists", "href": "/firestore/usage-with-flatlists" },
         { "title": "Implementing Pagination", "href": "/firestore/pagination" },
+        { "title": "Pipelines", "href": "/firestore/pipelines" },
+        {
+          "title": "Pipeline SDK compatibility",
+          "href": "/firestore/pipelines/sdk-compatibility"
+        },
         {
           "title": "Building a \"TODO\" app",
           "href": "https://invertase.io/blog/getting-started-with-cloud-firestore-on-react-native"
