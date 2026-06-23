@@ -130,6 +130,7 @@ import {
   isType,
   ifAbsent,
   coalesce,
+  currentDocument,
   ifError,
   conditional,
   logicalMaximum,
@@ -1197,6 +1198,8 @@ void coalesce(field('preferredName'), field('fullName'), constant('Anonymous'));
 void coalesce(field('preferredName'), 'Unknown');
 void coalesce('preferredName', field('fullName'), constant('Anonymous'));
 void field('preferredName').coalesce(field('fullName'), constant('Anonymous'));
+// currentDocument (no args)
+void currentDocument();
 // ifError: (BooleanExpression, BooleanExpression) | (Expression, Expression) | (Expression, unknown)
 void ifError(field('flag').equal(true), field('fallback').equal(false));
 void ifError(field('riskScore'), field('defaultScore'));

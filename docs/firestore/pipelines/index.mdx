@@ -1,7 +1,7 @@
 ---
 title: Pipelines
 description: Firestore pipeline queries in React Native Firebase - overview, requirements, and getting started.
-next: /firestore/pipelines/sdk-compatibility
+next: /firestore/pipelines/current-document
 previous: /firestore/pagination
 ---
 
@@ -158,6 +158,14 @@ On **macOS**, pipeline execution goes through the web Firebase SDK bundled for R
 Pipeline types and expression helpers are exported from `@react-native-firebase/firestore/pipelines`. The `firestore.pipeline()` method is augmented on `Firestore` when you import the firestore module.
 
 Run `yarn compare:types` in the React Native Firebase repository to see tracked differences between our public types and the firebase-js-sdk pipelines declarations.
+
+# Expression helpers
+
+| Helper                                                       | Description                                      |
+| ------------------------------------------------------------ | ------------------------------------------------ |
+| [`currentDocument()`](/firestore/pipelines/current-document) | Reference the document currently being processed |
+
+See [Pipeline SDK compatibility](/firestore/pipelines/sdk-compatibility) for the full firebase-js-sdk parity matrix.
 
 # Next steps
 

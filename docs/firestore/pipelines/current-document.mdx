@@ -1,0 +1,65 @@
+---
+title: currentDocument
+description: Pipeline expression helper that references the document currently being processed.
+next: /firestore/pipelines/sdk-compatibility
+previous: /firestore/pipelines
+---
+
+`currentDocument()` returns an [expression](/firestore/pipelines) representing the Firestore document row the pipeline is processing. Use it when you need the full document map in a projection or when binding the document to a variable in upstream firebase-js-sdk samples.
+
+Import from the pipelines entry point:
+
+```js
+import { currentDocument, mapGet } from '@react-native-firebase/firestore/pipelines';
+```
+
+# Basic example
+
+Read a field from the current document map with `mapGet`:
+
+```js
+import { getFirestore } from '@react-native-firebase/firestore';
+import {
+  currentDocument,
+  execute,
+  field,
+  mapGet,
+} from '@react-native-firebase/firestore/pipelines';
+
+const db = getFirestore('your-enterprise-database-id');
+
+const snapshot = await execute(
+  db
+    .pipeline()
+    .collection('books')
+    .select(mapGet(currentDocument(), 'title').as('title'), field('author').as('author')),
+);
+
+snapshot.results.forEach(row => {
+  console.log(row.data().title, row.data().author);
+});
+```
+
+# Upstream define-stage pattern
+
+The [firebase-js-sdk](https://firebase.google.com/docs/reference/js/firestore_pipelines#currentdocument) also shows binding the document with a `define` stage:
+
+```js
+firestore
+  .pipeline()
+  .collection('books')
+  .define(currentDocument().as('doc'))
+  .select(variable('doc').mapGet('title'));
+```
+
+React Native Firebase does not expose the `define` stage yet. Until it does, prefer `mapGet(currentDocument(), 'fieldName')` or other helpers that accept expression arguments directly.
+
+# Platform support
+
+| Platform | Support                                 |
+| -------- | --------------------------------------- |
+| Android  | Supported (native Firestore SDK)        |
+| iOS      | Supported (native Firestore SDK)        |
+| macOS    | Supported (firebase-js-sdk web interop) |
+
+Pipeline execution requires a Firestore **Enterprise** database. See [Pipelines overview](/firestore/pipelines).

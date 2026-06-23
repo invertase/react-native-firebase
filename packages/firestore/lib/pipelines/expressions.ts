@@ -1575,6 +1575,14 @@ export function sqrt(_exprOrField: Expression | string): FunctionExpression {
 
 /**
  * @beta
+ * Creates an expression that represents the current document being processed.
+ */
+export function currentDocument(): Expression {
+  return callFunctionHelper('currentDocument', arguments);
+}
+
+/**
+ * @beta
  * Server timestamp at execution time.
  */
 export function currentTimestamp(): FunctionExpression {

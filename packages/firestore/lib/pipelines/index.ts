@@ -111,6 +111,7 @@ export {
   concat,
   coalesce,
   sqrt,
+  currentDocument,
   currentTimestamp,
   not,
   ifAbsent,
