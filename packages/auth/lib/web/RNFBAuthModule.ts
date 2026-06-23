@@ -43,6 +43,7 @@ import {
   GithubAuthProvider,
   PhoneAuthProvider,
   OAuthProvider,
+  initializeRecaptchaConfig as jsInitializeRecaptchaConfig,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseAuth';
 import type {
   ActionCodeSettings,
@@ -408,6 +409,18 @@ export default {
       'unsupported',
       'This operation is not supported in this environment.',
     );
+  },
+
+  /**
+   * Initializes the reCAPTCHA Enterprise client for Web phone/email Enterprise verification.
+   * @param {string} appName - The name of the app to get the auth instance for.
+   * @returns {Promise<void>}
+   */
+  async initializeRecaptchaConfig(appName: string) {
+    return guard(async () => {
+      const auth = getCachedAuthInstance(appName);
+      await jsInitializeRecaptchaConfig(auth);
+    });
   },
 
   /**

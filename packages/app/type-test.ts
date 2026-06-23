@@ -37,6 +37,10 @@ console.log(utils.FilePath.CACHES_DIRECTORY);
 // initialize app variants
 firebase.initializeApp({ apiKey: 'a', appId: 'b', projectId: 'c' });
 firebase.initializeApp({ apiKey: 'a', appId: 'b', projectId: 'c' }, 'foo');
+firebase.initializeApp(
+  { apiKey: 'a', appId: 'b', projectId: 'c', recaptchaSiteKey: '6Le-test-site-key' },
+  'recaptchaApp',
+);
 
 // utils instance API
 const u = firebase.utils();

@@ -17,3 +17,38 @@ Add the [Config Schema](https://github.com/invertase/react-native-firebase/blob/
   "$schema": "./node_modules/@react-native-firebase/app/firebase-schema.json"
 }
 ```
+
+## `recaptchaSiteKey` in Firebase app options
+
+`recaptchaSiteKey` is a Firebase app option used by [App Check reCAPTCHA Enterprise](/app-check/usage#recaptcha-enterprise-on-ios-and-android) and Auth Enterprise flows. It is **not** configured in `firebase.json`; pass it through [`initializeApp`](/app/usage#initializing-secondary-apps) options or read it from native config files.
+
+| App kind | Where `recaptchaSiteKey` comes from |
+| -------- | ----------------------------------- |
+| **Native default app** (iOS / Android startup) | `google-services.json` / `GoogleService-Info.plist` processed before JS runs — **redownload these files** after enabling reCAPTCHA Enterprise in the Firebase console |
+| **Native secondary app** (JS `initializeApp`) | JS options passed to `initializeApp({ recaptchaSiteKey, ... }, name)` — RNFB forwards the value to native `FirebaseOptions` / `FIROptions` |
+| **Other / Web** (`Platform.OS === 'web'`) | `initializeApp({ recaptchaSiteKey, ... })` — required for [provider-less App Check init](/app-check/usage#provider-less-initialization-web-only) on Web |
+| **Other / Hermes** (macOS, Windows, …) | Stored in JS app options; DOM reCAPTCHA providers still cannot run — use `CustomProvider` for App Check |
+
+> **Native default-app caveat:** JavaScript cannot retroactively change `recaptchaSiteKey` on the default iOS/Android app after native startup. If App Check `'recaptcha'` or Auth Enterprise fails with a missing site key, redownload your native config files rather than setting the key only in JS.
+
+```js
+import { initializeApp } from '@react-native-firebase/app';
+
+await initializeApp(
+  {
+    apiKey: '...',
+    appId: '...',
+    projectId: '...',
+    recaptchaSiteKey: 'your-recaptcha-enterprise-site-key',
+  },
+  { name: 'SECONDARY_APP' },
+);
+```
+
+On the default app, inspect `getApp().options.recaptchaSiteKey` after startup to confirm the native config file included the key.
+
+### Expo and config plugins
+
+When using Expo config plugins (`@react-native-firebase/app`, `@react-native-firebase/app-check`, and others), native Firebase config comes from the files referenced by [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile). Plugins copy these files into the native project at prebuild — they **do not** synthesize or inject `recaptchaSiteKey`.
+
+After enabling the App Check reCAPTCHA provider in the Firebase console, redownload `google-services.json` and `GoogleService-Info.plist`, replace the copies in your project, and rebuild (for example `npx expo prebuild --clean` in managed workflows).

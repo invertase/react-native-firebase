@@ -181,6 +181,33 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     promise.resolve(firebaseAuth.getCustomAuthDomain());
   }
 
+  /**
+   * Initializes the reCAPTCHA Enterprise client proactively to enhance reCAPTCHA signal
+   * collection and to complete reCAPTCHA-protected flows in a single attempt.
+   *
+   * @param appName
+   * @param promise
+   */
+  @ReactMethod
+  public void initializeRecaptchaConfig(final String appName, final Promise promise) {
+    Log.d(TAG, "initializeRecaptchaConfig");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    firebaseAuth
+        .initializeRecaptchaConfig()
+        .addOnSuccessListener(
+            unused -> {
+              Log.d(TAG, "initializeRecaptchaConfig:onComplete:success");
+              promise.resolve(null);
+            })
+        .addOnFailureListener(
+            exception -> {
+              Log.e(TAG, "initializeRecaptchaConfig:onComplete:failure", exception);
+              promiseRejectAuthException(promise, exception);
+            });
+  }
+
   /** Add a new auth state listener - if one doesn't exist already */
   @ReactMethod
   public void addAuthStateListener(final String appName) {

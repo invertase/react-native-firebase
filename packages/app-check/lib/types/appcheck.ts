@@ -16,7 +16,12 @@
  */
 
 import type { FirebaseApp } from '@react-native-firebase/app';
-import type { CustomProvider, ReactNativeFirebaseAppCheckProvider } from '../providers';
+import type {
+  CustomProvider,
+  ReCaptchaEnterpriseProvider,
+  ReCaptchaV3Provider,
+  ReactNativeFirebaseAppCheckProvider,
+} from '../providers';
 
 export type {
   Unsubscribe,
@@ -59,8 +64,10 @@ export interface AppCheckOptions {
    * or a custom provider. For convenience, you can also pass an object with providerOptions
    * directly, which will be accepted by the runtime.
    */
-  provider:
+  provider?:
     | CustomProvider
+    | ReCaptchaV3Provider
+    | ReCaptchaEnterpriseProvider
     | ReactNativeFirebaseAppCheckProvider
     | ReactNativeFirebaseAppCheckProviderConfig;
 
@@ -143,11 +150,11 @@ export interface ReactNativeFirebaseAppCheckProviderWebOptions extends ReactNati
  */
 export interface ReactNativeFirebaseAppCheckProviderAppleOptions extends ReactNativeFirebaseAppCheckProviderOptions {
   /**
-   * The apple provider to use, either `deviceCheck` or `appAttest`, or `appAttestWithDeviceCheckFallback`,
+   * The apple provider to use, either `deviceCheck`, `appAttest`, `appAttestWithDeviceCheckFallback`, or `recaptcha`,
    * defaults to `DeviceCheck`. `appAttest` requires iOS 14+ or will fail, `appAttestWithDeviceCheckFallback`
    * will use `appAttest` for iOS14+ and fallback to `deviceCheck` on devices with ios13 and lower
    */
-  provider?: 'debug' | 'deviceCheck' | 'appAttest' | 'appAttestWithDeviceCheckFallback';
+  provider?: 'debug' | 'deviceCheck' | 'appAttest' | 'appAttestWithDeviceCheckFallback' | 'recaptcha';
 }
 
 /**
@@ -156,9 +163,9 @@ export interface ReactNativeFirebaseAppCheckProviderAppleOptions extends ReactNa
  */
 export interface ReactNativeFirebaseAppCheckProviderAndroidOptions extends ReactNativeFirebaseAppCheckProviderOptions {
   /**
-   * The android provider to use, either `debug` or `playIntegrity`. default is `playIntegrity`.
+   * The android provider to use, either `debug`, `playIntegrity`, or `recaptcha`. default is `playIntegrity`.
    */
-  provider?: 'debug' | 'playIntegrity';
+  provider?: 'debug' | 'playIntegrity' | 'recaptcha';
 }
 
 /**

@@ -165,11 +165,11 @@ export namespace FirebaseAppCheckTypes {
    */
   export interface ReactNativeFirebaseAppCheckProviderAppleOptions extends ReactNativeFirebaseAppCheckProviderOptions {
     /**
-     * The apple provider to use, either `deviceCheck` or `appAttest`, or `appAttestWithDeviceCheckFallback`,
+     * The apple provider to use, either `deviceCheck`, `appAttest`, `appAttestWithDeviceCheckFallback`, or `recaptcha`,
      * defaults to `DeviceCheck`. `appAttest` requires iOS 14+ or will fail, `appAttestWithDeviceCheckFallback`
      * will use `appAttest` for iOS14+ and fallback to `deviceCheck` on devices with ios13 and lower
      */
-    provider?: 'debug' | 'deviceCheck' | 'appAttest' | 'appAttestWithDeviceCheckFallback';
+    provider?: 'debug' | 'deviceCheck' | 'appAttest' | 'appAttestWithDeviceCheckFallback' | 'recaptcha';
   }
 
   /**
@@ -177,9 +177,9 @@ export namespace FirebaseAppCheckTypes {
    */
   export interface ReactNativeFirebaseAppCheckProviderAndroidOptions extends ReactNativeFirebaseAppCheckProviderOptions {
     /**
-     * The android provider to use, either `debug` or `playIntegrity`. default is `playIntegrity`.
+     * The android provider to use, either `debug`, `playIntegrity`, or `recaptcha`. default is `playIntegrity`.
      */
-    provider?: 'debug' | 'playIntegrity';
+    provider?: 'debug' | 'playIntegrity' | 'recaptcha';
   }
 
   /**

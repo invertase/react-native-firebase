@@ -15,7 +15,7 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
+import { isOtherHermes, MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import {
   ActionCodeOperation,
   FactorId,
@@ -1131,6 +1131,33 @@ export function getAdditionalUserInfo(
 export function getCustomAuthDomain(auth: Auth): Promise<string> {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.getCustomAuthDomain);
+}
+
+/**
+ * Initializes the reCAPTCHA Enterprise client proactively to enhance reCAPTCHA signal
+ * collection and to complete reCAPTCHA-protected flows in a single attempt.
+ *
+ * @remarks
+ * - **iOS/Android/Web:** delegates to the native or firebase-js-sdk implementation.
+ * - **Other/Hermes** (incl. macOS): resolves without action and logs a warning — the DOM-based
+ *   reCAPTCHA bootstrap is unavailable in this context.
+ * - **Web phone Enterprise verification:** call once before {@link signInWithPhoneNumber} or
+ *   {@link PhoneAuthProvider.verifyPhoneNumber}; upstream fails when Enterprise is enforced and
+ *   this was not called.
+ */
+export function initializeRecaptchaConfig(auth: Auth): Promise<void> {
+  if (isOtherHermes) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'initializeRecaptchaConfig() is not supported on this platform. ' +
+        'reCAPTCHA Enterprise requires a DOM environment (Other/Web). ' +
+        'Enterprise phone verification is unavailable here.',
+    );
+    return Promise.resolve();
+  }
+
+  const authInternal = getAuthInternal(auth);
+  return callAuthMethod(authInternal, authInternal.initializeRecaptchaConfig);
 }
 
 /**

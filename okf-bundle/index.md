@@ -14,6 +14,11 @@ Knowledge documents for react-native-firebase development, testing, and maintena
 
 * [Coverage design](/testing/coverage-design.md) - unit and e2e coverage goals, pipelines, and Codecov uploads
 
+# Features
+
+* [reCAPTCHA Enterprise design](/recaptcha-enterprise-design.md) — App Check + Auth Enterprise feature design, platform matrix, and implementation plan
+
 # Packages
 
+* [@react-native-firebase/app-check](/packages/app-check/index.md) — App Check provider routing matrix and compare:types registry
 * [@react-native-firebase/auth](/packages/auth/index.md) — Auth modular API type parity, platform matrix, and compare:types triage

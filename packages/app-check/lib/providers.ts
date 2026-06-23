@@ -47,3 +47,41 @@ export class CustomProvider implements AppCheckProvider {
     return this._customProviderOptions.getToken();
   }
 }
+
+/**
+ * App Check provider that can obtain a reCAPTCHA v3 token and exchange it for an App Check token.
+ * @public
+ */
+export class ReCaptchaV3Provider implements AppCheckProvider {
+  readonly siteKey: string;
+
+  constructor(siteKey: string) {
+    this.siteKey = siteKey;
+  }
+
+  async getToken(): Promise<AppCheckToken> {
+    if (!this.siteKey) {
+      throw new Error('Missing reCAPTCHA site key.');
+    }
+    throw new Error('getToken() must be called via initializeAppCheck() routing');
+  }
+}
+
+/**
+ * App Check provider that can obtain a reCAPTCHA Enterprise token and exchange it for an App Check token.
+ * @public
+ */
+export class ReCaptchaEnterpriseProvider implements AppCheckProvider {
+  readonly siteKey: string;
+
+  constructor(siteKey: string) {
+    this.siteKey = siteKey;
+  }
+
+  async getToken(): Promise<AppCheckToken> {
+    if (!this.siteKey) {
+      throw new Error('Missing reCAPTCHA site key.');
+    }
+    throw new Error('getToken() must be called via initializeAppCheck() routing');
+  }
+}

@@ -98,7 +98,9 @@ The other platform implementation of Analytics does not capture automatic metric
 
 ### App Check
 
-App Check for other platforms only supports the `CustomProvider` provider. Here's how to setup your own custom provider:
+On **Other / Web** (`Platform.OS === 'web'`), App Check supports firebase-js-sdk providers including `ReCaptchaEnterpriseProvider`, `ReCaptchaV3Provider`, and [provider-less initialization](/app-check/usage#provider-less-initialization-web-only) when `app.options.recaptchaSiteKey` is set. See the [provider routing table](/app-check/usage#provider-routing-by-platform).
+
+On **Other / Hermes** (macOS, Windows, …), reCAPTCHA-based providers throw — only `CustomProvider` is supported. Here's how to set up a custom provider:
 
 - [Implement server support to get tokens](https://firebase.google.com/docs/app-check/custom-provider)
 - Create a custom provider in your app:
@@ -126,9 +128,13 @@ await initializeAppCheck(getApp(), {
 
 ### Authentication
 
-Multi-factor authentication is not supported on other platforms.
+MFA and TOTP flows are supported on **Other** platforms via the firebase-js-sdk auth bridge where documented — see [Multi-factor auth](/auth/multi-factor-auth).
 
-Phone authentication methods are unsupported, specifically:
+[`initializeRecaptchaConfig`](/auth/phone-auth#recaptcha-enterprise) is exported on all platforms: it delegates to firebase-js-sdk on **Web**, calls the native SDK on **iOS / Android**, and no-ops with a warning on **Other / Hermes** (Enterprise phone verification is unavailable there).
+
+On **Other / Web** (`Platform.OS === 'web'`), `signInWithPhoneNumber` is supported via firebase-js-sdk. Call `initializeRecaptchaConfig(auth)` before Enterprise phone verification when your project enforces reCAPTCHA Enterprise — see [Phone Authentication](/auth/phone-auth#example-web-enterprise-phone-sign-in).
+
+On **Other / Hermes**, native phone-auth bridge methods remain unsupported:
 
 - `signInWithProvider`
 - `signInWithPhoneNumber`

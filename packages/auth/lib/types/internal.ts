@@ -297,8 +297,9 @@ export interface RNFBAuthModule {
   verifyPasswordResetCode(code: string): Promise<string>;
   useUserAccessGroup(userAccessGroup: string): Promise<null | void>;
   signInWithProvider(provider: Record<string, unknown>): Promise<NativeUserCredentialInternal>;
-  useEmulator(host: string, port?: number): void;
+  useEmulator(host: string, port?: number): void | Promise<void>;
   getCustomAuthDomain(): Promise<string>;
+  initializeRecaptchaConfig(): Promise<void>;
   confirmationResultConfirm(verificationCode: string): Promise<NativeUserCredentialInternal>;
   delete(): Promise<void>;
   getIdToken(forceRefresh: boolean): Promise<string>;
@@ -369,6 +370,7 @@ export type AuthInternal = Auth & {
   ): Promise<UserCredentialWithAdditionalUserInfoInternal>;
   fetchSignInMethodsForEmail(email: string): Promise<string[]>;
   getCustomAuthDomain(): Promise<string>;
+  initializeRecaptchaConfig(): Promise<void>;
   getMultiFactorResolver(error: unknown): MultiFactorResolverResultInternal | null;
   isSignInWithEmailLink(emailLink: string): Promise<boolean>;
   onAuthStateChanged(

@@ -49,6 +49,38 @@ describe('modular', function () {
       should.equal(firebase.app().options.messagingSenderId, platformAppConfig.messagingSenderId);
       should.equal(firebase.app().options.projectId, platformAppConfig.projectId);
       should.equal(firebase.app().options.storageBucket, platformAppConfig.storageBucket);
+      // Native default-app recaptchaSiteKey (when present) comes from google-services.json /
+      // GoogleService-Info.plist at startup — JS cannot retroactively set it on [DEFAULT].
+    });
+
+    it('secondary app preserves recaptchaSiteKey in options on Other/Web', async function () {
+      if (!Platform.other) return;
+
+      const name = `recaptchaSiteKeyApp${FirebaseHelpers.id}`;
+      const platformAppConfig = FirebaseHelpers.app.config();
+      const recaptchaSiteKey = '6Le-test-recaptcha-site-key';
+      const newApp = await firebase.initializeApp(
+        { ...platformAppConfig, recaptchaSiteKey },
+        name,
+      );
+
+      newApp.options.recaptchaSiteKey.should.equal(recaptchaSiteKey);
+      return newApp.delete();
+    });
+
+    it('secondary app preserves recaptchaSiteKey in options on native', async function () {
+      if (Platform.other) return;
+
+      const name = `recaptchaSiteKeyApp${FirebaseHelpers.id}`;
+      const platformAppConfig = FirebaseHelpers.app.config();
+      const recaptchaSiteKey = '6Le-test-recaptcha-site-key';
+      const newApp = await firebase.initializeApp(
+        { ...platformAppConfig, recaptchaSiteKey },
+        name,
+      );
+
+      newApp.options.recaptchaSiteKey.should.equal(recaptchaSiteKey);
+      return newApp.delete();
     });
 
     it('SDK_VERSION should return a string version', function () {

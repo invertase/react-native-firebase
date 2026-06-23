@@ -1,21 +1,23 @@
 import {
   getApp,
-  initializeAppCheck,
+  initializeAppCheck as initializeJsAppCheck,
   getToken,
   getLimitedUseToken,
   setTokenAutoRefreshEnabled,
-  CustomProvider,
   onTokenChanged,
   makeIDBAvailable,
-  type AppCheckOptions,
   type AppCheckTokenResult,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseAppCheck';
 import { guard, emitEvent } from '@react-native-firebase/app/dist/module/internal/web/utils';
+import {
+  buildWebAppCheckInitOptions,
+  type WebInitializeAppCheckOptions,
+} from './appCheckWebProviderRouting';
 
-let appCheckInstances: Record<string, any> = {};
+let appCheckInstances: Record<string, unknown> = {};
 let listenersForApp: Record<string, () => void> = {};
 
-function getAppCheckInstanceForApp(appName: string): any {
+function getAppCheckInstanceForApp(appName: string): unknown {
   if (!appCheckInstances[appName]) {
     throw new Error(
       `firebase AppCheck instance for app ${appName} has not been initialized, ensure you have called initializeAppCheck() first.`,
@@ -25,7 +27,7 @@ function getAppCheckInstanceForApp(appName: string): any {
 }
 
 interface AppCheckModule {
-  initializeAppCheck(appName: string, options: AppCheckOptions): Promise<void>;
+  initializeAppCheck(appName: string, options: WebInitializeAppCheckOptions): Promise<void>;
   setTokenAutoRefreshEnabled(appName: string, isTokenAutoRefreshEnabled: boolean): Promise<void>;
   getLimitedUseToken(appName: string): Promise<AppCheckTokenResult>;
   getToken(appName: string, forceRefresh: boolean): Promise<AppCheckTokenResult>;
@@ -40,28 +42,17 @@ interface AppCheckModule {
  * java methods on Android.
  */
 const appCheckWebModule: AppCheckModule = {
-  initializeAppCheck(appName: string, options: AppCheckOptions) {
+  initializeAppCheck(appName: string, options: WebInitializeAppCheckOptions) {
     makeIDBAvailable();
     return guard(async () => {
       if (appCheckInstances[appName]) {
         return;
       }
+
       const { provider, isTokenAutoRefreshEnabled } = options;
-      if (!provider) {
-        throw new Error('AppCheck provider is required');
-      }
-      const _provider = new CustomProvider({
-        getToken() {
-          if ('getToken' in provider && typeof provider.getToken === 'function') {
-            return provider.getToken();
-          }
-          throw new Error('Provider does not have a getToken method');
-        },
-      });
-      appCheckInstances[appName] = initializeAppCheck(getApp(appName), {
-        provider: _provider,
-        isTokenAutoRefreshEnabled,
-      });
+      const app = getApp(appName);
+      const initOptions = buildWebAppCheckInitOptions(app, { provider, isTokenAutoRefreshEnabled });
+      appCheckInstances[appName] = initializeJsAppCheck(app, initOptions);
     });
   },
   setTokenAutoRefreshEnabled(appName: string, isTokenAutoRefreshEnabled: boolean) {

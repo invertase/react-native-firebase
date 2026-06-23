@@ -93,6 +93,10 @@ export const isAndroid = Platform.OS === 'android';
 
 export const isOther = Platform.OS !== 'ios' && Platform.OS !== 'android';
 
+export const isWeb = Platform.OS === 'web';
+
+export const isOtherHermes = isOther && Platform.OS !== 'web';
+
 export function tryJSONParse(string: string | null | undefined): any {
   try {
     return string && JSON.parse(string);
@@ -236,6 +240,7 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       useUserAccessGroup: 'useUserAccessGroup()',
       verifyPasswordResetCode: 'verifyPasswordResetCode()',
       getCustomAuthDomain: 'getCustomAuthDomain()',
+      initializeRecaptchaConfig: 'initializeRecaptchaConfig()',
       useEmulator: 'connectAuthEmulator()',
       setLanguageCode: 'useDeviceLanguage()',
       multiFactor: 'multiFactor()',

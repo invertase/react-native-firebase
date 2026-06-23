@@ -46,6 +46,9 @@ Pod::Spec.new do |s|
   # Firebase dependencies
   s.dependency          'Firebase/Auth', firebase_sdk_version
 
+  # reCAPTCHA Enterprise SDK for Auth phone/email Enterprise verification (Option A — always linked).
+  s.ios.dependency      'RecaptchaEnterprise', '>= 18.7.0'
+
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
     s.static_framework = $RNFirebaseAsStaticFramework

@@ -103,6 +103,13 @@ export namespace ReactNativeFirebase {
      * iOS only - The URL scheme used to set up Durable Deep Link service.
      */
     deepLinkURLScheme?: string;
+
+    /**
+     * The reCAPTCHA Enterprise site key for App Check and Auth bot protection.
+     * Native default apps read this from google-services.json / GoogleService-Info.plist;
+     * JS-provided values apply to JS-created secondary apps and Other/Web apps.
+     */
+    recaptchaSiteKey?: string;
     [name: string]: any;
   }
 

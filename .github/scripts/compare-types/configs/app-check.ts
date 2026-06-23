@@ -23,16 +23,6 @@ const config: PackageConfig = {
         'RN Firebase re-exports this type from `@react-native-firebase/app` common types rather than mirroring the firebase-js-sdk utility export directly.',
     },
     {
-      name: 'ReCaptchaEnterpriseProvider',
-      reason:
-        'Web-only reCAPTCHA Enterprise provider from the firebase-js-sdk. RN Firebase uses `ReactNativeFirebaseAppCheckProvider` to configure native platform providers instead.',
-    },
-    {
-      name: 'ReCaptchaV3Provider',
-      reason:
-        'Web-only reCAPTCHA v3 provider from the firebase-js-sdk. RN Firebase uses `ReactNativeFirebaseAppCheckProvider` for cross-platform provider configuration.',
-    },
-    {
       name: 'Unsubscribe',
       reason:
         'RN Firebase re-exports this type from `@react-native-firebase/app` common types rather than mirroring the firebase-js-sdk utility export directly.',
@@ -89,12 +79,22 @@ const config: PackageConfig = {
     {
       name: 'AppCheckOptions',
       reason:
-        'RN Firebase accepts `CustomProvider`, `ReactNativeFirebaseAppCheckProvider`, or a RN-specific provider config object instead of the firebase-js-sdk reCAPTCHA provider classes.',
+        'RN Firebase extends `AppCheckOptions.provider` with `ReactNativeFirebaseAppCheckProvider` and `ReactNativeFirebaseAppCheckProviderConfig` for cross-platform native provider selection. firebase-js-sdk accepts only reCAPTCHA and `CustomProvider` instances.',
     },
     {
       name: 'CustomProvider',
       reason:
-        'The RN Firebase `CustomProvider` class is tailored to the React Native/native initialization model, so its public class shape differs from the firebase-js-sdk version.',
+        'RN Firebase declares public `getToken()` on `CustomProvider` because the class implements `AppCheckProvider`. firebase-js-sdk marks provider `getToken` as internal on the public class declaration.',
+    },
+    {
+      name: 'ReCaptchaEnterpriseProvider',
+      reason:
+        'RN Firebase declares public `siteKey` and `getToken()` on the provider class for `initializeAppCheck` routing across native and Other/Web. firebase-js-sdk keeps the site key and token fetch internal to the provider implementation.',
+    },
+    {
+      name: 'ReCaptchaV3Provider',
+      reason:
+        'RN Firebase declares public `siteKey` and `getToken()` on the provider class for `initializeAppCheck` routing on Other/Web. firebase-js-sdk keeps the site key and token fetch internal to the provider implementation.',
     },
   ],
 };
