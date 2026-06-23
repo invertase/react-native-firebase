@@ -269,7 +269,10 @@ jobs:
           script: |
             $ANDROID_HOME/platform-tools/adb devices
             nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
+            chmod +x ./.github/workflows/scripts/resource-monitor-android.sh
+            nohup ./.github/workflows/scripts/resource-monitor-android.sh &
             yarn tests:android:test-cover --headless
+            pkill -f resource-monitor-android.sh || true
             yarn tests:android:post-e2e-coverage
 
       # https://github.com/codecov/codecov-action/releases
@@ -296,6 +299,13 @@ jobs:
         with:
           name: adb_logs_${{ matrix.api-level}}_${{ matrix.arch }}_${{ matrix.target }}_${{ matrix.iteration }}
           path: adb-*.txt
+
+      - name: Upload Android resource monitor log
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: resource-monitor-android-${{ matrix.api-level }}-${{ matrix.arch }}-${{ matrix.target }}-${{ matrix.iteration }}
+          path: resource-monitor-android.log
 
       - name: Upload Firebase emulator script logs
         # https://github.com/actions/upload-artifact/releases
