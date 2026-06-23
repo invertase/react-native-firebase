@@ -392,21 +392,21 @@ With js-sdk 12.15 / #9991, both modules may use Enterprise concurrently on Other
 
 ## Phase 6 — okf-bundle maintenance
 
-- [ ] **6.1** Link this document from [okf-bundle index](/index.md).
-- [ ] **6.2** Create `okf-bundle/packages/app-check/index.md` (provider matrix, compare:types pointers).
-- [ ] **6.3** Update `okf-bundle/packages/auth/compare-types-triage.md` item **#23a** after Auth implementation.
-- [ ] **6.4** Update `okf-bundle/testing/coverage-design.md` if new native files need explicit Codecov paths.
+- [x] **6.1** Link this document from [okf-bundle index](/index.md).
+- [x] **6.2** Create `okf-bundle/packages/app-check/index.md` (provider matrix, compare:types pointers).
+- [x] **6.3** Update `okf-bundle/packages/auth/compare-types-triage.md` item **#23a** after Auth implementation.
+- [x] **6.4** Update `okf-bundle/testing/coverage-design.md` if new native files need explicit Codecov paths.
 
 ---
 
 ## Phase 7 — Unit tests
 
-- [ ] **7.1** `packages/app-check/__tests__/appcheck.test.ts` — provider class exports; modular paths.
-- [ ] **7.2** New tests for web module provider routing (Enterprise vs V3 vs provider-less) with mocked js-sdk.
-- [ ] **7.3** Tests for `isWeb` / `isOtherHermes` guards (throw vs delegate).
-- [ ] **7.4** `packages/auth/__tests__/auth.test.ts` — `initializeRecaptchaConfig` export and modular wiring.
-- [ ] **7.5** Auth web bridge test for js-sdk delegation and Web phone Enterprise initialization ordering.
-- [ ] **7.6** Plugin tests only if Expo config changes.
+- [x] **7.1** `packages/app-check/__tests__/appcheck.test.ts` — provider class exports; modular paths. *(Already satisfied: `ReCaptchaV3Provider` / `ReCaptchaEnterpriseProvider` export + constructor tests; modular `initializeAppCheck` and related exports from `../lib`.)*
+- [x] **7.2** New tests for web module provider routing (Enterprise vs V3 vs provider-less) with mocked js-sdk. *(Already satisfied: `packages/app-check/__tests__/webModule.test.ts` — Enterprise/V3/RNFB web config routing, provider-less init, CustomProvider passthrough.)*
+- [x] **7.3** Tests for `isWeb` / `isOtherHermes` guards (throw vs delegate). *(Already satisfied: `packages/app/__tests__/platformHelpers.test.ts` for helper detection; `packages/app-check/__tests__/namespacedRouting.test.ts` for App Check throw vs delegate; `packages/auth/__tests__/initializeRecaptchaConfig.hermes.test.ts` for Auth Hermes no-op+warn.)*
+- [x] **7.4** `packages/auth/__tests__/auth.test.ts` — `initializeRecaptchaConfig` export and modular wiring. *(Already satisfied: modular export exposure test in `auth.test.ts`.)*
+- [x] **7.5** Auth web bridge test for js-sdk delegation and Web phone Enterprise initialization ordering. *(Already satisfied: `packages/auth/__tests__/initializeRecaptchaConfig.test.ts` — js-sdk delegation, modular bridge, Enterprise phone call-order regression.)*
+- [x] **7.6** Plugin tests only if Expo config changes. *(N/A — no Expo config-plugin changes in this feature; Phase 0.7 docs-only item remains open.)*
 
 ---
 

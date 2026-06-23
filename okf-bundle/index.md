@@ -36,6 +36,7 @@ okf_version: '0.1'
 
 # Packages
 
+- [App Check](/packages/app-check/index.md) — provider routing matrix and compare:types registry
 - [Auth](/packages/auth/index.md) — modular API type parity, platform matrix, `compare:types`
 - [Firestore](/packages/firestore/index.md) — Pipelines architecture, parity, e2e coverage
 - [Messaging](/packages/messaging/index.md) — iOS `UNUserNotificationCenter` delegate forwarding, `completionHandler` contract
