@@ -19529,13 +19529,13 @@ __metadata:
 
 "mocha-remote-client@patch:mocha-remote-client@npm%3A1.13.2#~/.yarn/patches/mocha-remote-client-npm-1.13.2-a2e7596aba.patch":
   version: 1.13.2
-  resolution: "mocha-remote-client@patch:mocha-remote-client@npm%3A1.13.2#~/.yarn/patches/mocha-remote-client-npm-1.13.2-a2e7596aba.patch::version=1.13.2&hash=f19f52"
+  resolution: "mocha-remote-client@patch:mocha-remote-client@npm%3A1.13.2#~/.yarn/patches/mocha-remote-client-npm-1.13.2-a2e7596aba.patch::version=1.13.2&hash=a43497"
   dependencies:
     debug: "npm:^4.3.4"
     fast-equals: "npm:^5.0.1"
     mocha-remote-common: "npm:1.13.2"
     ws: "npm:^8.17.1"
-  checksum: 10/0a30a523594b1ed92a53b784b415377c5bd71ac95ad1a8a18a4f5ccff077e885b7c6b39fddaf27cb1086ef028f58b337b7c1809f0e2cd4430d8283b3d9cb9f00
+  checksum: 10/b1ca6dc8d93622e46efa4e939e10bf0b814720ad9179aaefbb31d6c8bb21ed4d958be36ed8813eb6c4c45faf5f378fc9fbbdda3f8ec0ca5811136ebd509f012b
   languageName: node
   linkType: hard
 
@@ -19562,13 +19562,13 @@ __metadata:
 
 "mocha-remote-server@patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch":
   version: 1.13.2
-  resolution: "mocha-remote-server@patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch::version=1.13.2&hash=172605"
+  resolution: "mocha-remote-server@patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch::version=1.13.2&hash=ff2047"
   dependencies:
     debug: "npm:^4.3.4"
     flatted: "npm:^3.3.1"
     mocha-remote-common: "npm:1.13.2"
     ws: "npm:^8.17.1"
-  checksum: 10/8b3c527b2f1ccf0f04b7faa1b6e23f21e2a6ac61846d315b7433603d1ed7d2fef9b275607fa89805968fb137012feeb8ab7f4f8662b60f36f3c4d805c8289030
+  checksum: 10/afbf74cfd890e98fa4a9d2807d5f57052ff98fa711159a0b160da71e830cd453631d98353d9d16d57536fcbda371a91fb6ac4938413285aeff82045e5b86bb46
   languageName: node
   linkType: hard
 

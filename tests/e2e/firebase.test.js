@@ -38,6 +38,18 @@ const REBOOT_ANDROID_EMULATOR_TIMEOUT_MS = parseInt(
   process.env.RNFB_REBOOT_ANDROID_EMULATOR_TIMEOUT_MS || '300000',
   10,
 );
+const ANDROID_READY_MAX_LOAD = parseFloat(process.env.RNFB_ANDROID_READY_MAX_LOAD || '5');
+const ANDROID_READY_LOAD_POLLS = parseInt(process.env.RNFB_ANDROID_READY_LOAD_POLLS || '3', 10);
+const ANDROID_READY_POLL_MS = parseInt(process.env.RNFB_ANDROID_READY_POLL_MS || '2000', 10);
+const ANDROID_PACKAGE_HANDLER_TIMEOUT_MS = parseInt(
+  process.env.RNFB_ANDROID_PACKAGE_HANDLER_TIMEOUT_MS || '30000',
+  10,
+);
+const ANDROID_BOOT_SETTLE_MS = parseInt(process.env.RNFB_ANDROID_BOOT_SETTLE_MS || '30000', 10);
+const DRAIN_ORCHESTRATE_TIMEOUT_MS = parseInt(
+  process.env.RNFB_DRAIN_ORCHESTRATE_TIMEOUT_MS || '30000',
+  10,
+);
 const JET_RETRYABLE_WS_RE = /\[jet-ws\] RETRYABLE_DISCONNECT code=(1006|1001)\b/;
 const JET_RECONNECT_RECOVERED_RE = /\[jet-ws\] reconnect_recovered code=(1006|1001)\b/;
 const JET_SERVER_NOT_RUNNING_RE = /server wasn't running/i;
@@ -50,6 +62,9 @@ const RETRYABLE_LAUNCH_RE =
 const PORT_CLOSED_ERROR_CODES = new Set(['ECONNREFUSED', 'ECONNRESET', 'EPIPE']);
 
 let cachedUsesLiveMetro;
+let lastJetAttemptContext;
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function resolveDetoxConfigurationName() {
   if (process.env.DETOX_CONFIGURATION) {
@@ -193,7 +208,21 @@ function resolveAndroidSerial() {
   return process.env.ANDROID_SERIAL || 'emulator-5554';
 }
 
-async function rebootAndroidEmulator() {
+function adbShell(serial, command, timeoutMs = 15000) {
+  const adb = resolveAdbPath();
+  return execSync(`${adb} -s ${serial} shell ${command}`, {
+    encoding: 'utf8',
+    timeout: timeoutMs,
+  }).trim();
+}
+
+function parseGuestLoad1Min(loadavgLine) {
+  const first = loadavgLine.trim().split(/\s+/)[0];
+  const load = parseFloat(first);
+  return Number.isFinite(load) ? load : NaN;
+}
+
+function rebootAndroidEmulator() {
   const adb = resolveAdbPath();
   const serial = resolveAndroidSerial();
   console.warn(`[rnfb-e2e] Rebooting Android emulator serial=${serial} via adb reboot`);
@@ -203,33 +232,174 @@ async function rebootAndroidEmulator() {
     stdio: 'inherit',
     timeout: REBOOT_ANDROID_EMULATOR_TIMEOUT_MS,
   });
+}
 
+async function waitForAndroidEmulatorReady() {
+  const serial = resolveAndroidSerial();
   const deadline = Date.now() + REBOOT_ANDROID_EMULATOR_TIMEOUT_MS;
+  let stableLoadPolls = 0;
+  let packageHandlerDone = false;
+  let bootSettleDone = false;
+
   while (Date.now() < deadline) {
     try {
-      const booted = execSync(`${adb} -s ${serial} shell getprop sys.boot_completed`, {
-        encoding: 'utf8',
-        timeout: 15000,
-      }).trim();
-      if (booted === '1') {
-        const anim = execSync(`${adb} -s ${serial} shell getprop init.svc.bootanim`, {
-          encoding: 'utf8',
-          timeout: 15000,
-        }).trim();
-        if (anim === 'stopped') {
-          console.log(`[rnfb-e2e] Android emulator boot complete serial=${serial}`);
-          return;
+      const bootCompleted = adbShell(serial, 'getprop sys.boot_completed');
+      const bootDev = adbShell(serial, 'getprop dev.bootcomplete');
+      const provisioned = adbShell(serial, 'settings get global device_provisioned');
+      adbShell(serial, 'echo ok', 5000);
+
+      if (bootCompleted !== '1') {
+        stableLoadPolls = 0;
+        console.log(`[rnfb-e2e] android-ready probe boot_completed=${bootCompleted} (waiting)`);
+        await sleep(ANDROID_READY_POLL_MS);
+        continue;
+      }
+
+      if (bootDev !== '1') {
+        stableLoadPolls = 0;
+        console.log(`[rnfb-e2e] android-ready probe dev.bootcomplete=${bootDev} (waiting)`);
+        await sleep(ANDROID_READY_POLL_MS);
+        continue;
+      }
+
+      if (provisioned !== '1') {
+        stableLoadPolls = 0;
+        console.log(`[rnfb-e2e] android-ready probe provisioned=${provisioned} (waiting)`);
+        await sleep(ANDROID_READY_POLL_MS);
+        continue;
+      }
+
+      if (!packageHandlerDone) {
+        console.log('[rnfb-e2e] android-ready probe waiting for package handler queue...');
+        try {
+          adbShell(
+            serial,
+            `cmd package wait-for-handler --timeout ${ANDROID_PACKAGE_HANDLER_TIMEOUT_MS}`,
+            ANDROID_PACKAGE_HANDLER_TIMEOUT_MS + 5000,
+          );
+          packageHandlerDone = true;
+          console.log('[rnfb-e2e] android-ready probe package handler ready');
+        } catch (err) {
+          console.warn(`[rnfb-e2e] android-ready package handler wait: ${err?.message || err}`);
+          await sleep(ANDROID_READY_POLL_MS);
+          continue;
         }
       }
+
+      if (!bootSettleDone) {
+        console.log(
+          `[rnfb-e2e] android-ready boot complete; settling ${ANDROID_BOOT_SETTLE_MS}ms before load polling`,
+        );
+        await sleep(ANDROID_BOOT_SETTLE_MS);
+        bootSettleDone = true;
+        stableLoadPolls = 0;
+      }
+
+      const loadLine = adbShell(serial, 'cat /proc/loadavg');
+      const load1 = parseGuestLoad1Min(loadLine);
+      if (!Number.isFinite(load1) || load1 >= ANDROID_READY_MAX_LOAD) {
+        stableLoadPolls = 0;
+        console.log(
+          `[rnfb-e2e] android-ready probe load1=${load1} max=${ANDROID_READY_MAX_LOAD} loadavg="${loadLine.trim()}" (waiting)`,
+        );
+        await sleep(ANDROID_READY_POLL_MS);
+        continue;
+      }
+
+      stableLoadPolls += 1;
+      console.log(
+        `[rnfb-e2e] android-ready probe load1=${load1} stable=${stableLoadPolls}/${ANDROID_READY_LOAD_POLLS} boot=1 provisioned=1`,
+      );
+      if (stableLoadPolls >= ANDROID_READY_LOAD_POLLS) {
+        console.log(`[rnfb-e2e] Android emulator ready serial=${serial}`);
+        return;
+      }
+      await sleep(ANDROID_READY_POLL_MS);
     } catch (err) {
-      console.warn(`[rnfb-e2e] Android boot-wait probe: ${err?.message || err}`);
+      stableLoadPolls = 0;
+      console.warn(`[rnfb-e2e] android-ready probe: ${err?.message || err}`);
+      await sleep(ANDROID_READY_POLL_MS);
     }
-    await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
   throw new Error(
-    `Android emulator did not finish booting within ${REBOOT_ANDROID_EMULATOR_TIMEOUT_MS}ms (serial=${serial})`,
+    `Android emulator did not become ready within ${REBOOT_ANDROID_EMULATOR_TIMEOUT_MS}ms (serial=${serial})`,
   );
+}
+
+async function drainJetAttempt(platform) {
+  const ctx = lastJetAttemptContext;
+  console.warn('[rnfb-e2e] Draining Jet attempt before outer retry...');
+
+  if (platform === 'android') {
+    const adb = resolveAdbPath();
+    const serial = resolveAndroidSerial();
+    try {
+      await device.terminateApp();
+    } catch (_) {
+      // Detox may already be disconnected.
+    }
+    try {
+      execSync(`${adb} -s ${serial} shell am force-stop com.invertase.testing`, {
+        stdio: 'inherit',
+        timeout: 15000,
+      });
+      execSync(`${adb} -s ${serial} shell am force-stop com.invertase.testing.test`, {
+        stdio: 'inherit',
+        timeout: 15000,
+      });
+    } catch (err) {
+      console.warn(`[rnfb-e2e] force-stop during drain: ${err?.message || err}`);
+    }
+  } else {
+    try {
+      await device.terminateApp();
+    } catch (_) {
+      // No-op
+    }
+  }
+
+  if (ctx?.orchestratePromise) {
+    await Promise.race([
+      ctx.orchestratePromise.catch(() => {}),
+      sleep(DRAIN_ORCHESTRATE_TIMEOUT_MS).then(() => {
+        console.warn(
+          `[rnfb-e2e] drain orchestrate timed out after ${DRAIN_ORCHESTRATE_TIMEOUT_MS}ms`,
+        );
+      }),
+    ]);
+  }
+
+  if (ctx?.jetProcess && !ctx.jetProcess.killed) {
+    ctx.jetProcess.kill('SIGTERM');
+    await sleep(500);
+    if (!ctx.jetProcess.killed) {
+      ctx.jetProcess.kill('SIGKILL');
+    }
+  }
+
+  await waitForTcpPortClosed(JET_REMOTE_PORT);
+
+  if (platform === 'android') {
+    const adb = resolveAdbPath();
+    const serial = resolveAndroidSerial();
+
+    const instrumentationDeadline = Date.now() + 30000;
+    while (Date.now() < instrumentationDeadline) {
+      try {
+        const pid = adbShell(serial, 'pidof com.invertase.testing.test', 5000);
+        if (!pid) {
+          break;
+        }
+        console.log(`[rnfb-e2e] drain waiting for instrumentation pid=${pid}`);
+      } catch (_) {
+        break;
+      }
+      await sleep(1000);
+    }
+  }
+
+  console.log('[rnfb-e2e] Jet attempt drain complete');
 }
 
 function waitForTcpPort(port, host = '127.0.0.1', timeoutMs = 120000) {
@@ -541,15 +711,23 @@ function runJetE2eAttempt(attempt) {
     );
   };
 
+  const orchestratePromise = orchestrate();
+  lastJetAttemptContext = { jetProcess, orchestratePromise };
+
   return Promise.race([
-    orchestrate()
+    orchestratePromise
       .then(() => exitPromise)
       .catch(err => {
-        jetProcess.kill();
+        if (!jetProcess.killed) {
+          jetProcess.kill();
+        }
         err.jetOutput = output;
         throw err;
       }),
-    exitPromise,
+    exitPromise.catch(err => {
+      err.jetOutput = output;
+      throw err;
+    }),
   ]);
 }
 
@@ -567,6 +745,11 @@ describe('Jet Tests', function () {
 
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
+        if (attempt === 1 && platform === 'android') {
+          console.warn('[rnfb-e2e] Waiting for Android emulator ready before first Jet attempt');
+          await waitForAndroidEmulatorReady();
+        }
+
         if (attempt > 1) {
           const lastOutput = lastFailure?.jetOutput || '';
           if (isRetryableJetDisconnect(lastOutput)) {
@@ -582,14 +765,12 @@ describe('Jet Tests', function () {
           } else if (isRetryableLaunchFailure(lastFailure)) {
             console.warn('[rnfb-e2e] Retrying after launch failure (Metro/bundle/FrontBoard)');
           }
-          console.log(
-            `[rnfb-e2e] Jet attempt ${attempt}: waiting for port ${JET_REMOTE_PORT} to close before retry`,
-          );
-          await waitForTcpPortClosed(JET_REMOTE_PORT);
+          await drainJetAttempt(platform);
           if (platform === 'ios' && process.platform === 'darwin') {
             await rebootIosSimulator(testsDir);
           } else if (platform === 'android') {
-            await rebootAndroidEmulator();
+            rebootAndroidEmulator();
+            await waitForAndroidEmulatorReady();
           } else {
             try {
               await device.terminateApp();

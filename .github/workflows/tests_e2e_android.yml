@@ -260,20 +260,14 @@ jobs:
         timeout-minutes: 45
         env:
           ANDROID_AVD_HOME: /mnt/avd
+          ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 5
         with:
           api-level: ${{ matrix.api-level }}
           avd-name: TestingAVD
           target: ${{ matrix.target }}
           disable-spellchecker: true
           arch: ${{ matrix.arch }}
-          script: |
-            $ANDROID_HOME/platform-tools/adb devices
-            nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
-            chmod +x ./.github/workflows/scripts/resource-monitor-android.sh
-            nohup ./.github/workflows/scripts/resource-monitor-android.sh &
-            yarn tests:android:test-cover --headless
-            pkill -f resource-monitor-android.sh || true
-            yarn tests:android:post-e2e-coverage
+          script: bash ./.github/workflows/scripts/android-e2e-detox.sh
 
       # https://github.com/codecov/codecov-action/releases
       - name: Upload Codecov e2e TS (Android)
