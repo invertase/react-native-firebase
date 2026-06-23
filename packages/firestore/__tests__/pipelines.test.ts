@@ -15,6 +15,7 @@ import {
   coalesce,
   conditional,
   constant,
+  currentDocument,
   descending,
   execute,
   field,
@@ -29,7 +30,7 @@ import {
   variable,
 } from '../lib/pipelines';
 import '../lib/pipelines';
-import { ConstantExpression } from '../lib/pipelines/expressions';
+import { ConstantExpression, FunctionExpression } from '../lib/pipelines/expressions';
 import { getIOSUnsupportedPipelineFunctions } from '../lib/pipelines/pipeline_support';
 
 describe('Firestore pipelines runtime', function () {
@@ -207,6 +208,31 @@ describe('Firestore pipelines runtime', function () {
                   ],
                 },
               ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('serializes currentDocument as a zero-argument function expression helper', function () {
+    const db: any = firebase.firestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select((currentDocument() as FunctionExpression).as('doc'))
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          {
+            alias: 'doc',
+            expr: {
+              exprType: 'Function',
+              name: 'currentDocument',
+              args: [],
             },
           },
         ],

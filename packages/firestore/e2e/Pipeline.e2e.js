@@ -1135,6 +1135,35 @@ describe('FirestorePipeline', function () {
         snapshot.results[2].data().displayName.should.equal('Anonymous');
       });
 
+      it('evaluates currentDocument via mapGet', async function () {
+        const { execute, field, currentDocument, mapGet } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/current-document`,
+        );
+
+        await setDoc(doc(coll, 'a'), { title: 'Neuromancer', author: 'Gibson' });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .select(
+              mapGet(currentDocument(), 'title').as('titleFromDoc'),
+              mapGet(currentDocument(), 'author').as('authorFromDoc'),
+              field('title').as('titleFromField'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.titleFromDoc.should.equal('Neuromancer');
+        data.authorFromDoc.should.equal('Gibson');
+        data.titleFromField.should.equal('Neuromancer');
+      });
+
       it('evaluates ifError and isError', async function () {
         const { execute, field, constant, ifError, isError } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;

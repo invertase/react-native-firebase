@@ -107,6 +107,7 @@
         { "title": "Usage with FlatLists", "href": "/firestore/usage-with-flatlists" },
         { "title": "Implementing Pagination", "href": "/firestore/pagination" },
         { "title": "Pipelines", "href": "/firestore/pipelines" },
+        { "title": "currentDocument", "href": "/firestore/pipelines/current-document" },
         {
           "title": "Pipeline SDK compatibility",
           "href": "/firestore/pipelines/sdk-compatibility"

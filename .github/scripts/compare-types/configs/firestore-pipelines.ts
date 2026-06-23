@@ -23,11 +23,6 @@ const config: PackageConfig = {
   nameMapping: {},
   missingInRN: [
     {
-      name: 'currentDocument',
-      reason:
-        'Newer firebase-js-sdk document expression helper not yet exposed by RN Firebase pipelines.',
-    },
-    {
       name: 'documentMatches',
       reason:
         'Newer firebase-js-sdk document expression helper not yet exposed by RN Firebase pipelines.',
