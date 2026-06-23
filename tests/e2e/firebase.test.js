@@ -57,6 +57,7 @@ const JET_COVERAGE_LOST_RE = /Coverage summary:[\s\S]*?Unknown% \( 0\/0 \)/;
 const JET_COVERAGE_TEARDOWN_RE =
   /Failed to send 'coverage-ready' message: WebSocket is closed|coverage upload timed out waiting for coverage-ack/i;
 const JET_PROTOCOL_ERROR_RE = /\[🟥\] Unexpected end of JSON input/i;
+const JET_NO_CLIENT_CONNECTED_RE = /Error: No client connected/i;
 const RETRYABLE_LAUNCH_RE =
   /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding|Unknown application display identifier|Simulator device failed to launch|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain/i;
 const PORT_CLOSED_ERROR_CODES = new Set(['ECONNREFUSED', 'ECONNRESET', 'EPIPE']);
@@ -487,6 +488,10 @@ function isRetryableJetSessionFailure(output) {
     return true;
   }
 
+  if (JET_NO_CLIENT_CONNECTED_RE.test(output)) {
+    return true;
+  }
+
   if (!JET_RECONNECT_RECOVERED_RE.test(output)) {
     return false;
   }
@@ -524,6 +529,7 @@ function logRetryEligibility(err, attempt) {
     jetDisconnect: isRetryableJetDisconnect(jetOutput),
     jetSession: isRetryableJetSessionFailure(jetOutput),
     jetProtocol: JET_PROTOCOL_ERROR_RE.test(jetOutput),
+    jetNoClient: JET_NO_CLIENT_CONNECTED_RE.test(jetOutput),
     coverageTeardown: JET_COVERAGE_TEARDOWN_RE.test(jetOutput),
     launchFailure: isRetryableLaunchFailure(err),
     launchJetLevel: Boolean(err?.retryableAtJetLevel),
@@ -757,6 +763,8 @@ describe('Jet Tests', function () {
           } else if (isRetryableJetSessionFailure(lastOutput)) {
             if (JET_PROTOCOL_ERROR_RE.test(lastOutput)) {
               console.warn('[rnfb-e2e] Retrying after Jet protocol error (JSON/WS desync)');
+            } else if (JET_NO_CLIENT_CONNECTED_RE.test(lastOutput)) {
+              console.warn('[rnfb-e2e] Retrying after Jet reconnect send race (No client connected)');
             } else {
               console.warn(
                 '[rnfb-e2e] Retrying after Jet session desync (reconnect recovered / coverage teardown / server not running)',

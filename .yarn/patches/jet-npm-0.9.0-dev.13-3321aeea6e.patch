@@ -1,8 +1,8 @@
 diff --git a/lib/commonjs/cli.js b/lib/commonjs/cli.js
-index 35c04da87c63a79bc26707aaffe3156fb98eca79..5ef301146d35adf38a430f26d78a66f196d781f5 100644
+index 35c04da87c63a79bc26707aaffe3156fb98eca79..41de2f4918095084eca259e334d4deaa82f4bf96 100644
 --- a/lib/commonjs/cli.js
 +++ b/lib/commonjs/cli.js
-@@ -72,22 +72,68 @@ function cleanup() {
+@@ -72,22 +72,64 @@ function cleanup() {
    });
  }
  async function startServer(server, config, after) {
@@ -22,10 +22,6 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..5ef301146d35adf38a430f26d78a66f1
 +      reconnectGraceTimer = null;
 +      pendingDisconnectCode = null;
 +      console.warn(`[jet-ws] reconnect_recovered code=${recoveredCode} elapsed_ms=${elapsedMs}`);
-+      if (config.coverage && server.send) {
-+        console.warn(`[jet-coverage] proactive pull-coverage after reconnect`);
-+        server.send({ action: 'pull-coverage' });
-+      }
 +    }
    });
    server.on('disconnection', (_, code, reason) => {
@@ -75,7 +71,7 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..5ef301146d35adf38a430f26d78a66f1
    });
    server.on('error', error => {
      if (error instanceof _mochaRemoteServer.ClientError) {
-@@ -100,6 +146,14 @@ async function startServer(server, config, after) {
+@@ -100,6 +142,14 @@ async function startServer(server, config, after) {
        cleanup();
      }
    });
@@ -90,7 +86,7 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..5ef301146d35adf38a430f26d78a66f1
    cleanupTasks.add(async () => {
      if (server.listening) {
        await server.stop();
-@@ -129,8 +183,13 @@ function attachHttpServer(wss) {
+@@ -129,8 +179,13 @@ function attachHttpServer(wss) {
        });
        req.on('end', () => {
          try {
@@ -105,7 +101,7 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..5ef301146d35adf38a430f26d78a66f1
            res.end(JSON.stringify({
              message: 'OK'
            }));
-@@ -302,12 +361,11 @@ function attachHttpServer(wss) {
+@@ -302,12 +357,11 @@ function attachHttpServer(wss) {
      slow: finalConfig.slow
    });
    return startServer(server, finalConfig, target.after).then(() => {
@@ -120,68 +116,3 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..5ef301146d35adf38a430f26d78a66f1
          await cleanup();
          process.exit(failures > 0 ? 1 : 0);
        });
-diff --git a/lib/commonjs/index.js b/lib/commonjs/index.js
-index a72380ed2ace01b19b028bb8e6f9d29dc3affbcd..030475cff75349b2b7f820cf8a3556fb1d7bea45 100644
---- a/lib/commonjs/index.js
-+++ b/lib/commonjs/index.js
-@@ -63,15 +63,7 @@ function JetProvider(props) {
-         });
-         after(async () => {
-           if (_config.coverage) {
--            const coverage = global.__coverage__ ?? {};
--            const url = (props.url ?? 'ws://localhost:8090').replace('ws://', 'http://') + '/coverage';
--            return fetch(url, {
--              method: 'POST',
--              headers: {
--                'Content-Type': 'application/json'
--              },
--              body: JSON.stringify(coverage)
--            });
-+            return client.uploadCoverage();
-           }
-           return Promise.resolve();
-         });
-diff --git a/lib/module/index.js b/lib/module/index.js
-index 897b62288ae128e1ce071142fa3de136caa99239..2f8dd9edf79f6c095b4357307bdac5ea1efa00eb 100644
---- a/lib/module/index.js
-+++ b/lib/module/index.js
-@@ -51,15 +51,7 @@ export function JetProvider(props) {
-         });
-         after(async () => {
-           if (_config.coverage) {
--            const coverage = global.__coverage__ ?? {};
--            const url = (props.url ?? 'ws://localhost:8090').replace('ws://', 'http://') + '/coverage';
--            return fetch(url, {
--              method: 'POST',
--              headers: {
--                'Content-Type': 'application/json'
--              },
--              body: JSON.stringify(coverage)
--            });
-+            return client.uploadCoverage();
-           }
-           return Promise.resolve();
-         });
-diff --git a/src/index.tsx b/src/index.tsx
-index 1b28aca3fe817fee3e8701ac5096df6fc608bc39..17c631309f88a8017a9fd01e3420df2b4bab140e 100644
---- a/src/index.tsx
-+++ b/src/index.tsx
-@@ -82,17 +82,7 @@ export function JetProvider(props: JetProviderProps): React.JSX.Element {
-         });
-         after(async () => {
-           if (_config.coverage) {
--            const coverage = (global as any).__coverage__ ?? {};
--            const url =
--              (props.url ?? 'ws://localhost:8090').replace('ws://', 'http://') +
--              '/coverage';
--            return fetch(url, {
--              method: 'POST',
--              headers: {
--                'Content-Type': 'application/json',
--              },
--              body: JSON.stringify(coverage),
--            });
-+            return client.uploadCoverage();
-           }
-           return Promise.resolve();
-         });
