@@ -1036,7 +1036,7 @@ const pipelineFindNearest = pipelineDb
   .findNearest({
     field: 'embedding',
     vectorValue: [1.5, 2.345],
-    distanceMeasure: 'COSINE',
+    distanceMeasure: 'cosine',
     distanceField: 'computedDistance',
     limit: 10,
   });

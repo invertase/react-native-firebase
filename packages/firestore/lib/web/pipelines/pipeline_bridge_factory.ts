@@ -124,6 +124,48 @@ function buildQuerySourcePipeline(
   return pipelineSource.createFrom(query as unknown as Query) as WebPipelineInstance;
 }
 
+type WebDistanceMeasure = 'euclidean' | 'cosine' | 'dot_product';
+
+function normalizeWebDistanceMeasure(value: unknown, fieldName: string): WebDistanceMeasure {
+  if (typeof value !== 'string') {
+    throw new Error(`pipelineExecute() expected ${fieldName} to be a string.`);
+  }
+
+  const normalized = value
+    .trim()
+    .replace(/-/g, '_')
+    .replace(/ /g, '_')
+    .toUpperCase();
+
+  switch (normalized) {
+    case 'COSINE':
+      return 'cosine';
+    case 'EUCLIDEAN':
+      return 'euclidean';
+    case 'DOT_PRODUCT':
+    case 'DOTPRODUCT':
+      return 'dot_product';
+    default:
+      throw new Error(
+        `pipelineExecute() expected ${fieldName} to be one of euclidean, cosine, or dot_product.`,
+      );
+  }
+}
+
+function normalizeWebFindNearestOptions(options: Record<string, unknown>): Record<string, unknown> {
+  if (!Object.prototype.hasOwnProperty.call(options, 'distanceMeasure')) {
+    return options;
+  }
+
+  return {
+    ...options,
+    distanceMeasure: normalizeWebDistanceMeasure(
+      options.distanceMeasure,
+      'stage.options.distanceMeasure',
+    ),
+  };
+}
+
 function getPipelineStageMethod(
   current: WebPipelineInstance,
   stageName: string,
@@ -246,6 +288,8 @@ function applyPipelineStage(
             )
           : method.call(current, stageArgs)
       ) as WebPipelineInstance;
+    case 'findNearest':
+      return method.call(current, normalizeWebFindNearestOptions(stageArgs)) as WebPipelineInstance;
     default:
       return method.call(current, stageArgs) as WebPipelineInstance;
   }

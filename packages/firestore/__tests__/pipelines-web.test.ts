@@ -602,4 +602,86 @@ describe('Firestore web pipeline bridge', function () {
       'pipelineExecute() expected stage.options.other to be a serialized pipeline object.',
     );
   });
+
+  it('normalizes findNearest distanceMeasure casing for the web SDK', async function () {
+    const pipelineInstance: any = {};
+    pipelineInstance.findNearest = jest.fn(() => pipelineInstance);
+    const firestore = {
+      pipeline: jest.fn(() => ({
+        collection: jest.fn(() => pipelineInstance),
+      })),
+    } as any;
+
+    (execute as jest.Mock).mockImplementation(async () => ({
+      executionTime: { seconds: 11, nanoseconds: 0 },
+      results: [],
+    }));
+
+    await executeWebSdkPipeline(
+      firestore,
+      {
+        source: { source: 'collection', path: 'books' },
+        stages: [
+          {
+            stage: 'findNearest',
+            options: {
+              field: 'embedding',
+              vectorValue: [1, 0, 0],
+              distanceMeasure: 'euclidean',
+              limit: 1,
+            },
+          },
+        ],
+      } as any,
+      undefined,
+    );
+
+    expect(pipelineInstance.findNearest).toHaveBeenCalledWith({
+      field: 'embedding',
+      vectorValue: [1, 0, 0],
+      distanceMeasure: 'euclidean',
+      limit: 1,
+    });
+  });
+
+  it('accepts legacy uppercase findNearest distanceMeasure values on the web path', async function () {
+    const pipelineInstance: any = {};
+    pipelineInstance.findNearest = jest.fn(() => pipelineInstance);
+    const firestore = {
+      pipeline: jest.fn(() => ({
+        collection: jest.fn(() => pipelineInstance),
+      })),
+    } as any;
+
+    (execute as jest.Mock).mockImplementation(async () => ({
+      executionTime: { seconds: 11, nanoseconds: 0 },
+      results: [],
+    }));
+
+    await executeWebSdkPipeline(
+      firestore,
+      {
+        source: { source: 'collection', path: 'books' },
+        stages: [
+          {
+            stage: 'findNearest',
+            options: {
+              field: 'embedding',
+              vectorValue: [1, 0, 0],
+              distanceMeasure: 'EUCLIDEAN',
+              limit: 1,
+            },
+          },
+        ],
+      } as any,
+      undefined,
+    );
+
+    expect(pipelineInstance.findNearest).toHaveBeenCalledWith({
+      field: 'embedding',
+      vectorValue: [1, 0, 0],
+      distanceMeasure: 'euclidean',
+      limit: 1,
+    });
+  });
 });

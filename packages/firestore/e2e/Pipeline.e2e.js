@@ -2327,7 +2327,7 @@ describe('FirestorePipeline', function () {
             .findNearest({
               field: 'embedding',
               vectorValue: [1.0, 0.0, 0.0],
-              distanceMeasure: 'EUCLIDEAN',
+              distanceMeasure: 'euclidean',
               limit: 1,
             })
             .select('name'),

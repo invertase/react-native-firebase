@@ -1218,7 +1218,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     throw new PipelineValidationException(
         "pipelineExecute() expected "
             + fieldName
-            + " to be one of COSINE, EUCLIDEAN, DOT_PRODUCT.");
+            + " to be one of euclidean, cosine, or dot_product.");
   }
 
   private void validateNonEmptyString(Map<String, Object> map, String key, String fieldName)
