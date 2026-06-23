@@ -55,8 +55,10 @@ This App Check module has built-in support for using the following services as a
 - DeviceCheck on iOS
 - App Attest on iOS
 - Play Integrity on Android (requires distribution from Play Store to successfully fetch tokens)
-- SafetyNet on Android (deprecated)
+- reCAPTCHA Enterprise on Web, iOS, and Android
 - Debug providers on both platforms
+
+> **Legacy:** [SafetyNet](https://firebase.google.com/docs/app-check/android/safetynet-provider) on Android is deprecated. Prefer Play Integrity or reCAPTCHA Enterprise.
 
 App Check currently works with the following Firebase products:
 
@@ -73,12 +75,16 @@ The [official Firebase App Check documentation](https://firebase.google.com/docs
 
 Before the App Check package can be used on iOS or Android, the corresponding App must be registered in the firebase console.
 
-For instructions on how to generate required keys and register an app for the desired attestation provider, follow **Step 1** in these firebase guides:
+For instructions on how to generate required keys and register an app for the desired attestation provider, follow **Step 1** in these Firebase guides:
 
 - [Get started using App Check with DeviceCheck on Apple platforms](https://firebase.google.com/docs/app-check/ios/devicecheck-provider#project-setup)
 - [Get started using App Check with App Attest on Apple platforms](https://firebase.google.com/docs/app-check/ios/app-attest-provider#project-setup)
 - [Get started using App Check with Play Integrity on Android](https://firebase.google.com/docs/app-check/android/play-integrity-provider#project-setup)
-- [Get started using App Check with SafetyNet on Android (deprecated)](https://firebase.google.com/docs/app-check/android/safetynet-provider#project-setup)
+- [Get started using App Check with reCAPTCHA Enterprise on Web](https://firebase.google.com/docs/app-check/web/recaptcha-enterprise-provider#project-setup)
+- [Android `RecaptchaAppCheckProviderFactory` reference](https://firebase.google.com/docs/reference/android/com/google/firebase/appcheck/recaptcha/RecaptchaAppCheckProviderFactory) (mobile reCAPTCHA Enterprise)
+- [iOS `FIRRecaptchaProvider` reference](https://firebase.google.com/docs/reference/ios/firebaseappcheck/api/reference/Classes/FIRRecaptchaProvider) (mobile reCAPTCHA Enterprise, iOS only)
+
+After enabling the reCAPTCHA Enterprise App Check provider in the Firebase console, redownload `google-services.json` and `GoogleService-Info.plist` so they include `recaptchaSiteKey`. Native default apps read the site key from these files at startup.
 
 > Additionally, You can reference the iOS private key creation and registrations steps outlined in the [Cloud Messaging iOS Setup](/messaging/usage/ios-setup#linking-apns-with-fcm-ios).
 
@@ -184,7 +190,115 @@ It is through the use of a react-native-specific `ReactNativeFirebaseAppCheckPro
 
 So AppCheck module initialization is done in two steps in react-native-firebase - first you create and configure the custom provider, then you initialize AppCheck using that custom provider.
 
-Starting in v25, the modular App Check helpers and types are exported from `@react-native-firebase/app-check` at the package root to better match the Firebase JS SDK. For example, import `initializeAppCheck`, `AppCheck`, and `AppCheckTokenResult` directly from `@react-native-firebase/app-check` when using the modular API.
+Starting in v25, the modular App Check helpers and types are exported from `@react-native-firebase/app-check` at the package root to better match the Firebase JS SDK. For example, import `initializeAppCheck`, `ReCaptchaEnterpriseProvider`, `AppCheck`, and `AppCheckTokenResult` directly from `@react-native-firebase/app-check` when using the modular API.
+
+### Provider routing by platform
+
+React Native Firebase exports the same App Check types on every platform, but runtime behaviour depends on where your app runs. Use this table when copying firebase-js-sdk examples or choosing a provider:
+
+| `initializeAppCheck` provider | iOS / Android | Web (`Platform.OS === 'web'`) | Other / Hermes (macOS, Windows, …) |
+| ----------------------------- | ------------- | ----------------------------- | ------------------------------------ |
+| `ReCaptchaEnterpriseProvider` | Maps to native `'recaptcha'`; site key is read from `FirebaseApp` options / native config (`recaptchaSiteKey` in `google-services.json` / `GoogleService-Info.plist`), not the constructor | Delegates to firebase-js-sdk `ReCaptchaEnterpriseProvider` | **Throws** — reCAPTCHA Enterprise requires a DOM environment |
+| `ReCaptchaV3Provider` | **Throws** — native attestation uses the reCAPTCHA Enterprise factory, not v3 | Delegates to firebase-js-sdk `ReCaptchaV3Provider` | **Throws** — requires a DOM environment |
+| `ReactNativeFirebaseAppCheckProvider` | Existing native `configureProvider` path | Uses `providerOptions.web` (`reCaptchaEnterprise`, `reCaptchaV3`, …) | **No DOM** — Hermes cannot use `providerOptions.web` reCAPTCHA options; `CustomProvider` path only where applicable |
+| `CustomProvider` | **Throws** — not supported on native (Other-only); use `ReactNativeFirebaseAppCheckProvider` | firebase-js-sdk `CustomProvider` | firebase-js-sdk `CustomProvider` |
+| **Omitted** (`provider` undefined) | **Throws** — native platforms require an explicit provider | Provider-less init via `app.options.recaptchaSiteKey` (firebase-js-sdk 12.15+) | **Throws** — provider-less init requires the web Enterprise bootstrap |
+
+On iOS and Android, if you pass a constructor site key to `ReCaptchaEnterpriseProvider` and it differs from `app.options.recaptchaSiteKey`, React Native Firebase throws rather than silently using the wrong value.
+
+### reCAPTCHA Enterprise on Web
+
+Use the firebase-js-sdk-compatible `ReCaptchaEnterpriseProvider` class, or configure the cross-platform shim with `web: { provider: 'reCaptchaEnterprise', siteKey }`.
+
+```javascript
+import { getApp } from '@react-native-firebase/app';
+import {
+  initializeAppCheck,
+  ReCaptchaEnterpriseProvider,
+} from '@react-native-firebase/app-check';
+
+const appCheck = await initializeAppCheck(getApp(), {
+  provider: new ReCaptchaEnterpriseProvider('your-recaptcha-enterprise-site-key'),
+  isTokenAutoRefreshEnabled: true,
+});
+```
+
+See [Get started using App Check with reCAPTCHA Enterprise on Web](https://firebase.google.com/docs/app-check/web/recaptcha-enterprise-provider) for console setup and site-key creation.
+
+### Provider-less initialization (Web only)
+
+firebase-js-sdk 12.15+ allows omitting `provider` when the Firebase app has a `recaptchaSiteKey` in its options. React Native Firebase implements this on **Web only** — iOS and Android throw if `provider` is omitted.
+
+```javascript
+import { initializeApp, getApp } from '@react-native-firebase/app';
+import { initializeAppCheck } from '@react-native-firebase/app-check';
+
+// recaptchaSiteKey comes from Firebase project config / initializeApp options
+initializeApp({
+  apiKey: '...',
+  appId: '...',
+  projectId: '...',
+  recaptchaSiteKey: 'your-recaptcha-enterprise-site-key',
+});
+
+const appCheck = await initializeAppCheck(getApp(), {
+  isTokenAutoRefreshEnabled: true,
+});
+```
+
+If `recaptchaSiteKey` is missing, initialization throws `AppCheck provider is required`.
+
+### reCAPTCHA Enterprise on iOS and Android
+
+Mobile App Check uses the native `'recaptcha'` attestation provider. The site key is always sourced from `FirebaseApp` options — for the default native app, from your redownloaded config files; for JS-created secondary apps, from `initializeApp({ recaptchaSiteKey, ... })`.
+
+**Option A — js-sdk-compatible class (maps to native `'recaptcha'`):**
+
+```javascript
+import { getApp } from '@react-native-firebase/app';
+import {
+  initializeAppCheck,
+  ReCaptchaEnterpriseProvider,
+} from '@react-native-firebase/app-check';
+
+const appCheck = await initializeAppCheck(getApp(), {
+  provider: new ReCaptchaEnterpriseProvider('ignored-on-native'),
+  isTokenAutoRefreshEnabled: true,
+});
+```
+
+**Option B — cross-platform shim with `'recaptcha'` on native:**
+
+```javascript
+import { getApp } from '@react-native-firebase/app';
+import {
+  initializeAppCheck,
+  ReactNativeFirebaseAppCheckProvider,
+} from '@react-native-firebase/app-check';
+
+const rnfbProvider = new ReactNativeFirebaseAppCheckProvider();
+rnfbProvider.configure({
+  android: {
+    provider: __DEV__ ? 'debug' : 'recaptcha',
+  },
+  apple: {
+    provider: __DEV__ ? 'debug' : 'recaptcha',
+  },
+  web: {
+    provider: 'reCaptchaEnterprise',
+    siteKey: 'your-recaptcha-enterprise-site-key',
+  },
+});
+
+const appCheck = await initializeAppCheck(getApp(), {
+  provider: rnfbProvider,
+  isTokenAutoRefreshEnabled: true,
+});
+```
+
+> The `'recaptcha'` native provider is **iOS-only** among Apple platforms. Configuring it on macOS throws a clear error — use `CustomProvider` or another attestation provider on macOS.
+
+Console setup and native SDK references: [Android `RecaptchaAppCheckProviderFactory`](https://firebase.google.com/docs/reference/android/com/google/firebase/appcheck/recaptcha/RecaptchaAppCheckProviderFactory), [iOS `FIRRecaptchaProvider`](https://firebase.google.com/docs/reference/ios/firebaseappcheck/api/reference/Classes/FIRRecaptchaProvider).
 
 ### Configure a Custom Provider
 
@@ -204,11 +318,13 @@ rnfbProvider.configure({
     debugToken: 'some token you have configured for your project firebase web console',
   },
   web: {
-    provider: 'reCaptchaV3',
-    siteKey: 'unknown',
+    provider: 'reCaptchaEnterprise',
+    siteKey: 'your-recaptcha-enterprise-site-key',
   },
 });
 ```
+
+> On Web you can also use `'reCaptchaV3'` for the legacy v3 provider. Native iOS and Android do not support `ReCaptchaV3Provider` — use `'recaptcha'` or `ReCaptchaEnterpriseProvider` instead.
 
 ### Install the Custom Provider
 
@@ -244,8 +360,8 @@ const appCheck = await initializeAppCheck(getApp(), {
         debugToken: 'some token you have configured for your project firebase web console',
       },
       web: {
-        provider: 'reCaptchaV3',
-        siteKey: 'unknown',
+        provider: 'reCaptchaEnterprise',
+        siteKey: 'your-recaptcha-enterprise-site-key',
       },
     },
   },

@@ -382,11 +382,11 @@ With js-sdk 12.15 / #9991, both modules may use Enterprise concurrently on Other
 
 > **Requirement:** user-facing docs MUST include **per-platform routing tables** equivalent to the [App Check](#app-check--firebase-js-sdk-compatible-surface) and [Auth](#auth--initializerecaptchaconfigauth) tables in this design. Users need an at-a-glance view of which provider / call does what on iOS, Android, Other/Web, and Other/Hermes (incl. macOS), and where RNFB intentionally differs from firebase-js-sdk (throw vs delegate vs no-op+warn).
 
-- [ ] **5.1** `docs/app-check/usage/index.mdx` — Enterprise web (`ReCaptchaEnterpriseProvider`), mobile `'recaptcha'`, provider-less init, links to Firebase guides; demote SafetyNet. **Include the provider routing table** (provider × platform → behaviour).
-- [ ] **5.2** `docs/auth/phone-auth.mdx` — `initializeRecaptchaConfig`, Enterprise SMS defense, troubleshooting `ERROR_RECAPTCHA_SDK_NOT_LINKED`. **Include the `initializeRecaptchaConfig` platform behaviour table** (incl. Other/Hermes no-op+warn) and clearly state that Web phone Enterprise verification must call `initializeRecaptchaConfig(auth)` before starting phone verification.
-- [ ] **5.3** `docs/migrating-to-v25.mdx` — replace “initializeRecaptchaConfig is not exported” with platform matrix.
-- [ ] **5.4** `docs/app/json-config.mdx` — `recaptchaSiteKey` in Firebase options, including the native default-app caveat: default iOS/Android apps read native config files at startup, while JS-provided options affect JS-created secondary apps and Other/Web apps.
-- [ ] **5.5** `docs/platforms.mdx` — update App Check / Auth Other column notes if needed.
+- [x] **5.1** `docs/app-check/usage/index.mdx` — Enterprise web (`ReCaptchaEnterpriseProvider`), mobile `'recaptcha'`, provider-less init, links to Firebase guides; demote SafetyNet. **Include the provider routing table** (provider × platform → behaviour).
+- [x] **5.2** `docs/auth/phone-auth.mdx` — `initializeRecaptchaConfig`, Enterprise SMS defense, troubleshooting `ERROR_RECAPTCHA_SDK_NOT_LINKED`. **Include the `initializeRecaptchaConfig` platform behaviour table** (incl. Other/Hermes no-op+warn) and clearly state that Web phone Enterprise verification must call `initializeRecaptchaConfig(auth)` before starting phone verification.
+- [x] **5.3** `docs/migrating-to-v25.mdx` — replace “initializeRecaptchaConfig is not exported” with platform matrix.
+- [x] **5.4** `docs/app/json-config.mdx` — `recaptchaSiteKey` in Firebase options, including the native default-app caveat: default iOS/Android apps read native config files at startup, while JS-provided options affect JS-created secondary apps and Other/Web apps.
+- [x] **5.5** `docs/platforms.mdx` — update App Check / Auth Other column notes if needed.
 
 ---
 

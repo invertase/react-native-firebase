@@ -418,7 +418,7 @@ For maintainers and coding agents: the living triage matrix is [`okf-bundle/pack
 | ---------------- | ---------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | **iOS/Android**  | `ios`, `android`       | Native Firebase Auth SDK                | Native bridge types (`verifyPhoneNumber` listener, Multi-Factor Authentication overloads, async `isSignInWithEmailLink`) |
 | **Other/Hermes** | e.g. macOS, Windows RN | firebase-js-sdk via the auth web bridge | No DOM; MFA/TOTP covered by `tests/local-tests`                                                                          |
-| **Other/Web**    | browser embedding      | firebase-js-sdk                         | DOM APIs (reCAPTCHA, redirect) possible but not all delegated yet                                                        |
+| **Other/Web**    | browser embedding      | firebase-js-sdk                         | `initializeRecaptchaConfig` delegated; Enterprise Web phone auth requires calling it before verification                 |
 
 When a symbol is documented as **iOS/Android only**, do not assume it throws or is missing on Other without checking the web bridge. When compare:types signatures match but runtime differs, document in triage / this guide (not necessarily in `differentShape`).
 
@@ -428,9 +428,23 @@ Import modular types directly from `@react-native-firebase/auth` instead of `Fir
 
 For auth errors, use `NativeFirebaseAuthError` (or the modular `AuthError` interface) instead of expecting a firebase-js-sdk `AuthError` class export — React Native Firebase does not re-export the firebase-js-sdk error class.
 
-## Removed modular export
+## `initializeRecaptchaConfig`
 
-- `initializeRecaptchaConfig` is not exported. React Native Firebase uses native SDK Phone Auth verification rather than the browser reCAPTCHA bootstrap flow.
+`initializeRecaptchaConfig` is exported from `@react-native-firebase/auth` (matching firebase-js-sdk). Types are identical on every platform; runtime behaviour depends on context:
+
+| Context | `initializeRecaptchaConfig(auth)` |
+| ------- | --------------------------------- |
+| **iOS / Android** | Native Firebase Auth SDK pre-warm / force-fetch of Enterprise config |
+| **Web** (`Platform.OS === 'web'`) | firebase-js-sdk delegation — **required before Enterprise Web phone verification** |
+| **Other / Hermes** (macOS, Windows, …) | Resolves with `console.warn` (no-op) — Enterprise phone verification unavailable |
+
+```js
+import { getAuth, initializeRecaptchaConfig } from '@react-native-firebase/auth';
+
+await initializeRecaptchaConfig(getAuth());
+```
+
+See [Phone Authentication — reCAPTCHA Enterprise](/auth/phone-auth#recaptcha-enterprise) for SMS defense setup, Web ordering requirements, and `ERROR_RECAPTCHA_SDK_NOT_LINKED` troubleshooting.
 
 ## Deprecated provider helpers
 
