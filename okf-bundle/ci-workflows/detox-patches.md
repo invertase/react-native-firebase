@@ -17,7 +17,7 @@ Patches are maintained in-repo (including by agents). Prefer **editing the patch
 | Ignore missing adb reverse on teardown | `ADB.js` | Android | Jet WS 1006 triggers mid-run `reverse --remove` → adb exit 1 |
 | **2× device-registry lock stale** | `ExclusiveLockfile.js` | iOS, macOS, Android | `proper-lockfile` `ECOMPROMISED` before tests start |
 
-Related non-Detox patches: `jet`, `mocha-remote-client`, `mocha-remote-server` — WS reconnect grace, coverage handshake (`coverage-ready` / `pull-coverage`), client keepalive. See [coverage design](../testing/coverage-design.md) and [iOS CI — issues 6–8](ios.md#6-jet-websocket-disconnect-1006--1001).
+Related non-Detox patches: `jet`, `mocha-remote-client`, `mocha-remote-server` — WS reconnect grace, coverage handshake (`coverage-ready` / `pull-coverage`), client keepalive, server/client parse buffering, reconnect client assignment order. See [coverage design](../testing/coverage-design.md) and [iOS CI — issues 6–8](ios.md#6-jet-websocket-disconnect-1006--1001).
 
 ## Device registry lock (`ECOMPROMISED`)
 
@@ -92,7 +92,7 @@ SRC=tests/node_modules/detox
 yarn patch-commit -s "$PATCH_DIR"   # non-interactive when using /bin/cp -f, not plain cp
 ```
 
-3. `yarn install` from repo root and confirm the change in `tests/node_modules/detox/...`.
+3. `yarn install` from repo root and confirm the change in `tests/node_modules/...` **and** updated `yarn.lock` patch resolution hashes.
 4. Update this doc and platform pages (`ios.md`, `android.md`) if behaviour or file list changes.
 
 **Detox version bump:** change `tests/package.json`, run `yarn`, re-apply all hunks (or redo the headless flow from a fresh `yarn patch`), run iOS + Android E2E.

@@ -42,6 +42,31 @@ Full inventory: [detox-patches.md](detox-patches.md).
 
 **Orchestration retry:** `firebase.test.js` still retries on `RETRYABLE_DISCONNECT`; attempt 2 can pass all tests even when attempt 1's teardown logged adb noise.
 
+## CI failure: Jet JSON / WS protocol desync (Unexpected end of JSON input)
+
+Observed on Android CI under load (e.g. [run 28044822049](https://github.com/invertase/react-native-firebase/actions/runs/28044822049)): Jet runs only ~24 tests before the mocha-remote transport desyncs — often after a transient 1006 under high `loadavg`.
+
+**Symptom**
+
+```
+[🟥] Unexpected end of JSON input
+[mocha-remote-ws] parse_buffering ...
+```
+
+**Cause** — TCP/WebSocket chunks can split JSON frames; under I/O pressure, partial reads are more common. Unbuffered `JSON.parse` on each chunk corrupts the protocol stream.
+
+**Mitigations (patches + orchestration)**
+
+| Change | Location |
+|--------|----------|
+| Inbound parse buffer + `tryDeserialize` / `parse_skip` logging | mocha-remote-server patch → `Server.js` |
+| Outbound queue flushed on reconnect | mocha-remote-client patch |
+| `JET_PROTOCOL_ERROR_RE` → retryable Jet session (attempt 2) | `tests/e2e/firebase.test.js` |
+| Cold-boot ready wait + post-boot settle before Jet attempt 1 | `firebase.test.js` (`waitForAndroidEmulatorReady`, `RNFB_ANDROID_BOOT_SETTLE_MS`) |
+| Load gate before starting Jet (threshold 5, 3 consecutive polls) | `firebase.test.js` |
+
+**Patch workflow reminder** — after editing `tests/node_modules/jet` or `mocha-remote-*`, run `yarn patch-commit` **and** `yarn install` from repo root so `yarn.lock` patch hashes update. CI applies patches from the lockfile, not live `node_modules` edits.
+
 ## Troubleshooting
 
 | Symptom | Likely cause |

@@ -273,6 +273,7 @@ The app process (`testing[<pid>]`) often stays alive in `testing.log` / `simulat
 | 30s reconnect grace for 1006/1001 before fatal exit | `.yarn/patches/jet-npm-0.9.0-dev.13-*.patch` → `cli.js` |
 | `reconnectGraceMs: 30000` | `tests/.jetrc.js` |
 | mocha-remote-server preserves runner + sends `pull-coverage` on reconnect | `.yarn/patches/mocha-remote-server-npm-1.13.2-*.patch` |
+| Assign `this.client` **before** `emit('connection')`; `Server.send()` warns instead of throwing | mocha-remote-server patch → `Server.js` |
 | Client WS keepalive (`ping` when supported) + `readyState` logging on send failure | `.yarn/patches/mocha-remote-client-npm-1.13.2-*.patch` |
 | `disconnect_context` logs `loadavg` + `process.memoryUsage()` on disconnect | Jet patch → `cli.js` |
 | One Jet e2e retry when grace expires (`RETRYABLE_DISCONNECT`) or session/coverage retryable | `tests/e2e/firebase.test.js` |
@@ -309,6 +310,49 @@ rg 'disconnect_context|resource-monitor' detox-step.log resource-monitor.log
 | `[rnfb-e2e] Retrying after transient Jet WS` | Second Jet attempt starting (simulator reboot) |
 | `disconnect_context` with high loadavg / RSS | Correlate with `resource-monitor-*_log` snapshot at same UTC timestamp |
 | Release passes, debug fails with 1006 | Points at Metro/debug+coverage load, not test logic |
+| `reconnect_recovered` then `Error: No client connected` or `send skipped action=pull-coverage` | Reconnect send race (issue 6b); Jet attempt 2 should trigger |
+
+#### 6b. Reconnect send race under extreme host load
+
+**Symptom** (often **release** matrix leg, mid-run during heavy emulator tests e.g. Functions `HttpsError`):
+
+```
+[jet-ws] transient_disconnect code=1006 grace_ms=30000 waiting_for_reconnect
+[jet-ws] reconnect_recovered code=1006 elapsed_ms=~30000
+Error: No client connected
+```
+
+Or, after the server patch, the Jet process stays up but logs:
+
+```
+[mocha-remote-ws] send skipped action=pull-coverage readyState=...
+```
+
+**Cause** — macOS GitHub runners can become **heavily I/O saturated** at any time (Spotlight indexing is a common contributor). We **cannot** disable Spotlight — `xcodebuild` / Xcode expect an up-to-date index. Under load averages in the hundreds, a transient WS 1006 is more likely; the 30s grace window often **does** recover the transport, but upstream `mocha-remote-server` used to `emit('connection')` **before** assigning `this.client`. Jet's `connection` listener immediately called `server.send({ action: 'pull-coverage' })`, which threw `No client connected` and **killed the Jet Node process** (uncaught exception). That failure was **not** classified as retryable WS disconnect — `retry-eligibility` showed all `false`.
+
+A duplicate proactive `pull-coverage` in the Jet patch made the race worse (two senders on reconnect).
+
+**Mitigations in this repo**
+
+| Change | Location |
+|--------|----------|
+| `this.client = ws` before `emit('connection')`; protocol check first | mocha-remote-server patch → `handleConnection` |
+| Single `pull-coverage` after reconnect (server only, when runner active) | mocha-remote-server patch → `handleConnection` |
+| Remove Jet `connection` handler `pull-coverage` (keep `reconnect_recovered` log) | Jet patch → `cli.js` |
+| `Server.send()` logs `[mocha-remote-ws] send skipped` instead of throwing | mocha-remote-server patch → `Server.js` |
+| `JET_NO_CLIENT_CONNECTED_RE` → retryable Jet session failure | `tests/e2e/firebase.test.js` |
+
+**Diagnosing**
+
+```bash
+rg 'reconnect_recovered|No client connected|send skipped action=pull-coverage' detox-step.log
+rg '\[rnfb-e2e\] retry-eligibility' detox-step.log
+rg 'disconnect_context|resource-monitor' detox-step.log resource-monitor.log
+```
+
+Correlate `disconnect_context loadavg=…` with `resource-monitor-*_log` — high loadavg during disconnect is expected on saturated runners and is **not** something we can eliminate; orchestration must tolerate it.
+
+**Reference CI** — [run 28044818178](https://github.com/invertase/react-native-firebase/actions/runs/28044818178) (release leg, sha `dd8a2678a`): grace recovered at ~30s, then Jet crashed on `No client connected`.
 
 #### 7. FrontBoard / LaunchServices race after terminate+relaunch
 
@@ -360,7 +404,7 @@ May follow `[jet-ws] reconnect_recovered` mid-run — transport reconnected but 
 
 | Change | Location |
 |--------|----------|
-| Server sends `pull-coverage` proactively after reconnect | Jet + mocha-remote-server patches |
+| Server sends `pull-coverage` proactively after reconnect | mocha-remote-server patch only (Jet `connection` handler must not duplicate) |
 | Client `uploadCoverage()` retries up to 3× with backoff; logs `readyState` at send | mocha-remote-client patch |
 | `[jet-coverage] server recv coverage-ready` / client send logging | mocha-remote-server + client patches |
 | `JET_COVERAGE_TEARDOWN_RE` → retryable Jet session failure | `tests/e2e/firebase.test.js` |
@@ -383,6 +427,7 @@ See also [coverage design — e2e TypeScript coverage](../testing/coverage-desig
 
 ### Operational notes
 
+- **macOS runner load / Spotlight** — GHA macOS hosts may run Spotlight indexing (or other disk-heavy work) at any time and saturate disk I/O. Disabling Spotlight is **not** an option for Xcode CI. Design for tolerance: longer grace windows, non-throwing `Server.send()`, Jet e2e retry on orchestration crashes, `resource-monitor` + `disconnect_context` for triage. Do not treat high `loadavg` alone as a misconfiguration.
 - **Release vs debug** — matrix runs both; each has separate artifacts (`debug` / `release` in the artifact name).
 - **Retry** — Pre-Boot retries up to 3 times with 60s between attempts (clean shutdown + boot each time). Jet e2e retries once on retryable WS / launch / coverage teardown failures (simulator reboot via `boot-simulator.sh` on iOS).
 - **Do not boot the simulator only inside Detox** — historical races where the testee never sent “ready” to the Detox proxy; pre-boot remains mandatory.
