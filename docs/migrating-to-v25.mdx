@@ -9,6 +9,23 @@ Version 25 completes the TypeScript alignment started in v24. Modular types acro
 
 If you upgraded to v24 for Firestore only, see [Migrating to v24](/migrating-to-v24) first — Firestore breaking changes remain in v24.
 
+## Table of contents
+
+- [Why we made these changes](/migrating-to-v25#why-we-made-these-changes)
+- [Agent-assisted migration](/migrating-to-v25#agent-assisted-migration)
+- [Who is affected](/migrating-to-v25#who-is-affected)
+- [General pattern](/migrating-to-v25#general-pattern)
+- [Tooling & native SDKs](/migrating-to-v25#tooling--native-sdks)
+- [Cloud Storage](/migrating-to-v25#cloud-storage)
+- [Realtime Database](/migrating-to-v25#realtime-database)
+- [Remote Config](/migrating-to-v25#remote-config)
+- [Performance Monitoring](/migrating-to-v25#performance-monitoring)
+- [Installations](/migrating-to-v25#installations)
+- [App Check](/migrating-to-v25#app-check)
+- [Firebase Auth](/migrating-to-v25#firebase-auth)
+- [Cloud Messaging](/migrating-to-v25#cloud-messaging)
+- [Automated migration checklist](/migrating-to-v25#automated-migration-checklist)
+
 ## Why we made these changes
 
 React Native Firebase aims to be a drop-in replacement for the [firebase-js-sdk](https://firebase.google.com/docs/web/setup) — with native extensions and performance where the platform allows. At the JavaScript level we have always tracked the modular API closely, but our TypeScript declarations had diverged: namespaces specific to React Native Firebase, instance-style typings, and helper names that did not match the SDK.
@@ -24,7 +41,7 @@ Most apps behave the same after updating package versions; the work is primarily
 
 ## Agent-assisted migration
 
-This guide is written to be **complete enough for an automated first pass**. We recommend feeding this document to your coding agent, then asking it to analyze your codebase against each relevant section below and produce a concrete change list (or PR) for the packages you use. The [Automated migration checklist](#automated-migration-checklist) at the end is structured for that workflow.
+This guide is written to be **complete enough for an automated first pass**. We recommend feeding this document to your coding agent, then asking it to analyze your codebase against each relevant section below and produce a concrete change list (or PR) for the packages you use. The [Automated migration checklist](/migrating-to-v25#automated-migration-checklist) at the end is structured for that workflow.
 
 ## Who is affected
 
@@ -42,23 +59,6 @@ Across v25 package migrations:
 2. Prefer **free functions** (`getToken(appCheck)`, `trace(perf, name)`) over instance methods on service objects.
 3. `Firebase*Types` namespaces remain for namespaced compatibility but are **deprecated** for new code.
 4. Namespaced APIs (`firebase.auth()`, `storage()`) still work; modular is the typed source of truth.
-
-## Table of contents
-
-- [Why we made these changes](#why-we-made-these-changes)
-- [Agent-assisted migration](#agent-assisted-migration)
-- [Who is affected](#who-is-affected)
-- [General pattern](#general-pattern)
-- [Tooling & native SDKs](#tooling--native-sdks)
-- [Cloud Storage](#cloud-storage)
-- [Realtime Database](#realtime-database)
-- [Remote Config](#remote-config)
-- [Performance Monitoring](#performance-monitoring)
-- [Installations](#installations)
-- [App Check](#app-check)
-- [Firebase Auth](#firebase-auth)
-- [Cloud Messaging](#cloud-messaging)
-- [Automated migration checklist](#automated-migration-checklist)
 
 # Tooling & native SDKs
 
