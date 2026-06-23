@@ -103,6 +103,8 @@ Hesp
 Homebrew
 HTTP
 HTTPS
+ifAbsent
+ifNull
 IDFA
 Imagen
 installable

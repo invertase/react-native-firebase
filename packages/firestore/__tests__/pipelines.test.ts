@@ -16,6 +16,7 @@ import {
   conditional,
   constant,
   currentDocument,
+  ifNull,
   descending,
   execute,
   field,
@@ -233,6 +234,62 @@ describe('Firestore pipelines runtime', function () {
               exprType: 'Function',
               name: 'currentDocument',
               args: [],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('serializes ifNull as a function expression helper and fluent method', function () {
+    const db: any = firebase.firestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select(
+        ifNull(field('displayName'), constant('Anonymous')).as('displayName'),
+        ifNull('displayName', field('fullName')).as('stringFieldIfNull'),
+        field('displayName')
+          .ifNull(field('fullName'))
+          .as('fluentIfNull'),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          {
+            alias: 'displayName',
+            expr: {
+              exprType: 'Function',
+              name: 'ifNull',
+              args: [
+                { exprType: 'Field', path: 'displayName' },
+                { exprType: 'Constant', value: 'Anonymous' },
+              ],
+            },
+          },
+          {
+            alias: 'stringFieldIfNull',
+            expr: {
+              exprType: 'Function',
+              name: 'ifNull',
+              args: [
+                { exprType: 'Field', path: 'displayName' },
+                { exprType: 'Field', path: 'fullName' },
+              ],
+            },
+          },
+          {
+            alias: 'fluentIfNull',
+            expr: {
+              exprType: 'Function',
+              name: 'ifNull',
+              args: [
+                { exprType: 'Field', path: 'displayName' },
+                { exprType: 'Field', path: 'fullName' },
+              ],
             },
           },
         ],

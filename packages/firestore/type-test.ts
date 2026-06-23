@@ -128,6 +128,7 @@ import {
   isError,
   isType,
   ifAbsent,
+  ifNull,
   coalesce,
   currentDocument,
   ifError,
@@ -1193,6 +1194,13 @@ void isType('value', 'number');
 void ifAbsent(field('optionalName'), field('defaultName'));
 void ifAbsent(field('optionalName'), 'Unknown');
 void ifAbsent('optionalName', field('defaultName'));
+// ifNull: (Expression, Expression) | (Expression, unknown) | (string, Expression) | (string, unknown)
+void ifNull(field('displayName'), field('fullName'));
+void ifNull(field('displayName'), 'Anonymous');
+void ifNull('displayName', field('fullName'));
+void ifNull('displayName', 'Anonymous');
+void field('displayName').ifNull(field('fullName'));
+void field('displayName').ifNull('Anonymous');
 // coalesce: (Expression, Expression | unknown, ...others) | (string, Expression | unknown, ...others)
 void coalesce(field('preferredName'), field('fullName'), constant('Anonymous'));
 void coalesce(field('preferredName'), 'Unknown');

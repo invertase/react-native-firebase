@@ -1081,13 +1081,47 @@ describe('FirestorePipeline', function () {
         snapshot.results[0].data().isVerified.should.equal(false);
       });
 
+      it('evaluates ifNull for null, present, and missing field values', async function () {
+        const { execute, field, constant, ifNull } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/if-null`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'a'), { displayName: null, label: 'set' }),
+          setDoc(doc(coll, 'b'), { displayName: 'Ada', label: 'set' }),
+          setDoc(doc(coll, 'c'), { label: 'only-label' }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .sort(field('__name__').ascending())
+            .select(
+              ifNull(field('displayName'), constant('Anonymous')).as('displayName'),
+              ifNull(field('label'), constant('fallback')).as('label'),
+              field('displayName').ifNull(constant('Fluent Anonymous')).as('fluentDisplayName'),
+            ),
+        );
+
+        snapshot.results.should.have.length(3);
+        snapshot.results[0].data().displayName.should.equal('Anonymous');
+        snapshot.results[0].data().label.should.equal('set');
+        snapshot.results[0].data().fluentDisplayName.should.equal('Fluent Anonymous');
+        snapshot.results[1].data().displayName.should.equal('Ada');
+        snapshot.results[1].data().fluentDisplayName.should.equal('Ada');
+        snapshot.results[2].data().displayName.should.equal('Anonymous');
+        snapshot.results[2].data().fluentDisplayName.should.equal('Fluent Anonymous');
+      });
+
       it('evaluates ifAbsent for present and missing field values', async function () {
         const { execute, field, constant, ifAbsent } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
         const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/if-absent`);
 
-        await setDoc(doc(coll, 'only'), { label: 'set' });
+        await setDoc(doc(coll, 'only'), { label: 'set', explicitNull: null });
 
         const snapshot = await execute(
           db
@@ -1096,6 +1130,7 @@ describe('FirestorePipeline', function () {
             .select(
               ifAbsent(field('label'), constant('fallback')).as('existing'),
               ifAbsent(field('missing'), constant('fallback')).as('absent'),
+              ifAbsent(field('explicitNull'), constant('fallback')).as('nullKept'),
             ),
         );
 
@@ -1103,6 +1138,7 @@ describe('FirestorePipeline', function () {
         const data = snapshot.results[0].data();
         data.existing.should.equal('set');
         data.absent.should.equal('fallback');
+        should(data.nullKept).be.null();
       });
 
       it('evaluates coalesce for present, missing, and fallback values', async function () {
