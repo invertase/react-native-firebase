@@ -60,6 +60,12 @@ export type Type =
 
 /**
  * @beta
+ * Time unit for timestamp arithmetic expressions.
+ */
+export type TimeUnit = 'microsecond' | 'millisecond' | 'second' | 'minute' | 'hour' | 'day';
+
+/**
+ * @beta
  * Time granularity for timestampTruncate.
  */
 export type TimeGranularity =
@@ -826,6 +832,11 @@ function normalizeGlobalArguments(name: string, args: unknown[]): RuntimeNode[] 
     case 'stringReverse':
     case 'timestampAdd':
     case 'timestampSubtract':
+      fieldIndexList.push(0);
+      break;
+    case 'timestampDiff':
+      fieldIndexList.push(0, 1);
+      break;
     case 'timestampToUnixMicros':
     case 'timestampToUnixMillis':
     case 'timestampToUnixSeconds':
@@ -2520,7 +2531,7 @@ export function stringReplaceAll(
 
 // --- Batch 4: stringReplaceOne, stringReverse, timestamp*, trunc, type, unix*ToTimestamp, vectorLength, xor ---
 
-type TimestampUnit = 'microsecond' | 'millisecond' | 'second' | 'minute' | 'hour' | 'day';
+type TimestampUnit = TimeUnit;
 
 export function stringReplaceOne(
   _fieldName: string,
@@ -2590,6 +2601,38 @@ export function timestampSubtract(
   _amount: Expression | number,
 ): FunctionExpression {
   return callFunctionHelper('timestampSubtract', arguments);
+}
+
+/**
+ * @beta
+ * Difference between two timestamps in the given unit.
+ */
+export function timestampDiff(
+  _endExpression: Expression,
+  _startFieldName: string,
+  _unit: TimeUnit | Expression,
+): FunctionExpression;
+export function timestampDiff(
+  _endExpression: Expression,
+  _startExpression: Expression,
+  _unit: TimeUnit | Expression,
+): FunctionExpression;
+export function timestampDiff(
+  _endFieldName: string,
+  _startFieldName: string,
+  _unit: TimeUnit | Expression,
+): FunctionExpression;
+export function timestampDiff(
+  _endFieldName: string,
+  _startExpression: Expression,
+  _unit: TimeUnit | Expression,
+): FunctionExpression;
+export function timestampDiff(
+  _end: Expression | string,
+  _start: Expression | string,
+  _unit: TimeUnit | Expression,
+): FunctionExpression {
+  return callFunctionHelper('timestampDiff', arguments);
 }
 
 export function timestampToUnixMicros(_expr: Expression): FunctionExpression;

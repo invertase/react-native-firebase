@@ -43,11 +43,6 @@ const config: PackageConfig = {
         'Newer firebase-js-sdk subcollection stage helper not yet exposed by RN Firebase pipelines.',
     },
     {
-      name: 'timestampDiff',
-      reason:
-        'Newer firebase-js-sdk timestamp expression helper not yet exposed by RN Firebase pipelines.',
-    },
-    {
       name: 'timestampExtract',
       reason:
         'Newer firebase-js-sdk timestamp expression helper not yet exposed by RN Firebase pipelines.',
@@ -74,10 +69,6 @@ const config: PackageConfig = {
       name: 'TimePart',
       reason:
         'Newer firebase-js-sdk timestamp extraction type not yet exposed by RN Firebase pipelines.',
-    },
-    {
-      name: 'TimeUnit',
-      reason: 'Newer firebase-js-sdk timestamp unit type not yet exposed by RN Firebase pipelines.',
     },
   ],
   extraInRN: [
@@ -112,6 +103,11 @@ const config: PackageConfig = {
       name: 'TimeGranularity',
       reason:
         'RN Firebase uses the existing `isoWeek` and `isoYear` casing while the firebase-js-sdk declaration includes lowercase variants.',
+    },
+    {
+      name: 'timestampDiff',
+      reason:
+        'Declaration overload ordering differs from the firebase-js-sdk file, but all four end/start field and expression combinations are supported.',
     },
   ],
 };

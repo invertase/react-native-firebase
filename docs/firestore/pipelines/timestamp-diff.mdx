@@ -1,0 +1,50 @@
+---
+title: timestampDiff
+description: Pipeline expression helper that returns the difference between two timestamps in a chosen unit.
+next: /firestore/pipelines/sdk-compatibility
+previous: /firestore/pipelines/switch-on
+---
+
+`timestampDiff()` calculates how much time separates an **end** timestamp from a **start** timestamp, expressed in the unit you choose (`day`, `hour`, `minute`, and so on).
+
+Import from the pipelines entry point:
+
+```js
+import { timestampDiff, field } from '@react-native-firebase/firestore/pipelines';
+```
+
+# Basic example
+
+```js
+import { getFirestore } from '@react-native-firebase/firestore';
+import { execute, field, timestampDiff } from '@react-native-firebase/firestore/pipelines';
+
+const db = getFirestore('your-enterprise-database-id');
+
+const snapshot = await execute(
+  db
+    .pipeline()
+    .collection('events')
+    .select(
+      timestampDiff(field('endTime'), field('startTime'), 'day').as('daysApart'),
+      timestampDiff('endTime', 'startTime', 'hour').as('hoursApart'),
+    ),
+);
+
+snapshot.results.forEach(row => {
+  console.log(row.data().daysApart, row.data().hoursApart);
+});
+```
+
+# Related helpers
+
+| Helper              | Use when                                         |
+| ------------------- | ------------------------------------------------ |
+| `timestampDiff`     | Measure elapsed time between two timestamps      |
+| `timestampAdd`      | Shift a timestamp forward by an amount           |
+| `timestampSubtract` | Shift a timestamp backward by an amount          |
+| `TimeUnit`          | Type for `'microsecond'` … `'day'` unit literals |
+
+# Upstream reference
+
+See the [firebase-js-sdk `timestampDiff` declaration](https://firebase.google.com/docs/reference/js/firestore_pipelines#timestampdiff) for full overload signatures.

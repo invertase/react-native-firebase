@@ -2228,6 +2228,37 @@ describe('FirestorePipeline', function () {
     });
 
     describe('timestamp functions', function () {
+      it('evaluates timestampDiff across all global overload classes', async function () {
+        const { execute, field, timestampDiff } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc, Timestamp } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        const startTime = new Timestamp(1700000000, 0);
+        const endTime = new Timestamp(1700000000 + 2 * 86400, 0);
+
+        await setDoc(doc(db, docPath), { startTime, endTime });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              timestampDiff(field('endTime'), field('startTime'), 'day').as('exprExprDays'),
+              timestampDiff(field('endTime'), 'startTime', 'day').as('exprFieldDays'),
+              timestampDiff('endTime', field('startTime'), 'day').as('fieldExprDays'),
+              timestampDiff('endTime', 'startTime', 'hour').as('fieldFieldHours'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.exprExprDays.should.equal(2);
+        data.exprFieldDays.should.equal(2);
+        data.fieldExprDays.should.equal(2);
+        data.fieldFieldHours.should.equal(48);
+      });
+
       it('evaluates timestampToUnixMillis, timestampToUnixSeconds, timestampAdd, timestampSubtract, timestampTruncate, unixMillisToTimestamp', async function () {
         const {
           execute,
