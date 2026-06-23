@@ -29,6 +29,7 @@ DETOX_LOG="${RNFB_DETOX_LOG:-}"
   summarize "testing-log" "testing.log"
   summarize "springboard-log" "springboard-invertase.log"
   summarize "resource-monitor" "resource-monitor.log"
+  summarize "resource-monitor-android" "resource-monitor-android.log"
   summarize "metro-log" "metro.log"
 } >"$OUT"
 
