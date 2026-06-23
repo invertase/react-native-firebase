@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **auth:** migrate to TypeScript and bring auth closer in alignment with firebase-js-sdk API (#8991)
+- **analytics:** as anyone that relied on this param previously is hopefully happy
+  to have it actually work now versus silently fail
+
+### Features
+
+- **analytics:** add Expo config plugin for withoutAdIdSupport ([#8969](https://github.com/invertase/react-native-firebase/issues/8969)) ([483c143](https://github.com/invertase/react-native-firebase/commit/483c14343e7595bc539b03040ff760cfdae4421d))
+- **analytics:** add support for googleAppMeasurementOnDeviceConversion in iOS Expo plugin ([#9014](https://github.com/invertase/react-native-firebase/issues/9014)) ([6edab6f](https://github.com/invertase/react-native-firebase/commit/6edab6f14547c3d41ffdfd8ab43e7ff7979647c7))
+
+### Bug Fixes
+
+- **analytics:** cast item INDEX param to integer ([16efa30](https://github.com/invertase/react-native-firebase/commit/16efa30e4d58af4a9cb44ecc8dd47c7c50c60f1c))
+- **analytics:** coerce all number params from js double to native integral ([f913b77](https://github.com/invertase/react-native-firebase/commit/f913b779174427c3f00bb187b305a035b6c9bae5))
+- **analytics:** success param type now boolean - never worked before, now works ([ff53e9e](https://github.com/invertase/react-native-firebase/commit/ff53e9ea41c5c9268094928d4e4516a9d9700fbf))
+
+### Code Refactoring
+
+- **auth:** migrate to TypeScript and bring auth closer in alignment with firebase-js-sdk API ([#8991](https://github.com/invertase/react-native-firebase/issues/8991)) ([7cf7c1a](https://github.com/invertase/react-native-firebase/commit/7cf7c1ac0d31d09ade581deb027d4ed8126bb7cf))
+
 ## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
 
 **Note:** Version bump only for package @react-native-firebase/analytics

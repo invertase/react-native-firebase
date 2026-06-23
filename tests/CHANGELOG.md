@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **auth:** migrate to TypeScript and bring auth closer in alignment with firebase-js-sdk API (#8991)
+- **perf:** perf types now match firebase-js-sdk as closely as possible
+
+Please see https://rnfirebase.io/migrating-to-v25 for help migrating if needed.
+
+react-native-firebase has a goal to be a drop-in replacement for firebase-js-sdk, with native extensions and performance. It has always worked that way at the javascript level but the typescript types have been divergent.
+
+We are fixing that as we refactor to typescript. Please bear with us as we get closer to our goal of react-native-firebase matching firebase-js-sdk both in functionality where possible, but also in exact typescript typing.
+
+Specifics for Performance:
+
+- changed modular `initializePerformance(app, settings)` to return `FirebasePerformance` synchronously instead of `Promise<Performance>`, matching firebase-js-sdk; TypeScript consumers that call `.then(...)` on it will need to use the returned instance directly.
+- aligned the modular `FirebasePerformance` type with firebase-js-sdk, so it no longer exposes older namespaced instance-style methods such as `newTrace`, `startTrace`, `newHttpMetric`, `newScreenTrace`, `startScreenTrace`, or `setPerformanceCollectionEnabled` in the modular typings; use `trace(perf, name)`, `httpMetric(perf, url, method)`, `newScreenTrace(perf, name)`, `startScreenTrace(perf, name)`, and the `dataCollectionEnabled` property instead.
+- changed `PerformanceSettings` to the firebase-js-sdk shape, with optional `dataCollectionEnabled` and `instrumentationEnabled`.
+- changed modular trace and metric `getAttribute(...)` typings from `string | null` to `string | undefined`, matching firebase-js-sdk.
+- kept React Native-only modular exports for native functionality: `httpMetric`, `newScreenTrace`, `startScreenTrace`, plus `HttpMethod`, `HttpMetric`, and `ScreenTrace`.
+- kept the deprecated namespaced API under `FirebasePerformanceTypes`, but split it from the modular public types and marked it as deprecated for compatibility.
+
+* **remote-config:** remote-config types now match firebase-js-sdk as closely as possible
+
+Please see https://rnfirebase.io/migrating-to-v25 for help migrating if needed
+
+react-native-firebase has a goal to be a drop-in replacement for firebase-js-sdk, with native extensions and performance. It has always worked that way at the javascript level but the typescript types have been divergent
+
+We are fixing that as we refactor to typescript. Please bear with us as we get closer to our goal of react-native-firebase matching firebase-js-sdk both in functionality where possible, but also in exact typescript typing.
+
+Specifics for Remote Config:
+
+the primary modular remote-config types now use Firebase JS SDK names: LogLevel, FetchStatus, Value, and RemoteConfigSettings
+RemoteConfig.settings is now typed as RemoteConfigSettings, which uses fetchTimeoutMillis rather than the older RNFB-style fetchTimeMillis on the modular surface
+modular getAll() and getValue() now return SDK-aligned types: Record<string, Value> and Value
+modular setLogLevel() now matches the Firebase JS SDK signature and returns void
+the legacy modular helper exports fetchTimeMillis(), settings(), and lastFetchStatus() have been removed from @react-native-firebase/remote-config. Modular callers should read remoteConfig.fetchTimeMillis, remoteConfig.settings, and remoteConfig.lastFetchStatus from the RemoteConfig instance instead
+modular fetch() has been removed. Modular callers should use fetchConfig(remoteConfig) instead; the RNFB-only modular expirationDurationSeconds helper is no longer part of the public modular API
+modular setConfigSettings() and setDefaults() have been removed. Modular callers should use remoteConfig.settings = ... and remoteConfig.defaultConfig = ... on the RemoteConfig instance instead
+modular onConfigUpdated() has been removed. Modular callers should use onConfigUpdate(remoteConfig, observer) instead
+deprecated RemoteConfigValue.value and .source getters have been removed. Callers should use asString() and getSource() instead
+Remove LastFetchStatus, ValueSource, ConfigSettings, ConfigDefaults, ConfigValue, ConfigValues, LastFetchStatusType, and RemoteConfigLogLevel from modular exports
+
+- **storage:** migrate to TypeScript and match firebase-js-sdk API (#8824)
+- **sdks:** firebase-ios-sdk 12.12.0+ requires Xcode 26.2+
+
+### Features
+
+- **android, pnv:** add support for Firebase Phone Number Verification ([#9045](https://github.com/invertase/react-native-firebase/issues/9045)) ([ae03f3f](https://github.com/invertase/react-native-firebase/commit/ae03f3f0be636fcd949965ee720a691f8582ef82))
+
+### Bug Fixes
+
+- adopt firebase-ios-sdk 12.13.0 ([d488470](https://github.com/invertase/react-native-firebase/commit/d488470d23bb81b303235807f856f71e76b0b4b0))
+- adopt firebase-js-sdk 12.12.1 ([bfbf562](https://github.com/invertase/react-native-firebase/commit/bfbf5620c526401bb01ec383436247379fbfcdb5))
+- adopt firebase-js-sdk 12.13.0 ([a536afc](https://github.com/invertase/react-native-firebase/commit/a536afc8a5978a4c4d6f258505a4350959877528))
+- **sdks:** firebase-ios-sdk (requires Xcode 26.2+), firebase-android-sdk 34.12.0, firebase-js-sdk 12.12.0 ([c8c1fc1](https://github.com/invertase/react-native-firebase/commit/c8c1fc105f8e67914eea2f40ef727bc5a463fa40))
+
+### Code Refactoring
+
+- **auth:** migrate to TypeScript and bring auth closer in alignment with firebase-js-sdk API ([#8991](https://github.com/invertase/react-native-firebase/issues/8991)) ([7cf7c1a](https://github.com/invertase/react-native-firebase/commit/7cf7c1ac0d31d09ade581deb027d4ed8126bb7cf))
+- **perf:** migrate to TypeScript ([4aedfe8](https://github.com/invertase/react-native-firebase/commit/4aedfe883a5439b5c97b389c708a7c4cec9dc62d))
+- **remote-config:** migrate to TypeScript ([#8972](https://github.com/invertase/react-native-firebase/issues/8972)) ([4625961](https://github.com/invertase/react-native-firebase/commit/4625961bef042558d5cdf113a7d14ab6cb230f1a))
+- **storage:** migrate to TypeScript and match firebase-js-sdk API ([#8824](https://github.com/invertase/react-native-firebase/issues/8824)) ([663b57c](https://github.com/invertase/react-native-firebase/commit/663b57c220ef733affc1055e674334f35c458861))
+
 ## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
 
 ### Bug Fixes

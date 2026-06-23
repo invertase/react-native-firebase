@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **perf:** perf types now match firebase-js-sdk as closely as possible
+
+Please see https://rnfirebase.io/migrating-to-v25 for help migrating if needed.
+
+react-native-firebase has a goal to be a drop-in replacement for firebase-js-sdk, with native extensions and performance. It has always worked that way at the javascript level but the typescript types have been divergent.
+
+We are fixing that as we refactor to typescript. Please bear with us as we get closer to our goal of react-native-firebase matching firebase-js-sdk both in functionality where possible, but also in exact typescript typing.
+
+Specifics for Performance:
+
+- changed modular `initializePerformance(app, settings)` to return `FirebasePerformance` synchronously instead of `Promise<Performance>`, matching firebase-js-sdk; TypeScript consumers that call `.then(...)` on it will need to use the returned instance directly.
+- aligned the modular `FirebasePerformance` type with firebase-js-sdk, so it no longer exposes older namespaced instance-style methods such as `newTrace`, `startTrace`, `newHttpMetric`, `newScreenTrace`, `startScreenTrace`, or `setPerformanceCollectionEnabled` in the modular typings; use `trace(perf, name)`, `httpMetric(perf, url, method)`, `newScreenTrace(perf, name)`, `startScreenTrace(perf, name)`, and the `dataCollectionEnabled` property instead.
+- changed `PerformanceSettings` to the firebase-js-sdk shape, with optional `dataCollectionEnabled` and `instrumentationEnabled`.
+- changed modular trace and metric `getAttribute(...)` typings from `string | null` to `string | undefined`, matching firebase-js-sdk.
+- kept React Native-only modular exports for native functionality: `httpMetric`, `newScreenTrace`, `startScreenTrace`, plus `HttpMethod`, `HttpMetric`, and `ScreenTrace`.
+- kept the deprecated namespaced API under `FirebasePerformanceTypes`, but split it from the modular public types and marked it as deprecated for compatibility.
+
+### Code Refactoring
+
+- **perf:** migrate to TypeScript ([4aedfe8](https://github.com/invertase/react-native-firebase/commit/4aedfe883a5439b5c97b389c708a7c4cec9dc62d))
+
 ## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
 
 **Note:** Version bump only for package @react-native-firebase/perf

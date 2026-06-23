@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/phone-number-verification",
-  "version": "24.1.1",
+  "version": "25.0.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Phone Number Verification",
   "main": "./dist/module/index.js",
@@ -24,7 +24,7 @@
     "pnv"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "24.1.1"
+    "@react-native-firebase/app": "25.0.0"
   },
   "devDependencies": {
     "react-native-builder-bob": "^0.41.0",

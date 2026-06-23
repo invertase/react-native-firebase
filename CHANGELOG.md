@@ -3,6 +3,153 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **auth:** migrate to TypeScript and bring auth closer in alignment with firebase-js-sdk API (#8991)
+- **messaging:** deprecate permissions APIs, use react-native-permissions or expo-notifications (#9053)
+- **installations:** installations modular types now match firebase-js-sdk
+
+Please see https://rnfirebase.io/migrating-to-v25 for help migrating if needed.
+
+react-native-firebase has a goal to be a drop-in replacement for firebase-js-sdk, with native extensions and performance. It has always worked that way at the javascript level but the typescript types have been divergent.
+
+We are fixing that as we refactor to typescript. Please bear with us as we get closer to our goal of react-native-firebase matching firebase-js-sdk both in functionality where possible, but also in exact typescript typing.
+
+Specifics for Installations:
+
+changed modular getInstallations() to return the firebase-js-sdk-style Installations type, which only exposes app; TypeScript consumers should use the modular helpers getId(installations), getToken(installations), and deleteInstallations(installations) instead of calling .getId(), .getToken(), or .delete() on the returned instance.
+changed modular deleteInstallations(installations) so the installations argument is required in the TypeScript surface, matching firebase-js-sdk. Code that previously relied on the old optional typing should pass getInstallations() explicitly.
+preserved the namespaced API surface: installations(), firebase.installations(), firebase.app().installations(), and FirebaseInstallationsTypes.Module remain available for compatibility, with deprecation annotations added.
+added explicit modular public types including Installations, IdChangeCallbackFn, and IdChangeUnsubscribeFn.
+
+- **perf:** perf types now match firebase-js-sdk as closely as possible
+
+Please see https://rnfirebase.io/migrating-to-v25 for help migrating if needed.
+
+react-native-firebase has a goal to be a drop-in replacement for firebase-js-sdk, with native extensions and performance. It has always worked that way at the javascript level but the typescript types have been divergent.
+
+We are fixing that as we refactor to typescript. Please bear with us as we get closer to our goal of react-native-firebase matching firebase-js-sdk both in functionality where possible, but also in exact typescript typing.
+
+Specifics for Performance:
+
+- changed modular `initializePerformance(app, settings)` to return `FirebasePerformance` synchronously instead of `Promise<Performance>`, matching firebase-js-sdk; TypeScript consumers that call `.then(...)` on it will need to use the returned instance directly.
+- aligned the modular `FirebasePerformance` type with firebase-js-sdk, so it no longer exposes older namespaced instance-style methods such as `newTrace`, `startTrace`, `newHttpMetric`, `newScreenTrace`, `startScreenTrace`, or `setPerformanceCollectionEnabled` in the modular typings; use `trace(perf, name)`, `httpMetric(perf, url, method)`, `newScreenTrace(perf, name)`, `startScreenTrace(perf, name)`, and the `dataCollectionEnabled` property instead.
+- changed `PerformanceSettings` to the firebase-js-sdk shape, with optional `dataCollectionEnabled` and `instrumentationEnabled`.
+- changed modular trace and metric `getAttribute(...)` typings from `string | null` to `string | undefined`, matching firebase-js-sdk.
+- kept React Native-only modular exports for native functionality: `httpMetric`, `newScreenTrace`, `startScreenTrace`, plus `HttpMethod`, `HttpMetric`, and `ScreenTrace`.
+- kept the deprecated namespaced API under `FirebasePerformanceTypes`, but split it from the modular public types and marked it as deprecated for compatibility.
+
+* **analytics:** as anyone that relied on this param previously is hopefully happy
+  to have it actually work now versus silently fail
+* **database:** database types now match firebase-js-sdk as closely as possible
+
+Please see https://rnfirebase.io/migrating-to-v25 for help migrating if needed
+
+react-native-firebase has a goal to be a drop-in replacement for firebase-js-sdk, with native extensions and performance. It has always worked that way at the javascript level but the typescript types have been divergent
+
+We are fixing that as we refactor to typescript. Please bear with us as we get closer to our goal of react-native-firebase matching firebase-js-sdk both in functionality where possible, but also in exact typescript typing.
+
+Specifics for Database:
+
+- removed the modular ServerValue named export from @react-native-firebase/database; consumers must use serverTimestamp() / increment() instead.
+- changed modular goOffline(db) and goOnline(db) so they no longer return a chainable value, which breaks consumer code that awaits them or calls .then(...) on them.
+- aligned the modular TypeScript surface with the firebase-js-sdk, so modular types like DatabaseReference, Query, DataSnapshot, OnDisconnect, and QueryConstraint no longer expose the older namespaced instance-style API in their public typings; TypeScript consumers will need to switch to the function-based modular helpers.
+- corrected getServerTime(db) to a synchronous Date return in the modular type surface, so TypeScript consumers that previously treated it as promise-like will need to update their code.
+- **remote-config:** remote-config types now match firebase-js-sdk as closely as possible
+
+Please see https://rnfirebase.io/migrating-to-v25 for help migrating if needed
+
+react-native-firebase has a goal to be a drop-in replacement for firebase-js-sdk, with native extensions and performance. It has always worked that way at the javascript level but the typescript types have been divergent
+
+We are fixing that as we refactor to typescript. Please bear with us as we get closer to our goal of react-native-firebase matching firebase-js-sdk both in functionality where possible, but also in exact typescript typing.
+
+Specifics for Remote Config:
+
+the primary modular remote-config types now use Firebase JS SDK names: LogLevel, FetchStatus, Value, and RemoteConfigSettings
+RemoteConfig.settings is now typed as RemoteConfigSettings, which uses fetchTimeoutMillis rather than the older RNFB-style fetchTimeMillis on the modular surface
+modular getAll() and getValue() now return SDK-aligned types: Record<string, Value> and Value
+modular setLogLevel() now matches the Firebase JS SDK signature and returns void
+the legacy modular helper exports fetchTimeMillis(), settings(), and lastFetchStatus() have been removed from @react-native-firebase/remote-config. Modular callers should read remoteConfig.fetchTimeMillis, remoteConfig.settings, and remoteConfig.lastFetchStatus from the RemoteConfig instance instead
+modular fetch() has been removed. Modular callers should use fetchConfig(remoteConfig) instead; the RNFB-only modular expirationDurationSeconds helper is no longer part of the public modular API
+modular setConfigSettings() and setDefaults() have been removed. Modular callers should use remoteConfig.settings = ... and remoteConfig.defaultConfig = ... on the RemoteConfig instance instead
+modular onConfigUpdated() has been removed. Modular callers should use onConfigUpdate(remoteConfig, observer) instead
+deprecated RemoteConfigValue.value and .source getters have been removed. Callers should use asString() and getSource() instead
+Remove LastFetchStatus, ValueSource, ConfigSettings, ConfigDefaults, ConfigValue, ConfigValues, LastFetchStatusType, and RemoteConfigLogLevel from modular exports
+
+- **app-check:** AppCheck has had all types moved to conform to firebase-js-sdk typescript types
+
+Please see https://rnfirebase.io/migrating-to-v25 for help migrating if needed
+
+react-native-firebase has a goal to be a drop-in replacement for firebase-js-sdk, with native extensions and performance. It has always worked that way at the javascript level but the typescript types have been divergent
+
+We are fixing that as we refactor to typescript. Please bear with us as we get closer to our goal of react-native-firebase matching firebase-js-sdk both in functionality where possible, but also in exact typescript typing.
+
+Specifics for AppCheck:
+
+modular AppCheck now matches firebase-js-sdk (no instance methods); use modular functions like initializeAppCheck, getToken, getLimitedUseToken, setTokenAutoRefreshEnabled, onTokenChanged instead, matching firebase-js-sdk.
+modular onTokenChanged callback result type changed from AppCheckListenerResult to AppCheckTokenResult
+FirebaseApp is no longer exported from @react-native-firebase/app-check; import FirebaseApp from @react-native-firebase/app
+modular type exports no longer include the old statics-based surface (e.g. AppCheckStatics), aligning closer to firebase-js-sdk
+FirebaseAppCheckTypes is now a type-only export (no runtime export); update any value imports to import type
+chore React-Native-Specific provider classes were moved into lib/providers.ts (exports updated)
+
+- **storage:** migrate to TypeScript and match firebase-js-sdk API (#8824)
+- **sdks:** firebase-ios-sdk 12.12.0+ requires Xcode 26.2+
+
+### Features
+
+- **ai:** add AnyOfSchema support ([e037945](https://github.com/invertase/react-native-firebase/commit/e037945822ef7302dfc7f9f02e084c77e075d1ec))
+- **ai:** expose automatic function calling options ([152704d](https://github.com/invertase/react-native-firebase/commit/152704df1ae6fb83ede82636ebe3365fca3297cd))
+- **ai:** expose LiveServerGoingAwayNotice ([211db68](https://github.com/invertase/react-native-firebase/commit/211db6868d555a539ae8a9b3c25cd241166f1d2b))
+- **ai:** expose ObjectSchemaRequest ([6432f73](https://github.com/invertase/react-native-firebase/commit/6432f73a3b2d4166a232f3e6bfa0e3bde389fe2c))
+- **ai:** expose TemplateChat APIs ([1096452](https://github.com/invertase/react-native-firebase/commit/10964520053c1432fba15d3ab538b9ebff313a58))
+- **ai:** expose ThinkingLevel and ThinkingConfig.thinkingLevel ([a064c23](https://github.com/invertase/react-native-firebase/commit/a064c236bc8ed1030003ff7e5790f9cafc62927e))
+- **ai:** expose UsageMetadata token details ([23d1095](https://github.com/invertase/react-native-firebase/commit/23d109585e9de8397f5ce3bf3aba9a20c052d1f8))
+- **ai:** implement Firebase JS SDK 12.15.0 portable API parity ([7eb76f3](https://github.com/invertase/react-native-firebase/commit/7eb76f39d4fae31db3c68c281b403f84ac00809a))
+- **ai:** support chat function auto-calling ([193df56](https://github.com/invertase/react-native-firebase/commit/193df56449e72d9a080e86b21eef3aadaaa4677b))
+- **ai:** support FunctionResponse parts ([c2127a9](https://github.com/invertase/react-native-firebase/commit/c2127a9838b57dfcabd8548bd519774be44ee5f9))
+- **ai:** support generateContent function auto-calling ([35d1794](https://github.com/invertase/react-native-firebase/commit/35d179495a7ad197ed6749ef75e6328e5ffb8f48))
+- **ai:** support per-call request options ([163e8c0](https://github.com/invertase/react-native-firebase/commit/163e8c0d140e72d55d86bc5fdb785f1160ec49d7))
+- **ai:** support responseJsonSchema generation config ([6b54462](https://github.com/invertase/react-native-firebase/commit/6b54462196e4d548b9bc4a8efb4144a1596377ac))
+- **ai:** support streaming chat function auto-calling ([6d65d5f](https://github.com/invertase/react-native-firebase/commit/6d65d5f771010c8d87985ed3cd5b13f4e5ebf536))
+- **ai:** support template chat function auto-calling ([7f31d9c](https://github.com/invertase/react-native-firebase/commit/7f31d9cf8a2fe40e399098677c041bcb4fcbbbb3))
+- **analytics:** add Expo config plugin for withoutAdIdSupport ([#8969](https://github.com/invertase/react-native-firebase/issues/8969)) ([483c143](https://github.com/invertase/react-native-firebase/commit/483c14343e7595bc539b03040ff760cfdae4421d))
+- **analytics:** add support for googleAppMeasurementOnDeviceConversion in iOS Expo plugin ([#9014](https://github.com/invertase/react-native-firebase/issues/9014)) ([6edab6f](https://github.com/invertase/react-native-firebase/commit/6edab6f14547c3d41ffdfd8ab43e7ff7979647c7))
+- **android, pnv:** add support for Firebase Phone Number Verification ([#9045](https://github.com/invertase/react-native-firebase/issues/9045)) ([ae03f3f](https://github.com/invertase/react-native-firebase/commit/ae03f3f0be636fcd949965ee720a691f8582ef82))
+- **firestore:** add 'source' option to enable local cache firestore listeners ([2ccd763](https://github.com/invertase/react-native-firebase/commit/2ccd7635d1964a49c841504627c42321aef6c70d))
+
+### Bug Fixes
+
+- adopt firebase-android-sdk 34.13.0 ([5fcaff1](https://github.com/invertase/react-native-firebase/commit/5fcaff18093d6a425e07e00f17add5ac2f2d7cf0))
+- adopt firebase-ios-sdk 12.13.0 ([d488470](https://github.com/invertase/react-native-firebase/commit/d488470d23bb81b303235807f856f71e76b0b4b0))
+- adopt firebase-js-sdk 12.12.1 ([bfbf562](https://github.com/invertase/react-native-firebase/commit/bfbf5620c526401bb01ec383436247379fbfcdb5))
+- adopt firebase-js-sdk 12.13.0 ([a536afc](https://github.com/invertase/react-native-firebase/commit/a536afc8a5978a4c4d6f258505a4350959877528))
+- **analytics:** cast item INDEX param to integer ([16efa30](https://github.com/invertase/react-native-firebase/commit/16efa30e4d58af4a9cb44ecc8dd47c7c50c60f1c))
+- **analytics:** coerce all number params from js double to native integral ([f913b77](https://github.com/invertase/react-native-firebase/commit/f913b779174427c3f00bb187b305a035b6c9bae5))
+- **analytics:** success param type now boolean - never worked before, now works ([ff53e9e](https://github.com/invertase/react-native-firebase/commit/ff53e9ea41c5c9268094928d4e4516a9d9700fbf))
+- **android:** catch RejectedExecutionException on executor-backed Tasks ([d70520d](https://github.com/invertase/react-native-firebase/commit/d70520d39c16c6a414affe4585de6f65ec9ab345))
+- **database, android:** remove RTDB listeners before shutting down executors ([f527153](https://github.com/invertase/react-native-firebase/commit/f527153548c8f6f97c553f7348f798bb1ce08b08))
+- **docs:** workflow to generate+publish API docs, call same on publish ([8222a96](https://github.com/invertase/react-native-firebase/commit/8222a9653794a44c37922f717358718b7ec5c653))
+- **firestore, android:** catch RejectedExecutionException in sendOnSnapshotEvent ([d0c6513](https://github.com/invertase/react-native-firebase/commit/d0c6513f1b5898d56b086810affaffb44f6107af))
+- **firestore:** restore generic root type exports for `DocumentSnapshot`, `Transaction`, and `WriteBatch` ([#8997](https://github.com/invertase/react-native-firebase/issues/8997)) ([7cf9502](https://github.com/invertase/react-native-firebase/commit/7cf950291d438df6f07dc5f189223d4fbc24365b))
+- **sdks:** firebase-ios-sdk (requires Xcode 26.2+), firebase-android-sdk 34.12.0, firebase-js-sdk 12.12.0 ([c8c1fc1](https://github.com/invertase/react-native-firebase/commit/c8c1fc105f8e67914eea2f40ef727bc5a463fa40))
+
+### Miscellaneous Chores
+
+- **messaging:** deprecate permissions APIs, use react-native-permissions or expo-notifications ([#9053](https://github.com/invertase/react-native-firebase/issues/9053)) ([fc317fa](https://github.com/invertase/react-native-firebase/commit/fc317fa51f0060abe1b5b7e9f0748f000d9bc6f8))
+
+### Code Refactoring
+
+- **app-check:** match AppCheck type with firebase-js-sdk ([#8889](https://github.com/invertase/react-native-firebase/issues/8889)) ([71e8eb5](https://github.com/invertase/react-native-firebase/commit/71e8eb5773851846be3abe97632f7b6f60f68a6c))
+- **auth:** migrate to TypeScript and bring auth closer in alignment with firebase-js-sdk API ([#8991](https://github.com/invertase/react-native-firebase/issues/8991)) ([7cf7c1a](https://github.com/invertase/react-native-firebase/commit/7cf7c1ac0d31d09ade581deb027d4ed8126bb7cf))
+- **database:** migrate to TypeScript ([#8977](https://github.com/invertase/react-native-firebase/issues/8977)) ([fc8b839](https://github.com/invertase/react-native-firebase/commit/fc8b839b8e315a0cb8f74bc9b13720109315dd11))
+- **installations:** migrate to TypeScript ([739a4ca](https://github.com/invertase/react-native-firebase/commit/739a4ca36169a7e0d8cf20c9330747d1d154e0c9))
+- **perf:** migrate to TypeScript ([4aedfe8](https://github.com/invertase/react-native-firebase/commit/4aedfe883a5439b5c97b389c708a7c4cec9dc62d))
+- **remote-config:** migrate to TypeScript ([#8972](https://github.com/invertase/react-native-firebase/issues/8972)) ([4625961](https://github.com/invertase/react-native-firebase/commit/4625961bef042558d5cdf113a7d14ab6cb230f1a))
+- **storage:** migrate to TypeScript and match firebase-js-sdk API ([#8824](https://github.com/invertase/react-native-firebase/issues/8824)) ([663b57c](https://github.com/invertase/react-native-firebase/commit/663b57c220ef733affc1055e674334f35c458861))
+
 ## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
 
 ### Bug Fixes

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **messaging:** deprecate permissions APIs, use react-native-permissions or expo-notifications (#9053)
+
+### Miscellaneous Chores
+
+- **messaging:** deprecate permissions APIs, use react-native-permissions or expo-notifications ([#9053](https://github.com/invertase/react-native-firebase/issues/9053)) ([fc317fa](https://github.com/invertase/react-native-firebase/commit/fc317fa51f0060abe1b5b7e9f0748f000d9bc6f8))
+
 ## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
 
 **Note:** Version bump only for package @react-native-firebase/messaging
