@@ -152,6 +152,11 @@ const config: PackageConfig = {
         'RN Firebase-specific native auth domain helper on iOS/Android. Other/All: auth.config from firebase-js-sdk may cover this instead (see auth.config in migration guide).',
     },
     {
+      name: 'revokeToken',
+      reason:
+        'RN Firebase-specific Sign in with Apple authorization-code revocation helper. iOS: native revokeTokenWithAuthorizationCode. Android/Web: bridge no-op. Distinct from firebase-js-sdk revokeAccessToken (web-only OAuth token revocation).',
+    },
+    {
       name: 'AdditionalUserInfoNative',
       reason:
         'RN Firebase extension type: firebase-js-sdk AdditionalUserInfo core fields plus index signature for extra native bridge keys. Use when typing values from getAdditionalUserInfo or UserCredential.additionalUserInfo that may include provider-specific native fields.',

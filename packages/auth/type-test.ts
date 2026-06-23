@@ -25,6 +25,7 @@ import auth, {
   GoogleAuthProvider,
   getMultiFactorResolver,
   getRedirectResult,
+  revokeToken,
   initializeAuth,
   isSignInWithEmailLink,
   multiFactor,
@@ -353,6 +354,7 @@ setLanguageCode(modularAuth, 'fr');
 useUserAccessGroup(modularAuth, 'group.example');
 verifyPasswordResetCode(modularAuth, 'oob-code').then((email: string) => console.log(email));
 getCustomAuthDomain(modularAuth).then((domain: string) => console.log(domain));
+revokeToken(modularAuth, 'authorization-code');
 validatePassword(modularAuth, 'password123').then((status: PasswordValidationStatus) =>
   console.log(status.isValid),
 );

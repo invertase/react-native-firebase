@@ -500,6 +500,12 @@ These modular helpers are exported for firebase-js-sdk API parity. **On iOS/Andr
 - `verifyPhoneNumber(auth, phoneNumber, ...)` — **iOS/Android only** native listener flow (force-resend, auto-verification callbacks). On Other platforms use `signInWithPhoneNumber` / firebase-js-sdk `PhoneAuthProvider` instead.
 - `signInWithPhoneNumber(auth, phoneNumber, appVerifier?)` — modular API no longer accepts the former `forceResend` fourth argument from React Native Firebase; use `verifyPhoneNumber` when you need the native listener / force-resend behavior.
 
+## Sign in with Apple
+
+- `revokeToken(auth, authorizationCode)` — React Native Firebase-specific modular helper for Apple's account-deletion requirement. **Supported on iOS** (native `revokeTokenWithAuthorizationCode`). Android and Web bridges resolve without performing revocation.
+- Do not confuse with `revokeAccessToken` — that is firebase-js-sdk web-only OAuth token revocation and always throws on iOS/Android.
+- The namespaced `firebase.auth().revokeToken(authorizationCode)` API remains available but is deprecated.
+
 ## Auth instance surface
 
 - `auth.tenantId = 'tenant-id'` is now supported (delegates to `setTenantId`).
