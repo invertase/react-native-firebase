@@ -229,6 +229,7 @@ import {
   regexMatch,
   // timestamp
   timestampAdd,
+  timestampDiff,
   timestampSubtract,
   timestampToUnixMicros,
   timestampToUnixMillis,
@@ -259,6 +260,7 @@ import type {
   ExpressionType,
   Type as PipelineValueType,
   TimeGranularity,
+  TimeUnit,
   AliasedAggregate,
   AliasedExpression,
   StageOptions,
@@ -1092,6 +1094,7 @@ type _AllPipelineTypes = [
   ExpressionType,
   PipelineValueType,
   TimeGranularity,
+  TimeUnit,
   AliasedAggregate,
   AliasedExpression,
   StageOptions,
@@ -1562,6 +1565,11 @@ void timestampAdd(field('createdAt'), field('unit'), field('amount'));
 void timestampSubtract(field('expiry'), 'hour', 1);
 void timestampSubtract('expiry', 'hour', 1);
 void timestampSubtract(field('expiry'), field('unit'), field('amount'));
+// timestampDiff: 4 overloads
+void timestampDiff(field('endTime'), 'startTime', 'day');
+void timestampDiff(field('endTime'), field('startTime'), 'hour');
+void timestampDiff('endTime', 'startTime', 'day');
+void timestampDiff('endTime', field('startTime'), field('unit'));
 // timestampToUnixMicros: (Expression) | (string)
 void timestampToUnixMicros(field('ts'));
 void timestampToUnixMicros('ts');
@@ -1864,6 +1872,8 @@ const pipelineTimestampOps = xDb
     timestampSubtract(field('expiry'), 'hour', 1).as('previousUpdate'),
     timestampSubtract('expiry', 'minute', 30).as('previousUpdate2'),
     timestampSubtract(field('ts'), field('unit'), field('amount')).as('dynamicSub'),
+    timestampDiff(field('endTime'), field('startTime'), 'day').as('daysApart'),
+    timestampDiff('endTime', 'startTime', 'hour').as('hoursApart'),
     timestampToUnixMillis(field('eventTime')).as('eventTimeMs'),
     timestampToUnixMillis('eventTime').as('eventTimeMs2'),
     timestampToUnixSeconds(field('eventTime')).as('eventTimeSec'),

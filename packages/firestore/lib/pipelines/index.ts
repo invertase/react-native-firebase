@@ -37,6 +37,7 @@ export type {
   ExpressionType,
   Type,
   TimeGranularity,
+  TimeUnit,
   AliasedAggregate,
   AliasedExpression,
 } from './expressions';
@@ -188,6 +189,7 @@ export {
   stringReplaceOne,
   stringReverse,
   timestampAdd,
+  timestampDiff,
   timestampSubtract,
   timestampToUnixMicros,
   timestampToUnixMillis,
