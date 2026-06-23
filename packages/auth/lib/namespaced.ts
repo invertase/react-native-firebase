@@ -21,6 +21,7 @@ import {
   isBoolean,
   isNull,
   isOther,
+  isOtherHermes,
   isString,
   isValidUrl,
   parseListenerOrObserver,
@@ -798,6 +799,15 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   initializeRecaptchaConfig(): Promise<void> {
+    if (isOtherHermes) {
+      console.warn(
+        'initializeRecaptchaConfig() is not supported on this platform. ' +
+          'reCAPTCHA Enterprise requires a DOM environment (Other/Web). ' +
+          'Enterprise phone verification is unavailable here.',
+      );
+      return Promise.resolve();
+    }
+
     return this.native.initializeRecaptchaConfig();
   }
 }

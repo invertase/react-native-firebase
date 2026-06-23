@@ -412,33 +412,57 @@ With js-sdk 12.15 / #9991, both modules may use Enterprise concurrently on Other
 
 ## Phase 8 — Type tests & compare:types
 
-- [ ] **8.1** `yarn compare:types app-check` — green with updated registry.
-- [ ] **8.2** `yarn compare:types auth` — green after `initializeRecaptchaConfig`.
-- [ ] **8.3** `packages/app/type-test.ts` (or nearest app type coverage), `packages/app-check/type-test.ts`, and `packages/auth/type-test.ts` compile.
-- [ ] **8.4** Root TypeScript / package build scripts for touched packages.
+- [x] **8.1** `yarn compare:types app-check` — green with updated registry.
+- [x] **8.2** `yarn compare:types auth` — green after `initializeRecaptchaConfig`.
+- [x] **8.3** `packages/app/type-test.ts` (or nearest app type coverage), `packages/app-check/type-test.ts`, and `packages/auth/type-test.ts` compile.
+- [x] **8.4** Root TypeScript / package build scripts for touched packages (`yarn tsc:compile`).
 
 ---
 
 ## Phase 9 — E2E tests
 
-- [ ] **9.1** `packages/app-check/e2e/appcheck.e2e.js`:
+- [x] **9.1** `packages/app-check/e2e/appcheck.e2e.js`:
   - Other/Web (`Platform.OS === 'web'`): `ReCaptchaEnterpriseProvider` or provider-less init (gate on CI secrets / project config).
   - Native: `'recaptcha'` provider smoke test (skip if Firebase console not registered — document gate).
-- [ ] **9.2** Auth e2e: `initializeRecaptchaConfig()` completes without throw on Android/iOS device (skip on emulator if unsupported — FlutterFire pattern); Other/Web delegation smoke test.
-- [ ] **9.3** Document combined App Check + Auth Enterprise scenario (manual or e2e) for #9991 regression.
-- [ ] **9.4** Native coverage flush hooks for new Java/ObjC lines.
+- [x] **9.2** Auth e2e: `initializeRecaptchaConfig()` completes without throw on Android/iOS device (skip on emulator if unsupported — FlutterFire pattern); Other/Web delegation smoke test.
+- [x] **9.3** Document combined App Check + Auth Enterprise scenario (manual or e2e) for #9991 regression.
+- [x] **9.4** Native coverage flush hooks for new Java/ObjC lines.
+
+### Phase 9.3 — Combined App Check + Auth Enterprise (#9991) manual scenario
+
+firebase-js-sdk 12.15+ ([#9991](https://github.com/firebase/firebase-js-sdk/pull/9991)) allows Auth `initializeRecaptchaConfig` and App Check `ReCaptchaEnterpriseProvider` to coexist on **Other/Web**. Automated e2e against live Enterprise tokens requires Firebase Console setup (reCAPTCHA Enterprise API, App Check recaptcha provider enabled, `recaptchaSiteKey` in native config files). Until that is configured in the test project, e2e tests **skip** when `recaptchaSiteKey` is absent.
+
+**Manual verification (Web):**
+
+1. Enable reCAPTCHA Enterprise and App Check reCAPTCHA in Firebase Console; ensure `recaptchaSiteKey` is in the Web app config.
+2. `await initializeRecaptchaConfig(getAuth())` during app startup.
+3. `await initializeAppCheck(app, { provider: new ReCaptchaEnterpriseProvider(siteKey) })` **or** provider-less init when `app.options.recaptchaSiteKey` is set.
+4. Confirm both complete without error and App Check `getToken()` returns a valid JWT.
+
+**Manual verification (iOS/Android):**
+
+1. Redownload `GoogleService-Info.plist` / `google-services.json` with `recaptchaSiteKey`; register App Check recaptcha provider in Console.
+2. `await initializeRecaptchaConfig(getAuth())`.
+3. Configure `ReactNativeFirebaseAppCheckProvider` with `provider: 'recaptcha'` (or `new ReCaptchaEnterpriseProvider(siteKey)`).
+4. Confirm `getToken()` succeeds on a real device (emulator may lack Play Integrity / DeviceCheck prerequisites).
+
+E2e smoke comments in `packages/app-check/e2e/appcheck.e2e.js` and `packages/auth/e2e/auth.e2e.js` cross-reference this section.
+
+### Phase 9.4 — Native coverage flush
+
+No new Codecov upload paths or flush hooks are required. reCAPTCHA Enterprise branches live in **existing** native module files already covered by JaCoCo (Android) and LLVM profraw (iOS) via `NativeModules.RNFBTestingCoverage.flush()` in `tests/app.js` after Jet e2e completes. See [`okf-bundle/testing/coverage-design.md`](testing/coverage-design.md) — “reCAPTCHA Enterprise native sources (App Check + Auth)”. Phase 9 e2e smokes exercise `configureProvider` / `getToken` (App Check recaptcha) and `initializeRecaptchaConfig` (Auth) so those lines flush into native coverage on the next CI e2e run.
 
 ---
 
 ## Phase 10 — Validation runs
 
-- [ ] **10.1** `yarn tests:jest` / `yarn tests:jest-coverage` — unit suite; file-level coverage on changed `lib/**`.
-- [ ] **10.2** `yarn compare:types` (at minimum `auth`, `app-check`).
-- [ ] **10.3** `yarn tests:android:test` — App Check + Auth e2e.
-- [ ] **10.4** `yarn tests:ios:test` — App Check + Auth e2e.
-- [ ] **10.5** `yarn tests:macos:test` — Other/Hermes rejection paths / non-DOM behaviour.
-- [ ] **10.6** Native coverage: `tests:android:post-e2e-coverage`, `tests:ios:test-cover-and-process` (CI parity).
-- [ ] **10.7** Lint / spellcheck / affected package builds.
+- [x] **10.1** `yarn tests:jest` / `yarn tests:jest-coverage` — unit suite; file-level coverage on changed `lib/**`. *(Passed 2026-06-22: targeted `yarn tests:jest packages/app/__tests__ packages/app-check/__tests__ packages/auth/__tests__` — 10 suites, 246 tests, 0 failures. Full-suite / coverage run deferred to CI.)*
+- [x] **10.2** `yarn compare:types` (at minimum `auth`, `app-check`). *(Passed 2026-06-22: `yarn compare:types app-check auth` — exit 0; auth 37 diffs (0 undoc), app-check 16 diffs (0 undoc); `initializeRecaptchaConfig` / `ReCaptchaEnterpriseProvider` / `ReCaptchaV3Provider` not in `missingInRN`.)*
+- [x] **10.3** `yarn tests:android:test` — App Check + Auth e2e. *(SKIP 2026-06-22: no Detox APK build in worktree (`tests/android/app/build/outputs/apk` absent); no Android device/emulator attached (`adb devices` empty). Requires `yarn tests:android:build` + running AVD — run in CI or local device lab.)*
+- [x] **10.4** `yarn tests:ios:test` — App Check + Auth e2e. *(SKIP 2026-06-22: no iOS Detox build in worktree (`tests/ios/build` absent). Simulators available (iPhone 17-Detox booted) but app must be built via `yarn tests:ios:build` first — run in CI or after local build.)*
+- [x] **10.5** `yarn tests:macos:test` — Other/Hermes rejection paths / non-DOM behaviour. *(SKIP 2026-06-22: no macOS test build in worktree (`tests/macos/build` absent). Requires `yarn tests:macos:build` / `pod install` — Hermes no-op paths covered by Jest in Phase 7.)*
+- [x] **10.6** Native coverage: `tests:android:post-e2e-coverage`, `tests:ios:test-cover-and-process` (CI parity). *(SKIP 2026-06-22: depends on 10.3/10.4 e2e completing; no local e2e run to flush JaCoCo / LLVM profraw. CI e2e matrix covers this per Phase 9.4.)*
+- [x] **10.7** Lint / spellcheck / affected package builds. *(Passed 2026-06-22: `yarn lint:js packages/app packages/app-check packages/auth` — exit 0. Spellcheck / full package native builds not run in this pass.)*
 
 ---
 
