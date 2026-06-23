@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [25.0.1](https://github.com/invertase/react-native-firebase/compare/v25.0.0...v25.0.1) (2026-06-23)
+
+### Bug Fixes
+
+- **auth:** export revokeToken in modular API for Sign in with Apple ([a05fa66](https://github.com/invertase/react-native-firebase/commit/a05fa66c44d6043bad72c9d1b3374e305b51edcc)), closes [#9070](https://github.com/invertase/react-native-firebase/issues/9070)
+
 ## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
 
 ### ⚠ BREAKING CHANGES
