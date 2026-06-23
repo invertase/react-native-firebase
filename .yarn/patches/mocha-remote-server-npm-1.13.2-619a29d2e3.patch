@@ -1,17 +1,19 @@
 diff --git a/dist/Server.js b/dist/Server.js
-index ad9debe2086ab9b96e97a69aec966da8114ad102..ab83f1603bed6bf1d1bc8f58263f9161e9a6913e 100644
+index ad9debe2086ab9b96e97a69aec966da8114ad102..1c7856a7b8983cc71bad33465bae1e8182bb016d 100644
 --- a/dist/Server.js
 +++ b/dist/Server.js
-@@ -73,6 +73,8 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
+@@ -73,6 +73,10 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
          /** The options to send to the next connecting running client */
          this.clientOptions = {};
          this._listening = false;
 +        this._clientResetTimer = null;
 +        this._awaitingInitialClientRun = false;
++        this._inboundBuffer = "";
++        this._maxInboundBufferBytes = 50 * 1024 * 1024;
          this.handleConnection = (ws, req) => {
              this.debug("Client connected");
              // Check that the protocol matches
-@@ -88,6 +90,15 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
+@@ -88,6 +92,15 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
                  ws.close(1002, `Expected "${expectedProtocol}" protocol got "${ws.protocol}"`);
                  return;
              }
@@ -27,9 +29,11 @@ index ad9debe2086ab9b96e97a69aec966da8114ad102..ab83f1603bed6bf1d1bc8f58263f9161
              if (this.client) {
                  this.debug("A client was already connected");
                  this.client.close(1013 /* try again later */, "Got a connection from another client");
-@@ -97,14 +108,20 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
+@@ -96,15 +109,22 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
+             }
              // Hang onto the client
              this.client = ws;
++            this._inboundBuffer = "";
              this.client.on("message", this.handleMessage.bind(this, this.client));
 -            this.client.once("close", this.handleReset);
 +            this.client.once("close", (code) => this.handleClientDisconnect(code));
@@ -52,7 +56,38 @@ index ad9debe2086ab9b96e97a69aec966da8114ad102..ab83f1603bed6bf1d1bc8f58263f9161
                  }
              }
              else if (this.config.autoRun) {
-@@ -130,6 +147,18 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
+@@ -115,8 +135,29 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
+             }
+         };
+         this.handleMessage = (ws, message) => {
++            const chunk = typeof message === "string" ? message : message.toString();
++            if (!chunk) {
++                return;
++            }
++            this._inboundBuffer += chunk;
++            if (this._inboundBuffer.length > this._maxInboundBufferBytes) {
++                console.warn(`[mocha-remote-ws] parse_buffer_overflow bytes=${this._inboundBuffer.length}`);
++                this._inboundBuffer = "";
++                return;
++            }
++            const parsed = (0, serialization_1.tryDeserialize)(this._inboundBuffer);
++            if (!parsed.ok) {
++                if (parsed.incomplete) {
++                    console.warn(`[mocha-remote-ws] parse_buffering bytes=${this._inboundBuffer.length} err=${parsed.error?.message || "incomplete"}`);
++                    return;
++                }
++                console.warn(`[mocha-remote-ws] parse_skip bytes=${this._inboundBuffer.length} err=${parsed.error?.message || "parse failed"}`);
++                this._inboundBuffer = "";
++                return;
++            }
++            this._inboundBuffer = "";
++            const msg = parsed.value;
+             try {
+-                const msg = (0, serialization_1.deserialize)(message);
+                 if (typeof msg.action !== "string") {
+                     throw new Error("Expected message to have an action property");
+                 }
+@@ -130,6 +171,18 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
                          throw new Error("Received a message from the client, but server wasn't running");
                      }
                  }
@@ -71,11 +106,12 @@ index ad9debe2086ab9b96e97a69aec966da8114ad102..ab83f1603bed6bf1d1bc8f58263f9161
                  else if (msg.action === "error") {
                      if (typeof msg.message !== "string") {
                          throw new Error("Expected 'error' action to have an error argument with a message");
-@@ -152,10 +181,43 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
+@@ -152,10 +205,45 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
                  }
              }
          };
 +        this.handleClientDisconnect = (code) => {
++            this._inboundBuffer = "";
 +            const transientCodes = [1006, 1001];
 +            const graceMs = this.config.reconnectGraceMs ?? 30000;
 +            if (this.runner && transientCodes.includes(code)) {
@@ -112,10 +148,11 @@ index ad9debe2086ab9b96e97a69aec966da8114ad102..ab83f1603bed6bf1d1bc8f58263f9161
 +                this._clientResetTimer = null;
 +            }
 +            this._awaitingInitialClientRun = false;
++            this._inboundBuffer = "";
              // Forget everything about the runner and the client
              const { runner, client } = this;
              delete this.runner;
-@@ -263,6 +325,7 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
+@@ -263,6 +351,7 @@ class Server extends ServerEventEmitter_1.ServerEventEmitter {
          // this.runner = new Mocha.Runner(this.suite, this.options.delay || false);
          // TODO: Stub this to match the Runner's interface even better
          this.runner = new FakeRunner_1.FakeRunner();
@@ -123,3 +160,38 @@ index ad9debe2086ab9b96e97a69aec966da8114ad102..ab83f1603bed6bf1d1bc8f58263f9161
          // Attach event listeners to update stats
          (0, stats_collector_1.createStatsCollector)(this.runner);
          // Set the client options, to be passed to the next running client
+diff --git a/dist/serialization.js b/dist/serialization.js
+index b2dd290111197907d125e3151a4a965e9fe0528d..a52262f30458c2d0406e0809252f345ce8a2b60e 100644
+--- a/dist/serialization.js
++++ b/dist/serialization.js
+@@ -45,9 +45,29 @@ function createReviver() {
+     };
+ }
+ exports.createReviver = createReviver;
++function isIncompleteParseError(err) {
++    if (!(err instanceof SyntaxError)) {
++        return false;
++    }
++    const message = err.message || "";
++    return (/Unexpected end of JSON input|Unterminated string in JSON|Unexpected token/.test(message));
++}
++exports.isIncompleteParseError = isIncompleteParseError;
+ function deserialize(text, reviver = createReviver()) {
+     debug("Deserializing %s", text);
+     return flatted_1.default.parse(text, reviver);
+ }
+ exports.deserialize = deserialize;
++function tryDeserialize(text, reviver = createReviver()) {
++    try {
++        return { ok: true, value: deserialize(text, reviver) };
++    }
++    catch (err) {
++        if (err instanceof Error && isIncompleteParseError(err)) {
++            return { ok: false, incomplete: true, error: err };
++        }
++        return { ok: false, incomplete: false, error: err };
++    }
++}
++exports.tryDeserialize = tryDeserialize;
+ //# sourceMappingURL=serialization.js.map
+\ No newline at end of file

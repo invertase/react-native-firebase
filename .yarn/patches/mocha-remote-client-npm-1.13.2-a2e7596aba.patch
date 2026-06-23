@@ -1,16 +1,25 @@
 diff --git a/dist/browser.bundle.mjs b/dist/browser.bundle.mjs
-index eb7d0bd7a2f43daa9124a2171dc708db76e8882e..083fbb440bc9e8494444d829bc410ecef984f695 100644
+index eb7d0bd7a2f43daa9124a2171dc708db76e8882e..20bc994ae6f7f5897882ae2730bd9ea46a865543 100644
 --- a/dist/browser.bundle.mjs
 +++ b/dist/browser.bundle.mjs
-@@ -11324,6 +11324,7 @@ class Client extends ClientEventEmitter {
+@@ -11284,6 +11284,7 @@ class Client extends ClientEventEmitter {
+     _state = ClientState.DISCONNECTED;
+     ws;
+     reconnectTimeout;
++    _outboundQueue = [];
+     constructor(config = {}, debug = Client.nextDebug()) {
+         super(Client.EventEmitter, debug.extend("events"));
+         this.debug = debug;
+@@ -11324,6 +11325,8 @@ class Client extends ClientEventEmitter {
                  // No need to handle connection error now that we're connected
                  ws.removeEventListener("error", handleConnectionError);
                  this.emit("connection", ws);
 +                this.startKeepalive();
++                this.flushOutboundQueue();
                  resolve();
              });
              if (!this.config.autoReconnect) {
-@@ -11517,6 +11518,7 @@ class Client extends ClientEventEmitter {
+@@ -11517,6 +11520,7 @@ class Client extends ClientEventEmitter {
          }
      }
      handleClose = ({ code, reason }) => {
@@ -18,7 +27,7 @@ index eb7d0bd7a2f43daa9124a2171dc708db76e8882e..083fbb440bc9e8494444d829bc410ece
          this.debug(`Connection closed: ${reason || "No reason"} (code=${code})`);
          // Forget about the socket
          delete this.ws;
-@@ -11563,6 +11565,20 @@ class Client extends ClientEventEmitter {
+@@ -11563,6 +11567,20 @@ class Client extends ClientEventEmitter {
                      }
                  });
              }
@@ -39,16 +48,23 @@ index eb7d0bd7a2f43daa9124a2171dc708db76e8882e..083fbb440bc9e8494444d829bc410ece
              else if (msg.action === "error") {
                  if (typeof msg.message === "string") {
                      this.emit("error", new Error(msg.message));
-@@ -11606,6 +11622,8 @@ class Client extends ClientEventEmitter {
+@@ -11605,7 +11623,15 @@ class Client extends ClientEventEmitter {
+             const data = serialize(msg);
              this.ws.send(data);
          }
++        else if (this.config.autoReconnect && this._state !== ClientState.DISCONNECTED && throwOnClosed) {
++            const readyState = this.ws?.readyState ?? "no-socket";
++            const data = serialize(msg);
++            this._outboundQueue.push(data);
++            console.warn(`[mocha-remote-ws] send queued action=${msg.action} readyState=${readyState} queue=${this._outboundQueue.length}`);
++        }
          else if (throwOnClosed) {
 +            const readyState = this.ws?.readyState ?? "no-socket";
 +            console.warn(`[mocha-remote-ws] send failed action=${msg.action} readyState=${readyState}`);
              throw new SendMessageFailure(msg, "WebSocket is closed");
          }
      }
-@@ -11645,6 +11663,77 @@ class Client extends ClientEventEmitter {
+@@ -11645,6 +11671,88 @@ class Client extends ClientEventEmitter {
              },
          };
      }
@@ -120,6 +136,17 @@ index eb7d0bd7a2f43daa9124a2171dc708db76e8882e..083fbb440bc9e8494444d829bc410ece
 +        if (this._keepaliveTimer) {
 +            clearInterval(this._keepaliveTimer);
 +            this._keepaliveTimer = null;
++        }
++    }
++    flushOutboundQueue() {
++        if (!this._outboundQueue.length || !this.ws || this.ws.readyState !== Client.WebSocket.OPEN) {
++            return;
++        }
++        const queue = this._outboundQueue;
++        this._outboundQueue = [];
++        console.warn(`[mocha-remote-ws] flushing outbound queue count=${queue.length}`);
++        for (const data of queue) {
++            this.ws.send(data);
 +        }
 +    }
 +
@@ -127,18 +154,27 @@ index eb7d0bd7a2f43daa9124a2171dc708db76e8882e..083fbb440bc9e8494444d829bc410ece
  
  Client.WebSocket = WebSocket;
 diff --git a/dist/node.bundle.cjs b/dist/node.bundle.cjs
-index a692e25a30f24e8299661c190ec09c3be5e5e2da..08fba4ed4909812c96ddc23e0a63b3a11f3388ac 100644
+index a692e25a30f24e8299661c190ec09c3be5e5e2da..4fff06db5f8d8c679337a689fe54157f169bec32 100644
 --- a/dist/node.bundle.cjs
 +++ b/dist/node.bundle.cjs
-@@ -5661,6 +5661,7 @@ class Client extends ClientEventEmitter {
+@@ -5621,6 +5621,7 @@ class Client extends ClientEventEmitter {
+     _state = exports.ClientState.DISCONNECTED;
+     ws;
+     reconnectTimeout;
++    _outboundQueue = [];
+     constructor(config = {}, debug = Client.nextDebug()) {
+         super(Client.EventEmitter, debug.extend("events"));
+         this.debug = debug;
+@@ -5661,6 +5662,8 @@ class Client extends ClientEventEmitter {
                  // No need to handle connection error now that we're connected
                  ws.removeEventListener("error", handleConnectionError);
                  this.emit("connection", ws);
 +                this.startKeepalive();
++                this.flushOutboundQueue();
                  resolve();
              });
              if (!this.config.autoReconnect) {
-@@ -5854,6 +5855,7 @@ class Client extends ClientEventEmitter {
+@@ -5854,6 +5857,7 @@ class Client extends ClientEventEmitter {
          }
      }
      handleClose = ({ code, reason }) => {
@@ -146,7 +182,7 @@ index a692e25a30f24e8299661c190ec09c3be5e5e2da..08fba4ed4909812c96ddc23e0a63b3a1
          this.debug(`Connection closed: ${reason || "No reason"} (code=${code})`);
          // Forget about the socket
          delete this.ws;
-@@ -5900,6 +5902,20 @@ class Client extends ClientEventEmitter {
+@@ -5900,6 +5904,20 @@ class Client extends ClientEventEmitter {
                      }
                  });
              }
@@ -167,16 +203,23 @@ index a692e25a30f24e8299661c190ec09c3be5e5e2da..08fba4ed4909812c96ddc23e0a63b3a1
              else if (msg.action === "error") {
                  if (typeof msg.message === "string") {
                      this.emit("error", new Error(msg.message));
-@@ -5943,6 +5959,8 @@ class Client extends ClientEventEmitter {
+@@ -5942,7 +5960,15 @@ class Client extends ClientEventEmitter {
+             const data = serialize(msg);
              this.ws.send(data);
          }
++        else if (this.config.autoReconnect && this._state !== ClientState.DISCONNECTED && throwOnClosed) {
++            const readyState = this.ws?.readyState ?? "no-socket";
++            const data = serialize(msg);
++            this._outboundQueue.push(data);
++            console.warn(`[mocha-remote-ws] send queued action=${msg.action} readyState=${readyState} queue=${this._outboundQueue.length}`);
++        }
          else if (throwOnClosed) {
 +            const readyState = this.ws?.readyState ?? "no-socket";
 +            console.warn(`[mocha-remote-ws] send failed action=${msg.action} readyState=${readyState}`);
              throw new SendMessageFailure(msg, "WebSocket is closed");
          }
      }
-@@ -5982,6 +6000,77 @@ class Client extends ClientEventEmitter {
+@@ -5982,6 +6008,88 @@ class Client extends ClientEventEmitter {
              },
          };
      }
@@ -248,6 +291,17 @@ index a692e25a30f24e8299661c190ec09c3be5e5e2da..08fba4ed4909812c96ddc23e0a63b3a1
 +        if (this._keepaliveTimer) {
 +            clearInterval(this._keepaliveTimer);
 +            this._keepaliveTimer = null;
++        }
++    }
++    flushOutboundQueue() {
++        if (!this._outboundQueue.length || !this.ws || this.ws.readyState !== Client.WebSocket.OPEN) {
++            return;
++        }
++        const queue = this._outboundQueue;
++        this._outboundQueue = [];
++        console.warn(`[mocha-remote-ws] flushing outbound queue count=${queue.length}`);
++        for (const data of queue) {
++            this.ws.send(data);
 +        }
 +    }
 +
@@ -255,18 +309,27 @@ index a692e25a30f24e8299661c190ec09c3be5e5e2da..08fba4ed4909812c96ddc23e0a63b3a1
  
  Client.WebSocket = WebSocket;
 diff --git a/dist/node.bundle.mjs b/dist/node.bundle.mjs
-index 77d3d8299505196a826971ba46e0ff14b75c3d0a..373b3a7641a15d4cef6ce2c5b7e29cd1716c5a6b 100644
+index 77d3d8299505196a826971ba46e0ff14b75c3d0a..f0983009d144febeb4dfb2c5cb7c8cfa29789981 100644
 --- a/dist/node.bundle.mjs
 +++ b/dist/node.bundle.mjs
-@@ -5640,6 +5640,7 @@ class Client extends ClientEventEmitter {
+@@ -5600,6 +5600,7 @@ class Client extends ClientEventEmitter {
+     _state = ClientState.DISCONNECTED;
+     ws;
+     reconnectTimeout;
++    _outboundQueue = [];
+     constructor(config = {}, debug = Client.nextDebug()) {
+         super(Client.EventEmitter, debug.extend("events"));
+         this.debug = debug;
+@@ -5640,6 +5641,8 @@ class Client extends ClientEventEmitter {
                  // No need to handle connection error now that we're connected
                  ws.removeEventListener("error", handleConnectionError);
                  this.emit("connection", ws);
 +                this.startKeepalive();
++                this.flushOutboundQueue();
                  resolve();
              });
              if (!this.config.autoReconnect) {
-@@ -5833,6 +5834,7 @@ class Client extends ClientEventEmitter {
+@@ -5833,6 +5836,7 @@ class Client extends ClientEventEmitter {
          }
      }
      handleClose = ({ code, reason }) => {
@@ -274,7 +337,7 @@ index 77d3d8299505196a826971ba46e0ff14b75c3d0a..373b3a7641a15d4cef6ce2c5b7e29cd1
          this.debug(`Connection closed: ${reason || "No reason"} (code=${code})`);
          // Forget about the socket
          delete this.ws;
-@@ -5879,6 +5881,20 @@ class Client extends ClientEventEmitter {
+@@ -5879,6 +5883,20 @@ class Client extends ClientEventEmitter {
                      }
                  });
              }
@@ -295,16 +358,23 @@ index 77d3d8299505196a826971ba46e0ff14b75c3d0a..373b3a7641a15d4cef6ce2c5b7e29cd1
              else if (msg.action === "error") {
                  if (typeof msg.message === "string") {
                      this.emit("error", new Error(msg.message));
-@@ -5922,6 +5938,8 @@ class Client extends ClientEventEmitter {
+@@ -5921,7 +5939,15 @@ class Client extends ClientEventEmitter {
+             const data = serialize(msg);
              this.ws.send(data);
          }
++        else if (this.config.autoReconnect && this._state !== ClientState.DISCONNECTED && throwOnClosed) {
++            const readyState = this.ws?.readyState ?? "no-socket";
++            const data = serialize(msg);
++            this._outboundQueue.push(data);
++            console.warn(`[mocha-remote-ws] send queued action=${msg.action} readyState=${readyState} queue=${this._outboundQueue.length}`);
++        }
          else if (throwOnClosed) {
 +            const readyState = this.ws?.readyState ?? "no-socket";
 +            console.warn(`[mocha-remote-ws] send failed action=${msg.action} readyState=${readyState}`);
              throw new SendMessageFailure(msg, "WebSocket is closed");
          }
      }
-@@ -5961,6 +5979,77 @@ class Client extends ClientEventEmitter {
+@@ -5961,6 +5987,88 @@ class Client extends ClientEventEmitter {
              },
          };
      }
@@ -376,6 +446,17 @@ index 77d3d8299505196a826971ba46e0ff14b75c3d0a..373b3a7641a15d4cef6ce2c5b7e29cd1
 +        if (this._keepaliveTimer) {
 +            clearInterval(this._keepaliveTimer);
 +            this._keepaliveTimer = null;
++        }
++    }
++    flushOutboundQueue() {
++        if (!this._outboundQueue.length || !this.ws || this.ws.readyState !== Client.WebSocket.OPEN) {
++            return;
++        }
++        const queue = this._outboundQueue;
++        this._outboundQueue = [];
++        console.warn(`[mocha-remote-ws] flushing outbound queue count=${queue.length}`);
++        for (const data of queue) {
++            this.ws.send(data);
 +        }
 +    }
 +
