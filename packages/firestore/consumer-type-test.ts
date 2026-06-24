@@ -231,6 +231,7 @@ import {
   timestampAdd,
   timestampDiff,
   timestampExtract,
+  subcollection,
   timestampSubtract,
   timestampToUnixMicros,
   timestampToUnixMillis,
@@ -281,6 +282,7 @@ import type {
   SampleStageOptions,
   SelectStageOptions,
   SortStageOptions,
+  SubcollectionStageOptions,
   UnionStageOptions,
   UnnestStageOptions,
   WhereStageOptions,
@@ -1116,6 +1118,7 @@ type _AllPipelineTypes = [
   SampleStageOptions,
   SelectStageOptions,
   SortStageOptions,
+  SubcollectionStageOptions,
   UnionStageOptions,
   UnnestStageOptions,
   WhereStageOptions,
@@ -1580,6 +1583,15 @@ void timestampExtract('eventTime', field('partColumn'));
 void timestampExtract(field('eventTime'), field('partColumn'));
 void timestampExtract(field('eventTime'), 'day', 'UTC');
 void timestampExtract(field('eventTime'), 'year', field('timezone'));
+// subcollection: (path) | (SubcollectionStageOptions)
+void subcollection('reviews');
+void subcollection({ path: 'reviews' });
+void subcollection({ path: 'reviews', rawOptions: {} });
+const subcollectionOpts: SubcollectionStageOptions = { path: 'reviews' };
+void subcollectionOpts;
+// toScalarExpression / toArrayExpression on detached pipelines
+void subcollection('reviews').aggregate(countAll().as('total')).toScalarExpression();
+void subcollection('reviews').select('rating').toArrayExpression();
 // timestampToUnixMicros: (Expression) | (string)
 void timestampToUnixMicros(field('ts'));
 void timestampToUnixMicros('ts');
@@ -1886,6 +1898,10 @@ const pipelineTimestampOps = xDb
     timestampDiff('endTime', 'startTime', 'hour').as('hoursApart'),
     timestampExtract(field('eventTime'), 'year').as('eventYear'),
     timestampExtract('eventTime', 'month').as('eventMonth'),
+    subcollection('reviews')
+      .aggregate(countAll().as('reviewCount'))
+      .toScalarExpression()
+      .as('reviewSummary'),
     timestampToUnixMillis(field('eventTime')).as('eventTimeMs'),
     timestampToUnixMillis('eventTime').as('eventTimeMs2'),
     timestampToUnixSeconds(field('eventTime')).as('eventTimeSec'),

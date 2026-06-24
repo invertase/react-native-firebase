@@ -30,7 +30,8 @@ export type ExpressionType =
   | 'Function'
   | 'AggregateFunction'
   | 'ListOfExpressions'
-  | 'AliasedExpression';
+  | 'AliasedExpression'
+  | 'PipelineValue';
 
 /**
  * @beta
@@ -637,6 +638,22 @@ function createVariable(name: unknown): RuntimeExpressionFluentNode & VariableEx
   });
 }
 
+/** @internal Wraps a pipeline in a scalar or array subquery function expression. */
+export function createPipelineSubqueryExpression(
+  kind: 'scalar' | 'array',
+  pipeline: unknown,
+): FunctionExpression {
+  const pipelineValue = createNode(expressionProto, {
+    [RUNTIME_NODE_SYMBOL]: true,
+    __kind: 'expression',
+    exprType: 'PipelineValue',
+    selectable: true,
+    pipeline,
+  });
+
+  return createFunctionExpression(kind, [pipelineValue]);
+}
+
 function normalizeMapLikeValue(value: Record<string, unknown>): Record<string, unknown> {
   const output: Record<string, unknown> = {};
 
@@ -916,10 +933,7 @@ function createMethodResult(
     ]);
   }
 
-  if (
-    (canonicalName === 'currentTimestamp' || canonicalName === 'rand') &&
-    rawArgs.length === 0
-  ) {
+  if ((canonicalName === 'currentTimestamp' || canonicalName === 'rand') && rawArgs.length === 0) {
     return createFunctionExpression(canonicalName, []);
   }
 
@@ -1664,10 +1678,7 @@ export function ifAbsent(
 export function ifNull(_ifExpr: Expression, _elseExpr: Expression): FunctionExpression;
 export function ifNull(_ifExpr: Expression, _elseValue: unknown): FunctionExpression;
 export function ifNull(_ifFieldName: string, _elseExpr: Expression): FunctionExpression;
-export function ifNull(
-  _ifFieldName: string,
-  _elseValue: Expression | unknown,
-): FunctionExpression;
+export function ifNull(_ifFieldName: string, _elseValue: Expression | unknown): FunctionExpression;
 export function ifNull(
   _ifFieldName: string | Expression,
   _elseValue: Expression | unknown,

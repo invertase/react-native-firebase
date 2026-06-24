@@ -38,11 +38,6 @@ const config: PackageConfig = {
         'Newer firebase-js-sdk search score expression helper not yet exposed by RN Firebase pipelines.',
     },
     {
-      name: 'subcollection',
-      reason:
-        'Newer firebase-js-sdk subcollection stage helper not yet exposed by RN Firebase pipelines.',
-    },
-    {
       name: 'DefineStageOptions',
       reason: 'Newer firebase-js-sdk stage options type not yet exposed by RN Firebase pipelines.',
     },
@@ -54,11 +49,6 @@ const config: PackageConfig = {
       name: 'SearchStageOptions',
       reason:
         'Newer firebase-js-sdk search stage options type not yet exposed by RN Firebase pipelines.',
-    },
-    {
-      name: 'SubcollectionStageOptions',
-      reason:
-        'Newer firebase-js-sdk subcollection stage options type not yet exposed by RN Firebase pipelines.',
     },
   ],
   extraInRN: [
@@ -82,7 +72,7 @@ const config: PackageConfig = {
     {
       name: 'ExpressionType',
       reason:
-        'RN Firebase has not yet exposed the newer firebase-js-sdk `PipelineValue` expression kind.',
+        'Declaration member ordering differs from the firebase-js-sdk file, but the same expression kinds are supported (including `PipelineValue`).',
     },
     {
       name: 'StageOptions',

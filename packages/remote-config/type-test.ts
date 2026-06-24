@@ -52,9 +52,8 @@ const typedConfigDefaults: Record<string, string | number | boolean> = {
 };
 const typedConfigValue: Value = getValue(typedRemoteConfig, 'typed');
 const typedConfigValues: Record<string, Value> = getAll(typedRemoteConfig);
-const typedLegacyConfigValue: FirebaseRemoteConfigTypes.ConfigValue = remoteConfig().getValue(
-  'typed',
-);
+const typedLegacyConfigValue: FirebaseRemoteConfigTypes.ConfigValue =
+  remoteConfig().getValue('typed');
 const typedLegacyConfigValues: FirebaseRemoteConfigTypes.ConfigValues = remoteConfig().getAll();
 const typedCustomSignals: CustomSignals = { signal: 'value', number: 1, reset: null };
 const typedLastFetchStatus: FetchStatus = typedRemoteConfig.lastFetchStatus;

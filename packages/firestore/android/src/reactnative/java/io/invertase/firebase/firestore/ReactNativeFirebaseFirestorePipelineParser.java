@@ -15,7 +15,7 @@ import java.util.Set;
 final class ReactNativeFirebaseFirestorePipelineParser {
   private static final Set<String> SOURCE_TYPES =
       new HashSet<>(
-          Arrays.asList("collection", "collectionGroup", "database", "documents", "query"));
+          Arrays.asList("collection", "collectionGroup", "database", "documents", "query", "subcollection"));
 
   private static final Set<String> KNOWN_STAGES =
       new HashSet<>(
@@ -271,7 +271,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
         readableMapToJava(pipeline), options == null ? null : readableMapToJava(options));
   }
 
-  private static ParsedPipelineRequest parsePipelineMap(
+  static ParsedPipelineRequest parsePipelineMap(
       Map<String, Object> pipeline, Map<String, Object> options)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     ParsedPipelineRequestBox rootBox = new ParsedPipelineRequestBox();
@@ -381,6 +381,10 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             requireArray(source, "filters", "pipeline.source.filters"),
             requireArray(source, "orders", "pipeline.source.orders"),
             requireMap(source, "options", "pipeline.source.options"));
+      case "subcollection":
+        return ParsedPipelineSource.subcollection(
+            requireNonEmptyString(source, "path", "pipeline.source.path"),
+            optionalMap(source, "rawOptions", "pipeline.source.rawOptions"));
       default:
         throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
             "pipelineExecute() received an unknown source type.");
@@ -789,6 +793,12 @@ final class ReactNativeFirebaseFirestorePipelineParser {
 
   private static boolean isExpressionLike(Map<?, ?> map) {
     Object exprType = map.get("exprType");
+    if (exprType instanceof String) {
+      String normalizedType = ((String) exprType).toLowerCase(java.util.Locale.ROOT);
+      if ("pipelinevalue".equals(normalizedType)) {
+        return false;
+      }
+    }
     return exprType instanceof String
         || map.containsKey("operator")
         || map.containsKey("name")
@@ -1087,6 +1097,20 @@ final class ReactNativeFirebaseFirestorePipelineParser {
 
         if (value instanceof Map) {
           Map<?, ?> map = (Map<?, ?>) value;
+          // A PipelineValue is an opaque nested-pipeline subquery (scalar/array).
+          // Preserve the raw map verbatim so the node builder can re-parse the
+          // nested pipeline via parsePipelineMap. Descending into it here would
+          // treat the nested pipeline's stages (e.g. AggregateFunction nodes)
+          // as outer expressions and loop forever.
+          Object exprTypeValue = map.get("exprType");
+          if (exprTypeValue instanceof String) {
+            String normalizedType = ((String) exprTypeValue).toLowerCase(java.util.Locale.ROOT);
+            if ("pipelinevalue".equals(normalizedType)) {
+              enterFrame.box.value = new ParsedPrimitiveValueNode(value);
+              continue;
+            }
+          }
+
           if (isExpressionLike(map)) {
             ParsedExpressionNodeBox expressionBox = new ParsedExpressionNodeBox();
             stack.push(new ExpressionValueExitFrame(enterFrame.box, expressionBox, fieldName));
@@ -1457,6 +1481,11 @@ final class ReactNativeFirebaseFirestorePipelineParser {
         Map<String, Object> options) {
       return new ParsedPipelineSource(
           "query", path, null, null, queryType, filters, orders, options, null);
+    }
+
+    static ParsedPipelineSource subcollection(String path, Map<String, Object> rawOptions) {
+      return new ParsedPipelineSource(
+          "subcollection", path, null, null, null, null, null, null, rawOptions);
     }
   }
 

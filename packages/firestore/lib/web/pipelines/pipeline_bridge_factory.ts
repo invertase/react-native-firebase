@@ -24,8 +24,10 @@ import type {
   Query,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 import type { FirestorePipelineSerializedInternal } from '../../types/internal';
+import * as firebaseFirestorePipelines from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
 import {
   revivePipelineValue,
+  configureWebNestedPipelineRevival,
   type WebPipelineInstance,
   type WebPipelineSource,
 } from './pipeline_node_builder';
@@ -95,6 +97,21 @@ function buildDocumentsSourcePipeline(
 
   return pipelineSource.documents({
     docs: source.documents,
+    ...(isRecord(source.rawOptions) && source.rawOptions ? { rawOptions: source.rawOptions } : {}),
+  }) as WebPipelineInstance;
+}
+
+function buildSubcollectionSourcePipeline(
+  source: Extract<FirestorePipelineSerializedInternal['source'], { source: 'subcollection' }>,
+): WebPipelineInstance | undefined {
+  const subcollectionFactory = (firebaseFirestorePipelines as Record<string, unknown>)
+    .subcollection;
+  if (typeof subcollectionFactory !== 'function') {
+    return undefined;
+  }
+
+  return subcollectionFactory({
+    path: source.path,
     ...(isRecord(source.rawOptions) && source.rawOptions ? { rawOptions: source.rawOptions } : {}),
   }) as WebPipelineInstance;
 }
@@ -313,6 +330,9 @@ function buildSourcePipeline(
     case 'documents':
       currentPipeline = buildDocumentsSourcePipeline(pipelineSource, source);
       break;
+    case 'subcollection':
+      currentPipeline = buildSubcollectionSourcePipeline(source);
+      break;
     case 'query':
       currentPipeline = buildQuerySourcePipeline(firestore, pipelineSource, source);
       break;
@@ -347,6 +367,10 @@ export function buildWebSdkPipeline(
   firestore: Firestore,
   request: Pick<WebParsedPipelineRequest, 'pipeline'>,
 ): WebPipelineInstance {
+  configureWebNestedPipelineRevival(firestore, (nestedFirestore, nestedPipeline) =>
+    buildWebSdkPipeline(nestedFirestore, { pipeline: nestedPipeline }),
+  );
+
   const pipelineFactory = (firestore as { pipeline?: () => unknown }).pipeline;
   if (typeof pipelineFactory !== 'function') {
     throw createPipelineRuntimeImportError(

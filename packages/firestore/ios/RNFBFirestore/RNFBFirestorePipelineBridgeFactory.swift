@@ -77,6 +77,22 @@ final class RNFBFirestorePipelineBridgeFactory {
     firestore: Firestore,
     request: RNFBFirestoreParsedPipelineRequest
   ) throws -> [StageBridge] {
+    nodeBuilder.currentFirestore = firestore
+    nodeBuilder.buildNestedPipelineSubquery = { [self] nestedFirestore, pipelineMap, scalar in
+      RNFBFirestorePipelineDebug.log(
+        "buildNestedPipelineSubquery scalar=\(scalar) source=\((pipelineMap["source"] as? [String: Any])?["source"] as? String ?? "nil") stages=\((pipelineMap["stages"] as? [Any])?.count ?? 0)"
+      )
+      let nestedRequest = try RNFBFirestorePipelineParser.parsePipelineMap(pipelineMap)
+      let nestedStages = try self.buildStageBridges(firestore: nestedFirestore, request: nestedRequest)
+      RNFBFirestorePipelineDebug.log(
+        "buildNestedPipelineSubquery built \(nestedStages.count) stage bridge(s) kind=\(scalar ? "scalar" : "array")"
+      )
+      // Mirror the Firebase Swift SDK: `toScalarExpression()`/`toArrayExpression()` wrap the
+      // pipeline's stage bridges in a `PipelineExprBridge` then a `scalar`/`array` function bridge.
+      let pipelineExprBridge = PipelineExprBridge(stages: nestedStages)
+      return FunctionExprBridge(name: scalar ? "scalar" : "array", args: [pipelineExprBridge])
+    }
+
     let rootBox = StageBridgeBox()
     var stack: [StageBridgeFrame] = [
       .enter(request: request, box: rootBox),
@@ -186,6 +202,11 @@ final class RNFBFirestorePipelineBridgeFactory {
       }
 
       return PipelineBridge.createStageBridges(from: query)
+    case "subcollection":
+      guard let path = source.path else {
+        throw PipelineValidationError("pipelineExecute() expected pipeline.source.path to be a non-empty string.")
+      }
+      return [SubcollectionSourceStageBridge(path: path)]
     default:
       throw PipelineValidationError("pipelineExecute() received an unknown source type.")
     }

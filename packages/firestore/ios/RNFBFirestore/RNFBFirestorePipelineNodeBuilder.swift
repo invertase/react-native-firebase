@@ -18,6 +18,9 @@ import Foundation
 import FirebaseFirestore
 
 final class RNFBFirestorePipelineNodeBuilder {
+  var currentFirestore: Firestore?
+  var buildNestedPipelineSubquery: ((Firestore, [String: Any], Bool) throws -> ExprBridge)?
+
   private final class SerializedValueBox {
     var value: Any?
   }
@@ -494,124 +497,6 @@ final class RNFBFirestorePipelineNodeBuilder {
     return value
   }
 
-  private func coerceBooleanFunctionExpression(
-    name: String,
-    args: [Any],
-    fieldName: String
-  ) throws -> ExprBridge {
-    return try coerceBooleanExpression([
-      "name": name,
-      "args": args,
-    ], fieldName: fieldName)
-  }
-
-  // NOTE: iOS pipeline function lowering lives in this builder.
-  //
-  // If a serialized JS pipeline function is not supported by the currently linked
-  // Firebase iOS pipeline runtime, add or document it here first.
-  //
-  // Some functions are intentionally blocked before reaching native on iOS
-  // (see `pipeline_support.ts` / `getIOSUnsupportedPipelineFunctions()`)
-  // because the installed iOS SDK/runtime currently rejects them with
-  // `invalid-argument` even though newer Firebase snippets may show them.
-  // When iOS support becomes available, implement the lowering here and then
-  // remove the corresponding JS-side unsupported-function guard.
-  private func coerceFunctionExpression(
-    name: String,
-    args: [Any],
-    fieldName: String
-  ) throws -> ExprBridge {
-    return try coerceExpression([
-      "name": name,
-      "args": args,
-    ], fieldName: fieldName)
-  }
-
-  private func buildArrayExpression(_ args: [Any], fieldName: String) throws -> ExprBridge {
-    let elements: [Any]
-    if args.count == 1, let unwrapped = try unwrapConstantArray(args[0], fieldName: "\(fieldName).args[0]") {
-      elements = unwrapped
-    } else {
-      elements = args
-    }
-
-    if !elements.contains(where: containsSerializedExpression) {
-      return ConstantBridge(try elements.enumerated().map { index, value in
-        try resolveConstantValue(value, fieldName: "\(fieldName).args[\(index)]")
-      })
-    }
-
-    return FunctionExprBridge(name: "array", args: try elements.enumerated().map { index, value in
-      try coerceExpressionValue(value, fieldName: "\(fieldName).args[\(index)]")
-    })
-  }
-
-  private func buildMapExpression(_ args: [Any], fieldName: String) throws -> ExprBridge {
-    guard args.count == 1 else {
-      throw PipelineValidationError("pipelineExecute() expected \(fieldName).map to include exactly 1 argument.")
-    }
-
-    guard let entries = try unwrapConstantMap(args[0], fieldName: "\(fieldName).args[0]") else {
-      return FunctionExprBridge(name: "map", args: try args.enumerated().map { index, value in
-        try coerceExpressionValue(value, fieldName: "\(fieldName).args[\(index)]")
-      })
-    }
-
-    if !entries.values.contains(where: containsSerializedExpression) {
-      var resolved: [String: Any] = [:]
-      for (key, value) in entries {
-        resolved[key] = try resolveConstantValue(value, fieldName: "\(fieldName).args[0].\(key)")
-      }
-      return ConstantBridge(resolved)
-    }
-
-    var expressionArgs: [ExprBridge] = []
-    for (key, value) in entries {
-      expressionArgs.append(ConstantBridge(key))
-      expressionArgs.append(try coerceExpressionValue(value, fieldName: "\(fieldName).args[0].\(key)"))
-    }
-    return FunctionExprBridge(name: "map", args: expressionArgs)
-  }
-
-  private func coerceBooleanOperatorExpression(
-    map: [String: Any],
-    operatorName: String,
-    fieldName: String
-  ) throws -> ExprBridge {
-    let normalized = operatorName.uppercased()
-    if normalized == "AND" || normalized == "OR" {
-      guard let queries = map["queries"] as? [Any], !queries.isEmpty else {
-        throw PipelineValidationError("pipelineExecute() expected \(fieldName).queries to contain boolean expressions.")
-      }
-
-      let args = try queries.map { try coerceBooleanExpression($0, fieldName: "\(fieldName).queries") }
-      return FunctionExprBridge(name: normalized == "AND" ? "and" : "or", args: args)
-    }
-
-    let fieldValue = map["fieldPath"] ?? map["field"]
-    guard let fieldValue else {
-      throw PipelineValidationError("pipelineExecute() expected \(fieldName).fieldPath to be provided.")
-    }
-
-    let left = FieldBridge(name: try coerceFieldPath(fieldValue, fieldName: "\(fieldName).fieldPath"))
-    let right = map["value"] ?? map["right"] ?? map["operand"] ?? NSNull()
-    let rightExpr = try coerceComparisonOperand(right, fieldName: "\(fieldName).value")
-    let fnName = mapOperatorToFunction(normalized)
-    return FunctionExprBridge(name: fnName, args: [left, rightExpr])
-  }
-
-  private func coerceComparisonOperand(_ value: Any, fieldName: String) throws -> ExprBridge {
-    try coerceExpressionTree(value, fieldName: fieldName, mode: .comparisonOperand)
-  }
-
-  private func coerceExpressionValue(_ value: Any, fieldName: String) throws -> ExprBridge {
-    try coerceExpressionTree(value, fieldName: fieldName, mode: .expressionValue)
-  }
-
-  private func coerceVectorExpressionValue(_ value: Any, fieldName: String) throws -> ExprBridge {
-    try coerceExpressionTree(value, fieldName: fieldName, mode: .vectorExpressionValue)
-  }
-
   private func resolveConstantValue(_ value: Any, fieldName: String) throws -> Any {
     let rootBox = SerializedValueBox()
     var stack: [ConstantResolutionFrame] = [
@@ -995,6 +880,17 @@ final class RNFBFirestorePipelineNodeBuilder {
     return rootBox.value as Any
   }
 
+  // NOTE: iOS pipeline function lowering lives in this builder.
+  //
+  // If a serialized JS pipeline function is not supported by the currently linked
+  // Firebase iOS pipeline runtime, add or document it here first.
+  //
+  // Some functions are intentionally blocked before reaching native on iOS
+  // (see `pipeline_support.ts` / `getIOSUnsupportedPipelineFunctions()`)
+  // because the installed iOS SDK/runtime currently rejects them with
+  // `invalid-argument` even though newer Firebase snippets may show them.
+  // When iOS support becomes available, implement the lowering here and then
+  // remove the corresponding JS-side unsupported-function guard.
   private func coerceExpressionTree(
     _ value: Any,
     fieldName: String,
@@ -1205,6 +1101,15 @@ final class RNFBFirestorePipelineNodeBuilder {
               break expressionLoop
             }
 
+            if let kind = (map["exprType"] as? String)?.lowercased(), kind == "pipelinevalue" {
+              if let pipelineMap = map["pipeline"] as? [String: Any],
+                let firestore = currentFirestore,
+                let builder = buildNestedPipelineSubquery {
+                box.value = try builder(firestore, pipelineMap, true)
+                break expressionLoop
+              }
+            }
+
             if let name = map["name"] as? String {
               let rawArgs: [Any]
               if let args = map["args"] as? [Any] {
@@ -1217,7 +1122,26 @@ final class RNFBFirestorePipelineNodeBuilder {
 
               let normalized = canonicalizeFunctionName(name)
 
+              if normalized == "scalar" {
+                guard rawArgs.count == 1,
+                  let firestore = currentFirestore,
+                  let pipelineMap = extractNestedPipelineMap(rawArgs[0]),
+                  let builder = buildNestedPipelineSubquery else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField) to contain a nested pipeline subquery.")
+                }
+                box.value = try builder(firestore, pipelineMap, true)
+                break expressionLoop
+              }
+
               if normalized == "array" {
+                if rawArgs.count == 1, let pipelineMap = extractNestedPipelineMap(rawArgs[0]),
+                  let firestore = currentFirestore,
+                  let builder = buildNestedPipelineSubquery {
+                  box.value = try builder(firestore, pipelineMap, false)
+                  break expressionLoop
+                }
+
                 let elements: [Any]
                 if rawArgs.count == 1,
                   let unwrapped = try unwrapConstantArray(rawArgs[0], fieldName: "\(currentField).args[0]") {
@@ -1939,6 +1863,22 @@ final class RNFBFirestorePipelineNodeBuilder {
     }
 
     return rootBox.value as Any
+  }
+
+  private func extractNestedPipelineMap(_ value: Any) -> [String: Any]? {
+    guard let map = value as? [String: Any] else {
+      return nil
+    }
+
+    if let pipeline = map["pipeline"] as? [String: Any] {
+      return pipeline
+    }
+
+    if map["source"] != nil, map["stages"] != nil {
+      return map
+    }
+
+    return nil
   }
 
   private func coerceNumber(_ value: Any, fieldName: String) throws -> Double {

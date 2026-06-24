@@ -240,7 +240,10 @@ function binaryCompare(
   });
 }
 
-function nullaryGlobal(method: 'currentTimestamp' | 'rand', fluentTarget: pipelines.Field): FluentParityCase {
+function nullaryGlobal(
+  method: 'currentTimestamp' | 'rand',
+  fluentTarget: pipelines.Field,
+): FluentParityCase {
   return createCase({
     category: 'nullary-global',
     method,
@@ -549,7 +552,8 @@ export function buildFluentParityCases(): FluentParityCase[] {
       category: 'array-field',
       method: 'arrayTransform',
       expectedName: 'arrayTransform',
-      global: () => pipelines.arrayTransform(scores, 'score', pipelines.add(pipelines.variable('score'), 1)),
+      global: () =>
+        pipelines.arrayTransform(scores, 'score', pipelines.add(pipelines.variable('score'), 1)),
       fluent: () =>
         fluent(scores).arrayTransform('score', pipelines.add(pipelines.variable('score'), 1)),
     }),

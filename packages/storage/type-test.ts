@@ -226,17 +226,13 @@ listAll(modularRef1).then((result: ListResult) => {
   console.log(result.items);
 });
 
-updateMetadata(modularRef1, { cacheControl: 'no-cache' }).then(
-  (metadata: FullMetadata) => {
-    console.log(metadata);
-  },
-);
+updateMetadata(modularRef1, { cacheControl: 'no-cache' }).then((metadata: FullMetadata) => {
+  console.log(metadata);
+});
 
-uploadBytes(modularRef1, new Blob(), { cacheControl: 'no-cache' }).then(
-  (result: TaskResult) => {
-    console.log(result);
-  },
-);
+uploadBytes(modularRef1, new Blob(), { cacheControl: 'no-cache' }).then((result: TaskResult) => {
+  console.log(result);
+});
 
 const modularUploadBytesResumable = uploadBytesResumable(modularRef1, new Blob(), {
   cacheControl: 'no-cache',

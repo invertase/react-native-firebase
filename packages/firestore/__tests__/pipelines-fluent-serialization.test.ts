@@ -51,8 +51,14 @@ describe('pipelines fluent serialization parity', function () {
     'serializes %s (%s) global helper the same as fluent method',
     function (_method, category, entry) {
       expect(entry.category).toBe(category);
-      const globalSelection = selectSelection(db, (entry.global() as any).as(`${entry.method}Global`));
-      const fluentSelection = selectSelection(db, (entry.fluent() as any).as(`${entry.method}Fluent`));
+      const globalSelection = selectSelection(
+        db,
+        (entry.global() as any).as(`${entry.method}Global`),
+      );
+      const fluentSelection = selectSelection(
+        db,
+        (entry.fluent() as any).as(`${entry.method}Fluent`),
+      );
 
       expect(normalizeSelection(globalSelection)).toEqual(normalizeSelection(fluentSelection));
     },
@@ -67,11 +73,9 @@ describe('pipelines fluent serialization parity', function () {
   it('serializes switchOn only as a global helper', function () {
     const globalSelection = selectSelection(
       db,
-      switchOn(
-        equal(field('status'), constant(1)),
-        constant('Active'),
-        constant('Unknown'),
-      ).as('statusLabel'),
+      switchOn(equal(field('status'), constant(1)), constant('Active'), constant('Unknown')).as(
+        'statusLabel',
+      ),
     );
 
     expect(normalizeSelection(globalSelection)).toMatchObject({
