@@ -111,6 +111,8 @@ curl -X DELETE \
 
 **Critical:** `Pipeline.e2e.js` uses `getFirestore('pipelines-e2e')`. Because `connectFirestoreEmulator` is **not** called for that database, pipeline `execute()` talks to **live cloud**. Connecting it to the local Standard emulator breaks tests (`permission-denied` / `invalid-argument`).
 
+**Why not emulator for pipelines:** RNFB tried hosting pipeline e2e on the emulator alongside `(default)` / `second-rnfb`. The emulator serves one rules/index bundle for `(default)` and does not model multiple cloud databases faithfully — mixing in Enterprise pipeline work broke **security-rules testing** for Standard Firestore e2e. `pipelines-e2e` was split out: dedicated **`firestore.pipelines-e2e.rules`** + **`firestore.pipelines-e2e.indexes.json`**, cloud deploy only (see `firebase.json` array — only `(default)` and `pipelines-e2e`).
+
 Pipelines require Enterprise; the emulator defaults to Standard unless `firebase.json` sets `"edition": "enterprise"` under `firestore` or `emulators.firestore`. RNFB does not enable Enterprise emulator mode today.
 
 See also [Firestore Pipelines design](/packages/firestore/pipelines.md) for bridge/coercion and coverage notes.
@@ -194,6 +196,8 @@ For **pipeline-only** debugging, `tests/app.js` may be temporarily scoped to `Pi
 | Topic | Learning |
 |-------|----------|
 | Pipelines backend | Cloud Enterprise `pipelines-e2e`, not emulator |
+| **Why pipelines split from emulator** | Emulator multi-database + shared rules bundle broke Standard e2e security-rules testing; `pipelines-e2e` moved to dedicated cloud rules/indexes files |
+| `second-rnfb` on emulator | Same `firestore.rules` file with `database == "second-rnfb"` guards — not a separate `firebase.json` deploy entry |
 | `helpers.wipe()` | Emulator REST only; does not clear cloud `pipelines-e2e` |
 | Index deploy safety | Pull `(default)` indexes before `deploy-firestore.sh` |
 | Multi-DB deploy | Use `--only firestore`, not `:indexes` / `:rules` sub-targets |
