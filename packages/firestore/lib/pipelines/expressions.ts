@@ -26,6 +26,7 @@ import type { Bytes } from '../modular/Bytes';
 export type ExpressionType =
   | 'Field'
   | 'Constant'
+  | 'Variable'
   | 'Function'
   | 'AggregateFunction'
   | 'ListOfExpressions'
@@ -108,6 +109,25 @@ interface FluentExpressionMethods {
   sum(): AggregateFunction;
   arrayAgg(): AggregateFunction;
   arrayAggDistinct(): AggregateFunction;
+  arrayFilter(alias: string, filter: BooleanExpression): FunctionExpression;
+  arrayTransform(elementAlias: string, transform: Expression): FunctionExpression;
+  arrayTransformWithIndex(
+    elementAlias: string,
+    indexAlias: string,
+    transform: Expression,
+  ): FunctionExpression;
+  arraySlice(offset: number | Expression, length?: number | Expression): FunctionExpression;
+  arrayFirst(): FunctionExpression;
+  arrayFirstN(n: number | Expression): FunctionExpression;
+  arrayLast(): FunctionExpression;
+  arrayLastN(n: number | Expression): FunctionExpression;
+  arrayMaximum(): FunctionExpression;
+  arrayMaximumN(n: number | Expression): FunctionExpression;
+  arrayMinimum(): FunctionExpression;
+  arrayMinimumN(n: number | Expression): FunctionExpression;
+  arrayIndexOf(search: unknown): FunctionExpression;
+  arrayLastIndexOf(search: unknown): FunctionExpression;
+  arrayIndexOfAll(search: unknown): FunctionExpression;
 }
 
 export interface BooleanExpression extends Selectable, FluentExpressionMethods {
@@ -149,9 +169,23 @@ export interface ConstantExpression extends FluentExpressionMethods {
 
 /**
  * @beta
+ * Variable expression returned by `variable(...)`.
+ */
+export interface VariableExpression extends Selectable, FluentExpressionMethods {
+  readonly _brand?: 'VariableExpression';
+}
+
+/**
+ * @beta
  * Expression type for pipeline parameters (field refs, literals, function results).
  */
-export type Expression = Field | FunctionExpression | ConstantExpression | Selectable | string;
+export type Expression =
+  | Field
+  | FunctionExpression
+  | ConstantExpression
+  | VariableExpression
+  | Selectable
+  | string;
 
 /**
  * @beta
@@ -257,6 +291,7 @@ type BooleanExpressionNode = RuntimeExpressionNode & RuntimeExpressionMethods & 
 type RuntimeExpressionFluentNode =
   | (RuntimeExpressionNode & RuntimeExpressionMethods & Field)
   | (RuntimeExpressionNode & RuntimeExpressionMethods & FunctionExpression)
+  | (RuntimeExpressionNode & RuntimeExpressionMethods & VariableExpression)
   | BooleanExpressionNode
   | ConstantExpressionNode;
 type FieldNode = RuntimeExpressionFluentNode & Field;
@@ -379,6 +414,7 @@ const EXPRESSION_METHOD_NAMES = [
   'arrayContains',
   'arrayContainsAny',
   'arrayContainsAll',
+  'arrayFilter',
   'startsWith',
   'endsWith',
   'add',
@@ -410,6 +446,20 @@ const EXPRESSION_METHOD_NAMES = [
   'trim',
   'substring',
   'arrayAggDistinct',
+  'arrayTransform',
+  'arrayTransformWithIndex',
+  'arraySlice',
+  'arrayFirst',
+  'arrayFirstN',
+  'arrayLast',
+  'arrayLastN',
+  'arrayMaximum',
+  'arrayMaximumN',
+  'arrayMinimum',
+  'arrayMinimumN',
+  'arrayIndexOf',
+  'arrayLastIndexOf',
+  'arrayIndexOfAll',
   'arrayConcat',
   'arrayGet',
   'arrayLength',
@@ -473,6 +523,7 @@ const EXPRESSION_METHOD_NAMES = [
   'unixSecondsToTimestamp',
   'vectorLength',
   'xor',
+  'nor',
   'length',
 ] as const;
 
@@ -540,11 +591,28 @@ function createField(path: unknown): FieldNode {
 }
 
 function createConstant(value: unknown): ConstantExpressionNode {
-  return createNode(expressionProto, {
+  const node = createNode(expressionProto, {
     [RUNTIME_NODE_SYMBOL]: true,
     __kind: 'expression',
     exprType: 'Constant',
     value,
+  }) as ConstantExpressionNode;
+
+  if (typeof value === 'number' && Number.isInteger(value)) {
+    // iOS RN bridge can coerce 0/1 integer constants to booleans; tag explicit integers.
+    (node as unknown as Record<string, unknown>).integerLiteral = true;
+  }
+
+  return node;
+}
+
+function createVariable(name: unknown): RuntimeExpressionFluentNode & VariableExpression {
+  return createNode(expressionProto, {
+    [RUNTIME_NODE_SYMBOL]: true,
+    __kind: 'expression',
+    exprType: 'Variable',
+    selectable: true,
+    name: String(name ?? ''),
   });
 }
 
@@ -691,6 +759,20 @@ function normalizeGlobalArguments(name: string, args: unknown[]): RuntimeNode[] 
     case 'toUpper':
     case 'trim':
     case 'substring':
+    case 'arrayTransform':
+    case 'arrayTransformWithIndex':
+    case 'arraySlice':
+    case 'arrayFirst':
+    case 'arrayFirstN':
+    case 'arrayLast':
+    case 'arrayLastN':
+    case 'arrayMaximum':
+    case 'arrayMaximumN':
+    case 'arrayMinimum':
+    case 'arrayMinimumN':
+    case 'arrayIndexOf':
+    case 'arrayLastIndexOf':
+    case 'arrayIndexOfAll':
     case 'arrayGet':
     case 'arrayLength':
     case 'arraySum':
@@ -765,6 +847,7 @@ function normalizeGlobalArguments(name: string, args: unknown[]): RuntimeNode[] 
     case 'arrayContains':
     case 'arrayContainsAny':
     case 'arrayContainsAll':
+    case 'arrayFilter':
     case 'sum':
     case 'count':
     case 'average':
@@ -793,6 +876,14 @@ function createMethodResult(
 
   if (AGGREGATE_KINDS.has(canonicalName)) {
     return createAggregate(canonicalName, [base, ...rawArgs.map(arg => toExpressionArgument(arg))]);
+  }
+
+  if (canonicalName === 'arrayIndexOf' || canonicalName === 'arrayLastIndexOf') {
+    return createFunctionExpression(canonicalName, [
+      base,
+      toExpressionArgument(rawArgs[0]),
+      createConstant(canonicalName === 'arrayIndexOf' ? 'first' : 'last'),
+    ]);
   }
 
   return createFunctionExpression(canonicalName, [
@@ -837,6 +928,14 @@ function callExpressionHelper(name: string, argsLike: IArguments): FunctionExpre
  */
 export function field(_path: string): Field {
   return createField(_path);
+}
+
+/**
+ * @beta
+ * Returns a variable reference for alias-bound pipeline expressions.
+ */
+export function variable(_name: string): Expression {
+  return createVariable(_name);
 }
 
 /**
@@ -996,6 +1095,28 @@ export function arrayContainsAll(
   _values: Array<Expression | unknown>,
 ): BooleanExpression {
   return callBooleanHelper('arrayContainsAll', arguments);
+}
+
+/**
+ * @beta
+ * Filters an array using a provided alias and predicate expression.
+ */
+export function arrayFilter(
+  _fieldName: string,
+  _alias: string,
+  _filter: BooleanExpression,
+): FunctionExpression;
+export function arrayFilter(
+  _arrayExpression: Expression,
+  _alias: string,
+  _filter: BooleanExpression,
+): FunctionExpression;
+export function arrayFilter(
+  _arrayOrField: string | Expression,
+  _alias: string,
+  _filter: BooleanExpression,
+): FunctionExpression {
+  return callFunctionHelper('arrayFilter', arguments);
 }
 
 /**
@@ -1607,6 +1728,190 @@ export function arrayGet(
   _offset: number | Expression,
 ): FunctionExpression {
   return callFunctionHelper('arrayGet', arguments);
+}
+
+export function arrayTransform(
+  _arrayExpression: Expression,
+  _elementAlias: string,
+  _transform: Expression,
+): FunctionExpression;
+export function arrayTransform(
+  _arrayField: string,
+  _elementAlias: string,
+  _transform: Expression,
+): FunctionExpression;
+export function arrayTransform(
+  _arrayOrField: string | Expression,
+  _elementAlias: string,
+  _transform: Expression,
+): FunctionExpression {
+  return callFunctionHelper('arrayTransform', arguments);
+}
+
+export function arrayTransformWithIndex(
+  _arrayExpression: Expression,
+  _elementAlias: string,
+  _indexAlias: string,
+  _transform: Expression,
+): FunctionExpression;
+export function arrayTransformWithIndex(
+  _arrayField: string,
+  _elementAlias: string,
+  _indexAlias: string,
+  _transform: Expression,
+): FunctionExpression;
+export function arrayTransformWithIndex(
+  _arrayOrField: string | Expression,
+  _elementAlias: string,
+  _indexAlias: string,
+  _transform: Expression,
+): FunctionExpression {
+  return callFunctionHelper('arrayTransformWithIndex', arguments);
+}
+
+export function arraySlice(
+  _arrayField: string,
+  _offset: number | Expression,
+  _length?: number | Expression,
+): FunctionExpression;
+export function arraySlice(
+  _arrayExpression: Expression,
+  _offset: number | Expression,
+  _length?: number | Expression,
+): FunctionExpression;
+export function arraySlice(
+  _arrayOrField: string | Expression,
+  _offset: number | Expression,
+  _length?: number | Expression,
+): FunctionExpression {
+  return callFunctionHelper('arraySlice', arguments);
+}
+
+export function arrayFirst(_arrayField: string): FunctionExpression;
+export function arrayFirst(_arrayExpression: Expression): FunctionExpression;
+export function arrayFirst(_arrayOrField: string | Expression): FunctionExpression {
+  return callFunctionHelper('arrayFirst', arguments);
+}
+
+export function arrayFirstN(_arrayField: string, _n: number): FunctionExpression;
+export function arrayFirstN(_arrayField: string, _n: Expression): FunctionExpression;
+export function arrayFirstN(
+  _arrayExpression: Expression,
+  _n: number | Expression,
+): FunctionExpression;
+export function arrayFirstN(
+  _arrayOrField: string | Expression,
+  _n: number | Expression,
+): FunctionExpression {
+  return callFunctionHelper('arrayFirstN', arguments);
+}
+
+export function arrayLast(_arrayField: string): FunctionExpression;
+export function arrayLast(_arrayExpression: Expression): FunctionExpression;
+export function arrayLast(_arrayOrField: string | Expression): FunctionExpression {
+  return callFunctionHelper('arrayLast', arguments);
+}
+
+export function arrayLastN(_arrayField: string, _n: number): FunctionExpression;
+export function arrayLastN(_arrayField: string, _n: Expression): FunctionExpression;
+export function arrayLastN(
+  _arrayExpression: Expression,
+  _n: number | Expression,
+): FunctionExpression;
+export function arrayLastN(
+  _arrayOrField: string | Expression,
+  _n: number | Expression,
+): FunctionExpression {
+  return callFunctionHelper('arrayLastN', arguments);
+}
+
+export function arrayMaximum(_arrayField: string): FunctionExpression;
+export function arrayMaximum(_arrayExpression: Expression): FunctionExpression;
+export function arrayMaximum(_arrayOrField: string | Expression): FunctionExpression {
+  return callFunctionHelper('arrayMaximum', arguments);
+}
+
+export function arrayMaximumN(_arrayField: string, _n: number): FunctionExpression;
+export function arrayMaximumN(_arrayField: string, _n: Expression): FunctionExpression;
+export function arrayMaximumN(
+  _arrayExpression: Expression,
+  _n: number | Expression,
+): FunctionExpression;
+export function arrayMaximumN(
+  _arrayOrField: string | Expression,
+  _n: number | Expression,
+): FunctionExpression {
+  return callFunctionHelper('arrayMaximumN', arguments);
+}
+
+export function arrayMinimum(_arrayField: string): FunctionExpression;
+export function arrayMinimum(_arrayExpression: Expression): FunctionExpression;
+export function arrayMinimum(_arrayOrField: string | Expression): FunctionExpression {
+  return callFunctionHelper('arrayMinimum', arguments);
+}
+
+export function arrayMinimumN(_arrayField: string, _n: number): FunctionExpression;
+export function arrayMinimumN(_arrayField: string, _n: Expression): FunctionExpression;
+export function arrayMinimumN(
+  _arrayExpression: Expression,
+  _n: number | Expression,
+): FunctionExpression;
+export function arrayMinimumN(
+  _arrayOrField: string | Expression,
+  _n: number | Expression,
+): FunctionExpression {
+  return callFunctionHelper('arrayMinimumN', arguments);
+}
+
+export function arrayIndexOf(
+  _arrayField: string,
+  _search: unknown | Expression,
+): FunctionExpression;
+export function arrayIndexOf(
+  _arrayExpression: Expression,
+  _search: unknown | Expression,
+): FunctionExpression;
+export function arrayIndexOf(
+  _arrayOrField: string | Expression,
+  _search: unknown,
+): FunctionExpression {
+  return createFunctionExpression('arrayIndexOf', [
+    ...normalizeGlobalArguments('arrayIndexOf', Array.from(arguments).slice(0, 2)),
+    createConstant('first'),
+  ]);
+}
+
+export function arrayLastIndexOf(
+  _arrayField: string,
+  _search: unknown | Expression,
+): FunctionExpression;
+export function arrayLastIndexOf(
+  _arrayExpression: Expression,
+  _search: unknown | Expression,
+): FunctionExpression;
+export function arrayLastIndexOf(
+  _arrayOrField: string | Expression,
+  _search: unknown,
+): FunctionExpression {
+  return createFunctionExpression('arrayLastIndexOf', [
+    ...normalizeGlobalArguments('arrayLastIndexOf', Array.from(arguments).slice(0, 2)),
+    createConstant('last'),
+  ]);
+}
+
+export function arrayIndexOfAll(
+  _arrayField: string,
+  _search: unknown | Expression,
+): FunctionExpression;
+export function arrayIndexOfAll(
+  _arrayExpression: Expression,
+  _search: unknown | Expression,
+): FunctionExpression;
+export function arrayIndexOfAll(
+  _arrayOrField: string | Expression,
+  _search: unknown,
+): FunctionExpression {
+  return callFunctionHelper('arrayIndexOfAll', arguments);
 }
 
 /**
@@ -2308,6 +2613,14 @@ export function xor(
   ..._additionalConditions: BooleanExpression[]
 ): BooleanExpression {
   return callBooleanHelper('xor', arguments);
+}
+
+export function nor(
+  _first: BooleanExpression,
+  _second: BooleanExpression,
+  ..._additionalConditions: BooleanExpression[]
+): BooleanExpression {
+  return callBooleanHelper('nor', arguments);
 }
 
 /**

@@ -110,6 +110,13 @@ export interface FirestorePipelineConstantExpressionInternal {
   value: FirestorePipelineSerializedValueInternal;
 }
 
+/** Serialized variable expression node passed to native pipeline execute bridge. */
+export interface FirestorePipelineVariableExpressionInternal {
+  __kind?: 'expression';
+  exprType: 'Variable';
+  name: string;
+}
+
 /** Serialized function expression node passed to native pipeline execute bridge. */
 export interface FirestorePipelineFunctionExpressionInternal {
   __kind?: 'expression';
@@ -160,6 +167,7 @@ export interface FirestorePipelineAliasedAggregateInternal {
 export type FirestorePipelineExpressionInternal =
   | FirestorePipelineFieldExpressionInternal
   | FirestorePipelineConstantExpressionInternal
+  | FirestorePipelineVariableExpressionInternal
   | FirestorePipelineFunctionExpressionInternal;
 
 export type FirestorePipelineSelectableInternal =

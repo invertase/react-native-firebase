@@ -409,6 +409,27 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     }
   }
 
+  private static final class ExitReceiverArrayFirstNFrame implements ObjectLoweringFrame {
+    final LoweredExpressionBox box;
+    final List<PendingReceiverOperation> pendingOperations;
+    final int nextIndex;
+    final Expression currentExpression;
+    final LoweredExpressionBox countBox;
+
+    ExitReceiverArrayFirstNFrame(
+        LoweredExpressionBox box,
+        List<PendingReceiverOperation> pendingOperations,
+        int nextIndex,
+        Expression currentExpression,
+        LoweredExpressionBox countBox) {
+      this.box = box;
+      this.pendingOperations = pendingOperations;
+      this.nextIndex = nextIndex;
+      this.currentExpression = currentExpression;
+      this.countBox = countBox;
+    }
+  }
+
   private static final class ExitReceiverArrayConcatFrame implements ObjectLoweringFrame {
     final LoweredExpressionBox box;
     final List<PendingReceiverOperation> pendingOperations;
@@ -994,6 +1015,22 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             break;
           }
 
+          Object exprType = map.get("exprType");
+          if (exprType instanceof String
+              && "variable".equals(((String) exprType).toLowerCase(Locale.ROOT))) {
+            Object nameValue = map.get("name");
+            if (!(nameValue instanceof String) || ((String) nameValue).isEmpty()) {
+              throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                  "pipelineExecute() expected "
+                      + currentFieldName
+                      + ".name to be a non-empty string.");
+            }
+            enterFrame.box.value =
+                applyPendingUnaryExpressionFunctions(
+                    Expression.variable((String) nameValue), pendingUnaryFunctions);
+            break;
+          }
+
           Object name = map.get("name");
           if (name instanceof String) {
             String functionName = (String) name;
@@ -1022,7 +1059,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             break;
           }
 
-          Object exprType = map.get("exprType");
+          exprType = map.get("exprType");
           if (exprType instanceof String) {
             String normalizedType = ((String) exprType).toLowerCase(Locale.ROOT);
             if ("field".equals(normalizedType)) {
@@ -1540,6 +1577,36 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
                       indexArg, operationFieldName + ".args[1]", indexBox));
               continue;
             }
+          case "arrayfirstn":
+            {
+              Object countArg = args.get(1);
+              if (!containsLowerableExpression(countArg)) {
+                Object countValue = resolveConstantValue(countArg, operationFieldName + ".args[1]");
+                if (countValue instanceof Number) {
+                  stack.push(
+                      new ContinueReceiverExpressionChainFrame(
+                          continueFrame.box,
+                          null,
+                          continueFrame.pendingOperations,
+                          nextIndex,
+                          currentExpression.arrayFirstN(((Number) countValue).intValue())));
+                  continue;
+                }
+              }
+
+              LoweredExpressionBox countBox = new LoweredExpressionBox();
+              stack.push(
+                  new ExitReceiverArrayFirstNFrame(
+                      continueFrame.box,
+                      continueFrame.pendingOperations,
+                      nextIndex,
+                      currentExpression,
+                      countBox));
+              stack.push(
+                  new EnterObjectExpressionValueFrame(
+                      countArg, operationFieldName + ".args[1]", countBox));
+              continue;
+            }
           case "arrayconcat":
             {
               if (args.size() < 2) {
@@ -1768,6 +1835,18 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
                 exitFrame.pendingOperations,
                 exitFrame.nextIndex,
                 exitFrame.currentExpression.arrayGet(exitFrame.indexBox.value)));
+        continue;
+      }
+
+      if (frame instanceof ExitReceiverArrayFirstNFrame) {
+        ExitReceiverArrayFirstNFrame exitFrame = (ExitReceiverArrayFirstNFrame) frame;
+        stack.push(
+            new ContinueReceiverExpressionChainFrame(
+                exitFrame.box,
+                null,
+                exitFrame.pendingOperations,
+                exitFrame.nextIndex,
+                exitFrame.currentExpression.arrayFirstN(exitFrame.countBox.value)));
         continue;
       }
 
@@ -2555,6 +2634,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     return "type".equals(normalizedFunctionName)
         || "collectionid".equals(normalizedFunctionName)
         || "documentid".equals(normalizedFunctionName)
+        || "arrayfirst".equals(normalizedFunctionName)
         || "arraylength".equals(normalizedFunctionName)
         || "arraysum".equals(normalizedFunctionName)
         || "vectorlength".equals(normalizedFunctionName)
@@ -2572,6 +2652,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         || "mapget".equals(normalizedFunctionName)
         || "mapmerge".equals(normalizedFunctionName)
         || "arrayget".equals(normalizedFunctionName)
+        || "arrayfirstn".equals(normalizedFunctionName)
         || "arrayconcat".equals(normalizedFunctionName)
         || "cosinedistance".equals(normalizedFunctionName)
         || "dotproduct".equals(normalizedFunctionName)
@@ -2595,6 +2676,9 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           break;
         case "documentid":
           currentExpression = currentExpression.documentId();
+          break;
+        case "arrayfirst":
+          currentExpression = currentExpression.arrayFirst();
           break;
         case "arraylength":
           currentExpression = currentExpression.arrayLength();
@@ -2742,6 +2826,12 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       case "arrayget":
         requireParsedArgumentCount(args, 2, functionName, fieldName);
         return buildParsedArrayGetExpression(args, fieldName);
+      case "arrayfirst":
+        requireParsedArgumentCount(args, 1, functionName, fieldName);
+        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]").arrayFirst();
+      case "arrayfirstn":
+        requireParsedArgumentCount(args, 2, functionName, fieldName);
+        return buildParsedArrayFirstNExpression(args, fieldName);
       case "arrayconcat":
         return buildParsedArrayConcatExpression(args, functionName, fieldName);
       case "arraysum":
@@ -2957,6 +3047,19 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       }
     }
     return arrayExpr.arrayGet(coerceExpressionValueNode(args.get(1), fieldName + ".args[1]"));
+  }
+
+  private Expression buildParsedArrayFirstNExpression(
+      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args, String fieldName)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    Expression arrayExpr = coerceExpressionValueNode(args.get(0), fieldName + ".args[0]");
+    if (!containsParsedExpression(args.get(1))) {
+      Object countValue = resolveValueNode(args.get(1), fieldName + ".args[1]");
+      if (countValue instanceof Number) {
+        return arrayExpr.arrayFirstN(((Number) countValue).intValue());
+      }
+    }
+    return arrayExpr.arrayFirstN(coerceExpressionValueNode(args.get(1), fieldName + ".args[1]"));
   }
 
   private Expression buildParsedArrayConcatExpression(
@@ -3287,6 +3390,19 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           continue;
         }
 
+        if (expression
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) {
+          Map<String, Object> output = new LinkedHashMap<>();
+          output.put("__kind", "expression");
+          output.put("exprType", "Variable");
+          output.put(
+              "name",
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) expression)
+                  .name);
+          enterFrame.box.value = output;
+          continue;
+        }
+
         ReactNativeFirebaseFirestorePipelineParser.ParsedFunctionExpressionNode function =
             (ReactNativeFirebaseFirestorePipelineParser.ParsedFunctionExpressionNode) expression;
         List<SerializedValueBox> argBoxes = new ArrayList<>(function.args.size());
@@ -3532,6 +3648,19 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           continue;
         }
 
+        if (expression
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) {
+          Map<String, Object> output = new LinkedHashMap<>();
+          output.put("__kind", "expression");
+          output.put("exprType", "Variable");
+          output.put(
+              "name",
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) expression)
+                  .name);
+          enterFrame.box.value = output;
+          continue;
+        }
+
         ReactNativeFirebaseFirestorePipelineParser.ParsedFunctionExpressionNode function =
             (ReactNativeFirebaseFirestorePipelineParser.ParsedFunctionExpressionNode) expression;
         List<SerializedValueBox> argBoxes = new ArrayList<>(function.args.size());
@@ -3595,6 +3724,18 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     switch (canonicalizeExpressionFunctionName(name)) {
       case "conditional":
         return "cond";
+      case "arraytransformwithindex":
+        return "array_transform";
+      case "arraylastindexof":
+        return "array_index_of";
+      case "arraymaximum":
+        return "maximum";
+      case "arraymaximumn":
+        return "maximum_n";
+      case "arrayminimum":
+        return "minimum";
+      case "arrayminimumn":
+        return "minimum_n";
       case "logicalmaximum":
         return "logical_max";
       case "logicalminimum":

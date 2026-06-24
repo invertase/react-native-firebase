@@ -32,7 +32,7 @@ import type {
  * @beta
  * Distance measure for vector search.
  */
-export type PipelineDistanceMeasure = 'COSINE' | 'EUCLIDEAN' | 'DOT_PRODUCT';
+export type PipelineDistanceMeasure = 'euclidean' | 'cosine' | 'dot_product';
 
 /**
  * @beta

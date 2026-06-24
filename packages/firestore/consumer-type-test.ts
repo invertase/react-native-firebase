@@ -168,8 +168,24 @@ import {
   collectionId,
   type as pipelineType,
   currentTimestamp,
+  variable,
   // array
   array,
+  arrayFilter,
+  arrayFirst,
+  arrayFirstN,
+  arrayIndexOf,
+  arrayIndexOfAll,
+  arrayLast,
+  arrayLastIndexOf,
+  arrayLastN,
+  arrayMaximum,
+  arrayMaximumN,
+  arrayMinimum,
+  arrayMinimumN,
+  arraySlice,
+  arrayTransform,
+  arrayTransformWithIndex,
   arrayConcat,
   arrayGet,
   arrayLength,
@@ -1020,7 +1036,7 @@ const pipelineFindNearest = pipelineDb
   .findNearest({
     field: 'embedding',
     vectorValue: [1.5, 2.345],
-    distanceMeasure: 'COSINE',
+    distanceMeasure: 'cosine',
     distanceField: 'computedDistance',
     limit: 10,
   });
@@ -1307,6 +1323,68 @@ void currentTimestamp();
 // array
 void array([1, 2, 3]);
 void array([field('a'), constant(2)]);
+// variable: (string) => Expression
+void variable('score');
+// arrayFilter: (string, alias, BooleanExpression) | (Expression, alias, BooleanExpression)
+void arrayFilter('scores', 'score', greaterThan(variable('score'), constant(15)));
+void arrayFilter(field('scores'), 'score', greaterThan(variable('score'), constant(15)));
+void field('scores').arrayFilter('score', greaterThan(variable('score'), constant(15)));
+// newer array helpers
+void arrayTransform('scores', 'score', add(variable('score'), 1));
+void arrayTransform(field('scores'), 'score', add(variable('score'), 1));
+void field('scores').arrayTransform('score', add(variable('score'), 1));
+void arrayTransformWithIndex('scores', 'score', 'index', add(variable('score'), variable('index')));
+void arrayTransformWithIndex(
+  field('scores'),
+  'score',
+  'index',
+  add(variable('score'), variable('index')),
+);
+void field('scores').arrayTransformWithIndex(
+  'score',
+  'index',
+  add(variable('score'), variable('index')),
+);
+void arraySlice('scores', 1, 2);
+void arraySlice(field('scores'), field('offset'), field('length'));
+void field('scores').arraySlice(1, 2);
+void arrayFirst('scores');
+void arrayFirst(field('scores'));
+void field('scores').arrayFirst();
+void arrayFirstN('scores', 2);
+void arrayFirstN('scores', field('limit'));
+void arrayFirstN(field('scores'), field('limit'));
+void field('scores').arrayFirstN(field('limit'));
+void arrayLast('scores');
+void arrayLast(field('scores'));
+void field('scores').arrayLast();
+void arrayLastN('scores', 2);
+void arrayLastN('scores', field('limit'));
+void arrayLastN(field('scores'), field('limit'));
+void field('scores').arrayLastN(field('limit'));
+void arrayMaximum('scores');
+void arrayMaximum(field('scores'));
+void field('scores').arrayMaximum();
+void arrayMaximumN('scores', 2);
+void arrayMaximumN('scores', field('limit'));
+void arrayMaximumN(field('scores'), field('limit'));
+void field('scores').arrayMaximumN(field('limit'));
+void arrayMinimum('scores');
+void arrayMinimum(field('scores'));
+void field('scores').arrayMinimum();
+void arrayMinimumN('scores', 2);
+void arrayMinimumN('scores', field('limit'));
+void arrayMinimumN(field('scores'), field('limit'));
+void field('scores').arrayMinimumN(field('limit'));
+void arrayIndexOf('scores', 20);
+void arrayIndexOf(field('scores'), field('needle'));
+void field('scores').arrayIndexOf(20);
+void arrayLastIndexOf('scores', 20);
+void arrayLastIndexOf(field('scores'), field('needle'));
+void field('scores').arrayLastIndexOf(20);
+void arrayIndexOfAll('scores', 20);
+void arrayIndexOfAll(field('scores'), field('needle'));
+void field('scores').arrayIndexOfAll(20);
 // arrayConcat: (Expression, ...) | (string, ...)
 void arrayConcat(field('tags'), field('moreTags'));
 void arrayConcat(field('tags'), ['extra']);
@@ -1676,11 +1754,41 @@ const pipelineArrayOps = xDb
     array([constant(1), constant(2), constant(3)]).as('fixedArr'),
     arrayLength(field('comments')).as('commentCount'),
     arrayLength('comments').as('commentCount2'),
+    arrayFirst(field('items')).as('firstItemByHelper'),
+    arrayFirst('items').as('firstItemByField'),
+    arrayFirstN(field('items'), 2).as('firstItems'),
+    arrayFirstN('items', field('limit')).as('dynamicFirstItems'),
     arrayGet(field('items'), 0).as('firstItem'),
     arrayGet(field('items'), field('idx')).as('dynamicItem'),
     arrayGet('items', 0).as('firstItem2'),
     arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
     arrayConcat('primaryTags', ['extra']).as('allTags2'),
+    arrayFilter('scores', 'score', greaterThan(variable('score'), constant(15))).as(
+      'passingScores',
+    ),
+    field('scores')
+      .arrayFilter('score', greaterThan(variable('score'), constant(20)))
+      .as('topScores'),
+    arrayFirst('scores').as('firstScore'),
+    arrayFirstN('scores', 2).as('firstTwoScores'),
+    field('scores').arrayLast().as('lastScore'),
+    field('scores').arrayLastN(2).as('lastTwoScores'),
+    arraySlice('scores', 1, 2).as('middleScores'),
+    arrayTransform('scores', 'score', add(variable('score'), 1)).as('incrementedScores'),
+    arrayTransformWithIndex(
+      'scores',
+      'score',
+      'index',
+      add(variable('score'), variable('index')),
+    ).as('indexedScores'),
+    arrayMaximum('scores').as('maxScore'),
+    arrayMaximumN('scores', 2).as('topTwoScores'),
+    arrayMinimum('scores').as('minScore'),
+    arrayMinimumN('scores', 2).as('bottomTwoScores'),
+    arrayIndexOf('scores', 20).as('firstTwentyIndex'),
+    field('scores').arrayIndexOf(20).as('fluentFirstTwentyIndex'),
+    arrayLastIndexOf('scores', 20).as('lastTwentyIndex'),
+    arrayIndexOfAll('scores', 20).as('allTwentyIndexes'),
     arraySum(field('scores')).as('totalScore'),
     arraySum('scores').as('totalScore2'),
   );

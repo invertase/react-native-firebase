@@ -30,6 +30,26 @@ final class RNFBFirestorePipelineNodeBuilder {
     var value: ExprBridge?
   }
 
+  private final class ArrayCountLiteralBox {
+    var literalCount: Int?
+    var expressionCountBox: ExprBridgeBox?
+  }
+
+  private final class ArraySliceLiteralBox {
+    var literalOffset: Int?
+    var expressionOffsetBox: ExprBridgeBox?
+    var hasLengthArg = false
+    var literalLength: Int?
+    var expressionLengthBox: ExprBridgeBox?
+  }
+
+  private enum ArrayCountExpressionMethod: String {
+    case arrayFirstN
+    case arrayLastN
+    case arrayMaximumN
+    case arrayMinimumN
+  }
+
   private final class RawParamBox {
     var value: Any?
   }
@@ -39,6 +59,7 @@ final class RNFBFirestorePipelineNodeBuilder {
     case booleanExpression
     case expressionValue
     case comparisonOperand
+    case numericOperand
     case vectorExpressionValue
   }
 
@@ -88,6 +109,19 @@ final class RNFBFirestorePipelineNodeBuilder {
       String,
       String,
       ExprBridgeBox,
+      String
+    )
+    case arrayCountExit(
+      ExprBridgeBox,
+      ExprBridgeBox,
+      ArrayCountLiteralBox,
+      ArrayCountExpressionMethod,
+      String
+    )
+    case arraySliceExit(
+      ExprBridgeBox,
+      ExprBridgeBox,
+      ArraySliceLiteralBox,
       String
     )
   }
@@ -262,6 +296,20 @@ final class RNFBFirestorePipelineNodeBuilder {
       throw PipelineValidationError("pipelineExecute() expected \(fieldName) to include an aggregate kind.")
     }
     let normalizedKind = normalizeAggregateKind(kind)
+
+    if normalizedKind == "count_if" {
+      var predicate = aggregate["expr"] ?? aggregate["field"] ?? aggregate["value"]
+      if predicate == nil, let extraArgs = aggregate["args"] as? [Any], let first = extraArgs.first {
+        predicate = first
+      }
+      guard let predicate else {
+        throw PipelineValidationError("pipelineExecute() expected \(fieldName) to include an expression for countIf.")
+      }
+      return AggregateFunctionBridge(
+        name: "count_if",
+        args: [try coerceBooleanExpression(predicate, fieldName: "\(fieldName).expr")]
+      )
+    }
 
     var args: [ExprBridge] = []
     if let expr = aggregate["expr"] ?? aggregate["field"] ?? aggregate["value"] {
@@ -684,11 +732,61 @@ final class RNFBFirestorePipelineNodeBuilder {
       throw PipelineValidationError("pipelineExecute() expected \(fieldName).value to be provided.")
     }
 
+    if map["integerLiteral"] as? Bool == true {
+      if let boolValue = value as? Bool {
+        return boolValue ? 1 : 0
+      }
+      if let number = value as? NSNumber {
+        if isBooleanNSNumber(number) {
+          return number.boolValue ? 1 : 0
+        }
+        if let intValue = wholeNumberInt(from: number) {
+          return intValue
+        }
+      }
+      if let intValue = value as? Int {
+        return intValue
+      }
+    }
+
     return value
   }
 
+  private func scalarConstantBridge(fromConstantMap map: [String: Any], fieldName: String) throws -> ExprBridge {
+    guard let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be a constant expression.")
+    }
+
+    if map["integerLiteral"] as? Bool == true {
+      if let boolValue = map["value"] as? Bool {
+        return ConstantBridge(boolValue ? 1 : 0)
+      }
+      if let number = map["value"] as? NSNumber {
+        if isBooleanNSNumber(number) {
+          return ConstantBridge(number.boolValue ? 1 : 0)
+        }
+        if let intValue = wholeNumberInt(from: number) {
+          return ConstantBridge(intValue)
+        }
+      }
+      if let intValue = map["value"] as? Int {
+        return ConstantBridge(intValue)
+      }
+    }
+
+    guard let value = map["value"] else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName).value to be provided.")
+    }
+
+    return scalarConstantBridge(from: value)
+  }
+
   private func isSerializedExpressionLike(_ map: [String: Any]) -> Bool {
-    map["exprType"] != nil || map["operator"] != nil || map["name"] != nil || map["expr"] != nil ||
+    if let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
+      return false
+    }
+
+    return map["exprType"] != nil || map["operator"] != nil || map["name"] != nil || map["expr"] != nil ||
       map["expression"] != nil || map["fieldPath"] != nil || map["path"] != nil ||
       map["segments"] != nil || map["_segments"] != nil
   }
@@ -721,10 +819,18 @@ final class RNFBFirestorePipelineNodeBuilder {
     switch normalized {
     case "conditional":
       return "cond"
+    case "arraytransformwithindex":
+      return "array_transform"
+    case "arraylastindexof":
+      return "array_index_of"
     case "logicalmaximum", "arraymaximum":
       return "maximum"
+    case "arraymaximumn":
+      return "maximum_n"
     case "logicalminimum", "arrayminimum":
       return "minimum"
+    case "arrayminimumn":
+      return "minimum_n"
     case "arraysum":
       return "sum"
     case "lower", "tolower":
@@ -747,6 +853,10 @@ final class RNFBFirestorePipelineNodeBuilder {
       return "array_contains_any"
     case "arraycontainsall":
       return "array_contains_all"
+    case "arrayfirst":
+      return "array_first"
+    case "arrayfirstn":
+      return "array_first_n"
     case "charlength", "characterlength":
       return "char_length"
     case "bytelength":
@@ -894,6 +1004,12 @@ final class RNFBFirestorePipelineNodeBuilder {
       "equal", "notequal", "greaterthan", "greaterthanorequal", "lessthan", "lessthanorequal",
       "arraycontains", "arraycontainsany", "arraycontainsall", "equalany", "notequalany",
     ]
+    let orderingComparisonFunctions: Set<String> = [
+      "greaterthan", "greaterthanorequal", "lessthan", "lessthanorequal",
+    ]
+    let arithmeticFunctions: Set<String> = [
+      "add", "subtract", "multiply", "divide", "mod", "pow",
+    ]
 
     let rootBox = ExprBridgeBox()
     var stack: [ExpressionCoercionFrame] = [
@@ -905,6 +1021,11 @@ final class RNFBFirestorePipelineNodeBuilder {
       case let .enter(value, currentFieldName, currentMode, box):
         switch currentMode {
         case .expressionValue:
+          if let map = value as? [String: Any],
+             let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
+            box.value = try scalarConstantBridge(fromConstantMap: map, fieldName: currentFieldName)
+            continue
+          }
           if containsSerializedExpression(value) {
             stack.append(.enter(value, currentFieldName, .expression, box))
           } else {
@@ -917,7 +1038,7 @@ final class RNFBFirestorePipelineNodeBuilder {
             continue
           }
           if let values = value as? [Any] {
-            box.value = ConstantBridge(values)
+            box.value = ConstantBridge(try resolveConstantValue(values, fieldName: currentFieldName))
             continue
           }
           if let stringValue = value as? String {
@@ -925,7 +1046,39 @@ final class RNFBFirestorePipelineNodeBuilder {
             continue
           }
           if isImmediateExpressionConstant(value) {
-            box.value = ConstantBridge(value)
+            box.value = scalarConstantBridge(from: value)
+            continue
+          }
+          stack.append(.enter(value, currentFieldName, .expression, box))
+          continue
+        case .numericOperand:
+          if let map = value as? [String: Any],
+             let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
+            if let boolValue = map["value"] as? Bool {
+              box.value = ConstantBridge(boolValue ? 1 : 0)
+              continue
+            }
+            box.value = try scalarConstantBridge(fromConstantMap: map, fieldName: currentFieldName)
+            continue
+          }
+          if let values = value as? [Any] {
+            box.value = ConstantBridge(try resolveConstantValue(values, fieldName: currentFieldName))
+            continue
+          }
+          if let stringValue = value as? String {
+            box.value = ConstantBridge(stringValue)
+            continue
+          }
+          if let boolValue = value as? Bool {
+            box.value = ConstantBridge(boolValue ? 1 : 0)
+            continue
+          }
+          if let number = value as? NSNumber, isBooleanNSNumber(number) {
+            box.value = ConstantBridge(number.boolValue ? 1 : 0)
+            continue
+          }
+          if isImmediateExpressionConstant(value) {
+            box.value = scalarConstantBridge(from: value)
             continue
           }
           stack.append(.enter(value, currentFieldName, .expression, box))
@@ -979,7 +1132,7 @@ final class RNFBFirestorePipelineNodeBuilder {
             }
 
             if isImmediateExpressionConstant(currentValue) {
-              box.value = ConstantBridge(currentValue)
+              box.value = scalarConstantBridge(from: currentValue)
               break expressionLoop
             }
 
@@ -1041,6 +1194,14 @@ final class RNFBFirestorePipelineNodeBuilder {
                 currentField
               ))
               stack.append(.enter(right, "\(currentField).value", .comparisonOperand, rightBox))
+              break expressionLoop
+            }
+
+            if let kind = (map["exprType"] as? String)?.lowercased(), kind == "variable" {
+              guard let name = map["name"] as? String, !name.isEmpty else {
+                throw PipelineValidationError("pipelineExecute() expected \(currentField).name to be a non-empty string.")
+              }
+              box.value = VariableBridge(name: name)
               break expressionLoop
             }
 
@@ -1134,6 +1295,72 @@ final class RNFBFirestorePipelineNodeBuilder {
                 break expressionLoop
               }
 
+              if normalized == "arrayfirst" {
+                guard rawArgs.count == 1 else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).\(name) to include exactly 1 argument.")
+                }
+
+                let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
+                stack.append(.functionExit(box, "array_first", argBoxes, currentField))
+                stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expressionValue, argBoxes[0]))
+                break expressionLoop
+              }
+
+              if normalized == "arrayfirstn" {
+                try pushArrayCountExpressionFrame(
+                  stack: &stack,
+                  box: box,
+                  rawArgs: rawArgs,
+                  currentField: currentField,
+                  method: .arrayFirstN
+                )
+                break expressionLoop
+              }
+
+              if normalized == "arraylastn" {
+                try pushArrayCountExpressionFrame(
+                  stack: &stack,
+                  box: box,
+                  rawArgs: rawArgs,
+                  currentField: currentField,
+                  method: .arrayLastN
+                )
+                break expressionLoop
+              }
+
+              if normalized == "arraymaximumn" {
+                try pushArrayCountExpressionFrame(
+                  stack: &stack,
+                  box: box,
+                  rawArgs: rawArgs,
+                  currentField: currentField,
+                  method: .arrayMaximumN
+                )
+                break expressionLoop
+              }
+
+              if normalized == "arrayminimumn" {
+                try pushArrayCountExpressionFrame(
+                  stack: &stack,
+                  box: box,
+                  rawArgs: rawArgs,
+                  currentField: currentField,
+                  method: .arrayMinimumN
+                )
+                break expressionLoop
+              }
+
+              if normalized == "arrayslice" {
+                try pushArraySliceExpressionFrame(
+                  stack: &stack,
+                  box: box,
+                  rawArgs: rawArgs,
+                  currentField: currentField
+                )
+                break expressionLoop
+              }
+
               if normalized == "conditional" {
                 guard rawArgs.count == 3 else {
                   throw PipelineValidationError(
@@ -1182,7 +1409,7 @@ final class RNFBFirestorePipelineNodeBuilder {
                 break expressionLoop
               }
 
-              if normalized == "and" || normalized == "or" {
+              if normalized == "and" || normalized == "or" || normalized == "xor" || normalized == "nor" {
                 guard !rawArgs.isEmpty else {
                   throw PipelineValidationError(
                     "pipelineExecute() expected \(currentField).args to contain boolean expressions.")
@@ -1209,7 +1436,9 @@ final class RNFBFirestorePipelineNodeBuilder {
 
                 let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
                 stack.append(.functionExit(box, canonicalComparisonFunctionName(normalized), argBoxes, currentField))
-                stack.append(.enter(rawArgs[1], "\(currentField).args[1]", .comparisonOperand, argBoxes[1]))
+                let rightOperandMode: ExpressionCoercionMode =
+                  orderingComparisonFunctions.contains(normalized) ? .numericOperand : .comparisonOperand
+                stack.append(.enter(rawArgs[1], "\(currentField).args[1]", rightOperandMode, argBoxes[1]))
                 stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expression, argBoxes[0]))
                 break expressionLoop
               }
@@ -1217,10 +1446,14 @@ final class RNFBFirestorePipelineNodeBuilder {
               let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
               stack.append(.functionExit(box, normalizeExpressionFunctionName(name), argBoxes, currentField))
               for index in rawArgs.indices.reversed() {
+                let argMode: ExpressionCoercionMode =
+                  arithmeticFunctions.contains(normalized) && index > 0
+                    ? .numericOperand
+                    : .expressionValue
                 stack.append(.enter(
                   rawArgs[index],
                   "\(currentField).args[\(index)]",
-                  .expressionValue,
+                  argMode,
                   argBoxes[index]
                 ))
               }
@@ -1233,7 +1466,15 @@ final class RNFBFirestorePipelineNodeBuilder {
             }
 
             if let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
-              box.value = ConstantBridge(map["value"] as Any)
+              box.value = try scalarConstantBridge(fromConstantMap: map, fieldName: currentField)
+              break expressionLoop
+            }
+
+            if let kind = (map["exprType"] as? String)?.lowercased(), kind == "variable" {
+              guard let name = map["name"] as? String, !name.isEmpty else {
+                throw PipelineValidationError("pipelineExecute() expected \(currentField).name to be a non-empty string.")
+              }
+              box.value = VariableBridge(name: name)
               break expressionLoop
             }
 
@@ -1248,6 +1489,57 @@ final class RNFBFirestorePipelineNodeBuilder {
             try requireExpressionValue(argBox, fieldName: "\(currentFieldName).args[\(index)]")
           }
         )
+        if RNFBFirestorePipelineDebug.enabled,
+           name == "add" || name.contains("array") || name.contains("equal") || name.contains("greater") {
+          RNFBFirestorePipelineDebug.log(
+            "built \(name) at \(currentFieldName) -> \(RNFBFirestorePipelineDebug.describeExpr(box.value!))"
+          )
+        }
+      case let .arrayCountExit(box, arrayBox, countBox, method, currentFieldName):
+        let arrayBridge = try requireExpressionValue(arrayBox, fieldName: "\(currentFieldName).args[0]")
+        if let literalCount = countBox.literalCount {
+          box.value = buildArrayCountFunctionBridge(
+            arrayBridge: arrayBridge,
+            count: literalCount,
+            method: method
+          )
+        } else if let countExprBox = countBox.expressionCountBox {
+          let countBridge = try requireExpressionValue(
+            countExprBox,
+            fieldName: "\(currentFieldName).args[1]"
+          )
+          box.value = FunctionExprBridge(
+            name: normalizedArrayCountFunctionName(method),
+            args: [arrayBridge, countBridge],
+            options: nil
+          )
+        } else {
+          throw PipelineValidationError(
+            "pipelineExecute() expected \(currentFieldName).args[1] to be provided.")
+        }
+      case let .arraySliceExit(box, arrayBox, sliceBox, currentFieldName):
+        var args = [try requireExpressionValue(arrayBox, fieldName: "\(currentFieldName).args[0]")]
+        if let literalOffset = sliceBox.literalOffset {
+          args.append(scalarConstantBridge(from: literalOffset))
+        } else if let offsetBox = sliceBox.expressionOffsetBox {
+          args.append(try requireExpressionValue(offsetBox, fieldName: "\(currentFieldName).args[1]"))
+        } else {
+          throw PipelineValidationError(
+            "pipelineExecute() expected \(currentFieldName).args[1] to be provided.")
+        }
+
+        if sliceBox.hasLengthArg {
+          if let literalLength = sliceBox.literalLength {
+            args.append(scalarConstantBridge(from: literalLength))
+          } else if let lengthBox = sliceBox.expressionLengthBox {
+            args.append(try requireExpressionValue(lengthBox, fieldName: "\(currentFieldName).args[2]"))
+          } else {
+            throw PipelineValidationError(
+              "pipelineExecute() expected \(currentFieldName).args[2] to be provided.")
+          }
+        }
+
+        box.value = FunctionExprBridge(name: "array_slice", args: args, options: nil)
       case let .conditionalExit(box, conditionBox, trueBox, falseBox, currentFieldName):
         box.value = FunctionExprBridge(name: "cond", args: [
           try requireExpressionValue(conditionBox, fieldName: "\(currentFieldName).args[0]"),
@@ -1305,6 +1597,152 @@ final class RNFBFirestorePipelineNodeBuilder {
       value is GeoPoint || value is DocumentReference || value is VectorValue
   }
 
+  private func tryIntegerLiteral(from value: Any) -> Int? {
+    if let number = value as? NSNumber {
+      return wholeNumberInt(from: number)
+    }
+    if let intValue = value as? Int {
+      return intValue
+    }
+    guard let map = value as? [String: Any],
+          (map["exprType"] as? String)?.lowercased() == "constant" else {
+      return nil
+    }
+    if let number = map["value"] as? NSNumber {
+      return wholeNumberInt(from: number)
+    }
+    if let intValue = map["value"] as? Int {
+      return intValue
+    }
+    return nil
+  }
+
+  private func isBooleanNSNumber(_ number: NSNumber) -> Bool {
+    CFGetTypeID(number) == CFBooleanGetTypeID()
+  }
+
+  private func wholeNumberInt(from number: NSNumber) -> Int? {
+    if isBooleanNSNumber(number) {
+      return nil
+    }
+    let doubleValue = number.doubleValue
+    guard doubleValue.isFinite,
+          doubleValue.rounded() == doubleValue,
+          doubleValue >= Double(Int.min),
+          doubleValue <= Double(Int.max) else {
+      return nil
+    }
+    return number.intValue
+  }
+
+  private func scalarConstantBridge(from value: Any) -> ExprBridge {
+    if let boolValue = value as? Bool {
+      return ConstantBridge(boolValue)
+    }
+    if let number = value as? NSNumber, isBooleanNSNumber(number) {
+      return ConstantBridge(number.boolValue)
+    }
+    if let number = value as? NSNumber, let intValue = wholeNumberInt(from: number) {
+      return ConstantBridge(intValue)
+    }
+    if let intValue = value as? Int {
+      return ConstantBridge(intValue)
+    }
+    return ConstantBridge(value)
+  }
+
+  private func pushArrayCountExpressionFrame(
+    stack: inout [ExpressionCoercionFrame],
+    box: ExprBridgeBox,
+    rawArgs: [Any],
+    currentField: String,
+    method: ArrayCountExpressionMethod
+  ) throws {
+    guard rawArgs.count == 2 else {
+      throw PipelineValidationError(
+        "pipelineExecute() expected \(currentField) to include exactly 2 arguments.")
+    }
+
+    let arrayBox = ExprBridgeBox()
+    let countBox = ArrayCountLiteralBox()
+    if let literalCount = tryIntegerLiteral(from: rawArgs[1]) {
+      countBox.literalCount = literalCount
+      stack.append(.arrayCountExit(box, arrayBox, countBox, method, currentField))
+      stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expressionValue, arrayBox))
+      return
+    }
+
+    let countExprBox = ExprBridgeBox()
+    countBox.expressionCountBox = countExprBox
+    stack.append(.arrayCountExit(box, arrayBox, countBox, method, currentField))
+    stack.append(.enter(rawArgs[1], "\(currentField).args[1]", .expressionValue, countExprBox))
+    stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expressionValue, arrayBox))
+  }
+
+  private func pushArraySliceExpressionFrame(
+    stack: inout [ExpressionCoercionFrame],
+    box: ExprBridgeBox,
+    rawArgs: [Any],
+    currentField: String
+  ) throws {
+    guard rawArgs.count == 2 || rawArgs.count == 3 else {
+      throw PipelineValidationError(
+        "pipelineExecute() expected \(currentField) to include 2 or 3 arguments.")
+    }
+
+    let arrayBox = ExprBridgeBox()
+    let sliceBox = ArraySliceLiteralBox()
+
+    if let literalOffset = tryIntegerLiteral(from: rawArgs[1]) {
+      sliceBox.literalOffset = literalOffset
+    } else {
+      sliceBox.expressionOffsetBox = ExprBridgeBox()
+    }
+
+    if rawArgs.count == 3 {
+      sliceBox.hasLengthArg = true
+      if let literalLength = tryIntegerLiteral(from: rawArgs[2]) {
+        sliceBox.literalLength = literalLength
+      } else {
+        sliceBox.expressionLengthBox = ExprBridgeBox()
+      }
+    }
+
+    stack.append(.arraySliceExit(box, arrayBox, sliceBox, currentField))
+    if rawArgs.count == 3, sliceBox.expressionLengthBox != nil {
+      stack.append(.enter(rawArgs[2], "\(currentField).args[2]", .expressionValue, sliceBox.expressionLengthBox!))
+    }
+    if sliceBox.expressionOffsetBox != nil {
+      stack.append(.enter(rawArgs[1], "\(currentField).args[1]", .expressionValue, sliceBox.expressionOffsetBox!))
+    }
+    stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expressionValue, arrayBox))
+  }
+
+  private func buildArrayCountFunctionBridge(
+    arrayBridge: ExprBridge,
+    count: Int,
+    method: ArrayCountExpressionMethod
+  ) -> ExprBridge {
+    FunctionExprBridge(
+      name: normalizedArrayCountFunctionName(method),
+      args: [arrayBridge, scalarConstantBridge(from: count)],
+      options: nil
+    )
+  }
+
+  private func normalizedArrayCountFunctionName(_ method: ArrayCountExpressionMethod) -> String {
+    switch method {
+    case .arrayFirstN:
+      return "array_first_n"
+    case .arrayLastN:
+      return "array_last_n"
+    case .arrayMaximumN:
+      return "maximum_n"
+    case .arrayMinimumN:
+      return "minimum_n"
+    }
+  }
+
   func coerceAlias(from value: Any) -> String? {
     guard let map = value as? [String: Any] else {
       return nil
@@ -1357,6 +1795,12 @@ final class RNFBFirestorePipelineNodeBuilder {
           let valueBox = SerializedValueBox()
           stack.append(.expressionConstantExit(box, valueBox))
           stack.append(.valueEnter(constantValue, valueBox))
+        case let .variable(name):
+          box.value = [
+            "__kind": "expression",
+            "exprType": "Variable",
+            "name": name,
+          ]
         case let .function(name, args):
           let argBoxes = args.map { _ in SerializedValueBox() }
           stack.append(.expressionFunctionExit(box, name, argBoxes))
@@ -1463,6 +1907,12 @@ final class RNFBFirestorePipelineNodeBuilder {
           let valueBox = SerializedValueBox()
           stack.append(.expressionConstantExit(box, valueBox))
           stack.append(.valueEnter(constantValue, valueBox))
+        case let .variable(name):
+          box.value = [
+            "__kind": "expression",
+            "exprType": "Variable",
+            "name": name,
+          ]
         case let .function(name, args):
           let argBoxes = args.map { _ in SerializedValueBox() }
           stack.append(.expressionFunctionExit(box, name, argBoxes))

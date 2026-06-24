@@ -1,10 +1,10 @@
 #!/bin/bash
-if ! [ -x "$(command -v firebase)" ]; then
-  echo "❌ Firebase-tools CLI is missing. Run 'npm i -g firebase-tools' or the equivalent"
-  exit 1
-fi
+# shellcheck source=firebase-cli.sh
+source "$(dirname "$0")/firebase-cli.sh"
 
-EMU_START_COMMAND="firebase emulators:start --only auth,database,firestore,functions,storage --project react-native-firebase-testing"
+# firebase.json must use single-database Firestore config — the emulator does not load
+# security rules from the multi-database array format (firebase.deploy.json).
+EMU_START_COMMAND=("${FIREBASE_CMD[@]}" emulators:start --config firebase.json --only auth,database,firestore,functions,storage --project react-native-firebase-testing)
 #EMU_START_COMMAND="sleep 120"
 MAX_RETRIES=3
 MAX_CHECKATTEMPTS=60
@@ -19,11 +19,11 @@ while [ $RETRIES -le $MAX_RETRIES ]; do
 
   if [ "$1" == "--no-daemon" ]; then
     echo "Starting Firebase Emulator Suite in foreground."
-    $EMU_START_COMMAND
+    "${EMU_START_COMMAND[@]}"
     exit 0
   else
     echo "Starting Firebase Emulator Suite in background."
-    $EMU_START_COMMAND &
+    "${EMU_START_COMMAND[@]}" &
     CHECKATTEMPTS=1
     while [ $CHECKATTEMPTS -le $MAX_CHECKATTEMPTS ]; do
       sleep $CHECKATTEMPTS_WAIT

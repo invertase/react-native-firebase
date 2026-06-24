@@ -273,20 +273,50 @@ final class RNFBFirestorePipelineBridgeFactory {
   private func buildFindNearestStage(_ stage: RNFBFirestoreParsedFindNearestStage) throws -> StageBridge {
     let fieldPath = try nodeBuilder.coerceFieldPath(stage.field, fieldName: "stage.options.field")
     let vector = try nodeBuilder.coerceVector(stage.vectorValue, fieldName: "findNearest.vectorValue")
+    let distanceMeasure = try normalizeDistanceMeasure(
+      stage.distanceMeasure,
+      fieldName: "stage.options.distanceMeasure"
+    )
     let distanceFieldExpr: ExprBridge?
     if let distanceField = stage.distanceField {
       distanceFieldExpr = try nodeBuilder.coerceExpression(distanceField, fieldName: "stage.options.distanceField")
     } else {
       distanceFieldExpr = nil
     }
+    let limitNumber: NSNumber?
+    if let limit = stage.limit {
+      limitNumber = NSNumber(value: try nodeBuilder.coerceInt(limit, fieldName: "stage.options.limit"))
+    } else {
+      limitNumber = nil
+    }
 
     return FindNearestStageBridge(
       field: FieldBridge(name: fieldPath),
       vectorValue: VectorValue(__array: vector.map { NSNumber(value: $0) }),
-      distanceMeasure: stage.distanceMeasure.lowercased(),
-      limit: stage.limit,
+      distanceMeasure: distanceMeasure,
+      limit: limitNumber,
       distanceField: distanceFieldExpr
     )
+  }
+
+  private func normalizeDistanceMeasure(_ value: String, fieldName: String) throws -> String {
+    let normalized = value
+      .trimmingCharacters(in: .whitespacesAndNewlines)
+      .replacingOccurrences(of: "-", with: "_")
+      .replacingOccurrences(of: " ", with: "_")
+      .uppercased()
+    switch normalized {
+    case "COSINE":
+      return "COSINE"
+    case "EUCLIDEAN":
+      return "EUCLIDEAN"
+    case "DOT_PRODUCT", "DOTPRODUCT":
+      return "DOT_PRODUCT"
+    default:
+      throw PipelineValidationError(
+        "pipelineExecute() expected \(fieldName) to be one of euclidean, cosine, or dot_product."
+      )
+    }
   }
 
   private func coerceNumber(_ value: Any, fieldName: String) throws -> Double {
@@ -353,6 +383,12 @@ final class RNFBFirestorePipelineBridgeFactory {
           let childBox = QuerySourceValueBox()
           stack.append(.expressionConstantExit(box, childBox))
           stack.append(.value(value, childBox))
+        case let .variable(name):
+          box.value = [
+            "__kind": "expression",
+            "exprType": "Variable",
+            "name": name,
+          ]
         case let .function(name, args):
           let childBoxes = args.map { _ in QuerySourceValueBox() }
           stack.append(.expressionFunctionExit(name, box, childBoxes))

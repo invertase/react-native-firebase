@@ -41,6 +41,7 @@ struct RNFBFirestoreParsedQuerySource {
 indirect enum RNFBFirestoreParsedExpressionNode {
   case field(path: String)
   case constant(RNFBFirestoreParsedValueNode)
+  case variable(name: String)
   case function(name: String, args: [RNFBFirestoreParsedValueNode])
 }
 
@@ -1189,6 +1190,13 @@ enum RNFBFirestorePipelineParser {
               let valueBox = ParsedValueNodeBox()
               stack.append(.expressionConstantExit(box, valueBox, fieldName))
               stack.append(.valueEnter(map["value"] as Any, valueBox, "\(fieldName).value"))
+              continue
+            }
+            if normalizedType == "variable" {
+              guard let name = map["name"] as? String, !name.isEmpty else {
+                throw PipelineValidationError("pipelineExecute() expected \(fieldName).name to be a non-empty string.")
+              }
+              box.value = .variable(name: name)
               continue
             }
           }

@@ -1,7 +1,16 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { firebase } from '../lib';
 import {
+  arrayFilter,
+  arrayFirst,
+  arrayFirstN,
+  arrayIndexOf,
   arrayGet,
+  arrayLastIndexOf,
+  arrayMaximum,
+  arrayMaximumN,
+  arrayMinimumN,
+  arrayTransform,
   and,
   conditional,
   constant,
@@ -16,6 +25,7 @@ import {
   timestampAdd,
   timestampSubtract,
   trunc,
+  variable,
 } from '../lib/pipelines';
 import '../lib/pipelines';
 import { ConstantExpression } from '../lib/pipelines/expressions';
@@ -137,6 +147,166 @@ describe('Firestore pipelines runtime', function () {
           },
         },
         options: {},
+      },
+    });
+  });
+
+  it('serializes arrayFilter as a function expression helper and fluent method', function () {
+    const db: any = firebase.firestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select(
+        arrayFilter('scores', 'score', greaterThan(variable('score'), constant(15))).as(
+          'passingScores',
+        ),
+        field('scores')
+          .arrayFilter('score', greaterThan(variable('score'), constant(20)))
+          .as('topScores'),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          {
+            alias: 'passingScores',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayFilter',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Constant', value: 'score' },
+                {
+                  exprType: 'Function',
+                  name: 'greaterThan',
+                  args: [
+                    { exprType: 'Variable', name: 'score' },
+                    { exprType: 'Constant', value: 15 },
+                  ],
+                },
+              ],
+            },
+          },
+          {
+            alias: 'topScores',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayFilter',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Constant', value: 'score' },
+                {
+                  exprType: 'Function',
+                  name: 'greaterThan',
+                  args: [
+                    { exprType: 'Variable', name: 'score' },
+                    { exprType: 'Constant', value: 20 },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('serializes newer array expression helpers with SDK-compatible arguments', function () {
+    const db: any = firebase.firestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select(
+        arrayFirst('scores').as('firstScore'),
+        arrayFirstN('scores', 2).as('firstTwoScores'),
+        arrayFirstN('scores', field('limit')).as('dynamicFirstScores'),
+        field('scores').arrayLast().as('lastScore'),
+        field('scores').arrayLastN(2).as('lastTwoScores'),
+        field('scores').arraySlice(1, 3).as('middleScores'),
+        arrayTransform('scores', 'score', variable('score')).as('transformedScores'),
+        field('scores')
+          .arrayTransformWithIndex('score', 'index', variable('index'))
+          .as('indexedScores'),
+        arrayMaximum('scores').as('maxScore'),
+        arrayMaximumN(field('scores'), 3).as('topScores'),
+        field('scores').arrayMinimum().as('minScore'),
+        arrayMinimumN(field('scores'), 3).as('bottomScores'),
+        arrayIndexOf('scores', 10).as('firstIndex'),
+        field('scores').arrayIndexOf(10).as('fluentFirstIndex'),
+        arrayLastIndexOf(field('scores'), 10).as('lastIndex'),
+        field('scores').arrayIndexOfAll(10).as('allIndexes'),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          { alias: 'firstScore', expr: { exprType: 'Function', name: 'arrayFirst' } },
+          { alias: 'firstTwoScores', expr: { exprType: 'Function', name: 'arrayFirstN' } },
+          {
+            alias: 'dynamicFirstScores',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayFirstN',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Field', path: 'limit' },
+              ],
+            },
+          },
+          { alias: 'lastScore', expr: { exprType: 'Function', name: 'arrayLast' } },
+          { alias: 'lastTwoScores', expr: { exprType: 'Function', name: 'arrayLastN' } },
+          { alias: 'middleScores', expr: { exprType: 'Function', name: 'arraySlice' } },
+          { alias: 'transformedScores', expr: { exprType: 'Function', name: 'arrayTransform' } },
+          {
+            alias: 'indexedScores',
+            expr: { exprType: 'Function', name: 'arrayTransformWithIndex' },
+          },
+          { alias: 'maxScore', expr: { exprType: 'Function', name: 'arrayMaximum' } },
+          { alias: 'topScores', expr: { exprType: 'Function', name: 'arrayMaximumN' } },
+          { alias: 'minScore', expr: { exprType: 'Function', name: 'arrayMinimum' } },
+          { alias: 'bottomScores', expr: { exprType: 'Function', name: 'arrayMinimumN' } },
+          {
+            alias: 'firstIndex',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayIndexOf',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Constant', value: 10 },
+                { exprType: 'Constant', value: 'first' },
+              ],
+            },
+          },
+          {
+            alias: 'fluentFirstIndex',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayIndexOf',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Constant', value: 10 },
+                { exprType: 'Constant', value: 'first' },
+              ],
+            },
+          },
+          {
+            alias: 'lastIndex',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayLastIndexOf',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Constant', value: 10 },
+                { exprType: 'Constant', value: 'last' },
+              ],
+            },
+          },
+          { alias: 'allIndexes', expr: { exprType: 'Function', name: 'arrayIndexOfAll' } },
+        ],
       },
     });
   });
@@ -388,6 +558,10 @@ describe('Firestore pipelines runtime', function () {
       .pipeline()
       .documents(['firestore/a'])
       .select(
+        arrayFirst(field('items')).as('firstArrayItem'),
+        arrayFirstN(field('items'), 2).as('firstArrayItems'),
+        field('items').arrayFirst().as('fluentFirstArrayItem'),
+        field('items').arrayFirstN(2).as('fluentFirstArrayItems'),
         arrayGet(field('items'), 0).as('firstItem'),
         conditional(
           field('value').greaterThan(0),
