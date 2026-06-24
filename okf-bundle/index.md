@@ -13,6 +13,7 @@ Knowledge documents for react-native-firebase development, testing, and maintena
 # Testing
 
 * [Running e2e tests](/testing/running-e2e.md) — the canonical e2e runbook: the minimal command set, fast-iteration tips, environment control, and diagnosis (start here)
+* [Validation checklist](/testing/validation-checklist.md) — canonical validation command sequence (`reference:api`, Jest, lints, spellcheck, `compare:types`, e2e, coverage policy)
 * [Coverage design](/testing/coverage-design.md) - unit and e2e coverage goals, expectations/policy, pipelines, and Codecov uploads
 * [Firebase testing project and emulator setup](/testing/firebase-testing-project.md) - cloud vs emulator, rules/indexes, deploy workflow for `react-native-firebase-testing`
 

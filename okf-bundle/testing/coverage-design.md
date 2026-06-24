@@ -8,36 +8,50 @@ timestamp: 2026-06-17T00:00:00Z
 
 # Goals
 
-Coverage exists to show which **TypeScript library sources** (`packages/*/lib/**`) and **native module sources** (Java, Objective-C, Swift under `packages/*/android/**` and `packages/*/ios/**`) are exercised by tests.
+Coverage shows which **TS library sources** (`packages/*/lib/**`) and **native sources** (Java/ObjC/Swift under `packages/*/android/**`, `packages/*/ios/**`) tests exercise.
 
-| Layer | What it proves | Primary consumers |
-|-------|----------------|-------------------|
-| **Unit (Jest)** | Package logic in isolation with mocks | Fast feedback on `packages/*/lib/**` |
-| **E2e (Jet / Detox)** | Real app behaviour against Firebase emulators | Integration coverage for TS + native bridges |
+| Layer | Proves | Consumers |
+|-------|--------|-----------|
+| **Unit (Jest)** | Package logic with mocks | Fast feedback on `lib/**` |
+| **E2e (Jet / Detox)** | Real app behaviour against Firebase emulators and cloud APIs | TS + native bridge integration |
 
-Codecov merges uploads from CI into a single project view. Small project-level percentage swings can be noise (non-deterministic indirect lines); **file-level** coverage on `packages/*/lib/modular/**` and native startup files is the meaningful signal.
-
-macOS e2e uses the **firebase-js-sdk** only — native RNFB coverage is not applicable there.
+Codecov merges CI uploads. Project-level % swings can be noise; **file-level** coverage on changed sources is the signal. macOS e2e uses firebase-js-sdk only — no native RNFB coverage there.
 
 # Coverage expectations (policy)
 
-For code being **newly implemented** in a PR, the standing expectation is:
+For **new code in a PR**:
 
-* **Coverage only goes up.** A change should not lower file-level coverage on the files it touches.
-* **100% is the goal**, on both the TypeScript library sources and the native sources for the area under change. "Most lines are covered" is not the bar for new code.
-* **The only acceptable justification for a gap is an intractable technological limitation**, and it must be named and quantified. Example: Swift sometimes expands language features into machine code that is structurally unreachable from source (defensive `default`/`fatalError` arms, synthesized conformances), which caps realistic line coverage a few percent below 100% — quantify it ("~NN% is unreachable Swift codegen") rather than waving at it.
-* **Every other gap is one of two things:** lines that *can* be exercised (write the test — negative tests, failure branches, every operator/stage), or lines that are **unnecessary** (dead/duplicate/superseded code — delete it, which both simplifies the implementation and raises coverage). When you see a large uncovered block, ask "is this even reachable?" before writing tests for it.
+* **Coverage only goes up** on files the change touches.
+* **100% is the goal** for TS and native sources in that area. "Mostly covered" is not enough for new code.
+* **Gaps need quantified intractability** — e.g. Swift codegen unreachable arms (`default`/`fatalError`, synthesized conformances) capping coverage a few % below 100%; name and measure ("~NN% unreachable Swift codegen"), don't hand-wave.
+* **Any other gap is either testable or dead code** — add tests (negative paths, failure branches, every reachable branch) or delete unreachable/duplicate/superseded code. Large uncovered blocks: ask "is this reachable?" before writing tests.
 
-This policy is why a coverage-gap pass should both *add tests* and *remove dead code*; the two together, not just one.
+Gap passes should **add tests and remove dead code** together.
+
+## Coverage as completion signal
+
+File-level coverage means an iteration is **done** — not merely green Jest/e2e or passing type checks.
+
+1. **Baseline** after full e2e (all relevant platforms).
+2. Implement with tests.
+3. **After** full e2e with single-test/suite narrowing reverted (area narrowing may persist per package workflow until pre-merge).
+4. Touched files: coverage **only rises** until **intractable limits** (above).
+
+**Plateau below that limit → refactor**, not ship:
+
+* Large uncovered native blocks often mean **dormant code paths** — use coverage to find the live path, delete the rest.
+* Duplicate traversal (e.g. visiting the same tree property twice) can pass tests while leaving untestable structure — simplify until coverage rises.
+
+Do not hand off with closable gaps. Package workflows may define snapshot tooling (e.g. [pipeline before/after scripts](../packages/firestore/pipeline-implementation-workflow.md)).
 
 ## Reading per-file coverage locally
 
-After a `tests:<platform>:test-cover` run, generate/refresh the reports and inspect the files you changed:
+After `tests:<platform>:test-cover`:
 
-* **JS:** `npx jest <path> --coverage --collectCoverageFrom='packages/<pkg>/lib/**/*.ts' --coverageReporters=text` prints a per-file table with uncovered line numbers.
-* **iOS native:** `yarn tests:ios:test:process-coverage` writes `coverage/ios-native/lcov.info` (per-file `DA:` lines). **It deletes the processed `.profraw` afterwards**, so re-run the iOS e2e before re-processing — there is no second processing of the same run.
-* **Android native:** `yarn tests:android:post-e2e-coverage` pulls `coverage.ec` and runs `jacocoAndroidTestReport`, writing the Jacoco XML (per-`sourcefile` LINE counters).
-* Note macOS/JS `tests:macos:test-cover` overwrites `coverage/lcov.info`; process/inspect iOS or Android native coverage before a subsequent macOS run if you need both.
+* **JS:** `npx jest <path> --coverage --collectCoverageFrom='packages/<pkg>/lib/**/*.ts' --coverageReporters=text`
+* **iOS native:** `yarn tests:ios:test:process-coverage` → `coverage/ios-native/lcov.info` (`DA:` lines). **Deletes processed `.profraw`** — re-run e2e before re-processing.
+* **Android native:** `yarn tests:android:post-e2e-coverage` → Jacoco XML per `sourcefile`.
+* macOS e2e overwrites `coverage/lcov.info`; process iOS/Android native before a macOS run if you need both.
 
 # End-to-end overview
 
@@ -74,216 +88,168 @@ flowchart LR
 
 # Unit coverage (Jest)
 
-## Command
-
 ```bash
 yarn tests:jest-coverage
 ```
 
-## Tooling
-
-- **Provider:** Jest with `coverageProvider: "babel"` (Istanbul via `babel-jest`), **not** NYC.
-- **Scope:** `packages/**/__tests__/**` only (see root `jest.config.js`).
-- **Output:** `coverage/lcov.info` at repo root (among other Istanbul artifacts).
-
-## Behaviour
-
-Jest instruments TypeScript/JavaScript directly under `packages/*/lib/**`. No source-map remapping is required because tests import library sources, not Metro bundles.
+- Jest + `coverageProvider: "babel"` (Istanbul), **not** NYC.
+- Scope: `packages/**/__tests__/**` (`jest.config.js`).
+- Output: `coverage/lcov.info` at repo root.
+- Instruments `packages/*/lib/**` directly — no source-map remap.
 
 # E2e TypeScript coverage (Jet + NYC)
 
-## Commands
+Commands: [e2e runbook](running-e2e.md) (`tests:<platform>:test-cover`).
 
-Run e2e with the canonical `tests:<platform>:test-cover` commands from the [e2e runbook](running-e2e.md) — that doc is the single source of truth for how to run.
+| Platform | Script | Notes |
+|----------|--------|-------|
+| macOS | `tests:macos:test-cover` | Jet only |
+| iOS | `tests:ios:test-cover` | Detox → Jet `--coverage` |
+| Android | `tests:android:test-cover` | Detox → Jet `--coverage` |
 
-| Platform | Yarn script | Notes |
-|----------|-------------|-------|
-| macOS | `yarn tests:macos:test-cover` | Jet only |
-| iOS | `yarn tests:ios:test-cover` | Detox → Jet `--coverage` |
-| Android | `yarn tests:android:test-cover` | Detox → Jet `--coverage` |
+Jet self-wraps under NYC when `--coverage` is passed.
 
-Android/iOS run Detox, which spawns Jet with `--coverage`. macOS runs Jet directly. Jet self-wraps under NYC whenever `--coverage` is passed.
+**Tooling:**
 
-## Tooling
+- Metro bundles `packages/*/dist/module/**` with inline source maps (`tests/.babelrc`: `useInlineSourceMaps: true`).
+- NYC (`tests/nyc.config.js`) remaps to `packages/*/lib/**` → **`coverage/lcov.info`** (`cwd: '..'`).
+- Jet re-invokes under `tests/node_modules/.bin/nyc` (checks `NYC_CONFIG`). Detox/macOS need no extra `nyc` prefix; Jet must run from `tests/`.
+- **Transfer:** Patched Jet/mocha-remote WebSocket path (`coverage-ready` → `pull-coverage` → `coverage-data` → `coverage-ack`); HTTP POST failed on ~4.5MB+ payloads. Patches: `.yarn/patches/` (`jet`, `mocha-remote-client`, `mocha-remote-server`). Server assigns client before `connection`, sends `pull-coverage` when runner active; client retries with `readyState` logging. See [iOS issues 6–6b](../ci-workflows/ios.md#6-jet-websocket-disconnect-1006--1001), [issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00).
 
-- **Metro** bundles `packages/*/dist/module/**` with inline source maps (`tests/.babelrc`: `useInlineSourceMaps: true`).
-- **NYC** (`tests/nyc.config.js`) collects coverage from instrumented bundles, remaps to `packages/*/lib/**` via source maps, and writes **`coverage/lcov.info`** (NYC `cwd: '..'`).
-- **Jet self-wrap:** When `--coverage` is passed, `tests/node_modules/jet/jet.js` re-invokes itself under `tests/node_modules/.bin/nyc` (checks `NYC_CONFIG` to avoid double-wrap). Detox/macOS do **not** need an extra `nyc` prefix on the yarn script — only Jet needs to run from the `tests/` directory so it can find NYC.
-- **Transfer:** Patched Jet / mocha-remote send coverage over the existing WebSocket (`coverage-ready` → `pull-coverage` → `coverage-data` → `coverage-ack`), replacing HTTP POST that failed on large (~4.5MB+) payloads. Patches live in `.yarn/patches/` (`jet`, `mocha-remote-client`, `mocha-remote-server`). On transient WS reconnect, **mocha-remote-server** assigns the client before emitting `connection`, then sends `pull-coverage` once when a runner is active; `Server.send()` warns instead of throwing if the socket is not ready. Client `uploadCoverage()` retries with `readyState` logging; inbound JSON uses parse buffering on the server and an outbound queue on the client. See [iOS issues 6–6b](../ci-workflows/ios.md#6-jet-websocket-disconnect-1006--1001) and [issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00).
-
-## Key NYC settings
+**NYC settings:**
 
 ```javascript
 include: ['packages/*/lib/**/*.{js,ts,tsx}', 'packages/*/dist/**/*.js'],
-sourceMap: true,
-'exclude-after-remap': true,
-instrument: false,
+sourceMap: true, 'exclude-after-remap': true, instrument: false,
 reporter: ['lcov', 'html', 'text-summary'],
 ```
 
-## Verification
+**Verify:** `[jet-coverage] WS received N file(s)` + NYC summary; `coverage/lcov.info` has `SF:packages/...` not just `dist/`.
 
-After a Detox/macOS e2e run, expect log lines like `[jet-coverage] WS received N file(s)` and an NYC summary. `coverage/lcov.info` should contain `SF:packages/...` paths (not only `packages/*/dist/...`).
+# E2e Android native (Jacoco)
 
-# E2e Android native coverage (Jacoco)
+1. `testCoverageEnabled` on RNFB modules (`tests/android/build.gradle`).
+2. Jet `after` in `tests/app.js` → `NativeModules.RNFBTestingCoverage.flush()` in **app** process → `coverage.ec` in `filesDir` **before** Detox SIGINT.
+3. After Detox: `yarn tests:android:post-e2e-coverage` (or `pull-native-coverage`) → `emulator_coverage.ec` → `jacocoAndroidTestReport`. Missing file: warning, not test/CI fail (`continue-on-error` on Codecov upload).
+4. XML: `tests/android/app/build/reports/jacoco/jacocoAndroidTestReport/jacocoAndroidTestReport.xml`
 
-## Pipeline
+**Why app-process flush:** Detox SIGINT kills instrumentation right after Jet ends; post-`Detox.runTests()` dump in `DetoxTest.java` never runs.
 
-1. Gradle enables `testCoverageEnabled` on RNFB Android library modules (`tests/android/build.gradle`).
-2. Detox e2e runs Jet tests in the instrumented app. After all Mocha tests complete, the Jet `after` hook in `tests/app.js` calls `NativeModules.RNFBTestingCoverage.flush()` (`RNFBTestingCoverageModule` in the **app** process). This writes `coverage.ec` to the app `filesDir` **before** Detox SIGINTs the instrumentation process.
-3. **After Detox exits**, `yarn tests:android:post-e2e-coverage` (CI) or `yarn tests:android:pull-native-coverage` polls for `coverage.ec`, pulls it to `tests/android/app/build/output/coverage/emulator_coverage.ec`, then runs `jacocoAndroidTestReport`. A missing file logs a warning and does **not** fail the Detox test or the CI job (`continue-on-error` on Codecov upload).
-4. Jacoco XML is produced at:
+**Jacoco notes:**
 
-   `tests/android/app/build/reports/jacoco/jacocoAndroidTestReport/jacocoAndroidTestReport.xml`
+- AGP 8 classes: `build/intermediates/javac/debug/compileDebugJavaWithJavac/classes`
+- Sources: include `src/reactnative/java`
+- Modules: `rootProject.ext.firebaseModulePaths` (`tests/android/build.gradle`)
+- Tasks in `tests/android/app/jacoco.gradle`: `jacocoAndroidTestReport` (e2e `**/*.ec`, CI uses this), `jacocoUnitTestReport` (`**/*.exec`), `jacocoTestReport` (merged)
 
-CI runs step 3 inside the emulator job immediately after `yarn tests:android:test-cover`.
+# E2e iOS native (LLVM)
 
-## Why flush runs in the app process
+1. **Build:** LLVM flags in **`tests/ios/Podfile` `post_install`** (`pod install` after checkout):
+   - **`testing` target:** compile + link profile flags + Swift toolchain search paths (Firebase static pods on CI)
+   - **`RNFB*` pods:** compile-only flags — **no** `-fprofile-instr-generate` on pod `OTHER_LDFLAGS` (breaks `swiftCompatibility56` on CI)
+2. **Runtime:** `RNFBTestingConfigureCoverageProfilePath()` at launch → `Documents/coverage.profraw`. Jet `after` → `RNFBTestingCoverage.flush()`. **No custom URL scheme** (iOS "Open in 'testing'?" dialog blocks Detox).
+3. **Pull:** Jet exit 0 → `pull-native-coverage.js` → `simulator_coverage.profraw`. **Fails if missing.** Pull on Jet `close`, not `afterAll` (before Detox teardown).
+4. **Export:** `yarn tests:ios:test:process-coverage` / `process-ios-native-coverage.js`:
+   - exit **1** if no `.profraw`
+   - merge from `tests/ios/build/output/coverage/` (+ optional `Build/ProfileData/` for `xcodebuild test`, unused by Detox)
+   - `xcrun llvm-cov export -format=lcov` vs app binary → temp file (stdout buffer limit)
+   - rewrite `SF:` to repo-relative `packages/**` → **`coverage/ios-native/lcov.info`**
+   - **delete processed `.profraw`** (missing file next run = no fresh coverage)
 
-Detox sends **SIGINT** to the instrumentation process as soon as the Jet session ends. A Jacoco dump placed after `Detox.runTests()` in `DetoxTest.java` never runs. The app-process native module mirrors the iOS LLVM flush pattern: JS test completion → native module → file on disk → post-e2e pull.
+ObjC + Swift share this pipeline. Raw export is mostly Pods/SDK; ~50–60 `packages/*/ios/**` files in a healthy full run among ~2000 entries.
 
-## Jacoco configuration notes
-
-- Class directories must use the AGP 8.x path: `build/intermediates/javac/debug/compileDebugJavaWithJavac/classes` (not legacy `.../debug/classes`).
-- Source directories must include `src/reactnative/java` where modules place React Native entry code (e.g. `ReactNativeFirebaseAppInitProvider`).
-- Module list comes from `rootProject.ext.firebaseModulePaths` populated in `tests/android/build.gradle`.
-- `tests/android/app/jacoco.gradle` defines three report tasks sharing the same AGP 8 class paths and `firebaseModulePaths` source dirs:
-  - **`jacocoAndroidTestReport`** — e2e only (`**/*.ec` from Detox pull)
-  - **`jacocoUnitTestReport`** — unit tests only (`**/*.exec`; for when module/app unit tests are added)
-  - **`jacocoTestReport`** — merged unit + e2e (`**/*.exec` and `**/*.ec`)
-  CI uses `jacocoAndroidTestReport` after Detox.
-
-# E2e iOS native coverage (LLVM)
-
-## Pipeline
-
-1. **Build-time instrumentation:** LLVM profile flags are set in **`tests/ios/Podfile` `post_install`** only (run `pod install` after checkout):
-   - **`testing` app target:** compile + link profile flags, plus Swift toolchain library search paths (needed when linking Firebase Swift static pods on CI)
-   - **`RNFB*` pod targets:** compile-time profile flags only — **not** `-fprofile-instr-generate` on `OTHER_LDFLAGS` for third-party / Firebase pods (breaks `swiftCompatibility56` linking on CI)
-2. **Runtime flush:** At app launch, `RNFBTestingConfigureCoverageProfilePath()` sets the profile output to `Documents/coverage.profraw`. After all Mocha tests complete, the Jet `after` hook in `tests/app.js` calls `NativeModules.RNFBTestingCoverage.flush()` (native module exported via `RCT_EXPORT_MODULE(RNFBTestingCoverage)`). **Do not use a custom URL scheme** — iOS shows an “Open in 'testing'?” dialog that blocks Detox.
-3. **Pull:** When the Jet process exits with code 0, `tests/scripts/pull-native-coverage.js` copies profraw from the simulator app container to `tests/ios/build/output/coverage/simulator_coverage.profraw`. **The Detox test fails if no profraw is found.** Pull happens on Jet `close` (not in `afterAll`) so it runs before Detox environment teardown.
-4. **Post-test export:** `yarn tests:ios:test:process-coverage` runs `tests/scripts/process-ios-native-coverage.js`, which:
-   - exits **1** if no `.profraw` files are present (missing profraw after a successful e2e means flush or pull failed)
-   - merges `.profraw` from `tests/ios/build/output/coverage/` (Detox) and optionally `Build/ProfileData/` (`xcodebuild test` only — not used by Detox today)
-   - exports lcov with `xcrun llvm-cov export -format=lcov` against the main app binary (statically linked RNFB code), writing to a temp file (large reports exceed Node stdout buffer limits)
-   - streams and rewrites `SF:` paths to repo-relative `packages/**` paths
-   - writes **`coverage/ios-native/lcov.info`**
-   - **deletes the processed `.profraw` files** so a missing file on the next run is a clear signal that e2e did not produce fresh native coverage
-
-## Objective-C and Swift
-
-Both languages are covered by the same LLVM pipeline. Swift files (e.g. under `packages/firestore/ios/**`) appear in the exported lcov alongside `.m` / `.mm` files.
-
-Most entries in the raw llvm-cov export are Pods/SDK/system code; only paths under `packages/` matter for Codecov. A healthy full e2e run typically reports on the order of **~50–60 `packages/*/ios/**` files** among ~2000 total source entries.
-
-## CocoaPods → SPM
-
-The Podfile `post_install` coverage flags are temporary. When native dependencies move to SPM, enable the same build settings on SPM targets; the post-test script remains unchanged.
+**CocoaPods → SPM:** move same flags to SPM targets; post-test script unchanged.
 
 # Codecov uploads (CI)
 
-CI uses [codecov-action](https://github.com/codecov/codecov-action) v7 with explicit `files` and `flags` per upload (no auto-discovery for gated artifacts). Workflow steps use `continue-on-error: true` so a Codecov API hiccup does not fail the test job; **blocking gates** are the Codecov GitHub status checks configured in `codecov.yml`.
+[codecov-action](https://github.com/codecov/codecov-action) v7, explicit `files` + `flags`. Steps `continue-on-error: true`; **blocking** = GitHub status checks in `codecov.yml`.
 
-## Flag inventory
+## Flags
 
-Flag names are defined in **`codecov.yml`** (`flag_management`) and must match **`flags:`** in the workflow step. Do not rename in one place without the other.
+Names must match in **`codecov.yml`** and workflow `flags:`.
 
-| Flag | Workflow | File uploaded | Blocks PR? |
-|------|----------|---------------|------------|
+| Flag | Workflow | File | Blocks PR? |
+|------|----------|------|------------|
 | `jest` | `tests_jest.yml` | `coverage/lcov.info` | No |
-| `e2e-ts-ios` | `tests_e2e_ios.yml` (debug only) | `coverage/lcov.info` | No |
-| `ios-native` | `tests_e2e_ios.yml` (debug only) | `coverage/ios-native/lcov.info` | **Yes** — `codecov/project/ios-native` |
+| `e2e-ts-ios` | `tests_e2e_ios.yml` (debug) | `coverage/lcov.info` | No |
+| `ios-native` | `tests_e2e_ios.yml` (debug) | `coverage/ios-native/lcov.info` | **Yes** |
 | `e2e-ts-android` | `tests_e2e_android.yml` | `coverage/lcov.info` | No |
-| `android-native` | `tests_e2e_android.yml` | `tests/android/app/build/reports/jacoco/jacocoAndroidTestReport/jacocoAndroidTestReport.xml` | **Yes** — `codecov/project/android-native` |
+| `android-native` | `tests_e2e_android.yml` | Jacoco XML path below | **Yes** |
 | `e2e-ts-macos` | `tests_e2e_other.yml` | `coverage/lcov.info` | No |
 
-iOS **release** matrix legs do not upload coverage. macOS e2e has TS coverage only (no native gate).
+iOS release legs: no upload. macOS: TS only.
 
-## Native upload gates
+## Native gates
 
-Blocking flags use `carryforward: false` and `target: 1%` in `codecov.yml`:
+`carryforward: false`, `target: 1%` — gates **upload presence**, not % regression. Missing upload → 0% → fail. `codecov/project` overall: `informational: true`.
 
-- **Upload present** with any reasonable native coverage → flag status **passes** (well above 1%).
-- **Upload missing** (file not produced, step skipped, or upload failed) → flag has **0%** → status **fails**.
+## CI steps before upload
 
-This gates **upload presence**, not native coverage percentage regressions. Overall `codecov/project` remains `informational: true`.
-
-PR comments include a **flags** table (`comment.layout: …, flags`).
-
-## Per-workflow artifacts
-
-| Workflow | Steps before Codecov |
-|----------|---------------------|
+| Workflow | Steps |
+|----------|-------|
 | `tests_jest.yml` | `yarn tests:jest-coverage` |
-| `tests_e2e_ios.yml` (debug) | Detox → `yarn tests:ios:test:process-coverage` (`continue-on-error: true` on process step for now) |
-| `tests_e2e_android.yml` | Detox → `yarn tests:android:post-e2e-coverage` (soft-fail poll/pull in script) |
+| `tests_e2e_ios.yml` (debug) | Detox → `yarn tests:ios:test:process-coverage` (`continue-on-error: true` for now) |
+| `tests_e2e_android.yml` | Detox → `yarn tests:android:post-e2e-coverage` |
 | `tests_e2e_other.yml` | macOS Jet e2e |
 
-## File naming
-
-JavaScript lcov: **`coverage/lcov.info`**. iOS native lcov: **`coverage/ios-native/lcov.info`** (basename `lcov.info` required). Android native: **Jacoco XML** at the path in the table above after `jacocoAndroidTestReport`.
-
-Check the Codecov commit **Uploads** tab: each flag should appear as **Processed**. **Unusable** means wrong format or paths — fix before relying on the gate.
+**Paths:** JS `coverage/lcov.info`; iOS native `coverage/ios-native/lcov.info`; Android `tests/android/app/build/reports/jacoco/jacocoAndroidTestReport/jacocoAndroidTestReport.xml`. Uploads tab: **Processed** = good; **Unusable** = fix format/paths.
 
 # Local iteration
 
-Run e2e exactly as in the [e2e runbook](running-e2e.md) (`tests:<platform>:test-cover`, with Metro and the emulators already running). Then run the **native coverage post-processing** step for the platform you care about, and optionally upload via the Codecov CLI:
+E2e per [runbook](running-e2e.md), then native post-processing:
 
 ```bash
-# After a `tests:ios:test-cover` run — export iOS native lcov:
 yarn tests:ios:test:process-coverage
-
-# After a `tests:android:test-cover` run — pull coverage.ec + Jacoco report:
 yarn tests:android:post-e2e-coverage
+```
 
-# Codecov CLI (optional)
+Optional Codecov CLI:
+
+```bash
 .codecov-venv/bin/codecovcli upload-process \
   -t "$CODECOV_TOKEN" -r invertase/react-native-firebase \
   --git-service github -C "$(git rev-parse HEAD)" -B "$(git branch --show-current)" \
   -f coverage/ios-native/lcov.info -n local-ios-native --disable-search
 ```
 
-> **Do not use the `:test-cover-reuse` / `:test-cover-and-process` (and `:test-reuse`) variants.** "Reuse" skips the native build to save a little time, but it risks running **stale native code** against new JS — a silent source of wrong results. The time saved is not worth the risk; always do a clean `:build` + `:test-cover` (see the runbook).
+No `:test-cover-reuse` / `:test-reuse` — stale native risk ([runbook](running-e2e.md)).
 
 # Critical invariants
 
-These must all be true for native coverage to work. If any break, the e2e test should fail (not silently upload stale data).
-
-| Invariant | Where enforced |
-|-----------|----------------|
-| App built with LLVM profile flags (iOS) | `Podfile` `post_install` (run `pod install`) |
-| Profile path set at launch (iOS) | `AppDelegate` → `RNFBTestingConfigureCoverageProfilePath()` |
-| App built with Jacoco instrumentation (Android) | `testCoverageEnabled` in `tests/android/build.gradle` |
-| JS module name matches native export | `RNFBTestingCoverage` on iOS + Android; `NativeModules.RNFBTestingCoverage` in `tests/app.js` |
-| Native flush runs after Mocha tests | Jet `after` hook in `tests/app.js` (iOS + Android) |
-| Profraw pulled before Detox teardown (iOS) | `pull-native-coverage.js` on Jet `close` in `firebase.test.js` |
-| Android `coverage.ec` pulled after Detox | `yarn tests:android:post-e2e-coverage` in CI / local post-e2e step |
-| Fresh profraw processed after e2e (iOS) | `process-ios-native-coverage.js` (deletes profraw after export) |
+| Invariant | Enforced |
+|-----------|----------|
+| LLVM profile flags (iOS) | `Podfile` `post_install` |
+| Profile path at launch (iOS) | `AppDelegate` → `RNFBTestingConfigureCoverageProfilePath()` |
+| Jacoco instrumentation (Android) | `testCoverageEnabled` in `tests/android/build.gradle` |
+| Module name | `RNFBTestingCoverage` / `NativeModules.RNFBTestingCoverage` in `tests/app.js` |
+| Flush after Mocha | Jet `after` in `tests/app.js` |
+| Profraw pull before Detox teardown (iOS) | `pull-native-coverage.js` on Jet `close` in `firebase.test.js` |
+| Android ec pull after Detox | `yarn tests:android:post-e2e-coverage` |
+| Fresh profraw processed (iOS) | `process-ios-native-coverage.js` deletes after export |
 
 # Troubleshooting
 
-| Symptom | Likely cause | Fix |
-|---------|--------------|-----|
-| Simulator “Open in 'testing'?” dialog | Custom URL scheme handler | Use native module flush only; no `rnfb-testing://` |
-| No profraw after e2e; test still passes (old behaviour) | Pull in `afterAll` after `detox.cleanup()`, or wrong module name | Pull on Jet `close`; verify `RNFBTestingCoverage` export name |
-| Stale profraw uploaded | Re-processed old file without re-running e2e | Process step deletes profraw after export; missing file + exit 1 on next process |
-| `process-ios-native-coverage` succeeds but no `packages/` hits | Wrong binary / not instrumented | Rebuild with `yarn tests:ios:build`; check Podfile flags |
-| Empty Jacoco XML (~235 bytes) | AGP 8 class path, missing `src/reactnative/java`, or no `coverage.ec` pulled | See `jacocoAndroidTestReport`; check post-e2e poll logs |
-| Android `coverage.ec` missing after passing e2e | Detox SIGINT before instrumentation `@Test` tail; flush not called from app | Verify `[native-coverage] flushing android coverage` in Jet log; check `RNFBTestingCoverageModule` registered in `MainApplication` |
-| Jet `after` hook logs coverage not enabled | Non-instrumented build (release, or no Jacoco/LLVM flags) | Expected on a non-coverage build; use the debug `:test-cover` e2e builds for native coverage; hook catches errors so tests still pass |
-| iOS link: `swiftCompatibility56` undefined | Profile link flags applied to all Pods | Restrict `OTHER_LDFLAGS` profile flags to app target; RNFB pods compile-only |
-| No `[jet-coverage] WS received` lines | Patches not applied | `yarn install` from repo root; check `.yarn/patches/` |
-| `coverage-ready.*WebSocket is closed` after `reconnect_recovered` | Handshake lost on dead socket | Client retry + server `pull-coverage`; Jet e2e retry via `JET_COVERAGE_TEARDOWN_RE` — see [iOS issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00) |
-| NYC summary missing / empty `lcov.info` | Jet not run from `tests/` cwd | Detox spawns `yarn jet` inside `tests/`; macOS uses `cd tests && npx jet` |
-| Codecov missing iOS native files | Output not named `lcov.info` or wrong path | Use `coverage/ios-native/lcov.info`; confirm `ios-native` flag upload in iOS debug workflow |
-| Codecov upload **Unusable** | Wrong `SF:` paths | Confirm path rewrite in `process-ios-native-coverage.js`; check Uploads tab message |
-| `codecov/project/ios-native` or `android-native` **fail** | Native flag upload missing (`carryforward: false` → 0%) | Check Uploads tab for that flag; iOS: process-coverage step + `coverage/ios-native/lcov.info`; Android: post-e2e Jacoco XML path |
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| "Open in 'testing'?" dialog | Custom URL scheme | Native module flush only |
+| No profraw; test passes | Pull in `afterAll` after cleanup, wrong module name | Pull on Jet `close`; verify export name |
+| Stale profraw uploaded | Re-process without re-e2e | Process deletes profraw; exit 1 if missing next time |
+| No `packages/` hits in iOS export | Wrong binary / not instrumented | `yarn tests:ios:build`; check Podfile |
+| Empty Jacoco XML (~235 B) | AGP 8 path, missing `src/reactnative/java`, no ec | Check post-e2e logs |
+| Android ec missing after pass | SIGINT before flush | `[native-coverage] flushing android coverage` in log; `MainApplication` registration |
+| Jet after: coverage not enabled | Release / non-instrumented build | Use `:test-cover` debug builds |
+| `swiftCompatibility56` undefined | Profile link flags on all Pods | App target only for `OTHER_LDFLAGS` |
+| No `[jet-coverage] WS received` | Patches missing | `yarn install`; `.yarn/patches/` |
+| WS closed on `reconnect_recovered` | Handshake on dead socket | Client retry + server pull; `JET_COVERAGE_TEARDOWN_RE` — [iOS issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00) |
+| Empty NYC / lcov | Jet not from `tests/` cwd | Detox spawns `yarn jet` in `tests/` |
+| Codecov missing iOS native | Wrong path/name | `coverage/ios-native/lcov.info` |
+| Upload **Unusable** | Bad `SF:` paths | `process-ios-native-coverage.js` rewrite |
+| `ios-native` / `android-native` fail | Upload missing → 0% | Uploads tab; process/post-e2e steps |
 
-# Future cleanups (non-blocking)
+# Future cleanups
 
-- **CI:** drop `continue-on-error: true` on the iOS process-coverage step once stable in CI.
+- Drop `continue-on-error: true` on iOS process-coverage CI step when stable.
 
 # Citations
 
-[1] [Open Knowledge Format (OKF) specification](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
-[2] [Codecov CLI documentation](https://docs.codecov.com/docs/the-codecov-cli)
+[1] [OKF spec](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) · [2] [Codecov CLI](https://docs.codecov.com/docs/the-codecov-cli)

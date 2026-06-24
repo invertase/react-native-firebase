@@ -48,7 +48,7 @@ Set one clear default path so the agent does not choose randomly between options
 
 ## Command sequence
 
-Run these root `package.json` scripts in order:
+Run these root `package.json` scripts in order. **Canonical checklist with pipeline/e2e context:** `okf-bundle/testing/validation-checklist.md` (OKF bundle wins if this skill disagrees).
 
 1. `yarn lerna:prepare`
 2. `yarn tsc:compile`
@@ -129,5 +129,6 @@ Use this template:
 
 Load files only when needed:
 
+- **`okf-bundle/testing/validation-checklist.md`** — full validation command list including e2e, coverage, and doc lints
 - Read `package.json` if command names or script definitions need to be confirmed.
 - Read affected package `package.json`, `type-test.ts`, or nearby `__tests__/` files only when a failure needs package-specific diagnosis.
