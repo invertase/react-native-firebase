@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import { firebase } from '../lib';
-import { field, timestampDiff } from '../lib/pipelines';
+import { field, timestampDiff, timestampExtract } from '../lib/pipelines';
 import '../lib/pipelines';
 
 /** Standalone firebase-js-sdk helpers that must not get fluent `.name()` chains. */
@@ -73,6 +73,99 @@ describe('pipelines serialization matrix', function () {
           { exprType: 'Field', path: 'endTime' },
           { exprType: 'Field', path: 'startTime' },
           { exprType: 'Constant', value: 'second' },
+        ],
+      });
+    });
+  });
+
+  describe('timestampExtract global overload matrix', function () {
+    const db: any = firebase.firestore();
+
+    it('serializes (Expression, TimePart)', function () {
+      expect(
+        selectExpr(db, timestampExtract(field('eventTime'), 'year').as('eventYear')),
+      ).toMatchObject({
+        exprType: 'Function',
+        name: 'timestampExtract',
+        args: [
+          { exprType: 'Field', path: 'eventTime' },
+          { exprType: 'Constant', value: 'year' },
+        ],
+      });
+    });
+
+    it('serializes (Expression, Expression part)', function () {
+      expect(
+        selectExpr(
+          db,
+          timestampExtract(field('eventTime'), field('partColumn')).as('dynamicPart'),
+        ),
+      ).toMatchObject({
+        exprType: 'Function',
+        name: 'timestampExtract',
+        args: [
+          { exprType: 'Field', path: 'eventTime' },
+          { exprType: 'Field', path: 'partColumn' },
+        ],
+      });
+    });
+
+    it('serializes (string field, TimePart)', function () {
+      expect(
+        selectExpr(db, timestampExtract('eventTime', 'month').as('eventMonth')),
+      ).toMatchObject({
+        exprType: 'Function',
+        name: 'timestampExtract',
+        args: [
+          { exprType: 'Field', path: 'eventTime' },
+          { exprType: 'Constant', value: 'month' },
+        ],
+      });
+    });
+
+    it('serializes (string field, Expression part)', function () {
+      expect(
+        selectExpr(db, timestampExtract('eventTime', field('partColumn')).as('fieldDynamicPart')),
+      ).toMatchObject({
+        exprType: 'Function',
+        name: 'timestampExtract',
+        args: [
+          { exprType: 'Field', path: 'eventTime' },
+          { exprType: 'Field', path: 'partColumn' },
+        ],
+      });
+    });
+
+    it('serializes optional timezone as Constant', function () {
+      expect(
+        selectExpr(
+          db,
+          timestampExtract(field('eventTime'), 'day', 'America/New_York').as('eventDayNY'),
+        ),
+      ).toMatchObject({
+        exprType: 'Function',
+        name: 'timestampExtract',
+        args: [
+          { exprType: 'Field', path: 'eventTime' },
+          { exprType: 'Constant', value: 'day' },
+          { exprType: 'Constant', value: 'America/New_York' },
+        ],
+      });
+    });
+
+    it('serializes optional timezone Expression as Field', function () {
+      expect(
+        selectExpr(
+          db,
+          timestampExtract('eventTime', 'year', field('timezone')).as('eventYearTz'),
+        ),
+      ).toMatchObject({
+        exprType: 'Function',
+        name: 'timestampExtract',
+        args: [
+          { exprType: 'Field', path: 'eventTime' },
+          { exprType: 'Constant', value: 'year' },
+          { exprType: 'Field', path: 'timezone' },
         ],
       });
     });

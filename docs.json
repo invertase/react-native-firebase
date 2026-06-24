@@ -111,6 +111,7 @@
         { "title": "ifNull", "href": "/firestore/pipelines/if-null" },
         { "title": "switchOn", "href": "/firestore/pipelines/switch-on" },
         { "title": "timestampDiff", "href": "/firestore/pipelines/timestamp-diff" },
+        { "title": "timestampExtract", "href": "/firestore/pipelines/timestamp-extract" },
         {
           "title": "Pipeline SDK compatibility",
           "href": "/firestore/pipelines/sdk-compatibility"

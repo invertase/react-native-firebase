@@ -43,11 +43,6 @@ const config: PackageConfig = {
         'Newer firebase-js-sdk subcollection stage helper not yet exposed by RN Firebase pipelines.',
     },
     {
-      name: 'timestampExtract',
-      reason:
-        'Newer firebase-js-sdk timestamp expression helper not yet exposed by RN Firebase pipelines.',
-    },
-    {
       name: 'DefineStageOptions',
       reason: 'Newer firebase-js-sdk stage options type not yet exposed by RN Firebase pipelines.',
     },
@@ -64,11 +59,6 @@ const config: PackageConfig = {
       name: 'SubcollectionStageOptions',
       reason:
         'Newer firebase-js-sdk subcollection stage options type not yet exposed by RN Firebase pipelines.',
-    },
-    {
-      name: 'TimePart',
-      reason:
-        'Newer firebase-js-sdk timestamp extraction type not yet exposed by RN Firebase pipelines.',
     },
   ],
   extraInRN: [

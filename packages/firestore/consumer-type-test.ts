@@ -230,6 +230,7 @@ import {
   // timestamp
   timestampAdd,
   timestampDiff,
+  timestampExtract,
   timestampSubtract,
   timestampToUnixMicros,
   timestampToUnixMillis,
@@ -260,6 +261,7 @@ import type {
   ExpressionType,
   Type as PipelineValueType,
   TimeGranularity,
+  TimePart,
   TimeUnit,
   AliasedAggregate,
   AliasedExpression,
@@ -1094,6 +1096,7 @@ type _AllPipelineTypes = [
   ExpressionType,
   PipelineValueType,
   TimeGranularity,
+  TimePart,
   TimeUnit,
   AliasedAggregate,
   AliasedExpression,
@@ -1570,6 +1573,13 @@ void timestampDiff(field('endTime'), 'startTime', 'day');
 void timestampDiff(field('endTime'), field('startTime'), 'hour');
 void timestampDiff('endTime', 'startTime', 'day');
 void timestampDiff('endTime', field('startTime'), field('unit'));
+// timestampExtract: 4 overloads + optional timezone
+void timestampExtract('eventTime', 'year');
+void timestampExtract(field('eventTime'), 'month');
+void timestampExtract('eventTime', field('partColumn'));
+void timestampExtract(field('eventTime'), field('partColumn'));
+void timestampExtract(field('eventTime'), 'day', 'UTC');
+void timestampExtract(field('eventTime'), 'year', field('timezone'));
 // timestampToUnixMicros: (Expression) | (string)
 void timestampToUnixMicros(field('ts'));
 void timestampToUnixMicros('ts');
@@ -1874,6 +1884,8 @@ const pipelineTimestampOps = xDb
     timestampSubtract(field('ts'), field('unit'), field('amount')).as('dynamicSub'),
     timestampDiff(field('endTime'), field('startTime'), 'day').as('daysApart'),
     timestampDiff('endTime', 'startTime', 'hour').as('hoursApart'),
+    timestampExtract(field('eventTime'), 'year').as('eventYear'),
+    timestampExtract('eventTime', 'month').as('eventMonth'),
     timestampToUnixMillis(field('eventTime')).as('eventTimeMs'),
     timestampToUnixMillis('eventTime').as('eventTimeMs2'),
     timestampToUnixSeconds(field('eventTime')).as('eventTimeSec'),
