@@ -2369,6 +2369,36 @@ describe('FirestorePipeline', function () {
         data.fieldFieldHours.should.equal(48);
       });
 
+      it('evaluates timestampExtract across global overload classes', async function () {
+        const { execute, field, timestampExtract } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc, Timestamp } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        const eventTime = new Timestamp(1700000000, 0);
+
+        await setDoc(doc(db, docPath), { eventTime });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              timestampExtract(field('eventTime'), 'year').as('exprYear'),
+              timestampExtract('eventTime', 'month').as('fieldMonth'),
+              timestampExtract(field('eventTime'), 'day').as('exprDay'),
+              field('eventTime').timestampExtract('year').as('fluentYear'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.exprYear.should.equal(2023);
+        data.fieldMonth.should.equal(11);
+        data.exprDay.should.equal(14);
+        data.fluentYear.should.equal(2023);
+      });
+
       it('evaluates timestampToUnixMillis, timestampToUnixSeconds, timestampAdd, timestampSubtract, timestampTruncate, unixMillisToTimestamp', async function () {
         const {
           execute,

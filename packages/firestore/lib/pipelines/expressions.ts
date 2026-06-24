@@ -91,6 +91,12 @@ export type TimeGranularity =
 
 /**
  * @beta
+ * Time part for timestampExtract.
+ */
+export type TimePart = TimeGranularity | 'dayofweek' | 'dayofyear';
+
+/**
+ * @beta
  * Boolean expression for pipeline `where()` (e.g. field('x').gt(0), and(...), or(...)).
  */
 interface FluentExpressionMethods {
@@ -525,6 +531,7 @@ const EXPRESSION_METHOD_NAMES = [
   'stringReplaceOne',
   'stringReverse',
   'timestampAdd',
+  'timestampExtract',
   'timestampSubtract',
   'timestampToUnixMicros',
   'timestampToUnixMillis',
@@ -837,6 +844,7 @@ function normalizeGlobalArguments(name: string, args: unknown[]): RuntimeNode[] 
     case 'timestampDiff':
       fieldIndexList.push(0, 1);
       break;
+    case 'timestampExtract':
     case 'timestampToUnixMicros':
     case 'timestampToUnixMillis':
     case 'timestampToUnixSeconds':
@@ -2640,6 +2648,38 @@ export function timestampDiff(
   _unit: TimeUnit | Expression,
 ): FunctionExpression {
   return callFunctionHelper('timestampDiff', arguments);
+}
+
+/**
+ * @beta
+ * Extracts a calendar part from a timestamp (year, month, day, and so on).
+ */
+export function timestampExtract(
+  _fieldName: string,
+  _part: TimePart,
+  _timezone?: string | Expression,
+): FunctionExpression;
+export function timestampExtract(
+  _fieldName: string,
+  _part: Expression,
+  _timezone?: string | Expression,
+): FunctionExpression;
+export function timestampExtract(
+  _timestampExpression: Expression,
+  _part: TimePart,
+  _timezone?: string | Expression,
+): FunctionExpression;
+export function timestampExtract(
+  _timestampExpression: Expression,
+  _part: Expression,
+  _timezone?: string | Expression,
+): FunctionExpression;
+export function timestampExtract(
+  _fieldOrExpr: string | Expression,
+  _part: TimePart | Expression,
+  _timezone?: string | Expression,
+): FunctionExpression {
+  return callFunctionHelper('timestampExtract', arguments);
 }
 
 export function timestampToUnixMicros(_expr: Expression): FunctionExpression;

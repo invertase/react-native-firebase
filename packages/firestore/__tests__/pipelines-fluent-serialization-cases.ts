@@ -118,6 +118,7 @@ export const EXPRESSION_METHOD_NAMES = [
   'stringReplaceOne',
   'stringReverse',
   'timestampAdd',
+  'timestampExtract',
   'timestampSubtract',
   'timestampToUnixMicros',
   'timestampToUnixMillis',
@@ -681,6 +682,13 @@ export function buildFluentParityCases(): FluentParityCase[] {
       expectedName: 'timestampSubtract',
       global: () => pipelines.timestampSubtract(eventTime, 'hour', 1),
       fluent: () => fluent(eventTime).timestampSubtract('hour', 1),
+    }),
+    createCase({
+      category: 'timestamp-field',
+      method: 'timestampExtract',
+      expectedName: 'timestampExtract',
+      global: () => pipelines.timestampExtract(eventTime, 'year'),
+      fluent: () => fluent(eventTime).timestampExtract('year'),
     }),
     createCase({
       category: 'timestamp-field',

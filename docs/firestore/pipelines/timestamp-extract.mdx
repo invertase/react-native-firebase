@@ -1,0 +1,51 @@
+---
+title: timestampExtract
+description: Pipeline expression helper that extracts a calendar part from a timestamp.
+next: /firestore/pipelines/sdk-compatibility
+previous: /firestore/pipelines/timestamp-diff
+---
+
+`timestampExtract()` reads a calendar component—such as `year`, `month`, or `day`—from a timestamp. An optional timezone shifts the calendar used for extraction.
+
+Import from the pipelines entry point:
+
+```js
+import { timestampExtract, field } from '@react-native-firebase/firestore/pipelines';
+```
+
+# Basic example
+
+```js
+import { getFirestore } from '@react-native-firebase/firestore';
+import { execute, field, timestampExtract } from '@react-native-firebase/firestore/pipelines';
+
+const db = getFirestore('your-enterprise-database-id');
+
+const snapshot = await execute(
+  db
+    .pipeline()
+    .collection('events')
+    .select(
+      timestampExtract(field('createdAt'), 'year').as('createdYear'),
+      timestampExtract('createdAt', 'month').as('createdMonth'),
+      field('createdAt').timestampExtract('day').as('createdDay'),
+    ),
+);
+
+snapshot.results.forEach(row => {
+  console.log(row.data().createdYear, row.data().createdMonth, row.data().createdDay);
+});
+```
+
+# Related helpers
+
+| Helper              | Use when                                      |
+| ------------------- | --------------------------------------------- |
+| `timestampExtract`  | Read year, month, day, or other calendar part |
+| `timestampTruncate` | Bucket timestamps to a granularity            |
+| `timestampDiff`     | Measure elapsed time between timestamps       |
+| `TimePart`          | Type for part literals such as `'year'`       |
+
+# Upstream reference
+
+See the [firebase-js-sdk `timestampExtract` declaration](https://firebase.google.com/docs/reference/js/firestore_pipelines#timestampextract) for full overload signatures and supported `TimePart` values.
