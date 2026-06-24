@@ -1,6 +1,11 @@
 # Firestore rules and indexes (cloud + emulator)
 
-Configuration lives in this directory (`firebase.json` points here). The Firebase emulator started by `yarn tests:emulator:start` uses these same files for **`(default)`** only.
+Configuration lives in this directory. **Emulator and cloud deploy use different Firebase config files** because the local Firestore emulator does not support the multi-database `firebase.json` array format ([firebase-tools#9742](https://github.com/firebase/firebase-tools/issues/9742)): it ignores rules and defaults to allowing all reads/writes.
+
+| File | Purpose |
+|------|---------|
+| `firebase.json` | **Emulator + CI** — single-database `(default)` Firestore config |
+| `firebase.deploy.json` | **Cloud deploy only** — multi-database `(default)` + `pipelines-e2e` |
 
 ## Databases
 
@@ -9,13 +14,22 @@ Configuration lives in this directory (`firebase.json` points here). The Firebas
 | `(default)` | `firestore.rules` | `firestore.indexes.json` | Standard Firestore e2e (emulator + cloud) |
 | `pipelines-e2e` | `firestore.pipelines-e2e.rules` | `firestore.pipelines-e2e.indexes.json` | `Pipeline.e2e.js` (Enterprise cloud only) |
 
-`firebase.json` uses the **multi-database array** format:
+`firebase.deploy.json` uses the **multi-database array** format:
 
 ```json
 "firestore": [
   { "database": "(default)", "rules": "firestore.rules", "indexes": "firestore.indexes.json" },
   { "database": "pipelines-e2e", "rules": "firestore.pipelines-e2e.rules", "indexes": "firestore.pipelines-e2e.indexes.json" }
 ]
+```
+
+`firebase.json` keeps the **legacy single-object** format required by the emulator:
+
+```json
+"firestore": {
+  "rules": "firestore.rules",
+  "indexes": "firestore.indexes.json"
+}
 ```
 
 ## Pull current cloud state
@@ -41,7 +55,7 @@ cd .github/workflows/scripts
 ./deploy-firestore.sh
 ```
 
-Uses `firebase deploy --only firestore` (not `firestore:indexes` / `firestore:rules` sub-targets — those can silently no-op with multi-database config).
+Uses `firebase deploy --only firestore --config firebase.deploy.json` (not `firestore:indexes` / `firestore:rules` sub-targets — those can silently no-op with multi-database config).
 
 **Vector indexes** belong in `firestore.pipelines-e2e.indexes.json` under `vectorConfig`, not in security rules.
 

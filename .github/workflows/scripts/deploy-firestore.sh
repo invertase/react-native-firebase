@@ -17,6 +17,8 @@ echo "Tip: run ./sync-firestore-indexes.sh first if cloud may have indexes not i
 echo ""
 
 "${FIREBASE_CMD[@]}" use "$PROJECT"
-# Use full firestore target (not firestore:rules / firestore:indexes) when firebase.json
-# uses the multi-database array — sub-targets can silently no-op.
-"${FIREBASE_CMD[@]}" deploy --only firestore
+# Multi-database Firestore config lives in firebase.deploy.json (not firebase.json).
+# firebase.json must stay single-database so the local emulator loads security rules.
+# Use full firestore target (not firestore:rules / firestore:indexes) — sub-targets can
+# silently no-op with multi-database config.
+"${FIREBASE_CMD[@]}" deploy --only firestore --config firebase.deploy.json

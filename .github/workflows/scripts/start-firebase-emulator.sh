@@ -2,7 +2,9 @@
 # shellcheck source=firebase-cli.sh
 source "$(dirname "$0")/firebase-cli.sh"
 
-EMU_START_COMMAND=("${FIREBASE_CMD[@]}" emulators:start --only auth,database,firestore,functions,storage --project react-native-firebase-testing)
+# firebase.json must use single-database Firestore config — the emulator does not load
+# security rules from the multi-database array format (firebase.deploy.json).
+EMU_START_COMMAND=("${FIREBASE_CMD[@]}" emulators:start --config firebase.json --only auth,database,firestore,functions,storage --project react-native-firebase-testing)
 #EMU_START_COMMAND="sleep 120"
 MAX_RETRIES=3
 MAX_CHECKATTEMPTS=60
