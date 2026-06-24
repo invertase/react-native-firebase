@@ -222,6 +222,11 @@ export type FirestorePipelineSourceInternal =
       filters: FirestoreFilterSpecInternal[];
       orders: FirestoreOrderSpecInternal[];
       options: FirestoreQueryOptionsInternal;
+    }
+  | {
+      source: 'subcollection';
+      path: string;
+      rawOptions?: Record<string, unknown>;
     };
 
 export type FirestorePipelineStageInternal =

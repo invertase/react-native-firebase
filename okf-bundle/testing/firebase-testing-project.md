@@ -185,21 +185,9 @@ Pipeline tests run in the same Jet session as other Firestore e2e but hit cloud 
 
 # Local e2e workflow
 
-Typical loop for Firestore work:
+Run e2e using the canonical commands and iteration tips in the [e2e runbook](running-e2e.md) — emulators + Metro in the background, `tests:<platform>:build` after native changes, then `tests:<platform>:test-cover`. The runbook is the single source of truth for how to run; this doc only owns the **emulator/cloud project** setup above.
 
-```bash
-# Terminal 1
-yarn tests:emulator:start
-
-# Terminal 2
-yarn tests:packager:jet
-
-# Terminal 3
-yarn tests:ios:build          # after native changes
-yarn tests:ios:test           # or tests:ios:test-cover-reuse
-```
-
-For **pipeline-only** debugging, `tests/app.js` may be temporarily scoped to `Pipeline.e2e.js` (revert before merge).
+For **pipeline-only** debugging, `tests/app.js` may be temporarily scoped to `Pipeline.e2e.js` (revert before merge — see the runbook's fast-iteration section).
 
 # Learnings and pitfalls
 

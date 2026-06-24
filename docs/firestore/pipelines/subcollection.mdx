@@ -1,0 +1,68 @@
+---
+title: subcollection
+description: Pipeline source helper that targets a subcollection relative to the current document context.
+next: /firestore/pipelines/sdk-compatibility
+previous: /firestore/pipelines/timestamp-extract
+---
+
+`subcollection()` creates a **detached pipeline** aimed at a subcollection path relative to each parent document in the outer pipeline. The returned pipeline has no database instance and cannot be executed directly. Embed it in another pipeline with `toScalarExpression()` or `toArrayExpression()`.
+
+Import from the pipelines entry point:
+
+```js
+import { subcollection, field, countAll, average } from '@react-native-firebase/firestore/pipelines';
+```
+
+# Basic example
+
+```js
+import { getFirestore } from '@react-native-firebase/firestore';
+import {
+  execute,
+  field,
+  subcollection,
+  countAll,
+  average,
+} from '@react-native-firebase/firestore/pipelines';
+
+const db = getFirestore('your-enterprise-database-id');
+
+const snapshot = await execute(
+  db
+    .pipeline()
+    .collection('restaurants')
+    .addFields(
+      subcollection('reviews')
+        .aggregate(countAll().as('reviewCount'), average('rating').as('avgRating'))
+        .toScalarExpression()
+        .as('reviewSummary'),
+    )
+    .select('name', field('reviewSummary')),
+);
+
+snapshot.results.forEach(row => {
+  const summary = row.data().reviewSummary;
+  console.log(row.data().name, summary.reviewCount, summary.avgRating);
+});
+```
+
+# Options object
+
+Pass a `SubcollectionStageOptions` object when you need raw stage options:
+
+```js
+subcollection({ path: 'reviews', rawOptions: {} });
+```
+
+# Related helpers
+
+| Helper                 | Use when                                              |
+| ---------------------- | ----------------------------------------------------- |
+| `subcollection`        | Target a subcollection relative to each parent doc    |
+| `toScalarExpression()` | Embed a nested pipeline as a single scalar field      |
+| `toArrayExpression()`  | Embed a nested pipeline as an array of documents      |
+| `SubcollectionStageOptions` | Options type for the subcollection source stage |
+
+# Upstream reference
+
+See the [firebase-js-sdk `subcollection` declaration](https://firebase.google.com/docs/reference/js/firestore_pipelines#subcollection) for overload signatures and nested pipeline usage.

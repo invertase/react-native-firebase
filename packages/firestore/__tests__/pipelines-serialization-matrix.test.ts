@@ -7,8 +7,8 @@ import '../lib/pipelines';
 const STANDALONE_ONLY_EXPRESSIONS = ['timestampDiff', 'switchOn'] as const;
 
 function selectExpr(db: any, expr: unknown) {
-  return db.pipeline().collection('events').select(expr).serialize().stages[0].options
-    .selections[0].expr;
+  return db.pipeline().collection('events').select(expr).serialize().stages[0].options.selections[0]
+    .expr;
 }
 
 describe('pipelines serialization matrix', function () {
@@ -96,10 +96,7 @@ describe('pipelines serialization matrix', function () {
 
     it('serializes (Expression, Expression part)', function () {
       expect(
-        selectExpr(
-          db,
-          timestampExtract(field('eventTime'), field('partColumn')).as('dynamicPart'),
-        ),
+        selectExpr(db, timestampExtract(field('eventTime'), field('partColumn')).as('dynamicPart')),
       ).toMatchObject({
         exprType: 'Function',
         name: 'timestampExtract',
@@ -111,16 +108,16 @@ describe('pipelines serialization matrix', function () {
     });
 
     it('serializes (string field, TimePart)', function () {
-      expect(
-        selectExpr(db, timestampExtract('eventTime', 'month').as('eventMonth')),
-      ).toMatchObject({
-        exprType: 'Function',
-        name: 'timestampExtract',
-        args: [
-          { exprType: 'Field', path: 'eventTime' },
-          { exprType: 'Constant', value: 'month' },
-        ],
-      });
+      expect(selectExpr(db, timestampExtract('eventTime', 'month').as('eventMonth'))).toMatchObject(
+        {
+          exprType: 'Function',
+          name: 'timestampExtract',
+          args: [
+            { exprType: 'Field', path: 'eventTime' },
+            { exprType: 'Constant', value: 'month' },
+          ],
+        },
+      );
     });
 
     it('serializes (string field, Expression part)', function () {
@@ -155,10 +152,7 @@ describe('pipelines serialization matrix', function () {
 
     it('serializes optional timezone Expression as Field', function () {
       expect(
-        selectExpr(
-          db,
-          timestampExtract('eventTime', 'year', field('timezone')).as('eventYearTz'),
-        ),
+        selectExpr(db, timestampExtract('eventTime', 'year', field('timezone')).as('eventYearTz')),
       ).toMatchObject({
         exprType: 'Function',
         name: 'timestampExtract',

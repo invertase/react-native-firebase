@@ -167,6 +167,18 @@ export type CollectionGroupStageOptions = StageOptions & {
 
 /**
  * @beta
+ * Options for Subcollection stage.
+ */
+export type SubcollectionStageOptions = StageOptions & {
+  /**
+   * @beta
+   * The relative path to the subcollection.
+   */
+  path: string;
+};
+
+/**
+ * @beta
  * Options for Collection stage.
  */
 export type CollectionStageOptions = StageOptions & {

@@ -89,6 +89,11 @@ function validateSource(
         throw new Error(`pipelineExecute() expected ${fieldName}.options to be an object.`);
       }
       return;
+    case 'subcollection':
+      if (!isNonEmptyString(source.path)) {
+        throw new Error(`pipelineExecute() expected ${fieldName}.path to be a non-empty string.`);
+      }
+      return;
     default:
       throw new Error('pipelineExecute() received an unknown source type.');
   }

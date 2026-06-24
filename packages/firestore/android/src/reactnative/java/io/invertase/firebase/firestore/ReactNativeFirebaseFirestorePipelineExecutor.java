@@ -22,6 +22,7 @@ import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.objectMapToWritable;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getQueryForFirestore;
 
+import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableArray;
@@ -35,6 +36,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Pipeline;
+import com.google.firebase.firestore.PipelineSource;
 import com.google.firebase.firestore.PipelineResult;
 import com.google.firebase.firestore.PipelineSource;
 import com.google.firebase.firestore.Query;
@@ -137,13 +139,23 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
   ReactNativeFirebaseFirestorePipelineExecutor(FirebaseFirestore firestore) {
     this.firestore = firestore;
     this.nodeBuilder = new ReactNativeFirebaseFirestorePipelineNodeBuilder();
+    this.nodeBuilder.setNestedPipelineBuilder(this::buildNativePipeline);
   }
 
   void execute(ReadableMap pipeline, ReadableMap options, Promise promise) {
     try {
       ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest request =
           ReactNativeFirebaseFirestorePipelineParser.parse(pipeline, options);
+      Log.i(
+          "RNFB-Pipeline",
+          "execute source="
+              + request.source.sourceType
+              + " path="
+              + request.source.path
+              + " stages="
+              + request.stages.size());
       Pipeline sdkPipeline = buildNativePipeline(request);
+      Log.i("RNFB-Pipeline", "execute built pipeline, calling sdkPipeline.execute()");
       Pipeline.ExecuteOptions executeOptions = buildExecuteOptions(request.options);
       Task<Pipeline.Snapshot> executeTask =
           executeOptions == null ? sdkPipeline.execute() : sdkPipeline.execute(executeOptions);
@@ -158,6 +170,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
 
   private void resolvePipelineTask(Task<Pipeline.Snapshot> task, Promise promise) {
     if (task.isSuccessful()) {
+      Log.i("RNFB-Pipeline", "execute succeeded");
       Pipeline.Snapshot snapshot = task.getResult();
       try {
         promise.resolve(serializeSnapshot(snapshot));
@@ -286,6 +299,14 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
           new ReactNativeFirebaseFirestoreQuery(
               "pipeline", "pipeline", baseQuery, filters, orders, queryOptions);
       return pipelineSource.createFrom(firestoreQuery.query);
+    }
+
+    if ("subcollection".equals(sourceType)) {
+      if (source.path == null || source.path.isEmpty()) {
+        throw new PipelineValidationException(
+            "pipelineExecute() expected pipeline.source.path to be a non-empty string.");
+      }
+      return PipelineSource.subcollection(source.path);
     }
 
     throw new PipelineValidationException("pipelineExecute() received an unknown source type.");

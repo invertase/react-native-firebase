@@ -44,6 +44,7 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
       // the native SDK exposes an options-bearing pipeline execution/source API.
       let bridge = PipelineBridge(stages: stageBridges, db: firestore)
 
+      RNFBFirestorePipelineDebug.log("execute calling bridge.execute()")
       bridge.execute { snapshot, error in
         if let error {
           let nsError = error as NSError
@@ -97,7 +98,11 @@ struct PipelineValidationError: Error {
 }
 
 enum RNFBFirestorePipelineDebug {
+  #if DEBUG
+  static let enabled = true
+  #else
   static let enabled = false
+  #endif
 
   static func log(_ message: String) {
     guard enabled else { return }

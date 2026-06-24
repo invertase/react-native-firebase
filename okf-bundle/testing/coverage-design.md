@@ -19,6 +19,26 @@ Codecov merges uploads from CI into a single project view. Small project-level p
 
 macOS e2e uses the **firebase-js-sdk** only — native RNFB coverage is not applicable there.
 
+# Coverage expectations (policy)
+
+For code being **newly implemented** in a PR, the standing expectation is:
+
+* **Coverage only goes up.** A change should not lower file-level coverage on the files it touches.
+* **100% is the goal**, on both the TypeScript library sources and the native sources for the area under change. "Most lines are covered" is not the bar for new code.
+* **The only acceptable justification for a gap is an intractable technological limitation**, and it must be named and quantified. Example: Swift sometimes expands language features into machine code that is structurally unreachable from source (defensive `default`/`fatalError` arms, synthesized conformances), which caps realistic line coverage a few percent below 100% — quantify it ("~NN% is unreachable Swift codegen") rather than waving at it.
+* **Every other gap is one of two things:** lines that *can* be exercised (write the test — negative tests, failure branches, every operator/stage), or lines that are **unnecessary** (dead/duplicate/superseded code — delete it, which both simplifies the implementation and raises coverage). When you see a large uncovered block, ask "is this even reachable?" before writing tests for it.
+
+This policy is why a coverage-gap pass should both *add tests* and *remove dead code*; the two together, not just one.
+
+## Reading per-file coverage locally
+
+After a `tests:<platform>:test-cover` run, generate/refresh the reports and inspect the files you changed:
+
+* **JS:** `npx jest <path> --coverage --collectCoverageFrom='packages/<pkg>/lib/**/*.ts' --coverageReporters=text` prints a per-file table with uncovered line numbers.
+* **iOS native:** `yarn tests:ios:test:process-coverage` writes `coverage/ios-native/lcov.info` (per-file `DA:` lines). **It deletes the processed `.profraw` afterwards**, so re-run the iOS e2e before re-processing — there is no second processing of the same run.
+* **Android native:** `yarn tests:android:post-e2e-coverage` pulls `coverage.ec` and runs `jacocoAndroidTestReport`, writing the Jacoco XML (per-`sourcefile` LINE counters).
+* Note macOS/JS `tests:macos:test-cover` overwrites `coverage/lcov.info`; process/inspect iOS or Android native coverage before a subsequent macOS run if you need both.
+
 # End-to-end overview
 
 ```mermaid
@@ -74,14 +94,15 @@ Jest instruments TypeScript/JavaScript directly under `packages/*/lib/**`. No so
 
 ## Commands
 
+Run e2e with the canonical `tests:<platform>:test-cover` commands from the [e2e runbook](running-e2e.md) — that doc is the single source of truth for how to run.
+
 | Platform | Yarn script | Notes |
 |----------|-------------|-------|
 | macOS | `yarn tests:macos:test-cover` | Jet only |
-| iOS CI | `yarn tests:ios:test-cover` | Detox → Jet `--coverage` |
-| iOS local (reuse build) | `yarn tests:ios:test-cover-reuse` | Same; Jet self-wraps under NYC when `--coverage` is passed |
+| iOS | `yarn tests:ios:test-cover` | Detox → Jet `--coverage` |
 | Android | `yarn tests:android:test-cover` | Detox → Jet `--coverage` |
 
-Android/iOS run Detox, which spawns Jet with `--coverage`. macOS runs Jet directly.
+Android/iOS run Detox, which spawns Jet with `--coverage`. macOS runs Jet directly. Jet self-wraps under NYC whenever `--coverage` is passed.
 
 ## Tooling
 
@@ -206,17 +227,13 @@ Check the Codecov commit **Uploads** tab: each flag should appear as **Processed
 
 # Local iteration
 
+Run e2e exactly as in the [e2e runbook](running-e2e.md) (`tests:<platform>:test-cover`, with Metro and the emulators already running). Then run the **native coverage post-processing** step for the platform you care about, and optionally upload via the Codecov CLI:
+
 ```bash
-# Full iOS (build once, then reuse)
-yarn tests:ios:build
-yarn tests:ios:test-cover-reuse
+# After a `tests:ios:test-cover` run — export iOS native lcov:
 yarn tests:ios:test:process-coverage
 
-# Or combined
-yarn tests:ios:test-cover-and-process   # clean Detox run + process (no --reuse)
-
-# Android (after e2e)
-yarn tests:android:test-cover-reuse
+# After a `tests:android:test-cover` run — pull coverage.ec + Jacoco report:
 yarn tests:android:post-e2e-coverage
 
 # Codecov CLI (optional)
@@ -226,7 +243,7 @@ yarn tests:android:post-e2e-coverage
   -f coverage/ios-native/lcov.info -n local-ios-native --disable-search
 ```
 
-Metro must be running (`yarn tests:packager:jet`) for Detox e2e.
+> **Do not use the `:test-cover-reuse` / `:test-cover-and-process` (and `:test-reuse`) variants.** "Reuse" skips the native build to save a little time, but it risks running **stale native code** against new JS — a silent source of wrong results. The time saved is not worth the risk; always do a clean `:build` + `:test-cover` (see the runbook).
 
 # Critical invariants
 
@@ -253,7 +270,7 @@ These must all be true for native coverage to work. If any break, the e2e test s
 | `process-ios-native-coverage` succeeds but no `packages/` hits | Wrong binary / not instrumented | Rebuild with `yarn tests:ios:build`; check Podfile flags |
 | Empty Jacoco XML (~235 bytes) | AGP 8 class path, missing `src/reactnative/java`, or no `coverage.ec` pulled | See `jacocoAndroidTestReport`; check post-e2e poll logs |
 | Android `coverage.ec` missing after passing e2e | Detox SIGINT before instrumentation `@Test` tail; flush not called from app | Verify `[native-coverage] flushing android coverage` in Jet log; check `RNFBTestingCoverageModule` registered in `MainApplication` |
-| Jet `after` hook logs coverage not enabled | Non-instrumented build (local release or no Jacoco/LLVM flags) | Expected on `tests:android:test` without debug Jacoco; use debug e2e builds for native coverage; hook catches errors so tests still pass |
+| Jet `after` hook logs coverage not enabled | Non-instrumented build (release, or no Jacoco/LLVM flags) | Expected on a non-coverage build; use the debug `:test-cover` e2e builds for native coverage; hook catches errors so tests still pass |
 | iOS link: `swiftCompatibility56` undefined | Profile link flags applied to all Pods | Restrict `OTHER_LDFLAGS` profile flags to app target; RNFB pods compile-only |
 | No `[jet-coverage] WS received` lines | Patches not applied | `yarn install` from repo root; check `.yarn/patches/` |
 | `coverage-ready.*WebSocket is closed` after `reconnect_recovered` | Handshake lost on dead socket | Client retry + server `pull-coverage`; Jet e2e retry via `JET_COVERAGE_TEARDOWN_RE` — see [iOS issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00) |

@@ -26,6 +26,7 @@ export const PIPELINE_SOURCE_TYPES = [
   'database',
   'documents',
   'query',
+  'subcollection',
 ] as const;
 
 export const PIPELINE_STAGE_TYPES = [
@@ -96,33 +97,42 @@ export function getIOSUnsupportedPipelineFunctions(
 }
 
 function collectIOSUnsupportedFunctions(
-  value: FirestorePipelineSerializedValueInternal,
+  root: FirestorePipelineSerializedValueInternal,
   unsupported: Set<string>,
 ): void {
-  if (Array.isArray(value)) {
-    value.forEach(entry => collectIOSUnsupportedFunctions(entry, unsupported));
-    return;
-  }
+  // Iterative work-list (not recursion) so deeply nested pipelines/expressions
+  // cannot blow the JS call stack on Hermes. Each node is visited exactly once;
+  // `args` is reached through Object.values, so it must not be traversed twice
+  // (that would make this O(2^depth) and hang iOS execute() before native).
+  const stack: FirestorePipelineSerializedValueInternal[] = [root];
 
-  if (!value || typeof value !== 'object') {
-    return;
-  }
+  while (stack.length > 0) {
+    const value = stack.pop() as FirestorePipelineSerializedValueInternal;
 
-  const objectValue = value as Record<string, unknown>;
+    if (Array.isArray(value)) {
+      for (const entry of value) {
+        stack.push(entry);
+      }
+      continue;
+    }
 
-  if (isSerializedFunctionExpression(objectValue)) {
-    if (IOS_UNSUPPORTED_FUNCTION_NAMES.has(objectValue.name)) {
+    if (!value || typeof value !== 'object') {
+      continue;
+    }
+
+    const objectValue = value as Record<string, unknown>;
+
+    if (
+      isSerializedFunctionExpression(objectValue) &&
+      IOS_UNSUPPORTED_FUNCTION_NAMES.has(objectValue.name)
+    ) {
       unsupported.add(objectValue.name);
     }
 
-    if (Array.isArray(objectValue.args)) {
-      objectValue.args.forEach(entry => collectIOSUnsupportedFunctions(entry, unsupported));
+    for (const entry of Object.values(objectValue)) {
+      stack.push(entry as FirestorePipelineSerializedValueInternal);
     }
   }
-
-  Object.values(objectValue).forEach(entry => {
-    collectIOSUnsupportedFunctions(entry as FirestorePipelineSerializedValueInternal, unsupported);
-  });
 }
 
 function isSerializedFunctionExpression(

@@ -31,6 +31,7 @@ import type {
   Field,
   Ordering,
   AliasedAggregate,
+  FunctionExpression,
 } from './expressions';
 import type { DocumentData } from '../types/firestore';
 import type { FirestorePipelineSerializedInternal } from '../types/internal';
@@ -96,4 +97,16 @@ export interface Pipeline<T = DocumentData> {
     params: Record<string, unknown>,
     options?: PipelineRawStageOptions,
   ): Pipeline<T>;
+
+  /**
+   * @beta
+   * Converts this pipeline into an expression that evaluates to an array of results.
+   */
+  toArrayExpression(): FunctionExpression;
+
+  /**
+   * @beta
+   * Converts this pipeline into an expression that evaluates to a scalar result.
+   */
+  toScalarExpression(): FunctionExpression;
 }

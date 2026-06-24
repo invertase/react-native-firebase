@@ -285,6 +285,11 @@ describe('FirestorePipeline', function () {
         () => execute({ pipeline: {} }),
         'firebase.firestore().pipeline().execute(*) expected options.pipeline to be created from firestore.pipeline().',
       );
+
+      await expectAsyncError(
+        () => execute(firestorePipelinesModular.subcollection('reviews')),
+        'This pipeline was created without a database (e.g., as a subcollection pipeline) and cannot be executed directly. It can only be used as part of another pipeline.',
+      );
     });
 
     it('throws on circular pipeline serialization and invalid result.get field path argument', async function () {
@@ -2369,6 +2374,37 @@ describe('FirestorePipeline', function () {
         data.fieldFieldHours.should.equal(48);
       });
 
+      it('evaluates subcollection scalar subquery via addFields', async function () {
+        const { execute, field, subcollection, average, countAll } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const base = `${COLLECTION}/${Utils.randString(12, '#aA')}/subcollection-e2e`;
+        const parentPath = `${base}/restaurant-a`;
+
+        await setDoc(doc(db, parentPath), { name: 'Pizza Place' });
+        await setDoc(doc(db, `${parentPath}/reviews/review-1`), { rating: 4 });
+        await setDoc(doc(db, `${parentPath}/reviews/review-2`), { rating: 5 });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(base)
+            .addFields(
+              subcollection('reviews')
+                .aggregate(countAll().as('reviewCount'), average('rating').as('avgRating'))
+                .toScalarExpression()
+                .as('reviewSummary'),
+            )
+            .select('name', field('reviewSummary')),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.name.should.equal('Pizza Place');
+        data.reviewSummary.reviewCount.should.equal(2);
+        data.reviewSummary.avgRating.should.equal(4.5);
+      });
+
       it('evaluates timestampExtract across global overload classes', async function () {
         const { execute, field, timestampExtract } = firestorePipelinesModular;
         const { getFirestore, doc, setDoc, Timestamp } = firestoreModular;
@@ -2709,6 +2745,149 @@ describe('FirestorePipeline', function () {
         snapshot.results[1].data().name.should.equal('Zara');
         snapshot.results[2].data().name.should.equal('Mike');
       });
+    });
+  });
+
+  // Pathological / recursion + parsing-correctness coverage. These execute the
+  // exact native paths that previously hung: an AggregateFunction nested inside a
+  // PipelineValue subquery (scalar + array), and a deep expression tree whose
+  // analysis used to be O(2^depth) on iOS. They run on iOS, Android, and macOS.
+  describe('pathological subqueries and recursion', function () {
+    it('evaluates a scalar subquery with a where filter and multiple accumulators', async function () {
+      const { execute, field, constant, subcollection, average, countAll, sum, greaterThan } =
+        firestorePipelinesModular;
+      const { getFirestore, doc, setDoc } = firestoreModular;
+      const db = getFirestore(DATABASE_ID);
+      const base = `${COLLECTION}/${Utils.randString(12, '#aA')}/subquery-filter`;
+      const parentPath = `${base}/restaurant-a`;
+
+      await setDoc(doc(db, parentPath), { name: 'Pizza Place' });
+      await Promise.all([
+        setDoc(doc(db, `${parentPath}/reviews/r1`), { rating: 2 }),
+        setDoc(doc(db, `${parentPath}/reviews/r2`), { rating: 4 }),
+        setDoc(doc(db, `${parentPath}/reviews/r3`), { rating: 5 }),
+      ]);
+
+      const snapshot = await execute(
+        db
+          .pipeline()
+          .collection(base)
+          .addFields(
+            subcollection('reviews')
+              .where(greaterThan(field('rating'), constant(3)))
+              .aggregate(countAll().as('n'), average('rating').as('avg'), sum('rating').as('total'))
+              .toScalarExpression()
+              .as('goodReviews'),
+          )
+          .select('name', field('goodReviews')),
+      );
+
+      snapshot.results.should.have.length(1);
+      const data = snapshot.results[0].data();
+      data.name.should.equal('Pizza Place');
+      data.goodReviews.n.should.equal(2);
+      data.goodReviews.avg.should.equal(4.5);
+      data.goodReviews.total.should.equal(9);
+    });
+
+    it('evaluates an array subquery (toArrayExpression) over a subcollection', async function () {
+      const { execute, field, subcollection, ascending } = firestorePipelinesModular;
+      const { getFirestore, doc, setDoc } = firestoreModular;
+      const db = getFirestore(DATABASE_ID);
+      const base = `${COLLECTION}/${Utils.randString(12, '#aA')}/subquery-array`;
+      const parentPath = `${base}/restaurant-a`;
+
+      await setDoc(doc(db, parentPath), { name: 'Pizza Place' });
+      await Promise.all([
+        setDoc(doc(db, `${parentPath}/reviews/r1`), { rating: 5 }),
+        setDoc(doc(db, `${parentPath}/reviews/r2`), { rating: 3 }),
+        setDoc(doc(db, `${parentPath}/reviews/r3`), { rating: 4 }),
+      ]);
+
+      const snapshot = await execute(
+        db
+          .pipeline()
+          .collection(base)
+          .addFields(
+            subcollection('reviews')
+              .sort(ascending(field('rating')))
+              .select('rating')
+              .toArrayExpression()
+              .as('reviewDocs'),
+          )
+          .select('name', field('reviewDocs')),
+      );
+
+      snapshot.results.should.have.length(1);
+      const data = snapshot.results[0].data();
+      data.name.should.equal('Pizza Place');
+      Array.isArray(data.reviewDocs).should.equal(true);
+      data.reviewDocs.should.have.length(3);
+      // A single-field select() inside an array subquery yields the scalar values.
+      data.reviewDocs.should.deepEqual([3, 4, 5]);
+    });
+
+    it('evaluates sibling scalar + array subqueries in one addFields', async function () {
+      const { execute, field, subcollection, countAll, average, ascending } =
+        firestorePipelinesModular;
+      const { getFirestore, doc, setDoc } = firestoreModular;
+      const db = getFirestore(DATABASE_ID);
+      const base = `${COLLECTION}/${Utils.randString(12, '#aA')}/subquery-siblings`;
+      const parentPath = `${base}/restaurant-a`;
+
+      await setDoc(doc(db, parentPath), { name: 'Pizza Place' });
+      await Promise.all([
+        setDoc(doc(db, `${parentPath}/reviews/r1`), { rating: 4 }),
+        setDoc(doc(db, `${parentPath}/reviews/r2`), { rating: 5 }),
+      ]);
+
+      const snapshot = await execute(
+        db
+          .pipeline()
+          .collection(base)
+          .addFields(
+            subcollection('reviews')
+              .aggregate(countAll().as('count'), average('rating').as('avg'))
+              .toScalarExpression()
+              .as('summary'),
+            subcollection('reviews')
+              .sort(ascending(field('rating')))
+              .select('rating')
+              .toArrayExpression()
+              .as('reviewDocs'),
+          )
+          .select('name', field('summary'), field('reviewDocs')),
+      );
+
+      snapshot.results.should.have.length(1);
+      const data = snapshot.results[0].data();
+      data.summary.count.should.equal(2);
+      data.summary.avg.should.equal(4.5);
+      Array.isArray(data.reviewDocs).should.equal(true);
+      data.reviewDocs.should.deepEqual([4, 5]);
+    });
+
+    it('evaluates a deeply nested arithmetic expression without hanging analysis', async function () {
+      // A 30-deep add() chain. Under the previous O(2^depth) iOS
+      // getIOSUnsupportedPipelineFunctions this would have hung execute(); it must
+      // now parse + execute quickly and return the exact sum.
+      const { execute, field, add, constant } = firestorePipelinesModular;
+      const { getFirestore, doc, setDoc } = firestoreModular;
+      const db = getFirestore(DATABASE_ID);
+      const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+      await setDoc(doc(db, docPath), { x: 1 });
+
+      const depth = 30;
+      let expr = constant(0);
+      for (let i = 0; i < depth; i++) {
+        expr = add(field('x'), expr);
+      }
+
+      const snapshot = await execute(db.pipeline().documents([docPath]).select(expr.as('deepSum')));
+
+      snapshot.results.should.have.length(1);
+      snapshot.results[0].data().deepSum.should.equal(depth);
     });
   });
 });

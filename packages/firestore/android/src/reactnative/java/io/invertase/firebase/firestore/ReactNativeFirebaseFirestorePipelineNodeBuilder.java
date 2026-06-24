@@ -17,6 +17,18 @@ import java.util.Locale;
 import java.util.Map;
 
 final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
+  interface NestedPipelineBuilder {
+    com.google.firebase.firestore.Pipeline build(
+        ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest request)
+        throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException;
+  }
+
+  private NestedPipelineBuilder nestedPipelineBuilder;
+
+  void setNestedPipelineBuilder(NestedPipelineBuilder nestedPipelineBuilder) {
+    this.nestedPipelineBuilder = nestedPipelineBuilder;
+  }
+
   private static final class ResolvedValueBox {
     Object value;
   }
@@ -1959,6 +1971,19 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     String normalizedName = canonicalizeExpressionFunctionName(functionName);
 
+    // `scalar` / `array` may wrap an opaque PipelineValue (a nested-pipeline
+    // subquery) rather than a literal. Detect that here and build the nested
+    // pipeline directly; otherwise fall through to the normal literal handling.
+    if (("scalar".equals(normalizedName) || "array".equals(normalizedName)) && args.size() == 1) {
+      Map<String, Object> nestedPipelineMap = extractNestedPipelineMapFromRaw(args.get(0));
+      if (nestedPipelineMap != null) {
+        box.value =
+            buildRawNestedPipelineSubquery(
+                "scalar".equals(normalizedName), nestedPipelineMap, fieldName + ".args[0]");
+        return;
+      }
+    }
+
     switch (normalizedName) {
       case "array":
         {
@@ -2785,6 +2810,9 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
 
     switch (normalizedName) {
       case "array":
+        if (args.size() == 1 && isNestedPipelineSubqueryArgument(args.get(0))) {
+          return buildNestedPipelineSubqueryExpression(false, args.get(0), fieldName);
+        }
         return buildParsedArrayExpression(args, fieldName);
       case "map":
         return buildParsedMapExpression(args, fieldName);
@@ -2884,9 +2912,178 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           return buildParsedTimestampTruncateExpression(args, fieldName);
         }
         return null;
+      case "scalar":
+        requireParsedArgumentCount(args, 1, functionName, fieldName);
+        return buildNestedPipelineSubqueryExpression(true, args.get(0), fieldName);
       default:
         return null;
     }
+  }
+
+  private boolean isNestedPipelineSubqueryArgument(
+      ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value) {
+    Map<String, Object> pipelineMap = extractNestedPipelineMap(value);
+    return pipelineMap != null;
+  }
+
+  private Map<String, Object> extractNestedPipelineMap(
+      ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value) {
+    // A PipelineValue is preserved as an opaque primitive holding the raw map so
+    // the nested pipeline's stages are not walked as outer expressions. Unwrap it
+    // here and re-parse the raw nested pipeline map directly.
+    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) {
+      Object raw =
+          ((ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) value).value;
+      return extractNestedPipelineMapFromRaw(raw);
+    }
+
+    if (!(value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode)) {
+      return null;
+    }
+
+    Map<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> values =
+        ((ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) value).values;
+
+    if (values.containsKey("pipeline")
+        && values.get("pipeline")
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) {
+      return parsedMapValueNodeToMap(
+          (ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) values.get("pipeline"));
+    }
+
+    if (values.containsKey("source") && values.containsKey("stages")) {
+      return parsedMapValueNodeToMap(
+          (ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) value);
+    }
+
+    return null;
+  }
+
+  @SuppressWarnings("unchecked")
+  private Map<String, Object> extractNestedPipelineMapFromRaw(Object raw) {
+    if (!(raw instanceof Map)) {
+      return null;
+    }
+
+    Map<String, Object> rawMap = (Map<String, Object>) raw;
+
+    Object pipeline = rawMap.get("pipeline");
+    if (pipeline instanceof Map) {
+      return (Map<String, Object>) pipeline;
+    }
+
+    if (rawMap.containsKey("source") && rawMap.containsKey("stages")) {
+      return rawMap;
+    }
+
+    return null;
+  }
+
+  private Map<String, Object> parsedMapValueNodeToMap(
+      ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode mapValue) {
+    Map<String, Object> output = new LinkedHashMap<>();
+    for (Map.Entry<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> entry :
+        mapValue.values.entrySet()) {
+      Object converted = parsedValueNodeToObject(entry.getValue());
+      if (converted != null) {
+        output.put(entry.getKey(), converted);
+      }
+    }
+    return output;
+  }
+
+  private Object parsedValueNodeToObject(
+      ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value) {
+    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) {
+      return ((ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) value).value;
+    }
+    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) {
+      List<Object> list = new ArrayList<>();
+      for (ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode entry :
+          ((ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) value).values) {
+        list.add(parsedValueNodeToObject(entry));
+      }
+      return list;
+    }
+    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) {
+      return parsedMapValueNodeToMap(
+          (ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) value);
+    }
+    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) {
+      ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode expression =
+          ((ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) value).expression;
+      if (expression
+          instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedFunctionExpressionNode) {
+        ReactNativeFirebaseFirestorePipelineParser.ParsedFunctionExpressionNode function =
+            (ReactNativeFirebaseFirestorePipelineParser.ParsedFunctionExpressionNode) expression;
+        Map<String, Object> serialized = new LinkedHashMap<>();
+        serialized.put("exprType", "Function");
+        serialized.put("name", function.name);
+        List<Object> args = new ArrayList<>();
+        for (ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode arg : function.args) {
+          args.add(parsedValueNodeToObject(arg));
+        }
+        serialized.put("args", args);
+        return serialized;
+      }
+      if (expression
+          instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) {
+        Map<String, Object> serialized = new LinkedHashMap<>();
+        serialized.put("exprType", "Field");
+        serialized.put(
+            "path",
+            ((ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) expression)
+                .path);
+        return serialized;
+      }
+    }
+    return null;
+  }
+
+  private Expression buildNestedPipelineSubqueryExpression(
+      boolean scalar,
+      ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value,
+      String fieldName)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    if (nestedPipelineBuilder == null) {
+      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+          "pipelineExecute() failed to build nested pipeline subquery.");
+    }
+
+    Map<String, Object> pipelineMap = extractNestedPipelineMap(value);
+    if (pipelineMap == null) {
+      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+          "pipelineExecute() expected " + fieldName + " to contain a nested pipeline.");
+    }
+
+    return buildNestedPipelineFromMap(scalar, pipelineMap);
+  }
+
+  /**
+   * Builds a scalar/array nested-pipeline subquery from a raw pipeline map (the form produced when
+   * a PipelineValue argument is preserved opaquely by the parser).
+   */
+  private Expression buildRawNestedPipelineSubquery(
+      boolean scalar, Map<String, Object> pipelineMap, String fieldName)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    if (pipelineMap == null) {
+      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+          "pipelineExecute() expected " + fieldName + " to contain a nested pipeline.");
+    }
+    return buildNestedPipelineFromMap(scalar, pipelineMap);
+  }
+
+  private Expression buildNestedPipelineFromMap(boolean scalar, Map<String, Object> pipelineMap)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    if (nestedPipelineBuilder == null) {
+      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+          "pipelineExecute() failed to build nested pipeline subquery.");
+    }
+
+    ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest request =
+        ReactNativeFirebaseFirestorePipelineParser.parsePipelineMap(pipelineMap, null);
+    com.google.firebase.firestore.Pipeline nestedPipeline = nestedPipelineBuilder.build(request);
+    return scalar ? nestedPipeline.toScalarExpression() : nestedPipeline.toArrayExpression();
   }
 
   private Expression buildParsedArrayExpression(

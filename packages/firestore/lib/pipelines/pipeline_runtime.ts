@@ -78,6 +78,7 @@ import type { PipelineExecuteOptions } from './pipeline_options';
 import { getFirestore } from '../modular';
 import { getIOSUnsupportedPipelineFunctions } from './pipeline_support';
 import { validateExecuteOptions, validateSerializedPipeline } from './pipeline_validate';
+import { createPipelineSubqueryExpression, type FunctionExpression } from './expressions';
 
 const PIPELINE_RUNTIME_SYMBOL = Symbol.for('RNFBFirestorePipelineRuntime');
 const PIPELINE_RUNTIME_INSTALLER_SYMBOL = Symbol.for('RNFBFirestorePipelineRuntimeInstaller');
@@ -88,7 +89,7 @@ type GlobalWithPipelineInstaller = typeof globalThis & {
 
 interface RuntimePipeline extends Pipeline {
   readonly [PIPELINE_RUNTIME_SYMBOL]: true;
-  readonly firestore: FirestoreInternal;
+  readonly firestore: FirestoreInternal | null;
   serialize(visiting?: WeakSet<object>): FirestorePipelineSerializedInternal;
 }
 
@@ -349,13 +350,13 @@ function asQueryInternals(query: Query): QueryWithAggregateInternals {
 
 class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
   readonly [PIPELINE_RUNTIME_SYMBOL] = true as const;
-  readonly firestore: FirestoreInternal;
+  readonly firestore: FirestoreInternal | null;
 
   private readonly _source: FirestorePipelineSourceInternal;
   private readonly _stages: RuntimePipelineStageInternal[];
 
   constructor(
-    firestore: FirestoreInternal,
+    firestore: FirestoreInternal | null,
     source: FirestorePipelineSourceInternal,
     stages: RuntimePipelineStageInternal[] = [],
   ) {
@@ -557,13 +558,21 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
       );
     }
 
-    if (other.firestore !== this.firestore) {
+    if (other.firestore !== null && this.firestore !== null && other.firestore !== this.firestore) {
       throw new Error(
         'firebase.firestore().pipeline().union(*) cannot combine pipelines from different Firestore instances.',
       );
     }
 
     return this.append('union', { other });
+  }
+
+  toArrayExpression(): FunctionExpression {
+    return createPipelineSubqueryExpression('array', this);
+  }
+
+  toScalarExpression(): FunctionExpression {
+    return createPipelineSubqueryExpression('scalar', this);
   }
 
   unnest(selectable: Selectable, indexField?: string): Pipeline<T>;
@@ -757,6 +766,11 @@ export function createPipelineSource(firestore: FirestoreInternal): PipelineSour
   return new RuntimePipelineSourceImpl(firestore);
 }
 
+/** @internal Creates a detached pipeline without a Firestore instance (e.g. subcollection subqueries). */
+export function createDetachedPipeline(source: FirestorePipelineSourceInternal): Pipeline {
+  return new RuntimePipelineImpl(null, source);
+}
+
 export function installPipelineRuntime(firestoreInstance?: FirestoreInternal): void {
   let firestore = firestoreInstance;
   if (!firestore) {
@@ -829,6 +843,13 @@ export async function executeRuntimePipeline(
   pipelineOrOptions: Pipeline | PipelineExecuteOptions,
 ): Promise<PipelineSnapshot> {
   const { runtimePipeline, executeOptions } = parseExecuteInput(pipelineOrOptions);
+
+  if (!runtimePipeline.firestore) {
+    throw new Error(
+      'This pipeline was created without a database (e.g., as a subcollection pipeline) and cannot be executed directly. It can only be used as part of another pipeline.',
+    );
+  }
+
   const serializedPipeline = runtimePipeline.serialize();
   validateSerializedPipeline(serializedPipeline);
 
@@ -853,7 +874,7 @@ export async function executeRuntimePipeline(
     );
   }
   const results = (nativeResponse?.results ?? []).map(
-    result => new RuntimePipelineResult(runtimePipeline.firestore, result),
+    result => new RuntimePipelineResult(runtimePipeline.firestore!, result),
   );
 
   return {

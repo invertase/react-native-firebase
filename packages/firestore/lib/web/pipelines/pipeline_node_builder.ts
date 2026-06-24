@@ -16,6 +16,8 @@
  */
 
 import * as firebaseFirestorePipelines from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
+import type { Firestore } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
+import type { FirestorePipelineSerializedInternal } from '../../types/internal';
 import type {
   AggregateFunction,
   AliasedAggregate,
@@ -31,6 +33,38 @@ export type WebPipelineSource = WebSdkPipelineSource<WebPipelineInstance> & Reco
 
 type PipelineHelperFn = (...args: unknown[]) => unknown;
 type AliasedValue = { as: (name: string) => unknown };
+
+type NestedWebPipelineBuilder = (
+  firestore: Firestore,
+  pipeline: FirestorePipelineSerializedInternal,
+) => WebPipelineInstance;
+
+let nestedWebPipelineBuilder: NestedWebPipelineBuilder | null = null;
+let nestedWebPipelineFirestore: Firestore | null = null;
+
+export function configureWebNestedPipelineRevival(
+  firestore: Firestore,
+  builder: NestedWebPipelineBuilder,
+): void {
+  nestedWebPipelineFirestore = firestore;
+  nestedWebPipelineBuilder = builder;
+}
+
+function extractNestedPipelineFromArg(arg: unknown): FirestorePipelineSerializedInternal | null {
+  if (!isRecord(arg)) {
+    return null;
+  }
+
+  if (arg.exprType === 'PipelineValue' && isRecord(arg.pipeline)) {
+    return arg.pipeline as unknown as FirestorePipelineSerializedInternal;
+  }
+
+  if (isRecord(arg.source) && Array.isArray(arg.stages)) {
+    return arg as unknown as FirestorePipelineSerializedInternal;
+  }
+
+  return null;
+}
 
 const WEB_PIPELINE_HELPER_ALIASES: Record<string, string> = {
   lower: 'toLower',
@@ -58,7 +92,8 @@ function isExpressionNode(value: Record<string, unknown>): boolean {
     value.exprType === 'Field' ||
     value.exprType === 'Constant' ||
     value.exprType === 'Variable' ||
-    value.exprType === 'Function'
+    value.exprType === 'Function' ||
+    value.exprType === 'PipelineValue'
   );
 }
 
@@ -177,6 +212,33 @@ function rebuildExpressionNode(
   if (typeof node.name === 'string') {
     const helperName = node.name;
     const args = Array.isArray(node.args) ? node.args : [];
+
+    if (
+      (helperName === 'scalar' || helperName === 'array') &&
+      args.length === 1 &&
+      nestedWebPipelineBuilder &&
+      nestedWebPipelineFirestore
+    ) {
+      const nestedPipeline = extractNestedPipelineFromArg(args[0]);
+      if (nestedPipeline) {
+        const pipelineInstance = nestedWebPipelineBuilder(
+          nestedWebPipelineFirestore,
+          nestedPipeline,
+        );
+        const subqueryMethod =
+          helperName === 'scalar'
+            ? pipelineInstance.toScalarExpression
+            : pipelineInstance.toArrayExpression;
+        if (typeof subqueryMethod !== 'function') {
+          throw new Error(
+            'pipelineExecute() expected nested pipeline to support subquery expression conversion for web SDK.',
+          );
+        }
+        resolve(subqueryMethod.call(pipelineInstance) as Expression);
+        return;
+      }
+    }
+
     const revivedArgs = new Array(args.length);
     const argsMode = helperName === 'conditional' ? 'pipeline' : 'helper';
 

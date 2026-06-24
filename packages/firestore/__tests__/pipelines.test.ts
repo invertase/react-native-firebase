@@ -31,6 +31,9 @@ import {
   timestampSubtract,
   trunc,
   variable,
+  countAll,
+  average,
+  subcollection,
 } from '../lib/pipelines';
 import '../lib/pipelines';
 import { ConstantExpression, FunctionExpression } from '../lib/pipelines/expressions';
@@ -251,9 +254,7 @@ describe('Firestore pipelines runtime', function () {
       .select(
         ifNull(field('displayName'), constant('Anonymous')).as('displayName'),
         ifNull('displayName', field('fullName')).as('stringFieldIfNull'),
-        field('displayName')
-          .ifNull(field('fullName'))
-          .as('fluentIfNull'),
+        field('displayName').ifNull(field('fullName')).as('fluentIfNull'),
       )
       .serialize();
 
@@ -358,8 +359,12 @@ describe('Firestore pipelines runtime', function () {
       .pipeline()
       .collection('firestore')
       .select(
-        coalesce(field('preferredName'), field('fullName'), constant('Anonymous')).as('displayName'),
-        coalesce('preferredName', field('fullName'), constant('Anonymous')).as('stringFieldCoalesce'),
+        coalesce(field('preferredName'), field('fullName'), constant('Anonymous')).as(
+          'displayName',
+        ),
+        coalesce('preferredName', field('fullName'), constant('Anonymous')).as(
+          'stringFieldCoalesce',
+        ),
         field('preferredName')
           .coalesce(field('fullName'), constant('Anonymous'))
           .as('fluentDisplayName'),
@@ -766,11 +771,9 @@ describe('Firestore pipelines runtime', function () {
           constant('positive'),
           constant('non-positive'),
         ).as('bucket'),
-        switchOn(
-          field('value').greaterThan(0),
-          constant('positive'),
-          constant('non-positive'),
-        ).as('switchBucket'),
+        switchOn(field('value').greaterThan(0), constant('positive'), constant('non-positive')).as(
+          'switchBucket',
+        ),
         round(field('score'), 2).as('roundedScore'),
         stringRepeat(field('separator'), 3).as('divider'),
         substring(field('label'), 0, 4).as('labelPrefix'),
@@ -791,5 +794,90 @@ describe('Firestore pipelines runtime', function () {
       'timestampSubtract',
       'trunc',
     ]);
+  });
+
+  it('serializes subcollection detached pipelines and scalar subqueries', function () {
+    const db: any = firebase.firestore();
+    const detached = subcollection('reviews');
+    expect(detached.serialize()).toEqual({
+      source: { source: 'subcollection', path: 'reviews' },
+      stages: [],
+    });
+
+    const embedded = db
+      .pipeline()
+      .collection('restaurants')
+      .addFields(
+        subcollection('reviews')
+          .aggregate(countAll().as('reviewCount'), average('rating').as('avgRating'))
+          .toScalarExpression()
+          .as('reviewSummary'),
+      )
+      .serialize();
+
+    expect(embedded.stages[0]).toMatchObject({
+      stage: 'addFields',
+      options: {
+        fields: [
+          {
+            alias: 'reviewSummary',
+            expr: {
+              exprType: 'Function',
+              name: 'scalar',
+              args: [
+                {
+                  exprType: 'PipelineValue',
+                  pipeline: {
+                    source: { source: 'subcollection', path: 'reviews' },
+                    stages: [
+                      {
+                        stage: 'aggregate',
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('rejects direct execute of detached subcollection pipelines', async function () {
+    await expect(execute(subcollection('reviews'))).rejects.toThrow(
+      'This pipeline was created without a database (e.g., as a subcollection pipeline) and cannot be executed directly. It can only be used as part of another pipeline.',
+    );
+  });
+
+  it('validates subcollection() arguments', function () {
+    expect(() => subcollection('')).toThrow(
+      'subcollection(*) expected path to be a non-empty string.',
+    );
+    expect(() => (subcollection as any)(123)).toThrow(
+      'subcollection(*) expected a path string or SubcollectionStageOptions object.',
+    );
+    expect(() => (subcollection as any)(null)).toThrow(
+      'subcollection(*) expected a path string or SubcollectionStageOptions object.',
+    );
+    expect(() => subcollection({ path: '' } as any)).toThrow(
+      'subcollection(*) expected path to be a non-empty string.',
+    );
+  });
+
+  it('accepts subcollection() options form with and without rawOptions', function () {
+    expect((subcollection({ path: 'reviews' } as any) as any).serialize()).toEqual({
+      source: { source: 'subcollection', path: 'reviews' },
+      stages: [],
+    });
+
+    expect(
+      (
+        subcollection({ path: 'reviews', rawOptions: { requestLabel: 'x' } } as any) as any
+      ).serialize(),
+    ).toEqual({
+      source: { source: 'subcollection', path: 'reviews', rawOptions: { requestLabel: 'x' } },
+      stages: [],
+    });
   });
 });

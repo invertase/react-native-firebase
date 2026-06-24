@@ -189,7 +189,7 @@ struct RNFBFirestoreParsedRawStage {
 
 enum RNFBFirestorePipelineParser {
   private static let sourceTypes: Set<String> = [
-    "collection", "collectionGroup", "database", "documents", "query",
+    "collection", "collectionGroup", "database", "documents", "query", "subcollection",
   ]
 
   private static let knownStages: Set<String> = [
@@ -311,9 +311,9 @@ enum RNFBFirestorePipelineParser {
     return try parsePipelineMap(pipeline, options: options as? [String: Any])
   }
 
-  private static func parsePipelineMap(
+  static func parsePipelineMap(
     _ pipeline: [String: Any],
-    options: [String: Any]?
+    options: [String: Any]? = nil
   ) throws -> RNFBFirestoreParsedPipelineRequest {
     let rootBox = ParsedPipelineRequestBox()
     var stack: [PipelineParseFrame] = [
@@ -457,6 +457,16 @@ enum RNFBFirestorePipelineParser {
         queryType: try requireNonEmptyString(source, key: "queryType", fieldName: "pipeline.source.queryType"),
         query: try parseQuerySource(source),
         rawOptions: nil
+      )
+    case "subcollection":
+      return RNFBFirestoreParsedPipelineSource(
+        sourceType: sourceType,
+        path: try requireNonEmptyString(source, key: "path", fieldName: "pipeline.source.path"),
+        collectionId: nil,
+        documents: [],
+        queryType: nil,
+        query: nil,
+        rawOptions: try parseUnsupportedSourceRawOptions(source, sourceType: sourceType)
       )
     default:
       throw PipelineValidationError("pipelineExecute() received an unknown source type.")
@@ -1085,7 +1095,10 @@ enum RNFBFirestorePipelineParser {
   }
 
   private static func isExpressionLike(_ map: [String: Any]) -> Bool {
-    map["exprType"] != nil || map["operator"] != nil || map["name"] != nil || map["expr"] != nil ||
+    if let exprType = map["exprType"] as? String, exprType.lowercased() == "pipelinevalue" {
+      return false
+    }
+    return map["exprType"] != nil || map["operator"] != nil || map["name"] != nil || map["expr"] != nil ||
       map["expression"] != nil || map["fieldPath"] != nil || map["path"] != nil ||
       map["segments"] != nil || map["_segments"] != nil
   }
@@ -1271,6 +1284,16 @@ enum RNFBFirestorePipelineParser {
         ])
       case let .valueEnter(value, box, fieldName):
         if let map = value as? [String: Any] {
+          // A PipelineValue is an opaque nested-pipeline subquery (scalar/array).
+          // Preserve the raw map verbatim so the node builder can re-parse the
+          // nested pipeline via parsePipelineMap. Descending into it here would
+          // treat the nested pipeline's stages (e.g. AggregateFunction nodes)
+          // as outer expressions and loop forever.
+          if let exprType = map["exprType"] as? String, exprType.lowercased() == "pipelinevalue" {
+            box.value = .primitive(value)
+            continue
+          }
+
           if isExpressionLike(map) {
             let expressionBox = ParsedExpressionNodeBox()
             stack.append(.expressionValueExit(box, expressionBox, fieldName))

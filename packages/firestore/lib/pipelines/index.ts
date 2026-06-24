@@ -59,6 +59,7 @@ export type {
   SampleStageOptions,
   SelectStageOptions,
   SortStageOptions,
+  SubcollectionStageOptions,
   UnionStageOptions,
   UnnestStageOptions,
   WhereStageOptions,
@@ -67,6 +68,7 @@ export type { PipelineExecuteOptions } from './pipeline_options';
 export type { OneOf } from './types';
 
 export { execute } from './pipeline_impl';
+export { subcollection } from './subcollection';
 export {
   field,
   variable,
