@@ -15,7 +15,8 @@ import java.util.Set;
 final class ReactNativeFirebaseFirestorePipelineParser {
   private static final Set<String> SOURCE_TYPES =
       new HashSet<>(
-          Arrays.asList("collection", "collectionGroup", "database", "documents", "query", "subcollection"));
+          Arrays.asList(
+              "collection", "collectionGroup", "database", "documents", "query", "subcollection"));
 
   private static final Set<String> KNOWN_STAGES =
       new HashSet<>(
