@@ -3128,6 +3128,344 @@ describe('FirestorePipeline', function () {
     });
   });
 
+  describe('executor parser and bridge factory coverage', function () {
+    describe('source execute paths', function () {
+      it('executes database() source with where filter and limit', async function () {
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/database-source`,
+        );
+        const runId = Utils.randString(12, '#aA');
+
+        await setDoc(doc(coll, 'doc-a'), { runId, label: 'database-source-hit' });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .database()
+            .where(field('runId').equal(runId))
+            .select('label')
+            .limit(5),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().label.should.equal('database-source-hit');
+      });
+
+      it('routes collection and collectionGroup index hint rawOptions through native builder', async function () {
+        if (Platform.other || Platform.ios) {
+          return;
+        }
+
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/coll-hints`);
+        const root = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+        const runId = Utils.randString(12, '#aA');
+
+        await Promise.all([
+          setDoc(doc(coll, 'hint-a'), { runId, value: 1 }),
+          setDoc(doc(db, `${root}/${COLLECTION_GROUP}/grp-a`), { runId, employees: 42 }),
+        ]);
+
+        await expectAsyncError(
+          () =>
+            execute(
+              db
+                .pipeline()
+                .collection({
+                  collectionRef: coll,
+                  rawOptions: {
+                    ignoreIndexFields: ['value'],
+                  },
+                })
+                .where(field('runId').equal(runId))
+                .select('value'),
+            ),
+          ['invalid-argument', 'invalid argument', 'Failed to execute pipeline'],
+        );
+
+        await expectAsyncError(
+          () =>
+            execute(
+              db
+                .pipeline()
+                .collectionGroup({
+                  collectionId: COLLECTION_GROUP,
+                  rawOptions: {
+                    ignoreIndexFields: ['employees'],
+                  },
+                })
+                .where(field('runId').equal(runId))
+                .select('employees'),
+            ),
+          ['invalid-argument', 'invalid argument', 'Failed to execute pipeline'],
+        );
+      });
+
+      it('executes createFrom(query) with composite and array filter operands', async function () {
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc, query, where, orderBy, limit } =
+          firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/query-source-operands`,
+        );
+        const runId = Utils.randString(12, '#aA');
+
+        await Promise.all([
+          setDoc(doc(coll, 'match'), { runId, score: 90, tier: 1 }),
+          setDoc(doc(coll, 'skip-score'), { runId, score: 10, tier: 1 }),
+        ]);
+
+        const querySource = query(
+          coll,
+          where('runId', '==', runId),
+          where('score', '>=', 50),
+          orderBy('score', 'desc'),
+          limit(5),
+        );
+
+        const snapshot = await execute(
+          db.pipeline().createFrom(querySource).select('score'),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().score.should.equal(90);
+      });
+    });
+
+    describe('stage execute paths', function () {
+      it('executes sample stage with percentage', async function () {
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/sample-percent`);
+
+        await Promise.all(
+          Array.from({ length: 10 }, (_, index) =>
+            setDoc(doc(coll, `doc-${index}`), { slot: index }),
+          ),
+        );
+
+        const snapshot = await execute(
+          db.pipeline().collection(coll).sample({ percentage: 0.5 }).select('slot'),
+        );
+
+        snapshot.results.length.should.be.greaterThan(0);
+        snapshot.results.length.should.be.lessThanOrEqual(10);
+      });
+
+      it('executes findNearest basic and distanceField option paths', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc, vector } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/find-nearest-options`,
+        );
+
+        await Promise.all([
+          setDoc(doc(coll, 'near'), { name: 'near', embedding: vector([1.0, 0.0, 0.0]) }),
+          setDoc(doc(coll, 'far'), { name: 'far', embedding: vector([0.0, 1.0, 0.0]) }),
+        ]);
+
+        const basicSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .findNearest({
+              field: 'embedding',
+              vectorValue: [1.0, 0.0, 0.0],
+              distanceMeasure: 'COSINE',
+            })
+            .select('name'),
+        );
+
+        basicSnapshot.results.should.have.length(2);
+        basicSnapshot.results[0].data().name.should.equal('near');
+
+        const distanceFieldSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .findNearest({
+              field: 'embedding',
+              vectorValue: [1.0, 0.0, 0.0],
+              distanceMeasure: 'EUCLIDEAN',
+              limit: 1,
+              distanceField: 'matchDistance',
+            })
+            .select('name', 'matchDistance'),
+        );
+
+        distanceFieldSnapshot.results.should.have.length(1);
+        distanceFieldSnapshot.results[0].data().name.should.equal('near');
+        should(distanceFieldSnapshot.results[0].data().matchDistance).be.a.Number();
+      });
+
+      it('executes unnest options-object overload', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/unnest-options-object`);
+
+        await setDoc(doc(coll, 'u1'), { name: 'A', scores: [5, 7] });
+
+        const unnestSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where(field('name').equal('A'))
+            .unnest({ selectable: field('scores').as('score'), indexField: 'attempt' })
+            .sort(field('name').ascending(), field('attempt').ascending())
+            .select('name', 'score', 'attempt'),
+        );
+
+        unnestSnapshot.results.should.have.length(2);
+        unnestSnapshot.results[0].data().attempt.should.equal(0);
+        unnestSnapshot.results[1].data().attempt.should.equal(1);
+      });
+
+      it('routes rawStage through native bridge factory', async function () {
+        if (Platform.other || Platform.ios) {
+          return;
+        }
+
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/raw-stage-bridge`);
+
+        await setDoc(doc(coll, 'base'), { rating: 4, boost: 1 });
+
+        await expectAsyncError(
+          () =>
+            execute(
+              db
+                .pipeline()
+                .collection(coll)
+                .rawStage('score', {
+                  input: field('rating'),
+                  threshold: 4,
+                }, { enabled: true })
+                .select('rating'),
+            ),
+          ['invalid-argument', 'Failed to execute pipeline', 'firestore/'],
+        );
+      });
+    });
+
+    describe('native validation error paths', function () {
+      it('rejects invalid findNearest distanceMeasure at native boundary', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc, vector } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/find-nearest-invalid-measure`,
+        );
+
+        await setDoc(doc(coll, 'vec'), { embedding: vector([1.0, 0.0, 0.0]) });
+
+        await expectAsyncError(
+          () =>
+            execute(
+              db
+                .pipeline()
+                .collection(coll)
+                .findNearest({
+                  field: 'embedding',
+                  vectorValue: [1.0, 0.0, 0.0],
+                  distanceMeasure: 'INVALID_MEASURE',
+                })
+                .select('embedding'),
+            ),
+          [
+            'pipelineExecute() expected stage.options.distanceMeasure to be one of COSINE, EUCLIDEAN, DOT_PRODUCT.',
+            'invalid-argument',
+            'Failed to execute pipeline',
+          ],
+        );
+      });
+
+      it('rejects empty addFields and removeFields at validation boundary', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/native-empty-field-stages`,
+        );
+
+        await setDoc(doc(coll, 'base'), { value: 1 });
+
+        await expectAsyncError(
+          () => execute(db.pipeline().collection(coll).addFields()),
+          'pipelineExecute() expected stage.options.fields to contain at least one value.',
+        );
+
+        await expectAsyncError(
+          () => execute(db.pipeline().collection(coll).removeFields()),
+          'pipelineExecute() expected stage.options.fields to contain at least one value.',
+        );
+      });
+
+      it('normalizes findNearest DOTPRODUCT distance measure alias', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc, vector } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/find-nearest-dot-product`,
+        );
+
+        await setDoc(doc(coll, 'vec'), { name: 'dot', embedding: vector([1.0, 0.0, 0.0]) });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .findNearest({
+              field: 'embedding',
+              vectorValue: [1.0, 0.0, 0.0],
+              distanceMeasure: 'DOTPRODUCT',
+              limit: 1,
+            })
+            .select('name'),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().name.should.equal('dot');
+      });
+    });
+  });
+
   describe('pathological subqueries and recursion', function () {
     it('evaluates a scalar subquery with a where filter and multiple accumulators', async function () {
       const { execute, field, constant, subcollection, average, countAll, sum, greaterThan } =
