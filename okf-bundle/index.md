@@ -18,6 +18,10 @@ okf_version: "0.1"
 * [Coverage design](/testing/coverage-design.md) — unit/e2e coverage policy, native gates, Codecov
 * [Firebase testing project](/testing/firebase-testing-project.md) — cloud vs emulator, rules/indexes, deploy
 
+# New Architecture
+
+* [TurboModule migration](/new-architecture/index.md) — Codegen TurboModules, coordinated New Architecture break, phase queue
+
 # Packages
 
 * [Auth](/packages/auth/index.md) — modular API type parity, platform matrix, `compare:types`
