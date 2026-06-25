@@ -114,7 +114,7 @@ Jet self-wraps under NYC when `--coverage` is passed.
 - Metro bundles `packages/*/dist/module/**` with inline source maps (`tests/.babelrc`: `useInlineSourceMaps: true`).
 - NYC (`tests/nyc.config.js`) remaps to `packages/*/lib/**` → **`coverage/lcov.info`** (`cwd: '..'`).
 - Jet re-invokes under `tests/node_modules/.bin/nyc` (checks `NYC_CONFIG`). Detox/macOS need no extra `nyc` prefix; Jet must run from `tests/`.
-- **Transfer:** Patched Jet/mocha-remote WebSocket path (`coverage-ready` → `pull-coverage` → `coverage-data` → `coverage-ack`); HTTP POST failed on ~4.5MB+ payloads. Patches: `.yarn/patches/` (`jet`, `mocha-remote-client`, `mocha-remote-server`). Server assigns client before `connection`, sends `pull-coverage` when runner active; client retries with `readyState` logging. See [iOS issues 6–6b](../ci-workflows/ios.md#6-jet-websocket-disconnect-1006--1001), [issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00).
+- **Transfer:** Patched Jet/mocha-remote WebSocket path only (`coverage-ready` → `pull-coverage` → `coverage-data` → `coverage-ack`); upstream HTTP POST `/coverage` is **deleted** from the jet patch (not merely unwired — `attachHttpServer` removed). Patches: `.yarn/patches/` (`jet`, `mocha-remote-client`, `mocha-remote-server`). Server assigns client before `connection`, sends `pull-coverage` when runner active; client retries with `readyState` logging. See [iOS issues 6–6b](../ci-workflows/ios.md#6-jet-websocket-disconnect-1006--1001), [issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00), [jet patch workflow](../ci-workflows/detox-patches.md#updating-the-jet-patch-headless).
 
 **NYC settings:**
 
@@ -124,7 +124,16 @@ sourceMap: true, 'exclude-after-remap': true, instrument: false,
 reporter: ['lcov', 'html', 'text-summary'],
 ```
 
-**Verify:** `[jet-coverage] WS received N file(s)` + NYC summary; `coverage/lcov.info` has `SF:packages/...` not just `dist/`.
+**Verify:** `[jet-coverage] server recv coverage-ready` → `[jet-coverage] WS received N file(s)` (N > 0) → NYC summary with non-zero totals; `coverage/lcov.info` has `SF:packages/...` not just `dist/`. If you see `[jet-coverage] merged 0 file(s)`, see [TS coverage troubleshooting](#ts-e2e-coverage-troubleshooting).
+
+### TS e2e coverage troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `[jet-coverage] merged 0 file(s)` | Jet client still POSTs to removed `/coverage` HTTP endpoint, or stale Metro bundle | `yarn install` (jet patch wires `client.uploadCoverage()`); macOS: restart packager with `yarn react-native start --reset-cache` in `tests/` |
+| macOS bundle still has `'/coverage'` fetch | Metro resolves Jet via `"react-native": "src/index"` — patch must touch `jet/src/index.tsx`, not only `lib/` | Re-run after patch; `--reset-cache` |
+| iOS/Android merged 0, macOS OK | Prebuilt app bundle predates Jet/Istanbul fix | `yarn tests:ios:build` / `yarn tests:android:build` then `:test-cover` |
+| Metro 500 on bundle | Missing babel plugins in `tests/` | `yarn install`; confirm `tests/node_modules/babel-plugin-istanbul` exists |
 
 # E2e Android native (Jacoco)
 

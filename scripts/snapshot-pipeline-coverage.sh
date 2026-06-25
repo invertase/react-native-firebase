@@ -94,10 +94,15 @@ for name in (
     'ReactNativeFirebaseFirestorePipelineExecutor',
 ):
     for pkg in root.iter('package'):
-        for cls in pkg.findall('class'):
-            if name in cls.attrib.get('name', ''):
-                missed = int(cls.attrib.get('line-missed', 0))
-                covered = int(cls.attrib.get('line-covered', 0))
+        for sf in pkg.findall('sourcefile'):
+            if sf.attrib.get('name') == f'{name}.java':
+                missed = covered = 0
+                for line in sf.findall('line'):
+                    ci = int(line.attrib.get('ci', 0))
+                    if ci > 0:
+                        covered += 1
+                    else:
+                        missed += 1
                 total = missed + covered
                 pct = 100 * covered / total if total else 0
                 print(f"Android {name}: {covered}/{total} ({pct:.2f}%)")

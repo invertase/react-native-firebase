@@ -12,6 +12,12 @@ Single source of truth for local e2e. Use **only** these commands. `-ci` variant
 
 > **Maintenance contract.** All e2e how-to knowledge lives **here**. Other docs link here; they do not restate anything.
 
+## Prerequisites (once per checkout)
+
+```bash
+yarn   # applies .yarn/patches (jet, mocha-remote-*, detox); installs tests devDeps incl. babel-plugin-istanbul
+```
+
 ## Five rules
 
 1. **Packager** (background):
@@ -29,6 +35,7 @@ yarn tests:emulator:start
 3. **Rebuild when needed**
    - Native changed → `yarn tests:ios:build` / `yarn tests:android:build` before e2e. macOS uses firebase-js-sdk only — no native rebuild.
    - `packages/*/lib/**` changed → `yarn lerna:prepare` (Metro serves `dist/module/**`, not `lib/**`; e2e specs under `packages/*/e2e/**` and `tests/**` are served directly).
+   - **TS e2e coverage (Jet/NYC):** iOS/Android embed the JS bundle at **build** time — run `:build` before `:test-cover` so Istanbul + patched Jet client (`uploadCoverage` WS handshake) are in the app. macOS loads JS from Metro live; restart packager with `--reset-cache` in `tests/` after Jet patch changes. Jet patch must update `src/index.tsx` (Metro entry), not only compiled `lib/`.
 
 4. **Always run with coverage:**
 
