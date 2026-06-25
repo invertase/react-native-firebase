@@ -8,7 +8,7 @@ timestamp: 2026-06-23T00:00:00Z
 
 # Overview
 
-RNFB Detox/Jet e2e runs against a shared Firebase project **`react-native-firebase-testing`** (see `tests/android/app/google-services.json`). Most modules use the **local Firebase Emulator Suite**; **Firestore Pipelines** e2e is an exception and hits a **cloud Enterprise database**.
+RNFB Detox/Jet e2e uses Firebase project **`react-native-firebase-testing`**. Most modules use local emulators; **Firestore Pipelines** uses a cloud Enterprise DB.
 
 ```mermaid
 flowchart TB
@@ -45,7 +45,7 @@ flowchart TB
 
 # Where configuration lives
 
-All emulator and deploy configuration is under [`.github/workflows/scripts/`](../../.github/workflows/scripts/). That directory is the Firebase project root (`firebase.json` cwd for `firebase` CLI and `yarn tests:emulator:start`).
+Config root: [`.github/workflows/scripts/`](../../.github/workflows/scripts/) (`firebase.json` cwd for Firebase CLI and `yarn tests:emulator:start`).
 
 | File | Purpose |
 |------|---------|
@@ -62,7 +62,7 @@ All emulator and deploy configuration is under [`.github/workflows/scripts/`](..
 | [`sync-firestore-indexes.sh`](../../.github/workflows/scripts/sync-firestore-indexes.sh) | Pull indexes from cloud into repo (non-interactive) |
 | [`README-firestore.md`](../../.github/workflows/scripts/README-firestore.md) | Short operator cheat sheet |
 
-Runtime wiring in the test app:
+Runtime wiring:
 
 | File | Role |
 |------|------|
@@ -79,7 +79,7 @@ yarn tests:emulator:start        # foreground (dev)
 yarn tests:emulator:start-ci     # background (CI)
 ```
 
-Runs from `.github/workflows/scripts/` with project `react-native-firebase-testing`:
+Runs from `.github/workflows/scripts/`:
 
 | Emulator | Port | Config |
 |----------|------|--------|
@@ -90,7 +90,7 @@ Runs from `.github/workflows/scripts/` with project `react-native-firebase-testi
 | Storage | 9199 | `storage.rules` |
 | Emulator UI | 4000 | enabled in `firebase.json` |
 
-**Deploying to the emulator:** edit the rules/indexes files in-repo and **restart the emulator**. There is no separate deploy step — the emulator loads `firebase.json` on startup. Rules hot-reload when files change (`firestore: Change detected, updating rules…` in emulator logs).
+**Emulator deploy:** edit repo rules/indexes and restart emulator. No separate deploy; rules hot-reload.
 
 **Wiping emulator Firestore data** (between tests):
 
@@ -109,17 +109,17 @@ curl -X DELETE \
 | `second-rnfb` | Standard | Yes — same emulator host | `SecondDatabase/*` e2e |
 | **`pipelines-e2e`** | **Enterprise** (`eur3`) | **No** | `Pipeline.e2e.js` only |
 
-**Critical:** `Pipeline.e2e.js` uses `getFirestore('pipelines-e2e')`. Because `connectFirestoreEmulator` is **not** called for that database, pipeline `execute()` talks to **live cloud**. Connecting it to the local Standard emulator breaks tests (`permission-denied` / `invalid-argument`).
+**Critical:** `Pipeline.e2e.js` uses `getFirestore('pipelines-e2e')`. No `connectFirestoreEmulator` for that DB; `execute()` talks to **live cloud**. Local Standard emulator breaks tests.
 
-**Why not emulator for pipelines:** RNFB tried hosting pipeline e2e on the emulator alongside `(default)` / `second-rnfb`. The emulator serves one rules/index bundle for `(default)` and does not model multiple cloud databases faithfully — mixing in Enterprise pipeline work broke **security-rules testing** for Standard Firestore e2e. `pipelines-e2e` was split out: dedicated **`firestore.pipelines-e2e.rules`** + **`firestore.pipelines-e2e.indexes.json`**, cloud deploy only (see `firebase.json` array — only `(default)` and `pipelines-e2e`).
+**Why not emulator:** emulator multi-DB/rules behavior broke Standard Firestore security-rules e2e when Enterprise pipelines were mixed in. `pipelines-e2e` uses dedicated cloud rules/indexes.
 
-Pipelines require Enterprise; the emulator defaults to Standard unless `firebase.json` sets `"edition": "enterprise"` under `firestore` or `emulators.firestore`. RNFB does not enable Enterprise emulator mode today.
+Pipelines require Enterprise. RNFB does not enable Enterprise emulator mode today.
 
 See also [Firestore Pipelines design](/packages/firestore/pipelines.md) for bridge/coercion and coverage notes.
 
 # Cloud project: deploy rules and indexes
 
-Firebase CLI must be authenticated (`firebase login`) with access to `react-native-firebase-testing`. Scripts resolve `firebase-tools` from repo `node_modules` (or `yarn firebase` / `npx`) — a global install is optional.
+Firebase CLI must be authenticated for `react-native-firebase-testing`. Scripts use repo `firebase-tools`; global install optional.
 
 ## Multi-database `firebase.json`
 
@@ -137,9 +137,9 @@ cd .github/workflows/scripts
 ./sync-firestore-indexes.sh
 ```
 
-Uses `firebase firestore:indexes --database …` — there is **no** CLI command to pull security rules; edit `.rules` files in-repo intentionally.
+Uses `firebase firestore:indexes --database …`. No CLI pulls security rules; edit `.rules` in repo.
 
-**Always sync `(default)` indexes before deploying** if the cloud project has indexes not in repo. Deploying a minimal `firestore.indexes.json` would **delete** cloud indexes missing from the file.
+**Sync `(default)` indexes before deploy** if cloud has indexes not in repo; deploy deletes missing indexes.
 
 ## Deploy to cloud
 
@@ -148,13 +148,13 @@ cd .github/workflows/scripts
 ./deploy-firestore.sh
 ```
 
-Uses `firebase deploy --only firestore` for **both** databases.
+Deploys **both** databases via `firebase deploy --only firestore`.
 
-**Do not use** `firebase deploy --only firestore:indexes` or `firestore:rules` with the multi-database array config — those sub-targets can exit 0 while deploying nothing ([firebase-tools#10447](https://github.com/firebase/firebase-tools/issues/10447)).
+**Do not use** `--only firestore:indexes` or `firestore:rules`; with multi-DB array they can exit 0 while deploying nothing ([firebase-tools#10447](https://github.com/firebase/firebase-tools/issues/10447)).
 
 ### Vector indexes (`findNearest`)
 
-Vector indexes are defined in **`firestore.pipelines-e2e.indexes.json`**, not in security rules:
+Vector indexes live in **`firestore.pipelines-e2e.indexes.json`**, not rules:
 
 ```json
 {
@@ -169,27 +169,27 @@ Vector indexes are defined in **`firestore.pipelines-e2e.indexes.json`**, not in
 }
 ```
 
-After deploy, index creation is asynchronous; `findNearest` e2e may need to wait or stay skipped until the index is `READY` in console.
+After deploy, index creation is async; `findNearest` may wait/stay skipped until console shows `READY`.
 
 ### `pipelines-e2e` rules
 
-`firestore.pipelines-e2e.rules` is intentionally permissive (`allow read, write` when `database == "pipelines-e2e"`) for shared CI/local testing on a dedicated test database.
+`firestore.pipelines-e2e.rules` is intentionally permissive for dedicated shared CI/local test DB.
 
 # CI
 
-GitHub Actions e2e workflows (`tests_e2e_ios.yml`, `tests_e2e_android.yml`, `tests_e2e_other.yml`):
+GHA e2e:
 
 1. `yarn tests:emulator:start-ci` — background emulator
 2. Build + Detox/Jet run (needs network for `pipelines-e2e` cloud)
 3. Emulator cache under `~/.cache/firebase/emulators`
 
-Pipeline tests run in the same Jet session as other Firestore e2e but hit cloud for execute while setup/wipe for `(default)` still uses emulator.
+Pipeline tests share Jet session with Firestore e2e but execute on cloud; `(default)` setup/wipe stays emulator.
 
 # Local e2e workflow
 
-Run e2e using the canonical commands and iteration tips in the [e2e runbook](running-e2e.md) — emulators + Metro in the background, `tests:<platform>:build` after native changes, then `tests:<platform>:test-cover`. The runbook is the single source of truth for how to run; this doc only owns the **emulator/cloud project** setup above.
+Run e2e via [runbook](running-e2e.md). This doc owns only emulator/cloud setup.
 
-For **pipeline-only** debugging, `tests/app.js` may be temporarily scoped to `Pipeline.e2e.js` (revert before merge — see the runbook's fast-iteration section).
+Pipeline-only debugging may temporarily scope `tests/app.js` to `Pipeline.e2e.js`; revert before merge.
 
 # Learnings and pitfalls
 

@@ -10,10 +10,10 @@ timestamp: 2026-06-25T00:00:00Z
 
 **Policy:** [OKF documentation and commit policy](../../documentation-policy.md).
 
-Pipeline work has **two completion signals** (see [Coverage design](/testing/coverage-design.md)):
+Completion signals:
 
-1. **Parity** — observable behavior is **the same across platforms** unless a difference is a **native Firestore SDK limitation** (not an RNFB bridge gap). **Audit and remediate before further coverage work** ([work queue](pipeline-coverage-work-queue.md)).
-2. **Coverage** — file-level TS and native coverage rise until **intractable** limits (~100% where reachable), **after** parity drift is triaged and bridge gaps closed.
+1. **Parity** — same behavior across platforms unless native Firestore SDK limitation; audit/remediate before coverage work.
+2. **Coverage** — touched TS/native coverage rises until intractable limits after parity drift is triaged.
 
 | Outcome | Action |
 |---------|--------|
@@ -22,11 +22,11 @@ Pipeline work has **two completion signals** (see [Coverage design](/testing/cov
 | Native SDK does not support the feature | Document here with SDK version/evidence; optional reduced e2e on that platform only |
 | macOS-only path (firebase-js-sdk, no RN bridge) | Document; use `Platform.other` skip when the test requires native-only wire shapes |
 
-**Do not** treat e2e `Platform.android` / `Platform.ios` workarounds as permanent without an entry in the drift registry below.
+No permanent `Platform.android` / `Platform.ios` e2e workaround without registry entry.
 
 # Drift registry
 
-**Status:** Platform drift audit complete (2026-06-25). **31** `Platform.*` branch sites in `Pipeline.e2e.js`; **5** bridge gaps in the registry below; remainder documented as SDK / macOS-js / test-only. Live remediation order: [work queue](pipeline-coverage-work-queue.md).
+**Status:** drift audit complete. `Pipeline.e2e.js`: 31 `Platform.*` sites; 5 bridge gaps; remainder SDK / macOS-js / test-only. Live order: [work queue](pipeline-coverage-work-queue.md).
 
 **Classification key:** `bridge` | `SDK` | `macOS-js` | `test-only` | `RNFB-JS`
 
@@ -42,7 +42,7 @@ Pipeline work has **two completion signals** (see [Coverage design](/testing/cov
 | **P-011** | Parser constant envelope routing | `{ exprType: "constant", value: … }` in value context | `isExpressionLike` true for any `exprType` | `isExpressionLike` excludes `"constant"` — descends as literal map | Same wire | Nested constants (e.g. ref maps) | **4** |
 | **P-012** | `timestampTruncate` arity validation | Validates arg count; throws | Sets `box.value = null` when `args.size() != 2` | Same | L3292–3294 (macOS vacuous) | **5** |
 
-**Follow-up (test-only, after P-001):** **P-034** — extend Android operand-mode e2e (L3533–3579) to match iOS coverage once P-001 is fixed; remove `if (!Platform.ios) return` where-filter leg (L3581–3582).
+**After P-001:** **P-034** extend Android operand-mode e2e to match iOS; remove where-filter `if (!Platform.ios) return`.
 
 ---
 
@@ -84,13 +84,13 @@ Pipeline work has **two completion signals** (see [Coverage design](/testing/cov
 | **P-027** | empty addFields/removeFields | L4047–4049 | Vacuous pass |
 | **P-028** | findNearest DOTPRODUCT alias | L4073–4075 | Vacuous pass |
 
-**macOS test-count note:** The lower macOS total is **not** Pipeline drift — several `packages/app/e2e/utils*.e2e.js` tests never register on macOS (`Platform.other` at describe level). Pipeline tests register on every platform; some are vacuous passes on macOS (table above).
+**macOS count note:** lower macOS total is app `utils*` registration, not Pipeline drift. Pipeline tests register on every platform; some macOS passes are vacuous (table).
 
 ---
 
 ## iOS unsupported function e2e map
 
-Durable verification status per function. **Live probe progress:** [work queue runtime guard probes](pipeline-coverage-work-queue.md#j0--ios-runtime-guard-probes-do-first).
+Durable per-function status. **Live probes:** [work queue](pipeline-coverage-work-queue.md#j0--ios-runtime-guard-probes-do-first).
 
 | Function | Throw asserted | Reduced iOS pipeline | Approx line | SDK / verification status |
 |----------|----------------|----------------------|-------------|---------------------------|
@@ -126,14 +126,14 @@ Durable verification status per function. **Live probe progress:** [work queue r
 
 # Parity remediation workflow
 
-For each **bridge** row (P-001, P-005, P-010–P-012):
+For each **bridge** row:
 
 1. Implement native parity (prefer matching iOS / strictest correct behavior).
 2. Remove e2e `Platform.*` workarounds; use one shared assertion block.
-3. Run 3-platform e2e ([running-e2e.md](/testing/running-e2e.md) canonical commands).
+3. Run 3-platform e2e ([running-e2e.md](/testing/running-e2e.md)).
 4. Record closure in **Resolved** below.
 
-**Gate:** Expand coverage toward intractable limits only after bridge gaps and iOS guard verification close — see [work queue](pipeline-coverage-work-queue.md).
+**Gate:** expand coverage only after bridge gaps + iOS guard verification close; see [work queue](pipeline-coverage-work-queue.md).
 
 # Resolved
 

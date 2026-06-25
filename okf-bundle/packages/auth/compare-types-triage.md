@@ -1,6 +1,6 @@
 # Auth modular API — compare:types triage
 
-Working document for sorting known differences between `@react-native-firebase/auth` and the firebase-js-sdk modular Auth API.
+Known differences between `@react-native-firebase/auth` and firebase-js-sdk modular Auth.
 
 **Related files**
 
@@ -23,13 +23,13 @@ Working document for sorting known differences between `@react-native-firebase/a
 
 `isOther` = `Platform.OS !== 'ios' && Platform.OS !== 'android'`.
 
-**Note:** `yarn compare:types` compares **TypeScript shapes** only. Runtime behaviour gaps (throws vs works, `auth.config` empty object) may be documented in triage / migration docs even when signatures match.
+`yarn compare:types` checks **TS shapes** only; runtime gaps may still need triage/migration docs.
 
 ---
 
 ## Won't change now (#1–#2, #5, #7–#8, #11, #37)
 
-Permanent on iOS/Android, or verified elsewhere; no further work this round.
+Permanent on iOS/Android or verified elsewhere.
 
 | # | Item | Why |
 |---|------|-----|
@@ -45,7 +45,7 @@ Permanent on iOS/Android, or verified elsewhere; no further work this round.
 
 ## Update compare:types note (#3–#4, #6, #9–#10, #12–#22, #23a–#23h)
 
-Won't change on **iOS/Android** now, but `configs/auth.ts` reasons should document future **Other/Hermes**, **Other/Web**, or **Other/All** support. Registry updated unless noted.
+No iOS/Android change now; `configs/auth.ts` should note future **Other/Hermes**, **Other/Web**, or **Other/All** support.
 
 | # | Item | compare:types note (summary) |
 |---|------|------------------------------|
@@ -95,7 +95,7 @@ Won't change on **iOS/Android** now, but `configs/auth.ts` reasons should docume
 - `getAdditionalUserInfo(userCredential)` returns the same normalized object (`AdditionalUserInfo | null` in declarations).
 - Export `AdditionalUserInfoNative` (`AdditionalUserInfo & Record<string, unknown>`) when callers need to type provider-specific native extras.
 
-firebase-js-sdk keeps `additionalUserInfo` off the public `UserCredential` interface and exposes it via `getAdditionalUserInfo` only — RNFB documents the extra property as an intentional extension.
+firebase-js-sdk exposes this via `getAdditionalUserInfo` only; RNFB documents the extra property as intentional extension.
 
 ---
 
@@ -123,7 +123,7 @@ firebase-js-sdk keeps `additionalUserInfo` off the public `UserCredential` inter
 
 ### #36 — namespaced `sendSignInLinkToEmail` defaults
 
-**Not** an iOS vs Other split — **namespaced vs modular** within RNFB:
+**Namespaced vs modular**, not iOS vs Other:
 
 | API | `actionCodeSettings` |
 |-----|------------------------|
@@ -134,7 +134,7 @@ firebase-js-sdk keeps `additionalUserInfo` off the public `UserCredential` inter
 
 ### #40 — `credentialFromResult` / `credentialFromError`
 
-Overlap **#22**. Types match firebase-js-sdk; runtime always returns `null` on all platforms today.
+Overlaps **#22**. Types match firebase-js-sdk; runtime returns `null` today.
 
 | Platform | Today | Future (if any) |
 |----------|-------|-----------------|
@@ -142,7 +142,7 @@ Overlap **#22**. Types match firebase-js-sdk; runtime always returns `null` on a
 | **Other/Hermes** | Always `null` | Unlikely — js-sdk popup/redirect credential recovery needs DOM context |
 | **Other/Web** | Always `null` | Delegate to firebase-js-sdk in `RNFBAuthModule` |
 
-Documented in **#22**, provider JSDoc, `configs/auth.ts` (`OAuthProvider`, `FacebookAuthProvider`, `PhoneAuthProvider`), and the migration guide.
+Documented in **#22**, provider JSDoc, `configs/auth.ts`, and migration guide.
 
 ---
 
@@ -162,7 +162,7 @@ Documented in **#22**, provider JSDoc, `configs/auth.ts` (`OAuthProvider`, `Face
 
 ## Triage complete (Auth v25 type gap)
 
-All **#1–#40** items are classified. `yarn compare:types auth` passes with documented differences only.
+All **#1–#40** classified; `yarn compare:types auth` passes with documented differences only.
 
 | Outcome | Items |
 |---------|-------|

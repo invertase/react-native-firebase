@@ -4,7 +4,7 @@ E2E runs on **Detox 20.51.0** (`tests/package.json`), applied via Yarn Berry pat
 
 `.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch`
 
-Patches are maintained in-repo (including by agents). Prefer **editing the patch file directly** or the headless workflow below — `yarn patch-commit` can prompt for overwrite confirmation, which fails in non-interactive shells.
+Patches are in-repo. Prefer direct patch-file edits or headless workflow; `yarn patch-commit` may prompt and fail in non-interactive shells.
 
 ## Inventory
 
@@ -17,7 +17,7 @@ Patches are maintained in-repo (including by agents). Prefer **editing the patch
 | Ignore missing adb reverse on teardown | `ADB.js` | Android | Jet WS 1006 triggers mid-run `reverse --remove` → adb exit 1 |
 | **2× device-registry lock stale** | `ExclusiveLockfile.js` | iOS, macOS, Android | `proper-lockfile` `ECOMPROMISED` before tests start |
 
-Related non-Detox patches: `jet`, `mocha-remote-client`, `mocha-remote-server` — WS reconnect grace, coverage handshake (`coverage-ready` / `pull-coverage` / `coverage-data` / `coverage-ack`; **HTTP POST `/coverage` removed** from jet), client keepalive, server/client parse buffering, reconnect client assignment order. See [coverage design](../testing/coverage-design.md) and [iOS CI — issues 6–8](ios.md#6-jet-websocket-disconnect-1006--1001).
+Related patches: `jet`, `mocha-remote-client`, `mocha-remote-server` — WS reconnect grace, coverage handshake, client keepalive, parse buffering, reconnect assignment order; HTTP POST `/coverage` removed. See [coverage design](../testing/coverage-design.md), [iOS issues 6–8](ios.md#6-jet-websocket-disconnect-1006--1001).
 
 ## Updating the jet patch (headless)
 
@@ -41,7 +41,7 @@ yarn patch-commit -s "$PATCH_DIR"
 
 ### Symptom
 
-Detox Test step fails **before any test output**, often ~30–60s after `yarn tests:ios:test:release` starts:
+Detox fails **before test output**, often ~30–60s after start:
 
 ```
 Error: Unable to update lock within the stale threshold
@@ -49,19 +49,19 @@ Error: Unable to update lock within the stale threshold
   code: 'ECOMPROMISED'
 ```
 
-Build, pre-boot, and app install usually succeed. Codecov and coverage steps are skipped because Jest never starts.
+Build/pre-boot/install usually succeed; coverage skips because Jest never starts.
 
 ### Cause
 
-Detox serializes access to `~/Library/Detox/device.registry.json` (the **device allocation ledger**: which simulators/emulators are busy, session IDs, PIDs). It uses `proper-lockfile`, which refreshes the lock file mtime on a timer (default **stale = 10s**). If the runner is under load — simulator logging, Firestore emulator, `yeetd`, Xcode build cache — a heartbeat can miss that window and Detox throws `ECOMPROMISED`.
+Detox locks `~/Library/Detox/device.registry.json` (device allocation ledger) via `proper-lockfile`; default stale window is 10s. Under runner load, heartbeat can miss and throw `ECOMPROMISED`.
 
 This is a known Detox / CI flake ([Detox #4210](https://github.com/wix/Detox/issues/4210)). Community reports ~1-in-25 on busy macOS CI.
 
 ### Mitigation (this repo)
 
-**Patch** `ExclusiveLockfile.js` to pass `{ stale: 20000 }` (2× default) into `plockfile.lockSync` when locking the device registry.
+Patch `ExclusiveLockfile.js` with `{ stale: 20000 }` for device registry lock.
 
-We **do not** run `detox reset-lock-file` in CI. That command wipes `device.registry.json` — useful for local recovery, but it destroys Detox's ledger state and can mask concurrent-session bugs. Extending the stale window preserves the ledger while tolerating slow heartbeats.
+Do **not** run `detox reset-lock-file` in CI: it wipes the ledger and can mask concurrency bugs. Extend stale window instead.
 
 Other prerequisites already in place:
 
@@ -83,11 +83,11 @@ rg 'ECOMPROMISED|proper-lockfile|Unable to update lock' detox-step.log
 
 ### When to bump further
 
-If `ECOMPROMISED` persists after 20s, consider 30s in the patch (MetaMask used 20s on Bitrise). Re-evaluate when migrating off Detox to Appium.
+If 20s still flakes, consider 30s; re-evaluate when moving off Detox.
 
 ## Updating a Detox patch (headless)
 
-**Do not** `rsync` the whole `node_modules/detox` tree into a patch folder — that pulls in frameworks and multi‑MB artifacts.
+Do **not** `rsync` all `node_modules/detox`; it pulls frameworks and multi-MB artifacts.
 
 1. Edit the patched file under `tests/node_modules/detox/...` (after `yarn install`), **or** append a correct unified-diff hunk to `.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch`.
 2. Regenerate the patch file without prompts:
@@ -110,7 +110,7 @@ SRC=tests/node_modules/detox
 yarn patch-commit -s "$PATCH_DIR"   # non-interactive when using /bin/cp -f, not plain cp
 ```
 
-3. `yarn install` from repo root and confirm the change in `tests/node_modules/...` **and** updated `yarn.lock` patch resolution hashes.
+3. Root `yarn install`; confirm `tests/node_modules/...` and `yarn.lock` patch hashes.
 4. Update this doc and platform pages (`ios.md`, `android.md`) if behaviour or file list changes.
 
 **Detox version bump:** change `tests/package.json`, run `yarn`, re-apply all hunks (or redo the headless flow from a fresh `yarn patch`), run iOS + Android E2E.
