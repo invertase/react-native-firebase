@@ -189,7 +189,7 @@ Live probes/gates: [work queue](pipeline-coverage-work-queue.md#j0--ios-runtime-
 | Function | JS guard | iOS bridge | Android bridge | CHANGELOG @ 12.15 | Classification | Verification status |
 |----------|----------|------------|----------------|-------------------|----------------|---------------------|
 | `stringRepeat` | No | Generic `string_repeat` | raw | **Added 12.12** | **sdk-supported-bridge-ok** | Guard removed; unified cross-platform e2e |
-| `switchOn` | Yes | Generic `switch_on` | raw | **Added 12.12** | **pending-probe** → likely stale | Runtime probe pending |
+| `switchOn` | No | Generic `switch_on` | raw | **Added 12.12** | **sdk-supported-bridge-ok** | Guard removed; unified cross-platform e2e |
 | `trunc` | Yes | Generic `trunc` | raw | **Added 12.11** | **pending-probe** → likely stale | Runtime probe pending |
 | `conditional` | Yes | Dedicated `cond` | `Expression.conditional()` | **ConditionalExpression 12.11** | **pending-probe** → likely stale | Runtime probe pending |
 | `round` | Yes | Generic `round` | raw | Not listed | **pending-probe** | Runtime probe pending |
@@ -202,7 +202,7 @@ Live probes/gates: [work queue](pipeline-coverage-work-queue.md#j0--ios-runtime-
 
 | Registry row | Reconciliation finding |
 |--------------|------------------------|
-| **P-003** (umbrella iOS unsupported) | **Partially stale** — at least 3–4 functions added in iOS SDK 12.11–12.12 while guards unchanged |
+| **P-003** (umbrella iOS unsupported) | **Partially stale** — `stringRepeat` and `switchOn` confirmed supported (guards removed); remaining guarded names need runtime verification |
 | **P-003a** (per-function e2e) | Ten iOS reduced/throw tests may shrink after runtime guard probes |
 | **P-013** (iOS aggregate skip L3740) | Unrelated to guard list — separate SDK/bridge investigation |
 | **P-001, P-005, P-010–P-012** (bridge gaps) | Unchanged — operand coercion is independent of function guard list |

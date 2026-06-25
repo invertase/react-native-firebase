@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS (2026-06-25, post-arbiter):** Phase **J0** active. **J0-2** `switchOn`: WIP; `implementation_gate` **closed** (Jest 24/24); **`review_gate` open**; **`next_work_type`: `independent-review`**; **`validation_tier`: area**; **`platform`: ios**. **J0-1** `stringRepeat`: committed `f14092909`; `implementation_gate` closed; **`review_gate` open** (harness — not regression). **J0-3** **`blocked`** until J0-2 `review_gate` closed. Terms: [iteration vocabulary](../../testing/iteration-vocabulary.md). **I/H/Ib committed.**
+> **IN PROGRESS (2026-06-25):** **J0-1** `stringRepeat` `f14092909` — **`review_gate` closed** (area 100/100/100, clean harness). **J0-2** `switchOn` `ae795b96c` — all gates closed. **Next pickup:** **J0-3** `trunc` **`implementation`**. **J0b** consolidation queued after J0 complete, before J1–J6.
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -21,13 +21,14 @@ Ephemeral tracker; see [OKF policy](../../documentation-policy.md).
 
 **Parity before coverage.** Otherwise tests add `Platform.*` workarounds, misclassify bridge drift as intractable, and deepen Swift/Java drift.
 
-**Sequence from H onward:** **H** → **I** drift inventory → **Ib** SDK support reconciliation → **J** (J0 probes + bridge fixes) → **K–Q** coverage → **R** snapshot.
+**Sequence from H onward:** **H** → **I** drift inventory → **Ib** SDK support reconciliation → **J** (**J0** probes → **J0b** iOS lowering consolidation → **J1–J6** bridge) → **K–Q** coverage → **R** snapshot.
 
 | Phase | Focus |
 |-------|--------|
 | **Ib** | Reconcile `IOS_UNSUPPORTED_FUNCTION_NAMES` vs upstream CHANGELOG + bridge audit; [repeatable method](pipeline-sdk-support-audit.md) |
 | **J0** | iOS runtime probes — one function per commit; authoritative guard list |
-| **J1–J6** | Bridge remediation (P-001, P-005, P-010–P-012, P-034) after J0 |
+| **J0b** | **iOS NodeBuilder lowering consolidation** — dedupe boolean/receiver-chain paths added during J0 (see [J0b](#j0b--ios-nodebuilder-lowering-consolidation-after-j0-before-j1j6)); **before J1–J6** |
+| **J1–J6** | Bridge remediation (P-001, P-005, P-010–P-012, P-034) after **J0 + J0b** |
 
 ---
 
@@ -55,7 +56,7 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 | **H** | TS `pipeline_validate` execute guards | ✅ | `3a1f7d654` — 3-platform **141/141 / 146/146 / 146/146** |
 | **I** | **Platform parity audit** | ✅ | 31 e2e branches; registry P-001–P-031 |
 | **Ib** | **SDK support reconciliation** | ✅ | Guard list vs iOS 12.15 / Android 34.15 CHANGELOG; [audit method](pipeline-sdk-support-audit.md) |
-| **J** | **Parity remediation** | **in progress (J0)** | **J0** iOS probes → **J1–J6** bridge + e2e unification |
+| **J** | **Parity remediation** | **in progress (J0)** | **J0** probes → **J0b** consolidation → **J1–J6** |
 | **K** | TS `pipeline_runtime` + `expressions` | queued | guards, timestamp/FieldPath *(was old I)* |
 | **L** | Android parsed-aggregate tail | queued | ~143 missed *(was old J)* |
 | **M** | Android exit frames + receiver chains | queued | ~77 loop remainder + exit/receiver *(was old K)* |
@@ -71,9 +72,9 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 
 ## Current snapshot
 
-**Label:** `after-phase-h-3platform-green`; **harness:** firestore Pipeline only (`tests/app.js` local, do not commit)
+**Label:** `after-j0-1-j0-2`; **harness:** full test app (`tests/app.js` — all platform modules restored for push)
 
-**E2e counts (Phase H baseline):** macOS **141**, iOS **146**, Android **146** ✅
+**E2e counts (Phase H baseline):** macOS **141**, iOS **146**, Android **146** ✅ *(full app load; re-verify before merge)*
 
 | Target | macOS | iOS | Android (gap map) |
 |--------|-------|-----|-------------------|
@@ -82,15 +83,15 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 
 *Phase H baseline only; not J0 review gate.*
 
-**Next item:** **J0-2** — `next_work_type`: **`independent-review`**; `validation_tier`: **area**; `platform`: **ios**; `review_gate`: **open**. Then **J0-1** `review_gate` retry if still open. **J0-3** **blocked** until J0-2 `review_gate` closed.
+**Next item:** **J0-3** `trunc` — `next_work_type`: **`implementation`**; `validation_tier`: **focused**; `platform`: ios. **J0b** blocked until J0-9 complete.
 
 **Arbiter gate (2026-06-25):**
 
 | Probe | Code | `implementation_gate` | `review_gate` | `next_work_type` | `validation_tier` | `platform` | Notes |
 |-------|------|----------------------|---------------|------------------|-------------------|------------|-------|
-| **J0-1** `stringRepeat` | committed `f14092909` | closed | **open** | `independent-review` | area | ios | Jest OK; focused-tier ios once **146/146**; review not closed: Jet/SimError desync; **not code regression** |
-| **J0-2** `switchOn` | WIP | closed | **open** | **`independent-review`** | area | ios | Jest **24/24**; area-tier ios never green canonically |
-| **J0-3** `trunc` | — | — | — | — | — | — | **blocked** until J0-2 `review_gate` closed |
+| **J0-1** `stringRepeat` | `f14092909` | closed | **closed** | — | — | — | Area review 2026-06-25: 100/100/100; stringRepeat unified iOS path |
+| **J0-2** `switchOn` | `ae795b96c` | closed | **closed** | **closed** | — | — | — | Committed 2026-06-25; area review 100/100/100 |
+| **J0-3** `trunc` | — | — | — | **`implementation`** | focused | ios | **unblocked** (J0-2 committed) |
 
 | Target | macOS | iOS | Android (gap map) | Phase |
 |--------|-------|-----|-------------------|-------|
@@ -223,9 +224,9 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 | Probe | Function | Rationale | `implementation_gate` | `review_gate` | `next_work_type` |
 |-------|----------|-----------|----------------------|---------------|------------------|
-| J0-1 | `stringRepeat` | iOS CHANGELOG 12.12.0 | closed | **open** | `independent-review` |
-| J0-2 | `switchOn` | iOS CHANGELOG 12.12.0 | closed | **open** | **`independent-review`** |
-| J0-3 | `trunc` | iOS CHANGELOG 12.11.0 | — | — | **blocked** (J0-2) |
+| J0-1 | `stringRepeat` | iOS CHANGELOG 12.12.0 | closed | **closed** | — |
+| J0-2 | `switchOn` | iOS CHANGELOG 12.12.0 | closed | **closed** | — |
+| J0-3 | `trunc` | iOS CHANGELOG 12.11.0 | — | — | **`implementation`** |
 | J0-4 | `conditional` | `ConditionalExpression` 12.11.0; iOS bridge → `cond` | |
 | J0-5 | `round` | No CHANGELOG; Android + bridge ok | |
 | J0-6 | `substring` | No CHANGELOG; docs list function | |
@@ -235,7 +236,21 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Output:** updated `pipeline_support.ts`, shrunk P-003 reduced pipelines, confirmed parity classifications.
 
-### J1–J6 — bridge remediation (after J0)
+### J0b — iOS NodeBuilder lowering consolidation (after J0, before J1–J6)
+
+**Status:** **queued** — **`blocked`** until **J0** probes complete (J0-1…J0-9 committed + `review_gate` closed each).
+
+**Why (J0-2 independent-review, 2026-06-25):** `switchOn` landed ~**387 lines** in `RNFBFirestorePipelineNodeBuilder.swift` — a parallel coercion layer (`coerceFirebaseExpression`, `applyBooleanReceiver`, `coerceSwitchOnConditionBridge`, `pipelineExprBridge` + KVC on `FunctionExpression.args`) alongside existing `coerceExpression` / `coerceBooleanExpression` / stack-based lowering. Correctness verified (area e2e green); **maintainability / drift risk** if J0-3…J0-9 add more one-off paths.
+
+**Goal:** Consolidate J0-added boolean/receiver-chain lowering into **shared** NodeBuilder paths (align with Android `scheduleBooleanReceiverChain` / `EnterObjectBooleanFrame` where feasible). Remove fragile KVC probing where `ExprBridge` extraction exists. **No behavior change** — area-tier Pipeline e2e must stay green (especially `switchOn`, `stringRepeat`, and any probe-specific cases).
+
+**Scope:** `packages/firestore/ios/RNFBFirestore/RNFBFirestorePipelineNodeBuilder.swift` only (unless consolidation requires Parser touch — stop and note).
+
+**Protocol:** Same [Phase J iteration protocol](#phase-j-iteration-protocol-strict) — `implementation` (**focused**, switchOn + affected probe tests) → `independent-review` (**area**) → `commit`.
+
+**Gate for J1–J6:** **J0 complete + J0b committed** + parity registry updated.
+
+### J1–J6 — bridge remediation (after J0 + J0b)
 
 | Step | Registry | Work |
 |------|----------|------|
@@ -246,9 +261,9 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 | **J5** | P-012 | `timestampTruncate` arity validation on Android |
 | **J6** | P-034 + J0-9 tail | Unify operand-mode + arrayGet e2e after probes |
 
-**Gate for Phase K+:** J0 complete + J1–J6 bridge commits + parity **Resolved** updated.
+**Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **J0-2** WIP; `review_gate` **open**; `next_work_type` **`independent-review`** (area, ios). **J0-1** committed; `review_gate` **open**. **J0-3** **blocked** until J0-2 `review_gate` closed.
+**Current gates:** **J0-1** + **J0-2** committed; all gates closed. **J0-3** next **`implementation`**. **J0b** queued (blocked on J0 complete).
 
 ---
 
@@ -268,9 +283,10 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 ---
 
-## Harness (local only — do not commit)
+## Harness
 
-- `tests/app.js` — firestore-only + `require('../packages/firestore/e2e/Pipeline.e2e.js')`
+- **Push state:** full test app — all `platformSupportedModules` restored in `tests/app.js` (no pipeline-only narrowing).
+- **Local iteration:** area narrowing in `tests/app.js` / `tests/globals.js` OK during J0 work; revert before **R** (full tier).
 - `tests/globals.js` — `RNFBDebug = true` optional for fail-fast
 
 ---

@@ -269,7 +269,10 @@ describe('FirestorePipeline', function () {
       const { execute, field } = firestorePipelinesModular;
       const { getFirestore, collection, doc, setDoc } = firestoreModular;
       const db = getFirestore(DATABASE_ID);
-      const collectionRef = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/ref-source`);
+      const collectionRef = collection(
+        db,
+        `${COLLECTION}/${Utils.randString(12, '#aA')}/ref-source`,
+      );
       const docRef = doc(collectionRef, 'one');
 
       await setDoc(docRef, { score: 11 });
@@ -572,7 +575,10 @@ describe('FirestorePipeline', function () {
         const { field } = firestorePipelinesModular;
         const { getFirestore, collection } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
-        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/raw-stage-serialize`);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/raw-stage-serialize`,
+        );
 
         const pipeline = db
           .pipeline()
@@ -847,9 +853,7 @@ describe('FirestorePipeline', function () {
           ),
         );
 
-        const snapshot = await execute(
-          db.pipeline().collection(coll).sample(3).select('slot'),
-        );
+        const snapshot = await execute(db.pipeline().collection(coll).sample(3).select('slot'));
 
         snapshot.results.should.have.length(3);
       });
@@ -1071,10 +1075,7 @@ describe('FirestorePipeline', function () {
         const { execute } = firestorePipelinesModular;
         const { getFirestore, collection } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
-        const coll = collection(
-          db,
-          `${COLLECTION}/${Utils.randString(12, '#aA')}/validate-stages`,
-        );
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/validate-stages`);
 
         const malformedStage = db.pipeline().collection(coll);
         malformedStage._stages.push({ stage: 'select' });
@@ -1290,7 +1291,10 @@ describe('FirestorePipeline', function () {
         const { execute, field, and } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
-        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/fluent-comparison-aliases`);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/fluent-comparison-aliases`,
+        );
 
         await Promise.all([
           setDoc(doc(coll, 'match'), { price: 42, stock: 60, sku: 'SKU001' }),
@@ -1462,11 +1466,6 @@ describe('FirestorePipeline', function () {
               constant('Unknown'),
             ).as('statusLabel'),
           );
-
-        if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['switchOn']);
-          return;
-        }
 
         const snapshot = await execute(pipeline);
 
@@ -2676,10 +2675,13 @@ describe('FirestorePipeline', function () {
       });
 
       it('covers fluent string aliases, ordering passthrough, and fluent aggregates', async function () {
-        const { execute, field, Ordering, constant } = firestorePipelinesModular;
+        const { execute, field, Ordering } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
-        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/fluent-runtime-parity`);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/fluent-runtime-parity`,
+        );
 
         await Promise.all([
           setDoc(doc(coll, 'a'), { name: 'Alpha', salary: 100 }),
@@ -2711,7 +2713,10 @@ describe('FirestorePipeline', function () {
         const { execute, field, constant, array } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
-        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/normalize-runtime-values`);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/normalize-runtime-values`,
+        );
         const docPath = `${coll.path}/a`;
         const linkedRef = doc(db, `${COLLECTION}/${Utils.randString(12, '#aA')}`);
 
@@ -3206,7 +3211,9 @@ describe('FirestorePipeline', function () {
             db
               .pipeline()
               .documents([docPath])
-              .select(array([field('score'), add(field('bump'), constant(1))]).as('nestedExprList')),
+              .select(
+                array([field('score'), add(field('bump'), constant(1))]).as('nestedExprList'),
+              ),
           );
 
           macSnapshot.results.should.have.length(1);
@@ -3235,7 +3242,7 @@ describe('FirestorePipeline', function () {
           return;
         }
 
-        const { execute, field, constant, map } = firestorePipelinesModular;
+        const { execute, constant, map } = firestorePipelinesModular;
         const { getFirestore, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
         const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
@@ -3305,7 +3312,9 @@ describe('FirestorePipeline', function () {
             .pipeline()
             .documents([docPath])
             .select(
-              array([constant(2), field('score'), add(field('bonus'), constant(3))]).as('slotArray'),
+              array([constant(2), field('score'), add(field('bonus'), constant(3))]).as(
+                'slotArray',
+              ),
               map({
                 base: constant(10),
                 live: field('score'),
@@ -3437,9 +3446,7 @@ describe('FirestorePipeline', function () {
             .pipeline()
             .collection(coll)
             .aggregate({
-              accumulators: [
-                countIf(greaterThan(field('score'), constant(0))).as('positiveCount'),
-              ],
+              accumulators: [countIf(greaterThan(field('score'), constant(0))).as('positiveCount')],
             }),
         );
 
@@ -3450,18 +3457,8 @@ describe('FirestorePipeline', function () {
 
     describe('operand mode rhs shape coverage', function () {
       it('coerces string, array, and boolean rhs shapes in comparisons and arithmetic', async function () {
-        const {
-          execute,
-          field,
-          constant,
-          add,
-          multiply,
-          mod,
-          equal,
-          equalAny,
-          greaterThan,
-          and,
-        } = firestorePipelinesModular;
+        const { execute, field, constant, add, multiply, mod, equal, equalAny, greaterThan, and } =
+          firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
         const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
@@ -3678,10 +3675,7 @@ describe('FirestorePipeline', function () {
         } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
-        const coll = collection(
-          db,
-          `${COLLECTION}/${Utils.randString(12, '#aA')}/agg-expr-args`,
-        );
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/agg-expr-args`);
 
         await Promise.all([
           setDoc(doc(coll, 'a1'), { revenue: 100, bonus: 10, name: 'Alice' }),
@@ -3739,21 +3733,13 @@ describe('FirestorePipeline', function () {
         const { execute, field } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
-        const coll = collection(
-          db,
-          `${COLLECTION}/${Utils.randString(12, '#aA')}/database-source`,
-        );
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/database-source`);
         const runId = Utils.randString(12, '#aA');
 
         await setDoc(doc(coll, 'doc-a'), { runId, label: 'database-source-hit' });
 
         const snapshot = await execute(
-          db
-            .pipeline()
-            .database()
-            .where(field('runId').equal(runId))
-            .select('label')
-            .limit(5),
+          db.pipeline().database().where(field('runId').equal(runId)).select('label').limit(5),
         );
 
         snapshot.results.should.have.length(1);
@@ -3836,9 +3822,7 @@ describe('FirestorePipeline', function () {
           limit(5),
         );
 
-        const snapshot = await execute(
-          db.pipeline().createFrom(querySource).select('score'),
-        );
+        const snapshot = await execute(db.pipeline().createFrom(querySource).select('score'));
 
         snapshot.results.should.have.length(1);
         snapshot.results[0].data().score.should.equal(90);
@@ -3926,7 +3910,10 @@ describe('FirestorePipeline', function () {
         const { execute, field } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
-        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/unnest-options-object`);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/unnest-options-object`,
+        );
 
         await setDoc(doc(coll, 'u1'), { name: 'A', scores: [5, 7] });
 
@@ -3953,7 +3940,10 @@ describe('FirestorePipeline', function () {
         const { execute, field } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
-        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/raw-stage-bridge`);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/raw-stage-bridge`,
+        );
 
         await setDoc(doc(coll, 'base'), { rating: 4, boost: 1 });
 
@@ -3963,10 +3953,14 @@ describe('FirestorePipeline', function () {
               db
                 .pipeline()
                 .collection(coll)
-                .rawStage('score', {
-                  input: field('rating'),
-                  threshold: 4,
-                }, { enabled: true })
+                .rawStage(
+                  'score',
+                  {
+                    input: field('rating'),
+                    threshold: 4,
+                  },
+                  { enabled: true },
+                )
                 .select('rating'),
             ),
           ['invalid-argument', 'Failed to execute pipeline', 'firestore/'],
@@ -4005,6 +3999,7 @@ describe('FirestorePipeline', function () {
             ),
           [
             'pipelineExecute() expected stage.options.distanceMeasure to be one of COSINE, EUCLIDEAN, DOT_PRODUCT.',
+            'pipelineExecute() expected stage.options.distanceMeasure to be one of euclidean, cosine, or dot_product.',
             'invalid-argument',
             'Failed to execute pipeline',
           ],

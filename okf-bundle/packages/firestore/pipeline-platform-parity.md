@@ -50,7 +50,7 @@ No permanent `Platform.android` / `Platform.ios` e2e workaround without registry
 
 | ID | Area | Symptom | Justification | E2e |
 |----|------|---------|---------------|-----|
-| **P-003** | iOS unsupported functions | JS pre-execute throw via `IOS_UNSUPPORTED_FUNCTION_NAMES` (**8 names**; was 9) | List likely **partially stale** vs iOS **12.15** CHANGELOG — see [sdk-support-audit](pipeline-sdk-support-audit.md). Confirmed unsupported set requires **runtime verification** per audit §6. `stringRepeat` **confirmed supported** — guard removed; unified cross-platform e2e. | Reduced iOS pipelines until runtime verification completes — [work queue](pipeline-coverage-work-queue.md) |
+| **P-003** | iOS unsupported functions | JS pre-execute throw via `IOS_UNSUPPORTED_FUNCTION_NAMES` (**7 names**; was 9) | List likely **partially stale** vs iOS **12.15** CHANGELOG — see [sdk-support-audit](pipeline-sdk-support-audit.md). Confirmed unsupported set requires **runtime verification** per audit §6. `stringRepeat` and `switchOn` **confirmed supported** — guards removed; unified cross-platform e2e. | Reduced iOS pipelines until runtime verification completes — [work queue](pipeline-coverage-work-queue.md) |
 | **P-003a** | *(per-function hooks)* | `round`, `conditional`, `trunc`, `substring`, `arrayGet`, `timestampAdd`, `timestampSubtract` | Subset of P-003 — see [§ iOS unsupported function e2e map](#ios-unsupported-function-e2e-map) | One or more tests each |
 | **P-013** | iOS extended aggregate accumulators | `first`/`last`/`minimum`/`maximum` with expression args skipped on iOS only (L3740) | **Likely iOS SDK** — functions not in unsupported list; needs SDK repro; document until confirmed | L3740–3790 |
 | **P-014** | Execute `indexMode` / `rawOptions` on iOS | iOS parser rejects at native boundary | iOS SDK gap | L3796–3798 skip (iOS + macOS) |
@@ -96,7 +96,7 @@ Durable per-function status. **Live probes:** [work queue](pipeline-coverage-wor
 |----------|----------------|----------------------|-------------|---------------------------|
 | `round` | Yes | Yes | L1175, L1680 | No CHANGELOG entry — **pending-probe** |
 | `conditional` | Yes | Yes | L1350, L3356 skip | ConditionalExpression **12.11** — **pending-probe** |
-| `switchOn` | Yes | Yes | L1471 | **Added 12.12** — **pending-probe** |
+| `switchOn` | — | — | L1471 | **Added 12.12** — **sdk-supported-bridge-ok**; guard removed; unified e2e |
 | `trunc` | Yes | Yes | L1758 | **Added 12.11** — **pending-probe** |
 | `substring` | Yes | Yes | L1891 | No CHANGELOG entry — **pending-probe** |
 | `stringRepeat` | — | — | L1985 | **Added 12.12** — **sdk-supported-bridge-ok**; guard removed; unified e2e |

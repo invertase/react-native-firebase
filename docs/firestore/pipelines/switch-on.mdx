@@ -54,7 +54,7 @@ snapshot.results.forEach(row => {
 | `conditional` | One boolean test with explicit then/else branches |
 | `switchOn`    | Multiple discrete cases plus optional default     |
 
-On **iOS**, `switchOn` is serialized like other pipeline helpers but the native pipeline runtime does not execute it yet (same class of limitation as `conditional`). macOS and Android evaluate it against the Enterprise database in e2e.
+On **iOS**, the native pipeline runtime evaluates `switchOn` on Firebase iOS SDK **12.12.0+** (RNFB pins **12.15.0**); unified cross-platform e2e.
 
 # Upstream reference
 
