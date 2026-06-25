@@ -86,6 +86,11 @@ final class RNFBFirestorePipelineNodeBuilder {
       ExprBridgeBox,
       String
     )
+    case switchOnExit(
+      ExprBridgeBox,
+      [Any],
+      String
+    )
     case arrayExit(
       ExprBridgeBox,
       [ExprBridgeBox],
@@ -693,6 +698,374 @@ final class RNFBFirestorePipelineNodeBuilder {
     }
   }
 
+  private let booleanComparisonFunctions: Set<String> = [
+    "equal", "notequal", "greaterthan", "greaterthanorequal", "lessthan", "lessthanorequal",
+    "arraycontains", "arraycontainsany", "arraycontainsall", "equalany", "notequalany",
+  ]
+
+  private func isBooleanComparisonFunction(_ normalizedName: String) -> Bool {
+    booleanComparisonFunctions.contains(normalizedName)
+  }
+
+  private func isBooleanFunctionName(_ name: String) -> Bool {
+    let normalized = canonicalizeFunctionName(name)
+    return normalized == "and" || normalized == "or" || isBooleanComparisonFunction(normalized)
+  }
+
+  private func functionArgs(from map: [String: Any]) -> [Any] {
+    if let args = map["args"] as? [Any] {
+      return args
+    }
+    if let singleArg = map["args"] {
+      return [singleArg]
+    }
+    return []
+  }
+
+  private func constantExpressionValue(fromConstantMap map: [String: Any], fieldName: String) throws -> Any {
+    guard let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be a constant expression.")
+    }
+
+    if map["integerLiteral"] as? Bool == true {
+      if let boolValue = map["value"] as? Bool {
+        return boolValue ? 1 : 0
+      }
+      if let number = map["value"] as? NSNumber {
+        if isBooleanNSNumber(number) {
+          return number.boolValue ? 1 : 0
+        }
+        if let intValue = wholeNumberInt(from: number) {
+          return intValue
+        }
+      }
+      if let intValue = map["value"] as? Int {
+        return intValue
+      }
+    }
+
+    guard let value = map["value"] else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName).value to be provided.")
+    }
+
+    return value
+  }
+
+  private func coerceSendableConstant(_ value: Any) -> any Sendable {
+    switch value {
+    case let intValue as Int:
+      return intValue
+    case let doubleValue as Double:
+      return doubleValue
+    case let stringValue as String:
+      return stringValue
+    case let boolValue as Bool:
+      return boolValue
+    case let number as NSNumber:
+      if isBooleanNSNumber(number) {
+        return number.boolValue
+      }
+      if let intValue = wholeNumberInt(from: number) {
+        return intValue
+      }
+      return number.doubleValue
+    case let dateValue as Date:
+      return dateValue
+    case let timestampValue as Timestamp:
+      return timestampValue
+    case let geoPointValue as GeoPoint:
+      return geoPointValue
+    case let referenceValue as DocumentReference:
+      return referenceValue
+    case let vectorValue as VectorValue:
+      return vectorValue
+    default:
+      return value as! Sendable
+    }
+  }
+
+  private func firebaseConstantExpression(_ value: Any) -> any FirebaseFirestore.Expression {
+    switch value {
+    case let stringValue as String:
+      return Constant(stringValue)
+    case let intValue as Int:
+      return Constant(intValue)
+    case let doubleValue as Double:
+      return Constant(doubleValue)
+    case let boolValue as Bool:
+      return Constant(boolValue)
+    case let number as NSNumber:
+      if isBooleanNSNumber(number) {
+        return Constant(number.boolValue)
+      }
+      if let intValue = wholeNumberInt(from: number) {
+        return Constant(intValue)
+      }
+      return Constant(number.doubleValue)
+    case let dateValue as Date:
+      return Constant(dateValue)
+    case let timestampValue as Timestamp:
+      return Constant(timestampValue)
+    case let geoPointValue as GeoPoint:
+      return Constant(geoPointValue)
+    case let referenceValue as DocumentReference:
+      return Constant(referenceValue)
+    case let vectorValue as VectorValue:
+      return Constant(vectorValue)
+    default:
+      return Constant(String(describing: value))
+    }
+  }
+
+  private func coerceFirebaseExpressionArray(
+    _ value: Any,
+    fieldName: String
+  ) throws -> [any FirebaseFirestore.Expression] {
+    let resolved = try resolveConstantValue(value, fieldName: fieldName)
+    guard let array = resolved as? [Any] else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be an array.")
+    }
+    return array.map { firebaseConstantExpression($0) }
+  }
+
+  private func pipelineExprBridge(_ value: Any) throws -> ExprBridge {
+    if let bridge = value as? ExprBridge {
+      return bridge
+    }
+
+    if let functionExpression = value as? FunctionExpression {
+      let object = functionExpression as AnyObject
+      if object.responds(to: Selector(("bridge"))) {
+        if let bridge = object.perform(Selector(("bridge")))?.takeUnretainedValue() as? ExprBridge {
+          return bridge
+        }
+      }
+
+      let mirror = Mirror(reflecting: functionExpression)
+      for child in mirror.children {
+        if child.label == "bridge", let bridge = child.value as? ExprBridge {
+          return bridge
+        }
+      }
+    }
+
+    let object = value as AnyObject
+    if object.responds(to: Selector(("bridge"))) {
+      if let bridge = object.perform(Selector(("bridge")))?.takeUnretainedValue() as? ExprBridge {
+        return bridge
+      }
+    }
+
+    throw PipelineValidationError("pipelineExecute() could not convert a pipeline value into a native bridge.")
+  }
+
+  private func coerceSwitchOnConditionBridge(_ value: Any, fieldName: String) throws -> ExprBridge {
+    guard let map = value as? [String: Any],
+      let name = map["name"] as? String
+    else {
+      return try coerceBooleanExpression(value, fieldName: fieldName)
+    }
+
+    let normalized = canonicalizeFunctionName(name)
+    guard isBooleanComparisonFunction(normalized) else {
+      return try coerceBooleanExpression(value, fieldName: fieldName)
+    }
+
+    let args = functionArgs(from: map)
+    guard args.count >= 2 else {
+      throw PipelineValidationError(
+        "pipelineExecute() expected \(fieldName).args to include left and right operands.")
+    }
+
+    let leftExpression = try coerceFirebaseExpression(args[0], fieldName: "\(fieldName).args[0]")
+    let booleanExpression = try applyBooleanReceiver(
+      normalizedName: normalized,
+      left: leftExpression,
+      right: args[1],
+      fieldName: "\(fieldName).args[1]"
+    )
+
+    let probeExpression = FunctionExpression(
+      functionName: "switch_on",
+      args: [booleanExpression, Constant("")],
+      options: nil
+    )
+    let switchBridge = try pipelineExprBridge(probeExpression)
+    if let args = (switchBridge as AnyObject).value(forKey: "args") as? [ExprBridge],
+      let conditionBridge = args.first {
+      return conditionBridge
+    }
+
+    throw PipelineValidationError(
+      "pipelineExecute() could not convert \(fieldName) into a switchOn condition bridge.")
+  }
+
+  private func buildSwitchOnExprBridge(rawArgs: [Any], fieldName: String) throws -> ExprBridge {
+    guard rawArgs.count >= 2 else {
+      throw PipelineValidationError(
+        "pipelineExecute() expected \(fieldName) to include at least one condition/result pair.")
+    }
+
+    var args: [ExprBridge] = []
+    args.reserveCapacity(rawArgs.count)
+
+    for (index, rawArg) in rawArgs.enumerated() {
+      let argFieldName = "\(fieldName).args[\(index)]"
+      let isCondition = index % 2 == 0 && index + 1 < rawArgs.count
+      if isCondition {
+        args.append(try coerceSwitchOnConditionBridge(rawArg, fieldName: argFieldName))
+      } else {
+        args.append(try coerceExpression(rawArg, fieldName: argFieldName))
+      }
+    }
+
+    return FunctionExprBridge(name: "switch_on", args: args, options: nil)
+  }
+
+  private func coerceFirebaseExpression(_ value: Any, fieldName: String) throws -> any FirebaseFirestore.Expression {
+    var currentValue: Any = value
+    var currentField = fieldName
+
+    while true {
+      if let stringValue = currentValue as? String {
+        return Field(stringValue)
+      }
+
+      guard let map = currentValue as? [String: Any] else {
+        throw PipelineValidationError(
+          "pipelineExecute() could not convert \(currentField) into a pipeline expression.")
+      }
+
+      if let nested = map["expr"] {
+        currentValue = nested
+        currentField = "\(currentField).expr"
+        continue
+      }
+      if let nested = map["expression"] {
+        currentValue = nested
+        currentField = "\(currentField).expression"
+        continue
+      }
+
+      if let kind = (map["exprType"] as? String)?.lowercased() {
+        switch kind {
+        case "field":
+          return Field(try coerceFieldPath(map, fieldName: currentField))
+        case "constant":
+          return firebaseConstantExpression(try constantExpressionValue(fromConstantMap: map, fieldName: currentField))
+        case "variable":
+          guard let name = map["name"] as? String, !name.isEmpty else {
+            throw PipelineValidationError(
+              "pipelineExecute() expected \(currentField).name to be a non-empty string.")
+          }
+          return Variable(name)
+        default:
+          break
+        }
+      }
+
+      if map["fieldPath"] != nil || map["path"] != nil || map["segments"] != nil || map["_segments"] != nil {
+        return Field(try coerceFieldPath(map, fieldName: currentField))
+      }
+
+      if let name = map["name"] as? String {
+        let rawArgs = functionArgs(from: map)
+        let normalized = canonicalizeFunctionName(name)
+        if isBooleanComparisonFunction(normalized) {
+          guard rawArgs.count >= 2 else {
+            throw PipelineValidationError(
+              "pipelineExecute() expected \(currentField).args to include left and right operands.")
+          }
+          return try applyBooleanReceiver(
+            normalizedName: normalized,
+            left: try coerceFirebaseExpression(rawArgs[0], fieldName: "\(currentField).args[0]"),
+            right: rawArgs[1],
+            fieldName: "\(currentField).args[1]"
+          )
+        }
+
+        let args = try rawArgs.enumerated().map { index, arg in
+          try coerceFirebaseExpression(arg, fieldName: "\(currentField).args[\(index)]")
+        }
+        return FunctionExpression(
+          functionName: normalizeExpressionFunctionName(name),
+          args: args,
+          options: nil
+        )
+      }
+
+      throw PipelineValidationError(
+        "pipelineExecute() could not convert \(currentField) into a pipeline expression.")
+    }
+  }
+
+  private func applyBooleanReceiver(
+    normalizedName: String,
+    left: any FirebaseFirestore.Expression,
+    right: Any,
+    fieldName: String
+  ) throws -> any FirebaseFirestore.BooleanExpression {
+    switch normalizedName {
+    case "equal":
+      if !containsSerializedExpression(right) {
+        return left.equal(coerceSendableConstant(try resolveConstantValue(right, fieldName: fieldName)))
+      }
+      return left.equal(try coerceFirebaseExpression(right, fieldName: fieldName))
+    case "notequal":
+      if !containsSerializedExpression(right) {
+        return left.notEqual(coerceSendableConstant(try resolveConstantValue(right, fieldName: fieldName)))
+      }
+      return left.notEqual(try coerceFirebaseExpression(right, fieldName: fieldName))
+    case "greaterthan":
+      if !containsSerializedExpression(right) {
+        return left.greaterThan(coerceSendableConstant(try resolveConstantValue(right, fieldName: fieldName)))
+      }
+      return left.greaterThan(try coerceFirebaseExpression(right, fieldName: fieldName))
+    case "greaterthanorequal":
+      if !containsSerializedExpression(right) {
+        return left.greaterThanOrEqual(coerceSendableConstant(try resolveConstantValue(right, fieldName: fieldName)))
+      }
+      return left.greaterThanOrEqual(try coerceFirebaseExpression(right, fieldName: fieldName))
+    case "lessthan":
+      if !containsSerializedExpression(right) {
+        return left.lessThan(coerceSendableConstant(try resolveConstantValue(right, fieldName: fieldName)))
+      }
+      return left.lessThan(try coerceFirebaseExpression(right, fieldName: fieldName))
+    case "lessthanorequal":
+      if !containsSerializedExpression(right) {
+        return left.lessThanOrEqual(coerceSendableConstant(try resolveConstantValue(right, fieldName: fieldName)))
+      }
+      return left.lessThanOrEqual(try coerceFirebaseExpression(right, fieldName: fieldName))
+    case "arraycontains":
+      if !containsSerializedExpression(right) {
+        return left.arrayContains(coerceSendableConstant(try resolveConstantValue(right, fieldName: fieldName)))
+      }
+      return left.arrayContains(try coerceFirebaseExpression(right, fieldName: fieldName))
+    case "arraycontainsany":
+      if !containsSerializedExpression(right) {
+        return left.arrayContainsAny(try coerceFirebaseExpressionArray(right, fieldName: fieldName))
+      }
+      return left.arrayContainsAny(try coerceFirebaseExpression(right, fieldName: fieldName))
+    case "arraycontainsall":
+      if !containsSerializedExpression(right) {
+        return left.arrayContainsAll(try coerceFirebaseExpressionArray(right, fieldName: fieldName))
+      }
+      return left.arrayContainsAll(try coerceFirebaseExpression(right, fieldName: fieldName))
+    case "equalany":
+      if !containsSerializedExpression(right) {
+        return left.equalAny(try coerceFirebaseExpressionArray(right, fieldName: fieldName))
+      }
+      return left.equalAny(try coerceFirebaseExpression(right, fieldName: fieldName))
+    case "notequalany":
+      if !containsSerializedExpression(right) {
+        return left.notEqualAny(try coerceFirebaseExpressionArray(right, fieldName: fieldName))
+      }
+      return left.notEqualAny(try coerceFirebaseExpression(right, fieldName: fieldName))
+    default:
+      throw PipelineValidationError("pipelineExecute() expected a boolean receiver operation.")
+    }
+  }
+
   private func canonicalizeFunctionName(_ name: String) -> String {
     name.lowercased()
       .replacingOccurrences(of: "_", with: "")
@@ -756,6 +1129,8 @@ final class RNFBFirestorePipelineNodeBuilder {
       return "less_than_or_equal"
     case "notequal":
       return "not_equal"
+    case "switchon":
+      return "switch_on"
     default:
       return snakeCaseFunctionName(name)
     }
@@ -1367,6 +1742,16 @@ final class RNFBFirestorePipelineNodeBuilder {
                 break expressionLoop
               }
 
+              if normalized == "switchon" {
+                guard rawArgs.count >= 2 else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).\(name) to include at least one condition/result pair.")
+                }
+
+                stack.append(.switchOnExit(box, rawArgs, currentField))
+                break expressionLoop
+              }
+
               let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
               stack.append(.functionExit(box, normalizeExpressionFunctionName(name), argBoxes, currentField))
               for index in rawArgs.indices.reversed() {
@@ -1470,6 +1855,8 @@ final class RNFBFirestorePipelineNodeBuilder {
           try requireExpressionValue(trueBox, fieldName: "\(currentFieldName).args[1]"),
           try requireExpressionValue(falseBox, fieldName: "\(currentFieldName).args[2]"),
         ])
+      case let .switchOnExit(box, rawArgs, currentFieldName):
+        box.value = try buildSwitchOnExprBridge(rawArgs: rawArgs, fieldName: currentFieldName)
       case let .arrayExit(box, argBoxes, currentFieldName):
         box.value = FunctionExprBridge(
           name: "array",

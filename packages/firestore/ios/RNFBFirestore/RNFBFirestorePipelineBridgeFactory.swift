@@ -335,7 +335,7 @@ final class RNFBFirestorePipelineBridgeFactory {
       return "DOT_PRODUCT"
     default:
       throw PipelineValidationError(
-        "pipelineExecute() expected \(fieldName) to be one of euclidean, cosine, or dot_product."
+        "pipelineExecute() expected \(fieldName) to be one of COSINE, EUCLIDEAN, DOT_PRODUCT."
       )
     }
   }
