@@ -2913,6 +2913,166 @@ describe('FirestorePipeline', function () {
       });
     });
 
+    describe('enter object expression frame lowering coverage', function () {
+      it('lowers array and map slots with direct constant and field exprType nodes', async function () {
+        const { execute, field, constant, map, array, add } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          score: 8,
+          bonus: 2,
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              array([constant(2), field('score'), add(field('bonus'), constant(3))]).as('slotArray'),
+              map({
+                base: constant(10),
+                live: field('score'),
+                sum: add(field('score'), field('bonus')),
+              }).as('slotMap'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.slotArray.should.eql([2, 8, 5]);
+        data.slotMap.should.eql({ base: 10, live: 8, sum: 10 });
+      });
+
+      it('lowers conditional boolean value frames through native lowering', async function () {
+        if (Platform.ios) {
+          return;
+        }
+
+        const { execute, field, constant, conditional, greaterThan } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          score: 12,
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              conditional(
+                greaterThan(field('score'), constant(0)),
+                constant('positive'),
+                constant('non-positive'),
+              ).as('scoreSign'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().scoreSign.should.equal('positive');
+      });
+
+      it('lowers raw operator AND and comparison boolean shapes in where filters', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/raw-boolean-where`,
+        );
+
+        await Promise.all([
+          setDoc(doc(coll, 'match'), { status: 'active', score: 15 }),
+          setDoc(doc(coll, 'skip-status'), { status: 'inactive', score: 15 }),
+          setDoc(doc(coll, 'skip-score'), { status: 'active', score: 5 }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where({
+              condition: {
+                operator: 'AND',
+                queries: [
+                  { operator: '==', fieldPath: 'status', value: 'active' },
+                  { operator: '>=', fieldPath: 'score', value: 10 },
+                ],
+              },
+            })
+            .select('status', 'score'),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().status.should.equal('active');
+        snapshot.results[0].data().score.should.equal(15);
+      });
+
+      it('lowers arrayConcat through value-or-expression literal slots', async function () {
+        const { execute, field, constant, array, arrayConcat } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          tags: ['a'],
+          extra: 'b',
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              arrayConcat(field('tags'), array([constant('extra'), field('extra')])).as(
+                'mergedTags',
+              ),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().mergedTags.should.eql(['a', 'extra', 'b']);
+      });
+
+      it('lowers countIf boolean predicate through boolean value lowering frames', async function () {
+        const { execute, field, constant, countIf, greaterThan } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/countif-bool-frames`,
+        );
+
+        await Promise.all([
+          setDoc(doc(coll, 'a'), { score: 10 }),
+          setDoc(doc(coll, 'b'), { score: 0 }),
+          setDoc(doc(coll, 'c'), { score: 5 }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .aggregate({
+              accumulators: [
+                countIf(greaterThan(field('score'), constant(0))).as('positiveCount'),
+              ],
+            }),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().positiveCount.should.equal(2);
+      });
+    });
+
     describe('operand mode rhs shape coverage', function () {
       it('coerces string, array, and boolean rhs shapes in comparisons and arithmetic', async function () {
         const {
