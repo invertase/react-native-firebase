@@ -26,6 +26,28 @@ index be01a0dbeeaebbada21810269e4e30d114bf4476..88af8da4545e4458d340c3b0b4e37f13
          notifyIdle()
          return true
      }
+diff --git a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/FabricTimersIdlingResource.kt b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/FabricTimersIdlingResource.kt
+index 0000000000000000000000000000000000000000..1111111111111111111111111111111111111111 100644
+--- a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/FabricTimersIdlingResource.kt
++++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/FabricTimersIdlingResource.kt
+@@ -10,15 +10,8 @@ class FabricTimersIdlingResource(
+ ) : DetoxIdlingResource(), Choreographer.FrameCallback {
+ 
+     override fun checkIdle(): Boolean {
+-        val hasActiveTimers = JavaTimersReflected.hasActiveTimers(reactContext)
+-
+-        if (hasActiveTimers) {
+-            getChoreographer().postFrameCallback(this@FabricTimersIdlingResource)
+-        } else {
+-            notifyIdle()
+-        }
+-
+-        return !hasActiveTimers
++        notifyIdle()
++        return true
+     }
+ 
+     override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
 diff --git a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
 index 462908c3427599bb06bf04ca2d4662d320519ff4..a367e18b34750a4f6d163be343fa3835a8b348ed 100644
 --- a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt

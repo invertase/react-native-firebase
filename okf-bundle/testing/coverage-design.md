@@ -50,8 +50,27 @@ After `tests:<platform>:test-cover`:
 
 * **JS:** `npx jest <path> --coverage --collectCoverageFrom='packages/<pkg>/lib/**/*.ts' --coverageReporters=text`
 * **iOS native:** `yarn tests:ios:test:process-coverage` → `coverage/ios-native/lcov.info` (`DA:` lines). **Deletes processed `.profraw`** — re-run e2e before re-processing.
-* **Android native:** `yarn tests:android:post-e2e-coverage` → Jacoco XML per `sourcefile`.
+* **Android native:** `yarn tests:android:post-e2e-coverage` → Jacoco XML per `sourcefile`. **Deletes processed `emulator_coverage.ec`** after a successful report — re-run e2e before re-processing.
 * macOS e2e overwrites `coverage/lcov.info`; process iOS/Android native before a macOS run if you need both.
+
+## Stale coverage data
+
+Native coverage artifacts (`.profraw`, `.ec`, Jacoco XML) are **only trustworthy when paired with a fresh e2e run** that produced them. Re-running post-processing against leftover files can regenerate reports that look valid but reflect old, partial, or mismatched execution data — numbers may collapse or plateau with no code change.
+
+**When coverage numbers look wrong or you are unsure:** do not debug the report generator first. Run the full clean cycle for that platform:
+
+```bash
+# iOS
+yarn tests:ios:build && yarn tests:ios:test-cover && yarn tests:ios:test:process-coverage
+
+# Android
+yarn tests:android:build && yarn tests:android:test-cover && yarn tests:android:post-e2e-coverage
+
+# macOS (TS only)
+yarn tests:macos:test-cover
+```
+
+Post-process steps **delete** the raw iOS `.profraw` and Android `.ec` after successful export so a missing raw file on the next run signals "no fresh coverage — run e2e again". Do not use `:test-cover-reuse` / `:test-reuse` when measuring native deltas ([runbook](running-e2e.md)).
 
 # End-to-end overview
 
@@ -139,7 +158,7 @@ reporter: ['lcov', 'html', 'text-summary'],
 
 1. `testCoverageEnabled` on RNFB modules (`tests/android/build.gradle`).
 2. Jet `after` in `tests/app.js` → `NativeModules.RNFBTestingCoverage.flush()` in **app** process → `coverage.ec` in `filesDir` **before** Detox SIGINT.
-3. After Detox: `yarn tests:android:post-e2e-coverage` (or `pull-native-coverage`) → `emulator_coverage.ec` → `jacocoAndroidTestReport`. Missing file: warning, not test/CI fail (`continue-on-error` on Codecov upload).
+3. After Detox: `yarn tests:android:post-e2e-coverage` (or `pull-native-coverage`) → `emulator_coverage.ec` → `jacocoAndroidTestReport` → **delete local `.ec`**. Missing file: warning, not test/CI fail (`continue-on-error` on Codecov upload). Missing `.ec` on a later post-e2e without a new e2e run means Jacoco has no execution data — by design.
 4. XML: `tests/android/app/build/reports/jacoco/jacocoAndroidTestReport/jacocoAndroidTestReport.xml`
 
 **Why app-process flush:** Detox SIGINT kills instrumentation right after Jet ends; post-`Detox.runTests()` dump in `DetoxTest.java` never runs.
@@ -235,6 +254,7 @@ No `:test-cover-reuse` / `:test-reuse` — stale native risk ([runbook](running-
 | Profraw pull before Detox teardown (iOS) | `pull-native-coverage.js` on Jet `close` in `firebase.test.js` |
 | Android ec pull after Detox | `yarn tests:android:post-e2e-coverage` |
 | Fresh profraw processed (iOS) | `process-ios-native-coverage.js` deletes after export |
+| Fresh ec processed (Android) | `pull-native-coverage.js` deletes local `.ec` after successful Jacoco report |
 
 # Troubleshooting
 
@@ -243,6 +263,8 @@ No `:test-cover-reuse` / `:test-reuse` — stale native risk ([runbook](running-
 | "Open in 'testing'?" dialog | Custom URL scheme | Native module flush only |
 | No profraw; test passes | Pull in `afterAll` after cleanup, wrong module name | Pull on Jet `close`; verify export name |
 | Stale profraw uploaded | Re-process without re-e2e | Process deletes profraw; exit 1 if missing next time |
+| Stale Android Jacoco / collapsed native % | Re-run `post-e2e-coverage` without fresh e2e | Post-e2e deletes `.ec` after report; run full `:build` → `:test-cover` → `:post-e2e-coverage` |
+| Coverage numbers suspect (any platform) | Leftover raw artifacts or reuse shortcuts | Full clean cycle per platform; see [Stale coverage data](#stale-coverage-data) |
 | No `packages/` hits in iOS export | Wrong binary / not instrumented | `yarn tests:ios:build`; check Podfile |
 | Empty Jacoco XML (~235 B) | AGP 8 path, missing `src/reactnative/java`, no ec | Check post-e2e logs |
 | Android ec missing after pass | SIGINT before flush | `[native-coverage] flushing android coverage` in log; `MainApplication` registration |
