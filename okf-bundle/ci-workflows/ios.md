@@ -16,6 +16,8 @@ On GitHub Actions macOS runners (currently `macos-26` with `XCODE_VERSION: lates
 
 **Pre-boot step** (`.github/workflows/scripts/boot-simulator.sh`), run via `nick-fields/retry` before Detox:
 
+> **Not for local operators.** `boot-simulator.sh` is **CI-only** (this workflow) or invoked **internally** by `tests/e2e/firebase.test.js` on iOS Jet-level retry. Local e2e uses only [running-e2e.md](../testing/running-e2e.md) — Detox boots the simulator via `yarn tests:ios:test-cover`; do not run `boot-simulator.sh` as operator prep.
+
 | Phase | What happens |
 |--------|----------------|
 | `resolve_device` | Read simulator name from `tests/.detoxrc.js` (e.g. `iPhone 17`) |
@@ -155,7 +157,7 @@ Error: Unable to update lock within the stale threshold
 
 **Symptom** — Same Detox-side pattern as issue 4 (`waitForActive` without `waitForActiveDone`, multi-minute hang in `device.launchApp()`), but **`[rnfb-lifecycle]` shows the app is already active**. Often seen on debug CI only; release on the same run passes (embedded bundle, no live Metro).
 
-**Cause chain** (observed on run [27727525262](https://github.com/invertase/react-native-firebase/actions/runs/27727525262)):
+**Cause chain**:
 
 1. Debug app requests `http://localhost:8081/status` from inside the simulator; TCP connects but Metro returns no bytes within ~10s (`NSURLErrorDomain Code=-1001`).
 2. RN logs `No script URL provided. Make sure the packager is running...` and shows RedBox; DetoxSync adds an RN-load idling resource that never clears.
@@ -352,7 +354,7 @@ rg 'disconnect_context|resource-monitor' detox-step.log resource-monitor.log
 
 Correlate `disconnect_context loadavg=…` with `resource-monitor-*_log` — high loadavg during disconnect is expected on saturated runners and is **not** something we can eliminate; orchestration must tolerate it.
 
-**Reference CI** — [run 28044818178](https://github.com/invertase/react-native-firebase/actions/runs/28044818178) (release leg, sha `dd8a2678a`): grace recovered at ~30s, then Jet crashed on `No client connected`.
+**Reference symptom** — grace can recover after a disconnect, then Jet may still crash on `No client connected`.
 
 #### 7. FrontBoard / LaunchServices race after terminate+relaunch
 
@@ -442,6 +444,8 @@ Detox steps use `tee detox-step.log` and `exit ${PIPESTATUS[0]}` so the artifact
 
 ### Local stress iteration (optional)
 
+> **CI/manual mirror only.** The steps below reproduce CI deflake semantics on a developer machine. Local e2e runs must use [running-e2e.md](../testing/running-e2e.md) only — do not substitute `boot-simulator.sh`, `resource-monitor.sh`, or `flake-summary.sh` for the canonical `:build && :test-cover` loop.
+
 To deflake without pushing every change, run the same steps as CI on a macOS machine or VM (SSH is fine). Mirror: emulators → build → `boot-simulator.sh` → filtered log streams → `resource-monitor.sh` → `yarn tests:ios:test-cover` (or `:release`) → `flake-summary.sh`. Wrap in a loop over `iterations` and collect `local-e2e-artifacts/iter-N-*` directories. A self-hosted GHA runner on the same VM is optional when you need exact workflow YAML semantics; direct script iteration is faster for day-to-day patch work.
 
 ### Pinned Homebrew utilities
@@ -450,8 +454,8 @@ CI installs macOS build helpers from **vendored formulae** in `.github/homebrew-
 
 | Formula | Version | Upstream source | Used in |
 |---------|---------|-----------------|---------|
-| `applesimutils.rb` | 0.9.12 | [wix/homebrew-brew](https://github.com/wix/homebrew-brew) @ `8f636f84541e` | iOS e2e (`tests_e2e_ios.yml`) |
-| `xcbeautify.rb` | 3.2.1 | [homebrew-core](https://github.com/Homebrew/homebrew-core) @ `f2e343d17882` | iOS e2e + macOS e2e (`tests_e2e_other.yml`) |
+| `applesimutils.rb` | 0.9.12 | [wix/homebrew-brew](https://github.com/wix/homebrew-brew), pinned in vendored formula | iOS e2e (`tests_e2e_ios.yml`) |
+| `xcbeautify.rb` | 3.2.1 | [homebrew-core](https://github.com/Homebrew/homebrew-core), pinned in vendored formula | iOS e2e + macOS e2e (`tests_e2e_other.yml`) |
 
 **Workflow install** — both workflows call `.github/workflows/scripts/install-homebrew-rnfb.sh` (from repo root). Homebrew 6+ refuses bare `brew install --formula path/to.rb`; the script copies formulae into a local `invertase/rnfb` tap, trusts it once per job, then installs:
 

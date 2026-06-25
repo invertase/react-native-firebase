@@ -8,15 +8,17 @@ timestamp: 2026-06-25T00:00:00Z
 
 # Platform parity policy
 
+**Policy:** [OKF documentation and commit policy](../../documentation-policy.md).
+
 Pipeline work has **two completion signals** (see [Coverage design](/testing/coverage-design.md)):
 
-1. **Parity** — observable behavior is **the same across platforms** unless a difference is a **native Firestore SDK limitation** (not an RNFB bridge gap). **Audit and remediate before further coverage work** ([work queue Phase I–J](pipeline-coverage-work-queue.md)).
+1. **Parity** — observable behavior is **the same across platforms** unless a difference is a **native Firestore SDK limitation** (not an RNFB bridge gap). **Audit and remediate before further coverage work** ([work queue](pipeline-coverage-work-queue.md)).
 2. **Coverage** — file-level TS and native coverage rise until **intractable** limits (~100% where reachable), **after** parity drift is triaged and bridge gaps closed.
 
 | Outcome | Action |
 |---------|--------|
 | Same behavior on iOS, Android, macOS (JS SDK) | Required default — shared e2e assertions, no `Platform.*` branches unless macOS has no native bridge |
-| RNFB bridge gap (one platform lowers/coerces differently) | **Fix the bridge** — work-queue Phase **J** (remediation) |
+| RNFB bridge gap (one platform lowers/coerces differently) | **Fix the bridge** — parity remediation ([work queue](pipeline-coverage-work-queue.md)) |
 | Native SDK does not support the feature | Document here with SDK version/evidence; optional reduced e2e on that platform only |
 | macOS-only path (firebase-js-sdk, no RN bridge) | Document; use `Platform.other` skip when the test requires native-only wire shapes |
 
@@ -24,39 +26,39 @@ Pipeline work has **two completion signals** (see [Coverage design](/testing/cov
 
 # Drift registry
 
-**Status:** Phase **I** audit complete (2026-06-25). **31** `Platform.*` branch sites in `Pipeline.e2e.js`; **5** bridge items scheduled for Phase **J**; remainder documented as SDK / macOS-js / test-only.
+**Status:** Platform drift audit complete (2026-06-25). **31** `Platform.*` branch sites in `Pipeline.e2e.js`; **5** bridge gaps in the registry below; remainder documented as SDK / macOS-js / test-only. Live remediation order: [work queue](pipeline-coverage-work-queue.md).
 
 **Classification key:** `bridge` | `SDK` | `macOS-js` | `test-only` | `RNFB-JS`
 
 ---
 
-## Bridge gaps (Phase J — must fix)
+## Bridge gaps (must fix)
 
-| ID | Area | Symptom | iOS | Android | macOS | E2e hook (`Pipeline.e2e.js`) | J priority |
-|----|------|---------|-----|---------|-------|------------------------------|------------|
-| **P-001** | Operand-mode / numeric coercion | Ordering and arithmetic RHS: bool/scalar coercion differs | `ExpressionCoercionMode.numericOperand` / `.comparisonOperand` in `coerceExpressionTree` | No equivalent; `applyBooleanReceiverConstant` passes raw `Boolean`; arithmetic args use expression-value path only | JS SDK (no native bridge) | L3533–3622 (iOS-only arithmetic + where leg); L3665–3667 (`value: true` vs `1`) | **J1** |
-| **P-005** | `integerLiteral` wire tag | `constant()` integers emit `integerLiteral: true`; iOS NodeBuilder bool→0/1 before int | Consumes tag in `scalarConstantBridge` | `unwrapConstantValue` returns raw value; no tag handling | N/A | L3533–3559 (indirect); no wire assert | **J2** |
-| **P-010** | Stage option expression fields | Expression-valued `distanceField` / `indexField` | Parsed/coerced as expression | Parser `optionalString` only; executor `withDistanceField(String)` | Skipped (L3902+) | L3795–3845 (Android-only source rawOptions); findNearest/unnest paths | **J3** |
-| **P-011** | Parser constant envelope routing | `{ exprType: "constant", value: … }` in value context | `isExpressionLike` true for any `exprType` | `isExpressionLike` excludes `"constant"` — descends as literal map | Same wire | Nested constants (e.g. ref maps) | **J4** |
-| **P-012** | `timestampTruncate` arity validation | Validates arg count; throws | Sets `box.value = null` when `args.size() != 2` | Same | L3292–3294 (macOS vacuous) | **J5** |
+| ID | Area | Symptom | iOS | Android | macOS | E2e hook (`Pipeline.e2e.js`) | Remediation order |
+|----|------|---------|-----|---------|-------|------------------------------|-------------------|
+| **P-001** | Operand-mode / numeric coercion | Ordering and arithmetic RHS: bool/scalar coercion differs | `ExpressionCoercionMode.numericOperand` / `.comparisonOperand` in `coerceExpressionTree` | No equivalent; `applyBooleanReceiverConstant` passes raw `Boolean`; arithmetic args use expression-value path only | JS SDK (no native bridge) | L3533–3622 (iOS-only arithmetic + where leg); L3665–3667 (`value: true` vs `1`) | **1** |
+| **P-005** | `integerLiteral` wire tag | `constant()` integers emit `integerLiteral: true`; iOS NodeBuilder bool→0/1 before int | Consumes tag in `scalarConstantBridge` | `unwrapConstantValue` returns raw value; no tag handling | N/A | L3533–3559 (indirect); no wire assert | **2** |
+| **P-010** | Stage option expression fields | Expression-valued `distanceField` / `indexField` | Parsed/coerced as expression | Parser `optionalString` only; executor `withDistanceField(String)` | Skipped (L3902+) | L3795–3845 (Android-only source rawOptions); findNearest/unnest paths | **3** |
+| **P-011** | Parser constant envelope routing | `{ exprType: "constant", value: … }` in value context | `isExpressionLike` true for any `exprType` | `isExpressionLike` excludes `"constant"` — descends as literal map | Same wire | Nested constants (e.g. ref maps) | **4** |
+| **P-012** | `timestampTruncate` arity validation | Validates arg count; throws | Sets `box.value = null` when `args.size() != 2` | Same | L3292–3294 (macOS vacuous) | **5** |
 
-**Phase J follow-up (test-only, after J1):** **P-034** — extend Android operand-mode e2e (L3533–3579) to match iOS coverage once P-001 is fixed; remove `if (!Platform.ios) return` where-filter leg (L3581–3582).
+**Follow-up (test-only, after P-001):** **P-034** — extend Android operand-mode e2e (L3533–3579) to match iOS coverage once P-001 is fixed; remove `if (!Platform.ios) return` where-filter leg (L3581–3582).
 
 ---
 
-## SDK / platform API gaps (document — update after Phase Ib / J0)
+## SDK / platform API gaps (document — update after runtime verification)
 
 | ID | Area | Symptom | Justification | E2e |
 |----|------|---------|---------------|-----|
-| **P-003** | iOS unsupported functions | JS pre-execute throw via `IOS_UNSUPPORTED_FUNCTION_NAMES` (**8 names**; was 9) | **Under review (Ib/J0):** list likely **partially stale** vs iOS **12.15** CHANGELOG — see [sdk-support-audit](pipeline-sdk-support-audit.md). Confirmed unsupported set = **J0 runtime probes only**. `stringRepeat` **resolved J0-1**. | Reduced iOS pipelines until J0 |
-| **P-003a** | *(per-function hooks)* | `round`, `conditional`, `switchOn`, `trunc`, `substring`, `arrayGet`, `timestampAdd`, `timestampSubtract` | Subset of P-003 — see [§ iOS unsupported function e2e map](#ios-unsupported-function-e2e-map) | One or more tests each |
+| **P-003** | iOS unsupported functions | JS pre-execute throw via `IOS_UNSUPPORTED_FUNCTION_NAMES` (**8 names**; was 9) | List likely **partially stale** vs iOS **12.15** CHANGELOG — see [sdk-support-audit](pipeline-sdk-support-audit.md). Confirmed unsupported set requires **runtime verification** per audit §6. `stringRepeat` **confirmed supported** — guard removed; unified cross-platform e2e. | Reduced iOS pipelines until runtime verification completes — [work queue](pipeline-coverage-work-queue.md) |
+| **P-003a** | *(per-function hooks)* | `round`, `conditional`, `trunc`, `substring`, `arrayGet`, `timestampAdd`, `timestampSubtract` | Subset of P-003 — see [§ iOS unsupported function e2e map](#ios-unsupported-function-e2e-map) | One or more tests each |
 | **P-013** | iOS extended aggregate accumulators | `first`/`last`/`minimum`/`maximum` with expression args skipped on iOS only (L3740) | **Likely iOS SDK** — functions not in unsupported list; needs SDK repro; document until confirmed | L3740–3790 |
 | **P-014** | Execute `indexMode` / `rawOptions` on iOS | iOS parser rejects at native boundary | iOS SDK gap | L3796–3798 skip (iOS + macOS) |
 | **P-015** | Source `rawOptions` on iOS | iOS parser rejects `pipeline.source.rawOptions` | iOS SDK gap; Android applies `CollectionHints` | L3795–3845 (Android-only execute) |
 
 ---
 
-## RNFB JS policy (document or narrow in J)
+## RNFB JS policy (document or narrow during remediation)
 
 | ID | Area | Symptom | Justification | E2e |
 |----|------|---------|---------------|-----|
@@ -82,22 +84,24 @@ Pipeline work has **two completion signals** (see [Coverage design](/testing/cov
 | **P-027** | empty addFields/removeFields | L4047–4049 | Vacuous pass |
 | **P-028** | findNearest DOTPRODUCT alias | L4073–4075 | Vacuous pass |
 
-**macOS test-count note:** Total e2e **141 vs 146** is **not** Pipeline drift — five `packages/app/e2e/utils*.e2e.js` tests never register on macOS (`Platform.other` at describe level). All **100** Pipeline tests register on every platform; **11** are vacuous passes on macOS (table above).
+**macOS test-count note:** The lower macOS total is **not** Pipeline drift — several `packages/app/e2e/utils*.e2e.js` tests never register on macOS (`Platform.other` at describe level). Pipeline tests register on every platform; some are vacuous passes on macOS (table above).
 
 ---
 
 ## iOS unsupported function e2e map
 
-| Function | Throw asserted | Reduced iOS pipeline | Approx line | Ib status (CHANGELOG @ 12.15) |
-|----------|----------------|----------------------|-------------|-------------------------------|
-| `round` | Yes | Yes | L1175, L1680 | No entry — **J0-5 probe** |
-| `conditional` | Yes | Yes | L1350, L3356 skip | ConditionalExpression **12.11** — **J0-4 probe** |
-| `switchOn` | Yes | No reduced re-run | L1466 | **Added 12.12** — **J0-2 probe** |
-| `trunc` | Yes | Yes | L1758 | **Added 12.11** — **J0-3 probe** |
-| `substring` | Yes | Yes | L1891 | No entry — **J0-6 probe** |
-| `stringRepeat` | — | — | L1985 | **Resolved J0-1** — `sdk-supported-bridge-ok`; guard removed; iOS **146/146** |
-| `arrayGet` | Yes | Yes | L2265, L2648 | No entry — **J0-9 probe** (+ possible RNFB receiver gap) |
-| `timestampAdd` / `timestampSubtract` | Yes | Yes | L2903 | No entry — **J0-7/8 probe** |
+Durable verification status per function. **Live probe progress:** [work queue runtime guard probes](pipeline-coverage-work-queue.md#j0--ios-runtime-guard-probes-do-first).
+
+| Function | Throw asserted | Reduced iOS pipeline | Approx line | SDK / verification status |
+|----------|----------------|----------------------|-------------|---------------------------|
+| `round` | Yes | Yes | L1175, L1680 | No CHANGELOG entry — **pending-probe** |
+| `conditional` | Yes | Yes | L1350, L3356 skip | ConditionalExpression **12.11** — **pending-probe** |
+| `switchOn` | Yes | Yes | L1471 | **Added 12.12** — **pending-probe** |
+| `trunc` | Yes | Yes | L1758 | **Added 12.11** — **pending-probe** |
+| `substring` | Yes | Yes | L1891 | No CHANGELOG entry — **pending-probe** |
+| `stringRepeat` | — | — | L1985 | **Added 12.12** — **sdk-supported-bridge-ok**; guard removed; unified e2e |
+| `arrayGet` | Yes | Yes | L2265, L2648 | No CHANGELOG entry — **pending-probe** (+ possible RNFB receiver gap) |
+| `timestampAdd` / `timestampSubtract` | Yes | Yes | L2903 | No CHANGELOG entry — **pending-probe** |
 
 ---
 
@@ -111,16 +115,16 @@ Pipeline work has **two completion signals** (see [Coverage design](/testing/cov
 
 ---
 
-# Phase I audit summary (2026-06-25)
+# Platform drift audit summary (2026-06-25)
 
 | Source | Finding |
 |--------|---------|
-| [E2e inventory](f06f1caa-0502-4e60-9933-71bd892dcb2a) | 31 branch sites; 141/146 delta = app harness only |
-| [Native bridge diff](c178cb94-1b2d-43f5-8a05-1be6ef1b7263) | Primary drift in NodeBuilder coercion; secondary in Parser + stage fields |
-| [JS guards audit](82ebdd56-6894-455f-b58c-7ca8b90ba962) | Single runtime `isIOS` branch; execute-options JS gate on all platforms |
-| [SDK support reconciliation (Ib)](pipeline-sdk-support-audit.md) | Pins iOS 12.15 / Android 34.15; 9 guard entries likely partially stale; J0 probes required |
+| E2e inventory (`Pipeline.e2e.js`) | 31 `Platform.*` branch sites; macOS vs iOS/Android total count delta is app harness only (see P-006) |
+| Native bridge diff (Swift vs Java NodeBuilder/Parser) | Primary drift in NodeBuilder coercion; secondary in Parser + stage fields |
+| JS guards audit (`pipeline_support.ts`) | Single runtime `isIOS` branch; execute-options JS gate on all platforms |
+| [SDK support audit](pipeline-sdk-support-audit.md) | Pins iOS 12.15 / Android 34.15; guard list likely partially stale — runtime verification required |
 
-# Parity remediation workflow (Phase J)
+# Parity remediation workflow
 
 For each **bridge** row (P-001, P-005, P-010–P-012):
 
@@ -129,11 +133,11 @@ For each **bridge** row (P-001, P-005, P-010–P-012):
 3. Run 3-platform e2e ([running-e2e.md](/testing/running-e2e.md) canonical commands).
 4. Record closure in **Resolved** below.
 
-**Gate:** Phase **K+** (coverage) starts only after Phase **J** commit.
+**Gate:** Expand coverage toward intractable limits only after bridge gaps and iOS guard verification close — see [work queue](pipeline-coverage-work-queue.md).
 
 # Resolved
 
 | ID | Fix | Verified |
 |----|-----|----------|
-| P-002 | Android parser/node-builder: `{ path: "col/doc" }` reference constants no longer treated as field paths | Android e2e r3 **146/146** — commit `82d2a2cad` |
-| P-006 | E2e count delta macOS 141 vs 146 | **Closed** — 5 app `utils*` tests; Pipeline 100/100 on all platforms |
+| P-002 | Android parser/node-builder: `{ path: "col/doc" }` reference constants no longer treated as field paths | Verified on Android e2e after parser fix |
+| P-006 | MacOS e2e count delta | **Closed** — app `utils*` tests are skipped by platform; Pipeline registration is not the cause |

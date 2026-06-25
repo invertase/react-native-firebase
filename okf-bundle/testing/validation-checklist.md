@@ -40,7 +40,7 @@ yarn reference:api                    # after consumer tsc
 yarn compare:types                    # remove stale config entries when fixed
 ```
 
-Compare-types configs live in `.github/scripts/compare-types/configs/`. Package workflows define queue ordering (e.g. [pipelines](../packages/firestore/pipeline-implementation-workflow.md#phase-a--compare-types-gap-analysis)).
+Compare-types configs live in `.github/scripts/compare-types/configs/`. Package workflows define queue ordering (e.g. [pipelines](../packages/firestore/pipeline-implementation-workflow.md#step-1--compare-types-gap-analysis)).
 
 ## Jest
 
@@ -75,11 +75,11 @@ Some suites hit **cloud APIs** rather than emulators (e.g. Firestore Pipelines �
 
 ## OKF bundle review
 
-Before handoff, verify and update knowledge docs so the next iteration starts clean:
+Before handoff, follow the [OKF documentation and commit policy](../documentation-policy.md#okf-update-contract) so the next iteration starts clean:
 
 1. **Area under change** — read the relevant `okf-bundle/packages/<pkg>/` docs; consolidate anything learned this iteration (commands, gotchas, architecture) **into those OKF docs**, not into skills or ad-hoc notes.
 2. **Cross-cutting docs** — check `okf-bundle/testing/` (this checklist, [running-e2e](running-e2e.md), [coverage-design](coverage-design.md)) for statements that conflict with what you just verified; fix or remove drift.
-3. **References only elsewhere** — skills, package READMEs, and workflow docs should **link** to OKF; if they restate instructions, delete the duplicate and add a link.
+3. **Bundle consistency pass** — run the policy-required independent scan for canonical ownership, DRY references, link hygiene, and durability.
 
 Goal: each iteration leaves OKF more accurate and removes conflicting guidance.
 

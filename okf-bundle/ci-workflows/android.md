@@ -4,20 +4,20 @@
 
 1. `yarn tests:android:test-cover --headless` — Detox + Jet (pass/fail gate)
 2. `yarn tests:android:post-e2e-coverage` — poll/pull `coverage.ec`, Jacoco report (best-effort, never fails the job)
-3. **Codecov upload** — two flagged uploads (`e2e-ts-android`, `android-native`); `continue-on-error: true` on the action steps. **`codecov/project/android-native`** fails if the native flag upload is missing (see [coverage design](../testing/coverage-design.md#native-upload-gates)).
+3. **Codecov upload** — two flagged uploads (`e2e-ts-android`, `android-native`); `continue-on-error: true` on the action steps. **`codecov/project/android-native`** fails if the native flag upload is missing (see [coverage design](../testing/coverage-design.md#native-gates)).
 
 Native Android coverage is **not** pulled inside `tests/e2e/firebase.test.js`. The Jet `after` hook in `tests/app.js` calls `RNFBTestingCoverage.flush()` in the **app process** to write `coverage.ec` before Detox SIGINTs instrumentation. Post-e2e pull runs after Detox exits.
 
 ## CI failure: Jet 1006 → adb `reverse --remove` mid-run
 
-Observed on [run 27803881448](https://github.com/invertase/react-native-firebase/actions/runs/27803881448):
+Observed failure shape:
 
 | Time | Event |
 |------|--------|
 | Jet attempt 1 | Mocha-remote WS **1006** → Jet grace timer starts |
 | Same second | Detox runs `adb reverse --remove tcp:<detox-port>` |
 | +15s | Grace expires → Jet exits → orchestration retries |
-| Attempt 2 | **2586 tests pass** |
+| Attempt 2 | Retry can pass the suite |
 | Teardown | `adb reverse --remove` fails again → Jest FAIL |
 
 **Why reverse cleanup runs mid-run:** Detox `AndroidDriver._launchInstrumentationProcess()` registers a termination handler that always calls `adb reverse --remove` when instrumentation stops:
@@ -44,7 +44,7 @@ Full inventory: [detox-patches.md](detox-patches.md).
 
 ## CI failure: Jet JSON / WS protocol desync (Unexpected end of JSON input)
 
-Observed on Android CI under load (e.g. [run 28044822049](https://github.com/invertase/react-native-firebase/actions/runs/28044822049)): Jet runs only ~24 tests before the mocha-remote transport desyncs — often after a transient 1006 under high `loadavg`.
+Observed on Android CI under load: Jet may run only a small prefix of tests before the mocha-remote transport desyncs — often after a transient 1006 under high `loadavg`.
 
 **Symptom**
 
