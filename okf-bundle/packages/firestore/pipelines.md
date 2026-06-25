@@ -203,9 +203,18 @@ Baselines to beat: iOS NodeBuilder ~69%, Android NodeBuilder ~68%, Android Execu
 * Database: **`pipelines-e2e`** (`DATABASE_ID` in `Pipeline.e2e.js`); random collection suffixes; **no** `helpers.wipe()` (emulator REST only).
 * CI: emulator for Standard modules; `Pipeline.e2e.js` execute → cloud. Commands: [Running e2e tests](/testing/running-e2e.md).
 
-# iOS platform gaps
+# Platform parity
 
-`IOS_UNSUPPORTED_FUNCTION_NAMES` throw before native execute. E2e uses `expectIOSUnsupportedFunctions` and reduced pipelines on iOS.
+Cross-platform behavior is a **co-equal goal** with coverage ([Coverage design](/testing/coverage-design.md)). Differences must be **SDK limitations** (documented) or **closed via bridge fixes** — not silent e2e workarounds.
+
+| Topic | Document |
+|-------|----------|
+| Parity policy, drift registry, Q/R audit workflow | [Pipeline platform parity](pipeline-platform-parity.md) |
+| Coverage + parity work queue | [PIPELINE-COVERAGE-WORK-QUEUE.md](../../../PIPELINE-COVERAGE-WORK-QUEUE.md) — **I/J parity before K+ coverage** |
+
+# iOS platform gaps (SDK / API)
+
+`IOS_UNSUPPORTED_FUNCTION_NAMES` throw before native execute. E2e uses `expectIOSUnsupportedFunctions` and reduced pipelines on iOS. Registry row **P-003** in [pipeline-platform-parity.md](pipeline-platform-parity.md).
 
 # Measuring native coverage
 
