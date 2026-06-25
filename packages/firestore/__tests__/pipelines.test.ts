@@ -787,7 +787,6 @@ describe('Firestore pipelines runtime', function () {
       'arrayGet',
       'conditional',
       'round',
-      'stringRepeat',
       'substring',
       'switchOn',
       'timestampAdd',

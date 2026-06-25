@@ -183,7 +183,7 @@ Re-run when bumping `sdkVersions` in `@react-native-firebase/app`.
 
 | Function | JS guard | iOS bridge | Android bridge | CHANGELOG @ 12.15 | Classification | Phase J action |
 |----------|----------|------------|----------------|-------------------|----------------|----------------|
-| `stringRepeat` | Yes | Generic `string_repeat` | raw | **Added 12.12** | **pending-probe** → likely stale | **J0-1** iOS probe |
+| `stringRepeat` | No | Generic `string_repeat` | raw | **Added 12.12** | **sdk-supported-bridge-ok** | **J0-1** ✅ guard removed |
 | `switchOn` | Yes | Generic `switch_on` | raw | **Added 12.12** | **pending-probe** → likely stale | **J0-2** iOS probe |
 | `trunc` | Yes | Generic `trunc` | raw | **Added 12.11** | **pending-probe** → likely stale | **J0-3** iOS probe |
 | `conditional` | Yes | Dedicated `cond` | `Expression.conditional()` | **ConditionalExpression 12.11** | **pending-probe** → likely stale | **J0-4** iOS probe |

@@ -1982,38 +1982,6 @@ describe('FirestorePipeline', function () {
             stringReverse(field('token')).as('reversedToken'),
           );
 
-        if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['stringRepeat']);
-
-          const iosSnapshot = await execute(
-            db
-              .pipeline()
-              .documents([docPath])
-              .select(
-                stringConcat(field('firstName'), ' ', field('lastName')).as('fullName'),
-                concat(field('a'), field('b'), field('c')).as('concatResult'),
-                stringIndexOf(field('email'), '@').as('atIndex'),
-                stringReplaceAll(field('text'), 'foo', 'bar').as('replaced'),
-                stringReplaceOne(field('text'), 'foo', 'bar').as('replacedOnce'),
-                split(field('csvField'), ',').as('parts'),
-                reverse(field('code')).as('reversedCode'),
-                stringReverse(field('token')).as('reversedToken'),
-              ),
-          );
-
-          iosSnapshot.results.should.have.length(1);
-          const iosData = iosSnapshot.results[0].data();
-          iosData.fullName.should.equal('John Doe');
-          iosData.concatResult.should.equal('foobarbaz');
-          iosData.atIndex.should.equal(4);
-          iosData.replaced.should.equal('bar bar bar');
-          iosData.replacedOnce.should.equal('bar bar foo');
-          iosData.parts.should.eql(['a', 'b', 'c']);
-          iosData.reversedCode.should.equal('cba');
-          iosData.reversedToken.should.equal('321cba');
-          return;
-        }
-
         const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
