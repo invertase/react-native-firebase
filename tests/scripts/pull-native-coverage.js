@@ -160,6 +160,15 @@ function runJacocoAndroidTestReport() {
   return true;
 }
 
+function deleteProcessedAndroidCoverageEc(ecFilePath) {
+  if (!ecFilePath || !fs.existsSync(ecFilePath)) {
+    return;
+  }
+
+  fs.rmSync(ecFilePath, { force: true });
+  console.log(`[native-coverage] Removed processed coverage.ec: ${ecFilePath}`);
+}
+
 async function main() {
   const args = process.argv.slice(2);
 
@@ -174,9 +183,11 @@ async function main() {
     const deviceId = resolveAndroidDeviceId();
     console.log(`[native-coverage] Post-e2e Android coverage on ${deviceId}`);
     const pulled = await pullAndroidCoverageWithRetry(deviceId, { softFail: true });
-    runJacocoAndroidTestReport();
+    const reportOk = runJacocoAndroidTestReport();
     if (!pulled) {
       console.warn('[native-coverage] Jacoco report may be empty (no coverage.ec pulled)');
+    } else if (reportOk) {
+      deleteProcessedAndroidCoverageEc(pulled);
     }
     return;
   }
