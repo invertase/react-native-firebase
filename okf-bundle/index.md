@@ -4,22 +4,20 @@ okf_version: "0.1"
 
 # React Native Firebase knowledge bundle
 
-Knowledge documents for react-native-firebase development, testing, and maintenance.
-
-* [OKF documentation and commit policy](/documentation-policy.md) — durable vs ephemeral split, commit wording, and post-update bundle consistency contract (read first when editing OKF)
+* [Documentation/commit policy](/documentation-policy.md) — durable vs ephemeral, commit wording, OKF consistency
 
 # CI workflows
 
-* [CI workflows](/ci-workflows/index.md) — GitHub Actions reliability, logging, and troubleshooting (iOS simulator boot and Detox/Jet e2e orchestration)
+* [CI workflows](/ci-workflows/index.md) — GitHub Actions reliability, logs, Detox/Jet troubleshooting
 
 # Testing
 
-* [Running e2e tests](/testing/running-e2e.md) — the canonical e2e runbook: the minimal command set, fast-iteration tips, environment control, and diagnosis (start here)
-* [Validation checklist](/testing/validation-checklist.md) — canonical validation command sequence (`reference:api`, Jest, lints, spellcheck, `compare:types`, e2e, coverage policy)
-* [Coverage design](/testing/coverage-design.md) - unit and e2e coverage goals, expectations/policy, pipelines, and Codecov uploads
-* [Firebase testing project and emulator setup](/testing/firebase-testing-project.md) - cloud vs emulator, rules/indexes, deploy workflow for `react-native-firebase-testing`
+* [Running e2e tests](/testing/running-e2e.md) — canonical e2e commands, narrowing, environment, diagnosis
+* [Validation checklist](/testing/validation-checklist.md) — compile, Jest, lint, `compare:types`, e2e, coverage
+* [Coverage design](/testing/coverage-design.md) — unit/e2e coverage policy, native gates, Codecov
+* [Firebase testing project](/testing/firebase-testing-project.md) — cloud vs emulator, rules/indexes, deploy
 
 # Packages
 
-* [@react-native-firebase/auth](/packages/auth/index.md) — Auth modular API type parity, platform matrix, and compare:types triage
-* [@react-native-firebase/firestore](/packages/firestore/index.md) — Firestore Pipelines architecture, coercion, and e2e coverage
+* [Auth](/packages/auth/index.md) — modular API type parity, platform matrix, `compare:types`
+* [Firestore](/packages/firestore/index.md) — Pipelines architecture, parity, e2e coverage

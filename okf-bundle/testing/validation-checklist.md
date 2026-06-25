@@ -8,9 +8,9 @@ timestamp: 2026-06-24T00:00:00Z
 
 # Validation checklist
 
-Single source of truth for validation commands during development and handoff. Other docs and skills **link here**; they do not restate anything.
+Validation commands for development/handoff. Other docs/skills link here; do not restate.
 
-**Coverage acceptance** follows [Coverage design](coverage-design.md) — especially [expectations (policy)](coverage-design.md#coverage-expectations-policy) and [completion signal](coverage-design.md#coverage-as-completion-signal). Validation is not complete until those rules are satisfied on every file touched.
+Coverage acceptance: [expectations](coverage-design.md#coverage-expectations-policy) + [completion signal](coverage-design.md#coverage-as-completion-signal) on every touched file.
 
 ## When to run what
 
@@ -24,7 +24,7 @@ Single source of truth for validation commands during development and handoff. O
 
 ## Prepare and compile
 
-From repo root unless noted:
+Repo root unless noted:
 
 ```bash
 yarn lerna:prepare                    # after packages/*/lib/** edits (Metro serves dist/)
@@ -40,7 +40,7 @@ yarn reference:api                    # after consumer tsc
 yarn compare:types                    # remove stale config entries when fixed
 ```
 
-Compare-types configs live in `.github/scripts/compare-types/configs/`. Package workflows define queue ordering (e.g. [pipelines](../packages/firestore/pipeline-implementation-workflow.md#step-1--compare-types-gap-analysis)).
+Configs: `.github/scripts/compare-types/configs/`. Package workflows define ordering (e.g. [pipelines](../packages/firestore/pipeline-implementation-workflow.md#step-1--compare-types-gap-analysis)).
 
 ## Jest
 
@@ -48,7 +48,7 @@ Compare-types configs live in `.github/scripts/compare-types/configs/`. Package 
 yarn tests:jest                       # full suite at handoff
 ```
 
-Focused during implementation — paths for the package under change, e.g.:
+Focused example:
 
 ```bash
 yarn tests:jest --watchman=false packages/firestore/__tests__/pipelines.test.ts
@@ -63,25 +63,25 @@ yarn lint:js
 yarn format:js                        # inspect diff after
 ```
 
-When docs changed: `yarn lint:markdown`, `yarn lint:spellcheck`.
+Docs: `yarn lint:markdown`, `yarn lint:spellcheck`.
 
-When native changed: `yarn lint:android`, `yarn lint:ios:check`. **`lint:android` is sometimes flaky** — if it fails without a clear cause in your diff, re-run once or twice before treating as a real failure.
+Native: `yarn lint:android`, `yarn lint:ios:check`. `lint:android` can flake; rerun once/twice if failure is not clearly in diff.
 
 ## E2e with coverage
 
-Commands: [Running e2e tests](running-e2e.md). Post-processing: [Coverage design](coverage-design.md) (iOS `tests:ios:test:process-coverage`, Android `tests:android:post-e2e-coverage`).
+Commands: [Running e2e tests](running-e2e.md). Post-process: [Coverage design](coverage-design.md) (iOS `tests:ios:test:process-coverage`, Android `tests:android:post-e2e-coverage`).
 
-Some suites hit **cloud APIs** rather than emulators (e.g. Firestore Pipelines → `pipelines-e2e` Enterprise DB — [pipelines.md](../packages/firestore/pipelines.md#backend-cloud-enterprise-not-the-local-emulator)).
+Some suites hit **cloud APIs**, e.g. Firestore Pipelines → `pipelines-e2e` Enterprise DB ([pipelines.md](../packages/firestore/pipelines.md#backend-cloud-enterprise-not-the-local-emulator)).
 
 ## OKF bundle review
 
-Before handoff, follow the [OKF documentation and commit policy](../documentation-policy.md#okf-update-contract) so the next iteration starts clean:
+Before handoff, follow [OKF policy](../documentation-policy.md#okf-update-contract):
 
-1. **Area under change** — read the relevant `okf-bundle/packages/<pkg>/` docs; consolidate anything learned this iteration (commands, gotchas, architecture) **into those OKF docs**, not into skills or ad-hoc notes.
-2. **Cross-cutting docs** — check `okf-bundle/testing/` (this checklist, [running-e2e](running-e2e.md), [coverage-design](coverage-design.md)) for statements that conflict with what you just verified; fix or remove drift.
-3. **Bundle consistency pass** — run the policy-required independent scan for canonical ownership, DRY references, link hygiene, and durability.
+1. Update relevant `okf-bundle/packages/<pkg>/` docs with durable learnings.
+2. Check `okf-bundle/testing/` for conflicts with verified behavior; fix drift.
+3. Run independent scan for canonical ownership, DRY refs, link hygiene, durability.
 
-Goal: each iteration leaves OKF more accurate and removes conflicting guidance.
+Goal: each iteration improves OKF and removes conflicting guidance.
 
 ## Handoff checklist
 

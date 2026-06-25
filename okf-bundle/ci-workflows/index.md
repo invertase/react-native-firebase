@@ -1,19 +1,19 @@
 # CI workflows
 
-Knowledge for GitHub Actions workflows in this repository: how jobs are structured, platform-specific reliability concerns, and how to debug failures from CI artifacts.
+GitHub Actions job shape, platform reliability, and artifact triage.
 
 ## Platforms
 
-* [iOS](ios.md) — simulator boot reliability, logging, and troubleshooting
-* [Android](android.md) — idling resources, adb teardown, native coverage pull
-* [Other](other.md) — macOS Jet e2e (Metro bundle startup), Windows, and shared workflow concerns
+* [iOS](ios.md) — simulator boot, logging, troubleshooting
+* [Android](android.md) — idling, adb teardown, native coverage
+* [Other](other.md) — macOS Jet/Metro, Windows/shared
 
 ## Shared E2E dependencies
 
-* [Detox yarn patches](detox-patches.md) — inventory, `ECOMPROMISED` lock flake, headless patch update workflow
-* [iOS diagnostic scripts](ios.md#operational-notes) — `resource-monitor.sh`, `flake-summary.sh` (artifact helpers for flake triage)
+* [Detox patches](detox-patches.md) — inventory, `ECOMPROMISED`, patch workflow
+* [iOS diagnostics](ios.md#operational-notes) — `resource-monitor.sh`, `flake-summary.sh`
 
 ## Related
 
-* [Running e2e tests](../testing/running-e2e.md) — the local e2e runbook (CI uses the same yarn targets, with `-ci`/`--headless`/release variants noted per platform below)
-* [Testing / coverage design](../testing/coverage-design.md) — e2e coverage collection, Codecov flags, and upload gates
+* [Running e2e tests](../testing/running-e2e.md) — local runbook; CI variants noted per platform
+* [Coverage design](../testing/coverage-design.md) — e2e coverage, Codecov flags/gates

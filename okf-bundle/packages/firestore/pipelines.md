@@ -8,13 +8,13 @@ timestamp: 2026-06-22T00:00:00Z
 
 # ELI5 overview
 
-Imagine you write a recipe (the "pipeline") in JavaScript: "take the `restaurants` collection, add a field that summarizes each restaurant's reviews, then keep only `name` and `reviewSummary`." React Native Firebase can't run that recipe itself — the real Firestore engine lives in native code (Swift on iOS, Java on Android). So RNFB does three things:
+JS defines a pipeline; RNFB serializes it for native Firestore (Swift/Java), which executes it:
 
 1. **Serialize** — JS turns the pipeline into a plain JSON tree for the bridge.
 2. **Parse + build** — native reads JSON and rebuilds Firebase `Pipeline` / expression objects.
 3. **Execute** — native runs against the cloud `pipelines-e2e` Enterprise database and returns JSON results.
 
-A **subquery** embeds a whole inner pipeline as a **`PipelineValue`** node inside a `scalar`/`array` function. **Golden rule:** treat `PipelineValue` as a sealed box in parser pass 1 — hand it to `parsePipelineMap` in pass 2, never walk it with the expression parser (aggregates use `kind`, not `name`).
+A **subquery** embeds an inner pipeline as **`PipelineValue`** inside `scalar`/`array`. **Rule:** parser pass 1 treats `PipelineValue` as opaque; pass 2 hands it to `parsePipelineMap`. Never expression-walk it; aggregates use `kind`, not `name`.
 
 # Overview
 
@@ -32,7 +32,7 @@ flowchart LR
 
 # Backend: cloud Enterprise, not the local emulator
 
-Pipeline `execute()` requires **Firestore Enterprise**. The local emulator is **Standard** and does not faithfully run pipeline queries.
+Pipeline `execute()` requires **Firestore Enterprise**; local emulator is Standard.
 
 | Database | Emulator in `tests/app.js`? | Used for |
 |----------|----------------------------|----------|
@@ -40,17 +40,15 @@ Pipeline `execute()` requires **Firestore Enterprise**. The local emulator is **
 | `second-rnfb` | Yes | Second-database e2e |
 | **`pipelines-e2e`** | **No** | **Pipeline e2e only** (cloud Enterprise) |
 
-CI starts the emulator for auth/RTDB/functions/storage and Standard Firestore e2e; **pipeline execute hits cloud** and needs network.
+CI uses emulator for standard products; **pipeline execute hits cloud**.
 
 ### Emulator status (2026)
 
-Partial Enterprise support exists if `"edition": "enterprise"` is set in `firebase.json`. RNFB does **not** use it; cloud remains authoritative (incl. vector `findNearest`).
+Enterprise emulator mode exists but RNFB does **not** use it; cloud is authoritative, including vector `findNearest`.
 
 ### Why `pipelines-e2e` has its own rules and indexes (cloud deploy split)
 
-The emulator serves one rules/index bundle for `(default)` and does not model multiple cloud databases well. Mixing Enterprise pipeline work with Standard emulator databases broke **security-rules testing** for regular Firestore e2e.
-
-**Resolution:** `pipelines-e2e` is **cloud-only** for execute, rules, and indexes.
+Emulator multi-DB/rules behavior broke Standard Firestore security-rules e2e when mixed with Enterprise pipeline work. **Resolution:** `pipelines-e2e` is cloud-only for execute/rules/indexes.
 
 | Database | Rules file | Indexes file | Emulator | Cloud deploy |
 |----------|------------|--------------|----------|--------------|
@@ -58,7 +56,7 @@ The emulator serves one rules/index bundle for `(default)` and does not model mu
 | `second-rnfb` | *(same `firestore.rules`, `database == "second-rnfb"` guards)* | *(none in repo)* | Yes | No `firebase.json` entry |
 | **`pipelines-e2e`** | **`firestore.pipelines-e2e.rules`** | **`firestore.pipelines-e2e.indexes.json`** | **No** | **Yes** |
 
-Vector indexes (`findNearest`) live in **`firestore.pipelines-e2e.indexes.json`** only. Do **not** `connectFirestoreEmulator(..., 'pipelines-e2e')` without a deliberate Enterprise-emulator migration.
+Vector indexes live in **`firestore.pipelines-e2e.indexes.json`** only. Do **not** `connectFirestoreEmulator(..., 'pipelines-e2e')` without an Enterprise-emulator migration.
 
 **Deploy/sync:** [Firebase testing project](/testing/firebase-testing-project.md#cloud-project-deploy-rules-and-indexes) — `./sync-firestore-indexes.sh`, `./deploy-firestore.sh`.
 
@@ -69,7 +67,7 @@ Vector indexes (`findNearest`) live in **`firestore.pipelines-e2e.indexes.json`*
 
 # Native layer
 
-`RNFBFirestorePipelineNodeBuilder` (Swift/Java) coerces bridge types, separates literal vs expression slots, and builds `ExprBridge` / stage bridges for `RNFBFirestorePipelineBridgeFactory`.
+`RNFBFirestorePipelineNodeBuilder` coerces bridge types, separates literal/expression slots, and builds `ExprBridge` / stage bridges.
 
 # Nested pipelines / subqueries
 
@@ -93,9 +91,9 @@ flowchart TB
 
 ## Decision: `PipelineValue` opaque in parser pass 1
 
-**Why:** Walking into a `PipelineValue` with the expression parser reaches `AggregateFunction` nodes (`kind`, not `name`). Unhandled `exprType` + `isExpressionLike` true causes a **`valueEnter`↔`expressionEnter` infinite loop** (hang with no logs — confirm with `sample <pid>` on simulator, not NSLog).
+**Why:** Expression-walking `PipelineValue` reaches `AggregateFunction` nodes (`kind`, not `name`). Unhandled `exprType` + `isExpressionLike` causes **`valueEnter`↔`expressionEnter` infinite loop**; confirm hang with `sample <pid>`.
 
-**Fix (both platforms):** pass 1 stores `PipelineValue` as primitive raw map; pass 2 re-parses via `parsePipelineMap`. Jest `.serialize()` alone does **not** catch this — need native e2e or sampled run.
+**Fix:** pass 1 stores `PipelineValue` raw; pass 2 re-parses via `parsePipelineMap`. Jest `.serialize()` does **not** catch this; need native e2e or sampled run.
 
 **Guard rails:**
 
@@ -110,7 +108,7 @@ flowchart TB
 
 ## Decision: native parsers use work-list state machines
 
-**Tradeoff:** Swift has no reliable TCO; JVM stacks are bounded → mutual recursion risks overflow. Heap-allocated frame stacks bound depth by heap, not call stack.
+Swift lacks reliable TCO; JVM stacks are bounded. Heap frame stacks bound depth by heap, not call stack.
 
 **Exception:** `buildNestedPipelineSubquery` re-enters `parsePipelineMap` once per subquery nesting level — fine in practice; only absurd subquery depth grows the native stack.
 
@@ -130,18 +128,18 @@ Probes: `packages/firestore/__tests__/pipelines-pathological.test.ts`.
 
 ### DEFERRED: `serializeValue` work-list conversion
 
-Convert `serializeValue` (`pipeline_runtime.ts`) to iterative if deep machine-generated pipelines become a use case. Preserve `WeakSet` circular guard; add friendly "too deeply nested" message.
+Convert `serializeValue` to iterative if deep generated pipelines matter. Preserve `WeakSet`; add friendly "too deeply nested" error.
 
 # Two expression builders per platform — edit the live one
 
-Each platform has a **live** execute-time lowering path and a **dormant** sibling (looks implemented in coverage but never runs).
+Each platform has a **live** execute-time lowering path and a dormant sibling.
 
 | Platform | Live path | Dormant path |
 |----------|-----------|--------------|
 | iOS | `coerceExpressionTree` (iterative) | Recursive cluster — **removed ~117 lines** (0% coverage) |
 | Android | `EnterObjectExpressionFrame` → `scheduleExpressionFunctionLowering` | `buildExpressionFunctionFromParsedArgs` + `coerceExpressionValueNode` — **interwoven; confirm with coverage before delete** |
 
-**Lesson (Android subqueries):** `scalar`/`array` were implemented on the dormant path only; live path treated `array` as literal and ignored `scalar` → all subqueries failed until `scheduleExpressionFunctionLowering` gained `extractNestedPipelineMapFromRaw` → `buildRawNestedPipelineSubquery`.
+**Lesson:** Android `scalar`/`array` were implemented only on dormant path; live path treated `array` as literal and ignored `scalar` until `scheduleExpressionFunctionLowering` gained nested-pipeline handling.
 
 **Guard rails:**
 
@@ -153,17 +151,17 @@ Each platform has a **live** execute-time lowering path and a **dormant** siblin
 
 From `tests:<platform>:test-cover` + post-processing; refresh with `bash scripts/map-pipeline-coverage-gaps.sh <label>`:
 
-Durable coverage principle: use e2e coverage to distinguish live paths from dormant lowering code, then document any intractable gaps. Current snapshot numbers and phase-specific deltas live in the [pipeline coverage work queue](pipeline-coverage-work-queue.md#current-snapshot).
+Use e2e coverage to distinguish live paths from dormant lowering code; current numbers/deltas live in [work queue](pipeline-coverage-work-queue.md#current-snapshot).
 
 ### Native coverage gap map
 
-Live-path holes concentrate in **expression lowering** and **stage coercion**, not dormant parsed-node clusters (Android dormant `buildParsed*` cluster removed 2026-06). Remaining high-value gaps:
+Live-path holes concentrate in **expression lowering** and **stage coercion**, not dormant parsed-node clusters. Remaining high-value gaps:
 
 - **Android:** expression-frame lowering, parsed aggregate tails, executor branches.
 - **iOS:** stage coercion, operand modes, map passthrough success paths.
 - **TS:** runtime/validation branches reachable by direct Jest or e2e tamper tests.
 
-Quantified tables and next-phase priorities: [pipeline-coverage-work-queue.md](pipeline-coverage-work-queue.md). Summary script: `bash scripts/map-pipeline-coverage-gaps.sh <label>`.
+Quantified tables/priorities: [work queue](pipeline-coverage-work-queue.md). Script: `bash scripts/map-pipeline-coverage-gaps.sh <label>`.
 
 ### DEFERRED: native coverage to 100% (pending approval)
 
@@ -172,13 +170,13 @@ Quantified tables and next-phase priorities: [pipeline-coverage-work-queue.md](p
 1. **E2e per live-but-untested operator/stage** in `coerceExpressionTree` (iOS) and live Android lowering, plus remaining executor error branches.
 2. **Android parsed-aggregate tail** — partially live (`coerceAliasedAggregate` from Executor); target with e2e, not deletion.
 
-Baselines to beat: iOS NodeBuilder ~69%, Android NodeBuilder ~68%, Android Executor ~58%. Prefer cost-efficient passes; escalate model only if structural refactor required.
+Baselines: iOS NodeBuilder ~69%, Android NodeBuilder ~68%, Android Executor ~58%. Prefer cost-efficient passes.
 
 **Compare-types exports:** deferred — separate track from coverage expansion ([work queue](pipeline-coverage-work-queue.md)).
 
 # Integer / boolean coercion (iOS bridge)
 
-**Problem:** RN delivers JS booleans as `CFBoolean` `NSNumber`; integers also `NSNumber` — `0`/`1` and bools collide without care.
+RN delivers JS booleans as `CFBoolean` `NSNumber`; integers also `NSNumber`, so `0`/`1` and bools collide.
 
 **Decision — `scalarConstantBridge` check order:**
 
@@ -190,7 +188,7 @@ Baselines to beat: iOS NodeBuilder ~69%, Android NodeBuilder ~68%, Android Execu
 
 `xor` / `nor` / `count_if` use boolean-expression coercion like `and`/`or`.
 
-**E2e mitigation:** avoid ambiguous `constant(0)`/`constant(1)` in heterogeneous `array([…])` literals — tier-1 test uses `constant('tail')`. Tagging integers in serialization was considered and deferred (larger API change).
+**E2e mitigation:** avoid ambiguous `constant(0)`/`constant(1)` in heterogeneous `array([…])`; use `constant(2+)` or non-numeric sentinel. Integer tagging deferred.
 
 # E2e environment
 
@@ -199,7 +197,7 @@ Baselines to beat: iOS NodeBuilder ~69%, Android NodeBuilder ~68%, Android Execu
 
 # Platform parity
 
-Cross-platform behavior is a **co-equal goal** with coverage ([Coverage design](/testing/coverage-design.md)). Differences must be **SDK limitations** (documented) or **closed via bridge fixes** — not silent e2e workarounds.
+Cross-platform behavior is co-equal with coverage. Differences must be documented SDK limitations or closed bridge fixes, not silent e2e workarounds.
 
 | Topic | Document |
 |-------|----------|

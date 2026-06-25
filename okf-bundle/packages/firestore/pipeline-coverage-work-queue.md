@@ -8,27 +8,18 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS (2026-06-25, post-arbiter):** Phase **J0** — **review e2e gates open** (harness contention from parallel review runs — not product regression). **J0-1** (`stringRepeat`) — committed `f14092909`; static/Jest OK; implementer once reported iOS **146/146**; **review e2e gate NOT closed** (Jet `Invalid array length` after `coverage-ready`, SimError 405, desync). **J0-2** (`switchOn`) — uncommitted WIP; Jest **24/24**; **review e2e gate NOT closed** (`switchOn` never ran green on canonical review). **Do not start J0-3** until J0-2 review gate closes. Phase **I** + **H** + **Ib** committed.
-> **Goals:** (1) **Platform parity first** — same observable behavior on iOS, Android, and macOS unless a difference is a **native SDK limitation**; drift triaged and closed or **formally documented** in OKF. (2) Then raise pipeline coverage (TS + native) toward intractable limits (~100% where reachable).  
-> **Parity policy:** [pipeline-platform-parity.md](pipeline-platform-parity.md)  
-> **SDK support audit:** [pipeline-sdk-support-audit.md](pipeline-sdk-support-audit.md)  
-> **Coverage policy:** [Coverage design](../../testing/coverage-design.md)  
-> **E2e commands:** [Running e2e tests](../../testing/running-e2e.md) — **only** these commands; [e2e tiers](../../testing/running-e2e.md#e2e-tiers-implementer--reviewer--pre-merge) (implementer **focused**, reviewer **area**, pre-merge **full**); **always serial** from verified clean [pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start)
-> **Architecture:** [pipelines.md](pipelines.md)
+> **IN PROGRESS (2026-06-25, post-arbiter):** Phase **J0**, review e2e gates open from harness contention, not product regression. **J0-1** `stringRepeat`: committed `f14092909`; static/Jest OK; implementer once iOS **146/146**; review gate **not closed** (Jet `Invalid array length` after `coverage-ready`, SimError 405, desync). **J0-2** `switchOn`: uncommitted WIP; Jest **24/24**; review gate **not closed** (never green canonically). **Do not start J0-3** until J0-2 review gate closes. **I/H/Ib committed.**
+> **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
 
-Ephemeral tracker — see [OKF documentation and commit policy](../../documentation-policy.md).
+Ephemeral tracker; see [OKF policy](../../documentation-policy.md).
 
 ---
 
 ## Phase ordering (2026-06-25)
 
-**Parity before coverage.** Chasing coverage while parity drift remains tends to:
-
-- add per-platform e2e `Platform.*` workarounds instead of fixing bridges;
-- hit native arms that differ by platform and mis-read gaps as “intractable”;
-- deepen structural drift between Swift and Java lowering paths.
+**Parity before coverage.** Otherwise tests add `Platform.*` workarounds, misclassify bridge drift as intractable, and deepen Swift/Java drift.
 
 **Sequence from H onward:** **H** → **I** drift inventory → **Ib** SDK support reconciliation → **J** (J0 probes + bridge fixes) → **K–Q** coverage → **R** snapshot.
 
@@ -42,12 +33,9 @@ Ephemeral tracker — see [OKF documentation and commit policy](../../documentat
 
 ## Resume checklist
 
-E2e runs use **only** [running-e2e.md](../../testing/running-e2e.md). That runbook owns prerequisites, background services, pre-flight, serial host rules, interrupted-run cleanup, and platform commands.
-
-1. Start from [running-e2e § Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start); do not start if another e2e is active.
-2. Follow [running-e2e § Serialized e2e dispatch](../../testing/running-e2e.md#serialized-e2e-dispatch): one e2e run at a time; no source edits during runs.
-3. For guard probes, follow [sdk-support-audit § Runtime verification](pipeline-sdk-support-audit.md#6-runtime-verification-authoritative) and the live Phase J protocol below.
-4. For coverage deltas, run a full clean cycle; never trust stale `.ec`/profraw ([coverage-design § stale data](../../testing/coverage-design.md#stale-coverage-data)).
+1. E2e: [pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start), [serialized dispatch](../../testing/running-e2e.md#serialized-e2e-dispatch), no source edits mid-run.
+2. Guard probes: [SDK runtime verification](pipeline-sdk-support-audit.md#6-runtime-verification-authoritative) + Phase J protocol below.
+3. Coverage deltas: full clean cycle; never trust stale `.ec`/profraw ([coverage stale data](../../testing/coverage-design.md#stale-coverage-data)).
 
 ---
 
@@ -75,15 +63,13 @@ E2e runs use **only** [running-e2e.md](../../testing/running-e2e.md). That runbo
 | **Q** | Intractability audit | queued | measured caps per file *(was old O)* |
 | **R** | Pre-merge harness restore | queued | **Full** unfocused 3-platform snapshot — [pre-merge e2e tier](../../testing/running-e2e.md#e2e-tiers-implementer--reviewer--pre-merge) *(was old P)* |
 
-**Compare-types exports:** out of scope until Phase **R**.
-
-**Rule during J:** do **not** add new `Platform.android` / `Platform.ios` e2e branches to raise coverage — file as drift and fix in **J** or document as SDK limitation.
+**Compare-types exports:** out of scope until **R**. During **J**, no new `Platform.android` / `Platform.ios` branches for coverage; file drift, fix in **J**, or document SDK limitation.
 
 ---
 
 ## Current snapshot
 
-**Label:** `after-phase-h-3platform-green` · **Harness:** firestore Pipeline only (local `tests/app.js` — do not commit)
+**Label:** `after-phase-h-3platform-green`; **harness:** firestore Pipeline only (`tests/app.js` local, do not commit)
 
 **E2e counts (Phase H baseline):** macOS **141**, iOS **146**, Android **146** ✅
 
@@ -92,16 +78,16 @@ E2e runs use **only** [running-e2e.md](../../testing/running-e2e.md). That runbo
 | TS `pipeline_validate.ts` | 82/88 (93.18%) | 78/88 (88.64%) | 78/88 (88.64%) |
 | Phase H e2e baseline | ✅ | ✅ | ✅ |
 
-*Phase H baseline only — not the J0 review e2e gate. See arbiter table below.*
+*Phase H baseline only; not J0 review gate.*
 
-**Next (blocked):** [Pre-flight clear](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) + green canonical iOS review e2e for **J0-2** (`switchOn`); then re-attempt **J0-1** review gate if needed. **Do not start J0-3** (`trunc`) until J0-2 review gate closes.
+**Next (blocked):** [pre-flight clear](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) + green canonical iOS review e2e for **J0-2**; then retry **J0-1** if needed. **Do not start J0-3** until J0-2 closes.
 
 **Arbiter gate (2026-06-25):**
 
 | Probe | Code | Review e2e | Notes |
 |-------|------|------------|-------|
-| **J0-1** `stringRepeat` | ✅ committed — `f14092909` | ⛔ **gate open** (harness) | Static/Jest OK; implementer once **146/146**; review e2e NOT closed — parallel runs + Jet/SimError desync; **not a code regression** |
-| **J0-2** `switchOn` | ✅ WIP (uncommitted) | ⛔ **gate open** (never green) | Jest **24/24**; canonical review e2e never ran green — re-run after [pre-flight clear](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) |
+| **J0-1** `stringRepeat` | ✅ committed `f14092909` | ⛔ open (harness) | Static/Jest OK; implementer once **146/146**; review not closed: parallel runs + Jet/SimError desync; **not code regression** |
+| **J0-2** `switchOn` | ✅ WIP | ⛔ open (never green) | Jest **24/24**; re-run after [pre-flight clear](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) |
 | **J0-3** `trunc` | — | **hold** | Do not implement until J0-2 review gate closes |
 
 | Target | macOS | iOS | Android (gap map) | Phase |
@@ -133,7 +119,7 @@ bash scripts/map-pipeline-coverage-gaps.sh after-phase-f-dead-removal
 | `970022702` | E2e: expression frame lowering regression cases (Phase F) |
 | `0650b7783` | E2e: iOS operand modes via raw where filters (Phase G) |
 
-Earlier on branch: Phases A–E (baseline, dead code, gap map, lowering/executor e2e).
+Earlier: A–E baseline, dead code, gap map, lowering/executor e2e.
 
 ---
 
@@ -141,8 +127,8 @@ Earlier on branch: Phases A–E (baseline, dead code, gap map, lowering/executor
 
 ### Phase F (Android loop L900–1299)
 
-- **Five e2e tests** added under `enter object expression frame lowering coverage` — green 128/133/133; **zero Jacoco delta** (parser normalizes shapes before NodeBuilder).
-- **Live vs dead audit:** removed **183 lines** of duplicate/zero-caller lowering (wrappers, raw-operator boolean arms duplicated in Parser, scalar/String/Expression entry arms never reached from `serializeExpressionNode`).
+- Added five e2e tests under `enter object expression frame lowering coverage`; green 128/133/133; **zero Jacoco delta** because Parser normalizes before NodeBuilder.
+- Removed **183 lines** duplicate/zero-caller lowering: wrappers, raw-operator boolean arms duplicated in Parser, scalar/String/Expression entry arms unreachable from `serializeExpressionNode`.
 - **Result:** loop **106 → 77 missed**; NodeBuilder **67.5% → 70.2%** (fewer lines, higher %).
 - **Remainder → Phase M:** vector expression handler (expression-vector rhs), exit/receiver tails.
 
@@ -150,7 +136,7 @@ Earlier on branch: Phases A–E (baseline, dead code, gap map, lowering/executor
 
 ### Phase G (iOS operand modes + map passthrough)
 
-- **One e2e:** `coerces bare rhs operands through raw where filters` — raw `.where({ condition: { operator, fieldPath, value }})` with bare string/array/bool rhs (modular API wraps rhs in `exprType: constant` maps and cannot hit operand-mode arms).
+- One e2e: `coerces bare rhs operands through raw where filters`; raw `.where({ condition: { operator, fieldPath, value }})` with bare string/array/bool rhs (modular wraps rhs constants and misses operand-mode arms).
 - **Result:** iOS NodeBuilder **+0.95 pp**; operand modes **69.32% → 78.41%** (−8 missed).
 - **Map passthrough execute success (L1208–1219):** **intractable** — Firestore rejects `map(field(…))` execute; lowering already covered by existing error-path e2e.
 - **Operand tail (19 missed):** L928, L948–949, L961–966, L973–974, L990–1006 — triage in **Phase I**; Android side is **P-001** (bridge gap, not coverage-only).
@@ -200,15 +186,15 @@ Earlier on branch: Phases A–E (baseline, dead code, gap map, lowering/executor
 
 ## Phase Ib — SDK support reconciliation (complete 2026-06-25)
 
-**Goal:** Rebuild the true iOS unsupported-function list from primary sources; document a repeatable audit method; **revise Phase J queue** before drift closure.
+**Goal:** Rebuild iOS unsupported-function list from primary sources; document repeatable method; revise Phase J queue.
 
 **Pins audited:** iOS Firestore **12.15.0**, Android BOM **34.15.0**.
 
 **Deliverables:**
 
 - [pipeline-sdk-support-audit.md](pipeline-sdk-support-audit.md) — 7-step repeatable method + pre-probe matrix (`257e31abb`)
-- Finding: **`IOS_UNSUPPORTED_FUNCTION_NAMES` is likely stale** for functions added in iOS SDK **12.11–12.12** (`stringRepeat`, `switchOn`, `trunc`, `ConditionalExpression` / `conditional`) while guards unchanged since early pipeline work
-- Finding: **`timestampAdd` / `timestampSubtract` / `arrayGet`** — no iOS CHANGELOG entry at 12.15; Android uses receiver-chain lowering, iOS uses raw wire only → **probe then bridge or document**
+- **`IOS_UNSUPPORTED_FUNCTION_NAMES` likely stale** for iOS SDK **12.11–12.12** additions (`stringRepeat`, `switchOn`, `trunc`, `ConditionalExpression` / `conditional`).
+- **`timestampAdd` / `timestampSubtract` / `arrayGet`**: no iOS CHANGELOG at 12.15; Android receiver-chain lowering, iOS raw wire only → **probe then bridge or document**.
 - **Runtime probes (Phase J0) are authoritative** — CHANGELOG + bridge audit alone cannot remove guards
 
 **Audit input:** native bridge + CHANGELOG cross-check.
@@ -219,19 +205,19 @@ Earlier on branch: Phases A–E (baseline, dead code, gap map, lowering/executor
 
 ### Phase J iteration protocol (strict)
 
-Each J0 probe (and each J1–J6 bridge step) follows **one** serial loop. Do not overlap iterations.
+Each J0 probe / J1–J6 bridge step follows **one** serial loop. No overlap.
 
 | Step | Actor | Rules |
 |------|-------|-------|
-| **1. Implement** | Implementation context | Code + e2e spec changes; **Jest** + **focused e2e** ([running-e2e § focused tier](../../testing/running-e2e.md#e2e-tiers-implementer--reviewer--pre-merge)) — serial, canonical commands only; `.only` / tight area narrowing OK; **do not commit** |
-| **2. Review** | Fresh review context | Independent pass on frozen diff; **area e2e** — serial canonical `:test-cover` on frozen files, **no** `.only`; area narrowing in `tests/app.js` + `tests/globals.js` only — [running-e2e rules 6–7](../../testing/running-e2e.md) (**one e2e at a time**; **no source edits during e2e**) |
-| **3. Commit** | Coordinator | **One** focused commit **only after** review e2e green |
+| **1. Implement** | Implementation context | Code/e2e changes; **Jest** + **focused e2e**; `.only` / tight area narrowing OK; **no commit** |
+| **2. Review** | Fresh review context | Frozen diff; **area e2e**; no `.only`; area narrowing only in `tests/app.js` + `tests/globals.js`; serial |
+| **3. Commit** | Coordinator | One focused commit only after review e2e green |
 
-Canonical e2e loop and hard rules: [running-e2e § Serialized e2e dispatch](../../testing/running-e2e.md#serialized-e2e-dispatch), [running-e2e § Running one iteration](../../testing/running-e2e.md#running-one-iteration), and [pipeline implementation workflow § iOS guard probe iterations](pipeline-implementation-workflow.md#ios-guard-probe-iterations).
+Canonical rules: [serialized dispatch](../../testing/running-e2e.md#serialized-e2e-dispatch), [one iteration](../../testing/running-e2e.md#running-one-iteration), [guard probes](pipeline-implementation-workflow.md#ios-guard-probe-iterations).
 
 ### J0 — iOS runtime guard probes (do first)
 
-Per [sdk-support-audit §6](pipeline-sdk-support-audit.md): one function per commit, remove from guard, restore full iOS e2e assertions, and verify with canonical iOS e2e only.
+Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove guard; restore full iOS e2e assertions; verify canonical iOS e2e only.
 
 | Probe | Function | Rationale | Status |
 |-------|----------|-----------|--------|
@@ -245,7 +231,7 @@ Per [sdk-support-audit §6](pipeline-sdk-support-audit.md): one function per com
 | J0-8 | `timestampSubtract` | Same | |
 | J0-9 | `arrayGet` | No CHANGELOG; likely needs iOS receiver parity if SDK ok | |
 
-**Output:** Updated guard set in `pipeline_support.ts`; shrunk P-003 e2e reduced pipelines; parity registry classifications confirmed.
+**Output:** updated `pipeline_support.ts`, shrunk P-003 reduced pipelines, confirmed parity classifications.
 
 ### J1–J6 — bridge remediation (after J0)
 
@@ -260,7 +246,7 @@ Per [sdk-support-audit §6](pipeline-sdk-support-audit.md): one function per com
 
 **Gate for Phase K+:** J0 complete + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current (post-arbiter):** **J0-2** (`switchOn`) — uncommitted WIP; re-run canonical iOS review e2e after [pre-flight clear](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start). **J0-1** committed; review e2e gate still open (harness contention). **J0-3** (`trunc`) — **hold** until J0-2 review gate closes.
+**Current:** **J0-2** uncommitted WIP; re-run canonical iOS review e2e after [pre-flight clear](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start). **J0-1** committed; review gate open. **J0-3** hold until J0-2 closes.
 
 ---
 
@@ -276,7 +262,7 @@ Per [sdk-support-audit §6](pipeline-sdk-support-audit.md): one function per com
 | **P** | Jest-only TS validation paths |
 | **Q** | Intractability audit (map execute, debug gates, codegen caps) |
 
-**Phase R** — revert harness narrowing; **full** unfocused 3-platform run ([pre-merge tier](../../testing/running-e2e.md#e2e-tiers-implementer--reviewer--pre-merge); final gate before compare-types track).
+**R:** revert harness narrowing; **full** unfocused 3-platform run ([pre-merge tier](../../testing/running-e2e.md#e2e-tiers-implementer--reviewer--pre-merge)); final gate before compare-types.
 
 ---
 
@@ -301,11 +287,11 @@ Per [sdk-support-audit §6](pipeline-sdk-support-audit.md): one function per com
 1. `bash scripts/map-pipeline-coverage-gaps.sh before-<id>`
 2. Prove **live vs dead** before implementing
 3. **No new `Platform.*` branches** — if a probe only passes on one platform, stop and file drift for Phase J follow-up
-4. OKF background + `:build` (if native) + `:test-cover` + native post-process
+4. OKF background + `:build` if native + `:test-cover` + native post-process
 5. `bash scripts/map-pipeline-coverage-gaps.sh after-<id>`
 6. One focused commit per logical change (message describes **what**, not phase letter)
 
-**Platform pitfalls (retain):** iOS `constant(0/1)` → bool (use `constant(2+)`); raw AND where is Android-native (`Platform.other` skip on macOS — document in registry); emulator hygiene — Detox boots AVD, no manual `emulator -avd`.
+**Pitfalls:** iOS `constant(0/1)` → bool (use `constant(2+)`); raw AND where is Android-native (`Platform.other` skip on macOS; document); Detox boots AVD, no manual `emulator -avd`.
 
 ---
 

@@ -1,16 +1,16 @@
 # iOS CI workflows
 
-This document covers the **Testing E2E iOS** workflow (`.github/workflows/tests_e2e_ios.yml`) and scripts it uses under `.github/workflows/scripts/`.
+**Testing E2E iOS** workflow (`.github/workflows/tests_e2e_ios.yml`) and `.github/workflows/scripts/`.
 
 ## Simulator reliability
 
 ### Problem
 
-On GitHub Actions macOS runners (currently `macos-26` with `XCODE_VERSION: latest-stable`), booting an iOS Simulator for Detox is not instantaneous. A simulator can report `Booted` in `simctl list` while it is still unusable:
+On GHA macOS runners, `simctl list` can show `Booted` before the simulator is test-ready:
 
-1. **First-boot data migration** — `com.apple.datamigrator` can run for several minutes on a fresh simulator (observed ~4+ minutes on iOS 26.5). SpringBoard and app install are not reliable until migration finishes.
-2. **Ambiguous device names** — runners often have multiple simulators with the same marketing name (e.g. several `iPhone 17` entries across iOS runtimes). We intentionally use the **device name** from `tests/.detoxrc.js`, not a pinned UDID, so we do not churn workflow YAML when runner images change.
-3. **`Booted` ≠ ready for testing** — installing or launching the app during migration can block or fail; Detox may time out while the simulator is still migrating.
+1. First-boot `com.apple.datamigrator` can run for minutes; app install/launch is unreliable until done.
+2. Device names are ambiguous across runtimes; use `tests/.detoxrc.js` name, not pinned UDID.
+3. `Booted` ≠ ready; install/launch during migration can hang/fail.
 
 ### What we do
 
@@ -27,13 +27,13 @@ On GitHub Actions macOS runners (currently `macos-26` with `XCODE_VERSION: lates
 | `wait_shutdown` | If device is still `Booted` when install is about to run, poll up to 120s for `Shutdown` (avoids LaunchServices races after Jet retries) |
 | `install_app` | `simctl install` the built `testing.app` **only after** bootstatus succeeds |
 
-During `wait_for_full_boot`, the script logs to the **GitHub Actions step log** with the `[boot-status]` prefix:
+During `wait_for_full_boot`, `[boot-status]` logs:
 
 - Whether `simctl list` shows the device as `Booted`
 - **Data migration** snippets from `xcrun simctl bootstatus <name> -d` (probed with a short timeout so the step keeps printing progress instead of looking hung)
 - Elapsed time per poll
 
-We wait for **`simctl bootstatus`** (full boot completion), not merely the `Booted` line in `simctl list`.
+Wait for **`simctl bootstatus`**, not just `Booted`.
 
 **Timeouts** (tuned for first-boot migration on latest iOS):
 
@@ -43,11 +43,11 @@ We wait for **`simctl bootstatus`** (full boot completion), not merely the `Boot
 | Job `timeout-minutes` | 87 | +7 min vs previous 80 |
 | Detox test step | 62 min | +7 min vs previous 55 |
 
-Simulator **caching** of device data is intentionally deferred — caching a bad migration state would require cache invalidation policy.
+Simulator device caching deferred; bad migration cache needs invalidation policy.
 
 ### Simulator logging and video (troubleshooting)
 
-Artifacts are uploaded on every run (`if: always()`), even when tests fail.
+Artifacts upload on every run (`if: always()`).
 
 | Artifact | Source | Use when |
 |----------|--------|----------|
@@ -73,7 +73,7 @@ Artifacts are uploaded on every run (`if: always()`), even when tests fail.
 
 **Downloading artifacts**
 
-From the workflow run page: **Artifacts** section at the bottom, or:
+Workflow page **Artifacts**, or:
 
 ```bash
 gh run download <run-id> -n simulator-debug-0_log
@@ -81,7 +81,7 @@ gh run download <run-id> -n simulator-debug-0_log
 
 **Analyzing `simulator.log`**
 
-The file is unified logging from the booted simulator (compact style). Useful patterns:
+Useful patterns:
 
 ```bash
 rg -i "datamigrator|Telemetry: duration|systemShellWillBootstrap" simulator.log
@@ -89,19 +89,19 @@ rg -i "com\.invertase\.testing|installcoordination" simulator.log
 rg -i "test daemon not ready|xctest" simulator.log
 ```
 
-A long gap with only `com.apple.datamigrator` activity and no `com.invertase.testing` usually means the simulator was still in first-boot migration or pre-boot had not finished installing the app yet.
+Long `datamigrator` activity with no `com.invertase.testing` means migration/pre-boot install not done.
 
 ### Detox configuration
 
-Device type is defined in `tests/.detoxrc.js` (`devices.simulator.device.type`). The boot script and Detox both use this name. CI does not hard-code a UDID.
+Device type comes from `tests/.detoxrc.js`; boot script and Detox use it. No hard-coded UDID.
 
 ### Codecov (debug matrix only)
 
-After Detox, the debug leg runs `yarn tests:ios:test:process-coverage` then two flagged Codecov uploads (`e2e-ts-ios`, `ios-native`). **`codecov/project/ios-native`** blocks if the native flag upload is missing. Release legs skip coverage. Details: [coverage design](../testing/coverage-design.md#codecov-uploads-ci).
+Debug leg: `yarn tests:ios:test:process-coverage` + Codecov flags `e2e-ts-ios`, `ios-native`; `codecov/project/ios-native` blocks on missing native upload. Release skips coverage.
 
 ### E2E test app orchestration (Detox + Jet)
 
-After pre-boot succeeds, failures often move **inside** the test app process (`com.invertase.testing`, binary `testing`). Simulator boot and app install are fine; Detox `launchApp` stalls while the app stays alive. Several overlapping issues show up in CI logs.
+After pre-boot, failures often move inside app process `testing`: boot/install are fine, `launchApp` stalls while app stays alive.
 
 #### 1. Early `ready` race
 
@@ -112,20 +112,20 @@ ws-server connection :50400<->:50415
 ws-server The app has dispatched "ready" action too early.
 ```
 
-**Cause** — iOS `DetoxManager` sends proactive `ready` on `webSocketDidConnect` before the anonymous server handles `login`. Detox 20.x logs and drops that `ready`, leaving `device.launchApp()` stuck in `waitUntilReady`.
+**Cause** — iOS `DetoxManager` sends `ready` before server `login`; Detox 20.x drops it, so `launchApp()` waits forever.
 
-**Mitigation** — `.yarn/patches/detox-npm-20.51.0-*.patch` buffers early `ready` and replays it after app `login` (`AnonymousConnectionHandler.js`). Full patch list: [detox-patches.md](detox-patches.md).
+**Mitigation** — Detox patch buffers early `ready` and replays after `login`; see [detox-patches.md](detox-patches.md).
 
 #### 2. Device registry lock (`ECOMPROMISED`)
 
-**Detox step symptom** — failure before any test output, often within the first minute of `Detox Test Debug` / `Detox Test Release`:
+**Symptom** — failure before test output, often first minute:
 
 ```
 Error: Unable to update lock within the stale threshold
   code: 'ECOMPROMISED'
 ```
 
-**Cause** — Detox locks `~/Library/Detox/device.registry.json` (device busy/available ledger) via `proper-lockfile`. Default stale window is 10s; under CI load (simulator logging, Firestore emulator, `yeetd`) lock heartbeats can miss it ([Detox #4210](https://github.com/wix/Detox/issues/4210)).
+**Cause** — Detox locks `~/Library/Detox/device.registry.json`; 10s heartbeat can miss under CI load ([Detox #4210](https://github.com/wix/Detox/issues/4210)).
 
 **Mitigation** — same Detox patch doubles stale to 20s in `ExclusiveLockfile.js`. We do **not** use `detox reset-lock-file` in CI (wipes the ledger). See [detox-patches.md](detox-patches.md#device-registry-lock-ecompromised).
 
@@ -133,7 +133,7 @@ Error: Unable to update lock within the stale threshold
 
 #### 3. Main-thread delay before WebSocket handshake
 
-**Symptom** — Long gap (~30–60s) between `device com.invertase.testing launched` (Detox step log) and the first `Connection 1: ready` / `handshake successful` lines in `simulator.log`. Firebase configure, RN bridge startup, and LLVM coverage instrumentation run on the main thread and can defer Detox’s `URLSessionWebSocketDelegate` callbacks.
+**Symptom** — 30–60s gap between app launched and first `Connection 1: ready` / `handshake successful`; main-thread Firebase/RN/LLVM startup can defer WS callbacks.
 
 **Mitigations**
 
@@ -147,15 +147,15 @@ Error: Unable to update lock within the stale threshold
 
 #### 4. `waitForActive` / scene never foreground-active
 
-**Symptom** — Detox reaches `isReady` and `waitForActive` but never logs `waitForActiveDone`. App process stays alive for the rest of the step timeout (~30+ min). In `simulator.log`, SpringBoard requests `foreground-interactive` while the app scene stays `UISceneActivationStateUnattached` and UIKit deactivation reasons (e.g. `3104`) never clear.
+**Symptom** — `isReady` + `waitForActive`, no `waitForActiveDone`; app alive, scene remains unattached/inactive.
 
-**Instrumentation** — `tests/ios/testing/AppDelegate.mm` logs `[rnfb-lifecycle]` at launch, on UIApplication/UIScene lifecycle notifications, and at **+30s / +60s** one-shot probes if the app never becomes active. Confirms whether the stall is Detox-side or the app never reaching `UIApplicationStateActive` / `foregroundActive`.
+**Instrumentation** — `AppDelegate.mm` logs `[rnfb-lifecycle]` at launch, lifecycle notifications, and +30s/+60s probes.
 
 **Distinguish from issue 5** — If `[rnfb-lifecycle]` probes show `UIApplication.state=active` / `foregroundActive` but Detox still hangs on `waitForActive`, the cause is likely Metro/JS bundle load failure (issue 5), not scene activation.
 
 #### 5. Metro unresponsive at launch → `waitForActive` hang (active app)
 
-**Symptom** — Same Detox-side pattern as issue 4 (`waitForActive` without `waitForActiveDone`, multi-minute hang in `device.launchApp()`), but **`[rnfb-lifecycle]` shows the app is already active**. Often seen on debug CI only; release on the same run passes (embedded bundle, no live Metro).
+**Symptom** — same as issue 4, but `[rnfb-lifecycle]` shows app active; usually debug-only (live Metro).
 
 **Cause chain**:
 

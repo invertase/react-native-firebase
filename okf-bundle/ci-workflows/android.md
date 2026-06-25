@@ -6,7 +6,7 @@
 2. `yarn tests:android:post-e2e-coverage` — poll/pull `coverage.ec`, Jacoco report (best-effort, never fails the job)
 3. **Codecov upload** — two flagged uploads (`e2e-ts-android`, `android-native`); `continue-on-error: true` on the action steps. **`codecov/project/android-native`** fails if the native flag upload is missing (see [coverage design](../testing/coverage-design.md#native-gates)).
 
-Native Android coverage is **not** pulled inside `tests/e2e/firebase.test.js`. The Jet `after` hook in `tests/app.js` calls `RNFBTestingCoverage.flush()` in the **app process** to write `coverage.ec` before Detox SIGINTs instrumentation. Post-e2e pull runs after Detox exits.
+Android native coverage is flushed in app process by `tests/app.js` Jet `after`; post-e2e pull runs after Detox exits.
 
 ## CI failure: Jet 1006 → adb `reverse --remove` mid-run
 
@@ -20,7 +20,7 @@ Observed failure shape:
 | Attempt 2 | Retry can pass the suite |
 | Teardown | `adb reverse --remove` fails again → Jest FAIL |
 
-**Why reverse cleanup runs mid-run:** Detox `AndroidDriver._launchInstrumentationProcess()` registers a termination handler that always calls `adb reverse --remove` when instrumentation stops:
+**Why reverse cleanup runs mid-run:** Detox always calls `adb reverse --remove` when instrumentation stops:
 
 ```342:347:tests/node_modules/detox/src/devices/runtime/drivers/android/AndroidDriver.js
     const serverPort = await this._reverseServerPort(adbName);
@@ -30,7 +30,7 @@ Observed failure shape:
     });
 ```
 
-When the Jet/app WebSocket drops (1006), Detox can treat the session as dead and tear down instrumentation **while Jet is still in its 15s reconnect grace**. That triggers `reverseRemove` before the orchestration retry's `terminateApp()`. If the listener was never established or was already removed, adb exits non-zero.
+On Jet/app WS 1006, Detox may tear down instrumentation during Jet's 15s reconnect grace. `reverseRemove` can run before retry `terminateApp()`; missing listener gives non-zero adb.
 
 **Mitigation (patched):** `.yarn/patches/detox-npm-20.51.0-*.patch`:
 
@@ -38,13 +38,11 @@ When the Jet/app WebSocket drops (1006), Detox can treat the session as dead and
 - Android idling resources — force idle (network/timers/Fabric)
 - `ExclusiveLockfile.js` — 2× lock stale for `ECOMPROMISED` flake ([detox-patches.md](detox-patches.md))
 
-Full inventory: [detox-patches.md](detox-patches.md).
-
-**Orchestration retry:** `firebase.test.js` still retries on `RETRYABLE_DISCONNECT`; attempt 2 can pass all tests even when attempt 1's teardown logged adb noise.
+Inventory: [detox-patches.md](detox-patches.md). `firebase.test.js` retries `RETRYABLE_DISCONNECT`; retry can pass despite attempt-1 adb noise.
 
 ## CI failure: Jet JSON / WS protocol desync (Unexpected end of JSON input)
 
-Observed on Android CI under load: Jet may run only a small prefix of tests before the mocha-remote transport desyncs — often after a transient 1006 under high `loadavg`.
+Under load, Jet may run only a small prefix before mocha-remote desync, often after transient 1006/high `loadavg`.
 
 **Symptom**
 
@@ -53,7 +51,7 @@ Observed on Android CI under load: Jet may run only a small prefix of tests befo
 [mocha-remote-ws] parse_buffering ...
 ```
 
-**Cause** — TCP/WebSocket chunks can split JSON frames; under I/O pressure, partial reads are more common. Unbuffered `JSON.parse` on each chunk corrupts the protocol stream.
+**Cause** — WS chunks can split JSON frames; unbuffered `JSON.parse` corrupts stream under I/O pressure.
 
 **Mitigations (patches + orchestration)**
 
@@ -65,7 +63,7 @@ Observed on Android CI under load: Jet may run only a small prefix of tests befo
 | Cold-boot ready wait + post-boot settle before Jet attempt 1 | `firebase.test.js` (`waitForAndroidEmulatorReady`, `RNFB_ANDROID_BOOT_SETTLE_MS`) |
 | Load gate before starting Jet (threshold 5, 3 consecutive polls) | `firebase.test.js` |
 
-**Patch workflow reminder** — after editing `tests/node_modules/jet` or `mocha-remote-*`, run `yarn patch-commit` **and** `yarn install` from repo root so `yarn.lock` patch hashes update. CI applies patches from the lockfile, not live `node_modules` edits.
+**Patch workflow:** after editing `tests/node_modules/jet` or `mocha-remote-*`, run `yarn patch-commit` **and** root `yarn install`; CI uses lockfile patch hashes.
 
 ## Troubleshooting
 

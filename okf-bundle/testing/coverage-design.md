@@ -8,29 +8,29 @@ timestamp: 2026-06-17T00:00:00Z
 
 # Goals
 
-Coverage shows which **TS library sources** (`packages/*/lib/**`) and **native sources** (Java/ObjC/Swift under `packages/*/android/**`, `packages/*/ios/**`) tests exercise.
+Coverage shows exercised **TS library sources** (`packages/*/lib/**`) and **native sources** (`packages/*/{android,ios}/**`).
 
 | Layer | Proves | Consumers |
 |-------|--------|-----------|
 | **Unit (Jest)** | Package logic with mocks | Fast feedback on `lib/**` |
 | **E2e (Jet / Detox)** | Real app behaviour against Firebase emulators and cloud APIs | TS + native bridge integration |
 
-Codecov merges CI uploads. Project-level % swings can be noise; **file-level** coverage on changed sources is the signal. macOS e2e uses firebase-js-sdk only — no native RNFB coverage there.
+Codecov merges CI uploads. Project-level % can be noise; **file-level changed-source coverage** is signal. macOS e2e uses firebase-js-sdk only; no RNFB native coverage.
 
 # Coverage expectations (policy)
 
-For **new code in a PR**:
+For **new code**:
 
 * **Coverage only goes up** on files the change touches.
-* **100% is the goal** for TS and native sources in that area. "Mostly covered" is not enough for new code.
-* **Gaps need quantified intractability** — e.g. Swift codegen unreachable arms (`default`/`fatalError`, synthesized conformances) capping coverage a few % below 100%; name and measure ("~NN% unreachable Swift codegen"), don't hand-wave.
+* **100% is the goal** for touched TS/native sources. "Mostly covered" is not enough.
+* **Gaps need quantified intractability** — e.g. "~NN% unreachable Swift codegen"; no hand-waving.
 * **Any other gap is either testable or dead code** — add tests (negative paths, failure branches, every reachable branch) or delete unreachable/duplicate/superseded code. Large uncovered blocks: ask "is this reachable?" before writing tests.
 
 Gap passes should **add tests and remove dead code** together.
 
 ## Coverage as completion signal
 
-File-level coverage means an iteration is **done** — not merely green Jest/e2e or passing type checks.
+File-level coverage, not green tests/types alone, marks completion.
 
 1. **Baseline** after full e2e (all relevant platforms).
 2. Implement with tests.
@@ -42,11 +42,11 @@ File-level coverage means an iteration is **done** — not merely green Jest/e2e
 * Large uncovered native blocks often mean **dormant code paths** — use coverage to find the live path, delete the rest.
 * Duplicate traversal (e.g. visiting the same tree property twice) can pass tests while leaving untestable structure — simplify until coverage rises.
 
-Do not hand off with closable gaps. Package workflows may define snapshot tooling (e.g. [pipeline before/after scripts](../packages/firestore/pipeline-implementation-workflow.md)).
+Do not hand off closable gaps. Package workflows may define snapshot tooling (e.g. [pipeline scripts](../packages/firestore/pipeline-implementation-workflow.md)).
 
 ## Platform parity (pipeline and bridge code)
 
-For **Firestore Pipelines** and similar native-bridge features, **platform parity comes before coverage expansion**: observable behavior must match across iOS, Android, and macOS (JS SDK) unless a difference is a **native Firestore SDK limitation**. RNFB bridge gaps are defects to fix through the active work queue, not permanent `Platform.*` branches in e2e.
+For native-bridge features, **platform parity precedes coverage expansion**: iOS/Android/macOS behavior must match unless blocked by native SDK. RNFB bridge gaps are defects, not permanent `Platform.*` e2e branches.
 
 * **Policy and drift registry:** [Pipeline platform parity](../packages/firestore/pipeline-platform-parity.md)
 * **Work queue:** [Pipeline coverage and parity work queue](../packages/firestore/pipeline-coverage-work-queue.md)
@@ -62,9 +62,9 @@ After `tests:<platform>:test-cover`:
 
 ## Stale coverage data
 
-Native coverage artifacts (`.profraw`, `.ec`, Jacoco XML) are **only trustworthy when paired with a fresh e2e run** that produced them. Re-running post-processing against leftover files can regenerate reports that look valid but reflect old, partial, or mismatched execution data — numbers may collapse or plateau with no code change.
+Native artifacts (`.profraw`, `.ec`, Jacoco XML) are trustworthy only with the fresh e2e run that produced them. Re-processing leftovers can create valid-looking stale reports.
 
-**When coverage numbers look wrong or you are unsure:** do not debug the report generator first. Run the full clean cycle for that platform:
+If numbers look wrong, run the clean cycle before debugging generators:
 
 ```bash
 # iOS
@@ -77,7 +77,7 @@ yarn tests:android:build && yarn tests:android:test-cover && yarn tests:android:
 yarn tests:macos:test-cover
 ```
 
-Post-process steps **delete** the raw iOS `.profraw` and Android `.ec` after successful export so a missing raw file on the next run signals "no fresh coverage — run e2e again". Do not use `:test-cover-reuse` / `:test-reuse` when measuring native deltas ([runbook](running-e2e.md)).
+Post-process deletes raw iOS `.profraw` / Android `.ec`; missing raw file means "no fresh coverage." Do not use reuse variants for native deltas ([runbook](running-e2e.md)).
 
 # End-to-end overview
 
@@ -125,7 +125,7 @@ yarn tests:jest-coverage
 
 # E2e TypeScript coverage (Jet + NYC)
 
-Commands: [e2e runbook](running-e2e.md) (`tests:<platform>:test-cover`).
+Commands: [e2e runbook](running-e2e.md).
 
 | Platform | Script | Notes |
 |----------|--------|-------|
@@ -133,14 +133,14 @@ Commands: [e2e runbook](running-e2e.md) (`tests:<platform>:test-cover`).
 | iOS | `tests:ios:test-cover` | Detox → Jet `--coverage` |
 | Android | `tests:android:test-cover` | Detox → Jet `--coverage` |
 
-Jet self-wraps under NYC when `--coverage` is passed.
+Jet self-wraps under NYC with `--coverage`.
 
 **Tooling:**
 
 - Metro bundles `packages/*/dist/module/**` with inline source maps (`tests/.babelrc`: `useInlineSourceMaps: true`).
 - NYC (`tests/nyc.config.js`) remaps to `packages/*/lib/**` → **`coverage/lcov.info`** (`cwd: '..'`).
 - Jet re-invokes under `tests/node_modules/.bin/nyc` (checks `NYC_CONFIG`). Detox/macOS need no extra `nyc` prefix; Jet must run from `tests/`.
-- **Transfer:** Patched Jet/mocha-remote WebSocket path only (`coverage-ready` → `pull-coverage` → `coverage-data` → `coverage-ack`); upstream HTTP POST `/coverage` is **deleted** from the jet patch (not merely unwired — `attachHttpServer` removed). Patches: `.yarn/patches/` (`jet`, `mocha-remote-client`, `mocha-remote-server`). Server assigns client before `connection`, sends `pull-coverage` when runner active; client retries with `readyState` logging. See [iOS issues 6–6b](../ci-workflows/ios.md#6-jet-websocket-disconnect-1006--1001), [issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00), [jet patch workflow](../ci-workflows/detox-patches.md#updating-the-jet-patch-headless).
+- **Transfer:** patched Jet/mocha-remote WS only (`coverage-ready` → `pull-coverage` → `coverage-data` → `coverage-ack`); HTTP POST `/coverage` deleted (`attachHttpServer` removed). Patches: `.yarn/patches/` (`jet`, `mocha-remote-client`, `mocha-remote-server`). See [iOS issues 6–6b](../ci-workflows/ios.md#6-jet-websocket-disconnect-1006--1001), [issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00), [jet patch workflow](../ci-workflows/detox-patches.md#updating-the-jet-patch-headless).
 
 **NYC settings:**
 
@@ -150,7 +150,7 @@ sourceMap: true, 'exclude-after-remap': true, instrument: false,
 reporter: ['lcov', 'html', 'text-summary'],
 ```
 
-**Verify:** `[jet-coverage] server recv coverage-ready` → `[jet-coverage] WS received N file(s)` (N > 0) → NYC summary with non-zero totals; `coverage/lcov.info` has `SF:packages/...` not just `dist/`. If you see `[jet-coverage] merged 0 file(s)`, see [TS coverage troubleshooting](#ts-e2e-coverage-troubleshooting).
+**Verify:** `coverage-ready` → `WS received N file(s)` (N > 0) → non-zero NYC; `coverage/lcov.info` has `SF:packages/...`, not only `dist/`. If `merged 0 file(s)`, see [troubleshooting](#ts-e2e-coverage-troubleshooting).
 
 ### TS e2e coverage troubleshooting
 
@@ -168,7 +168,7 @@ reporter: ['lcov', 'html', 'text-summary'],
 3. After Detox: `yarn tests:android:post-e2e-coverage` (or `pull-native-coverage`) → `emulator_coverage.ec` → `jacocoAndroidTestReport` → **delete local `.ec`**. Missing file: warning, not test/CI fail (`continue-on-error` on Codecov upload). Missing `.ec` on a later post-e2e without a new e2e run means Jacoco has no execution data — by design.
 4. XML: `tests/android/app/build/reports/jacoco/jacocoAndroidTestReport/jacocoAndroidTestReport.xml`
 
-**Why app-process flush:** Detox SIGINT kills instrumentation right after Jet ends; post-`Detox.runTests()` dump in `DetoxTest.java` never runs.
+**Why app-process flush:** Detox SIGINT kills instrumentation after Jet; post-`Detox.runTests()` dump in `DetoxTest.java` never runs.
 
 **Jacoco notes:**
 
@@ -191,13 +191,13 @@ reporter: ['lcov', 'html', 'text-summary'],
    - rewrite `SF:` to repo-relative `packages/**` → **`coverage/ios-native/lcov.info`**
    - **delete processed `.profraw`** (missing file next run = no fresh coverage)
 
-ObjC + Swift share this pipeline. Raw export is mostly Pods/SDK; ~50–60 `packages/*/ios/**` files in a healthy full run among ~2000 entries.
+ObjC + Swift share this. Raw export is mostly Pods/SDK; healthy full run includes ~50–60 `packages/*/ios/**` files among ~2000 entries.
 
 **CocoaPods → SPM:** move same flags to SPM targets; post-test script unchanged.
 
 # Codecov uploads (CI)
 
-[codecov-action](https://github.com/codecov/codecov-action) v7, explicit `files` + `flags`. Steps `continue-on-error: true`; **blocking** = GitHub status checks in `codecov.yml`.
+[codecov-action](https://github.com/codecov/codecov-action) v7, explicit `files` + `flags`. Upload steps continue on error; **blocking** = `codecov.yml` status checks.
 
 ## Flags
 

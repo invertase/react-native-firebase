@@ -1,28 +1,19 @@
 # React Native Firebase AGENTS Guide
 
-## Project overview
+## Project
 
-- This repository is a Yarn workspaces monorepo for React Native Firebase packages.
-- Most library code lives in `packages/**/lib`.
-- The end-to-end test app lives in `tests/`.
-- Contributor expectations and review norms are documented in `CONTRIBUTING.md`.
+- Yarn workspaces monorepo for React Native Firebase.
+- Library code: `packages/**/lib`; e2e app: `tests/`.
+- Contributor/review norms: `CONTRIBUTING.md`.
 
-## Dev environment tips
+## Working
 
-- Install dependencies once at the repository root with `yarn`.
-- Prefer working from the repository root so package scripts and workspace resolution behave consistently.
-- Check the affected package's `type-test.ts`, `__tests__/`, and plugin directories before changing public APIs or platform-specific behavior.
-- Prefer consistency with existing patterns in the package you are editing instead of introducing new structure.
-
-## Knowledge bundle
-
-- Start with `okf-bundle/index.md` for repository-specific implementation, testing, and maintenance knowledge.
+- Run from repo root; install once with `yarn`.
+- Follow local package patterns; check `type-test.ts`, `__tests__/`, and plugin dirs before public API/platform changes.
+- Start with `okf-bundle/index.md` for repo-specific implementation/testing/maintenance knowledge.
 - Use package indexes under `okf-bundle/packages/` for package-specific workflows and active work queues.
-- Follow `okf-bundle/documentation-policy.md` when editing OKF docs or writing commit messages: durable knowledge belongs in reference docs, ephemeral state belongs only in explicit work queues.
-
-## Testing instructions
-
-- Follow `okf-bundle/testing/index.md` for testing entry points and `okf-bundle/testing/validation-checklist.md` for validation requirements.
+- Follow `okf-bundle/documentation-policy.md`: durable knowledge in reference docs; ephemeral state only in explicit work queues.
+- Testing entry points: `okf-bundle/testing/index.md`; validation requirements: `okf-bundle/testing/validation-checklist.md`.
 - Prefer focused validation for the area changed; package-specific OKF docs may add stricter gates.
 
 ## PR instructions
