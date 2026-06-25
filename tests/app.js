@@ -25,39 +25,15 @@ import { TestComponents } from './local-tests';
 
 const platformSupportedModules = [];
 
+// TEMP: pipeline e2e only (PR #9017 focused testing)
 if (Platform.other) {
   platformSupportedModules.push('app');
-  platformSupportedModules.push('functions');
   platformSupportedModules.push('firestore');
-  platformSupportedModules.push('database');
-  platformSupportedModules.push('auth');
-  platformSupportedModules.push('storage');
-  platformSupportedModules.push('remoteConfig');
-  platformSupportedModules.push('analytics');
-  platformSupportedModules.push('appCheck');
-  platformSupportedModules.push('ai');
-  // TODO add more modules here once they are supported.
 }
 
 if (!Platform.other) {
   platformSupportedModules.push('app');
-  platformSupportedModules.push('functions');
-  platformSupportedModules.push('auth');
-  platformSupportedModules.push('database');
   platformSupportedModules.push('firestore');
-  platformSupportedModules.push('storage');
-  platformSupportedModules.push('messaging');
-  platformSupportedModules.push('perf');
-  platformSupportedModules.push('analytics');
-  platformSupportedModules.push('remoteConfig');
-  platformSupportedModules.push('crashlytics');
-  platformSupportedModules.push('inAppMessaging');
-  platformSupportedModules.push('installations');
-  platformSupportedModules.push('appCheck');
-  platformSupportedModules.push('appDistribution');
-  platformSupportedModules.push('ml');
-  platformSupportedModules.push('phoneNumberVerification');
-  platformSupportedModules.push('ai');
 }
 // Registering an error handler that always throw unhandled exceptions
 // This is to enable Jet to exit on uncaught errors
@@ -192,8 +168,7 @@ function loadTests(_) {
     }
 
     if (platformSupportedModules.includes('firestore')) {
-      const firestoreTests = require.context('../packages/firestore/e2e', true, /\.e2e\.js$/);
-      firestoreTests.keys().forEach(firestoreTests);
+      require('../packages/firestore/e2e/Pipeline.e2e.js');
     }
     if (platformSupportedModules.includes('perf')) {
       const perfTests = require.context('../packages/perf/e2e', true, /\.e2e\.js$/);

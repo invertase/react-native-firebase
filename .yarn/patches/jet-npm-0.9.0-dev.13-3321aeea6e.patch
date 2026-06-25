@@ -1,5 +1,5 @@
 diff --git a/lib/commonjs/cli.js b/lib/commonjs/cli.js
-index 35c04da87c63a79bc26707aaffe3156fb98eca79..41de2f4918095084eca259e334d4deaa82f4bf96 100644
+index 35c04da87c63a79bc26707aaffe3156fb98eca79..cc9243fabdc014bc945dd6e85cbe55d85692ad56 100644
 --- a/lib/commonjs/cli.js
 +++ b/lib/commonjs/cli.js
 @@ -72,22 +72,64 @@ function cleanup() {
@@ -39,10 +39,10 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..41de2f4918095084eca259e334d4deaa
 +      );
 +    } catch (_) {
 +      // Best-effort diagnostics only.
-+    }
+     }
 +    if (code === 1000 || !config.exitOnError) {
 +      return;
-     }
++    }
 +    const graceMs = config.reconnectGraceMs ?? 30000;
 +    const transientCodes = [1006, 1001];
 +    if (transientCodes.includes(code)) {
@@ -86,22 +86,49 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..41de2f4918095084eca259e334d4deaa
    cleanupTasks.add(async () => {
      if (server.listening) {
        await server.stop();
-@@ -129,8 +179,13 @@ function attachHttpServer(wss) {
-       });
-       req.on('end', () => {
-         try {
+@@ -115,41 +165,6 @@ async function startServer(server, config, after) {
+   process.on('SIGINT', cleanup);
+   process.on('exit', cleanup);
+ }
+-function attachHttpServer(wss) {
+-  const server = wss._server;
+-  if (!server) {
+-    console.error('No underlying server found in WebSocket server');
+-    return;
+-  }
+-  server.on('request', (req, res) => {
+-    if (req.url === '/coverage' && req.method === 'POST') {
+-      let body = '';
+-      req.on('data', chunk => {
+-        body += chunk.toString();
+-      });
+-      req.on('end', () => {
+-        try {
 -          coverageMap.merge(JSON.parse(body));
-+          const incoming = JSON.parse(body);
-+          const incomingKeys = Object.keys(incoming).length;
-+          console.log(`[jet-coverage] POST body ${body.length} bytes, ${incomingKeys} file(s)`);
-+          coverageMap.merge(incoming);
-           global.__coverage__ = coverageMap.toJSON();
-+          const totalKeys = Object.keys(global.__coverage__).length;
-+          console.log(`[jet-coverage] POST received ${incomingKeys} file(s), merged total ${totalKeys}`);
-           res.end(JSON.stringify({
-             message: 'OK'
-           }));
-@@ -302,12 +357,11 @@ function attachHttpServer(wss) {
+-          global.__coverage__ = coverageMap.toJSON();
+-          res.end(JSON.stringify({
+-            message: 'OK'
+-          }));
+-        } catch (e) {
+-          res.end(JSON.stringify({
+-            error: 'Invalid JSON'
+-          }));
+-        }
+-      });
+-    } else {
+-      res.writeHead(404, {
+-        'Content-Type': 'application/json'
+-      });
+-      res.end(JSON.stringify({
+-        error: 'Not Found'
+-      }));
+-    }
+-  });
+-}
+ (0, _yargs.default)((0, _helpers.hideBin)(process.argv)).scriptName('jet').version('version', 'Show version number & exit', jetPackageJson.version).alias('v', 'version').option('target', {
+   description: 'The name of the test target to run as defined in your "jet" package.json config.',
+   type: 'string',
+@@ -302,12 +317,11 @@ function attachHttpServer(wss) {
      slow: finalConfig.slow
    });
    return startServer(server, finalConfig, target.after).then(() => {
@@ -116,3 +143,47 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..41de2f4918095084eca259e334d4deaa
          await cleanup();
          process.exit(failures > 0 ? 1 : 0);
        });
+diff --git a/lib/commonjs/index.js b/lib/commonjs/index.js
+index a72380ed2ace01b19b028bb8e6f9d29dc3affbcd..030475cff75349b2b7f820cf8a3556fb1d7bea45 100644
+--- a/lib/commonjs/index.js
++++ b/lib/commonjs/index.js
+@@ -63,15 +63,7 @@ function JetProvider(props) {
+         });
+         after(async () => {
+           if (_config.coverage) {
+-            const coverage = global.__coverage__ ?? {};
+-            const url = (props.url ?? 'ws://localhost:8090').replace('ws://', 'http://') + '/coverage';
+-            return fetch(url, {
+-              method: 'POST',
+-              headers: {
+-                'Content-Type': 'application/json'
+-              },
+-              body: JSON.stringify(coverage)
+-            });
++            return client.uploadCoverage();
+           }
+           return Promise.resolve();
+         });
+diff --git a/src/index.tsx b/src/index.tsx
+index 1b28aca3fe817fee3e8701ac5096df6fc608bc39..17c631309f88a8017a9fd01e3420df2b4bab140e 100644
+--- a/src/index.tsx
++++ b/src/index.tsx
+@@ -82,17 +82,7 @@ export function JetProvider(props: JetProviderProps): React.JSX.Element {
+         });
+         after(async () => {
+           if (_config.coverage) {
+-            const coverage = (global as any).__coverage__ ?? {};
+-            const url =
+-              (props.url ?? 'ws://localhost:8090').replace('ws://', 'http://') +
+-              '/coverage';
+-            return fetch(url, {
+-              method: 'POST',
+-              headers: {
+-                'Content-Type': 'application/json',
+-              },
+-              body: JSON.stringify(coverage),
+-            });
++            return client.uploadCoverage();
+           }
+           return Promise.resolve();
+         });

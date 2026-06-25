@@ -17,7 +17,25 @@ Patches are maintained in-repo (including by agents). Prefer **editing the patch
 | Ignore missing adb reverse on teardown | `ADB.js` | Android | Jet WS 1006 triggers mid-run `reverse --remove` → adb exit 1 |
 | **2× device-registry lock stale** | `ExclusiveLockfile.js` | iOS, macOS, Android | `proper-lockfile` `ECOMPROMISED` before tests start |
 
-Related non-Detox patches: `jet`, `mocha-remote-client`, `mocha-remote-server` — WS reconnect grace, coverage handshake (`coverage-ready` / `pull-coverage`), client keepalive, server/client parse buffering, reconnect client assignment order. See [coverage design](../testing/coverage-design.md) and [iOS CI — issues 6–8](ios.md#6-jet-websocket-disconnect-1006--1001).
+Related non-Detox patches: `jet`, `mocha-remote-client`, `mocha-remote-server` — WS reconnect grace, coverage handshake (`coverage-ready` / `pull-coverage` / `coverage-data` / `coverage-ack`; **HTTP POST `/coverage` removed** from jet), client keepalive, server/client parse buffering, reconnect client assignment order. See [coverage design](../testing/coverage-design.md) and [iOS CI — issues 6–8](ios.md#6-jet-websocket-disconnect-1006--1001).
+
+## Updating the jet patch (headless)
+
+1. Edit under `tests/node_modules/jet/` after `yarn install`, **or** append hunks to `.yarn/patches/jet-npm-0.9.0-dev.13-3321aeea6e.patch`.
+2. Regenerate without prompts:
+
+```bash
+PATCH_DIR=$(yarn patch jet@npm:0.9.0-dev.13 2>&1 | sed -n 's/.*folder: //p')
+SRC=tests/node_modules/jet
+/bin/cp -f "$SRC/lib/commonjs/cli.js" "$PATCH_DIR/lib/commonjs/cli.js"
+/bin/cp -f "$SRC/lib/commonjs/index.js" "$PATCH_DIR/lib/commonjs/index.js"
+/bin/cp -f "$SRC/src/index.tsx" "$PATCH_DIR/src/index.tsx"
+yarn patch-commit -s "$PATCH_DIR"
+```
+
+3. `yarn install` from repo root — confirm updated `yarn.lock` patch hash and applied files in `tests/node_modules/jet/`.
+
+**Touch list:** `lib/commonjs/cli.js` (server: WS `coverage-data`, reconnect grace; **no** `attachHttpServer`), `lib/commonjs/index.js` + `src/index.tsx` (client: `client.uploadCoverage()`). Metro resolves Jet via `"react-native": "src/index"` — patching `lib/` alone does not fix macOS bundles.
 
 ## Device registry lock (`ECOMPROMISED`)
 
