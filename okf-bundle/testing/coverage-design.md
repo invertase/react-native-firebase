@@ -49,7 +49,7 @@ Do not hand off with closable gaps. Package workflows may define snapshot toolin
 For **Firestore Pipelines** and similar native-bridge features, **platform parity comes before coverage expansion**: observable behavior must match across iOS, Android, and macOS (JS SDK) unless a difference is a **native Firestore SDK limitation**. RNFB bridge gaps are defects to fix in work-queue Phase **J**, not permanent `Platform.*` branches in e2e.
 
 * **Policy and drift registry:** [Pipeline platform parity](../packages/firestore/pipeline-platform-parity.md)
-* **Work queue:** Phase **I** (audit) → **J** (remediation) → **K–Q** (coverage) → **R** (pre-merge snapshot)
+* **Work queue:** [Pipeline coverage and parity work queue](../packages/firestore/pipeline-coverage-work-queue.md) — Phase **I** (audit) → **J** (remediation) → **K–Q** (coverage) → **R** (pre-merge snapshot)
 
 ## Reading per-file coverage locally
 

@@ -169,7 +169,7 @@ Live-path holes concentrate in **expression lowering** and **stage coercion**, n
 - **iOS:** stage coercion bulk (~293 missed); `coerceExpressionTree` operand modes (~29 missed); map passthrough success paths.
 - **TS:** `pipeline_validate.ts` execute/source guard branches (~29 missed lines).
 
-Quantified tables and next-phase priorities: [PIPELINE-COVERAGE-WORK-QUEUE.md](../../../PIPELINE-COVERAGE-WORK-QUEUE.md). Summary script: `bash scripts/map-pipeline-coverage-gaps.sh <label>`.
+Quantified tables and next-phase priorities: [pipeline-coverage-work-queue.md](pipeline-coverage-work-queue.md). Summary script: `bash scripts/map-pipeline-coverage-gaps.sh <label>`.
 
 ### DEFERRED: native coverage to 100% (pending approval)
 
@@ -180,7 +180,7 @@ Quantified tables and next-phase priorities: [PIPELINE-COVERAGE-WORK-QUEUE.md](.
 
 Baselines to beat: iOS NodeBuilder ~69%, Android NodeBuilder ~68%, Android Executor ~58%. Prefer cost-efficient passes; escalate model only if structural refactor required.
 
-**Compare-types exports:** deferred — separate track from coverage expansion ([work queue](../../../PIPELINE-COVERAGE-WORK-QUEUE.md)).
+**Compare-types exports:** deferred — separate track from coverage expansion ([work queue](pipeline-coverage-work-queue.md)).
 
 # Integer / boolean coercion (iOS bridge)
 
@@ -209,8 +209,9 @@ Cross-platform behavior is a **co-equal goal** with coverage ([Coverage design](
 
 | Topic | Document |
 |-------|----------|
-| Parity policy, drift registry, Q/R audit workflow | [Pipeline platform parity](pipeline-platform-parity.md) |
-| Coverage + parity work queue | [PIPELINE-COVERAGE-WORK-QUEUE.md](../../../PIPELINE-COVERAGE-WORK-QUEUE.md) — **I/J parity before K+ coverage** |
+| Parity policy, drift registry | [Pipeline platform parity](pipeline-platform-parity.md) |
+| SDK unsupported-function audit (repeatable) | [Pipeline SDK support audit](pipeline-sdk-support-audit.md) |
+| Coverage + parity work queue | [pipeline-coverage-work-queue.md](pipeline-coverage-work-queue.md) — **Ib/J before K+ coverage** |
 
 # iOS platform gaps (SDK / API)
 
