@@ -23,7 +23,6 @@
     "FilterMap",
     "DocumentFieldValueInternal",
     "FirestorePipelineSerializedInternal",
-    "TimestampUnit",
     "FilterOperator",
     "SerializedFilterSpec",
     "FirestoreBlobInternal"
