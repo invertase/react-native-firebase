@@ -151,26 +151,36 @@ Each platform has a **live** execute-time lowering path and a **dormant** siblin
 
 # Native coverage baselines (2026-06)
 
-From `tests:<platform>:test-cover` + post-processing:
+From `tests:<platform>:test-cover` + post-processing; refresh with `bash scripts/map-pipeline-coverage-gaps.sh <label>`:
 
 | File | iOS | Android |
 |------|-----|---------|
-| Parser | 83% | 79% |
-| NodeBuilder | **66.5%** | 55% |
-| Executor / CallHandler / BridgeFactory | 71–78% | 49% |
+| Parser | 84% | 81% |
+| NodeBuilder | **69%** | **68%** |
+| Executor / CallHandler / BridgeFactory | 83% / 83% | **58%** (Executor) |
 
-JS pipeline files under test: **100%** lines (`subcollection.ts`, `pipeline_support.ts`, `pipeline_validate.ts`).
+TS pipeline files (e2e NYC): `subcollection.ts` **100%**, `expressions.ts` 89%, `pipeline_runtime.ts` 86%, **`pipeline_validate.ts` 67%**.
 
-Remaining native gap: live-but-untested operator lowering + executor error branches — incremental e2e-per-operator, not structural.
+### Native coverage gap map
+
+Live-path holes concentrate in **expression lowering** and **stage coercion**, not dormant parsed-node clusters (Android dormant `buildParsed*` cluster removed 2026-06). Remaining high-value gaps:
+
+- **Android:** `EnterObjectExpressionFrame` loop (~106 missed lines) — non-constant array/map literal lowering; parsed aggregate tail (~143 missed, mixed live).
+- **iOS:** stage coercion bulk (~293 missed); `coerceExpressionTree` operand modes (~29 missed); map passthrough success paths.
+- **TS:** `pipeline_validate.ts` execute/source guard branches (~29 missed lines).
+
+Quantified tables and next-phase priorities: [PIPELINE-COVERAGE-WORK-QUEUE.md](../../../PIPELINE-COVERAGE-WORK-QUEUE.md). Summary script: `bash scripts/map-pipeline-coverage-gaps.sh <label>`.
 
 ### DEFERRED: native coverage to 100% (pending approval)
 
 **Status: needed, not done.** Per [Coverage expectations](/testing/coverage-design.md):
 
-1. **E2e per live-but-untested operator/stage** in `coerceExpressionTree` (iOS) and `buildExpressionFunction*` (Android), plus executor failure branches. Mechanical add-test/run/measure.
-2. **Android dead-code investigation** — parsed-node path via `coerceExpressionValueNode`; confirm reachability with coverage before removal (iOS analogue already removed).
+1. **E2e per live-but-untested operator/stage** in `coerceExpressionTree` (iOS) and live Android lowering, plus remaining executor error branches.
+2. **Android parsed-aggregate tail** — partially live (`coerceAliasedAggregate` from Executor); target with e2e, not deletion.
 
-Baselines to beat: iOS NodeBuilder ~66.5%, Android NodeBuilder ~55%, Android Executor ~49%. Prefer cost-efficient iteration; escalate model only if structural refactor required.
+Baselines to beat: iOS NodeBuilder ~69%, Android NodeBuilder ~68%, Android Executor ~58%. Prefer cost-efficient passes; escalate model only if structural refactor required.
+
+**Compare-types exports:** deferred — separate track from coverage expansion ([work queue](../../../PIPELINE-COVERAGE-WORK-QUEUE.md)).
 
 # Integer / boolean coercion (iOS bridge)
 
