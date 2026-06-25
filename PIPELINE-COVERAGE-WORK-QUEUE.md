@@ -1,6 +1,6 @@
 # Pipeline coverage — work queue (temporary)
 
-> **Status:** Phases A–F **complete** — Phase G **next** — Phases H–O queued  
+> **Status:** Phases A–G **complete** — Phase H **next** — Phases I–O queued  
 > **Goal:** Raise pipeline coverage (TS + native) toward intractable limits (~100% where reachable).  
 > **Deferred:** compare-types / new pipeline exports — separate track after coverage plateaus.  
 > **Policy:** [okf-bundle/testing/coverage-design.md](okf-bundle/testing/coverage-design.md)  
@@ -19,7 +19,7 @@
 | **D** | Native lowering e2e expansion | ✅ | subcollection 100%; schedule dispatch 100% |
 | **E** | Executor / Parser / BridgeFactory e2e | ✅ | Android Executor 49%→58%; iOS BridgeFactory 83% |
 | **F** | Android L900–1299 lowering region | **done (dead removal)** | loop 106→77 missed; NodeBuilder 67.5%→70.2% |
-| **G** | iOS operand modes + map passthrough | **in progress** | ~29 operand-mode lines; `map(field(…))` live path |
+| **G** | iOS operand modes + map passthrough | **done (e2e)** | operand 69/88 (+8); map passthrough execute success intractable |
 | **H** | TS `pipeline_validate` execute guards | queued | ~29 missed; negative Modular/e2e |
 | **I** | TS `pipeline_runtime` + `expressions` gaps | queued | guards, timestamp/FieldPath, runtime-node literals |
 | **J** | Android parsed-aggregate expression args | queued | ~143 missed mixed-live tail |
@@ -49,13 +49,49 @@
 | Android NodeBuilder | **1167/1729 (67.5%)** | **1155/1645 (70.2%)** | **+84 lines removed** | J, K |
 | Android loop L900–1299 | **128/234 (106 missed)** | **165/242 (77 missed)** | **−29 missed** | K (vector handler) |
 | Android Executor | 58% | 58% | — | M |
-| iOS NodeBuilder | 69% | 69% | — | G, L |
+| iOS NodeBuilder | 69% | **69.8%** | **+0.95% (operand modes)** | L, remainder |
 
 ```bash
 bash scripts/map-pipeline-coverage-gaps.sh android
 ```
 
-**Infra landed (committed `595194643`):** Detox `FabricTimersIdlingResource` patch; Android `.ec` delete after post-e2e; stale-coverage guidance in OKF.
+**Label:** `after-phase-g` (134 iOS / 129 macOS tests; Android blocked emulator conflict)
+
+---
+
+## Phase G — progress (2026-06-25)
+
+### Done
+
+- One e2e test in `operand mode rhs shape coverage`: **`coerces bare rhs operands through raw where filters`** — raw `.where({ condition: { operator, fieldPath, value }})` shapes deliver bare string/array/bool rhs to iOS `comparisonOperand` / `numericOperand` (Parser serializes function args as primitives, not `exprType: constant` maps).
+
+### Coverage outcome (`before-phase-g` → `after-phase-g`)
+
+| Target | Before | After | Δ |
+|--------|--------|-------|---|
+| iOS NodeBuilder total | 1085/1575 (68.89%) | **1100/1575 (69.84%)** | **+15 hit** |
+| iOS operand modes L919–1006 | 61/88 (69.32%), 27 missed | **69/88 (78.41%), 19 missed** | **+8 hit, −8 missed** |
+| iOS map passthrough L1208–1219 | 1 hit/line (error e2e) | unchanged | no delta |
+
+### E2e added
+
+| Test | Target | Result |
+|------|--------|--------|
+| `coerces bare rhs operands through raw where filters` | comparisonOperand array/bool/string; numericOperand bool (`>=`, `value: true`) | **+8 operand probes** |
+| *(rejected)* `executes map field passthrough through native lowering` | map passthrough execute success | Firestore `invalid-argument` for `map(field(…))`, `map(mapMerge(…))` |
+
+### Intractable / remainder (Phase G tail → Phase L / O)
+
+- **Map passthrough execute success (L1208–1219):** lowering already hit by `lowers map non-literal arguments through native passthrough lowering` (error path completes enter + `mapPassthroughExit`); Firestore rejects all `map(nonLiteral)` execute shapes tried (`map(field)`, `map(mapMerge)`, nested `map(map(…))`).
+- **Operand modes still missed (19 lines):** L928 (`expressionValue` bare scalar fallback); L948–949 (comparisonOperand → re-enter expression); L961–962 (numericOperand bare array); L965–966 (numericOperand bare string); L973–974 (CFBoolean `NSNumber`); L990–1006 (`vectorExpressionValue` `{values:…}` map + fallbacks). Likely need raw-stage injection or bridge-only shapes — defer to Phase L/O unless raw `.where`/`addFields` wire formats found.
+
+### 3-platform test counts
+
+| Platform | Before | After | Notes |
+|----------|--------|-------|-------|
+| iOS | 133 | **134** | +1 test green |
+| macOS | 128 | **129** | +1 test green |
+| Android | 133 | *(not run)* | emulator conflict (`Another emulator instance is running`) |
 
 ---
 
@@ -130,6 +166,8 @@ Dead-code removal satisfied done-when #1 (loop **106 → 77 missed**). Remaining
 ### Phase G — iOS operand modes + map passthrough
 
 **Target:** `coerceExpressionTree` operand modes (~29 missed); iOS map passthrough L1208–1219.
+
+**Closed 2026-06-25:** +8 operand-mode probes via raw-where e2e; map passthrough execute success documented intractable (lowering covered by existing error e2e).
 
 ### Phase H — TS `pipeline_validate`
 
