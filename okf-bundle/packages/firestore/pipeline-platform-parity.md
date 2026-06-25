@@ -48,8 +48,8 @@ Pipeline work has **two completion signals** (see [Coverage design](/testing/cov
 
 | ID | Area | Symptom | Justification | E2e |
 |----|------|---------|---------------|-----|
-| **P-003** | iOS unsupported functions | JS pre-execute throw via `IOS_UNSUPPORTED_FUNCTION_NAMES` (9 names) | **Under review (Ib):** list likely **partially stale** vs iOS **12.15** CHANGELOG — see [sdk-support-audit](pipeline-sdk-support-audit.md). Confirmed unsupported set = **J0 runtime probes only**. | Reduced iOS pipelines until J0 |
-| **P-003a** | *(per-function hooks)* | `round`, `conditional`, `switchOn`, `trunc`, `substring`, `stringRepeat`, `arrayGet`, `timestampAdd`, `timestampSubtract` | Subset of P-003 — see [§ iOS unsupported function e2e map](#ios-unsupported-function-e2e-map) | One or more tests each |
+| **P-003** | iOS unsupported functions | JS pre-execute throw via `IOS_UNSUPPORTED_FUNCTION_NAMES` (**8 names**; was 9) | **Under review (Ib/J0):** list likely **partially stale** vs iOS **12.15** CHANGELOG — see [sdk-support-audit](pipeline-sdk-support-audit.md). Confirmed unsupported set = **J0 runtime probes only**. `stringRepeat` **resolved J0-1**. | Reduced iOS pipelines until J0 |
+| **P-003a** | *(per-function hooks)* | `round`, `conditional`, `switchOn`, `trunc`, `substring`, `arrayGet`, `timestampAdd`, `timestampSubtract` | Subset of P-003 — see [§ iOS unsupported function e2e map](#ios-unsupported-function-e2e-map) | One or more tests each |
 | **P-013** | iOS extended aggregate accumulators | `first`/`last`/`minimum`/`maximum` with expression args skipped on iOS only (L3740) | **Likely iOS SDK** — functions not in unsupported list; needs SDK repro; document until confirmed | L3740–3790 |
 | **P-014** | Execute `indexMode` / `rawOptions` on iOS | iOS parser rejects at native boundary | iOS SDK gap | L3796–3798 skip (iOS + macOS) |
 | **P-015** | Source `rawOptions` on iOS | iOS parser rejects `pipeline.source.rawOptions` | iOS SDK gap; Android applies `CollectionHints` | L3795–3845 (Android-only execute) |
@@ -95,7 +95,7 @@ Pipeline work has **two completion signals** (see [Coverage design](/testing/cov
 | `switchOn` | Yes | No reduced re-run | L1466 | **Added 12.12** — **J0-2 probe** |
 | `trunc` | Yes | Yes | L1758 | **Added 12.11** — **J0-3 probe** |
 | `substring` | Yes | Yes | L1891 | No entry — **J0-6 probe** |
-| `stringRepeat` | Yes | Yes | L1985 | **Added 12.12** — **J0-1 probe** |
+| `stringRepeat` | — | — | L1985 | **Resolved J0-1** — `sdk-supported-bridge-ok`; guard removed; iOS **146/146** |
 | `arrayGet` | Yes | Yes | L2265, L2648 | No entry — **J0-9 probe** (+ possible RNFB receiver gap) |
 | `timestampAdd` / `timestampSubtract` | Yes | Yes | L2903 | No entry — **J0-7/8 probe** |
 

@@ -87,7 +87,7 @@ timestamp: 2026-06-25T00:00:00Z
 | TS `pipeline_validate.ts` | 82/88 (93.18%) | 78/88 (88.64%) | 78/88 (88.64%) |
 | E2e gate | ✅ | ✅ | ✅ |
 
-**Next:** Phase **J0** (iOS probe: `stringRepeat`, `switchOn`, `trunc` first — highest CHANGELOG confidence).
+**Next:** Phase **J0** — J0-1 ✅ (`stringRepeat`); next **J0-2** (`switchOn`).
 
 | Target | macOS | iOS | Android (gap map) | Phase |
 |--------|-------|-----|-------------------|-------|
@@ -206,17 +206,17 @@ Earlier on branch: Phases A–E (baseline, dead code, gap map, lowering/executor
 
 Per [sdk-support-audit §6](pipeline-sdk-support-audit.md): one function per commit, remove from guard, restore full iOS e2e assertions, `yarn tests:ios:test-cover`.
 
-| Probe | Function | Rationale |
-|-------|----------|-----------|
-| J0-1 | `stringRepeat` | iOS CHANGELOG 12.12.0 |
-| J0-2 | `switchOn` | iOS CHANGELOG 12.12.0 |
-| J0-3 | `trunc` | iOS CHANGELOG 12.11.0 |
-| J0-4 | `conditional` | `ConditionalExpression` 12.11.0; iOS bridge → `cond` |
-| J0-5 | `round` | No CHANGELOG; Android + bridge ok |
-| J0-6 | `substring` | No CHANGELOG; docs list function |
-| J0-7 | `timestampAdd` | No CHANGELOG; likely SDK gap or receiver shape |
-| J0-8 | `timestampSubtract` | Same |
-| J0-9 | `arrayGet` | No CHANGELOG; likely needs iOS receiver parity if SDK ok |
+| Probe | Function | Rationale | Status |
+|-------|----------|-----------|--------|
+| J0-1 | `stringRepeat` | iOS CHANGELOG 12.12.0 | ✅ iOS **146/146** — commit pending |
+| J0-2 | `switchOn` | iOS CHANGELOG 12.12.0 | |
+| J0-3 | `trunc` | iOS CHANGELOG 12.11.0 | |
+| J0-4 | `conditional` | `ConditionalExpression` 12.11.0; iOS bridge → `cond` | |
+| J0-5 | `round` | No CHANGELOG; Android + bridge ok | |
+| J0-6 | `substring` | No CHANGELOG; docs list function | |
+| J0-7 | `timestampAdd` | No CHANGELOG; likely SDK gap or receiver shape | |
+| J0-8 | `timestampSubtract` | Same | |
+| J0-9 | `arrayGet` | No CHANGELOG; likely needs iOS receiver parity if SDK ok | |
 
 **Output:** Updated guard set in `pipeline_support.ts`; shrunk P-003 e2e reduced pipelines; parity registry classifications confirmed.
 
@@ -233,7 +233,7 @@ Per [sdk-support-audit §6](pipeline-sdk-support-audit.md): one function per com
 
 **Gate for Phase K+:** J0 complete + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Delegate J0-1** to implementer subagent (single function probe + iOS e2e).
+**Next probe:** **J0-2** (`switchOn`).
 
 ---
 
