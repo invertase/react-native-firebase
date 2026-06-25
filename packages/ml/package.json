@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/ml",
-  "version": "25.0.1",
+  "version": "25.1.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Firebase ML brings the power of machine learning vision to your React Native application, supporting both Android & iOS.",
   "main": "./dist/module/index.js",
@@ -27,7 +27,7 @@
     "image labeler"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "25.0.1"
+    "@react-native-firebase/app": "25.1.0"
   },
   "publishConfig": {
     "access": "public",

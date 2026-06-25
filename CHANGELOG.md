@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [25.1.0](https://github.com/invertase/react-native-firebase/compare/v25.0.1...v25.1.0) (2026-06-25)
+
+### Features
+
+- **firestore:** `variable()` and `arrayFilter()` API features for pipelines ([#9017](https://github.com/invertase/react-native-firebase/issues/9017)) ([cbe2593](https://github.com/invertase/react-native-firebase/commit/cbe2593fa0f7f670cb3744d08bb27840a2b6ddc3))
+
+### Bug Fixes
+
+- **auth, perf:** correctly export expo config plugin, add test for same ([dfb8126](https://github.com/invertase/react-native-firebase/commit/dfb8126be05e3c87c4d8ea228110aa8b8e7674cb))
+
 ## [25.0.1](https://github.com/invertase/react-native-firebase/compare/v25.0.0...v25.0.1) (2026-06-23)
 
 ### Bug Fixes
