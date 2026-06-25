@@ -3214,6 +3214,72 @@ describe('FirestorePipeline', function () {
         filtered.results[0].data().status.should.equal('active');
         filtered.results[0].data().region.should.equal('EU');
       });
+
+      it('coerces bare rhs operands through raw where filters', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/raw-operand-where`,
+        );
+
+        await Promise.all([
+          setDoc(doc(coll, 'match'), {
+            region: 'EU',
+            bump: true,
+            base: 10,
+            status: 'active',
+          }),
+          setDoc(doc(coll, 'skip-region'), {
+            region: 'APAC',
+            bump: true,
+            base: 10,
+            status: 'active',
+          }),
+          setDoc(doc(coll, 'skip-bump'), {
+            region: 'EU',
+            bump: false,
+            base: 10,
+            status: 'active',
+          }),
+          setDoc(doc(coll, 'skip-base'), {
+            region: 'EU',
+            bump: true,
+            base: 0,
+            status: 'active',
+          }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where({
+              condition: {
+                operator: 'AND',
+                queries: [
+                  { operator: 'IN', fieldPath: 'region', value: ['EU', 'US'] },
+                  { operator: '==', fieldPath: 'bump', value: true },
+                  { operator: '>=', fieldPath: 'base', value: true },
+                  { operator: '==', fieldPath: 'status', value: 'active' },
+                ],
+              },
+            })
+            .select('region', 'bump', 'base', 'status'),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.region.should.equal('EU');
+        data.bump.should.equal(true);
+        data.base.should.equal(10);
+        data.status.should.equal('active');
+      });
     });
 
     describe('aggregate expression argument lowering', function () {
