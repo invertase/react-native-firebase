@@ -214,6 +214,7 @@ rg '\.only\(' packages/
 | Package / area | Adds to this loop |
 |----------------|-------------------|
 | Firestore Pipelines | Compare-types gap pick, serialization matrix, `Pipeline.e2e.js` setup, coverage snapshots — [pipeline implementation workflow](../packages/firestore/pipeline-implementation-workflow.md) |
+| TurboModule migration | Spec inventory, codegen commit, New Architecture harness, multi-module spec split — [turbomodule implementation workflow](../new-architecture/turbomodule-implementation-workflow.md) |
 | Other packages | `okf-bundle/packages/<pkg>/` index when a workflow exists |
 
 Ephemeral coordination (gate rows, `next_work_type`, `commit_subject`): **work queues only** — not part of this workflow.
