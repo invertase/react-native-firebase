@@ -17,6 +17,7 @@ Each iteration closes **one** compare-types backlog entry and produces **one** f
 | Topic | Document |
 |-------|----------|
 | Bridge design, subqueries, coercion, native coverage strategy | [Pipelines implementation design](pipelines.md) |
+| Coverage and parity phase tracker | [Pipeline coverage work queue](pipeline-coverage-work-queue.md) |
 | E2e commands, fast iteration hacks, handoff rules | [Running e2e tests](../../testing/running-e2e.md) |
 | Coverage policy, per-file reading, refactor-vs-test | [Coverage design](../../testing/coverage-design.md) |
 | All validation commands | [Validation checklist](../../testing/validation-checklist.md) |
