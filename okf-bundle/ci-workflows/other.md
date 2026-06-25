@@ -17,7 +17,7 @@ macOS e2e runs **Jet directly** (no Detox): `yarn tests:macos:test-cover`. The t
 **Symptom** — Jet logs `[💻] macOS app started` but never `[🟩] Jet client connected`. System log / `syslog` artifact shows:
 
 ```
-HTTP load failed, 384/63910994 bytes (error code: -1017)
+HTTP load failed, <partial>/<bundle-size> bytes (error code: -1017)
 Could not connect to development server.
 URL: http://localhost:8081/index.bundle?platform=macos&...&inlineSourceMap=false...
 ```

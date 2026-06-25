@@ -2,10 +2,15 @@
 
 Knowledge for Firestore Pipelines (modular `pipelines` entry) and native bridge behaviour.
 
+**Policy:** [OKF documentation and commit policy](../../documentation-policy.md).
+
 ## Documents
 
-* [Pipeline implementation workflow](pipeline-implementation-workflow.md) — compare-types gap analysis, baseline/review coverage, subagent implement/review, commit (start here for each export)
+* [Pipeline coverage work queue](pipeline-coverage-work-queue.md) — ephemeral phase tracker (live status)
+* [Pipeline implementation workflow](pipeline-implementation-workflow.md) — compare-types gap analysis, baseline/review coverage, implementation, independent review, commit (start here for each export)
 * [Serialization testing](serialization-testing.md) — required Jest/e2e serialization checks per expression export
+* [Pipeline platform parity](pipeline-platform-parity.md) — drift registry (P-001…), remediation policy, iOS unsupported map
+* [Pipeline SDK support audit](pipeline-sdk-support-audit.md) — guard reconciliation method and runtime verification
 * [Pipelines implementation design](pipelines.md) — architecture, JS→native serialization, integer/boolean coercion, e2e coverage strategy, emulator setup
 
 ## Related repository files

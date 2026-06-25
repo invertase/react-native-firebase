@@ -14,14 +14,16 @@
 - Check the affected package's `type-test.ts`, `__tests__/`, and plugin directories before changing public APIs or platform-specific behavior.
 - Prefer consistency with existing patterns in the package you are editing instead of introducing new structure.
 
+## Knowledge bundle
+
+- Start with `okf-bundle/index.md` for repository-specific implementation, testing, and maintenance knowledge.
+- Use package indexes under `okf-bundle/packages/` for package-specific workflows and active work queues.
+- Follow `okf-bundle/documentation-policy.md` when editing OKF docs or writing commit messages: durable knowledge belongs in reference docs, ephemeral state belongs only in explicit work queues.
+
 ## Testing instructions
 
-- Start with focused validation for the area you changed instead of running the entire suite.
-- For code changes, run the relevant linting scripts (e.g., yarn lint:js, yarn lint:android, or yarn lint:ios:check).
-- For package behavior changes, run targeted Jest coverage with `yarn tests:jest <path-to-test-file>`.
-- For public API changes, update and run the relevant `packages/<name>/type-test.ts` checks and nearby Jest tests in `packages/<name>/__tests__/`.
-- Run platform-specific e2e commands in `tests/` only when the change affects Android, iOS, or macOS behavior.
-- Before merging substantial code changes, run the relevant root scripts from `package.json` for the touched area.
+- Follow `okf-bundle/testing/index.md` for testing entry points and `okf-bundle/testing/validation-checklist.md` for validation requirements.
+- Prefer focused validation for the area changed; package-specific OKF docs may add stricter gates.
 
 ## PR instructions
 

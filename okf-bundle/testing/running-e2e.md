@@ -49,13 +49,15 @@ yarn tests:macos:test-cover
 
 5. **Report locations** — [Coverage design](coverage-design.md).
 
-6. **One e2e at a time** — never run more than one `:test-cover` (or any Detox/Jet e2e) concurrently on the same host. Jet listens on a single port (`:8090`); macOS, iOS, and Android all connect to the same Jet server and the same Metro packager (`:8081`). Parallel runs race on coverage upload, device registry locks, and emulator ports — treat failures as operator error, not product bugs.
+6. **One e2e at a time** — never run more than one `:test-cover` (or any Detox/Jet e2e) concurrently on the same host. Jet listens on a single port (`:8090`); macOS, iOS, and Android all connect to the same Jet server and the same Metro packager (`:8081`). Parallel runs race on coverage upload, device registry locks, and emulator ports — treat failures as operator error, not product bugs. **Every** run — implementer, reviewer, or pre-merge — starts only after [verified clean pre-flight](#pre-flight-is-the-host-clear-to-start); if the host is not clear, wait or follow [interrupted-run cleanup](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090) before starting another `:test-cover`.
 
 7. **No source edits during e2e** — do not modify tracked or untracked source while an e2e run is in progress. macOS loads JS live from Metro; iOS/Android debug builds can also pick up bundle changes. A save mid-run triggers hot reload/rebundle and invalidates the in-flight test ( flaky timeouts, partial coverage, false reds). Wait for the run to finish (or cancel it cleanly) before editing `packages/**`, `tests/**`, or OKF docs that affect the bundle.
 
-## Subagent e2e loops (shared dev host)
+## Serialized e2e loops (shared dev host)
 
-Implementer/reviewer subagents run iterative e2e locally. The orchestrator should **not** stream full e2e output into its context — subagents run canonical commands, wait on the **shell exit code**, and return a short summary.
+Implementation and review runs use canonical e2e locally at different [tiers](#e2e-tiers-implementer--reviewer--pre-merge) — implementer **focused**, reviewer **area**, pre-merge **full**. Every run is **serial** from **verified clean [pre-flight](#pre-flight-is-the-host-clear-to-start)**. Long e2e output should be written to logs; the coordinating context should receive only the shell exit code and a short summary.
+
+**Policy:** [OKF documentation and commit policy](../documentation-policy.md).
 
 ### How a platform run is structured (Android/iOS)
 
@@ -72,9 +74,9 @@ macOS is flat: `yarn tests:macos:test-cover` → `jet --target=macos` (same `:80
 
 **Do not poll `pgrep`, `detox`, or `jet.js` for completion.** Those match stale yarn wrappers, orphan Jest, and zombie Jet long after a run has stopped (especially if a prior shell was interrupted). Port `:8090` alone is not reliable — Metro/Jet zombies and cross-platform contention look the same.
 
-### Running one iteration (subagent)
+### Running one iteration
 
-1. **Pre-flight** — host clear for *this* platform (below). If busy, wait or report blocked; do not start another `:test-cover`.
+1. **Pre-flight** — **mandatory clean starting environment** for *this* platform ([below](#pre-flight-is-the-host-clear-to-start)). If busy or recovering from an interrupted run, wait or clean up; do not start another `:test-cover`.
 2. **One foreground command** — use the Shell tool with `block_until_ms` large enough for the platform (~15 min macOS, ~45–60 min iOS/Android). Do **not** background the run and poll.
 3. **Log to file, not context** — from **repo root**, tee the canonical command only (rule 4):
 
@@ -97,11 +99,11 @@ rg 'Tests Complete|jet-coverage.*merged' /tmp/rnfb-e2e-<platform>.log | tail -3
 
 Harness markers in `tests/e2e/firebase.test.js`: `✨ Tests Complete ✨`, Jest `N passing` / `N failing`, `[jet-coverage] merged … before NYC shutdown`.
 
-6. **Return upstream (keep it short)** — platform, exit code, passing/failing line, failing test names (if any), log path. Optional: one line from `bash scripts/map-pipeline-coverage-gaps.sh` if coverage was the goal. Do not paste the full log into the orchestrator thread.
+6. **Return upstream (keep it short)** — platform, exit code, passing/failing line, failing test names (if any), log path. Optional: one line from `bash scripts/map-pipeline-coverage-gaps.sh` if coverage was the goal. Do not paste the full log into the coordinating thread.
 
 ### Pre-flight: is the host clear to start?
 
-Run **before** each `:test-cover`. These reflect *device activity*, not Node leftovers.
+**Mandatory clean starting environment** — run **before every** `:test-cover`, at every tier (implementer, reviewer, pre-merge). Do not start another run while the host is busy or recovering from an interrupted session. These checks reflect *device activity*, not Node leftovers.
 
 | Platform | Active e2e signal | Clear to start |
 |----------|-------------------|----------------|
@@ -113,19 +115,37 @@ Also confirm no other `:test-cover` is in flight: if your IDE/terminal shows an 
 
 Background services (Metro `:8081`, emulators `:8080`/`:9099`) are **expected** to be up — they do not mean e2e is running.
 
-### Iteration loop (implementer)
+### Iteration loop (implementer — focused tier)
 
-Typical fast loop while editing specs or harness:
+Typical fast loop while editing specs or harness ([focused tier](#e2e-tiers-implementer--reviewer--pre-merge)):
 
-1. Edit e2e/spec (or narrowing in `tests/app.js` — never commit).
-2. macOS first when TS-only: `yarn tests:macos:test-cover 2>&1 | tee /tmp/rnfb-e2e-macos.log` — wait for exit code.
-3. If macOS green and native touched: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover 2>&1 | tee /tmp/rnfb-e2e-<platform>.log` — **one platform at a time**, serial across macOS → iOS → Android.
-4. Grep log tail → fix → repeat from step 1.
-5. Reviewer subagent: same commands, no `.only`, area narrowing allowed per [pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations).
+1. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — host clear; if not, wait or clean up per [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090).
+2. Edit e2e/spec; apply **focused** narrowing — `it.only` / `describe.only` and/or tight area narrowing in `tests/app.js` (never commit).
+3. macOS first when TS-only: `yarn tests:macos:test-cover 2>&1 | tee /tmp/rnfb-e2e-macos.log` — wait for exit code.
+4. If macOS green and native touched: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover 2>&1 | tee /tmp/rnfb-e2e-<platform>.log` — **one platform at a time**, serial across macOS → iOS → Android.
+5. Grep log tail → fix → repeat from step 1 (pre-flight again before each run).
+6. Hand off to independent review at **area** tier — same canonical commands, **no** `.only`; area narrowing only per [pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations).
 
-Orchestrator dispatches subagents for implement/review; each subagent owns its own blocking e2e runs and returns summaries only.
+### Serialized e2e dispatch
 
-### Interrupted run (subagent abort, killed terminal, EADDRINUSE on :8090)
+The coordinating context **serializes** e2e work — never overlap runs that use `:test-cover`.
+
+| Rule | Requirement |
+|------|-------------|
+| **One e2e run at a time** | Wait for the prior run's **shell exit code** and short log summary before starting the next e2e run |
+| **No parallel implement + review** | Never launch implementer and reviewer e2e concurrently; never spawn two reviewer runs |
+| **Clean pre-flight every run** | Verify [pre-flight](#pre-flight-is-the-host-clear-to-start) before each `:test-cover`; if not clear, wait or clean up — do not queue a second run |
+| **iOS guard probe loop** | **Implement** (Jest + **focused** e2e) → **Review** (**area** e2e on frozen diff) → **Commit once** |
+
+| Actor | E2e tier | Narrowing allowed |
+|-------|----------|-------------------|
+| **Implementer** | **Focused** — backpressure while coding; discovers errors in the implementation area | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** |
+| **Reviewer** | **Area** — full loaded spec(s) for the package/area under change | **Area narrowing only** (`tests/app.js` + `tests/globals.js`); **no** `.only` |
+| **Pre-merge** | **Full** — all modules, all platforms | None — revert all narrowing |
+
+Each e2e run owns its own blocking `:test-cover` (serial, canonical commands only) and returns summaries only. Use **only** the commands in this doc.
+
+### Interrupted run (abort, killed terminal, EADDRINUSE on :8090)
 
 Clean up before the next canonical command:
 
@@ -146,10 +166,12 @@ Then re-run from repo root: `yarn tests:<platform>:build && yarn tests:<platform
 ### What not to do
 
 - Do not invoke `detox test`, `npx jet`, or `cd tests && …` directly — use only `yarn tests:<platform>:test-cover` (and `:build` when needed) from repo root.
-- Do not background `:test-cover` and poll `pgrep`.
+- Do not background `:test-cover` and poll `pgrep`, `detox`, or `jet.js` for completion.
+- Do not use `:test-cover-reuse`, `:test-cover-and-process`, or `:test-reuse` when measuring coverage or closing review gates.
 - Do not use `:8090` listening as “e2e still running” without the platform active signal above.
 - Do not start iOS/Android/macOS `:test-cover` concurrently on one host.
 - Do not edit source while a tee'd run is still in progress.
+- Do not run `.github/workflows/scripts/boot-simulator.sh`, `simctl shutdown all`, or `kill -9` on `:8090` as operator prep — `boot-simulator.sh` is **CI-only** ([iOS CI workflows](../ci-workflows/ios.md)) or **internal** to `tests/e2e/firebase.test.js` iOS Jet-level retry; use only the commands in this doc.
 
 ## Typical loop
 
@@ -180,13 +202,32 @@ Full e2e loads every package's specs. Narrow locally to iterate faster. **Never 
 
 **`RNFBDebug`** (`tests/globals.js`): set `globalThis.RNFBDebug = true`. Prints `[TEST-->Start]` / `[TEST->Finish]` per case. Main value: **fail-fast** — disables Mocha retry/backoff in `tests/app.js`, so a hang or failure surfaces immediately instead of looking like a 4× longer hang.
 
-Package-specific workflows may define which narrowing levels are allowed through review (e.g. [Pipeline implementation workflow](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations)).
+Package-specific workflows may define which narrowing levels are allowed per [e2e tier](#e2e-tiers-implementer--reviewer--pre-merge) (e.g. [Pipeline implementation workflow](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations)).
+
+## E2e tiers (implementer / reviewer / pre-merge)
+
+Three narrowing scopes govern who may run what before merge. All tiers share the same [canonical commands](#rules), [serial host policy](#rules) (rule 6), and **mandatory clean [pre-flight](#pre-flight-is-the-host-clear-to-start)** before every `:test-cover`.
+
+| Actor | E2e scope | Narrowing allowed |
+|-------|-----------|-------------------|
+| **Implementer** | **Focused** e2e — backpressure while coding; discovers errors in the implementation area | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** |
+| **Reviewer** | **Area** e2e — full loaded spec(s) for the package/area under change | **Area narrowing only** (`tests/app.js` + `tests/globals.js`); **no** `.only` |
+| **Pre-merge** | **Full** unfocused e2e — all modules, all platforms | None — revert all narrowing |
+
+**Universal rules:**
+
+- E2e is **always serial** — one `:test-cover` at a time on the host.
+- Every run starts from **verified clean pre-flight**; if not clear, wait or follow [interrupted-run cleanup](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090) — do not start another run.
+- Use **only** canonical commands from this doc.
+- Coordinator: one e2e run at a time; never parallel implement + review e2e.
+
+Implementer loop: [Iteration loop (implementer)](#iteration-loop-implementer--focused-tier). Serialized dispatch: [Serialized e2e dispatch](#serialized-e2e-dispatch). Pre-merge handoff: [Before merge](#before-merge-pr-handoff).
 
 ## Environment
 
 - **Devices** — Detox boots simulator/emulator (`TestingAVD` in `tests/.detoxrc.js`); macOS auto-starts the app.
 - **adb empty** — `adb kill-server && adb start-server && adb devices`
-- **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, …). Jet (`:8090`) is **not** a background service — it is spawned for the duration of each `:test-cover` (macOS directly; iOS/Android via Detox). A listener on `:8090` after a run usually means a stray Jet from an interrupted session — see [Subagent e2e loops § interrupted run](#interrupted-run-subagent-abort-killed-terminal-eaddrinuse-on-8090). Check: `lsof -nP -iTCP -sTCP:LISTEN | rg ':8081|:8080|:9099|:4400'`. Kill Metro/emulators: `pkill -f "react-native start"`, `pkill -f "firebase emulators"`.
+- **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, …). Jet (`:8090`) is **not** a background service — it is spawned for the duration of each `:test-cover` (macOS directly; iOS/Android via Detox). A listener on `:8090` after a run usually means a stray Jet from an interrupted session — see [Serialized e2e loops § interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090). Check: `lsof -nP -iTCP -sTCP:LISTEN | rg ':8081|:8080|:9099|:4400'`. Kill Metro/emulators: `pkill -f "react-native start"`, `pkill -f "firebase emulators"`.
 
 ## Diagnosing native hangs
 
@@ -199,11 +240,12 @@ When JS output is unhelpful, use device logs + temporary native instrumentation 
 
 ## Before merge (PR handoff)
 
-PRs are **multiple commits**. These steps apply once to the **entire commit stream** on the branch — immediately before merge, or before push intended for merge — not after every commit.
+**Pre-merge tier.** PRs are **multiple commits**. These steps apply once to the **entire commit stream** on the branch — immediately before merge, or before push intended for merge — not after every commit.
 
-1. Revert all narrowing: restore `tests/app.js` (`platformSupportedModules` + `require.context`), default `RNFBDebug` in `tests/globals.js`, remove all `.only`, remove native instrumentation.
-2. Rebuild if needed (`tests:<platform>:build`; `yarn lerna:prepare` for `lib/**`).
-3. Full unfocused suite with coverage on **iOS, Android, macOS** — all green.
+1. Revert all narrowing ([full tier](#e2e-tiers-implementer--reviewer--pre-merge)): restore `tests/app.js` (`platformSupportedModules` + `require.context`), default `RNFBDebug` in `tests/globals.js`, remove all `.only`, remove native instrumentation.
+2. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — verified clean host before each platform run.
+3. Rebuild if needed (`tests:<platform>:build`; `yarn lerna:prepare` for `lib/**`).
+4. Full unfocused suite with coverage on **iOS, Android, macOS** — one platform at a time, all green.
 
 ## Notes
 

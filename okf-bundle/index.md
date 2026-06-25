@@ -6,6 +6,8 @@ okf_version: "0.1"
 
 Knowledge documents for react-native-firebase development, testing, and maintenance.
 
+* [OKF documentation and commit policy](/documentation-policy.md) — durable vs ephemeral split, commit wording, and post-update bundle consistency contract (read first when editing OKF)
+
 # CI workflows
 
 * [CI workflows](/ci-workflows/index.md) — GitHub Actions reliability, logging, and troubleshooting (iOS simulator boot and Detox/Jet e2e orchestration)

@@ -153,21 +153,15 @@ Each platform has a **live** execute-time lowering path and a **dormant** siblin
 
 From `tests:<platform>:test-cover` + post-processing; refresh with `bash scripts/map-pipeline-coverage-gaps.sh <label>`:
 
-| File | iOS | Android |
-|------|-----|---------|
-| Parser | 84% | 81% |
-| NodeBuilder | **69%** | **68%** |
-| Executor / CallHandler / BridgeFactory | 83% / 83% | **58%** (Executor) |
-
-TS pipeline files (e2e NYC): `subcollection.ts` **100%**, `expressions.ts` 89%, `pipeline_runtime.ts` 86%, **`pipeline_validate.ts` 67%**.
+Durable coverage principle: use e2e coverage to distinguish live paths from dormant lowering code, then document any intractable gaps. Current snapshot numbers and phase-specific deltas live in the [pipeline coverage work queue](pipeline-coverage-work-queue.md#current-snapshot).
 
 ### Native coverage gap map
 
 Live-path holes concentrate in **expression lowering** and **stage coercion**, not dormant parsed-node clusters (Android dormant `buildParsed*` cluster removed 2026-06). Remaining high-value gaps:
 
-- **Android:** `EnterObjectExpressionFrame` loop (~106 missed lines) — non-constant array/map literal lowering; parsed aggregate tail (~143 missed, mixed live).
-- **iOS:** stage coercion bulk (~293 missed); `coerceExpressionTree` operand modes (~29 missed); map passthrough success paths.
-- **TS:** `pipeline_validate.ts` execute/source guard branches (~29 missed lines).
+- **Android:** expression-frame lowering, parsed aggregate tails, executor branches.
+- **iOS:** stage coercion, operand modes, map passthrough success paths.
+- **TS:** runtime/validation branches reachable by direct Jest or e2e tamper tests.
 
 Quantified tables and next-phase priorities: [pipeline-coverage-work-queue.md](pipeline-coverage-work-queue.md). Summary script: `bash scripts/map-pipeline-coverage-gaps.sh <label>`.
 
@@ -211,7 +205,7 @@ Cross-platform behavior is a **co-equal goal** with coverage ([Coverage design](
 |-------|----------|
 | Parity policy, drift registry | [Pipeline platform parity](pipeline-platform-parity.md) |
 | SDK unsupported-function audit (repeatable) | [Pipeline SDK support audit](pipeline-sdk-support-audit.md) |
-| Coverage + parity work queue | [pipeline-coverage-work-queue.md](pipeline-coverage-work-queue.md) — **Ib/J before K+ coverage** |
+| Coverage + parity work queue | [pipeline-coverage-work-queue.md](pipeline-coverage-work-queue.md) |
 
 # iOS platform gaps (SDK / API)
 
@@ -219,4 +213,4 @@ Cross-platform behavior is a **co-equal goal** with coverage ([Coverage design](
 
 # Measuring native coverage
 
-[Running e2e tests](/testing/running-e2e.md); compare-types snapshots: [Pipeline implementation workflow](pipeline-implementation-workflow.md), [Coverage design](/testing/coverage-design.md#coverage-as-iteration-completion-signal).
+[Running e2e tests](/testing/running-e2e.md); compare-types snapshots: [Pipeline implementation workflow](pipeline-implementation-workflow.md), [Coverage design](/testing/coverage-design.md#coverage-as-completion-signal).
