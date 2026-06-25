@@ -22,14 +22,14 @@ CI enforces parity through `yarn compare:types` and the `firestore-pipelines` al
 
 These firebase-js-sdk pipeline exports are **not** exposed yet. They are listed in the repository compare-types allowlist until implemented:
 
-| Export                      | Kind       | Notes                                              |
-| --------------------------- | ---------- | -------------------------------------------------- |
-| `documentMatches`           | Expression | Document matching helper (requires `search` stage) |
-| `geoDistance`               | Expression | Geospatial distance (requires `search` stage)      |
-| `score`                     | Expression | Full-text search score                             |
-| `parent`                    | Stage      | Parent document stage                              |
-| `DefineStageOptions`        | Type       | Options for define stage                           |
-| `SearchStageOptions`        | Type       | Full-text search stage options                     |
+| Export               | Kind       | Notes                                              |
+| -------------------- | ---------- | -------------------------------------------------- |
+| `documentMatches`    | Expression | Document matching helper (requires `search` stage) |
+| `geoDistance`        | Expression | Geospatial distance (requires `search` stage)      |
+| `score`              | Expression | Full-text search score                             |
+| `parent`             | Stage      | Parent document stage                              |
+| `DefineStageOptions` | Type       | Options for define stage                           |
+| `SearchStageOptions` | Type       | Full-text search stage options                     |
 
 If you depend on one of these, follow [Firebase pipeline release notes](https://firebase.google.com/support/release-notes/js) and React Native Firebase changelogs, or open a feature request with your use case.
 
@@ -39,8 +39,8 @@ These exports exist in both SDKs but differ in typing or optional parameters:
 
 | Export            | Difference                                                            |
 | ----------------- | --------------------------------------------------------------------- |
-| `timestampDiff`   | Declaration overload ordering differs; all four SDK shapes supported |
-| `constant`        | firebase-js-sdk added optional `preferIntegers`; not yet on RNFB     |
+| `timestampDiff`   | Declaration overload ordering differs; all four SDK shapes supported  |
+| `constant`        | firebase-js-sdk added optional `preferIntegers`; not yet on RNFB      |
 | `isType`          | RNFB accepts the local `Type` alias; JS SDK accepts a broader string  |
 | `StageOptions`    | Equivalent runtime shape; declaration formatting differs              |
 | `TimeGranularity` | RNFB uses `isoWeek` / `isoYear`; JS SDK also lists lowercase variants |

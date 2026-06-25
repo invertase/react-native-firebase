@@ -10,7 +10,12 @@ previous: /firestore/pipelines/timestamp-extract
 Import from the pipelines entry point:
 
 ```js
-import { subcollection, field, countAll, average } from '@react-native-firebase/firestore/pipelines';
+import {
+  subcollection,
+  field,
+  countAll,
+  average,
+} from '@react-native-firebase/firestore/pipelines';
 ```
 
 # Basic example
@@ -56,12 +61,12 @@ subcollection({ path: 'reviews', rawOptions: {} });
 
 # Related helpers
 
-| Helper                 | Use when                                              |
-| ---------------------- | ----------------------------------------------------- |
-| `subcollection`        | Target a subcollection relative to each parent doc    |
-| `toScalarExpression()` | Embed a nested pipeline as a single scalar field      |
-| `toArrayExpression()`  | Embed a nested pipeline as an array of documents      |
-| `SubcollectionStageOptions` | Options type for the subcollection source stage |
+| Helper                      | Use when                                           |
+| --------------------------- | -------------------------------------------------- |
+| `subcollection`             | Target a subcollection relative to each parent doc |
+| `toScalarExpression()`      | Embed a nested pipeline as a single scalar field   |
+| `toArrayExpression()`       | Embed a nested pipeline as an array of documents   |
+| `SubcollectionStageOptions` | Options type for the subcollection source stage    |
 
 # Upstream reference
 

@@ -93,7 +93,7 @@ describe('Firestore pipeline native parity', function () {
     const iosSource = readFileSync(IOS_NODE_BUILDER_PATH, 'utf8');
 
     expect(androidSource).toContain('currentExpression.arrayFirst()');
-    expect(androidSource).toContain('arrayExpr.arrayFirstN');
+    expect(androidSource).toContain('currentExpression.arrayFirstN');
     expect(iosSource).toContain('"array_first"');
     expect(iosSource).toContain('"array_first_n"');
     expect(iosSource).toContain('"array_slice"');
