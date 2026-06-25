@@ -933,24 +933,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     return rootBox.value;
   }
 
-  private Object lowerValueOrExpressionObject(Object value, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    LoweredObjectBox rootBox = new LoweredObjectBox();
-    ArrayDeque<ObjectLoweringFrame> stack = new ArrayDeque<>();
-    stack.push(new EnterObjectValueOrExpressionFrame(value, fieldName, rootBox));
-    processObjectLoweringStack(stack);
-    return rootBox.value;
-  }
-
-  private Expression lowerVectorExpressionValueObject(Object value, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    LoweredExpressionBox rootBox = new LoweredExpressionBox();
-    ArrayDeque<ObjectLoweringFrame> stack = new ArrayDeque<>();
-    stack.push(new EnterObjectVectorExpressionValueFrame(value, fieldName, rootBox));
-    processObjectLoweringStack(stack);
-    return rootBox.value;
-  }
-
   private void processObjectLoweringStack(ArrayDeque<ObjectLoweringFrame> stack)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     while (!stack.isEmpty()) {
@@ -963,36 +945,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         List<String> pendingUnaryFunctions = new ArrayList<>();
 
         while (true) {
-          if (currentValue instanceof String) {
-            enterFrame.box.value =
-                applyPendingUnaryExpressionFunctions(
-                    Expression.field((String) currentValue), pendingUnaryFunctions);
-            break;
-          }
-
-          if (currentValue instanceof Expression) {
-            enterFrame.box.value =
-                applyPendingUnaryExpressionFunctions(
-                    (Expression) currentValue, pendingUnaryFunctions);
-            break;
-          }
-
-          if (currentValue == null
-              || currentValue instanceof Number
-              || currentValue instanceof Boolean
-              || currentValue instanceof java.util.Date
-              || currentValue instanceof Timestamp
-              || currentValue instanceof com.google.firebase.firestore.GeoPoint
-              || currentValue instanceof com.google.firebase.firestore.Blob
-              || currentValue instanceof DocumentReference
-              || currentValue instanceof com.google.firebase.firestore.VectorValue
-              || currentValue instanceof byte[]) {
-            enterFrame.box.value =
-                applyPendingUnaryExpressionFunctions(
-                    constantExpression(currentValue), pendingUnaryFunctions);
-            break;
-          }
-
           if (!(currentValue instanceof Map)) {
             throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
                 "pipelineExecute() could not convert "
@@ -1015,16 +967,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             currentValue = nested;
             currentFieldName = currentFieldName + ".expression";
             continue;
-          }
-
-          Object operatorName = map.get("operator");
-          if (operatorName instanceof String) {
-            LoweredBooleanBox booleanBox = new LoweredBooleanBox();
-            stack.push(
-                new ExitApplyPendingUnaryBooleanFrame(
-                    enterFrame.box, booleanBox, new ArrayList<>(pendingUnaryFunctions)));
-            stack.push(new EnterObjectBooleanFrame(currentValue, currentFieldName, booleanBox));
-            break;
           }
 
           Object exprType = map.get("exprType");
@@ -1115,74 +1057,9 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         Object currentValue = enterFrame.value;
         String currentFieldName = enterFrame.fieldName;
 
-        while (currentValue instanceof Map) {
-          Map<?, ?> map = (Map<?, ?>) currentValue;
-          Object nested = map.get("condition");
-          if (nested == null) {
-            break;
-          }
-          currentValue = nested;
-          currentFieldName = currentFieldName + ".condition";
-        }
-
         if (currentValue instanceof Map) {
           @SuppressWarnings("unchecked")
           Map<String, Object> map = (Map<String, Object>) currentValue;
-
-          Object operatorName = map.get("operator");
-          if (operatorName instanceof String) {
-            String normalizedOperator = ((String) operatorName).toUpperCase(Locale.ROOT);
-            if ("AND".equals(normalizedOperator) || "OR".equals(normalizedOperator)) {
-              Object queriesValue = map.get("queries");
-              if (!(queriesValue instanceof List) || ((List<?>) queriesValue).isEmpty()) {
-                throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-                    "pipelineExecute() expected "
-                        + currentFieldName
-                        + ".queries to contain boolean expressions.");
-              }
-
-              List<?> queries = (List<?>) queriesValue;
-              List<LoweredBooleanBox> childBoxes = new ArrayList<>(queries.size());
-              for (int i = 0; i < queries.size(); i++) {
-                childBoxes.add(new LoweredBooleanBox());
-              }
-              stack.push(
-                  new ExitBooleanLogicalFrame(
-                      enterFrame.box,
-                      "AND".equals(normalizedOperator),
-                      childBoxes,
-                      currentFieldName));
-              for (int i = queries.size() - 1; i >= 0; i--) {
-                stack.push(
-                    new EnterObjectBooleanFrame(
-                        queries.get(i),
-                        currentFieldName + ".queries[" + i + "]",
-                        childBoxes.get(i)));
-              }
-              continue;
-            }
-
-            Object fieldValue =
-                map.get("fieldPath") != null ? map.get("fieldPath") : map.get("field");
-            if (fieldValue == null) {
-              throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-                  "pipelineExecute() expected " + currentFieldName + ".fieldPath to be provided.");
-            }
-
-            List<Object> args = new ArrayList<>(2);
-            args.add(fieldValue);
-            args.add(
-                map.containsKey("value")
-                    ? map.get("value")
-                    : map.containsKey("right") ? map.get("right") : map.get("operand"));
-            scheduleBooleanFunctionLowering(
-                mapOperatorToFunctionName(normalizedOperator),
-                args,
-                currentFieldName,
-                enterFrame.box,
-                stack);
-            continue;
-          }
 
           Object name = map.get("name");
           if (name instanceof String) {
@@ -2399,16 +2276,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         "pipelineExecute() expected " + fieldName + " to resolve to a string.");
   }
 
-  private Object resolveValueOrExpression(Object value, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    return lowerValueOrExpressionObject(value, fieldName);
-  }
-
-  private Expression coerceVectorExpressionValue(Object value, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    return lowerVectorExpressionValueObject(value, fieldName);
-  }
-
   private Object resolveConstantValue(Object value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     ConstantValueBox rootBox = new ConstantValueBox();
@@ -2739,50 +2606,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     return currentExpression;
   }
 
-  private String mapOperatorToFunctionName(String operatorName) {
-    switch (operatorName) {
-      case "==":
-      case "=":
-      case "EQUAL":
-        return "equal";
-      case "!=":
-      case "<>":
-      case "NOT_EQUAL":
-        return "not_equal";
-      case ">":
-      case "GREATER_THAN":
-        return "greater_than";
-      case ">=":
-      case "GREATER_THAN_OR_EQUAL":
-        return "greater_than_or_equal";
-      case "<":
-      case "LESS_THAN":
-        return "less_than";
-      case "<=":
-      case "LESS_THAN_OR_EQUAL":
-        return "less_than_or_equal";
-      case "ARRAY_CONTAINS":
-      case "ARRAY-CONTAINS":
-        return "array_contains";
-      case "ARRAY_CONTAINS_ANY":
-      case "ARRAY-CONTAINS-ANY":
-        return "array_contains_any";
-      case "ARRAY_CONTAINS_ALL":
-      case "ARRAY-CONTAINS-ALL":
-        return "array_contains_all";
-      case "IN":
-      case "EQUAL_ANY":
-      case "EQUAL-ANY":
-        return "equal_any";
-      case "NOT_IN":
-      case "NOT_EQUAL_ANY":
-      case "NOT-EQUAL-ANY":
-        return "not_equal_any";
-      default:
-        return normalizeExpressionFunctionName(operatorName);
-    }
-  }
-
   @SuppressWarnings("unchecked")
   private Map<String, Object> extractNestedPipelineMapFromRaw(Object raw) {
     if (!(raw instanceof Map)) {
@@ -2846,12 +2669,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     return coerceStringValue(serializeValueNode(value), fieldName);
-  }
-
-  private Object resolveValueOrExpressionNode(
-      ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    return resolveValueOrExpression(serializeValueNode(value), fieldName);
   }
 
   private Object resolveValueNode(
