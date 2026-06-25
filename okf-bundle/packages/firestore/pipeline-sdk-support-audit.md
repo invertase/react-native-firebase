@@ -138,7 +138,7 @@ Probe order/gates/live status: [work queue](pipeline-coverage-work-queue.md#j0--
 3. Restore full assertion block in matching `Pipeline.e2e.js` test (remove `expectIOSUnsupportedFunctions` + reduced iOS pipeline).
 4. Run the implement/review gate defined in the [work queue runtime guard protocol](pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict).
 5. Record outcome:
-   - **Reviewer pass** → `sdk-supported-bridge-ok`; remove guard permanently; close P-003 sub-row; coordinator commits.
+   - **`independent-review` pass** → `sdk-supported-bridge-ok`; remove guard permanently; close P-003 sub-row; `commit` work type after `review_gate` closed.
    - **`invalid-argument` / pipeline execute error** → capture exact message; classify `sdk-unsupported-confirmed` or `rnfb-bridge-gap` (compare native request in debug logs).
 6. Revert before next function unless committing a confirmed removal.
 

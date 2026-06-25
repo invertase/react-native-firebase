@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS (2026-06-25, post-arbiter):** Phase **J0**, review e2e gates open from harness contention, not product regression. **J0-1** `stringRepeat`: committed `f14092909`; static/Jest OK; implementer once iOS **146/146**; review gate **not closed** (Jet `Invalid array length` after `coverage-ready`, SimError 405, desync). **J0-2** `switchOn`: uncommitted WIP; Jest **24/24**; review gate **not closed** (never green canonically). **Do not start J0-3** until J0-2 review gate closes. **I/H/Ib committed.**
+> **IN PROGRESS (2026-06-25, post-arbiter):** Phase **J0** active. **J0-2** `switchOn`: WIP; `implementation_gate` **closed** (Jest 24/24); **`review_gate` open**; **`next_work_type`: `independent-review`**; **`validation_tier`: area**; **`platform`: ios**. **J0-1** `stringRepeat`: committed `f14092909`; `implementation_gate` closed; **`review_gate` open** (harness — not regression). **J0-3** **`blocked`** until J0-2 `review_gate` closed. Terms: [iteration vocabulary](../../testing/iteration-vocabulary.md). **I/H/Ib committed.**
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -33,8 +33,10 @@ Ephemeral tracker; see [OKF policy](../../documentation-policy.md).
 
 ## Resume checklist
 
-1. E2e: [pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start), [serialized dispatch](../../testing/running-e2e.md#serialized-e2e-dispatch), no source edits mid-run.
-2. Guard probes: [SDK runtime verification](pipeline-sdk-support-audit.md#6-runtime-verification-authoritative) + Phase J protocol below.
+Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration-vocabulary.md#host-rule)):
+
+1. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) clear; [serial `:test-cover`](../../testing/running-e2e.md#serialized-e2e-dispatch); [frozen tree](../../testing/iteration-vocabulary.md#frozen-tree) for `independent-review`.
+2. Guard probes: [SDK runtime verification](pipeline-sdk-support-audit.md#6-runtime-verification-authoritative) + [Phase J protocol](#phase-j-iteration-protocol-strict) below.
 3. Coverage deltas: full clean cycle; never trust stale `.ec`/profraw ([coverage stale data](../../testing/coverage-design.md#stale-coverage-data)).
 
 ---
@@ -61,7 +63,7 @@ Ephemeral tracker; see [OKF policy](../../documentation-policy.md).
 | **O** | Android Executor remainder | queued | sub-60% after E *(was old M)* |
 | **P** | Jest-only TS paths | queued | validation branches *(was old N)* |
 | **Q** | Intractability audit | queued | measured caps per file *(was old O)* |
-| **R** | Pre-merge harness restore | queued | **Full** unfocused 3-platform snapshot — [pre-merge e2e tier](../../testing/running-e2e.md#e2e-tiers-implementer--reviewer--pre-merge) *(was old P)* |
+| **R** | Pre-merge harness restore | queued | **Full** unfocused 3-platform snapshot — [full validation tier](../../testing/running-e2e.md#e2e-validation-tiers-focused-area-full) *(was old P)* |
 
 **Compare-types exports:** out of scope until **R**. During **J**, no new `Platform.android` / `Platform.ios` branches for coverage; file drift, fix in **J**, or document SDK limitation.
 
@@ -80,15 +82,15 @@ Ephemeral tracker; see [OKF policy](../../documentation-policy.md).
 
 *Phase H baseline only; not J0 review gate.*
 
-**Next (blocked):** [pre-flight clear](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) + green canonical iOS review e2e for **J0-2**; then retry **J0-1** if needed. **Do not start J0-3** until J0-2 closes.
+**Next item:** **J0-2** — `next_work_type`: **`independent-review`**; `validation_tier`: **area**; `platform`: **ios**; `review_gate`: **open**. Then **J0-1** `review_gate` retry if still open. **J0-3** **blocked** until J0-2 `review_gate` closed.
 
 **Arbiter gate (2026-06-25):**
 
-| Probe | Code | Review e2e | Notes |
-|-------|------|------------|-------|
-| **J0-1** `stringRepeat` | ✅ committed `f14092909` | ⛔ open (harness) | Static/Jest OK; implementer once **146/146**; review not closed: parallel runs + Jet/SimError desync; **not code regression** |
-| **J0-2** `switchOn` | ✅ WIP | ⛔ open (never green) | Jest **24/24**; re-run after [pre-flight clear](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) |
-| **J0-3** `trunc` | — | **hold** | Do not implement until J0-2 review gate closes |
+| Probe | Code | `implementation_gate` | `review_gate` | `next_work_type` | `validation_tier` | `platform` | Notes |
+|-------|------|----------------------|---------------|------------------|-------------------|------------|-------|
+| **J0-1** `stringRepeat` | committed `f14092909` | closed | **open** | `independent-review` | area | ios | Jest OK; focused-tier ios once **146/146**; review not closed: Jet/SimError desync; **not code regression** |
+| **J0-2** `switchOn` | WIP | closed | **open** | **`independent-review`** | area | ios | Jest **24/24**; area-tier ios never green canonically |
+| **J0-3** `trunc` | — | — | — | — | — | — | **blocked** until J0-2 `review_gate` closed |
 
 | Target | macOS | iOS | Android (gap map) | Phase |
 |--------|-------|-----|-------------------|-------|
@@ -205,25 +207,25 @@ Earlier: A–E baseline, dead code, gap map, lowering/executor e2e.
 
 ### Phase J iteration protocol (strict)
 
-Each J0 probe / J1–J6 bridge step follows **one** serial loop. No overlap.
+Each J0 probe / J1–J6 bridge step follows **one** serial loop. No overlap. Work types: [iteration vocabulary](../../testing/iteration-vocabulary.md).
 
-| Step | Actor | Rules |
-|------|-------|-------|
-| **1. Implement** | Implementation context | Code/e2e changes; **Jest** + **focused e2e**; `.only` / tight area narrowing OK; **no commit** |
-| **2. Review** | Fresh review context | Frozen diff; **area e2e**; no `.only`; area narrowing only in `tests/app.js` + `tests/globals.js`; serial |
-| **3. Commit** | Coordinator | One focused commit only after review e2e green |
+| Step | Work type | Closes gate | Rules |
+|------|-----------|-------------|-------|
+| **1** | `implementation` | `implementation` | Code/e2e changes; Jest + **focused** tier; `.only` / tight area narrowing OK locally; **no commit** |
+| **2** | `independent-review` | `review` | **Frozen tree**; **area** tier; no `.only`; area narrowing only in `tests/app.js` + `tests/globals.js`; serial [host rule](../../testing/iteration-vocabulary.md#host-rule) |
+| **3** | `commit` | `commit` | One focused commit only after `review_gate` closed |
 
-Canonical rules: [serialized dispatch](../../testing/running-e2e.md#serialized-e2e-dispatch), [one iteration](../../testing/running-e2e.md#running-one-iteration), [guard probes](pipeline-implementation-workflow.md#ios-guard-probe-iterations).
+Canonical commands: [serialized dispatch](../../testing/running-e2e.md#serialized-e2e-dispatch), [one iteration](../../testing/running-e2e.md#running-one-iteration), [guard probes](pipeline-implementation-workflow.md#ios-guard-probe-iterations).
 
 ### J0 — iOS runtime guard probes (do first)
 
 Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove guard; restore full iOS e2e assertions; verify canonical iOS e2e only.
 
-| Probe | Function | Rationale | Status |
-|-------|----------|-----------|--------|
-| J0-1 | `stringRepeat` | iOS CHANGELOG 12.12.0 | Committed `f14092909`; static/Jest OK; implementer once **146/146**; ⛔ **review e2e gate open** (harness contention — not code regression) |
-| J0-2 | `switchOn` | iOS CHANGELOG 12.12.0 | Uncommitted WIP; Jest **24/24**; ⛔ **review e2e gate open** (canonical review never green) |
-| J0-3 | `trunc` | iOS CHANGELOG 12.11.0 | **hold** — do not start until J0-2 review gate closes |
+| Probe | Function | Rationale | `implementation_gate` | `review_gate` | `next_work_type` |
+|-------|----------|-----------|----------------------|---------------|------------------|
+| J0-1 | `stringRepeat` | iOS CHANGELOG 12.12.0 | closed | **open** | `independent-review` |
+| J0-2 | `switchOn` | iOS CHANGELOG 12.12.0 | closed | **open** | **`independent-review`** |
+| J0-3 | `trunc` | iOS CHANGELOG 12.11.0 | — | — | **blocked** (J0-2) |
 | J0-4 | `conditional` | `ConditionalExpression` 12.11.0; iOS bridge → `cond` | |
 | J0-5 | `round` | No CHANGELOG; Android + bridge ok | |
 | J0-6 | `substring` | No CHANGELOG; docs list function | |
@@ -246,7 +248,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current:** **J0-2** uncommitted WIP; re-run canonical iOS review e2e after [pre-flight clear](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start). **J0-1** committed; review gate open. **J0-3** hold until J0-2 closes.
+**Current gates:** **J0-2** WIP; `review_gate` **open**; `next_work_type` **`independent-review`** (area, ios). **J0-1** committed; `review_gate` **open**. **J0-3** **blocked** until J0-2 `review_gate` closed.
 
 ---
 
@@ -262,7 +264,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 | **P** | Jest-only TS validation paths |
 | **Q** | Intractability audit (map execute, debug gates, codegen caps) |
 
-**R:** revert harness narrowing; **full** unfocused 3-platform run ([pre-merge tier](../../testing/running-e2e.md#e2e-tiers-implementer--reviewer--pre-merge)); final gate before compare-types.
+**R:** revert harness narrowing; **full** unfocused 3-platform run ([full tier](../../testing/running-e2e.md#e2e-validation-tiers-focused-area-full)); final gate before compare-types.
 
 ---
 
@@ -279,7 +281,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 1. Audit or implement bridge fix with **shared** e2e assertions.
 2. Update OKF parity registry (open/close rows).
-3. **Phase J:** follow [Phase J iteration protocol](#phase-j-iteration-protocol-strict) — implement (Jest + **focused** e2e) → review (**area** e2e, frozen tree) → **one** commit; never commit before review e2e; never overlap e2e runs.
+3. **Phase J:** follow [Phase J iteration protocol](#phase-j-iteration-protocol-strict) — `implementation` (Jest + **focused** tier) → `independent-review` (**area** tier, frozen tree) → `commit`; never commit before `review_gate` closed; never overlap `:test-cover` ([host rule](../../testing/iteration-vocabulary.md#host-rule)).
 4. 3-platform e2e on canonical commands ([running-e2e rules 6–7](../../testing/running-e2e.md)).
 
 **Phases K–Q (coverage):**
