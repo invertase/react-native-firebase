@@ -292,6 +292,30 @@ describe('FirestorePipeline', function () {
       );
     });
 
+    it('serializes subcollection options overload and rejects invalid detached paths', function () {
+      const { subcollection } = firestorePipelinesModular;
+
+      const withOptions = subcollection({
+        path: 'reviews',
+        rawOptions: { requestLabel: 'e2e-subcollection-options' },
+      });
+      should(withOptions.serialize().source).eql({
+        source: 'subcollection',
+        path: 'reviews',
+        rawOptions: { requestLabel: 'e2e-subcollection-options' },
+      });
+
+      (() => subcollection('')).should.throw(
+        'subcollection(*) expected path to be a non-empty string.',
+      );
+      (() => subcollection({ path: '' })).should.throw(
+        'subcollection(*) expected path to be a non-empty string.',
+      );
+      (() => subcollection(null)).should.throw(
+        'subcollection(*) expected a path string or SubcollectionStageOptions object.',
+      );
+    });
+
     it('throws on circular pipeline serialization and invalid result.get field path argument', async function () {
       const { getFirestore, doc, setDoc } = firestoreModular;
       const { execute } = firestorePipelinesModular;
@@ -2752,6 +2776,358 @@ describe('FirestorePipeline', function () {
   // exact native paths that previously hung: an AggregateFunction nested inside a
   // PipelineValue subquery (scalar + array), and a deep expression tree whose
   // analysis used to be O(2^depth) on iOS. They run on iOS, Android, and macOS.
+  describe('native expression literal lowering coverage', function () {
+    describe('expression literal lowering and function dispatch edges', function () {
+      it('lowers non-constant array and map literals with nested expression slots', async function () {
+        const { execute, field, constant, map, array, add, multiply } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          a: 10,
+          b: 5,
+          c: 2,
+          flag: true,
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              array([
+                field('a'),
+                add(field('b'), constant(1)),
+                multiply(field('c'), field('c')),
+              ]).as('computedList'),
+              map({
+                total: add(field('a'), field('b')),
+                doubled: multiply(field('c'), constant(2)),
+                active: field('flag'),
+              }).as('computedMap'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.computedList.should.eql([10, 6, 4]);
+        data.computedMap.should.eql({ total: 15, doubled: 4, active: true });
+      });
+
+      it('unwraps constant-wrapped array arguments during native lowering', async function () {
+        const { execute, field, constant, array, add } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          score: 42,
+          bump: 3,
+        });
+
+        if (Platform.other) {
+          const macSnapshot = await execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(array([field('score'), add(field('bump'), constant(1))]).as('nestedExprList')),
+          );
+
+          macSnapshot.results.should.have.length(1);
+          macSnapshot.results[0].data().nestedExprList.should.eql([42, 4]);
+          return;
+        }
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              array([constant([1, 2, 3])]).as('constantWrappedFixed'),
+              array([field('score'), add(field('bump'), constant(1))]).as('nestedExprList'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.constantWrappedFixed.should.eql([1, 2, 3]);
+        data.nestedExprList.should.eql([42, 4]);
+      });
+
+      it('lowers map non-literal arguments through native passthrough lowering', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { execute, field, constant, map } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          settings: { theme: 'dark', lang: 'en' },
+        });
+
+        await expectAsyncError(
+          () =>
+            execute(
+              db
+                .pipeline()
+                .documents([docPath])
+                .select(map(map({ label: constant('child') })).as('nestedMapPassthrough')),
+            ),
+          ['invalid-argument', 'Failed to execute pipeline'],
+        );
+      });
+
+      it('rejects timestampTruncate with wrong arity at validation boundary', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { execute, field, timestampTruncate } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc, Timestamp } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          eventTime: new Timestamp(1700000000, 0),
+        });
+
+        await expectAsyncError(
+          () =>
+            execute(
+              db
+                .pipeline()
+                .documents([docPath])
+                .select(timestampTruncate(field('eventTime')).as('badTruncate')),
+            ),
+          [
+            'pipelineExecute() expected',
+            'invalid-argument',
+            'Failed to execute pipeline',
+            'null object reference',
+          ],
+        );
+      });
+    });
+
+    describe('operand mode rhs shape coverage', function () {
+      it('coerces string, array, and boolean rhs shapes in comparisons and arithmetic', async function () {
+        const {
+          execute,
+          field,
+          constant,
+          add,
+          multiply,
+          mod,
+          equal,
+          equalAny,
+          greaterThan,
+          and,
+        } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          status: 'active',
+          region: 'EU',
+          allowed: ['EU', 'US'],
+          base: 10,
+          bump: true,
+          scale: false,
+          id: 27,
+        });
+
+        if (Platform.other) {
+          const macSnapshot = await execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(
+                equal(field('status'), 'active').as('statusStringRhs'),
+                equal(field('status'), constant('active')).as('statusConstRhs'),
+                equalAny(field('region'), ['EU', 'US']).as('regionInList'),
+                equal(field('bump'), true).as('bumpIsTrue'),
+              ),
+          );
+
+          macSnapshot.results.should.have.length(1);
+          const macData = macSnapshot.results[0].data();
+          macData.statusStringRhs.should.equal(true);
+          macData.statusConstRhs.should.equal(true);
+          macData.regionInList.should.equal(true);
+          macData.bumpIsTrue.should.equal(true);
+          return;
+        }
+
+        if (Platform.ios) {
+          const iosSnapshot = await execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(
+                add(field('base'), true).as('basePlusTrue'),
+                multiply(field('base'), false).as('baseTimesFalse'),
+                mod(field('id'), true).as('modByTrue'),
+                equal(field('status'), 'active').as('statusStringRhs'),
+                equal(field('status'), constant('active')).as('statusConstRhs'),
+                equalAny(field('region'), ['EU', 'US']).as('regionInList'),
+                equal(field('bump'), true).as('bumpIsTrue'),
+                greaterThan(field('base'), false).as('baseGtFalse'),
+              ),
+          );
+
+          iosSnapshot.results.should.have.length(1);
+          const iosData = iosSnapshot.results[0].data();
+          iosData.basePlusTrue.should.equal(11);
+          iosData.baseTimesFalse.should.equal(0);
+          iosData.modByTrue.should.equal(0);
+          iosData.statusStringRhs.should.equal(true);
+          iosData.statusConstRhs.should.equal(true);
+          iosData.regionInList.should.equal(true);
+          iosData.bumpIsTrue.should.equal(true);
+          iosData.baseGtFalse.should.equal(true);
+        } else {
+          const androidSnapshot = await execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(
+                equal(field('status'), 'active').as('statusStringRhs'),
+                equal(field('status'), constant('active')).as('statusConstRhs'),
+                equalAny(field('region'), ['EU', 'US']).as('regionInList'),
+                equal(field('bump'), true).as('bumpIsTrue'),
+              ),
+          );
+
+          androidSnapshot.results.should.have.length(1);
+          const androidData = androidSnapshot.results[0].data();
+          androidData.statusStringRhs.should.equal(true);
+          androidData.statusConstRhs.should.equal(true);
+          androidData.regionInList.should.equal(true);
+          androidData.bumpIsTrue.should.equal(true);
+        }
+
+        if (!Platform.ios) {
+          return;
+        }
+
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/operand-mode-where`,
+        );
+
+        await Promise.all([
+          setDoc(doc(coll, 'match'), {
+            status: 'active',
+            region: 'EU',
+            base: 10,
+            bump: true,
+          }),
+          setDoc(doc(coll, 'skip'), {
+            status: 'inactive',
+            region: 'APAC',
+            base: 10,
+            bump: true,
+          }),
+        ]);
+
+        const filtered = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where(
+              and(
+                equal(field('status'), 'active'),
+                equalAny(field('region'), ['EU', 'US']),
+                greaterThan(field('base'), false),
+                equal(field('bump'), true),
+              ),
+            )
+            .select('status', 'region'),
+        );
+
+        filtered.results.should.have.length(1);
+        filtered.results[0].data().status.should.equal('active');
+        filtered.results[0].data().region.should.equal('EU');
+      });
+    });
+
+    describe('aggregate expression argument lowering', function () {
+      it('evaluates aggregates with computed expression arguments', async function () {
+        const {
+          execute,
+          field,
+          constant,
+          add,
+          multiply,
+          sum,
+          average,
+          first,
+          last,
+          minimum,
+          maximum,
+        } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/agg-expr-args`,
+        );
+
+        await Promise.all([
+          setDoc(doc(coll, 'a1'), { revenue: 100, bonus: 10, name: 'Alice' }),
+          setDoc(doc(coll, 'a2'), { revenue: 200, bonus: 20, name: 'Bob' }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .aggregate({
+              accumulators: [
+                sum(add(field('revenue'), field('bonus'))).as('totalWithBonus'),
+                average(add(field('revenue'), constant(0))).as('avgRevenue'),
+              ],
+            }),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.totalWithBonus.should.equal(330);
+        data.avgRevenue.should.equal(150);
+
+        if (Platform.ios) {
+          return;
+        }
+
+        const extendedSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .aggregate({
+              accumulators: [
+                first(add(field('bonus'), constant(0))).as('firstBonus'),
+                last(add(constant(0), field('bonus'))).as('lastBonus'),
+                minimum(multiply(field('revenue'), constant(1))).as('minScaled'),
+                maximum(add(field('revenue'), field('bonus'))).as('maxTotal'),
+              ],
+            }),
+        );
+
+        extendedSnapshot.results.should.have.length(1);
+        const extendedData = extendedSnapshot.results[0].data();
+        extendedData.firstBonus.should.equal(10);
+        extendedData.lastBonus.should.equal(20);
+        extendedData.minScaled.should.equal(100);
+        extendedData.maxTotal.should.equal(220);
+      });
+    });
+  });
+
   describe('pathological subqueries and recursion', function () {
     it('evaluates a scalar subquery with a where filter and multiple accumulators', async function () {
       const { execute, field, constant, subcollection, average, countAll, sum, greaterThan } =
