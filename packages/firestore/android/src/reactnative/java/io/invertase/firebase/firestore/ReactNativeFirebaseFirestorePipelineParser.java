@@ -657,7 +657,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     Map<?, ?> map = (Map<?, ?>) value;
     String alias = firstString(map.get("alias"), map.get("as"), map.get("name"));
     if (alias != null && !alias.isEmpty()) {
-      if (map.containsKey("path") || map.containsKey("fieldPath") || map.containsKey("segments")) {
+      if ((map.containsKey("path") || map.containsKey("fieldPath") || map.containsKey("segments"))
+          && !isReferencePathConstantMap(map)) {
         return new ParsedSelectableNode(
             new ParsedFieldExpressionNode(coerceFieldPath(value, fieldName + ".path")),
             alias,
@@ -792,6 +793,34 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     return rootBox.value;
   }
 
+  private static boolean isReferencePathConstantMap(Map<?, ?> map) {
+    Object pathValue = map.get("path");
+    if (!(pathValue instanceof String)) {
+      return false;
+    }
+
+    String path = (String) pathValue;
+    if (path.indexOf('/') < 0) {
+      return false;
+    }
+
+    for (Object key : map.keySet()) {
+      if (!(key instanceof String)) {
+        return false;
+      }
+      String keyString = (String) key;
+      if (!"path".equals(keyString)
+          && !"firestore".equals(keyString)
+          && !"alias".equals(keyString)
+          && !"as".equals(keyString)
+          && !"__kind".equals(keyString)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   private static boolean isExpressionLike(Map<?, ?> map) {
     Object exprType = map.get("exprType");
     if (exprType instanceof String) {
@@ -799,6 +828,12 @@ final class ReactNativeFirebaseFirestorePipelineParser {
       if ("pipelinevalue".equals(normalizedType)) {
         return false;
       }
+      if ("constant".equals(normalizedType)) {
+        return false;
+      }
+    }
+    if (isReferencePathConstantMap(map)) {
+      return false;
     }
     return exprType instanceof String
         || map.containsKey("operator")
@@ -997,10 +1032,11 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             continue;
           }
 
-          if (map.containsKey("fieldPath")
-              || map.containsKey("path")
-              || map.containsKey("segments")
-              || map.containsKey("_segments")) {
+          if (!isReferencePathConstantMap(map)
+              && (map.containsKey("fieldPath")
+                  || map.containsKey("path")
+                  || map.containsKey("segments")
+                  || map.containsKey("_segments"))) {
             enterFrame.box.value = new ParsedFieldExpressionNode(coerceFieldPath(value, fieldName));
             continue;
           }

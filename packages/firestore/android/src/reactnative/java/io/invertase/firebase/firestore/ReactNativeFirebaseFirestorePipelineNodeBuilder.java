@@ -1033,10 +1033,11 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             }
           }
 
-          if (map.containsKey("fieldPath")
-              || map.containsKey("path")
-              || map.containsKey("segments")
-              || map.containsKey("_segments")) {
+          if (!isSerializedReferencePathConstantMap(map)
+              && (map.containsKey("fieldPath")
+                  || map.containsKey("path")
+                  || map.containsKey("segments")
+                  || map.containsKey("_segments"))) {
             enterFrame.box.value =
                 applyPendingUnaryExpressionFunctions(
                     Expression.field(coerceFieldPath(currentValue, currentFieldName)),
@@ -2493,7 +2494,45 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     return map.get("value");
   }
 
+  private boolean isSerializedReferencePathConstantMap(Map<String, Object> map) {
+    Object pathValue = map.get("path");
+    if (!(pathValue instanceof String)) {
+      return false;
+    }
+
+    String path = (String) pathValue;
+    if (path.indexOf('/') < 0) {
+      return false;
+    }
+
+    for (Object key : map.keySet()) {
+      if (!(key instanceof String)) {
+        return false;
+      }
+      String keyString = (String) key;
+      if (!"path".equals(keyString)
+          && !"firestore".equals(keyString)
+          && !"alias".equals(keyString)
+          && !"as".equals(keyString)
+          && !"__kind".equals(keyString)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   private boolean isSerializedExpressionLike(Map<String, Object> map) {
+    Object exprType = map.get("exprType");
+    if (exprType instanceof String
+        && "constant".equals(((String) exprType).toLowerCase(Locale.ROOT))) {
+      return false;
+    }
+
+    if (isSerializedReferencePathConstantMap(map)) {
+      return false;
+    }
+
     return map.get("exprType") != null
         || map.get("operator") != null
         || map.get("name") != null

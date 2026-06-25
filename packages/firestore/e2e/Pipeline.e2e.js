@@ -228,20 +228,63 @@ describe('FirestorePipeline', function () {
     });
 
     it('throws helpful validation errors for overload misuse and invalid document entries', function () {
-      const { getFirestore } = firestoreModular;
+      const { getApp } = modular;
+      const { getFirestore, collection, doc } = firestoreModular;
       const db = getFirestore(DATABASE_ID);
+      const secondaryDb = getFirestore(getApp('secondaryFromNative'), DATABASE_ID);
+      const crossInstancePath = `${COLLECTION}/${Utils.randString(12, '#aA')}/ref-cross-instance`;
+      const secondaryColl = collection(secondaryDb, crossInstancePath);
+      const secondaryDoc = doc(secondaryDb, `${COLLECTION}/${Utils.randString(12, '#aA')}`);
 
       (() => db.pipeline().collection({})).should.throw(
         'firebase.firestore().pipeline().collection(*) expected a non-empty string.',
+      );
+
+      (() => db.pipeline().collection(null)).should.throw(
+        'firebase.firestore().pipeline().collection(*) expected a path, CollectionReference, or options object.',
       );
 
       (() => db.pipeline().collectionGroup({})).should.throw(
         'firebase.firestore().pipeline().collectionGroup(*) expected a non-empty string.',
       );
 
+      (() => db.pipeline().collectionGroup(null)).should.throw(
+        'firebase.firestore().pipeline().collectionGroup(*) expected a collectionId string or options object.',
+      );
+
       (() => db.pipeline().documents(['valid/path', 123])).should.throw(
         'firebase.firestore().pipeline().documents(*) invalid value at index 1. Expected a document path or DocumentReference.',
       );
+
+      (() => db.pipeline().collection(secondaryColl)).should.throw(
+        'firebase.firestore().pipeline().collection(*) cannot use a reference from a different Firestore instance.',
+      );
+
+      (() => db.pipeline().documents([secondaryDoc])).should.throw(
+        'firebase.firestore().pipeline().documents(*) cannot use a reference from a different Firestore instance.',
+      );
+    });
+
+    it('accepts CollectionReference and DocumentReference pipeline sources on the same Firestore instance', async function () {
+      const { execute, field } = firestorePipelinesModular;
+      const { getFirestore, collection, doc, setDoc } = firestoreModular;
+      const db = getFirestore(DATABASE_ID);
+      const collectionRef = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/ref-source`);
+      const docRef = doc(collectionRef, 'one');
+
+      await setDoc(docRef, { score: 11 });
+
+      const fromCollectionRef = await execute(
+        db.pipeline().collection(collectionRef).select(field('score').as('score')),
+      );
+      fromCollectionRef.results.should.have.length(1);
+      fromCollectionRef.results[0].data().score.should.equal(11);
+
+      const fromDocumentRef = await execute(
+        db.pipeline().documents([docRef]).select(field('score').as('score')),
+      );
+      fromDocumentRef.results.should.have.length(1);
+      fromDocumentRef.results[0].data().score.should.equal(11);
     });
 
     it('throws helpful runtime guard errors for union/createFrom/execute input', async function () {
@@ -330,9 +373,23 @@ describe('FirestorePipeline', function () {
       const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
       await setDoc(doc(db, docPath), { nested: { ok: true } });
 
+      const { field } = firestorePipelinesModular;
+
       const snapshot = await execute(db.pipeline().documents([docPath]).select('nested'));
       (() => snapshot.results[0].get(123)).should.throw(
         "firebase.firestore().pipeline().execute().result.get(*) 'fieldPath' must be a string, FieldPath, or field().",
+      );
+      snapshot.results[0].get(field('nested.ok')).should.equal(true);
+
+      const circularValue = { label: 'cycle' };
+      circularValue.self = circularValue;
+      const circularPipeline = db
+        .pipeline()
+        .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}`)
+        .select(field('nested'));
+      circularPipeline._stages[0].options.selections = [field('nested'), circularValue];
+      (() => circularPipeline.serialize()).should.throw(
+        'firebase.firestore().pipeline() failed to serialize arguments because of a circular value.',
       );
     });
   });
@@ -499,6 +556,33 @@ describe('FirestorePipeline', function () {
 
         replaceSnapshot.results.should.have.length(1);
         replaceSnapshot.results[0].data().should.eql({ label: 'C', rank: 3 });
+
+        const replaceExprSnapshot = await execute(
+          db
+            .pipeline()
+            .documents([`${collectionRef.path}/two`])
+            .replaceWith({ expr: field('payload') }),
+        );
+
+        replaceExprSnapshot.results.should.have.length(1);
+        replaceExprSnapshot.results[0].data().should.eql({ label: 'B', rank: 2 });
+      });
+
+      it('serializes rawStage append without requiring native execution', function () {
+        const { field } = firestorePipelinesModular;
+        const { getFirestore, collection } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/raw-stage-serialize`);
+
+        const pipeline = db
+          .pipeline()
+          .collection(coll)
+          .rawStage('score', { input: field('rating') }, { enabled: true });
+
+        const serialized = pipeline.serialize();
+        serialized.stages.should.have.length(1);
+        serialized.stages[0].stage.should.equal('rawStage');
+        serialized.stages[0].options.name.should.equal('score');
       });
 
       it('rejects execute(options) when indexMode or rawOptions are provided', async function () {
@@ -751,6 +835,25 @@ describe('FirestorePipeline', function () {
         snapshot.results.should.have.length(5);
       });
 
+      it('executes sample stage with numeric document count overload', async function () {
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/sample-numeric`);
+
+        await Promise.all(
+          Array.from({ length: 10 }, (_, index) =>
+            setDoc(doc(coll, `doc-${index}`), { slot: index }),
+          ),
+        );
+
+        const snapshot = await execute(
+          db.pipeline().collection(coll).sample(3).select('slot'),
+        );
+
+        snapshot.results.should.have.length(3);
+      });
+
       it('supports unnest with index field', async function () {
         const { execute, field } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
@@ -843,6 +946,199 @@ describe('FirestorePipeline', function () {
             'pipelineExecute() expected stage.options.other to be a serialized pipeline object.',
             'pipelineExecute() expected pipeline.source to be an object.',
           ],
+        );
+      });
+    });
+
+    describe('pipeline execute validation guards', function () {
+      it('rejects tampered documents and collection source fields', async function () {
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/validate-documents-source`,
+        );
+        const docPath = `${coll.path}/base`;
+        await setDoc(doc(coll, 'base'), { value: 1 });
+
+        const emptyDocuments = db.pipeline().documents([docPath]);
+        emptyDocuments._source.documents = [];
+        await expectAsyncError(
+          () => execute(emptyDocuments),
+          'pipelineExecute() expected pipeline.source.documents to contain at least one value.',
+        );
+
+        const badDocumentEntry = db.pipeline().documents([docPath]);
+        badDocumentEntry._source.documents = [docPath, ''];
+        await expectAsyncError(
+          () => execute(badDocumentEntry),
+          'pipelineExecute() expected pipeline.source.documents to contain only non-empty strings.',
+        );
+
+        const nonObjectSource = db.pipeline().collection(coll);
+        nonObjectSource._source = null;
+        await expectAsyncError(
+          () => execute(nonObjectSource),
+          'pipelineExecute() expected pipeline.source to be an object.',
+        );
+
+        const emptyCollectionPath = db.pipeline().collection(coll);
+        emptyCollectionPath._source.path = '';
+        await expectAsyncError(
+          () => execute(emptyCollectionPath),
+          'pipelineExecute() expected pipeline.source.path to be a non-empty string.',
+        );
+      });
+
+      it('rejects tampered collectionGroup and subcollection source fields', async function () {
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/validate-group-subcollection`,
+        );
+
+        const emptyCollectionGroupId = db.pipeline().collectionGroup(COLLECTION_GROUP);
+        emptyCollectionGroupId._source.collectionId = '';
+        await expectAsyncError(
+          () => execute(emptyCollectionGroupId),
+          'pipelineExecute() expected pipeline.source.collectionId to be a non-empty string.',
+        );
+
+        const emptySubcollectionPath = db.pipeline().collection(coll);
+        emptySubcollectionPath._source = { source: 'subcollection', path: '' };
+        await expectAsyncError(
+          () => execute(emptySubcollectionPath),
+          'pipelineExecute() expected pipeline.source.path to be a non-empty string.',
+        );
+      });
+
+      it('rejects tampered query source fields', async function () {
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, query, where } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/validate-query-source`,
+        );
+        const queryPipeline = db.pipeline().createFrom(query(coll, where('value', '>=', 1)));
+
+        const emptyQueryPath = db.pipeline().createFrom(query(coll, where('value', '>=', 1)));
+        emptyQueryPath._source.path = '';
+        await expectAsyncError(
+          () => execute(emptyQueryPath),
+          'pipelineExecute() expected pipeline.source.path to be a non-empty string.',
+        );
+
+        const emptyQueryType = db.pipeline().createFrom(query(coll, where('value', '>=', 1)));
+        emptyQueryType._source.queryType = '';
+        await expectAsyncError(
+          () => execute(emptyQueryType),
+          'pipelineExecute() expected pipeline.source.queryType to be a non-empty string.',
+        );
+
+        const badFilters = db.pipeline().createFrom(query(coll, where('value', '>=', 1)));
+        badFilters._source.filters = 'not-an-array';
+        await expectAsyncError(
+          () => execute(badFilters),
+          'pipelineExecute() expected pipeline.source.filters to be an array.',
+        );
+
+        const badOrders = db.pipeline().createFrom(query(coll, where('value', '>=', 1)));
+        badOrders._source.orders = 'not-an-array';
+        await expectAsyncError(
+          () => execute(badOrders),
+          'pipelineExecute() expected pipeline.source.orders to be an array.',
+        );
+
+        const badOptions = db.pipeline().createFrom(query(coll, where('value', '>=', 1)));
+        badOptions._source.options = 'not-an-object';
+        await expectAsyncError(
+          () => execute(badOptions),
+          'pipelineExecute() expected pipeline.source.options to be an object.',
+        );
+
+        queryPipeline._source.source = 'galaxy';
+        await expectAsyncError(
+          () => execute(queryPipeline),
+          'pipelineExecute() received an unknown source type.',
+        );
+      });
+
+      it('rejects tampered stage payloads and unknown stage names', async function () {
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/validate-stages`,
+        );
+
+        const malformedStage = db.pipeline().collection(coll);
+        malformedStage._stages.push({ stage: 'select' });
+        await expectAsyncError(
+          () => execute(malformedStage),
+          'pipelineExecute() expected pipeline.stages[0] to include stage and options.',
+        );
+
+        const unknownStage = db.pipeline().collection(coll);
+        unknownStage._stages.push({ stage: 'teleport', options: {} });
+        await expectAsyncError(
+          () => execute(unknownStage),
+          'pipelineExecute() received an unknown stage: teleport.',
+        );
+      });
+
+      it('rejects nested union pipelines with non-object payloads', async function () {
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/validate-union-recursion`,
+        );
+
+        const nestedUnion = db.pipeline().collection(coll);
+        nestedUnion._stages.push({
+          stage: 'union',
+          options: {
+            other: {
+              source: { source: 'database' },
+              stages: [
+                {
+                  stage: 'union',
+                  options: { other: null },
+                },
+              ],
+            },
+          },
+        });
+        await expectAsyncError(
+          () => execute(nestedUnion),
+          'pipelineExecute() expected stage.options.other to be a serialized pipeline object.',
+        );
+      });
+
+      it('rejects invalid execute options indexMode and rawOptions types', async function () {
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/validate-execute-options`,
+        );
+        const validPipeline = db.pipeline().collection(coll).select('value');
+
+        await expectAsyncError(
+          () => execute({ pipeline: validPipeline, indexMode: 'fast' }),
+          'pipelineExecute() expected options.indexMode to equal "recommended".',
+        );
+
+        await expectAsyncError(
+          () => execute({ pipeline: validPipeline, rawOptions: 'not-an-object' }),
+          'pipelineExecute() expected options.rawOptions to be an object.',
         );
       });
     });
@@ -981,6 +1277,37 @@ describe('FirestorePipeline', function () {
                 not(isAbsent(field('region'))),
                 equalAny(field('region'), ['EU', 'US']),
                 notEqualAny(field('tag'), ['spam', 'bot']),
+              ),
+            )
+            .select('price', 'stock', 'sku'),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().sku.should.equal('SKU001');
+      });
+
+      it('filters with fluent comparison alias methods (gt, eq, gte, lt, lte)', async function () {
+        const { execute, field, and } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/fluent-comparison-aliases`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'match'), { price: 42, stock: 60, sku: 'SKU001' }),
+          setDoc(doc(coll, 'skip'), { price: 5, stock: 200, sku: 'SKU002' }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where(
+              and(
+                field('price').gt(10),
+                field('price').lt(100),
+                field('sku').eq('SKU001'),
+                field('stock').gte(50),
+                field('stock').lte(70),
               ),
             )
             .select('price', 'stock', 'sku'),
@@ -1847,8 +2174,11 @@ describe('FirestorePipeline', function () {
           arrayIndexOf,
           arrayIndexOfAll,
           arrayLastIndexOf,
+          arrayLast,
+          arrayLastN,
           arrayMaximum,
           arrayMaximumN,
+          arrayMinimum,
           arrayMinimumN,
           arraySlice,
           arrayTransform,
@@ -1907,6 +2237,8 @@ describe('FirestorePipeline', function () {
             ),
             arrayFirst('scores').as('firstScore'),
             arrayFirstN('scores', 2).as('firstTwoScores'),
+            arrayLast('scores').as('globalLastScore'),
+            arrayLastN('scores', 2).as('globalLastTwoScores'),
             field('scores').arrayLast().as('lastScore'),
             field('scores').arrayLastN(2).as('lastTwoScores'),
             arraySlice('scores', 1, 2).as('middleScores'),
@@ -1919,6 +2251,7 @@ describe('FirestorePipeline', function () {
             ).as('indexedScores'),
             arrayMaximum('scores').as('maxScore'),
             arrayMaximumN('scores', 2).as('topTwoScores'),
+            arrayMinimum('scores').as('globalMinScore'),
             field('scores').arrayMinimum().as('minScore'),
             arrayMinimumN('scores', 2).as('bottomTwoScores'),
             arrayIndexOf('scores', 20).as('firstTwentyIndex'),
@@ -1952,6 +2285,8 @@ describe('FirestorePipeline', function () {
                 ),
                 arrayFirst('scores').as('firstScore'),
                 arrayFirstN('scores', 2).as('firstTwoScores'),
+                arrayLast('scores').as('globalLastScore'),
+                arrayLastN('scores', 2).as('globalLastTwoScores'),
                 field('scores').arrayLast().as('lastScore'),
                 field('scores').arrayLastN(2).as('lastTwoScores'),
                 arraySlice('scores', 1, 2).as('middleScores'),
@@ -1966,6 +2301,7 @@ describe('FirestorePipeline', function () {
                 ).as('indexedScores'),
                 arrayMaximum('scores').as('maxScore'),
                 arrayMaximumN('scores', 2).as('topTwoScores'),
+                arrayMinimum('scores').as('globalMinScore'),
                 field('scores').arrayMinimum().as('minScore'),
                 arrayMinimumN('scores', 2).as('bottomTwoScores'),
                 arrayIndexOf('scores', 20).as('firstTwentyIndex'),
@@ -1985,6 +2321,8 @@ describe('FirestorePipeline', function () {
           iosData.filteredItems.should.eql([20, 30, 20]);
           iosData.firstScore.should.equal(10);
           iosData.firstTwoScores.should.eql([10, 20]);
+          iosData.globalLastScore.should.equal(20);
+          iosData.globalLastTwoScores.should.eql([30, 20]);
           iosData.lastScore.should.equal(20);
           iosData.lastTwoScores.should.eql([30, 20]);
           iosData.middleScores.should.eql([20, 30]);
@@ -1993,6 +2331,7 @@ describe('FirestorePipeline', function () {
           iosData.maxScore.should.equal(30);
           [...iosData.topTwoScores].sort((a, b) => a - b).should.eql([20, 30]);
           iosData.minScore.should.equal(10);
+          iosData.globalMinScore.should.equal(10);
           [...iosData.bottomTwoScores].sort((a, b) => a - b).should.eql([10, 20]);
           iosData.firstTwentyIndex.should.equal(1);
           iosData.fluentFirstTwentyIndex.should.equal(1);
@@ -2016,6 +2355,8 @@ describe('FirestorePipeline', function () {
         data.filteredItems.should.eql([20, 30, 20]);
         data.firstScore.should.equal(10);
         data.firstTwoScores.should.eql([10, 20]);
+        data.globalLastScore.should.equal(20);
+        data.globalLastTwoScores.should.eql([30, 20]);
         data.lastScore.should.equal(20);
         data.lastTwoScores.should.eql([30, 20]);
         data.middleScores.should.eql([20, 30]);
@@ -2024,6 +2365,7 @@ describe('FirestorePipeline', function () {
         data.maxScore.should.equal(30);
         [...data.topTwoScores].sort((a, b) => a - b).should.eql([20, 30]);
         data.minScore.should.equal(10);
+        data.globalMinScore.should.equal(10);
         [...data.bottomTwoScores].sort((a, b) => a - b).should.eql([10, 20]);
         data.firstTwentyIndex.should.equal(1);
         data.fluentFirstTwentyIndex.should.equal(1);
@@ -2363,6 +2705,71 @@ describe('FirestorePipeline', function () {
         data.globalDayBucket.constructor.name.should.equal('Timestamp');
         data.fluentDayBucket.constructor.name.should.equal('Timestamp');
         data.globalDayBucket.seconds.should.equal(data.fluentDayBucket.seconds);
+      });
+
+      it('covers fluent string aliases, ordering passthrough, and fluent aggregates', async function () {
+        const { execute, field, Ordering, constant } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/fluent-runtime-parity`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'a'), { name: 'Alpha', salary: 100 }),
+          setDoc(doc(coll, 'b'), { name: 'Beta', salary: 200 }),
+        ]);
+
+        const descendingScore = field('salary').descending();
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .aggregate({
+              accumulators: [field('salary').sum().as('totalSalary')],
+              groups: [field('name').toLower().as('nameNorm')],
+            })
+            .sort(Ordering.of(field('totalSalary').descending())),
+        );
+
+        snapshot.results.should.have.length(2);
+        const alpha = snapshot.results.find(r => r.data().nameNorm === 'alpha').data();
+        alpha.totalSalary.should.equal(100);
+        alpha.nameNorm.should.equal('alpha');
+
+        const passthrough = Ordering.of(descendingScore);
+        passthrough.should.equal(descendingScore);
+      });
+
+      it('normalizes nested literal maps, document references, and runtime-node arrays', async function () {
+        const { execute, field, constant, array } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/normalize-runtime-values`);
+        const docPath = `${coll.path}/a`;
+        const linkedRef = doc(db, `${COLLECTION}/${Utils.randString(12, '#aA')}`);
+
+        await Promise.all([
+          setDoc(linkedRef, { label: 'linked' }),
+          setDoc(doc(db, docPath), {
+            region: 'US',
+            tags: ['alpha', 'beta'],
+            linkedRef,
+          }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              array([field('tags'), constant('tail')]).as('nestedItems'),
+              constant(linkedRef).as('refCopy'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.nestedItems.should.eql([['alpha', 'beta'], 'tail']);
+        data.refCopy.path.should.equal(linkedRef.path);
       });
     });
 
@@ -3255,6 +3662,10 @@ describe('FirestorePipeline', function () {
           }),
         ]);
 
+        const baseRhsFilter = Platform.android
+          ? { operator: '>=', fieldPath: 'base', value: 1 }
+          : { operator: '>=', fieldPath: 'base', value: true };
+
         const snapshot = await execute(
           db
             .pipeline()
@@ -3265,7 +3676,7 @@ describe('FirestorePipeline', function () {
                 queries: [
                   { operator: 'IN', fieldPath: 'region', value: ['EU', 'US'] },
                   { operator: '==', fieldPath: 'bump', value: true },
-                  { operator: '>=', fieldPath: 'base', value: true },
+                  baseRhsFilter,
                   { operator: '==', fieldPath: 'status', value: 'active' },
                 ],
               },
