@@ -15,7 +15,7 @@ Single source of truth for OKF knowledge and commit wording. Other OKF docs/work
 | Kind | Where it lives | What it contains |
 |------|----------------|------------------|
 | **Durable** | OKF reference docs (design, runbooks, registries, workflows) | Stable API names, registry IDs, SDK versions, classifications, verification **methods**, architecture, canonical commands |
-| **Ephemeral** | Explicit **work-queue** docs only | Session phase/probe IDs, SHAs, gate state, snapshot labels, subagent IDs, dated banners, run counts |
+| **Ephemeral** | Explicit **work-queue** docs only | Session phase/probe IDs, SHAs, gate state, `next_work_type`, snapshot labels, dated banners, run counts |
 
 **Rules**
 
@@ -48,5 +48,7 @@ Fix violations before handoff/merge. Work-queue edits still follow this split.
 ## Work-queue documents
 
 Work queues are **intentionally ephemeral**: phases, SHAs, gates, active coordination. They are not policy or finalized registry/design homes.
+
+Work queues record **gates**, **`next_work_type`**, and **`validation_tier`** using [iteration vocabulary](testing/iteration-vocabulary.md). They do **not** name agent roles, dispatch instructions, or session choreography — those are out of scope for the public repo.
 
 New work queues link here in frontmatter/opening section; do not copy policy inline.

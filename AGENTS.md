@@ -14,7 +14,7 @@
 - Use package indexes under `okf-bundle/packages/` for package-specific workflows and active work queues.
 - Follow `okf-bundle/documentation-policy.md`: durable knowledge in reference docs; ephemeral state only in explicit work queues.
 - Testing entry points: `okf-bundle/testing/index.md`; validation requirements: `okf-bundle/testing/validation-checklist.md`.
-- Prefer focused validation for the area changed; package-specific OKF docs may add stricter gates.
+- Match validation to the **work type** and **validation tier** in OKF ([iteration vocabulary](okf-bundle/testing/iteration-vocabulary.md), package workflows, active work queue gates).
 
 ## PR instructions
 

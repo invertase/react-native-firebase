@@ -6,8 +6,8 @@ Firestore Pipelines (`pipelines` entry) and native bridge behavior.
 
 ## Documents
 
-* [Coverage work queue](pipeline-coverage-work-queue.md) — ephemeral live tracker
-* [Implementation workflow](pipeline-implementation-workflow.md) — compare-types gap → baseline → implement → review → docs → commit
+* [Coverage work queue](pipeline-coverage-work-queue.md) — ephemeral gates and `next_work_type`
+* [Implementation workflow](pipeline-implementation-workflow.md) — work types: gap-analysis → baseline-capture → implementation → independent-review → documentation → commit
 * [Serialization testing](serialization-testing.md) — required Jest/e2e checks per expression export
 * [Platform parity](pipeline-platform-parity.md) — drift registry, remediation, iOS unsupported map
 * [SDK support audit](pipeline-sdk-support-audit.md) — guard reconciliation, runtime verification

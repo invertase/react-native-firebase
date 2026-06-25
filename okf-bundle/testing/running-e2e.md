@@ -55,9 +55,9 @@ yarn tests:macos:test-cover
 
 ## Serialized e2e loops (shared dev host)
 
-Use [tiers](#e2e-tiers-implementer--reviewer--pre-merge): implementer **focused**, reviewer **area**, pre-merge **full**. Runs are serial from clean [pre-flight](#pre-flight-is-the-host-clear-to-start). Log long output; upstream gets exit code + short summary.
+Use [validation tiers](#e2e-validation-tiers-focused-area-full): **focused**, **area**, **full**. Match tier to [work type](iteration-vocabulary.md#work-types). Runs are serial from clean [pre-flight](#pre-flight-is-the-host-clear-to-start). Log long output; upstream gets exit code + short summary.
 
-**Policy:** [OKF documentation and commit policy](../documentation-policy.md).
+**Policy:** [OKF documentation and commit policy](../documentation-policy.md). **Terms:** [iteration vocabulary](iteration-vocabulary.md).
 
 ### How a platform run is structured (Android/iOS)
 
@@ -115,33 +115,33 @@ Also wait for any visible unfinished `yarn tests:*:test-cover`.
 
 Metro `:8081` and emulators `:8080`/`:9099` are expected; they do not mean e2e is running.
 
-### Iteration loop (implementer — focused tier)
+### Focused-tier iteration loop
 
-Fast loop ([focused tier](#e2e-tiers-implementer--reviewer--pre-merge)):
+For `implementation` work type ([focused tier](#e2e-validation-tiers-focused-area-full)):
 
 1. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — host clear; if not, wait or clean up per [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090).
 2. Edit e2e/spec; apply focused narrowing (`.only` and/or tight `tests/app.js` area narrowing); never commit.
 3. macOS first when TS-only: `yarn tests:macos:test-cover 2>&1 | tee /tmp/rnfb-e2e-macos.log` — wait for exit code.
 4. If macOS green and native touched: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover 2>&1 | tee /tmp/rnfb-e2e-<platform>.log`; one platform at a time.
 5. Grep log tail → fix → repeat from step 1 (pre-flight again before each run).
-6. Handoff to **area** review: canonical commands, no `.only`; area narrowing per package workflow.
+6. When `implementation_gate` closes, next work type is `independent-review` at **area** tier — [frozen tree](iteration-vocabulary.md#frozen-tree); canonical commands; no `.only`; area narrowing per package workflow.
 
 ### Serialized e2e dispatch
 
-Never overlap runs that use `:test-cover`.
+Never overlap runs that use `:test-cover`. See [host rule](iteration-vocabulary.md#host-rule).
 
 | Rule | Requirement |
 |------|-------------|
 | **One e2e run at a time** | Wait for prior shell exit code + short log summary |
-| **No parallel implement + review** | Never launch implementer and reviewer e2e concurrently; never spawn two reviewer runs |
+| **No overlapping tiers** | Never run focused-tier and area-tier `:test-cover` concurrently on one host |
 | **Clean pre-flight every run** | Verify [pre-flight](#pre-flight-is-the-host-clear-to-start); if not clear, wait/clean |
-| **iOS guard probe loop** | **Implement** (Jest + **focused** e2e) → **Review** (**area** e2e on frozen diff) → **Commit once** |
+| **iOS guard probe loop** | `implementation` (Jest + **focused**) → `independent-review` (**area**, frozen tree) → `commit` — [work queue protocol](../packages/firestore/pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict) |
 
-| Actor | E2e tier | Narrowing allowed |
-|-------|----------|-------------------|
-| **Implementer** | **Focused** — backpressure while coding; discovers errors in the implementation area | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** |
-| **Reviewer** | **Area** — full loaded spec(s) for the package/area under change | **Area narrowing only** (`tests/app.js` + `tests/globals.js`); **no** `.only` |
-| **Pre-merge** | **Full** — all modules, all platforms | None — revert all narrowing |
+| Validation tier | E2e scope | Narrowing allowed | Typical work type |
+|-----------------|-----------|-------------------|-------------------|
+| **Focused** | Backpressure while product code is changing | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** | `implementation` |
+| **Area** | Full loaded spec(s) for the package/area under change | Area narrowing only (`tests/app.js` + `tests/globals.js`); **no** `.only` | `baseline-capture`, `independent-review` |
+| **Full** | All modules, all platforms | None — revert all narrowing | `pre-merge-validation` |
 
 Each run owns its blocking `:test-cover` and returns summaries only.
 
@@ -202,26 +202,26 @@ Full e2e loads every package. Narrow locally; **never commit** narrowing.
 
 **`RNFBDebug`** (`tests/globals.js`): `globalThis.RNFBDebug = true`; prints per-case start/finish and disables Mocha retry/backoff for fail-fast.
 
-Package workflows may further restrict narrowing per [tier](#e2e-tiers-implementer--reviewer--pre-merge).
+Package workflows may further restrict narrowing per [validation tier](#e2e-validation-tiers-focused-area-full).
 
-## E2e tiers (implementer / reviewer / pre-merge)
+## E2e validation tiers (focused / area / full)
 
-All tiers use [canonical commands](#rules), serial host policy, and clean [pre-flight](#pre-flight-is-the-host-clear-to-start).
+All tiers use [canonical commands](#rules), [host rule](iteration-vocabulary.md#host-rule), and clean [pre-flight](#pre-flight-is-the-host-clear-to-start). Tier names describe **scope**, not who runs the commands — see [iteration vocabulary](iteration-vocabulary.md).
 
-| Actor | E2e scope | Narrowing allowed |
-|-------|-----------|-------------------|
-| **Implementer** | **Focused** e2e — backpressure while coding; discovers errors in the implementation area | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** |
-| **Reviewer** | **Area** e2e — full loaded spec(s) for the package/area under change | **Area narrowing only** (`tests/app.js` + `tests/globals.js`); **no** `.only` |
-| **Pre-merge** | **Full** unfocused e2e — all modules, all platforms | None — revert all narrowing |
+| Validation tier | E2e scope | Narrowing allowed | Typical work type |
+|-----------------|-----------|-------------------|-------------------|
+| **Focused** | Fast loop while product code is changing | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** | `implementation` |
+| **Area** | Full loaded spec(s) for the package/area under change | Area narrowing only (`tests/app.js` + `tests/globals.js`); **no** `.only` | `baseline-capture`, `independent-review` |
+| **Full** | Unfocused — all modules, all platforms | None — revert all narrowing | `pre-merge-validation` |
 
 **Universal rules:**
 
 - E2e is **always serial** — one `:test-cover` at a time on the host.
 - Every run starts from **verified clean pre-flight**; if not clear, wait or follow [interrupted-run cleanup](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090) — do not start another run.
 - Use **only** canonical commands from this doc.
-- Coordinator: one e2e run at a time; never parallel implement + review e2e.
+- Never overlap focused-tier and area-tier `:test-cover` on one host.
 
-See also: [implementer loop](#iteration-loop-implementer--focused-tier), [dispatch](#serialized-e2e-dispatch), [pre-merge](#before-merge-pr-handoff).
+See also: [focused-tier loop](#focused-tier-iteration-loop), [dispatch](#serialized-e2e-dispatch), [pre-merge](#before-merge-pr-handoff).
 
 ## Environment
 
@@ -242,7 +242,7 @@ If JS output is unhelpful, use device logs + temporary native instrumentation (r
 
 Pre-merge applies once to the branch commit stream before merge/push intended for merge, not after every commit.
 
-1. Revert all narrowing ([full tier](#e2e-tiers-implementer--reviewer--pre-merge)): restore `tests/app.js` (`platformSupportedModules` + `require.context`), default `RNFBDebug` in `tests/globals.js`, remove all `.only`, remove native instrumentation.
+1. Revert all narrowing ([full tier](#e2e-validation-tiers-focused-area-full)): restore `tests/app.js` (`platformSupportedModules` + `require.context`), default `RNFBDebug` in `tests/globals.js`, remove all `.only`, remove native instrumentation.
 2. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — verified clean host before each platform run.
 3. Rebuild if needed (`tests:<platform>:build`; `yarn lerna:prepare` for `lib/**`).
 4. Full unfocused suite with coverage on **iOS, Android, macOS** — one platform at a time, all green.

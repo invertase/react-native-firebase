@@ -14,13 +14,15 @@ Coverage acceptance: [expectations](coverage-design.md#coverage-expectations-pol
 
 ## When to run what
 
-| Phase | Scope | Shortcuts |
-|-------|--------|-----------|
-| **Analysis** | `compare:types`, config read, SDK declarations | n/a |
-| **Baseline** | Full loaded spec(s) + e2e coverage on macOS, iOS, Android | Area narrowing only ([running-e2e](running-e2e.md#fast-iteration-test-narrowing)); no `.only`, no `:test-cover-reuse` |
-| **Implementation** | Focused Jest + e2e | Area + single-test/suite narrowing per [running-e2e](running-e2e.md#fast-iteration-test-narrowing); package workflows may define review rules (e.g. [pipelines](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations)) |
-| **Review / handoff** | Full checklist below on all platforms | Per package workflow; never commit narrowing |
-| **Pre-merge** | Full unfocused suite | [running-e2e § merge](running-e2e.md#before-merge-pr-handoff) — entire PR branch, once |
+Work types and tiers: [iteration vocabulary](iteration-vocabulary.md).
+
+| Work type | Scope | Shortcuts |
+|-----------|--------|-----------|
+| `gap-analysis` | `compare:types`, config read, SDK declarations | n/a |
+| `baseline-capture` | Full loaded spec(s) + e2e coverage on macOS, iOS, Android | **area** tier; area narrowing only ([running-e2e](running-e2e.md#fast-iteration-test-narrowing)); no `.only`, no `:test-cover-reuse` |
+| `implementation` | Focused Jest + e2e | **focused** tier; area + single-test/suite narrowing per [running-e2e](running-e2e.md#fast-iteration-test-narrowing); package workflows may add rules (e.g. [pipelines](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations)) |
+| `independent-review` | Full checklist below on all platforms | **area** tier; [frozen tree](iteration-vocabulary.md#frozen-tree); never commit narrowing |
+| `pre-merge-validation` | Full unfocused suite | **full** tier — [running-e2e § merge](running-e2e.md#before-merge-pr-handoff); entire PR branch, once |
 
 ## Prepare and compile
 
