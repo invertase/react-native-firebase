@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS (2026-06-25):** **J0-1…J0-4** — all gates closed. **J0-5** `round` `5b4717d0c` — all gates closed. **Next pickup:** **J0-6** `substring` **`implementation`**. **J0b** queued after J0 complete.
+> **IN PROGRESS (2026-06-25):** **J0-1…J0-5** — guard removals committed. **J0-6** `substring` `8b76d8bc4` — **sdk-unsupported-confirmed** (guard retained). **Next pickup:** **J0-7** `timestampAdd` **`implementation`**. **J0b** queued after J0 complete.
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -76,7 +76,7 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 
 ## Current snapshot
 
-**Label:** `after-j0-1-j0-2-j0-3-j0-4-j0-5`; **harness:** full test app (`tests/app.js` — all platform modules restored for push)
+**Label:** `after-j0-1-j0-2-j0-3-j0-4-j0-5-j0-6`; **harness:** full test app (`tests/app.js` — all platform modules restored for push)
 
 **E2e counts (Phase H baseline):** macOS **141**, iOS **146**, Android **146** ✅ *(full app load; re-verify before merge)*
 
@@ -89,7 +89,7 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 
 *Phase H baseline only; not J0 review gate.*
 
-**Next item:** **J0-6** `substring` — `next_work_type`: **`implementation`**; `validation_tier`: **focused**; `platform`: ios. **J0b** blocked until J0-9 complete.
+**Next item:** **J0-7** `timestampAdd` — `next_work_type`: **`implementation`**; `validation_tier`: **focused**; `platform`: ios. **J0b** blocked until J0-9 complete.
 
 **Arbiter gate (2026-06-25):**
 
@@ -101,7 +101,8 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 | **J0-3** `trunc`        | `138e45690` | closed                | **closed**    | —                    | —                 | —          | Area review 2026-06-25: 100/100/100; trunc unified iOS path        |
 | **J0-4** `conditional`  | `cde7b812c`         | closed                | **closed**    | —                    | —                 | —          | Area review 100/100/100; iOS wire `conditional`; unified e2e       |
 | **J0-5** `round`        | `5b4717d0c`         | closed                | **closed**    | —                    | —                 | —          | Area review 100/100/100; round unified iOS path (TS-only)          |
-| **J0-6** `substring`    | —           | —                     | —             | **`implementation`** | focused           | ios        | **unblocked** (J0-5 committed)                                     |
+| **J0-6** `substring`    | `8b76d8bc4`         | closed                | **closed**    | —                    | —                 | —          | **sdk-unsupported-confirmed** — iOS 12.15 `invalid-argument`; guard retained |
+| **J0-7** `timestampAdd` | —           | —                     | —             | **`implementation`** | focused           | ios        | **unblocked** (J0-6 probe complete)                              |
 
 
 
@@ -249,8 +250,8 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 | J0-3  | `trunc`             | iOS CHANGELOG 12.11.0                                    | closed                | **closed**    | —                    |
 | J0-4  | `conditional`       | `ConditionalExpression` 12.11.0; iOS wire `conditional` | closed                | **closed**    | —                    |
 | J0-5  | `round`             | No CHANGELOG; Android + bridge ok                        | closed                | **closed**    | —                    |
-| J0-6  | `substring`         | No CHANGELOG; docs list function                         | —                     | —             | **`implementation`** |
-| J0-7  | `timestampAdd`      | No CHANGELOG; likely SDK gap or receiver shape           |                       |               |                      |
+| J0-6  | `substring`         | No CHANGELOG; docs list function                         | closed                | **closed**    | —                    |
+| J0-7  | `timestampAdd`      | No CHANGELOG; likely SDK gap or receiver shape           | —                     | —             | **`implementation`** |
 | J0-8  | `timestampSubtract` | Same                                                     |                       |               |                      |
 | J0-9  | `arrayGet`          | No CHANGELOG; likely needs iOS receiver parity if SDK ok |                       |               |                      |
 
@@ -286,7 +287,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **J0-1** + **J0-2** + **J0-3** + **J0-4** + **J0-5** committed; all gates closed. **J0-6** next **`implementation`**. **J0b** queued (blocked on J0 complete).
+**Current gates:** **J0-1…J0-6** probe iterations complete (**J0-6** guard retained). **J0-7** next **`implementation`**. **J0b** queued (blocked on J0 complete).
 
 ---
 
