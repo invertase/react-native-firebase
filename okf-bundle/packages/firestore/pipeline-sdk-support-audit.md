@@ -191,7 +191,7 @@ Live probes/gates: [work queue](pipeline-coverage-work-queue.md#j0--ios-runtime-
 | `stringRepeat` | No | Generic `string_repeat` | raw | **Added 12.12** | **sdk-supported-bridge-ok** | Guard removed; unified cross-platform e2e |
 | `switchOn` | No | Generic `switch_on` | raw | **Added 12.12** | **sdk-supported-bridge-ok** | Guard removed; unified cross-platform e2e |
 | `trunc` | No | Generic `trunc` | raw | **Added 12.11** | **sdk-supported-bridge-ok** | Guard removed; unified cross-platform e2e |
-| `conditional` | Yes | Dedicated `cond` | `Expression.conditional()` | **ConditionalExpression 12.11** | **pending-probe** → likely stale | Runtime probe pending |
+| `conditional` | No | `conditional` wire | `Expression.conditional()` | **ConditionalExpression 12.11** | **sdk-supported-bridge-ok** | Guard removed; iOS wire `cond`→`conditional`; unified e2e |
 | `round` | Yes | Generic `round` | raw | Not listed | **pending-probe** | Runtime probe pending |
 | `substring` | Yes | Generic `substring` | raw | Not listed | **pending-probe** | Runtime probe pending |
 | `timestampAdd` | Yes | Generic `timestamp_add` only | receiver chain | Not listed | **pending-probe**; suspect real SDK gap | Runtime probe pending; if fail → document SDK gap |
@@ -202,7 +202,7 @@ Live probes/gates: [work queue](pipeline-coverage-work-queue.md#j0--ios-runtime-
 
 | Registry row | Reconciliation finding |
 |--------------|------------------------|
-| **P-003** (umbrella iOS unsupported) | **Partially stale** — `stringRepeat`, `switchOn`, and `trunc` confirmed supported (guards removed); remaining guarded names need runtime verification |
+| **P-003** (umbrella iOS unsupported) | **Partially stale** — `stringRepeat`, `switchOn`, `trunc`, and `conditional` confirmed supported (guards removed); remaining guarded names need runtime verification |
 | **P-003a** (per-function e2e) | Ten iOS reduced/throw tests may shrink after runtime guard probes |
 | **P-013** (iOS aggregate skip L3740) | Unrelated to guard list — separate SDK/bridge investigation |
 | **P-001, P-005, P-010–P-012** (bridge gaps) | Unchanged — operand coercion is independent of function guard list |

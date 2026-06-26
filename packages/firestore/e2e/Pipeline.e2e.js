@@ -1351,28 +1351,6 @@ describe('FirestorePipeline', function () {
             logicalMinimum(field('askA'), field('askB')).as('bottomAsk'),
           );
 
-        if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['conditional']);
-
-          const iosSnapshot = await execute(
-            db
-              .pipeline()
-              .documents([docPath])
-              .select(
-                isType(field('value'), 'string').as('isString'),
-                logicalMaximum(field('bidA'), field('bidB')).as('topBid'),
-                logicalMinimum(field('askA'), field('askB')).as('bottomAsk'),
-              ),
-          );
-
-          iosSnapshot.results.should.have.length(1);
-          const iosData = iosSnapshot.results[0].data();
-          iosData.isString.should.equal(true);
-          iosData.topBid.should.equal(150);
-          iosData.bottomAsk.should.equal(175);
-          return;
-        }
-
         const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
@@ -3300,10 +3278,6 @@ describe('FirestorePipeline', function () {
       });
 
       it('lowers conditional boolean value frames through native lowering', async function () {
-        if (Platform.ios) {
-          return;
-        }
-
         const { execute, field, constant, conditional, greaterThan } = firestorePipelinesModular;
         const { getFirestore, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
