@@ -44,7 +44,7 @@ Confirm:
 
 | Check | Requirement |
 |-------|-------------|
-| **Canonical location** | Each topic has one owning doc; others link to it ([running e2e](testing/running-e2e.md) for e2e commands, this file for doc/commit policy, etc.) |
+| **Canonical location** | Each topic has one owning doc; others link to it ([change authoring](testing/change-authoring-workflow.md) for workflow/gates/frozen tree, [running e2e](testing/running-e2e.md) for e2e commands, [iteration vocabulary](testing/iteration-vocabulary.md) for term ids only, this file for doc/commit policy, etc.) |
 | **DRY** | No duplicated procedures, policy paragraphs, or ephemeral snapshots outside work queues |
 | **Link hygiene** | Cross-links resolve; indexes list canonical entry points |
 | **Durability** | No ephemeral fields leaked into general reference docs |
@@ -55,6 +55,6 @@ Fix violations before handoff/merge. Work-queue edits still follow this split.
 
 Work queues are **intentionally ephemeral**: phases, SHAs, gates, active coordination. They are not policy or finalized registry/design homes.
 
-Work queues record **gates**, **`next_work_type`**, and **`validation_tier`** using [iteration vocabulary](testing/iteration-vocabulary.md). They do **not** name agent roles, dispatch instructions, or session choreography — those are out of scope for the public repo.
+Work queues record **gates**, **`next_work_type`**, and **`validation_tier`** using field names and allowed values from [iteration vocabulary](testing/iteration-vocabulary.md). Gate semantics and workflow rules: [change authoring workflow](testing/change-authoring-workflow.md). They do **not** name agent roles, dispatch instructions, or session choreography — those are out of scope for the public repo.
 
 New work queues link here in frontmatter/opening section; do not copy policy inline.

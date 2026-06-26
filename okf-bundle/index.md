@@ -12,7 +12,8 @@ okf_version: "0.1"
 
 # Testing
 
-* [Iteration vocabulary](/testing/iteration-vocabulary.md) — work types, validation tiers, gates
+* [Change authoring workflow](/testing/change-authoring-workflow.md) — verified product change loop (unit-focused → area-focused review → commit)
+* [Iteration vocabulary](/testing/iteration-vocabulary.md) — work type, tier, and queue field identifiers
 * [Running e2e tests](/testing/running-e2e.md) — canonical e2e commands, narrowing, environment, diagnosis
 * [Validation checklist](/testing/validation-checklist.md) — compile, Jest, lint, `compare:types`, e2e, coverage
 * [Coverage design](/testing/coverage-design.md) — unit/e2e coverage policy, native gates, Codecov

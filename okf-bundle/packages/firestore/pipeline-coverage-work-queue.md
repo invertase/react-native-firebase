@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS (2026-06-25):** **J0-6′–J0-9′** receiver parity — implementation + area review **complete** (uncommitted). **J0b** committed `c27b6f115`. **Next:** commit batch → **J1** bridge remediation.
+> **IN PROGRESS (2026-06-25):** **J0-6′–J0-9′** receiver parity — implementation + area-focused review **complete** (uncommitted). **J0b** committed `c27b6f115`. **Next:** commit batch → **J1** bridge remediation.
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -36,9 +36,9 @@ Ephemeral tracker; see [OKF policy](../../documentation-policy.md).
 
 ## Resume checklist
 
-Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration-vocabulary.md#host-rule)):
+Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-authoring-workflow.md#host-rule)):
 
-1. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): [host-clear probes](../../testing/running-e2e.md#host-clear-probes), [services ready](../../testing/running-e2e.md#2-services-ready), [harness matches validation tier](../../testing/running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking) — required for **focused** and **area**; not [push harness](#harness)); [serial `:test-cover](../../testing/running-e2e.md#serialized-e2e-dispatch)`; [frozen tree](../../testing/iteration-vocabulary.md#frozen-tree) for `independent-review`.
+1. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): [host-clear probes](../../testing/running-e2e.md#host-clear-probes), [services ready](../../testing/running-e2e.md#2-services-ready), [harness matches validation tier](../../testing/running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking) — required for **unit-focused** and **area-focused**; not [push harness](#harness)); [serial `:test-cover](../../testing/running-e2e.md#serialized-e2e-dispatch)`; [frozen tree](../../testing/change-authoring-workflow.md#frozen-tree) for `independent-review`.
 2. Guard probes: [SDK runtime verification](pipeline-sdk-support-audit.md#6-runtime-verification-authoritative) + [Phase J protocol](#phase-j-iteration-protocol-strict) below.
 3. Coverage deltas: full clean cycle; never trust stale `.ec`/profraw ([coverage stale data](../../testing/coverage-design.md#stale-coverage-data)).
 
@@ -67,7 +67,7 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 | **O**  | Android Executor remainder            | queued                    | sub-60% after E *(was old M)*                                                                                                                      |
 | **P**  | Jest-only TS paths                    | queued                    | validation branches *(was old N)*                                                                                                                  |
 | **Q**  | Intractability audit                  | queued                    | measured caps per file *(was old O)*                                                                                                               |
-| **R**  | Pre-merge harness restore             | queued                    | **Full** unfocused 3-platform snapshot — [full validation tier](../../testing/running-e2e.md#e2e-validation-tiers-focused-area-full) *(was old P)* |
+| **R**  | Pre-merge harness restore             | queued                    | **Full** unfocused 3-platform snapshot — [full validation tier](../../testing/running-e2e.md#e2e-validation-tiers-unit-focused-area-focused-full) *(was old P)* |
 
 
 **Compare-types exports:** out of scope until **R**. During **J**, no new `Platform.android` / `Platform.ios` branches for coverage; file drift, fix in **J**, or document SDK limitation.
@@ -76,11 +76,11 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 
 ## Current snapshot
 
-**Label:** `j0-remainder-review-complete`; **harness:** full test app (area review used local firestore-only narrowing — not committed)
+**Label:** `j0-remainder-review-complete`; **harness:** full test app (area-focused review used local firestore-only narrowing — not committed)
 
 **E2e counts (Phase H baseline):** macOS **141**, iOS **146**, Android **146** ✅ *(full app load; re-verify before merge)*
 
-**Area review (2026-06-25):** iOS Pipeline-only harness — **100/100** passing (~135s); Jest pipelines **219/219**.
+**area-focused review (2026-06-25):** iOS Pipeline-only harness — **100/100** passing (~135s); Jest pipelines **219/219**.
 
 **Next item:** **Commit** J0-6′–J0-9′ batch → **J1** P-001 Android operand coercion.
 
@@ -89,20 +89,20 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 
 | Probe                         | Code        | `implementation_gate` | `review_gate` | `next_work_type` | `validation_tier` | `platform` | Notes                                                                   |
 | ----------------------------- | ----------- | --------------------- | ------------- | ---------------- | ----------------- | ---------- | ----------------------------------------------------------------------- |
-| **J0-1** `stringRepeat`       | `f14092909` | closed                | **closed**    | —                | —                 | —          | Area review 2026-06-25: 100/100/100; stringRepeat unified iOS path      |
-| **J0-2** `switchOn`           | `ae795b96c` | closed                | **closed**    | —                | —                 | —          | Committed 2026-06-25; area review 100/100/100                           |
-| **J0-3** `trunc`              | `138e45690` | closed                | **closed**    | —                | —                 | —          | Area review 2026-06-25: 100/100/100; trunc unified iOS path             |
-| **J0-4** `conditional`        | `cde7b812c` | closed                | **closed**    | —                | —                 | —          | Area review 100/100/100; iOS wire `conditional`; unified e2e            |
-| **J0-5** `round`              | `5b4717d0c` | closed                | **closed**    | —                | —                 | —          | Area review 100/100/100; round unified iOS path (TS-only)               |
+| **J0-1** `stringRepeat`       | `f14092909` | closed                | **closed**    | —                | —                 | —          | area-focused review 2026-06-25: 100/100/100; stringRepeat unified iOS path      |
+| **J0-2** `switchOn`           | `ae795b96c` | closed                | **closed**    | —                | —                 | —          | Committed 2026-06-25; area-focused review 100/100/100                           |
+| **J0-3** `trunc`              | `138e45690` | closed                | **closed**    | —                | —                 | —          | area-focused review 2026-06-25: 100/100/100; trunc unified iOS path             |
+| **J0-4** `conditional`        | `cde7b812c` | closed                | **closed**    | —                | —                 | —          | area-focused review 100/100/100; iOS wire `conditional`; unified e2e            |
+| **J0-5** `round`              | `5b4717d0c` | closed                | **closed**    | —                | —                 | —          | area-focused review 100/100/100; round unified iOS path (TS-only)               |
 | **J0-6** `substring`          | `8b76d8bc4` | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — reclassified; guard retained                      |
 | **J0-7** `timestampAdd`       | —           | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — probe + SDK source; guard retained                |
 | **J0-8** `timestampSubtract`  | —           | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — SDK `timestamp_subtract`; fix iOS wire + receiver |
 | **J0-9** `arrayGet`           | —           | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — SDK `array_get` receiver wire; guard retained     |
-| **J0b**                       | `c27b6f115` | closed                | **closed**    | —                | —                 | —          | Area review 2026-06-25: iOS 100/100; Jest switchOn ok                   |
-| **J0-6′** `substring`         | —           | **closed**            | **closed**    | —                | area              | ios        | iOS receiver chain; guard removed; unified e2e                          |
-| **J0-7′** `timestampAdd`      | —           | **closed**            | **closed**    | —                | area              | ios        | Same batch — `timestampAdd(amount:unit:)`                               |
-| **J0-8′** `timestampSubtract` | —           | **closed**            | **closed**    | —                | area              | ios        | Same batch — wire `timestamp_subtract`                                  |
-| **J0-9′** `arrayGet`          | —           | **closed**            | **closed**    | —                | area              | ios        | Same batch — `.arrayGet(_:)`                                            |
+| **J0b**                       | `c27b6f115` | closed                | **closed**    | —                | —                 | —          | area-focused review 2026-06-25: iOS 100/100; Jest switchOn ok                   |
+| **J0-6′** `substring`         | —           | **closed**            | **closed**    | —                | area-focused              | ios        | iOS receiver chain; guard removed; unified e2e                          |
+| **J0-7′** `timestampAdd`      | —           | **closed**            | **closed**    | —                | area-focused              | ios        | Same batch — `timestampAdd(amount:unit:)`                               |
+| **J0-8′** `timestampSubtract` | —           | **closed**            | **closed**    | —                | area-focused              | ios        | Same batch — wire `timestamp_subtract`                                  |
+| **J0-9′** `arrayGet`          | —           | **closed**            | **closed**    | —                | area-focused              | ios        | Same batch — `.arrayGet(_:)`                                            |
 
 
 
@@ -225,13 +225,13 @@ Earlier: A–E baseline, dead code, gap map, lowering/executor e2e.
 
 ### Phase J iteration protocol (strict)
 
-Each J0 probe / J1–J6 bridge step follows **one** serial loop. No overlap. Work types: [iteration vocabulary](../../testing/iteration-vocabulary.md).
+Each J0 probe / J1–J6 bridge step follows **one** serial loop. No overlap. Work types: [change authoring workflow](../../testing/change-authoring-workflow.md#work-types).
 
 
 | Step  | Work type            | Closes gate      | Rules                                                                                                                                                                       |
 | ----- | -------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1** | `implementation`     | `implementation` | Code/e2e changes; Jest + **focused** tier; `.only` / tight area narrowing OK locally; **no commit**                                                                         |
-| **2** | `independent-review` | `review`         | **Frozen tree**; **area** tier; no `.only`; area narrowing only in `tests/app.js` + `tests/globals.js`; serial [host rule](../../testing/iteration-vocabulary.md#host-rule) |
+| **1** | `implementation`     | `implementation` | Code/e2e changes; Jest + **unit-focused** tier; `.only` / tight area narrowing OK locally; **no commit**                                                                         |
+| **2** | `independent-review` | `review`         | **Frozen tree**; **area-focused** tier; no `.only`; area narrowing only in `tests/app.js` + `tests/globals.js`; serial [host rule](../../testing/change-authoring-workflow.md#host-rule) |
 | **3** | `commit`             | `commit`         | One focused commit only after `review_gate` closed                                                                                                                          |
 
 
@@ -261,13 +261,13 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Commit:** `c27b6f115` — consolidate switchOn boolean receiver lowering; area iOS 100/100.
 
-**Why (J0-2 independent-review, 2026-06-25):** `switchOn` landed ~**387 lines** in `RNFBFirestorePipelineNodeBuilder.swift` — a parallel coercion layer alongside existing stack-based lowering. Correctness verified (area e2e green); **maintainability / drift risk** if more one-off paths land before consolidation.
+**Why (J0-2 independent-review, 2026-06-25):** `switchOn` landed ~**387 lines** in `RNFBFirestorePipelineNodeBuilder.swift` — a parallel coercion layer alongside existing stack-based lowering. Correctness verified (area-focused e2e green); **maintainability / drift risk** if more one-off paths land before consolidation.
 
-**Goal:** Consolidate J0-added boolean/receiver-chain lowering into **shared** NodeBuilder paths (align with Android `scheduleBooleanReceiverChain` / `EnterObjectBooleanFrame` where feasible). Remove fragile KVC probing where `ExprBridge` extraction exists. **No behavior change** — area-tier Pipeline e2e must stay green (especially `switchOn`, `stringRepeat`, and any probe-specific cases).
+**Goal:** Consolidate J0-added boolean/receiver-chain lowering into **shared** NodeBuilder paths (align with Android `scheduleBooleanReceiverChain` / `EnterObjectBooleanFrame` where feasible). Remove fragile KVC probing where `ExprBridge` extraction exists. **No behavior change** — area-focused-tier Pipeline e2e must stay green (especially `switchOn`, `stringRepeat`, and any probe-specific cases).
 
 **Scope:** `packages/firestore/ios/RNFBFirestore/RNFBFirestorePipelineNodeBuilder.swift` only (unless consolidation requires Parser touch — stop and note).
 
-**Protocol:** Same [Phase J iteration protocol](#phase-j-iteration-protocol-strict) — `implementation` (**focused**, switchOn + affected probe tests) → `independent-review` (**area**) → `commit`.
+**Protocol:** Same [Phase J iteration protocol](#phase-j-iteration-protocol-strict) — `implementation` (**unit-focused**, switchOn + affected probe tests) → `independent-review` (**area-focused**) → `commit`.
 
 **Gate for J1–J6:** **J0 complete + J0b committed** + parity registry updated.
 
@@ -319,14 +319,14 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 | **Q** | Intractability audit (map execute, debug gates, codegen caps)            |
 
 
-**R:** revert harness narrowing; **full** unfocused 3-platform run ([full tier](../../testing/running-e2e.md#e2e-validation-tiers-focused-area-full)); final gate before compare-types.
+**R:** revert harness narrowing; **full** unfocused 3-platform run ([full tier](../../testing/running-e2e.md#e2e-validation-tiers-unit-focused-area-focused-full)); final gate before compare-types.
 
 ---
 
 ## Harness
 
 - **Push state (committed):** full test app — all `platformSupportedModules` + `require.context` in `tests/app.js`. For merge/CI only; **not** the harness for local `:test-cover` during J–Q.
-- **Local `:test-cover`:** must match arbiter `**validation_tier`** — [running e2e § harness + narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking). `**implementation` → focused** and `**independent-review` → area:** both require [area narrowing](pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations) locally **before** first run even when git has full harness. Revert before **R** (full tier).
+- **Local `:test-cover`:** must match arbiter `**validation_tier`** — [running e2e § harness + narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking). `**implementation` → unit-focused** and `**independent-review` → area-focused:** both require [area narrowing](pipeline-implementation-workflow.md#pipeline-area-harness) locally **before** first run even when git has full harness. Revert before **R** (full tier).
 - `tests/globals.js` — `RNFBDebug = true` optional for fail-fast
 
 ---
@@ -337,7 +337,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 1. Audit or implement bridge fix with **shared** e2e assertions.
 2. Update OKF parity registry (open/close rows).
-3. **Phase J:** follow [Phase J iteration protocol](#phase-j-iteration-protocol-strict) — `implementation` (Jest + **focused** tier) → `independent-review` (**area** tier, frozen tree) → `commit`; never commit before `review_gate` closed; never overlap `:test-cover` ([host rule](../../testing/iteration-vocabulary.md#host-rule)).
+3. **Phase J:** follow [Phase J iteration protocol](#phase-j-iteration-protocol-strict) — `implementation` (Jest + **unit-focused** tier) → `independent-review` (**area-focused** tier, frozen tree) → `commit`; never commit before `review_gate` closed; never overlap `:test-cover` ([host rule](../../testing/change-authoring-workflow.md#host-rule)).
 4. 3-platform e2e on canonical commands ([running-e2e rules 6–7](../../testing/running-e2e.md)).
 
 **Phases K–Q (coverage):**

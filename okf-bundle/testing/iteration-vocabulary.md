@@ -1,85 +1,75 @@
 ---
 type: Reference
 title: Iteration vocabulary
-description: Workflow-neutral terms for iteration steps, validation tiers, gates, and host rules used across OKF docs and work queues.
-tags: [testing, validation, workflow, gates, work-queue]
+description: Identifier glossary and work-queue field schema for OKF — not workflow rules or commands.
+tags: [testing, validation, workflow, work-queue]
 timestamp: 2026-06-25T00:00:00Z
 ---
 
 # Iteration vocabulary
 
-Canonical terms for **what kind of work** an iteration requires and **which validation applies**. These terms describe verification work — not agent roles, session types, or dispatch policy.
+Glossary of **string identifiers** and **work-queue field names** used across OKF. This doc does not define procedures, gate rules, harness policy, or e2e commands — each topic has one owning doc; others link.
 
 **Policy:** [OKF documentation and commit policy](../documentation-policy.md).
 
-## Work types
+| Topic | Owner |
+|-------|--------|
+| Change loop, gates, frozen tree, host rule | [change authoring workflow](change-authoring-workflow.md) |
+| E2e commands, pre-flight, harness gate, tier scope | [running e2e](running-e2e.md) |
+| Validation command sequence | [validation checklist](validation-checklist.md) |
+| Work-queue gate snapshots | Package work queues (ephemeral) |
 
-| Work type | Purpose | Typical validation tier | Product edits during work | Commit allowed |
-|-----------|---------|-------------------------|---------------------------|----------------|
-| `gap-analysis` | Confirm export/SDK semantics and feasibility | none | read-only | no |
-| `baseline-capture` | Record before snapshots and area-tier e2e baseline | `area` | harness narrowing OK locally; never commit narrowing | no |
-| `implementation` | Code, unit tests, fast e2e loop | `focused` | yes | no |
-| `independent-review` | Adversarial pass on a **frozen tree** | `area` (+ checklist where workflow requires) | no — [frozen tree](#frozen-tree) | no |
-| `documentation` | User docs and durable OKF updates | none | docs only | no |
-| `commit` | Single focused commit after gates close | none | staging/commit only | yes |
-| `pre-merge-validation` | Branch-wide unfocused gate before merge | `full` | revert all narrowing first | no |
+## Work type identifiers
 
-Work types are ordered in package workflows (e.g. [pipeline implementation workflow](../packages/firestore/pipeline-implementation-workflow.md)). A work queue row names the **`next_work_type`** when pickup should continue an in-flight item.
+| Work type | Brief meaning |
+|-----------|---------------|
+| `gap-analysis` | Read-only feasibility / semantics check |
+| `baseline-capture` | Record before snapshots or baselines |
+| `implementation` | Author product code and tests |
+| `independent-review` | Verify a frozen diff |
+| `documentation` | User docs and durable OKF updates |
+| `commit` | Stage and create one commit |
+| `pre-merge-validation` | Branch-wide merge gate |
 
-## Validation tiers
+When to use each work type, validation tier, edit policy, and commit rules: [change authoring § work types](change-authoring-workflow.md#work-types).
 
-E2e scope and narrowing rules: [running e2e § validation tiers](running-e2e.md#e2e-validation-tiers-focused-area-full).
+## Validation tier identifiers
 
-| Tier | E2e scope | Narrowing |
-|------|-----------|-----------|
-| `focused` | Fast loop while product code is changing | **Area narrowing required** before `:test-cover`; `.only` OK locally — never commit ([harness gate](running-e2e.md#harness-narrowing-gate-blocking)) |
-| `area` | Full loaded spec(s) for the package/area under change | **Area narrowing required** before `:test-cover`; **no** `.only` ([harness gate](running-e2e.md#harness-narrowing-gate-blocking)) |
-| `full` | All modules, all platforms | Revert all narrowing |
+| Tier id | Brief meaning |
+|---------|---------------|
+| `unit-focused` | Fast validation while product code is changing |
+| `area-focused` | Full loaded package spec(s) for the change area |
+| `full` | Unfocused — all modules and platforms |
 
-Jest, prepare, compile, and checklist commands per work type: [validation checklist](validation-checklist.md).
+E2e scope, narrowing, and harness rules: [change authoring § validation tiers](change-authoring-workflow.md#validation-tiers), [running e2e § validation tiers](running-e2e.md#e2e-validation-tiers-unit-focused-area-focused-full).
 
-## Gates
+## Gate identifiers
 
-Binary checkpoints on a queue item or iteration. Values: `open` | `closed`. Work queues may also mark an item **`blocked`** when a dependency gate is open elsewhere.
+Work queues use these **field names** (values: `open` | `closed`):
 
-| Gate | Closed when |
-|------|-------------|
-| `implementation` | `implementation` work type complete — code plus focused-tier checks reported green |
-| `review` | `independent-review` work type complete — area-tier (and checklist where required) green on frozen tree |
-| `commit` | Durable commit exists for the item |
+| Field | Tracks |
+|-------|--------|
+| `implementation_gate` | `implementation` work type complete |
+| `review_gate` | `independent-review` work type complete |
+| `commit_gate` | Durable commit exists for the item |
 
-**Trust rule:** Code may exist on disk or in git while `review` is still `open`. That state is **unverified** until `independent-review` closes the `review` gate.
+What closes each gate, trust rules, and loop transitions: [change authoring § gates](change-authoring-workflow.md#gates).
 
-## Frozen tree
-
-Required for `independent-review` and for any `:test-cover` run that closes the `review` gate:
-
-- No edits to `packages/**`, `tests/**` (except reverting `.only`), or bundle-affecting OKF docs during the run.
-- Wait for or cancel in-flight runs before editing again.
-
-See also: [running e2e rule 7](running-e2e.md#rules) and [host rule](running-e2e.md#serialized-e2e-loops-shared-dev-host).
-
-## Host rule
-
-On a shared dev host:
-
-- One `:test-cover` at a time — never overlap focused-tier and area-tier runs.
-- [Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) before every run: [host-clear probes](running-e2e.md#host-clear-probes), [services ready](running-e2e.md#2-services-ready), [harness matches `validation_tier`](running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](running-e2e.md#harness-narrowing-gate-blocking) for `focused` and `area`).
-- Canonical commands only — [running e2e](running-e2e.md). Stalled runs → [stalled run detection](running-e2e.md#stalled-run-detection).
+Items may also be marked **`blocked`** when a dependency gate is open elsewhere.
 
 ## Work-queue fields
 
 Ephemeral work queues may record:
 
-| Field | Meaning |
-|-------|---------|
-| `next_work_type` | Which work type unblocks the item next |
-| `validation_tier` | `focused` \| `area` \| `full` for the next validation pass |
-| `platform` | Optional scope (e.g. `ios` for iOS-only guard probes) |
+| Field | Allowed values / meaning |
+|-------|--------------------------|
+| `next_work_type` | A [work type identifier](#work-type-identifiers) |
+| `validation_tier` | `unit-focused` \| `area-focused` \| `full` |
+| `platform` | Optional scope (e.g. `ios`) |
 | `implementation_gate` | `open` \| `closed` |
 | `review_gate` | `open` \| `closed` |
 | `commit_gate` | `open` \| `closed` |
-| `blocked` | Item or dependent blocked until named gate closes |
+| `blocked` | Item or dependency blocked until named gate closes |
 
 Queues record **state**, not who executes the work.
 
@@ -87,8 +77,9 @@ Queues record **state**, not who executes the work.
 
 | Topic | Document |
 |-------|----------|
-| E2e commands and tiers | [running-e2e.md](running-e2e.md) |
+| **Change authoring loop** | [change-authoring-workflow.md](change-authoring-workflow.md) |
+| E2e commands | [running-e2e.md](running-e2e.md) |
 | Validation commands | [validation-checklist.md](validation-checklist.md) |
 | Doc/commit policy | [documentation-policy.md](../documentation-policy.md) |
-| Pipeline iteration steps | [pipeline-implementation-workflow.md](../packages/firestore/pipeline-implementation-workflow.md) |
+| Pipeline-specific artifacts | [pipeline-implementation-workflow.md](../packages/firestore/pipeline-implementation-workflow.md) |
 | Live gate snapshots | [pipeline coverage work queue](../packages/firestore/pipeline-coverage-work-queue.md) |

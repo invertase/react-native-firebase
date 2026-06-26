@@ -55,7 +55,7 @@ yarn tests:macos:test-cover
 
 ## Serialized e2e loops (shared dev host)
 
-Use [validation tiers](#e2e-validation-tiers-focused-area-full): **focused**, **area**, **full**. Match tier to [work type](iteration-vocabulary.md#work-types). Runs are serial from clean [pre-flight](#pre-flight-is-the-host-clear-to-start). Log long output; upstream gets exit code + short summary.
+Use [validation tiers](#e2e-validation-tiers-unit-focused-area-focused-full): **unit-focused**, **area-focused**, **full**. Match tier to [work type](change-authoring-workflow.md#work-types). Runs are serial from clean [pre-flight](#pre-flight-is-the-host-clear-to-start). Log long output; upstream gets exit code + short summary.
 
 **Policy:** [OKF documentation and commit policy](../documentation-policy.md). **Terms:** [iteration vocabulary](iteration-vocabulary.md).
 
@@ -202,11 +202,11 @@ Confirm `tests/app.js` / `tests/globals.js` match the item's **`validation_tier`
 
 | Tier | Harness before `:test-cover` |
 |------|------------------------------|
-| **Focused** (`implementation`) | **Area narrowing required** — trim modules + load only the spec under change (e.g. firestore + `Pipeline.e2e.js`); `.only` OK locally |
-| **Area** (`independent-review`, `baseline-capture`) | **Area narrowing required** — same module/spec trim as focused; load **full** spec file(s) for the area; **no** `.only` |
+| **Unit-focused** (`implementation`) | **Area narrowing required** — trim modules + load only the spec under change (e.g. firestore + `Pipeline.e2e.js`); `.only` OK locally |
+| **Area-focused** (`independent-review`, `baseline-capture`) | **Area narrowing required** — same module/spec trim as unit-focused; load **full** spec file(s) for the package area; **no** `.only` |
 | **Full** (`pre-merge-validation`) | Revert all narrowing — full app (`require.context`, all modules) |
 
-Committed full harness on the branch does **not** override **focused** or **area** tier for local runs. Package workflows define area setup (e.g. [pipelines § narrowing](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations)). Never commit narrowing until **full** tier.
+Committed full harness on the branch does **not** override **unit-focused** or **area-focused** tier for local runs. Package workflows define area setup (e.g. [pipelines § area harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness)). Never commit narrowing until **full** tier.
 
 See [Harness narrowing gate (blocking)](#harness-narrowing-gate-blocking) — a run that skips step 3 does **not** close `implementation_gate` or `review_gate`.
 
@@ -228,14 +228,14 @@ Do not poll `pgrep` / `jet.js` / `:8090` for *completion* ([above](#how-a-platfo
 
 ### Harness narrowing gate (blocking)
 
-**Both `focused` and `area` tiers require area narrowing in `tests/app.js` / `tests/globals.js` before the first `:test-cover`.** The only difference between those tiers is whether `.only` is allowed and whether the full area spec loads — not whether the harness stays at full app load.
+**Both `unit-focused` and `area-focused` tiers require area narrowing in `tests/app.js` / `tests/globals.js` before the first `:test-cover`.** The only difference between those tiers is whether `.only` is allowed and whether the full package-area spec loads — not whether the harness stays at full app load.
 
 | Mistake | Symptom | Gate impact |
 |---------|---------|-------------|
 | Run `:test-cover` on committed full harness during `implementation` or `independent-review` | macOS/iOS/Android pass counts in the **hundreds or thousands** (all modules via `require.context`) | Run is **invalid** — does not close `implementation_gate` or `review_gate` |
-| Correct pipeline area harness | ~**100** passing per platform for `Pipeline.e2e.js` only ([pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations)) | Expected for J0–Q iterations |
+| Correct pipeline area harness | ~**100** passing per platform for `Pipeline.e2e.js` only ([pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness)) | Expected for pipeline area runs |
 
-**Apply locally before every `:test-cover` at focused or area tier** — even when git shows the full push harness. Revert `tests/app.js` / `tests/globals.js` after the run if the branch commit keeps full harness (typical until phase **R**).
+**Apply locally before every `:test-cover` at unit-focused or area-focused tier** — even when git shows the full push harness. Revert `tests/app.js` / `tests/globals.js` after the run if the branch commit keeps full harness (typical until phase **R**).
 
 **Validation report must state:** harness narrowed (yes/no), which module/spec loads, and whether pass counts match area scope. A green full-app run is not a substitute.
 
@@ -243,35 +243,35 @@ Do not poll `pgrep` / `jet.js` / `:8090` for *completion* ([above](#how-a-platfo
 
 1. `platformSupportedModules` lists only the package under change (e.g. `firestore` only).
 2. Spec load uses direct `require` of the area spec — not `require.context` for all packages.
-3. No `.only` when tier is **area**; `.only` optional when tier is **focused**.
+3. No `.only` when tier is **area-focused**; `.only` optional when tier is **unit-focused**.
 4. Grep log: pass count consistent with area scope (~100 for pipeline-only), not full app (~141+ macOS baseline with full load per [work queue](../packages/firestore/pipeline-coverage-work-queue.md)).
 
-### Focused-tier iteration loop
+### Unit-focused-tier iteration loop
 
-For `implementation` work type ([focused tier](#e2e-validation-tiers-focused-area-full)):
+For `implementation` work type — validation tier **unit-focused** ([change authoring workflow](change-authoring-workflow.md#implementation-inner-loop)):
 
 1. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes), services ready, **harness narrowed** (step 3); if probes fail, [pre-flight recovery](#pre-flight-recovery) first.
 2. Edit e2e/spec; add `.only` if needed; never commit narrowing.
 3. macOS first when TS-only: `yarn tests:macos:test-cover 2>&1 | tee /tmp/rnfb-e2e-macos.log` — wait for exit code ([stalled run](#stalled-run-detection) if markers stop).
 4. If macOS green and native touched: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover 2>&1 | tee /tmp/rnfb-e2e-<platform>.log`; one platform at a time.
 5. Grep log tail → fix → repeat from step 1.
-6. When `implementation_gate` closes, next work type is `independent-review` at **area** tier — [frozen tree](iteration-vocabulary.md#frozen-tree); no `.only`; area narrowing per package workflow.
+6. When `implementation_gate` closes, next work type is `independent-review` at **area-focused** tier — [frozen tree](change-authoring-workflow.md#frozen-tree); no `.only`; area narrowing per package workflow.
 
 ### Serialized e2e dispatch
 
-Never overlap runs that use `:test-cover`. See [host rule](iteration-vocabulary.md#host-rule).
+Never overlap runs that use `:test-cover`. See [host rule](change-authoring-workflow.md#host-rule).
 
 | Rule | Requirement |
 |------|-------------|
 | **One e2e run at a time** | Wait for prior shell exit code + short log summary |
-| **No overlapping tiers** | Never run focused-tier and area-tier `:test-cover` concurrently on one host |
+| **No overlapping tiers** | Never run unit-focused-tier and area-focused-tier `:test-cover` concurrently on one host |
 | **Clean pre-flight every run** | [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes), services, harness tier |
-| **iOS guard probe loop** | `implementation` (Jest + **focused**) → `independent-review` (**area**, frozen tree) → `commit` — [work queue protocol](../packages/firestore/pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict) |
+| **Phase J loop** | `implementation` (Jest + **unit-focused**) → `independent-review` (**area-focused**, frozen tree) → `commit` — [work queue protocol](../packages/firestore/pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict) |
 
 | Validation tier | E2e scope | Narrowing allowed | Typical work type |
 |-----------------|-----------|-------------------|-------------------|
-| **Focused** | Backpressure while product code is changing | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** | `implementation` |
-| **Area** | Full loaded spec(s) for the package/area under change | **Area narrowing required** in `tests/app.js` / `tests/globals.js`; **no** `.only` | `baseline-capture`, `independent-review` |
+| **Unit-focused** | Backpressure while product code is changing | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** | `implementation` |
+| **Area-focused** | Full loaded spec(s) for the package/area under change | **Area narrowing required** in `tests/app.js` / `tests/globals.js`; **no** `.only` | `baseline-capture`, `independent-review` |
 | **Full** | All modules, all platforms | None — revert all narrowing | `pre-merge-validation` |
 
 Each run owns its blocking `:test-cover` and returns summaries only.
@@ -289,7 +289,7 @@ Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#ho
 - Do not start iOS/Android/macOS `:test-cover` concurrently on one host.
 - Do not edit source while a tee'd run is still in progress.
 - Do not passively tail tee output when progress markers stop — follow [stalled run detection](#stalled-run-detection).
-- Do not run **full** harness (`require.context`, all modules) for **focused**/**area** tier — match [harness to tier](#3-harness-matches-validation-tier).
+- Do not run **full** harness (`require.context`, all modules) for **unit-focused**/**area-focused** tier — match [harness to tier](#3-harness-matches-validation-tier).
 - Do not run `.github/workflows/scripts/boot-simulator.sh`, `simctl shutdown all`, or `kill -9` on `:8090` as prep. `boot-simulator.sh` is CI-only or internal to iOS Jet retry.
 
 ## Typical loop
@@ -321,16 +321,16 @@ Full e2e loads every package. Narrow locally; **never commit** narrowing.
 
 **`RNFBDebug`** (`tests/globals.js`): `globalThis.RNFBDebug = true`; prints per-case start/finish and disables Mocha retry/backoff for fail-fast.
 
-Package workflows may further restrict narrowing per [validation tier](#e2e-validation-tiers-focused-area-full).
+Package workflows may further restrict narrowing per [validation tier](#e2e-validation-tiers-unit-focused-area-focused-full).
 
-## E2e validation tiers (focused / area / full)
+## E2e validation tiers (unit-focused / area-focused / full)
 
-All tiers use [canonical commands](#rules), [host rule](iteration-vocabulary.md#host-rule), and clean [pre-flight](#pre-flight-is-the-host-clear-to-start). Tier names describe **scope**, not who runs the commands — see [iteration vocabulary](iteration-vocabulary.md).
+All tiers use [canonical commands](#rules), [host rule](change-authoring-workflow.md#host-rule), and clean [pre-flight](#pre-flight-is-the-host-clear-to-start). Tier names describe **scope**, not who runs the commands — see [iteration vocabulary](iteration-vocabulary.md#validation-tier-identifiers).
 
 | Validation tier | E2e scope | Narrowing allowed | Typical work type |
 |-----------------|-----------|-------------------|-------------------|
-| **Focused** | Fast loop while product code is changing | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** | `implementation` |
-| **Area** | Full loaded spec(s) for the package/area under change | **Area narrowing required** in `tests/app.js` / `tests/globals.js`; **no** `.only` | `baseline-capture`, `independent-review` |
+| **Unit-focused** | Fast loop while product code is changing | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** | `implementation` |
+| **Area-focused** | Full loaded spec(s) for the package/area under change | **Area narrowing required** in `tests/app.js` / `tests/globals.js`; **no** `.only` | `baseline-capture`, `independent-review` |
 | **Full** | Unfocused — all modules, all platforms | None — revert all narrowing | `pre-merge-validation` |
 
 **Universal rules:**
@@ -338,9 +338,9 @@ All tiers use [canonical commands](#rules), [host rule](iteration-vocabulary.md#
 - E2e is **always serial** — one `:test-cover` at a time on the host.
 - Every run starts from **verified [pre-flight](#pre-flight-is-the-host-clear-to-start)**; if probes fail, [pre-flight recovery](#pre-flight-recovery) before another run.
 - Use **only** canonical commands from this doc.
-- Never overlap focused-tier and area-tier `:test-cover` on one host.
+- Never overlap unit-focused-tier and area-focused-tier `:test-cover` on one host.
 
-See also: [focused-tier loop](#focused-tier-iteration-loop), [dispatch](#serialized-e2e-dispatch), [pre-merge](#before-merge-pr-handoff).
+See also: [unit-focused-tier loop](#unit-focused-tier-iteration-loop), [dispatch](#serialized-e2e-dispatch), [pre-merge](#before-merge-pr-handoff).
 
 ## Environment
 
@@ -366,7 +366,7 @@ See also: [focused-tier loop](#focused-tier-iteration-loop), [dispatch](#seriali
 
 Pre-merge applies once to the branch commit stream before merge/push intended for merge, not after every commit.
 
-1. Revert all narrowing ([full tier](#e2e-validation-tiers-focused-area-full)): restore `tests/app.js` (`platformSupportedModules` + `require.context`), default `RNFBDebug` in `tests/globals.js`, remove all `.only`, remove native instrumentation.
+1. Revert all narrowing ([full tier](#e2e-validation-tiers-unit-focused-area-focused-full)): restore `tests/app.js` (`platformSupportedModules` + `require.context`), default `RNFBDebug` in `tests/globals.js`, remove all `.only`, remove native instrumentation.
 2. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes) pass before each platform run.
 3. Rebuild if needed (`tests:<platform>:build`; `yarn lerna:prepare` for `lib/**`).
 4. Full unfocused suite with coverage on **iOS, Android, macOS** — one platform at a time, all green.
