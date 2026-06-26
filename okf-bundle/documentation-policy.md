@@ -23,9 +23,15 @@ Single source of truth for OKF knowledge and commit wording. Other OKF docs/work
 2. Ephemeral state lives **only** in work queues. When an item closes, durable outcomes move to reference docs; queue rows may archive/delete.
 3. Durable docs may link to a work queue for current status; do not duplicate ephemeral fields.
 
-## Commits
+## Commits as documentation
 
-Commit messages use Conventional Commits and describe durable product/process deliverables: what changed and why, not probe IDs, gates, e2e counts, or “phase X complete”.
+We treat **git commits** as durable documentation: they are the canonical record of what changed, when, and why — for humans and agents reviewing history later, not only for the current PR thread.
+
+Commit messages use [Conventional Commits](https://www.conventionalcommits.org/) and describe durable product/process deliverables: what changed and why, not probe IDs, gates, e2e counts, or “phase X complete”.
+
+## Pull requests
+
+When a PR contains **exactly one commit**, the **PR title must match that commit's subject line exactly** (character-for-character). Multi-commit PRs use a summary title that describes the overall change set.
 
 ## OKF update contract
 

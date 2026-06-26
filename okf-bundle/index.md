@@ -4,7 +4,7 @@ okf_version: "0.1"
 
 # React Native Firebase knowledge bundle
 
-* [Documentation/commit policy](/documentation-policy.md) — durable vs ephemeral, commit wording, OKF consistency
+* [Documentation/commit policy](/documentation-policy.md) — durable vs ephemeral, commits as documentation, PR titles, OKF consistency
 
 # CI workflows
 
