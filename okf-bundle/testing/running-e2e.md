@@ -308,6 +308,8 @@ See also: [focused-tier loop](#focused-tier-iteration-loop), [dispatch](#seriali
 
 **Benign noise:** iOS Detox `EXEC_FAIL "xcrun simctl terminate … com.invertase.testing" … found nothing to terminate` — app wasn't running; ignore.
 
+**Cloud API pressure** — Installations / Remote Config failures with FIS 503 or “Too many server requests” are live-project quota on **any** platform, not emulator issues. See [Firebase testing project — CI triage](firebase-testing-project.md#ci-triage-cloud-api-quota-pressure).
+
 ## Before merge (PR handoff)
 
 Pre-merge applies once to the branch commit stream before merge/push intended for merge, not after every commit.

@@ -74,3 +74,4 @@ Under load, Jet may run only a small prefix before mocha-remote desync, often af
 | `adb reverse --remove` in Detox logs | Expected on 1006; should be warn-only after Detox patch |
 | Detox red, tests green in log | Pre-patch: teardown adb error; re-run or check patch applied |
 | `codecov/project/android-native` fail | Jacoco XML not uploaded — check post-e2e logs and Codecov Uploads tab for `android-native` flag |
+| FIS 503 / `Too many server requests` / RC cascade | Live cloud quota (shared project) — not Android-specific; see [cloud API quota triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure) |

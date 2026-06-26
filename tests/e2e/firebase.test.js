@@ -20,6 +20,23 @@ const net = require('net');
 const path = require('path');
 
 const { pullIosCoverage } = require('../scripts/pull-native-coverage');
+const { recordE2eCloudMetricFromHost } = require('../../packages/app/e2e/cloud-metrics');
+
+const E2E_TEST_PROJECT = 'react-native-firebase-testing';
+const E2E_CLOUD_PRESSURE_LOG_FILTER = 'jsonPayload.message="[rnfb-e2e-metrics]"';
+const E2E_CLOUD_PRESSURE_LOG_CONSOLE_URL = `https://console.cloud.google.com/logs/query;query=${encodeURIComponent(
+  E2E_CLOUD_PRESSURE_LOG_FILTER,
+)};storageScope=project;project=${E2E_TEST_PROJECT}`;
+const E2E_CLOUD_PRESSURE_SUMMARY_CALLABLE = `https://us-central1-${E2E_TEST_PROJECT}.cloudfunctions.net/e2eCloudMetricsSummaryV2`;
+
+function logCloudPressureAnalysisPointer(context) {
+  console.warn(
+    `[rnfb-e2e] cloud-pressure-analysis (${context}): retrospective pressure data is in Cloud Logging ` +
+      `(project=${E2E_TEST_PROJECT}, filter ${E2E_CLOUD_PRESSURE_LOG_FILTER}) or via POST ` +
+      `${E2E_CLOUD_PRESSURE_SUMMARY_CALLABLE} with {"data":{"lookbackHours":24}} — ` +
+      `console: ${E2E_CLOUD_PRESSURE_LOG_CONSOLE_URL}`,
+  );
+}
 
 const JET_REMOTE_PORT = parseInt(process.env.JET_REMOTE_PORT || '8090', 10);
 const METRO_PORT = parseInt(process.env.JET_METRO_PORT || process.env.RCT_METRO_PORT || '8081', 10);
@@ -58,6 +75,12 @@ const JET_COVERAGE_TEARDOWN_RE =
   /Failed to send 'coverage-ready' message: WebSocket is closed|coverage upload timed out waiting for coverage-ack/i;
 const JET_PROTOCOL_ERROR_RE = /\[🟥\] Unexpected end of JSON input/i;
 const JET_NO_CLIENT_CONNECTED_RE = /Error: No client connected/i;
+const RETRYABLE_CLOUD_QUOTA_RE =
+  /installations\/token-error|Too many server requests|firebaseinstallations\.googleapis\.com|remoteConfig\/failure.*fetch\(\)|Failed to get installations token|\[remoteConfig\/unknown\].*installations/i;
+const CLOUD_QUOTA_RETRY_COOLDOWN_MS = parseInt(
+  process.env.RNFB_CLOUD_QUOTA_RETRY_COOLDOWN_MS || '90000',
+  10,
+);
 const RETRYABLE_LAUNCH_RE =
   /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding|Unknown application display identifier|Simulator device failed to launch|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain/i;
 const PORT_CLOSED_ERROR_CODES = new Set(['ECONNREFUSED', 'ECONNRESET', 'EPIPE']);
@@ -499,6 +522,10 @@ function isRetryableJetSessionFailure(output) {
   return JET_COVERAGE_LOST_RE.test(output) || /\[🟥\] Stopped the server/i.test(output);
 }
 
+function isRetryableCloudQuotaFailure(jetOutput) {
+  return RETRYABLE_CLOUD_QUOTA_RE.test(jetOutput);
+}
+
 function isRetryableLaunchFailure(err) {
   const message = err?.message || '';
   if (err?.retryableAtJetLevel) {
@@ -519,6 +546,7 @@ function isRetryableE2eFailure(err) {
   return (
     isRetryableJetDisconnect(jetOutput) ||
     isRetryableJetSessionFailure(jetOutput) ||
+    isRetryableCloudQuotaFailure(jetOutput) ||
     isRetryableLaunchFailure(err)
   );
 }
@@ -531,6 +559,7 @@ function logRetryEligibility(err, attempt) {
     jetProtocol: JET_PROTOCOL_ERROR_RE.test(jetOutput),
     jetNoClient: JET_NO_CLIENT_CONNECTED_RE.test(jetOutput),
     coverageTeardown: JET_COVERAGE_TEARDOWN_RE.test(jetOutput),
+    cloudQuota: isRetryableCloudQuotaFailure(jetOutput),
     launchFailure: isRetryableLaunchFailure(err),
     launchJetLevel: Boolean(err?.retryableAtJetLevel),
   };
@@ -772,6 +801,12 @@ describe('Jet Tests', function () {
             }
           } else if (isRetryableLaunchFailure(lastFailure)) {
             console.warn('[rnfb-e2e] Retrying after launch failure (Metro/bundle/FrontBoard)');
+          } else if (isRetryableCloudQuotaFailure(lastOutput)) {
+            console.warn(
+              `[rnfb-e2e] Retrying after cloud quota pressure; cooling down ${CLOUD_QUOTA_RETRY_COOLDOWN_MS}ms`,
+            );
+            logCloudPressureAnalysisPointer('jet-retry');
+            await sleep(CLOUD_QUOTA_RETRY_COOLDOWN_MS);
           }
           await drainJetAttempt(platform);
           if (platform === 'ios' && process.platform === 'darwin') {
@@ -793,6 +828,18 @@ describe('Jet Tests', function () {
       } catch (err) {
         lastFailure = err;
         logRetryEligibility(err, attempt);
+        if (isRetryableCloudQuotaFailure(err?.jetOutput || '')) {
+          await recordE2eCloudMetricFromHost({
+            category: 'cloud-quota',
+            event: 'jet-failure',
+            attempt,
+            error: String(err?.message || err),
+            metadata: {
+              jetExitCode: err?.jetExitCode ?? null,
+            },
+          });
+          logCloudPressureAnalysisPointer('jet-failure-recorded');
+        }
         const retryable = attempt === 1 && isRetryableE2eFailure(err);
         console.warn(
           `[rnfb-e2e] Jet attempt ${attempt} failed (retryable=${retryable}, exit=${err.jetExitCode ?? 'n/a'})`,

@@ -61,7 +61,8 @@ const ID_LENGTH = 22;
 const PROJECT_ID = 448618578101; // this is "magic", it's the react-native-firebase-testing project ID
 
 describe('installations() modular', function () {
-  describe('firebase v8 compatibility', function () {
+  // Namespaced API is being removed; modular coverage is sufficient and halves FIS load.
+  xdescribe('firebase v8 compatibility', function () {
     beforeEach(async function beforeEachTest() {
       // @ts-ignore
       globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;

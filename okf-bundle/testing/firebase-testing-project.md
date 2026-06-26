@@ -3,12 +3,12 @@ type: Reference
 title: Firebase testing project and emulator setup
 description: How RNFB e2e tests use the react-native-firebase-testing Firebase project, local emulators, cloud databases, and where rules/indexes are configured and deployed.
 tags: [testing, e2e, firebase, emulator, firestore, pipelines]
-timestamp: 2026-06-23T00:00:00Z
+timestamp: 2026-06-26T00:00:00Z
 ---
 
 # Overview
 
-RNFB Detox/Jet e2e uses Firebase project **`react-native-firebase-testing`**. Most modules use local emulators; **Firestore Pipelines** uses a cloud Enterprise DB.
+RNFB Detox/Jet e2e uses Firebase project **`react-native-firebase-testing`**. Most modules use local emulators; **Firestore Pipelines**, **Installations**, and **Remote Config fetch/activate** hit live Google APIs on the shared project.
 
 ```mermaid
 flowchart TB
@@ -31,6 +31,9 @@ flowchart TB
     C1["(default) Firestore"]
     C2["second-rnfb database"]
     C3["pipelines-e2e Enterprise eur3"]
+    C4["Installations FIS tokens"]
+    C5["Remote Config + RC admin helpers"]
+    C6["Deployed e2e helper callables"]
   end
 
   F1 --> FS
@@ -41,6 +44,10 @@ flowchart TB
   S --> AU
 
   PE["Pipeline.e2e.js getFirestore('pipelines-e2e')"] --> C3
+  INS["installations() e2e"] --> C4
+  RC["remoteConfig() fetch/activate"] --> C4
+  RC --> C5
+  HELP["FirebaseHelpers.callCloudHelperFunction"] --> C6
 ```
 
 # Where configuration lives
@@ -59,6 +66,7 @@ Config root: [`.github/workflows/scripts/`](../../.github/workflows/scripts/) (`
 | [`storage.rules`](../../.github/workflows/scripts/storage.rules) | Storage rules (emulator) |
 | [`functions/`](../../.github/workflows/scripts/functions/) | Cloud Functions used by some e2e (e.g. Vertex AI mock) |
 | [`deploy-firestore.sh`](../../.github/workflows/scripts/deploy-firestore.sh) | Deploy Firestore rules + indexes to cloud |
+| [`deploy-e2e-cloud-functions.sh`](../../.github/workflows/scripts/deploy-e2e-cloud-functions.sh) | Deploy live e2e helper callables (metrics, App Check, RC admin) |
 | [`sync-firestore-indexes.sh`](../../.github/workflows/scripts/sync-firestore-indexes.sh) | Pull indexes from cloud into repo (non-interactive) |
 | [`README-firestore.md`](../../.github/workflows/scripts/README-firestore.md) | Short operator cheat sheet |
 
@@ -116,6 +124,94 @@ curl -X DELETE \
 Pipelines require Enterprise. RNFB does not enable Enterprise emulator mode today.
 
 See also [Firestore Pipelines design](/packages/firestore/pipelines.md) for bridge/coercion and coverage notes.
+
+## Live cloud APIs (Installations, Remote Config)
+
+| Product | Emulator in Jet? | Runtime in e2e |
+|---------|------------------|----------------|
+| **Installations** (`getId`, `getToken`) | **No** | Live `firebaseinstallations.googleapis.com` on shared project |
+| **Remote Config** (`fetch`, `activate`, `getValue`) | **No** | Live RC; depends on FIS token from Installations |
+| **App Check debug token** | **No** | Live callable `fetchAppCheckTokenV2` via `FirebaseHelpers` |
+| **RC template admin** | **No** | Live callable `testFunctionRemoteConfigUpdateV2` |
+
+**Parallel CI load** — All e2e matrix legs (iOS debug/release, Android, macOS Other when RC/App Check modules load) share one FIS project and the same live helper callables. Duplicate namespaced + modular suites doubled token traffic; prefer **modular-only** coverage while namespaced APIs are removed (`xdescribe` v8 blocks per package).
+
+**Do not** route cloud-pressure telemetry through the Functions emulator (`connectFunctionsEmulator` in `tests/app.js`); observability for live API pressure uses **deployed** callables (below).
+
+### CI triage: cloud API quota pressure
+
+Platform-agnostic — can surface on **any** e2e workflow leg that hits live Installations, Remote Config, or cloud helpers while other jobs run concurrently.
+
+**Symptom** — mid/late Jet run (installations / remoteConfig / App Check suites), often with other matrix legs active:
+
+```
+installations/token-error … HTTP 503 UNAVAILABLE … firebaseinstallations.googleapis.com
+Too many server requests
+remoteConfig/failure … Failed to get installations token
+```
+
+RC cases cascade when FIS token fetch fails. Functions emulator tests may still pass in the same run — this is **not** an emulator failure.
+
+**Cause** — Live Google APIs on shared project `react-native-firebase-testing` (table above). Parallel GHA jobs multiply FIS and helper-callable traffic.
+
+**Mitigations in this repo**
+
+| Change | Location |
+|--------|----------|
+| Modular-only installations / RC e2e while namespaced APIs are removed | `packages/installations/e2e/`, `packages/remote-config/e2e/` (`xdescribe` v8 blocks) |
+| `RETRYABLE_CLOUD_QUOTA_RE` → one Jet e2e retry; cooldown `RNFB_CLOUD_QUOTA_RETRY_COOLDOWN_MS` (default 90s) before attempt 2 | `tests/e2e/firebase.test.js` (all Detox platforms) |
+| Record quota-class Jet failure to Cloud Logging via live `e2eCloudMetricsV2` | `packages/app/e2e/cloud-metrics.js`, `tests/globals.js` |
+| On FIS/quota Jet failure, log `cloud-pressure-analysis` pointer (Cloud Logging filter + summary callable URL) — no per-run summary dump | `tests/e2e/firebase.test.js` |
+
+Attempt 2 uses the same platform-specific drain/reboot as other Jet retries (iOS simulator reboot, Android emulator reboot, etc.) — see [iOS operational notes](../ci-workflows/ios.md#operational-notes).
+
+**Diagnosing** (any platform Detox step log):
+
+```bash
+rg 'installations/token-error|Too many server requests|remoteConfig/failure|cloudQuota|cloud-pressure-analysis' detox-step.log
+rg '\[rnfb-e2e\] retry-eligibility' detox-step.log
+```
+
+| Pattern | Meaning |
+|---------|---------|
+| `cloudQuota: true` + `retryable=true` on attempt 1 | Second Jet attempt should run after cooldown + platform reboot |
+| `cloud-pressure-analysis` | Pointer to Cloud Logging / `e2eCloudMetricsSummaryV2` for retrospective cross-run pressure — metrics are not dumped inline |
+| Installations fail, `functions()` green | Live API quota, not Functions emulator |
+
+Deploy metrics helpers before expecting summary/metrics in CI: [E2e cloud helper callables](#e2e-cloud-helper-callables).
+
+## E2e cloud helper callables
+
+Live helpers use `FirebaseHelpers.callCloudHelperFunction` → `https://us-central1-react-native-firebase-testing.cloudfunctions.net/<name>` (same pattern as App Check / RC admin). Emulator functions under `:5001` are a separate surface.
+
+| Callable | Role |
+|----------|------|
+| `e2eCloudMetricsV2` | Append `[rnfb-e2e-metrics]` structured events to **Cloud Logging** (cross-run pressure notes) |
+| `e2eCloudMetricsSummaryV2` | Query recent metrics for retrospective analysis (callable; not logged per Detox run) |
+| `fetchAppCheckTokenV2` | App Check e2e helper (live only) |
+| `testFunctionRemoteConfigUpdateV2` | RC template mutations (live only) |
+
+**Deploy** (after adding/changing helpers):
+
+```bash
+cd .github/workflows/scripts
+./deploy-e2e-cloud-functions.sh
+```
+
+Summary query needs Cloud Logging read on the functions runtime SA (`roles/logging.viewer`).
+
+**Triage** — Cloud Console → Logging, filter `jsonPayload.message="[rnfb-e2e-metrics]"`. CI Detox log on quota failure: `rg 'cloud-pressure-analysis' detox-step.log`. Retrospective aggregate: POST `e2eCloudMetricsSummaryV2` with `{"data":{"lookbackHours":24}}`.
+
+## Functions emulator timeouts
+
+Functions **e2e** callables run on the **emulator** (`:5001`). Under CI load, client default ~70s and server default 60s can surface `deadline-exceeded` on slow streaming/emulator-config tests.
+
+| Layer | Non-timeout-probe tests | Timeout-probe tests (`sleeperV2`) |
+|-------|-------------------------|-----------------------------------|
+| **Client** (`functions.e2e.js`) | `e2eCallableTimeoutOptions()` → 120s | `{ timeout: 1000 }` only |
+| **Server** (`functions/src/*.ts`) | `E2E_TEST_FUNCTION_TIMEOUT_SECONDS` (120) via `e2eCallOptions.ts` | `sleeperV2` unchanged (intentional hang) |
+
+Restart emulator after rebuilding `functions/` (`yarn tests:emulator:start`).
 
 # Cloud project: deploy rules and indexes
 
@@ -206,6 +302,10 @@ Pipeline-only debugging may temporarily scope `tests/app.js` to `Pipeline.e2e.js
 | Vector search | Index in `firestore.pipelines-e2e.indexes.json`; deploy to cloud; not emulator rules |
 | Firestore cache | `clearIndexedDbPersistence` in `tests/app.js` for non-macOS platforms between runs |
 | Native coverage | iOS profraw pulled in `finally` even when Jet fails — see [Coverage design](/testing/coverage-design.md) |
+| Installations / RC | Live FIS + RC on shared project; not emulated — parallel matrix can 503 / “Too many server requests” |
+| Cloud metrics | `e2eCloudMetricsV2` + summary callable; deploy via `deploy-e2e-cloud-functions.sh` |
+| Functions `deadline-exceeded` | Extend client + server timeouts for non-`sleeperV2` callables; see [Functions emulator timeouts](#functions-emulator-timeouts) |
+| Storage seed flake | `packages/storage/e2e/helpers.js` `seed()` retries with exponential backoff (emulator) |
 
 # Related
 
