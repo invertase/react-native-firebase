@@ -1,0 +1,101 @@
+---
+type: Reference
+title: Namespace API removal work queue
+description: Phase tracker for removing the deprecated namespaced JS API across all packages, leaving a modular-only public surface.
+tags: [app, modular, namespaced, deprecation, migration, work-queue]
+timestamp: 2026-06-26T00:00:00Z
+---
+
+# Namespace API removal — work queue
+
+> **IN PROGRESS (2026-06-26):** **N0/N1** complete — factory + `ml` modular-only; remediation + delta re-review green; `review_gate` **closed**, uncommitted. **Next:** `documentation` → `commit`, then **N2** `in-app-messaging`.
+> **Order:** pilot smallest (`ml`, `in-app-messaging`) → spike hardest (`messaging`) → bulk small→large → **NF** app cleanup → **NV** full validation. **Workflow:** [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md).
+
+---
+
+Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers / gate field ids: [iteration vocabulary](testing/iteration-vocabulary.md). **Loop, gates, host rule, harness:** [change authoring workflow](testing/change-authoring-workflow.md) — not restated here.
+
+---
+
+## Phase ordering
+
+| Phase | Module(s) | Why |
+|-------|-----------|-----|
+| **N0** | app factory | `gap-analysis` — factory shape; blocks N1 |
+| **N1** | `ml` (0m) | hollowest pilot — proves factory + index/test rewrite |
+| **N2** | `in-app-messaging` (3m) | second pilot — `withModularFlag` getters |
+| **N3** | `messaging` (~28m) | **hardest** — headless task, globals, cross-module hops; native ⇒ `:build` before e2e |
+| **N4** | `installations`, `app-distribution`, `functions` (~4m) | small bulk |
+| **N5** | `perf`, `app-check`, `crashlytics`, `database`, `storage` | medium bulk |
+| **N6** | `remote-config`, `analytics`, `auth`, `firestore` | large blast radius + `compare:types` |
+| **NF** | `app` + shared infra | [final cleanup](namespace-api-removal-workflow.md#nf--final-cleanup-app--shared-infra) |
+| **NV** | all | `pre-merge-validation`, **full** tier |
+
+`ai`, `vertexai`, `phone-number-verification` already modular-only — no phase.
+
+---
+
+## Resume checklist
+
+Gate prerequisites before any `:test-cover` ([host rule](testing/change-authoring-workflow.md#host-rule)):
+
+1. [Pre-flight](testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): [host-clear probes](testing/running-e2e.md#host-clear-probes), [services ready](testing/running-e2e.md#2-services-ready), [harness matches validation tier](testing/running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](testing/running-e2e.md#harness-narrowing-gate-blocking) — **unit-focused** and **area-focused** only); [serial `:test-cover`](testing/running-e2e.md#serialized-e2e-dispatch); [frozen tree](testing/change-authoring-workflow.md#frozen-tree) for `independent-review`.
+2. Per-module checklist and removal greps: [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md). User-facing namespace removal: [Migrating to v26](/migrating-to-v26).
+
+---
+
+## Per-module iteration protocol
+
+Each module follows **one** serial loop. Work types: [change authoring workflow § work types](testing/change-authoring-workflow.md#work-types). Module checklist: [namespace-api-removal-workflow.md § implementation](namespace-api-removal-workflow.md#per-module-implementation).
+
+| Step | Work type | Closes gate | Rules |
+|------|-----------|-------------|-------|
+| **1** | `gap-analysis` | — | Read-only; [workflow § gap-analysis](namespace-api-removal-workflow.md#per-module-gap-analysis) |
+| **2** | `baseline-capture` | — | **area-focused** tier where native |
+| **3** | `implementation` | `implementation` | [Workflow checklist](namespace-api-removal-workflow.md#per-module-implementation); **unit-focused** tier; `.only` OK locally; **no commit** |
+| **4** | `independent-review` | `review` | **Frozen tree**; **area-focused** tier; removal greps; minor/nit → remediation + delta re-review |
+| **5** | `documentation` | — | Migration guide + OKF if durable learnings |
+| **6** | `commit` | `commit` | Set `commit_subject`, close gates in queue doc, stage queue **with** product commit; one focused commit |
+
+---
+
+## Module arbiter gates
+
+Update immediately after each work type closes a gate ([fields](testing/iteration-vocabulary.md#work-queue-fields)). `~m` = instance methods.
+
+| Phase | Module | `impl_gate` | `review_gate` | `commit_gate` | `commit_subject` | `next_work_type` | `validation_tier` | Notes |
+|-------|--------|-------------|---------------|---------------|------------------|------------------|-------------------|-------|
+| N0 | app factory | **closed** | **closed** | open | — | `commit` | area-focused | `getOrCreateModularInstance` + `addOnAppDestroy`; delta re-review green; commits with N1 |
+| N1 | `ml` (0m) | **closed** | **closed** | open | — | `documentation` | area-focused | pilot; uncommitted; `tsc:compile` + `jest packages/ml` 1/1 |
+| N2 | `in-app-messaging` (3m) | open | open | open | — | `gap-analysis` | unit-focused | |
+| N3 | `messaging` (~28m) | open | open | open | — | `gap-analysis` | area-focused | blocked on factory pattern from N0/N1 |
+| N4 | `installations` (4m) | open | open | open | — | `gap-analysis` | unit-focused | |
+| N4 | `app-distribution` (4m) | open | open | open | — | `gap-analysis` | unit-focused | |
+| N4 | `functions` (4m) | open | open | open | — | `gap-analysis` | unit-focused | |
+| N5 | `perf` (6m) | open | open | open | — | `gap-analysis` | area-focused | |
+| N5 | `app-check` (8m) | open | open | open | — | `gap-analysis` | area-focused | `compare:types` |
+| N5 | `crashlytics` (11m) | open | open | open | — | `gap-analysis` | area-focused | |
+| N5 | `database` (10m) | open | open | open | — | `gap-analysis` | area-focused | `compare:types` |
+| N5 | `storage` (6m) | open | open | open | — | `gap-analysis` | area-focused | `compare:types` |
+| N6 | `remote-config` (15m) | open | open | open | — | `gap-analysis` | area-focused | `compare:types` |
+| N6 | `analytics` (~50m) | open | open | open | — | `gap-analysis` | area-focused | |
+| N6 | `auth` (~43m) | open | open | open | — | `gap-analysis` | area-focused | [auth triage](packages/auth/compare-types-triage.md) |
+| N6 | `firestore` (~17m) | open | open | open | — | `gap-analysis` | area-focused | pipelines + `compare:types` |
+| NF | `app` | open | open | open | — | `gap-analysis` | full | |
+| NV | all | open | open | open | — | `pre-merge-validation` | full | revert all narrowing |
+
+---
+
+## N0/N1 review findings
+
+**Fixed (delta re-review closed):** registry re-resolution + deleted-app guard; internal-`getApp` deprecation warning suppressed; fabricated `getX` message removed.
+
+**Deferred:** atomic swap for side-effect modules (N3); custom-URL validation (N5); factory unit tests (N2).
+
+**Edge cases for N3+:** headless handler + module globals; `firebase.utils(app)` hop; dual-exposed statics; instance-method deprecation maps on nested classes.
+
+---
+
+## NV — pre-merge
+
+`pre-merge-validation`, **full** tier: [change authoring § pre-merge](testing/change-authoring-workflow.md#primary-loop); `compare:types` all registered configs; [validation checklist](testing/validation-checklist.md).

@@ -19,6 +19,11 @@ okf_version: "0.1"
 * [Coverage design](/testing/coverage-design.md) — unit/e2e coverage policy, native gates, Codecov
 * [Firebase testing project](/testing/firebase-testing-project.md) — cloud vs emulator, live FIS/RC, helper callables, rules/indexes, deploy
 
+# Cross-cutting work
+
+* [Namespace API removal workflow](/namespace-api-removal-workflow.md) — modular-only migration checklist, factory design, removal greps
+* [Namespace API removal work queue](/namespace-api-removal-work-queue.md) — phase tracker and gate snapshots (ephemeral)
+
 # Packages
 
 * [Auth](/packages/auth/index.md) — modular API type parity, platform matrix, `compare:types`

@@ -15,11 +15,11 @@ Single source of truth for OKF knowledge and commit wording. Other OKF docs/work
 | Kind | Where it lives | What it contains |
 |------|----------------|------------------|
 | **Durable** | OKF reference docs (design, runbooks, registries, workflows) | Stable API names, registry IDs, SDK versions, classifications, verification **methods**, architecture, canonical commands |
-| **Ephemeral** | Explicit **work-queue** docs only | Session phase/probe IDs, SHAs, gate state, `next_work_type`, snapshot labels, dated banners, run counts |
+| **Ephemeral** | Explicit **work-queue** docs only | Session phase/probe IDs, **planned commit subjects** (`commit_subject`), gate state, `next_work_type`, snapshot labels, dated banners, run counts |
 
 **Rules**
 
-1. General OKF docs get **durable only** updates: no phase IDs, SHAs, session e2e counts, or gate snapshots.
+1. General OKF docs get **durable only** updates: no phase IDs, **commit subjects**, session e2e counts, or gate snapshots.
 2. Ephemeral state lives **only** in work queues. When an item closes, durable outcomes move to reference docs; queue rows may archive/delete.
 3. Durable docs may link to a work queue for current status; do not duplicate ephemeral fields.
 
@@ -53,8 +53,10 @@ Fix violations before handoff/merge. Work-queue edits still follow this split.
 
 ## Work-queue documents
 
-Work queues are **intentionally ephemeral**: phases, SHAs, gates, active coordination. They are not policy or finalized registry/design homes.
+Work queues are **intentionally ephemeral**: phases, **commit subjects**, gates, active coordination. They are not policy or finalized registry/design homes.
 
-Work queues record **gates**, **`next_work_type`**, and **`validation_tier`** using field names and allowed values from [iteration vocabulary](testing/iteration-vocabulary.md). Gate semantics and workflow rules: [change authoring workflow](testing/change-authoring-workflow.md). They do **not** name agent roles, dispatch instructions, or session choreography — those are out of scope for the public repo.
+Work queues record **gates**, **`next_work_type`**, **`validation_tier`**, and **`commit_subject`** using field names and allowed values from [iteration vocabulary](testing/iteration-vocabulary.md). Gate semantics and workflow rules: [change authoring workflow](testing/change-authoring-workflow.md). They do **not** name agent roles, dispatch instructions, or session choreography — those are out of scope for the public repo.
+
+Record **`commit_subject`** (the planned Conventional Commit subject line) **before** `git commit`, in the same staged changeset as the item being memorialized. Do not record SHAs — they are unstable under history rewrite. After commit, the subject in git and in the queue must match character-for-character ([PR title rule](#pull-requests) for single-commit PRs).
 
 New work queues link here in frontmatter/opening section; do not copy policy inline.

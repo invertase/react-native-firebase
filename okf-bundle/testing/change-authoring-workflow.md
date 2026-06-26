@@ -171,6 +171,7 @@ Package workflows define **which module/spec** to load (e.g. Firestore → [pipe
 
 - One focused commit per item when gates close.
 - **Never stage:** area narrowing, any `.only`, ad-hoc harness edits.
+- **Work queue:** before `git commit`, set the row's `commit_subject` to the commit's subject line, close `commit_gate`, and stage the queue doc **in the same commit** as the product change ([documentation policy § work queues](../documentation-policy.md#work-queue-documents)). Do not record SHAs in queue docs.
 
 ```bash
 git status
@@ -185,7 +186,7 @@ rg '\.only\(' packages/
 | Firestore Pipelines | Compare-types gap pick, serialization matrix, `Pipeline.e2e.js` setup, coverage snapshots — [pipeline implementation workflow](../packages/firestore/pipeline-implementation-workflow.md) |
 | Other packages | `okf-bundle/packages/<pkg>/` index when a workflow exists |
 
-Ephemeral coordination (gate rows, `next_work_type`, SHAs): **work queues only** — not part of this workflow.
+Ephemeral coordination (gate rows, `next_work_type`, `commit_subject`): **work queues only** — not part of this workflow.
 
 ## Related docs
 
