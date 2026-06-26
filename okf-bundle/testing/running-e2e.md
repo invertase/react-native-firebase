@@ -132,15 +132,17 @@ A listener on `:8081` or `:8080` is **not** sufficient — HTTP checks must succ
 
 #### 3. Harness matches validation tier
 
-Confirm `tests/app.js` / `tests/globals.js` match the item's **`validation_tier`** ([iteration vocabulary](iteration-vocabulary.md#work-queue-fields)), not the branch's committed harness.
+Confirm `tests/app.js` / `tests/globals.js` match the item's **`validation_tier`** ([iteration vocabulary](iteration-vocabulary.md#work-queue-fields)), **not** the branch's committed harness.
 
 | Tier | Harness before `:test-cover` |
 |------|------------------------------|
 | **Focused** (`implementation`) | **Area narrowing required** — trim modules + load only the spec under change (e.g. firestore + `Pipeline.e2e.js`); `.only` OK locally |
-| **Area** (`independent-review`, `baseline-capture`) | Area narrowing OK; full loaded spec(s); **no** `.only` |
+| **Area** (`independent-review`, `baseline-capture`) | **Area narrowing required** — same module/spec trim as focused; load **full** spec file(s) for the area; **no** `.only` |
 | **Full** (`pre-merge-validation`) | Revert all narrowing — full app (`require.context`, all modules) |
 
 Committed full harness on the branch does **not** override **focused** or **area** tier for local runs. Package workflows define area setup (e.g. [pipelines § narrowing](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations)). Never commit narrowing until **full** tier.
+
+See [Harness narrowing gate (blocking)](#harness-narrowing-gate-blocking) — a run that skips step 3 does **not** close `implementation_gate` or `review_gate`.
 
 ### Stalled run detection
 
@@ -157,6 +159,26 @@ Completion = shell exit code + log markers — not open-ended log tailing.
 - iOS Metro at launch → [ci-workflows/ios.md § Metro unresponsive](../ci-workflows/ios.md)
 
 Do not poll `pgrep` / `jet.js` / `:8090` for *completion* ([above](#how-a-platform-run-is-structured-androidios)). Stall detection uses **missing progress markers**, not exit polling.
+
+### Harness narrowing gate (blocking)
+
+**Both `focused` and `area` tiers require area narrowing in `tests/app.js` / `tests/globals.js` before the first `:test-cover`.** The only difference between those tiers is whether `.only` is allowed and whether the full area spec loads — not whether the harness stays at full app load.
+
+| Mistake | Symptom | Gate impact |
+|---------|---------|-------------|
+| Run `:test-cover` on committed full harness during `implementation` or `independent-review` | macOS/iOS/Android pass counts in the **hundreds or thousands** (all modules via `require.context`) | Run is **invalid** — does not close `implementation_gate` or `review_gate` |
+| Correct pipeline area harness | ~**100** passing per platform for `Pipeline.e2e.js` only ([pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations)) | Expected for J0–Q iterations |
+
+**Apply locally before every `:test-cover` at focused or area tier** — even when git shows the full push harness. Revert `tests/app.js` / `tests/globals.js` after the run if the branch commit keeps full harness (typical until phase **R**).
+
+**Validation report must state:** harness narrowed (yes/no), which module/spec loads, and whether pass counts match area scope. A green full-app run is not a substitute.
+
+**Checklist (copy before first run):**
+
+1. `platformSupportedModules` lists only the package under change (e.g. `firestore` only).
+2. Spec load uses direct `require` of the area spec — not `require.context` for all packages.
+3. No `.only` when tier is **area**; `.only` optional when tier is **focused**.
+4. Grep log: pass count consistent with area scope (~100 for pipeline-only), not full app (~141+ macOS baseline with full load per [work queue](../packages/firestore/pipeline-coverage-work-queue.md)).
 
 ### Focused-tier iteration loop
 
@@ -183,7 +205,7 @@ Never overlap runs that use `:test-cover`. See [host rule](iteration-vocabulary.
 | Validation tier | E2e scope | Narrowing allowed | Typical work type |
 |-----------------|-----------|-------------------|-------------------|
 | **Focused** | Backpressure while product code is changing | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** | `implementation` |
-| **Area** | Full loaded spec(s) for the package/area under change | Area narrowing only (`tests/app.js` + `tests/globals.js`); **no** `.only` | `baseline-capture`, `independent-review` |
+| **Area** | Full loaded spec(s) for the package/area under change | **Area narrowing required** in `tests/app.js` / `tests/globals.js`; **no** `.only` | `baseline-capture`, `independent-review` |
 | **Full** | All modules, all platforms | None — revert all narrowing | `pre-merge-validation` |
 
 Each run owns its blocking `:test-cover` and returns summaries only.
@@ -256,7 +278,7 @@ All tiers use [canonical commands](#rules), [host rule](iteration-vocabulary.md#
 | Validation tier | E2e scope | Narrowing allowed | Typical work type |
 |-----------------|-----------|-------------------|-------------------|
 | **Focused** | Fast loop while product code is changing | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** | `implementation` |
-| **Area** | Full loaded spec(s) for the package/area under change | Area narrowing only (`tests/app.js` + `tests/globals.js`); **no** `.only` | `baseline-capture`, `independent-review` |
+| **Area** | Full loaded spec(s) for the package/area under change | **Area narrowing required** in `tests/app.js` / `tests/globals.js`; **no** `.only` | `baseline-capture`, `independent-review` |
 | **Full** | Unfocused — all modules, all platforms | None — revert all narrowing | `pre-merge-validation` |
 
 **Universal rules:**

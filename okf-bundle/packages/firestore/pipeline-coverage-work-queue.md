@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS (2026-06-25):** **J0-1…J0-4** — all gates closed. **J0-5** `round` — **`review_gate` closed** (area 100/100/100). **Next pickup:** **J0-6** `substring` **`implementation`**. **J0b** queued after J0 complete.
+> **IN PROGRESS (2026-06-25):** **J0-1…J0-4** — all gates closed. **J0-5** `round` `5b4717d0c` — all gates closed. **Next pickup:** **J0-6** `substring` **`implementation`**. **J0b** queued after J0 complete.
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -38,7 +38,7 @@ Ephemeral tracker; see [OKF policy](../../documentation-policy.md).
 
 Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration-vocabulary.md#host-rule)):
 
-1. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): host clear, [services ready](../../testing/running-e2e.md#2-services-ready), [harness matches `validation_tier](../../testing/running-e2e.md#3-harness-matches-validation-tier)` from arbiter row — **not** [push harness](#harness) when tier is **focused**/**area**; [serial `:test-cover](../../testing/running-e2e.md#serialized-e2e-dispatch)`; [frozen tree](../../testing/iteration-vocabulary.md#frozen-tree) for `independent-review`.
+1. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): host clear, [services ready](../../testing/running-e2e.md#2-services-ready), [harness matches validation tier](../../testing/running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking) — required for **focused** and **area**; not [push harness](#harness)); [serial `:test-cover`](../../testing/running-e2e.md#serialized-e2e-dispatch); [frozen tree](../../testing/iteration-vocabulary.md#frozen-tree) for `independent-review`.
 2. Guard probes: [SDK runtime verification](pipeline-sdk-support-audit.md#6-runtime-verification-authoritative) + [Phase J protocol](#phase-j-iteration-protocol-strict) below.
 3. Coverage deltas: full clean cycle; never trust stale `.ec`/profraw ([coverage stale data](../../testing/coverage-design.md#stale-coverage-data)).
 
@@ -100,7 +100,7 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 | **J0-2** `switchOn`     | `ae795b96c` | closed                | **closed**    | —                    | —                 | —          | Committed 2026-06-25; area review 100/100/100                      |
 | **J0-3** `trunc`        | `138e45690` | closed                | **closed**    | —                    | —                 | —          | Area review 2026-06-25: 100/100/100; trunc unified iOS path        |
 | **J0-4** `conditional`  | `cde7b812c`         | closed                | **closed**    | —                    | —                 | —          | Area review 100/100/100; iOS wire `conditional`; unified e2e       |
-| **J0-5** `round`        | WIP         | closed                | **closed**    | —                    | —                 | —          | Area review 100/100/100; round unified iOS path (TS-only)          |
+| **J0-5** `round`        | `5b4717d0c`         | closed                | **closed**    | —                    | —                 | —          | Area review 100/100/100; round unified iOS path (TS-only)          |
 | **J0-6** `substring`    | —           | —                     | —             | **`implementation`** | focused           | ios        | **unblocked** (J0-5 committed)                                     |
 
 
@@ -311,7 +311,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 ## Harness
 
 - **Push state (committed):** full test app — all `platformSupportedModules` + `require.context` in `tests/app.js`. For merge/CI only; **not** the harness for local `:test-cover` during J–Q.
-- **Local `:test-cover`:** must match arbiter `**validation_tier`** — [running e2e § harness](../../testing/running-e2e.md#3-harness-matches-validation-tier). `**implementation` → focused:** apply [area narrowing](pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations) locally **before** first run even when git has full harness. `**independent-review` → area:** same narrowing, no `.only`. Revert before **R** (full tier).
+- **Local `:test-cover`:** must match arbiter **`validation_tier`** — [running e2e § harness + narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking). **`implementation` → focused** and **`independent-review` → area:** both require [area narrowing](pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations) locally **before** first run even when git has full harness. Revert before **R** (full tier).
 - `tests/globals.js` — `RNFBDebug = true` optional for fail-fast
 
 ---
