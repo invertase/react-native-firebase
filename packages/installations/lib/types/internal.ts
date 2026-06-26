@@ -2,7 +2,7 @@
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this library except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
@@ -17,18 +17,6 @@
 
 import type { Installations } from './installations';
 
-/** Optional final argument passed by modular API wrappers (MODULAR_DEPRECATION_ARG). */
-export type InstallationsModularDeprecationArg = string;
-
-export interface InstallationsInternal extends Installations {
-  delete(deprecationArg?: InstallationsModularDeprecationArg): Promise<void>;
-  getId(deprecationArg?: InstallationsModularDeprecationArg): Promise<string>;
-  getToken(
-    forceRefresh?: boolean,
-    deprecationArg?: InstallationsModularDeprecationArg,
-  ): Promise<string>;
-}
-
 export interface RNFBInstallationsModule {
   getId(): Promise<string>;
   getToken(forceRefresh: boolean): Promise<string>;
@@ -39,4 +27,11 @@ declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
     RNFBInstallationsModule: RNFBInstallationsModule;
   }
+}
+
+export interface InstallationsInternal extends Installations {
+  getId(): Promise<string>;
+  getToken(forceRefresh?: boolean): Promise<string>;
+  delete(): Promise<void>;
+  readonly native: RNFBInstallationsModule;
 }

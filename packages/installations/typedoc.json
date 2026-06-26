@@ -1,5 +1,5 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["lib/modular.ts", "lib/types/installations.ts"],
+  "entryPoints": ["lib/index.ts", "lib/types/installations.ts"],
   "tsconfig": "tsconfig.json"
 }

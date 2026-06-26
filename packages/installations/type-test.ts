@@ -1,74 +1,27 @@
-import installations, {
-  firebase,
+import { getApp } from '@react-native-firebase/app';
+import {
   getInstallations,
   deleteInstallations,
   getId,
   getToken,
   onIdChange,
-} from '.';
-import type {
-  FirebaseInstallationsTypes,
-  IdChangeCallbackFn,
-  IdChangeUnsubscribeFn,
-  Installations,
+  SDK_VERSION,
+  type IdChangeCallbackFn,
+  type IdChangeUnsubscribeFn,
+  type Installations,
 } from '.';
 
-console.log(installations().app);
-
-// checks module exists at root
-console.log(firebase.installations().app.name);
-
-// checks module exists at app level
-console.log(firebase.app().installations().app.name);
-
-// checks statics exist
-console.log(firebase.installations.SDK_VERSION);
-
-// checks statics exist on defaultExport
-console.log(installations.firebase.SDK_VERSION);
-
-// checks root exists
-console.log(firebase.SDK_VERSION);
-
-// checks multi-app support exists
-console.log(firebase.installations(firebase.app()).app.name);
-console.log(firebase.installations(firebase.app('foo')).app.name);
-
-// checks default export supports app arg
-console.log(installations(firebase.app()).app.name);
-console.log(installations(firebase.app('foo')).app.name);
-
-// checks Module instance APIs
-const installationsInstance = firebase.installations();
-console.log(installationsInstance.app.name);
-
-installationsInstance.getId().then((id: string) => {
-  console.log(id);
-});
-
-installationsInstance.getToken().then((token: string) => {
-  console.log(token);
-});
-
-installationsInstance.getToken(true).then((token: string) => {
-  console.log(token);
-});
-
-installationsInstance.delete().then(() => {
-  console.log('Installation deleted');
-});
-
-// checks modular API functions
 const modularInstallations1 = getInstallations();
 console.log(modularInstallations1.app.name);
-const typedInstallations: Installations = modularInstallations1;
-console.log(typedInstallations.app.name);
 
-const modularInstallations2 = getInstallations(firebase.app());
+const modularInstallations2 = getInstallations(getApp());
 console.log(modularInstallations2.app.name);
 
-const modularInstallations3 = getInstallations(firebase.app('foo'));
+const modularInstallations3 = getInstallations(getApp('foo'));
 console.log(modularInstallations3.app.name);
+
+const typedInstallations: Installations = modularInstallations1;
+console.log(typedInstallations.app.name);
 
 getId(modularInstallations1).then((id: string) => {
   console.log(id);
@@ -86,12 +39,6 @@ deleteInstallations(modularInstallations1).then(() => {
   console.log('Modular installation deleted');
 });
 
-const namespacedInstallations: FirebaseInstallationsTypes.Module = installationsInstance;
-namespacedInstallations.getId().then((id: string) => {
-  console.log(id);
-});
-
-// Note: onIdChange throws an error in React Native Firebase
 try {
   const onInstallationsIdChange: IdChangeCallbackFn = id => {
     console.log(id);
@@ -104,3 +51,6 @@ try {
 } catch (error) {
   console.log('Modular onIdChange not supported');
 }
+
+const sdkVersion: string = SDK_VERSION;
+console.log(sdkVersion);

@@ -15,13 +15,110 @@
  *
  */
 
-// Export modular/public types.
-export type * from './types/installations';
+import { isIOS } from '@react-native-firebase/app/dist/module/common';
+import {
+  FirebaseModule,
+  getOrCreateModularInstance,
+} from '@react-native-firebase/app/dist/module/internal';
+import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
+import './types/internal';
+import type { FirebaseApp } from '@react-native-firebase/app';
+import type {
+  IdChangeCallbackFn,
+  IdChangeUnsubscribeFn,
+  Installations,
+} from './types/installations';
+import type { InstallationsInternal } from './types/internal';
+import { version } from './version';
 
-// Export modular API functions.
-export * from './modular';
+const nativeModuleName = 'RNFBInstallationsModule';
 
-// Export namespaced API.
-export type { FirebaseInstallationsTypes } from './types/namespaced';
-export * from './namespaced';
-export { default } from './namespaced';
+class FirebaseInstallationsModule extends FirebaseModule<typeof nativeModuleName> {
+  getId(): Promise<string> {
+    return this.native.getId();
+  }
+
+  getToken(forceRefresh?: boolean): Promise<string> {
+    if (!forceRefresh) {
+      return this.native.getToken(false);
+    } else {
+      return this.native.getToken(true);
+    }
+  }
+
+  delete(): Promise<void> {
+    return this.native.delete();
+  }
+
+  onIdChange(): () => void {
+    if (isIOS) {
+      return () => {};
+    }
+
+    // TODO implement change listener on Android
+    return () => {};
+  }
+}
+
+const config: ModuleConfig = {
+  namespace: 'installations',
+  nativeModuleName,
+  nativeEvents: false, // TODO implement android id change listener: ['installations_id_changed'],
+  hasMultiAppSupport: true,
+  hasCustomUrlOrRegionSupport: false,
+};
+
+export const SDK_VERSION = version;
+
+/**
+ * Returns the {@link Installations} instance for the default or given {@link FirebaseApp}.
+ *
+ * @param app - The Firebase `FirebaseApp` to use. When omitted, the default app is used.
+ * @returns The Installations service instance for that app.
+ */
+export function getInstallations(app?: FirebaseApp): Installations {
+  return getOrCreateModularInstance(
+    FirebaseInstallationsModule,
+    config,
+    app,
+  ) as unknown as Installations;
+}
+
+/**
+ * Deletes the Firebase Installation and all associated data.
+ */
+export function deleteInstallations(installations: Installations): Promise<void> {
+  return (installations as InstallationsInternal).delete();
+}
+
+/**
+ * Creates a Firebase Installation if there isn't one for the app and returns the Installation ID.
+ */
+export function getId(installations: Installations): Promise<string> {
+  return (installations as InstallationsInternal).getId();
+}
+
+/**
+ * Returns a Firebase Installations auth token, identifying the current Firebase Installation.
+ */
+export function getToken(installations: Installations, forceRefresh?: boolean): Promise<string> {
+  return (installations as InstallationsInternal).getToken(forceRefresh);
+}
+
+/**
+ * Throw an error since react-native-firebase does not support this method.
+ *
+ * Sets a new callback that will get called when Installation ID changes. Returns an unsubscribe function that will remove the callback when called.
+ */
+export function onIdChange(
+  _installations: Installations,
+  _callback: IdChangeCallbackFn,
+): IdChangeUnsubscribeFn {
+  throw new Error('onIdChange() is unsupported by the React Native Firebase SDK.');
+}
+
+export type {
+  IdChangeCallbackFn,
+  IdChangeUnsubscribeFn,
+  Installations,
+} from './types/installations';

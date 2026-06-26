@@ -27,7 +27,6 @@ export const KNOWN_NAMESPACES = [
   'remoteConfig',
   'crashlytics',
   'database',
-  'installations',
   'firestore',
   'functions',
   'indexing',
