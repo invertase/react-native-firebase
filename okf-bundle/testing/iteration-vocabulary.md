@@ -55,6 +55,8 @@ Work queues use these **field names** (values: `open` | `closed`):
 
 What closes each gate, trust rules, and loop transitions: [change authoring § gates](change-authoring-workflow.md#gates).
 
+`commit_gate` closes when a durable commit exists whose subject matches the row's `commit_subject`.
+
 Items may also be marked **`blocked`** when a dependency gate is open elsewhere.
 
 ## Work-queue fields
@@ -69,6 +71,7 @@ Ephemeral work queues may record:
 | `implementation_gate` | `open` \| `closed` |
 | `review_gate` | `open` \| `closed` |
 | `commit_gate` | `open` \| `closed` |
+| `commit_subject` | Planned or landed **first line** of the item's focused commit (Conventional Commits subject). Set **before** `git commit`; must match the commit that closes `commit_gate`. Do not record SHAs. |
 | `blocked` | Item or dependency blocked until named gate closes |
 
 Queues record **state**, not who executes the work.
