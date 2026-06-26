@@ -32,6 +32,8 @@ export { sendFCM } from './sendFCM';
 
 export { testFetchStream, testFetch } from './vertexaiFunctions';
 
+export { e2eCloudMetricsV2, e2eCloudMetricsSummaryV2 } from './e2eCloudMetrics';
+
 export {
   testStreamingCallable,
   testProgressStream,

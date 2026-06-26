@@ -60,6 +60,7 @@ TypeError: (0 , serialization_1.tryDeserialize) is not a function
 
 - [iOS CI](ios.md) — simulator + Detox; shared Jet / mocha-remote patches
 - [Coverage design](../testing/coverage-design.md) — macOS uploads `e2e-ts-macos` only (no native gate)
+- [Cloud API quota triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure) — live FIS/RC pressure (macOS loads RC; shared project with all matrix legs)
 
 ## Windows / shared
 

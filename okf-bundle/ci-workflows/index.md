@@ -11,6 +11,7 @@ GitHub Actions job shape, platform reliability, and artifact triage.
 ## Shared E2E dependencies
 
 * [Detox patches](detox-patches.md) — inventory, `ECOMPROMISED`, patch workflow
+* [Cloud API quota triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure) — live FIS/RC pressure (all platforms)
 * [iOS diagnostics](ios.md#operational-notes) — `resource-monitor.sh`, `flake-summary.sh`
 
 ## Related

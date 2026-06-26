@@ -16,7 +16,7 @@ okf_version: "0.1"
 * [Running e2e tests](/testing/running-e2e.md) — canonical e2e commands, narrowing, environment, diagnosis
 * [Validation checklist](/testing/validation-checklist.md) — compile, Jest, lint, `compare:types`, e2e, coverage
 * [Coverage design](/testing/coverage-design.md) — unit/e2e coverage policy, native gates, Codecov
-* [Firebase testing project](/testing/firebase-testing-project.md) — cloud vs emulator, rules/indexes, deploy
+* [Firebase testing project](/testing/firebase-testing-project.md) — cloud vs emulator, live FIS/RC, helper callables, rules/indexes, deploy
 
 # Packages
 

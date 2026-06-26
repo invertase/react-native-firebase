@@ -226,6 +226,29 @@ global.FirebaseHelpers = {
   async updateRemoteConfigTemplate(operations) {
     return await this.callCloudHelperFunction('testFunctionRemoteConfigUpdateV2', operations);
   },
+  async recordE2eCloudMetric(payload) {
+    if (!payload || typeof payload !== 'object') {
+      return;
+    }
+
+    const metric = {
+      ...payload,
+      platform: global.Platform?.ios ? 'ios' : global.Platform?.android ? 'android' : 'other',
+    };
+
+    try {
+      await this.callCloudHelperFunction('e2eCloudMetricsV2', metric);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn('[rnfb-e2e-metrics] record failed', String(error?.message || error));
+    }
+  },
+  async fetchE2eCloudMetricsSummary(lookbackHours = 24) {
+    const response = await this.callCloudHelperFunction('e2eCloudMetricsSummaryV2', {
+      lookbackHours,
+    });
+    return response?.result ?? response;
+  },
 };
 
 global.android = {
@@ -492,7 +515,8 @@ global.jet = {
   },
 };
 
-// some tests flake in CI but we still run them locally
-global.isCI = process.env.CI === 'true' || process.env.CI === true;
 // Used to tell our internals that we are running tests.
 globalThis.RNFBTest = true;
+globalThis.recordE2eCloudMetric = payload => global.FirebaseHelpers.recordE2eCloudMetric(payload);
+// some tests flake in CI but we still run them locally
+global.isCI = process.env.CI === 'true' || process.env.CI === true;

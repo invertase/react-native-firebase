@@ -16,7 +16,8 @@
  */
 
 describe('remoteConfig()', function () {
-  describe('firebase v8 compatibility', function () {
+  // Namespaced API is being removed; modular coverage is sufficient and halves FRC/FIS load.
+  xdescribe('firebase v8 compatibility', function () {
     beforeEach(async function beforeEachTest() {
       // @ts-ignore
       globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;

@@ -250,6 +250,7 @@ rg -i 'BUNDLE|index\.bundle|8081|error|ECONN|transform' metro.log
 | Buffer early `ready`, replay after app `login` | `.yarn/patches/detox-npm-20.51.0-*.patch` → `AnonymousConnectionHandler.js` |
 | 2× device-registry lock stale (20s) | `.yarn/patches/detox-npm-20.51.0-*.patch` → `ExclusiveLockfile.js` |
 | Jet + Metro wait, bounded `launchApp` with retry, Detox launch args, install-state + retry-eligibility logging | `tests/e2e/firebase.test.js` |
+| Cloud quota Jet retry + cooldown + metrics/summary hooks | `tests/e2e/firebase.test.js`, `packages/app/e2e/cloud-metrics.js` — see [cloud API quota triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure) |
 | Lifecycle + JS load / packager probe logging; bundle URL `127.0.0.1` | `tests/ios/testing/AppDelegate.mm` |
 | Pre-boot + `bootstatus` + shutdown wait before install | `boot-simulator.sh` |
 | Filtered logs, resource monitor, flake summary, Detox `tee` | `.github/workflows/tests_e2e_ios.yml`, `resource-monitor.sh`, `flake-summary.sh` |
@@ -427,11 +428,13 @@ rg '\[rnfb-e2e\] retry-eligibility' detox-step.log
 
 See also [coverage design — e2e TypeScript coverage](../testing/coverage-design.md#e2e-typescript-coverage-jet--nyc).
 
+**Cloud API quota (Installations / Remote Config)** — platform-agnostic; see [firebase testing project — CI triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure).
+
 ### Operational notes
 
 - **macOS runner load / Spotlight** — GHA macOS hosts may run Spotlight indexing (or other disk-heavy work) at any time and saturate disk I/O. Disabling Spotlight is **not** an option for Xcode CI. Design for tolerance: longer grace windows, non-throwing `Server.send()`, Jet e2e retry on orchestration crashes, `resource-monitor` + `disconnect_context` for triage. Do not treat high `loadavg` alone as a misconfiguration.
 - **Release vs debug** — matrix runs both; each has separate artifacts (`debug` / `release` in the artifact name).
-- **Retry** — Pre-Boot retries up to 3 times with 60s between attempts (clean shutdown + boot each time). Jet e2e retries once on retryable WS / launch / coverage teardown failures (simulator reboot via `boot-simulator.sh` on iOS).
+- **Retry** — Pre-Boot retries up to 3 times with 60s between attempts (clean shutdown + boot each time). Jet e2e retries once on retryable WS / launch / coverage teardown / **cloud quota** failures (simulator reboot via `boot-simulator.sh` on iOS; cloud quota adds cooldown — [cloud API quota triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure)).
 - **Do not boot the simulator only inside Detox** — historical races where the testee never sent “ready” to the Detox proxy; pre-boot remains mandatory.
 - **CI helper scripts** (repo root relative):
 
