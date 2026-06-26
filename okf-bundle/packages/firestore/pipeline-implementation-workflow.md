@@ -109,17 +109,19 @@ Guard probes: one function per commit; no batching. [Pre-flight](../../testing/r
 
 ### Narrowing during pipeline iterations
 
-Generic definitions: [test narrowing](../../testing/running-e2e.md#fast-iteration-test-narrowing), [validation tiers](../../testing/running-e2e.md#e2e-validation-tiers-focused-area-full), [harness vs tier](../../testing/running-e2e.md#3-harness-matches-validation-tier). Pipeline rules:
+Generic definitions: [test narrowing](../../testing/running-e2e.md#fast-iteration-test-narrowing), [validation tiers](../../testing/running-e2e.md#e2e-validation-tiers-focused-area-full), [harness vs tier](../../testing/running-e2e.md#3-harness-matches-validation-tier), **[harness narrowing gate (blocking)](../../testing/running-e2e.md#harness-narrowing-gate-blocking)**. Pipeline rules:
 
-**Before the first `:test-cover` in `implementation`:** apply area narrowing below even if the branch commit has full harness ([work queue § harness](pipeline-coverage-work-queue.md#harness)). Full app load is **full** tier only (phase **R**).
+**Before the first `:test-cover` in `implementation` or `independent-review`:** apply area narrowing below even if the branch commit has full harness ([work queue § harness](pipeline-coverage-work-queue.md#harness)). Full app load is **full** tier only (phase **R**). A green run on the committed full harness does **not** close `implementation_gate` or `review_gate`.
 
 | Kind | `implementation` (**focused**) | `independent-review` (**area**) | `pre-merge-validation` (**full**) | `commit` |
 |------|--------------------------------|----------------------------------|-----------------------------------|----------|
-| **Area narrowing** (`tests/app.js`, `tests/globals.js`) | Allowed (tight scope OK) | Allowed — full `Pipeline.e2e.js`, no `.only` | Revert — all modules | Never |
+| **Area narrowing** (`tests/app.js`, `tests/globals.js`) | **Required** before `:test-cover` | **Required** before `:test-cover` — full `Pipeline.e2e.js`, no `.only` | Revert — all modules | Never |
 | **Single-test** (`it.only`) | Allowed | Revert | Revert | Never |
 | **Single-suite** (`describe.only`) | Allowed | Revert | Revert | Never |
 
-Area setup: firestore-only `platformSupportedModules` + `require('../packages/firestore/e2e/Pipeline.e2e.js')`; `RNFBDebug = true`.
+**Area setup (required for both focused and area tiers):** firestore-only `platformSupportedModules` + `require('../packages/firestore/e2e/Pipeline.e2e.js')`; `RNFBDebug = true`.
+
+**Sanity check:** ~**100** passing per platform when only `Pipeline.e2e.js` loads. Pass counts in the **hundreds or thousands** mean full app load — stop and re-apply narrowing ([running-e2e § gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking)).
 
 ## Step 1 — Compare-types gap analysis
 

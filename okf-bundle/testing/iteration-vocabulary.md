@@ -32,8 +32,8 @@ E2e scope and narrowing rules: [running e2e § validation tiers](running-e2e.md#
 
 | Tier | E2e scope | Narrowing |
 |------|-----------|-----------|
-| `focused` | Fast loop while product code is changing | `.only` and tight area narrowing OK locally — never commit |
-| `area` | Full loaded spec(s) for the package/area under change | Area narrowing in `tests/app.js` / `tests/globals.js` OK; no `.only` |
+| `focused` | Fast loop while product code is changing | **Area narrowing required** before `:test-cover`; `.only` OK locally — never commit ([harness gate](running-e2e.md#harness-narrowing-gate-blocking)) |
+| `area` | Full loaded spec(s) for the package/area under change | **Area narrowing required** before `:test-cover`; **no** `.only` ([harness gate](running-e2e.md#harness-narrowing-gate-blocking)) |
 | `full` | All modules, all platforms | Revert all narrowing |
 
 Jest, prepare, compile, and checklist commands per work type: [validation checklist](validation-checklist.md).
@@ -64,7 +64,7 @@ See also: [running e2e rule 7](running-e2e.md#rules) and [host rule](running-e2e
 On a shared dev host:
 
 - One `:test-cover` at a time — never overlap focused-tier and area-tier runs.
-- [Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) before every run: host clear, [services ready](running-e2e.md#2-services-ready), [harness matches `validation_tier`](running-e2e.md#3-harness-matches-validation-tier).
+- [Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) before every run: host clear, [services ready](running-e2e.md#2-services-ready), [harness matches `validation_tier`](running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](running-e2e.md#harness-narrowing-gate-blocking) for `focused` and `area`).
 - Canonical commands only — [running e2e](running-e2e.md). Stalled runs → [stalled run detection](running-e2e.md#stalled-run-detection).
 
 ## Work-queue fields

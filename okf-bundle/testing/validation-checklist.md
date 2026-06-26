@@ -19,9 +19,9 @@ Work types and tiers: [iteration vocabulary](iteration-vocabulary.md).
 | Work type | Scope | Shortcuts |
 |-----------|--------|-----------|
 | `gap-analysis` | `compare:types`, config read, SDK declarations | n/a |
-| `baseline-capture` | Full loaded spec(s) + e2e coverage on macOS, iOS, Android | **area** tier; area narrowing only ([running-e2e](running-e2e.md#fast-iteration-test-narrowing)); no `.only`, no `:test-cover-reuse` |
-| `implementation` | Focused Jest + e2e | **focused** tier; [area narrowing required before `:test-cover`](running-e2e.md#3-harness-matches-validation-tier) + optional `.only` ([running-e2e](running-e2e.md#fast-iteration-test-narrowing)); [pipelines workflow](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations) |
-| `independent-review` | Full checklist below on all platforms | **area** tier; [frozen tree](iteration-vocabulary.md#frozen-tree); never commit narrowing |
+| `baseline-capture` | Full loaded spec(s) + e2e coverage on macOS, iOS, Android | **area** tier; [area narrowing required](running-e2e.md#harness-narrowing-gate-blocking); no `.only`, no `:test-cover-reuse` |
+| `implementation` | Focused Jest + e2e | **focused** tier; [area narrowing required before `:test-cover`](running-e2e.md#harness-narrowing-gate-blocking) + optional `.only`; [pipelines workflow](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations) |
+| `independent-review` | Full checklist below on all platforms | **area** tier; [area narrowing required](running-e2e.md#harness-narrowing-gate-blocking); [frozen tree](iteration-vocabulary.md#frozen-tree); never commit narrowing |
 | `pre-merge-validation` | Full unfocused suite | **full** tier — [running-e2e § merge](running-e2e.md#before-merge-pr-handoff); entire PR branch, once |
 
 ## Prepare and compile
@@ -96,7 +96,7 @@ Goal: each iteration improves OKF and removes conflicting guidance.
 - [ ] `yarn tests:jest`
 - [ ] `yarn compare:types` (stale config entries removed)
 - [ ] `yarn lint:js` (+ markdown/spellcheck if docs; + platform lint if native)
-- [ ] E2e green on macOS, iOS, Android ([running-e2e](running-e2e.md); no `.only`)
+- [ ] E2e green on macOS, iOS, Android ([running-e2e](running-e2e.md); [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking) applied; no `.only`)
 - [ ] Native coverage post-processing per [coverage-design](coverage-design.md)
 - [ ] [Coverage policy](coverage-design.md#coverage-expectations-policy) satisfied on touched files
 - [ ] OKF bundle reviewed/updated per § above
