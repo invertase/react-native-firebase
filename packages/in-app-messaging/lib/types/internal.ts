@@ -17,9 +17,6 @@
 
 import type { InAppMessaging } from './in-app-messaging';
 
-/** Optional final argument passed by modular API wrappers (MODULAR_DEPRECATION_ARG). */
-export type InAppMessagingModularDeprecationArg = string;
-
 /**
  * Wrapped native module contract for `RNFBFiamModule`.
  */
@@ -40,15 +37,3 @@ declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
 export interface InAppMessagingInternal extends InAppMessaging {
   readonly native: RNFBFiamModule;
 }
-
-export type InAppMessagingWithDeprecationArg = InAppMessagingInternal & {
-  setMessagesDisplaySuppressed(
-    enabled: boolean,
-    _depArg: InAppMessagingModularDeprecationArg,
-  ): Promise<null>;
-  setAutomaticDataCollectionEnabled(
-    enabled: boolean,
-    _depArg: InAppMessagingModularDeprecationArg,
-  ): Promise<null>;
-  triggerEvent(eventId: string, _depArg: InAppMessagingModularDeprecationArg): Promise<null>;
-};
