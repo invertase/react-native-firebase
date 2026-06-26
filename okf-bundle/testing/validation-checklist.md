@@ -20,7 +20,7 @@ Work types and tiers: [iteration vocabulary](iteration-vocabulary.md).
 |-----------|--------|-----------|
 | `gap-analysis` | `compare:types`, config read, SDK declarations | n/a |
 | `baseline-capture` | Full loaded spec(s) + e2e coverage on macOS, iOS, Android | **area** tier; area narrowing only ([running-e2e](running-e2e.md#fast-iteration-test-narrowing)); no `.only`, no `:test-cover-reuse` |
-| `implementation` | Focused Jest + e2e | **focused** tier; area + single-test/suite narrowing per [running-e2e](running-e2e.md#fast-iteration-test-narrowing); package workflows may add rules (e.g. [pipelines](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations)) |
+| `implementation` | Focused Jest + e2e | **focused** tier; [area narrowing required before `:test-cover`](running-e2e.md#3-harness-matches-validation-tier) + optional `.only` ([running-e2e](running-e2e.md#fast-iteration-test-narrowing)); [pipelines workflow](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations) |
 | `independent-review` | Full checklist below on all platforms | **area** tier; [frozen tree](iteration-vocabulary.md#frozen-tree); never commit narrowing |
 | `pre-merge-validation` | Full unfocused suite | **full** tier — [running-e2e § merge](running-e2e.md#before-merge-pr-handoff); entire PR branch, once |
 
@@ -70,6 +70,8 @@ Docs: `yarn lint:markdown`, `yarn lint:spellcheck`.
 Native: `yarn lint:android`, `yarn lint:ios:check`. `lint:android` can flake; rerun once/twice if failure is not clearly in diff.
 
 ## E2e with coverage
+
+[Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) (host + services + harness tier) before every run. Match harness to work type — **focused**/**area** never use full app load ([running e2e § harness](running-e2e.md#3-harness-matches-validation-tier)).
 
 Commands: [Running e2e tests](running-e2e.md). Post-process: [Coverage design](coverage-design.md) (iOS `tests:ios:test:process-coverage`, Android `tests:android:post-e2e-coverage`).
 

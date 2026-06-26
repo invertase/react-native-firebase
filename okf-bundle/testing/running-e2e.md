@@ -103,7 +103,11 @@ Markers: `✨ Tests Complete ✨`, Jest `N passing` / `N failing`, `[jet-coverag
 
 ### Pre-flight: is the host clear to start?
 
-Run before every `:test-cover`. These check *device activity*, not Node leftovers.
+Run **all three** checks before every `:test-cover`.
+
+#### 1. Host clear
+
+No in-flight test run on the target platform:
 
 | Platform | Active e2e signal | Clear to start |
 |----------|-------------------|----------------|
@@ -113,18 +117,57 @@ Run before every `:test-cover`. These check *device activity*, not Node leftover
 
 Also wait for any visible unfinished `yarn tests:*:test-cover`.
 
-Metro `:8081` and emulators `:8080`/`:9099` are expected; they do not mean e2e is running.
+#### 2. Services ready
+
+Metro and emulators must be **running and responsive** — do not assume from a prior session or background start.
+
+```bash
+curl -sf http://127.0.0.1:8081/status >/dev/null   # Metro (127.0.0.1 matches test app bundle URL)
+curl -sf http://127.0.0.1:8080 >/dev/null          # Firestore emulator
+```
+
+If either fails: start `yarn tests:packager:jet` and `yarn tests:emulator:start` (background); re-check until both pass. After `yarn lerna:prepare` or Jet patch edits, restart Metro with `--reset-cache` in `tests/` ([Rules §3](#rules)).
+
+A listener on `:8081` or `:8080` is **not** sufficient — HTTP checks must succeed.
+
+#### 3. Harness matches validation tier
+
+Confirm `tests/app.js` / `tests/globals.js` match the item's **`validation_tier`** ([iteration vocabulary](iteration-vocabulary.md#work-queue-fields)), not the branch's committed harness.
+
+| Tier | Harness before `:test-cover` |
+|------|------------------------------|
+| **Focused** (`implementation`) | **Area narrowing required** — trim modules + load only the spec under change (e.g. firestore + `Pipeline.e2e.js`); `.only` OK locally |
+| **Area** (`independent-review`, `baseline-capture`) | Area narrowing OK; full loaded spec(s); **no** `.only` |
+| **Full** (`pre-merge-validation`) | Revert all narrowing — full app (`require.context`, all modules) |
+
+Committed full harness on the branch does **not** override **focused** or **area** tier for local runs. Package workflows define area setup (e.g. [pipelines § narrowing](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations)). Never commit narrowing until **full** tier.
+
+### Stalled run detection
+
+Completion = shell exit code + log markers — not open-ended log tailing.
+
+| Platform | Early markers (≈2–3 min) | Done |
+|----------|--------------------------|------|
+| **macOS** | `Jet client connected` | `✨ Tests Complete ✨`, Jest `N passing` |
+| **iOS/Android** | Detox launch done, Jet connected | Same |
+
+**If stalled** — no new markers for **5 minutes**, or past tier budget (~15m macOS, ~45–60m iOS/Android) without `Tests Complete`: treat as [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090). Re-check [services ready](#2-services-ready), diagnose (`curl` Metro `/status`, platform active-signal commands above, `lsof -nP -iTCP:8090`), retry. Do not keep watching flat tee output.
+
+- macOS bundle/Metro hangs → [ci-workflows/other.md § bundle load hang](../ci-workflows/other.md#ci-failure-bundle-load-hang--could-not-connect-to-development-server)
+- iOS Metro at launch → [ci-workflows/ios.md § Metro unresponsive](../ci-workflows/ios.md)
+
+Do not poll `pgrep` / `jet.js` / `:8090` for *completion* ([above](#how-a-platform-run-is-structured-androidios)). Stall detection uses **missing progress markers**, not exit polling.
 
 ### Focused-tier iteration loop
 
 For `implementation` work type ([focused tier](#e2e-validation-tiers-focused-area-full)):
 
-1. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — host clear; if not, wait or clean up per [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090).
-2. Edit e2e/spec; apply focused narrowing (`.only` and/or tight `tests/app.js` area narrowing); never commit.
-3. macOS first when TS-only: `yarn tests:macos:test-cover 2>&1 | tee /tmp/rnfb-e2e-macos.log` — wait for exit code.
+1. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — host clear, services ready, **harness narrowed** (step 3); if not, wait or clean per [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090).
+2. Edit e2e/spec; add `.only` if needed; never commit narrowing.
+3. macOS first when TS-only: `yarn tests:macos:test-cover 2>&1 | tee /tmp/rnfb-e2e-macos.log` — wait for exit code ([stalled run](#stalled-run-detection) if markers stop).
 4. If macOS green and native touched: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover 2>&1 | tee /tmp/rnfb-e2e-<platform>.log`; one platform at a time.
-5. Grep log tail → fix → repeat from step 1 (pre-flight again before each run).
-6. When `implementation_gate` closes, next work type is `independent-review` at **area** tier — [frozen tree](iteration-vocabulary.md#frozen-tree); canonical commands; no `.only`; area narrowing per package workflow.
+5. Grep log tail → fix → repeat from step 1.
+6. When `implementation_gate` closes, next work type is `independent-review` at **area** tier — [frozen tree](iteration-vocabulary.md#frozen-tree); no `.only`; area narrowing per package workflow.
 
 ### Serialized e2e dispatch
 
@@ -134,7 +177,7 @@ Never overlap runs that use `:test-cover`. See [host rule](iteration-vocabulary.
 |------|-------------|
 | **One e2e run at a time** | Wait for prior shell exit code + short log summary |
 | **No overlapping tiers** | Never run focused-tier and area-tier `:test-cover` concurrently on one host |
-| **Clean pre-flight every run** | Verify [pre-flight](#pre-flight-is-the-host-clear-to-start); if not clear, wait/clean |
+| **Clean pre-flight every run** | [Pre-flight](#pre-flight-is-the-host-clear-to-start) — host, services, harness tier |
 | **iOS guard probe loop** | `implementation` (Jest + **focused**) → `independent-review` (**area**, frozen tree) → `commit` — [work queue protocol](../packages/firestore/pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict) |
 
 | Validation tier | E2e scope | Narrowing allowed | Typical work type |
@@ -171,6 +214,8 @@ Then rerun from repo root: `yarn tests:<platform>:build && yarn tests:<platform>
 - Do not use `:8090` listening as “e2e still running” without the platform active signal above.
 - Do not start iOS/Android/macOS `:test-cover` concurrently on one host.
 - Do not edit source while a tee'd run is still in progress.
+- Do not passively tail tee output when progress markers stop — follow [stalled run detection](#stalled-run-detection).
+- Do not run **full** harness (`require.context`, all modules) for **focused**/**area** tier — match [harness to tier](#3-harness-matches-validation-tier).
 - Do not run `.github/workflows/scripts/boot-simulator.sh`, `simctl shutdown all`, or `kill -9` on `:8090` as prep. `boot-simulator.sh` is CI-only or internal to iOS Jet retry.
 
 ## Typical loop
@@ -217,7 +262,7 @@ All tiers use [canonical commands](#rules), [host rule](iteration-vocabulary.md#
 **Universal rules:**
 
 - E2e is **always serial** — one `:test-cover` at a time on the host.
-- Every run starts from **verified clean pre-flight**; if not clear, wait or follow [interrupted-run cleanup](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090) — do not start another run.
+- Every run starts from **verified pre-flight** (host clear + services ready + harness matches tier); if not, wait or follow [interrupted-run cleanup](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090) — do not start another run.
 - Use **only** canonical commands from this doc.
 - Never overlap focused-tier and area-tier `:test-cover` on one host.
 
@@ -229,12 +274,15 @@ See also: [focused-tier loop](#focused-tier-iteration-loop), [dispatch](#seriali
 - **adb empty** — `adb kill-server && adb start-server && adb devices`
 - **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, …). Jet `:8090` is per-`:test-cover`, not background; listener after run usually means stray Jet. Check: `lsof -nP -iTCP -sTCP:LISTEN | rg ':8081|:8080|:9099|:4400'`. Kill Metro/emulators: `pkill -f "react-native start"`, `pkill -f "firebase emulators"`.
 
-## Diagnosing native hangs
+## Diagnosing hangs
 
-If JS output is unhelpful, use device logs + temporary native instrumentation (remove before merge):
+**Local stalls** — see [stalled run detection](#stalled-run-detection) first (Metro `/status`, Jet connect markers).
 
-- **iOS** — `xcrun simctl spawn booted log stream --level debug --style compact --predicate 'process == "testing"'`; for silent hangs, `sample <pid>` on the `testing` process.
-- **Android** — `adb logcat` (filter your tags).
+**Native / device logs** (remove instrumentation before merge):
+
+- **macOS** — `log show --predicate 'process == "io.invertase.testing"' --last 10m --style compact`; bundle errors → [other.md](../ci-workflows/other.md)
+- **iOS** — `xcrun simctl spawn booted log stream --level debug --style compact --predicate 'process == "testing"'`; silent hangs: `sample <pid>` on `testing`
+- **Android** — `adb logcat` (filter your tags)
 
 **Benign noise:** iOS Detox `EXEC_FAIL "xcrun simctl terminate … com.invertase.testing" … found nothing to terminate` — app wasn't running; ignore.
 
