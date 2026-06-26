@@ -15,11 +15,38 @@
  *
  */
 
-export * from './modular';
+import {
+  FirebaseModule,
+  getOrCreateModularInstance,
+} from '@react-native-firebase/app/dist/module/internal';
+import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
+import './types/internal';
+import type { FirebaseApp, FirebaseML } from './types/ml';
+import { version } from './version';
+
+const nativeModuleName = 'RNFBMLModule';
+
+class FirebaseMLModule extends FirebaseModule<typeof nativeModuleName> {}
+
+const config: ModuleConfig = {
+  namespace: 'ml',
+  nativeModuleName,
+  nativeEvents: false,
+  hasMultiAppSupport: true,
+  hasCustomUrlOrRegionSupport: false,
+};
+
+// import { SDK_VERSION } from '@react-native-firebase/ml';
+export const SDK_VERSION = version;
+
+/**
+ * Returns the {@link FirebaseML} instance for the default or given {@link FirebaseApp}.
+ *
+ * @param app - The Firebase `FirebaseApp` to use. When omitted, the default app is used.
+ * @returns The ML service instance for that app.
+ */
+export function getML(app?: FirebaseApp): FirebaseML {
+  return getOrCreateModularInstance(FirebaseMLModule, config, app) as unknown as FirebaseML;
+}
 
 export type { FirebaseApp, FirebaseML } from './types/ml';
-
-export type { FirebaseMLTypes } from './types/namespaced';
-
-export * from './namespaced';
-export { default } from './namespaced';

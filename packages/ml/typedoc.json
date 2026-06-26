@@ -1,4 +1,4 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["lib/modular.ts", "lib/types/ml.ts"]
+  "entryPoints": ["lib/index.ts", "lib/types/ml.ts"]
 }

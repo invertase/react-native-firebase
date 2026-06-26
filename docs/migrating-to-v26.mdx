@@ -1,0 +1,85 @@
+---
+title: Migrating to v26
+description: Migrate to React Native Firebase v26 — namespaced API removal.
+previous: /migrating-to-v25
+next: /typescript
+---
+
+Version 26 removes the deprecated **namespaced** JavaScript API from selected packages. Each migrated package is **modular-only**: use `getX(app?)` and root-level helper functions from the package entry point. Namespaced default exports, `firebase.<module>()`, and `Firebase*Types` namespaces are removed from those packages.
+
+If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating-to-v25) first — v25 TypeScript alignment changes still apply.
+
+## Table of contents
+
+- [General pattern](/migrating-to-v26#general-pattern)
+- [Machine Learning (ML)](/migrating-to-v26#machine-learning-ml)
+- [Automated migration checklist](/migrating-to-v26#automated-migration-checklist)
+
+## General pattern
+
+For each package listed in this guide:
+
+1. Remove default export / `firebase.<module>()` usage — import modular helpers from the package root.
+2. Replace `Firebase*Types` namespace imports with root types (`InAppMessaging`, `Installations`, `FirebaseML`, etc.).
+3. Prefer free functions (`getId(installations)`, `setMessagesDisplaySuppressed(inAppMessaging, enabled)`) over instance methods on service objects.
+
+Packages not yet listed here may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
+
+# Machine Learning (ML)
+
+The namespaced API for `@react-native-firebase/ml` has been **removed**. This package is **modular-only** — use `getML(app?)`.
+
+## Removed namespaced API
+
+| Removed                       | Replacement (modular)                    |
+| ----------------------------- | ---------------------------------------- |
+| `firebase.ml()`               | `getML()` or `getML(app)`                |
+| Default export `ml()`         | `getML()` or `getML(app)`                |
+| `FirebaseMLTypes` namespace | Import `FirebaseML` from package root    |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import ml from '@react-native-firebase/ml';
+
+firebase.ml().app.name;
+ml().app.name;
+```
+
+```js
+// Now
+import { getApp } from '@react-native-firebase/app';
+import { getML } from '@react-native-firebase/ml';
+
+getML().app.name; // default app
+getML(getApp('secondaryFromNative')).app.name;
+```
+
+# Automated migration checklist
+
+Use this section when running scripted or agent-assisted upgrades to v26 for modular-only packages.
+
+## 1. Upgrade dependencies
+
+```bash
+# Bump all @react-native-firebase/* packages to v26 together (monorepo versions are aligned)
+yarn add @react-native-firebase/app@^26.0.0 …
+cd ios && pod install
+```
+
+## 2. Fix imports by package
+
+For each modular-only package you use:
+
+| Package | Search for | Replace with |
+| ------- | ---------- | ------------ |
+| `ml` | `firebase.ml()`, default `ml()`, `FirebaseMLTypes` | `getML()`, root `FirebaseML` type |
+
+## 3. Validate
+
+```bash
+yarn compile
+yarn tests:jest packages/<pkg>/__tests__
+```
