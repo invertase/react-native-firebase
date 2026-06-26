@@ -1076,7 +1076,7 @@ final class RNFBFirestorePipelineNodeBuilder {
     let normalized = canonicalizeFunctionName(name)
     switch normalized {
     case "conditional":
-      return "cond"
+      return "conditional"
     case "arraytransformwithindex":
       return "array_transform"
     case "arraylastindexof":
@@ -1850,7 +1850,7 @@ final class RNFBFirestorePipelineNodeBuilder {
 
         box.value = FunctionExprBridge(name: "array_slice", args: args, options: nil)
       case let .conditionalExit(box, conditionBox, trueBox, falseBox, currentFieldName):
-        box.value = FunctionExprBridge(name: "cond", args: [
+        box.value = FunctionExprBridge(name: "conditional", args: [
           try requireExpressionValue(conditionBox, fieldName: "\(currentFieldName).args[0]"),
           try requireExpressionValue(trueBox, fieldName: "\(currentFieldName).args[1]"),
           try requireExpressionValue(falseBox, fieldName: "\(currentFieldName).args[2]"),
