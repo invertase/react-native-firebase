@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS (2026-06-25):** **J0-1…J0-5** — guard removals committed. **J0-6** `substring` `8b76d8bc4` — **sdk-unsupported-confirmed** (guard retained). **Next pickup:** **J0-7** `timestampAdd` **`implementation`**. **J0b** queued after J0 complete.
+> **IN PROGRESS (2026-06-25):** **J0-6′–J0-9′** receiver parity — implementation + area review **complete** (uncommitted). **J0b** committed `c27b6f115`. **Next:** commit batch → **J1** bridge remediation.
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -19,14 +19,14 @@ Ephemeral tracker; see [OKF policy](../../documentation-policy.md).
 
 ## Phase ordering (2026-06-25)
 
-**Parity before coverage.** Otherwise tests add `Platform.*` workarounds, misclassify bridge drift as intractable, and deepen Swift/Java drift.
+**Parity before coverage.** Otherwise tests add `Platform.`* workarounds, misclassify bridge drift as intractable, and deepen Swift/Java drift.
 
 **Sequence from H onward:** **H** → **I** drift inventory → **Ib** SDK support reconciliation → **J** (**J0** probes → **J0b** iOS lowering consolidation → **J1–J6** bridge) → **K–Q** coverage → **R** snapshot.
 
 
 | Phase     | Focus                                                                                                                                                                                             |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Ib**    | Reconcile `IOS_UNSUPPORTED_FUNCTION_NAMES` vs upstream CHANGELOG + bridge audit; [repeatable method](pipeline-sdk-support-audit.md)                                                               |
+| **Ib**    | Reconcile SDK CHANGELOG + bridge audit vs RNFB lowering; [repeatable method](pipeline-sdk-support-audit.md)                                                                                       |
 | **J0**    | iOS runtime probes — one function per commit; authoritative guard list                                                                                                                            |
 | **J0b**   | **iOS NodeBuilder lowering consolidation** — dedupe boolean/receiver-chain paths added during J0 (see [J0b](#j0b--ios-nodebuilder-lowering-consolidation-after-j0-before-j1j6)); **before J1–J6** |
 | **J1–J6** | Bridge remediation (P-001, P-005, P-010–P-012, P-034) after **J0 + J0b**                                                                                                                          |
@@ -38,7 +38,7 @@ Ephemeral tracker; see [OKF policy](../../documentation-policy.md).
 
 Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration-vocabulary.md#host-rule)):
 
-1. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): host clear, [services ready](../../testing/running-e2e.md#2-services-ready), [harness matches validation tier](../../testing/running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking) — required for **focused** and **area**; not [push harness](#harness)); [serial `:test-cover`](../../testing/running-e2e.md#serialized-e2e-dispatch); [frozen tree](../../testing/iteration-vocabulary.md#frozen-tree) for `independent-review`.
+1. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): host clear, [services ready](../../testing/running-e2e.md#2-services-ready), [harness matches validation tier](../../testing/running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking) — required for **focused** and **area**; not [push harness](#harness)); [serial `:test-cover](../../testing/running-e2e.md#serialized-e2e-dispatch)`; [frozen tree](../../testing/iteration-vocabulary.md#frozen-tree) for `independent-review`.
 2. Guard probes: [SDK runtime verification](pipeline-sdk-support-audit.md#6-runtime-verification-authoritative) + [Phase J protocol](#phase-j-iteration-protocol-strict) below.
 3. Coverage deltas: full clean cycle; never trust stale `.ec`/profraw ([coverage stale data](../../testing/coverage-design.md#stale-coverage-data)).
 
@@ -47,27 +47,27 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 ## Phase table
 
 
-| Phase  | Focus                                 | Status               | Outcome                                                                                                                                            |
-| ------ | ------------------------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **A**  | Baseline e2e + Jet TS coverage        | ✅                    | 3-platform verify; harness + jet patch                                                                                                             |
-| **B**  | Android dead-code removal             | ✅                    | `buildParsed*` cluster; NodeBuilder 55%→66%                                                                                                        |
-| **C**  | Gap map + tooling                     | ✅                    | `map-pipeline-coverage-gaps.sh`                                                                                                                    |
-| **D**  | Native lowering e2e                   | ✅                    | subcollection 100%; schedule dispatch 100%                                                                                                         |
-| **E**  | Executor / Parser / BridgeFactory e2e | ✅                    | Android Executor 49%→58%; iOS BridgeFactory 83%                                                                                                    |
-| **F**  | Android L900–1299 lowering            | ✅                    | **Dead removal** — loop 106→77 missed; NodeBuilder 70.2%                                                                                           |
-| **G**  | iOS operand modes + map passthrough   | ✅                    | **+8 operand probes** via raw-where e2e; map execute intractable                                                                                   |
-| **H**  | TS `pipeline_validate` execute guards | ✅                    | `3a1f7d654` — 3-platform **141/141 / 146/146 / 146/146**                                                                                           |
-| **I**  | **Platform parity audit**             | ✅                    | 31 e2e branches; registry P-001–P-031                                                                                                              |
-| **Ib** | **SDK support reconciliation**        | ✅                    | Guard list vs iOS 12.15 / Android 34.15 CHANGELOG; [audit method](pipeline-sdk-support-audit.md)                                                   |
-| **J**  | **Parity remediation**                | **in progress (J0)** | **J0** probes → **J0b** consolidation → **J1–J6**                                                                                                  |
-| **K**  | TS `pipeline_runtime` + `expressions` | queued               | guards, timestamp/FieldPath *(was old I)*                                                                                                          |
-| **L**  | Android parsed-aggregate tail         | queued               | ~143 missed *(was old J)*                                                                                                                          |
-| **M**  | Android exit frames + receiver chains | queued               | ~77 loop remainder + exit/receiver *(was old K)*                                                                                                   |
-| **N**  | iOS stage coercion                    | queued               | ~293 missed; operand tail *(was old L)*                                                                                                            |
-| **O**  | Android Executor remainder            | queued               | sub-60% after E *(was old M)*                                                                                                                      |
-| **P**  | Jest-only TS paths                    | queued               | validation branches *(was old N)*                                                                                                                  |
-| **Q**  | Intractability audit                  | queued               | measured caps per file *(was old O)*                                                                                                               |
-| **R**  | Pre-merge harness restore             | queued               | **Full** unfocused 3-platform snapshot — [full validation tier](../../testing/running-e2e.md#e2e-validation-tiers-focused-area-full) *(was old P)* |
+| Phase  | Focus                                 | Status                    | Outcome                                                                                                                                            |
+| ------ | ------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A**  | Baseline e2e + Jet TS coverage        | ✅                         | 3-platform verify; harness + jet patch                                                                                                             |
+| **B**  | Android dead-code removal             | ✅                         | `buildParsed`* cluster; NodeBuilder 55%→66%                                                                                                        |
+| **C**  | Gap map + tooling                     | ✅                         | `map-pipeline-coverage-gaps.sh`                                                                                                                    |
+| **D**  | Native lowering e2e                   | ✅                         | subcollection 100%; schedule dispatch 100%                                                                                                         |
+| **E**  | Executor / Parser / BridgeFactory e2e | ✅                         | Android Executor 49%→58%; iOS BridgeFactory 83%                                                                                                    |
+| **F**  | Android L900–1299 lowering            | ✅                         | **Dead removal** — loop 106→77 missed; NodeBuilder 70.2%                                                                                           |
+| **G**  | iOS operand modes + map passthrough   | ✅                         | **+8 operand probes** via raw-where e2e; map execute intractable                                                                                   |
+| **H**  | TS `pipeline_validate` execute guards | ✅                         | `3a1f7d654` — 3-platform **141/141 / 146/146 / 146/146**                                                                                           |
+| **I**  | **Platform parity audit**             | ✅                         | 31 e2e branches; registry P-001–P-031                                                                                                              |
+| **Ib** | **SDK support reconciliation**        | ✅                         | Guard list vs iOS 12.15 / Android 34.15 CHANGELOG; [audit method](pipeline-sdk-support-audit.md)                                                   |
+| **J**  | **Parity remediation**                | **J0 complete — J1 next** | **J0** probes → **J0b** consolidation → **J0 remainder** → **J1–J6**                                                                               |
+| **K**  | TS `pipeline_runtime` + `expressions` | queued                    | guards, timestamp/FieldPath *(was old I)*                                                                                                          |
+| **L**  | Android parsed-aggregate tail         | queued                    | ~143 missed *(was old J)*                                                                                                                          |
+| **M**  | Android exit frames + receiver chains | queued                    | ~77 loop remainder + exit/receiver *(was old K)*                                                                                                   |
+| **N**  | iOS stage coercion                    | queued                    | ~293 missed; operand tail *(was old L)*                                                                                                            |
+| **O**  | Android Executor remainder            | queued                    | sub-60% after E *(was old M)*                                                                                                                      |
+| **P**  | Jest-only TS paths                    | queued                    | validation branches *(was old N)*                                                                                                                  |
+| **Q**  | Intractability audit                  | queued                    | measured caps per file *(was old O)*                                                                                                               |
+| **R**  | Pre-merge harness restore             | queued                    | **Full** unfocused 3-platform snapshot — [full validation tier](../../testing/running-e2e.md#e2e-validation-tiers-focused-area-full) *(was old P)* |
 
 
 **Compare-types exports:** out of scope until **R**. During **J**, no new `Platform.android` / `Platform.ios` branches for coverage; file drift, fix in **J**, or document SDK limitation.
@@ -76,33 +76,33 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 
 ## Current snapshot
 
-**Label:** `after-j0-1-j0-2-j0-3-j0-4-j0-5-j0-6`; **harness:** full test app (`tests/app.js` — all platform modules restored for push)
+**Label:** `j0-remainder-review-complete`; **harness:** full test app (area review used local firestore-only narrowing — not committed)
 
 **E2e counts (Phase H baseline):** macOS **141**, iOS **146**, Android **146** ✅ *(full app load; re-verify before merge)*
 
+**Area review (2026-06-25):** iOS Pipeline-only harness — **100/100** passing (~135s); Jest pipelines **219/219**.
 
-| Target                    | macOS          | iOS            | Android (gap map) |
-| ------------------------- | -------------- | -------------- | ----------------- |
-| TS `pipeline_validate.ts` | 82/88 (93.18%) | 78/88 (88.64%) | 78/88 (88.64%)    |
-| Phase H e2e baseline      | ✅              | ✅              | ✅                 |
-
-
-*Phase H baseline only; not J0 review gate.*
-
-**Next item:** **J0-7** `timestampAdd` — `next_work_type`: **`implementation`**; `validation_tier`: **focused**; `platform`: ios. **J0b** blocked until J0-9 complete.
+**Next item:** **Commit** J0-6′–J0-9′ batch → **J1** P-001 Android operand coercion.
 
 **Arbiter gate (2026-06-25):**
 
 
-| Probe                   | Code        | `implementation_gate` | `review_gate` | `next_work_type`     | `validation_tier` | `platform` | Notes                                                              |
-| ----------------------- | ----------- | --------------------- | ------------- | -------------------- | ----------------- | ---------- | ------------------------------------------------------------------ |
-| **J0-1** `stringRepeat` | `f14092909` | closed                | **closed**    | —                    | —                 | —          | Area review 2026-06-25: 100/100/100; stringRepeat unified iOS path |
-| **J0-2** `switchOn`     | `ae795b96c` | closed                | **closed**    | —                    | —                 | —          | Committed 2026-06-25; area review 100/100/100                      |
-| **J0-3** `trunc`        | `138e45690` | closed                | **closed**    | —                    | —                 | —          | Area review 2026-06-25: 100/100/100; trunc unified iOS path        |
-| **J0-4** `conditional`  | `cde7b812c`         | closed                | **closed**    | —                    | —                 | —          | Area review 100/100/100; iOS wire `conditional`; unified e2e       |
-| **J0-5** `round`        | `5b4717d0c`         | closed                | **closed**    | —                    | —                 | —          | Area review 100/100/100; round unified iOS path (TS-only)          |
-| **J0-6** `substring`    | `8b76d8bc4`         | closed                | **closed**    | —                    | —                 | —          | **sdk-unsupported-confirmed** — iOS 12.15 `invalid-argument`; guard retained |
-| **J0-7** `timestampAdd` | —           | —                     | —             | **`implementation`** | focused           | ios        | **unblocked** (J0-6 probe complete)                              |
+| Probe                         | Code        | `implementation_gate` | `review_gate` | `next_work_type` | `validation_tier` | `platform` | Notes                                                                   |
+| ----------------------------- | ----------- | --------------------- | ------------- | ---------------- | ----------------- | ---------- | ----------------------------------------------------------------------- |
+| **J0-1** `stringRepeat`       | `f14092909` | closed                | **closed**    | —                | —                 | —          | Area review 2026-06-25: 100/100/100; stringRepeat unified iOS path      |
+| **J0-2** `switchOn`           | `ae795b96c` | closed                | **closed**    | —                | —                 | —          | Committed 2026-06-25; area review 100/100/100                           |
+| **J0-3** `trunc`              | `138e45690` | closed                | **closed**    | —                | —                 | —          | Area review 2026-06-25: 100/100/100; trunc unified iOS path             |
+| **J0-4** `conditional`        | `cde7b812c` | closed                | **closed**    | —                | —                 | —          | Area review 100/100/100; iOS wire `conditional`; unified e2e            |
+| **J0-5** `round`              | `5b4717d0c` | closed                | **closed**    | —                | —                 | —          | Area review 100/100/100; round unified iOS path (TS-only)               |
+| **J0-6** `substring`          | `8b76d8bc4` | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — reclassified; guard retained                      |
+| **J0-7** `timestampAdd`       | —           | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — probe + SDK source; guard retained                |
+| **J0-8** `timestampSubtract`  | —           | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — SDK `timestamp_subtract`; fix iOS wire + receiver |
+| **J0-9** `arrayGet`           | —           | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — SDK `array_get` receiver wire; guard retained     |
+| **J0b**                       | `c27b6f115` | closed                | **closed**    | —                | —                 | —          | Area review 2026-06-25: iOS 100/100; Jest switchOn ok                   |
+| **J0-6′** `substring`         | —           | **closed**            | **closed**    | —                | area              | ios        | iOS receiver chain; guard removed; unified e2e                          |
+| **J0-7′** `timestampAdd`      | —           | **closed**            | **closed**    | —                | area              | ios        | Same batch — `timestampAdd(amount:unit:)`                               |
+| **J0-8′** `timestampSubtract` | —           | **closed**            | **closed**    | —                | area              | ios        | Same batch — wire `timestamp_subtract`                                  |
+| **J0-9′** `arrayGet`          | —           | **closed**            | **closed**    | —                | area              | ios        | Same batch — `.arrayGet(_:)`                                            |
 
 
 
@@ -193,30 +193,29 @@ Earlier: A–E baseline, dead code, gap map, lowering/executor e2e.
 **Triage totals:**
 
 
-| Class         | Count                                      | Action                                 |
-| ------------- | ------------------------------------------ | -------------------------------------- |
-| **bridge**    | 5                                          | Phase **J** (J1–J5)                    |
-| **SDK**       | 9 unsupported fns + 3 stage/aggregate gaps | Document (P-003, P-013–P-015)          |
-| **macOS-js**  | 11 vacuous/reduced Pipeline tests          | Document (P-004, P-018–P-028)          |
-| **test-only** | 1                                          | Unify after J1 (P-034)                 |
-| **RNFB-JS**   | 2                                          | Document or narrow in J (P-016, P-017) |
-| **closed**    | P-002, P-006                               | —                                      |
+| Class         | Count                             | Action                                 |
+| ------------- | --------------------------------- | -------------------------------------- |
+| **bridge**    | 5                                 | Phase **J** (J1–J5)                    |
+| **SDK**       | 3 stage/aggregate gaps            | Document (P-013–P-015)                 |
+| **macOS-js**  | 11 vacuous/reduced Pipeline tests | Document (P-004, P-018–P-028)          |
+| **test-only** | 1                                 | Unify after J1 (P-034)                 |
+| **RNFB-JS**   | 2                                 | Document or narrow in J (P-016, P-017) |
+| **closed**    | P-002, P-006                      | —                                      |
 
 
 ---
 
 ## Phase Ib — SDK support reconciliation (complete 2026-06-25)
 
-**Goal:** Rebuild iOS unsupported-function list from primary sources; document repeatable method; revise Phase J queue.
+**Goal:** Document repeatable SDK/bridge audit method; drive Phase J queue from runtime e2e + native lowering.
 
 **Pins audited:** iOS Firestore **12.15.0**, Android BOM **34.15.0**.
 
 **Deliverables:**
 
-- [pipeline-sdk-support-audit.md](pipeline-sdk-support-audit.md) — 7-step repeatable method + pre-probe matrix (`257e31abb`)
-- `**IOS_UNSUPPORTED_FUNCTION_NAMES` likely stale** for iOS SDK **12.11–12.12** additions (`stringRepeat`, `switchOn`, `trunc`, `ConditionalExpression` / `conditional`).
-- `**timestampAdd` / `timestampSubtract` / `arrayGet`**: no iOS CHANGELOG at 12.15; Android receiver-chain lowering, iOS raw wire only → **probe then bridge or document**.
-- **Runtime probes (Phase J0) are authoritative** — CHANGELOG + bridge audit alone cannot remove guards
+- [pipeline-sdk-support-audit.md](pipeline-sdk-support-audit.md) — repeatable method + support matrix
+- Former iOS JS function guard removed (2026-06-25); parity is native bridge + unified e2e
+- **Runtime e2e probes (Phase J0/J0 remainder) are authoritative** — CHANGELOG + bridge audit alone is insufficient
 
 **Audit input:** native bridge + CHANGELOG cross-check.
 
@@ -243,26 +242,26 @@ Canonical commands: [serialized dispatch](../../testing/running-e2e.md#serialize
 Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove guard; restore full iOS e2e assertions; verify canonical iOS e2e only.
 
 
-| Probe | Function            | Rationale                                                | `implementation_gate` | `review_gate` | `next_work_type`     |
-| ----- | ------------------- | -------------------------------------------------------- | --------------------- | ------------- | -------------------- |
-| J0-1  | `stringRepeat`      | iOS CHANGELOG 12.12.0                                    | closed                | **closed**    | —                    |
-| J0-2  | `switchOn`          | iOS CHANGELOG 12.12.0                                    | closed                | **closed**    | —                    |
-| J0-3  | `trunc`             | iOS CHANGELOG 12.11.0                                    | closed                | **closed**    | —                    |
-| J0-4  | `conditional`       | `ConditionalExpression` 12.11.0; iOS wire `conditional` | closed                | **closed**    | —                    |
-| J0-5  | `round`             | No CHANGELOG; Android + bridge ok                        | closed                | **closed**    | —                    |
-| J0-6  | `substring`         | No CHANGELOG; docs list function                         | closed                | **closed**    | —                    |
-| J0-7  | `timestampAdd`      | No CHANGELOG; likely SDK gap or receiver shape           | —                     | —             | **`implementation`** |
-| J0-8  | `timestampSubtract` | Same                                                     |                       |               |                      |
-| J0-9  | `arrayGet`          | No CHANGELOG; likely needs iOS receiver parity if SDK ok |                       |               |                      |
+| Probe | Function            | Rationale                                               | `implementation_gate` | `review_gate` | `next_work_type` |
+| ----- | ------------------- | ------------------------------------------------------- | --------------------- | ------------- | ---------------- |
+| J0-1  | `stringRepeat`      | iOS CHANGELOG 12.12.0                                   | closed                | **closed**    | —                |
+| J0-2  | `switchOn`          | iOS CHANGELOG 12.12.0                                   | closed                | **closed**    | —                |
+| J0-3  | `trunc`             | iOS CHANGELOG 12.11.0                                   | closed                | **closed**    | —                |
+| J0-4  | `conditional`       | `ConditionalExpression` 12.11.0; iOS wire `conditional` | closed                | **closed**    | —                |
+| J0-5  | `round`             | No CHANGELOG; Android + bridge ok                       | closed                | **closed**    | —                |
+| J0-6  | `substring`         | SDK API present; generic iOS wire fails                 | closed                | **closed**    | —                |
+| J0-7  | `timestampAdd`      | SDK `timestamp_add` receiver wire                       | closed                | **closed**    | —                |
+| J0-8  | `timestampSubtract` | SDK `timestamp_subtract`; RNFB emits `timestamp_sub`    | closed                | **closed**    | —                |
+| J0-9  | `arrayGet`          | SDK `array_get` receiver wire                           | closed                | **closed**    | —                |
 
 
-**Output:** updated `pipeline_support.ts`, shrunk P-003 reduced pipelines, confirmed parity classifications.
+**Output:** unified cross-platform e2e, confirmed parity classifications.
 
-### J0b — iOS NodeBuilder lowering consolidation (after J0, before J1–J6)
+### J0b — iOS NodeBuilder lowering consolidation (complete)
 
-**Status:** **queued** — `**blocked`** until **J0** probes complete (J0-1…J0-9 committed + `review_gate` closed each).
+**Commit:** `c27b6f115` — consolidate switchOn boolean receiver lowering; area iOS 100/100.
 
-**Why (J0-2 independent-review, 2026-06-25):** `switchOn` landed ~**387 lines** in `RNFBFirestorePipelineNodeBuilder.swift` — a parallel coercion layer (`coerceFirebaseExpression`, `applyBooleanReceiver`, `coerceSwitchOnConditionBridge`, `pipelineExprBridge` + KVC on `FunctionExpression.args`) alongside existing `coerceExpression` / `coerceBooleanExpression` / stack-based lowering. Correctness verified (area e2e green); **maintainability / drift risk** if J0-3…J0-9 add more one-off paths.
+**Why (J0-2 independent-review, 2026-06-25):** `switchOn` landed ~**387 lines** in `RNFBFirestorePipelineNodeBuilder.swift` — a parallel coercion layer alongside existing stack-based lowering. Correctness verified (area e2e green); **maintainability / drift risk** if more one-off paths land before consolidation.
 
 **Goal:** Consolidate J0-added boolean/receiver-chain lowering into **shared** NodeBuilder paths (align with Android `scheduleBooleanReceiverChain` / `EnterObjectBooleanFrame` where feasible). Remove fragile KVC probing where `ExprBridge` extraction exists. **No behavior change** — area-tier Pipeline e2e must stay green (especially `switchOn`, `stringRepeat`, and any probe-specific cases).
 
@@ -272,22 +271,37 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for J1–J6:** **J0 complete + J0b committed** + parity registry updated.
 
+### J0 remainder — iOS receiver-chain parity (complete)
+
+**Status:** **complete (2026-06-25)** — **J0-6′…J0-9′** landed in one batch: iOS receiver-chain lowering, empty guard list, unified e2e. Area iOS **100/100**; Jest **219/219**.
+
+**Scope delivered:** `RNFBFirestorePipelineNodeBuilder.swift` receiver infrastructure + unified e2e at substring / arrayGet (×2) / timestampAdd|Subtract sites. JS iOS function guard removed.
+
+
+| Function            | SDK wire (pinned iOS)                       | Fix                                                 |
+| ------------------- | ------------------------------------------- | --------------------------------------------------- |
+| `substring`         | `substring` `[self, position, length?]`     | `.substring(position:length:)` receiver chain       |
+| `timestampAdd`      | `timestamp_add` `[self, unit, amount]`      | `.timestampAdd(amount:unit:)` (amount first in SDK) |
+| `timestampSubtract` | `timestamp_subtract` `[self, unit, amount]` | Wire `timestamp_subtract` + receiver chain          |
+| `arrayGet`          | `array_get` `[self, offset]`                | `.arrayGet(_:)` receiver chain                      |
+
+
 ### J1–J6 — bridge remediation (after J0 + J0b)
 
 
-| Step   | Registry          | Work                                                        |
-| ------ | ----------------- | ----------------------------------------------------------- |
-| **J1** | P-001             | Android operand coercion parity                             |
-| **J2** | P-005             | Android `integerLiteral` constant lowering                  |
-| **J3** | P-010             | Expression-valued `distanceField` / `indexField` on Android |
-| **J4** | P-011             | Parser constant envelope routing                            |
-| **J5** | P-012             | `timestampTruncate` arity validation on Android             |
-| **J6** | P-034 + J0-9 tail | Unify operand-mode + arrayGet e2e after probes              |
+| Step   | Registry | Work                                                        |
+| ------ | -------- | ----------------------------------------------------------- |
+| **J1** | P-001    | Android operand coercion parity                             |
+| **J2** | P-005    | Android `integerLiteral` constant lowering                  |
+| **J3** | P-010    | Expression-valued `distanceField` / `indexField` on Android |
+| **J4** | P-011    | Parser constant envelope routing                            |
+| **J5** | P-012    | `timestampTruncate` arity validation on Android             |
+| **J6** | P-034    | Unify operand-mode e2e after bridge parity                  |
 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **J0-1…J0-6** probe iterations complete (**J0-6** guard retained). **J0-7** next **`implementation`**. **J0b** queued (blocked on J0 complete).
+**Current gates:** **J0 + J0b + J0 remainder** complete — ready to **commit** batch. **J1** `implementation` next.
 
 ---
 
@@ -312,7 +326,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 ## Harness
 
 - **Push state (committed):** full test app — all `platformSupportedModules` + `require.context` in `tests/app.js`. For merge/CI only; **not** the harness for local `:test-cover` during J–Q.
-- **Local `:test-cover`:** must match arbiter **`validation_tier`** — [running e2e § harness + narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking). **`implementation` → focused** and **`independent-review` → area:** both require [area narrowing](pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations) locally **before** first run even when git has full harness. Revert before **R** (full tier).
+- **Local `:test-cover`:** must match arbiter `**validation_tier`** — [running e2e § harness + narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking). `**implementation` → focused** and `**independent-review` → area:** both require [area narrowing](pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations) locally **before** first run even when git has full harness. Revert before **R** (full tier).
 - `tests/globals.js` — `RNFBDebug = true` optional for fail-fast
 
 ---
@@ -330,7 +344,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 1. `bash scripts/map-pipeline-coverage-gaps.sh before-<id>`
 2. Prove **live vs dead** before implementing
-3. **No new `Platform.`* branches** — if a probe only passes on one platform, stop and file drift for Phase J follow-up
+3. *No new `Platform.` branches** — if a probe only passes on one platform, stop and file drift for Phase J follow-up
 4. OKF background + `:build` if native + `:test-cover` + native post-process
 5. `bash scripts/map-pipeline-coverage-gaps.sh after-<id>`
 6. One focused commit per logical change (message describes **what**, not phase letter)

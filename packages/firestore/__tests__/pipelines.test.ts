@@ -5,7 +5,6 @@ import {
   arrayFirst,
   arrayFirstN,
   arrayIndexOf,
-  arrayGet,
   arrayLastIndexOf,
   arrayMaximum,
   arrayMaximumN,
@@ -13,7 +12,6 @@ import {
   arrayTransform,
   and,
   coalesce,
-  conditional,
   constant,
   currentDocument,
   equal,
@@ -24,12 +22,6 @@ import {
   field,
   greaterThan,
   Ordering,
-  round,
-  stringRepeat,
-  substring,
-  timestampAdd,
-  timestampSubtract,
-  trunc,
   variable,
   countAll,
   average,
@@ -37,7 +29,6 @@ import {
 } from '../lib/pipelines';
 import '../lib/pipelines';
 import { ConstantExpression, FunctionExpression } from '../lib/pipelines/expressions';
-import { getIOSUnsupportedPipelineFunctions } from '../lib/pipelines/pipeline_support';
 
 describe('Firestore pipelines runtime', function () {
   it('installs pipeline() and serializes source builders', function () {
@@ -753,42 +744,6 @@ describe('Firestore pipelines runtime', function () {
         ],
       },
     });
-  });
-
-  it('detects unsupported iOS runtime functions from serialized pipelines', function () {
-    const db: any = firebase.firestore();
-    const serialized = db
-      .pipeline()
-      .documents(['firestore/a'])
-      .select(
-        arrayFirst(field('items')).as('firstArrayItem'),
-        arrayFirstN(field('items'), 2).as('firstArrayItems'),
-        field('items').arrayFirst().as('fluentFirstArrayItem'),
-        field('items').arrayFirstN(2).as('fluentFirstArrayItems'),
-        arrayGet(field('items'), 0).as('firstItem'),
-        conditional(
-          field('value').greaterThan(0),
-          constant('positive'),
-          constant('non-positive'),
-        ).as('bucket'),
-        switchOn(field('value').greaterThan(0), constant('positive'), constant('non-positive')).as(
-          'switchBucket',
-        ),
-        round(field('score'), 2).as('roundedScore'),
-        stringRepeat(field('separator'), 3).as('divider'),
-        substring(field('label'), 0, 4).as('labelPrefix'),
-        timestampAdd(field('eventTime'), 'day', 1).as('nextDay'),
-        timestampSubtract(field('eventTime'), 'hour', 1).as('prevHour'),
-        trunc(field('score'), 2).as('truncatedScore'),
-      )
-      .serialize();
-
-    expect(getIOSUnsupportedPipelineFunctions(serialized)).toEqual([
-      'arrayGet',
-      'substring',
-      'timestampAdd',
-      'timestampSubtract',
-    ]);
   });
 
   it('serializes subcollection detached pipelines and scalar subqueries', function () {

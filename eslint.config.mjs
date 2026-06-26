@@ -13,6 +13,7 @@ import * as eslintPluginMdx from 'eslint-plugin-mdx';
 export default defineConfig([
   globalIgnores([
     'packages/**/dist/',
+    'packages/**/android/build/',
     '**/type-test.ts',
     'packages/ai/__tests__/test-utils'
   ]),
