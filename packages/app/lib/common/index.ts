@@ -422,13 +422,6 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       HttpsErrorCode: 'HttpsErrorCode',
     },
   },
-  installations: {
-    default: {
-      delete: 'deleteInstallations()',
-      getId: 'getId()',
-      getToken: 'getToken()',
-    },
-  },
   messaging: {
     default: {
       isAutoInitEnabled: 'isAutoInitEnabled()',

@@ -12,7 +12,13 @@ import type { PackageConfig } from '../src/types';
 const config: PackageConfig = {
   nameMapping: {},
   missingInRN: [],
-  extraInRN: [],
+  extraInRN: [
+    {
+      name: 'SDK_VERSION',
+      reason:
+        'RN Firebase package version string exported from the modular entry point. The firebase-js-sdk does not export SDK_VERSION from @firebase/installations.',
+    },
+  ],
   differentShape: [],
 };
 

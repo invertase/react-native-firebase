@@ -61,85 +61,17 @@ const ID_LENGTH = 22;
 const PROJECT_ID = 448618578101; // this is "magic", it's the react-native-firebase-testing project ID
 
 describe('installations() modular', function () {
-  // Namespaced API is being removed; modular coverage is sufficient and halves FIS load.
-  xdescribe('firebase v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    describe('getId()', function () {
-      it('returns a valid installation id', async function () {
-        const id = await firebase.installations().getId();
-        id.should.be.a.String();
-        id.length.should.be.equals(ID_LENGTH);
-      });
-    });
-
-    describe('getToken()', function () {
-      it('returns a valid auth token with no arguments', async function () {
-        const id = await firebase.installations().getId();
-        const token = await firebase.installations().getToken();
-        token.should.be.a.String();
-        token.should.not.equal('');
-        const decodedToken = decodeJWT(token);
-        decodedToken.fid.should.equal(id); // fid == firebase installations id
-        decodedToken.projectNumber.should.equal(PROJECT_ID);
-
-        // token time is "Unix epoch time", which is in seconds vs javascript milliseconds
-        if (decodedToken.exp < Math.round(new Date().getTime() / 1000)) {
-          return Promise.reject(
-            new Error('Token already expired: ' + JSON.stringify(decodedToken)),
-          );
-        }
-
-        const token2 = await firebase.installations().getToken(true);
-        token2.should.be.a.String();
-        token2.should.not.equal('');
-        const decodedToken2 = decodeJWT(token2);
-        decodedToken2.fid.should.equal(id);
-        decodedToken2.projectNumber.should.equal(PROJECT_ID);
-
-        // token time is "Unix epoch time", which is in seconds vs javascript milliseconds
-        if (decodedToken.exp < Math.round(new Date().getTime() / 1000)) {
-          return Promise.reject(new Error('Token already expired'));
-        }
-        (token === token2).should.be.false();
-      });
-    });
-
-    describe('delete()', function () {
-      it('successfully deletes', async function () {
-        const id = await firebase.installations().getId();
-        id.should.be.a.String();
-        id.length.should.be.equals(ID_LENGTH);
-        await firebase.installations().delete();
-
-        // New id should be different
-        const id2 = await firebase.installations().getId();
-        id2.should.be.a.String();
-        id2.length.should.be.equals(ID_LENGTH);
-        (id === id2).should.be.false();
-
-        const token = await firebase.installations().getToken(false);
-        const decodedToken = decodeJWT(token);
-        decodedToken.fid.should.equal(id2); // fid == firebase installations id
-
-        // token time is "Unix epoch time", which is in seconds vs javascript milliseconds
-        decodedToken.projectNumber.should.equal(PROJECT_ID);
-        if (decodedToken.exp < Math.round(new Date().getTime() / 1000)) {
-          return Promise.reject(new Error('Token already expired'));
-        }
-      });
-    });
-  });
-
   describe('modular', function () {
+    it('supports multiple apps', function () {
+      const { getApp } = modular;
+      const { getInstallations } = installationsModular;
+      const installations = getInstallations();
+      const secondaryInstallations = getInstallations(getApp('secondaryFromNative'));
+
+      installations.app.name.should.equal('[DEFAULT]');
+      secondaryInstallations.app.name.should.equal('secondaryFromNative');
+    });
+
     describe('getId()', function () {
       it('returns a valid installation id', async function () {
         const { getInstallations, getId } = installationsModular;

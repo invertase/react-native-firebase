@@ -1,52 +1,27 @@
-import { afterAll, beforeAll, describe, expect, it, beforeEach, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-import {
-  firebase,
-  getInstallations,
-  deleteInstallations,
-  getId,
-  getToken,
-  onIdChange,
-} from '../lib';
-
-import {
-  createCheckV9Deprecation,
-  CheckV9DeprecationFunction,
-} from '../../app/lib/common/unitTestUtils';
+import { getInstallations, deleteInstallations, getId, getToken, onIdChange } from '../lib';
 
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 describe('installations()', function () {
-  describe('namespace', function () {
-    beforeAll(async function () {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterAll(async function () {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('accessible from firebase.app()', function () {
-      const app = firebase.app();
-      expect(app.installations).toBeDefined();
-      expect(app.installations().app).toEqual(app);
-    });
-
-    it('supports multiple apps', async function () {
-      expect(firebase.installations().app.name).toEqual('[DEFAULT]');
-      expect(firebase.installations(firebase.app('secondaryFromNative')).app.name).toEqual(
-        'secondaryFromNative',
-      );
-      expect(firebase.app('secondaryFromNative').installations().app.name).toEqual(
-        'secondaryFromNative',
-      );
-    });
-  });
-
   describe('modular', function () {
+    beforeEach(function () {
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return new Proxy(
+          {},
+          {
+            get: () =>
+              jest.fn().mockResolvedValue({
+                constants: {},
+              } as never),
+          },
+        );
+      });
+    });
+
     it('`getInstallations` function is properly exposed to end user', function () {
       expect(getInstallations).toBeDefined();
     });
@@ -71,7 +46,7 @@ describe('installations()', function () {
       it('returns an instance of Installations', async function () {
         const installations = getInstallations();
         expect(installations).toBeDefined();
-        // expect(installations.app).toBeDefined();
+        expect(installations.app).toBeDefined();
       });
     });
 
@@ -82,57 +57,6 @@ describe('installations()', function () {
           'onIdChange() is unsupported by the React Native Firebase SDK.',
         );
       });
-    });
-  });
-
-  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
-    let installationsV9Deprecation: CheckV9DeprecationFunction;
-
-    beforeEach(function () {
-      installationsV9Deprecation = createCheckV9Deprecation(['installations']);
-
-      // @ts-ignore test
-      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
-        return new Proxy(
-          {},
-          {
-            get: () =>
-              jest.fn().mockResolvedValue({
-                constants: {},
-              } as never),
-          },
-        );
-      });
-    });
-
-    it('delete', function () {
-      const installations = getInstallations();
-      installationsV9Deprecation(
-        () => deleteInstallations(installations),
-        // @ts-expect-error Combines modular and namespace API
-        () => installations.delete(),
-        'delete',
-      );
-    });
-
-    it('getId', function () {
-      const installations = getInstallations();
-      installationsV9Deprecation(
-        () => getId(installations),
-        // @ts-expect-error Combines modular and namespace API
-        () => installations.getId(),
-        'getId',
-      );
-    });
-
-    it('getToken', function () {
-      const installations = getInstallations();
-      installationsV9Deprecation(
-        () => getToken(installations),
-        // @ts-expect-error Combines modular and namespace API
-        () => installations.getToken(),
-        'getToken',
-      );
     });
   });
 });

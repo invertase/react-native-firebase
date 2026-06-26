@@ -14,6 +14,7 @@ If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating
 - [General pattern](/migrating-to-v26#general-pattern)
 - [Machine Learning (ML)](/migrating-to-v26#machine-learning-ml)
 - [In-App Messaging](/migrating-to-v26#in-app-messaging)
+- [Installations](/migrating-to-v26#installations)
 - [Automated migration checklist](/migrating-to-v26#automated-migration-checklist)
 
 ## General pattern
@@ -24,7 +25,7 @@ For each package listed in this guide:
 2. Replace `Firebase*Types` namespace imports with root types (`InAppMessaging`, `Installations`, `FirebaseML`, etc.).
 3. Prefer free functions (`getId(installations)`, `setMessagesDisplaySuppressed(inAppMessaging, enabled)`) over instance methods on service objects.
 
-**Modular-only in v26 so far:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
+**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, and `@react-native-firebase/installations`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
 
 # Machine Learning (ML)
 
@@ -97,6 +98,51 @@ await setMessagesDisplaySuppressed(getInAppMessaging(), true);
 
 See [In-App Messaging usage](/in-app-messaging/usage) for additional examples.
 
+# Installations
+
+The namespaced API for `@react-native-firebase/installations` has been **removed**. This package is **modular-only** — use `getInstallations()` and the root-level helper functions.
+
+Modular `getInstallations()` returns a firebase-js-sdk-shaped `Installations` object exposing only `app`. Use modular helper functions instead of instance methods.
+
+## Removed namespaced API
+
+| Removed                                               | Replacement (modular)                                                                 |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `firebase.installations()`                            | `getInstallations()`                                                                  |
+| Default export `installations()`                      | `getInstallations()`                                                                  |
+| `FirebaseInstallationsTypes`                          | Import `Installations` and helpers (`getId`, `getToken`, `deleteInstallations`) from root |
+| `installations.getId()` / `.getToken()` / `.delete()` | `getId(installations)`, `getToken(installations)`, `deleteInstallations(installations)` |
+
+## Breaking changes (modular call shape)
+
+| Before                     | Now                                                             |
+| -------------------------- | --------------------------------------------------------------- |
+| `installations.getId()`    | `getId(installations)`                                          |
+| `installations.getToken()` | `getToken(installations)`                                       |
+| `installations.delete()`   | `deleteInstallations(installations)` — argument is **required** |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import installations from '@react-native-firebase/installations';
+
+const id = await firebase.installations().getId();
+// or
+const id = await installations().getId();
+```
+
+```js
+// Now
+import { getInstallations, getId } from '@react-native-firebase/installations';
+
+const installations = getInstallations();
+const id = await getId(installations);
+```
+
+See [Installations usage](/installations/usage) for additional examples.
+
 # Automated migration checklist
 
 Use this section when running scripted or agent-assisted upgrades to v26 for modular-only packages.
@@ -117,6 +163,7 @@ For each modular-only package you use:
 | ------- | ---------- | ------------ |
 | `ml` | `firebase.ml()`, default `ml()`, `FirebaseMLTypes` | `getML()`, root `FirebaseML` type |
 | `in-app-messaging` | `firebase.inAppMessaging()`, default `inAppMessaging()`, `FirebaseInAppMessagingTypes` | `getInAppMessaging()`, root modular helpers (`setMessagesDisplaySuppressed`, etc.) |
+| `installations` | `firebase.installations()`, default `installations()`, `.getId()`, `.getToken()`, `.delete()`, `FirebaseInstallationsTypes` | `getInstallations()`, `getId()`, `getToken()`, `deleteInstallations()` |
 
 ## 3. Validate
 
