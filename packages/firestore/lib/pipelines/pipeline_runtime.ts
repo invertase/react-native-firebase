@@ -17,7 +17,6 @@
 
 import {
   isArray,
-  isIOS,
   isNumber,
   isObject,
   isString,
@@ -76,7 +75,6 @@ import type {
 } from './stage_options';
 import type { PipelineExecuteOptions } from './pipeline_options';
 import { getFirestore } from '../modular';
-import { getIOSUnsupportedPipelineFunctions } from './pipeline_support';
 import { validateExecuteOptions, validateSerializedPipeline } from './pipeline_validate';
 import { createPipelineSubqueryExpression, type FunctionExpression } from './expressions';
 
@@ -852,15 +850,6 @@ export async function executeRuntimePipeline(
 
   const serializedPipeline = runtimePipeline.serialize();
   validateSerializedPipeline(serializedPipeline);
-
-  if (isIOS) {
-    const unsupportedFunctions = getIOSUnsupportedPipelineFunctions(serializedPipeline);
-    if (unsupportedFunctions.length) {
-      throw new Error(
-        `pipelineExecute() does not support these functions on iOS yet: ${unsupportedFunctions.join(', ')}.`,
-      );
-    }
-  }
 
   const nativeResponse = (await runtimePipeline.firestore.native.pipelineExecute(
     serializedPipeline,

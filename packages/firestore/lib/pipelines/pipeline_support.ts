@@ -15,10 +15,7 @@
  *
  */
 
-import type {
-  FirestorePipelineSerializedInternal,
-  FirestorePipelineSerializedValueInternal,
-} from '../types/internal';
+import type { FirestorePipelineSerializedInternal } from '../types/internal';
 
 export const PIPELINE_SOURCE_TYPES = [
   'collection',
@@ -50,16 +47,6 @@ export const PIPELINE_STAGE_TYPES = [
 export const PIPELINE_UNSUPPORTED_BASE_MESSAGE =
   'Some Firestore pipeline features are not supported by this native implementation yet.';
 
-// Keep this in sync with iOS native support in
-// `RNFBFirestorePipelineNodeBuilder.swift`.
-// Remove entries once the iOS node builder/runtime path supports them.
-const IOS_UNSUPPORTED_FUNCTION_NAMES = new Set<string>([
-  'arrayGet',
-  'substring',
-  'timestampAdd',
-  'timestampSubtract',
-]);
-
 export function createPipelineUnsupportedMessage(
   pipeline?: FirestorePipelineSerializedInternal | null,
 ): string {
@@ -74,67 +61,4 @@ export function createPipelineUnsupportedMessage(
   }
 
   return PIPELINE_UNSUPPORTED_BASE_MESSAGE;
-}
-
-export function getIOSUnsupportedPipelineFunctions(
-  pipeline?: FirestorePipelineSerializedInternal | null,
-): string[] {
-  if (!pipeline) {
-    return [];
-  }
-
-  const unsupported = new Set<string>();
-  collectIOSUnsupportedFunctions(
-    pipeline as unknown as FirestorePipelineSerializedValueInternal,
-    unsupported,
-  );
-  return Array.from(unsupported).sort();
-}
-
-function collectIOSUnsupportedFunctions(
-  root: FirestorePipelineSerializedValueInternal,
-  unsupported: Set<string>,
-): void {
-  // Iterative work-list (not recursion) so deeply nested pipelines/expressions
-  // cannot blow the JS call stack on Hermes. Each node is visited exactly once;
-  // `args` is reached through Object.values, so it must not be traversed twice
-  // (that would make this O(2^depth) and hang iOS execute() before native).
-  const stack: FirestorePipelineSerializedValueInternal[] = [root];
-
-  while (stack.length > 0) {
-    const value = stack.pop() as FirestorePipelineSerializedValueInternal;
-
-    if (Array.isArray(value)) {
-      for (const entry of value) {
-        stack.push(entry);
-      }
-      continue;
-    }
-
-    if (!value || typeof value !== 'object') {
-      continue;
-    }
-
-    const objectValue = value as Record<string, unknown>;
-
-    if (
-      isSerializedFunctionExpression(objectValue) &&
-      IOS_UNSUPPORTED_FUNCTION_NAMES.has(objectValue.name)
-    ) {
-      unsupported.add(objectValue.name);
-    }
-
-    for (const entry of Object.values(objectValue)) {
-      stack.push(entry as FirestorePipelineSerializedValueInternal);
-    }
-  }
-}
-
-function isSerializedFunctionExpression(
-  value: Record<string, unknown>,
-): value is { name: string; args?: FirestorePipelineSerializedValueInternal[] } {
-  return (
-    typeof value.name === 'string' &&
-    (value.exprType === 'Function' || value.__kind === 'expression')
-  );
 }

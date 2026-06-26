@@ -63,7 +63,7 @@ Vector indexes live in **`firestore.pipelines-e2e.indexes.json`** only. Do **not
 # JavaScript layer
 
 * Expression helpers build plain JSON-serializable trees; `execute()` sends serialized pipeline to native.
-* `pipeline_support.ts` — **iOS-unsupported** function names validated before execute (`arrayGet`, `conditional`, etc.).
+* `pipeline_support.ts` — shared source/stage type lists and unsupported-message helper for native fallback paths.
 
 # Native layer
 
@@ -120,8 +120,8 @@ Probes: `packages/firestore/__tests__/pipelines-pathological.test.ts`.
 
 | Issue | Cause | Threshold / fix |
 |-------|-------|-----------------|
-| `getIOSUnsupportedPipelineFunctions` hang | `args` visited explicitly **and** via `Object.values` → **O(2^depth)** | depth 20: 3487 ms → **0 ms** after single-visit fix |
-| Same function stack overflow | Recursive walk | **Iterative work-list**; verified depth **20 000** |
+| Deep expression tree walks | `args` visited explicitly **and** via `Object.values` → **O(2^depth)** | Prefer single-visit iterative work-lists |
+| Recursive tree walks | Recursive walk on generated depth | **Iterative work-list** for attacker/generator-controlled depth |
 | `serializeValue` still recursive | Runs every `execute()` | ~**5000** depth in Node (less Hermes) before `RangeError`; backend rejects deep nesting — **low urgency** |
 
 **Guard rails:** visit each tree property once; prefer work-lists for attacker/generator-controlled depth.
@@ -207,7 +207,7 @@ Cross-platform behavior is co-equal with coverage. Differences must be documente
 
 # iOS platform gaps (SDK / API)
 
-`IOS_UNSUPPORTED_FUNCTION_NAMES` throw before native execute. E2e uses `expectIOSUnsupportedFunctions` and reduced pipelines on iOS. Registry row **P-003** in [pipeline-platform-parity.md](pipeline-platform-parity.md).
+Native bridge lowering gaps and SDK-only limitations are tracked in [Pipeline platform parity](pipeline-platform-parity.md) (P-013–P-015 and bridge rows). There is no JS pre-execute function blocklist on iOS.
 
 # Measuring native coverage
 

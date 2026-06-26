@@ -1,18 +1,14 @@
 ---
 type: Reference
 title: Firestore Pipeline SDK support audit
-description: Repeatable method to determine which pipeline functions are unsupported on each platform, and reconciliation of the iOS JS guard list against upstream SDK releases.
+description: Repeatable method to determine which pipeline functions are supported on each platform, and reconciliation of RNFB bridge lowering against upstream SDK releases.
 tags: [firestore, pipelines, ios, android, sdk, parity, audit]
 timestamp: 2026-06-25T00:00:00Z
 ---
 
 # Purpose
 
-RNFB maintains `IOS_UNSUPPORTED_FUNCTION_NAMES` and reduced iOS e2e. The list dates from SDK runtime `invalid-argument` failures even when RNFB lowering existed.
-
-Upstream SDKs shipped expression additions since; stale guards falsely classify P-003 as SDK-unsupported.
-
-This method compares guards to primary sources and requires runtime verification before guard/e2e changes.
+RNFB pipeline parity depends on native bridge lowering matching pinned Firebase SDKs. This method compares RNFB exports, CHANGELOG evidence, bridge code, and runtime e2e execute probes.
 
 Related: [Platform parity](pipeline-platform-parity.md), [work queue](pipeline-coverage-work-queue.md) (live status).
 
@@ -43,8 +39,8 @@ Use the right source per platform/question:
 
 | Layer | Tool / source | Proves | Does **not** prove |
 |-------|----------------|--------|-------------------|
-| **A — Public API surface** | `yarn compare:types` → `firestore-pipelines` ([config](../../../.github/scripts/compare-types/configs/firestore-pipelines.ts)) | firebase-js-sdk **exports** missing from RNFB types, extra RN exports, signature drift | Native iOS/Android **runtime** execute; stale `IOS_UNSUPPORTED_*` guards; macOS runtime for new JS-only backend features |
-| **B — JS / macOS runtime** | firebase-js-sdk CHANGELOG + macOS e2e (`Platform.other` path uses web SDK) | What the **pinned npm `firebase`** package can execute on macOS | Native bridge behaviour; iOS guard list |
+| **A — Public API surface** | `yarn compare:types` → `firestore-pipelines` ([config](../../../.github/scripts/compare-types/configs/firestore-pipelines.ts)) | firebase-js-sdk **exports** missing from RNFB types, extra RN exports, signature drift | Native iOS/Android **runtime** execute; macOS runtime for new JS-only backend features |
+| **B — JS / macOS runtime** | firebase-js-sdk CHANGELOG + macOS e2e (`Platform.other` path uses web SDK) | What the **pinned npm `firebase`** package can execute on macOS | Native bridge behaviour |
 | **C — Native runtime** | Native Firestore CHANGELOGs + iOS/Android e2e execute probes | What **linked iOS/Android SDKs** accept through RNFB native bridges | RNFB type exports; JS SDK additions RN has not typed yet |
 
 `compare:types` is necessary, not sufficient:
@@ -57,7 +53,7 @@ Use firebase-js-sdk CHANGELOG for verification/macOS context, not instead of nat
 
 - `missingInRN`: read [@firebase/firestore CHANGELOG](https://github.com/firebase/firebase-js-sdk/blob/main/packages/firestore/CHANGELOG.md) to date/export context and native lag.
 - macOS parity: macOS uses `executeWebSdkPipeline`; run macOS e2e if RN exports name and JS SDK added behavior.
-- iOS guard reconciliation: JS CHANGELOG is weak alone; native CHANGELOG + runtime probe matter more.
+- iOS bridge reconciliation: native CHANGELOG + runtime e2e probe matter most.
 
 Rule: every firebase pin bump → `yarn compare:types`; every native pin bump → native CHANGELOG + runtime probes; consult JS CHANGELOG for API/macOS questions.
 
@@ -81,10 +77,10 @@ RNFB serializes helper `name`; native builders normalize:
 
 | JS / serialized `name` | iOS wire (typical) | Android wire (typical) |
 |------------------------|--------------------|-------------------------|
-| `conditional` | `cond` | `conditional()` API |
-| `timestampSubtract` | `timestamp_sub` | receiver `.timestampSubtract()` |
-| `timestampAdd` | `timestamp_add` | receiver `.timestampAdd()` |
-| `arrayGet` | `array_get` (raw) | receiver `.arrayGet()` |
+| `conditional` | `conditional` | `conditional()` API |
+| `timestampSubtract` | `timestamp_subtract` (RNFB currently emits `timestamp_sub` — **wrong**) | receiver `.timestampSubtract()` |
+| `timestampAdd` | `timestamp_add` (generic wire; **needs receiver chain** on iOS) | receiver `.timestampAdd()` |
+| `arrayGet` | `array_get` (generic wire; **needs receiver chain** on iOS) | receiver `.arrayGet()` |
 | `stringRepeat` | `string_repeat` | raw `string_repeat` |
 | `switchOn` | `switch_on` | raw `switch_on` |
 
@@ -106,24 +102,22 @@ Per function:
 
 | Column | Source |
 |--------|--------|
-| In JS guard? | `pipeline_support.ts` |
 | iOS CHANGELOG ≤ pin | Yes / No / N/A |
 | Android CHANGELOG ≤ pin | Yes / No / N/A |
 | iOS bridge lowers? | Swift builder |
 | Android bridge lowers? | Java builder |
-| iOS e2e today | Full / reduced / throw-only |
+| iOS e2e today | Full / reduced / skip |
 | **Classification** | See below |
-| **Next action** | Runtime guard probe / bridge remediation / document only |
+| **Next action** | Bridge remediation / runtime e2e probe / document only |
 
 **Classification values:**
 
 | Value | Meaning |
 |-------|---------|
-| `sdk-supported-stale-guard` | CHANGELOG + bridge lowering; guard likely obsolete — **runtime probe required** |
 | `sdk-unsupported-confirmed` | No CHANGELOG entry + runtime probe fails on pinned SDK |
 | `rnfb-bridge-gap` | SDK may support; RNFB lowering missing or wrong shape on one platform |
-| `sdk-supported-bridge-ok` | Probe passed; remove guard + restore full e2e |
-| `pending-probe` | Insufficient evidence — **do not** change guard until step 6 |
+| `sdk-supported-bridge-ok` | Bridge lowering + unified cross-platform e2e pass |
+| `pending-probe` | Insufficient evidence — do not change e2e until probed |
 
 ## 6. Runtime verification (authoritative)
 
@@ -133,18 +127,14 @@ Probe order/gates/live status: [work queue](pipeline-coverage-work-queue.md#j0--
 
 **Per-function probe (iOS):**
 
-1. Branch from current main; **one function at a time**.
-2. Remove that name from `IOS_UNSUPPORTED_FUNCTION_NAMES` only.
-3. Restore full assertion block in matching `Pipeline.e2e.js` test (remove `expectIOSUnsupportedFunctions` + reduced iOS pipeline).
-4. Run the implement/review gate defined in the [work queue runtime guard protocol](pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict).
-5. Record outcome:
-   - **`independent-review` pass** → `sdk-supported-bridge-ok`; remove guard permanently; close P-003 sub-row; `commit` work type after `review_gate` closed.
+1. Branch from current main; **one function or batch at a time** when bridge work is scoped.
+2. Implement or fix native lowering; unify matching `Pipeline.e2e.js` assertions cross-platform.
+3. Run the implement/review gate defined in the [work queue runtime protocol](pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict).
+4. Record outcome:
+   - **`independent-review` pass** → `sdk-supported-bridge-ok`; close parity row; `commit` after `review_gate` closed.
    - **`invalid-argument` / pipeline execute error** → capture exact message; classify `sdk-unsupported-confirmed` or `rnfb-bridge-gap` (compare native request in debug logs).
-6. Revert before next function unless committing a confirmed removal.
 
-**Optional batch probe:** temporary e2e `describe` loops minimal pipeline per function; still one guard change per commit.
-
-Android already runs full pipelines; macOS uses JS SDK. Probes are **iOS-only**.
+Android already runs full pipelines; macOS uses JS SDK. Probes focus on **native iOS/Android** execute paths.
 
 ## 7. Update artifacts
 
@@ -152,10 +142,9 @@ After probes update:
 
 | Artifact | Update |
 |----------|--------|
-| `pipeline_support.ts` | `IOS_UNSUPPORTED_FUNCTION_NAMES` |
-| `RNFBFirestorePipelineNodeBuilder.swift` | Comment block ~L883–893 + any new lowering |
-| `Pipeline.e2e.js` | Remove reduced iOS pipelines for confirmed functions |
-| [pipeline-platform-parity.md](pipeline-platform-parity.md) | P-003 / iOS unsupported map |
+| `RNFBFirestorePipelineNodeBuilder.swift` / Android NodeBuilder | New or fixed lowering |
+| `Pipeline.e2e.js` | Unified cross-platform assertions |
+| [pipeline-platform-parity.md](pipeline-platform-parity.md) | Bridge / SDK gap rows |
 | [pipeline-coverage-work-queue.md](pipeline-coverage-work-queue.md) | Live remediation tracker |
 
 Re-run on `@react-native-firebase/app` `sdkVersions` bump.
@@ -186,26 +175,24 @@ Re-run on `@react-native-firebase/app` `sdkVersions` bump.
 
 Live probes/gates: [work queue](pipeline-coverage-work-queue.md#j0--ios-runtime-guard-probes-do-first).
 
-| Function | JS guard | iOS bridge | Android bridge | CHANGELOG @ 12.15 | Classification | Verification status |
-|----------|----------|------------|----------------|-------------------|----------------|---------------------|
-| `stringRepeat` | No | Generic `string_repeat` | raw | **Added 12.12** | **sdk-supported-bridge-ok** | Guard removed; unified cross-platform e2e |
-| `switchOn` | No | Generic `switch_on` | raw | **Added 12.12** | **sdk-supported-bridge-ok** | Guard removed; unified cross-platform e2e |
-| `trunc` | No | Generic `trunc` | raw | **Added 12.11** | **sdk-supported-bridge-ok** | Guard removed; unified cross-platform e2e |
-| `conditional` | No | `conditional` wire | `Expression.conditional()` | **ConditionalExpression 12.11** | **sdk-supported-bridge-ok** | Guard removed; iOS wire `cond`→`conditional`; unified e2e |
-| `round` | No | Generic `round` | raw | Not listed | **sdk-supported-bridge-ok** | Guard removed; unified cross-platform e2e |
-| `substring` | Yes | Generic `substring` | raw | Not listed | **sdk-unsupported-confirmed** | Runtime verification failed on pinned iOS SDK; guard retained |
-| `timestampAdd` | Yes | Generic `timestamp_add` only | receiver chain | Not listed | **pending-probe**; suspect real SDK gap | Runtime probe pending; if fail → document SDK gap |
-| `timestampSubtract` | Yes | Generic `timestamp_sub` | receiver chain | Not listed | Same as timestampAdd | Runtime probe pending |
-| `arrayGet` | Yes | Generic `array_get` only | receiver chain | Not listed | **rnfb-bridge-gap** + **pending-probe** | Runtime probe pending; if SDK ok → iOS receiver parity |
+| Function | iOS bridge | Android bridge | CHANGELOG @ 12.15 | Classification | Verification status |
+|----------|------------|----------------|-------------------|----------------|---------------------|
+| `stringRepeat` | Generic `string_repeat` | raw | **Added 12.12** | **sdk-supported-bridge-ok** | Unified cross-platform e2e |
+| `switchOn` | Generic `switch_on` | raw | **Added 12.12** | **sdk-supported-bridge-ok** | Unified cross-platform e2e |
+| `trunc` | Generic `trunc` | raw | **Added 12.11** | **sdk-supported-bridge-ok** | Unified cross-platform e2e |
+| `conditional` | `conditional` wire | `Expression.conditional()` | **ConditionalExpression 12.11** | **sdk-supported-bridge-ok** | iOS wire `cond`→`conditional`; unified e2e |
+| `round` | Generic `round` | raw | Not listed | **sdk-supported-bridge-ok** | Unified cross-platform e2e |
+| `substring` | Receiver chain (`.substring()`) | raw | Not listed (SDK API present) | **sdk-supported-bridge-ok** | iOS receiver lowering; unified cross-platform e2e |
+| `timestampAdd` | Receiver chain (`.timestampAdd()`) | receiver chain | Not listed (SDK API present) | **sdk-supported-bridge-ok** | iOS receiver lowering; unified cross-platform e2e |
+| `timestampSubtract` | Receiver chain (`.timestampSubtract()`); wire `timestamp_subtract` | receiver chain | Not listed (SDK API present) | **sdk-supported-bridge-ok** | Fixed wire name + iOS receiver lowering; unified e2e |
+| `arrayGet` | Receiver chain (`.arrayGet()`) | receiver chain | Not listed (SDK API present) | **sdk-supported-bridge-ok** | iOS receiver lowering; unified cross-platform e2e |
 
 ## Impact on parity registry
 
 | Registry row | Reconciliation finding |
 |--------------|------------------------|
-| **P-003** (umbrella iOS unsupported) | **Partially stale** — `stringRepeat`, `switchOn`, `trunc`, `conditional`, and `round` confirmed supported (guards removed); `substring` **sdk-unsupported-confirmed** (guard correct); remaining guarded names need runtime verification |
-| **P-003a** (per-function e2e) | Ten iOS reduced/throw tests may shrink after runtime guard probes |
-| **P-013** (iOS aggregate skip L3740) | Unrelated to guard list — separate SDK/bridge investigation |
-| **P-001, P-005, P-010–P-012** (bridge gaps) | Unchanged — operand coercion is independent of function guard list |
+| **P-013** (iOS aggregate skip L3740) | Unrelated — separate SDK/bridge investigation |
+| **P-001, P-005, P-010–P-012** (bridge gaps) | Unchanged — operand coercion is independent of function support matrix |
 
 ## Recommended remediation order
 
@@ -213,11 +200,11 @@ Live order/gates: [work queue](pipeline-coverage-work-queue.md).
 
 | Step | Work |
 |------|------|
-| **1** | iOS runtime guard probes — one commit per confirmed guard removal ([§6](#6-runtime-verification-authoritative)) |
+| **1** | iOS runtime bridge probes + unified e2e ([§6](#6-runtime-verification-authoritative)) |
 | **2** | P-001 Android operand coercion |
 | **3–7** | Remaining bridge items from [parity registry](pipeline-platform-parity.md) |
 
-**Do not** treat P-003 e2e reduced pipelines as permanent SDK limitations until runtime verification completes.
+Treat reduced iOS e2e branches as bridge/SDK gaps until native lowering or SDK support is confirmed.
 
 ---
 
@@ -229,4 +216,4 @@ Live order/gates: [work queue](pipeline-coverage-work-queue.md).
 - [ ] Diff **native** Firestore CHANGELOGs since last audit (layer C)
 - [ ] Re-run bridge lowering grep for new/changed function names
 - [ ] Update matrix; run **runtime guard probes** for any function moving from “unsupported” to “CHANGELOG added” on **native**
-- [ ] Sync `pipeline_support.ts` ↔ Swift comment ↔ parity doc
+- [ ] Sync parity doc ↔ native lowering comments

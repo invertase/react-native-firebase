@@ -915,6 +915,255 @@ final class RNFBFirestorePipelineNodeBuilder {
     return try booleanExpressionBridge(booleanExpression, fieldName: fieldName)
   }
 
+  private struct PendingReceiverOperation {
+    let normalizedName: String
+    let originalName: String
+    let args: [Any]
+    let fieldName: String
+  }
+
+  private struct ReceiverExpressionChainSeed {
+    let baseValue: Any
+    let baseFieldName: String
+    let operations: [PendingReceiverOperation]
+  }
+
+  private func isReceiverExpressionFunction(_ normalizedName: String) -> Bool {
+    switch normalizedName {
+    case "substring", "arrayget", "timestampadd", "timestampsubtract":
+      return true
+    default:
+      return false
+    }
+  }
+
+  private func collectReceiverExpressionChain(
+    normalizedName: String,
+    originalName: String,
+    args: [Any],
+    fieldName: String
+  ) throws -> ReceiverExpressionChainSeed {
+    guard !args.isEmpty else {
+      throw PipelineValidationError(
+        "pipelineExecute() expected \(fieldName).\(originalName) to include at least 1 argument.")
+    }
+
+    var operations = [
+      PendingReceiverOperation(
+        normalizedName: normalizedName,
+        originalName: originalName,
+        args: args,
+        fieldName: fieldName
+      ),
+    ]
+
+    var currentValue: Any = args[0]
+    var currentFieldName = "\(fieldName).args[0]"
+
+    while true {
+      guard let map = currentValue as? [String: Any] else {
+        break
+      }
+
+      if advanceSerializedExpressionEnvelope(value: &currentValue, fieldName: &currentFieldName, map: map) {
+        continue
+      }
+
+      guard let nestedName = map["name"] as? String else {
+        break
+      }
+
+      let nestedArgs = functionArgs(from: map)
+      let nestedNormalized = canonicalizeFunctionName(nestedName)
+      guard isReceiverExpressionFunction(nestedNormalized), !nestedArgs.isEmpty else {
+        break
+      }
+
+      operations.append(
+        PendingReceiverOperation(
+          normalizedName: nestedNormalized,
+          originalName: nestedName,
+          args: nestedArgs,
+          fieldName: currentFieldName
+        )
+      )
+      currentValue = nestedArgs[0]
+      currentFieldName = "\(currentFieldName).args[0]"
+    }
+
+    return ReceiverExpressionChainSeed(
+      baseValue: currentValue,
+      baseFieldName: currentFieldName,
+      operations: operations
+    )
+  }
+
+  private func tryCoerceStringConstant(_ value: Any, fieldName: String) -> String? {
+    if let stringValue = value as? String {
+      return stringValue
+    }
+    guard let map = value as? [String: Any],
+      (map["exprType"] as? String)?.lowercased() == "constant",
+      let raw = map["value"] as? String else {
+      return nil
+    }
+    return raw
+  }
+
+  private func requireWholeNumber(_ value: Any, fieldName: String) throws -> Int {
+    if let intValue = tryIntegerLiteral(from: value) {
+      return intValue
+    }
+    throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be an integer.")
+  }
+
+  private func applyTimestampMathReceiver(
+    add: Bool,
+    expression: any FirebaseFirestore.Expression,
+    unitArg: Any,
+    amountArg: Any,
+    fieldName: String
+  ) throws -> any FirebaseFirestore.Expression {
+    if !containsSerializedExpression(unitArg), !containsSerializedExpression(amountArg),
+      let unit = tryCoerceStringConstant(unitArg, fieldName: "\(fieldName).args[1]"),
+      let amount = tryIntegerLiteral(from: amountArg) {
+      let amountExpression = firebaseConstantExpression(amount)
+      if add {
+        return expression.timestampAdd(amount: amountExpression, unit: unit)
+      }
+      return expression.timestampSubtract(amount: amountExpression, unit: unit)
+    }
+
+    let unitExpression = try coerceFirebaseExpression(unitArg, fieldName: "\(fieldName).args[1]")
+    let amountExpression = try coerceFirebaseExpression(amountArg, fieldName: "\(fieldName).args[2]")
+    if add {
+      return expression.timestampAdd(amount: amountExpression, unit: unitExpression)
+    }
+    return expression.timestampSubtract(amount: amountExpression, unit: unitExpression)
+  }
+
+  private func applyExpressionReceiverOperation(
+    to expression: any FirebaseFirestore.Expression,
+    operation: PendingReceiverOperation
+  ) throws -> any FirebaseFirestore.Expression {
+    switch operation.normalizedName {
+    case "substring":
+      guard operation.args.count >= 2 else {
+        throw PipelineValidationError(
+          "pipelineExecute() expected \(operation.fieldName).\(operation.originalName) to include at least 2 arguments.")
+      }
+      let positionArg = operation.args[1]
+      if operation.args.count >= 3 {
+        let lengthArg = operation.args[2]
+        if !containsSerializedExpression(positionArg), !containsSerializedExpression(lengthArg) {
+          let position = try requireWholeNumber(positionArg, fieldName: "\(operation.fieldName).args[1]")
+          let length = try requireWholeNumber(lengthArg, fieldName: "\(operation.fieldName).args[2]")
+          return expression.substring(position: position, length: length)
+        }
+        let positionExpression = try coerceFirebaseExpression(
+          positionArg, fieldName: "\(operation.fieldName).args[1]")
+        let lengthExpression = try coerceFirebaseExpression(
+          lengthArg, fieldName: "\(operation.fieldName).args[2]")
+        return expression.substring(position: positionExpression, length: lengthExpression)
+      }
+      if !containsSerializedExpression(positionArg) {
+        let position = try requireWholeNumber(positionArg, fieldName: "\(operation.fieldName).args[1]")
+        return expression.substring(position: position)
+      }
+      let positionExpression = try coerceFirebaseExpression(
+        positionArg, fieldName: "\(operation.fieldName).args[1]")
+      return expression.substring(position: positionExpression)
+    case "arrayget":
+      guard operation.args.count >= 2 else {
+        throw PipelineValidationError(
+          "pipelineExecute() expected \(operation.fieldName).\(operation.originalName) to include at least 2 arguments.")
+      }
+      let indexArg = operation.args[1]
+      if !containsSerializedExpression(indexArg), let index = tryIntegerLiteral(from: indexArg) {
+        return expression.arrayGet(index)
+      }
+      let indexExpression = try coerceFirebaseExpression(
+        indexArg, fieldName: "\(operation.fieldName).args[1]")
+      return expression.arrayGet(indexExpression)
+    case "timestampadd":
+      guard operation.args.count == 3 else {
+        throw PipelineValidationError(
+          "pipelineExecute() expected \(operation.fieldName).\(operation.originalName) to include exactly 3 arguments.")
+      }
+      return try applyTimestampMathReceiver(
+        add: true,
+        expression: expression,
+        unitArg: operation.args[1],
+        amountArg: operation.args[2],
+        fieldName: operation.fieldName
+      )
+    case "timestampsubtract":
+      guard operation.args.count == 3 else {
+        throw PipelineValidationError(
+          "pipelineExecute() expected \(operation.fieldName).\(operation.originalName) to include exactly 3 arguments.")
+      }
+      return try applyTimestampMathReceiver(
+        add: false,
+        expression: expression,
+        unitArg: operation.args[1],
+        amountArg: operation.args[2],
+        fieldName: operation.fieldName
+      )
+    default:
+      throw PipelineValidationError("pipelineExecute() expected a receiver expression operation.")
+    }
+  }
+
+  private func buildReceiverFirebaseExpression(
+    normalizedName: String,
+    originalName: String,
+    rawArgs: [Any],
+    fieldName: String
+  ) throws -> any FirebaseFirestore.Expression {
+    let seed = try collectReceiverExpressionChain(
+      normalizedName: normalizedName,
+      originalName: originalName,
+      args: rawArgs,
+      fieldName: fieldName
+    )
+    var expression = try coerceFirebaseExpression(seed.baseValue, fieldName: seed.baseFieldName)
+    for operation in seed.operations.reversed() {
+      expression = try applyExpressionReceiverOperation(to: expression, operation: operation)
+    }
+    return expression
+  }
+
+  private func expressionBridge(
+    _ expression: any FirebaseFirestore.Expression,
+    fieldName: String
+  ) throws -> ExprBridge {
+    if let bridge = bridgeFromSDKValue(expression) {
+      return bridge
+    }
+
+    throw PipelineValidationError(
+      "pipelineExecute() could not convert \(fieldName) into an expression bridge.")
+  }
+
+  private func coerceReceiverExpressionBridge(
+    _ map: [String: Any],
+    fieldName: String
+  ) throws -> ExprBridge {
+    guard let name = map["name"] as? String else {
+      throw PipelineValidationError(
+        "pipelineExecute() expected \(fieldName) to be a receiver expression.")
+    }
+    let rawArgs = functionArgs(from: map)
+    let normalized = canonicalizeFunctionName(name)
+    let expression = try buildReceiverFirebaseExpression(
+      normalizedName: normalized,
+      originalName: name,
+      rawArgs: rawArgs,
+      fieldName: fieldName
+    )
+    return try expressionBridge(expression, fieldName: fieldName)
+  }
+
   // Builds Firebase SDK `Expression` values for boolean receiver APIs (`.equal()`, etc.).
   // Wire-based lowering uses `coerceExpressionTree` → `ExprBridge`; the two paths share
   // serialized envelope helpers but target different SDK types by design.
@@ -970,6 +1219,15 @@ final class RNFBFirestorePipelineNodeBuilder {
             left: try coerceFirebaseExpression(rawArgs[0], fieldName: "\(currentField).args[0]"),
             right: rawArgs[1],
             fieldName: "\(currentField).args[1]"
+          )
+        }
+
+        if isReceiverExpressionFunction(normalized) {
+          return try buildReceiverFirebaseExpression(
+            normalizedName: normalized,
+            originalName: name,
+            rawArgs: rawArgs,
+            fieldName: currentField
           )
         }
 
@@ -1124,7 +1382,7 @@ final class RNFBFirestorePipelineNodeBuilder {
     case "endswith":
       return "ends_with"
     case "timestampsubtract":
-      return "timestamp_sub"
+      return "timestamp_subtract"
     case "timestamptruncate":
       return "timestamp_trunc"
     case "arraycontains":
@@ -1280,14 +1538,7 @@ final class RNFBFirestorePipelineNodeBuilder {
   // NOTE: iOS pipeline function lowering lives in this builder.
   //
   // If a serialized JS pipeline function is not supported by the currently linked
-  // Firebase iOS pipeline runtime, add or document it here first.
-  //
-  // Some functions are intentionally blocked before reaching native on iOS
-  // (see `pipeline_support.ts` / `getIOSUnsupportedPipelineFunctions()`)
-  // because the installed iOS SDK/runtime currently rejects them with
-  // `invalid-argument` even though newer Firebase snippets may show them.
-  // When iOS support becomes available, implement the lowering here and then
-  // remove the corresponding JS-side unsupported-function guard.
+  // Firebase iOS pipeline runtime, implement or document the lowering here.
   private func coerceExpressionTree(
     _ value: Any,
     fieldName: String,
@@ -1786,6 +2037,11 @@ final class RNFBFirestorePipelineNodeBuilder {
                     argBoxes[index]
                   ))
                 }
+                break expressionLoop
+              }
+
+              if isReceiverExpressionFunction(normalized) {
+                box.value = try coerceReceiverExpressionBridge(map, fieldName: currentField)
                 break expressionLoop
               }
 

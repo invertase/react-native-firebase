@@ -51,21 +51,6 @@ These exports exist in both SDKs but differ in typing or optional parameters:
 | ------ | ----------------------------------------------------------------------- |
 | `Type` | Local type discriminator union used with `isType()` and related helpers |
 
-# iOS expression limitations
-
-Even when an expression helper is exported from `@react-native-firebase/firestore/pipelines`, the **iOS native runtime** may not implement it yet. Using these functions in a pipeline on iOS throws before `execute()` completes:
-
-| Function            | Status on iOS |
-| ------------------- | ------------- |
-| `arrayGet`          | Not supported |
-| `substring`         | Not supported |
-| `timestampAdd`      | Not supported |
-| `timestampSubtract` | Not supported |
-
-**Android** and **macOS** do not apply this check; macOS uses the web SDK path. Prefer testing pipeline samples on Android or macOS when they use the functions above until iOS parity lands.
-
-The list is defined in `packages/firestore/lib/pipelines/pipeline_support.ts` and kept in sync with `RNFBFirestorePipelineNodeBuilder.swift`.
-
 # Platform execution matrix
 
 | Platform | Execution backend               | Pipeline database  |

@@ -39,13 +39,6 @@ async function expectAsyncError(run, expectedMessage, expectedCode) {
   }
 }
 
-async function expectIOSUnsupportedFunctions(run, functionNames) {
-  return expectAsyncError(
-    run,
-    `pipelineExecute() does not support these functions on iOS yet: ${[...functionNames].sort().join(', ')}.`,
-  );
-}
-
 describe('FirestorePipeline', function () {
   describe('Modular API', function () {
     it('serializes source builders and stage ordering', function () {
@@ -1773,38 +1766,6 @@ describe('FirestorePipeline', function () {
             charLength(field('name')).as('charLen'),
           );
 
-        if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['substring']);
-
-          const iosSnapshot = await execute(
-            db
-              .pipeline()
-              .documents([docPath])
-              .select(
-                toUpper(field('name')).as('upperName'),
-                toLower(field('name')).as('lowerName'),
-                trim(field('rawText')).as('trimmed'),
-                ltrim(field('rawText')).as('ltrimmed'),
-                rtrim(field('rawText')).as('rtrimmed'),
-                length(field('name')).as('nameLength'),
-                byteLength(field('name')).as('byteLen'),
-                charLength(field('name')).as('charLen'),
-              ),
-          );
-
-          iosSnapshot.results.should.have.length(1);
-          const iosData = iosSnapshot.results[0].data();
-          iosData.upperName.should.equal('ALICE');
-          iosData.lowerName.should.equal('alice');
-          iosData.trimmed.should.equal('hello');
-          iosData.ltrimmed.should.equal('hello  ');
-          iosData.rtrimmed.should.equal('  hello');
-          iosData.nameLength.should.equal(5);
-          iosData.byteLen.should.equal(5);
-          iosData.charLen.should.equal(5);
-          return;
-        }
-
         const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
@@ -2115,86 +2076,6 @@ describe('FirestorePipeline', function () {
             arraySum(field('scores')).as('totalScore'),
           );
 
-        if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['arrayGet']);
-
-          const iosSnapshot = await execute(
-            db
-              .pipeline()
-              .collection(coll)
-              .where(
-                and(
-                  arrayContains(field('tags'), 'typescript'),
-                  arrayContainsAny(field('tags'), [constant('js'), constant('ts')]),
-                  arrayContainsAll(field('permissions'), ['read', 'write']),
-                ),
-              )
-              .select(
-                array([constant('one'), constant('two'), constant('three')]).as('fixedArr'),
-                arrayLength(field('tags')).as('tagCount'),
-                arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
-                arrayFilter('scores', 'score', greaterThan(variable('score'), 15)).as(
-                  'filteredItems',
-                ),
-                arrayFirst('scores').as('firstScore'),
-                arrayFirstN('scores', 2).as('firstTwoScores'),
-                arrayLast('scores').as('globalLastScore'),
-                arrayLastN('scores', 2).as('globalLastTwoScores'),
-                field('scores').arrayLast().as('lastScore'),
-                field('scores').arrayLastN(2).as('lastTwoScores'),
-                arraySlice('scores', 1, 2).as('middleScores'),
-                arrayTransform('scores', 'score', add(variable('score'), 1)).as(
-                  'incrementedScores',
-                ),
-                arrayTransformWithIndex(
-                  'scores',
-                  'score',
-                  'index',
-                  add(variable('score'), variable('index')),
-                ).as('indexedScores'),
-                arrayMaximum('scores').as('maxScore'),
-                arrayMaximumN('scores', 2).as('topTwoScores'),
-                arrayMinimum('scores').as('globalMinScore'),
-                field('scores').arrayMinimum().as('minScore'),
-                arrayMinimumN('scores', 2).as('bottomTwoScores'),
-                arrayIndexOf('scores', 20).as('firstTwentyIndex'),
-                field('scores').arrayIndexOf(20).as('fluentFirstTwentyIndex'),
-                arrayLastIndexOf('scores', 20).as('lastTwentyIndex'),
-                field('scores').arrayLastIndexOf(20).as('fluentLastTwentyIndex'),
-                arrayIndexOfAll('scores', 20).as('allTwentyIndexes'),
-                arraySum(field('scores')).as('totalScore'),
-              ),
-          );
-
-          iosSnapshot.results.should.have.length(1);
-          const iosData = iosSnapshot.results[0].data();
-          iosData.fixedArr.should.eql(['one', 'two', 'three']);
-          iosData.tagCount.should.equal(2);
-          iosData.allTags.should.eql(['a', 'b', 'c', 'd']);
-          iosData.filteredItems.should.eql([20, 30, 20]);
-          iosData.firstScore.should.equal(10);
-          iosData.firstTwoScores.should.eql([10, 20]);
-          iosData.globalLastScore.should.equal(20);
-          iosData.globalLastTwoScores.should.eql([30, 20]);
-          iosData.lastScore.should.equal(20);
-          iosData.lastTwoScores.should.eql([30, 20]);
-          iosData.middleScores.should.eql([20, 30]);
-          iosData.incrementedScores.should.eql([11, 21, 31, 21]);
-          iosData.indexedScores.should.eql([10, 21, 32, 23]);
-          iosData.maxScore.should.equal(30);
-          [...iosData.topTwoScores].sort((a, b) => a - b).should.eql([20, 30]);
-          iosData.minScore.should.equal(10);
-          iosData.globalMinScore.should.equal(10);
-          [...iosData.bottomTwoScores].sort((a, b) => a - b).should.eql([10, 20]);
-          iosData.firstTwentyIndex.should.equal(1);
-          iosData.fluentFirstTwentyIndex.should.equal(1);
-          iosData.lastTwentyIndex.should.equal(3);
-          iosData.fluentLastTwentyIndex.should.equal(3);
-          iosData.allTwentyIndexes.should.eql([1, 3]);
-          iosData.totalScore.should.equal(80);
-          return;
-        }
-
         const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
@@ -2498,47 +2379,6 @@ describe('FirestorePipeline', function () {
             field('eventTime').timestampTruncate('day').as('fluentDayBucket'),
           );
 
-        if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['arrayGet']);
-
-          const iosSnapshot = await execute(
-            db
-              .pipeline()
-              .documents([docPath])
-              .select(
-                mapGet(field('metadata'), 'theme').as('globalTheme'),
-                field('metadata').mapGet('theme').as('fluentTheme'),
-                stringReplaceAll(field('label'), 'a', 'b').as('globalLabel'),
-                field('label').stringReplaceAll('a', 'b').as('fluentLabel'),
-                regexMatch(field('code'), '^[A-Z]{3}$').as('globalRegex'),
-                field('code').regexMatch('^[A-Z]{3}$').as('fluentRegex'),
-                ifNull(field('displayName'), 'Anonymous').as('globalIfNull'),
-                field('displayName').ifNull('Anonymous').as('fluentIfNull'),
-                coalesce(field('preferredName'), 'Unknown').as('globalCoalesce'),
-                field('preferredName').coalesce('Unknown').as('fluentCoalesce'),
-                timestampTruncate(field('eventTime'), 'day').as('globalDayBucket'),
-                field('eventTime').timestampTruncate('day').as('fluentDayBucket'),
-              ),
-          );
-
-          iosSnapshot.results.should.have.length(1);
-          const iosData = iosSnapshot.results[0].data();
-          iosData.globalTheme.should.equal('light');
-          iosData.fluentTheme.should.equal('light');
-          iosData.globalLabel.should.equal('bbb');
-          iosData.fluentLabel.should.equal('bbb');
-          iosData.globalRegex.should.equal(true);
-          iosData.fluentRegex.should.equal(true);
-          iosData.globalIfNull.should.equal('Anonymous');
-          iosData.fluentIfNull.should.equal('Anonymous');
-          iosData.globalCoalesce.should.equal('Ada');
-          iosData.fluentCoalesce.should.equal('Ada');
-          iosData.globalDayBucket.constructor.name.should.equal('Timestamp');
-          iosData.fluentDayBucket.constructor.name.should.equal('Timestamp');
-          iosData.globalDayBucket.seconds.should.equal(iosData.fluentDayBucket.seconds);
-          return;
-        }
-
         const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
@@ -2758,34 +2598,6 @@ describe('FirestorePipeline', function () {
             timestampTruncate(field('eventTime'), 'day').as('dayBucket'),
             unixMillisToTimestamp(field('epochMs')).as('fromEpochMs'),
           );
-
-        if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(
-            () => execute(pipeline),
-            ['timestampAdd', 'timestampSubtract'],
-          );
-
-          const iosSnapshot = await execute(
-            db
-              .pipeline()
-              .documents([docPath])
-              .select(
-                timestampToUnixMillis(field('eventTime')).as('eventTimeMs'),
-                timestampToUnixSeconds(field('eventTime')).as('eventTimeSec'),
-                timestampTruncate(field('eventTime'), 'day').as('dayBucket'),
-                unixMillisToTimestamp(field('epochMs')).as('fromEpochMs'),
-              ),
-          );
-
-          iosSnapshot.results.should.have.length(1);
-          const iosData = iosSnapshot.results[0].data();
-          iosData.eventTimeMs.should.equal(1700000000000);
-          iosData.eventTimeSec.should.equal(1700000000);
-          iosData.dayBucket.constructor.name.should.equal('Timestamp');
-          iosData.fromEpochMs.constructor.name.should.equal('Timestamp');
-          iosData.fromEpochMs.seconds.should.equal(1700000000);
-          return;
-        }
 
         const snapshot = await execute(pipeline);
 
@@ -4064,9 +3876,7 @@ describe('FirestorePipeline', function () {
     });
 
     it('evaluates a deeply nested arithmetic expression without hanging analysis', async function () {
-      // A 30-deep add() chain. Under the previous O(2^depth) iOS
-      // getIOSUnsupportedPipelineFunctions this would have hung execute(); it must
-      // now parse + execute quickly and return the exact sum.
+      // A 30-deep add() chain must parse + execute quickly and return the exact sum.
       const { execute, field, add, constant } = firestorePipelinesModular;
       const { getFirestore, doc, setDoc } = firestoreModular;
       const db = getFirestore(DATABASE_ID);
