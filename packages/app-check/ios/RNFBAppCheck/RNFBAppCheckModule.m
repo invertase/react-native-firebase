@@ -17,6 +17,7 @@
 
 #import <Firebase/Firebase.h>
 #import <FirebaseAppCheck/FIRAppCheck.h>
+#import <React/RCTBridgeModule.h>
 
 #import <React/RCTUtils.h>
 
