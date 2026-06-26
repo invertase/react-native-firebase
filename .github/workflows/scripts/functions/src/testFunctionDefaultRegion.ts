@@ -10,9 +10,11 @@
 import { deepEqual } from 'assert';
 import { FirebaseError } from 'firebase-admin';
 import { CallableRequest, onCall, HttpsError } from 'firebase-functions/v2/https';
+import { E2E_TEST_FUNCTION_TIMEOUT_SECONDS } from './e2eCallOptions';
 import SAMPLE_DATA from './sample-data';
 
 export const testFunctionDefaultRegionV2 = onCall(
+  { timeoutSeconds: E2E_TEST_FUNCTION_TIMEOUT_SECONDS },
   (req: CallableRequest<{ type: string; asError: boolean; inputData: any }>) => {
     console.log(Date.now(), req.data);
 

@@ -1,12 +1,17 @@
 import { onCall, CallableRequest, CallableResponse, HttpsError } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions/v2';
+import { E2E_TEST_FUNCTION_TIMEOUT_SECONDS } from './e2eCallOptions';
 import SAMPLE_DATA from './sample-data';
+
+const e2eOnCall = (
+  handler: (req: CallableRequest<any>, response?: CallableResponse<any>) => unknown,
+) => onCall({ timeoutSeconds: E2E_TEST_FUNCTION_TIMEOUT_SECONDS }, handler);
 
 /**
  * Test streaming callable function that sends multiple chunks of data
  * This function demonstrates Server-Sent Events (SSE) streaming
  */
-export const testStreamingCallable = onCall(
+export const testStreamingCallable = e2eOnCall(
   async (
     req: CallableRequest<{ count?: number; delay?: number }>,
     response?: CallableResponse<any>,
@@ -43,7 +48,7 @@ export const testStreamingCallable = onCall(
 /**
  * Test streaming callable that sends progressive updates
  */
-export const testProgressStream = onCall(
+export const testProgressStream = e2eOnCall(
   async (req: CallableRequest<{ task?: string }>, response?: CallableResponse<any>) => {
     const task = req.data.task || 'Processing';
 
@@ -71,7 +76,7 @@ export const testProgressStream = onCall(
 /**
  * Test streaming with complex data types
  */
-export const testComplexDataStream = onCall(
+export const testComplexDataStream = e2eOnCall(
   async (req: CallableRequest, response?: CallableResponse<any>) => {
     logger.info('testComplexDataStream called');
 
@@ -126,7 +131,7 @@ export const testComplexDataStream = onCall(
 /**
  * Test streaming with error handling
  */
-export const testStreamWithError = onCall(
+export const testStreamWithError = e2eOnCall(
   async (
     req: CallableRequest<{ shouldError?: boolean; errorAfter?: number }>,
     response?: CallableResponse<any>,
@@ -161,7 +166,7 @@ export const testStreamWithError = onCall(
  * Test streaming callable that returns the type of data sent
  * Similar to Dart's testStreamResponse - sends back the type of input data
  */
-export const testStreamResponse = onCall(
+export const testStreamResponse = e2eOnCall(
   async (req: CallableRequest<any>, response?: CallableResponse<any>) => {
     logger.info('testStreamResponse called', { data: req.data });
 
@@ -207,7 +212,7 @@ export const testStreamResponse = onCall(
  * Test streaming callable that handles null data
  * This function specifically accepts null and returns success: true
  */
-export const testStreamingCallableWithNull = onCall(
+export const testStreamingCallableWithNull = e2eOnCall(
   async (req: CallableRequest<any>, response?: CallableResponse<any>) => {
     logger.info('testStreamingCallableWithNull called', { data: req.data });
 
@@ -228,7 +233,7 @@ export const testStreamingCallableWithNull = onCall(
  * Streaming callable that throws HttpsError (for testing stream-by-name).
  * Only throws: invalid-argument (bad/missing type), or cancelled with details (when asError).
  */
-export const testStreamWithHttpsError = onCall(
+export const testStreamWithHttpsError = e2eOnCall(
   async (
     req: CallableRequest<{ type?: string; asError?: boolean; inputData?: any }>,
     response?: CallableResponse<any>,
@@ -263,7 +268,7 @@ export const testStreamWithHttpsError = onCall(
  * Streaming callable that throws HttpsError (for testing stream-from-URL).
  * Same behaviour as testStreamWithHttpsError; separate export for httpsCallableFromUrl.stream() e2e.
  */
-export const testStreamWithHttpsErrorFromUrl = onCall(
+export const testStreamWithHttpsErrorFromUrl = e2eOnCall(
   async (
     req: CallableRequest<{ type?: string; asError?: boolean; inputData?: any }>,
     response?: CallableResponse<any>,

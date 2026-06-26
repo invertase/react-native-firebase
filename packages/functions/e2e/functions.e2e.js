@@ -88,6 +88,12 @@ const SAMPLE_DATA = {
   ],
 };
 
+const E2E_CALLABLE_TIMEOUT_MS = 120000;
+
+function e2eCallableTimeoutOptions(extra = {}) {
+  return { timeout: E2E_CALLABLE_TIMEOUT_MS, ...extra };
+}
+
 describe('functions() modular', function () {
   describe('firebase v8 compatibility', function () {
     beforeEach(async function beforeEachTest() {
@@ -128,7 +134,10 @@ describe('functions() modular', function () {
 
         firebase.app().functions(region)._customUrlOrRegion.should.equal(region);
 
-        const functionRunner = functionsForRegion.httpsCallable('testFunctionCustomRegion');
+        const functionRunner = functionsForRegion.httpsCallable(
+          'testFunctionCustomRegion',
+          e2eCallableTimeoutOptions(),
+        );
 
         const response = await functionRunner();
         response.data.should.equal(region);
@@ -146,7 +155,10 @@ describe('functions() modular', function () {
 
         functionsForCustomUrl._customUrlOrRegion.should.equal(customUrl);
 
-        const functionRunner = functionsForCustomUrl.httpsCallable('testFunctionDefaultRegionV2');
+        const functionRunner = functionsForCustomUrl.httpsCallable(
+          'testFunctionDefaultRegionV2',
+          e2eCallableTimeoutOptions(),
+        );
 
         const response = await functionRunner();
         response.data.should.equal('null');
@@ -159,7 +171,7 @@ describe('functions() modular', function () {
         const fnName = 'helloWorldV2';
         const functions = firebase.app().functions(region);
         functions.useFunctionsEmulator('http://localhost');
-        const response = await functions.httpsCallable(fnName)();
+        const response = await functions.httpsCallable(fnName, e2eCallableTimeoutOptions())();
         response.data.should.equal('Hello from Firebase!');
       });
 
@@ -168,7 +180,7 @@ describe('functions() modular', function () {
         const fnName = 'helloWorldV2';
         const functions = firebase.app().functions(region);
         functions.useFunctionsEmulator('http://localhost:5001');
-        const response = await functions.httpsCallable(fnName)();
+        const response = await functions.httpsCallable(fnName, e2eCallableTimeoutOptions())();
         response.data.should.equal('Hello from Firebase!');
       });
 
@@ -177,7 +189,7 @@ describe('functions() modular', function () {
         const fnName = 'helloWorldV2';
         const functions = firebase.app().functions(region);
         functions.useEmulator('localhost', 5001);
-        const response = await functions.httpsCallable(fnName)();
+        const response = await functions.httpsCallable(fnName, e2eCallableTimeoutOptions())();
         response.data.should.equal('Hello from Firebase!');
       });
     });
@@ -192,6 +204,7 @@ describe('functions() modular', function () {
           .functions()
           .httpsCallableFromUrl(
             `http://${hostname}:5001/react-native-firebase-testing/us-central1/helloWorldV2`,
+            e2eCallableTimeoutOptions(),
           );
         const response = await functionRunner();
         response.data.should.equal('Hello from Firebase!');
@@ -200,37 +213,49 @@ describe('functions() modular', function () {
 
     describe('httpsCallable(fnName)(args)', function () {
       it('accepts primitive args: undefined', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
+        const functionRunner = firebase
+          .functions()
+          .httpsCallable('testFunctionDefaultRegionV2', e2eCallableTimeoutOptions());
         const response = await functionRunner();
         response.data.should.equal('null');
       });
 
       it('accepts primitive args: string', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
+        const functionRunner = firebase
+          .functions()
+          .httpsCallable('testFunctionDefaultRegionV2', e2eCallableTimeoutOptions());
         const response = await functionRunner('hello');
         response.data.should.equal('string');
       });
 
       it('accepts primitive args: number', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
+        const functionRunner = firebase
+          .functions()
+          .httpsCallable('testFunctionDefaultRegionV2', e2eCallableTimeoutOptions());
         const response = await functionRunner(123);
         response.data.should.equal('number');
       });
 
       it('accepts primitive args: boolean', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
+        const functionRunner = firebase
+          .functions()
+          .httpsCallable('testFunctionDefaultRegionV2', e2eCallableTimeoutOptions());
         const response = await functionRunner(true);
         response.data.should.equal('boolean');
       });
 
       it('accepts primitive args: null', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
+        const functionRunner = firebase
+          .functions()
+          .httpsCallable('testFunctionDefaultRegionV2', e2eCallableTimeoutOptions());
         const response = await functionRunner(null);
         response.data.should.equal('null');
       });
 
       it('accepts array args', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
+        const functionRunner = firebase
+          .functions()
+          .httpsCallable('testFunctionDefaultRegionV2', e2eCallableTimeoutOptions());
         const response = await functionRunner([1, 2, 3, 4]);
         response.data.should.equal('array');
       });
@@ -238,7 +263,9 @@ describe('functions() modular', function () {
       it('accepts object args', async function () {
         const type = 'object';
         const inputData = SAMPLE_DATA[type];
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
+        const functionRunner = firebase
+          .functions()
+          .httpsCallable('testFunctionDefaultRegionV2', e2eCallableTimeoutOptions());
         const { data: outputData } = await functionRunner({
           type,
           inputData,
@@ -249,7 +276,9 @@ describe('functions() modular', function () {
       it('accepts complex nested objects', async function () {
         const type = 'deepObject';
         const inputData = SAMPLE_DATA[type];
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
+        const functionRunner = firebase
+          .functions()
+          .httpsCallable('testFunctionDefaultRegionV2', e2eCallableTimeoutOptions());
         const { data: outputData } = await functionRunner({
           type,
           inputData,
@@ -260,7 +289,9 @@ describe('functions() modular', function () {
       it('accepts complex nested arrays', async function () {
         const type = 'deepArray';
         const inputData = SAMPLE_DATA[type];
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
+        const functionRunner = firebase
+          .functions()
+          .httpsCallable('testFunctionDefaultRegionV2', e2eCallableTimeoutOptions());
         const { data: outputData } = await functionRunner({
           type,
           inputData,
@@ -271,7 +302,9 @@ describe('functions() modular', function () {
 
     describe('HttpsError', function () {
       it('errors return instance of HttpsError', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
+        const functionRunner = firebase
+          .functions()
+          .httpsCallable('testFunctionDefaultRegionV2', e2eCallableTimeoutOptions());
 
         try {
           await functionRunner({});
@@ -288,7 +321,9 @@ describe('functions() modular', function () {
       it('HttpsError.details -> allows returning complex data', async function () {
         let type = 'deepObject';
         let inputData = SAMPLE_DATA[type];
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
+        const functionRunner = firebase
+          .functions()
+          .httpsCallable('testFunctionDefaultRegionV2', e2eCallableTimeoutOptions());
         try {
           await functionRunner({
             type,
@@ -327,7 +362,9 @@ describe('functions() modular', function () {
       it('HttpsError.details -> allows returning primitives', async function () {
         let type = 'number';
         let inputData = SAMPLE_DATA[type];
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
+        const functionRunner = firebase
+          .functions()
+          .httpsCallable('testFunctionDefaultRegionV2', e2eCallableTimeoutOptions());
         try {
           await functionRunner({
             type,
@@ -461,7 +498,11 @@ describe('functions() modular', function () {
 
       getApp().functions(region)._customUrlOrRegion.should.equal(region);
 
-      const functionRunner = httpsCallable(functionsForRegion, 'testFunctionCustomRegion');
+      const functionRunner = httpsCallable(
+        functionsForRegion,
+        'testFunctionCustomRegion',
+        e2eCallableTimeoutOptions(),
+      );
 
       const response = await functionRunner();
       response.data.should.equal(region);
@@ -482,7 +523,11 @@ describe('functions() modular', function () {
 
       functionsForCustomUrl._customUrlOrRegion.should.equal(customUrl);
 
-      const functionRunner = httpsCallable(functionsForCustomUrl, 'testFunctionDefaultRegionV2');
+      const functionRunner = httpsCallable(
+        functionsForCustomUrl,
+        'testFunctionDefaultRegionV2',
+        e2eCallableTimeoutOptions(),
+      );
 
       const response = await functionRunner();
       response.data.should.equal('null');
@@ -497,7 +542,7 @@ describe('functions() modular', function () {
         // const functions = firebase.app().functions(region);
         const functions = getFunctions(getApp(), region);
         connectFunctionsEmulator(functions, 'localhost', 5001);
-        const response = await httpsCallable(functions, fnName)();
+        const response = await httpsCallable(functions, fnName, e2eCallableTimeoutOptions())();
         response.data.should.equal('Hello from Firebase!');
       });
 
@@ -508,7 +553,7 @@ describe('functions() modular', function () {
         const fnName = 'helloWorldV2';
         const functions = getFunctions(getApp(), region);
         connectFunctionsEmulator(functions, 'localhost', 5001);
-        const response = await httpsCallable(functions, fnName)();
+        const response = await httpsCallable(functions, fnName, e2eCallableTimeoutOptions())();
         response.data.should.equal('Hello from Firebase!');
       });
 
@@ -538,6 +583,7 @@ describe('functions() modular', function () {
         const functionRunner = httpsCallableFromUrl(
           functions,
           `http://${hostname}:5001/react-native-firebase-testing/us-central1/helloWorldV2`,
+          e2eCallableTimeoutOptions(),
         );
         const response = await functionRunner();
         response.data.should.equal('Hello from Firebase!');
@@ -548,7 +594,11 @@ describe('functions() modular', function () {
       it('accepts primitive args: undefined', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testFunctionDefaultRegionV2',
+          e2eCallableTimeoutOptions(),
+        );
         const response = await functionRunner();
         response.data.should.equal('null');
       });
@@ -556,7 +606,11 @@ describe('functions() modular', function () {
       it('accepts primitive args: string', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testFunctionDefaultRegionV2',
+          e2eCallableTimeoutOptions(),
+        );
         const response = await functionRunner('hello');
         response.data.should.equal('string');
       });
@@ -564,7 +618,11 @@ describe('functions() modular', function () {
       it('accepts primitive args: number', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testFunctionDefaultRegionV2',
+          e2eCallableTimeoutOptions(),
+        );
         const response = await functionRunner(123);
         response.data.should.equal('number');
       });
@@ -572,7 +630,11 @@ describe('functions() modular', function () {
       it('accepts primitive args: boolean', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testFunctionDefaultRegionV2',
+          e2eCallableTimeoutOptions(),
+        );
         const response = await functionRunner(true);
         response.data.should.equal('boolean');
       });
@@ -580,7 +642,11 @@ describe('functions() modular', function () {
       it('accepts primitive args: null', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testFunctionDefaultRegionV2',
+          e2eCallableTimeoutOptions(),
+        );
         const response = await functionRunner(null);
         response.data.should.equal('null');
       });
@@ -588,7 +654,11 @@ describe('functions() modular', function () {
       it('accepts array args', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testFunctionDefaultRegionV2',
+          e2eCallableTimeoutOptions(),
+        );
         const response = await functionRunner([1, 2, 3, 4]);
         response.data.should.equal('array');
       });
@@ -598,7 +668,11 @@ describe('functions() modular', function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const type = 'object';
         const inputData = SAMPLE_DATA[type];
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testFunctionDefaultRegionV2',
+          e2eCallableTimeoutOptions(),
+        );
         const { data: outputData } = await functionRunner({
           type,
           inputData,
@@ -611,7 +685,11 @@ describe('functions() modular', function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const type = 'deepObject';
         const inputData = SAMPLE_DATA[type];
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testFunctionDefaultRegionV2',
+          e2eCallableTimeoutOptions(),
+        );
         const { data: outputData } = await functionRunner({
           type,
           inputData,
@@ -624,7 +702,11 @@ describe('functions() modular', function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const type = 'deepArray';
         const inputData = SAMPLE_DATA[type];
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testFunctionDefaultRegionV2',
+          e2eCallableTimeoutOptions(),
+        );
         const { data: outputData } = await functionRunner({
           type,
           inputData,
@@ -637,7 +719,11 @@ describe('functions() modular', function () {
       it('errors return instance of HttpsError', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testFunctionDefaultRegionV2',
+          e2eCallableTimeoutOptions(),
+        );
 
         try {
           await functionRunner({});
@@ -656,7 +742,11 @@ describe('functions() modular', function () {
         let inputData = SAMPLE_DATA[type];
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testFunctionDefaultRegionV2',
+          e2eCallableTimeoutOptions(),
+        );
         try {
           await functionRunner({
             type,
@@ -697,7 +787,11 @@ describe('functions() modular', function () {
         const { getFunctions, httpsCallable } = functionsModular;
         let type = 'number';
         let inputData = SAMPLE_DATA[type];
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testFunctionDefaultRegionV2',
+          e2eCallableTimeoutOptions(),
+        );
         try {
           await functionRunner({
             type,
@@ -791,7 +885,11 @@ describe('functions() modular', function () {
       it('should stream data chunks from a basic streaming function', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamingCallable');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testStreamingCallable',
+          e2eCallableTimeoutOptions(),
+        );
         const { stream, data } = await functionRunner.stream({ count: 5, delay: 500 });
 
         const chunks = [];
@@ -819,7 +917,11 @@ describe('functions() modular', function () {
       it('should stream progress updates', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testProgressStream');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testProgressStream',
+          e2eCallableTimeoutOptions(),
+        );
         const { stream, data } = await functionRunner.stream({ task: 'TestTask' });
 
         const chunks = [];
@@ -843,7 +945,11 @@ describe('functions() modular', function () {
       it('should handle complex data structures in stream', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testComplexDataStream');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testComplexDataStream',
+          e2eCallableTimeoutOptions(),
+        );
         const { stream, data } = await functionRunner.stream({});
 
         const complexChunks = [];
@@ -872,9 +978,11 @@ describe('functions() modular', function () {
       it('should work with HttpsCallableOptions.timeout', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamingCallable', {
-          timeout: 10000,
-        });
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testStreamingCallable',
+          e2eCallableTimeoutOptions(),
+        );
         const { stream, data } = await functionRunner.stream({ count: 3, delay: 300 });
 
         const chunks = [];
@@ -896,7 +1004,11 @@ describe('functions() modular', function () {
       it('should accept stream options as second parameter', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamingCallable');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testStreamingCallable',
+          e2eCallableTimeoutOptions(),
+        );
         const { stream, data } = await functionRunner.stream(
           { count: 3, delay: 300 },
           { limitedUseAppCheckTokens: false },
@@ -921,7 +1033,11 @@ describe('functions() modular', function () {
       it('should handle empty data parameter', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testComplexDataStream');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testComplexDataStream',
+          e2eCallableTimeoutOptions(),
+        );
         const { stream, data } = await functionRunner.stream();
 
         const chunks = [];
@@ -946,6 +1062,7 @@ describe('functions() modular', function () {
         const functionRunner = httpsCallable(
           getFunctions(getApp()),
           'testStreamingCallableWithNull',
+          e2eCallableTimeoutOptions(),
         );
         const { stream, data } = await functionRunner.stream(null);
 
@@ -968,7 +1085,11 @@ describe('functions() modular', function () {
       it('should return both stream and data promise', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamingCallable');
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testStreamingCallable',
+          e2eCallableTimeoutOptions(),
+        );
         const result = await functionRunner.stream({ count: 2, delay: 200 });
 
         result.should.have.property('stream');
@@ -994,8 +1115,16 @@ describe('functions() modular', function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
         const functions = getFunctions(getApp());
-        const functionRunner1 = httpsCallable(functions, 'testStreamingCallable');
-        const functionRunner2 = httpsCallable(functions, 'testStreamingCallable');
+        const functionRunner1 = httpsCallable(
+          functions,
+          'testStreamingCallable',
+          e2eCallableTimeoutOptions(),
+        );
+        const functionRunner2 = httpsCallable(
+          functions,
+          'testStreamingCallable',
+          e2eCallableTimeoutOptions(),
+        );
 
         const [result1, result2] = await Promise.all([
           functionRunner1.stream({ count: 2, delay: 200 }),
@@ -1036,7 +1165,11 @@ describe('functions() modular', function () {
         it('HttpsError when calling stream by name', async function () {
           const { getApp } = modular;
           const { getFunctions, httpsCallable } = functionsModular;
-          const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamWithHttpsError');
+          const functionRunner = httpsCallable(
+            getFunctions(getApp()),
+            'testStreamWithHttpsError',
+            e2eCallableTimeoutOptions(),
+          );
 
           try {
             const { stream } = await functionRunner.stream(null);
@@ -1115,6 +1248,7 @@ describe('functions() modular', function () {
           const functionRunner = httpsCallableFromUrl(
             getFunctions(getApp()),
             `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamWithHttpsErrorFromUrl`,
+            e2eCallableTimeoutOptions(),
           );
 
           try {
@@ -1197,6 +1331,7 @@ describe('functions() modular', function () {
         const functionRunner = httpsCallableFromUrl(
           getFunctions(getApp()),
           `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+          e2eCallableTimeoutOptions(),
         );
         const { stream, data } = await functionRunner.stream({ count: 3, delay: 400 });
 
@@ -1226,7 +1361,7 @@ describe('functions() modular', function () {
         const functionRunner = httpsCallableFromUrl(
           getFunctions(getApp()),
           `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
-          { timeout: 10000 },
+          e2eCallableTimeoutOptions(),
         );
         const { stream, data } = await functionRunner.stream({ count: 2, delay: 300 });
 
@@ -1256,6 +1391,7 @@ describe('functions() modular', function () {
         const functionRunner = httpsCallableFromUrl(
           getFunctions(getApp()),
           `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+          e2eCallableTimeoutOptions(),
         );
         const { stream, data } = await functionRunner.stream(
           { count: 2, delay: 300 },
@@ -1288,6 +1424,7 @@ describe('functions() modular', function () {
         const functionRunner = httpsCallableFromUrl(
           getFunctions(getApp()),
           `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+          e2eCallableTimeoutOptions(),
         );
         const result = await functionRunner.stream({ count: 2, delay: 200 });
 
