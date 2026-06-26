@@ -12,7 +12,7 @@
 - Follow local package patterns; check `type-test.ts`, `__tests__/`, and plugin dirs before public API/platform changes.
 - Start with `okf-bundle/index.md` for repo-specific implementation/testing/maintenance knowledge.
 - Use package indexes under `okf-bundle/packages/` for package-specific workflows and active work queues.
-- Follow `okf-bundle/documentation-policy.md`: durable knowledge in reference docs; ephemeral state only in explicit work queues.
+- Follow `okf-bundle/documentation-policy.md`: durable knowledge in reference docs; ephemeral state only in explicit work queues; commits are documentation; single-commit PR titles must match the commit subject exactly.
 - Testing entry points: `okf-bundle/testing/index.md`; validation requirements: `okf-bundle/testing/validation-checklist.md`.
 - Match validation to the **work type** and **validation tier** in OKF ([iteration vocabulary](okf-bundle/testing/iteration-vocabulary.md), package workflows, active work queue gates).
 
