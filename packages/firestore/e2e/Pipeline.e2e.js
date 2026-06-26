@@ -1173,34 +1173,6 @@ describe('FirestorePipeline', function () {
             field('price').multiply(field('sold')).round().as('revenueRounded'),
           );
 
-        if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['round']);
-
-          const iosSnapshot = await execute(
-            db
-              .pipeline()
-              .collection(coll)
-              .select(
-                field('rating').greaterThan(4).as('gt4'),
-                field('price').lessThan(10).as('cheap'),
-                and(field('rating').greaterThan(4), field('price').lessThan(10)).as('recommended'),
-                field('title').startsWith('The').as('startsWithThe'),
-                field('genre').arrayContains('Fantasy').as('hasFantasy'),
-                field('title').charLength().as('titleLength'),
-              ),
-          );
-
-          iosSnapshot.results.should.have.length(1);
-          const iosData = iosSnapshot.results[0].data();
-          iosData.gt4.should.equal(true);
-          iosData.cheap.should.equal(true);
-          iosData.recommended.should.equal(true);
-          iosData.startsWithThe.should.equal(true);
-          iosData.hasFantasy.should.equal(true);
-          iosData.titleLength.should.be.greaterThan(0);
-          return;
-        }
-
         const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
@@ -1653,40 +1625,6 @@ describe('FirestorePipeline', function () {
             floor(field('rawScore')).as('flooredScore'),
             round(field('score'), 2).as('roundedScore'),
           );
-
-        if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['round']);
-
-          const iosSnapshot = await execute(
-            db
-              .pipeline()
-              .documents([docPath])
-              .select(
-                add(field('subtotal'), field('tax')).as('total'),
-                subtract(field('msrp'), field('salePrice')).as('savings'),
-                multiply(field('price'), field('qty')).as('lineTotal'),
-                divide(field('revenue'), field('units')).as('revenuePerUnit'),
-                mod(field('id'), 10).as('shard'),
-                pow(field('rating'), 2).as('squaredRating'),
-                abs(field('balance')).as('absBalance'),
-                ceil(field('rawScore')).as('ceiledScore'),
-                floor(field('rawScore')).as('flooredScore'),
-              ),
-          );
-
-          iosSnapshot.results.should.have.length(1);
-          const iosData = iosSnapshot.results[0].data();
-          iosData.total.should.equal(108);
-          iosData.savings.should.equal(15);
-          iosData.lineTotal.should.equal(30);
-          iosData.revenuePerUnit.should.equal(125);
-          iosData.shard.should.equal(7);
-          iosData.squaredRating.should.equal(16);
-          iosData.absBalance.should.equal(42);
-          iosData.ceiledScore.should.equal(8);
-          iosData.flooredScore.should.equal(7);
-          return;
-        }
 
         const snapshot = await execute(pipeline);
 
