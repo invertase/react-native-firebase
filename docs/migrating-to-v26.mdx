@@ -13,6 +13,7 @@ If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating
 
 - [General pattern](/migrating-to-v26#general-pattern)
 - [Machine Learning (ML)](/migrating-to-v26#machine-learning-ml)
+- [In-App Messaging](/migrating-to-v26#in-app-messaging)
 - [Automated migration checklist](/migrating-to-v26#automated-migration-checklist)
 
 ## General pattern
@@ -23,7 +24,7 @@ For each package listed in this guide:
 2. Replace `Firebase*Types` namespace imports with root types (`InAppMessaging`, `Installations`, `FirebaseML`, etc.).
 3. Prefer free functions (`getId(installations)`, `setMessagesDisplaySuppressed(inAppMessaging, enabled)`) over instance methods on service objects.
 
-Packages not yet listed here may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
+**Modular-only in v26 so far:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
 
 # Machine Learning (ML)
 
@@ -57,6 +58,45 @@ getML().app.name; // default app
 getML(getApp('secondaryFromNative')).app.name;
 ```
 
+# In-App Messaging
+
+The namespaced API for `@react-native-firebase/in-app-messaging` has been **removed**. This package is **modular-only** — use `getInAppMessaging()` and the root-level helper functions.
+
+There is no `firebase/in-app-messaging` entry in the firebase-js-sdk modular surface; React Native Firebase follows the same modular service-instance pattern used for other native-only modules.
+
+## Removed namespaced API
+
+| Removed                                              | Replacement (modular)                                                                 |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `firebase.inAppMessaging()`                          | `getInAppMessaging()`                                                                 |
+| Default export `inAppMessaging()`                    | `getInAppMessaging()`                                                                 |
+| `FirebaseInAppMessagingTypes`                        | Import `InAppMessaging` and helpers (`setMessagesDisplaySuppressed`, etc.) from root |
+| Instance-only usage without modular helpers          | Prefer free functions: `setMessagesDisplaySuppressed(inAppMessaging, enabled)`, etc. |
+
+## Example: suppressing messages during setup
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import inAppMessaging from '@react-native-firebase/in-app-messaging';
+
+await firebase.inAppMessaging().setMessagesDisplaySuppressed(true);
+// or
+await inAppMessaging().setMessagesDisplaySuppressed(true);
+```
+
+```js
+// Now
+import {
+  getInAppMessaging,
+  setMessagesDisplaySuppressed,
+} from '@react-native-firebase/in-app-messaging';
+
+await setMessagesDisplaySuppressed(getInAppMessaging(), true);
+```
+
+See [In-App Messaging usage](/in-app-messaging/usage) for additional examples.
+
 # Automated migration checklist
 
 Use this section when running scripted or agent-assisted upgrades to v26 for modular-only packages.
@@ -76,6 +116,7 @@ For each modular-only package you use:
 | Package | Search for | Replace with |
 | ------- | ---------- | ------------ |
 | `ml` | `firebase.ml()`, default `ml()`, `FirebaseMLTypes` | `getML()`, root `FirebaseML` type |
+| `in-app-messaging` | `firebase.inAppMessaging()`, default `inAppMessaging()`, `FirebaseInAppMessagingTypes` | `getInAppMessaging()`, root modular helpers (`setMessagesDisplaySuppressed`, etc.) |
 
 ## 3. Validate
 

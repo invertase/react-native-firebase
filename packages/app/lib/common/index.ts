@@ -429,15 +429,6 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       getToken: 'getToken()',
     },
   },
-  inAppMessaging: {
-    default: {
-      isMessagesDisplaySuppressed: 'isMessagesDisplaySuppressed()',
-      setMessagesDisplaySuppressed: 'setMessagesDisplaySuppressed()',
-      isAutomaticDataCollectionEnabled: 'isAutomaticDataCollectionEnabled()',
-      setAutomaticDataCollectionEnabled: 'setAutomaticDataCollectionEnabled()',
-      triggerEvent: 'triggerEvent()',
-    },
-  },
   messaging: {
     default: {
       isAutoInitEnabled: 'isAutoInitEnabled()',

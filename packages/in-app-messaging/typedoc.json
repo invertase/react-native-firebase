@@ -1,4 +1,4 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["lib/modular.ts", "lib/types/in-app-messaging.ts"]
+  "entryPoints": ["lib/index.ts", "lib/types/in-app-messaging.ts"]
 }

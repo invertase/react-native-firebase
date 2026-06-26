@@ -15,28 +15,20 @@
  *
  */
 
-export const APP_NATIVE_MODULE = 'RNFBAppModule';
+import type { RNFBFiamModule } from '../types/internal';
 
-export const DEFAULT_APP_NAME = '[DEFAULT]';
+const RNFBFiamModuleWeb: RNFBFiamModule = {
+  isMessagesDisplaySuppressed: false,
+  isAutomaticDataCollectionEnabled: false,
+  setMessagesDisplaySuppressed() {
+    return Promise.resolve(null);
+  },
+  setAutomaticDataCollectionEnabled() {
+    return Promise.resolve(null);
+  },
+  triggerEvent() {
+    return Promise.resolve(null);
+  },
+};
 
-export const KNOWN_NAMESPACES = [
-  'appCheck',
-  'appDistribution',
-  'auth',
-  'analytics',
-  'remoteConfig',
-  'crashlytics',
-  'database',
-  'installations',
-  'firestore',
-  'functions',
-  'indexing',
-  'storage',
-  'messaging',
-  'naturalLanguage',
-  'notifications',
-  'perf',
-  'utils',
-] as const;
-
-export type KnownNamespace = (typeof KNOWN_NAMESPACES)[number];
+export default RNFBFiamModuleWeb;
