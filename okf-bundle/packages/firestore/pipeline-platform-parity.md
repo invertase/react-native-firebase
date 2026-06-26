@@ -98,7 +98,7 @@ Durable per-function status. **Live probes:** [work queue](pipeline-coverage-wor
 | `conditional` | — | — | L1344 | **Added 12.11** — **sdk-supported-bridge-ok**; guard removed; wire name `conditional`; unified e2e |
 | `switchOn` | — | — | L1471 | **Added 12.12** — **sdk-supported-bridge-ok**; guard removed; unified e2e |
 | `trunc` | — | — | L1758 | **Added 12.11** — **sdk-supported-bridge-ok**; guard removed; unified e2e |
-| `substring` | Yes | Yes | L1891 | No CHANGELOG entry — **pending-probe** |
+| `substring` | Yes | Yes | L1770 | No CHANGELOG entry — **sdk-unsupported-confirmed**; guard + reduced e2e retained |
 | `stringRepeat` | — | — | L1985 | **Added 12.12** — **sdk-supported-bridge-ok**; guard removed; unified e2e |
 | `arrayGet` | Yes | Yes | L2265, L2648 | No CHANGELOG entry — **pending-probe** (+ possible RNFB receiver gap) |
 | `timestampAdd` / `timestampSubtract` | Yes | Yes | L2903 | No CHANGELOG entry — **pending-probe** |

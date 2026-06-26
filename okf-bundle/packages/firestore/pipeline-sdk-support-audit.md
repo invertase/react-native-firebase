@@ -193,7 +193,7 @@ Live probes/gates: [work queue](pipeline-coverage-work-queue.md#j0--ios-runtime-
 | `trunc` | No | Generic `trunc` | raw | **Added 12.11** | **sdk-supported-bridge-ok** | Guard removed; unified cross-platform e2e |
 | `conditional` | No | `conditional` wire | `Expression.conditional()` | **ConditionalExpression 12.11** | **sdk-supported-bridge-ok** | Guard removed; iOS wire `cond`→`conditional`; unified e2e |
 | `round` | No | Generic `round` | raw | Not listed | **sdk-supported-bridge-ok** | Guard removed; unified cross-platform e2e |
-| `substring` | Yes | Generic `substring` | raw | Not listed | **pending-probe** | Runtime probe pending |
+| `substring` | Yes | Generic `substring` | raw | Not listed | **sdk-unsupported-confirmed** | Runtime verification failed on pinned iOS SDK; guard retained |
 | `timestampAdd` | Yes | Generic `timestamp_add` only | receiver chain | Not listed | **pending-probe**; suspect real SDK gap | Runtime probe pending; if fail → document SDK gap |
 | `timestampSubtract` | Yes | Generic `timestamp_sub` | receiver chain | Not listed | Same as timestampAdd | Runtime probe pending |
 | `arrayGet` | Yes | Generic `array_get` only | receiver chain | Not listed | **rnfb-bridge-gap** + **pending-probe** | Runtime probe pending; if SDK ok → iOS receiver parity |
@@ -202,7 +202,7 @@ Live probes/gates: [work queue](pipeline-coverage-work-queue.md#j0--ios-runtime-
 
 | Registry row | Reconciliation finding |
 |--------------|------------------------|
-| **P-003** (umbrella iOS unsupported) | **Partially stale** — `stringRepeat`, `switchOn`, `trunc`, `conditional`, and `round` confirmed supported (guards removed); remaining guarded names need runtime verification |
+| **P-003** (umbrella iOS unsupported) | **Partially stale** — `stringRepeat`, `switchOn`, `trunc`, `conditional`, and `round` confirmed supported (guards removed); `substring` **sdk-unsupported-confirmed** (guard correct); remaining guarded names need runtime verification |
 | **P-003a** (per-function e2e) | Ten iOS reduced/throw tests may shrink after runtime guard probes |
 | **P-013** (iOS aggregate skip L3740) | Unrelated to guard list — separate SDK/bridge investigation |
 | **P-001, P-005, P-010–P-012** (bridge gaps) | Unchanged — operand coercion is independent of function guard list |
