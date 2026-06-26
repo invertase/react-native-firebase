@@ -14,14 +14,14 @@ Coverage acceptance: [expectations](coverage-design.md#coverage-expectations-pol
 
 ## When to run what
 
-Work types and tiers: [iteration vocabulary](iteration-vocabulary.md).
+Work types and tiers: [change authoring workflow](change-authoring-workflow.md). Term ids: [iteration vocabulary](iteration-vocabulary.md).
 
 | Work type | Scope | Shortcuts |
 |-----------|--------|-----------|
 | `gap-analysis` | `compare:types`, config read, SDK declarations | n/a |
-| `baseline-capture` | Full loaded spec(s) + e2e coverage on macOS, iOS, Android | **area** tier; [area narrowing required](running-e2e.md#harness-narrowing-gate-blocking); no `.only`, no `:test-cover-reuse` |
-| `implementation` | Focused Jest + e2e | **focused** tier; [area narrowing required before `:test-cover`](running-e2e.md#harness-narrowing-gate-blocking) + optional `.only`; [pipelines workflow](../packages/firestore/pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations) |
-| `independent-review` | Full checklist below on all platforms | **area** tier; [area narrowing required](running-e2e.md#harness-narrowing-gate-blocking); [frozen tree](iteration-vocabulary.md#frozen-tree); never commit narrowing |
+| `baseline-capture` | Full loaded spec(s) + e2e coverage on macOS, iOS, Android | **area-focused** tier; [area narrowing required](running-e2e.md#harness-narrowing-gate-blocking); no `.only`, no `:test-cover-reuse` |
+| `implementation` | Unit-focused Jest + e2e | **unit-focused** tier; [area narrowing required before `:test-cover`](running-e2e.md#harness-narrowing-gate-blocking) + optional `.only`; [change authoring](change-authoring-workflow.md#harness-narrowing) |
+| `independent-review` | Full checklist below on all platforms | **area-focused** tier; [area narrowing required](running-e2e.md#harness-narrowing-gate-blocking); [frozen tree](change-authoring-workflow.md#frozen-tree); never commit narrowing |
 | `pre-merge-validation` | Full unfocused suite | **full** tier — [running-e2e § merge](running-e2e.md#before-merge-pr-handoff); entire PR branch, once |
 
 ## Prepare and compile
@@ -71,7 +71,7 @@ Native: `yarn lint:android`, `yarn lint:ios:check`. `lint:android` can flake; re
 
 ## E2e with coverage
 
-[Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) (host-clear probes + services + harness tier) before every run. Match harness to work type — **focused**/**area** never use full app load ([running e2e § harness](running-e2e.md#3-harness-matches-validation-tier)).
+[Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) (host-clear probes + services + harness tier) before every run. Match harness to work type — **unit-focused**/**area-focused** never use full app load ([running e2e § harness](running-e2e.md#3-harness-matches-validation-tier)).
 
 Commands: [Running e2e tests](running-e2e.md). Post-process: [Coverage design](coverage-design.md) (iOS `tests:ios:test:process-coverage`, Android `tests:android:post-e2e-coverage`).
 

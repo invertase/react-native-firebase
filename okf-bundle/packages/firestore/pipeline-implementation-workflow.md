@@ -1,52 +1,45 @@
 ---
 type: Reference
-title: Pipeline implementation workflow (compare-types iterations)
-description: Canonical workflow for closing one Firestore Pipelines compare-types gap — gap analysis, baseline coverage, implementation, independent review, documentation, and commit.
+title: Firestore Pipelines implementation workflow
+description: Pipeline-specific artifacts for compare-types exports, serialization, coverage snapshots, and area harness setup — extends the cross-package change authoring workflow.
 tags: [firestore, pipelines, compare-types, workflow, coverage]
-timestamp: 2026-06-25T12:00:00Z
+timestamp: 2026-06-26T00:00:00Z
 ---
 
-# Pipeline implementation workflow
+# Firestore Pipelines implementation workflow
 
-Single source for one `.github/scripts/compare-types/configs/firestore-pipelines.ts` missing export. Other docs/prompts link here.
-
-One iteration = one compare-types backlog entry + one focused commit.
+Pipeline-specific requirements for one `.github/scripts/compare-types/configs/firestore-pipelines.ts` export (or equivalent parity item). **Shared loop:** [change authoring workflow](../../testing/change-authoring-workflow.md).
 
 **Policy:** [OKF documentation and commit policy](../../documentation-policy.md).
 
-## Architecture and semantics (read first)
+## Read first
 
 | Topic | Document |
 |-------|----------|
-| Bridge design, subqueries, coercion, native coverage strategy | [Pipelines implementation design](pipelines.md) |
-| Coverage and parity phase tracker | [Pipeline coverage work queue](pipeline-coverage-work-queue.md) |
-| Work types, gates, tiers | [Iteration vocabulary](../../testing/iteration-vocabulary.md) |
-| E2e commands, fast iteration hacks, handoff rules | [Running e2e tests](../../testing/running-e2e.md) |
-| Coverage policy, per-file reading, refactor-vs-test | [Coverage design](../../testing/coverage-design.md) |
-| All validation commands | [Validation checklist](../../testing/validation-checklist.md) |
-| Serialization tests per export | [Serialization testing](serialization-testing.md) |
+| **Change authoring loop** | [change-authoring-workflow.md](../../testing/change-authoring-workflow.md) |
+| Bridge design, subqueries, coercion | [pipelines.md](pipelines.md) |
+| Live gate snapshots | [pipeline-coverage-work-queue.md](pipeline-coverage-work-queue.md) |
+| Work types, tiers, gates | [change-authoring-workflow.md](../../testing/change-authoring-workflow.md); term ids: [iteration-vocabulary.md](../../testing/iteration-vocabulary.md) |
+| E2e commands | [running-e2e.md](../../testing/running-e2e.md) |
+| Coverage policy | [coverage-design.md](../../testing/coverage-design.md) |
+| Validation commands | [validation-checklist.md](../../testing/validation-checklist.md) |
+| Serialization tests per export | [serialization-testing.md](serialization-testing.md) |
 | Compare-types machinery | `.github/scripts/compare-types/README.md` |
 
-## Hard gates (blocking)
+## Pipeline hard gates
 
-Commit/handoff only when **all** pass:
+In addition to [change authoring gates](../../testing/change-authoring-workflow.md#gates):
 
 | Gate | Requirement |
 |------|-------------|
-| Gap analysis | Selected export confirmed against firebase-js-sdk; platform support verified; semantic dependencies identified |
-| Baseline e2e | Full `Pipeline.e2e.js` on macOS/iOS/Android, **area** tier; no `.only` |
+| Gap analysis | Export confirmed against firebase-js-sdk; platform support verified; semantic dependencies identified |
 | Baseline coverage | `snapshot-pipeline-coverage.sh before-<export>` stdout recorded |
-| Implementation | Public API, lowering, Jest, serialization matrix, consumer type-test, **focused** e2e ([focused tier](../../testing/running-e2e.md#e2e-validation-tiers-focused-area-full)) |
-| Review e2e | Full `Pipeline.e2e.js` on all platforms, **area** tier; no `.only` |
-| Review coverage | `after-<export>` snapshot; [coverage policy](../../testing/coverage-design.md#coverage-as-completion-signal) |
-| Validation | Full [Validation checklist](../../testing/validation-checklist.md) + OKF review § |
-| Documentation | User docs + OKF bundle updates (decisions/learnings consolidated) |
-| Commit | One focused commit; area narrowing and `.only` never staged |
-| Pre-merge | **Full** unfocused 3-platform e2e; revert all narrowing ([full tier](../../testing/running-e2e.md#e2e-validation-tiers-focused-area-full)) |
+| Implementation | Public API, lowering, Jest, [serialization-testing.md](serialization-testing.md), consumer type-test, **unit-focused** e2e |
+| Review coverage | `after-<export>` snapshot; [coverage completion signal](../../testing/coverage-design.md#coverage-as-completion-signal) |
+| Review e2e | Full `Pipeline.e2e.js` on macOS, iOS, Android — **area-focused** tier; no `.only` |
+| Compare-types | Remove `missingInRN` entry when RNFB shape matches firebase-js-sdk |
 
-**Coverage acceptance:** [Coverage design § completion signal](../../testing/coverage-design.md#coverage-as-completion-signal) and [expectations (policy)](../../testing/coverage-design.md#coverage-expectations-policy).
-
-### Coverage snapshots (pipeline)
+### Coverage snapshots
 
 After full 3-platform e2e:
 
@@ -55,79 +48,9 @@ bash scripts/snapshot-pipeline-coverage.sh before-<export-name>
 bash scripts/snapshot-pipeline-coverage.sh after-<export-name>
 ```
 
-Paste stdout in the iteration report.
+## Compare-types gap analysis
 
-## Implementation model
-
-Run gap analysis + baseline first. Keep `implementation` and `independent-review` in **separate contexts** ([frozen tree](../../testing/iteration-vocabulary.md#frozen-tree) for review).
-
-```mermaid
-flowchart TD
-  A["gap-analysis"] --> B["baseline-capture"]
-  B --> C["implementation"]
-  C --> D["independent-review"]
-  D --> E["documentation"]
-  E --> F["commit"]
-```
-
-| Step | Work type | Validation tier | OKF docs to load |
-|------|-----------|-----------------|------------------|
-| 1 | `gap-analysis` | — | `firestore-pipelines.ts`; compare-types README |
-| 2 | `baseline-capture` | `area` | [running-e2e](../../testing/running-e2e.md); `before-<export>` snapshot |
-| 3 | `implementation` | `focused` | [pipelines.md](pipelines.md); [serialization-testing.md](serialization-testing.md); [narrowing § below](#narrowing-during-pipeline-iterations) |
-| 4 | `independent-review` | `area` | [validation-checklist.md](../../testing/validation-checklist.md); [narrowing § below](#narrowing-during-pipeline-iterations) |
-| 5 | `documentation` | — | `docs/firestore/pipelines/` conventions below |
-| 6 | `commit` | — | Commit scope below |
-
-### `implementation` work type
-
-- Selected export name and firebase-js-sdk reference paths (`node_modules/@firebase/firestore/pipelines/pipelines.d.ts`, `dist/pipelines.esm.js`)
-- Follow [pipelines.md](pipelines.md) patterns only; no one-export abstraction
-- **Fast iteration:** **focused** tier — per [narrowing § below](#narrowing-during-pipeline-iterations) and [running-e2e](../../testing/running-e2e.md#e2e-validation-tiers-focused-area-full)
-- **Serialization blocking:** [serialization-testing.md](serialization-testing.md) all four checks
-- Deliverable: diff, unit/e2e tests, consumer type-test updates; closes `implementation_gate`; **do not commit**
-
-### `independent-review` work type
-
-On a **frozen tree** ([iteration vocabulary](../../testing/iteration-vocabulary.md#frozen-tree)):
-
-- **Revert** `it.only` / `describe.only`; run **area**-tier e2e — area narrowing may remain per [narrowing § below](#narrowing-during-pipeline-iterations)
-- Run the full [Validation checklist](../../testing/validation-checklist.md) (no `:test-cover-reuse`)
-- Run full `Pipeline.e2e.js` e2e + coverage on macOS, iOS, Android; record `after-<export>` snapshot
-- Compare coverage to baseline; coverage on touched files must rise until intractable limits or plateau → refactor
-- Deliverable: pass/fail, commands, coverage delta; closes `review_gate`; **do not commit**
-
-If review fails, return to `implementation`, then repeat `independent-review`.
-
-### iOS guard probe iterations
-
-iOS guard probes/bridge fixes use the same split; stricter serial gate: [work queue runtime guard protocol](pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict) + [running-e2e serial policy](../../testing/running-e2e.md#serialized-e2e-dispatch).
-
-Guard probes: one function per commit; no batching. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) (by reference). Commands: [running-e2e.md](../../testing/running-e2e.md).
-
-**Live gate status:** [pipeline-coverage-work-queue](pipeline-coverage-work-queue.md) (ephemeral tracker — see [documentation policy](../../documentation-policy.md)).
-
-### Narrowing during pipeline iterations
-
-Generic definitions: [test narrowing](../../testing/running-e2e.md#fast-iteration-test-narrowing), [validation tiers](../../testing/running-e2e.md#e2e-validation-tiers-focused-area-full), [harness vs tier](../../testing/running-e2e.md#3-harness-matches-validation-tier), **[harness narrowing gate (blocking)](../../testing/running-e2e.md#harness-narrowing-gate-blocking)**. Pipeline rules:
-
-**Before the first `:test-cover` in `implementation` or `independent-review`:** apply area narrowing below even if the branch commit has full harness ([work queue § harness](pipeline-coverage-work-queue.md#harness)). Full app load is **full** tier only (phase **R**). A green run on the committed full harness does **not** close `implementation_gate` or `review_gate`.
-
-| Kind | `implementation` (**focused**) | `independent-review` (**area**) | `pre-merge-validation` (**full**) | `commit` |
-|------|--------------------------------|----------------------------------|-----------------------------------|----------|
-| **Area narrowing** (`tests/app.js`, `tests/globals.js`) | **Required** before `:test-cover` | **Required** before `:test-cover` — full `Pipeline.e2e.js`, no `.only` | Revert — all modules | Never |
-| **Single-test** (`it.only`) | Allowed | Revert | Revert | Never |
-| **Single-suite** (`describe.only`) | Allowed | Revert | Revert | Never |
-
-**Area setup (required for both focused and area tiers):** firestore-only `platformSupportedModules` + `require('../packages/firestore/e2e/Pipeline.e2e.js')`; `RNFBDebug = true`.
-
-**Sanity check:** ~**100** passing per platform when only `Pipeline.e2e.js` loads. Pass counts in the **hundreds or thousands** mean full app load — stop and re-apply narrowing ([running-e2e § gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking)).
-
-## Step 1 — Compare-types gap analysis
-
-### Work queue: `missingInRN`
-
-Primary queue: **`missingInRN`** in `.github/scripts/compare-types/configs/firestore-pipelines.ts`.
+Primary backlog: **`missingInRN`** in `.github/scripts/compare-types/configs/firestore-pipelines.ts`.
 
 1. Read the config in **file order**.
 2. Select first still-relevant `missingInRN` entry unless a semantic companion must ship first.
@@ -139,11 +62,11 @@ Primary queue: **`missingInRN`** in `.github/scripts/compare-types/configs/fires
 5. Run `yarn compare:types` to confirm the entry is still undocumented drift (not stale).
 6. Note ordering dependencies; do not skip ahead without user approval.
 
-`compare-types` config is backlog, not permission. Remove `missingInRN` only when RNFB matches firebase-js-sdk shape.
+`compare-types` config is backlog, not permission.
 
 ### Shape differences: `differentShape`
 
-`differentShape` is not the default queue. Each entry needs a strict, intractable RN technical reason (bridge, platform SDK, Hermes/Metro, etc.).
+Each entry needs a strict, intractable RN technical reason (bridge, platform SDK, Hermes/Metro, etc.).
 
 - If indefensible, align RNFB to firebase-js-sdk and remove the entry.
 - Do not use `differentShape` for avoidable drift (formatting, naming, optional params).
@@ -151,37 +74,31 @@ Primary queue: **`missingInRN`** in `.github/scripts/compare-types/configs/fires
 
 `extraInRN`: justify RN-specific surface or remove.
 
-## Step 2 — Coverage baseline (before coding)
+## Pipeline `implementation`
 
-Skip only when continuing immediately after same-worktree `after-<export>` snapshot.
+- Follow [pipelines.md](pipelines.md) patterns only; no one-export abstraction.
+- **Serialization blocking:** [serialization-testing.md](serialization-testing.md) all four checks.
+- Trace patterns in `packages/firestore/lib/pipelines/`, `internal.ts`, native parsers, web bridge.
+- Implement public API matching firebase-js-sdk **exactly** (including lowercase string unions — native may normalize internally).
+- Add Jest, consumer `type-test.ts`, serialization matrix, e2e cases.
+- **Unit-focused** tier per [change authoring § implementation inner loop](../../testing/change-authoring-workflow.md#implementation-inner-loop) and [pipeline area harness](#pipeline-area-harness) below.
 
-**Retroactive baseline:** If implementation was already committed without baseline numbers, check out the parent commit, apply harness only if needed for e2e load, run full baseline, snapshot `before-<export>`, return to HEAD.
+## Pipeline `independent-review`
 
-1. Revert leftover `.only`; area narrowing allowed for pipeline baseline.
-2. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) and prerequisites ([Rules §1–2](../../testing/running-e2e.md#rules)); rebuild native if needed.
-3. Full pipeline e2e + coverage on **macOS, iOS, Android**; no reuse variants.
-4. `bash scripts/snapshot-pipeline-coverage.sh before-<export-name>` — paste full stdout into the iteration report.
+On a **frozen tree** — full [change authoring § independent-review](../../testing/change-authoring-workflow.md#independent-review), plus:
 
-Start implementation only after green 3-platform baseline.
+- Full `Pipeline.e2e.js` e2e + coverage on all platforms; `after-<export>` snapshot.
+- Compare coverage to baseline; touched-file coverage must rise until intractable limits or plateau → refactor.
 
-## Step 3 — `implementation`
+## Pipeline area harness
 
-1. Trace patterns in `packages/firestore/lib/pipelines/`, `internal.ts`, native parsers, web bridge.
-2. Implement public API matching firebase-js-sdk **exactly** (including lowercase string unions — native may normalize internally).
-3. Add Jest, consumer `type-test.ts`, serialization matrix, e2e cases.
-4. Use focused narrowing during development; area narrowing may persist — [narrowing](#narrowing-during-pipeline-iterations).
-5. Re-run focused-tier e2e per fix with clean [pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start).
+Extends [change authoring § harness narrowing](../../testing/change-authoring-workflow.md#harness-narrowing).
 
-## Step 4 — `independent-review`
+**Area setup (required for `unit-focused` and `area-focused` tiers):** firestore-only `platformSupportedModules` + `require('../packages/firestore/e2e/Pipeline.e2e.js')`; `RNFBDebug = true`.
 
-1. Remove `it.only` / `describe.only`.
-2. Keep area narrowing if applied — [narrowing §](#narrowing-during-pipeline-iterations).
-3. Full [Validation checklist](../../testing/validation-checklist.md).
-4. Full `Pipeline.e2e.js` e2e + coverage on all platforms; `after-<export>` snapshot.
-5. Compare before/after; touched-file coverage must rise until intractable limit. Plateau below limit → refactor.
-6. Remove `firestore-pipelines.ts` entry when shape matches.
+**Sanity check:** ~**100** passing per platform when only `Pipeline.e2e.js` loads. Pass counts in the **hundreds or thousands** mean full app load — stop and re-apply narrowing ([running-e2e § gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking)).
 
-## Step 5 — `documentation`
+## Pipeline `documentation`
 
 Per export, same commit:
 
@@ -194,32 +111,17 @@ Per export, same commit:
 
 **OKF bundle maintenance**
 
-Durable learnings, same commit:
-
-- Update `pipelines.md`, `serialization-testing.md`, or this workflow for changed bridge behavior/gotchas/rules.
+- Update `pipelines.md`, `serialization-testing.md`, or this file for changed bridge behavior/gotchas/rules.
 - Cross-cutting testing/coverage learnings go in `okf-bundle/testing/`.
-- Move ad-hoc notes into OKF; fix conflicting linked docs.
 - Record non-obvious choices in OKF, not only commit messages.
 
-Skills/docs link to OKF; do not restate.
-
-## Step 6 — `commit`
-
-Message:
+## Pipeline `commit`
 
 ```text
 feat(firestore): expose pipeline <export-name>
 ```
 
-**Never stage:** area narrowing in `tests/app.js` / `tests/globals.js`, any `.only`, skill snapshot logs.
-
-Verify before commit:
-
-```bash
-git status
-git diff --stat
-rg '\.only\(' packages/firestore/e2e/
-```
+**Never stage:** area narrowing in `tests/app.js` / `tests/globals.js`, any `.only`.
 
 ## Gotchas
 
@@ -229,32 +131,4 @@ rg '\.only\(' packages/firestore/e2e/
 - **Two native expression builders per platform** — edit the live path; use coverage to disambiguate ([pipelines.md § Cross-platform e2e](pipelines.md#two-expression-builders-per-platform--edit-the-live-one)).
 - iOS profraw pull can flake — retry once before treating as environment failure.
 
-## Iteration report template
-
-```markdown
-# Pipeline iteration: <export>
-
-## Gap analysis
-- why this item was next
-- companion exports (if any)
-
-## Baseline
-- e2e: macOS / iOS / Android — pass | fail
-- before-<export> snapshot (paste)
-
-## Implementation
-- summary of changes
-
-## Review
-- validation checklist: pass | fail
-- e2e: macOS / iOS / Android — pass | fail
-- after-<export> snapshot (paste)
-- coverage delta / refactor notes
-
-## Documentation
-- user docs: pages / parity table / docs.json
-- OKF bundle: files updated, decisions recorded, conflicts resolved
-
-## Commit
-- hash + message (or blocked reason)
-```
+Parity remediation serial rules and live probe status: [pipeline coverage work queue](pipeline-coverage-work-queue.md) (ephemeral).
