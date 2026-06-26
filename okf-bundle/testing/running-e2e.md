@@ -76,7 +76,7 @@ macOS: `yarn tests:macos:test-cover` → `jet --target=macos` (same `:8090`).
 
 ### Running one iteration
 
-1. [Pre-flight](#pre-flight-is-the-host-clear-to-start); if busy/recovering, wait or clean.
+1. [Pre-flight](#pre-flight-is-the-host-clear-to-start); if [host-clear probes](#host-clear-probes) fail, [pre-flight recovery](#pre-flight-recovery) first.
 2. One foreground Shell command; set `block_until_ms` large enough (~15m macOS, ~45–60m iOS/Android). Do **not** background/poll.
 3. From repo root, tee canonical command:
 
@@ -103,19 +103,55 @@ Markers: `✨ Tests Complete ✨`, Jest `N passing` / `N failing`, `[jet-coverag
 
 ### Pre-flight: is the host clear to start?
 
-Run **all three** checks before every `:test-cover`.
+**Canonical owner** for host-clear probes, recovery after abort, and service checks. Other OKF docs link here by reference — do not duplicate commands or probes elsewhere.
+
+Run **all three** steps before every `:test-cover`. After an [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090), run [pre-flight recovery](#pre-flight-recovery) and re-run the probes.
 
 #### 1. Host clear
 
 No in-flight test run on the target platform:
 
-| Platform | Active e2e signal | Clear to start |
-|----------|-------------------|----------------|
-| **Android** | `adb -s emulator-5554 shell pidof com.invertase.testing.test` returns a PID | command prints nothing / empty |
-| **iOS** | `xcrun simctl spawn booted pgrep -x testing` returns a PID | no output |
-| **macOS** | `pgrep -x io.invertase.testing` returns a PID | no output |
+| Platform | Clear when |
+|----------|------------|
+| **Android** | [Host-clear probes](#host-clear-probes) pass (no instrumentation PID) |
+| **iOS** | [Host-clear probes](#host-clear-probes) pass — **zero booted simulators** and no stray Jet on `:8090`. Detox boots `iPhone 17` from `tests/.detoxrc.js`; do not pre-boot or leave simulators running. |
+| **macOS** | [Host-clear probes](#host-clear-probes) pass (no `io.invertase.testing` process) |
 
 Also wait for any visible unfinished `yarn tests:*:test-cover`.
+
+<a id="host-clear-probes"></a>
+
+**Host-clear probes** — run the block for your platform; **exit 0 = clear** (chain with `&&`):
+
+```bash
+# iOS — booted-device count must be 0
+test "$(xcrun simctl list devices booted | grep -c '(Booted)' || true)" -eq 0
+test -z "$(lsof -nP -iTCP:8090 -sTCP:LISTEN -t 2>/dev/null || true)"
+
+# Android
+! adb -s emulator-5554 shell pidof com.invertase.testing.test >/dev/null 2>&1
+
+# macOS
+! pgrep -x io.invertase.testing >/dev/null 2>&1
+```
+
+<a id="pre-flight-recovery"></a>
+
+**Pre-flight recovery** — when probes fail after abort, kill, or `EADDRINUSE` on `:8090`. Then re-run [host-clear probes](#host-clear-probes).
+
+```bash
+# Android
+adb -s emulator-5554 shell am force-stop com.invertase.testing
+adb -s emulator-5554 shell am force-stop com.invertase.testing.test
+
+# iOS — Detox re-boots iPhone 17 after shutdown booted
+lsof -nP -iTCP:8090 -sTCP:LISTEN -t | xargs kill 2>/dev/null || true
+pkill -f 'detox test --configuration ios' 2>/dev/null || true
+pkill -f 'jet.js --target=ios' 2>/dev/null || true
+xcrun simctl shutdown booted
+```
+
+Do **not** use `boot-simulator.sh` or `simctl shutdown all` as routine prep ([what not to do](#what-not-to-do)).
 
 #### 2. Services ready
 
@@ -153,7 +189,7 @@ Completion = shell exit code + log markers — not open-ended log tailing.
 | **macOS** | `Jet client connected` | `✨ Tests Complete ✨`, Jest `N passing` |
 | **iOS/Android** | Detox launch done, Jet connected | Same |
 
-**If stalled** — no new markers for **5 minutes**, or past tier budget (~15m macOS, ~45–60m iOS/Android) without `Tests Complete`: treat as [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090). Re-check [services ready](#2-services-ready), diagnose (`curl` Metro `/status`, platform active-signal commands above, `lsof -nP -iTCP:8090`), retry. Do not keep watching flat tee output.
+**If stalled** — no new markers for **5 minutes**, or past tier budget (~15m macOS, ~45–60m iOS/Android) without `Tests Complete`: treat as [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090). Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) and [services ready](#2-services-ready), retry. Do not keep watching flat tee output.
 
 - macOS bundle/Metro hangs → [ci-workflows/other.md § bundle load hang](../ci-workflows/other.md#ci-failure-bundle-load-hang--could-not-connect-to-development-server)
 - iOS Metro at launch → [ci-workflows/ios.md § Metro unresponsive](../ci-workflows/ios.md)
@@ -184,7 +220,7 @@ Do not poll `pgrep` / `jet.js` / `:8090` for *completion* ([above](#how-a-platfo
 
 For `implementation` work type ([focused tier](#e2e-validation-tiers-focused-area-full)):
 
-1. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — host clear, services ready, **harness narrowed** (step 3); if not, wait or clean per [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090).
+1. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes), services ready, **harness narrowed** (step 3); if probes fail, [pre-flight recovery](#pre-flight-recovery) first.
 2. Edit e2e/spec; add `.only` if needed; never commit narrowing.
 3. macOS first when TS-only: `yarn tests:macos:test-cover 2>&1 | tee /tmp/rnfb-e2e-macos.log` — wait for exit code ([stalled run](#stalled-run-detection) if markers stop).
 4. If macOS green and native touched: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover 2>&1 | tee /tmp/rnfb-e2e-<platform>.log`; one platform at a time.
@@ -199,7 +235,7 @@ Never overlap runs that use `:test-cover`. See [host rule](iteration-vocabulary.
 |------|-------------|
 | **One e2e run at a time** | Wait for prior shell exit code + short log summary |
 | **No overlapping tiers** | Never run focused-tier and area-tier `:test-cover` concurrently on one host |
-| **Clean pre-flight every run** | [Pre-flight](#pre-flight-is-the-host-clear-to-start) — host, services, harness tier |
+| **Clean pre-flight every run** | [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes), services, harness tier |
 | **iOS guard probe loop** | `implementation` (Jest + **focused**) → `independent-review` (**area**, frozen tree) → `commit` — [work queue protocol](../packages/firestore/pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict) |
 
 | Validation tier | E2e scope | Narrowing allowed | Typical work type |
@@ -212,21 +248,7 @@ Each run owns its blocking `:test-cover` and returns summaries only.
 
 ### Interrupted run (abort, killed terminal, EADDRINUSE on :8090)
 
-Before next canonical command:
-
-```bash
-# Android — stop app + instrumentation
-adb -s emulator-5554 shell am force-stop com.invertase.testing
-adb -s emulator-5554 shell am force-stop com.invertase.testing.test
-
-# Stray Jet from an aborted run (note PID, kill only jet.js for this repo)
-lsof -nP -iTCP:8090 -sTCP:LISTEN
-
-# Confirm clear
-adb -s emulator-5554 shell pidof com.invertase.testing.test || echo "instrumentation clear"
-```
-
-Then rerun from repo root: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover` (foreground; tee if logging).
+Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) pass, then rerun from repo root: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover` (foreground; tee if logging).
 
 ### What not to do
 
@@ -284,7 +306,7 @@ All tiers use [canonical commands](#rules), [host rule](iteration-vocabulary.md#
 **Universal rules:**
 
 - E2e is **always serial** — one `:test-cover` at a time on the host.
-- Every run starts from **verified pre-flight** (host clear + services ready + harness matches tier); if not, wait or follow [interrupted-run cleanup](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090) — do not start another run.
+- Every run starts from **verified [pre-flight](#pre-flight-is-the-host-clear-to-start)**; if probes fail, [pre-flight recovery](#pre-flight-recovery) before another run.
 - Use **only** canonical commands from this doc.
 - Never overlap focused-tier and area-tier `:test-cover` on one host.
 
@@ -292,9 +314,9 @@ See also: [focused-tier loop](#focused-tier-iteration-loop), [dispatch](#seriali
 
 ## Environment
 
-- **Devices** — Detox boots simulator/emulator (`TestingAVD`); macOS auto-starts app.
+- **Devices** — Detox boots simulator/emulator (`iPhone 17` on iOS, `TestingAVD` on Android); [host-clear probes](#host-clear-probes) require zero booted iOS simulators before `:test-cover`. macOS auto-starts app.
 - **adb empty** — `adb kill-server && adb start-server && adb devices`
-- **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, …). Jet `:8090` is per-`:test-cover`, not background; listener after run usually means stray Jet. Check: `lsof -nP -iTCP -sTCP:LISTEN | rg ':8081|:8080|:9099|:4400'`. Kill Metro/emulators: `pkill -f "react-native start"`, `pkill -f "firebase emulators"`.
+- **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, …). Stray Jet on `:8090` after a run → [pre-flight recovery](#pre-flight-recovery). Restart Metro/emulators: `pkill -f "react-native start"`, `pkill -f "firebase emulators"`, then [Rules §1–2](#rules).
 
 ## Diagnosing hangs
 
@@ -315,7 +337,7 @@ See also: [focused-tier loop](#focused-tier-iteration-loop), [dispatch](#seriali
 Pre-merge applies once to the branch commit stream before merge/push intended for merge, not after every commit.
 
 1. Revert all narrowing ([full tier](#e2e-validation-tiers-focused-area-full)): restore `tests/app.js` (`platformSupportedModules` + `require.context`), default `RNFBDebug` in `tests/globals.js`, remove all `.only`, remove native instrumentation.
-2. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — verified clean host before each platform run.
+2. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes) pass before each platform run.
 3. Rebuild if needed (`tests:<platform>:build`; `yarn lerna:prepare` for `lib/**`).
 4. Full unfocused suite with coverage on **iOS, Android, macOS** — one platform at a time, all green.
 

@@ -103,7 +103,7 @@ If review fails, return to `implementation`, then repeat `independent-review`.
 
 iOS guard probes/bridge fixes use the same split; stricter serial gate: [work queue runtime guard protocol](pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict) + [running-e2e serial policy](../../testing/running-e2e.md#serialized-e2e-dispatch).
 
-Guard probes: one function per commit; no batching. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) includes services ready + harness tier. Commands: [running-e2e.md](../../testing/running-e2e.md).
+Guard probes: one function per commit; no batching. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) (by reference). Commands: [running-e2e.md](../../testing/running-e2e.md).
 
 **Live gate status:** [pipeline-coverage-work-queue](pipeline-coverage-work-queue.md) (ephemeral tracker — see [documentation policy](../../documentation-policy.md)).
 
@@ -158,7 +158,7 @@ Skip only when continuing immediately after same-worktree `after-<export>` snaps
 **Retroactive baseline:** If implementation was already committed without baseline numbers, check out the parent commit, apply harness only if needed for e2e load, run full baseline, snapshot `before-<export>`, return to HEAD.
 
 1. Revert leftover `.only`; area narrowing allowed for pipeline baseline.
-2. Start [running e2e pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) (services + harness tier) and prerequisites: emulators, packager, rebuild native if needed.
+2. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) and prerequisites ([Rules §1–2](../../testing/running-e2e.md#rules)); rebuild native if needed.
 3. Full pipeline e2e + coverage on **macOS, iOS, Android**; no reuse variants.
 4. `bash scripts/snapshot-pipeline-coverage.sh before-<export-name>` — paste full stdout into the iteration report.
 

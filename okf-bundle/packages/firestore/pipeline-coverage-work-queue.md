@@ -38,7 +38,7 @@ Ephemeral tracker; see [OKF policy](../../documentation-policy.md).
 
 Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration-vocabulary.md#host-rule)):
 
-1. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): host clear, [services ready](../../testing/running-e2e.md#2-services-ready), [harness matches validation tier](../../testing/running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking) — required for **focused** and **area**; not [push harness](#harness)); [serial `:test-cover](../../testing/running-e2e.md#serialized-e2e-dispatch)`; [frozen tree](../../testing/iteration-vocabulary.md#frozen-tree) for `independent-review`.
+1. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): [host-clear probes](../../testing/running-e2e.md#host-clear-probes), [services ready](../../testing/running-e2e.md#2-services-ready), [harness matches validation tier](../../testing/running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking) — required for **focused** and **area**; not [push harness](#harness)); [serial `:test-cover](../../testing/running-e2e.md#serialized-e2e-dispatch)`; [frozen tree](../../testing/iteration-vocabulary.md#frozen-tree) for `independent-review`.
 2. Guard probes: [SDK runtime verification](pipeline-sdk-support-audit.md#6-runtime-verification-authoritative) + [Phase J protocol](#phase-j-iteration-protocol-strict) below.
 3. Coverage deltas: full clean cycle; never trust stale `.ec`/profraw ([coverage stale data](../../testing/coverage-design.md#stale-coverage-data)).
 
