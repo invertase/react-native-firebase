@@ -64,7 +64,7 @@ See also: [running e2e rule 7](running-e2e.md#rules) and [host rule](running-e2e
 On a shared dev host:
 
 - One `:test-cover` at a time — never overlap focused-tier and area-tier runs.
-- [Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) before every run: host clear, [services ready](running-e2e.md#2-services-ready), [harness matches `validation_tier`](running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](running-e2e.md#harness-narrowing-gate-blocking) for `focused` and `area`).
+- [Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) before every run: [host-clear probes](running-e2e.md#host-clear-probes), [services ready](running-e2e.md#2-services-ready), [harness matches `validation_tier`](running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](running-e2e.md#harness-narrowing-gate-blocking) for `focused` and `area`).
 - Canonical commands only — [running e2e](running-e2e.md). Stalled runs → [stalled run detection](running-e2e.md#stalled-run-detection).
 
 ## Work-queue fields

@@ -16,7 +16,7 @@ On GHA macOS runners, `simctl list` can show `Booted` before the simulator is te
 
 **Pre-boot step** (`.github/workflows/scripts/boot-simulator.sh`), run via `nick-fields/retry` before Detox:
 
-> **Not for local operators.** `boot-simulator.sh` is **CI-only** (this workflow) or invoked **internally** by `tests/e2e/firebase.test.js` on iOS Jet-level retry. Local e2e uses only [running-e2e.md](../testing/running-e2e.md) — Detox boots the simulator via `yarn tests:ios:test-cover`; do not run `boot-simulator.sh` as operator prep.
+> **Not for local operators.** `boot-simulator.sh` is **CI-only** (this workflow) or invoked **internally** by `tests/e2e/firebase.test.js` on iOS Jet-level retry. Local e2e uses only [running-e2e.md](../testing/running-e2e.md) — [host-clear probes](../testing/running-e2e.md#host-clear-probes) require zero booted simulators; Detox boots `iPhone 17` via `yarn tests:ios:test-cover`. Do not run `boot-simulator.sh` as operator prep.
 
 | Phase | What happens |
 |--------|----------------|
