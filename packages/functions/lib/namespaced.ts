@@ -83,6 +83,22 @@ const statics = {
   HttpsErrorCode,
 };
 
+function normalizeHttpsCallableTimeoutOptions(options: HttpsCallableOptions): HttpsCallableOptions {
+  if (!options.timeout) {
+    return options;
+  }
+  if (!isNumber(options.timeout)) {
+    throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
+  }
+  if (isOther) {
+    return options;
+  }
+  return {
+    ...options,
+    timeout: options.timeout / 1000,
+  };
+}
+
 let _id_functions_streaming_event = 0;
 
 class FirebaseFunctionsModule extends FirebaseModule {
@@ -278,13 +294,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
   }
 
   httpsCallable(name: string, options: HttpsCallableOptions = {}) {
-    if (options.timeout) {
-      if (isNumber(options.timeout)) {
-        options.timeout = options.timeout / 1000;
-      } else {
-        throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
-      }
-    }
+    const normalizedOptions = normalizeHttpsCallableTimeoutOptions(options);
 
     const callableFunction = ((data?: unknown) => {
       const nativePromise = this.native.httpsCallable(
@@ -294,7 +304,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
         {
           data,
         },
-        options,
+        normalizedOptions,
       );
       return nativePromise.catch((nativeError: NativeError) => {
         const { code, message, details } = nativeError.userInfo || {};
@@ -314,9 +324,9 @@ class FirebaseFunctionsModule extends FirebaseModule {
       streamOptions?: HttpsCallableStreamOptions,
     ) => {
       const platformOptions = !isOther
-        ? options
+        ? normalizedOptions
         : ({
-            ...options,
+            ...normalizedOptions,
             httpsCallableStreamOptions: streamOptions || {},
           } as CustomHttpsCallableOptions);
       return this._createStreamHandler(listenerId => {
@@ -335,13 +345,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
   }
 
   httpsCallableFromUrl(url: string, options: HttpsCallableOptions = {}) {
-    if (options.timeout) {
-      if (isNumber(options.timeout)) {
-        options.timeout = options.timeout / 1000;
-      } else {
-        throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
-      }
-    }
+    const normalizedOptions = normalizeHttpsCallableTimeoutOptions(options);
 
     const callableFunction = ((data?: unknown) => {
       const nativePromise = this.native.httpsCallableFromUrl(
@@ -351,7 +355,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
         {
           data,
         },
-        options,
+        normalizedOptions,
       );
       return nativePromise.catch((nativeError: NativeError) => {
         const { code, message, details } = nativeError.userInfo || {};
@@ -371,9 +375,9 @@ class FirebaseFunctionsModule extends FirebaseModule {
       streamOptions?: HttpsCallableStreamOptions,
     ) => {
       const platformOptions = !isOther
-        ? options
+        ? normalizedOptions
         : ({
-            ...options,
+            ...normalizedOptions,
             httpsCallableStreamOptions: streamOptions || {},
           } as CustomHttpsCallableOptions);
       return this._createStreamHandler(listenerId => {

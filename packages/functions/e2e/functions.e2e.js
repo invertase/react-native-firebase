@@ -511,6 +511,18 @@ describe('functions() modular', function () {
         const response = await httpsCallable(functions, fnName)();
         response.data.should.equal('Hello from Firebase!');
       });
+
+      it('HttpsCallableOptions.timeout honors millisecond values on web/macos', async function () {
+        if (!Platform.other) {
+          return this.skip();
+        }
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp(), 'us-central1');
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+        const response = await httpsCallable(functions, 'helloWorldV2', { timeout: 10000 })();
+        response.data.should.equal('Hello from Firebase!');
+      });
     });
 
     describe('httpsCallableFromUrl()', function () {
