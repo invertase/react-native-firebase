@@ -21,6 +21,7 @@ export { default as FirebaseModule } from './FirebaseModule';
 export { default as NativeFirebaseError } from './NativeFirebaseError';
 export * from './NativeModules';
 export * from './registry/app';
+export * from './registry/modular';
 export * from './registry/namespace';
 export * from './registry/nativeModule';
 export { default as SharedEventEmitter } from './SharedEventEmitter';

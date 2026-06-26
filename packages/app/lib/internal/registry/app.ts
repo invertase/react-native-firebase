@@ -39,6 +39,7 @@ type ReactNativeAsyncStorage = ReactNativeFirebase.ReactNativeAsyncStorage;
 const APP_REGISTRY: Record<string, FirebaseApp> = {};
 let onAppCreateFn: ((app: FirebaseApp) => void) | null = null;
 let onAppDestroyFn: ((app: FirebaseApp) => void) | null = null;
+const onAppDestroyCallbacks: Array<(app: FirebaseApp) => void> = [];
 let initializedNativeApps = false;
 
 /**
@@ -55,6 +56,16 @@ export function setOnAppCreate(fn: (app: FirebaseApp) => void): void {
  */
 export function setOnAppDestroy(fn: (app: FirebaseApp) => void): void {
   onAppDestroyFn = fn;
+}
+
+/**
+ * Registers an additional app-destroy listener. Unlike {@link setOnAppDestroy} (a single legacy
+ * slot used by the namespaced registry), this appends, so the modular instance registry can clear
+ * its cache independently and keep working once the namespaced registry is removed.
+ * @param fn
+ */
+export function addOnAppDestroy(fn: (app: FirebaseApp) => void): void {
+  onAppDestroyCallbacks.push(fn);
 }
 
 /**
@@ -273,6 +284,9 @@ export function deleteApp(name: string, nativeInitialized: boolean): Promise<voi
   return nativeModule.deleteApp(name).then(() => {
     (app as any)._deleted = true;
     onAppDestroyFn?.(app);
+    for (let i = 0; i < onAppDestroyCallbacks.length; i++) {
+      onAppDestroyCallbacks[i]?.(app);
+    }
     delete APP_REGISTRY[name];
   });
 }
