@@ -5,27 +5,49 @@ const PATH_ROOT = 'playground';
 const PATH = `${PATH_ROOT}/${ID}`;
 const WRITE_ONLY_NAME = 'writeOnly.jpeg';
 
+const SEED_MAX_ATTEMPTS = 4;
+const SEED_INITIAL_BACKOFF_MS = 250;
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function uploadSeedFixtures(path) {
+  const { getStorage, ref, uploadString, StringFormat } = storageModular;
+
+  await uploadString(ref(getStorage(), WRITE_ONLY_NAME), 'Write Only');
+
+  await uploadString(ref(getStorage(), `${path}/list/file1.txt`), 'File 1', StringFormat.RAW, {
+    contentType: 'text/plain',
+  });
+
+  await uploadString(ref(getStorage(), `${path}/list/file2.txt`), 'File 2');
+  await uploadString(ref(getStorage(), `${path}/list/file3.txt`), 'File 3');
+  await uploadString(ref(getStorage(), `${path}/list/file4.txt`), 'File 4');
+  await uploadString(ref(getStorage(), `${path}/list/nested/file5.txt`), 'File 5');
+}
+
 exports.seed = async function seed(path) {
   let leakDetectCurrent = globalThis.RNFBDebugInTestLeakDetection;
   globalThis.RNFBDebugInTestLeakDetection = false;
-  const { getStorage, ref, uploadString, StringFormat } = storageModular;
+  let lastError;
 
   try {
-    // Add a write only file
-    await uploadString(ref(getStorage(), WRITE_ONLY_NAME), 'Write Only');
+    for (let attempt = 1; attempt <= SEED_MAX_ATTEMPTS; attempt++) {
+      try {
+        await uploadSeedFixtures(path);
+        return;
+      } catch (error) {
+        lastError = error;
+        if (attempt >= SEED_MAX_ATTEMPTS) {
+          break;
+        }
+        const backoffMs = SEED_INITIAL_BACKOFF_MS * 2 ** (attempt - 1);
+        await sleep(backoffMs);
+      }
+    }
 
-    await uploadString(ref(getStorage(), `${path}/list/file1.txt`), 'File 1', StringFormat.RAW, {
-      contentType: 'text/plain',
-    });
-
-    await uploadString(ref(getStorage(), `${path}/list/file2.txt`), 'File 2');
-    await uploadString(ref(getStorage(), `${path}/list/file3.txt`), 'File 3');
-    await uploadString(ref(getStorage(), `${path}/list/file4.txt`), 'File 4');
-    await uploadString(ref(getStorage(), `${path}/list/nested/file5.txt`), 'File 5');
-  } catch (e) {
     // eslint-disable-next-line no-console
     console.error('unable to seed storage service with test fixtures');
-    throw e;
+    throw lastError;
   } finally {
     globalThis.RNFBDebugInTestLeakDetection = leakDetectCurrent;
   }
