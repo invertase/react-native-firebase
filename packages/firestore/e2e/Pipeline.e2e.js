@@ -1754,36 +1754,6 @@ describe('FirestorePipeline', function () {
             rand().as('randomValue'),
           );
 
-        if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['trunc']);
-
-          const iosSnapshot = await execute(
-            db
-              .pipeline()
-              .documents([docPath])
-              .select(
-                sqrt(field('area')).as('side'),
-                exp(field('x')).as('expX'),
-                ln(field('y')).as('lnY'),
-                log(field('logBase'), 10).as('logVal'),
-                log10(field('logBase')).as('log10Val'),
-                rand().as('randomValue'),
-              ),
-          );
-
-          iosSnapshot.results.should.have.length(1);
-          const iosData = iosSnapshot.results[0].data();
-          iosData.side.should.equal(2);
-          iosData.expX.should.equal(1);
-          iosData.lnY.should.equal(0);
-          should(iosData.logVal).be.approximately(2, 0.0001);
-          should(iosData.log10Val).be.approximately(2, 0.0001);
-          iosData.randomValue.should.be.a.Number();
-          iosData.randomValue.should.be.greaterThanOrEqual(0);
-          should(iosData.randomValue).be.lessThan(1);
-          return;
-        }
-
         const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);

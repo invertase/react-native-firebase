@@ -60,7 +60,6 @@ const IOS_UNSUPPORTED_FUNCTION_NAMES = new Set<string>([
   'substring',
   'timestampAdd',
   'timestampSubtract',
-  'trunc',
 ]);
 
 export function createPipelineUnsupportedMessage(

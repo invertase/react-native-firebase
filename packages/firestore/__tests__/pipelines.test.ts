@@ -790,7 +790,6 @@ describe('Firestore pipelines runtime', function () {
       'substring',
       'timestampAdd',
       'timestampSubtract',
-      'trunc',
     ]);
   });
 

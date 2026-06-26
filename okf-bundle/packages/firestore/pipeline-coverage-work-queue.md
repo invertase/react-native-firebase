@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS (2026-06-25):** **J0-1** `stringRepeat` `f14092909` — **`review_gate` closed** (area 100/100/100, clean harness). **J0-2** `switchOn` `ae795b96c` — all gates closed. **Next pickup:** **J0-3** `trunc` **`implementation`**. **J0b** consolidation queued after J0 complete, before J1–J6.
+> **IN PROGRESS (2026-06-25):** **J0-1** `stringRepeat` `f14092909` — all gates closed. **J0-2** `switchOn` `ae795b96c` — all gates closed. **J0-3** `trunc` `ee34b515d` — all gates closed. **Next pickup:** **J0-4** `conditional` **`implementation`**. **J0b** consolidation queued after J0 complete, before J1–J6.
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -36,7 +36,7 @@ Ephemeral tracker; see [OKF policy](../../documentation-policy.md).
 
 Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration-vocabulary.md#host-rule)):
 
-1. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) clear; [serial `:test-cover`](../../testing/running-e2e.md#serialized-e2e-dispatch); [frozen tree](../../testing/iteration-vocabulary.md#frozen-tree) for `independent-review`.
+1. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): host clear, [services ready](../../testing/running-e2e.md#2-services-ready), [harness matches `validation_tier`](../../testing/running-e2e.md#3-harness-matches-validation-tier) from arbiter row — **not** [push harness](#harness) when tier is **focused**/**area**; [serial `:test-cover`](../../testing/running-e2e.md#serialized-e2e-dispatch); [frozen tree](../../testing/iteration-vocabulary.md#frozen-tree) for `independent-review`.
 2. Guard probes: [SDK runtime verification](pipeline-sdk-support-audit.md#6-runtime-verification-authoritative) + [Phase J protocol](#phase-j-iteration-protocol-strict) below.
 3. Coverage deltas: full clean cycle; never trust stale `.ec`/profraw ([coverage stale data](../../testing/coverage-design.md#stale-coverage-data)).
 
@@ -72,7 +72,7 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 
 ## Current snapshot
 
-**Label:** `after-j0-1-j0-2`; **harness:** full test app (`tests/app.js` — all platform modules restored for push)
+**Label:** `after-j0-1-j0-2-j0-3`; **harness:** full test app (`tests/app.js` — all platform modules restored for push)
 
 **E2e counts (Phase H baseline):** macOS **141**, iOS **146**, Android **146** ✅ *(full app load; re-verify before merge)*
 
@@ -83,15 +83,16 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/iteration
 
 *Phase H baseline only; not J0 review gate.*
 
-**Next item:** **J0-3** `trunc` — `next_work_type`: **`implementation`**; `validation_tier`: **focused**; `platform`: ios. **J0b** blocked until J0-9 complete.
+**Next item:** **J0-4** `conditional` — `next_work_type`: **`implementation`**; `validation_tier`: **focused**; `platform`: ios. **J0b** blocked until J0-9 complete.
 
 **Arbiter gate (2026-06-25):**
 
 | Probe | Code | `implementation_gate` | `review_gate` | `next_work_type` | `validation_tier` | `platform` | Notes |
 |-------|------|----------------------|---------------|------------------|-------------------|------------|-------|
 | **J0-1** `stringRepeat` | `f14092909` | closed | **closed** | — | — | — | Area review 2026-06-25: 100/100/100; stringRepeat unified iOS path |
-| **J0-2** `switchOn` | `ae795b96c` | closed | **closed** | **closed** | — | — | — | Committed 2026-06-25; area review 100/100/100 |
-| **J0-3** `trunc` | — | — | — | **`implementation`** | focused | ios | **unblocked** (J0-2 committed) |
+| **J0-2** `switchOn` | `ae795b96c` | closed | **closed** | — | — | — | Committed 2026-06-25; area review 100/100/100 |
+| **J0-3** `trunc` | `ee34b515d` | closed | **closed** | — | — | — | Area review 2026-06-25: 100/100/100; trunc unified iOS path |
+| **J0-4** `conditional` | — | — | — | **`implementation`** | focused | ios | **unblocked** (J0-3 committed) |
 
 | Target | macOS | iOS | Android (gap map) | Phase |
 |--------|-------|-----|-------------------|-------|
@@ -226,8 +227,8 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 |-------|----------|-----------|----------------------|---------------|------------------|
 | J0-1 | `stringRepeat` | iOS CHANGELOG 12.12.0 | closed | **closed** | — |
 | J0-2 | `switchOn` | iOS CHANGELOG 12.12.0 | closed | **closed** | — |
-| J0-3 | `trunc` | iOS CHANGELOG 12.11.0 | — | — | **`implementation`** |
-| J0-4 | `conditional` | `ConditionalExpression` 12.11.0; iOS bridge → `cond` | |
+| J0-3 | `trunc` | iOS CHANGELOG 12.11.0 | closed | **closed** | — |
+| J0-4 | `conditional` | `ConditionalExpression` 12.11.0; iOS bridge → `cond` | — | — | **`implementation`** |
 | J0-5 | `round` | No CHANGELOG; Android + bridge ok | |
 | J0-6 | `substring` | No CHANGELOG; docs list function | |
 | J0-7 | `timestampAdd` | No CHANGELOG; likely SDK gap or receiver shape | |
@@ -263,7 +264,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **J0-1** + **J0-2** committed; all gates closed. **J0-3** next **`implementation`**. **J0b** queued (blocked on J0 complete).
+**Current gates:** **J0-1** + **J0-2** + **J0-3** committed; all gates closed. **J0-4** next **`implementation`**. **J0b** queued (blocked on J0 complete).
 
 ---
 
@@ -285,8 +286,8 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 ## Harness
 
-- **Push state:** full test app — all `platformSupportedModules` restored in `tests/app.js` (no pipeline-only narrowing).
-- **Local iteration:** area narrowing in `tests/app.js` / `tests/globals.js` OK during J0 work; revert before **R** (full tier).
+- **Push state (committed):** full test app — all `platformSupportedModules` + `require.context` in `tests/app.js`. For merge/CI only; **not** the harness for local `:test-cover` during J–Q.
+- **Local `:test-cover`:** must match arbiter **`validation_tier`** — [running e2e § harness](../../testing/running-e2e.md#3-harness-matches-validation-tier). **`implementation` → focused:** apply [area narrowing](pipeline-implementation-workflow.md#narrowing-during-pipeline-iterations) locally **before** first run even when git has full harness. **`independent-review` → area:** same narrowing, no `.only`. Revert before **R** (full tier).
 - `tests/globals.js` — `RNFBDebug = true` optional for fail-fast
 
 ---
