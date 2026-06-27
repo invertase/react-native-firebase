@@ -27,188 +27,153 @@ const {
 const TEST_PATH = `${PATH}/once`;
 
 describe('database().ref().once()', function () {
-  before(function () {
-    return seed(TEST_PATH);
-  });
+  describe('modular', function () {
+    before(function () {
+      return seed(TEST_PATH);
+    });
 
-  after(function () {
-    return wipe(TEST_PATH);
-  });
+    after(function () {
+      return wipe(TEST_PATH);
+    });
 
-  beforeEach(async function beforeEachTest() {
-    // @ts-ignore
-    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-  });
+    it('returns a promise', async function () {
+      const { getDatabase, ref, get } = databaseModular;
 
-  afterEach(async function afterEachTest() {
-    // @ts-ignore
-    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-  });
+      const dbRef = ref(getDatabase(), 'tests/types/number');
+      const returnValue = get(dbRef);
+      returnValue.should.be.Promise();
+    });
 
-  it('throws if event type is invalid', async function () {
-    try {
-      await firebase.database().ref().once('foo');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'eventType' must be one of");
-      return Promise.resolve();
-    }
-  });
+    it('resolves with the correct values', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
 
-  it('throws if success callback is not a function', async function () {
-    try {
-      await firebase.database().ref().once('value', 'foo');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'successCallBack' must be a function");
-      return Promise.resolve();
-    }
-  });
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/types`);
 
-  it('throws if failure callback is not a function', async function () {
-    try {
-      await firebase
-        .database()
-        .ref()
-        .once('value', () => {}, 'foo');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'failureCallbackOrContext' must be a function or context");
-      return Promise.resolve();
-    }
-  });
+      await Promise.all(
+        Object.keys(CONTENT.TYPES).map(async key => {
+          const value = CONTENT.TYPES[key];
+          const snapsnot = await get(child(dbRef, key));
+          snapsnot.val().should.eql(jet.contextify(value));
+        }),
+      );
+    });
 
-  it('throws if context is not an object', async function () {
-    try {
-      await firebase
-        .database()
-        .ref()
-        .once(
-          'value',
-          () => {},
-          () => {},
-          'foo',
-        );
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'context' must be a context object.");
-      return Promise.resolve();
-    }
-  });
+    it('is is called when the value is changed', async function () {
+      const { getDatabase, ref, set, onValue } = databaseModular;
+      const callback = sinon.spy();
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/types/number`);
+      onValue(
+        dbRef,
+        $ => {
+          callback($.val());
+        },
+        { onlyOnce: true },
+      );
+      await set(dbRef, 1337);
+      await Utils.spyToBeCalledOnceAsync(callback);
+    });
 
-  it('returns a promise', async function () {
-    const ref = firebase.database().ref('tests/types/number');
-    const returnValue = ref.once('value');
-    returnValue.should.be.Promise();
-  });
+    it('errors if permission denied', async function () {
+      const { getDatabase, ref, get } = databaseModular;
 
-  it('resolves with the correct values', async function () {
-    const ref = firebase.database().ref(`${TEST_PATH}/types`);
+      const dbRef = ref(getDatabase(), 'nope');
+      try {
+        await get(dbRef);
+        return Promise.reject(new Error('No permission denied error'));
+      } catch (error) {
+        error.code.includes('database/permission-denied').should.be.true();
+        return Promise.resolve();
+      }
+    });
 
-    await Promise.all(
-      Object.keys(CONTENT.TYPES).map(async key => {
-        const value = CONTENT.TYPES[key];
-        const snapsnot = await ref.child(key).once('value');
-        snapsnot.val().should.eql(jet.contextify(value));
-      }),
-    );
-  });
+    it('it calls when a child is added', async function () {
+      const { getDatabase, ref, set, child, onChildAdded } = databaseModular;
+      const value = Date.now();
+      const callback = sinon.spy();
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded`);
+      onChildAdded(
+        dbRef,
+        $ => callback($.val()),
+        error => callback(error),
+        { onlyOnce: true },
+      );
+      await waitForNativeDbListenerRegistration(`${TEST_PATH}/childAdded`);
+      await set(child(dbRef, 'foo'), value);
+      await Utils.spyToBeCalledOnceAsync(callback, 5000);
+      callback.should.be.calledWith(value);
+    });
 
-  it('is is called when the value is changed', async function () {
-    const callback = sinon.spy();
-    const ref = firebase.database().ref(`${TEST_PATH}/types/number`);
-    ref.once('value').then(callback);
-    await ref.set(1337);
-    await Utils.spyToBeCalledOnceAsync(callback);
-  });
+    it('resolves when a child is changed', async function () {
+      const { getDatabase, ref, set, child, onChildAdded, onChildChanged } = databaseModular;
+      const callbackAdd = sinon.spy();
+      const callbackChange = sinon.spy();
+      const date = Date.now();
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/childChanged/${date}`);
 
-  it('errors if permission denied', async function () {
-    const ref = firebase.database().ref('nope');
-    try {
-      await ref.once('value');
-      return Promise.reject(new Error('No permission denied error'));
-    } catch (error) {
-      error.code.includes('database/permission-denied').should.be.true();
-      return Promise.resolve();
-    }
-  });
+      onChildAdded(dbRef, $ => callbackAdd($.val()), { onlyOnce: true });
+      await waitForNativeDbListenerRegistration(`${TEST_PATH}/childChanged/${date}`);
+      await set(child(dbRef, 'foo'), 1);
+      await Utils.spyToBeCalledOnceAsync(callbackAdd, 10000);
+      onChildChanged(dbRef, $ => callbackChange($.val()), { onlyOnce: true });
+      await waitForNativeDbListenerReady(`${TEST_PATH}/childChanged/${date}/foo`, 1);
+      await set(child(dbRef, 'foo'), 2);
+      await Utils.spyToBeCalledOnceAsync(callbackChange, 10000);
+      callbackChange.should.be.calledWith(2);
+    });
 
-  it('it calls when a child is added', async function () {
-    const value = Date.now();
-    const callback = sinon.spy();
-    const ref = firebase.database().ref(`${TEST_PATH}/childAdded`);
-    ref
-      .once('child_added')
-      .then($ => callback($.val()))
-      .catch(e => callback(e));
-    await waitForNativeDbListenerRegistration(`${TEST_PATH}/childAdded`);
-    await ref.child('foo').set(value);
-    await Utils.spyToBeCalledOnceAsync(callback, 5000);
-    callback.should.be.calledWith(value);
-  });
+    it('resolves when a child is removed', async function () {
+      const { getDatabase, ref, set, child, remove, onChildAdded, onChildRemoved } =
+        databaseModular;
+      const callbackAdd = sinon.spy();
+      const callbackRemove = sinon.spy();
+      const date = Date.now();
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/childRemoved/${date}`);
+      onChildAdded(dbRef, $ => callbackAdd($.val()), { onlyOnce: true });
+      await waitForNativeDbListenerRegistration(`${TEST_PATH}/childRemoved/${date}`);
+      const childRef = child(dbRef, 'removeme');
+      await set(childRef, 'foo');
+      await Utils.spyToBeCalledOnceAsync(callbackAdd, 10000);
+      onChildRemoved(
+        dbRef,
+        $ => callbackRemove($.val()),
+        error => callbackRemove(error),
+        { onlyOnce: true },
+      );
+      await waitForNativeDbListenerReady(`${TEST_PATH}/childRemoved/${date}/removeme`, 'foo');
+      await remove(childRef);
+      await Utils.spyToBeCalledOnceAsync(callbackRemove, 10000);
+      callbackRemove.should.be.calledWith('foo');
+    });
 
-  it('resolves when a child is changed', async function () {
-    const callbackAdd = sinon.spy();
-    const callbackChange = sinon.spy();
-    const date = Date.now();
-    const ref = firebase.database().ref(`${TEST_PATH}/childChanged/${date}`);
+    // https://github.com/firebase/firebase-js-sdk/blob/6b53e0058483c9002d2fe56119f86fc9fb96b56c/packages/database/test/order_by.test.ts#L104
+    it('resolves when a child is moved', async function () {
+      if (Platform.other) {
+        this.skip('Errors on JS SDK about a missing index.');
+        return;
+      }
+      const { getDatabase, ref, set, child, onChildMoved, query, orderByChild } = databaseModular;
+      const callback = sinon.spy();
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/childMoved`);
+      const orderedRef = query(dbRef, orderByChild('nuggets'));
 
-    ref.once('child_added').then($ => callbackAdd($.val()));
-    await waitForNativeDbListenerRegistration(`${TEST_PATH}/childChanged/${date}`);
-    await ref.child('foo').set(1);
-    await Utils.spyToBeCalledOnceAsync(callbackAdd, 10000);
-    ref.once('child_changed').then($ => callbackChange($.val()));
-    await waitForNativeDbListenerReady(`${TEST_PATH}/childChanged/${date}/foo`, 1);
-    await ref.child('foo').set(2);
-    await Utils.spyToBeCalledOnceAsync(callbackChange, 10000);
-    callbackChange.should.be.calledWith(2);
-  });
-
-  it('resolves when a child is removed', async function () {
-    const callbackAdd = sinon.spy();
-    const callbackRemove = sinon.spy();
-    const date = Date.now();
-    const ref = firebase.database().ref(`${TEST_PATH}/childRemoved/${date}`);
-    ref.once('child_added').then($ => callbackAdd($.val()));
-    await waitForNativeDbListenerRegistration(`${TEST_PATH}/childRemoved/${date}`);
-    const child = ref.child('removeme');
-    await child.set('foo');
-    await Utils.spyToBeCalledOnceAsync(callbackAdd, 10000);
-    ref
-      .once('child_removed')
-      .then($ => callbackRemove($.val()))
-      .catch(e => callback(e));
-    await waitForNativeDbListenerReady(`${TEST_PATH}/childRemoved/${date}/removeme`, 'foo');
-    await child.remove();
-    await Utils.spyToBeCalledOnceAsync(callbackRemove, 10000);
-    callbackRemove.should.be.calledWith('foo');
-  });
-
-  // https://github.com/firebase/firebase-js-sdk/blob/6b53e0058483c9002d2fe56119f86fc9fb96b56c/packages/database/test/order_by.test.ts#L104
-  it('resolves when a child is moved', async function () {
-    if (Platform.other) {
-      this.skip('Errors on JS SDK about a missing index.');
-      return;
-    }
-    const callback = sinon.spy();
-    const ref = firebase.database().ref(`${TEST_PATH}/childMoved`);
-    const orderedRef = ref.orderByChild('nuggets');
-
-    const initial = {
-      alex: { nuggets: 60 },
-      rob: { nuggets: 56 },
-      vassili: { nuggets: 55.5 },
-      tony: { nuggets: 52 },
-      greg: { nuggets: 52 },
-    };
-    orderedRef
-      .once('child_moved')
-      .then($ => callback($.val()))
-      .catch(e => callback(e));
-    await waitForNativeDbListenerRegistration(`${TEST_PATH}/childMoved`);
-    await ref.set(initial);
-    await ref.child('greg/nuggets').set(57);
-    await Utils.spyToBeCalledOnceAsync(callback, 5000);
-    callback.should.be.calledWith({ nuggets: 57 });
+      const initial = {
+        alex: { nuggets: 60 },
+        rob: { nuggets: 56 },
+        vassili: { nuggets: 55.5 },
+        tony: { nuggets: 52 },
+        greg: { nuggets: 52 },
+      };
+      onChildMoved(
+        orderedRef,
+        $ => callback($.val()),
+        error => callback(error),
+        { onlyOnce: true },
+      );
+      await waitForNativeDbListenerRegistration(`${TEST_PATH}/childMoved`);
+      await set(dbRef, initial);
+      await set(child(dbRef, 'greg/nuggets'), 57);
+      await Utils.spyToBeCalledOnceAsync(callback, 5000);
+      callback.should.be.calledWith({ nuggets: 57 });
+    });
   });
 });

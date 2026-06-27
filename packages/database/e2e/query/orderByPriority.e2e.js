@@ -28,52 +28,6 @@ describe('database().ref().orderByPriority()', function () {
     await wipe(TEST_PATH);
   });
 
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('throws if an orderBy call has already been set', async function () {
-      try {
-        await firebase.database().ref().orderByChild('foo').orderByPriority();
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("You can't combine multiple orderBy calls");
-        return Promise.resolve();
-      }
-    });
-
-    it('order by priority', async function () {
-      const ref = firebase.database().ref(TEST_PATH).child('query');
-
-      await Promise.all([
-        ref.child('a').setPriority(2),
-        ref.child('b').setPriority(3),
-        ref.child('c').setPriority(1),
-      ]);
-
-      try {
-        const snapshot = await ref.orderByPriority().once('value');
-
-        const expected = ['c', 'a', 'b'];
-
-        snapshot.forEach((childSnapshot, i) => {
-          childSnapshot.key.should.eql(expected[i]);
-        });
-
-        return Promise.resolve();
-      } catch (error) {
-        throw error;
-      }
-    });
-  });
-
   describe('modular', function () {
     it('throws if an orderBy call has already been set', async function () {
       const { getDatabase, ref, orderByChild, orderByPriority, query } = databaseModular;

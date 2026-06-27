@@ -5,6 +5,11 @@ const config: PackageConfig = {
   missingInRN: [],
   extraInRN: [
     {
+      name: 'SDK_VERSION',
+      reason:
+        'RN Firebase package version string exported from the modular entry point. The firebase-js-sdk does not export SDK_VERSION from @firebase/database.',
+    },
+    {
       name: 'setPersistenceEnabled',
       reason:
         'RN Firebase-specific helper for configuring native database ' +

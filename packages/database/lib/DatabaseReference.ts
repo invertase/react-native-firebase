@@ -41,15 +41,21 @@ import DatabaseThenableReference, {
   provideReferenceClass as provideReferenceClassForThenable,
 } from './DatabaseThenableReference';
 import type { DatabaseInternal } from './types/internal';
-import type { FirebaseDatabaseTypes } from './types/namespaced';
+import type {
+  DatabaseReference as DatabaseReferenceType,
+  DataSnapshot,
+  OnDisconnect,
+  ThenableReference,
+  TransactionResult,
+} from './types/database';
 
 const internalRefs = ['.info/connected', '.info/serverTimeOffset'] as const;
 
-type ReferenceWithChildInternal = FirebaseDatabaseTypes.Reference & {
-  child(path: string, deprecationArg?: string): FirebaseDatabaseTypes.Reference;
+type ReferenceWithChildInternal = DatabaseReferenceType & {
+  child(path: string, deprecationArg?: string): DatabaseReferenceType;
 };
 
-type ReferenceWithSetInternal = FirebaseDatabaseTypes.Reference & {
+type ReferenceWithSetInternal = DatabaseReferenceType & {
   set(
     value: unknown,
     onComplete?: (error: Error | null) => void,
@@ -57,18 +63,15 @@ type ReferenceWithSetInternal = FirebaseDatabaseTypes.Reference & {
   ): Promise<void>;
 };
 
-function apChild(reference: FirebaseDatabaseTypes.Reference): ReferenceWithChildInternal {
+function apChild(reference: DatabaseReferenceType): ReferenceWithChildInternal {
   return reference as ReferenceWithChildInternal;
 }
 
-function apSet(reference: FirebaseDatabaseTypes.Reference): ReferenceWithSetInternal {
+function apSet(reference: DatabaseReferenceType): ReferenceWithSetInternal {
   return reference as ReferenceWithSetInternal;
 }
 
-export default class DatabaseReference
-  extends DatabaseQuery
-  implements FirebaseDatabaseTypes.Reference
-{
+export default class DatabaseReference extends DatabaseQuery implements DatabaseReferenceType {
   readonly _database: DatabaseInternal;
 
   constructor(database: DatabaseInternal, path: string) {
@@ -82,29 +85,29 @@ export default class DatabaseReference
     this._database = database;
   }
 
-  get parent(): FirebaseDatabaseTypes.Reference | null {
+  get parent(): DatabaseReferenceType | null {
     const parentPath = pathParent(this.path);
     if (parentPath === null) {
       return null;
     }
     return createDeprecationProxy(
       new DatabaseReference(this._database, parentPath),
-    ) as FirebaseDatabaseTypes.Reference;
+    ) as DatabaseReferenceType;
   }
 
-  get root(): FirebaseDatabaseTypes.Reference {
+  get root(): DatabaseReferenceType {
     return createDeprecationProxy(
       new DatabaseReference(this._database, '/'),
-    ) as FirebaseDatabaseTypes.Reference;
+    ) as DatabaseReferenceType;
   }
 
-  child(path: string): FirebaseDatabaseTypes.Reference {
+  child(path: string): DatabaseReferenceType {
     if (!isString(path)) {
       throw new Error("firebase.database().ref().child(*) 'path' must be a string value.");
     }
     return createDeprecationProxy(
       new DatabaseReference(this._database, pathChild(this.path, path)),
-    ) as FirebaseDatabaseTypes.Reference;
+    ) as DatabaseReferenceType;
   }
 
   set(value: any, onComplete?: (error: Error | null) => void): Promise<void> {
@@ -195,10 +198,10 @@ export default class DatabaseReference
     onComplete?: (
       error: Error | null,
       committed: boolean,
-      finalResult: FirebaseDatabaseTypes.DataSnapshot | null,
+      finalResult: DataSnapshot | null,
     ) => void,
     applyLocally?: boolean,
-  ): Promise<FirebaseDatabaseTypes.TransactionResult> {
+  ): Promise<TransactionResult> {
     if (!isFunction(transactionUpdate)) {
       throw new Error(
         "firebase.database().ref().transaction(*) 'transactionUpdate' must be a function.",
@@ -235,7 +238,7 @@ export default class DatabaseReference
                   this,
                   snapshotData as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
                 ),
-              ) as FirebaseDatabaseTypes.DataSnapshot,
+              ) as DataSnapshot,
             );
           }
         }
@@ -245,14 +248,19 @@ export default class DatabaseReference
           return;
         }
 
+        const snapshot = createDeprecationProxy(
+          new DatabaseDataSnapshot(
+            this,
+            snapshotData as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
+          ),
+        ) as DataSnapshot;
+
         resolve({
           committed,
-          snapshot: createDeprecationProxy(
-            new DatabaseDataSnapshot(
-              this,
-              snapshotData as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
-            ),
-          ) as FirebaseDatabaseTypes.DataSnapshot,
+          snapshot,
+          toJSON() {
+            return { committed, snapshot: snapshot.toJSON() };
+          },
         });
       };
 
@@ -282,10 +290,7 @@ export default class DatabaseReference
     );
   }
 
-  push(
-    value?: any,
-    onComplete?: (error: Error | null) => void,
-  ): FirebaseDatabaseTypes.ThenableReference {
+  push(value?: any, onComplete?: (error: Error | null) => void): ThenableReference {
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
         "firebase.database().ref().push(_, *) 'onComplete' must be a function if provided.",
@@ -299,7 +304,7 @@ export default class DatabaseReference
         this._database,
         pathChild(this.path, id),
         Promise.resolve(apChild(this).child.call(this, id, MODULAR_DEPRECATION_ARG)),
-      ) as unknown as FirebaseDatabaseTypes.ThenableReference;
+      ) as unknown as ThenableReference;
     }
 
     const pushRef = apChild(this).child.call(this, id, MODULAR_DEPRECATION_ARG);
@@ -316,10 +321,10 @@ export default class DatabaseReference
       this._database,
       pathChild(this.path, id),
       promise,
-    ) as unknown as FirebaseDatabaseTypes.ThenableReference;
+    ) as unknown as ThenableReference;
   }
 
-  onDisconnect(): FirebaseDatabaseTypes.OnDisconnect {
+  onDisconnect(): OnDisconnect {
     return new DatabaseOnDisconnect(this);
   }
 }

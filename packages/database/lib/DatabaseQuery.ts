@@ -37,7 +37,7 @@ import type {
   DatabaseInternal,
   DatabaseListenPropsInternal,
 } from './types/internal';
-import type { FirebaseDatabaseTypes } from './types/namespaced';
+import type { DatabaseReference, DataSnapshot, EventType, Query } from './types/database';
 
 const eventTypes = [
   'value',
@@ -50,19 +50,11 @@ const eventTypes = [
 type DatabaseReferenceConstructor = new (
   database: DatabaseInternal,
   path: string,
-) => FirebaseDatabaseTypes.Reference;
+) => DatabaseReference;
 
-type QueryWithDeprecationArgInternal = FirebaseDatabaseTypes.Query & {
-  startAt(
-    value: number | string | boolean | null,
-    key?: string,
-    deprecationArg?: string,
-  ): FirebaseDatabaseTypes.Query;
-  endAt(
-    value: number | string | boolean | null,
-    key?: string,
-    deprecationArg?: string,
-  ): FirebaseDatabaseTypes.Query;
+type QueryWithDeprecationArgInternal = Query & {
+  startAt(value: number | string | boolean | null, key?: string, deprecationArg?: string): Query;
+  endAt(value: number | string | boolean | null, key?: string, deprecationArg?: string): Query;
 };
 
 let DatabaseReferenceClass: DatabaseReferenceConstructor | null = null;
@@ -71,26 +63,21 @@ export function provideReferenceClass(databaseReference: DatabaseReferenceConstr
   DatabaseReferenceClass = databaseReference;
 }
 
-function ap(query: FirebaseDatabaseTypes.Query): QueryWithDeprecationArgInternal {
+function ap(query: Query): QueryWithDeprecationArgInternal {
   return query as QueryWithDeprecationArgInternal;
 }
 
-function createReference(
-  database: DatabaseInternal,
-  path: string,
-): FirebaseDatabaseTypes.Reference {
+function createReference(database: DatabaseInternal, path: string): DatabaseReference {
   if (!DatabaseReferenceClass) {
     throw new Error('DatabaseReference class has not been provided.');
   }
 
-  return createDeprecationProxy(
-    new DatabaseReferenceClass(database, path),
-  ) as FirebaseDatabaseTypes.Reference;
+  return createDeprecationProxy(new DatabaseReferenceClass(database, path)) as DatabaseReference;
 }
 
 let listeners = 0;
 
-export default class DatabaseQuery extends ReferenceBase implements FirebaseDatabaseTypes.Query {
+export default class DatabaseQuery extends ReferenceBase implements Query {
   _database: DatabaseInternal;
   _modifiers: DatabaseQueryModifiers;
 
@@ -100,11 +87,11 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
     this._modifiers = modifiers;
   }
 
-  get ref(): FirebaseDatabaseTypes.Reference {
+  get ref(): DatabaseReference {
     return createReference(this._database, this.path);
   }
 
-  endAt(value: number | string | boolean | null, key?: string): FirebaseDatabaseTypes.Query {
+  endAt(value: number | string | boolean | null, key?: string): Query {
     if (!isNumber(value) && !isString(value) && !isBoolean(value) && !isNull(value)) {
       throw new Error(
         "firebase.database().ref().endAt(*) 'value' must be a number, string, boolean or null value.",
@@ -129,7 +116,7 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
     return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
   }
 
-  equalTo(value: number | string | boolean | null, key?: string): FirebaseDatabaseTypes.Query {
+  equalTo(value: number | string | boolean | null, key?: string): Query {
     if (!isNumber(value) && !isString(value) && !isBoolean(value) && !isNull(value)) {
       throw new Error(
         "firebase.database().ref().equalTo(*) 'value' must be a number, string, boolean or null value.",
@@ -161,7 +148,7 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
     );
   }
 
-  isEqual(other: FirebaseDatabaseTypes.Query): boolean {
+  isEqual(other: Query): boolean {
     if (!(other instanceof DatabaseQuery)) {
       throw new Error("firebase.database().ref().isEqual(*) 'other' must be an instance of Query.");
     }
@@ -173,7 +160,7 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
     return sameApp && sameDatabasePath && sameModifiers;
   }
 
-  limitToFirst(limit: number): FirebaseDatabaseTypes.Query {
+  limitToFirst(limit: number): Query {
     if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
         "firebase.database().ref().limitToFirst(*) 'limit' must be a positive integer value.",
@@ -188,10 +175,10 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
 
     return createDeprecationProxy(
       new DatabaseQuery(this._database, this.path, this._modifiers._copy().limitToFirst(limit)),
-    ) as FirebaseDatabaseTypes.Query;
+    ) as Query;
   }
 
-  limitToLast(limit: number): FirebaseDatabaseTypes.Query {
+  limitToLast(limit: number): Query {
     if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
         "firebase.database().ref().limitToLast(*) 'limit' must be a positive integer value.",
@@ -206,12 +193,12 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
 
     return createDeprecationProxy(
       new DatabaseQuery(this._database, this.path, this._modifiers._copy().limitToLast(limit)),
-    ) as FirebaseDatabaseTypes.Query;
+    ) as Query;
   }
 
   off(
-    eventType?: FirebaseDatabaseTypes.EventType,
-    callback?: (a: FirebaseDatabaseTypes.DataSnapshot, b?: string | null) => void,
+    eventType?: EventType,
+    callback?: (a: DataSnapshot, b?: string | null) => void,
     context?: Record<string, any>,
   ): void {
     if (arguments.length === 0) {
@@ -261,11 +248,11 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
   }
 
   on(
-    eventType: FirebaseDatabaseTypes.EventType,
-    callback: (data: FirebaseDatabaseTypes.DataSnapshot, previousChildKey?: string | null) => void,
+    eventType: EventType,
+    callback: (data: DataSnapshot, previousChildKey?: string | null) => void,
     cancelCallbackOrContext?: ((a: Error) => void) | Record<string, any> | null,
     context?: Record<string, any> | null,
-  ): (a: FirebaseDatabaseTypes.DataSnapshot | null, b?: string | null) => void {
+  ): (a: DataSnapshot | null, b?: string | null) => void {
     if (!eventTypes.includes(eventType)) {
       throw new Error(
         `firebase.database().ref().on(*) 'eventType' must be one of ${eventTypes.join(', ')}.`,
@@ -341,15 +328,15 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
 
     listeners += 1;
 
-    return callback as (a: FirebaseDatabaseTypes.DataSnapshot | null, b?: string | null) => void;
+    return callback as (a: DataSnapshot | null, b?: string | null) => void;
   }
 
   once(
-    eventType: FirebaseDatabaseTypes.EventType,
-    successCallBack?: (a: FirebaseDatabaseTypes.DataSnapshot, b?: string | null) => any,
+    eventType: EventType,
+    successCallBack?: (a: DataSnapshot, b?: string | null) => any,
     failureCallbackOrContext?: ((a: Error) => void) | Record<string, any> | null,
     context?: Record<string, any>,
-  ): Promise<FirebaseDatabaseTypes.DataSnapshot> {
+  ): Promise<DataSnapshot> {
     if (!eventTypes.includes(eventType)) {
       throw new Error(
         `firebase.database().ref().once(*) 'eventType' must be one of ${eventTypes.join(', ')}.`,
@@ -381,7 +368,7 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
     return this._database.native
       .once(this.path, modifiers, eventType)
       .then(result => {
-        let dataSnapshot: FirebaseDatabaseTypes.DataSnapshot;
+        let dataSnapshot: DataSnapshot;
         let previousChildName: string | null | undefined;
 
         if (eventType === 'value') {
@@ -390,12 +377,12 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
               this.ref,
               result as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
             ),
-          ) as FirebaseDatabaseTypes.DataSnapshot;
+          ) as DataSnapshot;
         } else {
           const childResult = result as DatabaseChildSnapshotResultInternal;
           dataSnapshot = createDeprecationProxy(
             new DatabaseDataSnapshot(this.ref, childResult.snapshot),
-          ) as FirebaseDatabaseTypes.DataSnapshot;
+          ) as DataSnapshot;
           previousChildName = childResult.previousChildName;
         }
 
@@ -419,7 +406,7 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
       });
   }
 
-  orderByChild(path: string): FirebaseDatabaseTypes.Query {
+  orderByChild(path: string): Query {
     if (!isString(path)) {
       throw new Error("firebase.database().ref().orderByChild(*) 'path' must be a string value.");
     }
@@ -442,7 +429,7 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
     return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
   }
 
-  orderByKey(): FirebaseDatabaseTypes.Query {
+  orderByKey(): Query {
     if (this._modifiers.hasOrderBy()) {
       throw new Error(
         "firebase.database().ref().orderByKey() You can't combine multiple orderBy calls.",
@@ -455,7 +442,7 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
     return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
   }
 
-  orderByPriority(): FirebaseDatabaseTypes.Query {
+  orderByPriority(): Query {
     if (this._modifiers.hasOrderBy()) {
       throw new Error(
         "firebase.database().ref().orderByPriority() You can't combine multiple orderBy calls.",
@@ -468,7 +455,7 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
     return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
   }
 
-  orderByValue(): FirebaseDatabaseTypes.Query {
+  orderByValue(): Query {
     if (this._modifiers.hasOrderBy()) {
       throw new Error(
         "firebase.database().ref().orderByValue() You can't combine multiple orderBy calls.",
@@ -481,7 +468,7 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
     return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
   }
 
-  startAt(value: number | string | boolean | null, key?: string): FirebaseDatabaseTypes.Query {
+  startAt(value: number | string | boolean | null, key?: string): Query {
     if (!isNumber(value) && !isString(value) && !isBoolean(value) && !isNull(value)) {
       throw new Error(
         "firebase.database().ref().startAt(*) 'value' must be a number, string, boolean or null value.",
@@ -535,7 +522,7 @@ export default class DatabaseQuery extends ReferenceBase implements FirebaseData
     }$${this._modifiers.toString()}`;
   }
 
-  _generateQueryEventKey(eventType: FirebaseDatabaseTypes.EventType): string {
+  _generateQueryEventKey(eventType: EventType): string {
     return `${this._generateQueryKey()}$${listeners}$${eventType}`;
   }
 }

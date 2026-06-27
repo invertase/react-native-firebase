@@ -18,12 +18,12 @@
 import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 
 import type { DatabaseInternal } from './types/internal';
-import type { FirebaseDatabaseTypes } from './types/namespaced';
+import type { DatabaseReference } from './types/database';
 
 type DatabaseReferenceConstructor = new (
   database: DatabaseInternal,
   path: string,
-) => FirebaseDatabaseTypes.Reference;
+) => DatabaseReference;
 
 let DatabaseReferenceClass: DatabaseReferenceConstructor | null = null;
 
@@ -32,24 +32,20 @@ export function provideReferenceClass(databaseReference: DatabaseReferenceConstr
 }
 
 export default class DatabaseThenableReference implements Pick<
-  Promise<FirebaseDatabaseTypes.Reference>,
+  Promise<DatabaseReference>,
   'then' | 'catch'
 > {
-  _ref: FirebaseDatabaseTypes.Reference;
-  _promise: Promise<FirebaseDatabaseTypes.Reference>;
+  _ref: DatabaseReference;
+  _promise: Promise<DatabaseReference>;
 
-  constructor(
-    database: DatabaseInternal,
-    path: string,
-    promise: Promise<FirebaseDatabaseTypes.Reference>,
-  ) {
+  constructor(database: DatabaseInternal, path: string, promise: Promise<DatabaseReference>) {
     if (!DatabaseReferenceClass) {
       throw new Error('DatabaseReference class has not been provided.');
     }
 
     this._ref = createDeprecationProxy(
       new DatabaseReferenceClass(database, path),
-    ) as FirebaseDatabaseTypes.Reference;
+    ) as DatabaseReference;
     this._promise = promise;
 
     return new Proxy(this, {
@@ -63,11 +59,11 @@ export default class DatabaseThenableReference implements Pick<
     }) as unknown as DatabaseThenableReference;
   }
 
-  get then(): Promise<FirebaseDatabaseTypes.Reference>['then'] {
+  get then(): Promise<DatabaseReference>['then'] {
     return this._promise.then.bind(this._promise);
   }
 
-  get catch(): Promise<FirebaseDatabaseTypes.Reference>['catch'] {
+  get catch(): Promise<DatabaseReference>['catch'] {
     return this._promise.catch.bind(this._promise);
   }
 }

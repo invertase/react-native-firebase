@@ -26,11 +26,11 @@ import type {
   DatabaseSnapshotInternal,
   RNFBDatabaseModule,
 } from './types/internal';
-import type { FirebaseDatabaseTypes } from './types/namespaced';
+import type { DatabaseReference, DataSnapshot } from './types/database';
 
 interface DatabaseSyncTreeRegistration {
   eventType: string;
-  ref: FirebaseDatabaseTypes.Reference;
+  ref: DatabaseReference;
   path: string;
   key: string;
   appName: string;
@@ -145,7 +145,7 @@ class DatabaseSyncTree {
       return;
     }
 
-    let snapshot: FirebaseDatabaseTypes.DataSnapshot;
+    let snapshot: DataSnapshot;
     let previousChildName: string | null | undefined;
 
     if (!event.data) {
@@ -155,12 +155,12 @@ class DatabaseSyncTree {
     if (event.eventType === 'value') {
       snapshot = createDeprecationProxy(
         new DatabaseDataSnapshot(registration.ref, event.data as DatabaseSnapshotInternal),
-      ) as FirebaseDatabaseTypes.DataSnapshot;
+      ) as DataSnapshot;
     } else {
       const childData = event.data as DatabaseChildSnapshotResultInternal;
       snapshot = createDeprecationProxy(
         new DatabaseDataSnapshot(registration.ref, childData.snapshot),
-      ) as FirebaseDatabaseTypes.DataSnapshot;
+      ) as DataSnapshot;
       previousChildName = childData.previousChildName;
     }
 
