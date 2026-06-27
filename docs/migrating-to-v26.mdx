@@ -20,6 +20,7 @@ If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating
 - [Cloud Functions](/migrating-to-v26#cloud-functions)
 - [Performance Monitoring](/migrating-to-v26#performance-monitoring)
 - [App Check](/migrating-to-v26#app-check)
+- [Remote Config](/migrating-to-v26#remote-config)
 - [Crashlytics](/migrating-to-v26#crashlytics)
 - [Realtime Database](/migrating-to-v26#realtime-database)
 - [Cloud Storage](/migrating-to-v26#cloud-storage)
@@ -33,7 +34,7 @@ For each package listed in this guide:
 2. Replace `Firebase*Types` namespace imports with root types (`InAppMessaging`, `Installations`, `FirebaseML`, etc.).
 3. Prefer free functions (`getId(installations)`, `setMessagesDisplaySuppressed(inAppMessaging, enabled)`) over instance methods on service objects.
 
-**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, `@react-native-firebase/messaging`, `@react-native-firebase/app-distribution`, `@react-native-firebase/functions`, `@react-native-firebase/perf`, `@react-native-firebase/app-check`, `@react-native-firebase/crashlytics`, `@react-native-firebase/database`, and `@react-native-firebase/storage`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
+**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, `@react-native-firebase/messaging`, `@react-native-firebase/app-distribution`, `@react-native-firebase/functions`, `@react-native-firebase/perf`, `@react-native-firebase/app-check`, `@react-native-firebase/remote-config`, `@react-native-firebase/crashlytics`, `@react-native-firebase/database`, and `@react-native-firebase/storage`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
 
 # Machine Learning (ML)
 
@@ -303,6 +304,57 @@ The namespaced API for `@react-native-firebase/app-check` has been **removed**. 
 | `FirebaseAppCheckTypes` | Import `AppCheck`, `AppCheckTokenResult`, etc. from package root |
 | `appCheck().getToken()` | `getToken(appCheck, forceRefresh?)` |
 
+# Remote Config
+
+The namespaced API for `@react-native-firebase/remote-config` has been **removed**. This package is **modular-only** — use `getRemoteConfig()` and root-level helper functions.
+
+Modular `getRemoteConfig()` returns a firebase-js-sdk-shaped `RemoteConfig` object with `app`, `settings`, `defaultConfig`, `fetchTimeMillis`, and `lastFetchStatus`. Use modular helper functions for fetch/activate/getters; assign `remoteConfig.settings` and `remoteConfig.defaultConfig` instead of removed modular `setConfigSettings()` / `setDefaults()` helpers.
+
+## Removed namespaced API
+
+| Removed | Replacement (modular) |
+| ------- | --------------------- |
+| `firebase.remoteConfig()` | `getRemoteConfig()` |
+| Default export `remoteConfig()` | `getRemoteConfig()` |
+| `FirebaseRemoteConfigTypes` | Import `RemoteConfig`, `Value`, etc. from package root |
+| `remoteConfig().activate()` etc. | `activate(remoteConfig)`, `fetchConfig(remoteConfig)`, `getValue(remoteConfig, key)`, etc. |
+| `remoteConfig.LastFetchStatus` / `.ValueSource` on namespace | `LastFetchStatus`, `ValueSource` named exports |
+
+## Breaking changes (modular call shape)
+
+| Before | Now |
+| ------ | --- |
+| `remoteConfig().fetch()` | `fetchConfig(remoteConfig)` |
+| `remoteConfig().setConfigSettings({ ... })` | `remoteConfig.settings = { ... }` |
+| `remoteConfig().setDefaults({ ... })` | `remoteConfig.defaultConfig = { ... }` |
+| `remoteConfig().onConfigUpdated(listener)` | `onConfigUpdate(remoteConfig, observer)` |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import remoteConfig from '@react-native-firebase/remote-config';
+
+await firebase.remoteConfig().fetchAndActivate();
+const value = firebase.remoteConfig().getValue('key').asString();
+```
+
+```js
+// Now
+import {
+  getRemoteConfig,
+  fetchAndActivate,
+  getValue,
+} from '@react-native-firebase/remote-config';
+
+const remoteConfig = getRemoteConfig();
+await fetchAndActivate(remoteConfig);
+const value = getValue(remoteConfig, 'key').asString();
+```
+
+See [Remote Config usage](/remote-config/usage) for additional examples.
+
 # Crashlytics
 
 The namespaced API for `@react-native-firebase/crashlytics` has been **removed**. This package is **modular-only** — use `getCrashlytics()` and root-level helper functions.
@@ -371,6 +423,7 @@ For each modular-only package you use:
 | `functions` | `firebase.functions()`, default `functions()`, `FirebaseFunctionsTypes`, instance methods | `getFunctions()`, `httpsCallable`, `httpsCallableFromUrl`, `connectFunctionsEmulator`, `HttpsErrorCode` |
 | `perf` | `firebase.perf()`, default `perf()`, `FirebasePerformanceTypes`, instance methods | `getPerformance()`, `trace`, `httpMetric`, `newScreenTrace`, `startScreenTrace`, `initializePerformance` |
 | `app-check` | `firebase.appCheck()`, default `appCheck()`, `FirebaseAppCheckTypes`, instance methods | `getAppCheck()`, `initializeAppCheck`, `getToken`, `getLimitedUseToken`, `setTokenAutoRefreshEnabled`, `onTokenChanged`, `CustomProvider` |
+| `remote-config` | `firebase.remoteConfig()`, default `remoteConfig()`, `FirebaseRemoteConfigTypes`, instance methods | `getRemoteConfig()`, `activate`, `fetchConfig`, `fetchAndActivate`, `getValue`, `getAll`, `onConfigUpdate`, `LastFetchStatus`, `ValueSource` |
 | `crashlytics` | `firebase.crashlytics()`, default `crashlytics()`, `FirebaseCrashlyticsTypes`, instance methods | `getCrashlytics()`, `log`, `recordError`, `setUserId`, `setAttribute`, `setAttributes`, `setCrashlyticsCollectionEnabled`, etc. |
 | `database` | `firebase.database()`, default `database()`, `FirebaseDatabaseTypes`, instance methods | `getDatabase()`, `ref`, `refFromURL`, `onValue`, `runTransaction`, `connectDatabaseEmulator`, etc. |
 | `storage` | `firebase.storage()`, default `storage()`, `FirebaseStorageTypes`, instance/reference methods | `getStorage()`, `ref`, `uploadBytesResumable`, `getDownloadURL`, `connectStorageEmulator`, `StringFormat`, `TaskEvent`, `TaskState` |

@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # Namespace API removal — work queue
 
-> **IN PROGRESS (2026-06-26):** N4/N5 remediation complete (functions, database, storage amended). **Next pickup:** **N6** `remote-config`.
+> **IN PROGRESS (2026-06-26):** Latest: `refactor(remote-config): remove deprecated namespaced API`. **Next pickup:** **N6** `analytics` (independent cycle).
 > **Order:** pilot smallest (`ml`, `in-app-messaging`) → spike hardest (`messaging`) → bulk small→large → **NF** app cleanup → **NV** full validation. **Workflow:** [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md).
 
 ---
@@ -77,7 +77,7 @@ Update immediately after each work type closes a gate ([fields](testing/iteratio
 | N5 | `crashlytics` (11m) | **closed** | **closed** | **closed** | `refactor(crashlytics): remove deprecated namespaced API` | — | area-focused | review2 iOS: 64 pass / 0 fail |
 | N5 | `database` (10m) | **closed** | **closed** | **closed** | `refactor(database): remove deprecated namespaced API` | — | area-focused | review3 iOS: 228 pass / 0 fail (amended) |
 | N5 | `storage` (6m) | **closed** | **closed** | **closed** | `refactor(storage): remove deprecated namespaced API` | — | area-focused | review3 iOS: 144 pass / 0 fail (amended) |
-| N6 | `remote-config` (15m) | open | open | open | — | `gap-analysis` | area-focused | `compare:types` |
+| N6 | `remote-config` (15m) | **closed** | **closed** | **closed** | `refactor(remote-config): remove deprecated namespaced API` | — | area-focused | review macOS 30 / iOS 32 pass; compare:types 0 undocumented; grep1 error strings deferred |
 | N6 | `analytics` (~50m) | open | open | open | — | `gap-analysis` | area-focused | |
 | N6 | `auth` (~43m) | open | open | open | — | `gap-analysis` | area-focused | [auth triage](packages/auth/compare-types-triage.md) |
 | N6 | `firestore` (~17m) | open | open | open | — | `gap-analysis` | area-focused | pipelines + `compare:types` |

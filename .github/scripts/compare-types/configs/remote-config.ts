@@ -66,6 +66,19 @@ const config: PackageConfig = {
         'platform resource file (iOS .plist / Android XML). No equivalent ' +
         'exists in the firebase-js-sdk web API.',
     },
+    {
+      name: 'LastFetchStatus',
+      reason:
+        'RN Firebase exports fetch-status string literals as a named const object ' +
+        '(`SUCCESS`, `FAILURE`, etc.) for modular callers. The firebase-js-sdk does ' +
+        'not export this helper; web callers compare against string literals directly.',
+    },
+    {
+      name: 'SDK_VERSION',
+      reason:
+        'RN Firebase package version string exported from the modular entry point. ' +
+        'The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/remote-config`.',
+    },
   ],
   differentShape: [
     {
@@ -88,6 +101,13 @@ const config: PackageConfig = {
         'The firebase-js-sdk accepts an optional `RemoteConfigOptions` second argument. ' +
         'RN Firebase only accepts the optional app instance and does not expose the ' +
         'initialization-options surface.',
+    },
+    {
+      name: 'ValueSource',
+      reason:
+        'RN Firebase exports value-source string literals as a named const object ' +
+        '(`REMOTE`, `DEFAULT`, `STATIC`). The firebase-js-sdk exposes `ValueSource` as ' +
+        'a string-literal type alias instead of a runtime constants object.',
     },
   ],
 };
