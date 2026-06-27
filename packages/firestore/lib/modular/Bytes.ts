@@ -15,7 +15,7 @@
  *
  */
 
-import Blob from '../FirestoreBlob';
+import { Blob } from '../FirestoreBlob';
 import type { FirestoreBlobInternal } from '../types/internal';
 
 export class Bytes extends Blob {

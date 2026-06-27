@@ -94,9 +94,9 @@ On a **frozen tree** — [change authoring § independent-review](testing/change
 
 ## Module area harness
 
-Extends [change authoring § harness narrowing](testing/change-authoring-workflow.md#harness-narrowing).
+Extends [change authoring § harness narrowing](testing/change-authoring-workflow.md#harness-narrowing). **Mechanics:** [running e2e § area harness — two platform blocks](testing/running-e2e.md#tests-app-js-area-harness).
 
-When native e2e runs: load **only** the target package's e2e spec(s) in `tests/app.js`. Optionally set `RNFBDebug = true` in `tests/globals.js` **locally** for fail-fast — **never commit** (`false` is the committed default). Pass counts must match loaded scope — not full-app totals ([running e2e § gate](testing/running-e2e.md#harness-narrowing-gate-blocking), [platform coverage gate](testing/running-e2e.md#platform-coverage-gate-blocking)).
+When native e2e runs: load **only** the target package's e2e spec(s) in `tests/app.js`. Narrow **`platformSupportedModules` on both** `if (Platform.other)` and `if (!Platform.other)` (recommended: Pattern A — initial array + `if (false && …)` on **both** blocks). Set **`RNFBDebug = true`** locally per [running e2e § fail-fast](testing/running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing) — **never commit** (`false` is the committed default). Revert **both** blocks before `commit` or **full** tier. Pass counts must match loaded scope — not full-app totals ([running e2e § gate](testing/running-e2e.md#harness-narrowing-gate-blocking), [platform coverage gate](testing/running-e2e.md#platform-coverage-gate-blocking)).
 
 ## Per-module `documentation`
 
@@ -142,3 +142,4 @@ rg "firebase\.(app\(\)\.)?\w+\(" packages/*/e2e packages/*/__tests__ tests/
 - **`compare:types` gap:** only 10 packages registered — rely on `tsc` + `type-test.ts` for the rest.
 - **Factory parity:** registry re-resolution by name; custom-URL validation deferred to N5 modules.
 - **macOS e2e (native-only modules):** register a no-op `lib/web/` stub via `setReactNativeModule` in `lib/index.ts` so macOS Jet can load and exercise modular JS without a native bridge (see `in-app-messaging` `RNFBFiamModule` web fallback).
+- **Firestore on Other/macOS:** Firestore **Lite** only on the web bridge — no full `firebase/firestore`. Unsupported APIs reject with `Not supported in the lite SDK.` See [Other platform Firestore Lite](packages/firestore/other-platform-firestore-lite.md).

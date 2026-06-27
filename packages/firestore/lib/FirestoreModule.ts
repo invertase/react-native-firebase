@@ -16,7 +16,6 @@
  */
 
 import {
-  createDeprecationProxy,
   isAndroid,
   isBoolean,
   isFunction,
@@ -26,39 +25,26 @@ import {
   isUndefined,
   isOther,
 } from '@react-native-firebase/app/dist/module/common';
-import {
-  createModuleNamespace,
-  FirebaseModule,
-  getFirebaseRoot,
-  type ModuleConfig,
-} from '@react-native-firebase/app/dist/module/internal';
-import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import CollectionReference from './FirestoreCollectionReference';
-import DocumentReference from './FirestoreDocumentReference';
+import { FirebaseModule, type ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
+import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
+import CollectionReferenceClass from './FirestoreCollectionReference';
+import DocumentReferenceClass from './FirestoreDocumentReference';
 import FirestorePath from './FirestorePath';
-import FirestorePersistentCacheIndexManager from './FirestorePersistentCacheIndexManager';
-import Query from './FirestoreQuery';
+import FirestorePersistentCacheIndexManagerClass from './FirestorePersistentCacheIndexManager';
+import QueryClass from './FirestoreQuery';
 import QueryModifiers from './FirestoreQueryModifiers';
 import FirestoreStatics from './FirestoreStatics';
 import FirestoreTransactionHandler from './FirestoreTransactionHandler';
 import FirestoreWriteBatch from './FirestoreWriteBatch';
 import { LoadBundleTask } from './LoadBundleTask';
 import type { LoadBundleTaskProgress } from './types/firestore';
-import { version } from './version';
-import type { FirebaseFirestoreTypes } from './types/namespaced';
 import type { FirestoreInternal } from './types/internal';
 import fallBackModule from './web/RNFBFirestoreModule';
 
-// react-native at least through 0.77 does not correctly support URL.host, which
-// is needed by firebase-js-sdk. It appears that in 0.80+ it is supported, so this
-// (and the package.json entry for this package) should be removed when the minimum
-// supported version of react-native is 0.80 or higher.
-import 'react-native-url-polyfill/auto';
-
 const namespace = 'firestore';
 
-const nativeModuleNames = [
+export const nativeModuleNames = [
   'RNFBFirestoreModule',
   'RNFBFirestoreCollectionModule',
   'RNFBFirestoreDocumentModule',
@@ -72,6 +58,14 @@ const nativeEvents = [
   'firestore_snapshots_in_sync_event',
 ] as const;
 
+export const config: ModuleConfig = {
+  namespace,
+  nativeModuleName: [...nativeModuleNames],
+  nativeEvents: [...nativeEvents],
+  hasMultiAppSupport: true,
+  hasCustomUrlOrRegionSupport: true,
+};
+
 type FirestoreModuleSettingsState = {
   ignoreUndefinedProperties: boolean;
   persistence: boolean;
@@ -80,7 +74,7 @@ type FirestoreModuleSettingsState = {
 /** Sync event payload from emitter when fanning out collection/document/snapshots-in-sync events. */
 type FirestoreSyncEventWithListenerId = { listenerId: string | number };
 
-class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
+export class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
   type = 'firestore' as const;
   _referencePath: FirestorePath;
   _transactionHandler: FirestoreTransactionHandler;
@@ -176,7 +170,7 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
     return task;
   }
 
-  namedQuery(queryName: string): Query | null {
+  namedQuery(queryName: string): QueryClass | null {
     if (!isString(queryName)) {
       throw new Error("firebase.firestore().namedQuery(*) 'queryName' must be a string value.");
     }
@@ -185,7 +179,7 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
       throw new Error("firebase.firestore().namedQuery(*) 'queryName' must be a non-empty string.");
     }
 
-    return new Query(
+    return new QueryClass(
       this as unknown as FirestoreInternal,
       this._referencePath,
       new QueryModifiers(),
@@ -230,7 +224,7 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
     return [mappedHost, port];
   }
 
-  collection(collectionPath: string): CollectionReference {
+  collection(collectionPath: string): CollectionReferenceClass {
     if (!isString(collectionPath)) {
       throw new Error(
         "firebase.firestore().collection(*) 'collectionPath' must be a string value.",
@@ -251,12 +245,10 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
       );
     }
 
-    return createDeprecationProxy(
-      new CollectionReference(this as unknown as FirestoreInternal, path),
-    );
+    return new CollectionReferenceClass(this as unknown as FirestoreInternal, path);
   }
 
-  collectionGroup(collectionId: string): Query {
+  collectionGroup(collectionId: string): QueryClass {
     if (!isString(collectionId)) {
       throw new Error(
         "firebase.firestore().collectionGroup(*) 'collectionId' must be a string value.",
@@ -275,13 +267,11 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
       );
     }
 
-    return createDeprecationProxy(
-      new Query(
-        this as unknown as FirestoreInternal,
-        this._referencePath.child(collectionId),
-        new QueryModifiers().asCollectionGroupQuery(),
-        undefined,
-      ),
+    return new QueryClass(
+      this as unknown as FirestoreInternal,
+      this._referencePath.child(collectionId),
+      new QueryModifiers().asCollectionGroupQuery(),
+      undefined,
     );
   }
 
@@ -289,7 +279,7 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
     await this.native.disableNetwork();
   }
 
-  doc(documentPath: string): DocumentReference {
+  doc(documentPath: string): DocumentReferenceClass {
     if (!isString(documentPath)) {
       throw new Error("firebase.firestore().doc(*) 'documentPath' must be a string value.");
     }
@@ -304,9 +294,7 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
       throw new Error("firebase.firestore().doc(*) 'documentPath' must point to a document.");
     }
 
-    return createDeprecationProxy(
-      new DocumentReference(this as unknown as FirestoreInternal, path),
-    );
+    return new DocumentReferenceClass(this as unknown as FirestoreInternal, path);
   }
 
   async enableNetwork(): Promise<void> {
@@ -461,56 +449,13 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
     return this.native.settings(settingsToApply);
   }
 
-  persistentCacheIndexManager(): FirestorePersistentCacheIndexManager | null {
+  persistentCacheIndexManager(): FirestorePersistentCacheIndexManagerClass | null {
     if (this._settings.persistence === false) {
       return null;
     }
-    return createDeprecationProxy(
-      new FirestorePersistentCacheIndexManager(this as unknown as FirestoreInternal),
-    );
+    return new FirestorePersistentCacheIndexManagerClass(this as unknown as FirestoreInternal);
   }
 }
-
-// import { SDK_VERSION } from '@react-native-firebase/firestore';
-export const SDK_VERSION = version;
-
-const firestoreNamespace = createModuleNamespace({
-  statics: FirestoreStatics,
-  version,
-  namespace,
-  nativeModuleName: [...nativeModuleNames],
-  nativeEvents: [...nativeEvents],
-  hasMultiAppSupport: true,
-  hasCustomUrlOrRegionSupport: true,
-  ModuleClass: FirebaseFirestoreModule,
-});
-
-type FirestoreNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  FirebaseFirestoreTypes.Module,
-  FirebaseFirestoreTypes.Statics
-> & {
-  firestore: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-    FirebaseFirestoreTypes.Module,
-    FirebaseFirestoreTypes.Statics
-  >;
-  firebase: ReactNativeFirebase.Module;
-  app(name?: string): ReactNativeFirebase.FirebaseApp;
-};
-
-// import firestore from '@react-native-firebase/firestore';
-// firestore().X(...);
-export default firestoreNamespace as unknown as FirestoreNamespace;
-
-// import firestore, { firebase } from '@react-native-firebase/firestore';
-// firestore().X(...);
-// firebase.firestore().X(...);
-export const firebase =
-  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
-    'firestore',
-    FirebaseFirestoreTypes.Module,
-    FirebaseFirestoreTypes.Statics,
-    true
-  >;
 
 // Register the interop module for non-native platforms.
 for (const moduleName of nativeModuleNames) {

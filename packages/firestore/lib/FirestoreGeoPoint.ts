@@ -22,7 +22,7 @@ import {
   isObject,
 } from '@react-native-firebase/app/dist/module/common';
 
-export default class GeoPoint {
+export class GeoPoint {
   _latitude: number;
   _longitude: number;
 

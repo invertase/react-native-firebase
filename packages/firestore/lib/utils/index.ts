@@ -30,7 +30,7 @@ import type {
   ConverterWithToFirestoreInternal,
   PartialSnapshotObserverInternal,
 } from '../types/internal';
-import FieldPath, { fromDotSeparatedString } from '../FieldPath';
+import { fromDotSeparatedString, FieldPath } from '../FieldPath';
 import type { ListenSource } from '../types/firestore';
 
 export function extractFieldPathData(data: unknown, segments: string[]): unknown {

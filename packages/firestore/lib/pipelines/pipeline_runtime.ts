@@ -41,11 +41,12 @@ import type {
   DocumentData,
 } from '../types/firestore';
 import FirestorePath from '../FirestorePath';
-import FirestoreTimestamp from '../FirestoreTimestamp';
+import { Timestamp as FirestoreTimestamp } from '../FirestoreTimestamp';
 import DocumentReferenceClass from '../FirestoreDocumentReference';
-import FieldPath, { fromDotSeparatedString } from '../FieldPath';
+import { FieldPath, fromDotSeparatedString } from '../FieldPath';
 import { extractFieldPathData } from '../utils';
 import { parseNativeMap } from '../utils/serialize';
+import { getFirestore } from '../modular';
 
 import type {
   AliasedAggregate,
@@ -74,7 +75,6 @@ import type {
   PipelineUnnestOptions,
 } from './stage_options';
 import type { PipelineExecuteOptions } from './pipeline_options';
-import { getFirestore } from '../modular';
 import { validateExecuteOptions, validateSerializedPipeline } from './pipeline_validate';
 import { createPipelineSubqueryExpression, type FunctionExpression } from './expressions';
 

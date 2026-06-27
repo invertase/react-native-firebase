@@ -16,8 +16,8 @@
  */
 
 import type { DocumentData, DocumentReference } from '../types/firestore';
-import type Timestamp from '../FirestoreTimestamp';
-import type { FieldPath } from '../modular/FieldPath';
+import type { Timestamp } from '../FirestoreTimestamp';
+import type { FieldPath } from '../FieldPath';
 import type { Field } from './expressions';
 
 /**

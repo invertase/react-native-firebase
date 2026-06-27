@@ -17,7 +17,7 @@
 
 import type { Pipeline } from './pipeline';
 import type { DocumentReference, Query } from '../types/firestore';
-import type VectorValue from '../FirestoreVectorValue';
+import type { VectorValue } from '../FirestoreVectorValue';
 import type { OneOf } from './types';
 import type {
   Ordering,

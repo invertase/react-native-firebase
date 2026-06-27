@@ -22,22 +22,22 @@ import type {
   DocumentData,
   Query as FirestoreQuery,
 } from './types/firestore';
-import FieldPath, { fromDotSeparatedString } from './FieldPath';
+import { FieldPath, fromDotSeparatedString } from './FieldPath';
 
 import type FirestorePath from './FirestorePath';
-import type Query from './FirestoreQuery';
+import type { Query as QueryImplementation } from './FirestoreQuery';
 import type QueryModifiers from './FirestoreQueryModifiers';
 import type { FirestoreInternal } from './types/internal';
 
 export class AggregateQuery {
   _firestore: FirestoreInternal;
-  _query: Query;
+  _query: FirestoreQuery;
   _collectionPath: FirestorePath;
   _modifiers: QueryModifiers;
 
   constructor(
     firestore: FirestoreInternal,
-    query: Query,
+    query: QueryImplementation,
     collectionPath: FirestorePath,
     modifiers: QueryModifiers,
   ) {
@@ -47,7 +47,7 @@ export class AggregateQuery {
     this._modifiers = modifiers;
   }
 
-  get query(): Query {
+  get query(): FirestoreQuery {
     return this._query;
   }
 

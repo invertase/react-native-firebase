@@ -16,7 +16,7 @@
  */
 
 import type { DocumentReference } from '../types/firestore';
-import type VectorValue from '../FirestoreVectorValue';
+import type { VectorValue } from '../FirestoreVectorValue';
 import type { Bytes } from '../modular/Bytes';
 
 /**

@@ -33,7 +33,7 @@ describe('getAggregateFromServer()', function () {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          'getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `FirestoreQuery`',
+          'getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `Query`',
         );
       }
 
@@ -42,7 +42,7 @@ describe('getAggregateFromServer()', function () {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          'getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `FirestoreQuery`',
+          'getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `Query`',
         );
       }
 
@@ -51,7 +51,7 @@ describe('getAggregateFromServer()', function () {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          'getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `FirestoreQuery`',
+          'getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `Query`',
         );
       }
       return Promise.resolve();

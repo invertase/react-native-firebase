@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { firebase } from '../lib';
+import { getFirestore } from '../lib';
 import {
   add,
   and,
@@ -23,7 +23,7 @@ import { validateSerializedPipeline } from '../lib/pipelines/pipeline_validate';
  * (the `PipelineValue` opaque-handling path) and a wide, mixed pipeline.
  */
 describe('pipelines pathological / stress coverage', function () {
-  const db: any = firebase.firestore();
+  const db: any = getFirestore();
 
   describe('deep expression serialization correctness', function () {
     it('serializes a 64-deep add() chain to the correct nested structure', function () {

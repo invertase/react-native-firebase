@@ -17,7 +17,7 @@
 
 import type { PipelineSource } from './pipeline-source';
 import type { Pipeline } from './pipeline';
-import { installPipelineRuntime, registerPipelineRuntimeInstaller } from './pipeline_runtime';
+import { registerPipelineRuntimeInstaller } from './pipeline_runtime';
 
 /**
  * @beta
@@ -212,7 +212,6 @@ export {
 export { pipelineResultEqual } from './pipeline-result';
 
 registerPipelineRuntimeInstaller();
-installPipelineRuntime();
 
 declare module '../types/firestore' {
   /**

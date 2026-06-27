@@ -1,6 +1,6 @@
 # Testing
 
-* [Agent command policy](agent-command-policy.md) — **read before any shell command** (install, prepare, validation, e2e)
+* [Agent command policy](agent-command-policy.md) — **read before any shell command** (install, prepare, validation, e2e); **`yarn` / `yarn lerna:prepare` must exit 0 before any other command**
 * [Documentation/commit policy](../documentation-policy.md) — durable vs ephemeral, OKF scan
 * [Change authoring workflow](change-authoring-workflow.md) — verified product change loop (unit-focused → area-focused review → commit)
 * [Iteration vocabulary](iteration-vocabulary.md) — work type, tier, and queue field identifiers

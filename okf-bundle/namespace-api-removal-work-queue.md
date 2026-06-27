@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # Namespace API removal — work queue
 
-> **IN PROGRESS (2026-06-27):** Committing N6 **`auth`**. **Next:** N6 `firestore` (`gap-analysis`). Latest committed: `refactor(analytics): remove deprecated namespaced API`.
+> **IN PROGRESS (2026-06-27):** N6 **`firestore`** — `review_gate` closed; ready for commit prep (format + revert harness). Branch-level `reference:api` blockers remain in in-app-messaging/installations/ml typedoc.
 > **Order:** pilot smallest (`ml`, `in-app-messaging`) → spike hardest (`messaging`) → bulk small→large → **NF** app cleanup → **NV** full validation. **Workflow:** [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md).
 
 ---
@@ -28,6 +28,7 @@ Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers
 | **N4** | `installations`, `app-distribution`, `functions` (~4m) | small bulk |
 | **N5** | `perf`, `app-check`, `crashlytics`, `database`, `storage` | medium bulk |
 | **N6** | `remote-config`, `analytics`, `auth`, `firestore` | large blast radius + `compare:types` |
+| **NC** | compare-types cleanup | once tree is clean, amend prior namespace-removal commits that left registered-package drift |
 | **NF** | `app` + shared infra | [final cleanup](namespace-api-removal-workflow.md#nf--final-cleanup-app--shared-infra) |
 | **NV** | all | `pre-merge-validation`, **full** tier |
 
@@ -39,7 +40,7 @@ Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers
 
 Gate prerequisites before any `:test-cover` ([host rule](testing/change-authoring-workflow.md#host-rule)):
 
-1. [Pre-flight](testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): [host-clear probes](testing/running-e2e.md#host-clear-probes), [services ready](testing/running-e2e.md#2-services-ready), [harness matches validation tier](testing/running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](testing/running-e2e.md#harness-narrowing-gate-blocking) — **unit-focused** and **area-focused** only); [serial `:test-cover`](testing/running-e2e.md#serialized-e2e-dispatch); [frozen tree](testing/change-authoring-workflow.md#frozen-tree) for `independent-review`.
+1. [Pre-flight](testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): [host-clear probes](testing/running-e2e.md#host-clear-probes), [services ready](testing/running-e2e.md#2-services-ready), [harness matches validation tier](testing/running-e2e.md#3-harness-matches-validation-tier) — [area harness: both platform blocks](testing/running-e2e.md#tests-app-js-area-harness); [narrowing gate](testing/running-e2e.md#harness-narrowing-gate-blocking) — **unit-focused** and **area-focused** only); [serial `:test-cover`](testing/running-e2e.md#serialized-e2e-dispatch); [frozen tree](testing/change-authoring-workflow.md#frozen-tree) for `independent-review`.
 2. Per-module checklist and removal greps: [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md). User-facing namespace removal: [Migrating to v26](/migrating-to-v26).
 
 ---
@@ -80,7 +81,10 @@ Update immediately after each work type closes a gate ([fields](testing/iteratio
 | N6 | `remote-config` (15m) | **closed** | **closed** | **closed** | `refactor(remote-config): remove deprecated namespaced API` | — | area-focused | review3 macOS 71/4p, iOS 78/4p, Android 78/4p; `npx jet` spawn fix uncommitted in firebase.test.js |
 | N6 | `analytics` (~50m) | **closed** | **closed** | **closed** | `refactor(analytics): remove deprecated namespaced API` | — | area-focused | review1 macOS 62/6p, iOS 63/5p, Android 63/5p |
 | N6 | `auth` (~43m) | **closed** | **closed** | **closed** | `refactor(auth): remove deprecated namespaced API` | — | area-focused | review: macOS 139/6p, iOS 148/23p, Android 155/15p; compare:types auth ✓. Minors deferred: legacy `firebase.auth()` error strings + stale JSDoc (NF/string cleanup) |
-| N6 | `firestore` (~17m) | open | open | open | — | `gap-analysis` | area-focused | pipelines + `compare:types` |
+| N6 | `firestore` (~17m) | **closed** | **closed** | open | — | `commit` | area-focused (review verified) | **Loop 3 fix:** defer pipeline install to `getFirestore()`. **Loop 4:** macOS 701, iOS/Android 741 (area harness). **Review:** [independent-review](a10c0495-8c44-472c-a230-96412de02f2c) re-ran 701/741/741 green; no duck typing; modular-only ✓; compare:types firestore ✓. **Before commit:** `format:js` drift in 2 firestore files (review applied, uncommitted); revert harness/RNFBDebug. **Pre-merge (branch):** reference:api fails on in-app-messaging/installations/ml typedoc (non-firestore). **NO COMMIT** |
+| NC | `SDK_VERSION` compare-types drift | open | open | open | — | `implementation` | unit-focused | Once working tree is clean, amend affected prior namespace-removal commits for registered packages where only `SDK_VERSION` is undocumented. Add config entries matching existing documented modules: RN Firebase exports package `SDK_VERSION`; firebase-js-sdk does not. Known from current report: `storage`, `installations`, `perf`; `app-check` fixed in working tree pending amend. |
+| NC | `database` compare-types drift | open | open | open | — | `implementation` | unit-focused | Revisit database after current tree is clean. Prefer aligning types to firebase-js-sdk for the two non-`SDK_VERSION` drift areas if possible, then amend the database namespace-removal commit; document intentional RN-only differences only if parity is not feasible. |
+| NC | `app-check` compare-types drift | open | open | open | — | `implementation` | unit-focused | Working tree cleanup done: unnecessary modular `getAppCheck` export removed; `SDK_VERSION` documented; app-check Jest ✓; app-check compare-types section ✓ (global command still fails on unrelated packages). Pending: amend the app-check namespace-removal commit once tree is clean. |
 | NF | `app` | open | open | open | — | `gap-analysis` | full | |
 | NV | all | open | open | open | — | `pre-merge-validation` | full | revert all narrowing |
 

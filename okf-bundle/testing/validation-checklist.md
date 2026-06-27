@@ -20,8 +20,8 @@ Work types and tiers: [change authoring workflow](change-authoring-workflow.md).
 |-----------|--------|-----------|
 | `gap-analysis` | `compare:types`, config read, SDK declarations | n/a |
 | `baseline-capture` | Full loaded spec(s) + e2e on [**every required platform**](running-e2e.md#platform-coverage-gate-blocking) | **area-focused** tier; [area narrowing required](running-e2e.md#harness-narrowing-gate-blocking); no `.only`, no `:test-cover-reuse`; **no platform shortcuts** |
-| `implementation` | Unit-focused Jest + e2e on required platforms when native/TS path needs it | **unit-focused** tier; [area narrowing required before `:test-cover`](running-e2e.md#harness-narrowing-gate-blocking) + optional `.only`; [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) when module loads on iOS and Android |
-| `independent-review` | Full checklist; e2e on **every required platform** (macOS / iOS / Android per harness) | **area-focused** tier; [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) — **no shortcuts**; [frozen tree](change-authoring-workflow.md#frozen-tree); never commit narrowing or `RNFBDebug = true` |
+| `implementation` | Unit-focused Jest + e2e on required platforms when native/TS path needs it | **unit-focused** tier; [area narrowing + RNFBDebug=true locally](running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing) before `:test-cover`; optional `.only` / sub-suite for diagnosis; [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) when module loads on iOS and Android |
+| `independent-review` | Full checklist; e2e on **every required platform** (macOS / iOS / Android per harness) | **area-focused** tier; [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) — **no shortcuts**; [frozen tree](change-authoring-workflow.md#frozen-tree); never commit narrowing, sub-suite `.only`, or `RNFBDebug = true` ([fail-fast §](running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing)) |
 | `pre-merge-validation` | Full unfocused suite | **full** tier — [running-e2e § merge](running-e2e.md#before-merge-pr-handoff); entire PR branch, once |
 
 ## Prepare and compile
@@ -38,6 +38,8 @@ yarn tsc:compile:consumer
 
 `yarn lerna:prepare` runs each package **`prepare`** script (`build` then `compile`/bob). That is the canonical **`lib/**` → `dist/module/**`** path. Do **not** use `cd packages/<pkg> && yarn compile` as a substitute — `compile` is a step **inside** `prepare`, not a standalone agent entrypoint.
 
+**Blocking:** `yarn` and `yarn lerna:prepare` must **exit 0 before any other command** (Jest, tsc, e2e, Metro, builds) — never parallelize. [Agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first); e2e pre-flight: [running e2e § prepare completion gate](running-e2e.md#prepare-completion-gate-blocking).
+
 ## API reference and type parity
 
 ```bash
@@ -46,6 +48,14 @@ yarn compare:types                    # remove stale config entries when fixed
 ```
 
 Configs: `.github/scripts/compare-types/configs/`. Package workflows define ordering (e.g. [pipelines](../packages/firestore/pipeline-implementation-workflow.md#step-1--compare-types-gap-analysis)).
+
+For any package registered in `compare:types`, type parity is a **review-gate requirement**, not a best-effort signal. Before closing `independent-review`, the touched package must have:
+
+- no undocumented differences,
+- no stale config entries,
+- and any intentional RN-only exports documented in that package config.
+
+If `yarn compare:types` fails because of unrelated packages, keep the touched package's result in the handoff and add/fix a work-queue item for the unrelated drift. Do not close a review gate for a registered package when its own compare-types output is failing.
 
 ## Jest
 

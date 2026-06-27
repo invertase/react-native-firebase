@@ -17,9 +17,10 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 <a id="agent-rule-read-first"></a>
 
 1. Run **only** commands in the [registry](#canonical-registry) below (repo root unless noted).
-2. When a canonical command fails: read the **full** output, fix **product code**, re-run the **same** command. Do **not** switch invocation style.
-3. Do **not** infer alternate commands from error strings (`command not found: genversion`, `Couldn't find a script named "jet"`, etc.) — see [known traps](#known-traps).
-4. Subagents (Task, explore, orchestrator): same rule — paste the [handoff block](#subagent-handoff) into every RNFB task prompt.
+2. **`yarn` / `yarn lerna:prepare` must finish before anything else** — see [prepare must finish first](#prepare-must-finish-first). Do not parallelize install/prepare with e2e, Metro, builds, or other shell commands.
+3. When a canonical command fails: read the **full** output, fix **product code**, re-run the **same** command. Do **not** switch invocation style.
+4. Do **not** infer alternate commands from error strings (`command not found: genversion`, `Couldn't find a script named "jet"`, etc.) — see [known traps](#known-traps).
+5. Subagents (Task, explore, orchestrator): same rule — paste the [handoff block](#subagent-handoff) into every RNFB task prompt.
 
 ## Canonical registry
 
@@ -39,6 +40,23 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 
 - **`yarn compile`** (package script) is **not** a standalone agent entrypoint — it is invoked **inside** `prepare` via lerna. Do not run `cd packages/<pkg> && yarn compile` for handoff unless [validation checklist](validation-checklist.md) explicitly adds an exception (none today).
 - **`yarn`** at repo root runs `postinstallDev` → `yarn prepare && yarn lerna:prepare`; a fresh install already transpiles. Re-run **`yarn lerna:prepare`** after `lib/**` edits without reinstalling.
+
+<a id="prepare-must-finish-first"></a>
+
+### Prepare must finish first (blocking)
+
+**`yarn`**, **`yarn lerna:prepare`**, and **`yarn lerna run prepare --scope …`** are **blocking foreground** commands. Wait for the shell to return **exit code 0** before starting **any** other command — including in the same agent turn via parallel tool calls.
+
+| Do not start until prepare exits 0 | Why |
+|-----------------------------------|-----|
+| `yarn tests:*` (e2e, packager, build) | Metro and native embed read **`dist/module/**`**, not `lib/**` — partial prepare → missing modules, stale bundles |
+| `yarn tests:packager:jet-reset-cache` | Reset after prepare, not during it |
+| `yarn tsc:compile`, Jest, `compare:types` | May read transpiled output or assume `dist/` is current |
+| Another `yarn` / scoped prepare | Overlapping Nx/Lerna runs race on `dist/` |
+
+**Agent rule:** one prepare invocation per message batch; wait for completion; then run the next step (Metro restart if needed → pre-flight → `:test-cover`). [Running e2e § prepare completion gate](running-e2e.md#prepare-completion-gate-blocking) is the e2e-side mirror of this rule.
+
+**Symptoms when violated:** `Cannot find module '…/dist/module/…'`, Metro 500 on bundle, e2e failures before tests run, or green Metro `/status` while the app loads a half-written `dist/`.
 
 ## When install or prepare fails
 
@@ -82,6 +100,8 @@ Paste into Task / explore / work-queue prompts:
 RNFB agent command policy: okf-bundle/testing/agent-command-policy.md ONLY.
 E2e: okf-bundle/testing/running-e2e.md yarn tests:* ONLY.
 Never: yarn workspace prepare, yarn jet, npx jet, cd packages/* && yarn prepare/build for diagnostics.
+Prepare/install: yarn or yarn lerna:prepare must exit 0 before ANY other command — never parallelize with e2e/Metro/build.
+Area harness: okf-bundle/testing/running-e2e.md#tests-app-js-area-harness — edit BOTH Platform.other and !Platform.other blocks; revert both before commit.
 On failure: fix product code, re-run the same canonical command.
 ```
 

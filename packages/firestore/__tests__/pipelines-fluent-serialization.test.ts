@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { firebase } from '../lib';
+import { getFirestore } from '../lib';
 import { field, switchOn, equal, constant } from '../lib/pipelines';
 import '../lib/pipelines';
 import {
@@ -39,7 +39,7 @@ function stripRuntimeKeys(expr: unknown): unknown {
 }
 
 describe('pipelines fluent serialization parity', function () {
-  const db: any = firebase.firestore();
+  const db: any = getFirestore();
   const cases = buildFluentParityCases();
 
   it('defines parity cases for every EXPRESSION_METHOD_NAMES entry', function () {

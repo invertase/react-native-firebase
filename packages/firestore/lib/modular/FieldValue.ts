@@ -15,9 +15,7 @@
  *
  */
 
-import FieldValue from '../FieldValue';
-
-export { FieldValue };
+import { FieldValue } from '../FieldValue';
 
 export function deleteField(): FieldValue {
   return FieldValue.delete();

@@ -15,7 +15,6 @@
  *
  */
 
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import type {
   DocumentSnapshot,
   DocumentData,
@@ -125,7 +124,7 @@ export function onSnapshot<
 ): Unsubscribe {
   const onSnapshotMethod = (reference as unknown as ReferenceWithOnSnapshotInternal).onSnapshot;
 
-  return onSnapshotMethod.call(reference, ...args, MODULAR_DEPRECATION_ARG);
+  return onSnapshotMethod.call(reference, ...args);
 }
 
 export function snapshotEqual<AppModelType, DbModelType extends DocumentData>(
@@ -133,5 +132,5 @@ export function snapshotEqual<AppModelType, DbModelType extends DocumentData>(
   right: DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>,
 ): boolean {
   const isEqual = (left as unknown as ReferenceIsEqualInternal).isEqual;
-  return isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
+  return isEqual.call(left, right);
 }

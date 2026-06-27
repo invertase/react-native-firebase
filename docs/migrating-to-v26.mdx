@@ -26,6 +26,7 @@ If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating
 - [Realtime Database](/migrating-to-v26#realtime-database)
 - [Cloud Storage](/migrating-to-v26#cloud-storage)
 - [Authentication](/migrating-to-v26#authentication)
+- [Cloud Firestore](/migrating-to-v26#cloud-firestore)
 - [Automated migration checklist](/migrating-to-v26#automated-migration-checklist)
 
 ## General pattern
@@ -36,7 +37,7 @@ For each package listed in this guide:
 2. Replace `Firebase*Types` namespace imports with root types (`InAppMessaging`, `Installations`, `FirebaseML`, etc.).
 3. Prefer free functions (`getId(installations)`, `setMessagesDisplaySuppressed(inAppMessaging, enabled)`) over instance methods on service objects.
 
-**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, `@react-native-firebase/messaging`, `@react-native-firebase/app-distribution`, `@react-native-firebase/functions`, `@react-native-firebase/perf`, `@react-native-firebase/app-check`, `@react-native-firebase/remote-config`, `@react-native-firebase/crashlytics`, `@react-native-firebase/database`, `@react-native-firebase/storage`, `@react-native-firebase/analytics`, and `@react-native-firebase/auth`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
+**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, `@react-native-firebase/messaging`, `@react-native-firebase/app-distribution`, `@react-native-firebase/functions`, `@react-native-firebase/perf`, `@react-native-firebase/app-check`, `@react-native-firebase/remote-config`, `@react-native-firebase/crashlytics`, `@react-native-firebase/database`, `@react-native-firebase/storage`, `@react-native-firebase/analytics`, `@react-native-firebase/auth`, and `@react-native-firebase/firestore`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
 
 # Machine Learning (ML)
 
@@ -477,6 +478,56 @@ await signOut(auth);
 auth.currentUser;
 ```
 
+# Cloud Firestore
+
+The namespaced API for `@react-native-firebase/firestore` has been **removed**. This package is **modular-only** — use `getFirestore()` / `initializeFirestore()` and root-level helper functions. The `@react-native-firebase/firestore/pipelines` subpath export is unchanged.
+
+## Removed namespaced API
+
+| Removed | Replacement (modular) |
+| ------- | --------------------- |
+| `firebase.firestore()` | `getFirestore()` or `getFirestore(app, databaseId?)` |
+| Default export `firestore()` | `getFirestore()` |
+| `FirebaseFirestoreTypes` namespace | Import `Firestore`, `DocumentReference`, `Query`, etc. from package root |
+| `firestore().collection(...)` | `collection(getFirestore(), ...)` |
+| `firestore().doc(...)` | `doc(getFirestore(), ...)` |
+| `firestore().batch()` | `writeBatch(getFirestore())` |
+| `firestore().runTransaction(...)` | `runTransaction(getFirestore(), ...)` |
+| `firestore().useEmulator(...)` | `connectFirestoreEmulator(getFirestore(), ...)` |
+| `firestore().settings(...)` | `initializeFirestore(app, settings, databaseId?)` |
+| `firestore.FieldValue` / `firestore.Timestamp` | `FieldValue`, `Timestamp`, `FieldPath`, `Bytes`, `GeoPoint`, `Filter` (named exports) |
+| `firestore.Blob` | `Bytes` |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import firestore from '@react-native-firebase/firestore';
+
+firebase.firestore().collection('users').doc('alice').set({ name: 'Alice' });
+firestore.FieldValue.serverTimestamp();
+```
+
+```js
+// Now
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  serverTimestamp,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+await setDoc(doc(collection(db, 'users'), 'alice'), {
+  name: 'Alice',
+  createdAt: serverTimestamp(),
+});
+```
+
+See [Firestore usage](/firestore/usage) for additional examples.
+
 # Automated migration checklist
 
 Use this section when running scripted or agent-assisted upgrades to v26 for modular-only packages.
@@ -508,6 +559,7 @@ For each modular-only package you use:
 | `crashlytics` | `firebase.crashlytics()`, default `crashlytics()`, `FirebaseCrashlyticsTypes`, instance methods | `getCrashlytics()`, `log`, `recordError`, `setUserId`, `setAttribute`, `setAttributes`, `setCrashlyticsCollectionEnabled`, etc. |
 | `database` | `firebase.database()`, default `database()`, `FirebaseDatabaseTypes`, instance methods | `getDatabase()`, `ref`, `refFromURL`, `onValue`, `runTransaction`, `connectDatabaseEmulator`, etc. |
 | `storage` | `firebase.storage()`, default `storage()`, `FirebaseStorageTypes`, instance/reference methods | `getStorage()`, `ref`, `uploadBytesResumable`, `getDownloadURL`, `connectStorageEmulator`, `StringFormat`, `TaskEvent`, `TaskState` |
+| `firestore` | `firebase.firestore()`, default `firestore()`, `FirebaseFirestoreTypes`, instance methods | `getFirestore()`, `doc`, `collection`, `setDoc`, `writeBatch`, `runTransaction`, `connectFirestoreEmulator`, `FieldValue`, `Timestamp`, `Bytes`, `SDK_VERSION` |
 
 ## 3. Validate
 

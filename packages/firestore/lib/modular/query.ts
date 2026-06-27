@@ -15,7 +15,6 @@
  *
  */
 
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import { _Filter, Filter } from '../FirestoreFilter';
 import type {
   DocumentData,
@@ -30,13 +29,26 @@ import type {
 import type {
   DocumentReferenceDeleteInternal,
   DocumentReferenceGetInternal,
-  QueryFilterConstraintWithFilterInternal,
   QueryInternal,
   QueryWithMethodInternal,
   QueryWithWhereInternal,
   ReferenceIsEqualInternal,
 } from '../types/internal';
-import type { FieldPath } from './FieldPath';
+import type { FieldPath } from '../FieldPath';
+
+function isCompositeFilterConstraint(
+  value: QueryFilterConstraint,
+): value is QueryCompositeFilterConstraint {
+  return value instanceof QueryCompositeFilterConstraint;
+}
+
+function getFilterFromConstraint(constraint: QueryFilterConstraint): _Filter {
+  if (isCompositeFilterConstraint(constraint)) {
+    return constraint._filter;
+  }
+
+  return (constraint as QueryFieldFilterConstraint)._filter;
+}
 
 /**
  * Abstraction of a constraint that can be applied to a Firestore query.
@@ -86,7 +98,7 @@ abstract class QueryConstraintBase extends QueryConstraint {
     if (!method) {
       throw new Error(`Query method '${this.type}' is not available on query instance.`);
     }
-    return method.call(query, ...this._args, MODULAR_DEPRECATION_ARG);
+    return method.call(query, ...this._args);
   }
 }
 
@@ -109,10 +121,10 @@ export class QueryCompositeFilterConstraint extends AppliableConstraint {
     // Validate nested OR filters when creating the constraint
     if (type === 'or') {
       const filters = _queryConstraints.map(constraint => {
-        if (constraint instanceof QueryCompositeFilterConstraint) {
+        if (isCompositeFilterConstraint(constraint)) {
           return constraint._filter;
         }
-        return (constraint as unknown as QueryFilterConstraintWithFilterInternal)._filter;
+        return getFilterFromConstraint(constraint);
       });
       // This will throw if nested OR filters are detected
       Filter.or(...filters);
@@ -124,22 +136,22 @@ export class QueryCompositeFilterConstraint extends AppliableConstraint {
     query: Query<AppModelType, DbModelType>,
   ): Query<AppModelType, DbModelType> {
     const filters = this._queryConstraints.map(constraint => {
-      if (constraint instanceof QueryCompositeFilterConstraint) {
+      if (isCompositeFilterConstraint(constraint)) {
         return constraint._filter;
       }
-      return (constraint as unknown as QueryFilterConstraintWithFilterInternal)._filter;
+      return getFilterFromConstraint(constraint);
     });
     const _filter = this.type === 'or' ? Filter.or(...filters) : Filter.and(...filters);
     const where = (query as unknown as QueryWithWhereInternal<AppModelType, DbModelType>).where;
-    return where.call(query, _filter, MODULAR_DEPRECATION_ARG);
+    return where.call(query, _filter);
   }
 
   get _filter(): _Filter {
     const filters = this._queryConstraints.map(constraint => {
-      if (constraint instanceof QueryCompositeFilterConstraint) {
+      if (isCompositeFilterConstraint(constraint)) {
         return constraint._filter;
       }
-      return (constraint as unknown as QueryFilterConstraintWithFilterInternal)._filter;
+      return getFilterFromConstraint(constraint);
     });
     return this.type === 'or' ? Filter.or(...filters) : Filter.and(...filters);
   }
@@ -180,13 +192,38 @@ export class QueryEndAtConstraint extends QueryConstraintBase {
   }
 }
 
-export class QueryFieldFilterConstraint extends QueryConstraintBase {
+export class QueryFieldFilterConstraint extends QueryConstraint {
   readonly type = 'where';
   readonly _filter: _Filter;
+  private readonly _applyFilterOnly: boolean;
+  private readonly _fieldArgs?: [string | FieldPath, WhereFilterOp, unknown];
 
-  constructor(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: unknown) {
-    super(fieldPath, opStr, value);
-    this._filter = Filter(fieldPath, opStr, value);
+  constructor(
+    fieldPathOrFilter: string | FieldPath | _Filter,
+    opStr?: WhereFilterOp,
+    value?: unknown,
+  ) {
+    super();
+    if (fieldPathOrFilter instanceof _Filter && opStr === undefined && value === undefined) {
+      this._filter = fieldPathOrFilter;
+      this._applyFilterOnly = true;
+      return;
+    }
+
+    this._filter = Filter(fieldPathOrFilter as string | FieldPath, opStr!, value);
+    this._applyFilterOnly = false;
+    this._fieldArgs = [fieldPathOrFilter as string | FieldPath, opStr!, value];
+  }
+
+  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    query: Query<AppModelType, DbModelType>,
+  ): Query<AppModelType, DbModelType> {
+    const where = (query as unknown as QueryWithWhereInternal<AppModelType, DbModelType>).where;
+    if (this._applyFilterOnly) {
+      return where.call(query, this._filter);
+    }
+
+    return where.apply(query, this._fieldArgs!);
   }
 }
 
@@ -233,8 +270,13 @@ export function where(
   fieldPath: string | FieldPath,
   opStr: WhereFilterOp,
   value: unknown,
+): QueryFieldFilterConstraint;
+export function where(
+  fieldPath: string | FieldPath,
+  opStr?: WhereFilterOp,
+  value?: unknown,
 ): QueryFieldFilterConstraint {
-  return new QueryFieldFilterConstraint(fieldPath, opStr, value);
+  return new QueryFieldFilterConstraint(fieldPath as string | FieldPath | _Filter, opStr, value);
 }
 
 export function or(...queryConstraints: QueryFilterConstraint[]): QueryCompositeFilterConstraint {
@@ -304,7 +346,7 @@ export function getDoc<
   reference: DocumentReference<AppModelType, DbModelType>,
 ): Promise<DocumentSnapshot<AppModelType, DbModelType>> {
   const get = (reference as unknown as DocumentReferenceGetInternal<AppModelType, DbModelType>).get;
-  return get.call(reference, { source: 'default' }, MODULAR_DEPRECATION_ARG);
+  return get.call(reference, { source: 'default' });
 }
 
 export function getDocFromCache<
@@ -314,7 +356,7 @@ export function getDocFromCache<
   reference: DocumentReference<AppModelType, DbModelType>,
 ): Promise<DocumentSnapshot<AppModelType, DbModelType>> {
   const get = (reference as unknown as DocumentReferenceGetInternal<AppModelType, DbModelType>).get;
-  return get.call(reference, { source: 'cache' }, MODULAR_DEPRECATION_ARG);
+  return get.call(reference, { source: 'cache' });
 }
 
 export function getDocFromServer<
@@ -324,7 +366,7 @@ export function getDocFromServer<
   reference: DocumentReference<AppModelType, DbModelType>,
 ): Promise<DocumentSnapshot<AppModelType, DbModelType>> {
   const get = (reference as unknown as DocumentReferenceGetInternal<AppModelType, DbModelType>).get;
-  return get.call(reference, { source: 'server' }, MODULAR_DEPRECATION_ARG);
+  return get.call(reference, { source: 'server' });
 }
 
 export function getDocs<
@@ -332,7 +374,7 @@ export function getDocs<
   DbModelType extends DocumentData = DocumentData,
 >(queryRef: Query<AppModelType, DbModelType>): Promise<QuerySnapshot<AppModelType, DbModelType>> {
   const get = (queryRef as unknown as QueryInternal<AppModelType, DbModelType>).get;
-  return get.call(queryRef, { source: 'default' }, MODULAR_DEPRECATION_ARG);
+  return get.call(queryRef, { source: 'default' });
 }
 
 export function getDocsFromCache<
@@ -340,7 +382,7 @@ export function getDocsFromCache<
   DbModelType extends DocumentData = DocumentData,
 >(queryRef: Query<AppModelType, DbModelType>): Promise<QuerySnapshot<AppModelType, DbModelType>> {
   const get = (queryRef as unknown as QueryInternal<AppModelType, DbModelType>).get;
-  return get.call(queryRef, { source: 'cache' }, MODULAR_DEPRECATION_ARG);
+  return get.call(queryRef, { source: 'cache' });
 }
 
 export function getDocsFromServer<
@@ -348,7 +390,7 @@ export function getDocsFromServer<
   DbModelType extends DocumentData = DocumentData,
 >(queryRef: Query<AppModelType, DbModelType>): Promise<QuerySnapshot<AppModelType, DbModelType>> {
   const get = (queryRef as unknown as QueryInternal<AppModelType, DbModelType>).get;
-  return get.call(queryRef, { source: 'server' }, MODULAR_DEPRECATION_ARG);
+  return get.call(queryRef, { source: 'server' });
 }
 
 export function deleteDoc<
@@ -356,7 +398,7 @@ export function deleteDoc<
   DbModelType extends DocumentData = DocumentData,
 >(reference: DocumentReference<AppModelType, DbModelType>): Promise<void> {
   const remove = (reference as unknown as DocumentReferenceDeleteInternal).delete;
-  return remove.call(reference, MODULAR_DEPRECATION_ARG);
+  return remove.call(reference);
 }
 
 export function queryEqual<
@@ -364,5 +406,5 @@ export function queryEqual<
   DbModelType extends DocumentData = DocumentData,
 >(left: Query<AppModelType, DbModelType>, right: Query<AppModelType, DbModelType>): boolean {
   const isEqual = (left as unknown as ReferenceIsEqualInternal).isEqual;
-  return isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
+  return isEqual.call(left, right);
 }

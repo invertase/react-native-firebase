@@ -16,7 +16,6 @@
  */
 
 import {
-  createDeprecationProxy,
   isBoolean,
   isFunction,
   isObject,
@@ -26,8 +25,8 @@ import DocumentChange from './FirestoreDocumentChange';
 import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import SnapshotMetadata from './FirestoreSnapshotMetadata';
 
-import type Query from './FirestoreQuery';
-import type { DocumentData, FirestoreDataConverter } from './types/firestore';
+import type { Query as QueryImplementation } from './FirestoreQuery';
+import type { DocumentData, FirestoreDataConverter, Query } from './types/firestore';
 import type { FirestoreInternal } from './types/internal';
 
 export interface QuerySnapshotNativeData {
@@ -62,7 +61,7 @@ export default class QuerySnapshot<
 
   constructor(
     firestore: FirestoreInternal,
-    query: Query<AppModelType, DbModelType>,
+    query: QueryImplementation<AppModelType, DbModelType>,
     nativeData: QuerySnapshotNativeData,
     converter: FirestoreDataConverter<AppModelType, DbModelType> | null,
   ) {
@@ -77,10 +76,9 @@ export default class QuerySnapshot<
           converter as unknown as FirestoreDataConverter<DocumentData, DocumentData> | null,
         ),
     );
-    this._docs = nativeData.documents.map((doc: QuerySnapshotNativeData['documents'][0]) =>
-      createDeprecationProxy(
+    this._docs = nativeData.documents.map(
+      (doc: QuerySnapshotNativeData['documents'][0]) =>
         new DocumentSnapshot<AppModelType, DbModelType>(firestore, doc, converter),
-      ),
     ) as DocumentSnapshot<AppModelType, DbModelType>[];
     this._metadata = new SnapshotMetadata(nativeData.metadata ?? [false, false]);
   }

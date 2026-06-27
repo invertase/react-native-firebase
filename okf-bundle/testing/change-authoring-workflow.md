@@ -143,13 +143,26 @@ flowchart TD
 
 Step detail: [running e2e § unit-focused iteration loop](running-e2e.md#unit-focused-tier-iteration-loop).
 
+<a id="e2e-diagnosis-escalation"></a>
+
+### E2e diagnosis escalation
+
+When **`unit-focused`** e2e fails and product cause is unclear:
+
+1. Confirm [pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) was complete ([prepare completion gate](running-e2e.md#prepare-completion-gate-blocking) when `lib/**` changed, host-clear probes, services, area narrowing, **`RNFBDebug = true`**).
+2. If the **same failure repeats** on back-to-back runs with no assertion progress and the host is known clean → **sub-suite narrow** ([running e2e § fail-fast](running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing)): one spec file or `describe.only` on the failing band (e.g. aggregate `count()` / `average()` / `sum()` only). Still **unit-focused**; never commit narrowing.
+3. If sub-suite runs still fail without actionable assertion text → add **temporary native instrumentation** (NSLog, `adb logcat` tags, etc.) on the code path under test; use [running e2e § diagnosing hangs](running-e2e.md#diagnosing-hangs) for log commands. **Remove instrumentation before `commit`** and before **`area-focused`** gate closure on a frozen tree.
+4. Do not treat Jet WS disconnect / orchestration timeout alone as product failure — [stalled run detection](running-e2e.md#stalled-run-detection) and pre-flight recovery first.
+
+This escalation applies to **any** change authoring item, not only namespace removal. Work queues record outcomes; they do not restate this loop.
+
 ## `independent-review`
 
 On a **frozen tree**:
 
 1. Revert all `.only`.
 2. Keep area narrowing; run **area-focused**-tier e2e for loaded package spec(s) on [**every required platform**](running-e2e.md#platform-coverage-gate-blocking) (serial; pre-flight each run).
-3. Run applicable [validation checklist](validation-checklist.md) rows.
+3. Run applicable [validation checklist](validation-checklist.md) rows. For packages registered in `compare:types`, `yarn compare:types` is a **blocking review gate**: the touched package must have zero undocumented or stale differences before `review_gate` closes. If the global command fails on unrelated registered packages, record/fix that drift in the work queue; do not treat an unrelated failure as permission to skip the touched package's type-parity check.
 4. If the package workflow requires coverage: [coverage design § completion signal](coverage-design.md#coverage-as-completion-signal).
 5. Outcome closes **review gate** or returns to **`implementation`**.
 
@@ -157,13 +170,14 @@ Keep **`implementation`** and **`independent-review`** in separate passes ([§ f
 
 ## Harness narrowing
 
-**Before the first `:test-cover` at `unit-focused` or `area-focused` tier:** apply package area narrowing in `tests/app.js` / `tests/globals.js` even when the branch commit has full harness. Full app load is **`full`** tier only.
+**Before the first `:test-cover` at `unit-focused` or `area-focused` tier:** apply package area narrowing in `tests/app.js` / `tests/globals.js` even when the branch commit has full harness. **`tests/app.js` has two platform populate blocks** — [running e2e § area harness (two platform blocks)](running-e2e.md#tests-app-js-area-harness): edit **both** `if (Platform.other)` and `if (!Platform.other)` (or disable both with Pattern A). Set **`RNFBDebug = true`** locally in `tests/globals.js` ([running e2e § fail-fast](running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing)). Full app load is **`full`** tier only.
 
 | Kind | `implementation` (**unit-focused**) | `independent-review` (**area-focused**) | `pre-merge-validation` (**full**) | `commit` |
 |------|-------------------------------------|------------------------------------------|-----------------------------------|----------|
 | **Area narrowing** | Required before `:test-cover` | Required before `:test-cover` | Revert — all modules | Never |
-| **Single-test** (`.only`) | Allowed | Revert | Revert | Never |
-| **Single-suite** (`describe.only`) | Allowed | Revert | Revert | Never |
+| **`RNFBDebug = true`** | Required locally before `:test-cover` | Required locally before `:test-cover` | Revert — `false` | Never |
+| **Single-test** (`.only`) | Allowed (diagnosis) | Revert | Revert | Never |
+| **Single-suite** (`describe.only` / one spec file) | Allowed (diagnosis only — [escalation](#e2e-diagnosis-escalation)) | Revert | Revert | Never |
 
 Package workflows define **which module/spec** to load (e.g. Firestore → [pipeline implementation workflow § narrowing](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness)).
 
