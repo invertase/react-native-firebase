@@ -17,7 +17,7 @@ Patches are in-repo. Prefer direct patch-file edits or headless workflow; `yarn 
 | Ignore missing adb reverse on teardown | `ADB.js` | Android | Jet WS 1006 triggers mid-run `reverse --remove` → adb exit 1 |
 | **2× device-registry lock stale** | `ExclusiveLockfile.js` | iOS, macOS, Android | `proper-lockfile` `ECOMPROMISED` before tests start |
 
-Related patches: `jet`, `mocha-remote-client`, `mocha-remote-server` — WS reconnect grace, coverage handshake, client keepalive, parse buffering, reconnect assignment order; HTTP POST `/coverage` removed. See [coverage design](../testing/coverage-design.md), [iOS issues 6–8](ios.md#6-jet-websocket-disconnect-1006--1001).
+Related patches: `jet`, `mocha-remote-client`, `mocha-remote-server` — WS reconnect grace, coverage handshake, client keepalive, parse buffering, reconnect assignment order; **host control HTTP on `JET_REMOTE_PORT + 1` (default 8091)** for launch defer + orchestrate phase (`RNFB_JET_DEFER_RUN`); HTTP POST `/coverage` on 8090 removed. See [Jet host orchestration](../testing/running-e2e.md#jet-host-orchestration-ports-and-launch-gate), [coverage design](../testing/coverage-design.md), [iOS issues 6–8](ios.md#6-jet-websocket-disconnect-1006--1001).
 
 ## Updating the jet patch (headless)
 
@@ -35,7 +35,7 @@ yarn patch-commit -s "$PATCH_DIR"
 
 3. `yarn install` from repo root — confirm updated `yarn.lock` patch hash and applied files in `tests/node_modules/jet/`.
 
-**Touch list:** `lib/commonjs/cli.js` (server: WS `coverage-data`, reconnect grace; **no** `attachHttpServer`), `lib/commonjs/index.js` + `src/index.tsx` (client: `client.uploadCoverage()`). Metro resolves Jet via `"react-native": "src/index"` — patching `lib/` alone does not fix macOS bundles.
+**Touch list:** `lib/commonjs/cli.js` (server: WS `coverage-data`, reconnect grace, **`startControlHttpServer` on port `JET_REMOTE_PORT + 1`**, defer `server.run()` until `POST /launch-ready` when `RNFB_JET_DEFER_RUN=1`; **no** control HTTP on the 8090 WebSocket stack), `lib/commonjs/index.js` + `src/index.tsx` (client: `client.uploadCoverage()`). Metro resolves Jet via `"react-native": "src/index"` — patching `lib/` alone does not fix macOS bundles.
 
 ## Device registry lock (`ECOMPROMISED`)
 

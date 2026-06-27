@@ -187,6 +187,15 @@ pushd "${REPO_ROOT}/tests" >/dev/null || exit 1
 SIM="$(grep iPhone .detoxrc.js | head -1 | cut -d"'" -f2)"
 popd >/dev/null || exit 1
 
+BOOT_MODE="${RNFB_SIM_BOOT_MODE:-full}"
+# shellcheck source=../../../../.github/workflows/scripts/simulator-logging.sh
+source "${REPO_ROOT}/.github/workflows/scripts/simulator-logging.sh"
+
+if [[ "$BOOT_MODE" == "logs" ]]; then
+  restart_simulator_logging || true
+  exit 0
+fi
+
 log_boot_status "phase=resolve_device name=\"${SIM}\" (from tests/.detoxrc.js)"
 
 kill_resolved_simulator "$SIM"
@@ -245,3 +254,7 @@ log_boot_status "install complete in $((SECONDS - install_start))s"
 popd >/dev/null || exit 1
 
 log_boot_status "phase=complete device=\"${SIM}\" ready with test app installed"
+
+if [[ "${RNFB_START_SIM_LOGS:-1}" == "1" && "$BOOT_MODE" == "full" ]]; then
+  restart_simulator_logging || true
+fi

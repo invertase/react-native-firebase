@@ -1,17 +1,29 @@
 diff --git a/lib/commonjs/cli.js b/lib/commonjs/cli.js
-index 35c04da87c63a79bc26707aaffe3156fb98eca79..cc9243fabdc014bc945dd6e85cbe55d85692ad56 100644
+index 35c04da87c63a79bc26707aaffe3156fb98eca79..3ad2cea4c214e8c3c4f4698acacfff2610902863 100644
 --- a/lib/commonjs/cli.js
 +++ b/lib/commonjs/cli.js
-@@ -72,22 +72,64 @@ function cleanup() {
+@@ -71,23 +71,77 @@ function cleanup() {
+     console.log(`[🟥] Failed to run a cleanup task: ${err.message}`);
    });
  }
- async function startServer(server, config, after) {
+-async function startServer(server, config, after) {
++async function startServer(server, config, after, runControl) {
 +  let reconnectGraceTimer = null;
 +  let pendingDisconnectCode = null;
 +  let disconnectStartedAt = 0;
++  let orchestratePhase = 'jet-starting';
++  let lastTestTitle = '';
++  let lastSuiteTitle = '';
++  let coverageUploadInProgress = false;
    server.on('started', s => {
      const url = s.url;
      console.log(`[🟩] Jet remote server listening at "${url}".`);
++    startControlHttpServer(config, {
++      setOrchestratePhase: phase => {
++        orchestratePhase = phase || orchestratePhase;
++      },
++      onLaunchReady: () => runControl?.beginRun?.(),
++    });
    });
    server.on('connection', (_, req) => {
      console.log(`[🟩] Jet client connected from "${req.socket.remoteAddress + ':' + req.socket.remotePort}".`);
@@ -34,12 +46,14 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..cc9243fabdc014bc945dd6e85cbe55d8
 -      cleanup();
 +    try {
 +      const os = require('os');
++      const suite = lastSuiteTitle.replace(/"/g, "'");
++      const test = lastTestTitle.replace(/"/g, "'");
 +      console.warn(
-+        `[jet-ws] disconnect_context code=${code} loadavg=${os.loadavg().join(',')} mem=${JSON.stringify(process.memoryUsage())}`,
++        `[jet-ws] disconnect_context code=${code} loadavg=${os.loadavg().join(',')} orchestratePhase=${orchestratePhase} currentTest="${test}" currentSuite="${suite}" coverageUpload=${coverageUploadInProgress} mem=${JSON.stringify(process.memoryUsage())}`,
 +      );
 +    } catch (_) {
 +      // Best-effort diagnostics only.
-     }
++    }
 +    if (code === 1000 || !config.exitOnError) {
 +      return;
 +    }
@@ -63,7 +77,7 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..cc9243fabdc014bc945dd6e85cbe55d8
 +        cleanup();
 +      }, graceMs);
 +      return;
-+    }
+     }
 +    console.error(`[jet-ws] fatal_disconnect code=${code} reason="${reason || ''}" immediate=true`);
 +    print(`[🟥] Exiting after an abnormal disconnect.`);
 +    process.exitCode = 1;
@@ -71,11 +85,15 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..cc9243fabdc014bc945dd6e85cbe55d8
    });
    server.on('error', error => {
      if (error instanceof _mochaRemoteServer.ClientError) {
-@@ -100,6 +142,14 @@ async function startServer(server, config, after) {
+@@ -100,6 +154,25 @@ async function startServer(server, config, after) {
        cleanup();
      }
    });
++  server.on('coverage-upload-start', () => {
++    coverageUploadInProgress = true;
++  });
 +  server.on('coverage-data', coverage => {
++    coverageUploadInProgress = false;
 +    const incomingKeys = Object.keys(coverage).length;
 +    console.log(`[jet-coverage] WS received ${incomingKeys} file(s)`);
 +    coverageMap.merge(coverage);
@@ -83,10 +101,17 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..cc9243fabdc014bc945dd6e85cbe55d8
 +    const totalKeys = Object.keys(global.__coverage__).length;
 +    console.log(`[jet-coverage] WS merged total ${totalKeys} file(s)`);
 +  });
++  server.on('running', runner => {
++    const constants = require('mocha').Runner.constants;
++    runner.on(constants.EVENT_TEST_BEGIN, test => {
++      lastTestTitle = test?.title || '';
++      lastSuiteTitle = test?.parent?.fullTitle?.() || test?.parent?.title || '';
++    });
++  });
    cleanupTasks.add(async () => {
      if (server.listening) {
        await server.stop();
-@@ -115,41 +165,6 @@ async function startServer(server, config, after) {
+@@ -115,39 +188,48 @@ async function startServer(server, config, after) {
    process.on('SIGINT', cleanup);
    process.on('exit', cleanup);
  }
@@ -98,12 +123,25 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..cc9243fabdc014bc945dd6e85cbe55d8
 -  }
 -  server.on('request', (req, res) => {
 -    if (req.url === '/coverage' && req.method === 'POST') {
--      let body = '';
--      req.on('data', chunk => {
--        body += chunk.toString();
--      });
--      req.on('end', () => {
--        try {
++function startControlHttpServer(config, handlers) {
++  const http = require('http');
++  const controlPort = parseInt(process.env.RNFB_JET_CONTROL_PORT || String(config.port + 1), 10);
++  const server = http.createServer((req, res) => {
++    const url = req.url?.split('?')[0];
++    if (url === '/launch-ready' && req.method === 'POST') {
++      console.log('[jet-control] launch-ready received');
++      handlers.onLaunchReady?.();
++      res.writeHead(200, { 'Content-Type': 'text/plain' });
++      res.end('ok');
++      return;
++    }
++    if (url === '/orchestrate-state' && req.method === 'POST') {
+       let body = '';
+       req.on('data', chunk => {
+         body += chunk.toString();
+       });
+       req.on('end', () => {
+         try {
 -          coverageMap.merge(JSON.parse(body));
 -          global.__coverage__ = coverageMap.toJSON();
 -          res.end(JSON.stringify({
@@ -113,8 +151,17 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..cc9243fabdc014bc945dd6e85cbe55d8
 -          res.end(JSON.stringify({
 -            error: 'Invalid JSON'
 -          }));
--        }
--      });
++          const parsed = JSON.parse(body || '{}');
++          if (parsed.phase) {
++            handlers.setOrchestratePhase?.(parsed.phase);
++            console.log(`[jet-control] orchestrate-state=${parsed.phase}`);
++          }
++        } catch (_) {
++          // Best-effort only.
+         }
++        res.writeHead(200, { 'Content-Type': 'text/plain' });
++        res.end('ok');
+       });
 -    } else {
 -      res.writeHead(404, {
 -        'Content-Type': 'application/json'
@@ -122,27 +169,67 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..cc9243fabdc014bc945dd6e85cbe55d8
 -      res.end(JSON.stringify({
 -        error: 'Not Found'
 -      }));
--    }
--  });
--}
++      return;
+     }
++    res.writeHead(404, { 'Content-Type': 'application/json' });
++    res.end(JSON.stringify({ error: 'Not Found' }));
++  });
++  server.listen(controlPort, config.hostname, () => {
++    console.log(`[jet-control] listening on http://${config.hostname}:${controlPort}`);
++  });
++  cleanupTasks.add(async () => {
++    await new Promise(resolve => {
++      server.close(() => resolve());
++    });
+   });
+ }
  (0, _yargs.default)((0, _helpers.hideBin)(process.argv)).scriptName('jet').version('version', 'Show version number & exit', jetPackageJson.version).alias('v', 'version').option('target', {
-   description: 'The name of the test target to run as defined in your "jet" package.json config.',
-   type: 'string',
-@@ -302,12 +317,11 @@ function attachHttpServer(wss) {
+@@ -301,17 +383,34 @@ function attachHttpServer(wss) {
+     timeout: finalConfig.timeout,
      slow: finalConfig.slow
    });
-   return startServer(server, finalConfig, target.after).then(() => {
+-  return startServer(server, finalConfig, target.after).then(() => {
 -    if (finalConfig.coverage) {
 -      attachHttpServer(server.wss);
 -    }
-     if (!finalConfig.watch) {
-       server.run(async failures => {
-         global.__coverage__ = coverageMap.toJSON();
-+        const mergedKeys = Object.keys(global.__coverage__).length;
-+        console.log(`[jet-coverage] merged ${mergedKeys} file(s) before NYC shutdown`);
-         await cleanup();
-         process.exit(failures > 0 ? 1 : 0);
-       });
+-    if (!finalConfig.watch) {
+-      server.run(async failures => {
+-        global.__coverage__ = coverageMap.toJSON();
+-        await cleanup();
+-        process.exit(failures > 0 ? 1 : 0);
+-      });
++  const deferRun =
++    process.env.RNFB_JET_DEFER_RUN === '1' || process.env.RNFB_JET_DEFER_RUN === 'true';
++  const runControl = {
++    beginRun: null,
++  };
++  return startServer(server, finalConfig, target.after, runControl).then(() => {
++    let runStarted = false;
++    const beginRun = () => {
++      if (runStarted) {
++        return;
++      }
++      runStarted = true;
++      if (!finalConfig.watch) {
++        server.run(async failures => {
++          global.__coverage__ = coverageMap.toJSON();
++          const mergedKeys = Object.keys(global.__coverage__).length;
++          console.log(`[jet-coverage] merged ${mergedKeys} file(s) before NYC shutdown`);
++          await cleanup();
++          process.exit(failures > 0 ? 1 : 0);
++        });
++      }
++    };
++    runControl.beginRun = beginRun;
++    if (deferRun) {
++      console.log('[jet-control] deferring server.run until POST /launch-ready');
++      return;
+     }
++    beginRun();
+   });
+ }).help(true).alias('h', 'help').argv;
+ //# sourceMappingURL=cli.js.map
+\ No newline at end of file
 diff --git a/lib/commonjs/index.js b/lib/commonjs/index.js
 index a72380ed2ace01b19b028bb8e6f9d29dc3affbcd..030475cff75349b2b7f820cf8a3556fb1d7bea45 100644
 --- a/lib/commonjs/index.js

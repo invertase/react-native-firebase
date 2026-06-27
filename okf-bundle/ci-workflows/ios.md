@@ -140,6 +140,8 @@ Error: Unable to update lock within the stale threshold
 | Change | Location |
 |--------|----------|
 | Wait for Jet (port 8090) before `launchApp` | `tests/e2e/firebase.test.js` |
+| Defer `server.run()` until host `POST /launch-ready` on control port **8091** (`RNFB_JET_DEFER_RUN=1`) | Jet patch + `firebase.test.js` — [Jet host orchestration](../testing/running-e2e.md#jet-host-orchestration-ports-and-launch-gate) |
+| `POST /orchestrate-state` + `[rnfb-e2e] orchestrate-state=` for launch/retry triage | `firebase.test.js` + Jet patch |
 | Wait for Metro (`/status`) before `launchApp` | `tests/e2e/firebase.test.js` (debug Detox configs only; release skips Metro wait) |
 | Bounded `launchApp` timeout (debug default 180s; release default 120s via `RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS`) | `tests/e2e/firebase.test.js` |
 | `detoxEnableSynchronization: 'NO'` at launch | `tests/e2e/firebase.test.js` |
@@ -278,7 +280,7 @@ The app process (`testing[<pid>]`) often stays alive in `testing.log` / `simulat
 | mocha-remote-server preserves runner + sends `pull-coverage` on reconnect | `.yarn/patches/mocha-remote-server-npm-1.13.2-*.patch` |
 | Assign `this.client` **before** `emit('connection')`; `Server.send()` warns instead of throwing | mocha-remote-server patch → `Server.js` |
 | Client WS keepalive (`ping` when supported) + `readyState` logging on send failure | `.yarn/patches/mocha-remote-client-npm-1.13.2-*.patch` |
-| `disconnect_context` logs `loadavg` + `process.memoryUsage()` on disconnect | Jet patch → `cli.js` |
+| `disconnect_context` logs `loadavg`, `process.memoryUsage()`, orchestrate phase, current test/suite, coverage-upload flag | Jet patch → `cli.js` |
 | One Jet e2e retry when grace expires (`RETRYABLE_DISCONNECT`) or session/coverage retryable | `tests/e2e/firebase.test.js` |
 | Structured WS / orchestration logging | `[jet-ws]`, `[rnfb-e2e]`, `[mocha-remote-ws]` prefixes |
 
@@ -288,8 +290,8 @@ The app process (`testing[<pid>]`) often stays alive in `testing.log` / `simulat
 # Jet WS lifecycle
 rg '\[jet-ws\]|\[rnfb-e2e\]|\[mocha-remote-ws\]|Jet client disconnected|RETRYABLE_DISCONNECT' detox-step.log
 
-# Disconnect resource context
-rg '\[jet-ws\] disconnect_context' detox-step.log
+# Disconnect resource context (+ orchestrate phase when defer-run enabled)
+rg '\[jet-ws\] disconnect_context|\[rnfb-e2e\] orchestrate-state' detox-step.log
 
 # Grace window recovered (no e2e retry needed)
 rg '\[jet-ws\] reconnect_recovered|\[mocha-remote-ws\] reconnect_recovered' detox-step.log

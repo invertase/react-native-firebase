@@ -49,7 +49,7 @@ yarn tests:macos:test-cover
 
 5. **Report locations** — [Coverage design](coverage-design.md).
 
-6. **One e2e at a time** — never overlap `:test-cover`/Detox/Jet on one host. Jet uses `:8090`; all platforms share Jet + Metro `:8081`; parallel runs race on coverage/device/emulator state. Every run starts after [clean pre-flight](#pre-flight-is-the-host-clear-to-start).
+6. **One e2e at a time** — never overlap `:test-cover`/Detox/Jet on one host. Jet uses **8090** (WebSocket) plus **8091** (host control HTTP when defer-run is enabled); all platforms share Jet + Metro `:8081`; parallel runs race on coverage/device/emulator state. Every run starts after [clean pre-flight](#pre-flight-is-the-host-clear-to-start). See [Jet host orchestration](#jet-host-orchestration-ports-and-launch-gate).
 
 7. **No source edits during e2e** — wait/cancel cleanly before editing `packages/**`, `tests/**`, or bundle-affecting OKF docs. Saves can hot reload/rebundle and invalidate tests/coverage.
 
@@ -70,9 +70,33 @@ yarn tests:android:test-cover
             └─ app on emulator/simulator
 ```
 
-macOS: `yarn tests:macos:test-cover` → `jet --target=macos` (same `:8090`).
+macOS: `yarn tests:macos:test-cover` → `jet --target=macos` (same `:8090` WS).
 
 **Do not poll `pgrep`, `detox`, `jet.js`, or `:8090` for completion.** They match stale wrappers, orphans, zombies, and contention.
+
+#### Jet host orchestration (ports and launch gate)
+
+**Canonical owner** for Detox↔Jet↔app sequencing in `tests/e2e/firebase.test.js` and the patched Jet CLI. CI platform pages link here; do not duplicate the full port/protocol story elsewhere.
+
+| Port | Protocol | Role |
+|------|----------|------|
+| **8090** (default `JET_REMOTE_PORT`) | WebSocket (`mocha-remote-*`) | App ↔ Jet test transport; `server.run()` drives Mocha in the app |
+| **8091** (default `JET_REMOTE_PORT + 1`, override `RNFB_JET_CONTROL_PORT`) | HTTP POST only | Host ↔ Jet **control plane** — not used by the app |
+
+**Why two ports** — Port 8090 is a WebSocket server (`ws` library). Plain HTTP `POST` to that socket (e.g. `/launch-ready`) gets **426 Upgrade Required** and can crash Jet with `ERR_HTTP_HEADERS_SENT` if a control handler shares the same HTTP stack. Control endpoints therefore live on a **separate** small HTTP server (`startControlHttpServer` in the Jet patch).
+
+**Launch gate (orchestration race fix)** — `firebase.test.js` spawns Jet with `RNFB_JET_DEFER_RUN=1`. Jet listens on 8090 and **defers** `server.run()` until the host signals launch success:
+
+1. Host waits for TCP **8090**, then Metro (debug) if needed, then `launchAppWithRetry`.
+2. Host `POST`s **`/orchestrate-state`** (`{ "phase": "launch-pending" | "launch-ok" | … }`) to the control port (best-effort diagnostics).
+3. After `launchApp` succeeds, host `POST`s **`/launch-ready`** → Jet calls `server.run()` and the app may receive the mocha-remote `run` action.
+4. Mocha tests must not start during a stuck or retried `launchApp`; on inner launch retry the host may kill and respawn Jet before `terminateApp`/simulator reboot.
+
+**Log markers** — `[rnfb-e2e] orchestrate-state=…`, `[jet-control] deferring server.run until POST /launch-ready`, `[jet-control] launch-ready received`, `[jet-control] listening on http://…:8091`.
+
+**Pre-flight** — [Host-clear probes](#host-clear-probes) check **8090 only** (stray Jet WS listener). **8091** may be open while Jet is running; do not treat it as a stale-process signal.
+
+**Patches / code** — Jet patch (`cli.js`: defer run, control HTTP, enriched `disconnect_context`); `tests/e2e/firebase.test.js` (`postJetControl`, `createJetSession`). Patch workflow: [detox-patches.md](../ci-workflows/detox-patches.md#updating-the-jet-patch-headless). CI triage: [iOS orchestration](../ci-workflows/ios.md#e2e-test-app-orchestration-detox--jet).
 
 ### Running one iteration
 
@@ -97,7 +121,7 @@ rg '^\s+\d+\)' /tmp/rnfb-e2e-<platform>.log          # failure blocks, if any
 rg 'Tests Complete|jet-coverage.*merged' /tmp/rnfb-e2e-<platform>.log | tail -3
 ```
 
-Markers: `✨ Tests Complete ✨`, Jest `N passing` / `N failing`, `[jet-coverage] merged … before NYC shutdown`.
+Markers: `✨ Tests Complete ✨`, Jest `N passing` / `N failing`, `[jet-coverage] merged … before NYC shutdown`, `[rnfb-e2e] orchestrate-state=`, `[jet-control] launch-ready received`.
 
 6. Return only platform, exit code, pass/fail line, failing tests, log path, optional coverage-gap line. No full log upstream.
 
