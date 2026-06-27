@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # Namespace API removal — work queue
 
-> **IN PROGRESS (2026-06-26):** Latest: `refactor(installations): remove deprecated namespaced API`. **Next pickup:** **N3** `messaging` spike.
+> **IN PROGRESS (2026-06-26):** Latest: `refactor(messaging): remove deprecated namespaced API`. **Next pickup:** **N4** `app-distribution`.
 > **Order:** pilot smallest (`ml`, `in-app-messaging`) → spike hardest (`messaging`) → bulk small→large → **NF** app cleanup → **NV** full validation. **Workflow:** [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md).
 
 ---
@@ -68,7 +68,7 @@ Update immediately after each work type closes a gate ([fields](testing/iteratio
 | N0 | app factory | **closed** | **closed** | **closed** | `refactor(ml): remove deprecated namespace APIs` | — | area-focused | factory shipped with N1 commit |
 | N1 | `ml` (0m) | **closed** | **closed** | **closed** | `refactor(ml): remove deprecated namespace APIs` | — | area-focused | pilot modular-only |
 | N2 | `in-app-messaging` (3m) | **closed** | **closed** | **closed** | `refactor(in-app-messaging): remove deprecated namespaced API` | — | area-focused | web stub macOS; modular e2e 4×3 |
-| N3 | `messaging` (~28m) | open | open | open | — | `gap-analysis` | area-focused | spike |
+| N3 | `messaging` (~28m) | **closed** | **closed** | **closed** | `refactor(messaging): remove deprecated namespaced API` | — | area-focused | headless atomic swap; utils native hop; iOS 74 / Android 93 area e2e |
 | N4 | `installations` (4m) | **closed** | **closed** | **closed** | `refactor(installations): remove deprecated namespaced API` | — | area-focused | ios/android 4 passing |
 | N4 | `app-distribution` (4m) | open | open | open | — | `gap-analysis` | unit-focused | |
 | N4 | `functions` (4m) | open | open | open | — | `gap-analysis` | unit-focused | |

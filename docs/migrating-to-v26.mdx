@@ -15,6 +15,7 @@ If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating
 - [Machine Learning (ML)](/migrating-to-v26#machine-learning-ml)
 - [In-App Messaging](/migrating-to-v26#in-app-messaging)
 - [Installations](/migrating-to-v26#installations)
+- [Cloud Messaging](/migrating-to-v26#cloud-messaging)
 - [Automated migration checklist](/migrating-to-v26#automated-migration-checklist)
 
 ## General pattern
@@ -25,7 +26,7 @@ For each package listed in this guide:
 2. Replace `Firebase*Types` namespace imports with root types (`InAppMessaging`, `Installations`, `FirebaseML`, etc.).
 3. Prefer free functions (`getId(installations)`, `setMessagesDisplaySuppressed(inAppMessaging, enabled)`) over instance methods on service objects.
 
-**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, and `@react-native-firebase/installations`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
+**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, and `@react-native-firebase/messaging`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
 
 # Machine Learning (ML)
 
@@ -143,6 +144,67 @@ const id = await getId(installations);
 
 See [Installations usage](/installations/usage) for additional examples.
 
+# Cloud Messaging
+
+The namespaced API for `@react-native-firebase/messaging` has been **removed**. This package is **modular-only** — use `getMessaging()` and the root-level helper functions.
+
+Modular `getMessaging()` returns a firebase-js-sdk-shaped `Messaging` object. Prefer free functions (`getToken(messaging)`, `onMessage(messaging, listener)`, etc.) over calling methods on the service instance.
+
+## Removed namespaced API
+
+| Removed | Replacement (modular) |
+| ------- | --------------------- |
+| `firebase.messaging()` | `getMessaging()` |
+| Default export `messaging()` | `getMessaging()` |
+| `FirebaseMessagingTypes` | Import `Messaging`, `RemoteMessage`, and helpers from package root |
+| `messaging.getToken()` / `.onMessage()` / etc. | `getToken(messaging)`, `onMessage(messaging, listener)`, etc. |
+| `messaging.setDeliveryMetricsExportToBigQuery()` | `experimentalSetDeliveryMetricsExportedToBigQueryEnabled(messaging, enabled)` |
+| `firebase.messaging.SDK_VERSION` / `messaging.SDK_VERSION` | `SDK_VERSION` top-level export from package root |
+
+## Example: foreground messages
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import messaging from '@react-native-firebase/messaging';
+
+firebase.messaging().onMessage(message => {
+  console.log(message.data);
+});
+// or
+messaging().onMessage(message => {
+  console.log(message.data);
+});
+```
+
+```js
+// Now
+import { getMessaging, onMessage } from '@react-native-firebase/messaging';
+
+onMessage(getMessaging(), message => {
+  console.log(message.data);
+});
+```
+
+## Example: delivery metrics to BigQuery
+
+```js
+// Previously (removed)
+await firebase.messaging().setDeliveryMetricsExportToBigQuery(true);
+```
+
+```js
+// Now
+import {
+  getMessaging,
+  experimentalSetDeliveryMetricsExportedToBigQueryEnabled,
+} from '@react-native-firebase/messaging';
+
+await experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), true);
+```
+
+See [Cloud Messaging usage](/messaging/usage) for additional examples.
+
 # Automated migration checklist
 
 Use this section when running scripted or agent-assisted upgrades to v26 for modular-only packages.
@@ -164,6 +226,7 @@ For each modular-only package you use:
 | `ml` | `firebase.ml()`, default `ml()`, `FirebaseMLTypes` | `getML()`, root `FirebaseML` type |
 | `in-app-messaging` | `firebase.inAppMessaging()`, default `inAppMessaging()`, `FirebaseInAppMessagingTypes` | `getInAppMessaging()`, root modular helpers (`setMessagesDisplaySuppressed`, etc.) |
 | `installations` | `firebase.installations()`, default `installations()`, `.getId()`, `.getToken()`, `.delete()`, `FirebaseInstallationsTypes` | `getInstallations()`, `getId()`, `getToken()`, `deleteInstallations()` |
+| `messaging` | `firebase.messaging()`, default `messaging()`, `FirebaseMessagingTypes`, instance methods | `getMessaging()`, root helpers (`getToken`, `onMessage`, etc.), `SDK_VERSION`, `experimentalSetDeliveryMetricsExportedToBigQueryEnabled` |
 
 ## 3. Validate
 
