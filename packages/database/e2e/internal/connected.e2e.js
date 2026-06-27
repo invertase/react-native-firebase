@@ -19,53 +19,6 @@ const { PATH } = require('../helpers');
 const TEST_PATH = `${PATH}/connected`;
 
 describe("database().ref('.info/connected')", function () {
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-      await firebase.database().goOnline();
-    });
-
-    afterEach(async function afterEachTest() {
-      // Ensures the db is online before running each test
-      await firebase.database().goOnline();
-
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    xit('returns true when used with once', async function () {
-      const snapshot = await firebase.database().ref('.info/connected').once('value');
-      snapshot.val().should.equal(true);
-    });
-
-    xit('returns true when used with once with a previous call', async function () {
-      await firebase.database().ref(`${TEST_PATH}/foo`).once('value');
-      const snapshot = await firebase.database().ref('.info/connected').once('value');
-      snapshot.val().should.equal(true);
-    });
-
-    // FIXME on android this can work against the emulator
-    // on iOS it doesn't work at all ?
-    xit('subscribes to online state', async function () {
-      const callback = sinon.spy();
-      const ref = firebase.database().ref('.info/connected');
-      const handler = $ => {
-        callback($.val());
-      };
-
-      ref.on('value', handler);
-      await firebase.database().goOffline();
-      await Utils.sleep(1000); // FIXME why is this sleep needed here? callback is called immediately
-      await firebase.database().goOnline();
-      ref.off('value', handler);
-
-      await Utils.spyToBeCalledTimesAsync(callback, 2);
-      callback.getCall(0).args[0].should.equal(false);
-      callback.getCall(1).args[0].should.equal(true);
-    });
-  });
-
   describe('modular', function () {
     before(async function () {
       const { getDatabase, goOnline } = databaseModular;
@@ -82,7 +35,7 @@ describe("database().ref('.info/connected')", function () {
     xit('returns true when used with once', async function () {
       const { getDatabase, ref, get } = databaseModular;
 
-      const snapshot = await get(ref(getDatabase(), '.info/connected'), dbRef);
+      const snapshot = await get(ref(getDatabase(), '.info/connected'));
       snapshot.val().should.equal(true);
     });
 
@@ -90,7 +43,7 @@ describe("database().ref('.info/connected')", function () {
       const { getDatabase, ref, get } = databaseModular;
 
       await get(ref(getDatabase(), `${TEST_PATH}/foo`));
-      const snapshot = await firebase.database().ref('.info/connected').once('value');
+      const snapshot = await get(ref(getDatabase(), '.info/connected'));
       snapshot.val().should.equal(true);
     });
 

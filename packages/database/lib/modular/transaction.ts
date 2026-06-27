@@ -15,7 +15,6 @@
  *
  */
 
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import type { DatabaseReference, TransactionOptions, TransactionResult } from '../types/database';
 import type { DatabaseReferenceWithTransactionInternal } from '../types/internal';
 
@@ -24,11 +23,9 @@ export function runTransaction(
   transactionUpdate: (currentData: any) => unknown,
   options?: TransactionOptions,
 ): Promise<TransactionResult> {
-  return (ref as DatabaseReferenceWithTransactionInternal).transaction.call(
-    ref,
+  return (ref as DatabaseReferenceWithTransactionInternal).transaction(
     transactionUpdate,
     undefined,
     options?.applyLocally,
-    MODULAR_DEPRECATION_ARG,
   );
 }

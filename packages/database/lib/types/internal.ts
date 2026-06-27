@@ -30,7 +30,6 @@ import type {
   ThenableReference,
   TransactionResult,
 } from './database';
-import type { FirebaseDatabaseTypes } from './namespaced';
 import type { DatabaseQueryModifier } from '../DatabaseQueryModifiers';
 
 /** Optional final argument passed by modular API wrappers (MODULAR_DEPRECATION_ARG). */
@@ -157,7 +156,7 @@ export interface RNFBDatabaseModule {
   once(
     path: string,
     modifiers: DatabaseQueryModifier[],
-    eventType: FirebaseDatabaseTypes.EventType,
+    eventType: EventType,
   ): Promise<DatabaseSnapshotInternal | DatabaseChildSnapshotResultInternal>;
   on(props: DatabaseListenPropsInternal): void;
   off(queryKey: string, eventRegistrationKey: string): void | Promise<void>;
@@ -197,15 +196,15 @@ declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
 export interface DatabaseReferenceInternal {
   readonly path: string;
   on(
-    eventType: FirebaseDatabaseTypes.EventType,
-    callback: (data: FirebaseDatabaseTypes.DataSnapshot, previousChildKey?: string | null) => void,
+    eventType: EventType,
+    callback: (data: DataSnapshot, previousChildKey?: string | null) => void,
     cancelCallbackOrContext?:
       | ((a: Error) => void)
       | Record<string, any>
       | DatabaseModularDeprecationArg
       | null,
     context?: Record<string, any> | null,
-  ): (a: FirebaseDatabaseTypes.DataSnapshot | null, b?: string | null) => void;
+  ): (a: DataSnapshot | null, b?: string | null) => void;
 }
 
 /** Query instance viewed through the chainable query modifier methods. */

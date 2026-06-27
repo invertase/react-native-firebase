@@ -27,14 +27,14 @@ import {
 } from '@react-native-firebase/app/dist/module/common';
 
 import type { DatabaseModuleInternal } from './types/internal';
-import type { FirebaseDatabaseTypes } from './types/namespaced';
+import type { OnDisconnect } from './types/database';
 
 interface DatabaseOnDisconnectReferenceInternal {
   readonly path: string;
   readonly _database: DatabaseModuleInternal;
 }
 
-export default class DatabaseOnDisconnect implements FirebaseDatabaseTypes.OnDisconnect {
+export default class DatabaseOnDisconnect implements OnDisconnect {
   _ref: DatabaseOnDisconnectReferenceInternal;
 
   constructor(reference: DatabaseOnDisconnectReferenceInternal) {

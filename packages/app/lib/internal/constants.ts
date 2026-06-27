@@ -23,7 +23,6 @@ export const KNOWN_NAMESPACES = [
   'auth',
   'analytics',
   'remoteConfig',
-  'database',
   'firestore',
   'indexing',
   'storage',

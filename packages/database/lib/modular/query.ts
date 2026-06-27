@@ -15,7 +15,6 @@
  *
  */
 
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import type {
   DataSnapshot,
   DatabaseReference,
@@ -46,10 +45,7 @@ class DatabaseQueryConstraint extends QueryConstraint {
   }
 
   _apply(query: Query): Query {
-    return (query as QueryWithModifiersInternal)[this.type].apply(query, [
-      ...this.args,
-      MODULAR_DEPRECATION_ARG,
-    ]);
+    return (query as QueryWithModifiersInternal)[this.type](...this.args);
   }
 }
 
@@ -129,12 +125,9 @@ function addEventListener(
   if (options?.onlyOnce) {
     const userCallback = callback;
     listenerCallback = ((snapshot: DataSnapshot, previousChildName?: string | null) => {
-      queryWithSubscriptions.off.call(
-        queryRef,
+      queryWithSubscriptions.off(
         eventType,
         listenerCallback as (snapshot: DataSnapshot, previousChildName?: string | null) => unknown,
-        null,
-        MODULAR_DEPRECATION_ARG,
       );
 
       return (
@@ -143,22 +136,16 @@ function addEventListener(
     }) as SnapshotCallbackInternal;
   }
 
-  queryWithSubscriptions.on.call(
-    queryRef,
+  queryWithSubscriptions.on(
     eventType,
     listenerCallback as (snapshot: DataSnapshot, previousChildName?: string | null) => unknown,
     cancelCallback as ((error: Error) => unknown) | undefined,
-    null,
-    MODULAR_DEPRECATION_ARG,
   );
 
   return () =>
-    queryWithSubscriptions.off.call(
-      queryRef,
+    queryWithSubscriptions.off(
       eventType,
       listenerCallback as (snapshot: DataSnapshot, previousChildName?: string | null) => unknown,
-      null,
-      MODULAR_DEPRECATION_ARG,
     );
 }
 
@@ -312,24 +299,14 @@ export function onChildRemoved(
 }
 
 export function set(ref: DatabaseReference, value: unknown): Promise<void> {
-  return (ref as DatabaseReferenceWithMethodsInternal).set.call(
-    ref,
-    value,
-    () => {},
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (ref as DatabaseReferenceWithMethodsInternal).set(value);
 }
 
 export function setPriority(
   ref: DatabaseReference,
   priority: string | number | null,
 ): Promise<void> {
-  return (ref as DatabaseReferenceWithMethodsInternal).setPriority.call(
-    ref,
-    priority,
-    () => {},
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (ref as DatabaseReferenceWithMethodsInternal).setPriority(priority);
 }
 
 export function setWithPriority(
@@ -337,24 +314,11 @@ export function setWithPriority(
   value: unknown,
   priority: string | number | null,
 ): Promise<void> {
-  return (ref as DatabaseReferenceWithMethodsInternal).setWithPriority.call(
-    ref,
-    value,
-    priority,
-    () => {},
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (ref as DatabaseReferenceWithMethodsInternal).setWithPriority(value, priority);
 }
 
 export function get(queryRef: Query): Promise<DataSnapshot> {
-  return (queryRef as QueryWithSubscriptionMethodsInternal).once.call(
-    queryRef,
-    'value',
-    () => {},
-    () => {},
-    {},
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (queryRef as QueryWithSubscriptionMethodsInternal).once('value');
 }
 
 export function off(
@@ -366,45 +330,25 @@ export function off(
 }
 
 export function child(parent: DatabaseReference, path: string): DatabaseReference {
-  return (parent as DatabaseReferenceWithMethodsInternal).child.call(
-    parent,
-    path,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (parent as DatabaseReferenceWithMethodsInternal).child(path);
 }
 
 export function onDisconnect(ref: DatabaseReference): OnDisconnect {
-  return (ref as DatabaseReferenceWithMethodsInternal).onDisconnect.call(
-    ref,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (ref as DatabaseReferenceWithMethodsInternal).onDisconnect();
 }
 
 export function keepSynced(ref: DatabaseReference, bool: boolean): Promise<void> {
-  return (ref as DatabaseReferenceWithMethodsInternal).keepSynced.call(
-    ref,
-    bool,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (ref as DatabaseReferenceWithMethodsInternal).keepSynced(bool);
 }
 
 export function push(parent: DatabaseReference, value?: unknown): ThenableReference {
-  return (parent as DatabaseReferenceWithMethodsInternal).push.call(
-    parent,
-    value,
-    undefined,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (parent as DatabaseReferenceWithMethodsInternal).push(value);
 }
 
 export function remove(ref: DatabaseReference): Promise<void> {
-  return (ref as DatabaseReferenceWithMethodsInternal).remove.call(ref, MODULAR_DEPRECATION_ARG);
+  return (ref as DatabaseReferenceWithMethodsInternal).remove();
 }
 
 export function update(ref: DatabaseReference, values: object): Promise<void> {
-  return (ref as DatabaseReferenceWithMethodsInternal).update.call(
-    ref,
-    values,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (ref as DatabaseReferenceWithMethodsInternal).update(values);
 }

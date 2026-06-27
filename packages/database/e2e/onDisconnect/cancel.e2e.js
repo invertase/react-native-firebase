@@ -24,62 +24,6 @@ describe('database().ref().onDisconnect().cancel()', function () {
     await wipe(TEST_PATH);
   });
 
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // Ensures the db is online before running each test
-      await firebase.database().goOnline();
-
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('throws if onComplete is not a function', function () {
-      const ref = firebase.database().ref(TEST_PATH).onDisconnect();
-      try {
-        ref.cancel('foo');
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'onComplete' must be a function if provided");
-        return Promise.resolve();
-      }
-    });
-
-    it('cancels all previously queued events', async function () {
-      const ref = firebase.database().ref(TEST_PATH);
-
-      await ref.set('foobar');
-      const value = Date.now();
-
-      await ref.onDisconnect().set(value);
-      await ref.onDisconnect().cancel();
-      await firebase.database().goOffline();
-      await firebase.database().goOnline();
-
-      const snapshot = await ref.once('value');
-      snapshot.val().should.eql('foobar');
-    });
-
-    it('calls back to the onComplete function', async function () {
-      const callback = sinon.spy();
-      const ref = firebase.database().ref(TEST_PATH);
-
-      // Set an initial value
-      await ref.set('foo');
-
-      await ref.onDisconnect().set('bar');
-      await ref.onDisconnect().cancel(callback);
-      await firebase.database().goOffline();
-      await firebase.database().goOnline();
-
-      callback.should.be.calledOnce();
-    });
-  });
-
   describe('modular', function () {
     afterEach(async function () {
       const { getDatabase, goOnline } = databaseModular;
