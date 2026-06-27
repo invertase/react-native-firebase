@@ -42,7 +42,7 @@ yarn tests:emulator:start
 
 3. **Rebuild when needed**
    - Native changed → `yarn tests:ios:build` / `yarn tests:android:build` before e2e. macOS uses firebase-js-sdk only — no native rebuild.
-   - `packages/*/lib/**` changed → `yarn lerna:prepare` (Metro serves `dist/module/**`, not `lib/**`; e2e specs under `packages/*/e2e/**` and `tests/**` are served directly).
+   - `packages/*/lib/**` changed → **`yarn lerna:prepare` must run to completion (exit 0) before anything else** — Metro serves `dist/module/**`, not `lib/**`. See [prepare completion gate](#prepare-completion-gate-blocking) and [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first). After prepare finishes, restart the packager with `yarn tests:packager:jet-reset-cache` when Metro was already running ([Rules §1](#rules)).
    - TS coverage: iOS/Android embed JS at **build** time; run `:build` before `:test-cover` so Istanbul + patched test-runner coverage upload is in app. macOS loads from Metro live; after test-runner patch changes, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)).
 
 4. **Always run with coverage:**
@@ -142,7 +142,21 @@ Markers: `✨ Tests Complete ✨`, Jest `N passing` / `N failing`, `[jet-coverag
 
 **Canonical owner** for host-clear probes, recovery after abort, and service checks. Other OKF docs link here by reference — do not duplicate commands or probes elsewhere.
 
-Run **all three** steps before every `:test-cover`. After an [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090), run [pre-flight recovery](#pre-flight-recovery) and re-run the probes.
+Run **all four** steps before every `:test-cover`. After an [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090), run [pre-flight recovery](#pre-flight-recovery) and re-run the probes.
+
+<a id="prepare-completion-gate-blocking"></a>
+
+#### 0. Prepare complete (when `packages/*/lib/**` changed)
+
+If product code under `packages/*/lib/**` was edited in this session, **`yarn lerna:prepare`** (or scoped `yarn lerna run prepare --scope …`) must have **fully finished with exit code 0** before pre-flight steps 1–3 or any `:test-cover` / `:build`.
+
+- **Wait** for the prepare shell to return — do not batch prepare in parallel with Metro restart, pre-flight probes, or e2e in the same agent turn.
+- **Then** restart Metro when it was already running: `yarn tests:packager:jet-reset-cache` ([Rules §3](#rules)).
+- **Then** continue with host-clear probes and service checks below.
+
+Skipping this gate causes missing or half-written `dist/module/**` while Metro `/status` still returns 200 — a common source of bundle-load and module-not-found failures that look like product bugs.
+
+Owner for install/prepare serialization: [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first).
 
 #### 1. Host clear
 
@@ -199,7 +213,7 @@ curl -sf http://127.0.0.1:8081/status >/dev/null   # Metro (127.0.0.1 matches te
 curl -sf http://127.0.0.1:8080 >/dev/null          # Firestore emulator
 ```
 
-If either fails: start `yarn tests:packager:jet` and `yarn tests:emulator:start` (background); re-check until both pass. After `yarn lerna:prepare` or test-runner patch edits, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)).
+If either fails: start `yarn tests:packager:jet` and `yarn tests:emulator:start` (background); re-check until both pass. After **`yarn lerna:prepare` has finished** (step [0](#prepare-completion-gate-blocking)) or test-runner patch edits, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)) — never restart Metro while prepare is still running.
 
 A listener on `:8081` or `:8080` is **not** sufficient — HTTP checks must succeed.
 
@@ -209,11 +223,11 @@ Confirm `tests/app.js` / `tests/globals.js` match the item's **`validation_tier`
 
 | Tier | Harness before `:test-cover` |
 |------|------------------------------|
-| **Unit-focused** (`implementation`) | **Area narrowing required** — trim modules + load only the spec under change (e.g. firestore + `Pipeline.e2e.js`); `.only` OK locally |
-| **Area-focused** (`independent-review`, `baseline-capture`) | **Area narrowing required** — same module/spec trim as unit-focused; load **full** spec file(s) for the package area; **no** `.only` |
-| **Full** (`pre-merge-validation`) | Revert all narrowing — full app (`require.context`, all modules) |
+| **Unit-focused** (`implementation`) | **Area narrowing required** — trim modules + load only the spec under change (e.g. firestore + `Pipeline.e2e.js`); `.only` OK locally. Set **`RNFBDebug = true`** locally in `tests/globals.js` ([§ fail-fast](#fail-fast-rnfbdebug-and-sub-suite-narrowing)). |
+| **Area-focused** (`independent-review`, `baseline-capture`) | **Area narrowing required** — same module/spec trim as unit-focused; load **full** spec file(s) for the package area; **no** `.only`. Set **`RNFBDebug = true`** locally ([§ fail-fast](#fail-fast-rnfbdebug-and-sub-suite-narrowing)). |
+| **Full** (`pre-merge-validation`) | Revert all narrowing — full app (`require.context`, all modules); **`RNFBDebug = false`** (committed default). |
 
-Committed full harness on the branch does **not** override **unit-focused** or **area-focused** tier for local runs. Package workflows define area setup (e.g. [pipelines § area harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness)). Never commit narrowing until **full** tier.
+Committed full harness on the branch does **not** override **unit-focused** or **area-focused** tier for local runs. Package workflows define area setup (e.g. [pipelines § area harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness)). **How to edit `tests/app.js`:** [two platform blocks](#tests-app-js-area-harness). Never commit narrowing until **full** tier.
 
 See [Harness narrowing gate (blocking)](#harness-narrowing-gate-blocking) — a run that skips step 3 does **not** close `implementation_gate` or `review_gate`.
 
@@ -240,6 +254,7 @@ Do not poll `pgrep`, process names, or `:8090` for *completion* ([above](#how-a-
 | Mistake | Symptom | Gate impact |
 |---------|---------|-------------|
 | Run `:test-cover` on committed full harness during `implementation` or `independent-review` | macOS/iOS/Android pass counts in the **hundreds or thousands** (all modules via `require.context`) | Run is **invalid** — does not close `implementation_gate` or `review_gate` |
+| Narrow **only** `if (Platform.other)` or only set initial `platformSupportedModules` while **`if (!Platform.other)`** still pushes full native list | macOS ~700 firestore tests pass; iOS/Android logs show `database`, `crashlytics`, etc.; thousands of tests / Jet WS 1006 under load | Run is **invalid** on iOS/Android — see [two platform blocks](#tests-app-js-area-harness) |
 | Correct pipeline area harness | ~**100** passing per platform for `Pipeline.e2e.js` only ([pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness)) | Expected for pipeline area runs |
 
 **Apply locally before every `:test-cover` at unit-focused or area-focused tier** — even when git shows the full push harness. Revert `tests/app.js` / `tests/globals.js` after the run if the branch commit keeps full harness (typical until phase **R**).
@@ -252,12 +267,12 @@ Do not poll `pgrep`, process names, or `:8090` for *completion* ([above](#how-a-
 
 **Both `unit-focused` (implementation) and `area-focused` (baseline-capture, independent-review) require e2e on every platform where the changed module loads in the committed harness** — not a subset for convenience.
 
-Determine required platforms from `tests/app.js` (`Platform.other` vs native lists):
+Determine required platforms from `tests/app.js` ([two platform blocks](#tests-app-js-area-harness) — use **committed** lists when deciding macOS vs native requirement, not a narrowed local harness):
 
 | Platform class | When required |
 |----------------|---------------|
-| **macOS** (`Platform.other`) | Module appears in the `if (Platform.other)` `platformSupportedModules` list |
-| **iOS** and **Android** | Module appears in the `if (!Platform.other)` list |
+| **macOS** (`Platform.other`) | Module appears in the committed `if (Platform.other)` list (or your narrowed list includes it on macOS) |
+| **iOS** and **Android** | Module appears in the committed `if (!Platform.other)` list (or your narrowed list includes it on native) |
 
 **Area-focused (`baseline-capture`, `independent-review`) — closes `review_gate` / baseline only when:**
 
@@ -280,16 +295,17 @@ See also: [coverage design § platform parity](coverage-design.md#coverage-expec
 
 **Checklist (copy before first run):**
 
-1. `platformSupportedModules` lists only the package under change (e.g. `firestore` only).
-2. Spec load uses direct `require` of the area spec — not `require.context` for all packages.
-3. No `.only` when tier is **area-focused**; `.only` optional when tier is **unit-focused**.
-4. Grep log: pass count consistent with area scope (~100 for pipeline-only), not full app (~141+ macOS baseline with full load per [work queue](../packages/firestore/pipeline-coverage-work-queue.md)).
+1. [Both platform blocks](#tests-app-js-area-harness) narrowed or disabled — not just macOS / not just initial array.
+2. `platformSupportedModules` lists only the package under change (e.g. `firestore` + `app`).
+3. Spec load uses direct `require` of the area spec — not `require.context` for all packages — when sub-suite narrowing applies; otherwise full package `require.context` is OK when the module list is narrowed.
+4. No `.only` when tier is **area-focused**; `.only` optional when tier is **unit-focused**.
+5. Grep log: pass count consistent with area scope (~100 for pipeline-only, ~700 for full firestore package on macOS), not full app (~141+ macOS baseline with full load per [work queue](../packages/firestore/pipeline-coverage-work-queue.md)).
 
 ### Unit-focused-tier iteration loop
 
 For `implementation` work type — validation tier **unit-focused** ([change authoring workflow](change-authoring-workflow.md#implementation-inner-loop)):
 
-1. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes), services ready, **harness narrowed** (step 3); if probes fail, [pre-flight recovery](#pre-flight-recovery) first.
+1. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [prepare completion gate](#prepare-completion-gate-blocking) when `lib/**` changed, [host-clear probes](#host-clear-probes), services ready, **harness narrowed** (step 3), **`RNFBDebug = true`** locally; if probes fail, [pre-flight recovery](#pre-flight-recovery) first.
 2. Edit e2e/spec; add `.only` if needed; never commit narrowing.
 3. macOS first when TS-only: `yarn tests:macos:test-cover 2>&1 | tee /tmp/rnfb-e2e-macos.log` — wait for exit code ([stalled run](#stalled-run-detection) if markers stop).
 4. If macOS green and native touched: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover 2>&1 | tee /tmp/rnfb-e2e-<platform>.log`; one platform at a time.
@@ -322,6 +338,7 @@ Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#ho
 ### What not to do
 
 - Do not invoke the test runner (Jet), Detox, Metro, or emulators except through repo-root `yarn tests:*` commands in this doc — see [agent rule](#agent-rule-read-first).
+- Do not run `:test-cover`, `:build`, Metro restart, or pre-flight while **`yarn` / `yarn lerna:prepare` is still in progress** — wait for exit 0 first ([prepare completion gate](#prepare-completion-gate-blocking)).
 - Do not background `:test-cover` and poll `pgrep`, `detox`, or process names for completion.
 - Do not use `:test-cover-reuse`, `:test-cover-and-process`, or `:test-reuse` when measuring coverage or closing review gates.
 - Do not use `:8090` listening as “e2e still running” without the platform active signal above.
@@ -356,9 +373,107 @@ Full e2e loads every package. Narrow locally; **never commit** narrowing.
 
 **Area narrowing** = `tests/app.js` / `tests/globals.js` only; not test-runner `--grep` or packager `--target`.
 
-**Area example:** firestore-only modules + `require('../packages/firestore/e2e/Pipeline.e2e.js')`; mark `// TEMP: …`.
+<a id="tests-app-js-area-harness"></a>
 
-**`RNFBDebug`** (`tests/globals.js`): set `globalThis.RNFBDebug = true` **locally** for fail-fast focused runs (prints per-case start/finish; disables Mocha retry). **Committed default must stay `false`.** Revert any local `true` before commit — same rule as harness narrowing ([§ before merge](#before-merge-pr-handoff)).
+### Area harness in `tests/app.js` (two platform blocks)
+
+**Canonical owner** for how to narrow the test app. Package workflows name **which module/spec**; this section defines **how** to edit `tests/app.js` so narrowing works on **every** platform.
+
+#### Why two blocks
+
+Committed `tests/app.js` builds `platformSupportedModules` from **two separate blocks** — only one runs per platform at bundle time:
+
+| Block | Runs on | Committed role |
+|-------|---------|----------------|
+| `if (Platform.other) { … push … }` | **macOS / Other** | Full macOS module list |
+| `if (!Platform.other) { … push … }` | **iOS / Android** | Full native module list |
+
+Committed shape: `const platformSupportedModules = []`, then **both** blocks push their full lists.
+
+**Common agent mistake:** set a narrowed initial array (e.g. `['app', 'firestore']`) but leave **`if (!Platform.other)`** pushing every native module → macOS looks narrowed (~700 firestore tests) while iOS/Android still run the **full app** (thousands of tests, unrelated modules like `database` appear in logs). That invalidates [harness narrowing gate](#harness-narrowing-gate-blocking) on native platforms.
+
+#### Apply narrowing (pick one pattern)
+
+**Pattern A — initial array + disable both blocks (recommended for one area on all platforms):**
+
+1. Replace `const platformSupportedModules = []` with the narrowed list (almost always include `'app'`).
+2. Change **both** populate blocks to `if (false && Platform.other)` and `if (false && !Platform.other)` so neither block re-expands the list.
+3. Add `// TEMP: <module> area harness — never commit` above your edits.
+
+```javascript
+// TEMP: firestore area harness — never commit
+const platformSupportedModules = ['app', 'firestore'];
+
+if (false && Platform.other) {
+  // committed macOS list — disabled while narrowed
+  platformSupportedModules.push('app');
+  // …
+}
+
+if (false && !Platform.other) {
+  // committed iOS/Android list — disabled while narrowed
+  platformSupportedModules.push('app');
+  // …
+}
+```
+
+**Pattern B — trim inside each block (when macOS and native lists must differ):**
+
+1. Keep `const platformSupportedModules = []`.
+2. Edit **`if (Platform.other)`** pushes to only the modules needed on macOS.
+3. Edit **`if (!Platform.other)`** pushes to only the modules needed on iOS/Android.
+4. **Both blocks must be edited** before `:test-cover` when the work item requires native platforms — editing only one block is invalid.
+
+Do **not** use `if (false && Platform.other)` on one block while leaving the other block active unless that asymmetry is intentional.
+
+#### Spec loading (optional second narrowing)
+
+Module specs load later in `loadTests()` via `platformSupportedModules.includes('<module>')` — usually `require.context('../packages/<module>/e2e', …)`.
+
+| Goal | Change |
+|------|--------|
+| Full package area | Leave `require.context` as-is; narrowing the module list is enough |
+| Single spec file | Replace `require.context` for that module with `require('../packages/<module>/e2e/<Spec>.e2e.js')` ([sub-suite](#fail-fast-rnfbdebug-and-sub-suite-narrowing) — unit-focused diagnosis only unless package workflow says otherwise) |
+
+#### Revert before `full` tier or `commit`
+
+Restore committed harness on **both** blocks:
+
+1. `const platformSupportedModules = []`
+2. `if (Platform.other) { … }` — full macOS list, **no** `false &&`
+3. `if (!Platform.other) { … }` — full native list, **no** `false &&`
+4. Restore any `require.context` edits; remove `// TEMP` comments
+5. Revert `tests/globals.js` (`RNFBDebug = false`) per [before merge](#before-merge-pr-handoff)
+
+**Pre-flight check:** grep `tests/app.js` — if either block is `if (Platform.other)` / `if (!Platform.other)` **without** `false &&` and pushes modules outside your area, native or macOS runs are not narrowed.
+
+#### Sanity check by platform
+
+| Platform | Narrowed firestore-only (full `packages/firestore/e2e`) | Pipeline-only (`Pipeline.e2e.js`) |
+|----------|--------------------------------------------------------|----------------------------------|
+| macOS | ~**700** passing | ~**100** passing |
+| iOS / Android | Same order of magnitude as macOS for the same spec scope | ~**100** passing |
+
+Pass counts in the **thousands** or unrelated suites (`database`, `crashlytics`, …) in the log → re-apply [both blocks](#tests-app-js-area-harness) and re-run.
+
+**Area example (Pattern A):** firestore-only `platformSupportedModules` + both blocks disabled; full firestore specs via existing `require.context` in `loadTests`.
+
+Package-specific spec names: [Firestore pipeline harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness), [namespace removal § module area harness](../namespace-api-removal-workflow.md#module-area-harness).
+
+<a id="fail-fast-rnfbdebug-and-sub-suite-narrowing"></a>
+
+### Fail-fast (`RNFBDebug`) and sub-suite narrowing
+
+**`RNFBDebug`** (`tests/globals.js`): for **`unit-focused`** and **`area-focused`** tiers, set `globalThis.RNFBDebug = true` **locally before the first `:test-cover`** — not optional. It prints per-case start/finish and **disables Mocha retry/backoff**, so failures surface immediately instead of burning time on retries. **Committed default must stay `false`.** Revert to `false` with other harness edits before **`full`** tier or commit ([§ before merge](#before-merge-pr-handoff)).
+
+| Kind | Mechanism | When |
+|------|-----------|------|
+| **Sub-suite narrowing** | `describe.only` / `require` one e2e file (e.g. `Aggregate/count.e2e.js` only) | **Unit-focused diagnosis only** — after [pre-flight](#pre-flight-is-the-host-clear-to-start) is clean and the **same failure repeats** on back-to-back runs without assertion progress. Never for **`area-focused`** gate closure (no `.only`). Never commit. |
+| **Single-test narrowing** | `it.only(...)` | Same as sub-suite — unit-focused diagnosis only |
+
+Package workflows may name default area specs (e.g. [Firestore pipeline harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness)); sub-suite narrowing is **tighter** than area narrowing for iteration speed.
+
+**E2e diagnosis escalation** (cross-package): [change authoring § implementation inner loop](change-authoring-workflow.md#e2e-diagnosis-escalation).
 
 Package workflows may further restrict narrowing per [validation tier](#e2e-validation-tiers-unit-focused-area-focused-full).
 

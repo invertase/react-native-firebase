@@ -41,8 +41,8 @@ import type {
 import type { PersistentCacheIndexManager } from '../FirestorePersistentCacheIndexManager';
 import type { QueryConstraint } from '../modular/query';
 import type { _Filter } from '../FirestoreFilter';
-import type FirestoreTimestamp from '../FirestoreTimestamp';
-import Blob from '../FirestoreBlob';
+import type { Timestamp } from '../FirestoreTimestamp';
+import { Blob } from '../FirestoreBlob';
 
 /** Optional final argument passed by modular API wrappers (MODULAR_DEPRECATION_ARG). */
 export type FirestoreModularDeprecationArg = string;
@@ -351,7 +351,7 @@ export interface FirestorePipelineExecuteOptionsInternal {
 
 /** Timestamp shape received from native pipeline execution. */
 export type FirestorePipelineTimestampInternal =
-  | FirestoreTimestamp
+  | Timestamp
   | { seconds?: number; nanoseconds?: number }
   | [number, number]
   | number;

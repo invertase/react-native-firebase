@@ -15,7 +15,6 @@
  *
  */
 
-import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import type { FirestoreInternal } from './types/internal';
 import type { DocumentData, FirestoreDataConverter } from './types/firestore';
@@ -52,8 +51,10 @@ export default class DocumentChange {
   }
 
   get doc(): DocumentSnapshot {
-    return createDeprecationProxy(
-      new DocumentSnapshot(this._firestore, this._nativeData.doc, this._converter),
+    return new DocumentSnapshot(
+      this._firestore,
+      this._nativeData.doc,
+      this._converter,
     ) as DocumentSnapshot;
   }
 

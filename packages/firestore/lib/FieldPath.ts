@@ -19,7 +19,7 @@ import { isString } from '@react-native-firebase/app/dist/module/common';
 
 const RESERVED = new RegExp('[~*/\\[\\]]');
 
-export default class FieldPath {
+export class FieldPath {
   _segments: string[];
 
   constructor(...segments: string[]) {
@@ -76,4 +76,13 @@ export function fromDotSeparatedString(path: string): FieldPath {
   }
 
   return new FieldPath(...path.split('.'));
+}
+
+/** Serialize a stored filter/order field path for the native bridge. */
+export function fieldPathOrSegmentsToNative(fieldPath: FieldPath | string[]): string[] {
+  if (fieldPath instanceof FieldPath) {
+    return fieldPath._toArray();
+  }
+
+  return fieldPath;
 }

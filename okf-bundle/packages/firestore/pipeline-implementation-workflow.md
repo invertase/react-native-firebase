@@ -92,9 +92,9 @@ On a **frozen tree** — full [change authoring § independent-review](../../tes
 
 ## Pipeline area harness
 
-Extends [change authoring § harness narrowing](../../testing/change-authoring-workflow.md#harness-narrowing).
+Extends [change authoring § harness narrowing](../../testing/change-authoring-workflow.md#harness-narrowing). **Mechanics:** [running e2e § area harness — two platform blocks](../../testing/running-e2e.md#tests-app-js-area-harness).
 
-**Area setup (required for `unit-focused` and `area-focused` tiers):** firestore-only `platformSupportedModules` + `require('../packages/firestore/e2e/Pipeline.e2e.js')`; optionally set `RNFBDebug = true` **locally** in `tests/globals.js` — **never commit** ([running e2e § RNFBDebug](../../testing/running-e2e.md#fast-iteration-test-narrowing)).
+**Area setup (required for `unit-focused` and `area-focused` tiers):** firestore-only `platformSupportedModules` with **both** `if (Platform.other)` and `if (!Platform.other)` disabled (`if (false && …)` on each) or trimmed inside each block; load `require('../packages/firestore/e2e/Pipeline.e2e.js')` or full firestore `require.context` per scope; **`RNFBDebug = true`** locally per [running e2e § fail-fast](../../testing/running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing) — **never commit**. Revert **both** platform blocks before **full** tier or `commit`.
 
 **Sanity check:** ~**100** passing per platform when only `Pipeline.e2e.js` loads. Pass counts in the **hundreds or thousands** mean full app load — stop and re-apply narrowing ([running-e2e § gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking)).
 

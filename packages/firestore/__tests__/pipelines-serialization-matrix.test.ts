@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { firebase } from '../lib';
+import { getFirestore } from '../lib';
 import { field, timestampDiff, timestampExtract } from '../lib/pipelines';
 import '../lib/pipelines';
 
@@ -19,7 +19,7 @@ describe('pipelines serialization matrix', function () {
   });
 
   describe('timestampDiff global overload matrix', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
 
     it('serializes (Expression, Expression, unit)', function () {
       expect(
@@ -79,7 +79,7 @@ describe('pipelines serialization matrix', function () {
   });
 
   describe('timestampExtract global overload matrix', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
 
     it('serializes (Expression, TimePart)', function () {
       expect(

@@ -16,8 +16,6 @@
  */
 
 import {
-  createDeprecationProxy,
-  filterModularArgument,
   isArray,
   isNull,
   isObject,
@@ -27,14 +25,19 @@ import {
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import { AggregateQuery } from './FirestoreAggregate';
 import DocumentSnapshot from './FirestoreDocumentSnapshot';
-import FieldPath, { fromDotSeparatedString } from './FieldPath';
+import { FieldPath, fromDotSeparatedString } from './FieldPath';
 import { _Filter, generateFilters } from './FirestoreFilter';
 import QueryModifiers from './FirestoreQueryModifiers';
 import QuerySnapshot, { type QuerySnapshotNativeData } from './FirestoreQuerySnapshot';
 import { parseSnapshotArgs, validateWithConverter } from './utils';
 
 import type FirestorePath from './FirestorePath';
-import type { DocumentData, FirestoreDataConverter, ListenSource } from './types/firestore';
+import type {
+  DocumentData,
+  FirestoreDataConverter,
+  ListenSource,
+  Query as QueryInterface,
+} from './types/firestore';
 import type {
   FirestoreInternal,
   DocumentFieldValueInternal,
@@ -44,10 +47,11 @@ import type {
 
 let _id = 0;
 
-export default class Query<
+/** @internal */
+export class Query<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
-> {
+> implements QueryInterface<AppModelType, DbModelType> {
   _firestore: FirestoreInternal;
   _collectionPath: FirestorePath;
   _modifiers: QueryModifiers;
@@ -173,14 +177,12 @@ export default class Query<
     return modifiers.setFieldsCursor(cursor, allFields);
   }
 
-  count(): ReturnType<typeof createDeprecationProxy> {
-    return createDeprecationProxy(
-      new AggregateQuery(
-        this._firestore,
-        this as unknown as Query<DocumentData, DocumentData>,
-        this._collectionPath,
-        this._modifiers,
-      ),
+  count(): AggregateQuery {
+    return new AggregateQuery(
+      this._firestore,
+      this as unknown as Query<DocumentData, DocumentData>,
+      this._collectionPath,
+      this._modifiers,
     );
   }
 
@@ -191,38 +193,34 @@ export default class Query<
   endAt(
     docOrField: DocumentSnapshot | DocumentFieldValueInternal,
     ...fields: DocumentFieldValueInternal[]
-  ): ReturnType<typeof createDeprecationProxy> {
-    return createDeprecationProxy(
-      new Query(
-        this._firestore,
-        this._collectionPath,
-        this._handleQueryCursor(
-          'endAt',
-          docOrField as DocumentSnapshot<AppModelType, DbModelType> | DocumentFieldValueInternal,
-          filterModularArgument(fields),
-        ),
-        this._queryName,
-        this._converter,
+  ): Query<AppModelType, DbModelType> {
+    return new Query(
+      this._firestore,
+      this._collectionPath,
+      this._handleQueryCursor(
+        'endAt',
+        docOrField as DocumentSnapshot<AppModelType, DbModelType> | DocumentFieldValueInternal,
+        fields,
       ),
+      this._queryName,
+      this._converter,
     );
   }
 
   endBefore(
     docOrField: DocumentSnapshot | DocumentFieldValueInternal,
     ...fields: DocumentFieldValueInternal[]
-  ): ReturnType<typeof createDeprecationProxy> {
-    return createDeprecationProxy(
-      new Query(
-        this._firestore,
-        this._collectionPath,
-        this._handleQueryCursor(
-          'endBefore',
-          docOrField as DocumentSnapshot<AppModelType, DbModelType> | DocumentFieldValueInternal,
-          filterModularArgument(fields),
-        ),
-        this._queryName,
-        this._converter,
+  ): Query<AppModelType, DbModelType> {
+    return new Query(
+      this._firestore,
+      this._collectionPath,
+      this._handleQueryCursor(
+        'endBefore',
+        docOrField as DocumentSnapshot<AppModelType, DbModelType> | DocumentFieldValueInternal,
+        fields,
       ),
+      this._queryName,
+      this._converter,
     );
   }
 
@@ -320,7 +318,7 @@ export default class Query<
     return true;
   }
 
-  limit(limit: number): ReturnType<typeof createDeprecationProxy> {
+  limit(limit: number): Query<AppModelType, DbModelType> {
     if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
         "firebase.firestore().collection().limit(*) 'limit' must be a positive integer value.",
@@ -329,12 +327,16 @@ export default class Query<
 
     const modifiers = this._modifiers._copy().limit(limit);
 
-    return createDeprecationProxy(
-      new Query(this._firestore, this._collectionPath, modifiers, this._queryName, this._converter),
+    return new Query(
+      this._firestore,
+      this._collectionPath,
+      modifiers,
+      this._queryName,
+      this._converter,
     );
   }
 
-  limitToLast(limitToLast: number): ReturnType<typeof createDeprecationProxy> {
+  limitToLast(limitToLast: number): Query<AppModelType, DbModelType> {
     if (this._modifiers.isValidLimitToLast(limitToLast)) {
       throw new Error(
         "firebase.firestore().collection().limitToLast(*) 'limitToLast' must be a positive integer value.",
@@ -343,8 +345,12 @@ export default class Query<
 
     const modifiers = this._modifiers._copy().limitToLast(limitToLast);
 
-    return createDeprecationProxy(
-      new Query(this._firestore, this._collectionPath, modifiers, this._queryName, this._converter),
+    return new Query(
+      this._firestore,
+      this._collectionPath,
+      modifiers,
+      this._queryName,
+      this._converter,
     );
   }
 
@@ -360,7 +366,7 @@ export default class Query<
     this._modifiers.validatelimitToLast();
 
     try {
-      const options = parseSnapshotArgs(filterModularArgument(args));
+      const options = parseSnapshotArgs(args);
       snapshotListenOptions = options.snapshotListenOptions;
       callback = options.callback;
       onNext = options.onNext;
@@ -429,10 +435,7 @@ export default class Query<
     return unsubscribe;
   }
 
-  orderBy(
-    fieldPath: string | FieldPath,
-    directionStr?: string,
-  ): ReturnType<typeof createDeprecationProxy> {
+  orderBy(fieldPath: string | FieldPath, directionStr?: string): Query<AppModelType, DbModelType> {
     if (!isString(fieldPath) && !(fieldPath instanceof FieldPath)) {
       throw new Error(
         "firebase.firestore().collection().orderBy(*) 'fieldPath' must be a string or instance of FieldPath.",
@@ -479,38 +482,38 @@ export default class Query<
       throw new Error(`firebase.firestore().collection().orderBy() ${(e as Error).message}`);
     }
 
-    return createDeprecationProxy(
-      new Query(this._firestore, this._collectionPath, modifiers, this._queryName, this._converter),
+    return new Query(
+      this._firestore,
+      this._collectionPath,
+      modifiers,
+      this._queryName,
+      this._converter,
     );
   }
 
   startAfter(
     docOrField: DocumentSnapshot<AppModelType, DbModelType> | DocumentFieldValueInternal,
     ...fields: DocumentFieldValueInternal[]
-  ): ReturnType<typeof createDeprecationProxy> {
-    return createDeprecationProxy(
-      new Query(
-        this._firestore,
-        this._collectionPath,
-        this._handleQueryCursor('startAfter', docOrField, filterModularArgument(fields)),
-        this._queryName,
-        this._converter,
-      ),
+  ): Query<AppModelType, DbModelType> {
+    return new Query(
+      this._firestore,
+      this._collectionPath,
+      this._handleQueryCursor('startAfter', docOrField, fields),
+      this._queryName,
+      this._converter,
     );
   }
 
   startAt(
     docOrField: DocumentSnapshot<AppModelType, DbModelType> | DocumentFieldValueInternal,
     ...fields: DocumentFieldValueInternal[]
-  ): ReturnType<typeof createDeprecationProxy> {
-    return createDeprecationProxy(
-      new Query(
-        this._firestore,
-        this._collectionPath,
-        this._handleQueryCursor('startAt', docOrField, filterModularArgument(fields)),
-        this._queryName,
-        this._converter,
-      ),
+  ): Query<AppModelType, DbModelType> {
+    return new Query(
+      this._firestore,
+      this._collectionPath,
+      this._handleQueryCursor('startAt', docOrField, fields),
+      this._queryName,
+      this._converter,
     );
   }
 
@@ -518,7 +521,7 @@ export default class Query<
     fieldPathOrFilter: string | FieldPath | _Filter,
     opStr?: string,
     value?: DocumentFieldValueInternal,
-  ): ReturnType<typeof createDeprecationProxy> {
+  ): Query<AppModelType, DbModelType> {
     if (
       !isString(fieldPathOrFilter) &&
       !(fieldPathOrFilter instanceof FieldPath) &&
@@ -602,8 +605,12 @@ export default class Query<
       throw new Error(`firebase.firestore().collection().where() ${(e as Error).message}`);
     }
 
-    return createDeprecationProxy(
-      new Query(this._firestore, this._collectionPath, modifiers, this._queryName, this._converter),
+    return new Query(
+      this._firestore,
+      this._collectionPath,
+      modifiers,
+      this._queryName,
+      this._converter,
     );
   }
 
@@ -639,3 +646,5 @@ export default class Query<
     );
   }
 }
+
+export default Query;

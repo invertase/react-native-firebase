@@ -27,14 +27,14 @@ import {
 } from '@react-native-firebase/app/dist/module/common';
 import type { Firestore } from '../types/firestore';
 import type { FirestoreInternal } from '../types/internal';
-import Blob from '../FirestoreBlob';
+import { Blob } from '../FirestoreBlob';
 import { DOCUMENT_ID } from '../FieldPath';
-import FirestoreGeoPoint from '../FirestoreGeoPoint';
+import { GeoPoint as FirestoreGeoPoint } from '../FirestoreGeoPoint';
 import FirestorePath from '../FirestorePath';
-import FirestoreTimestamp from '../FirestoreTimestamp';
+import { Timestamp as FirestoreTimestamp } from '../FirestoreTimestamp';
 import { getTypeMapInt, getTypeMapName } from './typemap';
 import { Bytes } from '../modular/Bytes';
-import FirestoreVectorValue from '../FirestoreVectorValue';
+import { VectorValue as FirestoreVectorValue } from '../FirestoreVectorValue';
 
 let FirestoreDocumentReference:
   | (new (

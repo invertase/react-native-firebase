@@ -22,38 +22,6 @@ describe('firestore.collection().doc()', function () {
     return wipe();
   });
 
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('throws if path is not a document', function () {
-      try {
-        firebase.firestore().collection(COLLECTION).doc('bar/baz');
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'documentPath' must point to a document");
-        return Promise.resolve();
-      }
-    });
-
-    it('generates an ID if no path is provided', function () {
-      const instance = firebase.firestore().collection(COLLECTION).doc();
-      should.equal(20, instance.id.length);
-    });
-
-    it('uses path if provided', function () {
-      const instance = firebase.firestore().collection(COLLECTION).doc('bar');
-      instance.id.should.eql('bar');
-    });
-  });
-
   describe('modular', function () {
     it('throws if path is not a document', function () {
       const { getFirestore, collection, doc } = firestoreModular;

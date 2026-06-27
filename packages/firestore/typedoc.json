@@ -1,13 +1,15 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": [
-    "lib/modular.ts",
+    "lib/index.ts",
     "lib/FirestoreTransaction.ts",
     "lib/FirestoreWriteBatch.ts",
     "lib/FirestoreFilter.ts",
     "lib/FirestoreDocumentChange.ts",
     "lib/FirestoreDocumentSnapshot.ts",
     "lib/FirestorePersistentCacheIndexManager.ts",
+    "lib/FirestoreAggregate.ts",
+    "lib/FirestoreQuery.ts",
     "lib/FirestoreQuerySnapshot.ts",
     "lib/types/firestore.ts",
     "lib/pipelines/index.ts",

@@ -20,7 +20,7 @@ import { isDate, isNumber, isObject } from '@react-native-firebase/app/dist/modu
 // Earliest date supported by Firestore timestamps (0001-01-01T00:00:00Z).
 const MIN_SECONDS = -62135596800;
 
-export default class Timestamp {
+export class Timestamp {
   static now(): Timestamp {
     return Timestamp.fromMillis(Date.now());
   }

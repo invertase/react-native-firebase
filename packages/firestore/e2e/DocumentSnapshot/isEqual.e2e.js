@@ -17,58 +17,6 @@
 const COLLECTION = 'firestore';
 
 describe('firestore.doc() -> snapshot.isEqual()', function () {
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('throws if other is not a DocumentSnapshot', async function () {
-      try {
-        const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
-
-        const docSnapshot = await docRef.get();
-        docSnapshot.isEqual(123);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'other' expected a DocumentSnapshot instance");
-        return Promise.resolve();
-      }
-    });
-
-    it('returns false when not equal', async function () {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/isEqual-false-exists`);
-      await docRef.set({ foo: 'bar' });
-
-      const docSnapshot1 = await docRef.get();
-      const docSnapshot2 = await firebase.firestore().doc(`${COLLECTION}/idonotexist`).get();
-      await docRef.set({ foo: 'baz' });
-      const docSnapshot3 = await docRef.get();
-
-      const eql1 = docSnapshot1.isEqual(docSnapshot2);
-      const eql2 = docSnapshot1.isEqual(docSnapshot3);
-
-      eql1.should.be.False();
-      eql2.should.be.False();
-    });
-
-    it('returns true when equal', async function () {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/isEqual-true-exists`);
-      await docRef.set({ foo: 'bar' });
-
-      const docSnapshot = await docRef.get();
-
-      const eql1 = docSnapshot.isEqual(docSnapshot);
-
-      eql1.should.be.True();
-    });
-  });
-
   describe('modular', function () {
     it('throws if other is not a DocumentSnapshot', async function () {
       const { getFirestore, doc, getDoc, snapshotEqual } = firestoreModular;

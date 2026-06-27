@@ -6,6 +6,7 @@ Firestore Pipelines (`pipelines` entry) and native bridge behavior.
 
 ## Documents
 
+* [**Other platform — Firestore Lite**](other-platform-firestore-lite.md) — macOS/Other uses `firebase/firestore/lite` only; unsupported API list; web bridge files
 * [Coverage work queue](pipeline-coverage-work-queue.md) — ephemeral gates and `next_work_type`
 * [Pipelines implementation workflow](pipeline-implementation-workflow.md) — compare-types, serialization, coverage snapshots; extends [change authoring](../../testing/change-authoring-workflow.md)
 * [Serialization testing](serialization-testing.md) — required Jest/e2e checks per expression export

@@ -1,15 +1,9 @@
 /*
  * Consumer-facing API type tests for @react-native-firebase/firestore.
- * Part 1: Namespaced API (firebase.firestore(), default firestore()).
- * Part 2: Modular API (getFirestore, doc, collection, setDoc, etc. from lib/modular.ts).
+ * Modular API (getFirestore, doc, collection, setDoc, etc.).
  */
 
-// ---------------------------------------------------------------------------
-// PART 1 — NAMESPACED API
-// ---------------------------------------------------------------------------
-// Import namespaced API: default export and firebase, plus types used in Part 1.
-import firestore, {
-  firebase,
+import {
   getFirestore,
   connectFirestoreEmulator,
   setLogLevel,
@@ -78,22 +72,20 @@ import firestore, {
   CACHE_SIZE_UNLIMITED,
   AggregateField,
   AggregateQuerySnapshot,
-  DocumentSnapshot,
   DocumentReference,
-  Query,
   QueryDocumentSnapshot,
-  Transaction,
-  WriteBatch,
 } from '.';
 import type {
-  FirebaseFirestoreTypes,
+  Query,
   Firestore,
   DocumentData,
   LoadBundleTaskProgress,
   FirestoreDataConverter,
   WithFieldValue,
   PartialWithFieldValue,
+  DocumentSnapshot as FirestoreDocumentSnapshot,
 } from '.';
+import { getApp } from '@react-native-firebase/app';
 import {
   execute,
   field,
@@ -109,7 +101,6 @@ import {
   average as pipelineAverage,
   maximum,
   constant,
-  // comparison / logical
   greaterThan,
   equal,
   notEqual,
@@ -136,10 +127,8 @@ import {
   conditional,
   logicalMaximum,
   logicalMinimum,
-  // ordering
   ascending,
   descending,
-  // arithmetic
   add,
   subtract,
   divide,
@@ -157,7 +146,6 @@ import {
   pow,
   trunc,
   rand,
-  // aggregates
   count as pipelineCount, // duplicate name from main module
   countDistinct,
   countIf,
@@ -166,13 +154,11 @@ import {
   arrayAgg,
   arrayAggDistinct,
   minimum,
-  // document / collection
   documentId as pipelineDocumentId, // duplicate name from main module
   collectionId,
   type as pipelineType,
   currentTimestamp,
   variable,
-  // array
   array,
   arrayFilter,
   arrayFirst,
@@ -193,7 +179,6 @@ import {
   arrayGet,
   arrayLength,
   arraySum,
-  // map
   map,
   mapEntries,
   mapGet,
@@ -202,7 +187,6 @@ import {
   mapRemove,
   mapSet,
   mapValues,
-  // string
   concat,
   toUpper,
   trim,
@@ -226,7 +210,6 @@ import {
   regexFind,
   regexFindAll,
   regexMatch,
-  // timestamp
   timestampAdd,
   timestampDiff,
   timestampExtract,
@@ -239,12 +222,10 @@ import {
   unixMicrosToTimestamp,
   unixMillisToTimestamp,
   unixSecondsToTimestamp,
-  // vector
   cosineDistance,
   dotProduct,
   euclideanDistance,
   vectorLength,
-  // result utility
   pipelineResultEqual,
 } from '@react-native-firebase/firestore/pipelines';
 import type {
@@ -289,240 +270,14 @@ import type {
   OneOf,
 } from '@react-native-firebase/firestore/pipelines';
 
-// ----- Default export and module access -----
-console.log(firestore().app);
-console.log(firestore.SDK_VERSION);
-console.log(firestore.firebase.SDK_VERSION);
-
-// ----- firebase.firestore at root -----
-console.log(firebase.firestore().app.name);
-console.log(firebase.firestore().collection('foo'));
-
-// ----- firebase.firestore at app level -----
-console.log(firebase.app().firestore().app.name);
-console.log(firebase.app().firestore().collection('foo'));
-
-// ----- Multi-app and database ID -----
-console.log(firebase.firestore(firebase.app()).app.name);
-console.log(firebase.firestore(firebase.app('foo')).app.name);
-// Database ID: firebase.app().firestore(databaseId)
-console.log(firebase.app().firestore('(default)').app.name);
-console.log(firebase.app().firestore('other-db').app.name);
-
-// ----- Default export with app arg -----
-console.log(firestore(firebase.app()).app.name);
-
-// ----- Statics (FirestoreStatics) -----
-console.log(firebase.firestore.Blob);
-console.log(firebase.firestore.FieldPath);
-console.log(firebase.firestore.FieldValue);
-console.log(firebase.firestore.GeoPoint);
-console.log(firebase.firestore.Timestamp);
-console.log(firebase.firestore.Filter);
-console.log(firebase.firestore.CACHE_SIZE_UNLIMITED);
-firebase.firestore.setLogLevel('debug');
-
-// ----- Firestore instance: references and batch -----
-const nsFirestore = firebase.firestore();
-console.log(nsFirestore.collection('users'));
-console.log(nsFirestore.collection('users').doc('alice'));
-console.log(nsFirestore.collection('users').doc('alice').collection('orders'));
-console.log(nsFirestore.collectionGroup('orders'));
-console.log(nsFirestore.batch());
-
-// ----- CollectionReference -----
-const nsColl = nsFirestore.collection('users');
-const nsDocRef = nsColl.doc('alice');
-const nsQuery = nsColl.where('name', '==', 'test');
-
-nsDocRef.set({ name: 'Alice', count: 1 }).then(() => {});
-nsDocRef.set({ name: 'Alice' }, { merge: true }).then(() => {});
-
-nsDocRef.update({ count: 2 }).then(() => {});
-nsDocRef.update('count', 3).then(() => {});
-
-nsDocRef.delete().then(() => {});
-
-nsColl.add({ name: 'Bob' }).then((ref: FirebaseFirestoreTypes.DocumentReference) => {
-  console.log(ref.id);
-});
-
-nsDocRef.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
-  console.log(snap.exists());
-  console.log(snap.data());
-  console.log(snap.id);
-  console.log(snap.ref);
-  console.log(snap.metadata);
-});
-nsDocRef.get({ source: 'cache' }).then(() => {});
-nsDocRef.get({ source: 'server' }).then(() => {});
-
-nsQuery.get().then((snap: FirebaseFirestoreTypes.QuerySnapshot) => {
-  console.log(snap.docs);
-  console.log(snap.empty);
-  console.log(snap.size);
-  console.log(snap.docChanges());
-});
-
-// ----- DocumentSnapshot -----
-nsDocRef.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
-  if (snap.exists()) {
-    const d = snap.data();
-    console.log(d);
-  }
-  console.log(snap.get('field'));
-  console.log(snap.metadata.isEqual(snap.metadata));
-});
-
-// ----- onSnapshot (document) -----
-const unsubDoc1 = nsDocRef.onSnapshot((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
-  console.log(snap.data());
-});
-const unsubDoc2 = nsDocRef.onSnapshot(
-  { includeMetadataChanges: true },
-  (_snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
-);
-const unsubDoc4 = nsDocRef.onSnapshot(
-  { source: 'cache' },
-  (_snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
-);
-const unsubDoc3 = nsDocRef.onSnapshot({
-  next: (_snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
-  error: (_e: Error) => {},
-});
-unsubDoc1();
-unsubDoc2();
-unsubDoc3();
-unsubDoc4();
-
-// ----- onSnapshot (query) -----
-const unsubQuery1 = nsQuery.onSnapshot((snap: FirebaseFirestoreTypes.QuerySnapshot) => {
-  console.log(snap.docs);
-});
-const unsubQuery2 = nsQuery.onSnapshot(
-  { includeMetadataChanges: true },
-  { next: (_snap: FirebaseFirestoreTypes.QuerySnapshot) => {}, error: (_e: Error) => {} },
-);
-const unsubQuery3 = nsQuery.onSnapshot(
-  { source: 'cache', includeMetadataChanges: true },
-  { next: (_snap: FirebaseFirestoreTypes.QuerySnapshot) => {}, error: (_e: Error) => {} },
-);
-unsubQuery1();
-unsubQuery2();
-unsubQuery3();
-
-// ----- Query: where, orderBy, limit, cursor -----
-const nsQuery2 = nsColl
-  .where('age', '>', 18)
-  .orderBy('age', 'desc')
-  .orderBy('name')
-  .limit(10)
-  .limitToLast(5)
-  .startAt(1)
-  .startAfter(2)
-  .endAt(10)
-  .endBefore(9);
-void nsQuery2;
-
-// ----- Firestore instance: loadBundle, namedQuery, runTransaction -----
-const nsLoadTask = nsFirestore.loadBundle('bundle-data');
-console.log(nsLoadTask.then(() => {}));
-
-const nsNamed = nsFirestore.namedQuery('my-query');
-console.log(nsNamed);
-
-nsFirestore
-  .runTransaction(async (tx: FirebaseFirestoreTypes.Transaction) => {
-    const snap = await tx.get(nsDocRef);
-    if (snap.exists()) {
-      tx.update(nsDocRef, { count: ((snap.data() as { count?: number })?.count ?? 0) + 1 });
-    }
-    return null;
-  })
-  .then(() => {});
-
-// ----- Firestore instance: persistence and network -----
-nsFirestore.clearPersistence().then(() => {});
-nsFirestore.waitForPendingWrites().then(() => {});
-nsFirestore.terminate().then(() => {});
-nsFirestore.useEmulator('localhost', 8080);
-nsFirestore.enableNetwork().then(() => {});
-nsFirestore.disableNetwork().then(() => {});
-
-// ----- Firestore instance: settings -----
-nsFirestore.settings({ persistence: true }).then(() => {});
-
-// ----- Persistent cache index manager (namespaced) -----
-const nsIndexManager = nsFirestore.persistentCacheIndexManager();
-if (nsIndexManager) {
-  nsIndexManager.enableIndexAutoCreation().then(() => {});
-  nsIndexManager.disableIndexAutoCreation().then(() => {});
-  nsIndexManager.deleteAllIndexes().then(() => {});
-}
-
-// ----- WriteBatch (namespaced) -----
-const nsBatch = nsFirestore.batch();
-nsBatch.set(nsDocRef, { name: 'Alice' });
-nsBatch.set(nsDocRef, { name: 'Alice' }, { merge: true });
-nsBatch.update(nsDocRef, { count: 1 });
-nsBatch.delete(nsDocRef);
-nsBatch.commit().then(() => {});
-
-// ----- Namespaced FieldValue (statics) -----
-const nsFieldPath = new firebase.firestore.FieldPath('user', 'name');
-void nsFieldPath;
-const nsBlob = firebase.firestore.Blob.fromBase64String('dGVzdA==');
-void nsBlob;
-const nsGeoPoint = new firebase.firestore.GeoPoint(0, 0);
-void nsGeoPoint;
-const nsTimestamp = firebase.firestore.Timestamp.now();
-void nsTimestamp;
-const nsDelete = firebase.firestore.FieldValue.delete();
-const nsServerTs = firebase.firestore.FieldValue.serverTimestamp();
-const nsArrayUnion = firebase.firestore.FieldValue.arrayUnion(1, 2);
-const nsArrayRemove = firebase.firestore.FieldValue.arrayRemove(1);
-void nsArrayRemove;
-const nsIncrement = firebase.firestore.FieldValue.increment(1);
-
-nsDocRef
-  .set({
-    name: 'x',
-    deleted: nsDelete,
-    ts: nsServerTs,
-    arr: nsArrayUnion,
-    cnt: nsIncrement,
-  })
-  .then(() => {});
-
-// ----- withConverter (namespaced) -----
-interface User {
-  name: string;
-  age: number;
-}
-const nsConverter: FirebaseFirestoreTypes.FirestoreDataConverter<User> = {
-  toFirestore(u: User) {
-    return u;
-  },
-  fromFirestore(snap: FirebaseFirestoreTypes.QueryDocumentSnapshot): User {
-    return snap.data() as User;
-  },
-};
-const nsCollWithConv = nsFirestore.collection('users').withConverter(nsConverter);
-const nsDocWithConv = nsCollWithConv.doc('alice');
-nsDocWithConv.set({ name: 'Alice', age: 30 }).then(() => {});
-nsDocWithConv.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot<User>) => {
-  const u = snap.data();
-  if (u) console.log(u.name, u.age);
-});
-
 // ----- getFirestore -----
 const modFirestore1 = getFirestore();
 console.log(modFirestore1.app.name);
 
-const modFirestore2 = getFirestore(firebase.app());
+const modFirestore2 = getFirestore(getApp());
 console.log(modFirestore2.app.name);
 
-const modFirestore3 = getFirestore(firebase.app(), 'other-db');
+const modFirestore3 = getFirestore(getApp(), 'other-db');
 console.log(modFirestore3.app.name);
 
 // ----- connectFirestoreEmulator -----
@@ -535,7 +290,7 @@ connectFirestoreEmulator(modFirestore1, 'localhost', 8080, {
 setLogLevel('debug');
 
 // ----- initializeFirestore -----
-initializeFirestore(firebase.app(), {
+initializeFirestore(getApp(), {
   cacheSizeBytes: CACHE_SIZE_UNLIMITED,
 }).then((fs: Firestore) => {
   console.log(fs.app.name);
@@ -582,27 +337,22 @@ runTransaction(modFirestore1, async tx => {
 }).then(() => {});
 
 // Root runtime exports must also carry the generic modular type surface.
-function acceptRootDocumentSnapshot(_snap: DocumentSnapshot<DocumentData>) {}
-function acceptRootTransaction(tx: Transaction, tRef: DocumentReference<DocumentData>) {
-  tx.update(tRef, { active: true });
-}
+function acceptRootDocumentSnapshot(_snap: FirestoreDocumentSnapshot<DocumentData>) {}
 runTransaction(modFirestore1, async tx => {
-  const rootTx: Transaction = tx;
-  const rootSnap: DocumentSnapshot<DocumentData> = await rootTx.get(modDoc);
+  const rootSnap = await tx.get(modDoc);
   acceptRootDocumentSnapshot(rootSnap);
-  acceptRootTransaction(rootTx, modDoc);
+  tx.update(modDoc, { active: true });
   if (rootSnap.exists()) {
     const rootData: DocumentData = rootSnap.data();
     void rootData;
   }
   return rootSnap;
-}).then((rootSnap: DocumentSnapshot<DocumentData>) => {
+}).then(rootSnap => {
   acceptRootDocumentSnapshot(rootSnap);
 });
-const rootBatch: WriteBatch = writeBatch(modFirestore1);
+const rootBatch = writeBatch(modFirestore1);
 rootBatch.update(modDoc, { active: true });
 void acceptRootDocumentSnapshot;
-void acceptRootTransaction;
 void rootBatch;
 
 // ----- query, where, or, and, orderBy, startAt, startAfter, endAt, endBefore, limit, limitToLast -----

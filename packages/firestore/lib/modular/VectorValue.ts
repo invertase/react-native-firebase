@@ -15,9 +15,7 @@
  *
  */
 
-import VectorValue from '../FirestoreVectorValue';
-
-export { VectorValue };
+import { VectorValue } from '../FirestoreVectorValue';
 
 export function vector(values?: number[]): VectorValue {
   return new VectorValue(values);

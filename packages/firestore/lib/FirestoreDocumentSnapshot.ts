@@ -17,7 +17,7 @@
 
 import { isString } from '@react-native-firebase/app/dist/module/common';
 import DocumentReference, { provideDocumentSnapshotClass } from './FirestoreDocumentReference';
-import FieldPath, { fromDotSeparatedString } from './FieldPath';
+import { FieldPath, fromDotSeparatedString } from './FieldPath';
 import FirestorePath from './FirestorePath';
 import SnapshotMetadata from './FirestoreSnapshotMetadata';
 import type { SnapshotOptions } from './types/firestore';

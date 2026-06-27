@@ -17,7 +17,7 @@
 
 import { Base64, isString } from '@react-native-firebase/app/dist/module/common';
 
-export default class Blob {
+export class Blob {
   _binaryString: string;
 
   constructor(internal = false, binaryString?: string) {

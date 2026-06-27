@@ -20,8 +20,6 @@ import {
   isString,
   isUndefined,
   isNull,
-  createDeprecationProxy,
-  filterModularArgument,
 } from '@react-native-firebase/app/dist/module/common';
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import {
@@ -172,21 +170,18 @@ export default class DocumentReference<
       .documentGet(this.path, options)
       .then(
         (data: unknown) =>
-          createDeprecationProxy(
-            new FirestoreDocumentSnapshotClass!(
-              this._firestore,
-              data as DocumentSnapshotNativeData,
-              this._converter as unknown as FirestoreDataConverter<
-                DocumentData,
-                DocumentData
-              > | null,
-            ),
+          new FirestoreDocumentSnapshotClass!(
+            this._firestore,
+            data as DocumentSnapshotNativeData,
+            this._converter as unknown as FirestoreDataConverter<DocumentData, DocumentData> | null,
           ) as DocumentSnapshot<AppModelType, DbModelType>,
       );
   }
 
   isEqual(other: DocumentReference<AppModelType, DbModelType>): boolean {
-    if (!(other instanceof DocumentReference)) {
+    const otherRef = other as DocumentReference<AppModelType, DbModelType> & { type?: string };
+
+    if (!(other instanceof DocumentReference) || otherRef.type !== 'document') {
       throw new Error(
         "firebase.firestore().doc().isEqual(*) 'other' expected a DocumentReference instance.",
       );
@@ -239,15 +234,10 @@ export default class DocumentReference<
         } else {
           const snapshot = event.body.snapshot;
           if (!snapshot) return;
-          const documentSnapshot = createDeprecationProxy(
-            new FirestoreDocumentSnapshotClass!(
-              this._firestore,
-              snapshot,
-              this._converter as unknown as FirestoreDataConverter<
-                DocumentData,
-                DocumentData
-              > | null,
-            ),
+          const documentSnapshot = new FirestoreDocumentSnapshotClass!(
+            this._firestore,
+            snapshot,
+            this._converter as unknown as FirestoreDataConverter<DocumentData, DocumentData> | null,
           ) as DocumentSnapshot<AppModelType, DbModelType>;
           handleSuccess(documentSnapshot);
         }
@@ -293,7 +283,7 @@ export default class DocumentReference<
   }
 
   update(...args: unknown[]): Promise<void> {
-    const updatedArgs = filterModularArgument(args);
+    const updatedArgs = args;
     if (updatedArgs.length === 0) {
       throw new Error(
         'firebase.firestore().doc().update(*) expected at least 1 argument but was called with 0 arguments.',

@@ -38,7 +38,7 @@ function validateArrayElements(elements: unknown[]): void {
   }
 }
 
-export default class FieldValue {
+export class FieldValue {
   _type: string;
   _elements: unknown;
 

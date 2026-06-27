@@ -15,22 +15,26 @@
  *
  */
 
-import { getApp, setLogLevel as appSetLogLevel } from '@react-native-firebase/app';
-import { isObject, MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
+import { getOrCreateModularInstance } from '@react-native-firebase/app/dist/module/internal';
+import { isObject } from '@react-native-firebase/app/dist/module/common';
+import { Query as QueryClass } from './FirestoreQuery';
+import { FirebaseFirestoreModule, config } from './FirestoreModule';
+import FirestoreStatics from './FirestoreStatics';
+import { LoadBundleTask } from './LoadBundleTask';
+import { version } from './version';
 import {
   AggregateField,
   fieldPathFromArgument,
   AggregateQuerySnapshot,
 } from './FirestoreAggregate';
-import QueryImpl from './FirestoreQuery';
-import { LoadBundleTask } from './LoadBundleTask';
+import { PersistentCacheIndexManager } from './FirestorePersistentCacheIndexManager';
+import type { FirebaseApp } from '@react-native-firebase/app';
 import type {
   CollectionReference,
   DocumentData,
   DocumentReference,
   Firestore,
   FirestoreSettings,
-  FirebaseApp,
   EmulatorMockTokenOptions,
   Query,
   SetOptions,
@@ -40,8 +44,9 @@ import type {
   PartialWithFieldValue,
   WriteBatch,
   AggregateSpec,
-  LoadBundleTaskProgress,
   LogLevel,
+  Unsubscribe,
+  LoadBundleTaskProgress,
 } from './types/firestore';
 import type {
   CollectionReferenceInternal,
@@ -50,59 +55,76 @@ import type {
   ParentReferenceInternal,
   PersistentCacheIndexManagerInternal,
   QueryInternal,
-  QueryWithAggregateInternals,
   ReferenceInternal,
-  AppWithFirestoreInternal,
   FirestoreAggregateQuerySpecInternal,
   FirestoreAggregateQueryResultInternal,
+  QueryWithAggregateInternals,
 } from './types/internal';
-import { PersistentCacheIndexManager } from './FirestorePersistentCacheIndexManager';
-import type { FieldPath } from './modular/FieldPath';
-import type { Unsubscribe } from './types/firestore';
+import type { FieldPath } from './FieldPath';
 
-export { AggregateField, AggregateQuerySnapshot } from './FirestoreAggregate';
+// react-native at least through 0.77 does not correctly support URL.host, which
+// is needed by firebase-js-sdk. It appears that in 0.80+ it is supported, so this
+// (and the package.json entry for this package) should be removed when the minimum
+// supported version of react-native is 0.80 or higher.
+import 'react-native-url-polyfill/auto';
 
-export const CACHE_SIZE_UNLIMITED = -1;
+export const SDK_VERSION = version;
+
 const PIPELINE_RUNTIME_INSTALLER_SYMBOL = Symbol.for('RNFBFirestorePipelineRuntimeInstaller');
 
 type GlobalWithPipelineInstaller = typeof globalThis & {
   [PIPELINE_RUNTIME_INSTALLER_SYMBOL]?: (firestore?: FirestoreInternal) => void;
 };
 
+export const CACHE_SIZE_UNLIMITED = -1;
 export function getFirestore(): Firestore;
 export function getFirestore(app: FirebaseApp): Firestore;
 export function getFirestore(app: FirebaseApp, databaseId: string): Firestore;
+export function getFirestore(databaseId: string): Firestore;
 export function getFirestore(
   appOrDatabaseId?: FirebaseApp | string,
   databaseId?: string,
 ): Firestore {
-  const app = (name?: string) => getApp(name) as unknown as AppWithFirestoreInternal;
-  let firestore: Firestore;
+  let firestore: FirestoreInternal;
   if (typeof appOrDatabaseId === 'string') {
-    firestore = app().firestore(appOrDatabaseId);
+    firestore = getOrCreateModularInstance(
+      FirebaseFirestoreModule,
+      config,
+      undefined,
+      appOrDatabaseId,
+    ) as unknown as FirestoreInternal;
   } else if (appOrDatabaseId) {
-    if (databaseId) {
-      firestore = app(appOrDatabaseId.name).firestore(databaseId);
-    } else {
-      firestore = app(appOrDatabaseId.name).firestore();
-    }
+    firestore = getOrCreateModularInstance(
+      FirebaseFirestoreModule,
+      config,
+      appOrDatabaseId,
+      databaseId,
+    ) as unknown as FirestoreInternal;
   } else if (databaseId) {
-    firestore = app().firestore(databaseId);
+    firestore = getOrCreateModularInstance(
+      FirebaseFirestoreModule,
+      config,
+      undefined,
+      databaseId,
+    ) as unknown as FirestoreInternal;
   } else {
-    firestore = app().firestore();
+    firestore = getOrCreateModularInstance(
+      FirebaseFirestoreModule,
+      config,
+    ) as unknown as FirestoreInternal;
   }
 
   const runtimeGlobal = globalThis as GlobalWithPipelineInstaller;
   const installPipelineRuntime = runtimeGlobal[PIPELINE_RUNTIME_INSTALLER_SYMBOL];
   if (typeof installPipelineRuntime === 'function') {
     try {
-      installPipelineRuntime(firestore as FirestoreInternal);
+      installPipelineRuntime(firestore);
     } catch {
       // Avoid changing getFirestore behavior if optional pipeline runtime install fails.
     }
   }
 
-  return firestore;
+  return firestore as Firestore;
 }
 
 export function doc(
@@ -136,11 +158,10 @@ export function doc<AppModelType = DocumentData, DbModelType extends DocumentDat
       pathSegments.map(segment => segment.replace(/^\/|\/$/g, '')).join('/');
   }
 
-  return (parent as unknown as ParentReferenceInternal).doc.call(
-    parent,
-    resolvedPath,
-    MODULAR_DEPRECATION_ARG,
-  ) as DocumentReference<AppModelType, DbModelType>;
+  return (parent as unknown as ParentReferenceInternal).doc(resolvedPath) as DocumentReference<
+    AppModelType,
+    DbModelType
+  >;
 }
 
 export function collection(
@@ -174,10 +195,8 @@ export function collection<
     resolvedPath = `${resolvedPath}/${pathSegments.map(segment => segment.replace(/^\/|\/$/g, '')).join('/')}`;
   }
 
-  return (parent as unknown as ParentReferenceInternal).collection.call(
-    parent,
+  return (parent as unknown as ParentReferenceInternal).collection(
     resolvedPath,
-    MODULAR_DEPRECATION_ARG,
   ) as CollectionReference<DocumentData, DocumentData>;
 }
 
@@ -189,22 +208,17 @@ export function refEqual<AppModelType, DbModelType extends DocumentData>(
     | DocumentReference<AppModelType, DbModelType>
     | CollectionReference<AppModelType, DbModelType>,
 ): boolean {
-  return (left as unknown as ReferenceInternal<AppModelType, DbModelType>).isEqual.call(
-    left,
-    right,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (left as unknown as ReferenceInternal<AppModelType, DbModelType>).isEqual(right);
 }
 
 export function collectionGroup(
   firestore: Firestore,
   collectionId: string,
 ): Query<DocumentData, DocumentData> {
-  return (firestore as FirestoreInternal).collectionGroup.call(
-    firestore,
-    collectionId,
-    MODULAR_DEPRECATION_ARG,
-  ) as Query<DocumentData, DocumentData>;
+  return (firestore as FirestoreInternal).collectionGroup(collectionId) as Query<
+    DocumentData,
+    DocumentData
+  >;
 }
 
 let snapshotInSyncListenerId = 0;
@@ -254,11 +268,9 @@ export function setDoc<AppModelType, DbModelType extends DocumentData>(
   data: WithFieldValue<AppModelType> | PartialWithFieldValue<AppModelType>,
   options?: SetOptions,
 ): Promise<void> {
-  return (reference as unknown as DocumentReferenceInternal<AppModelType, DbModelType>).set.call(
-    reference,
+  return (reference as unknown as DocumentReferenceInternal<AppModelType, DbModelType>).set(
     data,
     options,
-    MODULAR_DEPRECATION_ARG,
   );
 }
 
@@ -281,43 +293,35 @@ export function updateDoc<AppModelType, DbModelType extends DocumentData>(
   const ref = reference as unknown as DocumentReferenceInternal<AppModelType, DbModelType>;
 
   if (!fieldOrUpdateData) {
-    return ref.update.call(reference, MODULAR_DEPRECATION_ARG);
+    return ref.update();
   }
 
   if (!value) {
-    return ref.update.call(reference, fieldOrUpdateData, MODULAR_DEPRECATION_ARG);
+    return ref.update(fieldOrUpdateData);
   }
 
   if (!Array.isArray(moreFieldsAndValues)) {
-    return ref.update.call(reference, fieldOrUpdateData, value, MODULAR_DEPRECATION_ARG);
+    return ref.update(fieldOrUpdateData, value);
   }
 
-  return ref.update.call(
-    reference,
-    fieldOrUpdateData,
-    value,
-    ...moreFieldsAndValues,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return ref.update(fieldOrUpdateData, value, ...moreFieldsAndValues);
 }
 
 export function addDoc<AppModelType, DbModelType extends DocumentData>(
   reference: CollectionReference<AppModelType, DbModelType>,
   data: WithFieldValue<AppModelType>,
 ): Promise<DocumentReference<AppModelType, DbModelType>> {
-  return (reference as unknown as CollectionReferenceInternal<AppModelType, DbModelType>).add.call(
-    reference,
+  return (reference as unknown as CollectionReferenceInternal<AppModelType, DbModelType>).add(
     data,
-    MODULAR_DEPRECATION_ARG,
   ) as Promise<DocumentReference<AppModelType, DbModelType>>;
 }
 
 export function enableNetwork(firestore: Firestore): Promise<void> {
-  return (firestore as FirestoreInternal).enableNetwork.call(firestore, MODULAR_DEPRECATION_ARG);
+  return (firestore as FirestoreInternal).enableNetwork();
 }
 
 export function disableNetwork(firestore: Firestore): Promise<void> {
-  return (firestore as FirestoreInternal).disableNetwork.call(firestore, MODULAR_DEPRECATION_ARG);
+  return (firestore as FirestoreInternal).disableNetwork();
 }
 
 export function clearPersistence(firestore: Firestore): Promise<void> {
@@ -326,18 +330,15 @@ export function clearPersistence(firestore: Firestore): Promise<void> {
 }
 
 export function clearIndexedDbPersistence(firestore: Firestore): Promise<void> {
-  return (firestore as FirestoreInternal).clearPersistence.call(firestore, MODULAR_DEPRECATION_ARG);
+  return (firestore as FirestoreInternal).clearPersistence();
 }
 
 export function terminate(firestore: Firestore): Promise<void> {
-  return (firestore as FirestoreInternal).terminate.call(firestore, MODULAR_DEPRECATION_ARG);
+  return (firestore as FirestoreInternal).terminate();
 }
 
 export function waitForPendingWrites(firestore: Firestore): Promise<void> {
-  return (firestore as FirestoreInternal).waitForPendingWrites.call(
-    firestore,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (firestore as FirestoreInternal).waitForPendingWrites();
 }
 
 export async function initializeFirestore(
@@ -345,10 +346,14 @@ export async function initializeFirestore(
   settings: FirestoreSettings,
   databaseId?: string,
 ): Promise<Firestore> {
-  const firebase = getApp(app.name) as unknown as { firestore(databaseId?: string): Firestore };
-  const firestore = firebase.firestore(databaseId) as unknown as FirestoreInternal;
-  await firestore.settings.call(firestore, settings, MODULAR_DEPRECATION_ARG);
-  return firestore;
+  const firestore = getOrCreateModularInstance(
+    FirebaseFirestoreModule,
+    config,
+    app,
+    databaseId,
+  ) as unknown as FirestoreInternal;
+  await firestore.settings(settings);
+  return firestore as Firestore;
 }
 
 export function connectFirestoreEmulator(
@@ -357,36 +362,25 @@ export function connectFirestoreEmulator(
   port: number,
   options?: { mockUserToken?: EmulatorMockTokenOptions | string },
 ): void {
-  return (firestore as FirestoreInternal).useEmulator.call(
-    firestore,
-    host,
-    port,
-    options,
-    MODULAR_DEPRECATION_ARG,
-  );
+  void options;
+  return (firestore as FirestoreInternal).useEmulator(host, port);
 }
 
 export function setLogLevel(logLevel: LogLevel): void {
-  return appSetLogLevel(logLevel);
+  return FirestoreStatics.setLogLevel(logLevel);
 }
 
 export function runTransaction<T>(
   firestore: Firestore,
   updateFunction: (transaction: Transaction) => Promise<T>,
 ): Promise<T> {
-  return (firestore as FirestoreInternal).runTransaction.call(
-    firestore,
-    updateFunction,
-    MODULAR_DEPRECATION_ARG,
-  ) as Promise<T>;
+  return (firestore as FirestoreInternal).runTransaction(updateFunction) as Promise<T>;
 }
 
 export function getCountFromServer<AppModelType, DbModelType extends DocumentData>(
   query: Query<AppModelType, DbModelType>,
 ): Promise<AggregateQuerySnapshot<{ count: AggregateField<number> }, AppModelType, DbModelType>> {
-  return (query as unknown as QueryInternal<AppModelType, DbModelType>).count
-    .call(query, MODULAR_DEPRECATION_ARG)
-    .get() as Promise<
+  return (query as unknown as QueryInternal<AppModelType, DbModelType>).count().get() as Promise<
     AggregateQuerySnapshot<{ count: AggregateField<number> }, AppModelType, DbModelType>
   >;
 }
@@ -399,17 +393,19 @@ export function getAggregateFromServer<
   query: Query<AppModelType, DbModelType>,
   aggregateSpec: AggregateSpecType,
 ): Promise<AggregateQuerySnapshot<AggregateSpecType, AppModelType, DbModelType>> {
-  if (!(query instanceof QueryImpl)) {
+  if (!(query instanceof QueryClass)) {
     throw new Error(
-      '`getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `FirestoreQuery`',
+      '`getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `Query`',
     );
   }
+
+  const queryWithInternals = query as unknown as QueryWithAggregateInternals;
 
   if (!isObject(aggregateSpec)) {
     throw new Error('`getAggregateFromServer(query, *)` `aggregateSpec` must be an object');
   }
 
-  const containsOneAggregateField = Object.values(aggregateSpec).find(
+  const containsOneAggregateField = Object.values(aggregateSpec).some(
     value => value instanceof AggregateField,
   );
   if (!containsOneAggregateField) {
@@ -448,7 +444,6 @@ export function getAggregateFromServer<
     }
   }
 
-  const queryWithInternals = query as QueryWithAggregateInternals;
   return queryWithInternals._firestore.native
     .aggregateQuery(
       queryWithInternals._collectionPath.relativeName,
@@ -485,66 +480,49 @@ export function loadBundle(
   bundleData: ReadableStream<Uint8Array> | ArrayBuffer | string,
 ): LoadBundleTask {
   const task = new LoadBundleTask();
-  (firestore as FirestoreInternal).loadBundle
-    .call(firestore, bundleData, MODULAR_DEPRECATION_ARG)
+  (firestore as FirestoreInternal)
+    .loadBundle(bundleData)
     .then(progress => task._completeWith(progress as LoadBundleTaskProgress))
     .catch(error => task._failWith(error));
   return task;
 }
 
 export function namedQuery(firestore: Firestore, name: string): Promise<Query | null> {
-  return Promise.resolve(
-    (firestore as FirestoreInternal).namedQuery.call(firestore, name, MODULAR_DEPRECATION_ARG),
-  );
+  return Promise.resolve((firestore as FirestoreInternal).namedQuery(name));
 }
 
 export function writeBatch(firestore: Firestore): WriteBatch {
-  return (firestore as FirestoreInternal).batch.call(firestore, MODULAR_DEPRECATION_ARG);
+  return (firestore as FirestoreInternal).batch();
 }
 
 export function getPersistentCacheIndexManager(
   firestore: Firestore,
 ): PersistentCacheIndexManager | null {
-  return (firestore as FirestoreInternal).persistentCacheIndexManager.call(
-    firestore,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (firestore as FirestoreInternal).persistentCacheIndexManager();
 }
 
 export function enablePersistentCacheIndexAutoCreation(
   indexManager: PersistentCacheIndexManager,
 ): Promise<void> {
-  return (indexManager as PersistentCacheIndexManagerInternal).enableIndexAutoCreation.call(
-    indexManager,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (indexManager as PersistentCacheIndexManagerInternal).enableIndexAutoCreation();
 }
 
 export function disablePersistentCacheIndexAutoCreation(
   indexManager: PersistentCacheIndexManager,
 ): Promise<void> {
-  return (indexManager as PersistentCacheIndexManagerInternal).disableIndexAutoCreation.call(
-    indexManager,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (indexManager as PersistentCacheIndexManagerInternal).disableIndexAutoCreation();
 }
 
 export function deleteAllPersistentCacheIndexes(
   indexManager: PersistentCacheIndexManager,
 ): Promise<void> {
-  return (indexManager as PersistentCacheIndexManagerInternal).deleteAllIndexes.call(
-    indexManager,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (indexManager as PersistentCacheIndexManagerInternal).deleteAllIndexes();
 }
 
 export * from './modular/query';
 export * from './modular/snapshot';
-export * from './modular/Bytes';
 export * from './modular/FieldPath';
 export * from './modular/FieldValue';
-export * from './modular/GeoPoint';
-export * from './modular/Timestamp';
 export * from './modular/VectorValue';
 export { LoadBundleTask } from './LoadBundleTask';
 export { default as Transaction } from './FirestoreTransaction';

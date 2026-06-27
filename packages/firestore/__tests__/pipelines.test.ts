@@ -1,5 +1,6 @@
 import { describe, expect, it, jest } from '@jest/globals';
-import { firebase } from '../lib';
+import { getFirestore } from '../lib';
+import { getApp } from '@react-native-firebase/app';
 import {
   arrayFilter,
   arrayFirst,
@@ -32,7 +33,7 @@ import { ConstantExpression, FunctionExpression } from '../lib/pipelines/express
 
 describe('Firestore pipelines runtime', function () {
   it('installs pipeline() and serializes source builders', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const docRef = db.doc('firestore/a');
     const query = db
       .collection('firestore')
@@ -70,7 +71,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('normalizes stage option keys and preserves stage order', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
 
     const pipeline = db
       .pipeline()
@@ -100,7 +101,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('treats unnest selectable overload as selectable, not options object', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const serialized = db
       .pipeline()
       .collection('firestore')
@@ -118,7 +119,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('serializes rawStage params as an object so native bridges preserve named params', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const serialized = db
       .pipeline()
       .collection('firestore')
@@ -151,7 +152,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('serializes arrayFilter as a function expression helper and fluent method', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const serialized = db
       .pipeline()
       .collection('firestore')
@@ -213,7 +214,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('serializes currentDocument as a zero-argument function expression helper', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const serialized = db
       .pipeline()
       .collection('firestore')
@@ -238,7 +239,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('serializes ifNull as a function expression helper and fluent method', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const serialized = db
       .pipeline()
       .collection('firestore')
@@ -292,7 +293,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('serializes switchOn as a function expression helper', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const serialized = db
       .pipeline()
       .collection('firestore')
@@ -345,7 +346,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('serializes coalesce as a function expression helper and fluent method', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const serialized = db
       .pipeline()
       .collection('firestore')
@@ -408,7 +409,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('serializes newer array expression helpers with SDK-compatible arguments', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const serialized = db
       .pipeline()
       .collection('firestore')
@@ -506,8 +507,8 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('enforces union guards and self-cycle serialization constraints', function () {
-    const db: any = firebase.firestore();
-    const secondaryDb: any = firebase.app('secondaryFromNative').firestore();
+    const db: any = getFirestore();
+    const secondaryDb: any = getFirestore(getApp('secondaryFromNative'));
     const base = db.pipeline().collection('firestore');
 
     expect(() => base.union({} as any)).toThrow(
@@ -526,8 +527,8 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('enforces createFrom cross-firestore and query-shape guards', function () {
-    const db: any = firebase.firestore();
-    const secondaryDb: any = firebase.app('secondaryFromNative').firestore();
+    const db: any = getFirestore();
+    const secondaryDb: any = getFirestore(getApp('secondaryFromNative'));
     const secondaryQuery = secondaryDb.collection('firestore').where('value', '==', 1);
 
     expect(() => db.pipeline().createFrom({} as any)).toThrow(
@@ -540,8 +541,8 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('enforces source reference affinity for collection() and documents()', function () {
-    const db: any = firebase.firestore();
-    const secondaryDb: any = firebase.app('secondaryFromNative').firestore();
+    const db: any = getFirestore();
+    const secondaryDb: any = getFirestore(getApp('secondaryFromNative'));
 
     expect(() => db.pipeline().collection(secondaryDb.collection('firestore'))).toThrow(
       'firebase.firestore().pipeline().collection(*) cannot use a reference from a different Firestore instance.',
@@ -565,7 +566,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('validates execute input and rejects unsupported execute options', async function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const nativeExecute = jest.fn(async () => ({
       executionTime: [1735689600, 123000000],
       results: [{ path: 'firestore/a', data: { value: 42 } }],
@@ -616,7 +617,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('throws when pipelineExecute omits executionTime', async function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const originalNativeModule = db._nativeModule;
     db._nativeModule = {
       pipelineExecute: jest.fn(async () => ({
@@ -646,7 +647,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('supports method-style expression chaining and ordering helper serialization', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
 
     const pipeline = db
       .pipeline()
@@ -747,7 +748,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('serializes subcollection detached pipelines and scalar subqueries', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const detached = subcollection('reviews');
     expect(detached.serialize()).toEqual({
       source: { source: 'subcollection', path: 'reviews' },

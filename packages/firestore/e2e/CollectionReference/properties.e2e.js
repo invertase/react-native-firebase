@@ -22,48 +22,6 @@ describe('firestore.collection()', function () {
     return wipe();
   });
 
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('returns the firestore instance', function () {
-      const instance = firebase.firestore().collection(COLLECTION);
-      instance.firestore.app.name.should.eql('[DEFAULT]');
-    });
-
-    it('returns the collection id', function () {
-      const instance1 = firebase.firestore().collection(COLLECTION);
-      const instance2 = firebase.firestore().collection(`${COLLECTION}/bar/baz`);
-      instance1.id.should.eql(COLLECTION);
-      instance2.id.should.eql('baz');
-    });
-
-    it('returns the collection parent', function () {
-      const instance1 = firebase.firestore().collection(COLLECTION);
-      should.equal(instance1.parent, null);
-      const instance2 = firebase.firestore().collection('foo').doc('bar').collection('baz');
-      should.equal(instance2.parent.id, 'bar');
-    });
-
-    it('returns the firestore path', function () {
-      const instance1 = firebase.firestore().collection(COLLECTION);
-      instance1.path.should.eql(COLLECTION);
-      const instance2 = firebase
-        .firestore()
-        .collection(COLLECTION)
-        .doc('bar')
-        .collection(COLLECTION);
-      instance2.path.should.eql(`${COLLECTION}/bar/${COLLECTION}`);
-    });
-  });
-
   describe('modular', function () {
     it('returns the firestore instance', function () {
       const { getFirestore, collection } = firestoreModular;

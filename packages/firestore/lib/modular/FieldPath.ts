@@ -15,9 +15,7 @@
  *
  */
 
-import FieldPath, { DOCUMENT_ID } from '../FieldPath';
-
-export { FieldPath };
+import { DOCUMENT_ID, FieldPath } from '../FieldPath';
 
 export function documentId(): FieldPath {
   return DOCUMENT_ID;

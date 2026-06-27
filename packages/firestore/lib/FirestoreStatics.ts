@@ -15,15 +15,14 @@
  *
  */
 
-import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
-import Blob from './FirestoreBlob';
-import FieldPath from './FieldPath';
-import FieldValue from './FieldValue';
+import { Blob } from './FirestoreBlob';
+import { FieldPath } from './FieldPath';
+import { FieldValue } from './FieldValue';
 import { Filter } from './FirestoreFilter';
-import FirestoreGeoPoint from './FirestoreGeoPoint';
-import FirestoreTimestamp from './FirestoreTimestamp';
-import FirestoreVectorValue from './FirestoreVectorValue';
+import { GeoPoint } from './FirestoreGeoPoint';
+import { Timestamp } from './FirestoreTimestamp';
+import { VectorValue } from './FirestoreVectorValue';
 import type { LogLevel } from './types/firestore';
 import type { RNFBFirestoreModule } from './types/internal';
 
@@ -32,13 +31,13 @@ type FirestoreLogLevel = LogLevel;
 const FirestoreStatics = {
   Blob: Blob,
   FieldPath: FieldPath,
-  FieldValue: createDeprecationProxy(FieldValue),
-  GeoPoint: FirestoreGeoPoint,
-  Timestamp: createDeprecationProxy(FirestoreTimestamp),
-  Filter: createDeprecationProxy(Filter),
-  VectorValue: FirestoreVectorValue,
-  vector(values?: number[]): FirestoreVectorValue {
-    return new FirestoreVectorValue(values);
+  FieldValue: FieldValue,
+  GeoPoint: GeoPoint,
+  Timestamp: Timestamp,
+  Filter: Filter,
+  VectorValue: VectorValue,
+  vector(values?: number[]): VectorValue {
+    return new VectorValue(values);
   },
 
   CACHE_SIZE_UNLIMITED: -1,

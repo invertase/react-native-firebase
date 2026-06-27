@@ -1,16 +1,10 @@
 /*
  * Consumer-facing API type tests for @react-native-firebase/firestore.
- * Part 1: Namespaced API (firebase.firestore(), default firestore()).
- * Part 2: Modular API (getFirestore, doc, collection, setDoc, etc. from the
- * published/root package entrypoint).
+ * Modular API (getFirestore, doc, collection, setDoc, etc. from the
+ * published package entrypoint).
  */
 
-// ---------------------------------------------------------------------------
-// PART 1 — NAMESPACED API
-// ---------------------------------------------------------------------------
-// Import namespaced API: default export and firebase, plus types used in Part 1.
-import firestore, {
-  firebase,
+import {
   getFirestore,
   connectFirestoreEmulator,
   setLogLevel,
@@ -81,11 +75,10 @@ import firestore, {
   AggregateQuerySnapshot,
   DocumentSnapshot,
   DocumentReference,
-  Query,
   QueryDocumentSnapshot,
 } from '@react-native-firebase/firestore';
+import { getApp } from '@react-native-firebase/app';
 import type {
-  FirebaseFirestoreTypes,
   Firestore,
   DocumentData,
   LoadBundleTaskProgress,
@@ -94,6 +87,7 @@ import type {
   PartialWithFieldValue,
   SetOptions,
   Transaction,
+  Query,
 } from '@react-native-firebase/firestore';
 import {
   execute,
@@ -293,230 +287,14 @@ import type {
 // Reproducer for issue #8975: this should compile for consumers.
 export function f(_snap: DocumentSnapshot<DocumentData>): void {}
 
-// ----- Default export and module access -----
-void firestore().app;
-void firestore.SDK_VERSION;
-void firestore.firebase.SDK_VERSION;
-
-// ----- firebase.firestore at root -----
-void firebase.firestore().app.name;
-void firebase.firestore().collection('foo');
-
-// ----- firebase.firestore at app level -----
-void firebase.app().firestore().app.name;
-void firebase.app().firestore().collection('foo');
-
-// ----- Multi-app and database ID -----
-void firebase.firestore(firebase.app()).app.name;
-void firebase.firestore(firebase.app('foo')).app.name;
-// Database ID: firebase.app().firestore(databaseId)
-void firebase.app().firestore('(default)').app.name;
-void firebase.app().firestore('other-db').app.name;
-
-// ----- Default export with app arg -----
-void firestore(firebase.app()).app.name;
-
-// ----- Statics (FirestoreStatics) -----
-void firebase.firestore.Blob;
-void firebase.firestore.FieldPath;
-void firebase.firestore.FieldValue;
-void firebase.firestore.GeoPoint;
-void firebase.firestore.Timestamp;
-void firebase.firestore.Filter;
-void firebase.firestore.CACHE_SIZE_UNLIMITED;
-firebase.firestore.setLogLevel('debug');
-
-// ----- Firestore instance: references and batch -----
-const nsFirestore = firebase.firestore();
-void nsFirestore.collection('users');
-void nsFirestore.collection('users').doc('alice');
-void nsFirestore.collection('users').doc('alice').collection('orders');
-void nsFirestore.collectionGroup('orders');
-void nsFirestore.batch();
-
-// ----- CollectionReference -----
-const nsColl = nsFirestore.collection('users');
-const nsDocRef = nsColl.doc('alice');
-const nsQuery = nsColl.where('name', '==', 'test');
-
-nsDocRef.set({ name: 'Alice', count: 1 }).then(() => {});
-nsDocRef.set({ name: 'Alice' }, { merge: true }).then(() => {});
-
-nsDocRef.update({ count: 2 }).then(() => {});
-nsDocRef.update('count', 3).then(() => {});
-
-nsDocRef.delete().then(() => {});
-
-nsColl.add({ name: 'Bob' }).then((ref: FirebaseFirestoreTypes.DocumentReference) => {
-  void ref.id;
-});
-
-nsDocRef.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
-  void snap.exists();
-  void snap.data();
-  void snap.id;
-  void snap.ref;
-  void snap.metadata;
-});
-nsDocRef.get({ source: 'cache' }).then(() => {});
-nsDocRef.get({ source: 'server' }).then(() => {});
-
-nsQuery.get().then((snap: FirebaseFirestoreTypes.QuerySnapshot) => {
-  void snap.docs;
-  void snap.empty;
-  void snap.size;
-  void snap.docChanges();
-});
-
-// ----- DocumentSnapshot -----
-nsDocRef.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
-  if (snap.exists()) {
-    const d = snap.data();
-    void d;
-  }
-  void snap.get('field');
-  void snap.metadata.isEqual(snap.metadata);
-});
-
-// ----- onSnapshot (document) -----
-const unsubDoc1 = nsDocRef.onSnapshot((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
-  void snap.data();
-});
-const unsubDoc2 = nsDocRef.onSnapshot(
-  { includeMetadataChanges: true },
-  (_snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
-);
-const unsubDoc3 = nsDocRef.onSnapshot({
-  next: (_snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
-  error: (_e: Error) => {},
-});
-unsubDoc1();
-unsubDoc2();
-unsubDoc3();
-
-// ----- onSnapshot (query) -----
-const unsubQuery1 = nsQuery.onSnapshot((snap: FirebaseFirestoreTypes.QuerySnapshot) => {
-  void snap.docs;
-});
-const unsubQuery2 = nsQuery.onSnapshot(
-  { includeMetadataChanges: true },
-  { next: (_snap: FirebaseFirestoreTypes.QuerySnapshot) => {}, error: (_e: Error) => {} },
-);
-unsubQuery1();
-unsubQuery2();
-
-// ----- Query: where, orderBy, limit, cursor -----
-const nsQuery2 = nsColl
-  .where('age', '>', 18)
-  .orderBy('age', 'desc')
-  .orderBy('name')
-  .limit(10)
-  .limitToLast(5)
-  .startAt(1)
-  .startAfter(2)
-  .endAt(10)
-  .endBefore(9);
-void nsQuery2;
-
-// ----- Firestore instance: loadBundle, namedQuery, runTransaction -----
-const nsLoadTask = nsFirestore.loadBundle('bundle-data');
-void nsLoadTask.then(() => {});
-
-const nsNamed = nsFirestore.namedQuery('my-query');
-void nsNamed;
-
-nsFirestore
-  .runTransaction(async (tx: FirebaseFirestoreTypes.Transaction) => {
-    const snap = await tx.get(nsDocRef);
-    if (snap.exists()) {
-      tx.update(nsDocRef, { count: ((snap.data() as { count?: number })?.count ?? 0) + 1 });
-    }
-    return null;
-  })
-  .then(() => {});
-
-// ----- Firestore instance: persistence and network -----
-nsFirestore.clearPersistence().then(() => {});
-nsFirestore.waitForPendingWrites().then(() => {});
-nsFirestore.terminate().then(() => {});
-nsFirestore.useEmulator('localhost', 8080);
-nsFirestore.enableNetwork().then(() => {});
-nsFirestore.disableNetwork().then(() => {});
-
-// ----- Firestore instance: settings -----
-nsFirestore.settings({ persistence: true }).then(() => {});
-
-// ----- Persistent cache index manager (namespaced) -----
-const nsIndexManager = nsFirestore.persistentCacheIndexManager();
-if (nsIndexManager) {
-  nsIndexManager.enableIndexAutoCreation().then(() => {});
-  nsIndexManager.disableIndexAutoCreation().then(() => {});
-  nsIndexManager.deleteAllIndexes().then(() => {});
-}
-
-// ----- WriteBatch (namespaced) -----
-const nsBatch = nsFirestore.batch();
-nsBatch.set(nsDocRef, { name: 'Alice' });
-nsBatch.set(nsDocRef, { name: 'Alice' }, { merge: true });
-nsBatch.update(nsDocRef, { count: 1 });
-nsBatch.delete(nsDocRef);
-nsBatch.commit().then(() => {});
-
-// ----- Namespaced FieldValue (statics) -----
-const nsFieldPath = new firebase.firestore.FieldPath('user', 'name');
-void nsFieldPath;
-const nsBlob = firebase.firestore.Blob.fromBase64String('dGVzdA==');
-void nsBlob;
-const nsGeoPoint = new firebase.firestore.GeoPoint(0, 0);
-void nsGeoPoint;
-const nsTimestamp = firebase.firestore.Timestamp.now();
-void nsTimestamp;
-const nsDelete = firebase.firestore.FieldValue.delete();
-const nsServerTs = firebase.firestore.FieldValue.serverTimestamp();
-const nsArrayUnion = firebase.firestore.FieldValue.arrayUnion(1, 2);
-const nsArrayRemove = firebase.firestore.FieldValue.arrayRemove(1);
-void nsArrayRemove;
-const nsIncrement = firebase.firestore.FieldValue.increment(1);
-
-nsDocRef
-  .set({
-    name: 'x',
-    deleted: nsDelete,
-    ts: nsServerTs,
-    arr: nsArrayUnion,
-    cnt: nsIncrement,
-  })
-  .then(() => {});
-
-// ----- withConverter (namespaced) -----
-interface User {
-  name: string;
-  age: number;
-}
-const nsConverter: FirebaseFirestoreTypes.FirestoreDataConverter<User> = {
-  toFirestore(u: User) {
-    return u;
-  },
-  fromFirestore(snap: FirebaseFirestoreTypes.QueryDocumentSnapshot): User {
-    return snap.data() as User;
-  },
-};
-const nsCollWithConv = nsFirestore.collection('users').withConverter(nsConverter);
-const nsDocWithConv = nsCollWithConv.doc('alice');
-nsDocWithConv.set({ name: 'Alice', age: 30 }).then(() => {});
-nsDocWithConv.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot<User>) => {
-  const u = snap.data();
-  if (u) void [u.name, u.age];
-});
-
 // ----- getFirestore -----
 const modFirestore1 = getFirestore();
 void modFirestore1.app.name;
 
-const modFirestore2 = getFirestore(firebase.app());
+const modFirestore2 = getFirestore(getApp());
 void modFirestore2.app.name;
 
-const modFirestore3 = getFirestore(firebase.app(), 'other-db');
+const modFirestore3 = getFirestore(getApp(), 'other-db');
 void modFirestore3.app.name;
 
 // ----- connectFirestoreEmulator -----
@@ -529,7 +307,7 @@ connectFirestoreEmulator(modFirestore1, 'localhost', 8080, {
 setLogLevel('debug');
 
 // ----- initializeFirestore -----
-initializeFirestore(firebase.app(), {
+initializeFirestore(getApp(), {
   cacheSizeBytes: CACHE_SIZE_UNLIMITED,
 }).then((fs: Firestore) => {
   void fs.app.name;
