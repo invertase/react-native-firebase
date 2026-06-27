@@ -16,65 +16,6 @@
  */
 
 describe('appDistribution()', function () {
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    describe('native module is loaded', function () {
-      it('checks native module load status', function () {
-        firebase.appDistribution().native;
-      });
-    });
-
-    describe('isTesterSignedIn()', function () {
-      it('checks if a tester is signed in', async function () {
-        if (Platform.ios) {
-          await firebase.appDistribution().isTesterSignedIn();
-        } else {
-          this.skip();
-        }
-      });
-    });
-    // Requires a valid google account logged in on device and associated with iOS testing app
-    xdescribe('signInTester()', function () {
-      it('signs a tester in', async function () {
-        if (Platform.ios) {
-          await firebase.appDistribution().signInTester();
-        } else {
-          this.skip();
-        }
-      });
-    });
-
-    describe('signOutTester()', function () {
-      it('signs out a tester', async function () {
-        if (Platform.ios) {
-          await firebase.appDistribution().signOutTester();
-        } else {
-          this.skip();
-        }
-      });
-    });
-    // Requires a valid google account logged in on device and associated with iOS testing app
-    // plus a new IPA file uploaded
-    xdescribe('checkForUpdate()', function () {
-      it('checks for an update', async function () {
-        if (Platform.ios) {
-          await firebase.appDistribution().checkForUpdate();
-        } else {
-          this.skip();
-        }
-      });
-    });
-  });
-
   describe('modular', function () {
     describe('native module is loaded', function () {
       it('checks native module load status', function () {

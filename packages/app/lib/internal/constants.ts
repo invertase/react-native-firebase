@@ -21,7 +21,6 @@ export const DEFAULT_APP_NAME = '[DEFAULT]';
 
 export const KNOWN_NAMESPACES = [
   'appCheck',
-  'appDistribution',
   'auth',
   'analytics',
   'remoteConfig',
