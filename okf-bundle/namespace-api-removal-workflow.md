@@ -124,6 +124,7 @@ Only after N1–N6 modules committed and their greps empty. Same change-authorin
 
 - **App namespaced surface:** remove `firebase` + default from `packages/app/lib/index.ts`/`namespaced.ts`; remove namespace plumbing from `registry/namespace.ts`; remove `KNOWN_NAMESPACES` from `constants.ts` and `utils`'s `createModuleNamespace`.
 - **Deprecation machinery:** remove `createDeprecationProxy`, `mapOfDeprecationReplacements`, `MODULAR_DEPRECATION_ARG`/`withModularFlag`/`warnIfNotModularCall`, and related globals in `global.d.ts` + `tests/globals.js`. Retire single-slot `setOnAppDestroy` in favor of `addOnAppDestroy`.
+- **Pre-existing modular-only packages:** `ai`, `vertexai`, and `phone-number-verification` shipped before N1–N6 but must match the same end-state as migrated modules — **sole public entry is `lib/index.ts`** (no `export * from './modular'` shim; delete `lib/modular.ts` after inlining). `typedoc.json` entry points and internal imports must reference `lib/index.ts` only.
 - **Repo sweep:**
 
 ```bash

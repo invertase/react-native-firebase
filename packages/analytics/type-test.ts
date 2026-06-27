@@ -1,56 +1,10 @@
-import analytics, {
-  firebase,
-  // Types
-  type Analytics,
-  type AnalyticsCallOptions,
-  type ConsentSettings,
-  type AnalyticsSettings,
-  type SettingsOptions,
-  type Currency,
-  type ConsentStatusString,
-  type Promotion,
-  type Item,
-  type AddPaymentInfoEventParameters,
-  type AddShippingInfoParameters,
-  type AddToCartEventParameters,
-  type AddToWishlistEventParameters,
-  type BeginCheckoutEventParameters,
-  type CampaignDetailsEventParameters,
-  type EarnVirtualCurrencyEventParameters,
-  type GenerateLeadEventParameters,
-  type JoinGroupEventParameters,
-  type LevelEndEventParameters,
-  type LevelStartEventParameters,
-  type LevelUpEventParameters,
-  type LoginEventParameters,
-  type PostScoreEventParameters,
-  type SelectContentEventParameters,
-  type PurchaseEventParameters,
-  type RefundEventParameters,
-  type RemoveFromCartEventParameters,
-  type SearchEventParameters,
-  type SelectItemEventParameters,
-  type SetCheckoutOptionEventParameters,
-  type SelectPromotionEventParameters,
-  type ShareEventParameters,
-  type SignUpEventParameters,
-  type SpendVirtualCurrencyEventParameters,
-  type UnlockAchievementEventParameters,
-  type ViewCartEventParameters,
-  type ViewItemEventParameters,
-  type ViewItemListEventParameters,
-  type ViewPromotionEventParameters,
-  type ViewSearchResultsParameters,
-  type ScreenViewParameters,
-  type EventParams,
-  type GtagConfigParams,
-  type EventNameString,
-  type CustomEventName,
-  // Modular API
+import { getApp } from '@react-native-firebase/app';
+import {
   getAnalytics,
   initializeAnalytics,
   getGoogleAnalyticsClientId,
   logEvent,
+  logTransaction,
   setAnalyticsCollectionEnabled,
   setSessionTimeoutDuration,
   getAppInstanceId,
@@ -102,706 +56,111 @@ import analytics, {
   isSupported,
   setConsent,
   settings,
+  SDK_VERSION,
+  type Analytics,
+  type AnalyticsCallOptions,
+  type ConsentSettings,
+  type AnalyticsSettings,
+  type SettingsOptions,
+  type AddPaymentInfoEventParameters,
+  type ScreenViewParameters,
 } from '.';
 
-console.log(analytics().app);
+const analytics = getAnalytics();
+console.log(analytics.app.name);
 
-// checks module exists at root
-console.log(firebase.analytics().app.name);
+const analyticsWithApp = getAnalytics(getApp());
+console.log(analyticsWithApp.app.name);
 
-// checks module exists at app level
-console.log(firebase.app().analytics().app.name);
-
-// Note: The 'app' property should exist on AnalyticsModule interface
-// If TypeScript errors occur, it may be a type inference issue with createModuleNamespace
-
-// checks statics exist
-console.log(firebase.analytics.SDK_VERSION);
-
-// checks statics exist on defaultExport
-console.log(analytics.SDK_VERSION);
-
-// checks root exists
-console.log(firebase.SDK_VERSION);
-
-// test method calls with proper types
-firebase
-  .analytics()
-  .logAddPaymentInfo({ value: 123, currency: 'USD' })
-  .then(() => {
-    console.log('logAddPaymentInfo completed');
-  });
-
-firebase
-  .analytics()
-  .logAddToCart({ value: 123, currency: 'USD' })
-  .then(() => {
-    console.log('logAddToCart completed');
-  });
-
-firebase
-  .analytics()
-  .logLogin({ method: 'foo' })
-  .then(() => {
-    console.log('logLogin completed');
-  });
-
-firebase
-  .analytics()
-  .setUserProperties({ foo: 'bar' })
-  .then(() => {
-    console.log('setUserProperties completed');
-  });
-
-firebase.analytics().setConsent({ ad_storage: true });
-
-// test type usage
-const analyticsInstance: Analytics = firebase.analytics();
-console.log(analyticsInstance.app.name);
-const callOptions: AnalyticsCallOptions = { global: true };
-console.log(callOptions.global);
-const consentSettings: ConsentSettings = { ad_storage: true, analytics_storage: false };
-const analyticsSettings: AnalyticsSettings = {};
-console.log(analyticsSettings);
-const settingsOptions: SettingsOptions = {};
-console.log(settingsOptions);
-const currency: Currency = 123;
-console.log(currency);
-const consentStatus: ConsentStatusString = 'granted';
-console.log(consentStatus);
-const promotion: Promotion = { id: 'promo1', name: 'Promotion' };
-console.log(promotion.id);
-const item: Item = { item_id: 'item1', item_name: 'Item' };
-console.log(item.item_id);
-const addPaymentInfoParams: AddPaymentInfoEventParameters = { value: 123, currency: 'USD' };
-const addShippingInfoParams: AddShippingInfoParameters = { value: 123, currency: 'USD' };
-const addToCartParams: AddToCartEventParameters = { value: 123, currency: 'USD' };
-const addToWishlistParams: AddToWishlistEventParameters = { value: 123, currency: 'USD' };
-const beginCheckoutParams: BeginCheckoutEventParameters = { value: 123, currency: 'USD' };
-const campaignDetailsParams: CampaignDetailsEventParameters = {
-  source: 'source',
-  medium: 'medium',
-  campaign: 'campaign',
-};
-const earnVirtualCurrencyParams: EarnVirtualCurrencyEventParameters = {
-  virtual_currency_name: 'coins',
-  value: 100,
-};
-const generateLeadParams: GenerateLeadEventParameters = { value: 123, currency: 'USD' };
-const joinGroupParams: JoinGroupEventParameters = { group_id: 'group1' };
-const levelEndParams: LevelEndEventParameters = { level: 1, success: true };
-const levelStartParams: LevelStartEventParameters = { level: 1 };
-const levelUpParams: LevelUpEventParameters = { level: 5, character: 'character1' };
-const loginParams: LoginEventParameters = { method: 'email' };
-const postScoreParams: PostScoreEventParameters = { score: 100, level: 5 };
-const selectContentParams: SelectContentEventParameters = {
-  content_type: 'type',
-  item_id: 'item1',
-};
-const purchaseParams: PurchaseEventParameters = {
-  value: 123,
-  currency: 'USD',
-  transaction_id: 'tx1',
-};
-const refundParams: RefundEventParameters = { value: 123, currency: 'USD', transaction_id: 'tx1' };
-const removeFromCartParams: RemoveFromCartEventParameters = { value: 123, currency: 'USD' };
-const searchParams: SearchEventParameters = { search_term: 'term' };
-const selectItemParams: SelectItemEventParameters = {
-  item_list_id: 'list1',
-  item_list_name: 'List',
-  content_type: 'type',
-};
-const setCheckoutOptionParams: SetCheckoutOptionEventParameters = {
-  checkout_step: 1,
-  checkout_option: 'option',
-};
-const selectPromotionParams: SelectPromotionEventParameters = {
-  promotion_id: 'promo1',
-  promotion_name: 'Promotion',
-  creative_name: 'Creative',
-  creative_slot: 'Slot',
-  location_id: 'location1',
-};
-const shareParams: ShareEventParameters = {
-  method: 'email',
-  content_type: 'type',
-  item_id: 'item1',
-};
-const signUpParams: SignUpEventParameters = { method: 'email' };
-const spendVirtualCurrencyParams: SpendVirtualCurrencyEventParameters = {
-  virtual_currency_name: 'coins',
-  value: 50,
-  item_name: 'item',
-};
-const unlockAchievementParams: UnlockAchievementEventParameters = { achievement_id: 'ach1' };
-const viewCartParams: ViewCartEventParameters = { value: 123, currency: 'USD' };
-const viewItemParams: ViewItemEventParameters = { value: 123, currency: 'USD' };
-const viewItemListParams: ViewItemListEventParameters = {
-  item_list_id: 'list1',
-  item_list_name: 'List',
-};
-const viewPromotionParams: ViewPromotionEventParameters = { promotion_id: 'promo1' };
-const viewSearchResultsParams: ViewSearchResultsParameters = { search_term: 'term' };
-const screenViewParams: ScreenViewParameters = { screen_name: 'screen', screen_class: 'Screen' };
-const eventParams: EventParams = { key: 'value' };
-console.log(eventParams.key);
-const gtagConfigParams: GtagConfigParams = {};
-console.log(gtagConfigParams);
-const eventNameString: EventNameString = 'add_payment_info';
-console.log(eventNameString);
-const customEventName: CustomEventName<'my_custom_event'> = 'my_custom_event';
-console.log(customEventName);
-
-// checks all methods exist on firebase.analytics()
-console.log(firebase.analytics().logAddPaymentInfo);
-console.log(firebase.analytics().logAddToCart);
-console.log(firebase.analytics().logAddShippingInfo);
-console.log(firebase.analytics().logAddToWishlist);
-console.log(firebase.analytics().logAppOpen);
-console.log(firebase.analytics().logBeginCheckout);
-console.log(firebase.analytics().logCampaignDetails);
-console.log(firebase.analytics().logEarnVirtualCurrency);
-console.log(firebase.analytics().logEvent);
-console.log(firebase.analytics().logGenerateLead);
-console.log(firebase.analytics().logJoinGroup);
-console.log(firebase.analytics().logLevelEnd);
-console.log(firebase.analytics().logLevelStart);
-console.log(firebase.analytics().logLevelUp);
-console.log(firebase.analytics().logLogin);
-console.log(firebase.analytics().logPostScore);
-console.log(firebase.analytics().logPurchase);
-console.log(firebase.analytics().logRemoveFromCart);
-console.log(firebase.analytics().logRefund);
-console.log(firebase.analytics().logSearch);
-console.log(firebase.analytics().logSelectContent);
-console.log(firebase.analytics().logSetCheckoutOption);
-console.log(firebase.analytics().logShare);
-console.log(firebase.analytics().logSignUp);
-console.log(firebase.analytics().logSpendVirtualCurrency);
-console.log(firebase.analytics().logTutorialBegin);
-console.log(firebase.analytics().logTutorialComplete);
-console.log(firebase.analytics().logUnlockAchievement);
-console.log(firebase.analytics().logViewItem);
-console.log(firebase.analytics().logViewItemList);
-console.log(firebase.analytics().resetAnalyticsData);
-console.log(firebase.analytics().logViewCart);
-console.log(firebase.analytics().setAnalyticsCollectionEnabled);
-console.log(firebase.analytics().logSelectPromotion);
-console.log(firebase.analytics().logScreenView);
-console.log(firebase.analytics().logViewPromotion);
-console.log(firebase.analytics().setSessionTimeoutDuration);
-console.log(firebase.analytics().setUserId);
-console.log(firebase.analytics().setUserProperties);
-console.log(firebase.analytics().logViewSearchResults);
-console.log(firebase.analytics().setUserProperty);
-console.log(firebase.analytics().setConsent);
-
-// checks all methods exist on default export
-console.log(analytics().logAddPaymentInfo);
-console.log(analytics().logAddToCart);
-console.log(analytics().logAddShippingInfo);
-console.log(analytics().logAddToWishlist);
-console.log(analytics().logAppOpen);
-console.log(analytics().logBeginCheckout);
-console.log(analytics().logCampaignDetails);
-console.log(analytics().logEarnVirtualCurrency);
-console.log(analytics().logEvent);
-console.log(analytics().logGenerateLead);
-console.log(analytics().logJoinGroup);
-console.log(analytics().logLevelEnd);
-console.log(analytics().logLevelStart);
-console.log(analytics().logLevelUp);
-console.log(analytics().logLogin);
-console.log(analytics().logPostScore);
-console.log(analytics().logPurchase);
-console.log(analytics().logRemoveFromCart);
-console.log(analytics().logRefund);
-console.log(analytics().logSearch);
-console.log(analytics().logSelectContent);
-console.log(analytics().logSetCheckoutOption);
-console.log(analytics().logShare);
-console.log(analytics().logSignUp);
-console.log(analytics().logSpendVirtualCurrency);
-console.log(analytics().logTutorialBegin);
-console.log(analytics().logTutorialComplete);
-console.log(analytics().logUnlockAchievement);
-console.log(analytics().logViewItem);
-console.log(analytics().logViewItemList);
-console.log(analytics().resetAnalyticsData);
-console.log(analytics().logViewCart);
-console.log(analytics().setAnalyticsCollectionEnabled);
-console.log(analytics().logSelectPromotion);
-console.log(analytics().logScreenView);
-console.log(analytics().logViewPromotion);
-console.log(analytics().setSessionTimeoutDuration);
-console.log(analytics().setUserId);
-console.log(analytics().setUserProperties);
-console.log(analytics().logViewSearchResults);
-console.log(analytics().setUserProperty);
-console.log(analytics().setConsent);
-
-// checks missing methods exist on firebase.analytics()
-console.log(firebase.analytics().getAppInstanceId);
-console.log(firebase.analytics().getSessionId);
-console.log(firebase.analytics().setDefaultEventParameters);
-console.log(firebase.analytics().logSelectItem);
-console.log(firebase.analytics().initiateOnDeviceConversionMeasurementWithEmailAddress);
-console.log(firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress);
-console.log(firebase.analytics().initiateOnDeviceConversionMeasurementWithPhoneNumber);
-console.log(firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber);
-
-// checks missing methods exist on default export
-console.log(analytics().getAppInstanceId);
-console.log(analytics().getSessionId);
-console.log(analytics().setDefaultEventParameters);
-console.log(analytics().logSelectItem);
-console.log(analytics().initiateOnDeviceConversionMeasurementWithEmailAddress);
-console.log(analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress);
-console.log(analytics().initiateOnDeviceConversionMeasurementWithPhoneNumber);
-console.log(analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber);
-
-// test method calls with missing methods
-firebase
-  .analytics()
-  .getAppInstanceId()
-  .then((id: string | null) => {
-    console.log('getAppInstanceId:', id);
-  });
-
-firebase
-  .analytics()
-  .getSessionId()
-  .then((id: number | null) => {
-    console.log('getSessionId:', id);
-  });
-
-firebase
-  .analytics()
-  .setDefaultEventParameters({ key: 'value' })
-  .then(() => {
-    console.log('setDefaultEventParameters completed');
-  });
-
-firebase
-  .analytics()
-  .logSelectItem({ item_list_id: 'list1', item_list_name: 'List', content_type: 'type' })
-  .then(() => {
-    console.log('logSelectItem completed');
-  });
-
-firebase
-  .analytics()
-  .initiateOnDeviceConversionMeasurementWithEmailAddress('test@example.com')
-  .then(() => {
-    console.log('initiateOnDeviceConversionMeasurementWithEmailAddress completed');
-  });
-
-firebase
-  .analytics()
-  .initiateOnDeviceConversionMeasurementWithHashedEmailAddress('hashed')
-  .then(() => {
-    console.log('initiateOnDeviceConversionMeasurementWithHashedEmailAddress completed');
-  });
-
-firebase
-  .analytics()
-  .initiateOnDeviceConversionMeasurementWithPhoneNumber('+1234567890')
-  .then(() => {
-    console.log('initiateOnDeviceConversionMeasurementWithPhoneNumber completed');
-  });
-
-firebase
-  .analytics()
-  .initiateOnDeviceConversionMeasurementWithHashedPhoneNumber('hashed')
-  .then(() => {
-    console.log('initiateOnDeviceConversionMeasurementWithHashedPhoneNumber completed');
-  });
-
-// test modular API functions
-const analyticsModular = getAnalytics();
-const analyticsModularWithApp = getAnalytics(firebase.app());
-console.log(analyticsModularWithApp.app.name);
-
-const initializedAnalytics = initializeAnalytics(firebase.app(), {});
+const initializedAnalytics = initializeAnalytics(getApp(), {});
 console.log(initializedAnalytics.app.name);
 
-getGoogleAnalyticsClientId(analyticsModular).then((id: string) => {
-  console.log('getGoogleAnalyticsClientId:', id);
-});
+const typedAnalytics: Analytics = analytics;
+const typedCallOptions: AnalyticsCallOptions = { global: false };
+const typedConsent: ConsentSettings = { ad_storage: true };
+const typedSettings: AnalyticsSettings = {};
+const typedSettingsOptions: SettingsOptions = {};
+const typedAddPaymentInfo: AddPaymentInfoEventParameters = { currency: 'USD', value: 1 };
+const typedScreenView: ScreenViewParameters = { screen_name: 'Home' };
 
-logEvent(analyticsModular, 'event_name', { key: 'value' }, { global: false }).then(() => {
-  console.log('logEvent completed');
-});
+console.log(typedCallOptions);
+console.log(typedConsent);
+console.log(typedSettings);
+console.log(typedSettingsOptions);
+console.log(typedAddPaymentInfo);
+console.log(typedScreenView);
+console.log(SDK_VERSION);
 
-setAnalyticsCollectionEnabled(analyticsModular, true).then(() => {
-  console.log('setAnalyticsCollectionEnabled completed');
-});
+logEvent(analytics, 'invertase_event');
+logEvent(analytics, 'screen_view', typedScreenView);
+setAnalyticsCollectionEnabled(analytics, true);
+setSessionTimeoutDuration(analytics, 1800000);
+getAppInstanceId(analytics).then(id => console.log(id));
+getSessionId(analytics).then(id => console.log(id));
+setUserId(analytics, 'user');
+setUserProperty(analytics, 'prop', 'value');
+setUserProperties(analytics, { prop: 'value' });
+resetAnalyticsData(analytics);
+setDefaultEventParameters(analytics, { foo: 'bar' });
+setConsent(analytics, typedConsent);
+settings(typedSettingsOptions);
 
-setSessionTimeoutDuration(analyticsModular, 1800000).then(() => {
-  console.log('setSessionTimeoutDuration completed');
+logAddPaymentInfo(analytics, typedAddPaymentInfo);
+logScreenView(analytics, typedScreenView);
+logAddShippingInfo(analytics, { currency: 'USD', value: 1 });
+logAddToCart(analytics, { currency: 'USD', value: 1 });
+logAddToWishlist(analytics, { currency: 'USD', value: 1 });
+logAppOpen(analytics);
+logBeginCheckout(analytics, { currency: 'USD', value: 1 });
+logCampaignDetails(analytics, { source: 'src', medium: 'med', campaign: 'camp' });
+logEarnVirtualCurrency(analytics, { virtual_currency_name: 'coins', value: 1 });
+logGenerateLead(analytics, { currency: 'USD', value: 1 });
+logJoinGroup(analytics, { group_id: 'group' });
+logLevelEnd(analytics, { level: 1, success: true });
+logLevelStart(analytics, { level: 1 });
+logLevelUp(analytics, { level: 1, character: 'hero' });
+logLogin(analytics, { method: 'email' });
+logPostScore(analytics, { score: 100, level: 1, character: 'hero' });
+logSelectContent(analytics, { content_type: 'type', item_id: 'id' });
+logPurchase(analytics, { currency: 'USD', value: 1 });
+logRefund(analytics, { currency: 'USD', value: 1 });
+logRemoveFromCart(analytics, { currency: 'USD', value: 1 });
+logSearch(analytics, { search_term: 'term' });
+logSelectItem(analytics, { content_type: 'type', item_list_id: 'list', item_list_name: 'name' });
+logSetCheckoutOption(analytics, { checkout_step: 1, checkout_option: 'option' });
+logSelectPromotion(analytics, {
+  creative_name: 'creative',
+  creative_slot: 'slot',
+  location_id: 'loc',
+  promotion_id: 'promo',
+  promotion_name: 'Promo',
 });
+logShare(analytics, { content_type: 'type', item_id: 'id', method: 'method' });
+logSignUp(analytics, { method: 'email' });
+logSpendVirtualCurrency(analytics, { virtual_currency_name: 'coins', value: 1, item_name: 'item' });
+logTutorialBegin(analytics);
+logTutorialComplete(analytics);
+logUnlockAchievement(analytics, { achievement_id: 'ach' });
+logViewCart(analytics, { currency: 'USD', value: 1 });
+logViewItem(analytics, { currency: 'USD', value: 1 });
+logViewItemList(analytics, { items: [] });
+logViewPromotion(analytics, { items: [] });
+logViewSearchResults(analytics, { search_term: 'term' });
 
-getAppInstanceId(analyticsModular).then((id: string | null) => {
-  console.log('getAppInstanceId modular:', id);
-});
-
-getSessionId(analyticsModular).then((id: number | null) => {
-  console.log('getSessionId modular:', id);
-});
-
-setUserId(analyticsModular, 'user123').then(() => {
-  console.log('setUserId completed');
-});
-
-setUserProperty(analyticsModular, 'property', 'value').then(() => {
-  console.log('setUserProperty completed');
-});
-
-setUserProperties(analyticsModular, { prop1: 'value1', prop2: 'value2' }, { global: false }).then(
-  () => {
-    console.log('setUserProperties completed');
-  },
+initiateOnDeviceConversionMeasurementWithEmailAddress(analytics, 'user@example.com');
+initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+  analytics,
+  'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+);
+initiateOnDeviceConversionMeasurementWithPhoneNumber(analytics, '+15551234567');
+initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+  analytics,
+  'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
 );
 
-resetAnalyticsData(analyticsModular).then(() => {
-  console.log('resetAnalyticsData completed');
-});
-
-logAddPaymentInfo(analyticsModular, addPaymentInfoParams).then(() => {
-  console.log('logAddPaymentInfo modular completed');
-});
-
-logScreenView(analyticsModular, screenViewParams).then(() => {
-  console.log('logScreenView modular completed');
-});
-
-logAddShippingInfo(analyticsModular, addShippingInfoParams).then(() => {
-  console.log('logAddShippingInfo modular completed');
-});
-
-logAddToCart(analyticsModular, addToCartParams).then(() => {
-  console.log('logAddToCart modular completed');
-});
-
-logAddToWishlist(analyticsModular, addToWishlistParams).then(() => {
-  console.log('logAddToWishlist modular completed');
-});
-
-logAppOpen(analyticsModular).then(() => {
-  console.log('logAppOpen modular completed');
-});
-
-logBeginCheckout(analyticsModular, beginCheckoutParams).then(() => {
-  console.log('logBeginCheckout modular completed');
-});
-
-logCampaignDetails(analyticsModular, campaignDetailsParams).then(() => {
-  console.log('logCampaignDetails modular completed');
-});
-
-logEarnVirtualCurrency(analyticsModular, earnVirtualCurrencyParams).then(() => {
-  console.log('logEarnVirtualCurrency modular completed');
-});
-
-logGenerateLead(analyticsModular, generateLeadParams).then(() => {
-  console.log('logGenerateLead modular completed');
-});
-
-logJoinGroup(analyticsModular, joinGroupParams).then(() => {
-  console.log('logJoinGroup modular completed');
-});
-
-logLevelEnd(analyticsModular, levelEndParams).then(() => {
-  console.log('logLevelEnd modular completed');
-});
-
-logLevelStart(analyticsModular, levelStartParams).then(() => {
-  console.log('logLevelStart modular completed');
-});
-
-logLevelUp(analyticsModular, levelUpParams).then(() => {
-  console.log('logLevelUp modular completed');
-});
-
-logLogin(analyticsModular, loginParams).then(() => {
-  console.log('logLogin modular completed');
-});
-
-logPostScore(analyticsModular, postScoreParams).then(() => {
-  console.log('logPostScore modular completed');
-});
-
-logSelectContent(analyticsModular, selectContentParams).then(() => {
-  console.log('logSelectContent modular completed');
-});
-
-logPurchase(analyticsModular, purchaseParams).then(() => {
-  console.log('logPurchase modular completed');
-});
-
-logRefund(analyticsModular, refundParams).then(() => {
-  console.log('logRefund modular completed');
-});
-
-logRemoveFromCart(analyticsModular, removeFromCartParams).then(() => {
-  console.log('logRemoveFromCart modular completed');
-});
-
-logSearch(analyticsModular, searchParams).then(() => {
-  console.log('logSearch modular completed');
-});
-
-logSelectItem(analyticsModular, selectItemParams).then(() => {
-  console.log('logSelectItem modular completed');
-});
-
-logSetCheckoutOption(analyticsModular, setCheckoutOptionParams).then(() => {
-  console.log('logSetCheckoutOption modular completed');
-});
-
-logSelectPromotion(analyticsModular, selectPromotionParams).then(() => {
-  console.log('logSelectPromotion modular completed');
-});
-
-logShare(analyticsModular, shareParams).then(() => {
-  console.log('logShare modular completed');
-});
-
-logSignUp(analyticsModular, signUpParams).then(() => {
-  console.log('logSignUp modular completed');
-});
-
-logSpendVirtualCurrency(analyticsModular, spendVirtualCurrencyParams).then(() => {
-  console.log('logSpendVirtualCurrency modular completed');
-});
-
-logTutorialBegin(analyticsModular).then(() => {
-  console.log('logTutorialBegin modular completed');
-});
-
-logTutorialComplete(analyticsModular).then(() => {
-  console.log('logTutorialComplete modular completed');
-});
-
-logUnlockAchievement(analyticsModular, unlockAchievementParams).then(() => {
-  console.log('logUnlockAchievement modular completed');
-});
-
-logViewCart(analyticsModular, viewCartParams).then(() => {
-  console.log('logViewCart modular completed');
-});
-
-logViewItem(analyticsModular, viewItemParams).then(() => {
-  console.log('logViewItem modular completed');
-});
-
-logViewItemList(analyticsModular, viewItemListParams).then(() => {
-  console.log('logViewItemList modular completed');
-});
-
-logViewPromotion(analyticsModular, viewPromotionParams).then(() => {
-  console.log('logViewPromotion modular completed');
-});
-
-logViewSearchResults(analyticsModular, viewSearchResultsParams).then(() => {
-  console.log('logViewSearchResults modular completed');
-});
-
-setDefaultEventParameters(analyticsModular, { key: 'value' }).then(() => {
-  console.log('setDefaultEventParameters modular completed');
-});
-
-initiateOnDeviceConversionMeasurementWithEmailAddress(analyticsModular, 'test@example.com').then(
-  () => {
-    console.log('initiateOnDeviceConversionMeasurementWithEmailAddress modular completed');
-  },
-);
-
-initiateOnDeviceConversionMeasurementWithHashedEmailAddress(analyticsModular, 'hashed').then(() => {
-  console.log('initiateOnDeviceConversionMeasurementWithHashedEmailAddress modular completed');
-});
-
-initiateOnDeviceConversionMeasurementWithPhoneNumber(analyticsModular, '+1234567890').then(() => {
-  console.log('initiateOnDeviceConversionMeasurementWithPhoneNumber modular completed');
-});
-
-initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(analyticsModular, 'hashed').then(() => {
-  console.log('initiateOnDeviceConversionMeasurementWithHashedPhoneNumber modular completed');
-});
-
-isSupported().then((supported: boolean) => {
-  console.log('isSupported:', supported);
-});
-
-setConsent(analyticsModular, consentSettings).then(() => {
-  console.log('setConsent modular completed');
-});
-
-settings(settingsOptions);
-
-// Test logEvent with overloads for standard events
-logEvent(analyticsModular, 'add_payment_info', {
-  currency: 'USD',
-  value: 100,
-  payment_type: 'credit',
-}).then(() => {
-  console.log('logEvent add_payment_info completed');
-});
-
-logEvent(analyticsModular, 'add_shipping_info', {
-  currency: 'USD',
-  value: 50,
-  shipping_tier: 'ground',
-}).then(() => {
-  console.log('logEvent add_shipping_info completed');
-});
-
-logEvent(analyticsModular, 'add_to_cart', { currency: 'USD', value: 25 }).then(() => {
-  console.log('logEvent add_to_cart completed');
-});
-
-logEvent(analyticsModular, 'add_to_wishlist', { currency: 'USD', value: 30 }).then(() => {
-  console.log('logEvent add_to_wishlist completed');
-});
-
-logEvent(analyticsModular, 'begin_checkout', {
-  currency: 'USD',
-  value: 100,
-  coupon: 'SAVE10',
-}).then(() => {
-  console.log('logEvent begin_checkout completed');
-});
-
-logEvent(analyticsModular, 'checkout_progress', {
-  checkout_step: 2,
-  checkout_option: 'express',
-}).then(() => {
-  console.log('logEvent checkout_progress completed');
-});
-
-logEvent(analyticsModular, 'exception', { description: 'Error occurred', fatal: false }).then(
-  () => {
-    console.log('logEvent exception completed');
-  },
-);
-
-logEvent(analyticsModular, 'generate_lead', { currency: 'USD', value: 200 }).then(() => {
-  console.log('logEvent generate_lead completed');
-});
-
-logEvent(analyticsModular, 'login', { method: 'email' }).then(() => {
-  console.log('logEvent login completed');
-});
-
-logEvent(analyticsModular, 'page_view', { page_title: 'Home', page_location: '/home' }).then(() => {
-  console.log('logEvent page_view completed');
-});
-
-logEvent(analyticsModular, 'purchase', {
-  currency: 'USD',
-  value: 150,
-  transaction_id: 'tx123',
-}).then(() => {
-  console.log('logEvent purchase completed');
-});
-
-logEvent(analyticsModular, 'refund', { currency: 'USD', value: 50, transaction_id: 'tx123' }).then(
-  () => {
-    console.log('logEvent refund completed');
-  },
-);
-
-logEvent(analyticsModular, 'remove_from_cart', { currency: 'USD', value: 20 }).then(() => {
-  console.log('logEvent remove_from_cart completed');
-});
-
-logEvent(analyticsModular, 'screen_view', {
-  screen_name: 'HomeScreen',
-  screen_class: 'Screen',
-}).then(() => {
-  console.log('logEvent screen_view completed');
-});
-
-logEvent(analyticsModular, 'search', { search_term: 'shoes' }).then(() => {
-  console.log('logEvent search completed');
-});
-
-logEvent(analyticsModular, 'select_content', { content_type: 'product', item_id: 'item123' }).then(
-  () => {
-    console.log('logEvent select_content completed');
-  },
-);
-
-logEvent(analyticsModular, 'select_item', {
-  content_type: 'product',
-  item_list_id: 'list1',
-  item_list_name: 'Featured',
-}).then(() => {
-  console.log('logEvent select_item completed');
-});
-
-logEvent(analyticsModular, 'select_promotion', {
-  creative_name: 'Summer Sale',
-  creative_slot: 'banner',
-  location_id: 'loc1',
-  promotion_id: 'promo1',
-  promotion_name: 'Summer Sale',
-}).then(() => {
-  console.log('logEvent select_promotion completed');
-});
-
-logEvent(analyticsModular, 'set_checkout_option', {
-  checkout_step: 1,
-  checkout_option: 'standard',
-}).then(() => {
-  console.log('logEvent set_checkout_option completed');
-});
-
-logEvent(analyticsModular, 'share', {
-  content_type: 'article',
-  item_id: 'article123',
-  method: 'twitter',
-}).then(() => {
-  console.log('logEvent share completed');
-});
-
-logEvent(analyticsModular, 'sign_up', { method: 'email' }).then(() => {
-  console.log('logEvent sign_up completed');
-});
-
-logEvent(analyticsModular, 'timing_complete', { duration: 5000 }).then(() => {
-  console.log('logEvent timing_complete completed');
-});
-
-logEvent(analyticsModular, 'view_cart', { currency: 'USD', value: 75 }).then(() => {
-  console.log('logEvent view_cart completed');
-});
-
-logEvent(analyticsModular, 'view_item', { currency: 'USD', value: 40 }).then(() => {
-  console.log('logEvent view_item completed');
-});
-
-logEvent(analyticsModular, 'view_item_list', {
-  item_list_id: 'list1',
-  item_list_name: 'Featured Products',
-}).then(() => {
-  console.log('logEvent view_item_list completed');
-});
-
-logEvent(analyticsModular, 'view_promotion', {
-  promotion_id: 'promo1',
-  promotion_name: 'Summer Sale',
-}).then(() => {
-  console.log('logEvent view_promotion completed');
-});
-
-logEvent(analyticsModular, 'view_search_results', { search_term: 'shoes' }).then(() => {
-  console.log('logEvent view_search_results completed');
-});
-
-// Test custom event name (should use generic overload)
-logEvent(analyticsModular, 'custom_event_name' as CustomEventName<'custom_event_name'>, {
-  key: 'value',
-}).then(() => {
-  console.log('logEvent custom event completed');
-});
+isSupported().then(supported => console.log(supported));
+getGoogleAnalyticsClientId(analytics).then(clientId => console.log(clientId));
+logTransaction(analytics, 'transaction-id');
+
+console.log(typedAnalytics.logEvent);
+console.log(typedAnalytics.setAnalyticsCollectionEnabled);
