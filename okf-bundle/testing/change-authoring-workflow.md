@@ -91,6 +91,8 @@ flowchart LR
 
 E2e scope, pre-flight, and harness gate: [running e2e § agent rule](running-e2e.md#agent-rule-read-first) (canonical commands only), [validation tiers](running-e2e.md#e2e-validation-tiers-unit-focused-area-focused-full), [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking).
 
+**Command rule:** Agents run **only** [agent command policy](agent-command-policy.md) allowlisted commands for install, prepare, and validation — no improvised `yarn workspace … prepare`, `yarn jet`, or package-scoped build probes.
+
 ## Gates
 
 | Gate | Closes when |

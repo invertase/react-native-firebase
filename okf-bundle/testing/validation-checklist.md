@@ -26,14 +26,17 @@ Work types and tiers: [change authoring workflow](change-authoring-workflow.md).
 
 ## Prepare and compile
 
-Repo root unless noted:
+Repo root. **Agents:** [agent command policy](agent-command-policy.md) — only these invocations; never `yarn workspace … prepare` or package-scoped `yarn run build` for diagnostics.
 
 ```bash
-yarn lerna:prepare                    # after packages/*/lib/** edits (Metro serves dist/)
-cd packages/<pkg> && yarn compile      # package under change
+yarn                                  # install + postinstallDev (includes lerna:prepare)
+yarn lerna:prepare                    # after packages/*/lib/** edits — transpiles lib → dist/module via each package prepare target
+yarn lerna run prepare --scope @react-native-firebase/<pkg>   # single package only when needed
 yarn tsc:compile
 yarn tsc:compile:consumer
 ```
+
+`yarn lerna:prepare` runs each package **`prepare`** script (`build` then `compile`/bob). That is the canonical **`lib/**` → `dist/module/**`** path. Do **not** use `cd packages/<pkg> && yarn compile` as a substitute — `compile` is a step **inside** `prepare`, not a standalone agent entrypoint.
 
 ## API reference and type parity
 
@@ -71,7 +74,7 @@ Native: `yarn lint:android`, `yarn lint:ios:check`. `lint:android` can flake; re
 
 ## E2e with coverage
 
-[Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) (host-clear probes + services + harness tier) before every run — [agent rule](running-e2e.md#agent-rule-read-first): use **only** `yarn tests:*` commands from that doc. Match harness to work type — **unit-focused**/**area-focused** never use full app load ([running e2e § harness](running-e2e.md#3-harness-matches-validation-tier)).
+[Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) (host-clear probes + services + harness tier) before every run — [agent command policy](agent-command-policy.md) and [e2e agent rule](running-e2e.md#agent-rule-read-first): use **only** `yarn tests:*` commands from [running e2e](running-e2e.md). Match harness to work type — **unit-focused**/**area-focused** never use full app load ([running e2e § harness](running-e2e.md#3-harness-matches-validation-tier)).
 
 Commands: [Running e2e tests](running-e2e.md). Post-process: [Coverage design](coverage-design.md) (iOS `tests:ios:test:process-coverage`, Android `tests:android:post-e2e-coverage`).
 
@@ -89,8 +92,7 @@ Goal: each iteration improves OKF and removes conflicting guidance.
 
 ## Handoff checklist
 
-- [ ] `yarn lerna:prepare`
-- [ ] `cd packages/<pkg> && yarn compile`
+- [ ] `yarn lerna:prepare` (after any `packages/*/lib/**` edits)
 - [ ] `yarn tsc:compile`, `yarn tsc:compile:consumer`
 - [ ] `yarn reference:api`
 - [ ] `yarn tests:jest`

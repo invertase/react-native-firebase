@@ -48,7 +48,7 @@ Set one clear default path so the agent does not choose randomly between options
 
 ## Command sequence
 
-Run these root `package.json` scripts in order. **Canonical checklist with pipeline/e2e context:** `okf-bundle/testing/validation-checklist.md` (OKF bundle wins if this skill disagrees).
+Run these root `package.json` scripts in order. **Canonical checklist:** [validation-checklist.md](../../okf-bundle/testing/validation-checklist.md). **Agent allowlist (no improvisation):** [agent-command-policy.md](../../okf-bundle/testing/agent-command-policy.md). OKF bundle wins if this skill disagrees.
 
 1. `yarn lerna:prepare`
 2. `yarn tsc:compile`
@@ -60,6 +60,7 @@ Run these root `package.json` scripts in order. **Canonical checklist with pipel
 
 ## Gotchas
 
+- **Forbidden:** `yarn workspace … prepare`, `cd packages/<pkg> && yarn prepare/build`, `yarn jet`, `npx jet` — see [agent command policy](../../okf-bundle/testing/agent-command-policy.md). On failure, fix product code and re-run the **same** canonical command.
 - `yarn format:js` writes changes across `packages/**/*.{js,ts,tsx}`. Check the diff after formatting and do not revert user changes.
 - Run commands from the repository root so workspace resolution, root `tsconfig.json`, and Jest configuration are consistent.
 - `yarn lerna:prepare` may rebuild or refresh package artifacts needed before TypeScript or tests run.
