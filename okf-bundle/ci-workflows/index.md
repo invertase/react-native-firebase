@@ -10,6 +10,7 @@ GitHub Actions job shape, platform reliability, and artifact triage.
 
 ## Shared E2E dependencies
 
+* [Jet host orchestration](../testing/running-e2e.md#jet-host-orchestration-ports-and-launch-gate) — ports 8090/8091, defer-run launch gate (canonical)
 * [Detox patches](detox-patches.md) — inventory, `ECOMPROMISED`, patch workflow
 * [Cloud API quota triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure) — live FIS/RC pressure (all platforms)
 * [iOS diagnostics](ios.md#operational-notes) — `resource-monitor.sh`, `flake-summary.sh`

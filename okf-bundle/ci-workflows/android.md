@@ -57,6 +57,7 @@ Under load, Jet may run only a small prefix before mocha-remote desync, often af
 
 | Change | Location |
 |--------|----------|
+| Defer `server.run()` until host `POST /launch-ready` on control port **8091** (`RNFB_JET_DEFER_RUN=1`) | Jet patch + `firebase.test.js` — [Jet host orchestration](../testing/running-e2e.md#jet-host-orchestration-ports-and-launch-gate) |
 | Inbound parse buffer + `tryDeserialize` in `serialization.js` / `parse_skip` logging | mocha-remote-server patch |
 | Outbound queue flushed on reconnect | mocha-remote-client patch |
 | `JET_PROTOCOL_ERROR_RE` → retryable Jet session (attempt 2) | `tests/e2e/firebase.test.js` |

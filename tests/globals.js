@@ -46,7 +46,7 @@ import shouldMatchers from 'should';
 //            [RNFB<--Event][📣] storage_event <- {...}
 //            [RNFB<-Native][🟢] RNFBStorageModule.putString <- {...}
 //            [TEST->Finish][✅] uploads a base64url string
-globalThis.RNFBDebug = true;
+globalThis.RNFBDebug = false;
 
 // this may be used to locate modular API errors quickly
 globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = true;

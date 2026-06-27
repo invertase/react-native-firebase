@@ -39,6 +39,10 @@ function logCloudPressureAnalysisPointer(context) {
 }
 
 const JET_REMOTE_PORT = parseInt(process.env.JET_REMOTE_PORT || '8090', 10);
+const JET_CONTROL_PORT = parseInt(
+  process.env.RNFB_JET_CONTROL_PORT || String(JET_REMOTE_PORT + 1),
+  10,
+);
 const METRO_PORT = parseInt(process.env.JET_METRO_PORT || process.env.RCT_METRO_PORT || '8081', 10);
 const LAUNCH_APP_TIMEOUT_MS = parseInt(process.env.RNFB_LAUNCH_APP_TIMEOUT_MS || '180000', 10);
 const LAUNCH_APP_RELEASE_TIMEOUT_MS = parseInt(
@@ -65,6 +69,10 @@ const ANDROID_PACKAGE_HANDLER_TIMEOUT_MS = parseInt(
 const ANDROID_BOOT_SETTLE_MS = parseInt(process.env.RNFB_ANDROID_BOOT_SETTLE_MS || '30000', 10);
 const DRAIN_ORCHESTRATE_TIMEOUT_MS = parseInt(
   process.env.RNFB_DRAIN_ORCHESTRATE_TIMEOUT_MS || '30000',
+  10,
+);
+const KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS = parseInt(
+  process.env.RNFB_KILL_JET_LAUNCH_RETRY_TIMEOUT_MS || '30000',
   10,
 );
 const JET_RETRYABLE_WS_RE = /\[jet-ws\] RETRYABLE_DISCONNECT code=(1006|1001)\b/;
@@ -103,13 +111,28 @@ function resolveDetoxConfigurationName() {
 }
 
 function resolveAppBinaryPath() {
-  if (typeof detox === 'undefined' || !detox?.config?.apps) {
-    return '';
+  if (typeof detox !== 'undefined' && detox?.config?.apps) {
+    const apps = detox.config.apps;
+    const appConfig = apps.default || apps[Object.keys(apps)[0]];
+    if (appConfig?.binaryPath) {
+      return appConfig.binaryPath;
+    }
   }
 
-  const apps = detox.config.apps;
-  const appConfig = apps.default || apps[Object.keys(apps)[0]];
-  return appConfig?.binaryPath || '';
+  const fs = require('node:fs');
+  const debugIosApp = path.resolve(__dirname, '../ios/build/Build/Products/Debug-iphonesimulator/testing.app');
+  if (fs.existsSync(debugIosApp)) {
+    return debugIosApp;
+  }
+  const releaseIosApp = path.resolve(
+    __dirname,
+    '../ios/build/Build/Products/Release-iphonesimulator/testing.app',
+  );
+  if (fs.existsSync(releaseIosApp)) {
+    return releaseIosApp;
+  }
+
+  return '';
 }
 
 function usesLiveMetro() {
@@ -642,7 +665,53 @@ async function launchAppWithTimeout(launchArgs, { deleteApp = true, timeoutMs } 
   }
 }
 
-async function launchAppWithRetry(launchArgs, { testsDir } = {}) {
+async function postJetControl(path, body) {
+  const url = `http://127.0.0.1:${JET_CONTROL_PORT}${path}`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (!response.ok) {
+      console.warn(`[rnfb-e2e] jet-control POST ${path} status=${response.status}`);
+    }
+  } catch (err) {
+    console.warn(`[rnfb-e2e] jet-control POST ${path} failed: ${err?.message || err}`);
+  }
+}
+
+function logOrchestrateState(state) {
+  console.log(`[rnfb-e2e] orchestrate-state=${state} ts=${new Date().toISOString()}`);
+  postJetControl('/orchestrate-state', { phase: state });
+}
+
+async function signalJetLaunchReady() {
+  console.log('[rnfb-e2e] signaling Jet launch-ready (permit test run)');
+  await postJetControl('/launch-ready', {});
+}
+
+async function killJetForLaunchRetry(jetProcess) {
+  if (!jetProcess || jetProcess.killed) {
+    return;
+  }
+
+  logOrchestrateState('launch-retry-kill-jet');
+  console.warn('[rnfb-e2e] launch-retry: killing Jet before terminateApp/reboot');
+  jetProcess.kill('SIGTERM');
+  await sleep(500);
+  if (!jetProcess.killed) {
+    jetProcess.kill('SIGKILL');
+  }
+
+  try {
+    await waitForTcpPortClosed(JET_REMOTE_PORT, '127.0.0.1', KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS);
+  } catch (err) {
+    console.warn(`[rnfb-e2e] launch-retry: Jet port still open after kill: ${err?.message || err}`);
+  }
+}
+
+async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {}) {
   const liveMetro = usesLiveMetro();
 
   for (let launchAttempt = 1; launchAttempt <= LAUNCH_APP_MAX_ATTEMPTS; launchAttempt++) {
@@ -651,6 +720,9 @@ async function launchAppWithRetry(launchArgs, { testsDir } = {}) {
         console.warn(
           `[rnfb-e2e] Retrying launchApp after launch failure (attempt ${launchAttempt}/${LAUNCH_APP_MAX_ATTEMPTS}) liveMetro=${liveMetro}`,
         );
+        if (onBeforeRelaunch) {
+          await onBeforeRelaunch();
+        }
         const terminateMs = await terminateAppWithTiming(`retry-${launchAttempt}`);
         if (terminateMs >= SLOW_TERMINATE_MS && testsDir && process.platform === 'darwin') {
           console.warn(
@@ -681,7 +753,97 @@ async function launchAppWithRetry(launchArgs, { testsDir } = {}) {
   }
 }
 
+function createJetSession(jetArgs, testsDir) {
+  let output = '';
+  let jetProcess;
+  let ignoreExit = false;
+  let resolveExit;
+  let rejectExit;
+
+  const exitPromise = new Promise((resolve, reject) => {
+    resolveExit = resolve;
+    rejectExit = reject;
+  });
+
+  const bindProcess = proc => {
+    jetProcess = proc;
+    proc.stdout.on('data', chunk => {
+      const text = chunk.toString();
+      output += text;
+      process.stdout.write(text);
+    });
+    proc.stderr.on('data', chunk => {
+      const text = chunk.toString();
+      output += text;
+      process.stderr.write(text);
+    });
+    proc.on('error', err => {
+      if (ignoreExit) {
+        console.warn(`[rnfb-e2e] ignoring Jet error during launch-retry: ${err?.message || err}`);
+        return;
+      }
+      err.jetOutput = output;
+      rejectExit(err);
+    });
+    proc.on('close', code => {
+      if (ignoreExit) {
+        console.warn(`[rnfb-e2e] ignoring Jet exit code=${code} during launch-retry`);
+        return;
+      }
+      if (code !== 0) {
+        const err = new Error('Jet tests failed!');
+        err.jetOutput = output;
+        err.jetExitCode = code;
+        rejectExit(err);
+        return;
+      }
+      resolveExit({ output });
+    });
+  };
+
+  const spawnJet = () => {
+    const proc = spawn('yarn', jetArgs, {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: true,
+      cwd: testsDir,
+      env: {
+        ...process.env,
+        RNFB_JET_DEFER_RUN: '1',
+      },
+    });
+    bindProcess(proc);
+    return proc;
+  };
+
+  spawnJet();
+
+  return {
+    get process() {
+      return jetProcess;
+    },
+    get output() {
+      return output;
+    },
+    exitPromise,
+    async respawnAfterLaunchRetry() {
+      ignoreExit = true;
+      try {
+        await killJetForLaunchRetry(jetProcess);
+        output += '\n[rnfb-e2e] --- jet respawn after launch retry ---\n';
+        spawnJet();
+        await waitForTcpPort(JET_REMOTE_PORT);
+        logOrchestrateState('launch-retry-jet-respawned');
+      } finally {
+        ignoreExit = false;
+      }
+    },
+  };
+}
+
 function runJetE2eAttempt(attempt) {
+  cachedUsesLiveMetro = undefined;
+  cacheUsesLiveMetro();
+
   const platform = detox.device.getPlatform();
   const testsDir = path.resolve(__dirname, '..');
   const jetArgs =
@@ -689,43 +851,12 @@ function runJetE2eAttempt(attempt) {
       ? ['jet', `--target=${platform}`]
       : ['jet', `--target=${platform}`, '--coverage'];
 
-  let output = '';
-  const jetProcess = spawn('yarn', jetArgs, {
-    stdio: ['ignore', 'pipe', 'pipe'],
-    shell: true,
-    cwd: testsDir,
-  });
-
-  jetProcess.stdout.on('data', chunk => {
-    const text = chunk.toString();
-    output += text;
-    process.stdout.write(text);
-  });
-  jetProcess.stderr.on('data', chunk => {
-    const text = chunk.toString();
-    output += text;
-    process.stderr.write(text);
-  });
-
-  const exitPromise = new Promise((resolve, reject) => {
-    jetProcess.on('error', err => {
-      err.jetOutput = output;
-      reject(err);
-    });
-    jetProcess.on('close', code => {
-      if (code !== 0) {
-        const err = new Error('Jet tests failed!');
-        err.jetOutput = output;
-        err.jetExitCode = code;
-        reject(err);
-        return;
-      }
-      resolve({ output });
-    });
-  });
+  const jetSession = createJetSession(jetArgs, testsDir);
 
   const orchestrate = async () => {
+    logOrchestrateState('jet-spawned');
     console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for port ${JET_REMOTE_PORT}`);
+    logOrchestrateState('port-wait');
     await waitForTcpPort(JET_REMOTE_PORT);
     if (usesLiveMetro()) {
       console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for Metro on port ${METRO_PORT}`);
@@ -736,31 +867,45 @@ function runJetE2eAttempt(attempt) {
       );
     }
     console.log(`[rnfb-e2e] Jet attempt ${attempt}: launching app`);
+    logOrchestrateState('launch-pending');
     await launchAppWithRetry(
       {
         detoxURLBlacklistRegex: `.*`,
         // Avoid sync/idling blocking the main queue while Detox WS login is pending.
         detoxEnableSynchronization: 'NO',
       },
-      { testsDir },
+      {
+        testsDir,
+        onBeforeRelaunch: async () => {
+          await jetSession.respawnAfterLaunchRetry();
+        },
+      },
     );
+    logOrchestrateState('launch-ok');
+    await signalJetLaunchReady();
+    logOrchestrateState('tests-run-permitted');
   };
 
   const orchestratePromise = orchestrate();
-  lastJetAttemptContext = { jetProcess, orchestratePromise };
+  lastJetAttemptContext = { jetProcess: jetSession.process, orchestratePromise };
 
   return Promise.race([
     orchestratePromise
-      .then(() => exitPromise)
+      .then(() => {
+        logOrchestrateState('awaiting-jet-exit');
+        return jetSession.exitPromise;
+      })
       .catch(err => {
-        if (!jetProcess.killed) {
-          jetProcess.kill();
+        logOrchestrateState('orchestrate-failed');
+        if (!jetSession.process.killed) {
+          jetSession.process.kill();
         }
-        err.jetOutput = output;
+        err.jetOutput = jetSession.output;
         throw err;
       }),
-    exitPromise.catch(err => {
-      err.jetOutput = output;
+    jetSession.exitPromise.catch(err => {
+      logOrchestrateState('jet-exited');
+      err.jetOutput = jetSession.output;
       throw err;
     }),
   ]);
