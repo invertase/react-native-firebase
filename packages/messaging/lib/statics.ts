@@ -1,4 +1,4 @@
-// shared between namespaced and modular API
+// Authorization and notification statics for modular API exports
 
 /**
  * Authorization status values returned by the deprecated permission APIs.
