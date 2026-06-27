@@ -15,7 +15,7 @@
  *
  */
 
-import type { FirebaseAuthTypes } from './types/namespaced';
+import type { UserCredential } from './types/auth';
 import type { AuthInternal } from './types/internal';
 
 export default class ConfirmationResult {
@@ -27,13 +27,10 @@ export default class ConfirmationResult {
     this._verificationId = verificationId;
   }
 
-  confirm(verificationCode: string): Promise<FirebaseAuthTypes.UserCredential | null> {
+  confirm(verificationCode: string): Promise<UserCredential | null> {
     return this._auth.native
       .confirmationResultConfirm(verificationCode)
-      .then(
-        userCredential =>
-          this._auth._setUserCredential(userCredential) as FirebaseAuthTypes.UserCredential,
-      );
+      .then(userCredential => this._auth._setUserCredential(userCredential) as UserCredential);
   }
 
   get verificationId(): string {

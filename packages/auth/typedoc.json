@@ -4,7 +4,6 @@
   "tsconfig": "tsconfig.json",
   "excludeInternal": true,
   "intentionallyNotExported": [
-    "AuthNamespace",
     "Observer",
     "AuthInternal",
     "OAuthCredentialParams"

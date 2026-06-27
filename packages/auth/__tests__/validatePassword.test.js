@@ -18,7 +18,7 @@
 import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import { PasswordPolicyImpl } from '../lib/password-policy/PasswordPolicyImpl';
 import { PasswordPolicyMixin } from '../lib/password-policy/PasswordPolicyMixin';
-import { validatePassword as validatePasswordModular } from '../lib/modular';
+import { validatePassword as validatePasswordModular } from '../lib';
 
 const mockPasswordPolicy = {
   schemaVersion: 1,
@@ -312,10 +312,7 @@ describe('validatePassword (modular API)', () => {
 
     const result = await validatePassword(mockAuth, 'Password123$');
 
-    expect(mockAuth.validatePassword).toHaveBeenCalledWith(
-      'Password123$',
-      'react-native-firebase-modular-method-call',
-    );
+    expect(mockAuth.validatePassword).toHaveBeenCalledWith('Password123$');
     expect(result).toEqual({ isValid: true });
   });
 });

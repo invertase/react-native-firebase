@@ -1,12 +1,12 @@
 /**
  * Base class to facilitate multi-factor authentication.
  */
-import type { FirebaseAuthTypes } from './types/namespaced';
+import type { MultiFactorInfo, MultiFactorSession, UserCredential } from './types/auth';
 import type { AuthInternal } from './types/internal';
 
 type ResolverLike = {
-  hints: FirebaseAuthTypes.MultiFactorInfo[];
-  session: FirebaseAuthTypes.MultiFactorSession;
+  hints: MultiFactorInfo[];
+  session: MultiFactorSession;
 };
 
 type PhoneMultiFactorAssertion = {
@@ -17,8 +17,8 @@ type PhoneMultiFactorAssertion = {
 };
 
 export default class MultiFactorResolver {
-  readonly hints: FirebaseAuthTypes.MultiFactorInfo[];
-  readonly session: FirebaseAuthTypes.MultiFactorSession;
+  readonly hints: MultiFactorInfo[];
+  readonly session: MultiFactorSession;
   private readonly _auth: AuthInternal;
 
   constructor(auth: AuthInternal, resolver: ResolverLike) {
@@ -27,7 +27,7 @@ export default class MultiFactorResolver {
     this.session = resolver.session;
   }
 
-  resolveSignIn(assertion: PhoneMultiFactorAssertion): Promise<FirebaseAuthTypes.UserCredential> {
+  resolveSignIn(assertion: PhoneMultiFactorAssertion): Promise<UserCredential> {
     const { token, secret, uid, verificationCode } = assertion;
 
     if (token && secret) {
@@ -35,7 +35,7 @@ export default class MultiFactorResolver {
         this.session,
         token,
         secret,
-      ) as Promise<FirebaseAuthTypes.UserCredential>;
+      ) as Promise<UserCredential>;
     }
 
     if (uid && verificationCode) {
@@ -43,7 +43,7 @@ export default class MultiFactorResolver {
         this.session,
         uid,
         verificationCode,
-      ) as Promise<FirebaseAuthTypes.UserCredential>;
+      ) as Promise<UserCredential>;
     }
 
     throw new Error('Invalid multi-factor assertion provided for sign-in resolution.');

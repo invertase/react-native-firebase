@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import { AI, AIErrorCode } from '@react-native-firebase/ai';
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import type { Auth } from '@react-native-firebase/auth';
 import type { AppCheck } from '@react-native-firebase/app-check';
 
 /**
@@ -34,7 +34,7 @@ export type VertexAI = AI;
 export interface VertexAIOptions {
   location?: string;
   appCheck?: AppCheck | null;
-  auth?: FirebaseAuthTypes.Module | null;
+  auth?: Auth | null;
 }
 
 export type VertexAIErrorCode = AIErrorCode;

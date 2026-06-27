@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # Namespace API removal — work queue
 
-> **IN PROGRESS (2026-06-27):** Latest: `refactor(analytics): remove deprecated namespaced API`. **Next pickup:** N6 `auth` (`implementation`). Then `firestore`.
+> **IN PROGRESS (2026-06-27):** Committing N6 **`auth`**. **Next:** N6 `firestore` (`gap-analysis`). Latest committed: `refactor(analytics): remove deprecated namespaced API`.
 > **Order:** pilot smallest (`ml`, `in-app-messaging`) → spike hardest (`messaging`) → bulk small→large → **NF** app cleanup → **NV** full validation. **Workflow:** [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md).
 
 ---
@@ -79,7 +79,7 @@ Update immediately after each work type closes a gate ([fields](testing/iteratio
 | N5 | `storage` (6m) | **closed** | **closed** | **closed** | `refactor(storage): remove deprecated namespaced API` | — | area-focused | review3 iOS: 144 pass / 0 fail (amended) |
 | N6 | `remote-config` (15m) | **closed** | **closed** | **closed** | `refactor(remote-config): remove deprecated namespaced API` | — | area-focused | review3 macOS 71/4p, iOS 78/4p, Android 78/4p; `npx jet` spawn fix uncommitted in firebase.test.js |
 | N6 | `analytics` (~50m) | **closed** | **closed** | **closed** | `refactor(analytics): remove deprecated namespaced API` | — | area-focused | review1 macOS 62/6p, iOS 63/5p, Android 63/5p |
-| N6 | `auth` (~43m) | open | open | open | — | `implementation` | area-focused | gap-analysis done; getAuth hops namespaced; compare:types registered |
+| N6 | `auth` (~43m) | **closed** | **closed** | **closed** | `refactor(auth): remove deprecated namespaced API` | — | area-focused | review: macOS 139/6p, iOS 148/23p, Android 155/15p; compare:types auth ✓. Minors deferred: legacy `firebase.auth()` error strings + stale JSDoc (NF/string cleanup) |
 | N6 | `firestore` (~17m) | open | open | open | — | `gap-analysis` | area-focused | pipelines + `compare:types` |
 | NF | `app` | open | open | open | — | `gap-analysis` | full | |
 | NV | all | open | open | open | — | `pre-merge-validation` | full | revert all narrowing |

@@ -161,6 +161,31 @@ const config: PackageConfig = {
       reason:
         'RN Firebase extension type: firebase-js-sdk AdditionalUserInfo core fields plus index signature for extra native bridge keys. Use when typing values from getAdditionalUserInfo or UserCredential.additionalUserInfo that may include provider-specific native fields.',
     },
+    {
+      name: 'SDK_VERSION',
+      reason:
+        'RN Firebase package version string exported from the modular entry point. The firebase-js-sdk does not export SDK_VERSION from @firebase/auth.',
+    },
+    {
+      name: 'AuthListenerCallback',
+      reason:
+        'RN Firebase exported auth state listener callback type. firebase-js-sdk uses inline callback types on onAuthStateChanged / onIdTokenChanged rather than exporting this alias.',
+    },
+    {
+      name: 'CallbackOrObserver',
+      reason:
+        'RN Firebase exported union type for auth listener callbacks and observers. firebase-js-sdk uses inline overloads rather than exporting this helper type.',
+    },
+    {
+      name: 'UpdateProfile',
+      reason:
+        'RN Firebase exported profile update options type for updateProfile(). firebase-js-sdk declares the shape inline on updateProfile rather than exporting this alias.',
+    },
+    {
+      name: 'MultiFactor',
+      reason:
+        'RN Firebase exported MultiFactor interface type. firebase-js-sdk exposes multi-factor enrollment through the multiFactor() helper without exporting this interface at the package root.',
+    },
   ],
 
   differentShape: [
@@ -218,6 +243,11 @@ const config: PackageConfig = {
       name: 'TotpSecret',
       reason:
         'iOS/Android: generateQrCodeUrl is Promise<string> via native bridge; openInOtpApp is an RN-only helper. Other/All: js-sdk synchronous generateQrCodeUrl is possible when MFA is supported on Other.',
+    },
+    {
+      name: 'User',
+      reason:
+        'RN Firebase User optionally exposes multiFactor for native MFA bridge convenience. firebase-js-sdk keeps multi-factor access on the multiFactor(user) helper only.',
     },
   ],
 };

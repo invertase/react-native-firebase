@@ -65,28 +65,6 @@ describe('auth() -> emailLink Provider', function () {
       }
     });
   });
-
-  describe('namespaced', function () {
-    before(function () {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    after(function () {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    describe('sendSignInLinkToEmail', function () {
-      it('works with default settings', async function () {
-        const random = Utils.randString(12, '#aA');
-        const email = `${random}@${random}.com`;
-
-        await firebase.auth().sendSignInLinkToEmail(email);
-      });
-    });
-  });
-
   describe('isSignInWithEmailLink', function () {
     it('should return true/false', async function () {
       const { getAuth, isSignInWithEmailLink } = authModular;

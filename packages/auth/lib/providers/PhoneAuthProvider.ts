@@ -16,6 +16,7 @@
  */
 
 import { createPhoneAuthCredential } from '../credentials';
+import type { AuthInternal } from '../types/internal';
 import type {
   ApplicationVerifier,
   Auth,
@@ -35,20 +36,7 @@ type FirebaseError = AuthError;
 
 const providerId = 'phone' as const;
 
-type PhoneAuthProviderAuth = {
-  app: {
-    auth(): {
-      verifyPhoneNumber(phoneNumber: string): PhoneAuthListener;
-      verifyPhoneNumberWithMultiFactorInfo(
-        hint: Pick<MultiFactorInfo, 'uid'>,
-        session: PhoneMultiFactorSignInInfoOptions['session'],
-      ): Promise<string>;
-      verifyPhoneNumberForMultiFactor(
-        phoneInfoOptions: PhoneMultiFactorEnrollInfoOptions,
-      ): Promise<string>;
-    };
-  };
-};
+type PhoneAuthProviderAuth = AuthInternal;
 
 function isPhoneMultiFactorSignInOptions(
   phoneInfoOptions: PhoneInfoOptions,
@@ -131,7 +119,7 @@ export default class PhoneAuthProvider {
     _appVerifier?: ApplicationVerifier,
   ): Promise<string> {
     if (typeof phoneInfoOptions === 'string') {
-      return verificationIdFromListener(this._auth.app.auth().verifyPhoneNumber(phoneInfoOptions));
+      return verificationIdFromListener(this._auth.verifyPhoneNumber(phoneInfoOptions));
     }
 
     if (isPhoneMultiFactorSignInOptions(phoneInfoOptions)) {
@@ -139,19 +127,18 @@ export default class PhoneAuthProvider {
         uid: phoneInfoOptions.multiFactorUid!,
       };
 
-      return this._auth.app
-        .auth()
-        .verifyPhoneNumberWithMultiFactorInfo(multiFactorHint, phoneInfoOptions.session);
+      return this._auth.verifyPhoneNumberWithMultiFactorInfo(
+        multiFactorHint as MultiFactorInfo,
+        phoneInfoOptions.session,
+      );
     }
 
     if (isPhoneMultiFactorEnrollOptions(phoneInfoOptions)) {
-      return this._auth.app.auth().verifyPhoneNumberForMultiFactor(phoneInfoOptions);
+      return this._auth.verifyPhoneNumberForMultiFactor(phoneInfoOptions);
     }
 
     if (isPhoneSingleFactorOptions(phoneInfoOptions)) {
-      return verificationIdFromListener(
-        this._auth.app.auth().verifyPhoneNumber(phoneInfoOptions.phoneNumber),
-      );
+      return verificationIdFromListener(this._auth.verifyPhoneNumber(phoneInfoOptions.phoneNumber));
     }
 
     throw new Error(

@@ -1,27 +1,35 @@
-import { reload } from './modular';
 import type { MultiFactorAssertion as ModularMultiFactorAssertion, User } from './types/auth';
-import type { FirebaseAuthTypes } from './types/namespaced';
-import type { AuthInternal, MultiFactorEnrollmentAssertionInternal } from './types/internal';
+import type {
+  MultiFactorInfo,
+  MultiFactorSession,
+  MultiFactorUser as MultiFactorUserType,
+  MultiFactorAssertion,
+} from './types/auth';
+import type {
+  AuthInternal,
+  MultiFactorEnrollmentAssertionInternal,
+  UserInternal,
+} from './types/internal';
 
 type MultiFactorAuthHost = {
-  currentUser: FirebaseAuthTypes.User | null;
+  currentUser: User | null;
   native: AuthInternal['native'];
 };
 /**
  * Return a MultiFactorUser instance the gateway to multi-factor operations.
  */
-export function multiFactor(auth: MultiFactorAuthHost): FirebaseAuthTypes.MultiFactorUser {
+export function multiFactor(auth: MultiFactorAuthHost): MultiFactorUserType {
   return new MultiFactorUser(auth);
 }
 
 export class MultiFactorUser {
-  readonly enrolledFactors: FirebaseAuthTypes.MultiFactorInfo[];
+  readonly enrolledFactors: MultiFactorInfo[];
   private readonly _auth: MultiFactorAuthHost;
 
-  constructor(auth: MultiFactorAuthHost, user?: FirebaseAuthTypes.User) {
+  constructor(auth: MultiFactorAuthHost, user?: User) {
     this._auth = auth;
     if (user === undefined) {
-      user = auth.currentUser as FirebaseAuthTypes.User;
+      user = auth.currentUser as User;
     }
 
     if (!user) {
@@ -31,7 +39,7 @@ export class MultiFactorUser {
     this.enrolledFactors = user.multiFactor?.enrolledFactors ?? [];
   }
 
-  getSession(): Promise<FirebaseAuthTypes.MultiFactorSession> {
+  getSession(): Promise<MultiFactorSession> {
     return this._auth.native.getSession();
   }
 
@@ -41,7 +49,7 @@ export class MultiFactorUser {
    * profile, which is necessary to see the multi-factor changes.
    */
   async enroll(
-    multiFactorAssertion: FirebaseAuthTypes.MultiFactorAssertion | ModularMultiFactorAssertion,
+    multiFactorAssertion: MultiFactorAssertion | ModularMultiFactorAssertion,
     displayName?: string | null,
   ): Promise<void> {
     const assertion = multiFactorAssertion as MultiFactorEnrollmentAssertionInternal;
@@ -65,16 +73,17 @@ export class MultiFactorUser {
 
     // We need to reload the user otherwise the changes are not visible
     // TODO reload not working on Other platform
-    await reload(this._auth.currentUser as unknown as User);
+    const currentUser = this._auth.currentUser as UserInternal | null;
+    if (currentUser) {
+      await currentUser.reload();
+    }
   }
 
-  async unenroll(enrollmentId: FirebaseAuthTypes.MultiFactorInfo | string): Promise<void> {
-    await this._auth.native.unenrollMultiFactor(
-      enrollmentId as string | FirebaseAuthTypes.MultiFactorInfo,
-    );
+  async unenroll(enrollmentId: MultiFactorInfo | string): Promise<void> {
+    await this._auth.native.unenrollMultiFactor(enrollmentId as string | MultiFactorInfo);
 
     if (this._auth.currentUser) {
-      await reload(this._auth.currentUser as unknown as User);
+      await (this._auth.currentUser as UserInternal).reload();
     }
   }
 }

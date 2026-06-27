@@ -22,10 +22,17 @@ import {
   isBoolean,
 } from '@react-native-firebase/app/dist/module/common';
 import type { IdTokenResult, UserInfo, UserMetadata } from './types/auth';
-import type { FirebaseAuthTypes } from './types/namespaced';
+import type {
+  AuthProvider,
+  AuthCredential,
+  ActionCodeSettings,
+  MultiFactor,
+  UpdateProfile,
+  UserCredential,
+} from './types/auth';
 import type { AuthInternal, NativeUserInternal } from './types/internal';
 
-type AuthProviderWithObject = FirebaseAuthTypes.AuthProvider & {
+type AuthProviderWithObject = AuthProvider & {
   toObject(): Record<string, unknown>;
 };
 
@@ -65,7 +72,7 @@ export default class User {
     };
   }
 
-  get multiFactor(): FirebaseAuthTypes.MultiFactor | null {
+  get multiFactor(): MultiFactor | null {
     return this._user.multiFactor || null;
   }
 
@@ -114,52 +121,34 @@ export default class User {
     return this._auth.native.getIdTokenResult(forceRefresh) as Promise<IdTokenResult>;
   }
 
-  linkWithCredential(
-    credential: FirebaseAuthTypes.AuthCredential,
-  ): Promise<FirebaseAuthTypes.UserCredential> {
+  linkWithCredential(credential: AuthCredential): Promise<UserCredential> {
     return this._auth.native
       .linkWithCredential(credential.providerId, credential.token, credential.secret)
-      .then(
-        userCredential =>
-          this._auth._setUserCredential(userCredential) as FirebaseAuthTypes.UserCredential,
-      );
+      .then(userCredential => this._auth._setUserCredential(userCredential) as UserCredential);
   }
 
-  linkWithPopup(provider: AuthProviderWithObject): Promise<FirebaseAuthTypes.UserCredential> {
+  linkWithPopup(provider: AuthProviderWithObject): Promise<UserCredential> {
     // call through to linkWithRedirect for shared implementation
     return this.linkWithRedirect(provider);
   }
 
-  linkWithRedirect(provider: AuthProviderWithObject): Promise<FirebaseAuthTypes.UserCredential> {
+  linkWithRedirect(provider: AuthProviderWithObject): Promise<UserCredential> {
     return this._auth.native
       .linkWithProvider(provider.toObject())
-      .then(
-        userCredential =>
-          this._auth._setUserCredential(userCredential) as FirebaseAuthTypes.UserCredential,
-      );
+      .then(userCredential => this._auth._setUserCredential(userCredential) as UserCredential);
   }
 
-  reauthenticateWithCredential(
-    credential: FirebaseAuthTypes.AuthCredential,
-  ): Promise<FirebaseAuthTypes.UserCredential> {
+  reauthenticateWithCredential(credential: AuthCredential): Promise<UserCredential> {
     return this._auth.native
       .reauthenticateWithCredential(credential.providerId, credential.token, credential.secret)
-      .then(
-        userCredential =>
-          this._auth._setUserCredential(userCredential) as FirebaseAuthTypes.UserCredential,
-      );
+      .then(userCredential => this._auth._setUserCredential(userCredential) as UserCredential);
   }
 
-  reauthenticateWithPopup(
-    provider: AuthProviderWithObject,
-  ): Promise<FirebaseAuthTypes.UserCredential> {
+  reauthenticateWithPopup(provider: AuthProviderWithObject): Promise<UserCredential> {
     // call through to reauthenticateWithRedirect for shared implementation
     return this._auth.native
       .reauthenticateWithProvider(provider.toObject())
-      .then(
-        userCredential =>
-          this._auth._setUserCredential(userCredential) as FirebaseAuthTypes.UserCredential,
-      );
+      .then(userCredential => this._auth._setUserCredential(userCredential) as UserCredential);
   }
 
   reauthenticateWithRedirect(provider: AuthProviderWithObject): Promise<void> {
@@ -176,9 +165,9 @@ export default class User {
     });
   }
 
-  sendEmailVerification(actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings): Promise<void> {
+  sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<void> {
     if (isObject(actionCodeSettings)) {
-      const settings = actionCodeSettings as FirebaseAuthTypes.ActionCodeSettings;
+      const settings = actionCodeSettings as ActionCodeSettings;
 
       if (!isString(settings.url)) {
         throw new Error(
@@ -249,7 +238,7 @@ export default class User {
     return Object.assign({}, this._user);
   }
 
-  unlink(providerId: string): Promise<FirebaseAuthTypes.User> {
+  unlink(providerId: string): Promise<import('./types/auth').User> {
     return this._auth.native.unlink(providerId).then(user => {
       const updatedUser = this._auth._setUser(user);
       if (!updatedUser) {
@@ -271,7 +260,7 @@ export default class User {
     });
   }
 
-  updatePhoneNumber(credential: FirebaseAuthTypes.AuthCredential): Promise<void> {
+  updatePhoneNumber(credential: AuthCredential): Promise<void> {
     return this._auth.native
       .updatePhoneNumber(credential.providerId, credential.token, credential.secret)
       .then(user => {
@@ -279,7 +268,7 @@ export default class User {
       });
   }
 
-  updateProfile(updates: FirebaseAuthTypes.UpdateProfile): Promise<void> {
+  updateProfile(updates: UpdateProfile): Promise<void> {
     return this._auth.native.updateProfile(updates).then(user => {
       this._auth._setUser(user);
     });
@@ -287,7 +276,7 @@ export default class User {
 
   verifyBeforeUpdateEmail(
     newEmail: string,
-    actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
+    actionCodeSettings?: ActionCodeSettings,
   ): Promise<void> {
     if (!isString(newEmail)) {
       throw new Error(
@@ -296,7 +285,7 @@ export default class User {
     }
 
     if (isObject(actionCodeSettings)) {
-      const settings = actionCodeSettings as FirebaseAuthTypes.ActionCodeSettings;
+      const settings = actionCodeSettings as ActionCodeSettings;
 
       if (!isString(settings.url)) {
         throw new Error(
