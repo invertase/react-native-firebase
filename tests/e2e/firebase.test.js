@@ -650,7 +650,7 @@ async function launchAppWithTimeout(launchArgs, { deleteApp = true, timeoutMs } 
       new Promise((_, reject) => {
         timer = setTimeout(() => {
           const err = new Error(
-            `[rnfb-e2e] launchApp timed out after ${effectiveTimeout}ms — check simulator.log for ` +
+            `[rnfb-e2e] launchApp timed out after ${effectiveTimeout}ms — check sim-app.log for ` +
               `[rnfb-lifecycle] packager-probe / RCTJavaScriptDidFailToLoad and Detox waitForActive`,
           );
           err.retryableLaunchFailure = true;

@@ -4,7 +4,7 @@ GitHub Actions job shape, platform reliability, and artifact triage.
 
 ## Platforms
 
-* [iOS](ios.md) — simulator boot, logging, troubleshooting
+* [iOS](ios.md) — simulator boot, logging, troubleshooting, [CI baseload policy](ios.md#ci-baseload-policy-instrumentation)
 * [Android](android.md) — idling, adb teardown, native coverage
 * [Other](other.md) — macOS Jet/Metro, Windows/shared
 
@@ -13,7 +13,7 @@ GitHub Actions job shape, platform reliability, and artifact triage.
 * [Jet host orchestration](../testing/running-e2e.md#jet-host-orchestration-ports-and-launch-gate) — ports 8090/8091, defer-run launch gate (canonical)
 * [Detox patches](detox-patches.md) — inventory, `ECOMPROMISED`, patch workflow
 * [Cloud API quota triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure) — live FIS/RC pressure (all platforms)
-* [iOS diagnostics](ios.md#operational-notes) — `resource-monitor.sh`, `flake-summary.sh`
+* [iOS diagnostics](ios.md#operational-notes) — `resource-monitor.sh`, `flake-summary.sh`, [CI baseload / load settle](ios.md#ci-baseload-policy-instrumentation)
 
 ## Related
 
