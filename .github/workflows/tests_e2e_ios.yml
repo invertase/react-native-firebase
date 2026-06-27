@@ -1,6 +1,12 @@
 name: Testing E2E iOS
 
 on:
+  workflow_call:
+    inputs:
+      record_screens:
+        description: 'Record host screencapture and simulator video artifacts'
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       iterations:
@@ -8,6 +14,10 @@ on:
         required: true
         default: 1
         type: number
+      record_screens:
+        description: 'Record host screencapture and simulator video artifacts'
+        type: boolean
+        default: false
   pull_request:
     branches:
       - '**'
@@ -97,6 +107,7 @@ jobs:
     timeout-minutes: 107
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      RNFB_RECORD_SCREENS: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call') && inputs.record_screens && '1' || '0' }}
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
       CCACHE_FILECLONE: true
       CCACHE_DEPEND: true
@@ -112,6 +123,7 @@ jobs:
         # https://github.com/guidepup/setup-action/releases
         uses: guidepup/setup-action@5ab89fbb6641406f6f6c91057225f3fb397c2eea # v0.20.0
         continue-on-error: true
+        if: env.RNFB_RECORD_SCREENS == '1'
         with:
           record: true
 
@@ -119,7 +131,7 @@ jobs:
         # https://github.com/actions/upload-artifact/releases
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         continue-on-error: true
-        if: always()
+        if: always() && env.RNFB_RECORD_SCREENS == '1'
         with:
           name: screenrecording-setup-${{ matrix.buildmode }}-${{ matrix.iteration }}.mov
           path: ./recordings/
@@ -327,11 +339,11 @@ jobs:
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false&inlineSourceMap=true"
           echo "...javascript bundle ready"
 
-      - name: Start Screen and System Logging
+      - name: Start host screen recording
+        if: env.RNFB_RECORD_SCREENS == '1'
         continue-on-error: true
         run: |
           nohup sh -c "sleep 314159265 | screencapture -v -C -k -T0 -g screenrecording.mov > screenrecording.log 2>&1 &"
-          nohup sh -c "log stream --backtrace --color none --style syslog > syslog.log 2>&1 &"
 
       - name: Pre-Boot Simulator
         # Separate Simulator boot from Detox run. boot-simulator.sh polls bootstatus and logs
@@ -344,12 +356,12 @@ jobs:
           max_attempts: 3
           command: RNFB_START_SIM_LOGS=0 ./.github/workflows/scripts/boot-simulator.sh
 
-      - name: Start Simulator Recordings and Log
-        # Log streams are owned by boot-simulator.sh (logs-only mode after pre-boot).
+      - name: Start Simulator App Log
+        # One filtered sim log stream (testing + SpringBoard/invertase); optional sim video when record_screens.
         continue-on-error: true
         run: |
           chmod +x ./.github/workflows/scripts/boot-simulator.sh
-          RNFB_SIM_BOOT_MODE=logs ./.github/workflows/scripts/boot-simulator.sh
+          RNFB_RECORD_SCREENS="${RNFB_RECORD_SCREENS}" RNFB_SIM_BOOT_MODE=logs ./.github/workflows/scripts/boot-simulator.sh
 
       - name: Wait for host load to settle
         continue-on-error: true
@@ -388,43 +400,27 @@ jobs:
         continue-on-error: true
         run: |
           killall -int simctl
-          killall -int screencapture
-          killall -int log
+          if [[ "${RNFB_RECORD_SCREENS}" == "1" ]]; then
+            killall -int screencapture
+          fi
           pkill -f resource-monitor.sh || true
 
       - name: Upload App Video
         # https://github.com/actions/upload-artifact/releases
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         continue-on-error: true
-        if: always()
+        if: always() && env.RNFB_RECORD_SCREENS == '1'
         with:
           name: simulator-${{ matrix.buildmode }}-${{ matrix.iteration }}_video
           path: simulator.mp4
 
-      - name: Upload Simulator Log
-        # https://github.com/actions/upload-artifact/releases
+      - name: Upload Simulator App Log
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         continue-on-error: true
         if: always()
         with:
-          name: simulator-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
-          path: simulator.log
-
-      - name: Upload testing process log
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        continue-on-error: true
-        if: always()
-        with:
-          name: testing-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
-          path: testing.log
-
-      - name: Upload SpringBoard invertase log
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        continue-on-error: true
-        if: always()
-        with:
-          name: springboard-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
-          path: springboard-invertase.log
+          name: sim-app-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
+          path: sim-app.log
 
       - name: Upload resource monitor log
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -463,7 +459,7 @@ jobs:
         # https://github.com/actions/upload-artifact/releases
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         continue-on-error: true
-        if: always()
+        if: always() && env.RNFB_RECORD_SCREENS == '1'
         with:
           name: screenrecording-${{ matrix.buildmode }}-${{ matrix.iteration }}
           path: screenrecording.*

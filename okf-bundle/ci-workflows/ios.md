@@ -51,42 +51,97 @@ Artifacts upload on every run (`if: always()`).
 
 | Artifact | Source | Use when |
 |----------|--------|----------|
-| `simulator-<buildmode>-<iteration>_log` | `xcrun simctl spawn booted log stream` → `simulator.log` | In-simulator system/app logs during Detox |
-| `testing-<buildmode>-<iteration>_log` | `log stream --predicate 'process == "testing"'` → `testing.log` | **Filtered** app-process log — much smaller than `simulator.log`; use for `[rnfb-lifecycle]`, Detox WS, Metro probes |
-| `springboard-<buildmode>-<iteration>_log` | `log stream` with SpringBoard + `invertase` predicate → `springboard-invertase.log` | FrontBoard / LaunchServices launch failures (`unknown to FrontBoard`, install races) |
+| `sim-app-<buildmode>-<iteration>_log` | One filtered `log stream` → `sim-app.log` (`testing` + SpringBoard/invertase) | `[rnfb-lifecycle]`, Detox WS, Metro probes, FrontBoard launch failures |
 | `detox-step-<buildmode>-<iteration>_log` | Detox/Jet step stdout/stderr (`tee detox-step.log`) | `[jet-ws]`, `[rnfb-e2e]`, `[jet-coverage]`, Jest output — primary orchestration log |
-| `flake-summary-<buildmode>-<iteration>` | `.github/workflows/scripts/flake-summary.sh` → `flake-summary.txt` | Pre-digested `rg` hits across detox/simulator/testing/springboard/metro/resource-monitor logs |
+| `flake-summary-<buildmode>-<iteration>` | `.github/workflows/scripts/flake-summary.sh` → `flake-summary.txt` | Pre-digested `rg` hits across detox/sim-app/metro/resource-monitor logs |
 | `resource-monitor-<buildmode>-<iteration>_log` | `.github/workflows/scripts/resource-monitor.sh` → `resource-monitor.log` | Periodic `uptime` + `ps` snapshots (10s default) to correlate WS drops with CPU/memory pressure |
 | `metro-<buildmode>-<iteration>_log` | Metro stdout/stderr from `yarn tests:packager:jet-ci` → `metro.log` (debug only) | Metro hung, slow bundle, or unresponsive `/status` during app launch |
-| `simulator-<buildmode>-<iteration>_video` | `xcrun simctl io booted recordVideo` → `simulator.mp4` | Visual confirmation of UI state |
-| `screenrecording-<buildmode>-<iteration>` | `screencapture` of the Mac desktop | Includes Simulator.app window |
-| `screenrecording-setup-<buildmode>-<iteration>.mov` | Guidepup setup recording | Very early environment setup |
+| `simulator-<buildmode>-<iteration>_video` | `simctl recordVideo` → `simulator.mp4` | Visual confirmation (**`workflow_dispatch` / `workflow_call` `record_screens: true` only**) |
+| `screenrecording-<buildmode>-<iteration>` | `screencapture` of the Mac desktop | Includes Simulator.app window (**`record_screens: true` only**) |
+| `screenrecording-setup-<buildmode>-<iteration>.mov` | Guidepup setup recording | Very early environment setup (**`record_screens: true` only**) |
 | `emulator-scripts-logs-<buildmode>-<iteration>` | `.github/workflows/scripts/*.log` | Script output if redirected |
+
+Video artifacts upload only when **`record_screens: true`** (see [CI baseload policy](#ci-baseload-policy-instrumentation) below).
+
+### CI baseload policy (instrumentation)
+
+**Why** — macOS GHA runners showed `loadavg` in the hundreds during iOS e2e. Unfiltered simulator debug log streams (~1M+ lines/run before Detox), host syslog with `--backtrace`, dual video capture (host + sim), and three separate log streams kept baseline CPU/disk load high. A pre-Detox gate at load **10** never cleared within the wait budget.
+
+**What changed** — shrink always-on instrumentation; gate load immediately before Jet/Detox orchestration at a realistic threshold (**20**).
+
+**Workflow order** (`.github/workflows/tests_e2e_ios.yml`, before Detox):
+
+| Step | Script / action | Notes |
+|------|-----------------|-------|
+| Pre-Boot Simulator | `RNFB_START_SIM_LOGS=0 ./boot-simulator.sh` | Boot + install only; no log streams |
+| Start Simulator App Log | `RNFB_SIM_BOOT_MODE=logs ./boot-simulator.sh` | One filtered stream + `resource-monitor.sh`; sim video only if `RNFB_RECORD_SCREENS=1` |
+| Wait for host load to settle | `wait-for-load-settle.sh` | Poll until `load1 < 20` or 1200s timeout; `continue-on-error: true` |
+| Detox Test Debug / Release | `yarn tests:ios:test-cover` / `:release` | Jet orchestration begins here |
+
+**Removed (high I/O / never triaged from artifacts)**
+
+| Was | Why removed |
+|-----|-------------|
+| Host `log stream --backtrace` → `syslog.log` | Whole-machine syslog; heavy under Spotlight/indexing |
+| Unfiltered `simctl log stream` → `simulator.log` | Millions of debug lines; triage uses filtered app/SpringBoard lines only |
+| Separate `testing.log` + `springboard-invertase.log` | Merged into one stream (below) |
+
+**Single sim log** — `simulator-logging.sh` writes **`sim-app.log`** via one predicate:
+
+```text
+process == "testing" OR (process == "SpringBoard" AND eventMessage CONTAINS "invertase")
+```
+
+Covers `[rnfb-lifecycle]`, Detox/Metro app lines, and FrontBoard/LaunchServices invertase failures.
+
+**Optional video — `record_screens` input** — on `workflow_dispatch` and `workflow_call` only; default **`false`**. PR/push runs leave it off.
+
+| When `record_screens: true` | When false (default) |
+|-----------------------------|-------------------------|
+| Guidepup setup recording | Skipped |
+| Host `screencapture` → `screenrecording.*` | Skipped |
+| `simctl recordVideo` → `simulator.mp4` | Skipped |
+
+Set explicitly for UI regressions: `gh workflow run tests_e2e_ios.yml -f record_screens=true`.
+
+**Load settle env** (`wait-for-load-settle.sh`):
+
+| Variable | Default | Role |
+|----------|---------|------|
+| `RNFB_LOAD_SETTLE_MAX_LOAD` | **20** | Proceed when 1-min loadavg drops below this |
+| `RNFB_LOAD_SETTLE_MAX_WAIT_SEC` | 1200 | Stop waiting and proceed anyway |
+| `RNFB_LOAD_SETTLE_POLL_SEC` | 5 | Poll interval |
+
+Log markers: `[load-settle] ts=… elapsed=… load1=… threshold=20` in the workflow step; copied into `flake-summary.txt` when present.
+
+**Triage** — Debug legs often plateau higher than release (Metro still running). Saturated runners may never reach 20; treat `[load-settle] WARN: timed out` as informational — Detox still runs. Correlate flakes with `resource-monitor-*_log` and `[jet-ws] disconnect_context loadavg=…` rather than expecting idle hosts.
 
 **When to use which log**
 
-- **Boot / migration / “simulator won’t start”** — read the **Pre-Boot Simulator** step log in GitHub Actions first. Look for `[boot-status]` lines and `bootstatus -d` migration output. That captures first-boot migration even though `simulator.log` starts only after pre-boot succeeds.
-- **Detox / app / test failures** — start with **`detox-step-*_log`** or **`flake-summary-*`** (fast triage). For native app instrumentation, download **`testing-*_log`** instead of searching all of `simulator.log`. Jet WS drops (1006/1001) appear in the Detox step (`[jet-ws]`, `[rnfb-e2e]`). For debug Metro issues, also download `metro-*_log`.
-- **FrontBoard / relaunch after terminate** — `springboard-*_log` plus `[rnfb-e2e] install-state` / `launchApp failure` lines in `detox-step-*_log`.
+- **Boot / migration / “simulator won’t start”** — read the **Pre-Boot Simulator** step log in GitHub Actions first. Look for `[boot-status]` lines and `bootstatus -d` migration output.
+- **Detox / app / test failures** — start with **`detox-step-*_log`** or **`flake-summary-*`** (fast triage). For native app instrumentation, download **`sim-app-*_log`**. Jet WS drops (1006/1001) appear in the Detox step (`[jet-ws]`, `[rnfb-e2e]`). For debug Metro issues, also download `metro-*_log`.
+- **FrontBoard / relaunch after terminate** — `sim-app-*_log` plus `[rnfb-e2e] install-state` / `launchApp failure` lines in `detox-step-*_log`.
 - **Runner load during flake** — `resource-monitor-*_log` (correlate timestamps with `[jet-ws] disconnect_context` loadavg/mem lines).
-- **UI regressions** — `simulator-*_video` or `screenrecording-*`.
+- **UI regressions** — re-run with `record_screens: true` → `simulator-*_video` or `screenrecording-*`.
 
 **Downloading artifacts**
 
 Workflow page **Artifacts**, or:
 
 ```bash
-gh run download <run-id> -n simulator-debug-0_log
+gh run download <run-id> -n sim-app-debug-0_log
 ```
 
-**Analyzing `simulator.log`**
+**Analyzing `sim-app.log`**
 
 Useful patterns:
 
 ```bash
-rg -i "datamigrator|Telemetry: duration|systemShellWillBootstrap" simulator.log
-rg -i "com\.invertase\.testing|installcoordination" simulator.log
-rg -i "test daemon not ready|xctest" simulator.log
+rg 'testing\[' sim-app.log | rg -i 'waitForActive|waitForActiveDone|com\.wix\.Detox|ready action too early'
+rg '\[rnfb-lifecycle\]' sim-app.log
+rg '\[rnfb-lifecycle\].*RCTJavaScriptDidFailToLoad|packager-probe|packager-status-fetch' sim-app.log
+rg 'No script URL provided|com\.facebook\.react\.log' sim-app.log
+rg -i 'invertase|FrontBoard|unknown' sim-app.log
 ```
 
 Long `datamigrator` activity with no `com.invertase.testing` means migration/pre-boot install not done.
@@ -190,33 +245,33 @@ Metro can look healthy on the **host** during pre-fetch minutes earlier while be
 
 **Known intermittent pattern (community)** — RN iOS debug builds commonly hit `No script URL provided` when Metro is down, slow, or reachable from the host but not from the simulator process. Reported causes include: Metro event loop blocked under load (TCP connect succeeds, HTTP hangs — matches our `-1001` on `/status`), macOS network proxy intercepting `localhost:8081`, port 8081 contention, and `RCTBundleURLProvider` returning a nil bundle URL despite `isPackagerRunning=YES` ([react-native#49173](https://github.com/facebook/react-native/issues/49173)). On **iOS 26+ simulators**, hostname resolution for `localhost` vs `127.0.0.1` can be unreliable; hardcoding `127.0.0.1` in bundle URL resolution has been reported to fix intermittent Metro disconnects ([react-native#56447](https://github.com/facebook/react-native/issues/56447)). Our test app now pins the debug bundle URL to `127.0.0.1:8081` and the e2e harness retries `launchApp` on retryable launch failures (Metro/bundle timeout, FrontBoard errors) before failing the Jet attempt. Release uses an embedded bundle, shorter launch timeout, and no Metro wait. These are typically **environment/timing** flakes rather than app logic bugs.
 
-#### Diagnosing from `simulator.log`
+#### Diagnosing from `sim-app.log`
 
-Download the artifact (`gh run download <run-id> -n simulator-debug-0_log`), unzip if needed, then search `simulator.log`.
+Download the artifact (`gh run download <run-id> -n sim-app-debug-0_log`), unzip if needed, then search `sim-app.log`.
 
 **Quick triage** — map Detox step timestamps to simulator log (`testing[<pid>]`):
 
 ```bash
 # Detox orchestration inside the app process
-rg 'testing\[' simulator.log | rg -i 'waitForActive|waitForActiveDone|com\.wix\.Detox|ready action too early'
+rg 'testing\[' sim-app.log | rg -i 'waitForActive|waitForActiveDone|com\.wix\.Detox|ready action too early'
 
 # App lifecycle confirmation (AppDelegate instrumentation)
-rg '\[rnfb-lifecycle\]' simulator.log
+rg '\[rnfb-lifecycle\]' sim-app.log
 
 # Metro / JS bundle load failure (issue 5)
-rg '\[rnfb-lifecycle\].*RCTJavaScriptDidFailToLoad|packager-probe|packager-status-fetch' simulator.log
-rg 'No script URL provided|com\.facebook\.react\.log' simulator.log
-rg 'testing\[' simulator.log | rg '8081/status|index\.bundle'
+rg '\[rnfb-lifecycle\].*RCTJavaScriptDidFailToLoad|packager-probe|packager-status-fetch' sim-app.log
+rg 'No script URL provided|com\.facebook\.react\.log' sim-app.log
+rg 'testing\[' sim-app.log | rg '8081/status|index\.bundle'
 
 # SpringBoard launch intent vs app scene state
-rg 'com\.invertase\.testing' simulator.log | rg -i 'foreground-interactive|visibility.*Foreground|running-active'
-rg 'testing\[' simulator.log | rg -i 'Deactivation reason|activationState|UISceneActivationState'
+rg 'com\.invertase\.testing' sim-app.log | rg -i 'foreground-interactive|visibility.*Foreground|running-active'
+rg 'testing\[' sim-app.log | rg -i 'Deactivation reason|activationState|UISceneActivationState'
 
 # WebSocket timing (main-thread block before handshake)
-rg 'testing\[' simulator.log | rg 'Connection 1: ready|handshake successful'
+rg 'testing\[' sim-app.log | rg 'Connection 1: ready|handshake successful'
 
 # Heavy startup on main thread (often precedes WS delay)
-rg 'testing\[' simulator.log | rg -i 'FIRApp|RNFB|RCTBridge|configure'
+rg 'testing\[' sim-app.log | rg -i 'FIRApp|RNFB|RCTBridge|configure'
 ```
 
 **Sentinel patterns**
@@ -255,6 +310,7 @@ rg -i 'BUNDLE|index\.bundle|8081|error|ECONN|transform' metro.log
 | Cloud quota Jet retry + cooldown + metrics/summary hooks | `tests/e2e/firebase.test.js`, `packages/app/e2e/cloud-metrics.js` — see [cloud API quota triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure) |
 | Lifecycle + JS load / packager probe logging; bundle URL `127.0.0.1` | `tests/ios/testing/AppDelegate.mm` |
 | Pre-boot + `bootstatus` + shutdown wait before install | `boot-simulator.sh` |
+| Baseload shrink: one `sim-app.log` stream, load settle before Detox, optional video | `simulator-logging.sh`, `wait-for-load-settle.sh`, `tests_e2e_ios.yml` — [CI baseload policy](#ci-baseload-policy-instrumentation) |
 | Filtered logs, resource monitor, flake summary, Detox `tee` | `.github/workflows/tests_e2e_ios.yml`, `resource-monitor.sh`, `flake-summary.sh` |
 | Metro stdout/stderr artifact | `.github/workflows/tests_e2e_ios.yml` |
 
@@ -267,7 +323,7 @@ rg -i 'BUNDLE|index\.bundle|8081|error|ECONN|transform' metro.log
 [jet-ws] transient_disconnect code=1006 grace_ms=30000 waiting_for_reconnect
 ```
 
-The app process (`testing[<pid>]`) often stays alive in `testing.log` / `simulator.log` — the break is the **simulator → host** mocha-remote WebSocket on port **8090**, not a native crash.
+The app process (`testing[<pid>]`) often stays alive in `sim-app.log` — the break is the **simulator → host** mocha-remote WebSocket on port **8090**, not a native crash.
 
 **Cause** — Transient abnormal WebSocket closure (1006 = no close frame; 1001 = going away). Common in long debug+coverage runs (live Metro + Istanbul `__coverage__` growth + port 8090 forwarding). mocha-remote-client auto-reconnects in ~1s; Jet and mocha-remote-server now preserve the runner during a grace window instead of exiting immediately.
 
@@ -381,14 +437,14 @@ Often preceded by `[rnfb-e2e] terminateApp ... elapsed=60000ms` (or similar) in 
 | Slow terminate (≥ `RNFB_SLOW_TERMINATE_MS`) → full `boot-simulator.sh` reboot before relaunch | `tests/e2e/firebase.test.js` |
 | Exhausted inner launch retries escalate to **Jet attempt 2** (`retryableAtJetLevel`) | `tests/e2e/firebase.test.js` |
 | `simctl get_app_container` + `listapps` logging (`[rnfb-e2e] install-state`) | `tests/e2e/firebase.test.js` |
-| Filtered SpringBoard log artifact | `springboard-invertase.log` |
+| Filtered sim app log artifact | `sim-app.log` |
 | `wait_shutdown` before `simctl install` on reboot | `boot-simulator.sh` |
 
 **Diagnosing**
 
 ```bash
 rg 'install-state|launchApp failure|FrontBoard|FBSOpenApplication|terminateApp' detox-step.log
-rg -i 'invertase|FrontBoard|unknown' springboard-invertase.log
+rg -i 'invertase|FrontBoard|unknown' sim-app.log
 ```
 
 #### 8. Coverage teardown handshake failure (tests pass, NYC 0/0)
@@ -434,7 +490,7 @@ See also [coverage design — e2e TypeScript coverage](../testing/coverage-desig
 
 ### Operational notes
 
-- **macOS runner load / Spotlight** — GHA macOS hosts may run Spotlight indexing (or other disk-heavy work) at any time and saturate disk I/O. Disabling Spotlight is **not** an option for Xcode CI. Design for tolerance: longer grace windows, non-throwing `Server.send()`, Jet e2e retry on orchestration crashes, `resource-monitor` + `disconnect_context` for triage. Do not treat high `loadavg` alone as a misconfiguration.
+- **macOS runner load / Spotlight** — GHA macOS hosts may run Spotlight indexing (or other disk-heavy work) at any time and saturate disk I/O. Disabling Spotlight is **not** an option for Xcode CI. Design for tolerance: longer grace windows, non-throwing `Server.send()`, Jet e2e retry on orchestration crashes, trimmed CI instrumentation ([CI baseload policy](#ci-baseload-policy-instrumentation)), `resource-monitor` + `disconnect_context` for triage. Do not treat high `loadavg` alone as a misconfiguration.
 - **Release vs debug** — matrix runs both; each has separate artifacts (`debug` / `release` in the artifact name).
 - **Retry** — Pre-Boot retries up to 3 times with 60s between attempts (clean shutdown + boot each time). Jet e2e retries once on retryable WS / launch / coverage teardown / **cloud quota** failures (simulator reboot via `boot-simulator.sh` on iOS; cloud quota adds cooldown — [cloud API quota triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure)).
 - **Do not boot the simulator only inside Detox** — historical races where the testee never sent “ready” to the Detox proxy; pre-boot remains mandatory.
@@ -442,6 +498,8 @@ See also [coverage design — e2e TypeScript coverage](../testing/coverage-desig
 
 | Script | Env vars | Role |
 |--------|----------|------|
+| `.github/workflows/scripts/simulator-logging.sh` | `RNFB_RECORD_SCREENS` (0/1), `RNFB_SIM_LOG_DIR`, `RNFB_SIM_LOG_STDOUT` | One filtered `sim-app.log` stream; optional sim video — sourced by `boot-simulator.sh` |
+| `.github/workflows/scripts/wait-for-load-settle.sh` | `RNFB_LOAD_SETTLE_MAX_LOAD` (default **20**), `RNFB_LOAD_SETTLE_MAX_WAIT_SEC`, `RNFB_LOAD_SETTLE_POLL_SEC` | Poll host load immediately before Detox |
 | `.github/workflows/scripts/resource-monitor.sh` | `RNFB_RESOURCE_MONITOR_INTERVAL_SEC` (default 10), `RNFB_RESOURCE_MONITOR_LOG` | Background `uptime` + `ps` snapshots during Detox |
 | `.github/workflows/scripts/flake-summary.sh` | `RNFB_DETOX_LOG`, `RNFB_FLAKE_SUMMARY_OUT` | Post-run `rg` digest → `flake-summary.txt` |
 
@@ -451,7 +509,7 @@ Detox steps use `tee detox-step.log` and `exit ${PIPESTATUS[0]}` so the artifact
 
 > **CI/manual mirror only.** The steps below reproduce CI deflake semantics on a developer machine. Local e2e runs must use [running-e2e.md](../testing/running-e2e.md) only — do not substitute `boot-simulator.sh`, `resource-monitor.sh`, or `flake-summary.sh` for the canonical `:build && :test-cover` loop.
 
-To deflake without pushing every change, run the same steps as CI on a macOS machine or VM (SSH is fine). Mirror: emulators → build → `boot-simulator.sh` → filtered log streams → `resource-monitor.sh` → `yarn tests:ios:test-cover` (or `:release`) → `flake-summary.sh`. Wrap in a loop over `iterations` and collect `local-e2e-artifacts/iter-N-*` directories. A self-hosted GHA runner on the same VM is optional when you need exact workflow YAML semantics; direct script iteration is faster for day-to-day patch work.
+To deflake without pushing every change, run the same steps as CI on a macOS machine or VM (SSH is fine). Mirror: emulators → build → `boot-simulator.sh` (pre-boot, `RNFB_START_SIM_LOGS=0`) → `RNFB_SIM_BOOT_MODE=logs` + `RNFB_RECORD_SCREENS=0` → `wait-for-load-settle.sh` → `resource-monitor.sh` → `yarn tests:ios:test-cover` (or `:release`) → `flake-summary.sh`. Wrap in a loop over `iterations` and collect `local-e2e-artifacts/iter-N-*` directories. A self-hosted GHA runner on the same VM is optional when you need exact workflow YAML semantics; direct script iteration is faster for day-to-day patch work.
 
 ### Pinned Homebrew utilities
 

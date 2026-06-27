@@ -25,9 +25,7 @@ DETOX_LOG="${RNFB_DETOX_LOG:-}"
   }
 
   summarize "detox-log" "${DETOX_LOG}"
-  summarize "simulator-log" "simulator.log"
-  summarize "testing-log" "testing.log"
-  summarize "springboard-log" "springboard-invertase.log"
+  summarize "sim-app-log" "sim-app.log"
   summarize "resource-monitor" "resource-monitor.log"
   summarize "resource-monitor-android" "resource-monitor-android.log"
   summarize "metro-log" "metro.log"
@@ -43,7 +41,7 @@ DETOX_LOG="${RNFB_DETOX_LOG:-}"
   echo ""
 
   echo "=== log stream death markers ==="
-  for f in simulator.log testing.log springboard-invertase.log; do
+  for f in sim-app.log; do
     if [[ -f "$f" ]]; then
       rg -n 'Child process terminated|log stream restarted' "$f" 2>/dev/null | tail -20 || true
     fi

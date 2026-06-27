@@ -4,7 +4,7 @@ set -euo pipefail
 
 MAX_WAIT_SEC="${RNFB_LOAD_SETTLE_MAX_WAIT_SEC:-1200}"
 POLL_SEC="${RNFB_LOAD_SETTLE_POLL_SEC:-5}"
-MAX_LOAD="${RNFB_LOAD_SETTLE_MAX_LOAD:-10}"
+MAX_LOAD="${RNFB_LOAD_SETTLE_MAX_LOAD:-20}"
 
 parse_load1() {
   # uptime: ... load averages: 1.23 4.56 7.89

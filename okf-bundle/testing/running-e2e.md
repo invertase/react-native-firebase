@@ -98,6 +98,12 @@ macOS: `yarn tests:macos:test-cover` → `jet --target=macos` (same `:8090` WS).
 
 **Patches / code** — Jet patch (`cli.js`: defer run, control HTTP, enriched `disconnect_context`); `tests/e2e/firebase.test.js` (`postJetControl`, `createJetSession`). Patch workflow: [detox-patches.md](../ci-workflows/detox-patches.md#updating-the-jet-patch-headless). CI triage: [iOS orchestration](../ci-workflows/ios.md#e2e-test-app-orchestration-detox--jet).
 
+#### CI iOS instrumentation (not local)
+
+GitHub Actions **Testing E2E iOS** adds CI-only steps local `:test-cover` does not run: pre-boot (`boot-simulator.sh`), one filtered **`sim-app.log`** stream, **`wait-for-load-settle.sh`** (threshold **20**) immediately before Detox, and optional video when `record_screens: true`. Host syslog and unfiltered simulator logs are **disabled** to reduce runner baseload.
+
+**Canonical owner:** [iOS CI baseload policy](../ci-workflows/ios.md#ci-baseload-policy-instrumentation). Artifact names and triage: [simulator logging and video](../ci-workflows/ios.md#simulator-logging-and-video-troubleshooting).
+
 ### Running one iteration
 
 1. [Pre-flight](#pre-flight-is-the-host-clear-to-start); if [host-clear probes](#host-clear-probes) fail, [pre-flight recovery](#pre-flight-recovery) first.
