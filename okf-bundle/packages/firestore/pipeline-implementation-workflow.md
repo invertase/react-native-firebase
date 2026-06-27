@@ -94,7 +94,7 @@ On a **frozen tree** — full [change authoring § independent-review](../../tes
 
 Extends [change authoring § harness narrowing](../../testing/change-authoring-workflow.md#harness-narrowing).
 
-**Area setup (required for `unit-focused` and `area-focused` tiers):** firestore-only `platformSupportedModules` + `require('../packages/firestore/e2e/Pipeline.e2e.js')`; `RNFBDebug = true`.
+**Area setup (required for `unit-focused` and `area-focused` tiers):** firestore-only `platformSupportedModules` + `require('../packages/firestore/e2e/Pipeline.e2e.js')`; optionally set `RNFBDebug = true` **locally** in `tests/globals.js` — **never commit** ([running e2e § RNFBDebug](../../testing/running-e2e.md#fast-iteration-test-narrowing)).
 
 **Sanity check:** ~**100** passing per platform when only `Pipeline.e2e.js` loads. Pass counts in the **hundreds or thousands** mean full app load — stop and re-apply narrowing ([running-e2e § gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking)).
 

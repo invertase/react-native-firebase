@@ -237,7 +237,39 @@ Do not poll `pgrep` / `jet.js` / `:8090` for *completion* ([above](#how-a-platfo
 
 **Apply locally before every `:test-cover` at unit-focused or area-focused tier** — even when git shows the full push harness. Revert `tests/app.js` / `tests/globals.js` after the run if the branch commit keeps full harness (typical until phase **R**).
 
-**Validation report must state:** harness narrowed (yes/no), which module/spec loads, and whether pass counts match area scope. A green full-app run is not a substitute.
+**Validation report must state:** harness narrowed (yes/no), which module/spec loads, whether pass counts match area scope, and **which platforms ran** with exit codes. A green full-app run is not a substitute.
+
+<a id="platform-coverage-gate-blocking"></a>
+
+### Platform coverage gate (blocking — no shortcuts)
+
+**Both `unit-focused` (implementation) and `area-focused` (baseline-capture, independent-review) require e2e on every platform where the changed module loads in the committed harness** — not a subset for convenience.
+
+Determine required platforms from `tests/app.js` (`Platform.other` vs native lists):
+
+| Platform class | When required |
+|----------------|---------------|
+| **macOS** (`Platform.other`) | Module appears in the `if (Platform.other)` `platformSupportedModules` list |
+| **iOS** and **Android** | Module appears in the `if (!Platform.other)` list |
+
+**Area-focused (`baseline-capture`, `independent-review`) — closes `review_gate` / baseline only when:**
+
+1. Full loaded package spec(s) with [area narrowing](#harness-narrowing-gate-blocking) (no `.only`).
+2. **Serial** `:test-cover` on **each required platform** above — pre-flight before **every** run.
+3. Native platforms: `yarn tests:<platform>:build` before first `:test-cover` when product/native JS changed ([Rules §4](#rules)).
+4. Subagent/orchestrator return includes a **platform matrix**: platform, exit code, pass/fail/pending counts, log path.
+
+**Invalid shortcuts (do not close gates):**
+
+- “macOS + iOS minimum”; skipping **Android** when the module loads on Android.
+- “Skip Android if time tight” or “Android fallback only if iOS failures look env-related” without a fresh Android run.
+- Substituting a prior implementer log for `independent-review` on the frozen tree.
+
+**Module-specific skip:** only when the module is **absent** from that platform’s harness list (e.g. `messaging` is not on macOS). Record in the work-queue **Notes** — not an oral exception.
+
+**Unit-focused (`implementation`) — native touched:** macOS first when the path is TS/web-only; when the module loads on iOS **and** Android, run **both** before closing `implementation_gate` (same narrowing; `.only` OK locally; never commit).
+
+See also: [coverage design § platform parity](coverage-design.md#coverage-expectations-policy), [validation checklist § handoff](validation-checklist.md#handoff-checklist).
 
 **Checklist (copy before first run):**
 
@@ -319,7 +351,7 @@ Full e2e loads every package. Narrow locally; **never commit** narrowing.
 
 **Area example:** firestore-only modules + `require('../packages/firestore/e2e/Pipeline.e2e.js')`; mark `// TEMP: …`.
 
-**`RNFBDebug`** (`tests/globals.js`): `globalThis.RNFBDebug = true`; prints per-case start/finish and disables Mocha retry/backoff for fail-fast.
+**`RNFBDebug`** (`tests/globals.js`): set `globalThis.RNFBDebug = true` **locally** for fail-fast focused runs (prints per-case start/finish; disables Mocha retry). **Committed default must stay `false`.** Revert any local `true` before commit — same rule as harness narrowing ([§ before merge](#before-merge-pr-handoff)).
 
 Package workflows may further restrict narrowing per [validation tier](#e2e-validation-tiers-unit-focused-area-focused-full).
 

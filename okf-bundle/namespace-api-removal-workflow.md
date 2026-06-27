@@ -52,7 +52,7 @@ In addition to [change authoring gates](testing/change-authoring-workflow.md#gat
 | Gate | Requirement |
 |------|-------------|
 | Gap analysis | Every namespaced capability has a modular export; flag cross-module namespaced hops, constructor side-effects, module-level state, multi-app support |
-| Baseline | Module Jest + (where native) **area-focused** e2e ×3 platforms green; `compare:types` baseline if registered |
+| Baseline | Module Jest + (where native) **area-focused** e2e on [**every required platform**](testing/running-e2e.md#platform-coverage-gate-blocking); `compare:types` baseline if registered |
 | Implementation | Atomic swap — never register in **both** namespaced registry and factory at once (duplicate constructor side-effects) |
 | Review | Removal greps empty (below); no deprecation-proxy regression for other modules; `compare:types` unchanged-or-improved if registered |
 | Documentation | Row in [`docs/migrating-to-v26.mdx`](../../../docs/migrating-to-v26.mdx) → "namespaced removed"; reconcile v22 deprecation messaging |
@@ -90,13 +90,13 @@ Complete modular-only checklist (one focused commit scope):
 
 ## Per-module `independent-review`
 
-On a **frozen tree** — [change authoring § independent-review](testing/change-authoring-workflow.md#independent-review), plus removal greps and module-specific **area-focused** e2e ×3 platforms (no `.only`). Minor/nit findings: fix or defer-with-rationale, then delta re-review before `commit`.
+On a **frozen tree** — [change authoring § independent-review](testing/change-authoring-workflow.md#independent-review), plus removal greps and module-specific **area-focused** e2e on [**every required platform**](testing/running-e2e.md#platform-coverage-gate-blocking) (no `.only`; **no Android/macOS shortcuts**). Minor/nit findings: fix or defer-with-rationale, then delta re-review before `commit`.
 
 ## Module area harness
 
 Extends [change authoring § harness narrowing](testing/change-authoring-workflow.md#harness-narrowing).
 
-When native e2e runs: load **only** the target package's e2e spec(s) in `tests/app.js` (+ `RNFBDebug = true` in `tests/globals.js` if useful). Pass counts must match loaded scope — not full-app totals ([running e2e § gate](testing/running-e2e.md#harness-narrowing-gate-blocking)).
+When native e2e runs: load **only** the target package's e2e spec(s) in `tests/app.js`. Optionally set `RNFBDebug = true` in `tests/globals.js` **locally** for fail-fast — **never commit** (`false` is the committed default). Pass counts must match loaded scope — not full-app totals ([running e2e § gate](testing/running-e2e.md#harness-narrowing-gate-blocking), [platform coverage gate](testing/running-e2e.md#platform-coverage-gate-blocking)).
 
 ## Per-module `documentation`
 
@@ -116,7 +116,7 @@ Before `git commit`:
 2. Close `commit_gate` and update the header/next-pickup line in [namespace API removal work queue](namespace-api-removal-work-queue.md).
 3. Stage product, user docs, durable OKF learnings, **and** the queue doc together — one commit.
 
-**Never stage:** area narrowing, any `.only`, ad-hoc harness edits.
+**Never stage:** area narrowing, any `.only`, ad-hoc harness edits, or **`RNFBDebug = true`** in `tests/globals.js`.
 
 ## NF — final cleanup (app + shared infra)
 

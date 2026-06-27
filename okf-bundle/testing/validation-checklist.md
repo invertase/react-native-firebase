@@ -19,9 +19,9 @@ Work types and tiers: [change authoring workflow](change-authoring-workflow.md).
 | Work type | Scope | Shortcuts |
 |-----------|--------|-----------|
 | `gap-analysis` | `compare:types`, config read, SDK declarations | n/a |
-| `baseline-capture` | Full loaded spec(s) + e2e coverage on macOS, iOS, Android | **area-focused** tier; [area narrowing required](running-e2e.md#harness-narrowing-gate-blocking); no `.only`, no `:test-cover-reuse` |
-| `implementation` | Unit-focused Jest + e2e | **unit-focused** tier; [area narrowing required before `:test-cover`](running-e2e.md#harness-narrowing-gate-blocking) + optional `.only`; [change authoring](change-authoring-workflow.md#harness-narrowing) |
-| `independent-review` | Full checklist below on all platforms | **area-focused** tier; [area narrowing required](running-e2e.md#harness-narrowing-gate-blocking); [frozen tree](change-authoring-workflow.md#frozen-tree); never commit narrowing |
+| `baseline-capture` | Full loaded spec(s) + e2e on [**every required platform**](running-e2e.md#platform-coverage-gate-blocking) | **area-focused** tier; [area narrowing required](running-e2e.md#harness-narrowing-gate-blocking); no `.only`, no `:test-cover-reuse`; **no platform shortcuts** |
+| `implementation` | Unit-focused Jest + e2e on required platforms when native/TS path needs it | **unit-focused** tier; [area narrowing required before `:test-cover`](running-e2e.md#harness-narrowing-gate-blocking) + optional `.only`; [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) when module loads on iOS and Android |
+| `independent-review` | Full checklist; e2e on **every required platform** (macOS / iOS / Android per harness) | **area-focused** tier; [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) — **no shortcuts**; [frozen tree](change-authoring-workflow.md#frozen-tree); never commit narrowing or `RNFBDebug = true` |
 | `pre-merge-validation` | Full unfocused suite | **full** tier — [running-e2e § merge](running-e2e.md#before-merge-pr-handoff); entire PR branch, once |
 
 ## Prepare and compile
@@ -96,7 +96,7 @@ Goal: each iteration improves OKF and removes conflicting guidance.
 - [ ] `yarn tests:jest`
 - [ ] `yarn compare:types` (stale config entries removed)
 - [ ] `yarn lint:js` (+ markdown/spellcheck if docs; + platform lint if native)
-- [ ] E2e green on macOS, iOS, Android ([running-e2e](running-e2e.md); [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking) applied; no `.only`)
+- [ ] E2e green on **every required platform** for the changed module ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking); [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking); no `.only`; committed `RNFBDebug` remains `false`)
 - [ ] Native coverage post-processing per [coverage-design](coverage-design.md)
 - [ ] [Coverage policy](coverage-design.md#coverage-expectations-policy) satisfied on touched files
 - [ ] OKF bundle reviewed/updated per § above
