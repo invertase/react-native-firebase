@@ -19,7 +19,7 @@ DETOX_LOG="${RNFB_DETOX_LOG:-}"
     fi
     echo "=== ${label}: ${file} ($(wc -l <"$file" | tr -d ' ') lines) ==="
     rg -n \
-      '\[jet-ws\]|\[rnfb-e2e\]|\[jet-coverage\]|\[rnfb-lifecycle\]|RETRYABLE_DISCONNECT|reconnect_recovered|FrontBoard|FBSOpenApplication|coverage-ready|retry-eligibility|install-state|terminateApp|launchApp failure|Jet attempt|FAIL e2e' \
+      '\[jet-ws\]|\[rnfb-e2e\]|\[jet-coverage\]|\[rnfb-lifecycle\]|RETRYABLE_DISCONNECT|reconnect_recovered|FrontBoard|FBSOpenApplication|coverage-ready|retry-eligibility|install-state|terminateApp|launchApp failure|Jet attempt|FAIL e2e|orchestrate-state|Child process terminated|log stream restarted|\[load-settle\]' \
       "$file" 2>/dev/null | tail -200 || true
     echo ""
   }
@@ -31,6 +31,24 @@ DETOX_LOG="${RNFB_DETOX_LOG:-}"
   summarize "resource-monitor" "resource-monitor.log"
   summarize "resource-monitor-android" "resource-monitor-android.log"
   summarize "metro-log" "metro.log"
+
+  echo "=== disconnect_context vs resource-monitor load ==="
+  if [[ -f "${DETOX_LOG}" ]]; then
+    rg -n '\[jet-ws\] disconnect_context' "${DETOX_LOG}" 2>/dev/null | tail -20 || true
+  fi
+  if [[ -f "resource-monitor.log" ]]; then
+    echo "--- resource-monitor load around disconnect (last 80 load lines) ---"
+    rg -n 'load averages|^\[resource-monitor\] ps-empty' resource-monitor.log 2>/dev/null | tail -80 || true
+  fi
+  echo ""
+
+  echo "=== log stream death markers ==="
+  for f in simulator.log testing.log springboard-invertase.log; do
+    if [[ -f "$f" ]]; then
+      rg -n 'Child process terminated|log stream restarted' "$f" 2>/dev/null | tail -20 || true
+    fi
+  done
+  echo ""
 } >"$OUT"
 
 echo "[flake-summary] wrote ${OUT} ($(wc -l <"$OUT" | tr -d ' ') lines)"

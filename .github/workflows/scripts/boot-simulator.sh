@@ -155,6 +155,16 @@ wait_for_simulator_ready() {
   return 1
 }
 
+BOOT_MODE="${RNFB_SIM_BOOT_MODE:-full}"
+
+# shellcheck source=simulator-logging.sh
+source "$(dirname "$0")/simulator-logging.sh"
+
+if [[ "$BOOT_MODE" == "logs" ]]; then
+  restart_simulator_logging || true
+  exit 0
+fi
+
 # Get our simulator name from our test Detox config
 pushd "$(dirname "$0")/../../../tests" >/dev/null || exit 1
 SIM="$(grep iPhone .detoxrc.js | head -1 | cut -d"'" -f2)"
@@ -220,3 +230,7 @@ log_boot_status "install complete in $((SECONDS - install_start))s"
 popd >/dev/null || exit 1
 
 log_boot_status "phase=complete device=\"${SIM}\" ready with test app installed"
+
+if [[ "${RNFB_START_SIM_LOGS:-1}" == "1" && "$BOOT_MODE" == "full" ]]; then
+  restart_simulator_logging || true
+fi
