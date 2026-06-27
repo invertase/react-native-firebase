@@ -15,7 +15,7 @@
  *
  */
 
-import { firebase } from '.';
+import { getApp } from '@react-native-firebase/app';
 import { isError, once } from '@react-native-firebase/app/dist/module/common';
 // @ts-ignore - No declaration file for promise/setimmediate/rejection-tracking
 import tracking from 'promise/setimmediate/rejection-tracking';
@@ -125,35 +125,16 @@ export const setGlobalErrorHandler = once((nativeModule: NativeModule) => {
         // Flag the Crashlytics backend that we have a fatal error, they will transform it
         await nativeModule.setAttribute(FATAL_FLAG, fatalTime);
 
-        // remember our current deprecation warning state in case users
-        // have set it to non-default
-        const currentDeprecationWarningToggle =
-          globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS;
-
-        // Notify analytics, if it exists - throws error if not
         try {
-          // FIXME - disable warnings and use the old namespaced style,
-          // See https://github.com/invertase/react-native-firebase/issues/8381
-          // Unfortunately, this fails completely when using modular!
-          // Did not matter if I did named imports above or dynamic require here.
-          // So temporarily reverting and silencing warnings instead
-          globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-          // @ts-ignore - analytics types not available in crashlytics
-          await firebase.app().analytics().logEvent(
-            'app_exception', // 'app_exception' is reserved but we make an exception for JS->fatal transforms
-            {
-              fatal: 1, // as in firebase-android-sdk
-              timestamp: fatalTime,
-            },
-          );
+          const { getAnalytics, logEvent } = require('@react-native-firebase/analytics');
+          await logEvent(getAnalytics(getApp()), 'app_exception', {
+            fatal: 1,
+            timestamp: fatalTime,
+          });
         } catch (_) {
-          // This just means analytics was not present, so we could not log the analytics event
-          // console.log('error logging analytics app_exception: ' + e);
-        } finally {
-          globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = currentDeprecationWarningToggle;
+          // analytics not present
         }
 
-        // If we are chaining to other handlers, just record the error, otherwise we need to crash with it
         if (nativeModule.isCrashlyticsJavascriptExceptionHandlerChainingEnabled) {
           await nativeModule.recordErrorPromise(createNativeErrorObj(error, stackFrames, false));
         } else {
