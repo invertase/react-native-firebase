@@ -23,28 +23,16 @@ import type {
   ScreenTrace,
 } from './perf';
 
-export type PerfModularDeprecationArg = string;
-
-/**
- * Namespaced perf instance used by modular entrypoints; methods accept an optional modular deprecation token.
- */
 export interface PerfInternal extends FirebasePerformance {
   /**
    * @deprecated Prefer assigning {@link FirebasePerformance.dataCollectionEnabled}.
    */
   setPerformanceCollectionEnabled(enabled: boolean): Promise<null>;
-  newTrace(name: string, deprecationArg?: PerfModularDeprecationArg): PerformanceTrace;
-  startTrace(name: string, deprecationArg?: PerfModularDeprecationArg): Promise<PerformanceTrace>;
-  newScreenTrace(screenName: string, deprecationArg?: PerfModularDeprecationArg): ScreenTrace;
-  startScreenTrace(
-    screenName: string,
-    deprecationArg?: PerfModularDeprecationArg,
-  ): Promise<ScreenTrace>;
-  newHttpMetric(
-    url: string,
-    httpMethod: HttpMethod,
-    deprecationArg?: PerfModularDeprecationArg,
-  ): HttpMetric;
+  newTrace(name: string): PerformanceTrace;
+  startTrace(name: string): Promise<PerformanceTrace>;
+  newScreenTrace(screenName: string): ScreenTrace;
+  startScreenTrace(screenName: string): Promise<ScreenTrace>;
+  newHttpMetric(url: string, httpMethod: HttpMethod): HttpMetric;
 }
 
 export interface RNFBPerfTraceData {

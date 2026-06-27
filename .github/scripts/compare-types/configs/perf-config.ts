@@ -9,6 +9,11 @@ const config: PackageConfig = {
   missingInRN: [],
   extraInRN: [
     {
+      name: 'SDK_VERSION',
+      reason:
+        'RN Firebase package version string exported from the modular entry point. The firebase-js-sdk does not export SDK_VERSION from @firebase/performance.',
+    },
+    {
       name: 'HttpMethod',
       reason:
         'String union of HTTP verbs used by React Native HTTP metrics. The web Performance ' +
