@@ -20,6 +20,7 @@ If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating
 - [Cloud Functions](/migrating-to-v26#cloud-functions)
 - [Performance Monitoring](/migrating-to-v26#performance-monitoring)
 - [App Check](/migrating-to-v26#app-check)
+- [Analytics](/migrating-to-v26#analytics)
 - [Remote Config](/migrating-to-v26#remote-config)
 - [Crashlytics](/migrating-to-v26#crashlytics)
 - [Realtime Database](/migrating-to-v26#realtime-database)
@@ -34,7 +35,7 @@ For each package listed in this guide:
 2. Replace `Firebase*Types` namespace imports with root types (`InAppMessaging`, `Installations`, `FirebaseML`, etc.).
 3. Prefer free functions (`getId(installations)`, `setMessagesDisplaySuppressed(inAppMessaging, enabled)`) over instance methods on service objects.
 
-**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, `@react-native-firebase/messaging`, `@react-native-firebase/app-distribution`, `@react-native-firebase/functions`, `@react-native-firebase/perf`, `@react-native-firebase/app-check`, `@react-native-firebase/remote-config`, `@react-native-firebase/crashlytics`, `@react-native-firebase/database`, and `@react-native-firebase/storage`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
+**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, `@react-native-firebase/messaging`, `@react-native-firebase/app-distribution`, `@react-native-firebase/functions`, `@react-native-firebase/perf`, `@react-native-firebase/app-check`, `@react-native-firebase/remote-config`, `@react-native-firebase/crashlytics`, `@react-native-firebase/database`, `@react-native-firebase/storage`, and `@react-native-firebase/analytics`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
 
 # Machine Learning (ML)
 
@@ -304,6 +305,49 @@ The namespaced API for `@react-native-firebase/app-check` has been **removed**. 
 | `FirebaseAppCheckTypes` | Import `AppCheck`, `AppCheckTokenResult`, etc. from package root |
 | `appCheck().getToken()` | `getToken(appCheck, forceRefresh?)` |
 
+# Analytics
+
+The namespaced API for `@react-native-firebase/analytics` has been **removed**. This package is **modular-only** — use `getAnalytics()` and root-level helper functions.
+
+Analytics supports only the **default Firebase app** (same as before). Calling `getAnalytics(secondaryApp)` throws.
+
+## Removed namespaced API
+
+| Removed | Replacement (modular) |
+| ------- | --------------------- |
+| `firebase.analytics()` | `getAnalytics()` |
+| Default export `analytics()` | `getAnalytics()` |
+| `FirebaseAnalyticsTypes` | Import `Analytics`, event parameter types, etc. from package root |
+| `analytics().logEvent(...)` | `logEvent(analytics, ...)` |
+| `analytics().setUserId(...)` etc. | `setUserId(analytics, ...)`, `setConsent(analytics, ...)`, etc. |
+| Deprecated helper events (`logScreenView`, `logPurchase`, …) | Still exported as modular helpers; prefer `logEvent(analytics, 'screen_view', params)` |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import analytics from '@react-native-firebase/analytics';
+
+await firebase.analytics().logEvent('screen_view', { screen_name: 'Home' });
+await analytics().setUserId('user-123');
+```
+
+```js
+// Now
+import {
+  getAnalytics,
+  logEvent,
+  setUserId,
+} from '@react-native-firebase/analytics';
+
+const analytics = getAnalytics();
+await logEvent(analytics, 'screen_view', { screen_name: 'Home' });
+await setUserId(analytics, 'user-123');
+```
+
+See [Analytics usage](/analytics/usage) for additional examples.
+
 # Remote Config
 
 The namespaced API for `@react-native-firebase/remote-config` has been **removed**. This package is **modular-only** — use `getRemoteConfig()` and root-level helper functions.
@@ -423,6 +467,7 @@ For each modular-only package you use:
 | `functions` | `firebase.functions()`, default `functions()`, `FirebaseFunctionsTypes`, instance methods | `getFunctions()`, `httpsCallable`, `httpsCallableFromUrl`, `connectFunctionsEmulator`, `HttpsErrorCode` |
 | `perf` | `firebase.perf()`, default `perf()`, `FirebasePerformanceTypes`, instance methods | `getPerformance()`, `trace`, `httpMetric`, `newScreenTrace`, `startScreenTrace`, `initializePerformance` |
 | `app-check` | `firebase.appCheck()`, default `appCheck()`, `FirebaseAppCheckTypes`, instance methods | `getAppCheck()`, `initializeAppCheck`, `getToken`, `getLimitedUseToken`, `setTokenAutoRefreshEnabled`, `onTokenChanged`, `CustomProvider` |
+| `analytics` | `firebase.analytics()`, default `analytics()`, `FirebaseAnalyticsTypes`, instance methods | `getAnalytics()`, `logEvent`, `setUserId`, `setConsent`, `getAppInstanceId`, `getSessionId`, etc. |
 | `remote-config` | `firebase.remoteConfig()`, default `remoteConfig()`, `FirebaseRemoteConfigTypes`, instance methods | `getRemoteConfig()`, `activate`, `fetchConfig`, `fetchAndActivate`, `getValue`, `getAll`, `onConfigUpdate`, `LastFetchStatus`, `ValueSource` |
 | `crashlytics` | `firebase.crashlytics()`, default `crashlytics()`, `FirebaseCrashlyticsTypes`, instance methods | `getCrashlytics()`, `log`, `recordError`, `setUserId`, `setAttribute`, `setAttributes`, `setCrashlyticsCollectionEnabled`, etc. |
 | `database` | `firebase.database()`, default `database()`, `FirebaseDatabaseTypes`, instance methods | `getDatabase()`, `ref`, `refFromURL`, `onValue`, `runTransaction`, `connectDatabaseEmulator`, etc. |
