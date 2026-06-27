@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 jest.mock('@react-native-firebase/app/dist/module/common', () => {
   const actualCommon = jest.requireActual(
@@ -11,7 +11,7 @@ jest.mock('@react-native-firebase/app/dist/module/common', () => {
   };
 });
 
-import { firebase } from '../lib';
+import { getFunctions, httpsCallable } from '../lib';
 
 function timeoutFromNativeCall(nativeMock: jest.Mock): number {
   const call = nativeMock.mock.calls[0] as unknown[] | undefined;
@@ -24,22 +24,12 @@ function timeoutFromNativeCall(nativeMock: jest.Mock): number {
 describe('httpsCallable timeout units on other platforms', function () {
   let httpsCallableNative: jest.Mock;
 
-  beforeAll(function () {
-    // @ts-ignore test-only global
-    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-  });
-
-  afterAll(function () {
-    // @ts-ignore test-only global
-    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-  });
-
   beforeEach(function () {
     httpsCallableNative = jest
       .fn<(...args: unknown[]) => Promise<{ data: null }>>()
       .mockResolvedValue({ data: null });
 
-    const functions = firebase.app().functions();
+    const functions = getFunctions();
     // @ts-ignore test-only internal cache
     functions._nativeModule = {
       httpsCallable: (
@@ -53,7 +43,8 @@ describe('httpsCallable timeout units on other platforms', function () {
   });
 
   it('keeps milliseconds for httpsCallable (web/macos)', async function () {
-    const runner = firebase.app().functions().httpsCallable('example', { timeout: 30000 });
+    const functions = getFunctions();
+    const runner = httpsCallable(functions, 'example', { timeout: 30000 });
     await runner();
 
     expect(httpsCallableNative).toHaveBeenCalledTimes(1);
