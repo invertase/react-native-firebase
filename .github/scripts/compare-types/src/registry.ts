@@ -156,12 +156,12 @@ export const packages: PackageEntry[] = [
     name: 'remote-config',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('remote-config')],
     rnFirebaseModularFiles: [
+      path.join(rnDist('remote-config'), 'index.d.ts'),
       path.join(rnDist('remote-config'), 'types', 'remote-config.d.ts'),
-      path.join(rnDist('remote-config'), 'modular.d.ts'),
     ],
     rnFirebaseSupportFiles: [
       path.join(rnDist('remote-config'), 'statics.d.ts'),
-      path.join(rnDist('remote-config'), 'types', 'namespaced.d.ts'),
+      path.join(rnDist('remote-config'), 'types', 'internal.d.ts'),
     ],
     config: remoteConfigConfig,
   },

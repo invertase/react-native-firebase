@@ -2,7 +2,7 @@
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this library except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
@@ -24,21 +24,17 @@ import type {
   Value,
   ValueSource,
 } from './remote-config';
-import type { FirebaseRemoteConfigTypes } from './namespaced';
 
 export type ConfigValueSourceInternal = ValueSource;
 
 export type LastFetchStatusInternal = FetchStatus;
 
-export type RemoteConfigModularDeprecationArg = string;
+export type OnConfigUpdatedListenerCallback = (
+  event?: { updatedKeys: string[] },
+  error?: RemoteConfigUpdateErrorInternal,
+) => void;
 
-export type WithRemoteConfigDeprecationArg<F> = F extends (...args: infer P) => infer R
-  ? (...args: [...P, RemoteConfigModularDeprecationArg?]) => R
-  : never;
-
-export interface AppWithRemoteConfigInternal {
-  remoteConfig(deprecationArg?: RemoteConfigModularDeprecationArg): RemoteConfig;
-}
+export type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
 
 export interface ConfigSettingsStateInternal {
   fetchTimeoutMillis: number;
@@ -106,19 +102,16 @@ export interface RemoteConfigInternal extends RemoteConfig {
   defaultConfig: {
     [key: string]: string | number | boolean;
   };
-  activate(deprecationArg?: RemoteConfigModularDeprecationArg): Promise<boolean>;
-  ensureInitialized(deprecationArg?: RemoteConfigModularDeprecationArg): Promise<void>;
-  fetchAndActivate(deprecationArg?: RemoteConfigModularDeprecationArg): Promise<boolean>;
-  fetch(
-    expirationDurationSeconds?: number,
-    deprecationArg?: RemoteConfigModularDeprecationArg,
-  ): Promise<void>;
-  getAll(deprecationArg?: RemoteConfigModularDeprecationArg): Record<string, Value>;
-  getBoolean(key: string, deprecationArg?: RemoteConfigModularDeprecationArg): boolean;
-  getNumber(key: string, deprecationArg?: RemoteConfigModularDeprecationArg): number;
-  getString(key: string, deprecationArg?: RemoteConfigModularDeprecationArg): string;
-  getValue(key: string, deprecationArg?: RemoteConfigModularDeprecationArg): Value;
-  reset(deprecationArg?: RemoteConfigModularDeprecationArg): Promise<void>;
+  activate(): Promise<boolean>;
+  ensureInitialized(): Promise<void>;
+  fetchAndActivate(): Promise<boolean>;
+  fetch(expirationDurationSeconds?: number): Promise<void>;
+  getAll(): Record<string, Value>;
+  getBoolean(key: string): boolean;
+  getNumber(key: string): number;
+  getString(key: string): string;
+  getValue(key: string): Value;
+  reset(): Promise<void>;
   setConfigSettings(
     settings:
       | RemoteConfigSettings
@@ -127,35 +120,22 @@ export interface RemoteConfigInternal extends RemoteConfig {
           fetchTimeMillis?: number;
           fetchTimeoutMillis?: number;
         },
-    deprecationArg?: RemoteConfigModularDeprecationArg,
+    fromSettingsSetter?: boolean,
   ): Promise<void>;
   setDefaults(
     defaults: {
       [key: string]: string | number | boolean;
     },
-    deprecationArg?: RemoteConfigModularDeprecationArg,
+    fromDefaultConfigSetter?: boolean,
   ): Promise<null>;
-  setDefaultsFromResource(
-    resourceName: string,
-    deprecationArg?: RemoteConfigModularDeprecationArg,
-  ): Promise<null>;
-  onConfigUpdate(
-    observer: ConfigUpdateObserver,
-    deprecationArg?: RemoteConfigModularDeprecationArg,
-  ): Unsubscribe;
+  setDefaultsFromResource(resourceName: string): Promise<null>;
+  onConfigUpdate(observer: ConfigUpdateObserver): Unsubscribe;
   onConfigUpdated(
-    listenerOrObserver: FirebaseRemoteConfigTypes.CallbackOrObserver<FirebaseRemoteConfigTypes.OnConfigUpdatedListenerCallback>,
-    deprecationArg?: RemoteConfigModularDeprecationArg,
+    listenerOrObserver: CallbackOrObserver<OnConfigUpdatedListenerCallback>,
   ): Unsubscribe;
   readonly native: RNFBConfigModule;
-  _promiseWithConstants(
-    promise: Promise<NativeRemoteConfigResult<void>>,
-    deprecationArg?: RemoteConfigModularDeprecationArg,
-  ): Promise<void>;
-  _promiseWithConstants<T>(
-    promise: Promise<NativeRemoteConfigResult<T>>,
-    deprecationArg?: RemoteConfigModularDeprecationArg,
-  ): Promise<T>;
+  _promiseWithConstants(promise: Promise<NativeRemoteConfigResult<void>>): Promise<void>;
+  _promiseWithConstants<T>(promise: Promise<NativeRemoteConfigResult<T>>): Promise<T>;
 }
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
