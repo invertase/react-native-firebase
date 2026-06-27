@@ -191,26 +191,6 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       logViewSearchResults: 'logEvent()',
     },
   },
-  appCheck: {
-    default: {
-      activate: 'initializeAppCheck()',
-      setTokenAutoRefreshEnabled: 'setTokenAutoRefreshEnabled()',
-      getToken: 'getToken()',
-      getLimitedUseToken: 'getLimitedUseToken()',
-      onTokenChanged: 'onTokenChanged()',
-    },
-    statics: {
-      CustomProvider: 'CustomProvider',
-    },
-  },
-  appDistribution: {
-    default: {
-      isTesterSignedIn: 'isTesterSignedIn()',
-      signInTester: 'signInTester()',
-      checkForUpdate: 'checkForUpdate()',
-      signOutTester: 'signOutTester()',
-    },
-  },
   auth: {
     default: {
       applyActionCode: 'applyActionCode()',
@@ -277,62 +257,6 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       PhoneAuthState: 'PhoneAuthState',
       getMultiFactorResolver: 'getMultiFactorResolver()',
       multiFactor: 'multiFactor()',
-    },
-  },
-  crashlytics: {
-    default: {
-      checkForUnsentReports: 'checkForUnsentReports()',
-      crash: 'crash()',
-      deleteUnsentReports: 'deleteUnsentReports()',
-      didCrashOnPreviousExecution: 'didCrashOnPreviousExecution()',
-      log: 'log()',
-      setAttribute: 'setAttribute()',
-      setAttributes: 'setAttributes()',
-      setUserId: 'setUserId()',
-      recordError: 'recordError()',
-      sendUnsentReports: 'sendUnsentReports()',
-      setCrashlyticsCollectionEnabled: 'setCrashlyticsCollectionEnabled()',
-    },
-  },
-
-  database: {
-    default: {
-      useEmulator: 'connectDatabaseEmulator()',
-      goOffline: 'goOffline()',
-      goOnline: 'goOnline()',
-      ref: 'ref()',
-      refFromURL: 'refFromURL()',
-      setPersistenceEnabled: 'setPersistenceEnabled()',
-      setLoggingEnabled: 'setLoggingEnabled()',
-      setPersistenceCacheSizeBytes: 'setPersistenceCacheSizeBytes()',
-      getServerTime: 'getServerTime()',
-    },
-    statics: {
-      ServerValue: 'ServerValue',
-    },
-    DatabaseReference: {
-      child: 'child()',
-      set: 'set()',
-      update: 'update()',
-      setWithPriority: 'setWithPriority()',
-      remove: 'remove()',
-      on: 'onValue()',
-      once: 'get()',
-      endAt: 'endAt()',
-      endBefore: 'endBefore()',
-      startAt: 'startAt()',
-      startAfter: 'startAfter()',
-      limitToFirst: 'limitToFirst()',
-      limitToLast: 'limitToLast()',
-      orderByChild: 'orderByChild()',
-      orderByKey: 'orderByKey()',
-      orderByValue: 'orderByValue()',
-      equalTo: 'equalTo()',
-      setPriority: 'setPriority()',
-      push: 'push()',
-      onDisconnect: 'onDisconnect()',
-      keepSynced: 'keepSynced()',
-      transaction: 'runTransaction()',
     },
   },
   firestore: {
@@ -412,25 +336,6 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
-  functions: {
-    default: {
-      useEmulator: 'connectFirestoreEmulator()',
-      httpsCallable: 'httpsCallable()',
-      httpsCallableFromUrl: 'httpsCallableFromUrl()',
-    },
-    statics: {
-      HttpsErrorCode: 'HttpsErrorCode',
-    },
-  },
-  perf: {
-    default: {
-      setPerformanceCollectionEnabled: 'initializePerformance()',
-      newTrace: 'trace()',
-      newHttpMetric: 'httpMetric()',
-      newScreenTrace: 'newScreenTrace()',
-      startScreenTrace: 'startScreenTrace()',
-    },
-  },
   remoteConfig: {
     default: {
       activate: 'activate()',
@@ -451,35 +356,6 @@ const mapOfDeprecationReplacements: DeprecationMap = {
     statics: {
       LastFetchStatus: 'LastFetchStatus',
       ValueSource: 'ValueSource',
-    },
-  },
-  storage: {
-    default: {
-      useEmulator: 'connectStorageEmulator()',
-      ref: 'ref()',
-      refFromURL: 'refFromURL()',
-      setMaxOperationRetryTime: 'setMaxOperationRetryTime()',
-      setMaxUploadRetryTime: 'setMaxUploadRetryTime()',
-      setMaxDownloadRetryTime: 'setMaxDownloadRetryTime()',
-    },
-    Reference: {
-      delete: 'deleteObject()',
-      getDownloadURL: 'getDownloadURL()',
-      getMetadata: 'getMetadata()',
-      list: 'list()',
-      listAll: 'listAll()',
-      updateMetadata: 'updateMetadata()',
-      put: 'uploadBytesResumable()',
-      putString: 'uploadString()',
-      putFile: 'putFile()',
-      writeToFile: 'writeToFile()',
-      toString: 'toString()',
-      child: 'child()',
-    },
-    statics: {
-      StringFormat: 'StringFormat',
-      TaskEvent: 'TaskEvent',
-      TaskState: 'TaskState',
     },
   },
 };

@@ -16,6 +16,13 @@ If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating
 - [In-App Messaging](/migrating-to-v26#in-app-messaging)
 - [Installations](/migrating-to-v26#installations)
 - [Cloud Messaging](/migrating-to-v26#cloud-messaging)
+- [App Distribution](/migrating-to-v26#app-distribution)
+- [Cloud Functions](/migrating-to-v26#cloud-functions)
+- [Performance Monitoring](/migrating-to-v26#performance-monitoring)
+- [App Check](/migrating-to-v26#app-check)
+- [Crashlytics](/migrating-to-v26#crashlytics)
+- [Realtime Database](/migrating-to-v26#realtime-database)
+- [Cloud Storage](/migrating-to-v26#cloud-storage)
 - [Automated migration checklist](/migrating-to-v26#automated-migration-checklist)
 
 ## General pattern
@@ -26,7 +33,7 @@ For each package listed in this guide:
 2. Replace `Firebase*Types` namespace imports with root types (`InAppMessaging`, `Installations`, `FirebaseML`, etc.).
 3. Prefer free functions (`getId(installations)`, `setMessagesDisplaySuppressed(inAppMessaging, enabled)`) over instance methods on service objects.
 
-**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, and `@react-native-firebase/messaging`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
+**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, `@react-native-firebase/messaging`, `@react-native-firebase/app-distribution`, `@react-native-firebase/functions`, `@react-native-firebase/perf`, `@react-native-firebase/app-check`, `@react-native-firebase/crashlytics`, `@react-native-firebase/database`, and `@react-native-firebase/storage`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
 
 # Machine Learning (ML)
 
@@ -205,6 +212,139 @@ await experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), tr
 
 See [Cloud Messaging usage](/messaging/usage) for additional examples.
 
+# App Distribution
+
+The namespaced API for `@react-native-firebase/app-distribution` has been **removed**. This package is **modular-only** — use `getAppDistribution()` and the root-level helper functions.
+
+## Removed namespaced API
+
+| Removed | Replacement (modular) |
+| ------- | --------------------- |
+| `firebase.appDistribution()` | `getAppDistribution()` |
+| Default export `appDistribution()` | `getAppDistribution()` |
+| `FirebaseAppDistributionTypes` | Import `AppDistribution`, `AppDistributionRelease` from package root |
+| `appDistribution.isTesterSignedIn()` / etc. | `isTesterSignedIn(appDistribution)`, `signInTester(appDistribution)`, `checkForUpdate(appDistribution)`, `signOutTester(appDistribution)` |
+| `firebase.appDistribution.SDK_VERSION` | `SDK_VERSION` top-level export from package root |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import appDistribution from '@react-native-firebase/app-distribution';
+
+await firebase.appDistribution().isTesterSignedIn();
+```
+
+```js
+// Now
+import { getAppDistribution, isTesterSignedIn } from '@react-native-firebase/app-distribution';
+
+const appDistribution = getAppDistribution();
+await isTesterSignedIn(appDistribution);
+```
+
+# Cloud Functions
+
+The namespaced API for `@react-native-firebase/functions` has been **removed**. This package is **modular-only** — use `getFunctions()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed | Replacement (modular) |
+| ------- | --------------------- |
+| `firebase.functions()` | `getFunctions()` or `getFunctions(app, regionOrCustomDomain)` |
+| Default export `functions()` | `getFunctions()` |
+| `FirebaseFunctionsTypes` | Import `Functions`, `HttpsCallable`, `HttpsErrorCode`, etc. from package root |
+| `functions().httpsCallable()` | `httpsCallable(functions, name, options?)` |
+| `functions().useEmulator()` | `connectFunctionsEmulator(functions, host, port)` |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import functions from '@react-native-firebase/functions';
+
+await firebase.functions().httpsCallable('myFn')({ foo: 'bar' });
+```
+
+```js
+// Now
+import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
+
+const functions = getFunctions();
+await httpsCallable(functions, 'myFn')({ foo: 'bar' });
+```
+
+# Performance Monitoring
+
+The namespaced API for `@react-native-firebase/perf` has been **removed**. This package is **modular-only** — use `getPerformance()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed | Replacement (modular) |
+| ------- | --------------------- |
+| `firebase.perf()` | `getPerformance()` |
+| Default export `perf()` | `getPerformance()` |
+| `FirebasePerformanceTypes` | Import `FirebasePerformance`, `PerformanceTrace`, etc. from package root |
+| `perf().newTrace()` | `trace(performance, name)` |
+| `perf().newHttpMetric()` | `httpMetric(performance, url, httpMethod)` |
+
+# App Check
+
+The namespaced API for `@react-native-firebase/app-check` has been **removed**. This package is **modular-only** — use `getAppCheck()` / `initializeAppCheck()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed | Replacement (modular) |
+| ------- | --------------------- |
+| `firebase.appCheck()` | `getAppCheck()` or `initializeAppCheck(app, options)` |
+| Default export `appCheck()` | `getAppCheck()` |
+| `FirebaseAppCheckTypes` | Import `AppCheck`, `AppCheckTokenResult`, etc. from package root |
+| `appCheck().getToken()` | `getToken(appCheck, forceRefresh?)` |
+
+# Crashlytics
+
+The namespaced API for `@react-native-firebase/crashlytics` has been **removed**. This package is **modular-only** — use `getCrashlytics()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed | Replacement (modular) |
+| ------- | --------------------- |
+| `firebase.crashlytics()` | `getCrashlytics()` |
+| Default export `crashlytics()` | `getCrashlytics()` |
+| `FirebaseCrashlyticsTypes` | Import `Crashlytics` from package root |
+| `crashlytics().log()` | `log(crashlytics, message)` |
+| `crashlytics().recordError()` | `recordError(crashlytics, error, jsErrorName?)` |
+
+# Realtime Database
+
+The namespaced API for `@react-native-firebase/database` has been **removed**. This package is **modular-only** — use `getDatabase()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed | Replacement (modular) |
+| ------- | --------------------- |
+| `firebase.database()` | `getDatabase()` or `getDatabase(app, url?)` |
+| Default export `database()` | `getDatabase()` |
+| `FirebaseDatabaseTypes` | Import `Database`, `DatabaseReference`, etc. from package root |
+| `database().ref()` | `ref(database, path?)` |
+| `database().refFromURL()` | `refFromURL(database, url)` |
+
+# Cloud Storage
+
+The namespaced API for `@react-native-firebase/storage` has been **removed**. This package is **modular-only** — use `getStorage()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed | Replacement (modular) |
+| ------- | --------------------- |
+| `firebase.storage()` | `getStorage()` or `getStorage(app, bucketUrl?)` |
+| Default export `storage()` | `getStorage()` |
+| `FirebaseStorageTypes` | Import `FirebaseStorage`, `StorageReference`, etc. from package root |
+| `storage().ref()` | `ref(storage, path?)` |
+| `storageRef.put()` | `uploadBytesResumable(storageRef, data, metadata?)` |
+
 # Automated migration checklist
 
 Use this section when running scripted or agent-assisted upgrades to v26 for modular-only packages.
@@ -227,6 +367,13 @@ For each modular-only package you use:
 | `in-app-messaging` | `firebase.inAppMessaging()`, default `inAppMessaging()`, `FirebaseInAppMessagingTypes` | `getInAppMessaging()`, root modular helpers (`setMessagesDisplaySuppressed`, etc.) |
 | `installations` | `firebase.installations()`, default `installations()`, `.getId()`, `.getToken()`, `.delete()`, `FirebaseInstallationsTypes` | `getInstallations()`, `getId()`, `getToken()`, `deleteInstallations()` |
 | `messaging` | `firebase.messaging()`, default `messaging()`, `FirebaseMessagingTypes`, instance methods | `getMessaging()`, root helpers (`getToken`, `onMessage`, etc.), `SDK_VERSION`, `experimentalSetDeliveryMetricsExportedToBigQueryEnabled` |
+| `app-distribution` | `firebase.appDistribution()`, default `appDistribution()`, `FirebaseAppDistributionTypes`, instance methods | `getAppDistribution()`, `isTesterSignedIn`, `signInTester`, `checkForUpdate`, `signOutTester`, `SDK_VERSION` |
+| `functions` | `firebase.functions()`, default `functions()`, `FirebaseFunctionsTypes`, instance methods | `getFunctions()`, `httpsCallable`, `httpsCallableFromUrl`, `connectFunctionsEmulator`, `HttpsErrorCode` |
+| `perf` | `firebase.perf()`, default `perf()`, `FirebasePerformanceTypes`, instance methods | `getPerformance()`, `trace`, `httpMetric`, `newScreenTrace`, `startScreenTrace`, `initializePerformance` |
+| `app-check` | `firebase.appCheck()`, default `appCheck()`, `FirebaseAppCheckTypes`, instance methods | `getAppCheck()`, `initializeAppCheck`, `getToken`, `getLimitedUseToken`, `setTokenAutoRefreshEnabled`, `onTokenChanged`, `CustomProvider` |
+| `crashlytics` | `firebase.crashlytics()`, default `crashlytics()`, `FirebaseCrashlyticsTypes`, instance methods | `getCrashlytics()`, `log`, `recordError`, `setUserId`, `setAttribute`, `setAttributes`, `setCrashlyticsCollectionEnabled`, etc. |
+| `database` | `firebase.database()`, default `database()`, `FirebaseDatabaseTypes`, instance methods | `getDatabase()`, `ref`, `refFromURL`, `onValue`, `runTransaction`, `connectDatabaseEmulator`, etc. |
+| `storage` | `firebase.storage()`, default `storage()`, `FirebaseStorageTypes`, instance/reference methods | `getStorage()`, `ref`, `uploadBytesResumable`, `getDownloadURL`, `connectStorageEmulator`, `StringFormat`, `TaskEvent`, `TaskState` |
 
 ## 3. Validate
 
