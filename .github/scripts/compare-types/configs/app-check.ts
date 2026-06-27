@@ -40,6 +40,11 @@ const config: PackageConfig = {
   ],
   extraInRN: [
     {
+      name: 'SDK_VERSION',
+      reason:
+        'RN Firebase package version string exported from the modular entry point. The firebase-js-sdk does not export SDK_VERSION from @firebase/app-check.',
+    },
+    {
       name: 'AppCheckProvider',
       reason:
         'RN Firebase keeps the provider interface public because its native and React Native-specific provider classes are part of the package surface.',

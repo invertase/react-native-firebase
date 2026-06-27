@@ -1,196 +1,40 @@
-import appCheck, {
-  firebase,
-  FirebaseAppCheckTypes,
+import { getApp } from '@react-native-firebase/app';
+import {
   initializeAppCheck,
   getToken,
   getLimitedUseToken,
   setTokenAutoRefreshEnabled,
   onTokenChanged,
   CustomProvider,
-  AppCheck,
-  AppCheckTokenResult,
+  SDK_VERSION,
+  type AppCheck,
+  type AppCheckOptions,
+  type AppCheckTokenResult,
 } from '.';
 
-console.log(appCheck().app);
+const options: AppCheckOptions = {
+  provider: {
+    providerOptions: {
+      android: { provider: 'debug' },
+    },
+  },
+};
+const appCheck = {} as AppCheck;
 
-// checks module exists at root
-console.log(firebase.appCheck().app.name);
-
-// checks module exists at app level
-console.log(firebase.app().appCheck().app.name);
-
-// checks statics exist
-console.log(firebase.appCheck.SDK_VERSION);
-
-// checks statics exist on defaultExport
-console.log(appCheck.firebase.SDK_VERSION);
-
-// checks root exists
-console.log(firebase.SDK_VERSION);
-
-// checks multi-app support exists
-console.log(firebase.appCheck(firebase.app()).app.name);
-
-// checks default export supports app arg
-console.log(appCheck(firebase.app()).app.name);
-
-// checks CustomProvider static exists
-console.log(firebase.appCheck.CustomProvider);
-
-// checks Module instance APIs
-const appCheckInstance = firebase.appCheck();
-console.log(appCheckInstance.newReactNativeFirebaseAppCheckProvider());
-
-const provider = appCheckInstance.newReactNativeFirebaseAppCheckProvider();
-provider.configure({
-  android: { provider: 'playIntegrity' },
-  apple: { provider: 'deviceCheck' },
-  web: { provider: 'reCaptchaV3', siteKey: 'test' },
+initializeAppCheck(getApp(), options).then((instance: AppCheck) => {
+  console.log(instance.app.name);
 });
 
-appCheckInstance
-  .initializeAppCheck({
-    provider: provider,
-    isTokenAutoRefreshEnabled: true,
-  })
-  .then(() => {
-    console.log('Initialized');
-  });
-
-appCheckInstance.activate('test', true).then(() => {
-  console.log('Activated');
-});
-
-appCheckInstance.setTokenAutoRefreshEnabled(true);
-
-appCheckInstance.getToken().then((result: FirebaseAppCheckTypes.AppCheckTokenResult) => {
+getToken(appCheck).then((result: AppCheckTokenResult) => {
   console.log(result.token);
 });
 
-appCheckInstance.getToken(true).then((result: FirebaseAppCheckTypes.AppCheckTokenResult) => {
+getLimitedUseToken(appCheck).then((result: AppCheckTokenResult) => {
   console.log(result.token);
 });
 
-appCheckInstance.getLimitedUseToken().then((result: FirebaseAppCheckTypes.AppCheckTokenResult) => {
-  console.log(result.token);
-});
+setTokenAutoRefreshEnabled(appCheck, true);
+onTokenChanged(appCheck, () => {});
 
-const unsubscribe1 = appCheckInstance.onTokenChanged({
-  next: (tokenResult: FirebaseAppCheckTypes.AppCheckListenerResult) => {
-    console.log(tokenResult.token);
-    console.log(tokenResult.appName);
-  },
-  error: (error: Error) => {
-    console.log(error.message);
-  },
-  complete: () => {
-    console.log('Complete');
-  },
-});
-
-const unsubscribe2 = appCheckInstance.onTokenChanged(
-  (tokenResult: FirebaseAppCheckTypes.AppCheckListenerResult) => {
-    console.log(tokenResult.token);
-    console.log(tokenResult.appName);
-  },
-  (error: Error) => {
-    console.log(error.message);
-  },
-  () => {
-    console.log('Complete');
-  },
-);
-
-unsubscribe1();
-unsubscribe2();
-
-// checks modular API functions
-const modularProvider = appCheckInstance.newReactNativeFirebaseAppCheckProvider();
-modularProvider.configure({
-  android: { provider: 'playIntegrity' },
-  apple: { provider: 'deviceCheck' },
-  web: { provider: 'reCaptchaV3', siteKey: 'test' },
-});
-
-initializeAppCheck(firebase.app(), {
-  provider: modularProvider,
-  isTokenAutoRefreshEnabled: true,
-}).then((appCheckModular: AppCheck) => {
-  console.log(appCheckModular.app.name);
-});
-
-initializeAppCheck(undefined, {
-  provider: modularProvider,
-  isTokenAutoRefreshEnabled: true,
-}).then((appCheckModular: AppCheck) => {
-  console.log(appCheckModular.app.name);
-});
-
-getToken(appCheckInstance).then((result: AppCheckTokenResult) => {
-  console.log(result.token);
-});
-
-getToken(appCheckInstance, true).then((result: AppCheckTokenResult) => {
-  console.log(result.token);
-});
-
-getLimitedUseToken(appCheckInstance).then((result: AppCheckTokenResult) => {
-  console.log(result.token);
-});
-
-setTokenAutoRefreshEnabled(appCheckInstance, true);
-
-const modularUnsubscribe1 = onTokenChanged(appCheckInstance, {
-  next: (tokenResult: AppCheckTokenResult) => {
-    console.log(tokenResult.token);
-  },
-  error: (error: Error) => {
-    console.log(error.message);
-  },
-  complete: () => {
-    console.log('Complete');
-  },
-});
-
-const modularUnsubscribe2 = onTokenChanged(
-  appCheckInstance,
-  (tokenResult: AppCheckTokenResult) => {
-    console.log(tokenResult.token);
-  },
-  (error: Error) => {
-    console.log(error.message);
-  },
-  () => {
-    console.log('Complete');
-  },
-);
-
-modularUnsubscribe1();
-modularUnsubscribe2();
-
-// checks modular CustomProvider class
-const customProvider = new CustomProvider({
-  getToken: async () => {
-    return {
-      token: 'test-token',
-      expireTimeMillis: Date.now() + 3600000,
-    };
-  },
-});
-
-// CustomProvider can be used in AppCheckOptions
-initializeAppCheck(firebase.app(), {
-  provider: customProvider,
-  isTokenAutoRefreshEnabled: true,
-}).then(() => {
-  console.log('CustomProvider initialized');
-});
-
-// checks modular ReactNativeFirebaseAppCheckProvider class can be instantiated directly from modular import
-const rnfbProvider = appCheckInstance.newReactNativeFirebaseAppCheckProvider();
-// Test that configure method exists and can be called (reusing modularProvider for initializeAppCheck above)
-rnfbProvider.configure({
-  android: { provider: 'playIntegrity' },
-  apple: { provider: 'deviceCheck' },
-  web: { provider: 'reCaptchaV3', siteKey: 'test' },
-});
+console.log(CustomProvider);
+console.log(SDK_VERSION);
