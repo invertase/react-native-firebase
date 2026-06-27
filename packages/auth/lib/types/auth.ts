@@ -284,6 +284,8 @@ export interface User extends UserInfo {
   readonly providerData: UserInfo[];
   readonly refreshToken: string;
   readonly tenantId: string | null;
+  /** Present on native user instances returned from auth state listeners. */
+  readonly multiFactor?: MultiFactor | null;
   delete(): Promise<void>;
   getIdToken(forceRefresh?: boolean): Promise<string>;
   getIdTokenResult(forceRefresh?: boolean): Promise<IdTokenResult>;
@@ -391,3 +393,16 @@ export type PhoneInfoOptions =
 export interface TotpMultiFactorAssertion extends MultiFactorAssertion {}
 
 export interface TotpMultiFactorInfo extends MultiFactorInfo {}
+
+export type AuthListenerCallback = (user: User | null) => void;
+
+export type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
+
+export interface UpdateProfile {
+  displayName?: string | null;
+  photoURL?: string | null;
+}
+
+export interface MultiFactor {
+  enrolledFactors: MultiFactorInfo[];
+}

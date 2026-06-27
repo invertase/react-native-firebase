@@ -17,19 +17,19 @@
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { AI, Backend } from './public-types';
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import type { Auth } from '@react-native-firebase/auth';
 import type { AppCheck } from '@react-native-firebase/app-check';
 import { VertexAIBackend } from './backend';
 
 export class AIService implements AI {
-  auth: FirebaseAuthTypes.Module | null;
+  auth: Auth | null;
   appCheck: AppCheck | null;
   location: string;
 
   constructor(
     public app: ReactNativeFirebase.FirebaseApp,
     public backend: Backend,
-    auth?: FirebaseAuthTypes.Module,
+    auth?: Auth,
     appCheck?: AppCheck,
   ) {
     this.auth = auth || null;

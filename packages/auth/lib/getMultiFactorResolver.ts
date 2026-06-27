@@ -1,13 +1,13 @@
 import { isOther } from '@react-native-firebase/app/dist/module/common';
-import MultiFactorResolver from './MultiFactorResolver';
-import type { FirebaseAuthTypes } from './types/namespaced';
+import MultiFactorResolverClass from './MultiFactorResolver';
+import type { MultiFactorError, MultiFactorResolver } from './types/auth';
 import type { AuthInternal } from './types/internal';
 
-type ErrorWithResolver = FirebaseAuthTypes.MultiFactorError & {
+type ErrorWithResolver = MultiFactorError & {
   userInfo?: {
     resolver?: {
-      hints: FirebaseAuthTypes.MultiFactorResolver['hints'];
-      session: FirebaseAuthTypes.MultiFactorResolver['session'];
+      hints: MultiFactorResolver['hints'];
+      session: MultiFactorResolver['session'];
     };
   };
 };
@@ -21,21 +21,19 @@ type ErrorWithResolver = FirebaseAuthTypes.MultiFactorError & {
 export function getMultiFactorResolver(
   auth: AuthInternal,
   error: ErrorWithResolver,
-): FirebaseAuthTypes.MultiFactorResolver | null {
+): MultiFactorResolver | null {
   if (isOther) {
-    return auth.native.getMultiFactorResolver(
-      error,
-    ) as FirebaseAuthTypes.MultiFactorResolver | null;
+    return auth.native.getMultiFactorResolver(error) as MultiFactorResolver | null;
   }
   if (
     error.hasOwnProperty('userInfo') &&
     error.userInfo?.hasOwnProperty('resolver') &&
     error.userInfo.resolver
   ) {
-    return new MultiFactorResolver(
+    return new MultiFactorResolverClass(
       auth,
       error.userInfo.resolver,
-    ) as unknown as FirebaseAuthTypes.MultiFactorResolver;
+    ) as unknown as MultiFactorResolver;
   }
 
   return null;

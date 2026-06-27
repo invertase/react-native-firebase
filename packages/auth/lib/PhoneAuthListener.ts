@@ -23,7 +23,7 @@ import {
 } from '@react-native-firebase/app/dist/module/common';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import NativeFirebaseError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
-import type { FirebaseAuthTypes } from './types/namespaced';
+import type { PhoneAuthSnapshot, PhoneAuthError } from './types/auth';
 import type {
   AuthInternal,
   NativePhoneAuthCredentialInternal,
@@ -38,8 +38,6 @@ type PhoneAuthInternalEventType =
 
 type InternalEvents = Record<PhoneAuthInternalEventType, string>;
 type PublicEvents = Record<'error' | 'event' | 'success', string>;
-type PhoneAuthSnapshot = FirebaseAuthTypes.PhoneAuthSnapshot;
-type PhoneAuthError = FirebaseAuthTypes.PhoneAuthError;
 
 let REQUEST_ID = 0;
 
@@ -235,15 +233,13 @@ export default class PhoneAuthListener {
     const snapshot: PhoneAuthSnapshot = {
       verificationId: state.verificationId,
       code: null,
-      error: null,
+      error: new NativeFirebaseError(
+        { userInfo: state.error },
+        this._jsStack,
+        'auth',
+      ) as ReactNativeFirebase.NativeFirebaseError,
       state: 'error',
     };
-
-    snapshot.error = new NativeFirebaseError(
-      { userInfo: state.error },
-      this._jsStack,
-      'auth',
-    ) as ReactNativeFirebase.NativeFirebaseError;
 
     this._emitToObservers(snapshot);
     this._emitToErrorCb(snapshot);

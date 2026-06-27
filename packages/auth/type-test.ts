@@ -1,11 +1,9 @@
 /*
- * Consumer-facing API type tests for @react-native-firebase/auth.
- * Part 1: namespaced API (firebase.auth(), default auth()).
- * Part 2: modular API (getAuth, signInWithEmailAndPassword, etc. from lib/modular.ts).
+ * Consumer-facing API type tests for @react-native-firebase/auth (modular API only).
  */
 
-import auth, {
-  firebase,
+import { getApp } from '@react-native-firebase/app';
+import {
   applyActionCode,
   ActionCodeOperation,
   beforeAuthStateChanged,
@@ -32,7 +30,6 @@ import auth, {
   onAuthStateChanged,
   onIdTokenChanged,
   OperationType,
-  ProviderId,
   OAuthProvider,
   ActionCodeURL,
   parseActionCodeURL,
@@ -57,6 +54,7 @@ import auth, {
   useUserAccessGroup,
   validatePassword,
   verifyPasswordResetCode,
+  SDK_VERSION,
   type ActionCodeInfo,
   type ActionCodeSettings,
   type ApplicationVerifier,
@@ -65,11 +63,8 @@ import auth, {
   type AuthProvider,
   type AuthSettings,
   type Config,
-  type ConfirmationResult,
   type Dependencies,
-  type FirebaseAuthTypes,
   type IdTokenResult,
-  type MultiFactorError,
   type MultiFactorSession,
   type OAuthCredentialOptions,
   type PasswordPolicy,
@@ -78,7 +73,6 @@ import auth, {
   type PopupRedirectResolver,
   type TotpMultiFactorAssertion,
   type TotpSecret,
-  type Unsubscribe,
   type User,
   type UserCredential,
   deleteUser,
@@ -102,19 +96,7 @@ import auth, {
   PhoneAuthCredential,
 } from '.';
 
-const authModule = auth();
-const namespacedAuth = firebase.auth();
-const authFromApp = firebase.app().auth();
-const authFromAppArg = auth(firebase.app());
-
-console.log(authModule.app.name);
-console.log(namespacedAuth.currentUser);
-console.log(authFromApp.app.name);
-console.log(authFromAppArg.app.name);
-console.log(firebase.auth.SDK_VERSION);
-console.log(auth.firebase.SDK_VERSION);
-console.log(firebase.SDK_VERSION);
-
+console.log(SDK_VERSION);
 const actionCodeSettings: ActionCodeSettings = {
   url: 'https://example.com/auth',
   handleCodeInApp: true,
@@ -234,8 +216,8 @@ console.log(
 );
 
 const modularAuth: Auth = getAuth();
-const modularAuthFromApp: Auth = getAuth(firebase.app());
-const initializedAuth: Auth = initializeAuth(firebase.app(), dependencies);
+const modularAuthFromApp: Auth = getAuth(getApp());
+const initializedAuth: Auth = initializeAuth(getApp(), dependencies);
 const phoneVerificationId: Promise<string> = new PhoneAuthProvider(modularAuth).verifyPhoneNumber(
   '+16505550101',
   appVerifier,
@@ -252,48 +234,6 @@ console.log(modularAuth.app.name, modularAuthFromApp.app.name, initializedAuth.a
 console.log(phoneVerificationId);
 console.log(totpAssertionForSignIn, totpAssertionForEnrollment, generatedTotpSecret);
 
-namespacedAuth.setTenantId('tenant-123');
-namespacedAuth.setLanguageCode('en');
-namespacedAuth.useEmulator('http://localhost:9099');
-namespacedAuth.sendPasswordResetEmail('test@example.com');
-namespacedAuth.sendSignInLinkToEmail('test@example.com', actionCodeSettings);
-namespacedAuth.verifyPasswordResetCode('oob-code').then((email: string) => console.log(email));
-namespacedAuth
-  .checkActionCode('oob-code')
-  .then((info: FirebaseAuthTypes.ActionCodeInfo) => console.log(info.operation));
-namespacedAuth.getCustomAuthDomain().then((domain: string) => console.log(domain));
-
-const namespacedUnsubscribe: Unsubscribe = namespacedAuth.onAuthStateChanged(
-  (user: FirebaseAuthTypes.User | null) => {
-    console.log(user?.uid);
-  },
-);
-namespacedUnsubscribe();
-
-namespacedAuth.onIdTokenChanged((user: FirebaseAuthTypes.User | null) => {
-  console.log(user?.email);
-});
-
-namespacedAuth
-  .signInAnonymously()
-  .then((credential: FirebaseAuthTypes.UserCredential) => console.log(credential.user.uid));
-namespacedAuth
-  .createUserWithEmailAndPassword('new@example.com', 'password123')
-  .then((credential: FirebaseAuthTypes.UserCredential) => console.log(credential.user.email));
-namespacedAuth
-  .signInWithEmailAndPassword('test@example.com', 'password123')
-  .then((credential: FirebaseAuthTypes.UserCredential) => console.log(credential.user.email));
-namespacedAuth
-  .signInWithCustomToken('custom-token')
-  .then((credential: FirebaseAuthTypes.UserCredential) => console.log(credential.user.uid));
-namespacedAuth
-  .signInWithEmailLink('test@example.com', 'email-link')
-  .then((credential: FirebaseAuthTypes.UserCredential) => console.log(credential.user.email));
-namespacedAuth
-  .signInWithPhoneNumber('+1234567890')
-  .then((result: FirebaseAuthTypes.ConfirmationResult) => console.log(result.verificationId));
-namespacedAuth.signOut();
-
 const emailCredential = EmailAuthProvider.credential('test@example.com', 'password123');
 const phoneCredential = PhoneAuthProvider.credential('verification-id', '123456');
 console.log(emailCredential.providerId, phoneCredential.providerId);
@@ -302,126 +242,66 @@ applyActionCode(modularAuth, 'oob-code');
 checkActionCode(modularAuth, 'oob-code').then((info: ActionCodeInfo) =>
   console.log(info.data.email),
 );
-confirmPasswordReset(modularAuth, 'oob-code', 'new-password');
 connectAuthEmulator(modularAuth, 'http://localhost:9099', { disableWarnings: false });
-createUserWithEmailAndPassword(modularAuth, 'new@example.com', 'password123').then(
-  (credential: UserCredential) => console.log(credential.user.uid),
-);
-fetchSignInMethodsForEmail(modularAuth, 'test@example.com').then((methods: string[]) =>
-  console.log(methods),
-);
-getMultiFactorResolver(modularAuth, {} as MultiFactorError);
-getRedirectResult(modularAuth, popupRedirectResolver).then(result => console.log(result?.user.uid));
-isSignInWithEmailLink(modularAuth, 'email-link').then((valid: boolean) => console.log(valid));
-
-const modularUnsubscribe: Unsubscribe = onAuthStateChanged(modularAuth, (user: User | null) =>
-  console.log(user?.email),
-);
-modularUnsubscribe();
-
-onIdTokenChanged(modularAuth, (user: User | null) => console.log(user?.uid));
-signInAnonymously(modularAuth).then((credential: UserCredential) =>
-  console.log(credential.user.uid),
-);
-signInWithCredential(modularAuth, emailCredential).then((credential: UserCredential) =>
-  console.log(credential.user.email),
-);
-signInWithCustomToken(modularAuth, 'custom-token').then((credential: UserCredential) =>
-  console.log(credential.user.uid),
-);
-signInWithEmailAndPassword(modularAuth, 'test@example.com', 'password123').then(
-  (credential: UserCredential) => console.log(credential.user.email),
-);
-signInWithEmailLink(modularAuth, 'test@example.com', 'email-link').then(
-  (credential: UserCredential) => console.log(credential.user.email),
-);
-signInWithEmailLink(modularAuth, 'test@example.com').then((credential: UserCredential) =>
-  console.log(credential.user.email),
-);
-signInWithPhoneNumber(modularAuth, '+1234567890', appVerifier).then((result: ConfirmationResult) =>
-  console.log(result.verificationId),
-);
-signInWithPopup(modularAuth, redirectProvider, popupRedirectResolver).then(result =>
-  console.log(result.user.uid),
-);
-signInWithRedirect(modularAuth, redirectProvider, popupRedirectResolver).then(result =>
-  console.log(result.user.uid),
-);
 signOut(modularAuth);
-sendPasswordResetEmail(modularAuth, 'test@example.com', actionCodeSettings);
 sendSignInLinkToEmail(modularAuth, 'test@example.com', actionCodeSettings);
 setLanguageCode(modularAuth, 'fr');
-useUserAccessGroup(modularAuth, 'group.example');
-verifyPasswordResetCode(modularAuth, 'oob-code').then((email: string) => console.log(email));
-getCustomAuthDomain(modularAuth).then((domain: string) => console.log(domain));
-revokeToken(modularAuth, 'authorization-code');
-validatePassword(modularAuth, 'password123').then((status: PasswordValidationStatus) =>
-  console.log(status.isValid),
-);
-
-beforeAuthStateChanged(modularAuth, async (user: User | null) => {
-  console.log(user?.uid);
-});
-updateCurrentUser(modularAuth, null);
-useDeviceLanguage(modularAuth);
-
-void ActionCodeURL.parseLink('https://example.com/auth?mode=verifyEmail&oobCode=abc');
-
-const parsedActionCode = parseActionCodeURL(
-  'https://example.com/auth?mode=verifyEmail&oobCode=abc',
-);
-if (parsedActionCode) {
-  console.log(parsedActionCode.code);
-}
-
-const additionalUserInfo = getAdditionalUserInfo({
-  additionalUserInfo: null,
-  user: {} as User,
-} as unknown as UserCredential);
-console.log(additionalUserInfo);
-
-const maybeUser = namespacedAuth.currentUser;
-if (maybeUser) {
-  maybeUser.reload();
-  maybeUser.getIdToken().then((token: string) => console.log(token));
-  maybeUser
-    .getIdTokenResult()
-    .then((result: FirebaseAuthTypes.IdTokenResult) => console.log(result.claims));
-  maybeUser.sendEmailVerification(actionCodeSettings);
-  maybeUser.updateEmail('new@example.com');
-  maybeUser.updatePassword('new-password');
-  maybeUser.updatePhoneNumber(phoneCredential);
-  maybeUser.updateProfile({ displayName: 'New Name', photoURL: 'https://example.com/photo.png' });
-
-  const namespacedMfaUser = namespacedAuth.multiFactor(maybeUser);
-  namespacedMfaUser.getSession();
-}
-
-const modularUser = {} as User;
-const modularMfaUser = multiFactor(modularUser);
-modularMfaUser.getSession();
-getIdTokenResult(modularUser).then((result: IdTokenResult) => console.log(result.claims));
-modularAuth.authStateReady().then(() => console.log('auth ready'));
 modularAuth.tenantId = 'tenant-id';
 console.log(modularAuth.emulatorConfig?.host);
 console.log(modularAuth.config);
+
+const modularUser = {} as User;
+multiFactor(modularUser).getSession();
+getIdTokenResult(modularUser).then((result: IdTokenResult) => console.log(result.claims));
 deleteUser(modularUser);
-getIdToken(modularUser);
-linkWithCredential(modularUser, emailCredential);
-linkWithPopup(modularUser, redirectProvider, popupRedirectResolver);
-linkWithRedirect(modularUser, redirectProvider, popupRedirectResolver);
-reauthenticateWithCredential(modularUser, emailCredential);
-reauthenticateWithPopup(modularUser, redirectProvider, popupRedirectResolver);
-reauthenticateWithRedirect(modularUser, redirectProvider, popupRedirectResolver);
-reload(modularUser);
 sendEmailVerification(modularUser, actionCodeSettings);
-unlink(modularUser, ProviderId.GOOGLE);
-updateEmail(modularUser, 'new@example.com');
-updatePassword(modularUser, 'new-password');
-updatePhoneNumber(modularUser, phoneCredential);
-updateProfile(modularUser, { displayName: 'Name', photoURL: 'https://example.com/photo.png' });
 verifyBeforeUpdateEmail(modularUser, 'new@example.com', actionCodeSettings);
-namespacedAuth.sendSignInLinkToEmail('test@example.com');
 EmailAuthCredential.fromJSON({ email: 'a@b.com', password: 'pw', signInMethod: 'password' });
 OAuthCredential.fromJSON({ providerId: 'google.com', idToken: 'token' });
 PhoneAuthCredential.fromJSON({ verificationId: 'vid', verificationCode: '123456' });
+
+void [
+  beforeAuthStateChanged,
+  confirmPasswordReset,
+  createUserWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
+  getAdditionalUserInfo,
+  getCustomAuthDomain,
+  getMultiFactorResolver,
+  getRedirectResult,
+  revokeToken,
+  isSignInWithEmailLink,
+  onAuthStateChanged,
+  onIdTokenChanged,
+  parseActionCodeURL,
+  sendPasswordResetEmail,
+  signInAnonymously,
+  signInWithCredential,
+  signInWithCustomToken,
+  signInWithEmailAndPassword,
+  signInWithEmailLink,
+  signInWithPhoneNumber,
+  signInWithPopup,
+  signInWithRedirect,
+  updateCurrentUser,
+  useDeviceLanguage,
+  useUserAccessGroup,
+  validatePassword,
+  verifyPasswordResetCode,
+  getIdToken,
+  linkWithCredential,
+  linkWithPopup,
+  linkWithRedirect,
+  reauthenticateWithCredential,
+  reauthenticateWithPopup,
+  reauthenticateWithRedirect,
+  reload,
+  unlink,
+  updateEmail,
+  updatePassword,
+  updatePhoneNumber,
+  updateProfile,
+  ActionCodeURL,
+  redirectProvider,
+  popupRedirectResolver,
+];

@@ -25,6 +25,7 @@ If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating
 - [Crashlytics](/migrating-to-v26#crashlytics)
 - [Realtime Database](/migrating-to-v26#realtime-database)
 - [Cloud Storage](/migrating-to-v26#cloud-storage)
+- [Authentication](/migrating-to-v26#authentication)
 - [Automated migration checklist](/migrating-to-v26#automated-migration-checklist)
 
 ## General pattern
@@ -35,7 +36,7 @@ For each package listed in this guide:
 2. Replace `Firebase*Types` namespace imports with root types (`InAppMessaging`, `Installations`, `FirebaseML`, etc.).
 3. Prefer free functions (`getId(installations)`, `setMessagesDisplaySuppressed(inAppMessaging, enabled)`) over instance methods on service objects.
 
-**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, `@react-native-firebase/messaging`, `@react-native-firebase/app-distribution`, `@react-native-firebase/functions`, `@react-native-firebase/perf`, `@react-native-firebase/app-check`, `@react-native-firebase/remote-config`, `@react-native-firebase/crashlytics`, `@react-native-firebase/database`, `@react-native-firebase/storage`, and `@react-native-firebase/analytics`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
+**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, `@react-native-firebase/messaging`, `@react-native-firebase/app-distribution`, `@react-native-firebase/functions`, `@react-native-firebase/perf`, `@react-native-firebase/app-check`, `@react-native-firebase/remote-config`, `@react-native-firebase/crashlytics`, `@react-native-firebase/database`, `@react-native-firebase/storage`, `@react-native-firebase/analytics`, and `@react-native-firebase/auth`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
 
 # Machine Learning (ML)
 
@@ -440,6 +441,41 @@ The namespaced API for `@react-native-firebase/storage` has been **removed**. Th
 | `FirebaseStorageTypes` | Import `FirebaseStorage`, `StorageReference`, etc. from package root |
 | `storage().ref()` | `ref(storage, path?)` |
 | `storageRef.put()` | `uploadBytesResumable(storageRef, data, metadata?)` |
+
+# Authentication
+
+The namespaced API for `@react-native-firebase/auth` has been **removed**. This package is **modular-only** — use `getAuth()` / `initializeAuth()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed | Replacement (modular) |
+| ------- | --------------------- |
+| `firebase.auth()` | `getAuth()` or `getAuth(app)` |
+| Default export `auth()` | `getAuth()` |
+| `FirebaseAuthTypes` namespace | Import `Auth`, `User`, `UserCredential`, etc. from package root |
+| `auth().signInWithEmailAndPassword(...)` | `signInWithEmailAndPassword(getAuth(), ...)` |
+| `auth().useEmulator(url)` | `connectAuthEmulator(getAuth(), url, options?)` |
+| `firebase.auth.EmailAuthProvider` | `EmailAuthProvider` (named export) |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import auth from '@react-native-firebase/auth';
+
+firebase.auth().signOut();
+auth().currentUser;
+```
+
+```js
+// Now
+import { getAuth, signOut } from '@react-native-firebase/auth';
+
+const auth = getAuth();
+await signOut(auth);
+auth.currentUser;
+```
 
 # Automated migration checklist
 

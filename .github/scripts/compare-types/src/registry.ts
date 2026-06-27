@@ -107,14 +107,11 @@ export const packages: PackageEntry[] = [
     name: 'auth',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('auth')],
     rnFirebaseModularFiles: [
+      path.join(rnDist('auth'), 'index.d.ts'),
       path.join(rnDist('auth'), 'types', 'auth.d.ts'),
-      path.join(rnDist('auth'), 'modular.d.ts'),
     ],
     rnFirebaseSupportFiles: [
-      path.join(rnDist('auth'), 'index.d.ts'),
       path.join(rnDist('auth'), 'constants.d.ts'),
-      path.join(rnDist('auth'), 'namespaced.d.ts'),
-      path.join(rnDist('auth'), 'types', 'namespaced.d.ts'),
       path.join(rnDist('auth'), 'types', 'internal.d.ts'),
       path.join(rnDist('auth'), 'ConfirmationResult.d.ts'),
       path.join(rnDist('auth'), 'MultiFactorResolver.d.ts'),
@@ -142,12 +139,11 @@ export const packages: PackageEntry[] = [
     name: 'storage',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('storage')],
     rnFirebaseModularFiles: [
+      path.join(rnDist('storage'), 'index.d.ts'),
       path.join(rnDist('storage'), 'types', 'storage.d.ts'),
-      path.join(rnDist('storage'), 'modular.d.ts'),
     ],
     rnFirebaseSupportFiles: [
       path.join(rnDist('storage'), 'StorageStatics.d.ts'),
-      path.join(rnDist('storage'), 'types', 'namespaced.d.ts'),
       path.join(rnDist('storage'), 'types', 'internal.d.ts'),
     ],
     config: storageConfig,
@@ -203,13 +199,12 @@ export const packages: PackageEntry[] = [
     name: 'database',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('database')],
     rnFirebaseModularFiles: [
+      path.join(rnDist('database'), 'index.d.ts'),
       path.join(rnDist('database'), 'types', 'database.d.ts'),
-      path.join(rnDist('database'), 'modular.d.ts'),
       path.join(rnDist('database'), 'modular', 'query.d.ts'),
       path.join(rnDist('database'), 'modular', 'transaction.d.ts'),
     ],
     rnFirebaseSupportFiles: [
-      path.join(rnDist('database'), 'types', 'namespaced.d.ts'),
       path.join(rnDist('database'), 'types', 'internal.d.ts'),
       path.join(rnDist('database'), 'DatabaseDataSnapshot.d.ts'),
       path.join(rnDist('database'), 'DatabaseOnDisconnect.d.ts'),
@@ -224,8 +219,8 @@ export const packages: PackageEntry[] = [
     name: 'app-check',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('app-check')],
     rnFirebaseModularFiles: [
+      path.join(rnDist('app-check'), 'index.d.ts'),
       path.join(rnDist('app-check'), 'types', 'appcheck.d.ts'),
-      path.join(rnDist('app-check'), 'modular.d.ts'),
     ],
     rnFirebaseSupportFiles: [
       path.join(rnDist('app-check'), 'providers.d.ts'),
@@ -239,8 +234,8 @@ export const packages: PackageEntry[] = [
       requiredFirebaseTypes('installations'),
     ],
     rnFirebaseModularFiles: [
+      path.join(rnDist('installations'), 'index.d.ts'),
       path.join(rnDist('installations'), 'types', 'installations.d.ts'),
-      path.join(rnDist('installations'), 'modular.d.ts'),
     ],
     rnFirebaseSupportFiles: [path.join(rnDist('installations'), 'types', 'internal.d.ts')],
     config: installationsConfig,
@@ -300,8 +295,8 @@ export const packages: PackageEntry[] = [
     name: 'perf',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('performance')],
     rnFirebaseModularFiles: [
+      path.join(rnDist('perf'), 'index.d.ts'),
       path.join(rnDist('perf'), 'types', 'perf.d.ts'),
-      path.join(rnDist('perf'), 'modular.d.ts'),
     ],
     rnFirebaseSupportFiles: [],
     config: perfConfig,

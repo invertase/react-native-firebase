@@ -17,7 +17,7 @@
 
 import { isOther } from '@react-native-firebase/app/dist/module/common';
 import { TotpSecret } from './TotpSecret';
-import { getAuth } from './modular';
+import { getAuth } from './index';
 import type { Auth, MultiFactorSession, TotpMultiFactorAssertion } from './types/auth';
 import type { AuthInternal } from './types/internal';
 
