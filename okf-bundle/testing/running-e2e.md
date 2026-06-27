@@ -18,6 +18,8 @@ Canonical local e2e commands. Use **only** these commands. `-ci` variants are CI
 
 **Never invoke the test runner (Jet), Detox, Metro, or emulators directly.** Use **only** the repo-root `yarn tests:*` commands defined in this document (for example `yarn tests:packager:jet`, `yarn tests:emulator:start`, `yarn tests:<platform>:test-cover`). Do not run `jet`, `npx jet`, `yarn jet`, `detox test`, `cd tests && …`, or ad-hoc Metro/emulator start commands. When another doc mentions e2e, Jet, Detox, or pre-flight, follow the link to this runbook — do not infer commands from log output or implementation details.
 
+Install, prepare, and validation commands are **not** in this doc — they live in [agent command policy](agent-command-policy.md) (read before any non-e2e shell command).
+
 ## Prerequisites (once per checkout)
 
 ```bash

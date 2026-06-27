@@ -9,6 +9,7 @@
 ## Working
 
 - Run from repo root; install once with `yarn`.
+- **Agent shell commands:** [agent-command-policy.md](okf-bundle/testing/agent-command-policy.md) only (allowlist). E2e additionally [running-e2e.md § agent rule](okf-bundle/testing/running-e2e.md#agent-rule-read-first).
 - Follow local package patterns; check `type-test.ts`, `__tests__/`, and plugin dirs before public API/platform changes.
 - Start with `okf-bundle/index.md` for repo-specific implementation/testing/maintenance knowledge.
 - **Change authoring:** [change-authoring-workflow.md](okf-bundle/testing/change-authoring-workflow.md) — baseline → unit-focused implementation → area-focused review → commit.

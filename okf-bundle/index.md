@@ -12,6 +12,7 @@ okf_version: "0.1"
 
 # Testing
 
+* [Agent command policy](/testing/agent-command-policy.md) — allowlisted shell commands for agents (install, prepare, validation, e2e)
 * [Change authoring workflow](/testing/change-authoring-workflow.md) — verified product change loop (unit-focused → area-focused review → commit)
 * [Iteration vocabulary](/testing/iteration-vocabulary.md) — work type, tier, and queue field identifiers
 * [Running e2e tests](/testing/running-e2e.md) — canonical e2e commands, narrowing, environment, diagnosis

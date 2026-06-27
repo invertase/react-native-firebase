@@ -10,7 +10,8 @@ GitHub Actions job shape, platform reliability, and artifact triage.
 
 ## Shared E2E dependencies
 
-* [Running e2e — agent rule](../testing/running-e2e.md#agent-rule-read-first) — **only** repo-root `yarn tests:*` commands; never invoke Jet/Detox/Metro directly
+* [Agent command policy](../testing/agent-command-policy.md) — allowlisted install/prepare/validation/e2e commands for agents
+* [Running e2e — agent rule](../testing/running-e2e.md#agent-rule-read-first) — e2e `yarn tests:*` detail; never invoke Jet/Detox/Metro directly
 * [Test-runner orchestration (log triage)](../testing/running-e2e.md#test-runner-host-orchestration-log-triage-only) — ports 8090/8091, defer-run launch gate markers
 * [Detox patches](detox-patches.md) — inventory, `ECOMPROMISED`, patch workflow
 * [Cloud API quota triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure) — live FIS/RC pressure (all platforms)

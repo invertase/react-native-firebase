@@ -44,7 +44,7 @@ Confirm:
 
 | Check | Requirement |
 |-------|-------------|
-| **Canonical location** | Each topic has one owning doc; others link to it ([change authoring](testing/change-authoring-workflow.md) for workflow/gates/frozen tree, [running e2e](testing/running-e2e.md) for **all** e2e commands — never invoke Jet/Detox/Metro directly; follow [agent rule](testing/running-e2e.md#agent-rule-read-first), [platform coverage gate](testing/running-e2e.md#platform-coverage-gate-blocking), [iteration vocabulary](testing/iteration-vocabulary.md) for term ids only, this file for doc/commit policy, etc.) |
+| **Canonical location** | Each topic has one owning doc; others link to it ([agent command policy](testing/agent-command-policy.md) for **all** agent shell commands; [change authoring](testing/change-authoring-workflow.md) for workflow/gates/frozen tree; [running e2e](testing/running-e2e.md) for e2e `yarn tests:*` detail — [agent rule](testing/running-e2e.md#agent-rule-read-first); [platform coverage gate](testing/running-e2e.md#platform-coverage-gate-blocking); [iteration vocabulary](testing/iteration-vocabulary.md) for term ids only; this file for doc/commit policy, etc.) |
 | **DRY** | No duplicated procedures, policy paragraphs, or ephemeral snapshots outside work queues |
 | **Link hygiene** | Cross-links resolve; indexes list canonical entry points |
 | **Durability** | No ephemeral fields leaked into general reference docs |
