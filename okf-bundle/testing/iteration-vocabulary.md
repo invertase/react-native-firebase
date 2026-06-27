@@ -15,7 +15,7 @@ Glossary of **string identifiers** and **work-queue field names** used across OK
 | Topic | Owner |
 |-------|--------|
 | Change loop, gates, frozen tree, host rule | [change authoring workflow](change-authoring-workflow.md) |
-| E2e commands, pre-flight, harness gate, tier scope | [running e2e](running-e2e.md) |
+| E2e commands, pre-flight, harness gate, tier scope | [running e2e](running-e2e.md) — [agent rule](running-e2e.md#agent-rule-read-first): **only** `yarn tests:*` from that doc |
 | Validation command sequence | [validation checklist](validation-checklist.md) |
 | Work-queue gate snapshots | Package work queues (ephemeral) |
 

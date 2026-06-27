@@ -52,7 +52,7 @@ flowchart TB
 
 # Where configuration lives
 
-Config root: [`.github/workflows/scripts/`](../../.github/workflows/scripts/) (`firebase.json` cwd for Firebase CLI and `yarn tests:emulator:start`).
+Config root: [`.github/workflows/scripts/`](../../.github/workflows/scripts/) (`firebase.json` cwd for Firebase CLI). Emulator start: [running e2e § Rules #2](running-e2e.md#rules).
 
 | File | Purpose |
 |------|---------|
@@ -82,10 +82,7 @@ Runtime wiring:
 
 ## Started locally
 
-```bash
-yarn tests:emulator:start        # foreground (dev)
-yarn tests:emulator:start-ci     # background (CI)
-```
+Foreground/background emulator start: [running e2e § Rules #2](running-e2e.md#rules).
 
 Runs from `.github/workflows/scripts/`:
 
@@ -211,7 +208,7 @@ Functions **e2e** callables run on the **emulator** (`:5001`). Under CI load, cl
 | **Client** (`functions.e2e.js`) | `e2eCallableTimeoutOptions()` → 120s | `{ timeout: 1000 }` only |
 | **Server** (`functions/src/*.ts`) | `E2E_TEST_FUNCTION_TIMEOUT_SECONDS` (120) via `e2eCallOptions.ts` | `sleeperV2` unchanged (intentional hang) |
 
-Restart emulator after rebuilding `functions/` (`yarn tests:emulator:start`).
+Restart emulator after rebuilding `functions/` — [running e2e § Rules #2](running-e2e.md#rules).
 
 # Cloud project: deploy rules and indexes
 
@@ -275,8 +272,8 @@ After deploy, index creation is async; `findNearest` may wait/stay skipped until
 
 GHA e2e:
 
-1. `yarn tests:emulator:start-ci` — background emulator
-2. Build + Detox/Jet run (needs network for `pipelines-e2e` cloud)
+1. Emulator — [running e2e § Rules #2](running-e2e.md#rules) (`tests:emulator:start-ci` in CI)
+2. Build + Detox run — [running e2e](running-e2e.md) (needs network for `pipelines-e2e` cloud)
 3. Emulator cache under `~/.cache/firebase/emulators`
 
 Pipeline tests share Jet session with Firestore e2e but execute on cloud; `(default)` setup/wipe stays emulator.

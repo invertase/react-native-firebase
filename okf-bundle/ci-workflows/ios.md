@@ -16,7 +16,7 @@ On GHA macOS runners, `simctl list` can show `Booted` before the simulator is te
 
 **Pre-boot step** (`.github/workflows/scripts/boot-simulator.sh`), run via `nick-fields/retry` before Detox:
 
-> **Not for local operators.** `boot-simulator.sh` is **CI-only** (this workflow) or invoked **internally** by `tests/e2e/firebase.test.js` on iOS Jet-level retry. Local e2e uses only [running-e2e.md](../testing/running-e2e.md) — [host-clear probes](../testing/running-e2e.md#host-clear-probes) require zero booted simulators; Detox boots `iPhone 17` via `yarn tests:ios:test-cover`. Do not run `boot-simulator.sh` as operator prep.
+> **Not for local operators.** `boot-simulator.sh` is **CI-only** (this workflow) or invoked **internally** by `tests/e2e/firebase.test.js` on iOS test-runner retry. Local e2e: [running-e2e.md](../testing/running-e2e.md) only — [host-clear probes](../testing/running-e2e.md#host-clear-probes), [agent rule](../testing/running-e2e.md#agent-rule-read-first). Do not run `boot-simulator.sh` as operator prep.
 
 | Phase | What happens |
 |--------|----------------|
@@ -509,7 +509,7 @@ Detox steps use `tee detox-step.log` and `exit ${PIPESTATUS[0]}` so the artifact
 
 > **CI/manual mirror only.** The steps below reproduce CI deflake semantics on a developer machine. Local e2e runs must use [running-e2e.md](../testing/running-e2e.md) only — do not substitute `boot-simulator.sh`, `resource-monitor.sh`, or `flake-summary.sh` for the canonical `:build && :test-cover` loop.
 
-To deflake without pushing every change, run the same steps as CI on a macOS machine or VM (SSH is fine). Mirror: emulators → build → `boot-simulator.sh` (pre-boot, `RNFB_START_SIM_LOGS=0`) → `RNFB_SIM_BOOT_MODE=logs` + `RNFB_RECORD_SCREENS=0` → `wait-for-load-settle.sh` → `resource-monitor.sh` → `yarn tests:ios:test-cover` (or `:release`) → `flake-summary.sh`. Wrap in a loop over `iterations` and collect `local-e2e-artifacts/iter-N-*` directories. A self-hosted GHA runner on the same VM is optional when you need exact workflow YAML semantics; direct script iteration is faster for day-to-day patch work.
+To deflake without pushing every change, mirror CI on a macOS machine or VM (SSH is fine): emulators → build → `boot-simulator.sh` (pre-boot, CI-only) → `wait-for-load-settle.sh` → `resource-monitor.sh` → `:test-cover` per [running e2e](../testing/running-e2e.md) → `flake-summary.sh`. Wrap in a loop over `iterations` and collect `local-e2e-artifacts/iter-N-*` directories.
 
 ### Pinned Homebrew utilities
 

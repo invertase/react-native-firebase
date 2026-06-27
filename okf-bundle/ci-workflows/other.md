@@ -1,16 +1,16 @@
 # Other CI workflows
 
-## macOS Jet e2e (`tests_e2e_other.yml`)
+## macOS e2e (`tests_e2e_other.yml`)
 
-macOS e2e runs **Jet directly**: `yarn tests:macos:test-cover`; app launched via `open` in `tests/.jetrc.js`.
+Local macOS e2e: [running e2e § Rules](../testing/running-e2e.md#rules) only. CI pipeline below mirrors `tests_e2e_other.yml` (uses `-ci` packager variants).
 
-### Pipeline
+### Pipeline (CI — mirrors `tests_e2e_other.yml`; local operators use [running e2e](../testing/running-e2e.md) only)
 
-1. Build macOS app (`yarn tests:macos:build`, `SKIP_BUNDLING=1`)
+1. Build macOS app (`tests:macos:build`, `SKIP_BUNDLING=1`)
 2. Start Firestore emulator
-3. Start Metro (`yarn tests:packager:jet-ci`)
+3. Start Metro (`tests:packager:jet-ci` — CI variant; local: [running e2e § Rules #1](../testing/running-e2e.md#rules))
 4. **Pre-fetch JS bundle**; URL must match app request
-5. `yarn tests:macos:test-cover` — Jet `before` hook also prefetches, then `open` app
+5. `tests:macos:test-cover` — internal `before` hook prefetches, then `open` app
 
 ### CI failure: bundle load hang / `Could not connect to development server`
 

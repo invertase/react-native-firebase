@@ -1,9 +1,9 @@
 # Android CI workflows
 
-## E2E job shape
+## E2E job shape (CI — mirrors workflow YAML; local: [running e2e](../testing/running-e2e.md))
 
-1. `yarn tests:android:test-cover --headless` — Detox + Jet (pass/fail gate)
-2. `yarn tests:android:post-e2e-coverage` — poll/pull `coverage.ec`, Jacoco report (best-effort, never fails the job)
+1. `tests:android:test-cover --headless` — pass/fail gate
+2. `tests:android:post-e2e-coverage` — poll/pull `coverage.ec`, Jacoco report (best-effort, never fails the job)
 3. **Codecov upload** — two flagged uploads (`e2e-ts-android`, `android-native`); `continue-on-error: true` on the action steps. **`codecov/project/android-native`** fails if the native flag upload is missing (see [coverage design](../testing/coverage-design.md#native-gates)).
 
 Android native coverage is flushed in app process by `tests/app.js` Jet `after`; post-e2e pull runs after Detox exits.
