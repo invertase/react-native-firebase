@@ -132,7 +132,7 @@ function getConfiguredFunctionsInstance(
   let functionsInstance: FunctionsWebInternal;
 
   if (regionOrCustomDomain) {
-    functionsInstance = getFunctions(app, regionOrCustomDomain);
+    functionsInstance = getFunctions(app, regionOrCustomDomain) as FunctionsWebInternal;
     // Hack to work around custom domain and region not being set on the instance.
     if (regionOrCustomDomain.startsWith('http')) {
       functionsInstance.customDomain = regionOrCustomDomain;
@@ -142,7 +142,7 @@ function getConfiguredFunctionsInstance(
       functionsInstance.customDomain = null;
     }
   } else {
-    functionsInstance = getFunctions(app);
+    functionsInstance = getFunctions(app) as FunctionsWebInternal;
     functionsInstance.region = 'us-central1';
     functionsInstance.customDomain = null;
   }
