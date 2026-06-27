@@ -10,7 +10,13 @@ timestamp: 2026-06-25T00:00:00Z
 
 Canonical local e2e commands. Use **only** these commands. `-ci` variants are CI-only. Avoid `:test-cover-reuse`, `:test-cover-and-process`, `:test-reuse` (stale native risk). If another doc disagrees, this wins.
 
-> All e2e how-to lives here; other docs link here.
+> All e2e how-to lives here; other docs link here — they do **not** define alternate entrypoints or commands.
+
+## Agent rule (read first)
+
+<a id="agent-rule-read-first"></a>
+
+**Never invoke the test runner (Jet), Detox, Metro, or emulators directly.** Use **only** the repo-root `yarn tests:*` commands defined in this document (for example `yarn tests:packager:jet`, `yarn tests:emulator:start`, `yarn tests:<platform>:test-cover`). Do not run `jet`, `npx jet`, `yarn jet`, `detox test`, `cd tests && …`, or ad-hoc Metro/emulator start commands. When another doc mentions e2e, Jet, Detox, or pre-flight, follow the link to this runbook — do not infer commands from log output or implementation details.
 
 ## Prerequisites (once per checkout)
 
@@ -35,7 +41,7 @@ yarn tests:emulator:start
 3. **Rebuild when needed**
    - Native changed → `yarn tests:ios:build` / `yarn tests:android:build` before e2e. macOS uses firebase-js-sdk only — no native rebuild.
    - `packages/*/lib/**` changed → `yarn lerna:prepare` (Metro serves `dist/module/**`, not `lib/**`; e2e specs under `packages/*/e2e/**` and `tests/**` are served directly).
-   - TS coverage: iOS/Android embed JS at **build** time; run `:build` before `:test-cover` so Istanbul + patched Jet `uploadCoverage` are in app. macOS loads from Metro live; after Jet patch changes, restart packager with `--reset-cache` in `tests/`. Patch `src/index.tsx`, not only compiled `lib/`.
+   - TS coverage: iOS/Android embed JS at **build** time; run `:build` before `:test-cover` so Istanbul + patched test-runner coverage upload is in app. macOS loads from Metro live; after test-runner patch changes, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)).
 
 4. **Always run with coverage:**
 
@@ -49,7 +55,7 @@ yarn tests:macos:test-cover
 
 5. **Report locations** — [Coverage design](coverage-design.md).
 
-6. **One e2e at a time** — never overlap `:test-cover`/Detox/Jet on one host. Jet uses **8090** (WebSocket) plus **8091** (host control HTTP when defer-run is enabled); all platforms share Jet + Metro `:8081`; parallel runs race on coverage/device/emulator state. Every run starts after [clean pre-flight](#pre-flight-is-the-host-clear-to-start). See [Jet host orchestration](#jet-host-orchestration-ports-and-launch-gate).
+6. **One e2e at a time** — never overlap `:test-cover` runs on one host. All platforms share Metro `:8081` and the test-runner WebSocket port (default **8090**); parallel runs race on coverage/device/emulator state. Every run starts after [clean pre-flight](#pre-flight-is-the-host-clear-to-start). Log triage for port/orchestration markers: [test-runner host orchestration](#test-runner-host-orchestration-log-triage-only).
 
 7. **No source edits during e2e** — wait/cancel cleanly before editing `packages/**`, `tests/**`, or bundle-affecting OKF docs. Saves can hot reload/rebundle and invalidate tests/coverage.
 
@@ -61,42 +67,41 @@ Use [validation tiers](#e2e-validation-tiers-unit-focused-area-focused-full): **
 
 ### How a platform run is structured (Android/iOS)
 
-Wait on Detox/Jest; Jet is its **child**:
+**Internal only — do not invoke sub-commands.** Wait on the single repo-root `:test-cover` command; Detox/Jest and the test runner start automatically.
 
 ```text
-yarn tests:android:test-cover
-  └─ detox test → jest (e2e/jest.config.js)
-       └─ firebase.test.js spawns: yarn jet --target=android --coverage  (:8090)
-            └─ app on emulator/simulator
+yarn tests:android:test-cover   # only command you run
+  └─ (internal) detox → jest → firebase.test.js → test runner on :8090 → app
 ```
 
-macOS: `yarn tests:macos:test-cover` → `jet --target=macos` (same `:8090` WS).
+macOS: `yarn tests:macos:test-cover` only — same `:8090` transport, no Detox.
 
-**Do not poll `pgrep`, `detox`, `jet.js`, or `:8090` for completion.** They match stale wrappers, orphans, zombies, and contention.
+**Do not poll `pgrep`, `detox`, process names, or `:8090` for completion.** They match stale wrappers, orphans, zombies, and contention.
 
-#### Jet host orchestration (ports and launch gate)
+<a id="jet-host-orchestration-ports-and-launch-gate"></a>
+<a id="test-runner-host-orchestration-log-triage-only"></a>
 
-**Canonical owner** for Detox↔Jet↔app sequencing in `tests/e2e/firebase.test.js` and the patched Jet CLI. CI platform pages link here; do not duplicate the full port/protocol story elsewhere.
+#### Test-runner host orchestration (log triage only)
+
+**No commands to run from this section** — for interpreting `:test-cover` logs and CI artifacts only. Patch workflow: [detox-patches.md](../ci-workflows/detox-patches.md#updating-the-jet-patch-headless). CI triage: [iOS orchestration](../ci-workflows/ios.md#e2e-test-app-orchestration-detox--jet).
 
 | Port | Protocol | Role |
 |------|----------|------|
-| **8090** (default `JET_REMOTE_PORT`) | WebSocket (`mocha-remote-*`) | App ↔ Jet test transport; `server.run()` drives Mocha in the app |
-| **8091** (default `JET_REMOTE_PORT + 1`, override `RNFB_JET_CONTROL_PORT`) | HTTP POST only | Host ↔ Jet **control plane** — not used by the app |
+| **8090** (default `JET_REMOTE_PORT`) | WebSocket (`mocha-remote-*`) | App ↔ host test transport; drives Mocha in the app |
+| **8091** (default `JET_REMOTE_PORT + 1`, override `RNFB_JET_CONTROL_PORT`) | HTTP POST only | Host ↔ test-runner **control plane** — not used by the app |
 
-**Why two ports** — Port 8090 is a WebSocket server (`ws` library). Plain HTTP `POST` to that socket (e.g. `/launch-ready`) gets **426 Upgrade Required** and can crash Jet with `ERR_HTTP_HEADERS_SENT` if a control handler shares the same HTTP stack. Control endpoints therefore live on a **separate** small HTTP server (`startControlHttpServer` in the Jet patch).
+**Why two ports** — Port 8090 is a WebSocket server (`ws` library). Plain HTTP `POST` to that socket (e.g. `/launch-ready`) gets **426 Upgrade Required** and can crash the runner with `ERR_HTTP_HEADERS_SENT` if a control handler shares the same HTTP stack. Control endpoints therefore live on a **separate** small HTTP server (`startControlHttpServer` in the test-runner patch).
 
-**Launch gate (orchestration race fix)** — `firebase.test.js` spawns Jet with `RNFB_JET_DEFER_RUN=1`. Jet listens on 8090 and **defers** `server.run()` until the host signals launch success:
+**Launch gate (orchestration race fix)** — `firebase.test.js` starts the test runner with `RNFB_JET_DEFER_RUN=1`. It listens on 8090 and **defers** `server.run()` until the host signals launch success:
 
 1. Host waits for TCP **8090**, then Metro (debug) if needed, then `launchAppWithRetry`.
 2. Host `POST`s **`/orchestrate-state`** (`{ "phase": "launch-pending" | "launch-ok" | … }`) to the control port (best-effort diagnostics).
-3. After `launchApp` succeeds, host `POST`s **`/launch-ready`** → Jet calls `server.run()` and the app may receive the mocha-remote `run` action.
-4. Mocha tests must not start during a stuck or retried `launchApp`; on inner launch retry the host may kill and respawn Jet before `terminateApp`/simulator reboot.
+3. After `launchApp` succeeds, host `POST`s **`/launch-ready`** → test runner calls `server.run()` and the app may receive the mocha-remote `run` action.
+4. Mocha tests must not start during a stuck or retried `launchApp`; on inner launch retry the host may kill and respawn the test runner before `terminateApp`/simulator reboot.
 
-**Log markers** — `[rnfb-e2e] orchestrate-state=…`, `[jet-control] deferring server.run until POST /launch-ready`, `[jet-control] launch-ready received`, `[jet-control] listening on http://…:8091`.
+**Log markers** — `[rnfb-e2e] orchestrate-state=…`, `[jet-control] deferring server.run until POST /launch-ready`, `[jet-control] launch-ready received`, `[jet-control] listening on http://…:8091`, `[jet-coverage] …`, `Jet client connected`.
 
-**Pre-flight** — [Host-clear probes](#host-clear-probes) check **8090 only** (stray Jet WS listener). **8091** may be open while Jet is running; do not treat it as a stale-process signal.
-
-**Patches / code** — Jet patch (`cli.js`: defer run, control HTTP, enriched `disconnect_context`); `tests/e2e/firebase.test.js` (`postJetControl`, `createJetSession`). Patch workflow: [detox-patches.md](../ci-workflows/detox-patches.md#updating-the-jet-patch-headless). CI triage: [iOS orchestration](../ci-workflows/ios.md#e2e-test-app-orchestration-detox--jet).
+**Pre-flight** — [Host-clear probes](#host-clear-probes) check **8090 only** (stray test-runner WS listener). **8091** may be open during a run; do not treat it as a stale-process signal by itself.
 
 #### CI iOS instrumentation (not local)
 
@@ -116,7 +121,7 @@ yarn tests:ios:test-cover     2>&1 | tee /tmp/rnfb-e2e-ios.log
 yarn tests:macos:test-cover   2>&1 | tee /tmp/rnfb-e2e-macos.log
 ```
 
-Use `/tmp/rnfb-e2e-<platform>.log` (overwrite each iteration). Do not substitute `detox test`, `cd tests && yarn detox …`, or other entrypoints.
+Use `/tmp/rnfb-e2e-<platform>.log` (overwrite each iteration). Do not substitute other entrypoints — see [agent rule](#agent-rule-read-first).
 
 4. Completion = shell exit code. `0` finished; non-zero failed/aborted. Read log for counts.
 5. Parse log tail; do not infer from processes:
@@ -144,7 +149,7 @@ No in-flight test run on the target platform:
 | Platform | Clear when |
 |----------|------------|
 | **Android** | [Host-clear probes](#host-clear-probes) pass (no instrumentation PID) |
-| **iOS** | [Host-clear probes](#host-clear-probes) pass — **zero booted simulators** and no stray Jet on `:8090`. Detox boots `iPhone 17` from `tests/.detoxrc.js`; do not pre-boot or leave simulators running. |
+| **iOS** | [Host-clear probes](#host-clear-probes) pass — **zero booted simulators** and no stray listener on `:8090`. Detox boots `iPhone 17` from `tests/.detoxrc.js`; do not pre-boot or leave simulators running. |
 | **macOS** | [Host-clear probes](#host-clear-probes) pass (no `io.invertase.testing` process) |
 
 Also wait for any visible unfinished `yarn tests:*:test-cover`.
@@ -192,7 +197,7 @@ curl -sf http://127.0.0.1:8081/status >/dev/null   # Metro (127.0.0.1 matches te
 curl -sf http://127.0.0.1:8080 >/dev/null          # Firestore emulator
 ```
 
-If either fails: start `yarn tests:packager:jet` and `yarn tests:emulator:start` (background); re-check until both pass. After `yarn lerna:prepare` or Jet patch edits, restart Metro with `--reset-cache` in `tests/` ([Rules §3](#rules)).
+If either fails: start `yarn tests:packager:jet` and `yarn tests:emulator:start` (background); re-check until both pass. After `yarn lerna:prepare` or test-runner patch edits, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)).
 
 A listener on `:8081` or `:8080` is **not** sufficient — HTTP checks must succeed.
 
@@ -217,14 +222,14 @@ Completion = shell exit code + log markers — not open-ended log tailing.
 | Platform | Early markers (≈2–3 min) | Done |
 |----------|--------------------------|------|
 | **macOS** | `Jet client connected` | `✨ Tests Complete ✨`, Jest `N passing` |
-| **iOS/Android** | Detox launch done, Jet connected | Same |
+| **iOS/Android** | Detox launch done, `Jet client connected` | Same |
 
 **If stalled** — no new markers for **5 minutes**, or past tier budget (~15m macOS, ~45–60m iOS/Android) without `Tests Complete`: treat as [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090). Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) and [services ready](#2-services-ready), retry. Do not keep watching flat tee output.
 
 - macOS bundle/Metro hangs → [ci-workflows/other.md § bundle load hang](../ci-workflows/other.md#ci-failure-bundle-load-hang--could-not-connect-to-development-server)
 - iOS Metro at launch → [ci-workflows/ios.md § Metro unresponsive](../ci-workflows/ios.md)
 
-Do not poll `pgrep` / `jet.js` / `:8090` for *completion* ([above](#how-a-platform-run-is-structured-androidios)). Stall detection uses **missing progress markers**, not exit polling.
+Do not poll `pgrep`, process names, or `:8090` for *completion* ([above](#how-a-platform-run-is-structured-androidios)). Stall detection uses **missing progress markers**, not exit polling.
 
 ### Harness narrowing gate (blocking)
 
@@ -314,15 +319,15 @@ Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#ho
 
 ### What not to do
 
-- Do not invoke `detox test`, `npx jet`, or `cd tests && …`; use repo-root `yarn tests:<platform>:test-cover` (+ `:build` when needed).
-- Do not background `:test-cover` and poll `pgrep`, `detox`, or `jet.js` for completion.
+- Do not invoke the test runner (Jet), Detox, Metro, or emulators except through repo-root `yarn tests:*` commands in this doc — see [agent rule](#agent-rule-read-first).
+- Do not background `:test-cover` and poll `pgrep`, `detox`, or process names for completion.
 - Do not use `:test-cover-reuse`, `:test-cover-and-process`, or `:test-reuse` when measuring coverage or closing review gates.
 - Do not use `:8090` listening as “e2e still running” without the platform active signal above.
 - Do not start iOS/Android/macOS `:test-cover` concurrently on one host.
 - Do not edit source while a tee'd run is still in progress.
 - Do not passively tail tee output when progress markers stop — follow [stalled run detection](#stalled-run-detection).
 - Do not run **full** harness (`require.context`, all modules) for **unit-focused**/**area-focused** tier — match [harness to tier](#3-harness-matches-validation-tier).
-- Do not run `.github/workflows/scripts/boot-simulator.sh`, `simctl shutdown all`, or `kill -9` on `:8090` as prep. `boot-simulator.sh` is CI-only or internal to iOS Jet retry.
+- Do not run `.github/workflows/scripts/boot-simulator.sh`, `simctl shutdown all`, or `kill -9` on `:8090` as prep. `boot-simulator.sh` is CI-only or internal to iOS test-runner retry.
 
 ## Typical loop
 
@@ -347,7 +352,7 @@ Full e2e loads every package. Narrow locally; **never commit** narrowing.
 | **Single-test narrowing** | `it.only(...)` | One case in a loaded file |
 | **Single-suite narrowing** | `describe.only(...)` | One block in a loaded file |
 
-**Area narrowing** = `tests/app.js` / `tests/globals.js` only; not Jet `--grep` or packager `--target`.
+**Area narrowing** = `tests/app.js` / `tests/globals.js` only; not test-runner `--grep` or packager `--target`.
 
 **Area example:** firestore-only modules + `require('../packages/firestore/e2e/Pipeline.e2e.js')`; mark `// TEMP: …`.
 
@@ -378,11 +383,11 @@ See also: [unit-focused-tier loop](#unit-focused-tier-iteration-loop), [dispatch
 
 - **Devices** — Detox boots simulator/emulator (`iPhone 17` on iOS, `TestingAVD` on Android); [host-clear probes](#host-clear-probes) require zero booted iOS simulators before `:test-cover`. macOS auto-starts app.
 - **adb empty** — `adb kill-server && adb start-server && adb devices`
-- **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, …). Stray Jet on `:8090` after a run → [pre-flight recovery](#pre-flight-recovery). Restart Metro/emulators: `pkill -f "react-native start"`, `pkill -f "firebase emulators"`, then [Rules §1–2](#rules).
+- **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, …). Stray listener on `:8090` after a run → [pre-flight recovery](#pre-flight-recovery), then restart background services with [Rules §1–2](#rules) (`yarn tests:packager:jet`, `yarn tests:emulator:start`).
 
 ## Diagnosing hangs
 
-**Local stalls** — see [stalled run detection](#stalled-run-detection) first (Metro `/status`, Jet connect markers).
+**Local stalls** — see [stalled run detection](#stalled-run-detection) first (Metro `/status`, `Jet client connected` markers).
 
 **Native / device logs** (remove instrumentation before merge):
 

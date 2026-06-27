@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # Namespace API removal — work queue
 
-> **IN PROGRESS (2026-06-26):** Latest: `refactor(remote-config): remove deprecated namespaced API`. **Next pickup:** **N6** `analytics` (independent cycle).
+> **IN PROGRESS (2026-06-26):** Latest: `refactor(remote-config): remove deprecated namespaced API`. **Next pickup:** **N6** `remote-config` 3-platform review (Android pending), then `analytics` baseline.
 > **Order:** pilot smallest (`ml`, `in-app-messaging`) → spike hardest (`messaging`) → bulk small→large → **NF** app cleanup → **NV** full validation. **Workflow:** [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md).
 
 ---
@@ -77,8 +77,8 @@ Update immediately after each work type closes a gate ([fields](testing/iteratio
 | N5 | `crashlytics` (11m) | **closed** | **closed** | **closed** | `refactor(crashlytics): remove deprecated namespaced API` | — | area-focused | review2 iOS: 64 pass / 0 fail |
 | N5 | `database` (10m) | **closed** | **closed** | **closed** | `refactor(database): remove deprecated namespaced API` | — | area-focused | review3 iOS: 228 pass / 0 fail (amended) |
 | N5 | `storage` (6m) | **closed** | **closed** | **closed** | `refactor(storage): remove deprecated namespaced API` | — | area-focused | review3 iOS: 144 pass / 0 fail (amended) |
-| N6 | `remote-config` (15m) | **closed** | open | **closed** | `refactor(remote-config): remove deprecated namespaced API` | `independent-review` | area-focused | review macOS 30 / iOS 32 pass; **Android not run** — re-review before close; compare:types 0 undocumented |
-| N6 | `analytics` (~50m) | open | open | open | — | `gap-analysis` | area-focused | |
+| N6 | `remote-config` (15m) | **closed** | open | **closed** | `refactor(remote-config): remove deprecated namespaced API` | `independent-review` | area-focused | review1 macOS 30 / iOS 32 pass; Android not run; re-review aborted — close gate after 3-platform `:test-cover` per [running e2e](testing/running-e2e.md) |
+| N6 | `analytics` (~50m) | open | open | open | — | `baseline-capture` | area-focused | gap-analysis done (~50 methods; getAnalytics still namespaced hop; no compare:types; delete v8 e2e L73–575) |
 | N6 | `auth` (~43m) | open | open | open | — | `gap-analysis` | area-focused | [auth triage](packages/auth/compare-types-triage.md) |
 | N6 | `firestore` (~17m) | open | open | open | — | `gap-analysis` | area-focused | pipelines + `compare:types` |
 | NF | `app` | open | open | open | — | `gap-analysis` | full | |

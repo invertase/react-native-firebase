@@ -64,17 +64,11 @@ After `tests:<platform>:test-cover`:
 
 Native artifacts (`.profraw`, `.ec`, Jacoco XML) are trustworthy only with the fresh e2e run that produced them. Re-processing leftovers can create valid-looking stale reports.
 
-If numbers look wrong, run the clean cycle before debugging generators:
+If numbers look wrong, run the clean cycle before debugging generators — e2e steps: [running e2e § Rules](running-e2e.md#rules) and [typical loop](running-e2e.md#typical-loop); then post-process below (this doc owns post-e2e coverage export only):
 
 ```bash
-# iOS
-yarn tests:ios:build && yarn tests:ios:test-cover && yarn tests:ios:test:process-coverage
-
-# Android
-yarn tests:android:build && yarn tests:android:test-cover && yarn tests:android:post-e2e-coverage
-
-# macOS (TS only)
-yarn tests:macos:test-cover
+yarn tests:ios:test:process-coverage
+yarn tests:android:post-e2e-coverage
 ```
 
 Post-process deletes raw iOS `.profraw` / Android `.ec`; missing raw file means "no fresh coverage." Do not use reuse variants for native deltas ([runbook](running-e2e.md)).
@@ -125,13 +119,13 @@ yarn tests:jest-coverage
 
 # E2e TypeScript coverage (Jet + NYC)
 
-Commands: [e2e runbook](running-e2e.md).
+**Run e2e:** [running e2e § Rules](running-e2e.md#rules) — canonical `:test-cover` commands only; do not duplicate them here.
 
-| Platform | Script | Notes |
-|----------|--------|-------|
-| macOS | `tests:macos:test-cover` | Jet only |
-| iOS | `tests:ios:test-cover` | Detox → Jet `--coverage` |
-| Android | `tests:android:test-cover` | Detox → Jet `--coverage` |
+| Platform | Entry (repo root) | Notes |
+|----------|-------------------|-------|
+| macOS | `tests:macos:test-cover` | See runbook |
+| iOS | `tests:ios:test-cover` | See runbook |
+| Android | `tests:android:test-cover` | See runbook |
 
 Jet self-wraps under NYC with `--coverage`.
 
@@ -140,7 +134,7 @@ Jet self-wraps under NYC with `--coverage`.
 - Metro bundles `packages/*/dist/module/**` with inline source maps (`tests/.babelrc`: `useInlineSourceMaps: true`).
 - NYC (`tests/nyc.config.js`) remaps to `packages/*/lib/**` → **`coverage/lcov.info`** (`cwd: '..'`).
 - Jet re-invokes under `tests/node_modules/.bin/nyc` (checks `NYC_CONFIG`). Detox/macOS need no extra `nyc` prefix; Jet must run from `tests/`.
-- **Transfer:** patched Jet/mocha-remote WS only (`coverage-ready` → `pull-coverage` → `coverage-data` → `coverage-ack`); HTTP POST `/coverage` deleted (`attachHttpServer` removed). Host launch/orchestrate control uses a **separate** HTTP server on **8091** (not the 8090 WS stack) — see [Jet host orchestration](running-e2e.md#jet-host-orchestration-ports-and-launch-gate). Patches: `.yarn/patches/` (`jet`, `mocha-remote-client`, `mocha-remote-server`). See [iOS issues 6–6b](../ci-workflows/ios.md#6-jet-websocket-disconnect-1006--1001), [issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00), [jet patch workflow](../ci-workflows/detox-patches.md#updating-the-jet-patch-headless).
+- **Transfer:** patched test-runner/mocha-remote WS only (`coverage-ready` → `pull-coverage` → `coverage-data` → `coverage-ack`); HTTP POST `/coverage` deleted (`attachHttpServer` removed). Host launch/orchestrate control uses a **separate** HTTP server on **8091** (not the 8090 WS stack) — see [test-runner orchestration (log triage)](running-e2e.md#test-runner-host-orchestration-log-triage-only). Patches: `.yarn/patches/` (`jet`, `mocha-remote-client`, `mocha-remote-server`). See [iOS issues 6–6b](../ci-workflows/ios.md#6-jet-websocket-disconnect-1006--1001), [issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00), [jet patch workflow](../ci-workflows/detox-patches.md#updating-the-jet-patch-headless).
 
 **NYC settings:**
 
@@ -156,9 +150,9 @@ reporter: ['lcov', 'html', 'text-summary'],
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `[jet-coverage] merged 0 file(s)` | Jet client still POSTs to removed `/coverage` HTTP endpoint, or stale Metro bundle | `yarn install` (jet patch wires `client.uploadCoverage()`); macOS: restart packager with `yarn react-native start --reset-cache` in `tests/` |
+| `[jet-coverage] merged 0 file(s)` | Stale Metro bundle or missing test-runner patch | `yarn install`; macOS: restart packager per [running e2e § Rules #1](running-e2e.md#rules) |
 | macOS bundle still has `'/coverage'` fetch | Metro resolves Jet via `"react-native": "src/index"` — patch must touch `jet/src/index.tsx`, not only `lib/` | Re-run after patch; `--reset-cache` |
-| iOS/Android merged 0, macOS OK | Prebuilt app bundle predates Jet/Istanbul fix | `yarn tests:ios:build` / `yarn tests:android:build` then `:test-cover` |
+| iOS/Android merged 0, macOS OK | Prebuilt app bundle predates Istanbul fix | Re-run [running e2e § Rules](running-e2e.md#rules) (`:build` then `:test-cover`) |
 | Metro 500 on bundle | Missing babel plugins in `tests/` | `yarn install`; confirm `tests/node_modules/babel-plugin-istanbul` exists |
 
 # E2e Android native (Jacoco)
@@ -272,14 +266,14 @@ No `:test-cover-reuse` / `:test-reuse` — stale native risk ([runbook](running-
 | Stale profraw uploaded | Re-process without re-e2e | Process deletes profraw; exit 1 if missing next time |
 | Stale Android Jacoco / collapsed native % | Re-run `post-e2e-coverage` without fresh e2e | Post-e2e deletes `.ec` after report; run full `:build` → `:test-cover` → `:post-e2e-coverage` |
 | Coverage numbers suspect (any platform) | Leftover raw artifacts or reuse shortcuts | Full clean cycle per platform; see [Stale coverage data](#stale-coverage-data) |
-| No `packages/` hits in iOS export | Wrong binary / not instrumented | `yarn tests:ios:build`; check Podfile |
+| No `packages/` hits in iOS export | Wrong binary / not instrumented | Re-run `tests:ios:build` per [running e2e § Rules](running-e2e.md#rules); check Podfile |
 | Empty Jacoco XML (~235 B) | AGP 8 path, missing `src/reactnative/java`, no ec | Check post-e2e logs |
 | Android ec missing after pass | SIGINT before flush | `[native-coverage] flushing android coverage` in log; `MainApplication` registration |
 | Jet after: coverage not enabled | Release / non-instrumented build | Use `:test-cover` debug builds |
 | `swiftCompatibility56` undefined | Profile link flags on all Pods | App target only for `OTHER_LDFLAGS` |
 | No `[jet-coverage] WS received` | Patches missing | `yarn install`; `.yarn/patches/` |
 | WS closed on `reconnect_recovered` | Handshake on dead socket | Client retry + server pull; `JET_COVERAGE_TEARDOWN_RE` — [iOS issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00) |
-| Empty NYC / lcov | Jet not from `tests/` cwd | Detox spawns `yarn jet` in `tests/` |
+| Empty NYC / lcov | Environment or patch issue during `:test-cover` | Re-run per [running e2e](running-e2e.md) — do not invoke the test runner directly |
 | Codecov missing iOS native | Wrong path/name | `coverage/ios-native/lcov.info` |
 | Upload **Unusable** | Bad `SF:` paths | `process-ios-native-coverage.js` rewrite |
 | `ios-native` / `android-native` fail | Upload missing → 0% | Uploads tab; process/post-e2e steps |

@@ -71,7 +71,7 @@ Native: `yarn lint:android`, `yarn lint:ios:check`. `lint:android` can flake; re
 
 ## E2e with coverage
 
-[Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) (host-clear probes + services + harness tier) before every run. Match harness to work type — **unit-focused**/**area-focused** never use full app load ([running e2e § harness](running-e2e.md#3-harness-matches-validation-tier)).
+[Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) (host-clear probes + services + harness tier) before every run — [agent rule](running-e2e.md#agent-rule-read-first): use **only** `yarn tests:*` commands from that doc. Match harness to work type — **unit-focused**/**area-focused** never use full app load ([running e2e § harness](running-e2e.md#3-harness-matches-validation-tier)).
 
 Commands: [Running e2e tests](running-e2e.md). Post-process: [Coverage design](coverage-design.md) (iOS `tests:ios:test:process-coverage`, Android `tests:android:post-e2e-coverage`).
 
