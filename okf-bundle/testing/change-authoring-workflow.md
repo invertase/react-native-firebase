@@ -146,7 +146,7 @@ Step detail: [running e2e § unit-focused iteration loop](running-e2e.md#unit-fo
 On a **frozen tree**:
 
 1. Revert all `.only`.
-2. Keep area narrowing; run **area-focused**-tier e2e for loaded package spec(s).
+2. Keep area narrowing; run **area-focused**-tier e2e for loaded package spec(s) on [**every required platform**](running-e2e.md#platform-coverage-gate-blocking) (serial; pre-flight each run).
 3. Run applicable [validation checklist](validation-checklist.md) rows.
 4. If the package workflow requires coverage: [coverage design § completion signal](coverage-design.md#coverage-as-completion-signal).
 5. Outcome closes **review gate** or returns to **`implementation`**.
@@ -170,7 +170,7 @@ Package workflows define **which module/spec** to load (e.g. Firestore → [pipe
 ## `commit`
 
 - One focused commit per item when gates close.
-- **Never stage:** area narrowing, any `.only`, ad-hoc harness edits.
+- **Never stage:** area narrowing, any `.only`, ad-hoc harness edits, or **`RNFBDebug = true`** in `tests/globals.js` ([running e2e § before merge](running-e2e.md#before-merge-pr-handoff), [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)).
 - **Work queue:** before `git commit`, set the row's `commit_subject` to the commit's subject line, close `commit_gate`, and stage the queue doc **in the same commit** as the product change ([documentation policy § work queues](../documentation-policy.md#work-queue-documents)). Do not record SHAs in queue docs.
 
 ```bash

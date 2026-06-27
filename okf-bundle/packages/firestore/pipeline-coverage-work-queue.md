@@ -327,7 +327,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 - **Push state (committed):** full test app — all `platformSupportedModules` + `require.context` in `tests/app.js`. For merge/CI only; **not** the harness for local `:test-cover` during J–Q.
 - **Local `:test-cover`:** must match arbiter `**validation_tier`** — [running e2e § harness + narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking). `**implementation` → unit-focused** and `**independent-review` → area-focused:** both require [area narrowing](pipeline-implementation-workflow.md#pipeline-area-harness) locally **before** first run even when git has full harness. Revert before **R** (full tier).
-- `tests/globals.js` — `RNFBDebug = true` optional for fail-fast
+- `tests/globals.js` — `RNFBDebug = true` optional **locally** for fail-fast; committed default must stay `false` ([running e2e § RNFBDebug](../../testing/running-e2e.md#fast-iteration-test-narrowing))
 
 ---
 

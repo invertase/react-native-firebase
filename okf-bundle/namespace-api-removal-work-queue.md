@@ -77,7 +77,7 @@ Update immediately after each work type closes a gate ([fields](testing/iteratio
 | N5 | `crashlytics` (11m) | **closed** | **closed** | **closed** | `refactor(crashlytics): remove deprecated namespaced API` | — | area-focused | review2 iOS: 64 pass / 0 fail |
 | N5 | `database` (10m) | **closed** | **closed** | **closed** | `refactor(database): remove deprecated namespaced API` | — | area-focused | review3 iOS: 228 pass / 0 fail (amended) |
 | N5 | `storage` (6m) | **closed** | **closed** | **closed** | `refactor(storage): remove deprecated namespaced API` | — | area-focused | review3 iOS: 144 pass / 0 fail (amended) |
-| N6 | `remote-config` (15m) | **closed** | **closed** | **closed** | `refactor(remote-config): remove deprecated namespaced API` | — | area-focused | review macOS 30 / iOS 32 pass; compare:types 0 undocumented; grep1 error strings deferred |
+| N6 | `remote-config` (15m) | **closed** | open | **closed** | `refactor(remote-config): remove deprecated namespaced API` | `independent-review` | area-focused | review macOS 30 / iOS 32 pass; **Android not run** — re-review before close; compare:types 0 undocumented |
 | N6 | `analytics` (~50m) | open | open | open | — | `gap-analysis` | area-focused | |
 | N6 | `auth` (~43m) | open | open | open | — | `gap-analysis` | area-focused | [auth triage](packages/auth/compare-types-triage.md) |
 | N6 | `firestore` (~17m) | open | open | open | — | `gap-analysis` | area-focused | pipelines + `compare:types` |
