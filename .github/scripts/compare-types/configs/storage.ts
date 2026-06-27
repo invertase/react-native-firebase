@@ -45,6 +45,11 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   extraInRN: [
     {
+      name: 'SDK_VERSION',
+      reason:
+        'RN Firebase package version string exported from the modular entry point. The firebase-js-sdk does not export SDK_VERSION from @firebase/storage.',
+    },
+    {
       name: 'setMaxOperationRetryTime',
       reason:
         'RN Firebase-specific function for setting the maximum retry time for ' +

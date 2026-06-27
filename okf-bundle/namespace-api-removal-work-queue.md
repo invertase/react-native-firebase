@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # Namespace API removal — work queue
 
-> **IN PROGRESS (2026-06-26):** Latest: `refactor(messaging): remove deprecated namespaced API`. **Next pickup:** **N4** `app-distribution`.
+> **IN PROGRESS (2026-06-26):** N4/N5 remediation complete (functions, database, storage amended). **Next pickup:** **N6** `remote-config`.
 > **Order:** pilot smallest (`ml`, `in-app-messaging`) → spike hardest (`messaging`) → bulk small→large → **NF** app cleanup → **NV** full validation. **Workflow:** [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md).
 
 ---
@@ -68,15 +68,15 @@ Update immediately after each work type closes a gate ([fields](testing/iteratio
 | N0 | app factory | **closed** | **closed** | **closed** | `refactor(ml): remove deprecated namespace APIs` | — | area-focused | factory shipped with N1 commit |
 | N1 | `ml` (0m) | **closed** | **closed** | **closed** | `refactor(ml): remove deprecated namespace APIs` | — | area-focused | pilot modular-only |
 | N2 | `in-app-messaging` (3m) | **closed** | **closed** | **closed** | `refactor(in-app-messaging): remove deprecated namespaced API` | — | area-focused | web stub macOS; modular e2e 4×3 |
-| N3 | `messaging` (~28m) | **closed** | **closed** | **closed** | `refactor(messaging): remove deprecated namespaced API` | — | area-focused | headless atomic swap; utils native hop; iOS 74 / Android 93 area e2e |
+| N3 | `messaging` (~28m) | **closed** | **closed** | **closed** | `refactor(messaging): remove deprecated namespaced API` | — | area-focused | headless atomic swap; utils native hop |
 | N4 | `installations` (4m) | **closed** | **closed** | **closed** | `refactor(installations): remove deprecated namespaced API` | — | area-focused | ios/android 4 passing |
-| N4 | `app-distribution` (4m) | open | open | open | — | `gap-analysis` | unit-focused | |
-| N4 | `functions` (4m) | open | open | open | — | `gap-analysis` | unit-focused | |
-| N5 | `perf` (6m) | open | open | open | — | `gap-analysis` | area-focused | |
-| N5 | `app-check` (8m) | open | open | open | — | `gap-analysis` | area-focused | `compare:types` |
-| N5 | `crashlytics` (11m) | open | open | open | — | `gap-analysis` | area-focused | |
-| N5 | `database` (10m) | open | open | open | — | `gap-analysis` | area-focused | `compare:types` |
-| N5 | `storage` (6m) | open | open | open | — | `gap-analysis` | area-focused | `compare:types` |
+| N4 | `app-distribution` (4m) | **closed** | **closed** | **closed** | `refactor(app-distribution): remove deprecated namespaced API` | — | area-focused | review2 iOS: 49 pass / 0 fail |
+| N4 | `functions` (4m) | **closed** | **closed** | **closed** | `refactor(functions): remove deprecated namespaced API` | — | area-focused | review3 iOS: 36 pass / 0 fail (amended) |
+| N5 | `perf` (6m) | **closed** | **closed** | **closed** | `refactor(perf): remove deprecated namespaced API` | — | area-focused | review2 iOS: 106 pass / 0 fail |
+| N5 | `app-check` (8m) | **closed** | **closed** | **closed** | `refactor(app-check): remove deprecated namespaced API` | — | area-focused | review2 iOS: 50 pass / 0 fail |
+| N5 | `crashlytics` (11m) | **closed** | **closed** | **closed** | `refactor(crashlytics): remove deprecated namespaced API` | — | area-focused | review2 iOS: 64 pass / 0 fail |
+| N5 | `database` (10m) | **closed** | **closed** | **closed** | `refactor(database): remove deprecated namespaced API` | — | area-focused | review3 iOS: 228 pass / 0 fail (amended) |
+| N5 | `storage` (6m) | **closed** | **closed** | **closed** | `refactor(storage): remove deprecated namespaced API` | — | area-focused | review3 iOS: 144 pass / 0 fail (amended) |
 | N6 | `remote-config` (15m) | open | open | open | — | `gap-analysis` | area-focused | `compare:types` |
 | N6 | `analytics` (~50m) | open | open | open | — | `gap-analysis` | area-focused | |
 | N6 | `auth` (~43m) | open | open | open | — | `gap-analysis` | area-focused | [auth triage](packages/auth/compare-types-triage.md) |

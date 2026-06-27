@@ -25,7 +25,6 @@ export const KNOWN_NAMESPACES = [
   'remoteConfig',
   'firestore',
   'indexing',
-  'storage',
   'naturalLanguage',
   'notifications',
   'utils',
