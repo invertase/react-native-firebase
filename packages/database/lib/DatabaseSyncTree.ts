@@ -15,7 +15,7 @@
  *
  */
 
-import { createDeprecationProxy, isString } from '@react-native-firebase/app/dist/module/common';
+import { isString } from '@react-native-firebase/app/dist/module/common';
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import SharedEventEmitter from '@react-native-firebase/app/dist/module/internal/SharedEventEmitter';
 import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
@@ -153,14 +153,10 @@ class DatabaseSyncTree {
     }
 
     if (event.eventType === 'value') {
-      snapshot = createDeprecationProxy(
-        new DatabaseDataSnapshot(registration.ref, event.data as DatabaseSnapshotInternal),
-      ) as DataSnapshot;
+      snapshot = new DatabaseDataSnapshot(registration.ref, event.data as DatabaseSnapshotInternal);
     } else {
       const childData = event.data as DatabaseChildSnapshotResultInternal;
-      snapshot = createDeprecationProxy(
-        new DatabaseDataSnapshot(registration.ref, childData.snapshot),
-      ) as DataSnapshot;
+      snapshot = new DatabaseDataSnapshot(registration.ref, childData.snapshot);
       previousChildName = childData.previousChildName;
     }
 

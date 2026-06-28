@@ -16,25 +16,22 @@
  */
 
 import {
-  createDeprecationProxy,
   isArray,
   isFunction,
   isNumber,
   isObject,
   isString,
-  MODULAR_DEPRECATION_ARG,
 } from '@react-native-firebase/app/dist/module/common';
 import { deepGet } from '@react-native-firebase/app/dist/module/common/deeps';
 
-import type { DatabaseSnapshotInternal } from './types/internal';
+import type {
+  DatabaseReferenceWithMethodsInternal,
+  DatabaseSnapshotInternal,
+} from './types/internal';
 import type { DatabaseReference, DataSnapshot, IteratedDataSnapshot } from './types/database';
 
-type ReferenceWithDeprecationArg = DatabaseReference & {
-  child(path: string, deprecationArg?: string): DatabaseReference;
-};
-
-function ap(reference: DatabaseReference): ReferenceWithDeprecationArg {
-  return reference as ReferenceWithDeprecationArg;
+function ap(reference: DatabaseReference): DatabaseReferenceWithMethodsInternal {
+  return reference as DatabaseReferenceWithMethodsInternal;
 }
 
 export default class DatabaseDataSnapshot implements DataSnapshot {
@@ -45,11 +42,7 @@ export default class DatabaseDataSnapshot implements DataSnapshot {
     this._snapshot = snapshot;
 
     if (reference.key !== snapshot.key && isString(snapshot.key)) {
-      this._ref = ap(reference.ref).child.call(
-        reference.ref,
-        snapshot.key,
-        MODULAR_DEPRECATION_ARG,
-      );
+      this._ref = ap(reference.ref).child(snapshot.key);
     } else {
       this._ref = reference;
     }
@@ -75,7 +68,7 @@ export default class DatabaseDataSnapshot implements DataSnapshot {
       value = null;
     }
 
-    const childRef = ap(this._ref).child.call(this._ref, path, MODULAR_DEPRECATION_ARG);
+    const childRef = ap(this._ref).child(path);
 
     let childPriority: string | number | null = null;
     if (this._snapshot.childPriorities) {
@@ -85,15 +78,13 @@ export default class DatabaseDataSnapshot implements DataSnapshot {
       }
     }
 
-    return createDeprecationProxy(
-      new DatabaseDataSnapshot(childRef, {
-        value,
-        key: childRef.key,
-        exists: value !== null,
-        childKeys: isObject(value) ? Object.keys(value as Record<string, unknown>) : [],
-        priority: childPriority,
-      }),
-    ) as DataSnapshot;
+    return new DatabaseDataSnapshot(childRef, {
+      value,
+      key: childRef.key,
+      exists: value !== null,
+      childKeys: isObject(value) ? Object.keys(value as Record<string, unknown>) : [],
+      priority: childPriority,
+    });
   }
 
   exists(): boolean {

@@ -16,7 +16,6 @@
  */
 
 import {
-  createDeprecationProxy,
   generateDatabaseId,
   isBoolean,
   isFunction,
@@ -26,7 +25,6 @@ import {
   isString,
   isUndefined,
   isValidPath,
-  MODULAR_DEPRECATION_ARG,
   pathChild,
   pathParent,
   promiseWithOptionalCallback,
@@ -40,7 +38,7 @@ import DatabaseQueryModifiers from './DatabaseQueryModifiers';
 import DatabaseThenableReference, {
   provideReferenceClass as provideReferenceClassForThenable,
 } from './DatabaseThenableReference';
-import type { DatabaseInternal } from './types/internal';
+import type { DatabaseInternal, DatabaseReferenceWithMethodsInternal } from './types/internal';
 import type {
   DatabaseReference as DatabaseReferenceType,
   DataSnapshot,
@@ -50,26 +48,6 @@ import type {
 } from './types/database';
 
 const internalRefs = ['.info/connected', '.info/serverTimeOffset'] as const;
-
-type ReferenceWithChildInternal = DatabaseReferenceType & {
-  child(path: string, deprecationArg?: string): DatabaseReferenceType;
-};
-
-type ReferenceWithSetInternal = DatabaseReferenceType & {
-  set(
-    value: unknown,
-    onComplete?: (error: Error | null) => void,
-    deprecationArg?: string,
-  ): Promise<void>;
-};
-
-function apChild(reference: DatabaseReferenceType): ReferenceWithChildInternal {
-  return reference as ReferenceWithChildInternal;
-}
-
-function apSet(reference: DatabaseReferenceType): ReferenceWithSetInternal {
-  return reference as ReferenceWithSetInternal;
-}
 
 export default class DatabaseReference extends DatabaseQuery implements DatabaseReferenceType {
   readonly _database: DatabaseInternal;
@@ -90,24 +68,18 @@ export default class DatabaseReference extends DatabaseQuery implements Database
     if (parentPath === null) {
       return null;
     }
-    return createDeprecationProxy(
-      new DatabaseReference(this._database, parentPath),
-    ) as DatabaseReferenceType;
+    return new DatabaseReference(this._database, parentPath);
   }
 
   get root(): DatabaseReferenceType {
-    return createDeprecationProxy(
-      new DatabaseReference(this._database, '/'),
-    ) as DatabaseReferenceType;
+    return new DatabaseReference(this._database, '/');
   }
 
   child(path: string): DatabaseReferenceType {
     if (!isString(path)) {
       throw new Error("firebase.database().ref().child(*) 'path' must be a string value.");
     }
-    return createDeprecationProxy(
-      new DatabaseReference(this._database, pathChild(this.path, path)),
-    ) as DatabaseReferenceType;
+    return new DatabaseReference(this._database, pathChild(this.path, path));
   }
 
   set(value: any, onComplete?: (error: Error | null) => void): Promise<void> {
@@ -233,12 +205,10 @@ export default class DatabaseReference extends DatabaseQuery implements Database
             onComplete(
               null,
               committed,
-              createDeprecationProxy(
-                new DatabaseDataSnapshot(
-                  this,
-                  snapshotData as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
-                ),
-              ) as DataSnapshot,
+              new DatabaseDataSnapshot(
+                this,
+                snapshotData as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
+              ),
             );
           }
         }
@@ -248,12 +218,10 @@ export default class DatabaseReference extends DatabaseQuery implements Database
           return;
         }
 
-        const snapshot = createDeprecationProxy(
-          new DatabaseDataSnapshot(
-            this,
-            snapshotData as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
-          ),
-        ) as DataSnapshot;
+        const snapshot = new DatabaseDataSnapshot(
+          this,
+          snapshotData as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
+        );
 
         resolve({
           committed,
@@ -303,15 +271,13 @@ export default class DatabaseReference extends DatabaseQuery implements Database
       return new DatabaseThenableReference(
         this._database,
         pathChild(this.path, id),
-        Promise.resolve(apChild(this).child.call(this, id, MODULAR_DEPRECATION_ARG)),
+        Promise.resolve(this.child(id)),
       ) as unknown as ThenableReference;
     }
 
-    const pushRef = apChild(this).child.call(this, id, MODULAR_DEPRECATION_ARG);
+    const pushRef = this.child(id) as DatabaseReferenceWithMethodsInternal;
 
-    const promise = apSet(pushRef)
-      .set.call(pushRef, value, onComplete, MODULAR_DEPRECATION_ARG)
-      .then(() => pushRef);
+    const promise = pushRef.set(value, onComplete).then(() => pushRef);
 
     if (onComplete) {
       promise.catch(() => {});

@@ -15,8 +15,6 @@
  *
  */
 
-import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
-
 import type { DatabaseInternal } from './types/internal';
 import type { DatabaseReference } from './types/database';
 
@@ -43,9 +41,7 @@ export default class DatabaseThenableReference implements Pick<
       throw new Error('DatabaseReference class has not been provided.');
     }
 
-    this._ref = createDeprecationProxy(
-      new DatabaseReferenceClass(database, path),
-    ) as DatabaseReference;
+    this._ref = new DatabaseReferenceClass(database, path);
     this._promise = promise;
 
     return new Proxy(this, {
