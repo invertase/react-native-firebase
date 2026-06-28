@@ -44,23 +44,7 @@ const config: PackageConfig = {
         'a standalone `keepSynced()` function.',
     },
   ],
-  differentShape: [
-    {
-      name: 'Database',
-      reason:
-        'RN Firebase narrows the public `type` member to the concrete `database` literal, while the firebase-js-sdk declaration leaves it less specific.',
-    },
-    {
-      name: 'DataSnapshot',
-      reason:
-        'RN Firebase exposes native snapshot metadata helpers such as `key`, `priority`, and `size` on the public snapshot type.',
-    },
-    {
-      name: 'OnDisconnect',
-      reason:
-        'The public method signatures are equivalent, but the generated declaration text differs in union ordering for the priority parameter.',
-    },
-  ],
+  differentShape: [],
 };
 
 export default config;

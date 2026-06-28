@@ -86,7 +86,7 @@ export default class DatabaseOnDisconnect implements OnDisconnect {
 
   setWithPriority(
     value: any,
-    priority: string | number | null,
+    priority: number | string | null,
     onComplete?: (error: Error | null) => void,
   ): Promise<void> {
     if (isUndefined(value)) {

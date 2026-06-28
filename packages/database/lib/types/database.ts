@@ -59,7 +59,7 @@ export type EmulatorMockTokenOptions = ({ user_id: string } | { sub: string }) &
 
 export declare class Database {
   readonly app: FirebaseApp;
-  readonly type: 'database';
+  readonly 'type' = 'database';
 }
 
 export declare class TransactionResult {
@@ -94,10 +94,10 @@ export interface IteratedDataSnapshot extends DataSnapshot {
 }
 
 export declare class DataSnapshot {
-  readonly key: string | null;
-  readonly priority: string | number | null;
   readonly ref: DatabaseReference;
-  readonly size: number;
+  get key(): string | null;
+  get priority(): string | number | null;
+  get size(): number;
   child(path: string): DataSnapshot;
   exists(): boolean;
   exportVal(): any;
@@ -112,7 +112,7 @@ export declare class OnDisconnect {
   cancel(): Promise<void>;
   remove(): Promise<void>;
   set(value: unknown): Promise<void>;
-  setWithPriority(value: unknown, priority: string | number | null): Promise<void>;
+  setWithPriority(value: unknown, priority: number | string | null): Promise<void>;
   update(values: object): Promise<void>;
 }
 
