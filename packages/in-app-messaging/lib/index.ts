@@ -86,6 +86,11 @@ const config: ModuleConfig = {
   hasCustomUrlOrRegionSupport: false,
 };
 
+/**
+ * RN Firebase package version string exported from the modular entry point.
+ *
+ * The firebase-js-sdk does not ship a modular In-App Messaging entry point or `SDK_VERSION` export.
+ */
 export const SDK_VERSION = version;
 
 /**
