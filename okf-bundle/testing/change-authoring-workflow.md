@@ -97,8 +97,8 @@ E2e scope, pre-flight, and harness gate: [running e2e § agent rule](running-e2e
 
 | Gate | Closes when |
 |------|-------------|
-| `implementation` | `implementation` work type complete — code plus **unit-focused**-tier checks green |
-| `review` | `independent-review` complete — **area-focused**-tier (and checklist where required) green on frozen tree |
+| `implementation` | `implementation` work type complete — code plus **unit-focused**-tier checks green; [static analysis](validation-checklist.md#lint-and-formatting) green on the diff |
+| `review` | `independent-review` complete — **area-focused**-tier checks green on frozen tree; applicable [validation checklist](validation-checklist.md) rows green (including static analysis) |
 | `commit` | Durable commit exists for the item |
 
 **Trust rule:** Code on disk or in git with `review` still **open** is unverified until `independent-review` closes the gate.
@@ -135,11 +135,14 @@ flowchart TD
   P4 --> P6{Green?}
   P5 --> P6
   P6 -->|no| P1
-  P6 -->|yes| DONE([Close implementation gate])
+  P6 -->|yes| STATIC[Static analysis — validation checklist § lint]
+  STATIC --> DONE([Close implementation gate])
   P0 --> P1
 ```
 
 **Host rule:** one `:test-cover` at a time; never overlap **unit-focused** and **area-focused** tiers on one host ([§ host rule](#host-rule)).
+
+**Static analysis before handoff:** Before closing the **`implementation`** gate, run the [validation checklist § lint and formatting](validation-checklist.md#lint-and-formatting) rows (`yarn lint:js`; `yarn lint:markdown` / `yarn lint:spellcheck` when docs changed). Fix violations in product code — do not hand off with lint failures. Command list lives only in the checklist; do not duplicate here.
 
 Step detail: [running e2e § unit-focused iteration loop](running-e2e.md#unit-focused-tier-iteration-loop).
 
@@ -162,7 +165,7 @@ On a **frozen tree**:
 
 1. Revert all `.only`.
 2. Keep area narrowing; run **area-focused**-tier e2e for loaded package spec(s) on [**every required platform**](running-e2e.md#platform-coverage-gate-blocking) (serial; pre-flight each run).
-3. Run applicable [validation checklist](validation-checklist.md) rows. For packages registered in `compare:types`, `yarn compare:types` is a **blocking review gate**: the touched package must have zero undocumented or stale differences before `review_gate` closes. If the global command fails on unrelated registered packages, record/fix that drift in the work queue; do not treat an unrelated failure as permission to skip the touched package's type-parity check.
+3. Run applicable [validation checklist](validation-checklist.md) rows — **blocking:** [static analysis § lint and formatting](validation-checklist.md#lint-and-formatting) (`yarn lint:js` on the frozen tree; markdown/spellcheck when docs touched); `yarn reference:api` when public surface changed. For packages registered in `compare:types`, `yarn compare:types` is a **blocking review gate**: the touched package must have zero undocumented or stale differences before `review_gate` closes. If the global command fails on unrelated registered packages, record/fix that drift in the work queue; do not treat an unrelated failure as permission to skip the touched package's type-parity check.
 4. If the package workflow requires coverage: [coverage design § completion signal](coverage-design.md#coverage-as-completion-signal).
 5. Outcome closes **review gate** or returns to **`implementation`**.
 

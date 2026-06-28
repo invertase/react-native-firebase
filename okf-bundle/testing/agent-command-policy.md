@@ -31,6 +31,8 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 | Transpile one package | `yarn lerna run prepare --scope @react-native-firebase/<pkg>` | `yarn workspace @react-native-firebase/<pkg> prepare` |
 | After `packages/*/lib/**` edits (Metro / native embed) | `yarn lerna:prepare` then platform `:build` when [running e2e § Rules #3](running-e2e.md#rules) requires | ad-hoc `bob`, `babel`, or package-scoped prepare |
 | TS/JS validation sequence | [validation checklist](validation-checklist.md) | ad-hoc `tsc` in package dirs unless listed there |
+| JS lint (implementation / review gate) | `yarn lint:js`, `yarn lint:js --fix` | package-scoped `eslint`, `npx eslint` |
+| Docs lint (when docs in diff) | `yarn lint:markdown`, `yarn lint:spellcheck` | ad-hoc prettier/eslint on single files |
 | E2e + coverage | [running e2e](running-e2e.md) — **only** `yarn tests:*` | `jet`, `npx jet`, `yarn jet`, `detox test`, `cd tests && …`, direct Metro/emulator starts |
 | Host pre-flight (before each `:test-cover`) | [running e2e § host-clear probes](running-e2e.md#host-clear-probes) | `pgrep`, polling `:8090`, spawn probes of Jet/Detox |
 

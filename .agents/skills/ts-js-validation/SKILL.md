@@ -54,9 +54,10 @@ Run these root `package.json` scripts in order. **Canonical checklist:** [valida
 2. `yarn tsc:compile`
 3. `yarn tsc:compile:consumer`
 4. `yarn reference:api`
-5. `yarn tests:jest`
-6. `yarn format:js`
-7. `yarn compare:types`
+5. `yarn lint:js` (use `yarn lint:js --fix` then re-run until clean)
+6. `yarn tests:jest`
+7. `yarn format:js`
+8. `yarn compare:types`
 
 ## Gotchas
 
@@ -107,6 +108,7 @@ Use this template:
 - `yarn tsc:compile`: passed | failed | not run
 - `yarn tsc:compile:consumer`: passed | failed | not run
 - `yarn reference:api`: passed | failed | not run
+- `yarn lint:js`: passed | failed | not run
 - `yarn tests:jest`: passed | failed | not run
 - `yarn format:js`: passed | failed | changed files
 - `yarn compare:types`: passed | failed | not run

@@ -107,7 +107,7 @@ Per export, same commit:
 - Page or section under `docs/firestore/pipelines/`
 - Parity table row on pipelines overview
 - `docs.json` sidebar entry for new pages
-- `yarn lint:markdown` and `yarn lint:spellcheck`
+- [Validation checklist § lint and formatting](../../testing/validation-checklist.md#lint-and-formatting) — markdown/spellcheck when docs changed
 
 **OKF bundle maintenance**
 
