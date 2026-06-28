@@ -46,16 +46,16 @@ The namespaced API for `@react-native-firebase/app` has been **removed**. This p
 
 ## Removed namespaced API
 
-| Removed | Replacement (modular) |
-| ------- | --------------------- |
-| Default export `firebase` | Named exports from `@react-native-firebase/app` |
-| `firebase.app(name?)` | `getApp(name?)` |
-| `firebase.apps` | `getApps()` |
-| `firebase.initializeApp(options, name?)` | `initializeApp(options, name?)` |
-| `firebase.utils(app?)` | `getUtils(app?)` |
-| `firebase.utils.FilePath` | `FilePath` (named export) |
-| `firebase.SDK_VERSION` | `SDK_VERSION` (named export) |
-| `firebase.setLogLevel(...)` | `setLogLevel(...)` |
+| Removed                                               | Replacement (modular)                                               |
+| ----------------------------------------------------- | ------------------------------------------------------------------- |
+| Default export `firebase`                             | Named exports from `@react-native-firebase/app`                     |
+| `firebase.app(name?)`                                 | `getApp(name?)`                                                     |
+| `firebase.apps`                                       | `getApps()`                                                         |
+| `firebase.initializeApp(options, name?)`              | `initializeApp(options, name?)`                                     |
+| `firebase.utils(app?)`                                | `getUtils(app?)`                                                    |
+| `firebase.utils.FilePath`                             | `FilePath` (named export)                                           |
+| `firebase.SDK_VERSION`                                | `SDK_VERSION` (named export)                                        |
+| `firebase.setLogLevel(...)`                           | `setLogLevel(...)`                                                  |
 | `firebase.<module>()` accessors on the default export | Import modular helpers from each `@react-native-firebase/*` package |
 
 ## Example
@@ -86,11 +86,11 @@ The namespaced API for `@react-native-firebase/ml` has been **removed**. This pa
 
 ## Removed namespaced API
 
-| Removed                       | Replacement (modular)                    |
-| ----------------------------- | ---------------------------------------- |
-| `firebase.ml()`               | `getML()` or `getML(app)`                |
-| Default export `ml()`         | `getML()` or `getML(app)`                |
-| `FirebaseMLTypes` namespace | Import `FirebaseML` from package root    |
+| Removed                     | Replacement (modular)                 |
+| --------------------------- | ------------------------------------- |
+| `firebase.ml()`             | `getML()` or `getML(app)`             |
+| Default export `ml()`       | `getML()` or `getML(app)`             |
+| `FirebaseMLTypes` namespace | Import `FirebaseML` from package root |
 
 ## Example
 
@@ -120,12 +120,12 @@ There is no `firebase/in-app-messaging` entry in the firebase-js-sdk modular sur
 
 ## Removed namespaced API
 
-| Removed                                              | Replacement (modular)                                                                 |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `firebase.inAppMessaging()`                          | `getInAppMessaging()`                                                                 |
-| Default export `inAppMessaging()`                    | `getInAppMessaging()`                                                                 |
-| `FirebaseInAppMessagingTypes`                        | Import `InAppMessaging` and helpers (`setMessagesDisplaySuppressed`, etc.) from root |
-| Instance-only usage without modular helpers          | Prefer free functions: `setMessagesDisplaySuppressed(inAppMessaging, enabled)`, etc. |
+| Removed                                     | Replacement (modular)                                                                |
+| ------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `firebase.inAppMessaging()`                 | `getInAppMessaging()`                                                                |
+| Default export `inAppMessaging()`           | `getInAppMessaging()`                                                                |
+| `FirebaseInAppMessagingTypes`               | Import `InAppMessaging` and helpers (`setMessagesDisplaySuppressed`, etc.) from root |
+| Instance-only usage without modular helpers | Prefer free functions: `setMessagesDisplaySuppressed(inAppMessaging, enabled)`, etc. |
 
 ## Example: suppressing messages during setup
 
@@ -159,12 +159,12 @@ Modular `getInstallations()` returns a firebase-js-sdk-shaped `Installations` ob
 
 ## Removed namespaced API
 
-| Removed                                               | Replacement (modular)                                                                 |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `firebase.installations()`                            | `getInstallations()`                                                                  |
-| Default export `installations()`                      | `getInstallations()`                                                                  |
+| Removed                                               | Replacement (modular)                                                                     |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `firebase.installations()`                            | `getInstallations()`                                                                      |
+| Default export `installations()`                      | `getInstallations()`                                                                      |
 | `FirebaseInstallationsTypes`                          | Import `Installations` and helpers (`getId`, `getToken`, `deleteInstallations`) from root |
-| `installations.getId()` / `.getToken()` / `.delete()` | `getId(installations)`, `getToken(installations)`, `deleteInstallations(installations)` |
+| `installations.getId()` / `.getToken()` / `.delete()` | `getId(installations)`, `getToken(installations)`, `deleteInstallations(installations)`   |
 
 ## Breaking changes (modular call shape)
 
@@ -204,14 +204,14 @@ Modular `getMessaging()` returns a firebase-js-sdk-shaped `Messaging` object. Pr
 
 ## Removed namespaced API
 
-| Removed | Replacement (modular) |
-| ------- | --------------------- |
-| `firebase.messaging()` | `getMessaging()` |
-| Default export `messaging()` | `getMessaging()` |
-| `FirebaseMessagingTypes` | Import `Messaging`, `RemoteMessage`, and helpers from package root |
-| `messaging.getToken()` / `.onMessage()` / etc. | `getToken(messaging)`, `onMessage(messaging, listener)`, etc. |
-| `messaging.setDeliveryMetricsExportToBigQuery()` | `experimentalSetDeliveryMetricsExportedToBigQueryEnabled(messaging, enabled)` |
-| `firebase.messaging.SDK_VERSION` / `messaging.SDK_VERSION` | `SDK_VERSION` top-level export from package root |
+| Removed                                                    | Replacement (modular)                                                         |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `firebase.messaging()`                                     | `getMessaging()`                                                              |
+| Default export `messaging()`                               | `getMessaging()`                                                              |
+| `FirebaseMessagingTypes`                                   | Import `Messaging`, `RemoteMessage`, and helpers from package root            |
+| `messaging.getToken()` / `.onMessage()` / etc.             | `getToken(messaging)`, `onMessage(messaging, listener)`, etc.                 |
+| `messaging.setDeliveryMetricsExportToBigQuery()`           | `experimentalSetDeliveryMetricsExportedToBigQueryEnabled(messaging, enabled)` |
+| `firebase.messaging.SDK_VERSION` / `messaging.SDK_VERSION` | `SDK_VERSION` top-level export from package root                              |
 
 ## Example: foreground messages
 
@@ -263,13 +263,13 @@ The namespaced API for `@react-native-firebase/app-distribution` has been **remo
 
 ## Removed namespaced API
 
-| Removed | Replacement (modular) |
-| ------- | --------------------- |
-| `firebase.appDistribution()` | `getAppDistribution()` |
-| Default export `appDistribution()` | `getAppDistribution()` |
-| `FirebaseAppDistributionTypes` | Import `AppDistribution`, `AppDistributionRelease` from package root |
+| Removed                                     | Replacement (modular)                                                                                                                     |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `firebase.appDistribution()`                | `getAppDistribution()`                                                                                                                    |
+| Default export `appDistribution()`          | `getAppDistribution()`                                                                                                                    |
+| `FirebaseAppDistributionTypes`              | Import `AppDistribution`, `AppDistributionRelease` from package root                                                                      |
 | `appDistribution.isTesterSignedIn()` / etc. | `isTesterSignedIn(appDistribution)`, `signInTester(appDistribution)`, `checkForUpdate(appDistribution)`, `signOutTester(appDistribution)` |
-| `firebase.appDistribution.SDK_VERSION` | `SDK_VERSION` top-level export from package root |
+| `firebase.appDistribution.SDK_VERSION`      | `SDK_VERSION` top-level export from package root                                                                                          |
 
 ## Example
 
@@ -295,13 +295,13 @@ The namespaced API for `@react-native-firebase/functions` has been **removed**. 
 
 ## Removed namespaced API
 
-| Removed | Replacement (modular) |
-| ------- | --------------------- |
-| `firebase.functions()` | `getFunctions()` or `getFunctions(app, regionOrCustomDomain)` |
-| Default export `functions()` | `getFunctions()` |
-| `FirebaseFunctionsTypes` | Import `Functions`, `HttpsCallable`, `HttpsErrorCode`, etc. from package root |
-| `functions().httpsCallable()` | `httpsCallable(functions, name, options?)` |
-| `functions().useEmulator()` | `connectFunctionsEmulator(functions, host, port)` |
+| Removed                       | Replacement (modular)                                                         |
+| ----------------------------- | ----------------------------------------------------------------------------- |
+| `firebase.functions()`        | `getFunctions()` or `getFunctions(app, regionOrCustomDomain)`                 |
+| Default export `functions()`  | `getFunctions()`                                                              |
+| `FirebaseFunctionsTypes`      | Import `Functions`, `HttpsCallable`, `HttpsErrorCode`, etc. from package root |
+| `functions().httpsCallable()` | `httpsCallable(functions, name, options?)`                                    |
+| `functions().useEmulator()`   | `connectFunctionsEmulator(functions, host, port)`                             |
 
 ## Example
 
@@ -327,13 +327,13 @@ The namespaced API for `@react-native-firebase/perf` has been **removed**. This 
 
 ## Removed namespaced API
 
-| Removed | Replacement (modular) |
-| ------- | --------------------- |
-| `firebase.perf()` | `getPerformance()` |
-| Default export `perf()` | `getPerformance()` |
+| Removed                    | Replacement (modular)                                                    |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `firebase.perf()`          | `getPerformance()`                                                       |
+| Default export `perf()`    | `getPerformance()`                                                       |
 | `FirebasePerformanceTypes` | Import `FirebasePerformance`, `PerformanceTrace`, etc. from package root |
-| `perf().newTrace()` | `trace(performance, name)` |
-| `perf().newHttpMetric()` | `httpMetric(performance, url, httpMethod)` |
+| `perf().newTrace()`        | `trace(performance, name)`                                               |
+| `perf().newHttpMetric()`   | `httpMetric(performance, url, httpMethod)`                               |
 
 # App Check
 
@@ -341,12 +341,12 @@ The namespaced API for `@react-native-firebase/app-check` has been **removed**. 
 
 ## Removed namespaced API
 
-| Removed | Replacement (modular) |
-| ------- | --------------------- |
-| `firebase.appCheck()` | `getAppCheck()` or `initializeAppCheck(app, options)` |
-| Default export `appCheck()` | `getAppCheck()` |
-| `FirebaseAppCheckTypes` | Import `AppCheck`, `AppCheckTokenResult`, etc. from package root |
-| `appCheck().getToken()` | `getToken(appCheck, forceRefresh?)` |
+| Removed                     | Replacement (modular)                                            |
+| --------------------------- | ---------------------------------------------------------------- |
+| `firebase.appCheck()`       | `getAppCheck()` or `initializeAppCheck(app, options)`            |
+| Default export `appCheck()` | `getAppCheck()`                                                  |
+| `FirebaseAppCheckTypes`     | Import `AppCheck`, `AppCheckTokenResult`, etc. from package root |
+| `appCheck().getToken()`     | `getToken(appCheck, forceRefresh?)`                              |
 
 # Analytics
 
@@ -356,13 +356,13 @@ Analytics supports only the **default Firebase app** (same as before). Calling `
 
 ## Removed namespaced API
 
-| Removed | Replacement (modular) |
-| ------- | --------------------- |
-| `firebase.analytics()` | `getAnalytics()` |
-| Default export `analytics()` | `getAnalytics()` |
-| `FirebaseAnalyticsTypes` | Import `Analytics`, event parameter types, etc. from package root |
-| `analytics().logEvent(...)` | `logEvent(analytics, ...)` |
-| `analytics().setUserId(...)` etc. | `setUserId(analytics, ...)`, `setConsent(analytics, ...)`, etc. |
+| Removed                                                      | Replacement (modular)                                                                  |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| `firebase.analytics()`                                       | `getAnalytics()`                                                                       |
+| Default export `analytics()`                                 | `getAnalytics()`                                                                       |
+| `FirebaseAnalyticsTypes`                                     | Import `Analytics`, event parameter types, etc. from package root                      |
+| `analytics().logEvent(...)`                                  | `logEvent(analytics, ...)`                                                             |
+| `analytics().setUserId(...)` etc.                            | `setUserId(analytics, ...)`, `setConsent(analytics, ...)`, etc.                        |
 | Deprecated helper events (`logScreenView`, `logPurchase`, …) | Still exported as modular helpers; prefer `logEvent(analytics, 'screen_view', params)` |
 
 ## Example
@@ -378,11 +378,7 @@ await analytics().setUserId('user-123');
 
 ```js
 // Now
-import {
-  getAnalytics,
-  logEvent,
-  setUserId,
-} from '@react-native-firebase/analytics';
+import { getAnalytics, logEvent, setUserId } from '@react-native-firebase/analytics';
 
 const analytics = getAnalytics();
 await logEvent(analytics, 'screen_view', { screen_name: 'Home' });
@@ -399,22 +395,22 @@ Modular `getRemoteConfig()` returns a firebase-js-sdk-shaped `RemoteConfig` obje
 
 ## Removed namespaced API
 
-| Removed | Replacement (modular) |
-| ------- | --------------------- |
-| `firebase.remoteConfig()` | `getRemoteConfig()` |
-| Default export `remoteConfig()` | `getRemoteConfig()` |
-| `FirebaseRemoteConfigTypes` | Import `RemoteConfig`, `Value`, etc. from package root |
-| `remoteConfig().activate()` etc. | `activate(remoteConfig)`, `fetchConfig(remoteConfig)`, `getValue(remoteConfig, key)`, etc. |
-| `remoteConfig.LastFetchStatus` / `.ValueSource` on namespace | `LastFetchStatus`, `ValueSource` named exports |
+| Removed                                                      | Replacement (modular)                                                                      |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `firebase.remoteConfig()`                                    | `getRemoteConfig()`                                                                        |
+| Default export `remoteConfig()`                              | `getRemoteConfig()`                                                                        |
+| `FirebaseRemoteConfigTypes`                                  | Import `RemoteConfig`, `Value`, etc. from package root                                     |
+| `remoteConfig().activate()` etc.                             | `activate(remoteConfig)`, `fetchConfig(remoteConfig)`, `getValue(remoteConfig, key)`, etc. |
+| `remoteConfig.LastFetchStatus` / `.ValueSource` on namespace | `LastFetchStatus`, `ValueSource` named exports                                             |
 
 ## Breaking changes (modular call shape)
 
-| Before | Now |
-| ------ | --- |
-| `remoteConfig().fetch()` | `fetchConfig(remoteConfig)` |
-| `remoteConfig().setConfigSettings({ ... })` | `remoteConfig.settings = { ... }` |
-| `remoteConfig().setDefaults({ ... })` | `remoteConfig.defaultConfig = { ... }` |
-| `remoteConfig().onConfigUpdated(listener)` | `onConfigUpdate(remoteConfig, observer)` |
+| Before                                      | Now                                      |
+| ------------------------------------------- | ---------------------------------------- |
+| `remoteConfig().fetch()`                    | `fetchConfig(remoteConfig)`              |
+| `remoteConfig().setConfigSettings({ ... })` | `remoteConfig.settings = { ... }`        |
+| `remoteConfig().setDefaults({ ... })`       | `remoteConfig.defaultConfig = { ... }`   |
+| `remoteConfig().onConfigUpdated(listener)`  | `onConfigUpdate(remoteConfig, observer)` |
 
 ## Example
 
@@ -429,11 +425,7 @@ const value = firebase.remoteConfig().getValue('key').asString();
 
 ```js
 // Now
-import {
-  getRemoteConfig,
-  fetchAndActivate,
-  getValue,
-} from '@react-native-firebase/remote-config';
+import { getRemoteConfig, fetchAndActivate, getValue } from '@react-native-firebase/remote-config';
 
 const remoteConfig = getRemoteConfig();
 await fetchAndActivate(remoteConfig);
@@ -448,13 +440,13 @@ The namespaced API for `@react-native-firebase/crashlytics` has been **removed**
 
 ## Removed namespaced API
 
-| Removed | Replacement (modular) |
-| ------- | --------------------- |
-| `firebase.crashlytics()` | `getCrashlytics()` |
-| Default export `crashlytics()` | `getCrashlytics()` |
-| `FirebaseCrashlyticsTypes` | Import `Crashlytics` from package root |
-| `crashlytics().log()` | `log(crashlytics, message)` |
-| `crashlytics().recordError()` | `recordError(crashlytics, error, jsErrorName?)` |
+| Removed                        | Replacement (modular)                           |
+| ------------------------------ | ----------------------------------------------- |
+| `firebase.crashlytics()`       | `getCrashlytics()`                              |
+| Default export `crashlytics()` | `getCrashlytics()`                              |
+| `FirebaseCrashlyticsTypes`     | Import `Crashlytics` from package root          |
+| `crashlytics().log()`          | `log(crashlytics, message)`                     |
+| `crashlytics().recordError()`  | `recordError(crashlytics, error, jsErrorName?)` |
 
 # Realtime Database
 
@@ -462,13 +454,13 @@ The namespaced API for `@react-native-firebase/database` has been **removed**. T
 
 ## Removed namespaced API
 
-| Removed | Replacement (modular) |
-| ------- | --------------------- |
-| `firebase.database()` | `getDatabase()` or `getDatabase(app, url?)` |
-| Default export `database()` | `getDatabase()` |
-| `FirebaseDatabaseTypes` | Import `Database`, `DatabaseReference`, etc. from package root |
-| `database().ref()` | `ref(database, path?)` |
-| `database().refFromURL()` | `refFromURL(database, url)` |
+| Removed                     | Replacement (modular)                                          |
+| --------------------------- | -------------------------------------------------------------- |
+| `firebase.database()`       | `getDatabase()` or `getDatabase(app, url?)`                    |
+| Default export `database()` | `getDatabase()`                                                |
+| `FirebaseDatabaseTypes`     | Import `Database`, `DatabaseReference`, etc. from package root |
+| `database().ref()`          | `ref(database, path?)`                                         |
+| `database().refFromURL()`   | `refFromURL(database, url)`                                    |
 
 # Cloud Storage
 
@@ -476,13 +468,13 @@ The namespaced API for `@react-native-firebase/storage` has been **removed**. Th
 
 ## Removed namespaced API
 
-| Removed | Replacement (modular) |
-| ------- | --------------------- |
-| `firebase.storage()` | `getStorage()` or `getStorage(app, bucketUrl?)` |
-| Default export `storage()` | `getStorage()` |
-| `FirebaseStorageTypes` | Import `FirebaseStorage`, `StorageReference`, etc. from package root |
-| `storage().ref()` | `ref(storage, path?)` |
-| `storageRef.put()` | `uploadBytesResumable(storageRef, data, metadata?)` |
+| Removed                    | Replacement (modular)                                                |
+| -------------------------- | -------------------------------------------------------------------- |
+| `firebase.storage()`       | `getStorage()` or `getStorage(app, bucketUrl?)`                      |
+| Default export `storage()` | `getStorage()`                                                       |
+| `FirebaseStorageTypes`     | Import `FirebaseStorage`, `StorageReference`, etc. from package root |
+| `storage().ref()`          | `ref(storage, path?)`                                                |
+| `storageRef.put()`         | `uploadBytesResumable(storageRef, data, metadata?)`                  |
 
 # Authentication
 
@@ -490,14 +482,14 @@ The namespaced API for `@react-native-firebase/auth` has been **removed**. This 
 
 ## Removed namespaced API
 
-| Removed | Replacement (modular) |
-| ------- | --------------------- |
-| `firebase.auth()` | `getAuth()` or `getAuth(app)` |
-| Default export `auth()` | `getAuth()` |
-| `FirebaseAuthTypes` namespace | Import `Auth`, `User`, `UserCredential`, etc. from package root |
-| `auth().signInWithEmailAndPassword(...)` | `signInWithEmailAndPassword(getAuth(), ...)` |
-| `auth().useEmulator(url)` | `connectAuthEmulator(getAuth(), url, options?)` |
-| `firebase.auth.EmailAuthProvider` | `EmailAuthProvider` (named export) |
+| Removed                                  | Replacement (modular)                                           |
+| ---------------------------------------- | --------------------------------------------------------------- |
+| `firebase.auth()`                        | `getAuth()` or `getAuth(app)`                                   |
+| Default export `auth()`                  | `getAuth()`                                                     |
+| `FirebaseAuthTypes` namespace            | Import `Auth`, `User`, `UserCredential`, etc. from package root |
+| `auth().signInWithEmailAndPassword(...)` | `signInWithEmailAndPassword(getAuth(), ...)`                    |
+| `auth().useEmulator(url)`                | `connectAuthEmulator(getAuth(), url, options?)`                 |
+| `firebase.auth.EmailAuthProvider`        | `EmailAuthProvider` (named export)                              |
 
 ## Example
 
@@ -525,19 +517,19 @@ The namespaced API for `@react-native-firebase/firestore` has been **removed**. 
 
 ## Removed namespaced API
 
-| Removed | Replacement (modular) |
-| ------- | --------------------- |
-| `firebase.firestore()` | `getFirestore()` or `getFirestore(app, databaseId?)` |
-| Default export `firestore()` | `getFirestore()` |
-| `FirebaseFirestoreTypes` namespace | Import `Firestore`, `DocumentReference`, `Query`, etc. from package root |
-| `firestore().collection(...)` | `collection(getFirestore(), ...)` |
-| `firestore().doc(...)` | `doc(getFirestore(), ...)` |
-| `firestore().batch()` | `writeBatch(getFirestore())` |
-| `firestore().runTransaction(...)` | `runTransaction(getFirestore(), ...)` |
-| `firestore().useEmulator(...)` | `connectFirestoreEmulator(getFirestore(), ...)` |
-| `firestore().settings(...)` | `initializeFirestore(app, settings, databaseId?)` |
+| Removed                                        | Replacement (modular)                                                                 |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `firebase.firestore()`                         | `getFirestore()` or `getFirestore(app, databaseId?)`                                  |
+| Default export `firestore()`                   | `getFirestore()`                                                                      |
+| `FirebaseFirestoreTypes` namespace             | Import `Firestore`, `DocumentReference`, `Query`, etc. from package root              |
+| `firestore().collection(...)`                  | `collection(getFirestore(), ...)`                                                     |
+| `firestore().doc(...)`                         | `doc(getFirestore(), ...)`                                                            |
+| `firestore().batch()`                          | `writeBatch(getFirestore())`                                                          |
+| `firestore().runTransaction(...)`              | `runTransaction(getFirestore(), ...)`                                                 |
+| `firestore().useEmulator(...)`                 | `connectFirestoreEmulator(getFirestore(), ...)`                                       |
+| `firestore().settings(...)`                    | `initializeFirestore(app, settings, databaseId?)`                                     |
 | `firestore.FieldValue` / `firestore.Timestamp` | `FieldValue`, `Timestamp`, `FieldPath`, `Bytes`, `GeoPoint`, `Filter` (named exports) |
-| `firestore.Blob` | `Bytes` |
+| `firestore.Blob`                               | `Bytes`                                                                               |
 
 ## Example
 
@@ -585,23 +577,23 @@ cd ios && pod install
 
 For each modular-only package you use:
 
-| Package | Search for | Replace with |
-| ------- | ---------- | ------------ |
-| `app` | default `firebase` import, `firebase.app()`, `firebase.apps`, `firebase.initializeApp()`, `firebase.utils()`, `firebase.SDK_VERSION` | `getApp()`, `getApps()`, `initializeApp()`, `getUtils()`, `FilePath`, `SDK_VERSION`, `setLogLevel`, etc. |
-| `ml` | `firebase.ml()`, default `ml()`, `FirebaseMLTypes` | `getML()`, root `FirebaseML` type |
-| `in-app-messaging` | `firebase.inAppMessaging()`, default `inAppMessaging()`, `FirebaseInAppMessagingTypes` | `getInAppMessaging()`, root modular helpers (`setMessagesDisplaySuppressed`, etc.) |
-| `installations` | `firebase.installations()`, default `installations()`, `.getId()`, `.getToken()`, `.delete()`, `FirebaseInstallationsTypes` | `getInstallations()`, `getId()`, `getToken()`, `deleteInstallations()` |
-| `messaging` | `firebase.messaging()`, default `messaging()`, `FirebaseMessagingTypes`, instance methods | `getMessaging()`, root helpers (`getToken`, `onMessage`, etc.), `SDK_VERSION`, `experimentalSetDeliveryMetricsExportedToBigQueryEnabled` |
-| `app-distribution` | `firebase.appDistribution()`, default `appDistribution()`, `FirebaseAppDistributionTypes`, instance methods | `getAppDistribution()`, `isTesterSignedIn`, `signInTester`, `checkForUpdate`, `signOutTester`, `SDK_VERSION` |
-| `functions` | `firebase.functions()`, default `functions()`, `FirebaseFunctionsTypes`, instance methods | `getFunctions()`, `httpsCallable`, `httpsCallableFromUrl`, `connectFunctionsEmulator`, `HttpsErrorCode` |
-| `perf` | `firebase.perf()`, default `perf()`, `FirebasePerformanceTypes`, instance methods | `getPerformance()`, `trace`, `httpMetric`, `newScreenTrace`, `startScreenTrace`, `initializePerformance` |
-| `app-check` | `firebase.appCheck()`, default `appCheck()`, `FirebaseAppCheckTypes`, instance methods | `getAppCheck()`, `initializeAppCheck`, `getToken`, `getLimitedUseToken`, `setTokenAutoRefreshEnabled`, `onTokenChanged`, `CustomProvider` |
-| `analytics` | `firebase.analytics()`, default `analytics()`, `FirebaseAnalyticsTypes`, instance methods | `getAnalytics()`, `logEvent`, `setUserId`, `setConsent`, `getAppInstanceId`, `getSessionId`, etc. |
-| `remote-config` | `firebase.remoteConfig()`, default `remoteConfig()`, `FirebaseRemoteConfigTypes`, instance methods | `getRemoteConfig()`, `activate`, `fetchConfig`, `fetchAndActivate`, `getValue`, `getAll`, `onConfigUpdate`, `LastFetchStatus`, `ValueSource` |
-| `crashlytics` | `firebase.crashlytics()`, default `crashlytics()`, `FirebaseCrashlyticsTypes`, instance methods | `getCrashlytics()`, `log`, `recordError`, `setUserId`, `setAttribute`, `setAttributes`, `setCrashlyticsCollectionEnabled`, etc. |
-| `database` | `firebase.database()`, default `database()`, `FirebaseDatabaseTypes`, instance methods | `getDatabase()`, `ref`, `refFromURL`, `onValue`, `runTransaction`, `connectDatabaseEmulator`, etc. |
-| `storage` | `firebase.storage()`, default `storage()`, `FirebaseStorageTypes`, instance/reference methods | `getStorage()`, `ref`, `uploadBytesResumable`, `getDownloadURL`, `connectStorageEmulator`, `StringFormat`, `TaskEvent`, `TaskState` |
-| `firestore` | `firebase.firestore()`, default `firestore()`, `FirebaseFirestoreTypes`, instance methods | `getFirestore()`, `doc`, `collection`, `setDoc`, `writeBatch`, `runTransaction`, `connectFirestoreEmulator`, `FieldValue`, `Timestamp`, `Bytes`, `SDK_VERSION` |
+| Package            | Search for                                                                                                                           | Replace with                                                                                                                                                   |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app`              | default `firebase` import, `firebase.app()`, `firebase.apps`, `firebase.initializeApp()`, `firebase.utils()`, `firebase.SDK_VERSION` | `getApp()`, `getApps()`, `initializeApp()`, `getUtils()`, `FilePath`, `SDK_VERSION`, `setLogLevel`, etc.                                                       |
+| `ml`               | `firebase.ml()`, default `ml()`, `FirebaseMLTypes`                                                                                   | `getML()`, root `FirebaseML` type                                                                                                                              |
+| `in-app-messaging` | `firebase.inAppMessaging()`, default `inAppMessaging()`, `FirebaseInAppMessagingTypes`                                               | `getInAppMessaging()`, root modular helpers (`setMessagesDisplaySuppressed`, etc.)                                                                             |
+| `installations`    | `firebase.installations()`, default `installations()`, `.getId()`, `.getToken()`, `.delete()`, `FirebaseInstallationsTypes`          | `getInstallations()`, `getId()`, `getToken()`, `deleteInstallations()`                                                                                         |
+| `messaging`        | `firebase.messaging()`, default `messaging()`, `FirebaseMessagingTypes`, instance methods                                            | `getMessaging()`, root helpers (`getToken`, `onMessage`, etc.), `SDK_VERSION`, `experimentalSetDeliveryMetricsExportedToBigQueryEnabled`                       |
+| `app-distribution` | `firebase.appDistribution()`, default `appDistribution()`, `FirebaseAppDistributionTypes`, instance methods                          | `getAppDistribution()`, `isTesterSignedIn`, `signInTester`, `checkForUpdate`, `signOutTester`, `SDK_VERSION`                                                   |
+| `functions`        | `firebase.functions()`, default `functions()`, `FirebaseFunctionsTypes`, instance methods                                            | `getFunctions()`, `httpsCallable`, `httpsCallableFromUrl`, `connectFunctionsEmulator`, `HttpsErrorCode`                                                        |
+| `perf`             | `firebase.perf()`, default `perf()`, `FirebasePerformanceTypes`, instance methods                                                    | `getPerformance()`, `trace`, `httpMetric`, `newScreenTrace`, `startScreenTrace`, `initializePerformance`                                                       |
+| `app-check`        | `firebase.appCheck()`, default `appCheck()`, `FirebaseAppCheckTypes`, instance methods                                               | `getAppCheck()`, `initializeAppCheck`, `getToken`, `getLimitedUseToken`, `setTokenAutoRefreshEnabled`, `onTokenChanged`, `CustomProvider`                      |
+| `analytics`        | `firebase.analytics()`, default `analytics()`, `FirebaseAnalyticsTypes`, instance methods                                            | `getAnalytics()`, `logEvent`, `setUserId`, `setConsent`, `getAppInstanceId`, `getSessionId`, etc.                                                              |
+| `remote-config`    | `firebase.remoteConfig()`, default `remoteConfig()`, `FirebaseRemoteConfigTypes`, instance methods                                   | `getRemoteConfig()`, `activate`, `fetchConfig`, `fetchAndActivate`, `getValue`, `getAll`, `onConfigUpdate`, `LastFetchStatus`, `ValueSource`                   |
+| `crashlytics`      | `firebase.crashlytics()`, default `crashlytics()`, `FirebaseCrashlyticsTypes`, instance methods                                      | `getCrashlytics()`, `log`, `recordError`, `setUserId`, `setAttribute`, `setAttributes`, `setCrashlyticsCollectionEnabled`, etc.                                |
+| `database`         | `firebase.database()`, default `database()`, `FirebaseDatabaseTypes`, instance methods                                               | `getDatabase()`, `ref`, `refFromURL`, `onValue`, `runTransaction`, `connectDatabaseEmulator`, etc.                                                             |
+| `storage`          | `firebase.storage()`, default `storage()`, `FirebaseStorageTypes`, instance/reference methods                                        | `getStorage()`, `ref`, `uploadBytesResumable`, `getDownloadURL`, `connectStorageEmulator`, `StringFormat`, `TaskEvent`, `TaskState`                            |
+| `firestore`        | `firebase.firestore()`, default `firestore()`, `FirebaseFirestoreTypes`, instance methods                                            | `getFirestore()`, `doc`, `collection`, `setDoc`, `writeBatch`, `runTransaction`, `connectFirestoreEmulator`, `FieldValue`, `Timestamp`, `Bytes`, `SDK_VERSION` |
 
 ## 3. Validate
 

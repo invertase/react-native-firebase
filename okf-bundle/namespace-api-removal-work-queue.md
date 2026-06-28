@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # Namespace API removal — work queue
 
-> **IN PROGRESS (2026-06-27):** **NV** pre-merge validation (full tier). NF complete (NF-1 through NF-6 committed).
+> **COMPLETE (2026-06-27):** Namespace removal **NV** green on all platforms (`RNFBDebug=true`, no retries). App-check quota skip committed.
 > **Order:** pilot smallest (`ml`, `in-app-messaging`) → spike hardest (`messaging`) → bulk small→large → **NF** app cleanup → **NV** full validation. **Workflow:** [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md).
 
 ---
@@ -86,7 +86,7 @@ Update immediately after each work type closes a gate ([fields](testing/iteratio
 | NC | `database` compare-types drift | **closed** | **closed** | **closed** | `fix(database): align public types with firebase-js-sdk declarations` | — | unit-focused | Aligned Database/DataSnapshot/OnDisconnect; cleared stale differentShape. Review green; minor getter/harness coupling deferred. compare:types ✓; Jest 45 pass. |
 | NC | `app-check` compare-types drift | **closed** | **closed** | **closed** | — | — | unit-focused | compare-types app-check ✓ on HEAD (`b350d17b4`); no further product changes needed. Closed with NC SDK_VERSION pass. |
 | NF | `app` | **closed** | **closed** | **closed** | — | — | unit-focused | NF-1..6 committed: utils modular, database proxy purge, app root+deprecation removal, pnv inline, e2e/doc sweep. NF-7 error strings deferred. |
-| NV | all | open | open | open | — | `pre-merge-validation` | full | **Active.** Full harness; macOS + iOS + Android `:test-cover`; full Jest; compare:types; reference:api. |
+| NV | all | **closed** | **closed** | **closed** | `test(app-check): cleanup quota exceeded handling` | `pre-merge-validation` | full | Static ✓ Jest 1056/1056. **RNFBDebug=true** NV (2026-06-28): macOS 682/36p/0f, iOS 822/85p/0f, Android 848/58p/0f. App-check: quota→skip helper + macOS `CustomProvider`; all app-check modular tests pass iOS/Android. Logs: `/tmp/rnfb-e2e-{macos,ios,android}-nv-{appcheck,debug}.log`. |
 
 ---
 

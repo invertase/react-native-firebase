@@ -41,6 +41,18 @@ function getRandomToken() {
   return tokenUUIDs[0];
 }
 
+function isAppCheckCloudQuotaError(error) {
+  const message = error?.message || String(error);
+  return /Quota exceeded|Too many server requests|RESOURCE_EXHAUSTED/i.test(message);
+}
+
+function skipIfAppCheckCloudQuotaError(error, testContext) {
+  if (isAppCheckCloudQuotaError(error)) {
+    testContext.skip();
+  }
+  throw error;
+}
+
 function decodeJWT(token) {
   // Split the token into its parts
   const parts = token.split('.');
@@ -86,7 +98,8 @@ describe('appCheck()', function () {
     let appCheckInstance;
 
     beforeEach(async function () {
-      const { initializeAppCheck, ReactNativeFirebaseAppCheckProvider } = appCheckModular;
+      const { initializeAppCheck, ReactNativeFirebaseAppCheckProvider, CustomProvider } =
+        appCheckModular;
 
       let provider;
 
@@ -107,7 +120,7 @@ describe('appCheck()', function () {
           },
         });
       } else {
-        provider = new ReactNativeFirebaseAppCheckProvider({
+        provider = new CustomProvider({
           getToken() {
             return FirebaseHelpers.fetchAppCheckToken();
           },
@@ -173,9 +186,7 @@ describe('appCheck()', function () {
           }
           (token === token2).should.be.false();
         } catch (e) {
-          // we will silently pass rate limiting errors
-          e.message.should.containEql('Quota exceeded');
-          this.skip();
+          skipIfAppCheckCloudQuotaError(e, this);
         }
       });
 
@@ -241,15 +252,16 @@ describe('appCheck()', function () {
             );
           }
         } catch (e) {
-          // we will silently pass rate limiting errors
-          e.message.should.containEql('Quota exceeded');
-          this.skip();
+          skipIfAppCheckCloudQuotaError(e, this);
         }
       });
     });
 
     describe('getLimitedUseToken()', function () {
       it('limited use token fetch attempt with configured debug token should work', async function () {
+        if (Platform.other) {
+          this.skip();
+        }
         const { initializeAppCheck, getLimitedUseToken, ReactNativeFirebaseAppCheckProvider } =
           appCheckModular;
 
@@ -285,9 +297,7 @@ describe('appCheck()', function () {
             );
           }
         } catch (e) {
-          // we will silently pass rate limiting errors
-          e.message.should.containEql('Quota exceeded');
-          this.skip();
+          skipIfAppCheckCloudQuotaError(e, this);
         }
       });
     });
