@@ -21,6 +21,7 @@ import {
   isAlphaNumericUnderscore,
   isE164PhoneNumber,
   isIOS,
+  isBoolean,
   isNull,
   isNumber,
   isObject,
@@ -39,7 +40,6 @@ import './types/internal';
 
 // Internal types are now available through module declarations in app package
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
-import { isBoolean } from '@react-native-firebase/app/dist/module/common';
 
 import { validateStruct, validateCompound } from './struct';
 import { RNFBAnalyticsModule } from './web/RNFBAnalyticsModule';
