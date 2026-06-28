@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # Namespace API removal — work queue
 
-> **IN PROGRESS (2026-06-27):** **NC** `SDK_VERSION` — committing; **Next pickup:** NC `database` compare-types drift.
+> **IN PROGRESS (2026-06-27):** **NF** `app` — `gap-analysis` next. NC phase complete.
 > **Order:** pilot smallest (`ml`, `in-app-messaging`) → spike hardest (`messaging`) → bulk small→large → **NF** app cleanup → **NV** full validation. **Workflow:** [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md).
 
 ---
@@ -83,7 +83,7 @@ Update immediately after each work type closes a gate ([fields](testing/iteratio
 | N6 | `auth` (~43m) | **closed** | **closed** | **closed** | `refactor(auth): remove deprecated namespaced API` | — | area-focused | review: macOS 139/6p, iOS 148/23p, Android 155/15p; compare:types auth ✓. Minors deferred: legacy `firebase.auth()` error strings + stale JSDoc (NF/string cleanup) |
 | N6 | `firestore` (~17m) | **closed** | **closed** | **closed** | `refactor(firestore): remove deprecated namespaced API` | — | area-focused | Loop 3–4 green (701/741/741 area harness); compare:types firestore ✓; lint/format clean; harness reverted. |
 | NC | `SDK_VERSION` compare-types drift | **closed** | **closed** | **closed** | `docs(ml,installations,in-app-messaging): document SDK_VERSION export` | — | unit-focused | JSDoc on SDK_VERSION (ml/installations/in-app-messaging); ml stray comment removed. compare:types ✓ all registered; reference:api ✓; lint:js ✓. Configs already on HEAD. Review green; minor/nit deferred (two-track JSDoc vs config-only pattern). Forward commit. |
-| NC | `database` compare-types drift | open | open | open | — | `implementation` | unit-focused | **Next pickup.** Revisit database non-`SDK_VERSION` drift; align types to firebase-js-sdk where feasible or document intentional RN-only differences; amend database namespace-removal commit if needed. |
+| NC | `database` compare-types drift | **closed** | open | open | — | `independent-review` | area-focused | **Impl green (2026-06-27):** Aligned Database/DataSnapshot/OnDisconnect types; cleared stale differentShape config. compare:types database 6 extra / 0 shape; tsc ✓; lint:js ✓; database Jest ✓. |
 | NC | `app-check` compare-types drift | **closed** | **closed** | **closed** | — | — | unit-focused | compare-types app-check ✓ on HEAD (`b350d17b4`); no further product changes needed. Closed with NC SDK_VERSION pass. |
 | NF | `app` | open | open | open | — | `gap-analysis` | full | |
 | NV | all | open | open | open | — | `pre-merge-validation` | full | revert all narrowing |
