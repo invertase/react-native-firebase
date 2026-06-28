@@ -16,7 +16,9 @@
  */
 
 import { MODULAR_DEPRECATION_ARG } from './common';
-import type { ReactNativeFirebase, LogCallback, LogOptions } from './types/app';
+import type { ReactNativeFirebase, LogCallback, LogOptions, Utils } from './types/app';
+import { getUtils as getUtilsImpl } from './utils';
+import UtilsStatics from './utils/UtilsStatics';
 import {
   deleteApp as deleteAppCompat,
   getApp as getAppCompat,
@@ -217,3 +219,24 @@ export function preferencesSetString(key: string, value: string): Promise<void> 
 }
 
 export const SDK_VERSION = sdkVersion;
+
+/**
+ * Returns the {@link Utils.Module} instance for the default or given {@link ReactNativeFirebase.FirebaseApp}.
+ *
+ * @param app - The Firebase app to use. When omitted, the default app is used.
+ */
+export function getUtils(app?: ReactNativeFirebase.FirebaseApp): Utils.Module {
+  return getUtilsImpl(app);
+}
+
+/**
+ * Native device file paths for use with file-based APIs such as Storage `putFile` or `writeToFile`.
+ */
+export const FilePath: Utils.FilePath = new Proxy({} as Utils.FilePath, {
+  get(_target, prop: string | symbol) {
+    if (typeof prop === 'string') {
+      return UtilsStatics.FilePath[prop as keyof Utils.FilePath];
+    }
+    return undefined;
+  },
+});
