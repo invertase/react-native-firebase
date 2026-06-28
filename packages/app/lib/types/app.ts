@@ -130,7 +130,6 @@ export namespace ReactNativeFirebase {
   /**
    * Base interface for FirebaseApp containing core properties and methods.
    * The concrete FirebaseApp class implements this interface.
-   * Module-specific methods (auth(), analytics(), etc.) are added to FirebaseApp via declaration merging.
    */
   export interface FirebaseAppBase {
     /**
@@ -152,21 +151,12 @@ export namespace ReactNativeFirebase {
      * Make this app unusable and free up resources.
      */
     delete(): Promise<void>;
-
-    utils(): Utils.Module;
   }
 
   /**
    * Full FirebaseApp interface that extends the base interface.
-   * Module-specific methods (auth(), analytics(), etc.) are added here via declaration merging
-   * from individual package .d.ts files.
    */
-  export interface FirebaseApp extends FirebaseAppBase {
-    // Module methods are added here via declaration merging, e.g.:
-    // auth(): FirebaseAuthTypes.Module;
-    // analytics(): FirebaseAnalyticsTypes.Module;
-    // etc.
-  }
+  export interface FirebaseApp extends FirebaseAppBase {}
 
   /**
    * Interface for a supplied `AsyncStorage`.

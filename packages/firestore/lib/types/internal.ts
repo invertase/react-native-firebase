@@ -44,7 +44,7 @@ import type { _Filter } from '../FirestoreFilter';
 import type { Timestamp } from '../FirestoreTimestamp';
 import { Blob } from '../FirestoreBlob';
 
-/** Optional final argument passed by modular API wrappers (MODULAR_DEPRECATION_ARG). */
+/** Reserved optional trailing argument on legacy internal method signatures. */
 export type FirestoreModularDeprecationArg = string;
 
 /** Query type passed to native ('collection' or 'collectionGroup'). */
@@ -536,7 +536,7 @@ declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   }
 }
 
-// Helper type for wrappers that forward MODULAR_DEPRECATION_ARG via .call(...).
+// Helper type for internal wrappers that accept an optional trailing sentinel argument.
 export type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
   ? (...args: [...P, FirestoreModularDeprecationArg?]) => R
   : never;

@@ -20,7 +20,6 @@ import type FirebaseModule from '../FirebaseModule';
 import type { ReactNativeFirebase } from '../../types/app';
 import type { ModuleConfig } from '../../types/internal';
 import { addOnAppDestroy, getApp } from './app';
-import { MODULAR_DEPRECATION_ARG } from '../../common';
 
 /**
  * Constructor signature shared by every {@link FirebaseModule} subclass.
@@ -46,11 +45,10 @@ function ensureDestroyHook(): void {
 }
 
 /**
- * Builds (and memoises per app) a Firebase service instance for the modular API, without the
- * namespaced registry, `KNOWN_NAMESPACES`, or the deprecation proxy.
+ * Builds (and memoises per app) a Firebase service instance for the modular API.
  *
- * This is the modular-only replacement for `getApp().<module>()`. Each module's `modular.ts`
- * defines its own `ModuleClass` and `ModuleConfig` and calls this from `getX(app?)`.
+ * Each module's `index.ts` defines its own `ModuleClass` and `ModuleConfig` and calls this from
+ * `getX(app?)`.
  *
  * @param ModuleClass - The module's `FirebaseModule` subclass.
  * @param config - Static `ModuleConfig` for the module (namespace, native module name, support flags).
@@ -66,13 +64,7 @@ export function getOrCreateModularInstance<T extends FirebaseModule>(
 ): T {
   ensureDestroyHook();
 
-  // Resolve through the app registry by name (canonical instance; throws for unknown app names).
-  // Passing the modular sentinel suppresses the internal getApp() modular-deprecation warning.
-  // Re-resolving by name also rejects deleted apps (their name is removed from the registry on
-  // delete), giving the parity the namespaced app proxy provided via app._checkDestroyed().
-  const _app = (
-    getApp as unknown as (name?: string, modularArg?: unknown) => ReactNativeFirebase.FirebaseApp
-  )(app?.name, MODULAR_DEPRECATION_ARG);
+  const _app = getApp(app?.name);
 
   const { namespace, hasMultiAppSupport } = config;
 

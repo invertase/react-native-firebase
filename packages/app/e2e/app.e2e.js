@@ -16,164 +16,6 @@
  */
 
 describe('modular', function () {
-  describe('firebase v8 compat', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('it should allow read the default app from native', function () {
-      if (Platform.other) return; // Not supported on non-native platforms.
-      // app is created in tests app before all hook
-      should.equal(firebase.app()._nativeInitialized, true);
-      should.equal(firebase.app().name, '[DEFAULT]');
-    });
-
-    it('it should create js apps for natively initialized apps', function () {
-      if (Platform.other) return; // Not supported on non-native platforms.
-      should.equal(firebase.app('secondaryFromNative')._nativeInitialized, true);
-      should.equal(firebase.app('secondaryFromNative').name, 'secondaryFromNative');
-    });
-
-    it('natively initialized apps should have options available in js', function () {
-      if (Platform.other) return; // Not supported on non-native platforms.
-      const platformAppConfig = FirebaseHelpers.app.config();
-      should.equal(firebase.app().options.apiKey, platformAppConfig.apiKey);
-      should.equal(firebase.app().options.appId, platformAppConfig.appId);
-      should.equal(firebase.app().options.databaseURL, platformAppConfig.databaseURL);
-      should.equal(firebase.app().options.messagingSenderId, platformAppConfig.messagingSenderId);
-      should.equal(firebase.app().options.projectId, platformAppConfig.projectId);
-      should.equal(firebase.app().options.storageBucket, platformAppConfig.storageBucket);
-    });
-
-    it('SDK_VERSION should return a string version', function () {
-      firebase.SDK_VERSION.should.be.a.String();
-    });
-
-    it('apps should provide an array of apps', function () {
-      should.equal(!!firebase.apps.length, true);
-      should.equal(firebase.apps.includes(firebase.app('[DEFAULT]')), true);
-    });
-
-    it('apps can get and set data collection', async function () {
-      firebase.app().automaticDataCollectionEnabled = false;
-      should.equal(firebase.app().automaticDataCollectionEnabled, false);
-    });
-
-    it('should allow setting of log level', function () {
-      firebase.setLogLevel('error');
-      firebase.setLogLevel('verbose');
-    });
-
-    it('should error if logLevel is invalid', function () {
-      try {
-        firebase.setLogLevel('silent');
-        throw new Error('did not throw on invalid loglevel');
-      } catch (e) {
-        e.message.should.containEql('LogLevel must be one of');
-      }
-    });
-
-    it('it should initialize dynamic apps', async function () {
-      const appCount = firebase.apps.length;
-      const name = `testscoreapp${FirebaseHelpers.id}`;
-      const platformAppConfig = FirebaseHelpers.app.config();
-      const newApp = await firebase.initializeApp(platformAppConfig, name);
-      newApp.name.should.equal(name);
-      newApp.toString().should.equal(name);
-      newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
-      should.equal(firebase.apps.includes(firebase.app(name)), true);
-      should.equal(firebase.apps.length, appCount + 1);
-      return newApp.delete();
-    });
-
-    it('should error if dynamic app initialization values are incorrect', async function () {
-      const appCount = firebase.apps.length;
-      try {
-        await firebase.initializeApp({ appId: 'myid' }, 'myname');
-        throw new Error('Should have rejected incorrect initializeApp input');
-      } catch (e) {
-        e.message.should.equal("Missing or invalid FirebaseOptions property 'apiKey'.");
-        should.equal(firebase.apps.length, appCount);
-        should.equal(firebase.apps.includes('myname'), false);
-      }
-    });
-
-    it('should error if dynamic app initialization values are invalid', async function () {
-      // firebase-android-sdk and js-sdk will not complain on invalid initialization values, iOS throws
-      if (Platform.android || Platform.other) {
-        return;
-      }
-
-      const appCount = firebase.apps.length;
-      try {
-        const firebaseConfig = {
-          apiKey: 'XXXXXXXXXXXXXXXXXXXXXXX',
-          authDomain: 'test-XXXXX.firebaseapp.com',
-          databaseURL: 'https://test-XXXXXX.firebaseio.com',
-          projectId: 'test-XXXXX',
-          storageBucket: 'tes-XXXXX.appspot.com',
-          messagingSenderId: 'XXXXXXXXXXXXX',
-          appId: '1:XXXXXXXXX',
-          app_name: 'TEST',
-        };
-        await firebase.initializeApp(firebaseConfig, 'myname');
-        throw new Error('Should have rejected incorrect initializeApp input');
-      } catch (e) {
-        e.code.should.containEql('app/unknown');
-        e.message.should.containEql('Configuration fails');
-        should.equal(firebase.apps.length, appCount);
-        should.equal(firebase.apps.includes('myname'), false);
-      }
-    });
-
-    it('apps can be deleted, but only if it exists', async function () {
-      const name = `testscoreapp${FirebaseHelpers.id}`;
-      const platformAppConfig = FirebaseHelpers.app.config();
-      const newApp = await firebase.initializeApp(platformAppConfig, name);
-
-      newApp.name.should.equal(name);
-      newApp.toString().should.equal(name);
-      newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
-
-      await newApp.delete();
-      try {
-        await newApp.delete();
-      } catch (e) {
-        e.message.should.equal(`Firebase App named '${name}' already deleted`);
-      }
-      try {
-        firebase.app(name);
-      } catch (e) {
-        e.message.should.equal(
-          `No Firebase App '${name}' has been created - call firebase.initializeApp()`,
-        );
-      }
-    });
-
-    it('prevents the default app from being deleted', async function () {
-      if (Platform.other) return; // We can delete the default app on other platforms.
-      try {
-        await firebase.app().delete();
-      } catch (e) {
-        e.message.should.equal('Unable to delete the default native firebase app instance.');
-      }
-    });
-
-    it('extendApp should provide additional functionality', function () {
-      const extension = {};
-      firebase.app().extendApp({
-        extension,
-      });
-      firebase.app().extension.should.equal(extension);
-    });
-  });
-
   describe('firebase v9 modular', function () {
     it('it should allow read the default app from native', function () {
       if (Platform.other) return; // Not supported on non-native platforms.
@@ -190,6 +32,34 @@ describe('modular', function () {
 
       should.equal(getApp('secondaryFromNative')._nativeInitialized, true);
       should.equal(getApp('secondaryFromNative').name, 'secondaryFromNative');
+    });
+
+    it('natively initialized apps should have options available in js', function () {
+      if (Platform.other) return; // Not supported on non-native platforms.
+      const { getApp } = modular;
+      const platformAppConfig = FirebaseHelpers.app.config();
+      should.equal(getApp().options.apiKey, platformAppConfig.apiKey);
+      should.equal(getApp().options.appId, platformAppConfig.appId);
+      should.equal(getApp().options.databaseURL, platformAppConfig.databaseURL);
+      should.equal(getApp().options.messagingSenderId, platformAppConfig.messagingSenderId);
+      should.equal(getApp().options.projectId, platformAppConfig.projectId);
+      should.equal(getApp().options.storageBucket, platformAppConfig.storageBucket);
+    });
+
+    it('SDK_VERSION should return a string version', function () {
+      modular.SDK_VERSION.should.be.a.String();
+    });
+
+    it('apps should provide an array of apps', function () {
+      const { getApps, getApp } = modular;
+      should.equal(!!getApps().length, true);
+      should.equal(getApps().includes(getApp('[DEFAULT]')), true);
+    });
+
+    it('apps can get and set data collection', async function () {
+      const { getApp } = modular;
+      getApp().automaticDataCollectionEnabled = false;
+      should.equal(getApp().automaticDataCollectionEnabled, false);
     });
 
     it('should allow setting of log level', function () {
@@ -319,6 +189,15 @@ describe('modular', function () {
       } catch (e) {
         e.message.should.equal('registerVersion is only supported on Web');
       }
+    });
+
+    it('extendApp should provide additional functionality', function () {
+      const { getApp } = modular;
+      const extension = {};
+      getApp().extendApp({
+        extension,
+      });
+      getApp().extension.should.equal(extension);
     });
   });
 });
