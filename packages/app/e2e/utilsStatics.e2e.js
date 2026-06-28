@@ -18,6 +18,38 @@
 describe('utils()', function () {
   if (Platform.other) return; // Not supported on non-native platforms.
 
+  describe('modular', function () {
+    it('provides native path strings via FilePath export', function () {
+      const { FilePath } = modular;
+      FilePath.should.be.an.Object();
+      if (Platform.ios) {
+        FilePath.MAIN_BUNDLE.should.be.a.String();
+      } else {
+        should.equal(FilePath.MAIN_BUNDLE, null);
+      }
+
+      FilePath.CACHES_DIRECTORY.should.be.a.String();
+      FilePath.DOCUMENT_DIRECTORY.should.be.a.String();
+
+      if (Platform.android && FilePath.EXTERNAL_DIRECTORY !== null) {
+        FilePath.EXTERNAL_DIRECTORY.should.be.a.String();
+      } else {
+        should.equal(FilePath.EXTERNAL_DIRECTORY, null);
+      }
+
+      if (Platform.android && FilePath.EXTERNAL_STORAGE_DIRECTORY !== null) {
+        FilePath.EXTERNAL_STORAGE_DIRECTORY.should.be.a.String();
+      } else {
+        should.equal(FilePath.EXTERNAL_STORAGE_DIRECTORY, null);
+      }
+
+      FilePath.TEMP_DIRECTORY.should.be.a.String();
+      FilePath.LIBRARY_DIRECTORY.should.be.a.String();
+      FilePath.PICTURES_DIRECTORY.should.be.a.String();
+      FilePath.MOVIES_DIRECTORY.should.be.a.String();
+    });
+  });
+
   describe('statics', function () {
     it('provides native path strings', function () {
       firebase.utils.FilePath.should.be.an.Object();

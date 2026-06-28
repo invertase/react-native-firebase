@@ -16,9 +16,24 @@
  */
 
 import { getFirebaseRoot } from './internal/registry/namespace';
+import { setOnAppCreate } from './internal/registry/app';
 import utils from './utils';
+import { getUtils } from './utils';
 
 export const firebase = getFirebaseRoot();
+
+Object.defineProperty(firebase, 'utils', {
+  enumerable: false,
+  get: () => utils,
+});
+
+setOnAppCreate(app => {
+  Object.defineProperty(app, 'utils', {
+    enumerable: false,
+    get: () => () => getUtils(app),
+  });
+});
+
 export { utils };
 
 export default firebase;
