@@ -36,7 +36,11 @@ const config: ModuleConfig = {
   hasCustomUrlOrRegionSupport: false,
 };
 
-// import { SDK_VERSION } from '@react-native-firebase/ml';
+/**
+ * RN Firebase package version string exported from the modular entry point.
+ *
+ * The firebase-js-sdk does not ship a `firebase/ml` modular entry point or `SDK_VERSION` export.
+ */
 export const SDK_VERSION = version;
 
 /**
