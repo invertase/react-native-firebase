@@ -85,8 +85,8 @@ Update immediately after each work type closes a gate ([fields](testing/iteratio
 | NC | `SDK_VERSION` compare-types drift | **closed** | **closed** | **closed** | `docs(ml,installations,in-app-messaging): document SDK_VERSION export` | — | unit-focused | JSDoc on SDK_VERSION (ml/installations/in-app-messaging); ml stray comment removed. compare:types ✓ all registered; reference:api ✓; lint:js ✓. Configs already on HEAD. Review green; minor/nit deferred (two-track JSDoc vs config-only pattern). Forward commit. |
 | NC | `database` compare-types drift | **closed** | **closed** | **closed** | `fix(database): align public types with firebase-js-sdk declarations` | — | unit-focused | Aligned Database/DataSnapshot/OnDisconnect; cleared stale differentShape. Review green; minor getter/harness coupling deferred. compare:types ✓; Jest 45 pass. |
 | NC | `app-check` compare-types drift | **closed** | **closed** | **closed** | — | — | unit-focused | compare-types app-check ✓ on HEAD (`b350d17b4`); no further product changes needed. Closed with NC SDK_VERSION pass. |
-| NF | `app` | open | open | open | — | `implementation` | unit-focused | **NF-1 committed** (`refactor(app): expose modular getUtils and FilePath for utils`). iOS/Android 149p/9pend/0f. **Active: NF-2** database createDeprecationProxy purge. |
-| NV | all | open | open | open | — | `pre-merge-validation` | full | revert all narrowing |
+| NF | `app` | **closed** | **closed** | **closed** | — | — | unit-focused | NF-1..6 committed: utils modular, database proxy purge, app root+deprecation removal, pnv inline, e2e/doc sweep. NF-7 error strings deferred. |
+| NV | all | open | open | open | — | `pre-merge-validation` | full | **Active.** Full harness; macOS + iOS + Android `:test-cover`; full Jest; compare:types; reference:api. |
 
 ---
 
