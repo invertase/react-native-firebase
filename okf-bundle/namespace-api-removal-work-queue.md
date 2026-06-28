@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # Namespace API removal — work queue
 
-> **IN PROGRESS (2026-06-27):** **NF-3/4** app root + deprecation machinery removal. NF-1 ✓ NF-2 ✓
+> **IN PROGRESS (2026-06-27):** **NV** pre-merge validation (full tier). NF complete (NF-1 through NF-6 committed).
 > **Order:** pilot smallest (`ml`, `in-app-messaging`) → spike hardest (`messaging`) → bulk small→large → **NF** app cleanup → **NV** full validation. **Workflow:** [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md).
 
 ---

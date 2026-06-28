@@ -111,17 +111,7 @@ describe('analytics()', function () {
       });
     });
 
-    describe('tests that are for deprecated API for modular and namespace', function () {
-      beforeEach(async function beforeEachTest() {
-        // @ts-ignore
-        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-      });
-
-      afterEach(async function afterEachTest() {
-        // @ts-ignore
-        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-      });
-
+    describe('deprecated helper events', function () {
       describe('logScreenView()', function () {
         it('calls logScreenView', async function () {
           const { getAnalytics, logScreenView } = analyticsModular;
