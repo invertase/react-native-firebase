@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # Namespace API removal — work queue
 
-> **IN PROGRESS (2026-06-27):** **NF-2** database deprecation purge — `implementation_gate` open. NF-1 committed next.
+> **IN PROGRESS (2026-06-27):** **NF-3/4** app root + deprecation machinery removal. NF-1 ✓ NF-2 ✓
 > **Order:** pilot smallest (`ml`, `in-app-messaging`) → spike hardest (`messaging`) → bulk small→large → **NF** app cleanup → **NV** full validation. **Workflow:** [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md).
 
 ---
@@ -85,7 +85,7 @@ Update immediately after each work type closes a gate ([fields](testing/iteratio
 | NC | `SDK_VERSION` compare-types drift | **closed** | **closed** | **closed** | `docs(ml,installations,in-app-messaging): document SDK_VERSION export` | — | unit-focused | JSDoc on SDK_VERSION (ml/installations/in-app-messaging); ml stray comment removed. compare:types ✓ all registered; reference:api ✓; lint:js ✓. Configs already on HEAD. Review green; minor/nit deferred (two-track JSDoc vs config-only pattern). Forward commit. |
 | NC | `database` compare-types drift | **closed** | **closed** | **closed** | `fix(database): align public types with firebase-js-sdk declarations` | — | unit-focused | Aligned Database/DataSnapshot/OnDisconnect; cleared stale differentShape. Review green; minor getter/harness coupling deferred. compare:types ✓; Jest 45 pass. |
 | NC | `app-check` compare-types drift | **closed** | **closed** | **closed** | — | — | unit-focused | compare-types app-check ✓ on HEAD (`b350d17b4`); no further product changes needed. Closed with NC SDK_VERSION pass. |
-| NF | `app` | **closed** | **closed** | open | `refactor(app): expose modular getUtils and FilePath for utils` | `implementation` | unit-focused | **NF-1 done:** getUtils/FilePath modular; utils off createModuleNamespace; KNOWN_NAMESPACES cleared; StorageTask FilePath migrated. iOS/Android 149p/9pend/0f. **Active: NF-2** database createDeprecationProxy purge. |
+| NF | `app` | open | open | open | — | `implementation` | unit-focused | **NF-1 committed** (`refactor(app): expose modular getUtils and FilePath for utils`). iOS/Android 149p/9pend/0f. **Active: NF-2** database createDeprecationProxy purge. |
 | NV | all | open | open | open | — | `pre-merge-validation` | full | revert all narrowing |
 
 ---

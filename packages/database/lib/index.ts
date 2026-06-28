@@ -20,7 +20,6 @@ import {
   isBoolean,
   isNumber,
   isString,
-  MODULAR_DEPRECATION_ARG,
 } from '@react-native-firebase/app/dist/module/common';
 import type { FirebaseApp } from '@react-native-firebase/app';
 import {
@@ -42,7 +41,12 @@ import './types/internal';
 import DatabaseReferenceImpl from './DatabaseReference';
 import DatabaseStatics from './DatabaseStatics';
 import DatabaseTransaction from './DatabaseTransaction';
-import type { Database, DatabaseReference, EmulatorMockTokenOptions } from './types/database';
+import type {
+  Database,
+  DatabaseReference,
+  DataSnapshot,
+  EmulatorMockTokenOptions,
+} from './types/database';
 import { version } from './version';
 import fallBackModule from './web/RNFBDatabaseModule';
 
@@ -85,13 +89,9 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   _syncServerTimeOffset(): void {
-    ap(this.ref('.info/serverTimeOffset')).on(
-      'value',
-      (snapshot: { val(): number }) => {
-        this._serverTimeOffset = snapshot.val();
-      },
-      MODULAR_DEPRECATION_ARG,
-    );
+    ap(this.ref('.info/serverTimeOffset')).on('value', (snapshot: DataSnapshot) => {
+      this._serverTimeOffset = snapshot.val();
+    });
   }
 
   getServerTime(): Date {

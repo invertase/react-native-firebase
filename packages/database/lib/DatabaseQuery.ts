@@ -16,7 +16,6 @@
  */
 
 import {
-  createDeprecationProxy,
   isBoolean,
   isFunction,
   isNull,
@@ -24,7 +23,6 @@ import {
   isObject,
   isString,
   isUndefined,
-  MODULAR_DEPRECATION_ARG,
   pathIsEmpty,
   pathToUrlEncodedString,
   ReferenceBase,
@@ -52,19 +50,10 @@ type DatabaseReferenceConstructor = new (
   path: string,
 ) => DatabaseReference;
 
-type QueryWithDeprecationArgInternal = Query & {
-  startAt(value: number | string | boolean | null, key?: string, deprecationArg?: string): Query;
-  endAt(value: number | string | boolean | null, key?: string, deprecationArg?: string): Query;
-};
-
 let DatabaseReferenceClass: DatabaseReferenceConstructor | null = null;
 
 export function provideReferenceClass(databaseReference: DatabaseReferenceConstructor): void {
   DatabaseReferenceClass = databaseReference;
-}
-
-function ap(query: Query): QueryWithDeprecationArgInternal {
-  return query as QueryWithDeprecationArgInternal;
 }
 
 function createReference(database: DatabaseInternal, path: string): DatabaseReference {
@@ -72,7 +61,7 @@ function createReference(database: DatabaseInternal, path: string): DatabaseRefe
     throw new Error('DatabaseReference class has not been provided.');
   }
 
-  return createDeprecationProxy(new DatabaseReferenceClass(database, path)) as DatabaseReference;
+  return new DatabaseReferenceClass(database, path);
 }
 
 let listeners = 0;
@@ -113,7 +102,7 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
     const modifiers = this._modifiers._copy().endAt(value, key);
     modifiers.validateModifiers('firebase.database().ref().endAt()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
+    return new DatabaseQuery(this._database, this.path, modifiers);
   }
 
   equalTo(value: number | string | boolean | null, key?: string): Query {
@@ -141,11 +130,7 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
       );
     }
 
-    return ap(ap(this).startAt.call(this, value, key, MODULAR_DEPRECATION_ARG)).endAt.call(
-      this,
-      value,
-      MODULAR_DEPRECATION_ARG,
-    );
+    return (this.startAt(value, key) as DatabaseQuery).endAt(value, key);
   }
 
   isEqual(other: Query): boolean {
@@ -173,9 +158,11 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
       );
     }
 
-    return createDeprecationProxy(
-      new DatabaseQuery(this._database, this.path, this._modifiers._copy().limitToFirst(limit)),
-    ) as Query;
+    return new DatabaseQuery(
+      this._database,
+      this.path,
+      this._modifiers._copy().limitToFirst(limit),
+    );
   }
 
   limitToLast(limit: number): Query {
@@ -191,9 +178,7 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
       );
     }
 
-    return createDeprecationProxy(
-      new DatabaseQuery(this._database, this.path, this._modifiers._copy().limitToLast(limit)),
-    ) as Query;
+    return new DatabaseQuery(this._database, this.path, this._modifiers._copy().limitToLast(limit));
   }
 
   off(
@@ -372,17 +357,13 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
         let previousChildName: string | null | undefined;
 
         if (eventType === 'value') {
-          dataSnapshot = createDeprecationProxy(
-            new DatabaseDataSnapshot(
-              this.ref,
-              result as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
-            ),
-          ) as DataSnapshot;
+          dataSnapshot = new DatabaseDataSnapshot(
+            this.ref,
+            result as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
+          );
         } else {
           const childResult = result as DatabaseChildSnapshotResultInternal;
-          dataSnapshot = createDeprecationProxy(
-            new DatabaseDataSnapshot(this.ref, childResult.snapshot),
-          ) as DataSnapshot;
+          dataSnapshot = new DatabaseDataSnapshot(this.ref, childResult.snapshot);
           previousChildName = childResult.previousChildName;
         }
 
@@ -426,7 +407,7 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
     const modifiers = this._modifiers._copy().orderByChild(path);
     modifiers.validateModifiers('firebase.database().ref().orderByChild()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
+    return new DatabaseQuery(this._database, this.path, modifiers);
   }
 
   orderByKey(): Query {
@@ -439,7 +420,7 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
     const modifiers = this._modifiers._copy().orderByKey();
     modifiers.validateModifiers('firebase.database().ref().orderByKey()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
+    return new DatabaseQuery(this._database, this.path, modifiers);
   }
 
   orderByPriority(): Query {
@@ -452,7 +433,7 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
     const modifiers = this._modifiers._copy().orderByPriority();
     modifiers.validateModifiers('firebase.database().ref().orderByPriority()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
+    return new DatabaseQuery(this._database, this.path, modifiers);
   }
 
   orderByValue(): Query {
@@ -465,7 +446,7 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
     const modifiers = this._modifiers._copy().orderByValue();
     modifiers.validateModifiers('firebase.database().ref().orderByValue()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
+    return new DatabaseQuery(this._database, this.path, modifiers);
   }
 
   startAt(value: number | string | boolean | null, key?: string): Query {
@@ -490,7 +471,7 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
     const modifiers = this._modifiers._copy().startAt(value, key);
     modifiers.validateModifiers('firebase.database().ref().startAt()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
+    return new DatabaseQuery(this._database, this.path, modifiers);
   }
 
   toJSON(): string {
