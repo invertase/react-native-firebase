@@ -101,7 +101,7 @@ When native e2e runs: load **only** the target package's e2e spec(s) in `tests/a
 ## Per-module `documentation`
 
 - User migration guide row under [`docs/migrating-to-v26.mdx`](../../../docs/migrating-to-v26.mdx) (one section per module)
-- `yarn reference:api` if public surface changed
+- [Validation checklist § handoff](testing/validation-checklist.md#handoff-checklist) — `yarn reference:api`, static analysis, etc. when applicable
 - Durable learnings in this file or package OKF — not only commit messages
 
 ## Per-module `commit`

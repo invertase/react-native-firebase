@@ -71,16 +71,28 @@ yarn tests:jest --watchman=false packages/firestore/__tests__/pipelines.test.ts
 
 Optional: `yarn tests:jest-coverage`.
 
+<a id="lint-and-formatting"></a>
+
 ## Lint and formatting
 
+**Blocking before `implementation` handoff and on the frozen tree for `independent-review`.** Run from repo root after prepare/compile when TS/JS changed.
+
 ```bash
-yarn lint:js
-yarn format:js                        # inspect diff after
+yarn lint:js                          # eslint packages/* — must exit 0
+yarn lint:js --fix                    # auto-fix; re-run yarn lint:js until clean
+yarn format:js                        # inspect diff after; prefer lint:js --fix first
 ```
 
-Docs: `yarn lint:markdown`, `yarn lint:spellcheck`.
+Docs (when `docs/**` or OKF markdown changed):
 
-Native: `yarn lint:android`, `yarn lint:ios:check`. `lint:android` can flake; rerun once/twice if failure is not clearly in diff.
+```bash
+yarn lint:markdown
+yarn lint:spellcheck
+```
+
+Native (when platform sources in diff): `yarn lint:android`, `yarn lint:ios:check`. `lint:android` can flake; rerun once/twice if failure is not clearly in diff.
+
+Full aggregate (pre-merge optional): `yarn lint` (= js + android + ios check).
 
 ## E2e with coverage
 
