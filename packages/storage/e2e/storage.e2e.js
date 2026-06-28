@@ -66,7 +66,7 @@ describe('storage() modular', function () {
     // FIXME on android this is unathorized against emulator but works on iOS?
     xit('uploads to a custom bucket when specified', async function () {
       if (Platform.ios) {
-        const { getStorage, ref, uploadString } = storageModular;
+        const { getStorage, ref, uploadString, StringFormat, TaskState } = storageModular;
         const jsonDerulo = JSON.stringify({ foo: 'bar' });
         const bucket = 'gs://react-native-firebase-testing';
         const storage = getStorage(null, bucket);
@@ -74,13 +74,13 @@ describe('storage() modular', function () {
         const uploadTaskSnapshot = await uploadString(
           storageReference,
           jsonDerulo,
-          firebase.storage.StringFormat.RAW,
+          StringFormat.RAW,
           {
             contentType: 'application/json',
           },
         );
 
-        uploadTaskSnapshot.state.should.eql(storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.state.should.eql(TaskState.SUCCESS);
         uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
         uploadTaskSnapshot.metadata.should.be.an.Object();
       } else {

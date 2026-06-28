@@ -12,6 +12,7 @@ If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating
 ## Table of contents
 
 - [General pattern](/migrating-to-v26#general-pattern)
+- [App](/migrating-to-v26#app)
 - [Machine Learning (ML)](/migrating-to-v26#machine-learning-ml)
 - [In-App Messaging](/migrating-to-v26#in-app-messaging)
 - [Installations](/migrating-to-v26#installations)
@@ -37,7 +38,47 @@ For each package listed in this guide:
 2. Replace `Firebase*Types` namespace imports with root types (`InAppMessaging`, `Installations`, `FirebaseML`, etc.).
 3. Prefer free functions (`getId(installations)`, `setMessagesDisplaySuppressed(inAppMessaging, enabled)`) over instance methods on service objects.
 
-**Modular-only in v26:** `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, `@react-native-firebase/messaging`, `@react-native-firebase/app-distribution`, `@react-native-firebase/functions`, `@react-native-firebase/perf`, `@react-native-firebase/app-check`, `@react-native-firebase/remote-config`, `@react-native-firebase/crashlytics`, `@react-native-firebase/database`, `@react-native-firebase/storage`, `@react-native-firebase/analytics`, `@react-native-firebase/auth`, and `@react-native-firebase/firestore`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
+**Modular-only in v26:** `@react-native-firebase/app`, `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, `@react-native-firebase/messaging`, `@react-native-firebase/app-distribution`, `@react-native-firebase/functions`, `@react-native-firebase/perf`, `@react-native-firebase/app-check`, `@react-native-firebase/remote-config`, `@react-native-firebase/crashlytics`, `@react-native-firebase/database`, `@react-native-firebase/storage`, `@react-native-firebase/analytics`, `@react-native-firebase/auth`, and `@react-native-firebase/firestore`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
+
+# App
+
+The namespaced API for `@react-native-firebase/app` has been **removed**. This package is **modular-only** — use named exports such as `getApp()`, `initializeApp()`, and `getUtils()`.
+
+## Removed namespaced API
+
+| Removed | Replacement (modular) |
+| ------- | --------------------- |
+| Default export `firebase` | Named exports from `@react-native-firebase/app` |
+| `firebase.app(name?)` | `getApp(name?)` |
+| `firebase.apps` | `getApps()` |
+| `firebase.initializeApp(options, name?)` | `initializeApp(options, name?)` |
+| `firebase.utils(app?)` | `getUtils(app?)` |
+| `firebase.utils.FilePath` | `FilePath` (named export) |
+| `firebase.SDK_VERSION` | `SDK_VERSION` (named export) |
+| `firebase.setLogLevel(...)` | `setLogLevel(...)` |
+| `firebase.<module>()` accessors on the default export | Import modular helpers from each `@react-native-firebase/*` package |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+
+firebase.app().name;
+firebase.initializeApp(options, 'secondary');
+firebase.utils().FilePath.DOCUMENT_DIRECTORY;
+```
+
+```js
+// Now
+import { getApp, initializeApp, getUtils, FilePath } from '@react-native-firebase/app';
+
+getApp().name;
+initializeApp(options, 'secondary');
+getUtils().FilePath.DOCUMENT_DIRECTORY;
+// or
+FilePath.DOCUMENT_DIRECTORY;
+```
 
 # Machine Learning (ML)
 
@@ -546,6 +587,7 @@ For each modular-only package you use:
 
 | Package | Search for | Replace with |
 | ------- | ---------- | ------------ |
+| `app` | default `firebase` import, `firebase.app()`, `firebase.apps`, `firebase.initializeApp()`, `firebase.utils()`, `firebase.SDK_VERSION` | `getApp()`, `getApps()`, `initializeApp()`, `getUtils()`, `FilePath`, `SDK_VERSION`, `setLogLevel`, etc. |
 | `ml` | `firebase.ml()`, default `ml()`, `FirebaseMLTypes` | `getML()`, root `FirebaseML` type |
 | `in-app-messaging` | `firebase.inAppMessaging()`, default `inAppMessaging()`, `FirebaseInAppMessagingTypes` | `getInAppMessaging()`, root modular helpers (`setMessagesDisplaySuppressed`, etc.) |
 | `installations` | `firebase.installations()`, default `installations()`, `.getId()`, `.getToken()`, `.delete()`, `FirebaseInstallationsTypes` | `getInstallations()`, `getId()`, `getToken()`, `deleteInstallations()` |

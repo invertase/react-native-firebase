@@ -363,14 +363,14 @@ describe('storage() -> StorageTask', function () {
 
       // TODO we don't have files seeded on the device, but could do so from test helpers
       xit('uploads files with contentType detection', async function () {
-        const { getStorage, ref, putFile } = storageModular;
+        const { getStorage, ref, putFile, TaskState } = storageModular;
 
         let uploadTaskSnapshot = await putFile(
           ref(getStorage(), `${PATH}/uploadOk.jpeg`),
           `${FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`,
         );
 
-        uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.state.should.eql(TaskState.SUCCESS);
         uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
         uploadTaskSnapshot.metadata.should.be.an.Object();
         uploadTaskSnapshot.metadata.contentType.should.equal('image/jpeg');

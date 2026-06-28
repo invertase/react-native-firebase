@@ -33,10 +33,7 @@ describe('database issues', function () {
     xit('#2813 should return a null snapshot key if path is root', async function () {
       const { getDatabase, ref, get } = databaseModular;
 
-      const db = getDatabase(
-        /* takes default firebase.app() */ null,
-        'https://react-native-firebase-testing-db2.firebaseio.com',
-      );
+      const db = getDatabase(undefined, 'https://react-native-firebase-testing-db2.firebaseio.com');
       const dbRef = ref(db);
       const snapshot = await get(dbRef);
       should.equal(snapshot.key, null);

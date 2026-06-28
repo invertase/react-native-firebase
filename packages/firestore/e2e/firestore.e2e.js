@@ -214,10 +214,12 @@ describe('firestore()', function () {
         should(rejected).equal(false);
 
         //if we sign in as a different user then it should reject the promise
+        const { getAuth, signOut, signInAnonymously } = authModular;
+        const auth = getAuth();
         try {
-          await firebase.auth().signOut();
+          await signOut(auth);
         } catch (_) {}
-        await firebase.auth().signInAnonymously();
+        await signInAnonymously(auth);
         should(rejected).equal(true);
 
         //now if we enable the network then waitForPendingWrites should return immediately
