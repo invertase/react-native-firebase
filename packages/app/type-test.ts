@@ -14,49 +14,37 @@
  *  limitations under the License.
  */
 
-import firebase, { utils, getUtils, FilePath } from '.';
+import {
+  getApp,
+  getApps,
+  getUtils,
+  initializeApp,
+  SDK_VERSION,
+  FilePath,
+} from '.';
 
-// checks module exists at root
-console.log(firebase.utils().app.name);
-console.log(utils().app.name);
+// modular app accessors
 console.log(getUtils().app.name);
-console.log(firebase.app().name);
-console.log(firebase.app('foo').name);
-
-// checks module exists at app level
-console.log(firebase.app().utils().app.name);
-console.log(getUtils().app.name);
+console.log(getApp().name);
+console.log(getApp('foo').name);
 
 // checks statics exist
-console.log(firebase.utils.SDK_VERSION);
-console.log(utils.SDK_VERSION);
-console.log(firebase.utils.FilePath.CACHES_DIRECTORY);
-console.log(utils.FilePath.CACHES_DIRECTORY);
-console.log(FilePath.CACHES_DIRECTORY);
-
-console.log(firebase.utils.FilePath.CACHES_DIRECTORY);
-console.log(utils.FilePath.CACHES_DIRECTORY);
+console.log(SDK_VERSION);
 console.log(FilePath.CACHES_DIRECTORY);
 
 // initialize app variants
-firebase.initializeApp({ apiKey: 'a', appId: 'b', projectId: 'c' });
-firebase.initializeApp({ apiKey: 'a', appId: 'b', projectId: 'c' }, 'foo');
+initializeApp({ apiKey: 'a', appId: 'b', projectId: 'c' });
+initializeApp({ apiKey: 'a', appId: 'b', projectId: 'c' }, 'foo');
 
 // utils instance API
-const u = firebase.utils();
 const modularUtils = getUtils();
-console.log(u.isRunningInTestLab);
 console.log(modularUtils.isRunningInTestLab);
-console.log(u.playServicesAvailability);
 console.log(modularUtils.playServicesAvailability);
-u.getPlayServicesStatus();
 modularUtils.getPlayServicesStatus();
-u.promptForPlayServices();
 modularUtils.promptForPlayServices();
-u.makePlayServicesAvailable();
 modularUtils.makePlayServicesAvailable();
-u.resolutionForPlayServices();
 modularUtils.resolutionForPlayServices();
 
 // checks root exists
-console.log(firebase.SDK_VERSION);
+console.log(SDK_VERSION);
+console.log(getApps().length);

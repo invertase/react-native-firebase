@@ -18,7 +18,6 @@
 import { isIOS } from '../common';
 import { FirebaseModule, getOrCreateModularInstance } from '../internal';
 import type { ModuleConfig } from '../internal';
-import UtilsStatics from './UtilsStatics';
 import type { ReactNativeFirebase, Utils } from '../types/app';
 
 const namespace = 'utils';
@@ -96,12 +95,3 @@ class FirebaseUtilsModule extends FirebaseModule<'RNFBUtilsModule'> {
 export function getUtils(app?: ReactNativeFirebase.FirebaseApp): Utils.Module {
   return getOrCreateModularInstance(FirebaseUtilsModule, config, app) as unknown as Utils.Module;
 }
-
-function utilsNamespaced(app?: ReactNativeFirebase.FirebaseApp): Utils.Module {
-  return getUtils(app);
-}
-
-Object.assign(utilsNamespaced, UtilsStatics);
-
-export default utilsNamespaced as Utils.Statics &
-  ((app?: ReactNativeFirebase.FirebaseApp) => Utils.Module);

@@ -15,7 +15,6 @@
  *
  */
 
-import { MODULAR_DEPRECATION_ARG } from './common';
 import type { ReactNativeFirebase, LogCallback, LogOptions, Utils } from './types/app';
 import { getUtils as getUtilsImpl } from './utils';
 import UtilsStatics from './utils/UtilsStatics';
@@ -38,13 +37,7 @@ import type { RNFBAppModuleInterface } from './internal/NativeModules';
  * @returns Promise<void>
  */
 export function deleteApp(app: ReactNativeFirebase.FirebaseApp): Promise<void> {
-  return deleteAppCompat.call(
-    null,
-    app.name,
-    (app as any)._nativeInitialized,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return deleteAppCompat(app.name, (app as any)._nativeInitialized);
 }
 
 /**
@@ -77,11 +70,7 @@ export function onLog(logCallback: LogCallback | null, options?: LogOptions): vo
  * @returns An array of all initialized Firebase apps.
  */
 export function getApps(): ReactNativeFirebase.FirebaseApp[] {
-  return getAppsCompat.call(
-    null,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return getAppsCompat();
 }
 
 /**
@@ -94,13 +83,7 @@ export function initializeApp(
   options: ReactNativeFirebase.FirebaseAppOptions,
   configOrName?: string | ReactNativeFirebase.FirebaseAppConfig,
 ): Promise<ReactNativeFirebase.FirebaseApp> {
-  return initializeAppCompat.call(
-    null,
-    options,
-    configOrName,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return initializeAppCompat(options, configOrName);
 }
 
 /**
@@ -109,12 +92,7 @@ export function initializeApp(
  * @returns The requested Firebase app instance.
  */
 export function getApp(name?: string): ReactNativeFirebase.FirebaseApp {
-  return getAppCompat.call(
-    null,
-    name,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return getAppCompat(name);
 }
 
 /**
@@ -123,12 +101,7 @@ export function getApp(name?: string): ReactNativeFirebase.FirebaseApp {
  * @returns void
  */
 export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void {
-  return setLogLevelCompat.call(
-    null,
-    logLevel,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return setLogLevelCompat(logLevel);
 }
 
 /**
@@ -140,12 +113,7 @@ export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void 
 export function setReactNativeAsyncStorage(
   asyncStorage: ReactNativeFirebase.ReactNativeAsyncStorage,
 ): void {
-  return setReactNativeAsyncStorageCompat.call(
-    null,
-    asyncStorage,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return setReactNativeAsyncStorageCompat(asyncStorage);
 }
 
 /**

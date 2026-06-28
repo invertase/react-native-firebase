@@ -48,9 +48,6 @@ import shouldMatchers from 'should';
 //            [TEST->Finish][✅] uploads a base64url string
 globalThis.RNFBDebug = false;
 
-// this may be used to locate modular API errors quickly
-globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = true;
-
 // Needed for Platform.Other session storage
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -58,7 +55,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import '@react-native-firebase/analytics';
 import '@react-native-firebase/app-check';
 import '@react-native-firebase/app-distribution';
-import '@react-native-firebase/app/lib/utils';
 import '@react-native-firebase/auth';
 import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/database';
@@ -70,7 +66,7 @@ import '@react-native-firebase/messaging';
 import '@react-native-firebase/ml';
 import '@react-native-firebase/remote-config';
 import '@react-native-firebase/storage';
-import firebase, * as modular from '@react-native-firebase/app';
+import * as modular from '@react-native-firebase/app';
 import * as analyticsModular from '@react-native-firebase/analytics';
 import * as appCheckModular from '@react-native-firebase/app-check';
 import * as appDistributionModular from '@react-native-firebase/app-distribution';
@@ -352,12 +348,6 @@ Object.defineProperty(global, 'TestAdminApi', {
     if (testApiInstance) return testApiInstance;
     testApiInstance = TestingApi;
     return testApiInstance;
-  },
-});
-
-Object.defineProperty(global, 'firebase', {
-  get() {
-    return firebase;
   },
 });
 

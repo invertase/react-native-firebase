@@ -15,16 +15,7 @@
  *
  */
 
-import {
-  isIOS,
-  isOther,
-  isNull,
-  warnIfNotModularCall,
-  isObject,
-  isFunction,
-  isString,
-  isUndefined,
-} from '../../common';
+import { isIOS, isOther, isNull, isObject, isFunction, isString, isUndefined } from '../../common';
 import FirebaseApp from '../../FirebaseApp';
 import { DEFAULT_APP_NAME } from '../constants';
 import { setReactNativeAsyncStorageInternal } from '../asyncStorage';
@@ -38,7 +29,6 @@ type ReactNativeAsyncStorage = ReactNativeFirebase.ReactNativeAsyncStorage;
 
 const APP_REGISTRY: Record<string, FirebaseApp> = {};
 let onAppCreateFn: ((app: FirebaseApp) => void) | null = null;
-let onAppDestroyFn: ((app: FirebaseApp) => void) | null = null;
 const onAppDestroyCallbacks: Array<(app: FirebaseApp) => void> = [];
 let initializedNativeApps = false;
 
@@ -51,17 +41,7 @@ export function setOnAppCreate(fn: (app: FirebaseApp) => void): void {
 }
 
 /**
- * This was needed to avoid metro require cycles...
- * @param fn
- */
-export function setOnAppDestroy(fn: (app: FirebaseApp) => void): void {
-  onAppDestroyFn = fn;
-}
-
-/**
- * Registers an additional app-destroy listener. Unlike {@link setOnAppDestroy} (a single legacy
- * slot used by the namespaced registry), this appends, so the modular instance registry can clear
- * its cache independently and keep working once the namespaced registry is removed.
+ * Registers an app-destroy listener.
  * @param fn
  */
 export function addOnAppDestroy(fn: (app: FirebaseApp) => void): void {
@@ -104,7 +84,6 @@ export function initializeNativeApps(): void {
  * @param name
  */
 export function getApp(name: string = DEFAULT_APP_NAME): ReactNativeFirebase.FirebaseApp {
-  warnIfNotModularCall(arguments, 'getApp()');
   if (!initializedNativeApps) {
     initializeNativeApps();
   }
@@ -121,7 +100,6 @@ export function getApp(name: string = DEFAULT_APP_NAME): ReactNativeFirebase.Fir
  * Gets all app instances, used for `firebase.apps`
  */
 export function getApps(): ReactNativeFirebase.FirebaseApp[] {
-  warnIfNotModularCall(arguments, 'getApps()');
   if (!initializedNativeApps) {
     initializeNativeApps();
   }
@@ -137,7 +115,6 @@ export function initializeApp(
   options: Partial<FirebaseAppOptions> = {},
   configOrName?: string | FirebaseAppConfig,
 ): Promise<ReactNativeFirebase.FirebaseApp> {
-  warnIfNotModularCall(arguments, 'initializeApp()');
   let appConfig: FirebaseAppConfig = configOrName as FirebaseAppConfig;
 
   if (!isObject(configOrName) || isNull(configOrName)) {
@@ -231,7 +208,6 @@ export function initializeApp(
 }
 
 export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void {
-  warnIfNotModularCall(arguments, 'setLogLevel()');
   if (!['error', 'warn', 'info', 'debug', 'verbose'].includes(logLevel)) {
     throw new Error('LogLevel must be one of "error", "warn", "info", "debug", "verbose"');
   }
@@ -244,8 +220,6 @@ export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void 
 }
 
 export function setReactNativeAsyncStorage(asyncStorage: ReactNativeAsyncStorage): void {
-  warnIfNotModularCall(arguments, 'setReactNativeAsyncStorage()');
-
   if (!isObject(asyncStorage)) {
     throw new Error("setReactNativeAsyncStorage(*) 'asyncStorage' must be an object.");
   }
@@ -283,7 +257,6 @@ export function deleteApp(name: string, nativeInitialized: boolean): Promise<voi
 
   return nativeModule.deleteApp(name).then(() => {
     (app as any)._deleted = true;
-    onAppDestroyFn?.(app);
     for (let i = 0; i < onAppDestroyCallbacks.length; i++) {
       onAppDestroyCallbacks[i]?.(app);
     }

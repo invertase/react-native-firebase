@@ -29,7 +29,6 @@ import {
   pathParent,
   ReferenceBase,
   toFilePath,
-  isModularCall,
 } from '@react-native-firebase/app/dist/module/common';
 import StorageDownloadTask from './StorageDownloadTask';
 import StorageListResult, { provideStorageReferenceClass } from './StorageListResult';
@@ -144,13 +143,10 @@ export default class Reference extends ReferenceBase implements StorageReference
       maxResults: 1000,
     };
 
-    const isModular = isModularCall(arguments);
-
     if (options) {
       if (hasOwnProperty(options, 'maxResults')) {
         const maxResults = options.maxResults;
-        // Modular typings allow `null` for omission - ignore safely.
-        if (isModular && (maxResults === null || isUndefined(maxResults))) {
+        if (maxResults === null || isUndefined(maxResults)) {
           // no-op (keep default)
         } else {
           if (!isNumber(maxResults) || !isInteger(maxResults)) {
@@ -171,8 +167,7 @@ export default class Reference extends ReferenceBase implements StorageReference
 
       if (hasOwnProperty(options, 'pageToken')) {
         const pageToken = options.pageToken;
-        // Modular typings allow `null` for omission - ignore safely.
-        if (isModular && (pageToken === null || isUndefined(pageToken))) {
+        if (pageToken === null || isUndefined(pageToken)) {
           // no-op
         } else if (!isUndefined(pageToken) && pageToken !== null) {
           if (!isString(pageToken)) {

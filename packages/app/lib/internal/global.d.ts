@@ -24,10 +24,6 @@ declare global {
   var RNFBTest: boolean | undefined;
   var RNFBDebugInTestLeakDetection: boolean | undefined;
   var RNFBDebugLastTest: string | undefined;
-
-  // Modular API deprecation flags
-  var RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS: boolean | undefined;
-  var RNFB_MODULAR_DEPRECATION_STRICT_MODE: boolean | undefined;
 }
 
 export {};
