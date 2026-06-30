@@ -160,15 +160,15 @@ public class NativeRNFBTurboUtils extends NativeRNFBTurboUtilsSpec {
       constants.put(KEY_DOCUMENT_DIRECTORY, context.getFilesDir().getAbsolutePath());
     }
 
+    File picturesDirectory =
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
     constants.put(
-        KEY_PICS_DIRECTORY,
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-            .getAbsolutePath());
+        KEY_PICS_DIRECTORY, picturesDirectory != null ? picturesDirectory.getAbsolutePath() : "");
 
+    File moviesDirectory =
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
     constants.put(
-        KEY_MOVIES_DIRECTORY,
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
-            .getAbsolutePath());
+        KEY_MOVIES_DIRECTORY, moviesDirectory != null ? moviesDirectory.getAbsolutePath() : "");
 
     File externalStorageDirectory = Environment.getExternalStorageDirectory();
     if (externalStorageDirectory != null) {
