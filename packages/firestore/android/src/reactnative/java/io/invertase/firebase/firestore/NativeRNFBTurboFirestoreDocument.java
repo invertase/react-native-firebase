@@ -28,18 +28,19 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.*;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import com.facebook.fbreact.specs.NativeRNFBTurboFirestoreDocumentSpec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFirebaseModule {
+public class NativeRNFBTurboFirestoreDocument extends NativeRNFBTurboFirestoreDocumentSpec {
+  private final FirestoreTurboModuleSupport turboSupport = new FirestoreTurboModuleSupport("RNFBDocument");
   private static final String SERVICE_NAME = "FirestoreDocument";
   private static SparseArray<ListenerRegistration> documentSnapshotListeners = new SparseArray<>();
 
-  ReactNativeFirebaseFirestoreDocumentModule(ReactApplicationContext reactContext) {
-    super(reactContext, SERVICE_NAME);
+  public NativeRNFBTurboFirestoreDocument(ReactApplicationContext reactContext) {
+    super(reactContext);
   }
 
   @Override
@@ -51,13 +52,13 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     }
     documentSnapshotListeners.clear();
 
-    super.invalidate();
+    turboSupport.invalidate();
   }
 
-  @ReactMethod
+  @Override
   public void documentOnSnapshot(
-      String appName, String databaseId, String path, int listenerId, ReadableMap listenerOptions) {
-    if (documentSnapshotListeners.get(listenerId) != null) {
+      String appName, String databaseId, String path, double listenerId, ReadableMap listenerOptions) {
+    if (documentSnapshotListeners.get((int) listenerId) != null) {
       return;
     }
 
@@ -67,10 +68,10 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     final EventListener<DocumentSnapshot> listener =
         (documentSnapshot, exception) -> {
           if (exception != null) {
-            ListenerRegistration listenerRegistration = documentSnapshotListeners.get(listenerId);
+            ListenerRegistration listenerRegistration = documentSnapshotListeners.get((int) listenerId);
             if (listenerRegistration != null) {
               listenerRegistration.remove();
-              documentSnapshotListeners.remove(listenerId);
+              documentSnapshotListeners.remove((int) listenerId);
             }
             sendOnSnapshotError(appName, databaseId, listenerId, exception);
           } else {
@@ -100,19 +101,19 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     ListenerRegistration listenerRegistration =
         documentReference.addSnapshotListener(snapshotListenOptionsBuilder.build(), listener);
 
-    documentSnapshotListeners.put(listenerId, listenerRegistration);
+    documentSnapshotListeners.put((int) listenerId, listenerRegistration);
   }
 
-  @ReactMethod
-  public void documentOffSnapshot(String appName, String databaseId, int listenerId) {
-    ListenerRegistration listenerRegistration = documentSnapshotListeners.get(listenerId);
+  @Override
+  public void documentOffSnapshot(String appName, String databaseId, double listenerId) {
+    ListenerRegistration listenerRegistration = documentSnapshotListeners.get((int) listenerId);
     if (listenerRegistration != null) {
       listenerRegistration.remove();
-      documentSnapshotListeners.remove(listenerId);
+      documentSnapshotListeners.remove((int) listenerId);
     }
   }
 
-  @ReactMethod
+  @Override
   public void documentGet(
       String appName, String databaseId, String path, ReadableMap getOptions, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
@@ -134,7 +135,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     }
 
     Tasks.call(
-            getExecutor(),
+            turboSupport.getExecutor(),
             () -> {
               DocumentSnapshot documentSnapshot = Tasks.await(documentReference.get(source));
               return snapshotToWritableMap(appName, databaseId, documentSnapshot);
@@ -149,11 +150,11 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
             });
   }
 
-  @ReactMethod
+  @Override
   public void documentDelete(String appName, String databaseId, String path, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
-    Tasks.call(getTransactionalExecutor(), documentReference::delete)
+    Tasks.call(turboSupport.getTransactionalExecutor(), documentReference::delete)
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
@@ -164,7 +165,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
             });
   }
 
-  @ReactMethod
+  @Override
   public void documentSet(
       String appName,
       String databaseId,
@@ -175,9 +176,9 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
-    Tasks.call(getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data))
+    Tasks.call(turboSupport.getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data))
         .continueWithTask(
-            getTransactionalExecutor(),
+            turboSupport.getTransactionalExecutor(),
             task -> {
               Task<Void> setTask;
               Map<String, Object> settableData = Objects.requireNonNull(task.getResult());
@@ -209,15 +210,15 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
             });
   }
 
-  @ReactMethod
+  @Override
   public void documentUpdate(
       String appName, String databaseId, String path, ReadableMap data, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
-    Tasks.call(getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data))
+    Tasks.call(turboSupport.getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data))
         .continueWithTask(
-            getTransactionalExecutor(),
+            turboSupport.getTransactionalExecutor(),
             task -> documentReference.update(Objects.requireNonNull(task.getResult())))
         .addOnCompleteListener(
             task -> {
@@ -229,14 +230,14 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
             });
   }
 
-  @ReactMethod
+  @Override
   public void documentBatch(
       String appName, String databaseId, ReadableArray writes, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
 
-    Tasks.call(getTransactionalExecutor(), () -> parseDocumentBatches(firebaseFirestore, writes))
+    Tasks.call(turboSupport.getTransactionalExecutor(), () -> parseDocumentBatches(firebaseFirestore, writes))
         .continueWithTask(
-            getTransactionalExecutor(),
+            turboSupport.getTransactionalExecutor(),
             task -> {
               WriteBatch batch = firebaseFirestore.batch();
               List<Object> writesArray = task.getResult();
@@ -299,9 +300,9 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   private void sendOnSnapshotEvent(
-      String appName, String databaseId, int listenerId, DocumentSnapshot documentSnapshot) {
+      String appName, String databaseId, double listenerId, DocumentSnapshot documentSnapshot) {
     try {
-      Tasks.call(getExecutor(), () -> snapshotToWritableMap(appName, databaseId, documentSnapshot))
+      Tasks.call(turboSupport.getExecutor(), () -> snapshotToWritableMap(appName, databaseId, documentSnapshot))
           .addOnCompleteListener(
               task -> {
                 if (task.isSuccessful()) {
@@ -317,7 +318,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
                           body,
                           appName,
                           databaseId,
-                          listenerId));
+                          (int) listenerId));
                 } else {
                   sendOnSnapshotError(appName, databaseId, listenerId, task.getException());
                 }
@@ -329,7 +330,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   private void sendOnSnapshotError(
-      String appName, String databaseId, int listenerId, Exception exception) {
+      String appName, String databaseId, double listenerId, Exception exception) {
     WritableMap body = Arguments.createMap();
     WritableMap error = Arguments.createMap();
 
@@ -353,6 +354,6 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
             body,
             appName,
             databaseId,
-            listenerId));
+            (int) listenerId));
   }
 }

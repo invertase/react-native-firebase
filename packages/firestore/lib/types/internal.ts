@@ -422,14 +422,14 @@ export interface FirestoreEmitterInternal {
  *
  * Note: React Native Firebase internally wraps native methods and auto-prepends app name and
  * database ID when `hasMultiAppSupport` and `hasCustomUrlOrRegionSupport` are enabled.
- * Firestore uses multiple native modules (RNFBFirestoreModule, RNFBFirestoreCollectionModule,
- * RNFBFirestoreDocumentModule, RNFBFirestoreTransactionModule) which are merged into a single
+ * Firestore uses multiple native modules (NativeRNFBTurboFirestore, NativeRNFBTurboFirestoreCollection,
+ * NativeRNFBTurboFirestoreDocument, NativeRNFBTurboFirestoreTransaction) which are merged into a single
  * wrapped object. This interface represents that merged *wrapped* module shape exposed as
  * `this.native` within FirebaseFirestoreModule.
  */
 export interface RNFBFirestoreModule {
   setLogLevel(level: LogLevel): Promise<void>;
-  // --- Main Firestore module (RNFBFirestoreModule) ---
+  // --- Main Firestore module (NativeRNFBTurboFirestore) ---
   loadBundle(bundle: string): Promise<LoadBundleTaskProgress>;
   clearPersistence(): Promise<void>;
   waitForPendingWrites(): Promise<void>;
@@ -450,7 +450,7 @@ export interface RNFBFirestoreModule {
    */
   persistenceCacheIndexManager(mode: number): Promise<void>;
 
-  // --- Collection module (RNFBFirestoreCollectionModule) ---
+  // --- Collection module (NativeRNFBTurboFirestoreCollection) ---
   collectionOffSnapshot(listenerId: number): void;
   namedQueryOnSnapshot(
     queryName: string,
@@ -506,7 +506,7 @@ export interface RNFBFirestoreModule {
     options?: FirestorePipelineExecuteOptionsInternal,
   ): Promise<FirestorePipelineSnapshotInternal>;
 
-  // --- Document module (RNFBFirestoreDocumentModule) ---
+  // --- Document module (NativeRNFBTurboFirestoreDocument) ---
   documentDelete(path: string): Promise<void>;
   documentOffSnapshot(listenerId: number): void;
   documentOnSnapshot(
@@ -523,7 +523,7 @@ export interface RNFBFirestoreModule {
   documentUpdate(path: string, data: Record<string, unknown>): Promise<void>;
   documentBatch(writes: Array<Record<string, unknown>>): Promise<void>;
 
-  // --- Transaction module (RNFBFirestoreTransactionModule) ---
+  // --- Transaction module (NativeRNFBTurboFirestoreTransaction) ---
   transactionBegin(transactionId: number): Promise<void>;
   transactionDispose(transactionId: number): void;
   transactionGetDocument(transactionId: number, path: string): Promise<unknown>;
@@ -532,7 +532,10 @@ export interface RNFBFirestoreModule {
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBFirestoreModule: RNFBFirestoreModule;
+    NativeRNFBTurboFirestore: RNFBFirestoreModule;
+    NativeRNFBTurboFirestoreCollection: RNFBFirestoreModule;
+    NativeRNFBTurboFirestoreDocument: RNFBFirestoreModule;
+    NativeRNFBTurboFirestoreTransaction: RNFBFirestoreModule;
   }
 }
 

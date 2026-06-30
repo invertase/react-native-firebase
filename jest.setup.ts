@@ -284,7 +284,8 @@ jest.doMock('react-native', () => {
           ),
           getServerTime: jest.fn((_appName: any, _customUrl: any) => Promise.resolve(Date.now())),
         },
-        RNFBFirestoreModule: {
+        NativeRNFBTurboFirestore: {
+          setLogLevel: jest.fn(),
           loadBundle: jest.fn(() =>
             Promise.resolve({
               taskState: 'Success',
@@ -303,9 +304,20 @@ jest.doMock('react-native', () => {
           settings: jest.fn(),
           addSnapshotsInSync: jest.fn(),
           removeSnapshotsInSync: jest.fn(),
+          persistenceCacheIndexManager: jest.fn(),
+        },
+        NativeRNFBTurboFirestoreCollection: {
           collectionOffSnapshot: jest.fn(),
           namedQueryOnSnapshot: jest.fn(),
           collectionOnSnapshot: jest.fn(),
+          namedQueryGet: jest.fn(() =>
+            Promise.resolve({
+              source: 'cache',
+              changes: [],
+              documents: [],
+              metadata: {},
+            }),
+          ),
           collectionGet: jest.fn(() =>
             Promise.resolve({
               source: 'cache',
@@ -315,6 +327,15 @@ jest.doMock('react-native', () => {
             }),
           ),
           collectionCount: jest.fn(() => Promise.resolve({ count: 0 })),
+          aggregateQuery: jest.fn(() => Promise.resolve({})),
+          pipelineExecute: jest.fn(() =>
+            Promise.resolve({
+              results: [],
+              executionTime: Date.now(),
+            }),
+          ),
+        },
+        NativeRNFBTurboFirestoreDocument: {
           documentDelete: jest.fn(() => Promise.resolve()),
           documentOffSnapshot: jest.fn(),
           documentOnSnapshot: jest.fn(),
@@ -328,11 +349,20 @@ jest.doMock('react-native', () => {
           ),
           documentSet: jest.fn(() => Promise.resolve()),
           documentUpdate: jest.fn(() => Promise.resolve()),
-          persistenceCacheIndexManager: jest.fn(),
           documentBatch: jest.fn(),
+        },
+        NativeRNFBTurboFirestoreTransaction: {
           transactionApplyBuffer: jest.fn(),
           transactionBegin: jest.fn(),
           transactionDispose: jest.fn(),
+          transactionGetDocument: jest.fn(() =>
+            Promise.resolve({
+              data: {},
+              metadata: {},
+              path: 'firestore/document',
+              exists: true,
+            }),
+          ),
         },
         RNFBFiamModule: {
           isMessagesDisplaySuppressed: false,

@@ -15,7 +15,7 @@
  *
  */
 
-import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
+import { getStaticFirestoreMainModule } from './internal/staticNativeModule';
 import { Blob } from './FirestoreBlob';
 import { FieldPath } from './FieldPath';
 import { FieldValue } from './FieldValue';
@@ -24,7 +24,6 @@ import { GeoPoint } from './FirestoreGeoPoint';
 import { Timestamp } from './FirestoreTimestamp';
 import { VectorValue } from './FirestoreVectorValue';
 import type { LogLevel } from './types/firestore';
-import type { RNFBFirestoreModule } from './types/internal';
 
 type FirestoreLogLevel = LogLevel;
 
@@ -49,8 +48,8 @@ const FirestoreStatics = {
       );
     }
 
-    const native = getReactNativeModule('RNFBFirestoreModule') as unknown as RNFBFirestoreModule;
-    native.setLogLevel(logLevel);
+    // NewArch-AD-18 E8: static setLogLevel — no FirebaseModule instance; turbo main host.
+    getStaticFirestoreMainModule().setLogLevel(logLevel);
   },
 };
 

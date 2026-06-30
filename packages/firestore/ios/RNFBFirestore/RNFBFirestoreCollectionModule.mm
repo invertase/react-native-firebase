@@ -27,26 +27,33 @@
 // directory. See firebase-ios-sdk#12611 for more context.
 #import "RNFBFirestore-Swift.h"
 #endif
+#import "RNFBApp/RCTConvert+FIRApp.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTUtils.h>
 
 #import "RNFBFirestoreCollectionModule.h"
 #import "RNFBFirestoreCommon.h"
+#import "RNFBFirestoreTurboModules.h"
 
 static __strong NSMutableDictionary *collectionSnapshotListeners;
 static NSString *const RNFB_FIRESTORE_COLLECTION_SYNC = @"firestore_collection_sync_event";
+
+@interface RNFBFirestoreCollectionModule () <NativeRNFBTurboFirestoreCollectionSpec, RCTBridgeModule>
+@end
 
 @implementation RNFBFirestoreCollectionModule
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
-
-- (dispatch_queue_t)methodQueue {
-  return [RNFBFirestoreCommon getFirestoreQueue];
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboFirestoreCollectionSpecJSI>(params);
 }
 
+RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreCollection);
+
 + (BOOL)requiresMainQueueSetup {
-  return YES;
+  return NO;
 }
 
 - (id)init {
@@ -73,28 +80,30 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Firestore Methods
 
-RCT_EXPORT_METHOD(namedQueryOnSnapshot
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSString *)name
-                  : (NSString *)type
-                  : (NSArray *)filters
-                  : (NSArray *)orders
-                  : (NSDictionary *)options
-                  : (nonnull NSNumber *)listenerId
-                  : (NSDictionary *)listenerOptions) {
-  if (collectionSnapshotListeners[listenerId]) {
+- (void)namedQueryOnSnapshot:(NSString *)appName
+                  databaseId:(NSString *)databaseId
+                   queryName:(NSString *)queryName
+                        type:(NSString *)type
+                     filters:(NSArray *)filters
+                      orders:(NSArray *)orders
+                     options:(NSDictionary *)options
+                  listenerId:(double)listenerId
+       snapshotListenOptions:(NSDictionary *)snapshotListenOptions {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+  NSNumber *listenerIdNumber = @(listenerId);
+
+  if (collectionSnapshotListeners[listenerIdNumber]) {
     return;
   }
 
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
-  [firestore getQueryNamed:name
+  [firestore getQueryNamed:queryName
                 completion:^(FIRQuery *query) {
                   if (query == nil) {
                     [self sendSnapshotError:firebaseApp
                                  databaseId:databaseId
-                                 listenerId:listenerId
+                                 listenerId:listenerIdNumber
                                       error:nil];
                     return;
                   }
@@ -108,22 +117,24 @@ RCT_EXPORT_METHOD(namedQueryOnSnapshot
                   [self handleQueryOnSnapshot:firebaseApp
                                    databaseId:databaseId
                                firestoreQuery:firestoreQuery
-                                   listenerId:listenerId
-                              listenerOptions:listenerOptions];
+                                   listenerId:listenerIdNumber
+                              listenerOptions:snapshotListenOptions];
                 }];
 }
 
-RCT_EXPORT_METHOD(collectionOnSnapshot
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSString *)path
-                  : (NSString *)type
-                  : (NSArray *)filters
-                  : (NSArray *)orders
-                  : (NSDictionary *)options
-                  : (nonnull NSNumber *)listenerId
-                  : (NSDictionary *)listenerOptions) {
-  if (collectionSnapshotListeners[listenerId]) {
+- (void)collectionOnSnapshot:(NSString *)appName
+                  databaseId:(NSString *)databaseId
+                        path:(NSString *)path
+                        type:(NSString *)type
+                     filters:(NSArray *)filters
+                      orders:(NSArray *)orders
+                     options:(NSDictionary *)options
+                  listenerId:(double)listenerId
+       snapshotListenOptions:(NSDictionary *)snapshotListenOptions {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+  NSNumber *listenerIdNumber = @(listenerId);
+
+  if (collectionSnapshotListeners[listenerIdNumber]) {
     return;
   }
 
@@ -139,35 +150,36 @@ RCT_EXPORT_METHOD(collectionOnSnapshot
   [self handleQueryOnSnapshot:firebaseApp
                    databaseId:databaseId
                firestoreQuery:firestoreQuery
-                   listenerId:listenerId
-              listenerOptions:listenerOptions];
+                   listenerId:listenerIdNumber
+              listenerOptions:snapshotListenOptions];
 }
 
-RCT_EXPORT_METHOD(collectionOffSnapshot
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (nonnull NSNumber *)listenerId) {
-  id<FIRListenerRegistration> listener = collectionSnapshotListeners[listenerId];
+- (void)collectionOffSnapshot:(NSString *)appName
+                   databaseId:(NSString *)databaseId
+                   listenerId:(double)listenerId {
+  NSNumber *listenerIdNumber = @(listenerId);
+  id<FIRListenerRegistration> listener = collectionSnapshotListeners[listenerIdNumber];
   if (listener) {
     [listener remove];
-    [collectionSnapshotListeners removeObjectForKey:listenerId];
+    [collectionSnapshotListeners removeObjectForKey:listenerIdNumber];
   }
 }
 
-RCT_EXPORT_METHOD(namedQueryGet
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSString *)name
-                  : (NSString *)type
-                  : (NSArray *)filters
-                  : (NSArray *)orders
-                  : (NSDictionary *)options
-                  : (NSDictionary *)getOptions
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)namedQueryGet:(NSString *)appName
+           databaseId:(NSString *)databaseId
+            queryName:(NSString *)queryName
+                 type:(NSString *)type
+              filters:(NSArray *)filters
+               orders:(NSArray *)orders
+              options:(NSDictionary *)options
+           getOptions:(NSDictionary *)getOptions
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
-  [firestore getQueryNamed:name
+  [firestore getQueryNamed:queryName
                 completion:^(FIRQuery *query) {
                   if (query == nil) {
                     return [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:nil];
@@ -189,16 +201,17 @@ RCT_EXPORT_METHOD(namedQueryGet
                 }];
 }
 
-RCT_EXPORT_METHOD(collectionCount
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSString *)path
-                  : (NSString *)type
-                  : (NSArray *)filters
-                  : (NSArray *)orders
-                  : (NSDictionary *)options
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)collectionCount:(NSString *)appName
+             databaseId:(NSString *)databaseId
+                   path:(NSString *)path
+                   type:(NSString *)type
+                filters:(NSArray *)filters
+                 orders:(NSArray *)orders
+                options:(NSDictionary *)options
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
   FIRQuery *query = [RNFBFirestoreCommon getQueryForFirestore:firestore path:path type:type];
@@ -228,17 +241,19 @@ RCT_EXPORT_METHOD(collectionCount
                  }];
 }
 
-RCT_EXPORT_METHOD(aggregateQuery
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSString *)path
-                  : (NSString *)type
-                  : (NSArray *)filters
-                  : (NSArray *)orders
-                  : (NSDictionary *)options
-                  : (NSArray *)aggregateQueries
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)aggregateQuery:(NSString *)appName
+            databaseId:(NSString *)databaseId
+                  path:(NSString *)path
+                  type:(NSString *)type
+               filters:(NSArray *)filters
+                orders:(NSArray *)orders
+               options:(NSDictionary *)options
+      aggregateQueries:(NSArray *)aggregateQueries
+               resolve:(RCTPromiseResolveBlock)resolve
+                reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+  NSArray *aggregateQueriesArray = aggregateQueries;
+
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
 
@@ -257,9 +272,9 @@ RCT_EXPORT_METHOD(aggregateQuery
   NSMutableArray<FIRAggregateField *> *aggregateFields =
       [[NSMutableArray<FIRAggregateField *> alloc] init];
 
-  for (NSDictionary *aggregateQuery in aggregateQueries) {
-    NSString *aggregateType = aggregateQuery[@"aggregateType"];
-    NSString *fieldPath = aggregateQuery[@"field"];
+  for (NSDictionary *aggregateQueryItem in aggregateQueriesArray) {
+    NSString *aggregateType = aggregateQueryItem[@"aggregateType"];
+    NSString *fieldPath = aggregateQueryItem[@"field"];
 
     if ([aggregateType isEqualToString:@"count"]) {
       [aggregateFields addObject:[FIRAggregateField aggregateFieldForCount]];
@@ -271,17 +286,16 @@ RCT_EXPORT_METHOD(aggregateQuery
       NSString *reason = [@"Invalid Aggregate Type: " stringByAppendingString:aggregateType];
       [RNFBFirestoreCommon
           promiseRejectFirestoreException:reject
-                                    error:[NSException exceptionWithName:
-                                                           @"RNFB Firestore: Invalid Aggregate Type"
-                                                                  reason:reason
-                                                                userInfo:nil]];
+                                    error:[NSError errorWithDomain:@"RNFB Firestore"
+                                                                code:0
+                                                            userInfo:@{NSLocalizedDescriptionKey : reason}]];
       return;
     }
   }
 
-  FIRAggregateQuery *aggregateQuery = [query aggregate:aggregateFields];
+  FIRAggregateQuery *aggregateQueryInstance = [query aggregate:aggregateFields];
 
-  [aggregateQuery
+  [aggregateQueryInstance
       aggregationWithSource:FIRAggregateSourceServer
                  completion:^(FIRAggregateQuerySnapshot *_Nullable snapshot,
                               NSError *_Nullable error) {
@@ -290,10 +304,10 @@ RCT_EXPORT_METHOD(aggregateQuery
                    } else {
                      NSMutableDictionary *snapshotMap = [NSMutableDictionary dictionary];
 
-                     for (NSDictionary *aggregateQuery in aggregateQueries) {
-                       NSString *aggregateType = aggregateQuery[@"aggregateType"];
-                       NSString *fieldPath = aggregateQuery[@"field"];
-                       NSString *key = aggregateQuery[@"key"];
+                     for (NSDictionary *aggregateQueryItem in aggregateQueriesArray) {
+                       NSString *aggregateType = aggregateQueryItem[@"aggregateType"];
+                       NSString *fieldPath = aggregateQueryItem[@"field"];
+                       NSString *key = aggregateQueryItem[@"key"];
 
                        if ([aggregateType isEqualToString:@"count"]) {
                          snapshotMap[key] = snapshot.count;
@@ -314,13 +328,14 @@ RCT_EXPORT_METHOD(aggregateQuery
                  }];
 }
 
-RCT_EXPORT_METHOD(pipelineExecute
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSDictionary *)pipeline
-                  : (NSDictionary *)options
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)pipelineExecute:(NSString *)appName
+             databaseId:(NSString *)databaseId
+               pipeline:(NSDictionary *)pipeline
+                options:(NSDictionary *)options
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
   RNFBFirestorePipelineCallHandler *handler = [[RNFBFirestorePipelineCallHandler alloc] init];
@@ -352,17 +367,18 @@ RCT_EXPORT_METHOD(pipelineExecute
                      }];
 }
 
-RCT_EXPORT_METHOD(collectionGet
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSString *)path
-                  : (NSString *)type
-                  : (NSArray *)filters
-                  : (NSArray *)orders
-                  : (NSDictionary *)options
-                  : (NSDictionary *)getOptions
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)collectionGet:(NSString *)appName
+           databaseId:(NSString *)databaseId
+                 path:(NSString *)path
+                 type:(NSString *)type
+              filters:(NSArray *)filters
+               orders:(NSArray *)orders
+              options:(NSDictionary *)options
+           getOptions:(NSDictionary *)getOptions
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
   FIRQuery *query = [RNFBFirestoreCommon getQueryForFirestore:firestore path:path type:type];

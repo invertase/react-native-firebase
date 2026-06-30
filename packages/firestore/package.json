@@ -5,11 +5,31 @@
   "description": "React Native Firebase - Cloud Firestore is a NoSQL cloud database to store and sync data between your React Native application and Firebase's database. The API matches the Firebase Web SDK whilst taking advantage of the native SDKs performance and offline capabilities.",
   "main": "./dist/module/index.js",
   "types": "./dist/typescript/lib/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBFirestoreTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "io.invertase.firebase.firestore"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTurboFirestore": "RNFBFirestoreModule",
+        "NativeRNFBTurboFirestoreCollection": "RNFBFirestoreCollectionModule",
+        "NativeRNFBTurboFirestoreDocument": "RNFBFirestoreDocumentModule",
+        "NativeRNFBTurboFirestoreTransaction": "RNFBFirestoreTransactionModule"
+      }
+    }
+  },
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "compile": "bob build",
-    "prepare": "yarn run build && yarn compile"
+    "prepare": "yarn run build && yarn compile",
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/reactnative/java/io/invertase/firebase/firestore/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
   },
   "repository": {
     "type": "git",

@@ -18,6 +18,8 @@ package io.invertase.firebase.firestore;
  */
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithExceptionMap;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.parseReadableMap;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.snapshotToWritableMap;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getDocumentForFirestore;
@@ -29,19 +31,20 @@ import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.*;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import com.facebook.fbreact.specs.NativeRNFBTurboFirestoreTransactionSpec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFirebaseModule {
+public class NativeRNFBTurboFirestoreTransaction extends NativeRNFBTurboFirestoreTransactionSpec {
+  private final FirestoreTurboModuleSupport turboSupport = new FirestoreTurboModuleSupport("RNFBTransaction");
   private static final String SERVICE_NAME = "FirestoreTransaction";
   private SparseArray<ReactNativeFirebaseFirestoreTransactionHandler> transactionHandlers =
       new SparseArray<>();
 
-  ReactNativeFirebaseFirestoreTransactionModule(ReactApplicationContext reactContext) {
-    super(reactContext, SERVICE_NAME);
+  public NativeRNFBTurboFirestoreTransaction(ReactApplicationContext reactContext) {
+    super(reactContext);
   }
 
   @Override
@@ -57,14 +60,14 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
     }
 
     transactionHandlers.clear();
-    super.invalidate();
+    turboSupport.invalidate();
   }
 
-  @ReactMethod
+  @Override
   public void transactionGetDocument(
-      String appName, String databaseId, int transactionId, String path, Promise promise) {
+      String appName, String databaseId, double transactionId, String path, Promise promise) {
     ReactNativeFirebaseFirestoreTransactionHandler transactionHandler =
-        transactionHandlers.get(transactionId);
+        transactionHandlers.get((int) transactionId);
 
     if (transactionHandler == null) {
       rejectPromiseWithCodeAndMessage(
@@ -79,7 +82,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
 
     try {
       Tasks.call(
-              getTransactionalExecutor(),
+              turboSupport.getTransactionalExecutor(),
               () ->
                   snapshotToWritableMap(
                       appName, databaseId, transactionHandler.getDocument(documentReference)))
@@ -96,32 +99,32 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
     }
   }
 
-  @ReactMethod
-  public void transactionDispose(String appName, String databaseId, int transactionId) {
+  @Override
+  public void transactionDispose(String appName, String databaseId, double transactionId) {
     ReactNativeFirebaseFirestoreTransactionHandler transactionHandler =
-        transactionHandlers.get(transactionId);
+        transactionHandlers.get((int) transactionId);
 
     if (transactionHandler != null) {
       transactionHandler.abort();
-      transactionHandlers.delete(transactionId);
+      transactionHandlers.delete((int) transactionId);
     }
   }
 
-  @ReactMethod
+  @Override
   public void transactionApplyBuffer(
-      String appName, String databaseId, int transactionId, ReadableArray commandBuffer) {
-    ReactNativeFirebaseFirestoreTransactionHandler handler = transactionHandlers.get(transactionId);
+      String appName, String databaseId, double transactionId, ReadableArray commandBuffer) {
+    ReactNativeFirebaseFirestoreTransactionHandler handler = transactionHandlers.get((int) transactionId);
 
     if (handler != null) {
       handler.signalBufferReceived(commandBuffer);
     }
   }
 
-  @ReactMethod
-  public void transactionBegin(String appName, String databaseId, int transactionId) {
+  @Override
+  public void transactionBegin(String appName, String databaseId, double transactionId) {
     ReactNativeFirebaseFirestoreTransactionHandler transactionHandler =
-        new ReactNativeFirebaseFirestoreTransactionHandler(appName, transactionId);
-    transactionHandlers.put(transactionId, transactionHandler);
+        new ReactNativeFirebaseFirestoreTransactionHandler(appName, (int) transactionId);
+    transactionHandlers.put((int) transactionId, transactionHandler);
 
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();

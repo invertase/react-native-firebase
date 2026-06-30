@@ -16,42 +16,53 @@
  */
 
 #import "RNFBFirestoreModule.h"
+#import "RNFBApp/RCTConvert+FIRApp.h"
 #import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTUtils.h>
 #import "FirebaseFirestoreInternal/FIRPersistentCacheIndexManager.h"
 #import "RNFBFirestoreCommon.h"
 #import "RNFBPreferences.h"
+#import "RNFBFirestoreTurboModules.h"
 
 NSMutableDictionary *emulatorConfigs;
 static __strong NSMutableDictionary *snapshotsInSyncListeners;
 static NSString *const RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC = @"firestore_snapshots_in_sync_event";
 
+@interface RNFBFirestoreModule () <NativeRNFBTurboFirestoreSpec, RCTBridgeModule>
+@end
+
 @implementation RNFBFirestoreModule
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
-
-- (dispatch_queue_t)methodQueue {
-  return [RNFBFirestoreCommon getFirestoreQueue];
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboFirestoreSpecJSI>(params);
 }
 
+RCT_EXPORT_MODULE(NativeRNFBTurboFirestore);
+
 + (BOOL)requiresMainQueueSetup {
-  return YES;
+  return NO;
 }
 
 #pragma mark -
 #pragma mark Firebase Firestore Methods
 
-RCT_EXPORT_METHOD(setLogLevel : (FIRLoggerLevel)loggerLevel) {
-  [[FIRConfiguration sharedInstance] setLoggerLevel:loggerLevel];
+- (void)setLogLevel:(NSString *)logLevel {
+  if ([logLevel isEqualToString:@"debug"] || [logLevel isEqualToString:@"error"]) {
+    [[FIRConfiguration sharedInstance] setLoggerLevel:FIRLoggerLevelDebug];
+  } else {
+    [[FIRConfiguration sharedInstance] setLoggerLevel:FIRLoggerLevelMin];
+  }
 }
 
-RCT_EXPORT_METHOD(disableNetwork
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)disableNetwork:(NSString *)appName
+            databaseId:(NSString *)databaseId
+               resolve:(RCTPromiseResolveBlock)resolve
+                reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
       disableNetworkWithCompletion:^(NSError *error) {
         if (error) {
@@ -62,11 +73,11 @@ RCT_EXPORT_METHOD(disableNetwork
       }];
 }
 
-RCT_EXPORT_METHOD(enableNetwork
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)enableNetwork:(NSString *)appName
+           databaseId:(NSString *)databaseId
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
       enableNetworkWithCompletion:^(NSError *error) {
         if (error) {
@@ -77,13 +88,11 @@ RCT_EXPORT_METHOD(enableNetwork
       }];
 }
 
-RCT_EXPORT_METHOD(settings
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSDictionary *)settings
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
-  NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
+- (void)settings:(NSString *)appName
+      databaseId:(NSString *)databaseId
+        settings:(NSDictionary *)settings
+         resolve:(RCTPromiseResolveBlock)resolve
+          reject:(RCTPromiseRejectBlock)reject {
   NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
                                                                    databaseId:databaseId];
 
@@ -119,12 +128,12 @@ RCT_EXPORT_METHOD(settings
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(loadBundle
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (nonnull NSString *)bundle
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)loadBundle:(NSString *)appName
+        databaseId:(NSString *)databaseId
+            bundle:(NSString *)bundle
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   NSData *bundleData = [bundle dataUsingEncoding:NSUTF8StringEncoding];
   [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
       loadBundle:bundleData
@@ -137,11 +146,11 @@ RCT_EXPORT_METHOD(loadBundle
       }];
 }
 
-RCT_EXPORT_METHOD(clearPersistence
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)clearPersistence:(NSString *)appName
+              databaseId:(NSString *)databaseId
+                 resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
       clearPersistenceWithCompletion:^(NSError *error) {
         if (error) {
@@ -152,35 +161,34 @@ RCT_EXPORT_METHOD(clearPersistence
       }];
 }
 
-RCT_EXPORT_METHOD(useEmulator
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (nonnull NSString *)host
-                  : (NSInteger)port) {
+- (void)useEmulator:(NSString *)appName
+         databaseId:(NSString *)databaseId
+               host:(NSString *)host
+               port:(double)port {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   if (emulatorConfigs == nil) {
     emulatorConfigs = [[NSMutableDictionary alloc] init];
   }
 
-  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:firebaseApp.name
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
                                                                    databaseId:databaseId];
   if (!emulatorConfigs[firestoreKey]) {
     FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                            databaseId:databaseId];
-    [firestore useEmulatorWithHost:host port:port];
+    [firestore useEmulatorWithHost:host port:(NSInteger)port];
     emulatorConfigs[firestoreKey] = @YES;
 
-    // It is not sufficient to just use emulator. You have toggle SSL off too.
     FIRFirestoreSettings *settings = firestore.settings;
     settings.sslEnabled = FALSE;
     firestore.settings = settings;
   }
 }
 
-RCT_EXPORT_METHOD(waitForPendingWrites
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)waitForPendingWrites:(NSString *)appName
+                  databaseId:(NSString *)databaseId
+                     resolve:(RCTPromiseResolveBlock)resolve
+                      reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
       waitForPendingWritesWithCompletion:^(NSError *error) {
         if (error) {
@@ -191,11 +199,11 @@ RCT_EXPORT_METHOD(waitForPendingWrites
       }];
 }
 
-RCT_EXPORT_METHOD(terminate
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)terminate:(NSString *)appName
+       databaseId:(NSString *)databaseId
+          resolve:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRFirestore *instance = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                         databaseId:databaseId];
 
@@ -203,7 +211,7 @@ RCT_EXPORT_METHOD(terminate
     if (error) {
       [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
     } else {
-      NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:firebaseApp.name
+      NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
                                                                        databaseId:databaseId];
       [instanceCache removeObjectForKey:firestoreKey];
       resolve(nil);
@@ -211,18 +219,18 @@ RCT_EXPORT_METHOD(terminate
   }];
 }
 
-RCT_EXPORT_METHOD(persistenceCacheIndexManager
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSInteger)requestType
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)persistenceCacheIndexManager:(NSString *)appName
+                          databaseId:(NSString *)databaseId
+                         requestType:(double)requestType
+                             resolve:(RCTPromiseResolveBlock)resolve
+                              reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRPersistentCacheIndexManager *persistentCacheIndexManager =
       [RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
           .persistentCacheIndexManager;
 
   if (persistentCacheIndexManager) {
-    switch (requestType) {
+    switch ((NSInteger)requestType) {
       case 0:
         [persistentCacheIndexManager enableIndexAutoCreation];
         break;
@@ -243,14 +251,12 @@ RCT_EXPORT_METHOD(persistenceCacheIndexManager
   resolve(nil);
 }
 
-RCT_EXPORT_METHOD(addSnapshotsInSync
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (nonnull NSNumber *)listenerId
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
-  if (snapshotsInSyncListeners[listenerId]) {
-    resolve(nil);
+- (void)addSnapshotsInSync:(NSString *)appName
+                databaseId:(NSString *)databaseId
+                listenerId:(double)listenerId {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+  NSNumber *listenerIdNumber = @(listenerId);
+  if (snapshotsInSyncListeners[listenerIdNumber]) {
     return;
   }
 
@@ -261,31 +267,25 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
     [[RNFBRCTEventEmitter shared]
         sendEventWithName:RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC
                      body:@{
-                       @"appName" : [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name],
+                       @"appName" : appName,
                        @"databaseId" : databaseId,
-                       @"listenerId" : listenerId,
+                       @"listenerId" : listenerIdNumber,
                        @"body" : @{}
                      }];
   }];
 
-  snapshotsInSyncListeners[listenerId] = listener;
-
-  resolve(nil);
+  snapshotsInSyncListeners[listenerIdNumber] = listener;
 }
 
-RCT_EXPORT_METHOD(removeSnapshotsInSync
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (nonnull NSNumber *)listenerId
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
-  id<FIRListenerRegistration> listener = snapshotsInSyncListeners[listenerId];
+- (void)removeSnapshotsInSync:(NSString *)appName
+                   databaseId:(NSString *)databaseId
+                   listenerId:(double)listenerId {
+  NSNumber *listenerIdNumber = @(listenerId);
+  id<FIRListenerRegistration> listener = snapshotsInSyncListeners[listenerIdNumber];
   if (listener) {
     [listener remove];
-    [snapshotsInSyncListeners removeObjectForKey:listenerId];
+    [snapshotsInSyncListeners removeObjectForKey:listenerIdNumber];
   }
-
-  resolve(nil);
 }
 
 - (NSMutableDictionary *)taskProgressToDictionary:(FIRLoadBundleTaskProgress *)progress {

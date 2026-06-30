@@ -16,25 +16,31 @@
  */
 
 #import <RNFBApp/RNFBRCTEventEmitter.h>
+#import "RNFBApp/RCTConvert+FIRApp.h"
 #import <React/RCTUtils.h>
 
 #import "RNFBFirestoreDocumentModule.h"
+#import "RNFBFirestoreTurboModules.h"
 
 static __strong NSMutableDictionary *documentSnapshotListeners;
 static NSString *const RNFB_FIRESTORE_DOCUMENT_SYNC = @"firestore_document_sync_event";
+
+@interface RNFBFirestoreDocumentModule () <NativeRNFBTurboFirestoreDocumentSpec, RCTBridgeModule>
+@end
 
 @implementation RNFBFirestoreDocumentModule
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
-
-- (dispatch_queue_t)methodQueue {
-  return [RNFBFirestoreCommon getFirestoreQueue];
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboFirestoreDocumentSpecJSI>(params);
 }
 
+RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreDocument);
+
 + (BOOL)requiresMainQueueSetup {
-  return YES;
+  return NO;
 }
 
 - (id)init {
@@ -61,14 +67,27 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Firestore Methods
 
-RCT_EXPORT_METHOD(documentOnSnapshot
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSString *)path
-                  : (nonnull NSNumber *)listenerId
-                  : (NSDictionary *)listenerOptions) {
-  if (documentSnapshotListeners[listenerId]) {
+- (void)documentOnSnapshot:(NSString *)appName
+                databaseId:(NSString *)databaseId
+                      path:(NSString *)path
+                listenerId:(double)listenerId
+     snapshotListenOptions:
+         (JS::NativeRNFBTurboFirestoreDocument::FirestoreSnapshotListenOptions &)snapshotListenOptions {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+  NSNumber *listenerIdNumber = @(listenerId);
+
+  if (documentSnapshotListeners[listenerIdNumber]) {
     return;
+  }
+
+  NSMutableDictionary *listenerOptions = [NSMutableDictionary new];
+  auto includeMetadataChangesOpt = snapshotListenOptions.includeMetadataChanges();
+  if (includeMetadataChangesOpt.has_value()) {
+    listenerOptions[KEY_INCLUDE_METADATA_CHANGES] = @(*includeMetadataChangesOpt);
+  }
+  NSString *sourceString = snapshotListenOptions.source();
+  if (sourceString) {
+    listenerOptions[KEY_SOURCE] = sourceString;
   }
 
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
@@ -79,19 +98,19 @@ RCT_EXPORT_METHOD(documentOnSnapshot
   __weak RNFBFirestoreDocumentModule *weakSelf = self;
   id listenerBlock = ^(FIRDocumentSnapshot *snapshot, NSError *error) {
     if (error) {
-      id<FIRListenerRegistration> listener = documentSnapshotListeners[listenerId];
+      id<FIRListenerRegistration> listener = documentSnapshotListeners[listenerIdNumber];
       if (listener) {
         [listener remove];
-        [documentSnapshotListeners removeObjectForKey:listenerId];
+        [documentSnapshotListeners removeObjectForKey:listenerIdNumber];
       }
       [weakSelf sendSnapshotError:firebaseApp
                        databaseId:databaseId
-                       listenerId:listenerId
+                       listenerId:listenerIdNumber
                             error:error];
     } else {
       [weakSelf sendSnapshotEvent:firebaseApp
                        databaseId:databaseId
-                       listenerId:listenerId
+                       listenerId:listenerIdNumber
                          snapshot:snapshot];
     }
   };
@@ -105,43 +124,45 @@ RCT_EXPORT_METHOD(documentOnSnapshot
     source = FIRListenSourceCache;
   }
 
-  FIRSnapshotListenOptions *snapshotListenOptions = [[[[FIRSnapshotListenOptions alloc] init]
+  FIRSnapshotListenOptions *nativeSnapshotListenOptions = [[[[FIRSnapshotListenOptions alloc] init]
       optionsWithIncludeMetadataChanges:includeMetadataChanges] optionsWithSource:source];
   id<FIRListenerRegistration> listener =
-      [documentReference addSnapshotListenerWithOptions:snapshotListenOptions
+      [documentReference addSnapshotListenerWithOptions:nativeSnapshotListenOptions
                                                listener:listenerBlock];
-  documentSnapshotListeners[listenerId] = listener;
+  documentSnapshotListeners[listenerIdNumber] = listener;
 }
 
-RCT_EXPORT_METHOD(documentOffSnapshot
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (nonnull NSNumber *)listenerId) {
-  id<FIRListenerRegistration> listener = documentSnapshotListeners[listenerId];
+- (void)documentOffSnapshot:(NSString *)appName
+                 databaseId:(NSString *)databaseId
+                 listenerId:(double)listenerId {
+  NSNumber *listenerIdNumber = @(listenerId);
+  id<FIRListenerRegistration> listener = documentSnapshotListeners[listenerIdNumber];
   if (listener) {
     [listener remove];
-    [documentSnapshotListeners removeObjectForKey:listenerId];
+    [documentSnapshotListeners removeObjectForKey:listenerIdNumber];
   }
 }
 
-RCT_EXPORT_METHOD(documentGet
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSString *)path
-                  : (NSDictionary *)getOptions
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)documentGet:(NSString *)appName
+         databaseId:(NSString *)databaseId
+               path:(NSString *)path
+         getOptions:(JS::NativeRNFBTurboFirestoreDocument::SpecDocumentGetGetOptions &)getOptions
+            resolve:(RCTPromiseResolveBlock)resolve
+             reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
   FIRDocumentReference *documentReference = [RNFBFirestoreCommon getDocumentForFirestore:firestore
                                                                                     path:path];
 
   FIRFirestoreSource source;
+  NSString *sourceString = getOptions.source();
 
-  if (getOptions[@"source"]) {
-    if ([getOptions[@"source"] isEqualToString:@"server"]) {
+  if (sourceString) {
+    if ([sourceString isEqualToString:@"server"]) {
       source = FIRFirestoreSourceServer;
-    } else if ([getOptions[@"source"] isEqualToString:@"cache"]) {
+    } else if ([sourceString isEqualToString:@"cache"]) {
       source = FIRFirestoreSourceCache;
     } else {
       source = FIRFirestoreSourceDefault;
@@ -157,9 +178,10 @@ RCT_EXPORT_METHOD(documentGet
                      return [RNFBFirestoreCommon promiseRejectFirestoreException:reject
                                                                            error:error];
                    } else {
-                     NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
+                     NSString *resolvedAppName =
+                         [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
                      NSString *firestoreKey =
-                         [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
+                         [RNFBFirestoreCommon createFirestoreKeyWithAppName:resolvedAppName
                                                                  databaseId:databaseId];
                      NSDictionary *serialized =
                          [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot
@@ -169,12 +191,13 @@ RCT_EXPORT_METHOD(documentGet
                  }];
 }
 
-RCT_EXPORT_METHOD(documentDelete
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSString *)path
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)documentDelete:(NSString *)appName
+            databaseId:(NSString *)databaseId
+                  path:(NSString *)path
+               resolve:(RCTPromiseResolveBlock)resolve
+                reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
   FIRDocumentReference *documentReference = [RNFBFirestoreCommon getDocumentForFirestore:firestore
@@ -189,14 +212,15 @@ RCT_EXPORT_METHOD(documentDelete
   }];
 }
 
-RCT_EXPORT_METHOD(documentSet
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSString *)path
-                  : (NSDictionary *)data
-                  : (NSDictionary *)options
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)documentSet:(NSString *)appName
+         databaseId:(NSString *)databaseId
+               path:(NSString *)path
+               data:(NSDictionary *)data
+            options:(NSDictionary *)options
+            resolve:(RCTPromiseResolveBlock)resolve
+             reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
   FIRDocumentReference *documentReference = [RNFBFirestoreCommon getDocumentForFirestore:firestore
@@ -223,13 +247,14 @@ RCT_EXPORT_METHOD(documentSet
   }
 }
 
-RCT_EXPORT_METHOD(documentUpdate
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSString *)path
-                  : (NSDictionary *)data
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)documentUpdate:(NSString *)appName
+            databaseId:(NSString *)databaseId
+                  path:(NSString *)path
+                  data:(NSDictionary *)data
+               resolve:(RCTPromiseResolveBlock)resolve
+                reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
   FIRDocumentReference *documentReference = [RNFBFirestoreCommon getDocumentForFirestore:firestore
@@ -248,12 +273,13 @@ RCT_EXPORT_METHOD(documentUpdate
                      }];
 }
 
-RCT_EXPORT_METHOD(documentBatch
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)databaseId
-                  : (NSArray *)writes
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)documentBatch:(NSString *)appName
+           databaseId:(NSString *)databaseId
+               writes:(NSArray *)writes
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
   FIRWriteBatch *batch = [firestore batch];
