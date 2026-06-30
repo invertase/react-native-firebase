@@ -166,7 +166,7 @@ export function preferencesSetString(key: string, value: string): Promise<void> 
   return getAppModule().preferencesSetString(key, value);
 }
 
-export const SDK_VERSION = sdkVersion;
+export const SDK_VERSION: string = sdkVersion;
 
 /**
  * Returns the {@link Utils.Module} instance for the default or given {@link ReactNativeFirebase.FirebaseApp}.
