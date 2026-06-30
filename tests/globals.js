@@ -46,7 +46,14 @@ import shouldMatchers from 'should';
 //            [RNFB<--Event][📣] storage_event <- {...}
 //            [RNFB<-Native][🟢] RNFBStorageModule.putString <- {...}
 //            [TEST->Finish][✅] uploads a base64url string
-globalThis.RNFBDebug = false;
+let harnessOverrides = {};
+try {
+  harnessOverrides = require('./harness.overrides.js');
+} catch (e) {
+  // Optional local overrides — see harness.overrides.example.js
+}
+
+globalThis.RNFBDebug = harnessOverrides.RNFBDebug ?? false;
 
 // Needed for Platform.Other session storage
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -357,7 +364,8 @@ Object.defineProperty(global, 'NativeModules', {
       {},
       {
         get: (target, moduleName) => {
-          if (moduleName.startsWith('RNF')) {
+          // NewArch-AD-18 E4: e2e harness routes turbo/legacy names through the unified resolver.
+          if (moduleName.startsWith('RNF') || moduleName.startsWith('NativeRNFBTurbo')) {
             return getReactNativeModule(moduleName);
           }
           return target[moduleName] || (() => {});

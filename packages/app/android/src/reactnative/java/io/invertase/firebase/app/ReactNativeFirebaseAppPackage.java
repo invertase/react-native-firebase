@@ -21,7 +21,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
-import io.invertase.firebase.utils.ReactNativeFirebaseUtilsModule;
+import io.invertase.firebase.utils.NativeRNFBTurboUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,8 +36,8 @@ public class ReactNativeFirebaseAppPackage implements ReactPackage {
       ReactNativeFirebaseApp.setApplicationContext(reactContext.getApplicationContext());
     }
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebaseAppModule(reactContext));
-    modules.add(new ReactNativeFirebaseUtilsModule(reactContext));
+    modules.add(new NativeRNFBTurboApp(reactContext));
+    modules.add(new NativeRNFBTurboUtils(reactContext));
     return modules;
   }
 

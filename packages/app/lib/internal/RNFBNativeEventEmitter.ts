@@ -16,6 +16,7 @@
  */
 
 import { type EmitterSubscription, NativeEventEmitter } from 'react-native';
+import { APP_NATIVE_MODULE } from './constants';
 import { getReactNativeModule } from './nativeModule';
 import type { RNFBAppModuleInterface } from './NativeModules';
 
@@ -38,10 +39,11 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
   ready: boolean;
 
   constructor() {
-    const RNFBAppModule = getReactNativeModule('RNFBAppModule');
+    // NewArch-AD-18 E1: NativeEventEmitter must receive the same raw host that implements addListener/removeListeners.
+    const RNFBAppModule = getReactNativeModule(APP_NATIVE_MODULE);
     if (!RNFBAppModule) {
       throw new Error(
-        'Native module RNFBAppModule not found. Re-check module install, linking, configuration, build and install steps.',
+        `Native module ${APP_NATIVE_MODULE} not found. Re-check module install, linking, configuration, build and install steps.`,
       );
     }
     // Cast to any for NativeEventEmitter constructor which expects React Native's NativeModule type
@@ -54,8 +56,9 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
     listener: (...args: unknown[]) => unknown,
     context?: object,
   ): EmitterSubscription {
+    // NewArch-AD-18 E1: event bridge identity requires raw app-module host for listener registration.
     const RNFBAppModule = getReactNativeModule(
-      'RNFBAppModule',
+      APP_NATIVE_MODULE,
     ) as unknown as RNFBAppModuleInterface;
     if (!this.ready) {
       (RNFBAppModule.eventsNotifyReady as EventsNotifyReadyMethod)(true);
@@ -99,7 +102,8 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
     // we will modify it to do our native unsubscription then call the original
     const originalRemove = subscription.remove;
     const newRemove = () => {
-      const module = getReactNativeModule('RNFBAppModule') as unknown as RNFBAppModuleInterface;
+      // NewArch-AD-18 E1: raw host for eventsRemoveListener on unsubscribe.
+      const module = getReactNativeModule(APP_NATIVE_MODULE) as unknown as RNFBAppModuleInterface;
       (module.eventsRemoveListener as EventsRemoveListenerMethod)(eventType, false);
       const superClass = Object.getPrototypeOf(Object.getPrototypeOf(this));
       if (superClass.removeSubscription != null) {
@@ -115,8 +119,9 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
   }
 
   removeAllListeners(eventType: string): void {
+    // NewArch-AD-18 E1: raw host for eventsRemoveListener.
     const RNFBAppModule = getReactNativeModule(
-      'RNFBAppModule',
+      APP_NATIVE_MODULE,
     ) as unknown as RNFBAppModuleInterface;
     (RNFBAppModule.eventsRemoveListener as EventsRemoveListenerMethod)(eventType, true);
     super.removeAllListeners(`rnfb_${eventType}`);
@@ -124,8 +129,9 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
 
   // This is likely no longer ever called, but it is here for backwards compatibility with RN <= 0.64
   removeSubscription(subscription: EmitterSubscription & { eventType?: string }): void {
+    // NewArch-AD-18 E1: raw host for legacy removeSubscription path.
     const RNFBAppModule = getReactNativeModule(
-      'RNFBAppModule',
+      APP_NATIVE_MODULE,
     ) as unknown as RNFBAppModuleInterface;
     const eventType = subscription.eventType?.replace('rnfb_', '') || '';
     (RNFBAppModule.eventsRemoveListener as EventsRemoveListenerMethod)(eventType, false);

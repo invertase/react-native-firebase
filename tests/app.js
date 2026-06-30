@@ -23,6 +23,13 @@ import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
 
 import { TestComponents } from './local-tests';
 
+let harnessOverrides = {};
+try {
+  harnessOverrides = require('./harness.overrides.js');
+} catch (e) {
+  // Optional local overrides — see harness.overrides.example.js
+}
+
 const platformSupportedModules = [];
 
 if (Platform.other) {
@@ -58,6 +65,11 @@ if (!Platform.other) {
   platformSupportedModules.push('ml');
   platformSupportedModules.push('phoneNumberVerification');
   platformSupportedModules.push('ai');
+}
+if (Array.isArray(harnessOverrides.modules) && harnessOverrides.modules.length) {
+  const allowed = new Set(harnessOverrides.modules);
+  const filtered = platformSupportedModules.filter(module => allowed.has(module));
+  platformSupportedModules.splice(0, platformSupportedModules.length, ...filtered);
 }
 // Registering an error handler that always throw unhandled exceptions
 // This is to enable Jet to exit on uncaught errors

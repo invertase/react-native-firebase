@@ -16,9 +16,12 @@
  */
 
 #import <Firebase/Firebase.h>
+#import <React/RCTInvalidating.h>
 #import <React/RCTUtils.h>
 
+#import "RCTConvert+FIRApp.h"
 #import "RNFBAppModule.h"
+#import "RNFBAppTurboModules.h"
 #import "RNFBJSON.h"
 #import "RNFBMeta.h"
 #import "RNFBPreferences.h"
@@ -31,15 +34,19 @@
 #define REGISTER_LIB
 #endif
 
+@interface RNFBAppModule () <NativeRNFBTurboAppSpec, RCTInvalidating>
+@end
+
 @implementation RNFBAppModule
 
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE(NativeRNFBTurboApp)
 
-- (dispatch_queue_t)methodQueue {
-  return dispatch_get_main_queue();
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboAppSpecJSI>(params);
 }
 
 - (void)setBridge:(RCTBridge *)bridge {
@@ -72,53 +79,69 @@ RCT_EXPORT_MODULE();
 }
 
 #pragma mark -
+#pragma mark Constants
+
+- (NSDictionary *)appConstantsDictionary {
+  NSDictionary *firApps = [FIRApp allApps];
+  NSMutableArray *appsArray = [NSMutableArray new];
+  NSMutableDictionary *constants = [NSMutableDictionary new];
+
+  for (id key in firApps) {
+    [appsArray addObject:[RNFBSharedUtils firAppToDictionary:firApps[key]]];
+  }
+
+  constants[@"NATIVE_FIREBASE_APPS"] = appsArray;
+  constants[@"FIREBASE_RAW_JSON"] = [[RNFBJSON shared] getRawJSON];
+
+  return constants;
+}
+
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboApp::Constants::Builder>)constantsToExport {
+  return [_RCTTypedModuleConstants newWithUnsafeDictionary:[self appConstantsDictionary]];
+}
+
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboApp::Constants::Builder>)getConstants {
+  return [self constantsToExport];
+}
+
+#pragma mark -
 #pragma mark META Methods
 
-RCT_EXPORT_METHOD(metaGetAll
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)metaGetAll:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   resolve([RNFBMeta getAll]);
 }
 
 #pragma mark -
 #pragma mark JSON Methods
 
-RCT_EXPORT_METHOD(jsonGetAll
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)jsonGetAll:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   resolve([[RNFBJSON shared] getAll]);
 }
 
 #pragma mark -
 #pragma mark Preference Methods
 
-RCT_EXPORT_METHOD(preferencesSetBool
-                  : (NSString *)key boolValue
-                  : (BOOL)boolValue resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
-  [[RNFBPreferences shared] setBooleanValue:key boolValue:boolValue];
+- (void)preferencesSetBool:(NSString *)key
+                     value:(BOOL)value
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
+  [[RNFBPreferences shared] setBooleanValue:key boolValue:value];
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(preferencesSetString
-                  : (NSString *)key stringValue
-                  : (NSString *)stringValue resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
-  [[RNFBPreferences shared] setStringValue:key stringValue:stringValue];
+- (void)preferencesSetString:(NSString *)key
+                       value:(NSString *)value
+                     resolve:(RCTPromiseResolveBlock)resolve
+                      reject:(RCTPromiseRejectBlock)reject {
+  [[RNFBPreferences shared] setStringValue:key stringValue:value];
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(preferencesGetAll
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)preferencesGetAll:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   resolve([[RNFBPreferences shared] getAll]);
 }
 
-RCT_EXPORT_METHOD(preferencesClearAll
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)preferencesClearAll:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   [[RNFBPreferences shared] clearAll];
   resolve([NSNull null]);
 }
@@ -126,52 +149,48 @@ RCT_EXPORT_METHOD(preferencesClearAll
 #pragma mark -
 #pragma mark Event Methods
 
-RCT_EXPORT_METHOD(eventsNotifyReady : (BOOL)ready) {
+- (void)eventsNotifyReady:(BOOL)ready {
   [[RNFBRCTEventEmitter shared] notifyJsReady:ready];
 }
 
-RCT_EXPORT_METHOD(eventsGetListeners
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)eventsGetListeners:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   resolve([[RNFBRCTEventEmitter shared] getListenersDictionary]);
 }
 
-RCT_EXPORT_METHOD(eventsPing
-                  : (NSString *)eventName eventBody
-                  : (NSDictionary *)eventBody resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)eventsPing:(NSString *)eventName
+         eventBody:(NSDictionary *)eventBody
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
   [[RNFBRCTEventEmitter shared] sendEventWithName:eventName body:eventBody];
   resolve(eventBody);
 }
 
-RCT_EXPORT_METHOD(eventsAddListener : (NSString *)eventName) {
+- (void)eventsAddListener:(NSString *)eventName {
   [[RNFBRCTEventEmitter shared] addListener:eventName];
 }
 
-RCT_EXPORT_METHOD(eventsRemoveListener : (NSString *)eventName all : (BOOL)all) {
+- (void)eventsRemoveListener:(NSString *)eventName all:(BOOL)all {
   [[RNFBRCTEventEmitter shared] removeListeners:eventName all:all];
 }
 
 #pragma mark -
 #pragma mark Events Unused
 
-RCT_EXPORT_METHOD(addListener : (NSString *)eventName) {
+- (void)addListener:(NSString *)eventName {
   // Keep: Required for RN built in Event Emitter Calls.
 }
 
-RCT_EXPORT_METHOD(removeListeners : (NSInteger)count) {
+- (void)removeListeners:(double)count {
   // Keep: Required for RN built in Event Emitter Calls.
 }
 
 #pragma mark -
 #pragma mark Firebase App Methods
 
-RCT_EXPORT_METHOD(initializeApp
-                  : (NSDictionary *)options appConfig
-                  : (NSDictionary *)appConfig resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)initializeApp:(NSDictionary *)options
+            appConfig:(NSDictionary *)appConfig
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject {
   RCTUnsafeExecuteOnMainQueueSync(^{
     FIRApp *firApp;
     NSString *appName = [appConfig valueForKey:@"name"];
@@ -182,24 +201,18 @@ RCT_EXPORT_METHOD(initializeApp
                                                          GCMSenderID:messagingSenderId];
     firOptions.APIKey = [options valueForKey:@"apiKey"];
     firOptions.projectID = [options valueForKey:@"projectId"];
-    // kFirebaseOptionsDatabaseUrl
     if (![[options valueForKey:@"databaseURL"] isEqual:[NSNull null]]) {
       firOptions.databaseURL = [options valueForKey:@"databaseURL"];
     }
-    // kFirebaseOptionsStorageBucket
     if (![[options valueForKey:@"storageBucket"] isEqual:[NSNull null]]) {
       firOptions.storageBucket = [options valueForKey:@"storageBucket"];
     }
-
-    // kFirebaseOptionsIosBundleId
     if (![[options valueForKey:@"iosBundleId"] isEqual:[NSNull null]]) {
       firOptions.bundleID = [options valueForKey:@"iosBundleId"];
     }
-    // kFirebaseOptionsIosClientId
     if (![[options valueForKey:@"iosClientId"] isEqual:[NSNull null]]) {
       firOptions.clientID = [options valueForKey:@"iosClientId"];
     }
-    // kFirebaseOptionsAppGroupId
     if (![[options valueForKey:@"appGroupId"] isEqual:[NSNull null]]) {
       firOptions.appGroupID = [options valueForKey:@"appGroupId"];
     }
@@ -237,7 +250,7 @@ static NSMutableDictionary<NSString *, NSString *> *customAuthDomains;
   return customAuthDomains[appName];
 }
 
-RCT_EXPORT_METHOD(setLogLevel : (NSString *)logLevel) {
+- (void)setLogLevel:(NSString *)logLevel {
   int level = FIRLoggerLevelError;
   if ([logLevel isEqualToString:@"verbose"]) {
     level = FIRLoggerLevelDebug;
@@ -249,19 +262,20 @@ RCT_EXPORT_METHOD(setLogLevel : (NSString *)logLevel) {
     level = FIRLoggerLevelWarning;
   }
   DLog(@"RNFBSetLogLevel: setting level to %d from %@.", level, logLevel);
-  [[FIRConfiguration sharedInstance] setLoggerLevel:level];
+  [[FIRConfiguration sharedInstance] setLoggerLevel:(FIRLoggerLevel)level];
 }
 
-RCT_EXPORT_METHOD(setAutomaticDataCollectionEnabled : (FIRApp *)firApp enabled : (BOOL)enabled) {
+- (void)setAutomaticDataCollectionEnabled:(NSString *)appName enabled:(BOOL)enabled {
+  FIRApp *firApp = [RCTConvert firAppFromString:appName];
   if (firApp) {
     firApp.dataCollectionDefaultEnabled = enabled;
   }
 }
 
-RCT_EXPORT_METHOD(deleteApp
-                  : (FIRApp *)firApp resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)deleteApp:(NSString *)appName
+          resolve:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firApp = [RCTConvert firAppFromString:appName];
   if (!firApp) {
     return resolve([NSNull null]);
   }
@@ -270,12 +284,10 @@ RCT_EXPORT_METHOD(deleteApp
     if (success) {
       resolve([NSNull null]);
     } else {
-      // try again once more
       [firApp deleteApp:^(BOOL success2) {
         if (success2) {
           resolve([NSNull null]);
         } else {
-          // TODO js error builder
           reject(@"app/delete-app-failed", @"Failed to delete the specified app.", nil);
         }
       }];
@@ -283,23 +295,8 @@ RCT_EXPORT_METHOD(deleteApp
   }];
 }
 
-- (NSDictionary *)constantsToExport {
-  NSDictionary *firApps = [FIRApp allApps];
-  NSMutableArray *appsArray = [NSMutableArray new];
-  NSMutableDictionary *constants = [NSMutableDictionary new];
-
-  for (id key in firApps) {
-    [appsArray addObject:[RNFBSharedUtils firAppToDictionary:firApps[key]]];
-  }
-
-  constants[@"NATIVE_FIREBASE_APPS"] = appsArray;
-
-  constants[@"FIREBASE_RAW_JSON"] = [[RNFBJSON shared] getRawJSON];
-
-  return constants;
-}
-
 + (BOOL)requiresMainQueueSetup {
-  return YES;
+  return NO;
 }
+
 @end

@@ -19,9 +19,10 @@ import { isIOS } from '../common';
 import { FirebaseModule, getOrCreateModularInstance } from '../internal';
 import type { ModuleConfig } from '../internal';
 import type { ReactNativeFirebase, Utils } from '../types/app';
+import { UTILS_NATIVE_MODULE } from '../internal/constants';
 
 const namespace = 'utils';
-const nativeModuleName = 'RNFBUtilsModule';
+const nativeModuleName = UTILS_NATIVE_MODULE;
 
 const config: ModuleConfig = {
   namespace,
@@ -29,6 +30,7 @@ const config: ModuleConfig = {
   nativeEvents: false,
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
+  turboModule: true,
 };
 
 class FirebaseUtilsModule extends FirebaseModule<'RNFBUtilsModule'> {
@@ -49,7 +51,8 @@ class FirebaseUtilsModule extends FirebaseModule<'RNFBUtilsModule'> {
         error: undefined,
       };
     }
-    return this.native.androidPlayServices;
+    // NewArch-AD-15: dynamic Play Services status — use getPlayServicesStatus() (async) on Android.
+    return this.getPlayServicesStatus() as unknown as Utils.PlayServicesAvailability;
   }
 
   getPlayServicesStatus(): Promise<Utils.PlayServicesAvailability> {

@@ -15,9 +15,9 @@
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
 
-// Avoid multiple includes of NativeRNFBTurboFunctions symbols
-#ifndef NativeRNFBTurboFunctions_H
-#define NativeRNFBTurboFunctions_H
+// Avoid multiple includes of RNFBFunctionsTurboModules symbols
+#ifndef RNFBFunctionsTurboModules_H
+#define RNFBFunctionsTurboModules_H
 
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
@@ -111,9 +111,26 @@ namespace JS {
 @end
 namespace JS {
   namespace NativeRNFBTurboFunctions {
+    struct SpecHttpsCallableStreamOptionsHttpsCallableStreamOptions {
+      id<NSObject> _Nullable signal() const;
+      std::optional<bool> limitedUseAppCheckTokens() const;
+
+      SpecHttpsCallableStreamOptionsHttpsCallableStreamOptions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamOptionsHttpsCallableStreamOptions)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamOptionsHttpsCallableStreamOptions:(id)json;
+@end
+namespace JS {
+  namespace NativeRNFBTurboFunctions {
     struct SpecHttpsCallableStreamOptions {
       std::optional<double> timeout() const;
       std::optional<bool> limitedUseAppCheckTokens() const;
+      JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptionsHttpsCallableStreamOptions httpsCallableStreamOptions() const;
 
       SpecHttpsCallableStreamOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -268,6 +285,16 @@ inline id<NSObject> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamData::d
   id const p = _v[@"data"];
   return p;
 }
+inline id<NSObject> _Nullable JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptionsHttpsCallableStreamOptions::signal() const
+{
+  id const p = _v[@"signal"];
+  return p;
+}
+inline std::optional<bool> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptionsHttpsCallableStreamOptions::limitedUseAppCheckTokens() const
+{
+  id const p = _v[@"limitedUseAppCheckTokens"];
+  return RCTBridgingToOptionalBool(p);
+}
 inline std::optional<double> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptions::timeout() const
 {
   id const p = _v[@"timeout"];
@@ -277,6 +304,11 @@ inline std::optional<bool> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStream
 {
   id const p = _v[@"limitedUseAppCheckTokens"];
   return RCTBridgingToOptionalBool(p);
+}
+inline JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptionsHttpsCallableStreamOptions JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptions::httpsCallableStreamOptions() const
+{
+  id const p = _v[@"httpsCallableStreamOptions"];
+  return JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptionsHttpsCallableStreamOptions(p);
 }
 inline id<NSObject> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlData::data() const
 {
@@ -309,4 +341,4 @@ inline JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptionsHttpsC
   return JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions(p);
 }
 NS_ASSUME_NONNULL_END
-#endif // NativeRNFBTurboFunctions_H
+#endif // RNFBFunctionsTurboModules_H

@@ -6,18 +6,18 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/NativeRNFBTurboFunctions/*.cpp)
+file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/RNFBFunctionsTurboModules/*.cpp)
 
 add_library(
-  react_codegen_NativeRNFBTurboFunctions
+  react_codegen_RNFBFunctionsTurboModules
   OBJECT
   ${react_codegen_SRCS}
 )
 
-target_include_directories(react_codegen_NativeRNFBTurboFunctions PUBLIC . react/renderer/components/NativeRNFBTurboFunctions)
+target_include_directories(react_codegen_RNFBFunctionsTurboModules PUBLIC . react/renderer/components/RNFBFunctionsTurboModules)
 
 target_link_libraries(
-  react_codegen_NativeRNFBTurboFunctions
+  react_codegen_RNFBFunctionsTurboModules
   fbjni
   jsi
   # We need to link different libraries based on whether we are building rncore or not, that's necessary
@@ -26,7 +26,7 @@ target_link_libraries(
 )
 
 target_compile_options(
-  react_codegen_NativeRNFBTurboFunctions
+  react_codegen_RNFBFunctionsTurboModules
   PRIVATE
   -DLOG_TAG=\"ReactNative\"
   -fexceptions

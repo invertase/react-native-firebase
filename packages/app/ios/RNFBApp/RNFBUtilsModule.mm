@@ -18,20 +18,84 @@
 #import <React/RCTUtils.h>
 
 #import "RNFBApp/RNFBSharedUtils.h"
+#import "RNFBAppTurboModules.h"
 #import "RNFBUtilsModule.h"
+
+@interface RNFBUtilsModule () <NativeRNFBTurboUtilsSpec>
+@end
 
 @implementation RNFBUtilsModule
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE(NativeRNFBTurboUtils)
 
-- (dispatch_queue_t)methodQueue {
-  return dispatch_get_main_queue();
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboUtilsSpecJSI>(params);
 }
 
 + (BOOL)requiresMainQueueSetup {
-  return YES;
+  return NO;
+}
+
+#pragma mark -
+#pragma mark Constants
+
+- (NSString *)getPathForDirectory:(int)directory {
+  NSArray *paths =
+      NSSearchPathForDirectoriesInDomains((NSSearchPathDirectory)directory, NSUserDomainMask, YES);
+  return [paths firstObject];
+}
+
+- (NSDictionary *)utilsConstantsDictionary {
+  return @{
+    @"isRunningInTestLab" : @NO,
+    @"MAIN_BUNDLE" : [[NSBundle mainBundle] bundlePath],
+    @"CACHES_DIRECTORY" : [self getPathForDirectory:NSCachesDirectory],
+    @"DOCUMENT_DIRECTORY" : [self getPathForDirectory:NSDocumentDirectory],
+    @"PICTURES_DIRECTORY" : [self getPathForDirectory:NSPicturesDirectory],
+    @"MOVIES_DIRECTORY" : [self getPathForDirectory:NSMoviesDirectory],
+    @"TEMP_DIRECTORY" : NSTemporaryDirectory(),
+    @"LIBRARY_DIRECTORY" : [self getPathForDirectory:NSLibraryDirectory],
+  };
+}
+
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants::Builder>)
+    constantsToExport {
+  return [_RCTTypedModuleConstants newWithUnsafeDictionary:[self utilsConstantsDictionary]];
+}
+
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants::Builder>)getConstants {
+  return [self constantsToExport];
+}
+
+#pragma mark -
+#pragma mark Android-only stubs
+
+- (void)androidGetPlayServicesStatus:(RCTPromiseResolveBlock)resolve
+                              reject:(RCTPromiseRejectBlock)reject {
+  resolve(@{
+    @"isAvailable" : @YES,
+    @"status" : @0,
+    @"hasResolution" : @NO,
+    @"isUserResolvableError" : @NO,
+  });
+}
+
+- (void)androidPromptForPlayServices:(RCTPromiseResolveBlock)resolve
+                              reject:(RCTPromiseRejectBlock)reject {
+  resolve(nil);
+}
+
+- (void)androidResolutionForPlayServices:(RCTPromiseResolveBlock)resolve
+                                  reject:(RCTPromiseRejectBlock)reject {
+  resolve(nil);
+}
+
+- (void)androidMakePlayServicesAvailable:(RCTPromiseResolveBlock)resolve
+                                  reject:(RCTPromiseRejectBlock)reject {
+  resolve(nil);
 }
 
 #pragma mark -
@@ -56,7 +120,6 @@ RCT_EXPORT_MODULE();
 
   if ([localFilePath hasPrefix:@"assets-library://"] || [localFilePath hasPrefix:@"ph://"]) {
     if ([localFilePath hasPrefix:@"assets-library://"]) {
-      NSURL *localFile = [[NSURL alloc] initWithString:localFilePath];
       static BOOL hasWarned = NO;
       if (!hasWarned) {
         NSLog(@"'assets-library://' & 'ph://' URLs are not supported in Catalyst-based targets "
@@ -75,26 +138,6 @@ RCT_EXPORT_MODULE();
   }
 
   return asset;
-}
-
-- (NSString *)getPathForDirectory:(int)directory {
-  NSArray *paths =
-      NSSearchPathForDirectoriesInDomains((NSSearchPathDirectory)directory, NSUserDomainMask, YES);
-  return [paths firstObject];
-}
-
-- (NSDictionary *)constantsToExport {
-  NSMutableDictionary *constants = [@{
-    @"MAIN_BUNDLE" : [[NSBundle mainBundle] bundlePath],
-    @"CACHES_DIRECTORY" : [self getPathForDirectory:NSCachesDirectory],
-    @"DOCUMENT_DIRECTORY" : [self getPathForDirectory:NSDocumentDirectory],
-    @"PICTURES_DIRECTORY" : [self getPathForDirectory:NSPicturesDirectory],
-    @"MOVIES_DIRECTORY" : [self getPathForDirectory:NSMoviesDirectory],
-    @"TEMP_DIRECTORY" : NSTemporaryDirectory(),
-    @"LIBRARY_DIRECTORY" : [self getPathForDirectory:NSLibraryDirectory],
-  } mutableCopy];
-
-  return constants;
 }
 
 @end

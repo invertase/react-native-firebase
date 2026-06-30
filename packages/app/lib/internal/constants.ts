@@ -15,6 +15,8 @@
  *
  */
 
-export const APP_NATIVE_MODULE = 'RNFBAppModule';
+export const APP_NATIVE_MODULE = 'NativeRNFBTurboApp';
+
+export const UTILS_NATIVE_MODULE = 'NativeRNFBTurboUtils';
 
 export const DEFAULT_APP_NAME = '[DEFAULT]';
