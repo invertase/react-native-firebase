@@ -30,10 +30,10 @@ public class ReactNativeFirebaseFirestorePackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebaseFirestoreModule(reactContext));
-    modules.add(new ReactNativeFirebaseFirestoreCollectionModule(reactContext));
-    modules.add(new ReactNativeFirebaseFirestoreDocumentModule(reactContext));
-    modules.add(new ReactNativeFirebaseFirestoreTransactionModule(reactContext));
+    modules.add(new NativeRNFBTurboFirestore(reactContext));
+    modules.add(new NativeRNFBTurboFirestoreCollection(reactContext));
+    modules.add(new NativeRNFBTurboFirestoreDocument(reactContext));
+    modules.add(new NativeRNFBTurboFirestoreTransaction(reactContext));
     return modules;
   }
 

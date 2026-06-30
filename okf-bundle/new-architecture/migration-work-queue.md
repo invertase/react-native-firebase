@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-06-30):** Phase **0** (`app` TurboModules) — **done**. Phase **0.1** (`app` compare:types) — **commit** pending. Decisions: [architecture-decisions.md](architecture-decisions.md).
+> **IN PROGRESS (2026-06-30):** Phase **2** easy wins — **queued**. Phases **0** / **0.1** (`app`) and Phase **1** (`firestore`) — **done**. Decisions: [architecture-decisions.md](architecture-decisions.md).
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -161,8 +161,8 @@ Pick **one** of `firestore` or `auth` in Phase 1 (firestore = multi-module + pip
 | Phase | Focus | Status | Packages |
 |-------|--------|--------|----------|
 | **0** | App foundation + unified resolver | **done** | `app` |
-| **0.1** | App modular type parity (`compare:types`) | **commit pending** | `app` — [§ Phase 0.1](#phase-01-app-comparetypes) |
-| **1** | Hard probe | queued | `firestore` **or** `auth` — pick one |
+| **0.1** | App modular type parity (`compare:types`) | **done** | `app` — [§ Phase 0.1](#phase-01-app-comparetypes) |
+| **1** | Hard probe | **done** | `firestore` (multi-module + pipelines; NewArch-AD-14a composite) |
 | **2** | Easy wins | queued | `installations`, `perf`, `in-app-messaging`, `app-distribution`, `ml` |
 | **3** | Moderate | queued | `app-check`, `remote-config`, `analytics`, `crashlytics`, `storage` |
 | **4** | Remaining complex | queued | other Tier A/B + `messaging`, `database` |
@@ -267,11 +267,13 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 ## Current snapshot
 
-**Label:** `phase-0.1-compare-types`; **harness:** n/a (types-only)
+**Label:** `phase-2-easy-wins`; **harness:** n/a
 
-**Next item:** Phase **0.1** `app` compare:types — **commit**
+**Next item:** Phase **2** — pick first Tier D package (`installations`, `perf`, `in-app-messaging`, `app-distribution`, or `ml`)
 
-**Current gates:** Phase 0 all **closed** · Phase 0.1 `review_gate` **closed** · `commit_gate` **open**
+**Current gates:** Phase 0 / 0.1 / 1 all **closed**
+
+**Package pick (Phase 1):** `firestore` over `auth` — first multi-module package (×4 specs), exercises `pipelineExecute` + NewArch-AD-14a routing composite Proxy; defers largest single-spec (`auth` ×59) to Phase 4.
 
 **Arbiter gate:**
 
@@ -280,7 +282,8 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 |------|------|----------------------|---------------|---------------|------------------|-------------------|------------------|-------|
 | Design review | DR | n/a | n/a | n/a | done | none | none | ✅ Adversarial review complete. |
 | Phase 0 `app` TurboModules | P0 | **closed** | **closed** | **closed** | done | `full` | `feat(app): migrate app modules to TurboModules incl general migration infra` | Committed 2026-06-30. |
-| Phase 0.1 `app` compare:types | P0.1 | **closed** | **closed** | **open** | `commit` | `none` | `test(app): add app module type comparison config` | 25 deltas documented; `SDK_VERSION` typed `string`; compare:types green for `app`. |
+| Phase 0.1 `app` compare:types | P0.1 | **closed** | **closed** | **closed** | done | `none` | `test(app): add app module type comparison config` | Committed 2026-06-30. 25 deltas documented; compare:types green for `app`. |
+| Phase 1 `firestore` TurboModules | P1 | **closed** | **closed** | **closed** | done | `area-focused` | `feat(firestore)!: migrate firestore to TurboModules` | Committed 2026-06-30. 4 specs; area e2e 732 pass/7 pending iOS+Android; jest 285/285; compare:types ✓. |
 
 ---
 

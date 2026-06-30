@@ -2609,7 +2609,7 @@ SPEC CHECKSUMS:
   RNFBAuth: 6656cfdec1c2c7a238666ab46f00f37650ea4e86
   RNFBCrashlytics: 023cb897d12145878e749cc6c105e7ae6bb08996
   RNFBDatabase: 6205ca9a46bb177b1577dbf1dad08c5ea018cd67
-  RNFBFirestore: df2a438176508cfefee7ac4b621f6ce5e152df1e
+  RNFBFirestore: 7b2480c59acae62bb9607cdf28c1e0e157641288
   RNFBFunctions: d0ffe52e4f6138c3e42e69937b0592838e6f2cc9
   RNFBInAppMessaging: bcb89b77069691d903621c83cfc3a1d6bfcb43b2
   RNFBInstallations: 1073ed6c5b5f6da5378eca9f7c17bfbbd6deada6

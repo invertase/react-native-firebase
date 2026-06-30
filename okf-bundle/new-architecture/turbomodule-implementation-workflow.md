@@ -44,7 +44,7 @@ In addition to [change authoring gates](../testing/change-authoring-workflow.md#
 
 One TurboModule spec **per legacy native module** — do not consolidate the *specs* in the first pass (database ×5, firestore ×4); each legacy module keeps its own `NativeRNFBTurbo*` spec and shell.
 
-**Commit granularity: one commit per package, not per spec.** Splitting a multi-module package across several commits adds little value and is often impractical — the specs share `codegenConfig`, generated artifacts, podspec/`build.gradle` guards, and JS wiring that only compile and pass e2e together. Convert the whole package (all its legacy modules → all its specs) in a single `implementation` → `independent-review` → `commit` loop and land it as **one** `feat(<pkg>): migrate <pkg> to TurboModules` commit. Per-spec commits are only warranted if a single legacy module is genuinely independently shippable and reviewable, which is rare. Multiple specs ≠ multiple commits.
+**Commit granularity: one commit per package, not per spec.** Splitting a multi-module package across several commits adds little value and is often impractical — the specs share `codegenConfig`, generated artifacts, podspec/`build.gradle` guards, and JS wiring that only compile and pass e2e together. Convert the whole package (all its legacy modules → all its specs) in a single `implementation` → `independent-review` → `commit` loop and land it as **one** `feat(<pkg>)!: migrate <pkg> to TurboModules` commit (breaking: New Architecture required). Per-spec commits are only warranted if a single legacy module is genuinely independently shippable and reviewable, which is rare. Multiple specs ≠ multiple commits.
 
 ### Multi-spec packages (`app` precedent)
 
@@ -164,8 +164,10 @@ Per package (or per phase batch), same commit when user-facing:
 ## TurboModule `commit`
 
 ```text
-feat(<pkg>): migrate <module-or-package> to TurboModules
+feat(<pkg>)!: migrate <module-or-package> to TurboModules
 ```
+
+Breaking change (`!`): TurboModule migration requires New Architecture; legacy bridge is removed per package.
 
 **Never stage:** `tests/harness.overrides.js`, any `.only`, temporary sub-suite edits in `tests/app.js`.
 

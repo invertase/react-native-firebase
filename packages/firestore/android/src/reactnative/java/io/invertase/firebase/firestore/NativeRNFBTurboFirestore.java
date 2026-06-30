@@ -22,27 +22,26 @@ import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.createFirestoreKey;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
 
+import com.facebook.fbreact.specs.NativeRNFBTurboFirestoreSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.LoadBundleTaskProgress;
 import com.google.firebase.firestore.PersistentCacheIndexManager;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
-public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModule {
+public class NativeRNFBTurboFirestore extends NativeRNFBTurboFirestoreSpec {
   private static final String SERVICE_NAME = "Firestore";
   private final UniversalFirebaseFirestoreModule module;
 
-  ReactNativeFirebaseFirestoreModule(ReactApplicationContext reactContext) {
-    super(reactContext, SERVICE_NAME);
+  public NativeRNFBTurboFirestore(ReactApplicationContext reactContext) {
+    super(reactContext);
     module = new UniversalFirebaseFirestoreModule(reactContext, SERVICE_NAME);
   }
 
-  @ReactMethod
+  @Override
   public void setLogLevel(String logLevel) {
     if ("debug".equals(logLevel) || "error".equals(logLevel)) {
       FirebaseFirestore.setLoggingEnabled(true);
@@ -51,7 +50,7 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
     }
   }
 
-  @ReactMethod
+  @Override
   public void loadBundle(String appName, String databaseId, String bundle, Promise promise) {
     module
         .loadBundle(appName, databaseId, bundle)
@@ -66,7 +65,7 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
+  @Override
   public void clearPersistence(String appName, String databaseId, Promise promise) {
     module
         .clearPersistence(appName, databaseId)
@@ -80,7 +79,7 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
+  @Override
   public void waitForPendingWrites(String appName, String databaseId, Promise promise) {
     module
         .waitForPendingWrites(appName, databaseId)
@@ -94,7 +93,7 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
+  @Override
   public void disableNetwork(String appName, String databaseId, Promise promise) {
     module
         .disableNetwork(appName, databaseId)
@@ -108,7 +107,7 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
+  @Override
   public void enableNetwork(String appName, String databaseId, Promise promise) {
     module
         .enableNetwork(appName, databaseId)
@@ -122,22 +121,12 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
-  public void useEmulator(
-      String appName, String databaseId, String host, int port, Promise promise) {
-    module
-        .useEmulator(appName, databaseId, host, port)
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                promise.resolve(null);
-              } else {
-                rejectPromiseFirestoreException(promise, task.getException());
-              }
-            });
+  @Override
+  public void useEmulator(String appName, String databaseId, String host, double port) {
+    module.useEmulator(appName, databaseId, host, (int) port);
   }
 
-  @ReactMethod
+  @Override
   public void settings(String appName, String databaseId, ReadableMap settings, Promise promise) {
     String firestoreKey = createFirestoreKey(appName, databaseId);
     module
@@ -152,7 +141,7 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
+  @Override
   public void terminate(String appName, String databaseId, Promise promise) {
     module
         .terminate(appName, databaseId)
@@ -166,13 +155,14 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
+  @Override
   public void persistenceCacheIndexManager(
-      String appName, String databaseId, int requestType, Promise promise) {
+      String appName, String databaseId, double requestType, Promise promise) {
+    int mode = (int) requestType;
     PersistentCacheIndexManager indexManager =
         getFirestoreForApp(appName, databaseId).getPersistentCacheIndexManager();
     if (indexManager != null) {
-      switch (requestType) {
+      switch (mode) {
         case 0:
           indexManager.enableIndexAutoCreation();
           break;
@@ -193,18 +183,14 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
     promise.resolve(null);
   }
 
-  @ReactMethod
-  public void addSnapshotsInSync(
-      String appName, String databaseId, int listenerId, Promise promise) {
-    module.addSnapshotsInSync(appName, databaseId, listenerId);
-    promise.resolve(null);
+  @Override
+  public void addSnapshotsInSync(String appName, String databaseId, double listenerId) {
+    module.addSnapshotsInSync(appName, databaseId, (int) listenerId);
   }
 
-  @ReactMethod
-  public void removeSnapshotsInSync(
-      String appName, String databaseId, int listenerId, Promise promise) {
-    module.removeSnapshotsInSync(appName, databaseId, listenerId);
-    promise.resolve(null);
+  @Override
+  public void removeSnapshotsInSync(String appName, String databaseId, double listenerId) {
+    module.removeSnapshotsInSync(appName, databaseId, (int) listenerId);
   }
 
   private WritableMap taskProgressToWritableMap(LoadBundleTaskProgress progress) {
