@@ -11,7 +11,7 @@
  * must have a single output. More files => more genrule()s => slower builds.
  */
 
-#import "NativeRNFBTurboFunctions.h"
+#import "RNFBFunctionsTurboModules.h"
 
 
 @implementation NativeRNFBTurboFunctionsSpecBase
@@ -51,6 +51,12 @@
 + (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamData:(id)json
 {
   return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamData>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamOptionsHttpsCallableStreamOptions)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamOptionsHttpsCallableStreamOptions:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptionsHttpsCallableStreamOptions>(json);
 }
 @end
 @implementation RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamOptions)

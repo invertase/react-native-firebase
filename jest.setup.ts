@@ -32,6 +32,12 @@ jest.doMock('react-native', () => {
         OS: 'android',
         select: () => {},
       },
+      TurboModuleRegistry: {
+        get: jest.fn(() => undefined),
+        getEnforcing: jest.fn(() => {
+          throw new Error('TurboModuleRegistry.getEnforcing: module not found');
+        }),
+      },
       AppRegistry: {
         registerHeadlessTask: jest.fn(),
       },
@@ -53,6 +59,73 @@ jest.doMock('react-native', () => {
           initiateOnDeviceConversionMeasurementWithHashedEmailAddress: jest.fn(),
           initiateOnDeviceConversionMeasurementWithPhoneNumber: jest.fn(),
           initiateOnDeviceConversionMeasurementWithHashedPhoneNumber: jest.fn(),
+        },
+        NativeRNFBTurboApp: {
+          getConstants: () => ({
+            NATIVE_FIREBASE_APPS: [
+              {
+                appConfig: {
+                  name: '[DEFAULT]',
+                },
+                options: {},
+              },
+              {
+                appConfig: {
+                  name: 'secondaryFromNative',
+                },
+                options: {},
+              },
+            ],
+            FIREBASE_RAW_JSON: '{}',
+          }),
+          NATIVE_FIREBASE_APPS: [
+            {
+              appConfig: {
+                name: '[DEFAULT]',
+              },
+              options: {},
+            },
+
+            {
+              appConfig: {
+                name: 'secondaryFromNative',
+              },
+              options: {},
+            },
+          ],
+          FIREBASE_RAW_JSON: '{}',
+          addListener: jest.fn(),
+          eventsAddListener: jest.fn(),
+          eventsNotifyReady: jest.fn(),
+          removeListeners: jest.fn(),
+        },
+        NativeRNFBTurboUtils: {
+          getConstants: () => ({
+            isRunningInTestLab: false,
+            MAIN_BUNDLE: '/',
+            CACHES_DIRECTORY: '/cache',
+            DOCUMENT_DIRECTORY: '/documents',
+            TEMP_DIRECTORY: '/tmp',
+            LIBRARY_DIRECTORY: '/library',
+            PICTURES_DIRECTORY: '/pictures',
+            MOVIES_DIRECTORY: '/movies',
+          }),
+          isRunningInTestLab: false,
+          MAIN_BUNDLE: '/',
+          CACHES_DIRECTORY: '/cache',
+          DOCUMENT_DIRECTORY: '/documents',
+          TEMP_DIRECTORY: '/tmp',
+          LIBRARY_DIRECTORY: '/library',
+          PICTURES_DIRECTORY: '/pictures',
+          MOVIES_DIRECTORY: '/movies',
+          androidGetPlayServicesStatus: jest.fn(() =>
+            Promise.resolve({
+              isAvailable: true,
+              status: 0,
+              hasResolution: false,
+              isUserResolvableError: false,
+            }),
+          ),
         },
         RNFBAppModule: {
           NATIVE_FIREBASE_APPS: [

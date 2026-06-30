@@ -219,15 +219,15 @@ A listener on `:8081` or `:8080` is **not** sufficient — HTTP checks must succ
 
 #### 3. Harness matches validation tier
 
-Confirm `tests/app.js` / `tests/globals.js` match the item's **`validation_tier`** ([iteration vocabulary](iteration-vocabulary.md#work-queue-fields)), **not** the branch's committed harness.
+Confirm local harness overrides (or committed files for **full** tier only) match the item's **`validation_tier`** ([iteration vocabulary](iteration-vocabulary.md#work-queue-fields)), **not** the branch's committed harness alone.
 
 | Tier | Harness before `:test-cover` |
 |------|------------------------------|
-| **Unit-focused** (`implementation`) | **Area narrowing required** — trim modules + load only the spec under change (e.g. firestore + `Pipeline.e2e.js`); `.only` OK locally. Set **`RNFBDebug = true`** locally in `tests/globals.js` ([§ fail-fast](#fail-fast-rnfbdebug-and-sub-suite-narrowing)). |
-| **Area-focused** (`independent-review`, `baseline-capture`) | **Area narrowing required** — same module/spec trim as unit-focused; load **full** spec file(s) for the package area; **no** `.only`. Set **`RNFBDebug = true`** locally ([§ fail-fast](#fail-fast-rnfbdebug-and-sub-suite-narrowing)). |
-| **Full** (`pre-merge-validation`) | Revert all narrowing — full app (`require.context`, all modules); **`RNFBDebug = false`** (committed default). |
+| **Unit-focused** (`implementation`) | **Area narrowing required** — [`tests/harness.overrides.js`](#local-harness-overrides-harnessoverridesjs) with `modules` + `RNFBDebug: true`; `.only` OK locally. |
+| **Area-focused** (`independent-review`, `baseline-capture`) | **Area narrowing required** — same overrides file; load **full** spec file(s) for the package area; **no** `.only`; `RNFBDebug: true`. |
+| **Full** (`pre-merge-validation`) | **No** `harness.overrides.js` (delete or `{}`); full app in committed `tests/app.js`; `RNFBDebug: false`. |
 
-Committed full harness on the branch does **not** override **unit-focused** or **area-focused** tier for local runs. Package workflows define area setup (e.g. [pipelines § area harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness)). **How to edit `tests/app.js`:** [two platform blocks](#tests-app-js-area-harness). Never commit narrowing until **full** tier.
+Committed full harness on the branch does **not** override **unit-focused** or **area-focused** tier for local runs. Package workflows define **which module/spec** (e.g. [pipelines § area harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness)). **How:** [local harness overrides](#local-harness-overrides-harnessoverridesjs). Never commit `harness.overrides.js`.
 
 See [Harness narrowing gate (blocking)](#harness-narrowing-gate-blocking) — a run that skips step 3 does **not** close `implementation_gate` or `review_gate`.
 
@@ -249,17 +249,19 @@ Do not poll `pgrep`, process names, or `:8090` for *completion* ([above](#how-a-
 
 ### Harness narrowing gate (blocking)
 
-**Both `unit-focused` and `area-focused` tiers require area narrowing in `tests/app.js` / `tests/globals.js` before the first `:test-cover`.** The only difference between those tiers is whether `.only` is allowed and whether the full package-area spec loads — not whether the harness stays at full app load.
+**Both `unit-focused` and `area-focused` tiers require area narrowing before the first `:test-cover`.** The only difference between those tiers is whether `.only` is allowed and whether the full package-area spec loads — not whether the harness stays at full app load.
+
+**Primary mechanism:** create a local **`tests/harness.overrides.js`** (gitignored) from [`tests/harness.overrides.example.js`](../../tests/harness.overrides.example.js). Committed `tests/app.js` and `tests/globals.js` stay at full harness — do **not** edit them for module narrowing or `RNFBDebug`. See [local harness overrides](#local-harness-overrides-harnessoverridesjs).
 
 | Mistake | Symptom | Gate impact |
 |---------|---------|-------------|
-| Run `:test-cover` on committed full harness during `implementation` or `independent-review` | macOS/iOS/Android pass counts in the **hundreds or thousands** (all modules via `require.context`) | Run is **invalid** — does not close `implementation_gate` or `review_gate` |
-| Narrow **only** `if (Platform.other)` or only set initial `platformSupportedModules` while **`if (!Platform.other)`** still pushes full native list | macOS ~700 firestore tests pass; iOS/Android logs show `database`, `crashlytics`, etc.; thousands of tests / Jet WS 1006 under load | Run is **invalid** on iOS/Android — see [two platform blocks](#tests-app-js-area-harness) |
-| Correct pipeline area harness | ~**100** passing per platform for `Pipeline.e2e.js` only ([pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness)) | Expected for pipeline area runs |
+| Run `:test-cover` with no overrides (full harness) during `implementation` or `independent-review` | macOS/iOS/Android pass counts in the **hundreds or thousands** (all modules via `require.context`) | Run is **invalid** — does not close `implementation_gate` or `review_gate` |
+| Edit only one platform block in `tests/app.js` (legacy pattern) while the other still pushes full list | macOS ~700 firestore tests pass; iOS/Android logs show `database`, `crashlytics`, etc. | Run is **invalid** on iOS/Android — use [overrides file](#local-harness-overrides-harnessoverridesjs) instead |
+| Correct area harness via overrides | Pass counts match loaded module/spec scope ([sanity table](#sanity-check-by-platform)) | Expected |
 
-**Apply locally before every `:test-cover` at unit-focused or area-focused tier** — even when git shows the full push harness. Revert `tests/app.js` / `tests/globals.js` after the run if the branch commit keeps full harness (typical until phase **R**).
+**Apply locally before every `:test-cover` at unit-focused or area-focused tier** — even when git shows the full push harness. **Remove** `tests/harness.overrides.js` (or export `{}`) after the run when the branch keeps full harness (typical until phase **R**). Never commit `harness.overrides.js`.
 
-**Validation report must state:** harness narrowed (yes/no), which module/spec loads, whether pass counts match area scope, and **which platforms ran** with exit codes. A green full-app run is not a substitute.
+**Validation report must state:** harness narrowed (yes/no), override file used (yes/no), which module/spec loads, whether pass counts match area scope, and **which platforms ran** with exit codes. A green full-app run is not a substitute.
 
 <a id="platform-coverage-gate-blocking"></a>
 
@@ -267,12 +269,12 @@ Do not poll `pgrep`, process names, or `:8090` for *completion* ([above](#how-a-
 
 **Both `unit-focused` (implementation) and `area-focused` (baseline-capture, independent-review) require e2e on every platform where the changed module loads in the committed harness** — not a subset for convenience.
 
-Determine required platforms from `tests/app.js` ([two platform blocks](#tests-app-js-area-harness) — use **committed** lists when deciding macOS vs native requirement, not a narrowed local harness):
+Determine required platforms from committed [`tests/app.js`](../../tests/app.js) platform blocks (use **committed** lists when deciding macOS vs native requirement, not a narrowed local harness):
 
 | Platform class | When required |
 |----------------|---------------|
-| **macOS** (`Platform.other`) | Module appears in the committed `if (Platform.other)` list (or your narrowed list includes it on macOS) |
-| **iOS** and **Android** | Module appears in the committed `if (!Platform.other)` list (or your narrowed list includes it on native) |
+| **macOS** (`Platform.other`) | Module appears in the committed `if (Platform.other)` list (or overrides `modules` includes it) |
+| **iOS** and **Android** | Module appears in the committed `if (!Platform.other)` list (or overrides `modules` includes it) |
 
 **Area-focused (`baseline-capture`, `independent-review`) — closes `review_gate` / baseline only when:**
 
@@ -295,8 +297,8 @@ See also: [coverage design § platform parity](coverage-design.md#coverage-expec
 
 **Checklist (copy before first run):**
 
-1. [Both platform blocks](#tests-app-js-area-harness) narrowed or disabled — not just macOS / not just initial array.
-2. `platformSupportedModules` lists only the package under change (e.g. `firestore` + `app`).
+1. `tests/harness.overrides.js` exists with correct `modules` (almost always include `'app'`) and `RNFBDebug: true`.
+2. Overrides `modules` lists only the package under change (e.g. `['app', 'firestore']`).
 3. Spec load uses direct `require` of the area spec — not `require.context` for all packages — when sub-suite narrowing applies; otherwise full package `require.context` is OK when the module list is narrowed.
 4. No `.only` when tier is **area-focused**; `.only` optional when tier is **unit-focused**.
 5. Grep log: pass count consistent with area scope (~100 for pipeline-only, ~700 for full firestore package on macOS), not full app (~141+ macOS baseline with full load per [work queue](../packages/firestore/pipeline-coverage-work-queue.md)).
@@ -305,8 +307,8 @@ See also: [coverage design § platform parity](coverage-design.md#coverage-expec
 
 For `implementation` work type — validation tier **unit-focused** ([change authoring workflow](change-authoring-workflow.md#implementation-inner-loop)):
 
-1. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [prepare completion gate](#prepare-completion-gate-blocking) when `lib/**` changed, [host-clear probes](#host-clear-probes), services ready, **harness narrowed** (step 3), **`RNFBDebug = true`** locally; if probes fail, [pre-flight recovery](#pre-flight-recovery) first.
-2. Edit e2e/spec; add `.only` if needed; never commit narrowing.
+1. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [prepare completion gate](#prepare-completion-gate-blocking) when `lib/**` changed, [host-clear probes](#host-clear-probes), services ready, **harness overrides in place** (step 3), **`RNFBDebug: true`** via overrides; if probes fail, [pre-flight recovery](#pre-flight-recovery) first.
+2. Edit e2e/spec; add `.only` if needed; never commit overrides or `.only`.
 3. macOS first when TS-only: `yarn tests:macos:test-cover 2>&1 | tee /tmp/rnfb-e2e-macos.log` — wait for exit code ([stalled run](#stalled-run-detection) if markers stop).
 4. If macOS green and native touched: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover 2>&1 | tee /tmp/rnfb-e2e-<platform>.log`; one platform at a time.
 5. Grep log tail → fix → repeat from step 1.
@@ -323,11 +325,7 @@ Never overlap runs that use `:test-cover`. See [host rule](change-authoring-work
 | **Clean pre-flight every run** | [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes), services, harness tier |
 | **Phase J loop** | `implementation` (Jest + **unit-focused**) → `independent-review` (**area-focused**, frozen tree) → `commit` — [work queue protocol](../packages/firestore/pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict) |
 
-| Validation tier | E2e scope | Narrowing allowed | Typical work type |
-|-----------------|-----------|-------------------|-------------------|
-| **Unit-focused** | Backpressure while product code is changing | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** | `implementation` |
-| **Area-focused** | Full loaded spec(s) for the package/area under change | **Area narrowing required** in `tests/app.js` / `tests/globals.js`; **no** `.only` | `baseline-capture`, `independent-review` |
-| **Full** | All modules, all platforms | None — revert all narrowing | `pre-merge-validation` |
+Tier scope table: [E2e validation tiers](#e2e-validation-tiers-unit-focused-area-focused-full).
 
 Each run owns its blocking `:test-cover` and returns summaries only.
 
@@ -367,85 +365,63 @@ Full e2e loads every package. Narrow locally; **never commit** narrowing.
 
 | Kind | Mechanism | Scope |
 |------|-----------|--------|
-| **Area narrowing** | `tests/app.js` + `tests/globals.js` | Which modules/specs load (e.g. trim `platformSupportedModules`; `require` one spec file instead of `require.context`) |
+| **Area narrowing** | [`tests/harness.overrides.js`](#local-harness-overrides-harnessoverridesjs) | Which modules load (filter `platformSupportedModules` on all platforms) |
+| **Sub-suite narrowing** | Temporary edit to `tests/app.js` (`require` one spec instead of `require.context`) | Which spec files load within a module — **unit-focused diagnosis only** |
 | **Single-test narrowing** | `it.only(...)` | One case in a loaded file |
 | **Single-suite narrowing** | `describe.only(...)` | One block in a loaded file |
 
-**Area narrowing** = `tests/app.js` / `tests/globals.js` only; not test-runner `--grep` or packager `--target`.
+**Area narrowing** = overrides file for modules + `RNFBDebug`; not test-runner `--grep` or packager `--target`.
 
-<a id="tests-app-js-area-harness"></a>
+<a id="local-harness-overrides-harnessoverridesjs"></a>
 
-### Area harness in `tests/app.js` (two platform blocks)
+### Local harness overrides (`harness.overrides.js`)
 
-**Canonical owner** for how to narrow the test app. Package workflows name **which module/spec**; this section defines **how** to edit `tests/app.js` so narrowing works on **every** platform.
+**Canonical owner** for module narrowing and fail-fast debug. Package workflows name **which module/spec**; this section defines **how** to focus the harness without editing committed files.
 
-#### Why two blocks
+#### Setup
 
-Committed `tests/app.js` builds `platformSupportedModules` from **two separate blocks** — only one runs per platform at bundle time:
-
-| Block | Runs on | Committed role |
-|-------|---------|----------------|
-| `if (Platform.other) { … push … }` | **macOS / Other** | Full macOS module list |
-| `if (!Platform.other) { … push … }` | **iOS / Android** | Full native module list |
-
-Committed shape: `const platformSupportedModules = []`, then **both** blocks push their full lists.
-
-**Common agent mistake:** set a narrowed initial array (e.g. `['app', 'firestore']`) but leave **`if (!Platform.other)`** pushing every native module → macOS looks narrowed (~700 firestore tests) while iOS/Android still run the **full app** (thousands of tests, unrelated modules like `database` appear in logs). That invalidates [harness narrowing gate](#harness-narrowing-gate-blocking) on native platforms.
-
-#### Apply narrowing (pick one pattern)
-
-**Pattern A — initial array + disable both blocks (recommended for one area on all platforms):**
-
-1. Replace `const platformSupportedModules = []` with the narrowed list (almost always include `'app'`).
-2. Change **both** populate blocks to `if (false && Platform.other)` and `if (false && !Platform.other)` so neither block re-expands the list.
-3. Add `// TEMP: <module> area harness — never commit` above your edits.
-
-```javascript
-// TEMP: firestore area harness — never commit
-const platformSupportedModules = ['app', 'firestore'];
-
-if (false && Platform.other) {
-  // committed macOS list — disabled while narrowed
-  platformSupportedModules.push('app');
-  // …
-}
-
-if (false && !Platform.other) {
-  // committed iOS/Android list — disabled while narrowed
-  platformSupportedModules.push('app');
-  // …
-}
+```bash
+cp tests/harness.overrides.example.js tests/harness.overrides.js
 ```
 
-**Pattern B — trim inside each block (when macOS and native lists must differ):**
+Edit `tests/harness.overrides.js` (gitignored — never commit). Shape:
 
-1. Keep `const platformSupportedModules = []`.
-2. Edit **`if (Platform.other)`** pushes to only the modules needed on macOS.
-3. Edit **`if (!Platform.other)`** pushes to only the modules needed on iOS/Android.
-4. **Both blocks must be edited** before `:test-cover` when the work item requires native platforms — editing only one block is invalid.
+| Field | Purpose |
+|-------|---------|
+| `modules?: string[]` | After each platform block builds its list, filter to only these module names (works on macOS **and** iOS/Android — no dual-block edits) |
+| `RNFBDebug?: boolean` | `true` = verbose RNFB logging + disabled test retries ([§ fail-fast](#fail-fast-rnfbdebug-and-sub-suite-narrowing)) |
 
-Do **not** use `if (false && Platform.other)` on one block while leaving the other block active unless that asymmetry is intentional.
+**Example — app package only, debug on:**
+
+```javascript
+module.exports = {
+  RNFBDebug: true,
+  modules: ['app'],
+};
+```
+
+Omit a field or export `{}` to keep committed defaults for that field.
+
+#### How it works
+
+Committed [`tests/app.js`](../../tests/app.js) still builds full `platformSupportedModules` per platform block. If `harness.overrides.js` exists, [`tests/globals.js`](../../tests/globals.js) reads `RNFBDebug` and `tests/app.js` filters the module list **after** the platform block runs — so one overrides file applies on every platform.
 
 #### Spec loading (optional second narrowing)
 
-Module specs load later in `loadTests()` via `platformSupportedModules.includes('<module>')` — usually `require.context('../packages/<module>/e2e', …)`.
+Module specs load in `loadTests()` via `platformSupportedModules.includes('<module>')` — usually `require.context('../packages/<module>/e2e', …)`.
 
 | Goal | Change |
 |------|--------|
-| Full package area | Leave `require.context` as-is; narrowing the module list is enough |
-| Single spec file | Replace `require.context` for that module with `require('../packages/<module>/e2e/<Spec>.e2e.js')` ([sub-suite](#fail-fast-rnfbdebug-and-sub-suite-narrowing) — unit-focused diagnosis only unless package workflow says otherwise) |
+| Full package area | Overrides `modules` only — leave `require.context` as-is |
+| Single spec file | **Temporarily** replace `require.context` for that module with `require('../packages/<module>/e2e/<Spec>.e2e.js')` in `tests/app.js` — **never commit** ([sub-suite](#fail-fast-rnfbdebug-and-sub-suite-narrowing); unit-focused diagnosis only unless package workflow says otherwise) |
 
-#### Revert before `full` tier or `commit`
+#### Revert before `full` tier or commit
 
-Restore committed harness on **both** blocks:
+1. Delete `tests/harness.overrides.js` or set `module.exports = {}`.
+2. Revert any temporary `require.context` → single `require` edits in `tests/app.js`.
+3. Remove all `.only` and native instrumentation.
 
-1. `const platformSupportedModules = []`
-2. `if (Platform.other) { … }` — full macOS list, **no** `false &&`
-3. `if (!Platform.other) { … }` — full native list, **no** `false &&`
-4. Restore any `require.context` edits; remove `// TEMP` comments
-5. Revert `tests/globals.js` (`RNFBDebug = false`) per [before merge](#before-merge-pr-handoff)
-
-**Pre-flight check:** grep `tests/app.js` — if either block is `if (Platform.other)` / `if (!Platform.other)` **without** `false &&` and pushes modules outside your area, native or macOS runs are not narrowed.
+Do **not** revert durable product wiring in committed `tests/globals.js` (e.g. `NativeRNFBTurbo*` proxy routing — [NewArch-AD-13](../new-architecture/architecture-decisions.md#newarch-ad-13)).
 
 #### Sanity check by platform
 
@@ -454,9 +430,9 @@ Restore committed harness on **both** blocks:
 | macOS | ~**700** passing | ~**100** passing |
 | iOS / Android | Same order of magnitude as macOS for the same spec scope | ~**100** passing |
 
-Pass counts in the **thousands** or unrelated suites (`database`, `crashlytics`, …) in the log → re-apply [both blocks](#tests-app-js-area-harness) and re-run.
+Pass counts in the **thousands** or unrelated suites (`database`, `crashlytics`, …) in the log → confirm overrides file exists with correct `modules` and re-run.
 
-**Area example (Pattern A):** firestore-only `platformSupportedModules` + both blocks disabled; full firestore specs via existing `require.context` in `loadTests`.
+**Area example:** `modules: ['app', 'firestore']` + full firestore specs via existing `require.context`.
 
 Package-specific spec names: [Firestore pipeline harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness), [namespace removal § module area harness](../namespace-api-removal-workflow.md#module-area-harness).
 
@@ -464,7 +440,7 @@ Package-specific spec names: [Firestore pipeline harness](../packages/firestore/
 
 ### Fail-fast (`RNFBDebug`) and sub-suite narrowing
 
-**`RNFBDebug`** (`tests/globals.js`): for **`unit-focused`** and **`area-focused`** tiers, set `globalThis.RNFBDebug = true` **locally before the first `:test-cover`** — not optional. It prints per-case start/finish and **disables Mocha retry/backoff**, so failures surface immediately instead of burning time on retries. **Committed default must stay `false`.** Revert to `false` with other harness edits before **`full`** tier or commit ([§ before merge](#before-merge-pr-handoff)).
+**`RNFBDebug`:** for **`unit-focused`** and **`area-focused`** tiers, set **`RNFBDebug: true`** in `tests/harness.overrides.js` **before the first `:test-cover`** — not optional. It prints per-case start/finish and **disables Mocha retry/backoff**, so failures surface immediately instead of burning time on retries. Committed `tests/globals.js` default stays `false`. Remove overrides (or set `RNFBDebug: false`) before **`full`** tier or commit ([§ before merge](#before-merge-pr-handoff)).
 
 | Kind | Mechanism | When |
 |------|-----------|------|
@@ -483,9 +459,9 @@ All tiers use [canonical commands](#rules), [host rule](change-authoring-workflo
 
 | Validation tier | E2e scope | Narrowing allowed | Typical work type |
 |-----------------|-----------|-------------------|-------------------|
-| **Unit-focused** | Fast loop while product code is changing | `it.only` / `describe.only` / tight area narrowing in `tests/app.js` — **never commit** | `implementation` |
-| **Area-focused** | Full loaded spec(s) for the package/area under change | **Area narrowing required** in `tests/app.js` / `tests/globals.js`; **no** `.only` | `baseline-capture`, `independent-review` |
-| **Full** | Unfocused — all modules, all platforms | None — revert all narrowing | `pre-merge-validation` |
+| **Unit-focused** | Fast loop while product code is changing | `harness.overrides.js` + optional `.only` / sub-suite `require` in `tests/app.js` — **never commit** | `implementation` |
+| **Area-focused** | Full loaded spec(s) for the package/area under change | **`harness.overrides.js`** required; **no** `.only` | `baseline-capture`, `independent-review` |
+| **Full** | Unfocused — all modules, all platforms | Delete overrides file — committed full harness only | `pre-merge-validation` |
 
 **Universal rules:**
 
@@ -502,13 +478,56 @@ See also: [unit-focused-tier loop](#unit-focused-tier-iteration-loop), [dispatch
 - **adb empty** — `adb kill-server && adb start-server && adb devices`
 - **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, …). Stray listener on `:8090` after a run → [pre-flight recovery](#pre-flight-recovery), then restart background services with [Rules §1–2](#rules) (`yarn tests:packager:jet`, `yarn tests:emulator:start`).
 
+### iOS Detox framework cache (blocking)
+
+Detox injects a prebuilt **`Detox.framework`** and XCUITest runner from a versioned cache under **`~/Library/Detox/ios/`** (hashed by Xcode version). iOS `:test-cover` / `:build` **fail before any test runs** if that cache is missing or stale (common after Xcode upgrade, first checkout, or a failed Detox postinstall).
+
+**Detect (from a failed iOS run log):**
+
+```bash
+rg 'Detox\.framework could not be found' /tmp/rnfb-e2e-ios.log
+```
+
+Typical error (Detox prints the fix inline):
+
+```text
+DetoxRuntimeError: .../Library/Detox/ios/framework/<hash>/Detox.framework could not be found,
+this means either you changed a version of Xcode or Detox postinstall script was unsuccessful.
+To attempt a fix try running 'detox clean-framework-cache && detox build-framework-cache'
+```
+
+**Detect (proactive, before `:test-cover`):**
+
+```bash
+test -d ~/Library/Detox/ios/framework/*/Detox.framework && echo "Detox framework cache: OK" || echo "Detox framework cache: MISSING"
+```
+
+**Fix (canonical — repo root):**
+
+```bash
+yarn tests:ios:detox-framework-cache:rebuild
+```
+
+This runs Detox's `rebuild-framework-cache` (clean + build of both the injected Detox library and the XCUITest runner) from the `tests/` workspace. Expect ~10–30s on a warm machine; first build after Xcode change may take longer.
+
+**Verify cache present after rebuild:**
+
+```bash
+ls ~/Library/Detox/ios/framework/*/Detox.framework
+ls ~/Library/Detox/ios/xcuitest-runner/*/
+```
+
+Then resume the normal iOS loop: [pre-flight](#pre-flight-is-the-host-clear-to-start) → `yarn tests:ios:build` (if native/JS changed) → `yarn tests:ios:test-cover`.
+
+CI restores the same tree from `~/Library/Detox/ios` keyed by Xcode version ([iOS workflow § Detox Framework Cache Restore](../ci-workflows/ios.md)). Local developers must rebuild when the cache is missing — it is not committed to git.
+
 ## Diagnosing hangs
 
 **Local stalls** — see [stalled run detection](#stalled-run-detection) first (Metro `/status`, `Jet client connected` markers).
 
 **Native / device logs** (remove instrumentation before merge):
 
-- **macOS** — `log show --predicate 'process == "io.invertase.testing"' --last 10m --style compact`; bundle errors → [other.md](../ci-workflows/other.md)
+- **macOS** — `log show --predicate 'process == "io.invertase.testing"' --last 10m --style compact`; filter `com.facebook.react.log:javascript` for bundle errors. **Blank window / Jet never connects:** often `Native module NativeRNFBTurboApp is not registered` — see [TurboModule workflow § gotchas — macOS web registration](../new-architecture/turbomodule-implementation-workflow.md#gotchas). Other bundle errors → [other.md](../ci-workflows/other.md)
 - **iOS** — `xcrun simctl spawn booted log stream --level debug --style compact --predicate 'process == "testing"'`; silent hangs: `sample <pid>` on `testing`
 - **Android** — `adb logcat` (filter your tags)
 
@@ -520,7 +539,7 @@ See also: [unit-focused-tier loop](#unit-focused-tier-iteration-loop), [dispatch
 
 Pre-merge applies once to the branch commit stream before merge/push intended for merge, not after every commit.
 
-1. Revert all narrowing ([full tier](#e2e-validation-tiers-unit-focused-area-focused-full)): restore `tests/app.js` (`platformSupportedModules` + `require.context`), default `RNFBDebug` in `tests/globals.js`, remove all `.only`, remove native instrumentation.
+1. Remove all narrowing ([full tier](#e2e-validation-tiers-unit-focused-area-focused-full)): delete `tests/harness.overrides.js` (or `{}`), revert any temporary `require.context` → single `require` edits in `tests/app.js`, remove all `.only`, remove native instrumentation. Committed `tests/globals.js` / `tests/app.js` stay at full harness defaults — do not revert durable product wiring (e.g. `NativeRNFBTurbo*` proxy).
 2. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes) pass before each platform run.
 3. Rebuild if needed (`tests:<platform>:build`; `yarn lerna:prepare` for `lib/**`).
 4. Full unfocused suite with coverage on **iOS, Android, macOS** — one platform at a time, all green.

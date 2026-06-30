@@ -31,6 +31,7 @@ import {
 } from '@react-native-firebase/app/dist/module/internal';
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
 import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
+import { UTILS_NATIVE_MODULE } from '@react-native-firebase/app/dist/module/internal/constants';
 import './types/internal';
 import type { FirebaseApp } from '@react-native-firebase/app';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
@@ -495,13 +496,17 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
 
   async isSupported(): Promise<boolean> {
     if (isAndroid) {
-      const utilsNativeModule = getReactNativeModule('RNFBUtilsModule');
+      const utilsNativeModule = getReactNativeModule(UTILS_NATIVE_MODULE);
       if (!utilsNativeModule) {
         return false;
       }
-      const playServicesAvailability = utilsNativeModule.androidPlayServices as
-        | { isAvailable?: boolean }
+      const androidGetPlayServicesStatus = utilsNativeModule.androidGetPlayServicesStatus as
+        | (() => Promise<{ isAvailable?: boolean }>)
         | undefined;
+      if (typeof androidGetPlayServicesStatus !== 'function') {
+        return false;
+      }
+      const playServicesAvailability = await androidGetPlayServicesStatus();
       return playServicesAvailability?.isAvailable ?? false;
     }
     return true;

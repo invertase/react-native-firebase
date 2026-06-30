@@ -176,38 +176,67 @@ function resolveIosSimulatorUdid() {
 }
 
 function logLaunchInstallState(label) {
-  const udid = resolveIosSimulatorUdid();
-  if (!udid || process.platform !== 'darwin') {
-    console.log(`[rnfb-e2e] install-state label=${label} udid=unknown skipped=non-darwin-or-no-udid`);
+  let platform = 'unknown';
+  try {
+    if (typeof detox !== 'undefined' && detox?.device?.getPlatform) {
+      platform = detox.device.getPlatform();
+    }
+  } catch (_) {
+    // Detox device may not be ready yet.
+  }
+
+  if (platform === 'ios' && process.platform === 'darwin') {
+    const udid = resolveIosSimulatorUdid();
+    if (!udid) {
+      console.log(`[rnfb-e2e] install-state label=${label} udid=unknown skipped=no-ios-udid`);
+      return;
+    }
+
+    try {
+      const container = execSync(
+        `/usr/bin/xcrun simctl get_app_container ${udid} com.invertase.testing 2>&1`,
+        { encoding: 'utf8', timeout: 15000 },
+      ).trim();
+      console.log(`[rnfb-e2e] install-state label=${label} udid=${udid} container=${container}`);
+    } catch (err) {
+      const detail = err?.stdout?.toString?.() || err?.message || String(err);
+      console.warn(
+        `[rnfb-e2e] install-state label=${label} udid=${udid} container=missing detail=${detail}`,
+      );
+    }
+
+    try {
+      const apps = execSync(`/usr/bin/xcrun simctl listapps ${udid} 2>/dev/null`, {
+        encoding: 'utf8',
+        timeout: 30000,
+      });
+      const invertaseLine =
+        apps
+          .split('\n')
+          .find(line => line.includes('com.invertase.testing')) || '(not listed)';
+      console.log(`[rnfb-e2e] install-state label=${label} listapps=${invertaseLine.trim()}`);
+    } catch (err) {
+      console.warn(
+        `[rnfb-e2e] install-state label=${label} listapps=error detail=${err?.message || err}`,
+      );
+    }
     return;
   }
 
-  try {
-    const container = execSync(
-      `/usr/bin/xcrun simctl get_app_container ${udid} com.invertase.testing 2>&1`,
-      { encoding: 'utf8', timeout: 15000 },
-    ).trim();
-    console.log(`[rnfb-e2e] install-state label=${label} udid=${udid} container=${container}`);
-  } catch (err) {
-    const detail = err?.stdout?.toString?.() || err?.message || String(err);
-    console.warn(`[rnfb-e2e] install-state label=${label} udid=${udid} container=missing detail=${detail}`);
+  if (platform === 'android') {
+    const serial = resolveAndroidSerial();
+    try {
+      const apk = adbShell(serial, 'pm path com.invertase.testing');
+      console.log(`[rnfb-e2e] install-state label=${label} serial=${serial} apk=${apk}`);
+    } catch (err) {
+      console.warn(
+        `[rnfb-e2e] install-state label=${label} serial=${serial} apk=missing detail=${err?.message || err}`,
+      );
+    }
+    return;
   }
 
-  try {
-    const apps = execSync(`/usr/bin/xcrun simctl listapps ${udid} 2>/dev/null`, {
-      encoding: 'utf8',
-      timeout: 30000,
-    });
-    const invertaseLine =
-      apps
-        .split('\n')
-        .find(line => line.includes('com.invertase.testing')) || '(not listed)';
-    console.log(`[rnfb-e2e] install-state label=${label} listapps=${invertaseLine.trim()}`);
-  } catch (err) {
-    console.warn(
-      `[rnfb-e2e] install-state label=${label} listapps=error detail=${err?.message || err}`,
-    );
-  }
+  console.log(`[rnfb-e2e] install-state label=${label} skipped=platform-${platform}`);
 }
 
 function rebootIosSimulator(testsDir) {

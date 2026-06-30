@@ -147,22 +147,16 @@ const modularUnsubscribeOnMessageSent = onMessageSent(modularMessaging1, (messag
 });
 modularUnsubscribeOnMessageSent();
 
-const modularUnsubscribeOnSendError = onSendError(
-  modularMessaging1,
-  (evt: SendErrorEvent) => {
-    console.log(evt.messageId);
-    console.log(evt.error);
-  },
-);
+const modularUnsubscribeOnSendError = onSendError(modularMessaging1, (evt: SendErrorEvent) => {
+  console.log(evt.messageId);
+  console.log(evt.error);
+});
 modularUnsubscribeOnSendError();
 
-setBackgroundMessageHandler(
-  modularMessaging1,
-  async (message: RemoteMessage) => {
-    console.log(message.data);
-    return Promise.resolve();
-  },
-);
+setBackgroundMessageHandler(modularMessaging1, async (message: RemoteMessage) => {
+  console.log(message.data);
+  return Promise.resolve();
+});
 
 setOpenSettingsForNotificationsHandler(modularMessaging1, (message: RemoteMessage) => {
   console.log(message.data);

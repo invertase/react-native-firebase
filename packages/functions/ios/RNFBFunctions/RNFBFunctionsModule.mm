@@ -18,7 +18,7 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
-#import "NativeRNFBTurboFunctions.h"
+#import "RNFBFunctionsTurboModules.h"
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBRCTEventEmitter.h"
 #import "RNFBApp/RNFBSharedUtils.h"

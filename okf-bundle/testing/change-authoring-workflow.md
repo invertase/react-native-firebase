@@ -97,7 +97,7 @@ E2e scope, pre-flight, and harness gate: [running e2e § agent rule](running-e2e
 
 | Gate | Closes when |
 |------|-------------|
-| `implementation` | `implementation` work type complete — code plus **unit-focused**-tier checks green; [static analysis](validation-checklist.md#lint-and-formatting) green on the diff |
+| `implementation` | `implementation` work type complete — code plus **unit-focused**-tier checks green on **every required platform** when native bridge or embed path changed ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)); [static analysis](validation-checklist.md#lint-and-formatting) green on the diff |
 | `review` | `independent-review` complete — **area-focused**-tier checks green on frozen tree; applicable [validation checklist](validation-checklist.md) rows green (including static analysis) |
 | `commit` | Durable commit exists for the item |
 
@@ -163,7 +163,7 @@ Before changing native bridge code that calls a **platform SDK** (Firebase Andro
 
 When **`unit-focused`** e2e fails and product cause is unclear:
 
-1. Confirm [pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) was complete ([prepare completion gate](running-e2e.md#prepare-completion-gate-blocking) when `lib/**` changed, host-clear probes, services, area narrowing, **`RNFBDebug = true`**).
+1. Confirm [pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) was complete ([prepare completion gate](running-e2e.md#prepare-completion-gate-blocking) when `lib/**` changed, host-clear probes, services, harness overrides, **`RNFBDebug: true`** via overrides).
 2. If the **same failure repeats** on back-to-back runs with no assertion progress and the host is known clean → **sub-suite narrow** ([running e2e § fail-fast](running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing)): one spec file or `describe.only` on the failing band (e.g. aggregate `count()` / `average()` / `sum()` only). Still **unit-focused**; never commit narrowing.
 3. If sub-suite runs still fail without actionable assertion text → add **temporary native instrumentation** (NSLog, `adb logcat` tags, etc.) on the code path under test; use [running e2e § diagnosing hangs](running-e2e.md#diagnosing-hangs) for log commands. **Remove instrumentation before `commit`** and before **`area-focused`** gate closure on a frozen tree.
 4. Do not treat Jet WS disconnect / orchestration timeout alone as product failure — [stalled run detection](running-e2e.md#stalled-run-detection) and pre-flight recovery first.
@@ -184,12 +184,12 @@ Keep **`implementation`** and **`independent-review`** in separate passes ([§ f
 
 ## Harness narrowing
 
-**Before the first `:test-cover` at `unit-focused` or `area-focused` tier:** apply package area narrowing in `tests/app.js` / `tests/globals.js` even when the branch commit has full harness. **`tests/app.js` has two platform populate blocks** — [running e2e § area harness (two platform blocks)](running-e2e.md#tests-app-js-area-harness): edit **both** `if (Platform.other)` and `if (!Platform.other)` (or disable both with Pattern A). Set **`RNFBDebug = true`** locally in `tests/globals.js` ([running e2e § fail-fast](running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing)). Full app load is **`full`** tier only.
+**Before the first `:test-cover` at `unit-focused` or `area-focused` tier:** create local [`tests/harness.overrides.js`](../../tests/harness.overrides.example.js) even when the branch commit has full harness — [running e2e § local harness overrides](running-e2e.md#local-harness-overrides-harnessoverridesjs). Set `modules` to the package area and **`RNFBDebug: true`**. Full app load is **`full`** tier only (delete overrides file).
 
 | Kind | `implementation` (**unit-focused**) | `independent-review` (**area-focused**) | `pre-merge-validation` (**full**) | `commit` |
 |------|-------------------------------------|------------------------------------------|-----------------------------------|----------|
-| **Area narrowing** | Required before `:test-cover` | Required before `:test-cover` | Revert — all modules | Never |
-| **`RNFBDebug = true`** | Required locally before `:test-cover` | Required locally before `:test-cover` | Revert — `false` | Never |
+| **Area narrowing** | Required before `:test-cover` (overrides file) | Required before `:test-cover` | Delete overrides — all modules | Never commit overrides |
+| **`RNFBDebug: true`** | Required in overrides before `:test-cover` | Required in overrides before `:test-cover` | Delete overrides / `false` | Never |
 | **Single-test** (`.only`) | Allowed (diagnosis) | Revert | Revert | Never |
 | **Single-suite** (`describe.only` / one spec file) | Allowed (diagnosis only — [escalation](#e2e-diagnosis-escalation)) | Revert | Revert | Never |
 
@@ -200,7 +200,7 @@ Package workflows define **which module/spec** to load (e.g. Firestore → [pipe
 ## `commit`
 
 - One focused commit per item when gates close.
-- **Never stage:** area narrowing, any `.only`, ad-hoc harness edits, or **`RNFBDebug = true`** in `tests/globals.js` ([running e2e § before merge](running-e2e.md#before-merge-pr-handoff), [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)).
+- **Never stage:** `tests/harness.overrides.js`, any `.only`, temporary sub-suite edits in `tests/app.js`, or native instrumentation ([running e2e § before merge](running-e2e.md#before-merge-pr-handoff), [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)).
 - **Work queue:** before `git commit`, set the row's `commit_subject` to the commit's subject line, close `commit_gate`, and stage the queue doc **in the same commit** as the product change ([documentation policy § work queues](../documentation-policy.md#work-queue-documents)). Do not record SHAs in queue docs.
 
 ```bash

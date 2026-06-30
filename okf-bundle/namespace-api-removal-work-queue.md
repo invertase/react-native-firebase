@@ -40,7 +40,7 @@ Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers
 
 Gate prerequisites before any `:test-cover` ([host rule](testing/change-authoring-workflow.md#host-rule)):
 
-1. [Pre-flight](testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): [host-clear probes](testing/running-e2e.md#host-clear-probes), [services ready](testing/running-e2e.md#2-services-ready), [harness matches validation tier](testing/running-e2e.md#3-harness-matches-validation-tier) — [area harness: both platform blocks](testing/running-e2e.md#tests-app-js-area-harness); [narrowing gate](testing/running-e2e.md#harness-narrowing-gate-blocking) — **unit-focused** and **area-focused** only); [serial `:test-cover`](testing/running-e2e.md#serialized-e2e-dispatch); [frozen tree](testing/change-authoring-workflow.md#frozen-tree) for `independent-review`.
+1. [Pre-flight](testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): [host-clear probes](testing/running-e2e.md#host-clear-probes), [services ready](testing/running-e2e.md#2-services-ready), [harness matches validation tier](testing/running-e2e.md#3-harness-matches-validation-tier) — [local harness overrides](testing/running-e2e.md#local-harness-overrides-harnessoverridesjs); [narrowing gate](testing/running-e2e.md#harness-narrowing-gate-blocking) — **unit-focused** and **area-focused** only); [serial `:test-cover`](testing/running-e2e.md#serialized-e2e-dispatch); [frozen tree](testing/change-authoring-workflow.md#frozen-tree) for `independent-review`.
 2. Per-module checklist and removal greps: [namespace-api-removal-workflow.md](namespace-api-removal-workflow.md). User-facing namespace removal: [Migrating to v26](/migrating-to-v26).
 
 ---

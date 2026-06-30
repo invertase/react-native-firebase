@@ -94,7 +94,7 @@ On a **frozen tree** — [change authoring § independent-review](testing/change
 
 ## Module area harness
 
-Extends [change authoring § harness narrowing](testing/change-authoring-workflow.md#harness-narrowing). **Mechanics:** [running e2e § area harness — two platform blocks](testing/running-e2e.md#tests-app-js-area-harness).
+Extends [change authoring § harness narrowing](testing/change-authoring-workflow.md#harness-narrowing). **Mechanics:** [running e2e § local harness overrides](testing/running-e2e.md#local-harness-overrides-harnessoverridesjs).
 
 When native e2e runs: load **only** the target package's e2e spec(s) in `tests/app.js`. Narrow **`platformSupportedModules` on both** `if (Platform.other)` and `if (!Platform.other)` (recommended: Pattern A — initial array + `if (false && …)` on **both** blocks). Set **`RNFBDebug = true`** locally per [running e2e § fail-fast](testing/running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing) — **never commit** (`false` is the committed default). Revert **both** blocks before `commit` or **full** tier. Pass counts must match loaded scope — not full-app totals ([running e2e § gate](testing/running-e2e.md#harness-narrowing-gate-blocking), [platform coverage gate](testing/running-e2e.md#platform-coverage-gate-blocking)).
 

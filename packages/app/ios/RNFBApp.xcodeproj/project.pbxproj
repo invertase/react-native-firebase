@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2744B98621F45429004F8E3F /* RNFBAppModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAppModule.m */; };
+		2744B98621F45429004F8E3F /* RNFBAppModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAppModule.mm */; };
 		2744B99121F46140004F8E3F /* RNFBRCTEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B99021F46140004F8E3F /* RNFBRCTEventEmitter.m */; };
 		2744B9A421F48A4F004F8E3F /* RCTConvert+FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B9A321F48A4F004F8E3F /* RCTConvert+FIROptions.m */; };
 		2744B9A721F57C2F004F8E3F /* RCTConvert+FIRApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B9A621F57C2F004F8E3F /* RCTConvert+FIRApp.m */; };
@@ -15,7 +15,7 @@
 		2748D8172236429D00FC8DC8 /* RNFBSharedUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D8102236417700FC8DC8 /* RNFBSharedUtils.m */; };
 		2748D81C223674CD00FC8DC8 /* RNFBPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D81B223674CD00FC8DC8 /* RNFBPreferences.m */; };
 		2748D8202237018600FC8DC8 /* RNFBMeta.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D81F2237018600FC8DC8 /* RNFBMeta.m */; };
-		4D97BAD423042F2700077358 /* RNFBUtilsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D97BAD323042F2700077358 /* RNFBUtilsModule.m */; };
+		4D97BAD423042F2700077358 /* RNFBUtilsModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4D97BAD323042F2700077358 /* RNFBUtilsModule.mm */; };
 		DAA1F28522FCF6AD00F4DEC1 /* RNFBVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */; };
 		RNFB00001A2025011100000001 /* RNFBNullSentinelInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2025011100000002 /* RNFBNullSentinelInterceptor.m */; };
 /* End PBXBuildFile section */
@@ -35,7 +35,7 @@
 /* Begin PBXFileReference section */
 		2744B98221F45429004F8E3F /* libRNFBApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBApp.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBAppModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAppModule.h; path = RNFBApp/RNFBAppModule.h; sourceTree = SOURCE_ROOT; };
-		2744B98521F45429004F8E3F /* RNFBAppModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAppModule.m; path = RNFBApp/RNFBAppModule.m; sourceTree = SOURCE_ROOT; };
+		2744B98521F45429004F8E3F /* RNFBAppModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBAppModule.mm; path = RNFBApp/RNFBAppModule.mm; sourceTree = SOURCE_ROOT; };
 		2744B98D21F45E8B004F8E3F /* RNFBRCTEventEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBRCTEventEmitter.h; sourceTree = "<group>"; };
 		2744B99021F46140004F8E3F /* RNFBRCTEventEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBRCTEventEmitter.m; sourceTree = "<group>"; };
 		2744B9A221F48826004F8E3F /* RCTConvert+FIROptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+FIROptions.h"; sourceTree = "<group>"; };
@@ -51,7 +51,7 @@
 		2748D81E2237012B00FC8DC8 /* RNFBMeta.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMeta.h; sourceTree = "<group>"; };
 		2748D81F2237018600FC8DC8 /* RNFBMeta.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMeta.m; sourceTree = "<group>"; };
 		4D97BAD223042F0800077358 /* RNFBUtilsModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBUtilsModule.h; sourceTree = "<group>"; };
-		4D97BAD323042F2700077358 /* RNFBUtilsModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBUtilsModule.m; sourceTree = "<group>"; };
+		4D97BAD323042F2700077358 /* RNFBUtilsModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RNFBUtilsModule.mm; sourceTree = "<group>"; };
 		DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBVersion.m; sourceTree = "<group>"; };
 		DAA1F28622FCF6C200F4DEC1 /* RNFBVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBVersion.h; sourceTree = "<group>"; };
 		RNFB00001A2025011100000002 /* RNFBNullSentinelInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBNullSentinelInterceptor.m; sourceTree = "<group>"; };
@@ -91,7 +91,7 @@
 				2744B9A521F57BD9004F8E3F /* RCTConvert+FIRApp.h */,
 				2744B9A621F57C2F004F8E3F /* RCTConvert+FIRApp.m */,
 				2744B98421F45429004F8E3F /* RNFBAppModule.h */,
-				2744B98521F45429004F8E3F /* RNFBAppModule.m */,
+				2744B98521F45429004F8E3F /* RNFBAppModule.mm */,
 				2748D8162236428100FC8DC8 /* RNFBJSON.h */,
 				2748D8142236426300FC8DC8 /* RNFBJSON.m */,
 				2748D81A223674B600FC8DC8 /* RNFBPreferences.h */,
@@ -99,7 +99,7 @@
 				DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */,
 				DAA1F28622FCF6C200F4DEC1 /* RNFBVersion.h */,
 				4D97BAD223042F0800077358 /* RNFBUtilsModule.h */,
-				4D97BAD323042F2700077358 /* RNFBUtilsModule.m */,
+				4D97BAD323042F2700077358 /* RNFBUtilsModule.mm */,
 				RNFB00001A2025011100000003 /* RNFBNullSentinelInterceptor.h */,
 				RNFB00001A2025011100000002 /* RNFBNullSentinelInterceptor.m */,
 			);
@@ -173,12 +173,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2744B98621F45429004F8E3F /* RNFBAppModule.m in Sources */,
+				2744B98621F45429004F8E3F /* RNFBAppModule.mm in Sources */,
 				2744B9A721F57C2F004F8E3F /* RCTConvert+FIRApp.m in Sources */,
 				2748D8172236429D00FC8DC8 /* RNFBSharedUtils.m in Sources */,
 				2748D81C223674CD00FC8DC8 /* RNFBPreferences.m in Sources */,
 				DAA1F28522FCF6AD00F4DEC1 /* RNFBVersion.m in Sources */,
-				4D97BAD423042F2700077358 /* RNFBUtilsModule.m in Sources */,
+				4D97BAD423042F2700077358 /* RNFBUtilsModule.mm in Sources */,
 				2748D8202237018600FC8DC8 /* RNFBMeta.m in Sources */,
 				2744B99121F46140004F8E3F /* RNFBRCTEventEmitter.m in Sources */,
 				2744B9A421F48A4F004F8E3F /* RCTConvert+FIROptions.m in Sources */,

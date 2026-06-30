@@ -257,9 +257,24 @@ export function deleteApp(name: string, nativeInitialized: boolean): Promise<voi
 
   return nativeModule.deleteApp(name).then(() => {
     (app as any)._deleted = true;
-    for (let i = 0; i < onAppDestroyCallbacks.length; i++) {
-      onAppDestroyCallbacks[i]?.(app);
+    try {
+      for (let i = 0; i < onAppDestroyCallbacks.length; i++) {
+        try {
+          onAppDestroyCallbacks[i]?.(app);
+        } catch (e) {
+          // A failing destroy listener must not prevent the remaining listeners (or the
+          // registry cleanup below) from running. Surface it for diagnosis — partial cleanup
+          // here can leave a module's native/JS state stale for the deleted app.
+          // eslint-disable-next-line no-console
+          console.warn(
+            `Firebase: an onAppDestroy callback (index ${i}) for app '${name}' threw and was ` +
+              'skipped; remaining callbacks will still run. Inspect the offending listener:',
+            e,
+          );
+        }
+      }
+    } finally {
+      delete APP_REGISTRY[name];
     }
-    delete APP_REGISTRY[name];
   });
 }
