@@ -21,6 +21,7 @@ import remoteConfigConfig from '../configs/remote-config';
 import authConfig from '../configs/auth';
 import installationsConfig from '../configs/installations';
 import perfConfig from '../configs/perf-config';
+import appConfig from '../configs/app';
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
 
@@ -103,6 +104,20 @@ function optionalFirebasePackage(
 }
 
 export const packages: PackageEntry[] = [
+  {
+    name: 'app',
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('app')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('app'), 'modular.d.ts'),
+      path.join(rnDist('app'), 'index.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('app'), 'types', 'app.d.ts'),
+      path.join(rnDist('app'), 'types', 'internal.d.ts'),
+      path.join(rnDist('app'), 'FirebaseApp.d.ts'),
+    ],
+    config: appConfig,
+  },
   {
     name: 'auth',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('auth')],

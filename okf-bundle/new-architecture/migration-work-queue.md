@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-06-30):** Phase **0** (`app` TurboModules) — **done**. Phase **0.1** (`app` compare:types) — **queued**. Decisions: [architecture-decisions.md](architecture-decisions.md).
+> **IN PROGRESS (2026-06-30):** Phase **0** (`app` TurboModules) — **done**. Phase **0.1** (`app` compare:types) — **commit** pending. Decisions: [architecture-decisions.md](architecture-decisions.md).
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -161,7 +161,7 @@ Pick **one** of `firestore` or `auth` in Phase 1 (firestore = multi-module + pip
 | Phase | Focus | Status | Packages |
 |-------|--------|--------|----------|
 | **0** | App foundation + unified resolver | **done** | `app` |
-| **0.1** | App modular type parity (`compare:types`) | **queued** | `app` — [§ Phase 0.1](#phase-01-app-comparetypes) |
+| **0.1** | App modular type parity (`compare:types`) | **commit pending** | `app` — [§ Phase 0.1](#phase-01-app-comparetypes) |
 | **1** | Hard probe | queued | `firestore` **or** `auth` — pick one |
 | **2** | Easy wins | queued | `installations`, `perf`, `in-app-messaging`, `app-distribution`, `ml` |
 | **3** | Moderate | queued | `app-check`, `remote-config`, `analytics`, `crashlytics`, `storage` |
@@ -207,7 +207,7 @@ The "keep async if it does network/IO/disk" rule in the discriminator **assumes*
 | Column | What to record |
 |--------|----------------|
 | Method | RNFB API + package |
-| compare:types signal | Is it currently recorded as an async-vs-sync delta? (note: `app` registers in Phase **0.1**; other packages may still be unregistered — do not treat the config list as the full candidate set) |
+| compare:types signal | Is it currently recorded as an async-vs-sync delta? (note: `app` is registered as of Phase **0.1**; other packages may still be unregistered — do not treat the config list as the full candidate set) |
 | firebase-js-sdk behavior | What the web SDK actually does under the hood — **in-memory/cached** vs **deferred IO**. Cite the SDK source. |
 | RNFB native behavior | What our native shell does for the same result — pure in-memory (SDK getter, parse, cached field) vs real IO (network, disk, keychain, Play Services). |
 | Verdict | `convert` (both in-memory) / `keep-async` (either side does real IO) / `needs-native-change` (web is in-memory but our native is needlessly IO and could be made in-memory) |
@@ -267,11 +267,11 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 ## Current snapshot
 
-**Label:** `phase-0-committed`; **harness:** full (committed defaults)
+**Label:** `phase-0.1-compare-types`; **harness:** n/a (types-only)
 
-**Next item:** Phase **0.1** `app` compare:types — **implementation**
+**Next item:** Phase **0.1** `app` compare:types — **commit**
 
-**Current gates:** Phase 0 all **closed** · Phase 0.1 all **open**
+**Current gates:** Phase 0 all **closed** · Phase 0.1 `review_gate` **closed** · `commit_gate` **open**
 
 **Arbiter gate:**
 
@@ -280,7 +280,7 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 |------|------|----------------------|---------------|---------------|------------------|-------------------|------------------|-------|
 | Design review | DR | n/a | n/a | n/a | done | none | none | ✅ Adversarial review complete. |
 | Phase 0 `app` TurboModules | P0 | **closed** | **closed** | **closed** | done | `full` | `feat(app): migrate app modules to TurboModules incl general migration infra` | Committed 2026-06-30. |
-| Phase 0.1 `app` compare:types | P0.1 | **open** | **open** | **open** | `implementation` | `none` | `test(app): add app module type comparison config` | Queued after P0. |
+| Phase 0.1 `app` compare:types | P0.1 | **closed** | **closed** | **open** | `commit` | `none` | `test(app): add app module type comparison config` | 25 deltas documented; `SDK_VERSION` typed `string`; compare:types green for `app`. |
 
 ---
 
