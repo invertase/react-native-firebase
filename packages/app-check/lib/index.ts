@@ -18,8 +18,8 @@
 import {
   isBoolean,
   isIOS,
-  isString,
   isObject,
+  isString,
   isUndefined,
   isOther,
   parseListenerOrObserver,
@@ -258,8 +258,11 @@ export async function initializeAppCheck(
   app?: FirebaseApp,
   options?: AppCheckOptions,
 ): Promise<AppCheck> {
+  if (!isObject(options)) {
+    throw new Error('Invalid configuration: no options defined.');
+  }
   const appCheck = getModularAppCheck(app);
-  await (appCheck as AppCheckInternal).initializeAppCheck(options as AppCheckOptions);
+  await (appCheck as AppCheckInternal).initializeAppCheck(options);
   return appCheck;
 }
 
