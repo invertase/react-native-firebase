@@ -43,6 +43,7 @@ yarn tests:emulator:start
 3. **Rebuild when needed**
    - Native changed → `yarn tests:ios:build` / `yarn tests:android:build` before e2e. macOS uses firebase-js-sdk only — no native rebuild.
    - `packages/*/lib/**` changed → **`yarn lerna:prepare` must run to completion (exit 0) before anything else** — Metro serves `dist/module/**`, not `lib/**`. See [prepare completion gate](#prepare-completion-gate-blocking) and [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first). After prepare finishes, restart the packager with `yarn tests:packager:jet-reset-cache` when Metro was already running ([Rules §1](#rules)).
+   - TurboModule **codegen / spec / podspec / native shell** changed → same as native changed, plus regen codegen ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)) when specs changed; if app loads with Metro redbox `Requiring unknown module "undefined"`, see [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
    - TS coverage: iOS/Android embed JS at **build** time; run `:build` before `:test-cover` so Istanbul + patched test-runner coverage upload is in app. macOS loads from Metro live; after test-runner patch changes, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)).
 
 4. **Always run with coverage:**
@@ -521,6 +522,42 @@ Then resume the normal iOS loop: [pre-flight](#pre-flight-is-the-host-clear-to-s
 
 CI restores the same tree from `~/Library/Detox/ios` keyed by Xcode version ([iOS workflow § Detox Framework Cache Restore](../ci-workflows/ios.md)). Local developers must rebuild when the cache is missing — it is not committed to git.
 
+<a id="turbomodule-stale-toolchain-blocking"></a>
+
+### TurboModule migration — stale JS/native toolchain (blocking)
+
+During TurboModule work, three different **`undefined`** / load failures are easy to confuse — only the third row below is fixed by the [native registration checklist](../new-architecture/turbomodule-implementation-workflow.md#turbomodule-native-registration-checklist-blocking):
+
+| Symptom | Likely cause | Fix (escalate in order) |
+|---------|----------------|-------------------------|
+| `this.native.isFoo` is **`undefined`** in JS | Spec/native **constants** chain incomplete (`getConstants`, `getTypedExportedConstants`, iOS typed constants) | [Workflow checklist rows 1, 6, 8](../new-architecture/turbomodule-implementation-workflow.md#turbomodule-native-registration-checklist-blocking) |
+| Android `Proxy target must be an Object` | JNI not linked / **stale autolinking cache** | Delete `tests/android/build/generated/autolinking/autolinking.json` + `*.sha`, `:build` |
+| Metro redbox **`Requiring unknown module "undefined"`** at app load | **Stale Metro and/or partial native refresh** after codegen / `lib/**` / podspec changes | Steps below; then [full refresh](#turbomodule-full-toolchain-refresh) if needed |
+
+**Detect:** app redbox before `Jet client connected`; `curl` of `index.bundle` may still return 200 — that does **not** rule out staleness.
+
+**Routine fix** (try first after codegen, podspec, or `packages/*/lib/**` edits):
+
+1. [Prepare completion gate](#prepare-completion-gate-blocking) — `yarn lerna:prepare` exit 0.
+2. Regenerate codegen if specs changed — [workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical) (`cd tests`, `npx @react-native-community/cli codegen …`).
+3. **`yarn tests:<platform>:build`** (includes `pod install` on iOS when needed).
+4. **`yarn tests:packager:jet-reset-cache`** (Metro was running during the edits).
+5. [Pre-flight](#pre-flight-is-the-host-clear-to-start) → **`yarn tests:<platform>:test-cover`**.
+
+<a id="turbomodule-full-toolchain-refresh"></a>
+
+**Full toolchain refresh** — when the routine fix still shows `Requiring unknown module "undefined"` or you wiped `node_modules` mid-migration:
+
+1. [Pre-flight recovery](#pre-flight-recovery) — stop Metro, Jet, Detox; shutdown booted simulators.
+2. Remove **all** `node_modules` (repo root, `tests/`, and under `packages/*` if present).
+3. **`yarn`** at repo root (wait for exit 0 — includes `lerna:prepare`).
+4. Regenerate **all** touched packages' codegen from `tests/` ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)).
+5. **`yarn tests:ios:pod:install`** when iOS native/codegen changed.
+6. **`yarn tests:<platform>:build`**.
+7. **`yarn tests:packager:jet-reset-cache`** → pre-flight → `:test-cover`.
+
+Do **not** treat this redbox as a missing TurboModule registration until the refresh sequence has been run once on a clean tree.
+
 ## Diagnosing hangs
 
 **Local stalls** — see [stalled run detection](#stalled-run-detection) first (Metro `/status`, `Jet client connected` markers).
@@ -528,7 +565,7 @@ CI restores the same tree from `~/Library/Detox/ios` keyed by Xcode version ([iO
 **Native / device logs** (remove instrumentation before merge):
 
 - **macOS** — `log show --predicate 'process == "io.invertase.testing"' --last 10m --style compact`; filter `com.facebook.react.log:javascript` for bundle errors. **Blank window / Jet never connects:** often `Native module NativeRNFBTurboApp is not registered` — see [TurboModule workflow § gotchas — macOS web registration](../new-architecture/turbomodule-implementation-workflow.md#gotchas). Other bundle errors → [other.md](../ci-workflows/other.md)
-- **iOS** — `xcrun simctl spawn booted log stream --level debug --style compact --predicate 'process == "testing"'`; silent hangs: `sample <pid>` on `testing`
+- **iOS** — `xcrun simctl spawn booted log stream --level debug --style compact --predicate 'process == "testing"'`; silent hangs: `sample <pid>` on `testing`. Metro redbox **`Requiring unknown module "undefined"`** → [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking), not registration checklist alone.
 - **Android** — `adb logcat` (filter your tags)
 
 **Benign noise:** iOS Detox `EXEC_FAIL "xcrun simctl terminate … com.invertase.testing" … found nothing to terminate` — app wasn't running; ignore.
@@ -541,7 +578,7 @@ Pre-merge applies once to the branch commit stream before merge/push intended fo
 
 1. Remove all narrowing ([full tier](#e2e-validation-tiers-unit-focused-area-focused-full)): delete `tests/harness.overrides.js` (or `{}`), revert any temporary `require.context` → single `require` edits in `tests/app.js`, remove all `.only`, remove native instrumentation. Committed `tests/globals.js` / `tests/app.js` stay at full harness defaults — do not revert durable product wiring (e.g. `NativeRNFBTurbo*` proxy).
 2. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes) pass before each platform run.
-3. Rebuild if needed (`tests:<platform>:build`; `yarn lerna:prepare` for `lib/**`).
+3. Rebuild when needed (`tests:<platform>:build`; `yarn lerna:prepare` for `lib/**`). After TurboModule codegen or native bridge edits, see [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
 4. Full unfocused suite with coverage on **iOS, Android, macOS** — one platform at a time, all green.
 
 ## Notes

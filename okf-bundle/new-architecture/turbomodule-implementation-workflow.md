@@ -55,7 +55,7 @@ Phase 0 `app` is the first package with **two TurboModule specs in one `codegenC
 1. Inventory `@ReactMethod` / `RCT_EXPORT_METHOD` from existing Java/ObjC sources.
 2. Draft `specs/NativeRNFBTurbo*.ts` — strong types from `lib/types/internal.ts` and firebase-js-sdk shapes; `Object` / open maps only for genuinely dynamic payloads.
 3. Naming: `NativeRNFBTurbo*` prefix (decision [NewArch-AD-2](architecture-decisions.md#newarch-ad-2--naming-nativernfbturbo--accepted)).
-4. Run `yarn codegen` in the package; commit generated output under `android/.../generated` and `ios/generated`.
+4. Regenerate codegen output; commit under `android/.../generated` and `ios/generated` — [§ Running codegen](#running-codegen-canonical).
 5. For Phase 0 (`app`): include unified module resolver work in `packages/app` ([queue § reference pattern](migration-work-queue.md#reference-pattern-functions)).
 6. **NewArch-AD-18 raw-resolver audit:** `grep` product code for `getReactNativeModule(` (exclude `packages/app/lib/internal/nativeModule*.ts` infrastructure). For each hit, compare against the [NewArch-AD-18 canonical exception table](architecture-decisions.md#canonical-exception-table): existing row → confirm turbo module name + in-code `// NewArch-AD-18 E<n>:` comment; unlisted → bug (legacy name / should be wrapped) or new exception (add ADR row + rationale **before** merge). Every package migration PR must leave no unlisted raw call sites in that package's scope.
 
@@ -92,6 +92,52 @@ Per package, repeat the [`functions`](../../../packages/functions/) shape:
 6. **JS** — update namespace config; no public API changes unless unavoidable.
 7. **Native business logic** — prefer keeping ObjC++/Java shell + existing Swift helpers; language modernization is out of scope ([queue rationale](migration-work-queue.md#reference-pattern-functions)).
 
+### TurboModule native registration checklist (blocking)
+
+Repeat for **every** package migration. Skipping any row is the usual cause of `TypeError: new Proxy target must be an Object` (Android) or `Native module NativeRNFBTurbo* is not registered` (iOS/macOS) at runtime.
+
+| # | Layer | Requirement | Reference |
+|---|-------|-------------|-----------|
+| 1 | **Spec** | `specs/NativeRNFBTurbo*.ts`; module name = `TurboModuleRegistry.get` key. When JS reads `this.native.<constant>` (e.g. `perf`, `in-app-messaging`, `app`, `utils`), declare **`getConstants(): { … }`** in the spec — without it, codegen omits `getConstants` from the JSI method map and `withTurboConstants` has nothing to merge (runtime **`undefined`** on both platforms). | [`app/specs/NativeRNFBTurboApp.ts`](../../../packages/app/specs/NativeRNFBTurboApp.ts) |
+| 2 | **codegenConfig** | `name` = aggregate library `RNFB<Package>TurboModules` (not the module name); `includesGeneratedCode: true`; `ios.modulesProvider` maps spec name → ObjC shell class | [`firestore/package.json`](../../../packages/firestore/package.json) |
+| 3 | **codegen output** | Regenerate and commit `android/.../generated/` + `ios/generated/` — see [§ Running codegen](#running-codegen-canonical) | [NewArch-AD-5](architecture-decisions.md#newarch-ad-5--commit-generated-code--accepted) |
+| 4 | **react-native.config.js** | `platforms.android.cmakeListsPath` → committed `generated/jni/CMakeLists.txt` — path is **relative to package root** and must match `android:codegen` `outputPath` (no duplicate `android/` prefix) | [`firestore/react-native.config.js`](../../../packages/firestore/react-native.config.js) |
+| 5 | **CMake macro** | Generated `CMakeLists.txt` must use the macro for the **test app's RN version** (`tests/package.json`): **`target_compile_options`** on RN **0.78**; **`target_compile_reactnative_options`** on RN **0.81+**. Wrong macro → Android CMake configure fails or JNI never links. After `yarn codegen`, diff against [`functions`](../../../packages/functions/android/src/main/java/io/invertase/firebase/functions/generated/jni/CMakeLists.txt) (0.78) or re-run codegen when the test app upgrades. | [§ Android codegen wiring](#turbomodule-implementation) step 3 |
+| 6 | **Android shell** | `NativeRNFBTurbo*` extends generated `*Spec`; **only** turbo shells registered in `ReactPackage.createNativeModules`. When the spec declares `getConstants`, implement **`protected getTypedExportedConstants()`** (generated `*Spec` owns `public getConstants()`), not a standalone `public getConstants()` override. | [`perf/.../NativeRNFBTurboPerf.java`](../../../packages/perf/android/src/reactnative/java/io/invertase/firebase/perf/NativeRNFBTurboPerf.java) |
+| 7 | **Android build.gradle** | New-arch guard (`newArchEnabled`); `sourceSets { java.excludes = ['**/generated/jni/**'] }` when jni lives under `java.srcDirs` | [`firestore/android/build.gradle`](../../../packages/firestore/android/build.gradle) |
+| 8 | **iOS shell** | `.mm`: `RCT_EXPORT_MODULE(NativeRNFBTurbo*)` (exact spec name); `getTurboModule:` → `NativeRNFBTurbo*SpecJSI`; `.h` imports `RNFB<Package>TurboModules.h` and conforms to `NativeRNFBTurbo*Spec` (class extension or header — see [`functions`](../../../packages/functions/ios/RNFBFunctions/RNFBFunctionsModule.h)). **Constants:** when the spec declares `getConstants`, use **typed** `facebook::react::ModuleConstants<JS::NativeRNFBTurbo*::Constants::Builder>` + `[_RCTTypedModuleConstants newWithUnsafeDictionary:…]` — **not** legacy `- (NSDictionary *)getConstants` / `constantsToExport` (JSI never surfaces those to `TurboModuleRegistry.get`). | [`app/.../RNFBAppModule.mm`](../../../packages/app/ios/RNFBApp/RNFBAppModule.mm) |
+| 9 | **Podspec** | `install_modules_dependencies(s)`; new-arch guard; `exclude_files` for duplicate RN codegen providers (`RCTModuleProviders.*`, etc.). Add `pod_target_xcconfig` `HEADER_SEARCH_PATHS` → `ios/generated/RNFB<Package>TurboModules` + `ios/generated` when Xcode cannot find generated spec headers (see [`firestore/RNFBFirestore.podspec`](../../../packages/firestore/RNFBFirestore.podspec)). | [`functions/RNFBFunctions.podspec`](../../../packages/functions/RNFBFunctions.podspec) |
+| 10 | **JS** | `nativeModuleName` → turbo name; `turboModule: true`; web shim registers turbo name | [`firestore/lib/FirestoreModule.ts`](../../../packages/firestore/lib/FirestoreModule.ts) |
+| 11 | **jest.setup.ts** | Mock `NativeRNFBTurbo*` (not legacy `RNFB*Module`) with methods on the correct host; include `getConstants: () => ({ … })` when the package reads constants | [`jest.setup.ts`](../../../jest.setup.ts) |
+| 12 | **Native rebuild** | After steps 1–11: **`yarn tests:android:build`** and/or **`yarn tests:ios:build`** — Jest green alone does **not** prove native registration. **Android:** `autolinkLibrariesFromCommand` caches `tests/android/build/generated/autolinking/autolinking.json` keyed only on `tests/{package.json,yarn.lock,react-native.config.js}` — adding or changing a **package** `react-native.config.js` does **not** invalidate the cache; delete `autolinking.json` + `*.sha` under that folder (or touch `tests/package.json`) then rebuild, or JNI never links (`Proxy target must be an Object`). **iOS:** `yarn tests:ios:build` runs `pod install` + Xcode compile; required after codegen / `modulesProvider` / podspec changes. | [`tests/android/settings.gradle`](../../../tests/android/settings.gradle) |
+
+**Symptom → likely miss:** Android `Proxy target must be an object` → rows **4–7** or **12** (CMake not linked / **stale autolinking cache**). JS reads **`undefined`** for `this.native.isFoo` / constant-backed getters on **either platform** → row **1** (spec missing `getConstants`), row **6** (Android `getTypedExportedConstants`), row **8** (iOS still using `NSDictionary` constants). Metro redbox **`Requiring unknown module "undefined"`** at app load (before Jet connects) → **not** a registration miss — [stale JS/native toolchain](../testing/running-e2e.md#turbomodule-stale-toolchain-blocking); run checklist row **12** + Metro reset-cache; escalate to [full toolchain refresh](../testing/running-e2e.md#turbomodule-full-toolchain-refresh) if it persists. iOS `Native module NativeRNFBTurbo* is not registered` → rows **2**, **8**, **9**, **12**. iOS `unrecognized selector` on turbo method → row **8** (legacy `RCT_EXPORT_METHOD` signatures instead of spec protocol). iOS build missing generated header → row **9** (`HEADER_SEARCH_PATHS`).
+
+### Running codegen (canonical)
+
+Package `package.json` scripts (`yarn android:codegen` / `yarn ios:codegen`) are convenience wrappers; **`cd packages/<pkg> && yarn ios:codegen` often fails** after a clean install (`unknown command 'codegen'`) because `@react-native-community/cli` resolves from the **test app** workspace, not the library package cwd.
+
+**Canonical** — from repo root, `cd tests`, one platform at a time; `--outputPath` must match the package's `android:codegen` / `ios:codegen` script (paths differ per package — copy from [`functions/package.json`](../../../packages/functions/package.json)):
+
+```bash
+cd tests
+npx @react-native-community/cli codegen \
+  --path ../packages/<pkg> \
+  --platform android \
+  --source library \
+  --outputPath ../packages/<pkg>/<android:codegen outputPath from package.json>
+
+npx @react-native-community/cli codegen \
+  --path ../packages/<pkg> \
+  --platform ios \
+  --source library \
+  --outputPath ../packages/<pkg>/ios/generated
+```
+
+Example (`perf` Android): `--outputPath ../packages/perf/android/src/reactnative/java/io/invertase/firebase/perf/generated`.
+
+After regen: commit generated dirs, then [checklist row **12**](#turbomodule-native-registration-checklist-blocking) (`:build` + Metro reset-cache before `:test-cover`).
+
 **Unit-focused** tier per [change authoring § implementation inner loop](../testing/change-authoring-workflow.md#implementation-inner-loop) and [TurboModule area harness](#turbomodule-area-harness) below.
 
 Shared infrastructure (already landed for `functions`):
@@ -113,13 +159,20 @@ Extends [change authoring § harness narrowing](../testing/change-authoring-work
 
 **Area setup (required for `unit-focused` and `area-focused` tiers):** copy [`tests/harness.overrides.example.js`](../../../tests/harness.overrides.example.js) to gitignored `tests/harness.overrides.js` — set `modules` to the package under migration and `RNFBDebug: true`. Load that package's full `packages/<pkg>/e2e/*.e2e.js` specs via committed `require.context` ([running e2e § local overrides](../testing/running-e2e.md#local-harness-overrides-harnessoverridesjs)).
 
-| Package | Typical e2e entry |
-|---------|-------------------|
-| `app` | `packages/app/e2e/` |
-| `auth` | `packages/auth/e2e/` |
-| `firestore` | `packages/firestore/e2e/` (may coexist with Pipeline specs — load package module only) |
-| `functions` | `packages/functions/e2e/` (reference; already migrated) |
-| Others | `packages/<pkg>/e2e/` |
+| Package | Harness `modules` key | Typical e2e entry |
+|---------|----------------------|-------------------|
+| `app` | `app` | `packages/app/e2e/` |
+| `auth` | `auth` | `packages/auth/e2e/` |
+| `firestore` | `firestore` | `packages/firestore/e2e/` (may coexist with Pipeline specs — load package module only) |
+| `functions` | `functions` | `packages/functions/e2e/` (reference; already migrated) |
+| `in-app-messaging` | `inAppMessaging` | `packages/in-app-messaging/e2e/` |
+| `app-distribution` | `appDistribution` | `packages/app-distribution/e2e/` |
+| `installations` | `installations` | `packages/installations/e2e/` |
+| `perf` | `perf` | `packages/perf/e2e/` |
+| `ml` | `ml` | `packages/ml/e2e/` |
+| Others | match `platformSupportedModules` key in [`tests/app.js`](../../../tests/app.js) | `packages/<pkg>/e2e/` |
+
+**Harness key ≠ npm folder name** for camelCase entries (`inAppMessaging`, `appDistribution`, `remoteConfig`, …). Always copy the string from `tests/app.js` `platformSupportedModules` — wrong keys load zero specs or the wrong package ([Phase 2 review pitfall](migration-work-queue.md#current-snapshot)).
 
 **Sanity check:** pass counts must match loaded scope — not full-app totals ([running e2e § gate](../testing/running-e2e.md#harness-narrowing-gate-blocking)).
 
@@ -182,7 +235,14 @@ Breaking change (`!`): TurboModule migration requires New Architecture; legacy b
 * **Android cross-module native shared state** ([NewArch-AD-10](architecture-decisions.md#newarch-ad-10--cross-package-native-state-is-centralized-in-app-with-testable-apis--accepted)) — turbo shells may expose **`public static` fields** read by other packages' native code. Phase 0: **`NativeRNFBTurboApp.authDomains`** (populated on `initializeApp`; read by [`RCTConvertFirebase`](../../../packages/app/android/src/reactnative/java/io/invertase/firebase/common/RCTConvertFirebase.java) and [`ReactNativeFirebaseAuthModule`](../../../packages/auth/android/src/main/java/io/invertase/firebase/auth/ReactNativeFirebaseAuthModule.java)). Unregistered legacy bridge classes may **delegate** to the turbo shell — do not duplicate the map on legacy classes.
 * **iOS auth-domain naming** — iOS keeps historical **`customAuthDomains`** + `getCustomDomain:` on the turbo shell ([`RNFBAppModule.mm`](../../../packages/app/ios/RNFBApp/RNFBAppModule.mm)); Android uses **`authDomains`** on [`NativeRNFBTurboApp`](../../../packages/app/android/src/reactnative/java/io/invertase/firebase/app/NativeRNFBTurboApp.java). Same semantics; intentional cross-platform naming carry-over.
 * **Spec Promise typing (Android)** — Codegen Android methods take **`Promise` args** even when the legacy bridge was sync void. Example: Play Services helpers in [`NativeRNFBTurboUtils`](../../../packages/app/specs/NativeRNFBTurboUtils.ts) — declare `Promise<PlayServicesAvailability>` / `Promise<void>`; native resolves the promise.
+* **Android codegen output path families** — always copy `android:codegen` `outputPath` from the target `package.json` (do not assume one layout). **`src/reactnative/java/.../generated`**: `app`, `firestore`, `perf`, `in-app-messaging`, `ml`. **`src/main/java/.../generated`**: `functions`, `installations`, `app-distribution`. `react-native.config.js` `cmakeListsPath` must match the same tree.
+* **Duplicate generated trees** — a wrong initial `outputPath` or regen into a second folder leaves **two** `generated/` trees (e.g. `src/main/java` + `src/reactnative/java`, or `fiam/` + `in_app_messaging/`). Android then fails with `duplicate class: NativeRNFBTurbo*Spec`. Keep **one** canonical tree; delete stale dirs; align shell imports, `build.gradle` `sourceSets`, and `cmakeListsPath`.
 * **Dead legacy shells** — unregistered legacy Java modules (e.g. [`ReactNativeFirebaseAppModule`](../../../packages/app/android/src/reactnative/java/io/invertase/firebase/app/ReactNativeFirebaseAppModule.java)) may remain temporarily when the package registers turbo shells only. **Not a Phase 0 blocker** — track deletion as follow-on cleanup once the turbo path is verified.
+* **CMake macro vs test-app RN version** — see [registration checklist § row 5](#turbomodule-native-registration-checklist-blocking). `yarn codegen` uses root `@react-native/codegen`; if it emits `target_compile_reactnative_options` but the test app is still RN 0.78, replace with `target_compile_options` (copy from [`functions` CMakeLists](../../../packages/functions/android/src/main/java/io/invertase/firebase/functions/generated/jni/CMakeLists.txt)) before first `:test-cover`.
+* **TurboModule constants (both platforms)** — legacy bridge exposed constants as enumerable keys on the module object. TurboModules require the full chain in [checklist rows 1, 6, 8](#turbomodule-native-registration-checklist-blocking): spec `getConstants()` → codegen → Android `getTypedExportedConstants` → iOS typed `ModuleConstants` + `_RCTTypedModuleConstants` → `withTurboConstants` in [`nativeModuleAndroidIos.ts`](../../../packages/app/lib/internal/nativeModuleAndroidIos.ts). Skipping the spec or leaving iOS on `NSDictionary *` produces **`undefined`** in constructors like `this._foo = this.native.isFoo` even when methods work. Packages without constants (`functions`, `installations`, …) skip the constants rows.
+* **Android autolinking cache** — see checklist row **12**. `npx react-native config` can show the correct `cmakeListsPath` while `tests/android/build/generated/autolinking/autolinking.json` is still stale.
+* **Metro `Requiring unknown module "undefined"`** — Metro runtime error when `require()` gets module id `undefined`. **Not** the same as native constant `undefined` or `Proxy target must be an Object`. Usually **stale Metro cache and/or partial refresh** after spec/codegen/`lib/**`/podspec changes while iOS/Android debug still loads a **live** bundle from `:8081` ([running e2e § stale toolchain](../testing/running-e2e.md#turbomodule-stale-toolchain-blocking)). A static `index.bundle` fetch can succeed while the simulator still shows the redbox — treat as toolchain staleness, not a missing `import`. Escalation: [full toolchain refresh](../testing/running-e2e.md#turbomodule-full-toolchain-refresh).
+* **Codegen CLI cwd** — see [§ Running codegen](#running-codegen-canonical). Do not debug `unknown command 'codegen'` by patching package scripts; run from `tests/`.
 * **phone-number-verification** — bypasses `createModuleNamespace`; wire spec + resolver directly in `modular.ts`.
 
 Live phase status and arbiter gates: [migration work queue](migration-work-queue.md) (ephemeral).
