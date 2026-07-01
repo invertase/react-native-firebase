@@ -19,16 +19,17 @@
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 
-#import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBFiamModule.h"
 
 @implementation RNFBFiamModule
-#pragma mark -
-#pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE(NativeRNFBTurboFiam)
 
-- (NSDictionary *)constantsToExport {
++ (BOOL)requiresMainQueueSetup {
+  return NO;
+}
+
+- (NSDictionary *)fiamConstantsDictionary {
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isMessagesDisplaySuppressed"] =
       @([RCTConvert BOOL:@([FIRInAppMessaging inAppMessaging].messageDisplaySuppressed)]);
@@ -37,33 +38,36 @@ RCT_EXPORT_MODULE();
   return constants;
 }
 
-+ (BOOL)requiresMainQueueSetup {
-  return NO;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboFiam::Constants::Builder>)constantsToExport {
+  return [_RCTTypedModuleConstants newWithUnsafeDictionary:[self fiamConstantsDictionary]];
 }
 
-#pragma mark -
-#pragma mark Firebase Fiam Methods
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboFiam::Constants::Builder>)getConstants {
+  return [self constantsToExport];
+}
 
-RCT_EXPORT_METHOD(setAutomaticDataCollectionEnabled
-                  : (BOOL)enabled resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboFiamSpecJSI>(params);
+}
+
+- (void)setAutomaticDataCollectionEnabled:(BOOL)enabled
+                                  resolve:(RCTPromiseResolveBlock)resolve
+                                   reject:(RCTPromiseRejectBlock)reject {
   [FIRInAppMessaging inAppMessaging].automaticDataCollectionEnabled = (BOOL)enabled;
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(setMessagesDisplaySuppressed
-                  : (BOOL)enabled resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setMessagesDisplaySuppressed:(BOOL)enabled
+                            resolve:(RCTPromiseResolveBlock)resolve
+                             reject:(RCTPromiseRejectBlock)reject {
   [FIRInAppMessaging inAppMessaging].messageDisplaySuppressed = (BOOL)enabled;
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(triggerEvent
-                  : (NSString *)eventId resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)triggerEvent:(NSString *)eventId
+             resolve:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject {
   [[FIRInAppMessaging inAppMessaging] triggerEvent:eventId];
   resolve([NSNull null]);
 }
