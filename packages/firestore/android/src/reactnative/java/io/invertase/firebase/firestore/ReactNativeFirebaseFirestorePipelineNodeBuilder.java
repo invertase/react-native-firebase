@@ -11,10 +11,13 @@ import com.google.firebase.firestore.pipeline.Selectable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
   interface NestedPipelineBuilder {
@@ -28,6 +31,21 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
   void setNestedPipelineBuilder(NestedPipelineBuilder nestedPipelineBuilder) {
     this.nestedPipelineBuilder = nestedPipelineBuilder;
   }
+
+  private enum ExpressionCoercionMode {
+    EXPRESSION_VALUE,
+    COMPARISON_OPERAND,
+    NUMERIC_OPERAND
+  }
+
+  private static final Set<String> ORDERING_COMPARISON_FUNCTIONS =
+      Collections.unmodifiableSet(
+          new HashSet<>(
+              Arrays.asList("greaterthan", "greaterthanorequal", "lessthan", "lessthanorequal")));
+
+  private static final Set<String> ARITHMETIC_FUNCTIONS =
+      Collections.unmodifiableSet(
+          new HashSet<>(Arrays.asList("add", "subtract", "multiply", "divide", "mod", "pow")));
 
   private static final class ResolvedValueBox {
     Object value;
@@ -138,11 +156,18 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     final Object value;
     final String fieldName;
     final LoweredExpressionBox box;
+    final ExpressionCoercionMode mode;
 
     EnterObjectExpressionValueFrame(Object value, String fieldName, LoweredExpressionBox box) {
+      this(value, fieldName, box, ExpressionCoercionMode.EXPRESSION_VALUE);
+    }
+
+    EnterObjectExpressionValueFrame(
+        Object value, String fieldName, LoweredExpressionBox box, ExpressionCoercionMode mode) {
       this.value = value;
       this.fieldName = fieldName;
       this.box = box;
+      this.mode = mode;
     }
   }
 
@@ -1108,6 +1133,14 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           enterFrame.box.value = (Expression) enterFrame.value;
           continue;
         }
+        if (enterFrame.mode == ExpressionCoercionMode.NUMERIC_OPERAND
+            && tryEnterNumericOperandConstant(enterFrame, stack)) {
+          continue;
+        }
+        if (enterFrame.mode == ExpressionCoercionMode.COMPARISON_OPERAND
+            && tryEnterComparisonOperandConstant(enterFrame, stack)) {
+          continue;
+        }
         if (containsLowerableExpression(enterFrame.value)) {
           stack.push(
               new EnterObjectExpressionFrame(
@@ -1813,6 +1846,9 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
 
         if (!containsLowerableExpression(rightArg)) {
           Object resolved = resolveConstantValue(rightArg, rightFieldName);
+          if (isOrderingComparisonFunction(exitFrame.normalizedName)) {
+            resolved = coerceNumericOperandConstant(resolved);
+          }
           BooleanExpression directResult =
               applyBooleanReceiverConstant(exitFrame.normalizedName, leftExpression, resolved);
           if (directResult != null) {
@@ -1822,6 +1858,10 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         }
 
         LoweredExpressionBox rightBox = new LoweredExpressionBox();
+        ExpressionCoercionMode rightOperandMode =
+            isOrderingComparisonFunction(exitFrame.normalizedName)
+                ? ExpressionCoercionMode.NUMERIC_OPERAND
+                : ExpressionCoercionMode.EXPRESSION_VALUE;
         stack.push(
             new ExitFinalizeBooleanReceiverFrame(
                 exitFrame.box,
@@ -1829,7 +1869,9 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
                 exitFrame.normalizedName,
                 rightBox,
                 exitFrame.fieldName));
-        stack.push(new EnterObjectExpressionValueFrame(rightArg, rightFieldName, rightBox));
+        stack.push(
+            new EnterObjectExpressionValueFrame(
+                rightArg, rightFieldName, rightBox, rightOperandMode));
         continue;
       }
 
@@ -2012,15 +2054,20 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       String fieldName,
       LoweredExpressionBox box,
       ArrayDeque<ObjectLoweringFrame> stack) {
+    String normalizedName = canonicalizeExpressionFunctionName(functionName);
     List<LoweredExpressionBox> childBoxes = new ArrayList<>(args.size());
     for (int i = 0; i < args.size(); i++) {
       childBoxes.add(new LoweredExpressionBox());
     }
     stack.push(new ExitObjectRawExpressionFunctionFrame(box, functionName, childBoxes));
     for (int i = args.size() - 1; i >= 0; i--) {
+      ExpressionCoercionMode argMode =
+          isArithmeticFunction(normalizedName) && i > 0
+              ? ExpressionCoercionMode.NUMERIC_OPERAND
+              : ExpressionCoercionMode.EXPRESSION_VALUE;
       stack.push(
           new EnterObjectExpressionValueFrame(
-              args.get(i), fieldName + ".args[" + i + "]", childBoxes.get(i)));
+              args.get(i), fieldName + ".args[" + i + "]", childBoxes.get(i), argMode));
     }
   }
 
@@ -3282,6 +3329,96 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       }
     }
     return result.toString();
+  }
+
+  private static boolean isOrderingComparisonFunction(String normalizedName) {
+    return ORDERING_COMPARISON_FUNCTIONS.contains(normalizedName);
+  }
+
+  private static boolean isArithmeticFunction(String normalizedName) {
+    return ARITHMETIC_FUNCTIONS.contains(normalizedName);
+  }
+
+  private static Object coerceNumericOperandConstant(Object value) {
+    if (value instanceof Boolean) {
+      return ((Boolean) value) ? 1 : 0;
+    }
+    return value;
+  }
+
+  private static boolean isImmediateExpressionConstant(Object value) {
+    return value instanceof Number
+        || value instanceof java.util.Date
+        || value instanceof Timestamp
+        || value instanceof com.google.firebase.firestore.GeoPoint
+        || value instanceof DocumentReference
+        || value instanceof com.google.firebase.firestore.VectorValue;
+  }
+
+  private boolean tryEnterNumericOperandConstant(
+      EnterObjectExpressionValueFrame enterFrame, ArrayDeque<ObjectLoweringFrame> stack)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    Object value = enterFrame.value;
+    String fieldName = enterFrame.fieldName;
+
+    if (value instanceof Map) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> map = (Map<String, Object>) value;
+      Object exprType = map.get("exprType");
+      if (exprType instanceof String && "constant".equalsIgnoreCase((String) exprType)) {
+        Object constantValue = map.get("value");
+        if (constantValue instanceof Boolean) {
+          enterFrame.box.value = constantExpression(((Boolean) constantValue) ? 1 : 0);
+          return true;
+        }
+        enterFrame.box.value = constantExpression(resolveConstantValue(map, fieldName));
+        return true;
+      }
+      return false;
+    }
+    if (value instanceof List) {
+      enterFrame.box.value = constantExpression(resolveConstantValue(value, fieldName));
+      return true;
+    }
+    if (value instanceof String) {
+      enterFrame.box.value = constantExpression((String) value);
+      return true;
+    }
+    if (value instanceof Boolean) {
+      enterFrame.box.value = constantExpression(((Boolean) value) ? 1 : 0);
+      return true;
+    }
+    if (isImmediateExpressionConstant(value)) {
+      enterFrame.box.value = constantExpression(value);
+      return true;
+    }
+    return false;
+  }
+
+  private boolean tryEnterComparisonOperandConstant(
+      EnterObjectExpressionValueFrame enterFrame, ArrayDeque<ObjectLoweringFrame> stack)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    Object value = enterFrame.value;
+    String fieldName = enterFrame.fieldName;
+
+    if (value instanceof Map) {
+      stack.push(
+          new EnterObjectExpressionFrame(enterFrame.value, enterFrame.fieldName, enterFrame.box));
+      return true;
+    }
+    if (value instanceof List) {
+      enterFrame.box.value = constantExpression(resolveConstantValue(value, fieldName));
+      return true;
+    }
+    if (value instanceof String) {
+      enterFrame.box.value = constantExpression((String) value);
+      return true;
+    }
+    if (isImmediateExpressionConstant(value)) {
+      enterFrame.box.value = constantExpression(value);
+      return true;
+    }
+    return false;
   }
 
   private Expression constantExpression(Object value)

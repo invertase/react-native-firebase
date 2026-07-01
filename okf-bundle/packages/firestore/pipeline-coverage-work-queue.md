@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS (2026-06-25):** **J0-6′–J0-9′** receiver parity — implementation + area-focused review **complete** (uncommitted). **J0b** committed `c27b6f115`. **Next:** commit batch → **J1** bridge remediation.
+> **IN PROGRESS (2026-06-30):** **J2** P-005 Android `integerLiteral` — `implementation` next. **J1** committed `fix(firestore, android): align pipeline operand coercion with iOS`.
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -76,13 +76,9 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 
 ## Current snapshot
 
-**Label:** `j0-remainder-review-complete`; **harness:** full test app (area-focused review used local firestore-only narrowing — not committed)
+**Label:** `j2-p005-implementation`; **harness:** full test app (committed)
 
-**E2e counts (Phase H baseline):** macOS **141**, iOS **146**, Android **146** ✅ *(full app load; re-verify before merge)*
-
-**area-focused review (2026-06-25):** iOS Pipeline-only harness — **100/100** passing (~135s); Jest pipelines **219/219**.
-
-**Next item:** **Commit** J0-6′–J0-9′ batch → **J1** P-001 Android operand coercion.
+**Next item:** **J2** P-005 — `implementation` (`unit-focused`).
 
 **Arbiter gate (2026-06-25):**
 
@@ -99,16 +95,18 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 | **J0-8** `timestampSubtract`  | —           | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — SDK `timestamp_subtract`; fix iOS wire + receiver |
 | **J0-9** `arrayGet`           | —           | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — SDK `array_get` receiver wire; guard retained     |
 | **J0b**                       | `c27b6f115` | closed                | **closed**    | —                | —                 | —          | area-focused review 2026-06-25: iOS 100/100; Jest switchOn ok                   |
-| **J0-6′** `substring`         | —           | **closed**            | **closed**    | —                | area-focused              | ios        | iOS receiver chain; guard removed; unified e2e                          |
-| **J0-7′** `timestampAdd`      | —           | **closed**            | **closed**    | —                | area-focused              | ios        | Same batch — `timestampAdd(amount:unit:)`                               |
-| **J0-8′** `timestampSubtract` | —           | **closed**            | **closed**    | —                | area-focused              | ios        | Same batch — wire `timestamp_subtract`                                  |
-| **J0-9′** `arrayGet`          | —           | **closed**            | **closed**    | —                | area-focused              | ios        | Same batch — `.arrayGet(_:)`                                            |
+| **J0-6′** `substring`         | —           | closed                | **closed**    | —                | —                 | —          | Committed — iOS receiver chain; guard removed; unified e2e              |
+| **J0-7′** `timestampAdd`      | —           | closed                | **closed**    | —                | —                 | —          | Same commit — `timestampAdd(amount:unit:)`                                |
+| **J0-8′** `timestampSubtract` | —           | closed                | **closed**    | —                | —                 | —          | Same commit — wire `timestamp_subtract`                                   |
+| **J0-9′** `arrayGet`          | —           | closed                | **closed**    | —                | —                 | —          | Same commit — `.arrayGet(_:)`                                             |
+| **J1** P-001 operand coercion | `fix(firestore, android): align pipeline operand coercion with iOS` | **closed**            | **closed**    | **closed**    | —                | —                 | —          | P-001 → Resolved in parity registry; deferred `COMPARISON_OPERAND` call-site wiring |
+| **J2** P-005 `integerLiteral` | —           | **open**              | **open**      | `implementation` | `unit-focused`    | android    | Android `unwrapConstantValue` lacks `integerLiteral` tag handling vs iOS `scalarConstantBridge` |
 
 
 
 | Target                      | macOS             | iOS                    | Android (gap map)                      | Phase |
 | --------------------------- | ----------------- | ---------------------- | -------------------------------------- | ----- |
-| Parity drift (bridge)       | —                 | —                      | **5 open** (P-001, P-005, P-010–P-012) | **J** |
+| Parity drift (bridge)       | —                 | —                      | **4 open** (P-005, P-010–P-012) | **J** |
 | Parity drift (SDK/macOS-js) | 11 vacuous        | 10 reduced + 3 vacuous | documented                             | —     |
 | TS `pipeline_runtime.ts`    | 86%               | **90.79% (207/228)**   | pre-K baseline                         | **K** |
 | TS `expressions.ts`         | 89%               | **93.61% (249/266)**   | pre-K baseline                         | **K** |
@@ -301,7 +299,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **J0 + J0b + J0 remainder** complete — ready to **commit** batch. **J1** `implementation` next.
+**Current gates:** **J2** P-005 — `implementation_gate` **open**; `review_gate` **open**; `next_work_type`: `implementation`; `validation_tier`: `unit-focused`.
 
 ---
 

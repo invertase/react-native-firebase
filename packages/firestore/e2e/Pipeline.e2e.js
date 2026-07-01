@@ -3189,57 +3189,32 @@ describe('FirestorePipeline', function () {
           return;
         }
 
-        if (Platform.ios) {
-          const iosSnapshot = await execute(
-            db
-              .pipeline()
-              .documents([docPath])
-              .select(
-                add(field('base'), true).as('basePlusTrue'),
-                multiply(field('base'), false).as('baseTimesFalse'),
-                mod(field('id'), true).as('modByTrue'),
-                equal(field('status'), 'active').as('statusStringRhs'),
-                equal(field('status'), constant('active')).as('statusConstRhs'),
-                equalAny(field('region'), ['EU', 'US']).as('regionInList'),
-                equal(field('bump'), true).as('bumpIsTrue'),
-                greaterThan(field('base'), false).as('baseGtFalse'),
-              ),
-          );
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              add(field('base'), true).as('basePlusTrue'),
+              multiply(field('base'), false).as('baseTimesFalse'),
+              mod(field('id'), true).as('modByTrue'),
+              equal(field('status'), 'active').as('statusStringRhs'),
+              equal(field('status'), constant('active')).as('statusConstRhs'),
+              equalAny(field('region'), ['EU', 'US']).as('regionInList'),
+              equal(field('bump'), true).as('bumpIsTrue'),
+              greaterThan(field('base'), false).as('baseGtFalse'),
+            ),
+        );
 
-          iosSnapshot.results.should.have.length(1);
-          const iosData = iosSnapshot.results[0].data();
-          iosData.basePlusTrue.should.equal(11);
-          iosData.baseTimesFalse.should.equal(0);
-          iosData.modByTrue.should.equal(0);
-          iosData.statusStringRhs.should.equal(true);
-          iosData.statusConstRhs.should.equal(true);
-          iosData.regionInList.should.equal(true);
-          iosData.bumpIsTrue.should.equal(true);
-          iosData.baseGtFalse.should.equal(true);
-        } else {
-          const androidSnapshot = await execute(
-            db
-              .pipeline()
-              .documents([docPath])
-              .select(
-                equal(field('status'), 'active').as('statusStringRhs'),
-                equal(field('status'), constant('active')).as('statusConstRhs'),
-                equalAny(field('region'), ['EU', 'US']).as('regionInList'),
-                equal(field('bump'), true).as('bumpIsTrue'),
-              ),
-          );
-
-          androidSnapshot.results.should.have.length(1);
-          const androidData = androidSnapshot.results[0].data();
-          androidData.statusStringRhs.should.equal(true);
-          androidData.statusConstRhs.should.equal(true);
-          androidData.regionInList.should.equal(true);
-          androidData.bumpIsTrue.should.equal(true);
-        }
-
-        if (!Platform.ios) {
-          return;
-        }
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.basePlusTrue.should.equal(11);
+        data.baseTimesFalse.should.equal(0);
+        data.modByTrue.should.equal(0);
+        data.statusStringRhs.should.equal(true);
+        data.statusConstRhs.should.equal(true);
+        data.regionInList.should.equal(true);
+        data.bumpIsTrue.should.equal(true);
+        data.baseGtFalse.should.equal(true);
 
         const coll = collection(
           db,
@@ -3321,9 +3296,7 @@ describe('FirestorePipeline', function () {
           }),
         ]);
 
-        const baseRhsFilter = Platform.android
-          ? { operator: '>=', fieldPath: 'base', value: 1 }
-          : { operator: '>=', fieldPath: 'base', value: true };
+        const baseRhsFilter = { operator: '>=', fieldPath: 'base', value: true };
 
         const snapshot = await execute(
           db

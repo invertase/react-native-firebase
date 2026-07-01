@@ -36,13 +36,12 @@ No permanent `Platform.android` / `Platform.ios` e2e workaround without registry
 
 | ID | Area | Symptom | iOS | Android | macOS | E2e hook (`Pipeline.e2e.js`) | Remediation order |
 |----|------|---------|-----|---------|-------|------------------------------|-------------------|
-| **P-001** | Operand-mode / numeric coercion | Ordering and arithmetic RHS: bool/scalar coercion differs | `ExpressionCoercionMode.numericOperand` / `.comparisonOperand` in `coerceExpressionTree` | No equivalent; `applyBooleanReceiverConstant` passes raw `Boolean`; arithmetic args use expression-value path only | JS SDK (no native bridge) | L3533–3622 (iOS-only arithmetic + where leg); L3665–3667 (`value: true` vs `1`) | **1** |
-| **P-005** | `integerLiteral` wire tag | `constant()` integers emit `integerLiteral: true`; iOS NodeBuilder bool→0/1 before int | Consumes tag in `scalarConstantBridge` | `unwrapConstantValue` returns raw value; no tag handling | N/A | L3533–3559 (indirect); no wire assert | **2** |
-| **P-010** | Stage option expression fields | Expression-valued `distanceField` / `indexField` | Parsed/coerced as expression | Parser `optionalString` only; executor `withDistanceField(String)` | Skipped (L3902+) | L3795–3845 (Android-only source rawOptions); findNearest/unnest paths | **3** |
-| **P-011** | Parser constant envelope routing | `{ exprType: "constant", value: … }` in value context | `isExpressionLike` true for any `exprType` | `isExpressionLike` excludes `"constant"` — descends as literal map | Same wire | Nested constants (e.g. ref maps) | **4** |
-| **P-012** | `timestampTruncate` arity validation | Validates arg count; throws | Sets `box.value = null` when `args.size() != 2` | Same | L3292–3294 (macOS vacuous) | **5** |
+| **P-005** | `integerLiteral` wire tag | `constant()` integers emit `integerLiteral: true`; iOS NodeBuilder bool→0/1 before int | Consumes tag in `scalarConstantBridge` | `unwrapConstantValue` returns raw value; no tag handling | N/A | L3533–3559 (indirect); no wire assert | **1** |
+| **P-010** | Stage option expression fields | Expression-valued `distanceField` / `indexField` | Parsed/coerced as expression | Parser `optionalString` only; executor `withDistanceField(String)` | Skipped (L3902+) | L3795–3845 (Android-only source rawOptions); findNearest/unnest paths | **2** |
+| **P-011** | Parser constant envelope routing | `{ exprType: "constant", value: … }` in value context | `isExpressionLike` true for any `exprType` | `isExpressionLike` excludes `"constant"` — descends as literal map | Same wire | Nested constants (e.g. ref maps) | **3** |
+| **P-012** | `timestampTruncate` arity validation | Validates arg count; throws | Sets `box.value = null` when `args.size() != 2` | Same | L3292–3294 (macOS vacuous) | **4** |
 
-**After P-001:** **P-034** extend Android operand-mode e2e to match iOS; remove where-filter `if (!Platform.ios) return`.
+**After P-001 closure:** **P-034** may still trim remaining operand-mode `Platform.*` branches elsewhere in `Pipeline.e2e.js`.
 
 ---
 
@@ -120,5 +119,6 @@ For each **bridge** row:
 
 | ID | Fix | Verified |
 |----|-----|----------|
+| **P-001** | Android NodeBuilder: `ExpressionCoercionMode` with numeric/comparison operand constant lowering aligned with iOS `coerceExpressionTree`; unified cross-platform operand-mode e2e (ordering/arithmetic RHS and raw-where bool coercion). **Remainder:** wire `COMPARISON_OPERAND` at non-ordering comparison call sites on Android. | 3-platform `Pipeline.e2e.js` |
 | P-002 | Android parser/node-builder: `{ path: "col/doc" }` reference constants no longer treated as field paths | Verified on Android e2e after parser fix |
 | P-006 | MacOS e2e count delta | **Closed** — app `utils*` tests are skipped by platform; Pipeline registration is not the cause |
