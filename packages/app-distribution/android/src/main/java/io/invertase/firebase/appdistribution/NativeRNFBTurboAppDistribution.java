@@ -17,37 +17,34 @@ package io.invertase.firebase.appdistribution;
  *
  */
 
-import com.facebook.react.bridge.*;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import com.facebook.fbreact.specs.NativeRNFBTurboAppDistributionSpec;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
 
-public class ReactNativeFirebaseAppDistributionModule extends ReactNativeFirebaseModule {
+public class NativeRNFBTurboAppDistribution extends NativeRNFBTurboAppDistributionSpec {
   private static final String TAG = "AppDistribution";
 
-  ReactNativeFirebaseAppDistributionModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
+  public NativeRNFBTurboAppDistribution(ReactApplicationContext reactContext) {
+    super(reactContext);
   }
 
-  @ReactMethod
+  @Override
   public void isTesterSignedIn(Promise promise) {
-    rejectPromiseWithCodeAndMessage(
-        promise, "platform-unsupported", "Android is not supported for App Distribution");
+    promise.reject("platform-unsupported", "Android is not supported for App Distribution");
   }
 
-  @ReactMethod
+  @Override
   public void signInTester(Promise promise) {
-    rejectPromiseWithCodeAndMessage(
-        promise, "platform-unsupported", "Android is not supported for App Distribution");
+    promise.reject("platform-unsupported", "Android is not supported for App Distribution");
   }
 
-  @ReactMethod
+  @Override
   public void checkForUpdate(Promise promise) {
-    rejectPromiseWithCodeAndMessage(
-        promise, "platform-unsupported", "Android is not supported for App Distribution");
+    promise.reject("platform-unsupported", "Android is not supported for App Distribution");
   }
 
-  @ReactMethod
+  @Override
   public void signOutTester(Promise promise) {
-    rejectPromiseWithCodeAndMessage(
-        promise, "platform-unsupported", "Android is not supported for App Distribution");
+    promise.reject("platform-unsupported", "Android is not supported for App Distribution");
   }
 }

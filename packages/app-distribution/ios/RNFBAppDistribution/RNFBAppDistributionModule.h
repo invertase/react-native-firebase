@@ -16,9 +16,8 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "RNFBAppDistributionTurboModules.h"
 
-#import <React/RCTBridgeModule.h>
-
-@interface RNFBAppDistributionModule : NSObject <RCTBridgeModule>
+@interface RNFBAppDistributionModule : NSObject <NativeRNFBTurboAppDistributionSpec>
 
 @end
