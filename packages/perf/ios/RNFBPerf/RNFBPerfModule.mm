@@ -25,10 +25,12 @@ static __strong NSMutableDictionary *traces;
 static __strong NSMutableDictionary *httpMetrics;
 
 @implementation RNFBPerfModule
-#pragma mark -
-#pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
+
++ (BOOL)requiresMainQueueSetup {
+  return NO;
+}
 
 - (instancetype)init {
   self = [super init];
@@ -42,7 +44,7 @@ RCT_EXPORT_MODULE();
   return self;
 }
 
-- (void)dealloc {
+- (void)invalidate {
   @synchronized([self class]) {
     for (NSString *key in [traces allKeys]) {
       [traces removeObjectForKey:key];
@@ -54,7 +56,7 @@ RCT_EXPORT_MODULE();
   }
 }
 
-- (NSDictionary *)constantsToExport {
+- (NSDictionary *)perfConstantsDictionary {
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isPerformanceCollectionEnabled"] =
       @([RCTConvert BOOL:@([FIRPerformance sharedInstance].dataCollectionEnabled)]);
@@ -63,48 +65,58 @@ RCT_EXPORT_MODULE();
   return constants;
 }
 
-+ (BOOL)requiresMainQueueSetup {
-  return NO;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboPerf::Constants::Builder>)constantsToExport {
+  return [_RCTTypedModuleConstants newWithUnsafeDictionary:[self perfConstantsDictionary]];
 }
 
-#pragma mark -
-#pragma mark Firebase Perf Methods
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboPerf::Constants::Builder>)getConstants {
+  return [self constantsToExport];
+}
 
-RCT_EXPORT_METHOD(setPerformanceCollectionEnabled
-                  : (BOOL)enabled resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboPerfSpecJSI>(params);
+}
+
+- (void)setPerformanceCollectionEnabled:(BOOL)enabled
+                                resolve:(RCTPromiseResolveBlock)resolve
+                                 reject:(RCTPromiseRejectBlock)reject {
   [FIRPerformance sharedInstance].dataCollectionEnabled = (BOOL)enabled;
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(startTrace
-                  : (nonnull NSNumber *)id identifier
-                  : (NSString *)identifier resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)instrumentationEnabled:(BOOL)enabled
+                       resolve:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject {
+  [FIRPerformance sharedInstance].instrumentationEnabled = (BOOL)enabled;
+  resolve([NSNull null]);
+}
+
+- (void)startTrace:(double)id
+        identifier:(NSString *)identifier
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
   FIRTrace *trace = [[FIRPerformance sharedInstance] traceWithName:identifier];
   [trace start];
 
   @synchronized([self class]) {
-    traces[id] = trace;
+    traces[@((int)id)] = trace;
   }
 
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(stopTrace
-                  : (nonnull NSNumber *)id traceData
-                  : (NSDictionary *)traceData resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)stopTrace:(double)id
+        traceData:(JS::NativeRNFBTurboPerf::TraceData &)traceData
+          resolve:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject {
   FIRTrace *trace;
   @synchronized([self class]) {
-    trace = traces[id];
+    trace = traces[@((int)id)];
   }
 
-  NSDictionary *metrics = traceData[@"metrics"];
-  NSDictionary *attributes = traceData[@"attributes"];
+  NSDictionary *metrics = (NSDictionary *)traceData.metrics();
+  NSDictionary *attributes = (NSDictionary *)traceData.attributes();
 
   [metrics enumerateKeysAndObjectsUsingBlock:^(NSString *metricName, NSNumber *value, BOOL *stop) {
     [trace setIntValue:[value longLongValue] forMetric:metricName];
@@ -118,24 +130,36 @@ RCT_EXPORT_METHOD(stopTrace
   [trace stop];
 
   @synchronized([self class]) {
-    [traces removeObjectForKey:id];
+    [traces removeObjectForKey:@((int)id)];
   }
 
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(startHttpMetric
-                  : (nonnull NSNumber *)id url
-                  : (NSString *)url httpMethod
-                  : (NSString *)httpMethod resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)startScreenTrace:(double)id
+              identifier:(NSString *)identifier
+                 resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject {
+  resolve([NSNull null]);
+}
+
+- (void)stopScreenTrace:(double)id
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
+  resolve([NSNull null]);
+}
+
+- (void)startHttpMetric:(double)id
+                    url:(NSString *)url
+             httpMethod:(NSString *)httpMethod
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
   FIRHTTPMethod method = FIRHTTPMethodGET;
   NSURL *toNSURL = [NSURL URLWithString:url];
   if ([httpMethod compare:@"put" options:NSCaseInsensitiveSearch] == NSOrderedSame)
     method = FIRHTTPMethodPUT;
   if ([httpMethod compare:@"post" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodPUT;
+    method = FIRHTTPMethodPOST;
   if ([httpMethod compare:@"head" options:NSCaseInsensitiveSearch] == NSOrderedSame)
     method = FIRHTTPMethodHEAD;
   if ([httpMethod compare:@"trace" options:NSCaseInsensitiveSearch] == NSOrderedSame)
@@ -153,62 +177,49 @@ RCT_EXPORT_METHOD(startHttpMetric
   [httpMetric start];
 
   @synchronized([self class]) {
-    httpMetrics[id] = httpMetric;
+    httpMetrics[@((int)id)] = httpMetric;
   }
 
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(stopHttpMetric
-                  : (nonnull NSNumber *)id metricData
-                  : (NSDictionary *)metricData resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)stopHttpMetric:(double)id
+            metricData:(JS::NativeRNFBTurboPerf::HttpMetricData &)metricData
+               resolve:(RCTPromiseResolveBlock)resolve
+                reject:(RCTPromiseRejectBlock)reject {
   FIRHTTPMetric *httpMetric;
   @synchronized([self class]) {
-    httpMetric = httpMetrics[id];
+    httpMetric = httpMetrics[@((int)id)];
   }
 
-  NSDictionary *attributes = metricData[@"attributes"];
+  NSDictionary *attributes = (NSDictionary *)metricData.attributes();
   [attributes
       enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, NSString *value, BOOL *stop) {
         [httpMetric setValue:value forAttribute:attributeName];
       }];
 
-  if (metricData[@"httpResponseCode"]) {
-    NSNumber *responseCode = (NSNumber *)metricData[@"httpResponseCode"];
-    [httpMetric setResponseCode:[responseCode integerValue]];
+  if (metricData.httpResponseCode().has_value()) {
+    [httpMetric setResponseCode:(NSInteger)metricData.httpResponseCode().value()];
   }
 
-  if (metricData[@"requestPayloadSize"]) {
-    NSNumber *requestPayloadSize = (NSNumber *)metricData[@"requestPayloadSize"];
-    [httpMetric setRequestPayloadSize:[requestPayloadSize longValue]];
+  if (metricData.requestPayloadSize().has_value()) {
+    [httpMetric setRequestPayloadSize:(NSInteger)metricData.requestPayloadSize().value()];
   }
 
-  if (metricData[@"responsePayloadSize"]) {
-    NSNumber *responsePayloadSize = (NSNumber *)metricData[@"responsePayloadSize"];
-    [httpMetric setResponsePayloadSize:[responsePayloadSize longValue]];
+  if (metricData.responsePayloadSize().has_value()) {
+    [httpMetric setResponsePayloadSize:(NSInteger)metricData.responsePayloadSize().value()];
   }
 
-  if (metricData[@"responseContentType"]) {
-    NSString *responseContentType = (NSString *)metricData[@"responseContentType"];
-    [httpMetric setResponseContentType:responseContentType];
+  if (metricData.responseContentType() != nil) {
+    [httpMetric setResponseContentType:metricData.responseContentType()];
   }
 
   [httpMetric stop];
 
   @synchronized([self class]) {
-    [httpMetrics removeObjectForKey:id];
+    [httpMetrics removeObjectForKey:@((int)id)];
   }
 
-  resolve([NSNull null]);
-}
-
-RCT_EXPORT_METHOD(instrumentationEnabled
-                  : (BOOL)enabled resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
-  [FIRPerformance sharedInstance].instrumentationEnabled = (BOOL)enabled;
   resolve([NSNull null]);
 }
 

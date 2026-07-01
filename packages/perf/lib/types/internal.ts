@@ -63,6 +63,6 @@ export interface RNFBPerfNativeModule {
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBPerfModule: RNFBPerfNativeModule;
+    NativeRNFBTurboPerf: RNFBPerfNativeModule;
   }
 }

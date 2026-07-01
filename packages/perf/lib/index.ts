@@ -41,7 +41,7 @@ import type {
 } from './types/perf';
 import type { PerfInternal } from './types/internal';
 
-const nativeModuleName = 'RNFBPerfModule' as const;
+const nativeModuleName = 'NativeRNFBTurboPerf' as const;
 
 const VALID_HTTP_METHODS: HttpMethod[] = [
   'CONNECT',
@@ -174,6 +174,7 @@ const config: ModuleConfig = {
   nativeEvents: false,
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
+  turboModule: true,
 };
 
 export const SDK_VERSION = version;

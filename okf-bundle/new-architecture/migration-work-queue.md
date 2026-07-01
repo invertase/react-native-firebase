@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-06-30):** Phase **2** — committing P2a `installations`.
+> **IN PROGRESS (2026-06-30):** Phase **2** — committing P2b `perf`.
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -282,7 +282,7 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Phase 0 `app` TurboModules | P0 | **closed** | **closed** | **closed** | done | `full` | `feat(app)!: migrate app modules to TurboModules incl general migration infra` | Committed 2026-06-30. |
 | Phase 0.1 `app` compare:types | P0.1 | **closed** | **closed** | **closed** | done | `none` | `test(app): add app module type comparison config` | Committed 2026-06-30. |
 | Phase 1 `firestore` TurboModules | P1 | **closed** | **closed** | **closed** | done | `area-focused` | `feat(firestore)!: migrate firestore to TurboModules` | Committed 2026-06-30. |
-| Phase 2 `installations` | P2a | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(installations)!: migrate installations to TurboModules` | Review closed 2026-06-30. Remediation: iOS `invalidate` no-op. |
+| Phase 2 `installations` | P2a | **closed** | **closed** | **closed** | done | `area-focused` | `feat(installations)!: migrate installations to TurboModules` | Committed 2026-06-30. Remediation: iOS `invalidate` no-op. |
 | Phase 2 `perf` | P2b | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(perf)!: migrate perf to TurboModules` | Review green 2026-06-30. Deferred: dead legacy Java shell; `xdescribe` pending; vacuous iOS screenTrace e2e. |
 | Phase 2 `in-app-messaging` | P2c | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(in-app-messaging)!: migrate in-app-messaging to TurboModules` | Review green 2026-06-30. Deferred: dead legacy Java; stale JSDoc; 3 xdescribe pending. |
 | Phase 2 `app-distribution` | P2d | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(app-distribution)!: migrate app-distribution to TurboModules` | Review green 2026-06-30: Android 1 pass + 4 pending; iOS 3 pass + 2 pending. Duplicate codegen + legacy Java removed. |
