@@ -157,6 +157,6 @@ export interface RNFBAppCheckModule {
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBAppCheckModule: RNFBAppCheckModule;
+    NativeRNFBTurboAppCheck: RNFBAppCheckModule;
   }
 }

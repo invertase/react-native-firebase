@@ -17,10 +17,16 @@ package io.invertase.firebase.appcheck;
  *
  */
 
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
+
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
-import com.facebook.react.bridge.*;
+import com.facebook.fbreact.specs.NativeRNFBTurboAppCheckSpec;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.FirebaseAppCheck;
@@ -28,13 +34,14 @@ import io.invertase.firebase.common.ReactNativeFirebaseEvent;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseJSON;
 import io.invertase.firebase.common.ReactNativeFirebaseMeta;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
+import io.invertase.firebase.common.TaskExecutorService;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
-public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule {
+public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
   private static final String TAG = "AppCheck";
   private static final String LOGTAG = "RNFBAppCheck";
   private static final String KEY_APPCHECK_TOKEN_REFRESH_ENABLED = "app_check_token_auto_refresh";
@@ -42,7 +49,8 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
   private static HashMap<String, FirebaseAppCheck.AppCheckListener> mAppCheckListeners =
       new HashMap<>();
 
-  ReactNativeFirebaseAppCheckProviderFactory providerFactory =
+  private final TaskExecutorService executorService;
+  private final ReactNativeFirebaseAppCheckProviderFactory providerFactory =
       new ReactNativeFirebaseAppCheckProviderFactory();
 
   static boolean isAppCheckTokenRefreshEnabled() {
@@ -78,25 +86,29 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
     return enabled;
   }
 
+  public NativeRNFBTurboAppCheck(ReactApplicationContext reactContext) {
+    super(reactContext);
+    this.executorService = new TaskExecutorService("UniversalAppCheckModule");
+
+    FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+    firebaseAppCheck.setTokenAutoRefreshEnabled(isAppCheckTokenRefreshEnabled());
+  }
+
+  private ExecutorService getExecutor() {
+    return executorService.getExecutor();
+  }
+
   private boolean isAppDebuggable() throws Exception {
     boolean isDebuggable = false;
-    PackageManager pm = getContext().getPackageManager();
+    PackageManager pm = getReactApplicationContext().getPackageManager();
     if (pm != null) {
       isDebuggable =
           (0
-              != (pm.getApplicationInfo(getContext().getPackageName(), 0).flags
+              != (pm.getApplicationInfo(getReactApplicationContext().getPackageName(), 0).flags
                   & ApplicationInfo.FLAG_DEBUGGABLE));
     }
     Log.d(LOGTAG, "debuggable status? " + isDebuggable);
     return isDebuggable;
-  }
-
-  ReactNativeFirebaseAppCheckModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
-
-    // Our default token refresh config comes from config files, set it
-    FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
-    firebaseAppCheck.setTokenAutoRefreshEnabled(isAppCheckTokenRefreshEnabled());
   }
 
   @Override
@@ -116,9 +128,11 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
       firebaseAppCheck.removeAppCheckListener(mAppCheckListener);
       appCheckListenerIterator.remove();
     }
+
+    executorService.shutdown();
   }
 
-  @ReactMethod
+  @Override
   public void configureProvider(
       String appName, String providerName, String debugToken, Promise promise) {
     Log.d(
@@ -138,16 +152,14 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
     }
   }
 
-  @ReactMethod
+  @Override
   public void activate(
       String appName, String siteKeyProvider, boolean isTokenAutoRefreshEnabled, Promise promise) {
     try {
-
       FirebaseAppCheck firebaseAppCheck =
           FirebaseAppCheck.getInstance(FirebaseApp.getInstance(appName));
       firebaseAppCheck.setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled);
 
-      // Configure our new proxy factory in a backwards-compatible way for old API
       if (isAppDebuggable()) {
         Log.d(LOGTAG, "app is debuggable, configuring AppCheck for testing mode");
         if (BuildConfig.FIREBASE_APP_CHECK_DEBUG_TOKEN != "null") {
@@ -172,22 +184,26 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
     }
   }
 
-  @ReactMethod
+  @Override
+  public void isTokenAutoRefreshEnabled(String appName, Promise promise) {
+    promise.reject("platform-unsupported", "isTokenAutoRefreshEnabled is only supported on iOS");
+  }
+
+  @Override
   public void setTokenAutoRefreshEnabled(String appName, boolean isTokenAutoRefreshEnabled) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAppCheck.getInstance(firebaseApp).setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled);
   }
 
-  @ReactMethod
+  @Override
   public void getToken(String appName, boolean forceRefresh, Promise promise) {
     Log.d(LOGTAG, "getToken appName/forceRefresh: " + appName + "/" + forceRefresh);
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     Tasks.call(
             getExecutor(),
-            () -> {
-              return Tasks.await(
-                  FirebaseAppCheck.getInstance(firebaseApp).getAppCheckToken(forceRefresh));
-            })
+            () ->
+                Tasks.await(
+                    FirebaseAppCheck.getInstance(firebaseApp).getAppCheckToken(forceRefresh)))
         .addOnCompleteListener(
             getExecutor(),
             (task) -> {
@@ -206,17 +222,16 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
             });
   }
 
-  @ReactMethod
+  @Override
   public void getLimitedUseToken(String appName, Promise promise) {
     Log.d(LOGTAG, "getLimitedUseToken appName: " + appName);
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
 
     Tasks.call(
             getExecutor(),
-            () -> {
-              return Tasks.await(
-                  FirebaseAppCheck.getInstance(firebaseApp).getLimitedUseAppCheckToken());
-            })
+            () ->
+                Tasks.await(
+                    FirebaseAppCheck.getInstance(firebaseApp).getLimitedUseAppCheckToken()))
         .addOnCompleteListener(
             getExecutor(),
             (task) -> {
@@ -235,8 +250,7 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
             });
   }
 
-  /** Add a new token change listener - if one doesn't exist already */
-  @ReactMethod
+  @Override
   public void addAppCheckListener(final String appName) {
     Log.d(TAG, "addAppCheckListener " + appName);
 
@@ -247,7 +261,7 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
       FirebaseAppCheck.AppCheckListener newAppCheckListener =
           appCheckToken -> {
             WritableMap eventBody = Arguments.createMap();
-            eventBody.putString("appName", appName); // for js side distribution
+            eventBody.putString("appName", appName);
             eventBody.putString("token", appCheckToken.getToken());
             eventBody.putDouble("expireTimeMillis", appCheckToken.getExpireTimeMillis());
 
@@ -263,8 +277,7 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
     }
   }
 
-  /** Removes the current token change listener */
-  @ReactMethod
+  @Override
   public void removeAppCheckListener(String appName) {
     Log.d(TAG, "removeAppCheckListener " + appName);
 

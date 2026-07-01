@@ -47,7 +47,7 @@ import type { AppCheckInternal, ProviderWithOptions } from './types/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { ReactNativeFirebaseAppCheckProvider } from './providers';
 
-const nativeModuleName = 'RNFBAppCheckModule';
+const nativeModuleName = 'NativeRNFBTurboAppCheck';
 
 /**
  * Type guard to check if a provider has providerOptions.
@@ -244,6 +244,7 @@ const config: ModuleConfig = {
   nativeEvents: ['appCheck_token_changed'],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
+  turboModule: true,
 };
 
 export const SDK_VERSION = version;

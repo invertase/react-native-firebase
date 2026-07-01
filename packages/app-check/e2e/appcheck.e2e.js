@@ -142,14 +142,14 @@ describe('appCheck()', function () {
         // Only iOS lets us assert on this unfortunately, other platforms have no accessor
         if (Platform.ios) {
           let tokenRefresh =
-            await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled('[DEFAULT]');
+            await NativeModules.NativeRNFBTurboAppCheck.isTokenAutoRefreshEnabled('[DEFAULT]');
           tokenRefresh.should.equal(false);
         }
         setTokenAutoRefreshEnabled(appCheckInstance, true);
         // Only iOS lets us assert on this unfortunately, other platforms have no accessor
         if (Platform.ios) {
           tokenRefresh =
-            await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled('[DEFAULT]');
+            await NativeModules.NativeRNFBTurboAppCheck.isTokenAutoRefreshEnabled('[DEFAULT]');
           tokenRefresh.should.equal(true);
         }
       });

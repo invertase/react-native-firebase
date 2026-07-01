@@ -20,17 +20,21 @@
 
 #import <React/RCTUtils.h>
 
+#import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBAppCheckModule.h"
 
 @implementation RNFBAppCheckModule
-#pragma mark -
-#pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE(NativeRNFBTurboAppCheck)
 
-- (dispatch_queue_t)methodQueue {
-  return dispatch_get_main_queue();
++ (BOOL)requiresMainQueueSetup {
+  return NO;
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboAppCheckSpecJSI>(params);
 }
 
 + (instancetype)sharedInstance {
@@ -44,15 +48,15 @@ RCT_EXPORT_MODULE();
   return sharedInstance;
 }
 
-#pragma mark -
-#pragma mark Firebase AppCheck Methods
+- (void)invalidate {
+}
 
-RCT_EXPORT_METHOD(activate
-                  : (FIRApp *)firebaseApp
-                  : (nonnull NSString *)siteKeyOrProvider
-                  : (BOOL)isTokenAutoRefreshEnabled
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)activate:(NSString *)appName
+    siteKeyProvider:(NSString *)siteKeyProvider
+    isTokenAutoRefreshEnabled:(BOOL)isTokenAutoRefreshEnabled
+          resolve:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   DLog(@"deprecated API, provider will be deviceCheck / token refresh %d for app %@",
        isTokenAutoRefreshEnabled, firebaseApp.name);
   [[RNFBAppCheckModule sharedInstance].providerFactory configure:firebaseApp
@@ -64,12 +68,12 @@ RCT_EXPORT_METHOD(activate
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(configureProvider
-                  : (FIRApp *)firebaseApp
-                  : (nonnull NSString *)providerName
-                  : (nullable NSString *)debugToken
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)configureProvider:(NSString *)appName
+             providerName:(NSString *)providerName
+               debugToken:(NSString *)debugToken
+                  resolve:(RCTPromiseResolveBlock)resolve
+                   reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   DLog(@"appName/providerName/debugToken: %@/%@/%@", firebaseApp.name, providerName,
        (debugToken == nil ? @"null" : @"(not shown)"));
   [[RNFBAppCheckModule sharedInstance].providerFactory configure:firebaseApp
@@ -78,38 +82,35 @@ RCT_EXPORT_METHOD(configureProvider
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(setTokenAutoRefreshEnabled
-                  : (FIRApp *)firebaseApp
-                  : (BOOL)isTokenAutoRefreshEnabled) {
+- (void)setTokenAutoRefreshEnabled:(NSString *)appName
+         isTokenAutoRefreshEnabled:(BOOL)isTokenAutoRefreshEnabled {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   DLog(@"app/isTokenAutoRefreshEnabled: %@/%d", firebaseApp.name, isTokenAutoRefreshEnabled);
   FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   appCheck.isTokenAutoRefreshEnabled = isTokenAutoRefreshEnabled;
 }
 
-// Not present in JS or Android - it is iOS-specific so we only call this in testing - it is not in
-// index.d.ts
-RCT_EXPORT_METHOD(isTokenAutoRefreshEnabled
-                  : (FIRApp *)firebaseApp
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)isTokenAutoRefreshEnabled:(NSString *)appName
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   BOOL isTokenAutoRefreshEnabled = appCheck.isTokenAutoRefreshEnabled;
   DLog(@"app/isTokenAutoRefreshEnabled: %@/%d", firebaseApp.name, isTokenAutoRefreshEnabled);
   resolve([NSNumber numberWithBool:isTokenAutoRefreshEnabled]);
 }
 
-RCT_EXPORT_METHOD(getToken
-                  : (FIRApp *)firebaseApp
-                  : (BOOL)forceRefresh
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)getToken:(NSString *)appName
+    forceRefresh:(BOOL)forceRefresh
+         resolve:(RCTPromiseResolveBlock)resolve
+          reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   DLog(@"appName %@", firebaseApp.name);
   [appCheck
       tokenForcingRefresh:forceRefresh
                completion:^(FIRAppCheckToken *_Nullable token, NSError *_Nullable error) {
                  if (error != nil) {
-                   // Handle any errors if the token was not retrieved.
                    DLog(@"RNFBAppCheck - getToken - Unable to retrieve App Check token: %@", error);
                    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                                      userInfo:(NSMutableDictionary *)@{
@@ -134,16 +135,15 @@ RCT_EXPORT_METHOD(getToken
                }];
 }
 
-RCT_EXPORT_METHOD(getLimitedUseToken
-                  : (FIRApp *)firebaseApp
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)getLimitedUseToken:(NSString *)appName
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   DLog(@"appName %@", firebaseApp.name);
   [appCheck limitedUseTokenWithCompletion:^(FIRAppCheckToken *_Nullable token,
                                             NSError *_Nullable error) {
     if (error != nil) {
-      // Handle any errors if the token was not retrieved.
       DLog(@"RNFBAppCheck - getLimitedUseToken - Unable to retrieve App Check token: %@", error);
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                         userInfo:(NSMutableDictionary *)@{
@@ -166,6 +166,12 @@ RCT_EXPORT_METHOD(getLimitedUseToken
     tokenResultDictionary[@"token"] = token.token;
     resolve(tokenResultDictionary);
   }];
+}
+
+- (void)addAppCheckListener:(NSString *)appName {
+}
+
+- (void)removeAppCheckListener:(NSString *)appName {
 }
 
 @end

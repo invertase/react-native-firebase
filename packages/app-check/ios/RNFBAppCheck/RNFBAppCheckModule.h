@@ -16,12 +16,11 @@
  */
 
 #import <Foundation/Foundation.h>
-
-#import <React/RCTBridgeModule.h>
-
+#import <React/RCTInvalidating.h>
 #import "RNFBAppCheckProviderFactory.h"
+#import "RNFBAppCheckTurboModules.h"
 
-@interface RNFBAppCheckModule : NSObject <RCTBridgeModule>
+@interface RNFBAppCheckModule : NSObject <NativeRNFBTurboAppCheckSpec, RCTInvalidating>
 
 @property RNFBAppCheckProviderFactory* _Nullable providerFactory;
 

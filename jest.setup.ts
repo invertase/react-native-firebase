@@ -202,6 +202,16 @@ jest.doMock('react-native', () => {
           updateProfile: jest.fn(() => Promise.resolve(null)),
           verifyBeforeUpdateEmail: jest.fn(() => Promise.resolve(null)),
         },
+        NativeRNFBTurboAppCheck: {
+          activate: jest.fn(),
+          configureProvider: jest.fn(),
+          setTokenAutoRefreshEnabled: jest.fn(),
+          isTokenAutoRefreshEnabled: jest.fn(),
+          getToken: jest.fn(),
+          getLimitedUseToken: jest.fn(),
+          addAppCheckListener: jest.fn(),
+          removeAppCheckListener: jest.fn(),
+        },
         RNFBAppCheckModule: {
           initializeAppCheck: jest.fn(),
           setTokenAutoRefreshEnabled: jest.fn(),

@@ -5,13 +5,30 @@
   "description": "React Native Firebase - App Check",
   "main": "./dist/module/index.js",
   "types": "./dist/typescript/lib/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBAppCheckTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "io.invertase.firebase.appcheck"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTurboAppCheck": "RNFBAppCheckModule"
+      }
+    }
+  },
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "build:plugin": "rimraf plugin/build && tsc --build plugin",
     "lint:plugin": "eslint plugin/src/*",
     "compile": "bob build",
-    "prepare": "yarn run build && yarn compile && yarn run build:plugin"
+    "prepare": "yarn run build && yarn compile && yarn run build:plugin",
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/main/java/io/invertase/firebase/appcheck/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
   },
   "repository": {
     "type": "git",
