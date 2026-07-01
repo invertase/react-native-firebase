@@ -72,7 +72,7 @@ type ConfigSettings = {
 type ConfigValues = Record<string, Value>;
 
 const namespace = 'remoteConfig';
-const nativeModuleName = 'RNFBConfigModule' as const;
+const nativeModuleName = 'NativeRNFBTurboConfig' as const;
 
 function isSuccessEvent(
   event: RemoteConfigUpdateSuccessEventInternal | RemoteConfigUpdateErrorEventInternal,
@@ -526,6 +526,7 @@ const config: ModuleConfig = {
   nativeEvents: ['on_config_updated'],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
+  turboModule: true,
 };
 
 export { LastFetchStatus, ValueSource };

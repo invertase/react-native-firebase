@@ -75,6 +75,7 @@ export interface RemoteConfigUpdateErrorEventInternal extends RemoteConfigUpdate
 }
 
 export interface RNFBConfigModule {
+  getConstants(): NativeRemoteConfigConstants;
   activate(): Promise<NativeRemoteConfigResult<boolean>>;
   setConfigSettings(settings: {
     fetchTimeout: number;
@@ -140,6 +141,6 @@ export interface RemoteConfigInternal extends RemoteConfig {
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBConfigModule: RNFBConfigModule;
+    NativeRNFBTurboConfig: RNFBConfigModule;
   }
 }

@@ -43,7 +43,7 @@ jest.doMock('react-native', () => {
       },
       NativeModules: {
         ...ReactNative.NativeModules,
-        RNFBAnalyticsModule: {
+        NativeRNFBTurboAnalytics: {
           logEvent: jest.fn(),
           setAnalyticsCollectionEnabled: jest.fn(),
           setSessionTimeoutDuration: jest.fn(),
@@ -55,6 +55,7 @@ jest.doMock('react-native', () => {
           resetAnalyticsData: jest.fn(),
           setConsent: jest.fn(),
           setDefaultEventParameters: jest.fn(),
+          logTransaction: jest.fn(),
           initiateOnDeviceConversionMeasurementWithEmailAddress: jest.fn(),
           initiateOnDeviceConversionMeasurementWithHashedEmailAddress: jest.fn(),
           initiateOnDeviceConversionMeasurementWithPhoneNumber: jest.fn(),
@@ -433,7 +434,14 @@ jest.doMock('react-native', () => {
           stopHttpMetric: jest.fn(() => Promise.resolve()),
         },
         NativeRNFBTurboML: {},
-        RNFBConfigModule: {
+        NativeRNFBTurboConfig: {
+          getConstants: () => ({
+            lastFetchTime: Date.now(),
+            lastFetchStatus: 'success',
+            fetchTimeout: 60,
+            minimumFetchInterval: 43200,
+            values: {},
+          }),
           onConfigUpdated: jest.fn(),
           reset: jest.fn(() =>
             Promise.resolve({
@@ -520,6 +528,18 @@ jest.doMock('react-native', () => {
             }),
           ),
           setDefaultsFromResource: jest.fn(() =>
+            Promise.resolve({
+              result: true,
+              constants: {
+                lastFetchTime: Date.now(),
+                lastFetchStatus: 'success',
+                fetchTimeout: 60,
+                minimumFetchInterval: 43200,
+                values: {},
+              },
+            }),
+          ),
+          setCustomSignals: jest.fn(() =>
             Promise.resolve({
               result: true,
               constants: {
