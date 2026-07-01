@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2744B98621F45429004F8E3F /* RNFBStorageModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBStorageModule.m */; };
+		2744B98621F45429004F8E3F /* RNFBStorageModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBStorageModule.mm */; };
 		27A35B622268E0AB005BE5A8 /* RNFBStorageTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A35B612268E0AB005BE5A8 /* RNFBStorageTask.m */; };
 		27A35B652268E118005BE5A8 /* RNFBStorageDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A35B642268E118005BE5A8 /* RNFBStorageDownloadTask.m */; };
 		27A35B682268E138005BE5A8 /* RNFBStorageUploadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A35B672268E138005BE5A8 /* RNFBStorageUploadTask.m */; };
@@ -29,7 +29,7 @@
 /* Begin PBXFileReference section */
 		2744B98221F45429004F8E3F /* libRNFBStorage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBStorage.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBStorageModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBStorageModule.h; path = RNFBStorage/RNFBStorageModule.h; sourceTree = SOURCE_ROOT; };
-		2744B98521F45429004F8E3F /* RNFBStorageModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBStorageModule.m; path = RNFBStorage/RNFBStorageModule.m; sourceTree = SOURCE_ROOT; };
+		2744B98521F45429004F8E3F /* RNFBStorageModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBStorageModule.mm; path = RNFBStorage/RNFBStorageModule.mm; sourceTree = SOURCE_ROOT; };
 		27A35B612268E0AB005BE5A8 /* RNFBStorageTask.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBStorageTask.m; sourceTree = "<group>"; };
 		27A35B632268E0CD005BE5A8 /* RNFBStorageTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBStorageTask.h; sourceTree = "<group>"; };
 		27A35B642268E118005BE5A8 /* RNFBStorageDownloadTask.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBStorageDownloadTask.m; sourceTree = "<group>"; };
@@ -63,7 +63,7 @@
 			isa = PBXGroup;
 			children = (
 				2744B98421F45429004F8E3F /* RNFBStorageModule.h */,
-				2744B98521F45429004F8E3F /* RNFBStorageModule.m */,
+				2744B98521F45429004F8E3F /* RNFBStorageModule.mm */,
 				27A35B612268E0AB005BE5A8 /* RNFBStorageTask.m */,
 				27A35B632268E0CD005BE5A8 /* RNFBStorageTask.h */,
 				27A35B642268E118005BE5A8 /* RNFBStorageDownloadTask.m */,
@@ -144,7 +144,7 @@
 			files = (
 				27A35B622268E0AB005BE5A8 /* RNFBStorageTask.m in Sources */,
 				27A35B6B2268E1BE005BE5A8 /* RNFBStorageCommon.m in Sources */,
-				2744B98621F45429004F8E3F /* RNFBStorageModule.m in Sources */,
+				2744B98621F45429004F8E3F /* RNFBStorageModule.mm in Sources */,
 				27A35B652268E118005BE5A8 /* RNFBStorageDownloadTask.m in Sources */,
 				27A35B682268E138005BE5A8 /* RNFBStorageUploadTask.m in Sources */,
 			);

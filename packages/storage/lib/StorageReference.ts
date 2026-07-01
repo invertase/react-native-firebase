@@ -112,7 +112,7 @@ export default class Reference extends ReferenceBase implements StorageReference
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
    */
   delete(): Promise<void> {
-    return this._storage.native.delete(this.toString());
+    return this._storage.native.deleteObject(this.toString());
   }
 
   /**

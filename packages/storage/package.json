@@ -5,11 +5,28 @@
   "description": "React Native Firebase - React Native Firebase provides native integration with Cloud Storage, providing support to upload and download files directly from your device and from your Firebase Cloud Storage bucket.",
   "main": "./dist/module/index.js",
   "types": "./dist/typescript/lib/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBStorageTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "io.invertase.firebase.storage"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTurboStorage": "RNFBStorageModule"
+      }
+    }
+  },
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "compile": "bob build",
-    "prepare": "yarn run build && yarn compile"
+    "prepare": "yarn run build && yarn compile",
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/main/java/io/invertase/firebase/storage/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
   },
   "repository": {
     "type": "git",

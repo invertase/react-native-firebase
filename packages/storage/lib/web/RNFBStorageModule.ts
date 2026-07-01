@@ -247,7 +247,7 @@ export default {
    * @param url - The path to the object.
    * @return {Promise<void>}
    */
-  delete(appName: string, url: string): Promise<void> {
+  deleteObject(appName: string, url: string): Promise<void> {
     return guard(async () => {
       const ref = getReferenceFromUrl(appName, url);
       await deleteObject(ref);

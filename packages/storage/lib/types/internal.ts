@@ -35,7 +35,7 @@ import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitte
  * Used internally by StorageReference and other internal classes.
  */
 export type StorageInternal = FirebaseStorage & {
-  native: RNFBStorageModule;
+  native: NativeRNFBTurboStorage;
   _customUrlOrRegion: string | null;
   emitter: EventEmitter;
   eventNameForApp: (...args: Array<string | number>) => string;
@@ -127,7 +127,7 @@ export type ListResultInternal = {
  * when `hasMultiAppSupport` is enabled. This interface represents the *wrapped* module shape
  * that is exposed as `this.native` within FirebaseModule subclasses.
  */
-export interface RNFBStorageModule {
+export interface NativeRNFBTurboStorage {
   /**
    * Native constants exposed on the module.
    * These are read during module construction to seed the JS-side values.
@@ -140,7 +140,7 @@ export interface RNFBStorageModule {
   setMaxUploadRetryTime(time: number): Promise<void>;
   setMaxDownloadRetryTime(time: number): Promise<void>;
 
-  delete(url: string): Promise<void>;
+  deleteObject(url: string): Promise<void>;
   getDownloadURL(url: string): Promise<string>;
   getMetadata(url: string): Promise<FullMetadata>;
   updateMetadata(url: string, metadata: SettableMetadata): Promise<FullMetadata>;
@@ -184,6 +184,6 @@ export interface RNFBStorageModule {
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBStorageModule: RNFBStorageModule;
+    NativeRNFBTurboStorage: NativeRNFBTurboStorage;
   }
 }

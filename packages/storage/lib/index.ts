@@ -44,7 +44,7 @@ import type {
 import type { StorageInternal, StorageReferenceInternal } from './types/internal';
 
 const nativeEvents = ['storage_event'];
-const nativeModuleName = 'RNFBStorageModule';
+const nativeModuleName = 'NativeRNFBTurboStorage';
 
 const config: ModuleConfig = {
   namespace: 'storage',
@@ -53,6 +53,7 @@ const config: ModuleConfig = {
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
   disablePrependCustomUrlOrRegion: true,
+  turboModule: true,
 };
 
 class FirebaseStorageModule extends FirebaseModule<typeof nativeModuleName> {

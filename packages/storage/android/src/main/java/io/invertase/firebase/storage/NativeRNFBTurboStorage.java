@@ -17,6 +17,7 @@ package io.invertase.firebase.storage;
  *
  */
 
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.buildMetadataFromMap;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getListResultAsMap;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getMetadataAsMap;
@@ -25,9 +26,9 @@ import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.pro
 
 import android.content.Context;
 import android.net.Uri;
+import com.facebook.fbreact.specs.NativeRNFBTurboStorageSpec;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -35,19 +36,22 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import io.invertase.firebase.common.TaskExecutorService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import javax.annotation.Nullable;
 
-public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "Storage";
-
+public class NativeRNFBTurboStorage extends NativeRNFBTurboStorageSpec {
   private static HashMap<String, String> emulatorConfigs = new HashMap<>();
 
-  ReactNativeFirebaseStorageModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
+  private final TaskExecutorService executorService;
+
+  public NativeRNFBTurboStorage(ReactApplicationContext reactContext) {
+    super(reactContext);
+    executorService = new TaskExecutorService("RNFBStorageModule");
   }
 
   @Override
@@ -56,11 +60,27 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     super.invalidate();
   }
 
-  /**
-   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
-   */
-  @ReactMethod
-  public void delete(String appName, String url, final Promise promise) {
+  @Override
+  protected Map<String, Object> getTypedExportedConstants() {
+    Map<String, Object> constants = new HashMap<>();
+    Context context = getReactApplicationContext();
+    List<FirebaseApp> apps = FirebaseApp.getApps(context);
+    if (apps.size() > 0) {
+      FirebaseStorage defaultStorageInstance = FirebaseStorage.getInstance();
+      constants.put("maxDownloadRetryTime", defaultStorageInstance.getMaxDownloadRetryTimeMillis());
+      constants.put(
+          "maxOperationRetryTime", defaultStorageInstance.getMaxOperationRetryTimeMillis());
+      constants.put("maxUploadRetryTime", defaultStorageInstance.getMaxUploadRetryTimeMillis());
+    } else {
+      constants.put("maxDownloadRetryTime", 0);
+      constants.put("maxOperationRetryTime", 0);
+      constants.put("maxUploadRetryTime", 0);
+    }
+    return constants;
+  }
+
+  @Override
+  public void deleteObject(String appName, String url, final Promise promise) {
     try {
       StorageReference reference = getReferenceFromUrl(url, appName);
       reference
@@ -79,10 +99,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  /**
-   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getDownloadURL
-   */
-  @ReactMethod
+  @Override
   public void getDownloadURL(String appName, final String url, final Promise promise) {
     try {
       StorageReference reference = getReferenceFromUrl(url, appName);
@@ -101,10 +118,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  /**
-   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
-   */
-  @ReactMethod
+  @Override
   public void getMetadata(String appName, String url, Promise promise) {
     try {
       StorageReference reference = getReferenceFromUrl(url, appName);
@@ -124,10 +138,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  /**
-   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#list
-   */
-  @ReactMethod
+  @Override
   public void list(String appName, String url, ReadableMap listOptions, Promise promise) {
     try {
       StorageReference reference = getReferenceFromUrl(url, appName);
@@ -135,7 +146,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
 
       int maxResults = listOptions.getInt("maxResults");
 
-      if (listOptions.hasKey("pageToken")) {
+      if (listOptions.hasKey("pageToken") && !listOptions.isNull("pageToken")) {
         String pageToken = listOptions.getString("pageToken");
         list = reference.list(maxResults, Objects.requireNonNull(pageToken));
       } else {
@@ -156,10 +167,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  /**
-   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#listAll
-   */
-  @ReactMethod
+  @Override
   public void listAll(String appName, String url, Promise promise) {
     try {
       StorageReference reference = getReferenceFromUrl(url, appName);
@@ -179,30 +187,9 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  // Useful for development / debugging
-  private void dumpMetadata(StorageMetadata metadata) {
-    System.err.println("STORAGE dumping metadata contents");
-    System.err.println("STORAGE - cacheControl " + metadata.getCacheControl());
-    System.err.println("STORAGE - contentDisposition " + metadata.getContentDisposition());
-    System.err.println("STORAGE - contentEncoding " + metadata.getContentEncoding());
-    System.err.println("STORAGE - contentLanguage " + metadata.getContentLanguage());
-    System.err.println("STORAGE - contentType " + metadata.getContentType());
-    for (String customKey : metadata.getCustomMetadataKeys()) {
-      System.err.println(
-          "STORAGE - customMetadata: '"
-              + customKey
-              + "' / '"
-              + metadata.getCustomMetadata(customKey)
-              + "'");
-    }
-  }
-
-  /**
-   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#updateMetadata
-   */
-  @ReactMethod
+  @Override
   public void updateMetadata(
-      String appName, String url, ReadableMap metadataMap, final Promise promise) {
+      String appName, String url, @Nullable ReadableMap metadataMap, final Promise promise) {
     try {
       StorageReference reference = getReferenceFromUrl(url, appName);
 
@@ -212,11 +199,8 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
               getExecutor(),
               getTask -> {
                 if (getTask.isSuccessful()) {
-
-                  // dumpMetadata(getTask.getResult());
                   StorageMetadata metadata =
                       buildMetadataFromMap(metadataMap, null, getTask.getResult());
-                  // dumpMetadata(metadata);
 
                   reference
                       .updateMetadata(metadata)
@@ -224,10 +208,8 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
                           getExecutor(),
                           updateTask -> {
                             if (updateTask.isSuccessful()) {
-                              // dumpMetadata(updateTask.getResult());
                               promise.resolve(getMetadataAsMap(updateTask.getResult()));
                             } else {
-                              updateTask.getException().printStackTrace();
                               promiseRejectStorageException(promise, updateTask.getException());
                             }
                           });
@@ -241,11 +223,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  /**
-   * @link
-   *     https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxDownloadRetryTime
-   */
-  @ReactMethod
+  @Override
   public void setMaxDownloadRetryTime(String appName, double milliseconds, Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance(firebaseApp);
@@ -253,11 +231,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     promise.resolve(null);
   }
 
-  /**
-   * @link
-   *     https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxOperationRetryTime
-   */
-  @ReactMethod
+  @Override
   public void setMaxOperationRetryTime(String appName, double milliseconds, Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance(firebaseApp);
@@ -265,11 +239,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     promise.resolve(null);
   }
 
-  /**
-   * @link
-   *     https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxUploadRetryTime
-   */
-  @ReactMethod
+  @Override
   public void setMaxUploadRetryTime(String appName, double milliseconds, Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance(firebaseApp);
@@ -277,33 +247,22 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     promise.resolve(null);
   }
 
-  /**
-   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Storage#useEmulator
-   */
-  @ReactMethod
-  public void useEmulator(
-      String appName, String host, int port, String bucketUrl, Promise promise) {
+  @Override
+  public void useEmulator(String appName, String host, double port, String bucketUrl) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance(firebaseApp, bucketUrl);
     String emulatorKey = appName + ":" + bucketUrl;
 
     if (emulatorConfigs.get(emulatorKey) == null) {
-      firebaseStorage.useEmulator(host, port);
+      firebaseStorage.useEmulator(host, (int) port);
       emulatorConfigs.put(emulatorKey, "true");
     }
-    promise.resolve(null);
   }
 
-  /**
-   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#writeToFile
-   */
-  @ReactMethod
+  @Override
   public void writeToFile(
-      String appName, String url, String localFilePath, int taskId, Promise promise) {
-    // TODO(salakar) only need to check this if using external storage?
+      String appName, String url, String localFilePath, double taskId, Promise promise) {
     if (!isExternalStorageWritable()) {
-      // TODO(salakar) send failure event
       rejectPromiseWithCodeAndMessage(
           promise,
           "invalid-device-file-path",
@@ -313,7 +272,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     try {
       StorageReference reference = getReferenceFromUrl(url, appName);
       ReactNativeFirebaseStorageDownloadTask storageTask =
-          new ReactNativeFirebaseStorageDownloadTask(taskId, reference, appName);
+          new ReactNativeFirebaseStorageDownloadTask((int) taskId, reference, appName);
       storageTask.begin(getTransactionalExecutor(), localFilePath);
       storageTask.addOnCompleteListener(getTransactionalExecutor(), promise);
     } catch (Exception e) {
@@ -321,22 +280,19 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  /**
-   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putString
-   */
-  @ReactMethod
+  @Override
   public void putString(
       String appName,
       String url,
       String string,
       String format,
-      ReadableMap metadataMap,
-      int taskId,
+      @Nullable ReadableMap metadataMap,
+      double taskId,
       Promise promise) {
     try {
       StorageReference reference = getReferenceFromUrl(url, appName);
       ReactNativeFirebaseStorageUploadTask storageTask =
-          new ReactNativeFirebaseStorageUploadTask(taskId, reference, appName);
+          new ReactNativeFirebaseStorageUploadTask((int) taskId, reference, appName);
       storageTask.begin(getTransactionalExecutor(), string, format, metadataMap);
       storageTask.addOnCompleteListener(getTransactionalExecutor(), promise);
     } catch (Exception e) {
@@ -344,21 +300,18 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  /**
-   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putFile
-   */
-  @ReactMethod
+  @Override
   public void putFile(
       String appName,
       String url,
       String localFilePath,
-      ReadableMap metadata,
-      int taskId,
+      @Nullable ReadableMap metadata,
+      double taskId,
       Promise promise) {
     try {
       StorageReference reference = getReferenceFromUrl(url, appName);
       ReactNativeFirebaseStorageUploadTask storageTask =
-          new ReactNativeFirebaseStorageUploadTask(taskId, reference, appName);
+          new ReactNativeFirebaseStorageUploadTask((int) taskId, reference, appName);
       storageTask.begin(getTransactionalExecutor(), localFilePath, metadata);
       storageTask.addOnCompleteListener(getTransactionalExecutor(), promise);
     } catch (Exception e) {
@@ -366,19 +319,30 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  @ReactMethod
-  public void setTaskStatus(String appName, int taskId, int status, Promise promise) {
-    switch (status) {
+  @Override
+  public void setTaskStatus(String appName, double taskId, double status, Promise promise) {
+    switch ((int) status) {
       case 0:
-        promise.resolve(ReactNativeFirebaseStorageTask.pauseTaskById(taskId));
+        promise.resolve(ReactNativeFirebaseStorageTask.pauseTaskById((int) taskId));
         break;
       case 1:
-        promise.resolve(ReactNativeFirebaseStorageTask.resumeTaskById(taskId));
+        promise.resolve(ReactNativeFirebaseStorageTask.resumeTaskById((int) taskId));
         break;
       case 2:
-        promise.resolve(ReactNativeFirebaseStorageTask.cancelTaskById(taskId));
+        promise.resolve(ReactNativeFirebaseStorageTask.cancelTaskById((int) taskId));
+        break;
+      default:
+        promise.resolve(false);
         break;
     }
+  }
+
+  private ExecutorService getExecutor() {
+    return executorService.getExecutor();
+  }
+
+  private ExecutorService getTransactionalExecutor() {
+    return executorService.getTransactionalExecutor();
   }
 
   private String getBucketFromUrl(String url) {
@@ -392,24 +356,5 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     FirebaseStorage firebaseStorage =
         FirebaseStorage.getInstance(firebaseApp, getBucketFromUrl(url));
     return firebaseStorage.getReferenceFromUrl(url);
-  }
-
-  @Override
-  public Map<String, Object> getConstants() {
-    Map<String, Object> constants = new HashMap<>();
-
-    Context context = getReactApplicationContext();
-
-    // a 'safe' way of checking if any apps have been initialized
-    List<FirebaseApp> apps = FirebaseApp.getApps(context);
-    if (apps.size() > 0) {
-      FirebaseStorage defaultStorageInstance = FirebaseStorage.getInstance();
-      constants.put("maxDownloadRetryTime", defaultStorageInstance.getMaxDownloadRetryTimeMillis());
-      constants.put(
-          "maxOperationRetryTime", defaultStorageInstance.getMaxOperationRetryTimeMillis());
-      constants.put("maxUploadRetryTime", defaultStorageInstance.getMaxUploadRetryTimeMillis());
-    }
-
-    return constants;
   }
 }

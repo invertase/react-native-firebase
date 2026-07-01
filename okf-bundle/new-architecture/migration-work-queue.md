@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-06-30):** Phase **3** — P3d `crashlytics` **independent-review** (serial e2e).
+> **IN PROGRESS (2026-06-30):** Phase **3** complete — committing P3e `storage`.
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -164,7 +164,7 @@ Pick **one** of `firestore` or `auth` in Phase 1 (firestore = multi-module + pip
 | **0.1** | App modular type parity (`compare:types`) | **done** | `app` — [§ Phase 0.1](#phase-01-app-comparetypes) |
 | **1** | Hard probe | **done** | `firestore` (multi-module + pipelines; NewArch-AD-14a composite) |
 | **2** | Easy wins | **done** | `installations`, `perf`, `in-app-messaging`, `app-distribution`, `ml` |
-| **3** | Moderate | **in progress** | `app-check`, `remote-config`, `analytics`, `crashlytics`, `storage` |
+| **3** | Moderate | **done** | `app-check`, `remote-config`, `analytics`, `crashlytics`, `storage` |
 | **4** | Remaining complex | queued | other Tier A/B + `messaging`, `database` |
 | **5** | Android-only / misc | queued | `phone-number-verification` |
 | **S** | Sync conversion (forced-async → sync) | queued (scope open — [NewArch-AD-16](architecture-decisions.md#newarch-ad-16--phase-s-asyncsync-conversion--open)) | All migrated packages — [§ sync conversion](#phase-s-sync-conversion-forced-async--sync) |
@@ -269,9 +269,9 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 **Label:** `phase-3-moderate`; **harness:** pending per package
 
-**Next item:** Phase **3** P3d `crashlytics` — **independent-review** (serial e2e: Android → iOS)
+**Next item:** Phase **4** — pick `database` or `auth` / `messaging`
 
-**Current gates:** P3a–P3c committed · P3d `implementation_gate` **closed** · P3d `review_gate` **open**
+**Current gates:** Phase **3** complete (all P3 rows committed after P3e)
 
 **Host rule:** one `:test-cover` at a time — never parallel subagents with e2e.
 
@@ -292,8 +292,8 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Phase 3 `app-check` | P3a | **closed** | **closed** | **closed** | done | `area-focused` | `feat(app-check)!: migrate app-check to TurboModules` | Committed 2026-06-30. |
 | Phase 3 `remote-config` | P3b | **closed** | **closed** | **closed** | done | `area-focused` | `feat(remote-config)!: migrate remote-config to TurboModules` | Committed 2026-06-30. |
 | Phase 3 `analytics` | P3c | **closed** | **closed** | **closed** | done | `area-focused` | `feat(analytics)!: migrate analytics to TurboModules` | Committed 2026-06-30. |
-| Phase 3 `crashlytics` | P3d | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(crashlytics)!: migrate crashlytics to TurboModules` | Review green 2026-06-30 serial e2e: Android/iOS 18+1p (`crashlytics()` harness). |
-| Phase 3 `storage` | P3e | **open** | **open** | **open** | `implementation` | `unit-focused` | `feat(storage)!: migrate storage to TurboModules` | Tier C; 14 methods; 1 event. |
+| Phase 3 `crashlytics` | P3d | **closed** | **closed** | **closed** | done | `area-focused` | `feat(crashlytics)!: migrate crashlytics to TurboModules` | Committed 2026-06-30. |
+| Phase 3 `storage` | P3e | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(storage)!: migrate storage to TurboModules` | Review green 2026-06-30 serial e2e: macOS 97+8p; Android/iOS 98+9p. |
 
 ---
 

@@ -19,9 +19,11 @@
 #import <React/RCTUtils.h>
 
 #import "RNFBRCTEventEmitter.h"
-#import "RNFBSharedUtils.h"
+#import "RNFBApp/RCTConvert+FIRApp.h"
+#import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBStorageCommon.h"
 #import "RNFBStorageModule.h"
+#import "RNFBStorageTurboModules.h"
 
 static NSString *const RNFB_STORAGE_EVENT = @"storage_event";
 static NSString *const RNFB_STORAGE_STATE_CHANGED = @"state_changed";
@@ -44,10 +46,15 @@ static NSTimeInterval maxOperationRetryTime = 120;
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE(NativeRNFBTurboStorage);
 
 + (BOOL)requiresMainQueueSetup {
-  return YES;
+  return NO;
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboStorageSpecJSI>(params);
 }
 
 - (id)init {
@@ -80,11 +87,11 @@ RCT_EXPORT_MODULE();
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
  */
-RCT_EXPORT_METHOD(delete
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)url
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)deleteObject:(NSString *)appName
+                 url:(NSString *)url
+             resolve:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
   [storageReference deleteWithCompletion:^(NSError *_Nullable error) {
@@ -99,11 +106,11 @@ RCT_EXPORT_METHOD(delete
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getDownloadURL
  */
-RCT_EXPORT_METHOD(getDownloadURL
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)url
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)getDownloadURL:(NSString *)appName
+                   url:(NSString *)url
+               resolve:(RCTPromiseResolveBlock)resolve
+                reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
   [storageReference downloadURLWithCompletion:^(NSURL *_Nullable URL, NSError *_Nullable error) {
@@ -125,11 +132,11 @@ RCT_EXPORT_METHOD(getDownloadURL
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
  */
-RCT_EXPORT_METHOD(getMetadata
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)url
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)getMetadata:(NSString *)appName
+                url:(NSString *)url
+            resolve:(RCTPromiseResolveBlock)resolve
+             reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
   [storageReference
@@ -145,13 +152,22 @@ RCT_EXPORT_METHOD(getMetadata
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#updateMetadata
  */
-RCT_EXPORT_METHOD(updateMetadata
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)url
-                  : (NSDictionary *)metadata
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (NSDictionary *)decodedMetadataMap:(NSDictionary *_Nullable)metadata {
+  if (metadata == nil) {
+    return @{};
+  }
+
+  return [RNFBSharedUtils decodeNullSentinels:metadata];
+}
+
+- (void)updateMetadata:(NSString *)appName
+                   url:(NSString *)url
+              metadata:(NSDictionary *_Nullable)metadata
+               resolve:(RCTPromiseResolveBlock)resolve
+                reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
+  NSDictionary *metadataMap = [self decodedMetadataMap:metadata];
 
   [storageReference metadataWithCompletion:^(FIRStorageMetadata *_Nullable fetchedMetadata,
                                              NSError *_Nullable error) {
@@ -159,7 +175,7 @@ RCT_EXPORT_METHOD(updateMetadata
       [self promiseRejectStorageException:reject error:error];
     } else {
       FIRStorageMetadata *storageMetadata =
-          [RNFBStorageCommon buildMetadataFromMap:metadata
+          [RNFBStorageCommon buildMetadataFromMap:metadataMap
                                  existingMetadata:fetchedMetadata
                                              path:[storageReference fullPath]];
 
@@ -179,14 +195,14 @@ RCT_EXPORT_METHOD(updateMetadata
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#list
  */
-RCT_EXPORT_METHOD(list
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)url
-                  : (NSDictionary *)listOptions
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)list:(NSString *)appName
+         url:(NSString *)url
+ listOptions:(JS::NativeRNFBTurboStorage::StorageListOptions &)listOptions
+     resolve:(RCTPromiseResolveBlock)resolve
+      reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
-  long maxResults = [listOptions[@"maxResults"] longValue];
+  long maxResults = (long)listOptions.maxResults();
 
   id completionBlock = ^(FIRStorageListResult *result, NSError *error) {
     if (error != nil) {
@@ -197,8 +213,8 @@ RCT_EXPORT_METHOD(list
     }
   };
 
-  if (listOptions[@"pageToken"]) {
-    NSString *pageToken = listOptions[@"pageToken"];
+  NSString *pageToken = listOptions.pageToken();
+  if (pageToken != nil) {
     [storageReference listWithMaxResults:(int64_t)maxResults
                                pageToken:pageToken
                               completion:completionBlock];
@@ -210,11 +226,11 @@ RCT_EXPORT_METHOD(list
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#listAll
  */
-RCT_EXPORT_METHOD(listAll
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)url
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)listAll:(NSString *)appName
+            url:(NSString *)url
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
   __block bool alreadyCompleted = false;
@@ -241,14 +257,13 @@ RCT_EXPORT_METHOD(listAll
  * @url
  * https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxDownloadRetryTime
  */
-RCT_EXPORT_METHOD(setMaxDownloadRetryTime
-                  : (FIRApp *)firebaseApp
-                  : (nonnull NSNumber *)milliseconds
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
-  maxDownloadRetryTime = [milliseconds doubleValue] / 1000;
-  [[FIRStorage storageForApp:firebaseApp]
-      setMaxDownloadRetryTime:[milliseconds doubleValue] / 1000];
+- (void)setMaxDownloadRetryTime:(NSString *)appName
+                   milliseconds:(double)milliseconds
+                        resolve:(RCTPromiseResolveBlock)resolve
+                         reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+  maxDownloadRetryTime = milliseconds / 1000;
+  [[FIRStorage storageForApp:firebaseApp] setMaxDownloadRetryTime:milliseconds / 1000];
   resolve([NSNull null]);
 }
 
@@ -256,40 +271,40 @@ RCT_EXPORT_METHOD(setMaxDownloadRetryTime
  * @url
  * https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxOperationRetryTime
  */
-RCT_EXPORT_METHOD(setMaxOperationRetryTime
-                  : (FIRApp *)firebaseApp
-                  : (nonnull NSNumber *)milliseconds
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
-  maxOperationRetryTime = [milliseconds doubleValue] / 1000;
-  [[FIRStorage storageForApp:firebaseApp]
-      setMaxOperationRetryTime:[milliseconds doubleValue] / 1000];
+- (void)setMaxOperationRetryTime:(NSString *)appName
+                    milliseconds:(double)milliseconds
+                         resolve:(RCTPromiseResolveBlock)resolve
+                          reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+  maxOperationRetryTime = milliseconds / 1000;
+  [[FIRStorage storageForApp:firebaseApp] setMaxOperationRetryTime:milliseconds / 1000];
   resolve([NSNull null]);
 }
 
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxUploadRetryTime
  */
-RCT_EXPORT_METHOD(setMaxUploadRetryTime
-                  : (FIRApp *)firebaseApp
-                  : (nonnull NSNumber *)milliseconds
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
-  maxUploadRetryTime = [milliseconds doubleValue] / 1000;
-  [[FIRStorage storageForApp:firebaseApp] setMaxUploadRetryTime:[milliseconds doubleValue] / 1000];
+- (void)setMaxUploadRetryTime:(NSString *)appName
+                 milliseconds:(double)milliseconds
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+  maxUploadRetryTime = milliseconds / 1000;
+  [[FIRStorage storageForApp:firebaseApp] setMaxUploadRetryTime:milliseconds / 1000];
   resolve([NSNull null]);
 }
 
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#downloadFile
  */
-RCT_EXPORT_METHOD(writeToFile
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)url
-                  : (NSString *)localFilePath
-                  : (nonnull NSNumber *)taskId
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)writeToFile:(NSString *)appName
+                url:(NSString *)url
+      localFilePath:(NSString *)localFilePath
+             taskId:(double)taskId
+            resolve:(RCTPromiseResolveBlock)resolve
+             reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+  NSNumber *taskIdNumber = @(taskId);
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
   NSURL *localFile = [NSURL fileURLWithPath:localFilePath];
 
@@ -298,7 +313,7 @@ RCT_EXPORT_METHOD(writeToFile
     downloadTask = [storageReference writeToFile:localFile];
   });
 
-  PENDING_TASKS[taskId] = downloadTask;
+  PENDING_TASKS[taskIdNumber] = downloadTask;
 
   // download started or resumed
   [downloadTask
@@ -309,7 +324,7 @@ RCT_EXPORT_METHOD(writeToFile
                   [RNFBStorageCommon getStorageEventDictionary:eventBody
                                              internalEventName:RNFB_STORAGE_STATE_CHANGED
                                                        appName:firebaseApp.name
-                                                        taskId:taskId];
+                                                        taskId:taskIdNumber];
               [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
             }];
 
@@ -322,7 +337,7 @@ RCT_EXPORT_METHOD(writeToFile
                   [RNFBStorageCommon getStorageEventDictionary:eventBody
                                              internalEventName:RNFB_STORAGE_STATE_CHANGED
                                                        appName:firebaseApp.name
-                                                        taskId:taskId];
+                                                        taskId:taskIdNumber];
               [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
             }];
 
@@ -335,7 +350,7 @@ RCT_EXPORT_METHOD(writeToFile
                   [RNFBStorageCommon getStorageEventDictionary:eventBody
                                              internalEventName:RNFB_STORAGE_STATE_CHANGED
                                                        appName:firebaseApp.name
-                                                        taskId:taskId];
+                                                        taskId:taskIdNumber];
               [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
             }];
 
@@ -343,7 +358,7 @@ RCT_EXPORT_METHOD(writeToFile
   [downloadTask
       observeStatus:FIRStorageTaskStatusSuccess
             handler:^(FIRStorageTaskSnapshot *snapshot) {
-              [PENDING_TASKS removeObjectForKey:taskId];
+              [PENDING_TASKS removeObjectForKey:taskIdNumber];
 
               // state_changed
               NSDictionary *stateChangedEventBody =
@@ -352,7 +367,7 @@ RCT_EXPORT_METHOD(writeToFile
                   [RNFBStorageCommon getStorageEventDictionary:stateChangedEventBody
                                              internalEventName:RNFB_STORAGE_STATE_CHANGED
                                                        appName:firebaseApp.name
-                                                        taskId:taskId];
+                                                        taskId:taskIdNumber];
               [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT
                                                          body:stateChangedEvent];
 
@@ -362,7 +377,7 @@ RCT_EXPORT_METHOD(writeToFile
                   [RNFBStorageCommon getStorageEventDictionary:eventBody
                                              internalEventName:RNFB_STORAGE_DOWNLOAD_SUCCESS
                                                        appName:firebaseApp.name
-                                                        taskId:taskId];
+                                                        taskId:taskIdNumber];
               [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
               resolve(eventBody);
             }];
@@ -371,7 +386,7 @@ RCT_EXPORT_METHOD(writeToFile
   [downloadTask
       observeStatus:FIRStorageTaskStatusFailure
             handler:^(FIRStorageTaskSnapshot *snapshot) {
-              [PENDING_TASKS removeObjectForKey:taskId];
+              [PENDING_TASKS removeObjectForKey:taskIdNumber];
 
               // state_changed
               NSDictionary *stateChangedEventBody =
@@ -380,7 +395,7 @@ RCT_EXPORT_METHOD(writeToFile
                   [RNFBStorageCommon getStorageEventDictionary:stateChangedEventBody
                                              internalEventName:RNFB_STORAGE_STATE_CHANGED
                                                        appName:firebaseApp.name
-                                                        taskId:taskId];
+                                                        taskId:taskIdNumber];
               [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT
                                                          body:stateChangedEvent];
 
@@ -393,7 +408,7 @@ RCT_EXPORT_METHOD(writeToFile
                   [RNFBStorageCommon getStorageEventDictionary:eventBody
                                              internalEventName:RNFB_STORAGE_DOWNLOAD_FAILURE
                                                        appName:firebaseApp.name
-                                                        taskId:taskId];
+                                                        taskId:taskIdNumber];
               [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
 
               [self promiseRejectStorageException:reject error:snapshot.error];
@@ -403,17 +418,19 @@ RCT_EXPORT_METHOD(writeToFile
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putFile
  */
-RCT_EXPORT_METHOD(putFile
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)url
-                  : (NSString *)localFilePath
-                  : (NSDictionary *)metadata
-                  : (nonnull NSNumber *)taskId
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)putFile:(NSString *)appName
+            url:(NSString *)url
+  localFilePath:(NSString *)localFilePath
+       metadata:(NSDictionary *_Nullable)metadata
+         taskId:(double)taskId
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+  NSNumber *taskIdNumber = @(taskId);
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
+  NSDictionary *metadataMap = [self decodedMetadataMap:metadata];
   FIRStorageMetadata *storageMetadata =
-      [RNFBStorageCommon buildMetadataFromMap:metadata
+      [RNFBStorageCommon buildMetadataFromMap:metadataMap
                              existingMetadata:nil
                                          path:[storageReference fullPath]];
 
@@ -432,7 +449,7 @@ RCT_EXPORT_METHOD(putFile
                          getStorageEventDictionary:eventBody
                                  internalEventName:RNFB_STORAGE_STATE_CHANGED
                                            appName:[[[storageReference storage] app] name]
-                                            taskId:taskId];
+                                            taskId:taskIdNumber];
                      [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT
                                                                 body:stateChangedEvent];
 
@@ -441,7 +458,7 @@ RCT_EXPORT_METHOD(putFile
                          getStorageEventDictionary:eventBody
                                  internalEventName:RNFB_STORAGE_UPLOAD_FAILURE
                                            appName:[[[storageReference storage] app] name]
-                                            taskId:taskId];
+                                            taskId:taskIdNumber];
                      [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
 
                      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
@@ -467,7 +484,7 @@ RCT_EXPORT_METHOD(putFile
 
                    [self addUploadTaskObservers:uploadTask
                                  appDisplayName:[[[storageReference storage] app] name]
-                                         taskId:taskId
+                                         taskId:taskIdNumber
                                        resolver:resolve
                                        rejecter:reject];
                  }];
@@ -476,18 +493,20 @@ RCT_EXPORT_METHOD(putFile
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putFile
  */
-RCT_EXPORT_METHOD(putString
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)url
-                  : (NSString *)string
-                  : (NSString *)format
-                  : (NSDictionary *)metadata
-                  : (nonnull NSNumber *)taskId
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)putString:(NSString *)appName
+              url:(NSString *)url
+           string:(NSString *)string
+           format:(NSString *)format
+         metadata:(NSDictionary *_Nullable)metadata
+           taskId:(double)taskId
+          resolve:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+  NSNumber *taskIdNumber = @(taskId);
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
+  NSDictionary *metadataMap = [self decodedMetadataMap:metadata];
   FIRStorageMetadata *storageMetadata =
-      [RNFBStorageCommon buildMetadataFromMap:metadata
+      [RNFBStorageCommon buildMetadataFromMap:metadataMap
                              existingMetadata:nil
                                          path:[storageReference fullPath]];
 
@@ -500,7 +519,7 @@ RCT_EXPORT_METHOD(putString
 
   [self addUploadTaskObservers:uploadTask
                 appDisplayName:[[[storageReference storage] app] name]
-                        taskId:taskId
+                        taskId:taskIdNumber
                       resolver:resolve
                       rejecter:reject];
 }
@@ -508,17 +527,17 @@ RCT_EXPORT_METHOD(putString
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#useEmulator
  */
-RCT_EXPORT_METHOD(useEmulator
-                  : (FIRApp *)firebaseApp
-                  : (nonnull NSString *)host
-                  : (NSInteger)port
-                  : (NSString *)bucketUrl) {
+- (void)useEmulator:(NSString *)appName
+               host:(NSString *)host
+               port:(double)port
+          bucketUrl:(NSString *)bucketUrl {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   emulatorHost = host;
-  emulatorPort = port;
+  emulatorPort = (NSInteger)port;
   NSString *key = [self createEmulatorKey:bucketUrl appName:firebaseApp.name];
 
   if (!emulatorConfigs[key]) {
-    [[FIRStorage storageForApp:firebaseApp URL:bucketUrl] useEmulatorWithHost:host port:port];
+    [[FIRStorage storageForApp:firebaseApp URL:bucketUrl] useEmulatorWithHost:host port:(NSInteger)port];
     emulatorConfigs[key] = @YES;
   }
 }
@@ -526,19 +545,19 @@ RCT_EXPORT_METHOD(useEmulator
 /**
  * @url N/A - RNFB Specific
  */
-RCT_EXPORT_METHOD(setTaskStatus
-                  : (FIRApp *)firebaseApp
-                  : (nonnull NSNumber *)taskId
-                  : (nonnull NSNumber *)status
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
-  id task = PENDING_TASKS[taskId];
+- (void)setTaskStatus:(NSString *)appName
+               taskId:(double)taskId
+               status:(double)status
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject {
+  NSNumber *taskIdNumber = @(taskId);
+  id task = PENDING_TASKS[taskIdNumber];
   if (task == nil) {
     resolve(@(NO));
     return;
   }
 
-  switch ([status integerValue]) {
+  switch ((NSInteger)status) {
     case 0:
       [task pause];
       break;
@@ -705,7 +724,7 @@ RCT_EXPORT_METHOD(setTaskStatus
                                     }];
 }
 
-- (NSDictionary *)constantsToExport {
+- (NSDictionary *)storageConstantsDictionary {
   NSMutableDictionary *constants = [@{} mutableCopy];
 
   if ([[[FIRApp allApps] allKeys] count] > 0) {
@@ -715,9 +734,23 @@ RCT_EXPORT_METHOD(setTaskStatus
     constants[@"maxOperationRetryTime"] =
         @((NSInteger)[storageInstance maxOperationRetryTime] * 1000);
     constants[@"maxUploadRetryTime"] = @((NSInteger)[storageInstance maxUploadRetryTime] * 1000);
+  } else {
+    constants[@"maxDownloadRetryTime"] = @0;
+    constants[@"maxOperationRetryTime"] = @0;
+    constants[@"maxUploadRetryTime"] = @0;
   }
 
   return constants;
+}
+
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants::Builder>)
+    constantsToExport {
+  return [_RCTTypedModuleConstants newWithUnsafeDictionary:[self storageConstantsDictionary]];
+}
+
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants::Builder>)
+    getConstants {
+  return [self constantsToExport];
 }
 
 @end
