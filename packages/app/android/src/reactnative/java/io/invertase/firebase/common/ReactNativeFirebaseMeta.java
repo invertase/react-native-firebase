@@ -70,6 +70,12 @@ public class ReactNativeFirebaseMeta {
     return metaData.getString(META_PREFIX + key, defaultValue);
   }
 
+  public int getIntValue(String key, int defaultValue) {
+    Bundle metaData = getMetaData();
+    if (metaData == null) return defaultValue;
+    return metaData.getInt(META_PREFIX + key, defaultValue);
+  }
+
   public WritableMap getAll() {
     Bundle metaData = getMetaData();
     WritableMap map = Arguments.createMap();
@@ -84,6 +90,8 @@ public class ReactNativeFirebaseMeta {
           map.putString(key, (String) value);
         } else if (value instanceof Boolean) {
           map.putBoolean(key, (Boolean) value);
+        } else if (value instanceof Integer) {
+          map.putInt(key, (Integer) value);
         }
       }
     }
