@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2744B98621F45429004F8E3F /* RNFBAnalyticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAnalyticsModule.m */; };
+		2744B98621F45429004F8E3F /* RNFBAnalyticsModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAnalyticsModule.mm */; };
 		2744B99021F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98F21F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift */; };
 /* End PBXBuildFile section */
 
@@ -26,7 +26,7 @@
 /* Begin PBXFileReference section */
 		2744B98221F45429004F8E3F /* libRNFBAnalytics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBAnalytics.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBAnalyticsModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAnalyticsModule.h; path = RNFBAnalytics/RNFBAnalyticsModule.h; sourceTree = SOURCE_ROOT; };
-		2744B98521F45429004F8E3F /* RNFBAnalyticsModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAnalyticsModule.m; path = RNFBAnalytics/RNFBAnalyticsModule.m; sourceTree = SOURCE_ROOT; };
+		2744B98521F45429004F8E3F /* RNFBAnalyticsModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBAnalyticsModule.mm; path = RNFBAnalytics/RNFBAnalyticsModule.mm; sourceTree = SOURCE_ROOT; };
 		2744B98F21F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAnalyticsLogTransaction.swift; path = RNFBAnalytics/RNFBAnalyticsLogTransaction.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -55,7 +55,7 @@
 				2744B9A121F48736004F8E3F /* converters */,
 				2744B98C21F45C64004F8E3F /* common */,
 				2744B98421F45429004F8E3F /* RNFBAnalyticsModule.h */,
-				2744B98521F45429004F8E3F /* RNFBAnalyticsModule.m */,
+				2744B98521F45429004F8E3F /* RNFBAnalyticsModule.mm */,
 				2744B98F21F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift */,
 			);
 			path = RNFBAnalytics;
@@ -127,7 +127,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2744B98621F45429004F8E3F /* RNFBAnalyticsModule.m in Sources */,
+				2744B98621F45429004F8E3F /* RNFBAnalyticsModule.mm in Sources */,
 				2744B99021F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

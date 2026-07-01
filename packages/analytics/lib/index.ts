@@ -172,7 +172,7 @@ const ReservedEventNames: readonly string[] = [
 
 const namespace = 'analytics';
 
-const nativeModuleName = 'RNFBAnalyticsModule';
+const nativeModuleName = 'NativeRNFBTurboAnalytics' as const;
 
 class FirebaseAnalyticsModule extends FirebaseModule<typeof nativeModuleName> {
   logEvent(
@@ -927,6 +927,7 @@ const config: ModuleConfig = {
   nativeEvents: false,
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
+  turboModule: true,
 };
 
 export const SDK_VERSION: string = version;

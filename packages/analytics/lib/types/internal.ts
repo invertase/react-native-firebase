@@ -52,7 +52,7 @@ export interface RNFBAnalyticsModule {
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBAnalyticsModule: RNFBAnalyticsModule;
+    NativeRNFBTurboAnalytics: RNFBAnalyticsModule;
   }
 }
 

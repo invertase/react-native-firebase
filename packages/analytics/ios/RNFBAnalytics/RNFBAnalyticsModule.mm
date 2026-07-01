@@ -54,20 +54,24 @@ static NSArray<NSString *> *RNFBAnalyticsLongNumericParameterKeys(void) {
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
 
-- (dispatch_queue_t)methodQueue {
-  return dispatch_get_main_queue();
++ (BOOL)requiresMainQueueSetup {
+  return NO;
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboAnalyticsSpecJSI>(params);
 }
 
 #pragma mark -
 #pragma mark Firebase Analytics Methods
 
-RCT_EXPORT_METHOD(logEvent
-                  : (NSString *)name params
-                  : (NSDictionary *)params resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)logEvent:(NSString *)name
+          params:(NSDictionary *)params
+         resolve:(RCTPromiseResolveBlock)resolve
+          reject:(RCTPromiseRejectBlock)reject {
   @try {
     [FIRAnalytics logEventWithName:name parameters:[self cleanJavascriptParams:params]];
   } @catch (NSException *exception) {
@@ -77,10 +81,9 @@ RCT_EXPORT_METHOD(logEvent
   return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(setAnalyticsCollectionEnabled
-                  : (BOOL)enabled resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setAnalyticsCollectionEnabled:(BOOL)enabled
+                              resolve:(RCTPromiseResolveBlock)resolve
+                               reject:(RCTPromiseRejectBlock)reject {
   @try {
     [FIRAnalytics setAnalyticsCollectionEnabled:enabled];
   } @catch (NSException *exception) {
@@ -90,10 +93,9 @@ RCT_EXPORT_METHOD(setAnalyticsCollectionEnabled
   return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(setUserId
-                  : (NSString *)id resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setUserId:(NSString *)id
+          resolve:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject {
   @try {
     [FIRAnalytics setUserID:[self convertNSNullToNil:id]];
   } @catch (NSException *exception) {
@@ -102,11 +104,10 @@ RCT_EXPORT_METHOD(setUserId
   return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(setUserProperty
-                  : (NSString *)name value
-                  : (NSString *)value resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setUserProperty:(NSString *)name
+                  value:(NSString *)value
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
   @try {
     [FIRAnalytics setUserPropertyString:[self convertNSNullToNil:value] forName:name];
   } @catch (NSException *exception) {
@@ -115,10 +116,9 @@ RCT_EXPORT_METHOD(setUserProperty
   return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(setUserProperties
-                  : (NSDictionary *)properties resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setUserProperties:(NSDictionary *)properties
+                  resolve:(RCTPromiseResolveBlock)resolve
+                   reject:(RCTPromiseRejectBlock)reject {
   @try {
     [properties enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
       [FIRAnalytics setUserPropertyString:[self convertNSNullToNil:value] forName:key];
@@ -129,9 +129,7 @@ RCT_EXPORT_METHOD(setUserProperties
   return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(resetAnalyticsData
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)resetAnalyticsData:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   @try {
     [FIRAnalytics resetAnalyticsData];
   } @catch (NSException *exception) {
@@ -140,23 +138,18 @@ RCT_EXPORT_METHOD(resetAnalyticsData
   return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(setSessionTimeoutDuration
-                  : (double)milliseconds resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setSessionTimeoutDuration:(double)milliseconds
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject {
   [FIRAnalytics setSessionTimeoutInterval:milliseconds / 1000];
   return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(getAppInstanceId
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)getAppInstanceId:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   return resolve([FIRAnalytics appInstanceID]);
 }
 
-RCT_EXPORT_METHOD(getSessionId
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)getSessionId:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   __block BOOL completed = NO;
   const int64_t timeoutNs = (int64_t)(60 * NSEC_PER_SEC);
 
@@ -193,10 +186,9 @@ RCT_EXPORT_METHOD(getSessionId
   }];
 }
 
-RCT_EXPORT_METHOD(setDefaultEventParameters
-                  : (NSDictionary *)params resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setDefaultEventParameters:(NSDictionary *)params
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject {
   @try {
     [FIRAnalytics setDefaultEventParameters:[self cleanJavascriptParams:params]];
   } @catch (NSException *exception) {
@@ -206,10 +198,9 @@ RCT_EXPORT_METHOD(setDefaultEventParameters
   return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithEmailAddress
-                  : (NSString *)emailAddress resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)initiateOnDeviceConversionMeasurementWithEmailAddress:(NSString *)emailAddress
+                                                      resolve:(RCTPromiseResolveBlock)resolve
+                                                       reject:(RCTPromiseRejectBlock)reject {
   @try {
     [FIRAnalytics initiateOnDeviceConversionMeasurementWithEmailAddress:emailAddress];
   } @catch (NSException *exception) {
@@ -219,10 +210,9 @@ RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithEmailAddress
   return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithHashedEmailAddress
-                  : (NSString *)hashedEmailAddress resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)initiateOnDeviceConversionMeasurementWithHashedEmailAddress:(NSString *)hashedEmailAddress
+                                                            resolve:(RCTPromiseResolveBlock)resolve
+                                                             reject:(RCTPromiseRejectBlock)reject {
   @try {
     NSData *emailAddress = [self dataFromHexString:hashedEmailAddress];
     [FIRAnalytics initiateOnDeviceConversionMeasurementWithHashedEmailAddress:emailAddress];
@@ -233,10 +223,9 @@ RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithHashedEmailAddress
   return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithPhoneNumber
-                  : (NSString *)phoneNumber resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)initiateOnDeviceConversionMeasurementWithPhoneNumber:(NSString *)phoneNumber
+                                                     resolve:(RCTPromiseResolveBlock)resolve
+                                                      reject:(RCTPromiseRejectBlock)reject {
   @try {
     [FIRAnalytics initiateOnDeviceConversionMeasurementWithPhoneNumber:phoneNumber];
   } @catch (NSException *exception) {
@@ -246,10 +235,9 @@ RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithPhoneNumber
   return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithHashedPhoneNumber
-                  : (NSString *)hashedPhoneNumber resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)initiateOnDeviceConversionMeasurementWithHashedPhoneNumber:(NSString *)hashedPhoneNumber
+                                                           resolve:(RCTPromiseResolveBlock)resolve
+                                                            reject:(RCTPromiseRejectBlock)reject {
   @try {
     NSData *phoneNumber = [self dataFromHexString:hashedPhoneNumber];
     [FIRAnalytics initiateOnDeviceConversionMeasurementWithHashedPhoneNumber:phoneNumber];
@@ -260,10 +248,9 @@ RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithHashedPhoneNumber
   return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(logTransaction
-                  : (NSString *)transactionId resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)logTransaction:(NSString *)transactionId
+               resolve:(RCTPromiseResolveBlock)resolve
+                reject:(RCTPromiseRejectBlock)reject {
   if (@available(iOS 15.0, macOS 12.0, *)) {
     RNFBAnalyticsLogTransaction *handler = [[RNFBAnalyticsLogTransaction alloc] init];
     [handler logTransactionWithTransactionId:transactionId resolve:resolve reject:reject];
@@ -272,10 +259,9 @@ RCT_EXPORT_METHOD(logTransaction
   }
 }
 
-RCT_EXPORT_METHOD(setConsent
-                  : (NSDictionary *)consentSettings resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setConsent:(NSDictionary *)consentSettings
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
   @try {
     BOOL analyticsStorage = [consentSettings[@"analytics_storage"] boolValue];
     BOOL adStorage = [consentSettings[@"ad_storage"] boolValue];

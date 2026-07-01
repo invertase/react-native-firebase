@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-06-30):** Phase **3** — **independent-review** (`remote-config`). P3a committed.
+> **IN PROGRESS (2026-06-30):** Phase **3** — P3d `crashlytics` **implementation** (serial e2e only).
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -269,9 +269,13 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 **Label:** `phase-3-moderate`; **harness:** pending per package
 
-**Next item:** Phase **3** P3b `remote-config` — **independent-review**
+**Next item:** Phase **3** P3d `crashlytics` — **implementation** (serial e2e: Android → iOS)
 
-**Current gates:** P3a **done** · P3b `implementation_gate` **closed** · P3b `review_gate` **open**
+**Host rule:** one `:test-cover` at a time — never parallel subagents with e2e.
+
+**Current gates:** P3a–P3b committed · P3c `review_gate` **open** · P3d–P3e `implementation_gate` **open**
+
+**Host rule:** never dispatch parallel subagents that run `:test-cover`.
 
 **Arbiter gate:**
 
@@ -288,9 +292,9 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Phase 2 `app-distribution` | P2d | **closed** | **closed** | **closed** | done | `area-focused` | `feat(app-distribution)!: migrate app-distribution to TurboModules` | Committed 2026-06-30. |
 | Phase 2 `ml` | P2e | **closed** | **closed** | **closed** | done | `area-focused` | `feat(ml)!: migrate ml to TurboModules` | Committed 2026-06-30. |
 | Phase 3 `app-check` | P3a | **closed** | **closed** | **closed** | done | `area-focused` | `feat(app-check)!: migrate app-check to TurboModules` | Committed 2026-06-30. |
-| Phase 3 `remote-config` | P3b | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(remote-config)!: migrate remote-config to TurboModules` | Review green 2026-06-30: Jest 26/26; macOS 30+4p; Android/iOS 32+4p. |
-| Phase 3 `analytics` | P3c | **open** | **open** | **open** | `implementation` | `unit-focused` | `feat(analytics)!: migrate analytics to TurboModules` | Tier C; 11 methods; 0 events. |
-| Phase 3 `crashlytics` | P3d | **open** | **open** | **open** | `implementation` | `unit-focused` | `feat(crashlytics)!: migrate crashlytics to TurboModules` | Tier C; 14 methods; 0 events. |
+| Phase 3 `remote-config` | P3b | **closed** | **closed** | **closed** | done | `area-focused` | `feat(remote-config)!: migrate remote-config to TurboModules` | Committed 2026-06-30. |
+| Phase 3 `analytics` | P3c | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(analytics)!: migrate analytics to TurboModules` | Review green 2026-06-30 serial e2e: macOS 62+6p; Android/iOS 63+5p. |
+| Phase 3 `crashlytics` | P3d | **open** | **open** | **open** | `implementation` | `unit-focused` | `feat(crashlytics)!: migrate crashlytics to TurboModules` | Jest 15/15; Android build OK; e2e blocked Jet desync at recordError + iOS analytics C++ headers. |
 | Phase 3 `storage` | P3e | **open** | **open** | **open** | `implementation` | `unit-focused` | `feat(storage)!: migrate storage to TurboModules` | Tier C; 14 methods; 1 event. |
 
 ---

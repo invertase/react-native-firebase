@@ -17,22 +17,23 @@ package io.invertase.firebase.analytics;
  *
  */
 
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithExceptionMap;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import com.facebook.fbreact.specs.NativeRNFBTurboAnalyticsSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 
-public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModule {
+public class NativeRNFBTurboAnalytics extends NativeRNFBTurboAnalyticsSpec {
   private static final String SERVICE_NAME = "Analytics";
   private static final long GET_SESSION_ID_TIMEOUT_MS = 60_000L;
 
@@ -53,12 +54,12 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
   private final UniversalFirebaseAnalyticsModule module;
 
-  ReactNativeFirebaseAnalyticsModule(ReactApplicationContext reactContext) {
-    super(reactContext, SERVICE_NAME);
+  public NativeRNFBTurboAnalytics(ReactApplicationContext reactContext) {
+    super(reactContext);
     module = new UniversalFirebaseAnalyticsModule(reactContext, SERVICE_NAME);
   }
 
-  @ReactMethod
+  @Override
   public void logEvent(String name, @Nullable ReadableMap params, Promise promise) {
     module
         .logEvent(name, toBundle(params))
@@ -72,8 +73,8 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
-  public void setAnalyticsCollectionEnabled(Boolean enabled, Promise promise) {
+  @Override
+  public void setAnalyticsCollectionEnabled(boolean enabled, Promise promise) {
     module
         .setAnalyticsCollectionEnabled(enabled)
         .addOnCompleteListener(
@@ -86,7 +87,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
+  @Override
   public void setSessionTimeoutDuration(double milliseconds, Promise promise) {
     module
         .setSessionTimeoutDuration((long) milliseconds)
@@ -100,7 +101,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
+  @Override
   public void getAppInstanceId(Promise promise) {
     module
         .getAppInstanceId()
@@ -114,7 +115,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
+  @Override
   public void getSessionId(Promise promise) {
     final AtomicBoolean completed = new AtomicBoolean(false);
     final Handler handler = new Handler(Looper.getMainLooper());
@@ -143,8 +144,8 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
-  public void setUserId(String id, Promise promise) {
+  @Override
+  public void setUserId(@Nullable String id, Promise promise) {
     module
         .setUserId(id)
         .addOnCompleteListener(
@@ -157,8 +158,8 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
-  public void setUserProperty(String name, String value, Promise promise) {
+  @Override
+  public void setUserProperty(String name, @Nullable String value, Promise promise) {
     module
         .setUserProperty(name, value)
         .addOnCompleteListener(
@@ -171,7 +172,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
+  @Override
   public void setUserProperties(ReadableMap properties, Promise promise) {
     module
         .setUserProperties(Arguments.toBundle(properties))
@@ -185,7 +186,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
+  @Override
   public void resetAnalyticsData(Promise promise) {
     module
         .resetAnalyticsData()
@@ -199,7 +200,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
+  @Override
   public void setDefaultEventParameters(@Nullable ReadableMap params, Promise promise) {
     module
         .setDefaultEventParameters(toBundle(params))
@@ -213,7 +214,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
+  @Override
   public void setConsent(ReadableMap consentSettings, Promise promise) {
     module
         .setConsent(Arguments.toBundle(consentSettings))
@@ -225,6 +226,43 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
                 rejectPromiseWithExceptionMap(promise, task.getException());
               }
             });
+  }
+
+  @Override
+  public void logTransaction(String transactionId, Promise promise) {
+    promise.reject("platform-unsupported", "logTransaction is only supported on iOS");
+  }
+
+  @Override
+  public void initiateOnDeviceConversionMeasurementWithEmailAddress(
+      String emailAddress, Promise promise) {
+    promise.reject(
+        "platform-unsupported",
+        "initiateOnDeviceConversionMeasurementWithEmailAddress is only supported on iOS");
+  }
+
+  @Override
+  public void initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+      String hashedEmailAddress, Promise promise) {
+    promise.reject(
+        "platform-unsupported",
+        "initiateOnDeviceConversionMeasurementWithHashedEmailAddress is only supported on iOS");
+  }
+
+  @Override
+  public void initiateOnDeviceConversionMeasurementWithPhoneNumber(
+      String phoneNumber, Promise promise) {
+    promise.reject(
+        "platform-unsupported",
+        "initiateOnDeviceConversionMeasurementWithPhoneNumber is only supported on iOS");
+  }
+
+  @Override
+  public void initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+      String hashedPhoneNumber, Promise promise) {
+    promise.reject(
+        "platform-unsupported",
+        "initiateOnDeviceConversionMeasurementWithHashedPhoneNumber is only supported on iOS");
   }
 
   private Bundle toBundle(ReadableMap readableMap) {

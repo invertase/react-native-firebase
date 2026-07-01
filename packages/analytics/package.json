@@ -5,13 +5,30 @@
   "description": "React Native Firebase - The analytics module provides out of the box support with Google Analytics for Firebase. Integration with the Android & iOS allows for in-depth analytical insight reporting, such as device information, location, user actions and more.",
   "main": "./dist/module/index.js",
   "types": "./dist/typescript/lib/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBAnalyticsTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "io.invertase.firebase.analytics"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTurboAnalytics": "RNFBAnalyticsModule"
+      }
+    }
+  },
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "build:plugin": "rimraf plugin/build && tsc --build plugin",
     "lint:plugin": "eslint \"plugin/src/**/*.{ts,js}\"",
     "compile": "bob build",
-    "prepare": "yarn run build && yarn run build:plugin && yarn compile"
+    "prepare": "yarn run build && yarn run build:plugin && yarn compile",
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/reactnative/java/io/invertase/firebase/analytics/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
   },
   "repository": {
     "type": "git",

@@ -17,8 +17,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import <React/RCTBridgeModule.h>
+#import "RNFBAnalyticsTurboModules.h"
 
-@interface RNFBAnalyticsModule : NSObject <RCTBridgeModule>
+@interface RNFBAnalyticsModule : NSObject <NativeRNFBTurboAnalyticsSpec>
 
 @end
