@@ -293,7 +293,7 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Phase 3 `remote-config` | P3b | **closed** | **closed** | **closed** | done | `area-focused` | `feat(remote-config)!: migrate remote-config to TurboModules` | Committed 2026-06-30. |
 | Phase 3 `analytics` | P3c | **closed** | **closed** | **closed** | done | `area-focused` | `feat(analytics)!: migrate analytics to TurboModules` | Committed 2026-06-30. |
 | Phase 3 `crashlytics` | P3d | **closed** | **closed** | **closed** | done | `area-focused` | `feat(crashlytics)!: migrate crashlytics to TurboModules` | Committed 2026-06-30. |
-| Phase 3 `storage` | P3e | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(storage)!: migrate storage to TurboModules` | Review green 2026-06-30 serial e2e: macOS 97+8p; Android/iOS 98+9p. |
+| Phase 3 `storage` | P3e | **closed** | **closed** | **closed** | done | `area-focused` | `feat(storage)!: migrate storage to TurboModules` | Committed 2026-06-30. |
 
 ---
 
