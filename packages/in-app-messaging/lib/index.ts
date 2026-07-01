@@ -28,7 +28,7 @@ import type { InAppMessaging } from './types/in-app-messaging';
 import fallBackModule from './web/RNFBFiamModule';
 import { version } from './version';
 
-const nativeModuleName = 'RNFBFiamModule';
+const nativeModuleName = 'NativeRNFBTurboFiam';
 
 class FirebaseFiamModule extends FirebaseModule<typeof nativeModuleName> {
   private _isMessagesDisplaySuppressed: boolean;
@@ -84,6 +84,7 @@ const config: ModuleConfig = {
   nativeEvents: false,
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
+  turboModule: true,
 };
 
 /**

@@ -30,7 +30,7 @@ export interface RNFBFiamModule {
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBFiamModule: RNFBFiamModule;
+    NativeRNFBTurboFiam: RNFBFiamModule;
   }
 }
 

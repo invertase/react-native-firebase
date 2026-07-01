@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2744B98621F45429004F8E3F /* RNFBFiamModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBFiamModule.m */; };
+		2744B98621F45429004F8E3F /* RNFBFiamModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBFiamModule.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,7 +25,7 @@
 /* Begin PBXFileReference section */
 		2744B98221F45429004F8E3F /* libRNFBFiam.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBFiam.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBFiamModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFiamModule.h; path = RNFBFiam/RNFBFiamModule.h; sourceTree = SOURCE_ROOT; };
-		2744B98521F45429004F8E3F /* RNFBFiamModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFiamModule.m; path = RNFBFiam/RNFBFiamModule.m; sourceTree = SOURCE_ROOT; };
+		2744B98521F45429004F8E3F /* RNFBFiamModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFiamModule.mm; path = RNFBFiam/RNFBFiamModule.mm; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,7 +53,7 @@
 				2744B9A121F48736004F8E3F /* converters */,
 				2744B98C21F45C64004F8E3F /* common */,
 				2744B98421F45429004F8E3F /* RNFBFiamModule.h */,
-				2744B98521F45429004F8E3F /* RNFBFiamModule.m */,
+				2744B98521F45429004F8E3F /* RNFBFiamModule.mm */,
 			);
 			path = RNFBFiam;
 			sourceTree = "<group>";
@@ -124,7 +124,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2744B98621F45429004F8E3F /* RNFBFiamModule.m in Sources */,
+				2744B98621F45429004F8E3F /* RNFBFiamModule.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

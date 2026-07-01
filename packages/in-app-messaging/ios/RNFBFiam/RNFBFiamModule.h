@@ -16,9 +16,8 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "RNFBInAppMessagingTurboModules.h"
 
-#import <React/RCTBridgeModule.h>
-
-@interface RNFBFiamModule : NSObject <RCTBridgeModule>
+@interface RNFBFiamModule : NSObject <NativeRNFBTurboFiamSpec>
 
 @end
