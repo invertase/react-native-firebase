@@ -95,6 +95,12 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 - **`yarn jet --help`** working or failing in `tests/` is **not** a valid e2e or install gate.
 - Jet is started **internally** by `yarn tests:<platform>:test-cover`. Stale `:8090` → [pre-flight recovery](running-e2e.md#pre-flight-recovery), then re-run the same `:test-cover` command.
 
+### TurboModule codegen
+
+- **`cd packages/<pkg> && yarn ios:codegen`** (or `yarn android:codegen`) often fails with **`unknown command 'codegen'`** after a clean `yarn` — `@react-native-community/cli` resolves from the **test app** workspace.
+- **Canonical:** [turbomodule workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical) — `cd tests`, `npx @react-native-community/cli codegen --path ../packages/<pkg> …` with `--outputPath` copied from that package's `package.json` script.
+- After regen: commit `android/.../generated` + `ios/generated`, then `:build` + Metro reset-cache before `:test-cover`.
+
 ## Subagent handoff
 
 Paste into Task / explore / work-queue prompts:

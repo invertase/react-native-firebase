@@ -1,3 +1,5 @@
+package io.invertase.firebase.ml;
+
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,15 +17,11 @@
  *
  */
 
-/**
- * Wrapped native module contract for `RNFBMLModule`.
- * The namespaced `FirebaseMLModule` implementation does not call into native from JS;
- * this type anchors `FirebaseModule<typeof nativeModuleName>` and documents the bridge key.
- */
-export interface RNFBMLModule {}
+import com.facebook.fbreact.specs.NativeRNFBTurboMLSpec;
+import com.facebook.react.bridge.ReactApplicationContext;
 
-declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
-  interface ReactNativeFirebaseNativeModules {
-    NativeRNFBTurboML: RNFBMLModule;
+public class NativeRNFBTurboML extends NativeRNFBTurboMLSpec {
+  public NativeRNFBTurboML(ReactApplicationContext reactContext) {
+    super(reactContext);
   }
 }

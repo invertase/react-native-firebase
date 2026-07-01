@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-06-30):** Phase **2** — committing P2d `app-distribution`.
+> **IN PROGRESS (2026-06-30):** Phase **3** moderate — **implementation** (`app-check`). Phase **2** complete.
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -163,8 +163,8 @@ Pick **one** of `firestore` or `auth` in Phase 1 (firestore = multi-module + pip
 | **0** | App foundation + unified resolver | **done** | `app` |
 | **0.1** | App modular type parity (`compare:types`) | **done** | `app` — [§ Phase 0.1](#phase-01-app-comparetypes) |
 | **1** | Hard probe | **done** | `firestore` (multi-module + pipelines; NewArch-AD-14a composite) |
-| **2** | Easy wins | **commit-ready** | `installations`, `perf`, `in-app-messaging`, `app-distribution`, `ml` |
-| **3** | Moderate | queued | `app-check`, `remote-config`, `analytics`, `crashlytics`, `storage` |
+| **2** | Easy wins | **done** | `installations`, `perf`, `in-app-messaging`, `app-distribution`, `ml` |
+| **3** | Moderate | **in progress** | `app-check`, `remote-config`, `analytics`, `crashlytics`, `storage` |
 | **4** | Remaining complex | queued | other Tier A/B + `messaging`, `database` |
 | **5** | Android-only / misc | queued | `phone-number-verification` |
 | **S** | Sync conversion (forced-async → sync) | queued (scope open — [NewArch-AD-16](architecture-decisions.md#newarch-ad-16--phase-s-asyncsync-conversion--open)) | All migrated packages — [§ sync conversion](#phase-s-sync-conversion-forced-async--sync) |
@@ -267,11 +267,11 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 ## Current snapshot
 
-**Label:** `phase-2-easy-wins`; **harness:** local overrides (delete before Phase R)
+**Label:** `phase-3-moderate`; **harness:** pending per package
 
-**Next item:** Phase **2** P2a `installations` — **commit**
+**Next item:** Phase **3** P3a `app-check` — **implementation**
 
-**Current gates:** P2a–P2e `commit_gate` **open** (impl + review closed)
+**Current gates:** Phase **2** complete · P3a `implementation_gate` **open**
 
 **Arbiter gate:**
 
@@ -285,8 +285,13 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Phase 2 `installations` | P2a | **closed** | **closed** | **closed** | done | `area-focused` | `feat(installations)!: migrate installations to TurboModules` | Committed 2026-06-30. Remediation: iOS `invalidate` no-op. |
 | Phase 2 `perf` | P2b | **closed** | **closed** | **closed** | done | `area-focused` | `feat(perf)!: migrate perf to TurboModules` | Committed 2026-06-30. |
 | Phase 2 `in-app-messaging` | P2c | **closed** | **closed** | **closed** | done | `area-focused` | `feat(in-app-messaging)!: migrate in-app-messaging to TurboModules` | Committed 2026-06-30. |
-| Phase 2 `app-distribution` | P2d | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(app-distribution)!: migrate app-distribution to TurboModules` | Review green 2026-06-30: Android 1 pass + 4 pending; iOS 3 pass + 2 pending. Duplicate codegen + legacy Java removed. |
-| Phase 2 `ml` | P2e | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(ml)!: migrate ml to TurboModules` | Review green 2026-06-30: 1 pass Android + iOS. Stub module. |
+| Phase 2 `app-distribution` | P2d | **closed** | **closed** | **closed** | done | `area-focused` | `feat(app-distribution)!: migrate app-distribution to TurboModules` | Committed 2026-06-30. |
+| Phase 2 `ml` | P2e | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(ml)!: migrate ml to TurboModules` | Review green 2026-06-30. |
+| Phase 3 `app-check` | P3a | **open** | **open** | **open** | `implementation` | `unit-focused` | `feat(app-check)!: migrate app-check to TurboModules` | Tier C; 7 methods; 1 event. |
+| Phase 3 `remote-config` | P3b | **open** | **open** | **open** | `implementation` | `unit-focused` | `feat(remote-config)!: migrate remote-config to TurboModules` | Tier C; 11 methods; 1 event. |
+| Phase 3 `analytics` | P3c | **open** | **open** | **open** | `implementation` | `unit-focused` | `feat(analytics)!: migrate analytics to TurboModules` | Tier C; 11 methods; 0 events. |
+| Phase 3 `crashlytics` | P3d | **open** | **open** | **open** | `implementation` | `unit-focused` | `feat(crashlytics)!: migrate crashlytics to TurboModules` | Tier C; 14 methods; 0 events. |
+| Phase 3 `storage` | P3e | **open** | **open** | **open** | `implementation` | `unit-focused` | `feat(storage)!: migrate storage to TurboModules` | Tier C; 14 methods; 1 event. |
 
 ---
 

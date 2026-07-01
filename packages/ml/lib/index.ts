@@ -24,7 +24,7 @@ import './types/internal';
 import type { FirebaseApp, FirebaseML } from './types/ml';
 import { version } from './version';
 
-const nativeModuleName = 'RNFBMLModule';
+const nativeModuleName = 'NativeRNFBTurboML';
 
 class FirebaseMLModule extends FirebaseModule<typeof nativeModuleName> {}
 
@@ -34,6 +34,7 @@ const config: ModuleConfig = {
   nativeEvents: false,
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
+  turboModule: true,
 };
 
 /**

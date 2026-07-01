@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +15,19 @@
  *
  */
 
-/**
- * Wrapped native module contract for `RNFBMLModule`.
- * The namespaced `FirebaseMLModule` implementation does not call into native from JS;
- * this type anchors `FirebaseModule<typeof nativeModuleName>` and documents the bridge key.
- */
-export interface RNFBMLModule {}
+#import "RNFBMLModule.h"
 
-declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
-  interface ReactNativeFirebaseNativeModules {
-    NativeRNFBTurboML: RNFBMLModule;
-  }
+@implementation RNFBMLModule
+
+RCT_EXPORT_MODULE(NativeRNFBTurboML)
+
++ (BOOL)requiresMainQueueSetup {
+  return NO;
 }
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboMLSpecJSI>(params);
+}
+
+@end
