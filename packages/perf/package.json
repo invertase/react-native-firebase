@@ -5,13 +5,30 @@
   "description": "React Native Firebase - React Native Firebase provides native integration with Performance Monitoring to gain insight into key performance characteristics within your React Native application.",
   "main": "./dist/module/index.js",
   "types": "./dist/typescript/lib/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBPerfTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "io.invertase.firebase.perf"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTurboPerf": "RNFBPerfModule"
+      }
+    }
+  },
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "build:plugin": "rimraf plugin/build && tsc --build plugin",
     "compile": "bob build",
     "lint:plugin": "eslint plugin/src/*",
-    "prepare": "yarn run build && yarn compile && yarn run build:plugin"
+    "prepare": "yarn run build && yarn compile && yarn run build:plugin",
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/reactnative/java/io/invertase/firebase/perf/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
   },
   "repository": {
     "type": "git",
