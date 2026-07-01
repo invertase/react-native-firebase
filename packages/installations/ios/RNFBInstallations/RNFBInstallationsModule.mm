@@ -18,32 +18,35 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
+#import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBInstallationsModule.h"
 
 #import "FirebaseInstallations/FIRInstallations.h"
 
 @implementation RNFBInstallationsModule
-#pragma mark -
-#pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE(NativeRNFBTurboInstallations)
 
-- (dispatch_queue_t)methodQueue {
-  return dispatch_get_main_queue();
++ (BOOL)requiresMainQueueSetup {
+  return NO;
 }
 
-#pragma mark -
-#pragma mark Firebase Installations Methods
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboInstallationsSpecJSI>(params);
+}
 
-RCT_EXPORT_METHOD(delete
-                  : (FIRApp *)firebaseApp
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)invalidate {
+}
+
+- (void)deleteInstallations:(NSString *)appName
+       resolve:(RCTPromiseResolveBlock)resolve
+        reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRInstallations *installations = [FIRInstallations installationsWithApp:firebaseApp];
   [installations deleteWithCompletion:^(NSError *_Nullable error) {
     if (error != nil) {
-      // Handle any errors if the delete failed
       DLog(@"Unable to delete Installations ID: %@", error);
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                         userInfo:(NSMutableDictionary *)@{
@@ -57,14 +60,13 @@ RCT_EXPORT_METHOD(delete
   }];
 }
 
-RCT_EXPORT_METHOD(getId
-                  : (FIRApp *)firebaseApp
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)getId:(NSString *)appName
+      resolve:(RCTPromiseResolveBlock)resolve
+       reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRInstallations *installations = [FIRInstallations installationsWithApp:firebaseApp];
   [installations installationIDWithCompletion:^(NSString *_Nullable id, NSError *_Nullable error) {
     if (error != nil) {
-      // Handle any errors if the id was not retrieved.
       DLog(@"Unable to retrieve Installations ID: %@", error);
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                         userInfo:(NSMutableDictionary *)@{
@@ -87,17 +89,16 @@ RCT_EXPORT_METHOD(getId
   }];
 }
 
-RCT_EXPORT_METHOD(getToken
-                  : (FIRApp *)firebaseApp
-                  : (BOOL)forceRefresh
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)getToken:(NSString *)appName
+    forceRefresh:(BOOL)forceRefresh
+         resolve:(RCTPromiseResolveBlock)resolve
+          reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRInstallations *installations = [FIRInstallations installationsWithApp:firebaseApp];
   [installations authTokenForcingRefresh:forceRefresh
                               completion:^(FIRInstallationsAuthTokenResult *_Nullable token,
                                            NSError *_Nullable error) {
                                 if (error != nil) {
-                                  // Handle any errors if the token was not retrieved.
                                   DLog(@"Unable to retrieve Installations auth token: %@", error);
                                   [RNFBSharedUtils
                                       rejectPromiseWithUserInfo:reject

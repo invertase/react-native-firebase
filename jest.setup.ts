@@ -211,7 +211,7 @@ jest.doMock('react-native', () => {
           addAppCheckListener: jest.fn(),
           removeAppCheckListener: jest.fn(),
         },
-        RNFBAppDistributionModule: {
+        NativeRNFBTurboAppDistribution: {
           isTesterSignedIn: jest.fn(),
           signInTester: jest.fn(),
           checkForUpdate: jest.fn(),
@@ -364,17 +364,21 @@ jest.doMock('react-native', () => {
             }),
           ),
         },
-        RNFBFiamModule: {
+        NativeRNFBTurboFiam: {
+          getConstants: () => ({
+            isMessagesDisplaySuppressed: false,
+            isAutomaticDataCollectionEnabled: true,
+          }),
           isMessagesDisplaySuppressed: false,
           isAutomaticDataCollectionEnabled: true,
           setMessagesDisplaySuppressed: jest.fn(),
           setAutomaticDataCollectionEnabled: jest.fn(),
           triggerEvent: jest.fn(),
         },
-        RNFBInstallationsModule: {
+        NativeRNFBTurboInstallations: {
           getId: jest.fn(),
           getToken: jest.fn(),
-          delete: jest.fn(),
+          deleteInstallations: jest.fn(),
         },
         RNFBMessagingModule: {
           isAutoInitEnabled: true,
@@ -402,7 +406,11 @@ jest.doMock('react-native', () => {
           setDeliveryMetricsExportToBigQuery: jest.fn(),
           setNotificationDelegationEnabled: jest.fn(),
         },
-        RNFBPerfModule: {
+        NativeRNFBTurboPerf: {
+          getConstants: () => ({
+            isPerformanceCollectionEnabled: true,
+            isInstrumentationEnabled: true,
+          }),
           isPerformanceCollectionEnabled: true,
           isInstrumentationEnabled: true,
           instrumentationEnabled: jest.fn(() => Promise.resolve()),
@@ -414,6 +422,7 @@ jest.doMock('react-native', () => {
           startHttpMetric: jest.fn(() => Promise.resolve()),
           stopHttpMetric: jest.fn(() => Promise.resolve()),
         },
+        NativeRNFBTurboML: {},
         RNFBConfigModule: {
           onConfigUpdated: jest.fn(),
           reset: jest.fn(() =>

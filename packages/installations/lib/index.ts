@@ -31,7 +31,7 @@ import type {
 import type { InstallationsInternal } from './types/internal';
 import { version } from './version';
 
-const nativeModuleName = 'RNFBInstallationsModule';
+const nativeModuleName = 'NativeRNFBTurboInstallations';
 
 class FirebaseInstallationsModule extends FirebaseModule<typeof nativeModuleName> {
   getId(): Promise<string> {
@@ -47,7 +47,7 @@ class FirebaseInstallationsModule extends FirebaseModule<typeof nativeModuleName
   }
 
   delete(): Promise<void> {
-    return this.native.delete();
+    return this.native.deleteInstallations();
   }
 
   onIdChange(): () => void {
@@ -66,6 +66,7 @@ const config: ModuleConfig = {
   nativeEvents: false, // TODO implement android id change listener: ['installations_id_changed'],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
+  turboModule: true,
 };
 
 /**

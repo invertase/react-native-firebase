@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-06-30):** Phase **2** easy wins — **queued**. Phases **0** / **0.1** (`app`) and Phase **1** (`firestore`) — **done**. Decisions: [architecture-decisions.md](architecture-decisions.md).
+> **IN PROGRESS (2026-06-30):** Phase **2** — committing P2a `installations`.
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -163,7 +163,7 @@ Pick **one** of `firestore` or `auth` in Phase 1 (firestore = multi-module + pip
 | **0** | App foundation + unified resolver | **done** | `app` |
 | **0.1** | App modular type parity (`compare:types`) | **done** | `app` — [§ Phase 0.1](#phase-01-app-comparetypes) |
 | **1** | Hard probe | **done** | `firestore` (multi-module + pipelines; NewArch-AD-14a composite) |
-| **2** | Easy wins | queued | `installations`, `perf`, `in-app-messaging`, `app-distribution`, `ml` |
+| **2** | Easy wins | **commit-ready** | `installations`, `perf`, `in-app-messaging`, `app-distribution`, `ml` |
 | **3** | Moderate | queued | `app-check`, `remote-config`, `analytics`, `crashlytics`, `storage` |
 | **4** | Remaining complex | queued | other Tier A/B + `messaging`, `database` |
 | **5** | Android-only / misc | queued | `phone-number-verification` |
@@ -267,13 +267,11 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 ## Current snapshot
 
-**Label:** `phase-2-easy-wins`; **harness:** n/a
+**Label:** `phase-2-easy-wins`; **harness:** local overrides (delete before Phase R)
 
-**Next item:** Phase **2** — pick first Tier D package (`installations`, `perf`, `in-app-messaging`, `app-distribution`, or `ml`)
+**Next item:** Phase **2** P2a `installations` — **commit**
 
-**Current gates:** Phase 0 / 0.1 / 1 all **closed**
-
-**Package pick (Phase 1):** `firestore` over `auth` — first multi-module package (×4 specs), exercises `pipelineExecute` + NewArch-AD-14a routing composite Proxy; defers largest single-spec (`auth` ×59) to Phase 4.
+**Current gates:** P2a–P2e `commit_gate` **open** (impl + review closed)
 
 **Arbiter gate:**
 
@@ -281,9 +279,14 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Item | Code | `implementation_gate` | `review_gate` | `commit_gate` | `next_work_type` | `validation_tier` | `commit_subject` | Notes |
 |------|------|----------------------|---------------|---------------|------------------|-------------------|------------------|-------|
 | Design review | DR | n/a | n/a | n/a | done | none | none | ✅ Adversarial review complete. |
-| Phase 0 `app` TurboModules | P0 | **closed** | **closed** | **closed** | done | `full` | `feat(app): migrate app modules to TurboModules incl general migration infra` | Committed 2026-06-30. |
-| Phase 0.1 `app` compare:types | P0.1 | **closed** | **closed** | **closed** | done | `none` | `test(app): add app module type comparison config` | Committed 2026-06-30. 25 deltas documented; compare:types green for `app`. |
-| Phase 1 `firestore` TurboModules | P1 | **closed** | **closed** | **closed** | done | `area-focused` | `feat(firestore)!: migrate firestore to TurboModules` | Committed 2026-06-30. 4 specs; area e2e 732 pass/7 pending iOS+Android; jest 285/285; compare:types ✓. |
+| Phase 0 `app` TurboModules | P0 | **closed** | **closed** | **closed** | done | `full` | `feat(app)!: migrate app modules to TurboModules incl general migration infra` | Committed 2026-06-30. |
+| Phase 0.1 `app` compare:types | P0.1 | **closed** | **closed** | **closed** | done | `none` | `test(app): add app module type comparison config` | Committed 2026-06-30. |
+| Phase 1 `firestore` TurboModules | P1 | **closed** | **closed** | **closed** | done | `area-focused` | `feat(firestore)!: migrate firestore to TurboModules` | Committed 2026-06-30. |
+| Phase 2 `installations` | P2a | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(installations)!: migrate installations to TurboModules` | Review closed 2026-06-30. Remediation: iOS `invalidate` no-op. |
+| Phase 2 `perf` | P2b | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(perf)!: migrate perf to TurboModules` | Review green 2026-06-30. Deferred: dead legacy Java shell; `xdescribe` pending; vacuous iOS screenTrace e2e. |
+| Phase 2 `in-app-messaging` | P2c | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(in-app-messaging)!: migrate in-app-messaging to TurboModules` | Review green 2026-06-30. Deferred: dead legacy Java; stale JSDoc; 3 xdescribe pending. |
+| Phase 2 `app-distribution` | P2d | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(app-distribution)!: migrate app-distribution to TurboModules` | Review green 2026-06-30: Android 1 pass + 4 pending; iOS 3 pass + 2 pending. Duplicate codegen + legacy Java removed. |
+| Phase 2 `ml` | P2e | **closed** | **closed** | **open** | `commit` | `area-focused` | `feat(ml)!: migrate ml to TurboModules` | Review green 2026-06-30: 1 pass Android + iOS. Stub module. |
 
 ---
 
