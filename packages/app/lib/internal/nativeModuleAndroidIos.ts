@@ -50,7 +50,7 @@ export function getReactNativeModule(moduleName: string): Record<string, unknown
     (turboModule ?? NativeModules[moduleName]) as Record<string, unknown> | undefined,
   );
 
-  if (!globalThis.RNFBDebug) {
+  if (!globalThis.RNFBDebug || !nativeModule) {
     return nativeModule;
   }
   return new Proxy(nativeModule as Record<string, unknown>, {
