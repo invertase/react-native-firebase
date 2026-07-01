@@ -16,9 +16,8 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "RNFBCrashlyticsTurboModules.h"
 
-#import <React/RCTBridgeModule.h>
-
-@interface RNFBCrashlyticsModule : NSObject <RCTBridgeModule>
+@interface RNFBCrashlyticsModule : NSObject <NativeRNFBTurboCrashlyticsSpec>
 
 @end

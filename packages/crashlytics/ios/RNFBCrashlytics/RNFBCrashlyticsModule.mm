@@ -29,12 +29,19 @@
 #import "RNFBPreferences.h"
 
 @implementation RNFBCrashlyticsModule
-#pragma mark -
-#pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
 
-- (NSDictionary *)constantsToExport {
++ (BOOL)requiresMainQueueSetup {
+  return NO;
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboCrashlyticsSpecJSI>(params);
+}
+
+- (NSDictionary *)crashlyticsConstantsDictionary {
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isCrashlyticsCollectionEnabled"] =
       @([RCTConvert BOOL:@([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled])]);
@@ -50,31 +57,29 @@ RCT_EXPORT_MODULE();
   return constants;
 }
 
-+ (BOOL)requiresMainQueueSetup {
-  return NO;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboCrashlytics::Constants::Builder>)
+    constantsToExport {
+  return [_RCTTypedModuleConstants newWithUnsafeDictionary:[self crashlyticsConstantsDictionary]];
 }
 
-#pragma mark -
-#pragma mark Firebase Crashlytics Methods
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboCrashlytics::Constants::Builder>)
+    getConstants {
+  return [self constantsToExport];
+}
 
-RCT_EXPORT_METHOD(checkForUnsentReports
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)checkForUnsentReports:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   [[FIRCrashlytics crashlytics] checkForUnsentReportsWithCompletion:^(BOOL unsentReports) {
     resolve([NSNumber numberWithBool:unsentReports]);
   }];
 }
 
-RCT_EXPORT_METHOD(crash) {
+- (void)crash {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     if ([self isDebuggerAttached]) {
       RCTLog(
           @"Crashlytics - WARNING: Debugger detected. Crashlytics will not receive crash reports.");
     }
 
-    // https://firebase.google.com/docs/crashlytics/test-implementation?platform=ios recommends
-    // using "@[][1]" to crash, but that gets caught by react-native and shown as a red box for
-    // debug builds. Raise SIGSEGV here to generate a hard crash.
     int *p = 0;
     *p = 0;
   } else {
@@ -82,10 +87,9 @@ RCT_EXPORT_METHOD(crash) {
   }
 }
 
-RCT_EXPORT_METHOD(crashWithStackPromise
-                  : (NSDictionary *)jsErrorDict resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)crashWithStackPromise:(JS::NativeRNFBTurboCrashlytics::JavaScriptErrorObject &)jsErrorDict
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     if ([self isDebuggerAttached]) {
       RCTLog(
@@ -93,9 +97,6 @@ RCT_EXPORT_METHOD(crashWithStackPromise
     }
     [self recordJavaScriptError:jsErrorDict];
 
-    // This is strongly discouraged by Apple as "it will appear as though your app has crashed".
-    // Coincidentally, we are *in* a crash handler and have logged a crash report.
-    // It seems like the one place calling exit cleanly is valid.
     ELog(@"Crashlytics - Crash logged. Terminating app.");
     exit(0);
   } else {
@@ -104,42 +105,45 @@ RCT_EXPORT_METHOD(crashWithStackPromise
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(deleteUnsentReports) { [[FIRCrashlytics crashlytics] deleteUnsentReports]; }
+- (void)deleteUnsentReports:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  [[FIRCrashlytics crashlytics] deleteUnsentReports];
+  resolve([NSNull null]);
+}
 
-RCT_EXPORT_METHOD(didCrashOnPreviousExecution
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)didCrashOnPreviousExecution:(RCTPromiseResolveBlock)resolve
+                             reject:(RCTPromiseRejectBlock)reject {
   BOOL didCrash = [[FIRCrashlytics crashlytics] didCrashDuringPreviousExecution];
   resolve([NSNumber numberWithBool:didCrash]);
 }
 
-RCT_EXPORT_METHOD(log : (NSString *)message) { [[FIRCrashlytics crashlytics] log:message]; }
+- (void)log:(NSString *)message {
+  [[FIRCrashlytics crashlytics] log:message];
+}
 
-RCT_EXPORT_METHOD(logPromise
-                  : (NSString *)message resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)logPromise:(NSString *)message
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
   [[FIRCrashlytics crashlytics] log:message];
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(sendUnsentReports) { [[FIRCrashlytics crashlytics] sendUnsentReports]; }
+- (void)sendUnsentReports {
+  [[FIRCrashlytics crashlytics] sendUnsentReports];
+}
 
-RCT_EXPORT_METHOD(setAttribute
-                  : (NSString *)key value
-                  : (NSString *)value resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setAttribute:(NSString *)key
+               value:(NSString *)value
+             resolve:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     [[FIRCrashlytics crashlytics] setCustomValue:value forKey:key];
   }
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(setAttributes
-                  : (NSDictionary *)attributes resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setAttributes:(NSDictionary *)attributes
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     NSArray *keys = [attributes allKeys];
 
@@ -150,52 +154,49 @@ RCT_EXPORT_METHOD(setAttributes
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(setUserId
-                  : (NSString *)userId resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setUserId:(NSString *)userId
+          resolve:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     [[FIRCrashlytics crashlytics] setUserID:userId];
   }
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(recordError : (NSDictionary *)jsErrorDict) {
+- (void)recordError:(JS::NativeRNFBTurboCrashlytics::JavaScriptErrorObject &)jsErrorDict {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     [self recordJavaScriptError:jsErrorDict];
   }
 }
 
-RCT_EXPORT_METHOD(recordErrorPromise
-                  : (NSDictionary *)jsErrorDict resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)recordErrorPromise:(JS::NativeRNFBTurboCrashlytics::JavaScriptErrorObject &)jsErrorDict
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     [self recordJavaScriptError:jsErrorDict];
   }
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(setCrashlyticsCollectionEnabled
-                  : (BOOL)enabled resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setCrashlyticsCollectionEnabled:(BOOL)enabled
+                                resolve:(RCTPromiseResolveBlock)resolve
+                                 reject:(RCTPromiseRejectBlock)reject {
   [[RNFBPreferences shared] setBooleanValue:@"crashlytics_auto_collection_enabled"
                                   boolValue:enabled];
   resolve([NSNull null]);
 }
 
-- (void)recordJavaScriptError:(NSDictionary *)jsErrorDict {
-  NSString *message = jsErrorDict[@"message"];
-  NSDictionary *stackFrames = jsErrorDict[@"frames"];
+- (void)recordJavaScriptError:(JS::NativeRNFBTurboCrashlytics::JavaScriptErrorObject &)jsErrorDict {
+  NSString *message = jsErrorDict.message();
+  auto stackFrames = jsErrorDict.frames();
   NSMutableArray *stackTrace = [[NSMutableArray alloc] init];
-  BOOL isUnhandledPromiseRejection = [jsErrorDict[@"isUnhandledRejection"] boolValue];
+  BOOL isUnhandledPromiseRejection = jsErrorDict.isUnhandledRejection();
 
-  for (NSDictionary *stackFrame in stackFrames) {
+  for (const auto &stackFrame : stackFrames) {
     FIRStackFrame *customFrame =
-        [FIRStackFrame stackFrameWithSymbol:stackFrame[@"fn"]
-                                       file:stackFrame[@"file"]
-                                       line:(uint32_t)[stackFrame[@"line"] intValue]];
+        [FIRStackFrame stackFrameWithSymbol:stackFrame.fn()
+                                       file:stackFrame.file()
+                                       line:(uint32_t)stackFrame.line()];
     [stackTrace addObject:customFrame];
   }
 
@@ -211,14 +212,6 @@ RCT_EXPORT_METHOD(setCrashlyticsCollectionEnabled
   [[FIRCrashlytics crashlytics] recordExceptionModel:exceptionModel];
 }
 
-/**
- * Check if the debugger is attached
- *
- * Taken from
- * https://github.com/plausiblelabs/plcrashreporter/blob/2dd862ce049e6f43feb355308dfc710f3af54c4d/Source/Crash%20Demo/main.m#L96
- *
- * @return `YES` if the debugger is attached to the current process, `NO` otherwise
- */
 - (BOOL)isDebuggerAttached {
   static BOOL debuggerIsAttached = NO;
 
@@ -231,7 +224,7 @@ RCT_EXPORT_METHOD(setCrashlyticsCollectionEnabled
     name[0] = CTL_KERN;
     name[1] = KERN_PROC;
     name[2] = KERN_PROC_PID;
-    name[3] = getpid();  // from unistd.h, included by Foundation
+    name[3] = getpid();
 
     if (sysctl(name, 4, &info, &info_size, NULL, 0) == -1) {
       ELog(@"Crashlytics ERROR: Checking for a running debugger via sysctl() failed: %s",

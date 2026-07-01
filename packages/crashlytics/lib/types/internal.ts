@@ -17,7 +17,7 @@
 
 import type { Crashlytics } from './crashlytics';
 
-export interface RNFBCrashlyticsModule {
+export interface NativeRNFBTurboCrashlytics {
   isCrashlyticsCollectionEnabled: boolean;
   isErrorGenerationOnJSCrashEnabled: boolean;
   isCrashlyticsJavascriptExceptionHandlerChainingEnabled: boolean;
@@ -39,7 +39,7 @@ export interface RNFBCrashlyticsModule {
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBCrashlyticsModule: RNFBCrashlyticsModule;
+    NativeRNFBTurboCrashlytics: NativeRNFBTurboCrashlytics;
   }
 }
 
@@ -55,5 +55,5 @@ export interface CrashlyticsInternal extends Crashlytics {
   setAttribute(name: string, value: string): Promise<null>;
   setAttributes(attributes: { [key: string]: string }): Promise<null>;
   setCrashlyticsCollectionEnabled(enabled: boolean): Promise<null>;
-  readonly native: RNFBCrashlyticsModule;
+  readonly native: NativeRNFBTurboCrashlytics;
 }

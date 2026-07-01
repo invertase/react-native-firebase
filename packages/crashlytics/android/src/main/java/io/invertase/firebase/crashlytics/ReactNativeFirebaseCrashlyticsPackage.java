@@ -30,7 +30,7 @@ public class ReactNativeFirebaseCrashlyticsPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebaseCrashlyticsModule(reactContext));
+    modules.add(new NativeRNFBTurboCrashlytics(reactContext));
     return modules;
   }
 

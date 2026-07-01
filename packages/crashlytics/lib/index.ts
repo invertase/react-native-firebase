@@ -40,7 +40,7 @@ import type { Crashlytics } from './types/crashlytics';
 import type { CrashlyticsInternal } from './types/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
-const nativeModuleName = 'RNFBCrashlyticsModule';
+const nativeModuleName = 'NativeRNFBTurboCrashlytics';
 
 class FirebaseCrashlyticsModule extends FirebaseModule {
   _isCrashlyticsCollectionEnabled: boolean;
@@ -124,9 +124,13 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
 
   recordError(error: Error, jsErrorName?: string): void {
     if (isError(error)) {
-      StackTrace.fromError(error, { offline: true }).then(stackFrames => {
-        this.native.recordError(createNativeErrorObj(error, stackFrames, false, jsErrorName));
-      });
+      StackTrace.fromError(error, { offline: true })
+        .then(stackFrames =>
+          this.native.recordErrorPromise(
+            createNativeErrorObj(error, stackFrames, false, jsErrorName),
+          ),
+        )
+        .catch(() => {});
     } else {
       console.warn(
         'firebase.crashlytics().recordError(*) expects an instance of Error. Non Errors will be ignored.',
@@ -158,6 +162,7 @@ const config: ModuleConfig = {
   nativeEvents: false,
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
+  turboModule: true,
 };
 
 export const SDK_VERSION = version;

@@ -17,24 +17,46 @@ package io.invertase.firebase.crashlytics;
  *
  */
 
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
+
 import android.os.Handler;
 import android.util.Log;
-import com.facebook.react.bridge.*;
+import com.facebook.fbreact.specs.NativeRNFBTurboCrashlyticsSpec;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseModule {
+public class NativeRNFBTurboCrashlytics extends NativeRNFBTurboCrashlyticsSpec {
   private static final String TAG = "Crashlytics";
 
-  ReactNativeFirebaseCrashlyticsModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
+  public NativeRNFBTurboCrashlytics(ReactApplicationContext reactContext) {
+    super(reactContext);
   }
 
-  @ReactMethod
+  @Override
+  protected Map<String, Object> getTypedExportedConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    constants.put(
+        "isCrashlyticsCollectionEnabled",
+        ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled());
+    constants.put(
+        "isErrorGenerationOnJSCrashEnabled",
+        ReactNativeFirebaseCrashlyticsInitProvider.isErrorGenerationOnJSCrashEnabled());
+    constants.put(
+        "isCrashlyticsJavascriptExceptionHandlerChainingEnabled",
+        ReactNativeFirebaseCrashlyticsInitProvider
+            .isCrashlyticsJavascriptExceptionHandlerChainingEnabled());
+    return constants;
+  }
+
+  @Override
   public void checkForUnsentReports(Promise promise) {
     FirebaseCrashlytics.getInstance()
         .checkForUnsentReports()
@@ -58,7 +80,7 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
             });
   }
 
-  @ReactMethod
+  @Override
   public void crashWithStackPromise(ReadableMap jsErrorMap, Promise promise) {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
       Exception e = recordJavaScriptError(jsErrorMap);
@@ -71,10 +93,9 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     promise.resolve(null);
   }
 
-  @ReactMethod
+  @Override
   public void crash() {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
-      // async task so as not to get caught by the React Native redbox handler in debug
       new Handler()
           .postDelayed(
               new Runnable() {
@@ -89,25 +110,25 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     }
   }
 
-  @ReactMethod
-  public void deleteUnsentReports() {
+  @Override
+  public void deleteUnsentReports(Promise promise) {
     FirebaseCrashlytics.getInstance().deleteUnsentReports();
+    promise.resolve(null);
   }
 
-  @ReactMethod
+  @Override
   public void didCrashOnPreviousExecution(Promise promise) {
     promise.resolve(FirebaseCrashlytics.getInstance().didCrashOnPreviousExecution());
   }
 
-  @ReactMethod
+  @Override
   public void log(String message) {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
       FirebaseCrashlytics.getInstance().log(message);
     }
   }
 
-  // For internal use only.
-  @ReactMethod
+  @Override
   public void logPromise(String message, Promise promise) {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
       FirebaseCrashlytics.getInstance().log(message);
@@ -115,7 +136,7 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     promise.resolve(null);
   }
 
-  @ReactMethod
+  @Override
   public void setAttribute(String key, String value, Promise promise) {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
       FirebaseCrashlytics.getInstance().setCustomKey(key, value);
@@ -123,7 +144,7 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     promise.resolve(null);
   }
 
-  @ReactMethod
+  @Override
   public void setAttributes(ReadableMap keyValuesMap, Promise promise) {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
       ReadableMapKeySetIterator iterator = keyValuesMap.keySetIterator();
@@ -139,12 +160,12 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     promise.resolve(null);
   }
 
-  @ReactMethod
+  @Override
   public void sendUnsentReports() {
     FirebaseCrashlytics.getInstance().sendUnsentReports();
   }
 
-  @ReactMethod
+  @Override
   public void setUserId(String userId, Promise promise) {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
       FirebaseCrashlytics.getInstance().setUserId(userId);
@@ -152,14 +173,14 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     promise.resolve(null);
   }
 
-  @ReactMethod
-  public void setCrashlyticsCollectionEnabled(Boolean enabled, Promise promise) {
+  @Override
+  public void setCrashlyticsCollectionEnabled(boolean enabled, Promise promise) {
     ReactNativeFirebasePreferences.getSharedInstance()
         .setBooleanValue(Constants.KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, enabled);
     promise.resolve(null);
   }
 
-  @ReactMethod
+  @Override
   public void recordError(ReadableMap jsErrorMap) {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
       recordJavaScriptError(jsErrorMap);
@@ -168,7 +189,7 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     }
   }
 
-  @ReactMethod
+  @Override
   public void recordErrorPromise(ReadableMap jsErrorMap, Promise promise) {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
       recordJavaScriptError(jsErrorMap);
@@ -203,21 +224,5 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
 
     FirebaseCrashlytics.getInstance().recordException(customException);
     return customException;
-  }
-
-  @Override
-  public Map<String, Object> getConstants() {
-    final Map<String, Object> constants = new HashMap<>();
-    constants.put(
-        "isCrashlyticsCollectionEnabled",
-        ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled());
-    constants.put(
-        "isErrorGenerationOnJSCrashEnabled",
-        ReactNativeFirebaseCrashlyticsInitProvider.isErrorGenerationOnJSCrashEnabled());
-    constants.put(
-        "isCrashlyticsJavascriptExceptionHandlerChainingEnabled",
-        ReactNativeFirebaseCrashlyticsInitProvider
-            .isCrashlyticsJavascriptExceptionHandlerChainingEnabled());
-    return constants;
   }
 }
