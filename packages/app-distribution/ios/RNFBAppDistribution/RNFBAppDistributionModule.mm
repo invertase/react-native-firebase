@@ -22,31 +22,28 @@
 #import "RNFBAppDistributionModule.h"
 
 @implementation RNFBAppDistributionModule
-#pragma mark -
-#pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE(NativeRNFBTurboAppDistribution)
 
-- (dispatch_queue_t)methodQueue {
-  return dispatch_get_main_queue();
++ (BOOL)requiresMainQueueSetup {
+  return NO;
 }
 
-#pragma mark -
-#pragma mark Firebase AppDistribution Methods
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboAppDistributionSpecJSI>(params);
+}
 
-RCT_EXPORT_METHOD(isTesterSignedIn
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)isTesterSignedIn:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   FIRAppDistribution *appDistribution = [FIRAppDistribution appDistribution];
   BOOL isTesterSignedIn = appDistribution.isTesterSignedIn;
   resolve([NSNumber numberWithBool:isTesterSignedIn]);
 }
 
-RCT_EXPORT_METHOD(signInTester : (RCTPromiseResolveBlock)resolve : (RCTPromiseRejectBlock)reject) {
+- (void)signInTester:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   FIRAppDistribution *appDistribution = [FIRAppDistribution appDistribution];
   [appDistribution signInTesterWithCompletion:^(NSError *_Nullable error) {
     if (error != nil) {
-      // Handle any errors if the signIn failed
       DLog(@"Unable to signInTester: %@", error);
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                         userInfo:(NSMutableDictionary *)@{
@@ -60,21 +57,16 @@ RCT_EXPORT_METHOD(signInTester : (RCTPromiseResolveBlock)resolve : (RCTPromiseRe
   }];
 }
 
-RCT_EXPORT_METHOD(signOutTester
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)signOutTester:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   [[FIRAppDistribution appDistribution] signOutTester];
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(checkForUpdate
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)checkForUpdate:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   FIRAppDistribution *appDistribution = [FIRAppDistribution appDistribution];
   [appDistribution checkForUpdateWithCompletion:^(FIRAppDistributionRelease *_Nullable release,
                                                   NSError *_Nullable error) {
     if (error != nil) {
-      // Handle any errors if the release was not retrieved.
       DLog(@"Unable to check App Distribution release: %@", error);
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                         userInfo:(NSMutableDictionary *)@{
@@ -84,7 +76,7 @@ RCT_EXPORT_METHOD(checkForUpdate
       return;
     }
     if (release == nil) {
-      DLog(@"Unable to check App Distribution release: %@", error);
+      DLog(@"Unable to check App Distribution release.");
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                         userInfo:(NSMutableDictionary *)@{
                                           @"code" : @"checkupdate-null",

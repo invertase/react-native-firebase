@@ -9,7 +9,7 @@ export interface RNFBAppDistributionModule {
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBAppDistributionModule: RNFBAppDistributionModule;
+    NativeRNFBTurboAppDistribution: RNFBAppDistributionModule;
   }
 }
 

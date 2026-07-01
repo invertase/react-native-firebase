@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2744B98621F45429004F8E3F /* RNFBAppDistributionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAppDistributionModule.m */; };
+		2744B98621F45429004F8E3F /* RNFBAppDistributionModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAppDistributionModule.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,7 +25,7 @@
 /* Begin PBXFileReference section */
 		2744B98221F45429004F8E3F /* libRNFBAppDistribution.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBAppDistribution.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBAppDistributionModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAppDistributionModule.h; path = RNFBAppDistribution/RNFBAppDistributionModule.h; sourceTree = SOURCE_ROOT; };
-		2744B98521F45429004F8E3F /* RNFBAppDistributionModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAppDistributionModule.m; path = RNFBAppDistribution/RNFBAppDistributionModule.m; sourceTree = SOURCE_ROOT; };
+		2744B98521F45429004F8E3F /* RNFBAppDistributionModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAppDistributionModule.mm; path = RNFBAppDistribution/RNFBAppDistributionModule.mm; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,7 +53,7 @@
 				2744B9A121F48736004F8E3F /* converters */,
 				2744B98C21F45C64004F8E3F /* common */,
 				2744B98421F45429004F8E3F /* RNFBAppDistributionModule.h */,
-				2744B98521F45429004F8E3F /* RNFBAppDistributionModule.m */,
+				2744B98521F45429004F8E3F /* RNFBAppDistributionModule.mm */,
 			);
 			path = RNFBAppDistribution;
 			sourceTree = "<group>";
@@ -124,7 +124,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2744B98621F45429004F8E3F /* RNFBAppDistributionModule.m in Sources */,
+				2744B98621F45429004F8E3F /* RNFBAppDistributionModule.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

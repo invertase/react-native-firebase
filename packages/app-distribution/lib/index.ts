@@ -28,7 +28,7 @@ import type { AppDistribution, AppDistributionRelease } from './types/app-distri
 import type { AppDistributionInternal } from './types/internal';
 import { version } from './version';
 
-const nativeModuleName = 'RNFBAppDistributionModule';
+const nativeModuleName = 'NativeRNFBTurboAppDistribution';
 
 function rejectUnsupportedPlatform<T>(): Promise<T> {
   return Promise.reject(
@@ -76,6 +76,7 @@ const config: ModuleConfig = {
   nativeEvents: false,
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
+  turboModule: true,
 };
 
 export const SDK_VERSION = version;
