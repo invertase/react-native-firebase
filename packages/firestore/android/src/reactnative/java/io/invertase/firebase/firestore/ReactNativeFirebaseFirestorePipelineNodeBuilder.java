@@ -1675,6 +1675,14 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             }
           case "timestamptruncate":
             {
+              if (args.size() != 2) {
+                throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                    "pipelineExecute() expected "
+                        + operationFieldName
+                        + "."
+                        + operation.originalName
+                        + " to include exactly 2 arguments.");
+              }
               Object granularityArg = args.get(1);
               if (!containsLowerableExpression(granularityArg)) {
                 Object granularityValue =
@@ -2052,12 +2060,9 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         scheduleReceiverExpressionChain(normalizedName, functionName, args, fieldName, box, stack);
         return;
       case "timestamptruncate":
-        if (args.size() == 2) {
-          scheduleReceiverExpressionChain(
-              normalizedName, functionName, args, fieldName, box, stack);
-          return;
-        }
-        box.value = null;
+        requireArgumentCount(args, 2, functionName, fieldName);
+        scheduleReceiverExpressionChain(
+            normalizedName, functionName, args, fieldName, box, stack);
         return;
       default:
         scheduleRawExpressionFunction(functionName, args, fieldName, box, stack);

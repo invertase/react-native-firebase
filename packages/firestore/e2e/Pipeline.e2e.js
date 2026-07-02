@@ -3024,12 +3024,7 @@ describe('FirestorePipeline', function () {
                 .documents([docPath])
                 .select(timestampTruncate(field('eventTime')).as('badTruncate')),
             ),
-          [
-            'pipelineExecute() expected',
-            'invalid-argument',
-            'Failed to execute pipeline',
-            'null object reference',
-          ],
+          ['pipelineExecute() expected', 'invalid-argument', 'Failed to execute pipeline'],
         );
       });
     });
