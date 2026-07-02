@@ -62,6 +62,9 @@ module.exports = {
       device: {
         avdName: 'TestingAVD',
       },
+      // Cold boot: do not load/save AVD snapshots (warm quickboot is unreliable locally).
+      bootArgs: '-no-snapshot-load -no-snapshot-save',
+      readonly: true,
     },
   },
   configurations: {

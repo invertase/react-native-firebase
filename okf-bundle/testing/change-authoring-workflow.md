@@ -146,6 +146,17 @@ flowchart TD
 
 Step detail: [running e2e § unit-focused iteration loop](running-e2e.md#unit-focused-tier-iteration-loop).
 
+<a id="platform-sdk-bridge-contracts"></a>
+
+### Platform SDK bridge contracts (blocking)
+
+Before changing native bridge code that calls a **platform SDK** (Firebase Android/iOS, OS APIs, vendor SDKs, etc.):
+
+1. **Read each platform's official API signature and docs independently** — do not assume Android, iOS, and Web behave the same because the RNFB bridge presents a unified JavaScript surface.
+2. **Verify null vs empty string** — many SDKs treat absent values (`null`/`nil`) and empty strings (`""`) differently; map bridge fields to the SDK parameter the docs specify for "absent" values.
+3. **Do not apply defensive parity** — fixing platform A does not justify the same change on platform B without checking B's contract (e.g. `@Nullable` vs `nonnull`, optional vs required).
+4. **Record evidence** — link or cite the reference URL / header signature in the work queue note or triage report when the fix is native-only on one platform.
+
 <a id="e2e-diagnosis-escalation"></a>
 
 ### E2e diagnosis escalation
