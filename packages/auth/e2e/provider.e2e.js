@@ -236,6 +236,70 @@ describe('auth() -> Providers', function () {
             'At least one of ID token and access token must be non-null',
           );
         });
+
+        it('should accept id-token-only credentials (Credential Manager)', function () {
+          const { GoogleAuthProvider } = authModular;
+
+          const token = 'google-id-token-only';
+          const credential = GoogleAuthProvider.credential(token, null);
+          credential.providerId.should.equal('google.com');
+          credential.signInMethod.should.equal('google.com');
+          credential.token.should.equal(token);
+          credential.secret.should.equal('');
+          credential.idToken.should.equal(token);
+          should.equal(credential.accessToken, undefined);
+        });
+
+        it('should accept access-token-only credentials', function () {
+          const { GoogleAuthProvider } = authModular;
+
+          const accessToken = 'google-access-token-only';
+          const credential = GoogleAuthProvider.credential(null, accessToken);
+          credential.providerId.should.equal('google.com');
+          credential.signInMethod.should.equal('google.com');
+          credential.token.should.equal('');
+          credential.secret.should.equal(accessToken);
+          credential.accessToken.should.equal(accessToken);
+          should.equal(credential.idToken, undefined);
+        });
+
+        it('should reach Android native signInWithCredential for id-token-only Google credentials', async function () {
+          if (!Platform.android) {
+            this.skip();
+          }
+          const { getApp } = modular;
+          const { GoogleAuthProvider, signInWithCredential, getAuth } = authModular;
+          const defaultAuth = getAuth(getApp());
+          const credential = GoogleAuthProvider.credential('google-id-token-only-e2e', null);
+
+          try {
+            await signInWithCredential(defaultAuth, credential);
+            throw new Error('Did not error.');
+          } catch (error) {
+            error.code.should.be.a.String();
+            error.code.should.not.equal('auth/unknown');
+            String(error.message).should.not.match(/accessToken cannot be empty/i);
+          }
+        });
+
+        it('should reach Android native signInWithCredential for access-token-only Google credentials', async function () {
+          if (!Platform.android) {
+            this.skip();
+          }
+          const { getApp } = modular;
+          const { GoogleAuthProvider, signInWithCredential, getAuth } = authModular;
+          const defaultAuth = getAuth(getApp());
+          const credential = GoogleAuthProvider.credential(null, 'google-access-token-only-e2e');
+
+          try {
+            await signInWithCredential(defaultAuth, credential);
+            throw new Error('Did not error.');
+          } catch (error) {
+            error.code.should.be.a.String();
+            error.code.should.not.equal('auth/unknown');
+            String(error.message).should.not.match(/idToken cannot be empty/i);
+          }
+        });
       });
 
       describe('GOOGLE_SIGN_IN_METHOD', function () {

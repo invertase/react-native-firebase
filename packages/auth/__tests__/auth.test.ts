@@ -413,6 +413,26 @@ describe('Auth', function () {
         expect(credential?.idToken).toBe('id-token');
       });
 
+      it('GoogleAuthProvider.credential maps id-token-only credentials for native bridge', function () {
+        const credential = GoogleAuthProvider.credential('google-id-token', null);
+        expect(credential.providerId).toBe('google.com');
+        expect(credential.signInMethod).toBe('google.com');
+        expect(credential.idToken).toBe('google-id-token');
+        expect(credential.accessToken).toBeUndefined();
+        expect(credential.token).toBe('google-id-token');
+        expect(credential.secret).toBe('');
+      });
+
+      it('GoogleAuthProvider.credential maps access-token-only credentials for native bridge', function () {
+        const credential = GoogleAuthProvider.credential(null, 'google-access-token');
+        expect(credential.providerId).toBe('google.com');
+        expect(credential.signInMethod).toBe('google.com');
+        expect(credential.accessToken).toBe('google-access-token');
+        expect(credential.idToken).toBeUndefined();
+        expect(credential.token).toBe('');
+        expect(credential.secret).toBe('google-access-token');
+      });
+
       it('PhoneAuthCredential.fromJSON deserializes phone credentials', function () {
         const credential = PhoneAuthCredential.fromJSON({
           verificationId: 'vid',
