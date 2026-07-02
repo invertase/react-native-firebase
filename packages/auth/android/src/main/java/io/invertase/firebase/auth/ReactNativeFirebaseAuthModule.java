@@ -2046,7 +2046,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       case "facebook.com":
         return FacebookAuthProvider.getCredential(authToken);
       case "google.com":
-        return GoogleAuthProvider.getCredential(authToken, authSecret);
+        // Firebase Android rejects empty tokens; id-token-only and access-token-only flows require
+        // null.
+        // https://firebase.google.com/docs/reference/android/com/google/firebase/auth/GoogleAuthProvider#getCredential(java.lang.String,java.lang.String)
+        String googleIdToken = (authToken == null || authToken.isEmpty()) ? null : authToken;
+        String googleAccessToken = (authSecret == null || authSecret.isEmpty()) ? null : authSecret;
+        return GoogleAuthProvider.getCredential(googleIdToken, googleAccessToken);
       case "twitter.com":
         return TwitterAuthProvider.getCredential(authToken, authSecret);
       case "github.com":
