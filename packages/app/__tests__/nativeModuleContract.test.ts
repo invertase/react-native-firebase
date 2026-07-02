@@ -4,28 +4,7 @@ import FirebaseModule from '../lib/internal/FirebaseModule';
 import type { ModuleConfig } from '../lib/internal';
 import { getNativeModule } from '../lib/internal/registry/nativeModule';
 import type { WrappedNativeModule } from '../lib/internal/NativeModules';
-
-function createTurboModuleFixture(
-  methods: Record<string, jest.Mock>,
-  constants: Record<string, unknown> = {},
-): Record<string, unknown> {
-  const proto = Object.create(Object.prototype, {
-    getConstants: {
-      value: () => constants,
-      enumerable: true,
-    },
-  });
-
-  for (const [name, fn] of Object.entries(methods)) {
-    Object.defineProperty(proto, name, {
-      value: fn,
-      enumerable: true,
-      configurable: true,
-    });
-  }
-
-  return Object.create(proto);
-}
+import { createTurboModuleFixture } from './turboModuleContractHelper';
 
 describe('TurboModule wrapper contract (NewArch-AD-17.1)', function () {
   it('models TurboModule host: methods non-own on prototype, Object.keys(raw) === []', function () {

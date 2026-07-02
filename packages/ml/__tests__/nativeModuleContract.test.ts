@@ -4,10 +4,7 @@ import type { ModuleConfig } from '@react-native-firebase/app/dist/module/intern
 import FirebaseModule from '@react-native-firebase/app/dist/module/internal/FirebaseModule';
 import { getNativeModule } from '@react-native-firebase/app/dist/module/internal/registry/nativeModule';
 import type { WrappedNativeModule } from '@react-native-firebase/app/dist/module/internal/NativeModules';
-
-function createTurboModuleFixture(): Record<string, unknown> {
-  return Object.create(Object.prototype);
-}
+import { createTurboModuleFixture } from '../../app/__tests__/turboModuleContractHelper';
 
 describe('TurboModule wrapper contract (NewArch-AD-17.1)', function () {
   it('resolves an empty stub turbo module through the real wrapper', function () {

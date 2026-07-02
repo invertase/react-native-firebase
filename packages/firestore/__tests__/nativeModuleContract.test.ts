@@ -4,6 +4,7 @@ import type { ModuleConfig } from '@react-native-firebase/app/dist/module/intern
 import FirebaseModule from '@react-native-firebase/app/dist/module/internal/FirebaseModule';
 import { getNativeModule } from '@react-native-firebase/app/dist/module/internal/registry/nativeModule';
 import type { WrappedNativeModule } from '@react-native-firebase/app/dist/module/internal/NativeModules';
+import { createTurboModuleFixture } from '../../app/__tests__/turboModuleContractHelper';
 
 const MAIN_METHODS = [
   'setLogLevel',
@@ -54,28 +55,6 @@ const ALL_SPEC_METHODS = [
   ...DOCUMENT_METHODS,
   ...TRANSACTION_METHODS,
 ];
-
-function createTurboModuleFixture(
-  methods: Record<string, jest.Mock>,
-  constants: Record<string, unknown> = {},
-): Record<string, unknown> {
-  const proto = Object.create(Object.prototype, {
-    getConstants: {
-      value: () => constants,
-      enumerable: true,
-    },
-  });
-
-  for (const [name, fn] of Object.entries(methods)) {
-    Object.defineProperty(proto, name, {
-      value: fn,
-      enumerable: true,
-      configurable: true,
-    });
-  }
-
-  return Object.create(proto);
-}
 
 describe('TurboModule wrapper contract (NewArch-AD-17.1)', function () {
   it('asserts merged Firestore spec method names are unique (NewArch-AD-11)', function () {
