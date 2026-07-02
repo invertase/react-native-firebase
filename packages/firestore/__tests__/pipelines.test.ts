@@ -1,6 +1,8 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { getFirestore } from '../lib';
 import { getApp } from '@react-native-firebase/app';
+import { FieldPath } from '../lib/FieldPath';
+import { Timestamp } from '../lib/FirestoreTimestamp';
 import {
   arrayFilter,
   arrayFirst,
@@ -27,9 +29,19 @@ import {
   countAll,
   average,
   subcollection,
+  array,
+  map,
 } from '../lib/pipelines';
 import '../lib/pipelines';
-import { ConstantExpression, FunctionExpression } from '../lib/pipelines/expressions';
+import {
+  avg,
+  ConstantExpression,
+  eq,
+  FunctionExpression,
+  gt,
+  gte,
+  lt,
+} from '../lib/pipelines/expressions';
 
 describe('Firestore pipelines runtime', function () {
   it('installs pipeline() and serializes source builders', function () {
@@ -643,6 +655,151 @@ describe('Firestore pipelines runtime', function () {
         { exprType: 'Field', path: 'rating' },
         { exprType: 'Constant', value: 4 },
       ],
+    });
+  });
+
+  it('serializes comparison alias exports gt, eq, gte, and lt', function () {
+    expect(gt(field('rating'), constant(4))).toMatchObject({
+      exprType: 'Function',
+      name: 'greaterThan',
+    });
+    expect(eq(field('sku'), constant('SKU001'))).toMatchObject({
+      exprType: 'Function',
+      name: 'equal',
+    });
+    expect(gte(field('stock'), constant(50))).toMatchObject({
+      exprType: 'Function',
+      name: 'greaterThanOrEqual',
+    });
+    expect(lt(field('price'), constant(100))).toMatchObject({
+      exprType: 'Function',
+      name: 'lessThan',
+    });
+  });
+
+  it('serializes avg aggregate alias to average', function () {
+    expect(avg(field('score'))).toMatchObject({
+      exprType: 'AggregateFunction',
+      kind: 'average',
+    });
+  });
+
+  it('normalizes array and map helpers that embed runtime expression nodes', function () {
+    const arrayExpr: any = array([field('score'), constant('tail')]);
+    expect(arrayExpr).toMatchObject({
+      exprType: 'Function',
+      name: 'array',
+      args: [
+        { exprType: 'Field', path: 'score' },
+        { exprType: 'Constant', value: 'tail' },
+      ],
+    });
+
+    const mapExpr: any = map({ label: field('name'), version: constant(1) });
+    expect(mapExpr).toMatchObject({
+      exprType: 'Function',
+      name: 'map',
+    });
+    expect(mapExpr.args[0].exprType).toBe('Constant');
+    expect(mapExpr.args[0].value.label.exprType).toBe('Field');
+    expect(mapExpr.args[0].value.version.value).toBe(1);
+  });
+
+  it('preserves non-plain constant values without walking prototype objects', function () {
+    class Marker {
+      readonly tag = 'marker';
+    }
+    const marker = new Marker();
+    const expr: any = constant(marker);
+    expect(expr).toMatchObject({
+      exprType: 'Constant',
+      value: marker,
+    });
+  });
+
+  it('normalizes pipeline execute results across timestamp and field path shapes', async function () {
+    const db: any = getFirestore();
+    const existingExecutionTime = new Timestamp(1735689600, 123000000);
+    const nativeExecute = jest.fn(async () => ({
+      executionTime: existingExecutionTime,
+      results: [
+        {
+          path: 'books/alpha',
+          id: 'alpha',
+          data: { title: 'Alpha', nested: { score: 9 } },
+          createTime: 1700000000123,
+          updateTime: [1700000001, 456000000],
+        },
+        {
+          path: 'books/beta',
+          data: { plain: true },
+          createTime: { seconds: 2, nanoseconds: 3 },
+          updateTime: { seconds: 4, nanoseconds: 5 },
+        },
+      ],
+    }));
+
+    const originalNativeModule = db._nativeModule;
+    db._nativeModule = { pipelineExecute: nativeExecute };
+
+    try {
+      const snapshot = await execute(db.pipeline().documents(['books/alpha', 'books/beta']));
+
+      expect(snapshot.executionTime).toBe(existingExecutionTime);
+      expect(snapshot.results[0]?.createTime?.toMillis()).toBe(1700000000123);
+      expect(snapshot.results[0]?.updateTime?.seconds).toBe(1700000001);
+      expect(snapshot.results[0]?.updateTime?.nanoseconds).toBe(456000000);
+      expect(snapshot.results[0]?.get('nested.score')).toBe(9);
+      expect(snapshot.results[0]?.get(new FieldPath('nested', 'score'))).toBe(9);
+      expect(snapshot.results[0]?.get(field('nested.score'))).toBe(9);
+      expect(snapshot.results[1]?.data()).toEqual({ plain: true });
+      expect(snapshot.results[1]?.createTime?.seconds).toBe(2);
+      expect(snapshot.results[1]?.updateTime?.nanoseconds).toBe(5);
+    } finally {
+      db._nativeModule = originalNativeModule;
+    }
+  });
+
+  it('serializes FieldPath and Timestamp arguments in pipeline stages', function () {
+    const db: any = getFirestore();
+    const timestamp = new Timestamp(12, 34);
+    const fieldPath = new FieldPath('meta', 'createdAt');
+
+    const serialized = db
+      .pipeline()
+      .collection('books')
+      .where(greaterThan(field('rating'), timestamp as any))
+      .sort(Ordering.of(fieldPath as any).descending())
+      .distinct({ groups: [fieldPath] } as any)
+      .select(
+        field('title')
+          .add(timestamp as any)
+          .as('createdAt'),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]?.options?.condition?.args?.[1]).toMatchObject({
+      exprType: 'Constant',
+      value: {
+        seconds: 12,
+        nanoseconds: 34,
+      },
+    });
+    expect(serialized.stages[1]?.options?.orderings?.[0]?.expr).toMatchObject({
+      exprType: 'Constant',
+      value: {
+        segments: ['meta', 'createdAt'],
+      },
+    });
+    expect(serialized.stages[2]?.options?.groups?.[0]).toEqual({
+      segments: ['meta', 'createdAt'],
+    });
+    expect(serialized.stages[3]?.options?.selections?.[0]?.expr?.args?.[1]).toMatchObject({
+      exprType: 'Constant',
+      value: {
+        seconds: 12,
+        nanoseconds: 34,
+      },
     });
   });
 

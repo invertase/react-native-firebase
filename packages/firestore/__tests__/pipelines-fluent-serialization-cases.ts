@@ -1,4 +1,5 @@
 import * as pipelines from '../lib/pipelines';
+import * as pipelineExpressions from '../lib/pipelines/expressions';
 
 /** Keep in sync with EXPRESSION_METHOD_NAMES in lib/pipelines/expressions.ts */
 export const EXPRESSION_METHOD_NAMES = [
@@ -225,6 +226,20 @@ function unaryField(method: string, target = scores): FluentParityCase {
   });
 }
 
+function resolveGlobalHelper(method: string): (...args: unknown[]) => unknown {
+  const fromPipelines = (pipelines as Record<string, unknown>)[method];
+  if (typeof fromPipelines === 'function') {
+    return fromPipelines as (...args: unknown[]) => unknown;
+  }
+
+  const fromExpressions = (pipelineExpressions as Record<string, unknown>)[method];
+  if (typeof fromExpressions === 'function') {
+    return fromExpressions as (...args: unknown[]) => unknown;
+  }
+
+  throw new Error(`Missing global helper for ${method}`);
+}
+
 function binaryCompare(
   category: 'binary-compare' | 'binary-math',
   method: string,
@@ -235,7 +250,7 @@ function binaryCompare(
     category,
     method,
     expectedName: canonicalName(method),
-    global: () => (pipelines as any)[canonicalName(method)](target, arg),
+    global: () => resolveGlobalHelper(method)(target, arg),
     fluent: () => fluent(target)[method](arg),
   });
 }

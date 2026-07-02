@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS:** **K** queued — TS `pipeline_runtime` + `expressions`. **J** complete (J0–J6).
+> **IN PROGRESS:** **L** queued — Android parsed-aggregate tail. **K** complete.
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -60,7 +60,7 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 | **I**  | **Platform parity audit**             | ✅                         | 31 e2e branches; registry P-001–P-031                                                                                                              |
 | **Ib** | **SDK support reconciliation**        | ✅                         | Guard list vs iOS 12.15 / Android 34.15 CHANGELOG; [audit method](pipeline-sdk-support-audit.md)                                                   |
 | **J**  | **Parity remediation**                | **✅ complete** | **J0** probes → **J0b** consolidation → **J0 remainder** → **J1–J6**                                                                               |
-| **K**  | TS `pipeline_runtime` + `expressions` | queued | guards, timestamp/FieldPath normalization gaps |
+| **K**  | TS `pipeline_runtime` + `expressions` | **✅** | Jest alias/normalization batch; expressions e2e receiver probe |
 | **L**  | Android parsed-aggregate tail         | queued                    | ~143 missed *(was old J)*                                                                                                                          |
 | **M**  | Android exit frames + receiver chains | queued                    | ~77 loop remainder + exit/receiver *(was old K)*                                                                                                   |
 | **N**  | iOS stage coercion                    | queued                    | ~293 missed; operand tail *(was old L)*                                                                                                            |
@@ -76,16 +76,16 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 
 ## Current snapshot
 
-**Label:** `j-complete`; **harness:** full test app (committed)
+**Label:** `k-complete`; **harness:** full test app (committed)
 
-**Next item:** **K** — TS `pipeline_runtime` + `expressions` normalization gaps.
+**Next item:** **L** — Android parsed-aggregate expression args (~143 missed).
 
 | **J2** P-005 `integerLiteral` | `fix(firestore, android): align pipeline integerLiteral constant lowering with iOS` | **closed** | **closed** | **closed** | — | — | — | P-005 → Resolved; CFBoolean deferral accepted |
 | **J3** P-010 stage option expressions | `fix(firestore, android): align pipeline stage option expression fields with iOS` | **closed** | **closed** | **closed** | — | — | — | P-010 → Resolved |
 | **J4** P-011 constant envelope | `fix(firestore, android): align pipeline constant envelope routing with iOS` | **closed** | **closed** | **closed** | — | — | — | P-011 → Resolved |
 | **J5** P-012 timestampTruncate arity | `fix(firestore, android): align pipeline timestampTruncate arity validation with iOS` | **closed** | **closed** | **closed** | — | — | — | P-012 → Resolved; iOS explicit arity guard deferred |
 | **J6** P-034 operand-mode audit | `docs(firestore): close P-034 operand-mode e2e audit after J1 parity` | **closed** | **closed** | **closed** | — | — | — | No code trims; P-021/P-022 confirmed |
-| **K** TS runtime/expressions | — | open | open | open | `implementation` | `unit-focused` | — | queued |
+| **K** TS runtime/expressions | `test(firestore): expand pipeline TS runtime and expression coverage` | **closed** | **closed** | **closed** | — | — | — | Jest batch + receiver `currentTimestamp` e2e probe |
 
 **Arbiter gate (2026-06-25):**
 
@@ -114,8 +114,8 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 | --------------------------- | ----------------- | ---------------------- | -------------------------------------- | ----- |
 | Parity drift (bridge)       | —                 | —                      | **0 open** (P-034 closed) | **J** |
 | Parity drift (SDK/macOS-js) | 11 vacuous        | 10 reduced + 3 vacuous | documented                             | —     |
-| TS `pipeline_runtime.ts`    | 86%               | pre-K baseline         | —                                      | **K** |
-| TS `expressions.ts`         | 89%               | pre-K baseline         | —                                      | **K** |
+| TS `pipeline_runtime.ts`    | 86%               | **90.62% (203/224)**   | K batch (Jest; e2e lcov unchanged)     | **K** |
+| TS `expressions.ts`         | 89%               | **93.61% (249/266)**   | K batch (+1 e2e line)                  | **K** |
 | Android NodeBuilder         | 67.5% (1167/1729) | **70.2% (1155/1645)**  | F: −183 LOC dead                       | L, M  |
 | Android loop L900–1299      | 106 missed        | **77 missed**          | F: −29 missed                          | M     |
 | Android Executor            | 58%               | 58%                    | —                                      | O     |
@@ -303,7 +303,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **K** queued (`implementation_gate` open). **J** complete.
+**Current gates:** **L** queued. **J** and **K** complete.
 
 ---
 

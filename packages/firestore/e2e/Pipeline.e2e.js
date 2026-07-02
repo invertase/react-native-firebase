@@ -2682,6 +2682,7 @@ describe('FirestorePipeline', function () {
             .documents([docPath])
             .select(
               currentTimestamp().as('now'),
+              field('eventTime').currentTimestamp().as('receiverNow'),
               timestampToUnixMicros(field('eventTime')).as('eventTimeMicros'),
               unixSecondsToTimestamp(field('epochSec')).as('fromSec'),
               unixMicrosToTimestamp(field('epochMicros')).as('fromMicros'),
@@ -2692,6 +2693,8 @@ describe('FirestorePipeline', function () {
         const data = snapshot.results[0].data();
         data.now.constructor.name.should.equal('Timestamp');
         should(data.now.toMillis()).be.greaterThan(0);
+        data.receiverNow.constructor.name.should.equal('Timestamp');
+        should(data.receiverNow.toMillis()).be.greaterThan(0);
         data.eventTimeMicros.should.equal(1700000000000000);
         data.fromSec.constructor.name.should.equal('Timestamp');
         data.fromSec.seconds.should.equal(1700000000);
