@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-06-30):** Phase **3** complete — committing P3e `storage`.
+> **IN PROGRESS (2026-07-01):** Interruption batch **NB1** ready to commit. **Next pickup:** NB2 (`perf(app): reduce TurboModule resolver overhead`).
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -165,10 +165,15 @@ Pick **one** of `firestore` or `auth` in Phase 1 (firestore = multi-module + pip
 | **1** | Hard probe | **done** | `firestore` (multi-module + pipelines; NewArch-AD-14a composite) |
 | **2** | Easy wins | **done** | `installations`, `perf`, `in-app-messaging`, `app-distribution`, `ml` |
 | **3** | Moderate | **done** | `app-check`, `remote-config`, `analytics`, `crashlytics`, `storage` |
+| **NB** | Interruption batch — JS infra/test/chore (standalone commits) | queued | `app` resolver refactor+perf, shared contract-test helper, harness snapshot; `compare-types` **S0** — [§ interruption batch](#interruption-batch-standalone-commits) |
+| **3.5** | Guardrails — spec↔native parity + codegen-drift CI (**gates 4**) | queued | all migrated packages — [§ Phase 3.5](#phase-35-guardrails) |
+| **4a** | messaging event decision — gap-analysis (**gates 4**) | queued | `messaging` — [§ Phase 4a](#phase-4a-messaging-event-decision) |
+| **Docs** | New-Architecture requirements + migration-doc consolidation | queued (opportunistic) | docs — [§ Phase Docs](#phase-docs-new-architecture-requirements-and-doc-consolidation) |
+| **PD** | Platform-divergence documentation | queued (opportunistic) | multi-package JSDoc/docs — [§ Phase PD](#phase-pd-platform-divergence-documentation) |
 | **4** | Remaining complex | queued | other Tier A/B + `messaging`, `database` |
 | **5** | Android-only / misc | queued | `phone-number-verification` |
-| **S** | Sync conversion (forced-async → sync) | queued (scope open — [NewArch-AD-16](architecture-decisions.md#newarch-ad-16--phase-s-asyncsync-conversion--open)) | All migrated packages — [§ sync conversion](#phase-s-sync-conversion-forced-async--sync) |
-| **R** | Pre-merge full validation | queued | Revert harness narrowing; [full tier](../testing/running-e2e.md#e2e-validation-tiers-unit-focused-area-focused-full) 3-platform before coordinated major |
+| **S** | Sync conversion (forced-async → sync) | queued (scope open — [NewArch-AD-16](architecture-decisions.md#newarch-ad-16--phase-s-asyncsync-conversion--open)); prereq **S0** ([interruption batch](#interruption-batch-standalone-commits)) | All migrated packages — [§ sync conversion](#phase-s-sync-conversion-forced-async--sync) |
+| **R** | Pre-merge full validation | queued | Revert harness narrowing; remove `NativeModules` fallback + throw test ([§ Phase R additions](#phase-r-additions)); [full tier](../testing/running-e2e.md#e2e-validation-tiers-unit-focused-area-focused-full) 3-platform before coordinated major |
 | **C** | EventEmitter cleanup | deferred | All — [§ deferred cleanup](#deferred-cleanup-phase-eventemitter) |
 | **E** | Shared-state encapsulation | deferred (optional) | `app` + readers — [§ Phase E](#phase-e-shared-state-encapsulation-optional) |
 
@@ -246,6 +251,52 @@ The "keep async if it does network/IO/disk" rule in the discriminator **assumes*
 
 ---
 
+## Interruption batch + inserted phases (2026-07-01)
+
+Inserted before Phase 4 after a design/PR review. Ordering: **interruption batch** (standalone commits, any order — NB1 before NB2 as both touch `nativeModule.ts`) → **Phase 3.5** (gates 4) → **Phase 4a** (gates 4) → Phase 4. **Phase Docs** and **Phase PD** are opportunistic (Jest/markdown/typedoc only — no e2e host) and do **not** gate Phase 4. All items follow the [phase iteration protocol](#phase-iteration-protocol); one focused commit each ([one-commit-per-item](../testing/change-authoring-workflow.md#commit)).
+
+### Interruption batch (standalone commits)
+
+JS-layer / test / chore only — **no native bridge change** → `unit-focused` tier = **Jest** (+ `compare:types` for S0); **no e2e**. Run before Phase 3.5.
+
+- **NB1 — `refactor(app): unify single-host TurboModule composite creation`.** Fold `getAppModule()`, `getStaticUtilsModule()`, and the single-host branch of `initialiseNativeModule()` in [`registry/nativeModule.ts`](../../../packages/app/lib/internal/registry/nativeModule.ts) through one `createSingleHostComposite(namespace, moduleName)` helper (the N=1 case of the [NewArch-AD-14a](architecture-decisions.md#newarch-ad-14a--multi-host-merge-routing-composite-proxy-required-for-multi-module) routing composite). No behavior change. **Also stage the [`resource-monitor.sh`](../../../.github/workflows/scripts/resource-monitor.sh) `100644 → 100755` mode fix here** — it has no other natural home. Gate: `yarn tests:jest` (all `nativeModuleContract` + `app`) + `yarn lint:js`.
+- **NB2 — `perf(app): reduce TurboModule resolver overhead`** (after NB1). In [`nativeModuleAndroidIos.ts`](../../../packages/app/lib/internal/nativeModuleAndroidIos.ts): cache the `RNFBDebug` debug `Proxy` per module instead of rebuilding it on every `getReactNativeModule()`; memoize non-function constant reads in the composite `get` trap ([`registry/nativeModule.ts`](../../../packages/app/lib/internal/registry/nativeModule.ts)); add a comment documenting the intentional per-call `encodeNullValues` walk (leave behavior). Dev/JS-only, low-risk. Gate: Jest + `lint:js`.
+- **NB3 — `refactor(app): extract shared TurboModule contract-test helper`.** New shared helper `assertTurboContract(config, methodFixtures)` (colocate in `packages/app/__tests__/` or a test-utils path) consumed by all 11 `packages/*/__tests__/nativeModuleContract.test.ts`; each package keeps only its `SPEC_METHODS` + per-method arg fixtures, with the `@react-native-firebase/app/dist/module/...` import centralized in the helper. Gate: `yarn tests:jest` — all contract tests still pass with unchanged assertions.
+- **NB5 — `test: snapshot committed harness defaults`** (decision A). Jest snapshot/assertion that [`tests/globals.js`](../../../tests/globals.js) `RNFBDebug === false` and [`tests/app.js`](../../../tests/app.js) `platformSupportedModules` equals the full module set — catches committed narrowing on tracked files (`harness.overrides.js` is gitignored and cannot be committed). Confirm `mocha/no-exclusive-tests` (already active in [`eslint.config.mjs`](../../../eslint.config.mjs)) covers `.only`; only add `tests/**` to eslint scope if the snapshot alone is insufficient. Gate: `yarn tests:jest` + `yarn lint:js`.
+- **S0 — `chore(compare-types): register remaining migrated packages`** (decision E). Register every unregistered package in [`registry.ts`](../../../.github/scripts/compare-types/src/registry.ts) at its **current** state — `analytics`, `crashlytics`, `in-app-messaging`, `app-distribution`, `ml`, `functions`, plus legacy-state `messaging`, `database`, `phone-number-verification` — each with a `configs/<pkg>.ts` documenting existing deltas so the run is green. Completes the Phase S candidate set ([§ Phase S gap-analysis](#gap-analysis-deferred--capture-only-do-not-size-yet)). Gate: `yarn compare:types` green.
+
+### Phase 3.5: Guardrails
+
+**Gates Phase 4.** Promotes [NewArch-AD-17](architecture-decisions.md#newarch-ad-17--spec-contract--parity-tests) items **#2 (spec↔native parity)** and **#3 (codegen-up-to-date)** from *Proposed* → *Accepted* (update the ADR statuses in this phase's commit).
+
+- **Codegen-drift (decision C):** add a committed **`yarn codegen:verify`** script — runs `yarn codegen` for every migrated package then `git diff --exit-code` on `**/generated/**` — and wire it as a **new step in the existing CI lint job** (alongside `lint:js` / `lint:android` / `lint:ios:check`).
+- **Spec↔native parity:** per package assert the spec method-name set equals the union of Android `@ReactMethod` + iOS `RCT_EXPORT_METHOD`, and (NewArch-AD-11) the union across a package's specs has no duplicates.
+- **Commit rule (decision C — single concern):** if regenerating produces drift **or** parity finds a mismatch needing repair → **one `fix:` commit** (even across multiple modules) **with the guard test/script included**; if everything is already clean → one **`test:` commit** adding the guard. Tier: **Jest-only** for a pure test/script addition; if any package's generated code is regenerated (native artifact change), run that package's **area-focused** e2e before closing `review_gate`.
+
+### Phase 4a: messaging event decision
+
+Runs **immediately before** Phase 4 `messaging`. `gap-analysis` (read-only, **no commit**): determine whether `messaging` events work over the legacy `RNFBNativeEventEmitter` → app-proxy path under TurboModules — including iOS background / AppDelegate and headless JS — per the [NewArch-AD-4](architecture-decisions.md#newarch-ad-4--events-deferred-to-phase-c--accepted) deferral discriminator. **Output:** a recorded decision — *escalate messaging events into the Phase 4 PR* vs *defer to Phase C* — written into NewArch-AD-4 and the arbiter row Notes. No product edits; feeds Phase 4 scope.
+
+### Phase Docs: New Architecture requirements and doc consolidation
+
+Opportunistic (`documentation`; Jest/markdown only, does not gate Phase 4).
+
+- **v26 New Architecture section:** grow [`docs/migrating-to-v26.mdx`](../../../docs/migrating-to-v26.mdx) (currently namespace-removal only) with a New Architecture section. First analyze whether a **single global notice** suffices — *"all native modules now require React Native's New Architecture; stay on the prior RNFB major if you cannot enable it"* — or whether any module needs a specific note. Include agent-usable enable steps (mirror the v24 `functions` section) and per-module notes only where a module deviates.
+- **Consolidation (F5):** keep the **ADR + architecture** docs as the permanent set; consolidate the ephemeral "how-to-migrate" material where it reduces fragmentation without collapsing the durable/ephemeral split ([documentation policy](../documentation-policy.md)). One `docs:` commit. Gate: `yarn lint:markdown`, `yarn lint:spellcheck`.
+
+### Phase PD: platform-divergence documentation
+
+Opportunistic. `gap-analysis` → `documentation`. **Seed set (already known):** auth web-vs-native throwers + sync parsers (`getRedirectResult`, `setPersistence`, `ActionCodeURL.parseLink`, …); analytics/crashlytics **iOS-only** methods (`logTransaction`, `initiateOnDeviceConversionMeasurement*`); perf sync `initializePerformance`; database sync `goOffline`/`goOnline`/`getServerTime`. Gap-analysis completes the set across all packages. **Document each divergence in three places:** (1) JSDoc `@remarks` (flows through `yarn reference:api`), (2) the relevant migration guide, (3) the package `docs/` tree. Commit granularity: one `docs(<pkg>):` commit per package (or per batch). Gate: `yarn reference:api`, markdown lint.
+
+### Phase R additions
+
+Explicit Phase R gating requirements (decision B, [NewArch-AD-6](architecture-decisions.md#newarch-ad-6--unified-native-module-resolver--accepted) Phase R action):
+
+- Remove the `?? NativeModules[moduleName]` fallback in [`nativeModuleAndroidIos.ts`](../../../packages/app/lib/internal/nativeModuleAndroidIos.ts) so a missing module **throws** instead of returning soft-`undefined`.
+- **Test (both):** a **Jest** unit test asserting `getReactNativeModule` throws for an unknown name once the fallback is removed, **plus** an `app` **e2e** "unknown module throws" case. Both run at **full** tier / 3-platform as part of Phase R.
+
+---
+
 ## Phase iteration protocol
 
 Each package (or one legacy module within a multi-module package) follows **one** serial loop. No overlap. Work types: [change authoring workflow § work types](../testing/change-authoring-workflow.md#work-types).
@@ -267,11 +318,11 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 ## Current snapshot
 
-**Label:** `phase-3-moderate`; **harness:** pending per package
+**Label:** `interruption-before-phase-4` (2026-07-01); **harness:** none for the batch (JS/test/chore); pending per package for Phase 3.5+
 
-**Next item:** Phase **4** — pick `database` or `auth` / `messaging`
+**Next item:** [NB2](#interruption-batch-standalone-commits) — then NB3 → NB5 → S0 → Phase 3.5 → Phase 4a → Phase **4**
 
-**Current gates:** Phase **3** complete (all P3 rows committed after P3e)
+**Current gates:** NB1 review complete — commit pending. Interruption remainder queued (NB2–S0, 3.5, 4a, Docs, PD, PR-fallback).
 
 **Host rule:** one `:test-cover` at a time — never parallel subagents with e2e.
 
@@ -294,6 +345,16 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Phase 3 `analytics` | P3c | **closed** | **closed** | **closed** | done | `area-focused` | `feat(analytics)!: migrate analytics to TurboModules` | Committed 2026-06-30. |
 | Phase 3 `crashlytics` | P3d | **closed** | **closed** | **closed** | done | `area-focused` | `feat(crashlytics)!: migrate crashlytics to TurboModules` | Committed 2026-06-30. |
 | Phase 3 `storage` | P3e | **closed** | **closed** | **closed** | done | `area-focused` | `feat(storage)!: migrate storage to TurboModules` | Committed 2026-06-30. |
+| Interruption NB1 composite + mode fix | NB1 | **closed** | **closed** | **closed** | done | `unit-focused` (Jest) | `refactor(app): unify single-host TurboModule composite creation` | Committed 2026-07-01. `createSingleHostComposite`; resource-monitor 0755. Jest 41/41. |
+| Interruption NB2 resolver perf | NB2 | open | open | open | **implementation** | `unit-focused` (Jest) | `perf(app): reduce TurboModule resolver overhead` | Cache debug proxy + memoize constant reads. After NB1. |
+| Interruption NB3 contract-test helper | NB3 | open | open | open | refactor | `unit-focused` (Jest) | `refactor(app): extract shared TurboModule contract-test helper` | Test-only; 11 packages. |
+| Interruption NB5 harness snapshot | NB5 | open | open | open | test | `unit-focused` (Jest) | `test: snapshot committed harness defaults` | Decision A. Guards tracked narrowing. |
+| Phase S0 compare-types registration | S0 | open | open | open | chore | `none` (`compare:types`) | `chore(compare-types): register remaining migrated packages` | Decision E. Completes Phase S candidate set. |
+| Phase 3.5 guardrails | P3.5 | open | open | open | test-or-fix | `unit-focused`; `area-focused` if regen | `test:` / `fix:` (single-concern, decision C) | **Gates 4.** Promote NewArch-AD-17 #2/#3; add `codegen:verify` to CI lint job. |
+| Phase 4a messaging event decision | P4a | n/a | n/a | n/a | gap-analysis | `none` | none | **Gates 4.** Escalate vs defer messaging events → record in NewArch-AD-4. |
+| Phase Docs — NA reqs + consolidation | PDoc | open | open | open | documentation | `none` | `docs: new-architecture requirements + migration consolidation` | Opportunistic; does not gate 4. |
+| Phase PD — platform divergence | PPD | open | open | open | documentation | `none` | `docs(<pkg>): …` per package | Opportunistic; gap-analysis first. |
+| Phase R — remove `NativeModules` fallback | PR-fallback | open | open | open | pre-merge-validation | `full` | (Phase R) | Decision B. Jest + `app` e2e "unknown module throws". |
 
 ---
 

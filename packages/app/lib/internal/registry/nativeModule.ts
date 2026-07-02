@@ -146,6 +146,28 @@ function createRoutingCompositeProxy(
 }
 
 /**
+ * NewArch-AD-14a N=1: single-host routing composite (TurboModule by default).
+ */
+function createSingleHostComposite(
+  namespace: string,
+  moduleName: string,
+  argToPrepend: unknown[] = [],
+  isTurboModule = true,
+): WrappedNativeModule {
+  const nativeModule = getReactNativeModule(moduleName);
+
+  if (!nativeModule) {
+    throw new Error(getMissingModuleHelpText(namespace));
+  }
+
+  return createRoutingCompositeProxy(
+    namespace,
+    [{ module: nativeModule, argToPrepend }],
+    isTurboModule,
+  );
+}
+
+/**
  * Initialises and wraps all the native module methods.
  */
 function initialiseNativeModule(module: FirebaseModule): WrappedNativeModule {
@@ -163,7 +185,6 @@ function initialiseNativeModule(module: FirebaseModule): WrappedNativeModule {
   const isTurboModule = !!turboModule;
   const multiModule = Array.isArray(nativeModuleName);
   const nativeModuleNames = multiModule ? nativeModuleName : [nativeModuleName];
-  const hosts: Array<{ module: Record<string, unknown> | undefined; argToPrepend: unknown[] }> = [];
 
   const argToPrepend: Array<string> = [];
 
@@ -175,22 +196,32 @@ function initialiseNativeModule(module: FirebaseModule): WrappedNativeModule {
     argToPrepend.push(module._customUrlOrRegion as string);
   }
 
-  for (let i = 0; i < nativeModuleNames.length; i++) {
-    const moduleName = nativeModuleNames[i];
-    if (!moduleName) continue;
+  let composite: WrappedNativeModule;
 
-    const nativeModule = getReactNativeModule(moduleName);
-
-    if (!multiModule && !nativeModule) {
+  if (!multiModule) {
+    const moduleName = nativeModuleNames[0];
+    if (!moduleName) {
       throw new Error(getMissingModuleHelpText(namespace));
     }
 
-    if (nativeModule) {
-      hosts.push({ module: nativeModule, argToPrepend });
-    }
-  }
+    composite = createSingleHostComposite(namespace, moduleName, argToPrepend, isTurboModule);
+  } else {
+    const hosts: Array<{ module: Record<string, unknown> | undefined; argToPrepend: unknown[] }> =
+      [];
 
-  const composite = createRoutingCompositeProxy(namespace, hosts, isTurboModule);
+    for (let i = 0; i < nativeModuleNames.length; i++) {
+      const moduleName = nativeModuleNames[i];
+      if (!moduleName) continue;
+
+      const nativeModule = getReactNativeModule(moduleName);
+
+      if (nativeModule) {
+        hosts.push({ module: nativeModule, argToPrepend });
+      }
+    }
+
+    composite = createRoutingCompositeProxy(namespace, hosts, isTurboModule);
+  }
 
   if (nativeEvents && Array.isArray(nativeEvents) && nativeEvents.length) {
     for (let i = 0, len = nativeEvents.length; i < len; i++) {
@@ -256,18 +287,7 @@ export function getAppModule(): RNFBAppModuleInterface {
     return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] as unknown as RNFBAppModuleInterface;
   }
 
-  const namespace = 'app';
-  const nativeModule = getReactNativeModule(APP_NATIVE_MODULE);
-
-  if (!nativeModule) {
-    throw new Error(getMissingModuleHelpText(namespace));
-  }
-
-  NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] = createRoutingCompositeProxy(
-    namespace,
-    [{ module: nativeModule, argToPrepend: [] }],
-    true,
-  );
+  NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] = createSingleHostComposite('app', APP_NATIVE_MODULE);
 
   return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] as unknown as RNFBAppModuleInterface;
 }
@@ -280,18 +300,7 @@ export function getStaticUtilsModule(): WrappedNativeModule {
     return staticUtilsModule;
   }
 
-  const namespace = 'utils';
-  const nativeModule = getReactNativeModule(UTILS_NATIVE_MODULE);
-
-  if (!nativeModule) {
-    throw new Error(getMissingModuleHelpText(namespace));
-  }
-
-  staticUtilsModule = createRoutingCompositeProxy(
-    namespace,
-    [{ module: nativeModule, argToPrepend: [] }],
-    true,
-  );
+  staticUtilsModule = createSingleHostComposite('utils', UTILS_NATIVE_MODULE);
 
   return staticUtilsModule;
 }
