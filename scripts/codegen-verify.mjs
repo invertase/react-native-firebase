@@ -15,6 +15,7 @@ const MIGRATED_PACKAGES = [
   'installations',
   'perf',
   'in-app-messaging',
+  'messaging',
   'app-distribution',
   'ml',
   'app-check',

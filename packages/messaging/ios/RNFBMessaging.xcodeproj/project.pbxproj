@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2744B98621F45429004F8E3F /* RNFBMessagingModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBMessagingModule.m */; };
+		2744B98621F45429004F8E3F /* RNFBMessagingModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBMessagingModule.mm */; };
 		27F24640242AA29F0098906C /* RNFBMessaging+UNUserNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F2463F242AA29E0098906C /* RNFBMessaging+UNUserNotificationCenter.m */; };
 		27F24643242AA2EE0098906C /* RNFBMessaging+AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F24642242AA2EE0098906C /* RNFBMessaging+AppDelegate.m */; };
 		27F24646242AA30E0098906C /* RNFBMessaging+FIRMessagingDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F24645242AA30E0098906C /* RNFBMessaging+FIRMessagingDelegate.m */; };
@@ -31,7 +31,7 @@
 /* Begin PBXFileReference section */
 		2744B98221F45429004F8E3F /* libRNFBMessaging.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBMessaging.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBMessagingModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMessagingModule.h; path = RNFBMessaging/RNFBMessagingModule.h; sourceTree = SOURCE_ROOT; };
-		2744B98521F45429004F8E3F /* RNFBMessagingModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMessagingModule.m; path = RNFBMessaging/RNFBMessagingModule.m; sourceTree = SOURCE_ROOT; };
+		2744B98521F45429004F8E3F /* RNFBMessagingModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBMessagingModule.mm; path = RNFBMessaging/RNFBMessagingModule.mm; sourceTree = SOURCE_ROOT; };
 		27F2463E242AA29E0098906C /* RNFBMessaging+UNUserNotificationCenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RNFBMessaging+UNUserNotificationCenter.h"; sourceTree = "<group>"; };
 		27F2463F242AA29E0098906C /* RNFBMessaging+UNUserNotificationCenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RNFBMessaging+UNUserNotificationCenter.m"; sourceTree = "<group>"; };
 		27F24641242AA2EE0098906C /* RNFBMessaging+AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RNFBMessaging+AppDelegate.h"; sourceTree = "<group>"; };
@@ -71,7 +71,7 @@
 				37D60F7324E647BF00E44930 /* RNFBMessaging+UNNotificationServiceExtension.m */,
 				37D60F7124E6465300E44930 /* RNFBMessaging+UNNotificationServiceExtension.h */,
 				2744B98421F45429004F8E3F /* RNFBMessagingModule.h */,
-				2744B98521F45429004F8E3F /* RNFBMessagingModule.m */,
+				2744B98521F45429004F8E3F /* RNFBMessagingModule.mm */,
 				DA446E5022CA485C0066A0A3 /* RNFBMessagingSerializer.h */,
 				DA446E5122CA48690066A0A3 /* RNFBMessagingSerializer.m */,
 				27F2463E242AA29E0098906C /* RNFBMessaging+UNUserNotificationCenter.h */,
@@ -153,7 +153,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2744B98621F45429004F8E3F /* RNFBMessagingModule.m in Sources */,
+				2744B98621F45429004F8E3F /* RNFBMessagingModule.mm in Sources */,
 				27F24643242AA2EE0098906C /* RNFBMessaging+AppDelegate.m in Sources */,
 				37D60F7424E647BF00E44930 /* RNFBMessaging+UNNotificationServiceExtension.m in Sources */,
 				27F24640242AA29F0098906C /* RNFBMessaging+UNUserNotificationCenter.m in Sources */,

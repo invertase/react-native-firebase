@@ -21,6 +21,7 @@ export const MIGRATED_TURBO_PACKAGES = [
   'crashlytics',
   'storage',
   'functions',
+  'messaging',
 ] as const;
 
 export type MigratedTurboPackage = (typeof MIGRATED_TURBO_PACKAGES)[number];

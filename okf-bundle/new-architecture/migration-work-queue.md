@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-07-02):** Phase **4** `messaging` TurboModule migration. P4a: **defer** events to Phase C ([ADR-4](architecture-decisions.md#newarch-ad-4--events-deferred-to-phase-c--accepted)).
+> **IN PROGRESS (2026-07-02):** Phase **4** — **next pickup:** `database` + remaining Tier A/B. P4m committed; P4a events deferred to Phase C ([ADR-4](architecture-decisions.md#newarch-ad-4--events-deferred-to-phase-c--accepted)).
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -87,6 +87,8 @@ Follow-on **after** Phases 0–5 and coordinated break. Not in scope unless test
 | JS fan-out | Fixed `nativeEvents` + `SharedEventEmitter` prefixes | Re-evaluate once native side supports typed events |
 
 **Deferral discriminator:** if **area-focused** e2e or device testing shows TurboModule migration **cannot** work with the legacy event proxy, escalate that package's event path into the active migration PR — do not wait for Phase C.
+
+**Messaging event-delivery e2e (Phase C — investigate before enabling):** `packages/messaging/e2e/messaging.e2e.js` foreground `onMessage()` delivery test stays **`xit`** (disabled since modular e2e consolidation, 2023). Un-skipping without a harness audit risks intermittent Android failures (`TestsAPI.messaging().sendToDevice` / FCM data payload; see [#8736](https://github.com/invertase/react-native-firebase/issues/8736), [#8670](https://github.com/invertase/react-native-firebase/issues/8670), [#8392](https://github.com/invertase/react-native-firebase/issues/8392)). Phase C must define stable pass criteria (device vs emulator, data-only vs notification+data, delegation settings) and broader event coverage (token refresh, notification-opened, iOS background timing vs `signalBackgroundMessageHandlerSet`) before re-enabling as a CI gate — per [NewArch-AD-4 § messaging testing requirement](architecture-decisions.md#messaging--defer-eventemitter-cutover-migrate-shell-only-in-phase-4).
 
 ---
 
@@ -324,7 +326,7 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 **Next item:** Phase **4** `messaging` TurboModule migration
 
-**Current gates:** P4m `implementation` — shell only per [ADR-4 § messaging](architecture-decisions.md#messaging--defer-eventemitter-cutover-migrate-shell-only-in-phase-4).
+**Current gates:** P4m committed. **Next:** Phase 4 `database` (or next Tier A/B item).
 
 **Host rule:** one `:test-cover` at a time — never parallel subagents with e2e.
 
@@ -354,7 +356,7 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Phase S0 compare-types registration | S0 | **closed** | **closed** | **closed** | done | `none` (`compare:types`) | `chore(compare-types): register remaining migrated packages` | Committed 2026-07-01. 8 pkgs registered; compare:types 19/19 green. |
 | Phase 3.5 guardrails | P3.5 | **closed** | **closed** | **closed** | done | `full` | `fix: add codegen verify and spec-native parity tests` | Committed `64f99c53d` 2026-07-02. |
 | Phase 4a messaging event decision | P4a | n/a | n/a | n/a | done | `none` | none | **Defer** events to Phase C — [NewArch-AD-4 § messaging](architecture-decisions.md#messaging--defer-eventemitter-cutover-migrate-shell-only-in-phase-4). |
-| Phase 4 `messaging` TurboModules | P4m | **open** | open | open | **implementation** | `area-focused` | `feat(messaging)!: migrate messaging to TurboModules` | Shell only (P4a); area-focused e2e per ADR-4 testing requirement. |
+| Phase 4 `messaging` TurboModules | P4m | **closed** | **closed** | **closed** | done | `area-focused` | `feat(messaging)!: migrate messaging to TurboModules` | Turbo shell only (AD-4 event path preserved). Jest 38/38 + parity 32/32; codegen:verify incl messaging; legacy Java removed. iOS/Android area e2e green on method-call + listener-registration scope. Foreground `onMessage` delivery test **left `xit`** — flaky FCM harness; re-enable in [Phase C](#deferred-cleanup-phase-eventemitter). |
 | Phase Docs — NA reqs + consolidation | PDoc | open | open | open | documentation | `none` | `docs: new-architecture requirements + migration consolidation` | Opportunistic; does not gate 4. |
 | Phase PD — platform divergence | PPD | open | open | open | documentation | `none` | `docs(<pkg>): …` per package | Opportunistic; gap-analysis first. |
 | Phase R — remove `NativeModules` fallback | PR-fallback | open | open | open | pre-merge-validation | `full` | (Phase R) | Decision B. Jest + `app` e2e "unknown module throws". |

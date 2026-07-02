@@ -53,7 +53,7 @@ import type {
 } from './types/messaging';
 import { version } from './version';
 
-const nativeModuleName = 'RNFBMessagingModule';
+const nativeModuleName = 'NativeRNFBTurboMessaging';
 
 let backgroundMessageHandler: ((remoteMessage: RemoteMessage) => Promise<any>) | undefined;
 let openSettingsForNotificationHandler: ((remoteMessage: RemoteMessage) => any) | undefined;
@@ -81,9 +81,7 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
         ? this.native.isRegisteredForRemoteNotifications
         : true;
     this._isNotificationDelegationEnabled =
-      this.native.isNotificationDelegationEnabled != null
-        ? this.native.isNotificationDelegationEnabled
-        : false;
+      this.native.getConstants?.()?.isNotificationDelegationEnabled ?? false;
 
     AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => {
       if (!backgroundMessageHandler) {
@@ -496,6 +494,7 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
 
   async isSupported(): Promise<boolean> {
     if (isAndroid) {
+      // NewArch-AD-18 E6: cross-package Play Services availability via utils host.
       const utilsNativeModule = getReactNativeModule(UTILS_NATIVE_MODULE);
       if (!utilsNativeModule) {
         return false;
@@ -529,6 +528,7 @@ const config: ModuleConfig = {
   ],
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
+  turboModule: true,
 };
 
 export const SDK_VERSION = version;

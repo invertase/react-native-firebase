@@ -324,6 +324,7 @@ describe('messaging()', function () {
         }
       });
 
+      // Phase C: re-enable only after FCM harness / payload delivery audit (see migration-work-queue § Phase C).
       xit('receives messages when the app is in the foreground', async function () {
         const { getMessaging, onMessage, registerDeviceForRemoteMessages, getToken } =
           messagingModular;

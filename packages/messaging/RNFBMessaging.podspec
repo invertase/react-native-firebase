@@ -10,6 +10,7 @@ if coreVersionDetected != coreVersionRequired
 end
 firebase_ios_target = appPackage['sdkVersions']['ios']['iosTarget']
 firebase_macos_target = appPackage['sdkVersions']['ios']['macosTarget']
+firebase_tvos_target = appPackage['sdkVersions']['ios']['tvosTarget']
 
 Pod::Spec.new do |s|
   s.name                = "RNFBMessaging"
@@ -25,15 +26,16 @@ Pod::Spec.new do |s|
   s.social_media_url    = 'http://twitter.com/invertaseio'
   s.ios.deployment_target = firebase_ios_target
   s.macos.deployment_target = firebase_macos_target
-  s.source_files        = 'ios/**/*.{h,m}'
+  s.tvos.deployment_target = firebase_tvos_target
+  s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
 
   s.dependency          'RNFBApp'
 
-  # React Native dependencies
-  if defined?(install_modules_dependencies()) != nil
-    install_modules_dependencies(s);
-  else
-    s.dependency "React-Core"
+  install_modules_dependencies(s);
+
+  if defined?(ENV["RCT_NEW_ARCH_ENABLED"]) != nil && (ENV["RCT_NEW_ARCH_ENABLED"] == '0')
+     raise "#{s.name} requires New Architecture. Enable New Architecture to use this module"
   end
 
   if defined?($FirebaseSDKVersion)

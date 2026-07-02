@@ -401,12 +401,16 @@ jest.doMock('react-native', () => {
           getToken: jest.fn(),
           deleteInstallations: jest.fn(),
         },
-        RNFBMessagingModule: {
+        NativeRNFBTurboMessaging: {
+          getConstants: () => ({
+            isAutoInitEnabled: true,
+            isDeliveryMetricsExportToBigQueryEnabled: false,
+            isRegisteredForRemoteNotifications: false,
+            isNotificationDelegationEnabled: false,
+          }),
           isAutoInitEnabled: true,
           isDeliveryMetricsExportToBigQueryEnabled: false,
           isRegisteredForRemoteNotifications: false,
-          isNotificationDelegationEnabled: false,
-          onMessage: jest.fn(),
           completeNotificationProcessing: jest.fn(),
           setAutoInitEnabled: jest.fn(),
           getInitialNotification: jest.fn(() => Promise.resolve(null)),
@@ -425,6 +429,7 @@ jest.doMock('react-native', () => {
           subscribeToTopic: jest.fn(),
           unsubscribeFromTopic: jest.fn(),
           setDeliveryMetricsExportToBigQuery: jest.fn(),
+          isNotificationDelegationEnabled: jest.fn(() => Promise.resolve(false)),
           setNotificationDelegationEnabled: jest.fn(),
         },
         NativeRNFBTurboPerf: {

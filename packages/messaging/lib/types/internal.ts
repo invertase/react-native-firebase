@@ -18,13 +18,18 @@
 import type { IOSPermissions, RemoteMessage } from './messaging';
 
 /**
- * Wrapped native module contract for `RNFBMessagingModule`.
+ * Wrapped native module contract for `NativeRNFBTurboMessaging`.
  */
-export interface RNFBMessagingModule {
+export interface NativeRNFBTurboMessaging {
+  getConstants?(): {
+    isAutoInitEnabled?: boolean;
+    isDeliveryMetricsExportToBigQueryEnabled?: boolean;
+    isRegisteredForRemoteNotifications?: boolean;
+    isNotificationDelegationEnabled?: boolean;
+  };
   isAutoInitEnabled?: boolean;
   isDeliveryMetricsExportToBigQueryEnabled?: boolean;
   isRegisteredForRemoteNotifications?: boolean;
-  isNotificationDelegationEnabled?: boolean;
   setAutoInitEnabled(enabled: boolean): Promise<void>;
   getInitialNotification(): Promise<RemoteMessage | null>;
   getDidOpenSettingsForNotification(): Promise<boolean>;
@@ -43,11 +48,12 @@ export interface RNFBMessagingModule {
   subscribeToTopic(topic: string): Promise<void>;
   unsubscribeFromTopic(topic: string): Promise<void>;
   setDeliveryMetricsExportToBigQuery(enabled: boolean): Promise<void>;
+  isNotificationDelegationEnabled(): Promise<boolean>;
   setNotificationDelegationEnabled(enabled: boolean): Promise<void>;
 }
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBMessagingModule: RNFBMessagingModule;
+    NativeRNFBTurboMessaging: NativeRNFBTurboMessaging;
   }
 }
