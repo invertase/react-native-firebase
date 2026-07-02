@@ -4,6 +4,7 @@ import { NativeModules, TurboModuleRegistry } from 'react-native';
 const DYNAMIC_CONSTANT_KEYS = new Set(['androidPlayServices']);
 
 const memoizedModuleConstants = new Map<string, Record<string, unknown>>();
+const memoizedDebugProxies = new Map<string, Record<string, unknown>>();
 
 function withTurboConstants(
   moduleName: string,
@@ -53,7 +54,13 @@ export function getReactNativeModule(moduleName: string): Record<string, unknown
   if (!globalThis.RNFBDebug || !nativeModule) {
     return nativeModule;
   }
-  return new Proxy(nativeModule as Record<string, unknown>, {
+
+  let debugProxy = memoizedDebugProxies.get(moduleName);
+  if (debugProxy) {
+    return debugProxy;
+  }
+
+  debugProxy = new Proxy(nativeModule as Record<string, unknown>, {
     ownKeys(target) {
       const keys: string[] = [];
       for (const key in target) {
@@ -92,6 +99,8 @@ export function getReactNativeModule(moduleName: string): Record<string, unknown
       };
     },
   });
+  memoizedDebugProxies.set(moduleName, debugProxy);
+  return debugProxy;
 }
 
 export function setReactNativeModule(): void {

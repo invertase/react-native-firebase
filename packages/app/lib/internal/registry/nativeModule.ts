@@ -56,6 +56,7 @@ function nativeModuleMethodWrapped(
   isTurboModule: boolean,
 ): (...args: unknown[]) => unknown {
   return (...args: unknown[]) => {
+    // Per-call encodeNullValues walk is intentional: args may differ on every invocation.
     const processedArgs = isIOS && isTurboModule ? args.map(arg => encodeNullValues(arg)) : args;
     const allArgs = [...argToPrepend, ...processedArgs];
     const possiblePromise = method(...allArgs);
@@ -81,6 +82,7 @@ function createRoutingCompositeProxy(
 ): WrappedNativeModule {
   const routingMap: Record<string, RouteEntry> = {};
   const memoizedMethods: Record<string, (...args: unknown[]) => unknown> = {};
+  const memoizedConstants: Record<string, unknown> = {};
 
   for (const { module, argToPrepend } of hosts) {
     if (!module) {
@@ -110,7 +112,10 @@ function createRoutingCompositeProxy(
       const value = route.host[route.key];
 
       if (typeof value !== 'function') {
-        return value;
+        if (!(name in memoizedConstants)) {
+          memoizedConstants[name] = value;
+        }
+        return memoizedConstants[name];
       }
 
       if (!memoizedMethods[name]) {

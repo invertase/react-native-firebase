@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-07-01):** Interruption batch **NB1** ready to commit. **Next pickup:** NB2 (`perf(app): reduce TurboModule resolver overhead`).
+> **IN PROGRESS (2026-07-01):** Interruption batch **NB2** ready to commit. **Next pickup:** NB3 (`refactor(app): extract shared TurboModule contract-test helper`).
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -320,9 +320,9 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 **Label:** `interruption-before-phase-4` (2026-07-01); **harness:** none for the batch (JS/test/chore); pending per package for Phase 3.5+
 
-**Next item:** [NB2](#interruption-batch-standalone-commits) — then NB3 → NB5 → S0 → Phase 3.5 → Phase 4a → Phase **4**
+**Next item:** [NB3](#interruption-batch-standalone-commits) — then NB5 → S0 → Phase 3.5 → Phase 4a → Phase **4**
 
-**Current gates:** NB1 review complete — commit pending. Interruption remainder queued (NB2–S0, 3.5, 4a, Docs, PD, PR-fallback).
+**Current gates:** NB2 review complete — commit pending. Interruption remainder queued (NB3–S0, 3.5, 4a, Docs, PD, PR-fallback).
 
 **Host rule:** one `:test-cover` at a time — never parallel subagents with e2e.
 
@@ -346,8 +346,8 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Phase 3 `crashlytics` | P3d | **closed** | **closed** | **closed** | done | `area-focused` | `feat(crashlytics)!: migrate crashlytics to TurboModules` | Committed 2026-06-30. |
 | Phase 3 `storage` | P3e | **closed** | **closed** | **closed** | done | `area-focused` | `feat(storage)!: migrate storage to TurboModules` | Committed 2026-06-30. |
 | Interruption NB1 composite + mode fix | NB1 | **closed** | **closed** | **closed** | done | `unit-focused` (Jest) | `refactor(app): unify single-host TurboModule composite creation` | Committed 2026-07-01. `createSingleHostComposite`; resource-monitor 0755. Jest 41/41. |
-| Interruption NB2 resolver perf | NB2 | open | open | open | **implementation** | `unit-focused` (Jest) | `perf(app): reduce TurboModule resolver overhead` | Cache debug proxy + memoize constant reads. After NB1. |
-| Interruption NB3 contract-test helper | NB3 | open | open | open | refactor | `unit-focused` (Jest) | `refactor(app): extract shared TurboModule contract-test helper` | Test-only; 11 packages. |
+| Interruption NB2 resolver perf | NB2 | **closed** | **closed** | **closed** | done | `unit-focused` (Jest) | `perf(app): reduce TurboModule resolver overhead` | Committed 2026-07-01. Debug proxy cache + constant memoization. Jest 41/41. |
+| Interruption NB3 contract-test helper | NB3 | open | open | open | **implementation** | `unit-focused` (Jest) | `refactor(app): extract shared TurboModule contract-test helper` | Test-only; 11 packages. |
 | Interruption NB5 harness snapshot | NB5 | open | open | open | test | `unit-focused` (Jest) | `test: snapshot committed harness defaults` | Decision A. Guards tracked narrowing. |
 | Phase S0 compare-types registration | S0 | open | open | open | chore | `none` (`compare:types`) | `chore(compare-types): register remaining migrated packages` | Decision E. Completes Phase S candidate set. |
 | Phase 3.5 guardrails | P3.5 | open | open | open | test-or-fix | `unit-focused`; `area-focused` if regen | `test:` / `fix:` (single-concern, decision C) | **Gates 4.** Promote NewArch-AD-17 #2/#3; add `codegen:verify` to CI lint job. |
