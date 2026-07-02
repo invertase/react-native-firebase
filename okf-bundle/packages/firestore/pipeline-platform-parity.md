@@ -26,7 +26,7 @@ No permanent `Platform.android` / `Platform.ios` e2e workaround without registry
 
 # Drift registry
 
-**Status:** drift audit complete. `Pipeline.e2e.js`: 31 `Platform.*` sites; 5 bridge gaps; remainder SDK / macOS-js / test-only. Live order: [work queue](pipeline-coverage-work-queue.md).
+**Status:** bridge gaps **P-005–P-012** remediated; operand-mode audit **P-034** closed. Live coordination: [work queue](pipeline-coverage-work-queue.md).
 
 **Classification key:** `bridge` | `SDK` | `macOS-js` | `test-only` | `RNFB-JS`
 
@@ -34,14 +34,7 @@ No permanent `Platform.android` / `Platform.ios` e2e workaround without registry
 
 ## Bridge gaps (must fix)
 
-| ID | Area | Symptom | iOS | Android | macOS | E2e hook (`Pipeline.e2e.js`) | Remediation order |
-|----|------|---------|-----|---------|-------|------------------------------|-------------------|
-| **P-005** | `integerLiteral` wire tag | `constant()` integers emit `integerLiteral: true`; iOS NodeBuilder bool→0/1 before int | Consumes tag in `scalarConstantBridge` | `unwrapConstantValue` returns raw value; no tag handling | N/A | L3533–3559 (indirect); no wire assert | **1** |
-| **P-010** | Stage option expression fields | Expression-valued `distanceField` / `indexField` | Parsed/coerced as expression | Parser `optionalString` only; executor `withDistanceField(String)` | Skipped (L3902+) | L3795–3845 (Android-only source rawOptions); findNearest/unnest paths | **2** |
-| **P-011** | Parser constant envelope routing | `{ exprType: "constant", value: … }` in value context | `isExpressionLike` true for any `exprType` | `isExpressionLike` excludes `"constant"` — descends as literal map | Same wire | Nested constants (e.g. ref maps) | **3** |
-| **P-012** | `timestampTruncate` arity validation | Validates arg count; throws | Sets `box.value = null` when `args.size() != 2` | Same | L3292–3294 (macOS vacuous) | **4** |
-
-**After P-001 closure:** **P-034** may still trim remaining operand-mode `Platform.*` branches elsewhere in `Pipeline.e2e.js`.
+*None open* — remediated rows in [Resolved](#resolved). SDK / macOS-js / test-only rows below remain documented.
 
 ---
 
@@ -72,8 +65,8 @@ No permanent `Platform.android` / `Platform.ios` e2e workaround without registry
 | **P-018** | Constant-wrapped array lowering | L3236–3246 | Reduced select on macOS |
 | **P-019** | Map passthrough lowering | L3266–3268 | Vacuous pass |
 | **P-020** | `timestampTruncate` arity validation | L3292–3294 | Vacuous pass |
-| **P-021** | Operand-mode equality subset | L3511–3530 | Reduced select (4 fields); mirrors Android reduced path |
-| **P-022** | Raw where operand-mode | L3626–3628 | Vacuous pass |
+| **P-021** | Operand-mode equality subset | L3206–3225 | Reduced select (4 equality fields); arithmetic rhs + fluent-where subtest native-only — firebase-js-sdk rejects `add(..., BOOLEAN)` |
+| **P-022** | Raw where operand-mode | L3296–3298 | Vacuous pass; raw `{ operator, fieldPath, value }` where throws `_readUserData` on macOS JS path |
 | **P-023** | Source rawOptions / index hints | L3796–3798 | Vacuous pass (with iOS) |
 | **P-024** | findNearest execute | L3902–3904 | Vacuous pass |
 | **P-025** | unnest options-object | L3954–3956 | Vacuous pass |
@@ -120,5 +113,10 @@ For each **bridge** row:
 | ID | Fix | Verified |
 |----|-----|----------|
 | **P-001** | Android NodeBuilder: `ExpressionCoercionMode` with numeric/comparison operand constant lowering aligned with iOS `coerceExpressionTree`; unified cross-platform operand-mode e2e (ordering/arithmetic RHS and raw-where bool coercion). **Remainder:** wire `COMPARISON_OPERAND` at non-ordering comparison call sites on Android. | 3-platform `Pipeline.e2e.js` |
+| **P-005** | Android NodeBuilder: `unwrapConstantValue` consumes `integerLiteral: true`; `coerceIntegerLiteralConstantValue` bool→0/1 and whole-number int coercion aligned with iOS `scalarConstantBridge` / `unwrapConstantValue`. CFBoolean/NSNumber bool deferral documented (Android RN uses `ReadableType.Boolean`). | 3-platform `Pipeline.e2e.js` |
+| **P-010** | Android Parser `optionalExpressionNode` for `distanceField`/`indexField`; Executor expression coercion via `coerceExpression`/`coerceStageOptionFieldName`. SDK Field/String lowering asymmetry documented. | 3-platform `Pipeline.e2e.js` |
+| **P-011** | Android Parser `isExpressionLike` treats `exprType: "constant"` as expression-like (matching iOS); nested constant envelope e2e added. | 3-platform `Pipeline.e2e.js` |
+| **P-012** | Android NodeBuilder: `timestampTruncate` arity via `requireArgumentCount` + receiver-frame throw (no silent null/NPE). iOS explicit arity guard deferred (e2e green via SDK path). | 3-platform `Pipeline.e2e.js` |
+| **P-034** | Operand-mode e2e audit post-J1: no further `Platform.*` trims — iOS/Android share full assertion block; macOS-js reduced select (P-021) and raw-where vacuous skip (P-022) confirmed by runtime probe. | `Pipeline.e2e.js` operand-mode describe |
 | P-002 | Android parser/node-builder: `{ path: "col/doc" }` reference constants no longer treated as field paths | Verified on Android e2e after parser fix |
 | P-006 | MacOS e2e count delta | **Closed** — app `utils*` tests are skipped by platform; Pipeline registration is not the cause |

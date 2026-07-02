@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS (2026-06-30):** **J2** P-005 Android `integerLiteral` — `implementation` next. **J1** committed `fix(firestore, android): align pipeline operand coercion with iOS`.
+> **IN PROGRESS:** **K** queued — TS `pipeline_runtime` + `expressions`. **J** complete (J0–J6).
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -56,11 +56,11 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 | **E**  | Executor / Parser / BridgeFactory e2e | ✅                         | Android Executor 49%→58%; iOS BridgeFactory 83%                                                                                                    |
 | **F**  | Android L900–1299 lowering            | ✅                         | **Dead removal** — loop 106→77 missed; NodeBuilder 70.2%                                                                                           |
 | **G**  | iOS operand modes + map passthrough   | ✅                         | **+8 operand probes** via raw-where e2e; map execute intractable                                                                                   |
-| **H**  | TS `pipeline_validate` execute guards | ✅                         | `3a1f7d654` — 3-platform **141/141 / 146/146 / 146/146**                                                                                           |
+| **H**  | TS `pipeline_validate` execute guards | ✅                         | e2e tamper tests + Android parser ref-constant fix; `pipeline_validate` ~93% macOS TS lcov |
 | **I**  | **Platform parity audit**             | ✅                         | 31 e2e branches; registry P-001–P-031                                                                                                              |
 | **Ib** | **SDK support reconciliation**        | ✅                         | Guard list vs iOS 12.15 / Android 34.15 CHANGELOG; [audit method](pipeline-sdk-support-audit.md)                                                   |
-| **J**  | **Parity remediation**                | **J0 complete — J1 next** | **J0** probes → **J0b** consolidation → **J0 remainder** → **J1–J6**                                                                               |
-| **K**  | TS `pipeline_runtime` + `expressions` | queued                    | guards, timestamp/FieldPath *(was old I)*                                                                                                          |
+| **J**  | **Parity remediation**                | **✅ complete** | **J0** probes → **J0b** consolidation → **J0 remainder** → **J1–J6**                                                                               |
+| **K**  | TS `pipeline_runtime` + `expressions` | queued | guards, timestamp/FieldPath normalization gaps |
 | **L**  | Android parsed-aggregate tail         | queued                    | ~143 missed *(was old J)*                                                                                                                          |
 | **M**  | Android exit frames + receiver chains | queued                    | ~77 loop remainder + exit/receiver *(was old K)*                                                                                                   |
 | **N**  | iOS stage coercion                    | queued                    | ~293 missed; operand tail *(was old L)*                                                                                                            |
@@ -76,40 +76,46 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 
 ## Current snapshot
 
-**Label:** `j2-p005-implementation`; **harness:** full test app (committed)
+**Label:** `j-complete`; **harness:** full test app (committed)
 
-**Next item:** **J2** P-005 — `implementation` (`unit-focused`).
+**Next item:** **K** — TS `pipeline_runtime` + `expressions` normalization gaps.
+
+| **J2** P-005 `integerLiteral` | `fix(firestore, android): align pipeline integerLiteral constant lowering with iOS` | **closed** | **closed** | **closed** | — | — | — | P-005 → Resolved; CFBoolean deferral accepted |
+| **J3** P-010 stage option expressions | `fix(firestore, android): align pipeline stage option expression fields with iOS` | **closed** | **closed** | **closed** | — | — | — | P-010 → Resolved |
+| **J4** P-011 constant envelope | `fix(firestore, android): align pipeline constant envelope routing with iOS` | **closed** | **closed** | **closed** | — | — | — | P-011 → Resolved |
+| **J5** P-012 timestampTruncate arity | `fix(firestore, android): align pipeline timestampTruncate arity validation with iOS` | **closed** | **closed** | **closed** | — | — | — | P-012 → Resolved; iOS explicit arity guard deferred |
+| **J6** P-034 operand-mode audit | `docs(firestore): close P-034 operand-mode e2e audit after J1 parity` | **closed** | **closed** | **closed** | — | — | — | No code trims; P-021/P-022 confirmed |
+| **K** TS runtime/expressions | — | open | open | open | `implementation` | `unit-focused` | — | queued |
 
 **Arbiter gate (2026-06-25):**
 
 
-| Probe                         | Code        | `implementation_gate` | `review_gate` | `next_work_type` | `validation_tier` | `platform` | Notes                                                                   |
-| ----------------------------- | ----------- | --------------------- | ------------- | ---------------- | ----------------- | ---------- | ----------------------------------------------------------------------- |
-| **J0-1** `stringRepeat`       | `f14092909` | closed                | **closed**    | —                | —                 | —          | area-focused review 2026-06-25: 100/100/100; stringRepeat unified iOS path      |
-| **J0-2** `switchOn`           | `ae795b96c` | closed                | **closed**    | —                | —                 | —          | Committed 2026-06-25; area-focused review 100/100/100                           |
-| **J0-3** `trunc`              | `138e45690` | closed                | **closed**    | —                | —                 | —          | area-focused review 2026-06-25: 100/100/100; trunc unified iOS path             |
-| **J0-4** `conditional`        | `cde7b812c` | closed                | **closed**    | —                | —                 | —          | area-focused review 100/100/100; iOS wire `conditional`; unified e2e            |
-| **J0-5** `round`              | `5b4717d0c` | closed                | **closed**    | —                | —                 | —          | area-focused review 100/100/100; round unified iOS path (TS-only)               |
-| **J0-6** `substring`          | `8b76d8bc4` | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — reclassified; guard retained                      |
-| **J0-7** `timestampAdd`       | —           | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — probe + SDK source; guard retained                |
-| **J0-8** `timestampSubtract`  | —           | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — SDK `timestamp_subtract`; fix iOS wire + receiver |
-| **J0-9** `arrayGet`           | —           | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — SDK `array_get` receiver wire; guard retained     |
-| **J0b**                       | `c27b6f115` | closed                | **closed**    | —                | —                 | —          | area-focused review 2026-06-25: iOS 100/100; Jest switchOn ok                   |
-| **J0-6′** `substring`         | —           | closed                | **closed**    | —                | —                 | —          | Committed — iOS receiver chain; guard removed; unified e2e              |
-| **J0-7′** `timestampAdd`      | —           | closed                | **closed**    | —                | —                 | —          | Same commit — `timestampAdd(amount:unit:)`                                |
-| **J0-8′** `timestampSubtract` | —           | closed                | **closed**    | —                | —                 | —          | Same commit — wire `timestamp_subtract`                                   |
-| **J0-9′** `arrayGet`          | —           | closed                | **closed**    | —                | —                 | —          | Same commit — `.arrayGet(_:)`                                             |
-| **J1** P-001 operand coercion | `fix(firestore, android): align pipeline operand coercion with iOS` | **closed**            | **closed**    | **closed**    | —                | —                 | —          | P-001 → Resolved in parity registry; deferred `COMPARISON_OPERAND` call-site wiring |
-| **J2** P-005 `integerLiteral` | —           | **open**              | **open**      | `implementation` | `unit-focused`    | android    | Android `unwrapConstantValue` lacks `integerLiteral` tag handling vs iOS `scalarConstantBridge` |
+| Probe                         | `commit_subject` | `implementation_gate` | `review_gate` | `next_work_type` | `validation_tier` | `platform` | Notes                                                                   |
+| ----------------------------- | ---------------- | --------------------- | ------------- | ---------------- | ----------------- | ---------- | ----------------------------------------------------------------------- |
+| **J0-1** `stringRepeat`       | —                | closed                | **closed**    | —                | —                 | —          | stringRepeat unified iOS path                                           |
+| **J0-2** `switchOn`           | —                | closed                | **closed**    | —                | —                 | —          | switchOn unified iOS path                                               |
+| **J0-3** `trunc`              | —                | closed                | **closed**    | —                | —                 | —          | trunc unified iOS path                                                  |
+| **J0-4** `conditional`        | —                | closed                | **closed**    | —                | —                 | —          | iOS wire `conditional`; unified e2e                                     |
+| **J0-5** `round`              | —                | closed                | **closed**    | —                | —                 | —          | round unified iOS path (TS-only)                                        |
+| **J0-6** `substring`          | —                | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — reclassified; guard retained                      |
+| **J0-7** `timestampAdd`       | —                | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — probe + SDK source; guard retained                |
+| **J0-8** `timestampSubtract`  | —                | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — SDK `timestamp_subtract`; fix iOS wire + receiver |
+| **J0-9** `arrayGet`           | —                | closed                | **closed**    | —                | —                 | —          | **rnfb-bridge-gap** — SDK `array_get` receiver wire; guard retained     |
+| **J0b**                       | —                | closed                | **closed**    | —                | —                 | —          | switchOn boolean receiver consolidation                                 |
+| **J0-6′** `substring`         | —                | closed                | **closed**    | —                | —                 | —          | iOS receiver chain; guard removed; unified e2e                          |
+| **J0-7′** `timestampAdd`      | —                | closed                | **closed**    | —                | —                 | —          | `timestampAdd(amount:unit:)`                                            |
+| **J0-8′** `timestampSubtract` | —                | closed                | **closed**    | —                | —                 | —          | wire `timestamp_subtract`                                               |
+| **J0-9′** `arrayGet`          | —                | closed                | **closed**    | —                | —                 | —          | `.arrayGet(_:)`                                                         |
+| **J1** P-001 operand coercion | `fix(firestore, android): align pipeline operand coercion with iOS` | **closed** | **closed** | **closed** | — | — | — | P-001 → Resolved; deferred `COMPARISON_OPERAND` call-site wiring |
 
 
 
 | Target                      | macOS             | iOS                    | Android (gap map)                      | Phase |
 | --------------------------- | ----------------- | ---------------------- | -------------------------------------- | ----- |
-| Parity drift (bridge)       | —                 | —                      | **4 open** (P-005, P-010–P-012) | **J** |
+| Parity drift (bridge)       | —                 | —                      | **0 open** (P-034 closed) | **J** |
 | Parity drift (SDK/macOS-js) | 11 vacuous        | 10 reduced + 3 vacuous | documented                             | —     |
-| TS `pipeline_runtime.ts`    | 86%               | **90.79% (207/228)**   | pre-K baseline                         | **K** |
-| TS `expressions.ts`         | 89%               | **93.61% (249/266)**   | pre-K baseline                         | **K** |
+| TS `pipeline_runtime.ts`    | 86%               | pre-K baseline         | —                                      | **K** |
+| TS `expressions.ts`         | 89%               | pre-K baseline         | —                                      | **K** |
 | Android NodeBuilder         | 67.5% (1167/1729) | **70.2% (1155/1645)**  | F: −183 LOC dead                       | L, M  |
 | Android loop L900–1299      | 106 missed        | **77 missed**          | F: −29 missed                          | M     |
 | Android Executor            | 58%               | 58%                    | —                                      | O     |
@@ -127,14 +133,12 @@ bash scripts/map-pipeline-coverage-gaps.sh after-phase-f-dead-removal
 
 ## Branch commits (A–G)
 
-
-| Commit      | Summary                                                                      |
-| ----------- | ---------------------------------------------------------------------------- |
-| `61e198aaf` | Android e2e infra: Detox FabricTimers, `.ec` delete, OKF stale-coverage docs |
-| `fa5b469b2` | Android NodeBuilder: remove dormant lowering duplicates (Phase F)            |
-| `970022702` | E2e: expression frame lowering regression cases (Phase F)                    |
-| `0650b7783` | E2e: iOS operand modes via raw where filters (Phase G)                       |
-
+| Commit subject | Summary |
+| -------------- | ------- |
+| Android e2e infra: Detox FabricTimers, `.ec` delete, OKF stale-coverage docs | Phase A infra |
+| Android NodeBuilder: remove dormant lowering duplicates (Phase F) | Dead-code removal |
+| E2e: expression frame lowering regression cases (Phase F) | Lowering e2e |
+| E2e: iOS operand modes via raw where filters (Phase G) | Operand-mode probes |
 
 Earlier: A–E baseline, dead code, gap map, lowering/executor e2e.
 
@@ -159,7 +163,7 @@ Earlier: A–E baseline, dead code, gap map, lowering/executor e2e.
 - **Operand tail (19 missed):** L928, L948–949, L961–966, L973–974, L990–1006 — triage in **Phase I**; Android side is **P-001** (bridge gap, not coverage-only).
 - **Parity note:** e2e uses `Platform.android` split for ordering RHS — **must close in Phase J**, not extend in Phase K+.
 
-### Infra side quest (committed `61e198aaf`)
+### Infra side quest (Phase A)
 
 - Detox `FabricTimersIdlingResource` no-op under New Arch (launch crash fix).
 - Android post-e2e deletes processed `.ec` (parity with iOS profraw delete).
@@ -167,14 +171,14 @@ Earlier: A–E baseline, dead code, gap map, lowering/executor e2e.
 
 ---
 
-## Phase H — complete (2026-06-25)
+## Phase H — complete
 
-**Commit:** `3a1f7d654` — e2e tamper tests + Android parser/node-builder ref-constant fix. Docs: `aace9671f`.
+**Commit subject:** `test(firestore): expand pipeline execute validation e2e coverage` (representative).
 
 - Six e2e tests tamper `_source`/`_stages` before `execute()` to hit JS validation guards.
-- **Result:** 65/88 → **82/88 (93.18%)** on macOS (+17 lines).
-- **Remaining 6 lines → Phase P/Q:** L96 (valid subcollection return), L175/L181 (runtime-unreachable pending/stages guards), L208/L212 (parseExecuteInput short-circuit), L230 (rawOptions isolated throw). Jest `pipelines-validate.test.ts` covers direct-call paths.
-- **Android parser fix:** document-reference `{ path: "col/doc" }` constants — verified **146/146** on r3.
+- **Result:** `pipeline_validate.ts` ~93% macOS TS lcov (+17 lines).
+- **Remaining 6 lines → Phase P/Q:** runtime-unreachable guards; Jest `pipelines-validate.test.ts` covers direct-call paths.
+- **Android parser fix:** document-reference `{ path: "col/doc" }` constants.
 
 ---
 
@@ -219,7 +223,7 @@ Earlier: A–E baseline, dead code, gap map, lowering/executor e2e.
 
 ---
 
-## Phase J — parity remediation (in progress)
+## Phase J — parity remediation (complete)
 
 ### Phase J iteration protocol (strict)
 
@@ -257,9 +261,9 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 ### J0b — iOS NodeBuilder lowering consolidation (complete)
 
-**Commit:** `c27b6f115` — consolidate switchOn boolean receiver lowering; area iOS 100/100.
+**Commit subject:** `refactor(firestore, ios): consolidate pipeline switchOn boolean receiver lowering`
 
-**Why (J0-2 independent-review, 2026-06-25):** `switchOn` landed ~**387 lines** in `RNFBFirestorePipelineNodeBuilder.swift` — a parallel coercion layer alongside existing stack-based lowering. Correctness verified (area-focused e2e green); **maintainability / drift risk** if more one-off paths land before consolidation.
+**Why:** `switchOn` landed a parallel coercion layer alongside existing stack-based lowering. Correctness verified; **maintainability / drift risk** if more one-off paths land before consolidation.
 
 **Goal:** Consolidate J0-added boolean/receiver-chain lowering into **shared** NodeBuilder paths (align with Android `scheduleBooleanReceiverChain` / `EnterObjectBooleanFrame` where feasible). Remove fragile KVC probing where `ExprBridge` extraction exists. **No behavior change** — area-focused-tier Pipeline e2e must stay green (especially `switchOn`, `stringRepeat`, and any probe-specific cases).
 
@@ -271,7 +275,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 ### J0 remainder — iOS receiver-chain parity (complete)
 
-**Status:** **complete (2026-06-25)** — **J0-6′…J0-9′** landed in one batch: iOS receiver-chain lowering, empty guard list, unified e2e. Area iOS **100/100**; Jest **219/219**.
+**Status:** **complete** — J0-6′…J0-9′ receiver-chain batch: iOS lowering, empty guard list, unified e2e.
 
 **Scope delivered:** `RNFBFirestorePipelineNodeBuilder.swift` receiver infrastructure + unified e2e at substring / arrayGet (×2) / timestampAdd|Subtract sites. JS iOS function guard removed.
 
@@ -299,7 +303,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **J2** P-005 — `implementation_gate` **open**; `review_gate` **open**; `next_work_type`: `implementation`; `validation_tier`: `unit-focused`.
+**Current gates:** **K** queued (`implementation_gate` open). **J** complete.
 
 ---
 
