@@ -465,7 +465,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             requireValue(stageOptions, "vectorValue", "stage.options.vectorValue"),
             requireString(stageOptions, "distanceMeasure", "stage.options.distanceMeasure"),
             stageOptions.get("limit"),
-            optionalString(stageOptions, "distanceField"));
+            optionalExpressionNode(
+                stageOptions, "distanceField", "stage.options.distanceField"));
       case "replaceWith":
         return new ParsedReplaceWithStage(
             parseExpressionNode(
@@ -480,7 +481,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             parseSelectableNode(
                 requireValue(stageOptions, "selectable", "stage.options.selectable"),
                 "stage.options.selectable"),
-            optionalString(stageOptions, "indexField"));
+            optionalExpressionNode(stageOptions, "indexField", "stage.options.indexField"));
       case "rawStage":
         return new ParsedRawStage(
             requireNonEmptyString(stageOptions, "name", "stage.options.name"),
@@ -605,6 +606,15 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     }
     Object value = map.get(key);
     return value instanceof String ? (String) value : null;
+  }
+
+  private static ParsedExpressionNode optionalExpressionNode(
+      Map<String, Object> map, String key, String fieldName)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    if (map == null || !map.containsKey(key) || map.get(key) == null) {
+      return null;
+    }
+    return parseExpressionNode(map.get(key), fieldName);
   }
 
   private static List<ParsedSelectableNode> parseSelectableNodes(
@@ -1623,14 +1633,14 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     final Object vectorValue;
     final String distanceMeasure;
     final Object limit;
-    final String distanceField;
+    final ParsedExpressionNode distanceField;
 
     ParsedFindNearestStage(
         Object field,
         Object vectorValue,
         String distanceMeasure,
         Object limit,
-        String distanceField) {
+        ParsedExpressionNode distanceField) {
       super("findNearest");
       this.field = field;
       this.vectorValue = vectorValue;
@@ -1671,9 +1681,9 @@ final class ReactNativeFirebaseFirestorePipelineParser {
 
   static final class ParsedUnnestStage extends ParsedPipelineStage {
     final ParsedSelectableNode selectable;
-    final String indexField;
+    final ParsedExpressionNode indexField;
 
-    ParsedUnnestStage(ParsedSelectableNode selectable, String indexField) {
+    ParsedUnnestStage(ParsedSelectableNode selectable, ParsedExpressionNode indexField) {
       super("unnest");
       this.selectable = selectable;
       this.indexField = indexField;

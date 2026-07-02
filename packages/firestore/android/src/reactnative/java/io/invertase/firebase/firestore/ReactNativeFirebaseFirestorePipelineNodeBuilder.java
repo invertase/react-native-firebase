@@ -786,6 +786,22 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     return coerceExpression(serializeExpressionNode(value), fieldName);
   }
 
+  String coerceStageOptionFieldName(
+      ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode value, String fieldName)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    if (value
+        instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) {
+      return ((ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) value).path;
+    }
+    if (value
+        instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) {
+      return coerceStringValueNode(
+          ((ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) value).value,
+          fieldName);
+    }
+    return coerceFieldPath(serializeExpressionNode(value), fieldName);
+  }
+
   Selectable coerceSelectable(
       ReactNativeFirebaseFirestorePipelineParser.ParsedSelectableNode value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {

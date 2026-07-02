@@ -46,6 +46,7 @@ import com.google.firebase.firestore.pipeline.CollectionGroupOptions;
 import com.google.firebase.firestore.pipeline.CollectionHints;
 import com.google.firebase.firestore.pipeline.CollectionSourceOptions;
 import com.google.firebase.firestore.pipeline.Expression;
+import com.google.firebase.firestore.pipeline.Field;
 import com.google.firebase.firestore.pipeline.FindNearestOptions;
 import com.google.firebase.firestore.pipeline.FindNearestStage;
 import com.google.firebase.firestore.pipeline.Ordering;
@@ -617,9 +618,17 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     if (stage.limit != null) {
       options = options.withLimit(coerceLong(stage.limit, "stage.options.limit"));
     }
-    String distanceField = stage.distanceField;
-    if (distanceField != null && !distanceField.isEmpty()) {
-      options = options.withDistanceField(distanceField);
+    if (stage.distanceField != null) {
+      Expression distanceFieldExpression =
+          nodeBuilder.coerceExpression(stage.distanceField, "stage.options.distanceField");
+      if (distanceFieldExpression instanceof Field) {
+        options = options.withDistanceField((Field) distanceFieldExpression);
+      } else {
+        options =
+            options.withDistanceField(
+                nodeBuilder.coerceStageOptionFieldName(
+                    stage.distanceField, "stage.options.distanceField"));
+      }
     }
 
     return pipeline.findNearest(fieldPath, Expression.vector(vector), distanceMeasure, options);
@@ -662,8 +671,13 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     Selectable selectable =
         nodeBuilder.coerceSelectable(stage.selectable, "stage.options.selectable");
 
-    String indexField = stage.indexField;
-    if (indexField == null || indexField.isEmpty()) {
+    if (stage.indexField == null) {
+      return pipeline.unnest(selectable);
+    }
+
+    String indexField =
+        nodeBuilder.coerceStageOptionFieldName(stage.indexField, "stage.options.indexField");
+    if (indexField.isEmpty()) {
       return pipeline.unnest(selectable);
     }
 
