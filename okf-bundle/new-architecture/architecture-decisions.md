@@ -54,6 +54,22 @@ Keep the legacy event path (`RNFBNativeEventEmitter` → app-module proxy → `R
 
 **Deferral discriminator:** if area-focused e2e or device testing shows a package's events cannot work over the legacy proxy under TurboModules, escalate that package's event path into its own migration PR rather than waiting for Phase C. **Highest risk:** `messaging` (background/iOS AppDelegate, headless JS task).
 
+### messaging — defer EventEmitter cutover; migrate shell only in Phase 4
+
+**Decision:** Phase 4 `messaging` migrates the **method-call TurboModule shell** only. Event emit/subscribe stays on the legacy proxy until [Phase C](migration-work-queue.md#deferred-cleanup-phase-eventemitter).
+
+| Assertion | Primary source |
+|-----------|----------------|
+| Native emit sites do not use the messaging module bridge | iOS categories/delegates (`RNFBMessaging+AppDelegate.m`, `+UNUserNotificationCenter.m`, `+FIRMessagingDelegate.m`) call `RNFBRCTEventEmitter`; Android receiver/service/module call `ReactNativeFirebaseEventEmitter` |
+| JS subscribes via the app-module proxy, not the messaging shell | `packages/messaging/lib/index.ts` — `nativeEvents` array → `RNFBNativeEventEmitter` → `NativeRNFBTurboApp` ([NewArch-AD-18 E1](architecture-decisions.md#newarch-ad-18--raw-vs-wrapped-resolver-policy--accepted)) |
+| Android background (quit/killed) is outside the event-proxy path | `ReactNativeFirebaseMessagingHeadlessService` (`HeadlessJsTaskService`); `AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', …)` in `packages/messaging/lib/index.ts` |
+| iOS background data messages couple shell method + event proxy | `RNFBMessaging+AppDelegate.m` — `signalBackgroundMessageHandlerSet` on shell, then `RNFBRCTEventEmitter` for `messaging_message_received_background` |
+| iOS emitter implementation is legacy bridge API (Phase C debt) | `packages/app/ios/RNFBApp/RNFBRCTEventEmitter.m` — `bridge enqueueJSCall:@"RCTDeviceEventEmitter"` |
+
+The deferral discriminator is **not** satisfied by structure alone: nothing in the messaging native tree requires EventEmitter cutover when the shell becomes a TurboModule.
+
+**Testing requirement (Phase 4 review gate):** Messaging is the highest-risk legacy-proxy package. Area-focused e2e must be designed deliberately for **event delivery**, not only turbo method calls — foreground message receipt, token refresh, notification-opened, and (on iOS) background handler timing against `signalBackgroundMessageHandlerSet`. Device validation is required where the harness cannot automate FCM delivery or AppDelegate background races. Escalate event cutover into Phase 4 **only** if that testing proves the proxy fails. iOS `RCTRootView` / `addCustomPropsToUserProps` headless wiring is a separate shell implementation concern, not an event-path escalation trigger.
+
 ---
 
 ## NewArch-AD-5 — Commit generated code — **Accepted**

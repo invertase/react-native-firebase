@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-07-02):** Phase **4a** messaging event gap-analysis (**gates 4**). P3.5 committed.
+> **IN PROGRESS (2026-07-02):** Phase **4** `messaging` TurboModule migration. P4a: **defer** events to Phase C ([ADR-4](architecture-decisions.md#newarch-ad-4--events-deferred-to-phase-c--accepted)).
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -169,7 +169,7 @@ Pick **one** of `firestore` or `auth` in Phase 1 (firestore = multi-module + pip
 | **3** | Moderate | **done** | `app-check`, `remote-config`, `analytics`, `crashlytics`, `storage` |
 | **NB** | Interruption batch — JS infra/test/chore (standalone commits) | queued | `app` resolver refactor+perf, shared contract-test helper, harness snapshot; `compare-types` **S0** — [§ interruption batch](#interruption-batch-standalone-commits) |
 | **3.5** | Guardrails — spec↔native parity + codegen-drift CI (**gates 4**) | queued | all migrated packages — [§ Phase 3.5](#phase-35-guardrails) |
-| **4a** | messaging event decision — gap-analysis (**gates 4**) | queued | `messaging` — [§ Phase 4a](#phase-4a-messaging-event-decision) |
+| **4a** | messaging event decision — gap-analysis (**gates 4**) | **done** | `messaging` — [§ Phase 4a](#phase-4a-messaging-event-decision) |
 | **Docs** | New-Architecture requirements + migration-doc consolidation | queued (opportunistic) | docs — [§ Phase Docs](#phase-docs-new-architecture-requirements-and-doc-consolidation) |
 | **PD** | Platform-divergence documentation | queued (opportunistic) | multi-package JSDoc/docs — [§ Phase PD](#phase-pd-platform-divergence-documentation) |
 | **4** | Remaining complex | queued | other Tier A/B + `messaging`, `database` |
@@ -320,11 +320,11 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 ## Current snapshot
 
-**Label:** `phase-4a-gap-analysis` (2026-07-02); **harness:** n/a (read-only)
+**Label:** `phase-4-messaging` (2026-07-02); **harness:** area-focused (`messaging`)
 
-**Next item:** [Phase 4a](#phase-4a-messaging-event-decision) → Phase **4** `messaging`
+**Next item:** Phase **4** `messaging` TurboModule migration
 
-**Current gates:** P4a `gap-analysis` — record escalate vs defer in NewArch-AD-4.
+**Current gates:** P4m `implementation` — shell only per [ADR-4 § messaging](architecture-decisions.md#messaging--defer-eventemitter-cutover-migrate-shell-only-in-phase-4).
 
 **Host rule:** one `:test-cover` at a time — never parallel subagents with e2e.
 
@@ -352,8 +352,9 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Interruption NB3 contract-test helper | NB3 | **closed** | **closed** | **closed** | done | `unit-focused` (Jest) | `refactor(app): extract shared TurboModule contract-test helper` | Committed 2026-07-01. `turboModuleContractHelper.ts`; 12 contract tests. Jest 15/15. |
 | Interruption NB5 harness snapshot | NB5 | **closed** | **closed** | **closed** | done | `unit-focused` (Jest) | `test: snapshot committed harness defaults` | Committed 2026-07-01. `harnessCommittedDefaults.test.ts` (4 tests). |
 | Phase S0 compare-types registration | S0 | **closed** | **closed** | **closed** | done | `none` (`compare:types`) | `chore(compare-types): register remaining migrated packages` | Committed 2026-07-01. 8 pkgs registered; compare:types 19/19 green. |
-| Phase 3.5 guardrails | P3.5 | **closed** | **closed** | **closed** | done | `full` | `fix(guardrails): add codegen verify and spec-native parity tests` | Committed 2026-07-02. Parity Jest 33/33; full e2e macOS 682 / iOS 822 / Android 848. AD-13a Metro stub; AD-20 toolchain pins; 77 iOS provider stubs backfilled + 8 pilot updates; root `.gitignore` for misplaced Android provider spill (RN 0.78.3). |
-| Phase 4a messaging event decision | P4a | n/a | n/a | n/a | **gap-analysis** | `none` | none | **Gates 4.** Escalate vs defer messaging events → record in NewArch-AD-4. |
+| Phase 3.5 guardrails | P3.5 | **closed** | **closed** | **closed** | done | `full` | `fix: add codegen verify and spec-native parity tests` | Committed `64f99c53d` 2026-07-02. |
+| Phase 4a messaging event decision | P4a | n/a | n/a | n/a | done | `none` | none | **Defer** events to Phase C — [NewArch-AD-4 § messaging](architecture-decisions.md#messaging--defer-eventemitter-cutover-migrate-shell-only-in-phase-4). |
+| Phase 4 `messaging` TurboModules | P4m | **open** | open | open | **implementation** | `area-focused` | `feat(messaging)!: migrate messaging to TurboModules` | Shell only (P4a); area-focused e2e per ADR-4 testing requirement. |
 | Phase Docs — NA reqs + consolidation | PDoc | open | open | open | documentation | `none` | `docs: new-architecture requirements + migration consolidation` | Opportunistic; does not gate 4. |
 | Phase PD — platform divergence | PPD | open | open | open | documentation | `none` | `docs(<pkg>): …` per package | Opportunistic; gap-analysis first. |
 | Phase R — remove `NativeModules` fallback | PR-fallback | open | open | open | pre-merge-validation | `full` | (Phase R) | Decision B. Jest + `app` e2e "unknown module throws". |
