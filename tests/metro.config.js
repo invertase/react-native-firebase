@@ -17,8 +17,8 @@
 
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
-const { resolve, join } = require('path');
-const { readdirSync, statSync } = require('fs');
+const { resolve, join, dirname } = require('path');
+const { readdirSync, statSync, existsSync } = require('fs');
 
 const exclusionList = require('metro-config/src/defaults/exclusionList');
 
@@ -62,6 +62,21 @@ const config = {
       },
     ),
     resolveRequest(context, moduleName, platform) {
+      // The optional local harness overrides file (tests/harness.overrides.js) is
+      // gitignored and usually absent. Because it is required inside a try/catch,
+      // Metro treats it as an optional dependency and, when it cannot resolve,
+      // OMITS it from the requiring module's dependency-id array — shifting every
+      // later dependency and dropping the last one, which surfaces at runtime as
+      // `Requiring unknown module "undefined"`. Resolve to a committed empty stub
+      // when the local file does not exist so the dependency map stays intact.
+      if (moduleName === './harness.overrides.js') {
+        const originDir = context.originModulePath
+          ? dirname(context.originModulePath)
+          : __dirname;
+        if (!existsSync(resolve(originDir, 'harness.overrides.js'))) {
+          return { type: 'sourceFile', filePath: resolve(__dirname, 'harness.overrides.stub.js') };
+        }
+      }
       if (moduleName === '@react-native-firebase/firestore/pipelines') {
         const filePath = join(rootDir, 'packages', 'firestore', 'lib', 'pipelines', 'index.ts');
         return { type: 'sourceFile', filePath };

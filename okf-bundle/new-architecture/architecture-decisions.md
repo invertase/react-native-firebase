@@ -60,7 +60,7 @@ Keep the legacy event path (`RNFBNativeEventEmitter` → app-module proxy → `R
 
 `includesGeneratedCode: true`; commit Codegen output under `android/.../generated` and `ios/generated`, mirroring `packages/functions`.
 
-**Guard (Proposed, see NewArch-AD-17):** a CI check that re-running `yarn codegen` yields no diff, so committed artifacts can't go stale.
+**Guard (NewArch-AD-17.3):** CI runs `yarn codegen:verify` — re-running `yarn codegen` for every migrated package then `git diff --exit-code` on `**/generated/**` — so committed artifacts can't go stale.
 
 ---
 
@@ -150,6 +150,14 @@ Convert a whole package (all its legacy modules → all its specs) in one `imple
 
 **Ordering caution (do this in order):** add `tests/harness.overrides.js` to `.gitignore` **first** and verify it is ignored (`git check-ignore`), **then** create the local file — so the real overrides file can never be accidentally tracked. The committed example file (`harness.overrides.example.js`) must **not** be ignored.
 
+### NewArch-AD-13a — Optional overrides need a resolver stub (Metro dependency-map integrity) — **Accepted**
+
+The optional `require('./harness.overrides.js')` in `tests/app.js` / `tests/globals.js` sits in a `try/catch`, so Metro treats it as an **optional dependency**. When the gitignored file is **absent** (the default), Metro 0.81.x (RN 0.78) **omits the unresolved optional dependency from the requiring module's serialized dependency-id array** instead of inserting a placeholder. That shifts every later dependency index down by one and drops the module's **final** dependency — surfacing at runtime, during the very first `App()` render, as `Requiring unknown module "undefined"`. It is deterministic and independent of caches, `node_modules`, `lazy` bundling, and RN version; it was masked whenever a developer happened to have a local `harness.overrides.js` present, and it breaks any clean checkout / CI that runs e2e without one.
+
+**Decision:** `tests/metro.config.js` `resolveRequest` resolves `./harness.overrides.js` to a **committed empty stub** (`tests/harness.overrides.stub.js` → `module.exports = {}`) whenever the local file does not exist; a present local override resolves normally. The dependency then always resolves, so the dependency map stays intact.
+
+**Why not just commit a real `harness.overrides.js`:** keeping the override gitignored (AD-13) preserves "local narrowing can never be committed"; the resolver stub restores Metro integrity without giving that up. Keep the `try/catch` as defense-in-depth. The stub must never carry overrides.
+
 ---
 
 ## NewArch-AD-14 — Native-module wrapper: memoizing lazy `Proxy` — **Accepted**
@@ -203,7 +211,7 @@ Some RNFB methods are `Promise<T>` only because the legacy bridge forced async, 
 
 ---
 
-## NewArch-AD-17 — Spec contract + parity tests — **Accepted (1); Proposed (2, 3)**
+## NewArch-AD-17 — Spec contract + parity tests — **Accepted**
 
 Jest-level tests, reused across packages:
 
@@ -234,10 +242,37 @@ yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts
 | 2-host merge (NewArch-AD-14a) | Routing composite Proxy dispatches to the correct host per method name |
 
 **When required:** any change to [`nativeModule.ts`](../../../packages/app/lib/internal/registry/nativeModule.ts), `withTurboConstants`, or TurboModule wrapper behavior — re-run the scoped command above before closing `implementation_gate` or `review_gate`.
-2. **Spec↔native parity** — **Proposed.** Assert each package's spec method-name set equals the platform `@ReactMethod` / `RCT_EXPORT_METHOD` set, and (NewArch-AD-11) the union across a package's specs has no duplicate names.
-3. **Codegen-up-to-date CI** — **Proposed.** `yarn codegen` + `git diff --exit-code` on generated dirs (NewArch-AD-5 guard).
+2. **Spec↔native parity** — **Accepted.** Assert each package's spec method-name set equals the union of Android `@ReactMethod` (generated Java spec) and iOS TurboModule protocol methods (generated ObjC spec header), and (NewArch-AD-11) the union across a package's specs has no duplicate names.
+
+<a id="newarch-ad-172--spec-native-parity-test--accepted"></a>
+
+### NewArch-AD-17.2 — Spec↔native parity test — **Accepted**
+
+**Canonical file:** [`packages/app/__tests__/turboModuleSpecNativeParity.test.ts`](../../../packages/app/__tests__/turboModuleSpecNativeParity.test.ts)
+
+**Describe block (grep anchor):** `Spec↔native parity (NewArch-AD-17.2)`
+
+**Scoped Jest command:**
+
+```bash
+yarn tests:jest -- packages/app/__tests__/turboModuleSpecNativeParity.test.ts
+```
+
+**Helper:** [`specNativeParityHelper.ts`](../../../packages/app/__tests__/specNativeParityHelper.ts) — parses TS spec interfaces, Android generated `*Spec.java` `@ReactMethod` names, and iOS generated `@protocol NativeRNFBTurbo*Spec` method names.
+
+3. **Codegen-up-to-date CI** — **Accepted.** Root `yarn codegen:verify` runs [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs) (codegen for all 13 migrated packages via the `@react-native-firebase/app` React Native CLI context) then `git diff --exit-code` on `packages/*/android/**/generated/**` and `packages/*/ios/generated/**` (NewArch-AD-5 guard). Wired in the CI lint job ([`.github/workflows/linting.yml`](../../../.github/workflows/linting.yml)).
+
+<a id="newarch-ad-173--codegen-verify-ci--accepted"></a>
+
+### NewArch-AD-17.3 — Codegen verify CI — **Accepted**
+
+**Command:** `yarn codegen:verify`
+
+**When required:** any change to `packages/*/specs/**` or Codegen/RN version bumps that could regenerate native artifacts — run before closing `implementation_gate` or `review_gate`.
 
 **Why:** The current Jest mocks are plain enumerable objects and structurally cannot reproduce the enumeration bug that already cost an iteration; these tests close that blind spot and make iterations faster and higher quality.
+
+**Determinism requirement:** `codegen:verify` is only meaningful if `yarn codegen` is reproducible. It resolves the RN/Codegen toolchain at run time, so the toolchain **must** be pinned to the app's RN line ([NewArch-AD-20](#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted)); otherwise a host/CI with a drifted `@react-native/codegen` or `react-native` emits spurious drift (0.82/0.80 macros, podspec path changes) or masks real drift.
 
 ---
 
@@ -276,6 +311,22 @@ Two resolution surfaces exist and must be used deliberately:
 Default: **do not override `methodQueue`.** Remove legacy `- (dispatch_queue_t)methodQueue { return dispatch_get_main_queue(); }` overrides (present on `RNFBAppModule` and `RNFBUtilsModule`) unless a specific method genuinely needs the main thread — in which case dispatch *that method's* main-thread work explicitly (the `RCTUnsafeExecuteOnMainQueueSync` pattern already used in `initializeApp`), rather than forcing the whole module onto main.
 
 **Why:** A module-wide `methodQueue = main_queue` couples every async method to the main thread (jank/contention) and is inconsistent with [NewArch-AD-9](#newarch-ad-9--requiresmainqueuesetup-returns-no--accepted) (`requiresMainQueueSetup = NO`). **Caveat (unverified):** how TurboModule JSI honors `methodQueue` for sync vs async methods is not documented; treat removal as a native change to validate on-device during Phase 0 re-implementation, not a blind delete. Keep explicit main dispatch only where UI (e.g. Play Services resolution dialogs) requires it.
+
+---
+
+## NewArch-AD-20 — Pin the RN/Codegen toolchain; RN bumps are coordinated breaking changes — **Accepted**
+
+Committed generated native artifacts ([NewArch-AD-5](#newarch-ad-5--commit-generated-code--accepted)) are **RN-version-specific templates**: CMake `target_compile_options` vs `target_compile_reactnative_options`, podspec `RCT_SCRIPT_RN_DIR` paths / `add_rncore_dependency`, and JSI/spec signatures all change across RN releases. `yarn codegen` stamps whatever `@react-native/codegen` + `react-native` the toolchain resolves **at run time**. If that diverges from the test app's RN, codegen emits artifacts that mismatch the app → the native build breaks and [`codegen:verify`](#newarch-ad-173--codegen-verify-ci--accepted) becomes environment-nondeterministic.
+
+**This happened:** root `"@react-native-community/cli": "latest"` hoisted `@react-native/codegen@0.82` (and pulled `react-native@0.82`), while `packages/functions` carried a stray `"react-native": "^0.80.1"` devDep — together producing spurious 0.82/0.80 drift (CMake macro flip, functions podspec path/`add_rncore_dependency` changes) that would break the RN 0.78 build if committed.
+
+**Decision:**
+
+- Pin the RN/Codegen toolchain to the app's RN line via root `resolutions` — `react-native`, `@react-native/codegen`, and `@react-native-community/cli` fixed to the app's line (currently `0.78.3` / `0.78.3` / `15.1.3`).
+- **No floating specifiers** (`latest`, `*`, `^0.80`, …) for the RN toolchain in any workspace `package.json`. Individual packages must **not** declare their own `react-native` devDependency — rely on the hoisted, pinned version (as `app-check` / `storage` do).
+- Treat a React Native upgrade as **one coordinated breaking change**: bump the app RN **and** the pinned `resolutions` together, regenerate all `generated/**`, rebuild native on iOS + Android, and re-run `codegen:verify` — in a single change. See the **Updating React Native** checklist in [CONTRIBUTING.md](../../CONTRIBUTING.md).
+
+**Why:** makes generated output reproducible everywhere (local + CI), prevents silent native-build breaks, and makes the RN coupling explicit and auditable.
 
 ---
 

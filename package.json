@@ -12,6 +12,7 @@
     "test:functions:build": "cd .github/workflows/scripts/functions && yarn build",
     "compare:types": "cd .github/scripts/compare-types && yarn install && yarn compare",
     "codegen:all": "lerna run codegen",
+    "codegen:verify": "node ./scripts/codegen-verify.mjs && git diff --exit-code -- 'packages/*/android/**/generated/**' 'packages/*/ios/generated/**'",
     "lint": "yarn lint:js && yarn lint:android && yarn lint:ios:check",
     "lint:js": "eslint packages/* --max-warnings=0",
     "lint:android": "(find packages/*/android/src -name '*.java' -not -path '*/generated/*' -print0 | xargs -0 google-java-format --set-exit-if-changed --replace || (echo \"\n\nandroid formatting error - please re-run\n\n\" && exit 1)) && (git diff --exit-code packages/*/android/src || (echo \"\n\nandroid files changed from linting, please examine and commit result\n\n\" && exit 1))",
@@ -85,7 +86,7 @@
     "@firebase/rules-unit-testing": "^5.0.0",
     "@inquirer/prompts": "^8.4.2",
     "@octokit/core": "^7.0.6",
-    "@react-native-community/cli": "latest",
+    "@react-native-community/cli": "15.1.3",
     "@tsconfig/node-lts": "^24.0.0",
     "@types/react": "~19.2.14",
     "@types/react-native": "^0.73.0",
@@ -122,6 +123,9 @@
   },
   "resolutions": {
     "@types/react": "~19.0.0",
+    "react-native": "0.78.3",
+    "@react-native/codegen": "0.78.3",
+    "@react-native-community/cli": "15.1.3",
     "mocha-remote-client@npm:^1.13.0": "patch:mocha-remote-client@npm%3A1.13.2#~/.yarn/patches/mocha-remote-client-npm-1.13.2-a2e7596aba.patch",
     "mocha-remote-server@npm:^1.13.0": "patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch"
   },

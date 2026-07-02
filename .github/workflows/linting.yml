@@ -62,6 +62,14 @@ jobs:
           retry_wait_seconds: 10
           max_attempts: 3
           command: yarn lint
+      - name: Codegen verify
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 10
+          max_attempts: 3
+          command: yarn codegen:verify
       # https://github.com/actions/cache/releases
       - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         name: Yarn Cache Save

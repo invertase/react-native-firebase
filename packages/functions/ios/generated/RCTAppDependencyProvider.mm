@@ -8,33 +8,48 @@
 #import "RCTAppDependencyProvider.h"
 #import <ReactCodegen/RCTModulesConformingToProtocolsProvider.h>
 #import <ReactCodegen/RCTThirdPartyComponentsProvider.h>
-#import <ReactCodegen/RCTUnstableModulesRequiringMainQueueSetupProvider.h>
-#import <ReactCodegen/RCTModuleProviders.h>
 
-@implementation RCTAppDependencyProvider
+@implementation RCTAppDependencyProvider {
+  NSArray<NSString *> * _URLRequestHandlerClassNames;
+  NSArray<NSString *> * _imageDataDecoderClassNames;
+  NSArray<NSString *> * _imageURLLoaderClassNames;
+  NSDictionary<NSString *,Class<RCTComponentViewProtocol>> * _thirdPartyFabricComponents;
+}
 
 - (nonnull NSArray<NSString *> *)URLRequestHandlerClassNames {
-  return RCTModulesConformingToProtocolsProvider.URLRequestHandlerClassNames;
+  static dispatch_once_t requestUrlToken;
+  dispatch_once(&requestUrlToken, ^{
+    self->_URLRequestHandlerClassNames = RCTModulesConformingToProtocolsProvider.URLRequestHandlerClassNames;
+  });
+
+  return _URLRequestHandlerClassNames;
 }
 
 - (nonnull NSArray<NSString *> *)imageDataDecoderClassNames {
-  return RCTModulesConformingToProtocolsProvider.imageDataDecoderClassNames;
+  static dispatch_once_t dataDecoderToken;
+  dispatch_once(&dataDecoderToken, ^{
+    _imageDataDecoderClassNames = RCTModulesConformingToProtocolsProvider.imageDataDecoderClassNames;
+  });
+
+  return _imageDataDecoderClassNames;
 }
 
 - (nonnull NSArray<NSString *> *)imageURLLoaderClassNames {
-  return RCTModulesConformingToProtocolsProvider.imageURLLoaderClassNames;
-}
+  static dispatch_once_t urlLoaderToken;
+  dispatch_once(&urlLoaderToken, ^{
+    _imageURLLoaderClassNames = RCTModulesConformingToProtocolsProvider.imageURLLoaderClassNames;
+  });
 
-- (nonnull NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup {
-  return RCTUnstableModulesRequiringMainQueueSetupProvider.modules;
+  return _imageURLLoaderClassNames;
 }
 
 - (nonnull NSDictionary<NSString *,Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents {
-  return RCTThirdPartyComponentsProvider.thirdPartyFabricComponents;
-}
+  static dispatch_once_t nativeComponentsToken;
+  dispatch_once(&nativeComponentsToken, ^{
+    _thirdPartyFabricComponents = RCTThirdPartyComponentsProvider.thirdPartyFabricComponents;
+  });
 
-- (nonnull NSDictionary<NSString *, id<RCTModuleProvider>> *)moduleProviders {
-  return RCTModuleProviders.moduleProviders;
+  return _thirdPartyFabricComponents;
 }
 
 @end

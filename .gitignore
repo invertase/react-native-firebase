@@ -549,6 +549,22 @@ GoogleService-Info.plist
 
 tests/harness.overrides.js
 
+# RNFB TurboModule codegen — misplaced iOS provider stubs under Android output paths
+# (NewArch-AD-5: okf-bundle/new-architecture/architecture-decisions.md — commit generated
+# code: real Android artifacts are Java specs + JNI/CMake under packages/*/android/**/generated;
+# real iOS artifacts are ObjC/JSI/podspecs under packages/*/ios/generated, guarded by
+# codegen:verify per NewArch-AD-17.3.)
+#
+# `@react-native-community/cli codegen --platform android` also writes iOS-only
+# dependency-provider templates (RCT*Provider ObjC++, ReactAppDependencyProvider.podspec)
+# into each package's Android --outputPath. The Android Gradle build does not compile or
+# reference them; pilots commit the same templates under ios/generated/ only. Observed when
+# pinned to React Native 0.78.3 — re-check on RN upgrades; codegen may stop emitting these
+# here or change output layout.
+packages/*/android/**/generated/RCT*Provider.h
+packages/*/android/**/generated/RCT*Provider.mm
+packages/*/android/**/generated/ReactAppDependencyProvider.podspec
+
 # generated files
 RNFBVersion.m
 ReactNativeFirebaseVersion.java

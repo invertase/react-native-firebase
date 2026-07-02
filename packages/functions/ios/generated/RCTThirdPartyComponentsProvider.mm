@@ -15,16 +15,9 @@
 
 + (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
-  static NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *thirdPartyComponents = nil;
-  static dispatch_once_t nativeComponentsToken;
+  return @{
 
-  dispatch_once(&nativeComponentsToken, ^{
-    thirdPartyComponents = @{
-
-    };
-  });
-
-  return thirdPartyComponents;
+  };
 }
 
 @end
