@@ -49,6 +49,8 @@ yarn compare:types                    # remove stale config entries when fixed
 
 Configs: `.github/scripts/compare-types/configs/`. Package workflows define ordering (e.g. [pipelines](../packages/firestore/pipeline-implementation-workflow.md#step-1--compare-types-gap-analysis)).
 
+When **`typedoc.json` or `packages/*/typedoc.json`** changes anything that can alter reference URL structure, also run the [legacy redirect audit](../documentation-site-maintenance.md#redirect-audit-required-when-typedoc-config-changes) (verify every `docs.json` → `redirects` target; add mappings for newly orphaned legacy `/reference/...` paths).
+
 For any package registered in `compare:types`, type parity is a **review-gate requirement**, not a best-effort signal. Before closing `independent-review`, the touched package must have:
 
 - no undocumented differences,
@@ -117,6 +119,7 @@ Goal: each iteration improves OKF and removes conflicting guidance.
 - [ ] `yarn lerna:prepare` (after any `packages/*/lib/**` edits)
 - [ ] `yarn tsc:compile`, `yarn tsc:compile:consumer`
 - [ ] `yarn reference:api`
+- [ ] Redirect audit when TypeDoc config changed ([documentation site maintenance § redirect audit](../documentation-site-maintenance.md#redirect-audit-required-when-typedoc-config-changes))
 - [ ] `yarn tests:jest`
 - [ ] `yarn compare:types` (stale config entries removed)
 - [ ] `yarn lint:js` (+ markdown/spellcheck if docs; + platform lint if native)

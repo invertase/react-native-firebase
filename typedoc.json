@@ -1,4 +1,7 @@
 {
+  // TypeDoc parses typedoc.json as JSONC (comments OK). When options here change URL
+  // structure (router, entryPoints, navigation, etc.), audit docs.json redirects — see
+  // okf-bundle/documentation-site-maintenance.md § "Redirect audit".
   "$schema": "https://typedoc.org/schema.json",
   "name": "React Native Firebase",
   "customCss": "./docs/reference.css",
