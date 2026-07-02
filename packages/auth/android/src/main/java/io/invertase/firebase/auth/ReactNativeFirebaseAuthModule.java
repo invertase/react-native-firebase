@@ -72,7 +72,7 @@ import com.google.firebase.auth.TotpSecret;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import io.invertase.firebase.app.ReactNativeFirebaseAppModule;
+import io.invertase.firebase.app.NativeRNFBTurboApp;
 import io.invertase.firebase.common.ReactNativeFirebaseEvent;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
@@ -166,7 +166,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     Log.d(TAG, "configureAuthDomain");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-    String authDomain = ReactNativeFirebaseAppModule.authDomains.get(appName);
+    String authDomain = NativeRNFBTurboApp.authDomains.get(appName);
     Log.d(TAG, "configureAuthDomain - app " + appName + " domain? " + authDomain);
     if (authDomain != null) {
       firebaseAuth.setCustomAuthDomain(authDomain);

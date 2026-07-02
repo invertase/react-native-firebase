@@ -547,6 +547,8 @@ tests/ios/resetXcode.sh
 google-services.json
 GoogleService-Info.plist
 
+tests/harness.overrides.js
+
 # generated files
 RNFBVersion.m
 ReactNativeFirebaseVersion.java

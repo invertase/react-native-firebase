@@ -14,14 +14,7 @@
  *  limitations under the License.
  */
 
-import {
-  getApp,
-  getApps,
-  getUtils,
-  initializeApp,
-  SDK_VERSION,
-  FilePath,
-} from '.';
+import { getApp, getApps, getUtils, initializeApp, SDK_VERSION, FilePath } from '.';
 
 // modular app accessors
 console.log(getUtils().app.name);

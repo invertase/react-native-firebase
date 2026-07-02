@@ -34,6 +34,7 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 | JS lint (implementation / review gate) | `yarn lint:js`, `yarn lint:js --fix` | package-scoped `eslint`, `npx eslint` |
 | Docs lint (when docs in diff) | `yarn lint:markdown`, `yarn lint:spellcheck` | ad-hoc prettier/eslint on single files |
 | E2e + coverage | [running e2e](running-e2e.md) — **only** `yarn tests:*` | `jet`, `npx jet`, `yarn jet`, `detox test`, `cd tests && …`, direct Metro/emulator starts |
+| iOS Detox framework cache rebuild | `yarn tests:ios:detox-framework-cache:rebuild` | `cd tests && yarn detox clean-framework-cache`, `cd tests && yarn detox build-framework-cache`, bare `detox …` |
 | Host pre-flight (before each `:test-cover`) | [running e2e § host-clear probes](running-e2e.md#host-clear-probes) | `pgrep`, polling `:8090`, spawn probes of Jet/Detox |
 
 ### Prepare / transpile (detail)
@@ -94,6 +95,12 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 - **`yarn jet --help`** working or failing in `tests/` is **not** a valid e2e or install gate.
 - Jet is started **internally** by `yarn tests:<platform>:test-cover`. Stale `:8090` → [pre-flight recovery](running-e2e.md#pre-flight-recovery), then re-run the same `:test-cover` command.
 
+### TurboModule codegen
+
+- **`cd packages/<pkg> && yarn ios:codegen`** (or `yarn android:codegen`) often fails with **`unknown command 'codegen'`** after a clean `yarn` — `@react-native-community/cli` resolves from the **test app** workspace.
+- **Canonical:** [turbomodule workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical) — `cd tests`, `npx @react-native-community/cli codegen --path ../packages/<pkg> …` with `--outputPath` copied from that package's `package.json` script.
+- After regen: commit `android/.../generated` + `ios/generated`, then `:build` + Metro reset-cache before `:test-cover`.
+
 ## Subagent handoff
 
 Paste into Task / explore / work-queue prompts:
@@ -103,7 +110,8 @@ RNFB agent command policy: okf-bundle/testing/agent-command-policy.md ONLY.
 E2e: okf-bundle/testing/running-e2e.md yarn tests:* ONLY.
 Never: yarn workspace prepare, yarn jet, npx jet, cd packages/* && yarn prepare/build for diagnostics.
 Prepare/install: yarn or yarn lerna:prepare must exit 0 before ANY other command — never parallelize with e2e/Metro/build.
-Area harness: okf-bundle/testing/running-e2e.md#tests-app-js-area-harness — edit BOTH Platform.other and !Platform.other blocks; revert both before commit.
+Area harness: okf-bundle/testing/running-e2e.md#local-harness-overrides-harnessoverridesjs — copy harness.overrides.example.js to gitignored harness.overrides.js; set modules + RNFBDebug; delete overrides after run.
+TurboModule contract test (NewArch-AD-17.1): packages/app/__tests__/nativeModuleContract.test.ts — yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts
 On failure: fix product code, re-run the same canonical command.
 ```
 

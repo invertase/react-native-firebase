@@ -24,6 +24,6 @@ export interface RNFBMLModule {}
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBMLModule: RNFBMLModule;
+    NativeRNFBTurboML: RNFBMLModule;
   }
 }

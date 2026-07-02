@@ -21,10 +21,12 @@ const eventBody = {
   foo: 'bar',
 };
 
+const APP_MODULE = NativeModules.NativeRNFBTurboApp;
+
 describe('Core -> EventEmitter', function () {
   describe('ReactNativeFirebaseEventEmitter', function () {
     it('queues events before app is ready', async function () {
-      const { eventsPing, eventsNotifyReady, eventsGetListeners } = NativeModules.RNFBAppModule;
+      const { eventsPing, eventsNotifyReady, eventsGetListeners } = APP_MODULE;
       await eventsNotifyReady(false);
 
       let readyToResolve = false;
@@ -67,7 +69,7 @@ describe('Core -> EventEmitter', function () {
     });
 
     it('can send and receive lots of events', async function () {
-      const { eventsPing, eventsNotifyReady } = NativeModules.RNFBAppModule;
+      const { eventsPing, eventsNotifyReady } = APP_MODULE;
       await eventsNotifyReady(true);
       const { resolve, reject, promise } = Promise.defer();
       const emitter = NativeEventEmitter;
@@ -96,7 +98,7 @@ describe('Core -> EventEmitter', function () {
 
     it('queues events before a js listener is registered', async function () {
       const { eventsPing, eventsNotifyReady, eventsGetListeners, eventsRemoveListener } =
-        NativeModules.RNFBAppModule;
+        APP_MODULE;
       await eventsNotifyReady(true);
       const { resolve, reject, promise } = Promise.defer();
       const emitter = NativeEventEmitter;

@@ -1,7 +1,12 @@
 /* eslint-disable no-console */
 import RNFBAppModule from './web/RNFBAppModule';
+import { APP_NATIVE_MODULE } from './constants';
 
-const nativeModuleRegistry: Record<string, Record<string, unknown>> = {};
+// Register before exporting getters — RNFBNativeEventEmitter instantiates during circular imports.
+const nativeModuleRegistry: Record<string, Record<string, unknown>> = {
+  RNFBAppModule: RNFBAppModule as unknown as Record<string, unknown>,
+  [APP_NATIVE_MODULE]: RNFBAppModule as unknown as Record<string, unknown>,
+};
 
 export function getReactNativeModule(moduleName: string): Record<string, unknown> | undefined {
   const nativeModule = nativeModuleRegistry[moduleName];
@@ -14,8 +19,11 @@ export function getReactNativeModule(moduleName: string): Record<string, unknown
   }
   return new Proxy(nativeModule, {
     ownKeys(target) {
-      // FIXME - test in new arch context - I don't think Object.keys works
-      return Object.keys(target);
+      const keys: string[] = [];
+      for (const key in target) {
+        keys.push(key);
+      }
+      return keys;
     },
     get: (_, name) => {
       const prop = nativeModule[name as string];
@@ -56,5 +64,3 @@ export function setReactNativeModule(
 ): void {
   nativeModuleRegistry[moduleName] = nativeModule;
 }
-
-setReactNativeModule('RNFBAppModule', RNFBAppModule);

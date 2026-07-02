@@ -32,6 +32,12 @@ jest.doMock('react-native', () => {
         OS: 'android',
         select: () => {},
       },
+      TurboModuleRegistry: {
+        get: jest.fn(() => undefined),
+        getEnforcing: jest.fn(() => {
+          throw new Error('TurboModuleRegistry.getEnforcing: module not found');
+        }),
+      },
       AppRegistry: {
         registerHeadlessTask: jest.fn(),
       },
@@ -53,6 +59,73 @@ jest.doMock('react-native', () => {
           initiateOnDeviceConversionMeasurementWithHashedEmailAddress: jest.fn(),
           initiateOnDeviceConversionMeasurementWithPhoneNumber: jest.fn(),
           initiateOnDeviceConversionMeasurementWithHashedPhoneNumber: jest.fn(),
+        },
+        NativeRNFBTurboApp: {
+          getConstants: () => ({
+            NATIVE_FIREBASE_APPS: [
+              {
+                appConfig: {
+                  name: '[DEFAULT]',
+                },
+                options: {},
+              },
+              {
+                appConfig: {
+                  name: 'secondaryFromNative',
+                },
+                options: {},
+              },
+            ],
+            FIREBASE_RAW_JSON: '{}',
+          }),
+          NATIVE_FIREBASE_APPS: [
+            {
+              appConfig: {
+                name: '[DEFAULT]',
+              },
+              options: {},
+            },
+
+            {
+              appConfig: {
+                name: 'secondaryFromNative',
+              },
+              options: {},
+            },
+          ],
+          FIREBASE_RAW_JSON: '{}',
+          addListener: jest.fn(),
+          eventsAddListener: jest.fn(),
+          eventsNotifyReady: jest.fn(),
+          removeListeners: jest.fn(),
+        },
+        NativeRNFBTurboUtils: {
+          getConstants: () => ({
+            isRunningInTestLab: false,
+            MAIN_BUNDLE: '/',
+            CACHES_DIRECTORY: '/cache',
+            DOCUMENT_DIRECTORY: '/documents',
+            TEMP_DIRECTORY: '/tmp',
+            LIBRARY_DIRECTORY: '/library',
+            PICTURES_DIRECTORY: '/pictures',
+            MOVIES_DIRECTORY: '/movies',
+          }),
+          isRunningInTestLab: false,
+          MAIN_BUNDLE: '/',
+          CACHES_DIRECTORY: '/cache',
+          DOCUMENT_DIRECTORY: '/documents',
+          TEMP_DIRECTORY: '/tmp',
+          LIBRARY_DIRECTORY: '/library',
+          PICTURES_DIRECTORY: '/pictures',
+          MOVIES_DIRECTORY: '/movies',
+          androidGetPlayServicesStatus: jest.fn(() =>
+            Promise.resolve({
+              isAvailable: true,
+              status: 0,
+              hasResolution: false,
+              isUserResolvableError: false,
+            }),
+          ),
         },
         RNFBAppModule: {
           NATIVE_FIREBASE_APPS: [
@@ -138,7 +211,7 @@ jest.doMock('react-native', () => {
           addAppCheckListener: jest.fn(),
           removeAppCheckListener: jest.fn(),
         },
-        RNFBAppDistributionModule: {
+        NativeRNFBTurboAppDistribution: {
           isTesterSignedIn: jest.fn(),
           signInTester: jest.fn(),
           checkForUpdate: jest.fn(),
@@ -211,7 +284,8 @@ jest.doMock('react-native', () => {
           ),
           getServerTime: jest.fn((_appName: any, _customUrl: any) => Promise.resolve(Date.now())),
         },
-        RNFBFirestoreModule: {
+        NativeRNFBTurboFirestore: {
+          setLogLevel: jest.fn(),
           loadBundle: jest.fn(() =>
             Promise.resolve({
               taskState: 'Success',
@@ -230,9 +304,20 @@ jest.doMock('react-native', () => {
           settings: jest.fn(),
           addSnapshotsInSync: jest.fn(),
           removeSnapshotsInSync: jest.fn(),
+          persistenceCacheIndexManager: jest.fn(),
+        },
+        NativeRNFBTurboFirestoreCollection: {
           collectionOffSnapshot: jest.fn(),
           namedQueryOnSnapshot: jest.fn(),
           collectionOnSnapshot: jest.fn(),
+          namedQueryGet: jest.fn(() =>
+            Promise.resolve({
+              source: 'cache',
+              changes: [],
+              documents: [],
+              metadata: {},
+            }),
+          ),
           collectionGet: jest.fn(() =>
             Promise.resolve({
               source: 'cache',
@@ -242,6 +327,15 @@ jest.doMock('react-native', () => {
             }),
           ),
           collectionCount: jest.fn(() => Promise.resolve({ count: 0 })),
+          aggregateQuery: jest.fn(() => Promise.resolve({})),
+          pipelineExecute: jest.fn(() =>
+            Promise.resolve({
+              results: [],
+              executionTime: Date.now(),
+            }),
+          ),
+        },
+        NativeRNFBTurboFirestoreDocument: {
           documentDelete: jest.fn(() => Promise.resolve()),
           documentOffSnapshot: jest.fn(),
           documentOnSnapshot: jest.fn(),
@@ -255,23 +349,36 @@ jest.doMock('react-native', () => {
           ),
           documentSet: jest.fn(() => Promise.resolve()),
           documentUpdate: jest.fn(() => Promise.resolve()),
-          persistenceCacheIndexManager: jest.fn(),
           documentBatch: jest.fn(),
+        },
+        NativeRNFBTurboFirestoreTransaction: {
           transactionApplyBuffer: jest.fn(),
           transactionBegin: jest.fn(),
           transactionDispose: jest.fn(),
+          transactionGetDocument: jest.fn(() =>
+            Promise.resolve({
+              data: {},
+              metadata: {},
+              path: 'firestore/document',
+              exists: true,
+            }),
+          ),
         },
-        RNFBFiamModule: {
+        NativeRNFBTurboFiam: {
+          getConstants: () => ({
+            isMessagesDisplaySuppressed: false,
+            isAutomaticDataCollectionEnabled: true,
+          }),
           isMessagesDisplaySuppressed: false,
           isAutomaticDataCollectionEnabled: true,
           setMessagesDisplaySuppressed: jest.fn(),
           setAutomaticDataCollectionEnabled: jest.fn(),
           triggerEvent: jest.fn(),
         },
-        RNFBInstallationsModule: {
+        NativeRNFBTurboInstallations: {
           getId: jest.fn(),
           getToken: jest.fn(),
-          delete: jest.fn(),
+          deleteInstallations: jest.fn(),
         },
         RNFBMessagingModule: {
           isAutoInitEnabled: true,
@@ -299,7 +406,11 @@ jest.doMock('react-native', () => {
           setDeliveryMetricsExportToBigQuery: jest.fn(),
           setNotificationDelegationEnabled: jest.fn(),
         },
-        RNFBPerfModule: {
+        NativeRNFBTurboPerf: {
+          getConstants: () => ({
+            isPerformanceCollectionEnabled: true,
+            isInstrumentationEnabled: true,
+          }),
           isPerformanceCollectionEnabled: true,
           isInstrumentationEnabled: true,
           instrumentationEnabled: jest.fn(() => Promise.resolve()),
@@ -311,6 +422,7 @@ jest.doMock('react-native', () => {
           startHttpMetric: jest.fn(() => Promise.resolve()),
           stopHttpMetric: jest.fn(() => Promise.resolve()),
         },
+        NativeRNFBTurboML: {},
         RNFBConfigModule: {
           onConfigUpdated: jest.fn(),
           reset: jest.fn(() =>

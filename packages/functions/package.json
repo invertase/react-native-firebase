@@ -6,7 +6,7 @@
   "main": "./dist/module/index.js",
   "types": "./dist/typescript/lib/index.d.ts",
   "codegenConfig": {
-    "name": "NativeRNFBTurboFunctions",
+    "name": "RNFBFunctionsTurboModules",
     "type": "modules",
     "jsSrcsDir": "specs",
     "includesGeneratedCode": true,

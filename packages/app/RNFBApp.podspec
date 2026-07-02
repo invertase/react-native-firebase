@@ -22,20 +22,14 @@ Pod::Spec.new do |s|
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
   s.cocoapods_version   = '>= 1.12.0'
-  s.source_files        = "ios/**/*.{h,m}"
+  s.source_files        = "ios/**/*.{h,m,mm,cpp}"
+  s.private_header_files = "ios/**/*.h"
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
 
-  # Deprecation message for old architecture users
-  # - safely in case the variable goes away completely in future react-native versions
-  # - suppressable in case people need to
-  if (
-    defined?(ENV["RCT_NEW_ARCH_ENABLED"]) != nil &&
-    ENV["RCT_NEW_ARCH_ENABLED"] == '0' &&
-    ENV["RNFB_SUPPRESS_NEW_ARCHITECTURE_WARNING"] != '1'
-  )
-    Pod::UI.puts '[react-native-firebase] '.yellow + "Legacy Architecture support is deprecated for all modules"
-    Pod::UI.puts '[react-native-firebase] '.yellow + "New Architecture support is already required for some modules"
-    Pod::UI.puts '[react-native-firebase] '.yellow + "all modules will require it in the future."
-    Pod::UI.puts '[react-native-firebase] '.yellow + "Suppress this with environment variable RNFB_SUPPRESS_NEW_ARCHITECTURE_WARNING=1"
+  # Fail fast for old architecture users, but safely in case the variable goes away
+  # completely in future react-native versions
+  if defined?(ENV["RCT_NEW_ARCH_ENABLED"]) != nil && (ENV["RCT_NEW_ARCH_ENABLED"] == '0')
+     raise "#{s.name} requires New Architecture. Enable New Architecture to use this module"
   end
 
   # App must define modules for static framework integration of other packages to work

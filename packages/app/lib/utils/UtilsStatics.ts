@@ -15,7 +15,7 @@
  *
  */
 
-import { NativeModules } from 'react-native';
+import { getStaticUtilsModule } from '../internal/registry/nativeModule';
 import { stripTrailingSlash, isOther } from '../common';
 import { Utils } from '../types/app';
 import { version } from '../version';
@@ -66,7 +66,7 @@ const statics: Utils.Statics = {
   SDK_VERSION: version,
   get FilePath(): Utils.FilePath {
     // We don't support path constants on non-native platforms.
-    return processPathConstants(isOther ? {} : NativeModules.RNFBUtilsModule);
+    return processPathConstants(isOther ? {} : getStaticUtilsModule());
   },
 };
 

@@ -17,9 +17,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <React/RCTBridgeModule.h>
-
-@interface RNFBAppModule : NSObject <RCTBridgeModule>
+@interface RNFBAppModule : NSObject
 
 + (NSString *)getCustomDomain:(NSString *)appName;
 

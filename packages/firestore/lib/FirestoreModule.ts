@@ -45,10 +45,10 @@ import fallBackModule from './web/RNFBFirestoreModule';
 const namespace = 'firestore';
 
 export const nativeModuleNames = [
-  'RNFBFirestoreModule',
-  'RNFBFirestoreCollectionModule',
-  'RNFBFirestoreDocumentModule',
-  'RNFBFirestoreTransactionModule',
+  'NativeRNFBTurboFirestore',
+  'NativeRNFBTurboFirestoreCollection',
+  'NativeRNFBTurboFirestoreDocument',
+  'NativeRNFBTurboFirestoreTransaction',
 ] as const;
 
 const nativeEvents = [
@@ -64,6 +64,7 @@ export const config: ModuleConfig = {
   nativeEvents: [...nativeEvents],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
+  turboModule: true,
 };
 
 type FirestoreModuleSettingsState = {
@@ -74,7 +75,7 @@ type FirestoreModuleSettingsState = {
 /** Sync event payload from emitter when fanning out collection/document/snapshots-in-sync events. */
 type FirestoreSyncEventWithListenerId = { listenerId: string | number };
 
-export class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
+export class FirebaseFirestoreModule extends FirebaseModule<'NativeRNFBTurboFirestore'> {
   type = 'firestore' as const;
   _referencePath: FirestorePath;
   _transactionHandler: FirestoreTransactionHandler;

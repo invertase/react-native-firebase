@@ -150,6 +150,8 @@ Long `datamigrator` activity with no `com.invertase.testing` means migration/pre
 
 Device type comes from `tests/.detoxrc.js`; boot script and Detox use it. No hard-coded UDID.
 
+**Missing Detox framework cache** — if iOS `:test-cover` fails before tests with `Detox.framework could not be found`, rebuild the local cache: [running e2e § iOS Detox framework cache](../testing/running-e2e.md#ios-detox-framework-cache-blocking) (`yarn tests:ios:detox-framework-cache:rebuild`). CI restores `~/Library/Detox/ios` from Actions cache keyed by Xcode version.
+
 ### Codecov (debug matrix only)
 
 Debug leg: `yarn tests:ios:test:process-coverage` + Codecov flags `e2e-ts-ios`, `ios-native`; `codecov/project/ios-native` blocks on missing native upload. Release skips coverage.

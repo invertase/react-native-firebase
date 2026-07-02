@@ -20,12 +20,12 @@ import type { Installations } from './installations';
 export interface RNFBInstallationsModule {
   getId(): Promise<string>;
   getToken(forceRefresh: boolean): Promise<string>;
-  delete(): Promise<void>;
+  deleteInstallations(): Promise<void>;
 }
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBInstallationsModule: RNFBInstallationsModule;
+    NativeRNFBTurboInstallations: RNFBInstallationsModule;
   }
 }
 

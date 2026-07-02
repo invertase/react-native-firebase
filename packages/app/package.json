@@ -5,7 +5,25 @@
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
   "main": "./dist/module/index.js",
   "types": "./dist/typescript/lib/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBAppTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "io.invertase.firebase.app"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTurboApp": "RNFBAppModule",
+        "NativeRNFBTurboUtils": "RNFBUtilsModule"
+      }
+    }
+  },
   "scripts": {
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/reactnative/java/io/invertase/firebase/app/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated",
     "build": "genversion --esm --semi lib/version.ts && npm run build:version",
     "build:version": "node ./scripts/genversion-ios && node ./scripts/genversion-android",
     "build:clean": "rimraf android/build && rimraf ios/build",
