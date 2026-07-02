@@ -2538,7 +2538,29 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
           "pipelineExecute() expected " + fieldName + ".value to be provided.");
     }
-    return map.get("value");
+
+    Object value = map.get("value");
+    if (Boolean.TRUE.equals(map.get("integerLiteral"))) {
+      return coerceIntegerLiteralConstantValue(value);
+    }
+    return value;
+  }
+
+  private static Object coerceIntegerLiteralConstantValue(Object value) {
+    if (value instanceof Boolean) {
+      return ((Boolean) value) ? 1 : 0;
+    }
+    if (value instanceof Number) {
+      Number number = (Number) value;
+      double doubleValue = number.doubleValue();
+      if (Double.isFinite(doubleValue)
+          && doubleValue == Math.rint(doubleValue)
+          && doubleValue >= Integer.MIN_VALUE
+          && doubleValue <= Integer.MAX_VALUE) {
+        return number.intValue();
+      }
+    }
+    return value;
   }
 
   private boolean isSerializedReferencePathConstantMap(Map<String, Object> map) {
