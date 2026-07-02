@@ -52,10 +52,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAppCheck)
 }
 
 - (void)activate:(NSString *)appName
-    siteKeyProvider:(NSString *)siteKeyProvider
+              siteKeyProvider:(NSString *)siteKeyProvider
     isTokenAutoRefreshEnabled:(BOOL)isTokenAutoRefreshEnabled
-          resolve:(RCTPromiseResolveBlock)resolve
-           reject:(RCTPromiseRejectBlock)reject {
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   DLog(@"deprecated API, provider will be deviceCheck / token refresh %d for app %@",
        isTokenAutoRefreshEnabled, firebaseApp.name);

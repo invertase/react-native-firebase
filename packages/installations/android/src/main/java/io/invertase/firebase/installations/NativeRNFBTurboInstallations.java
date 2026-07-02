@@ -68,8 +68,7 @@ public class NativeRNFBTurboInstallations extends NativeRNFBTurboInstallationsSp
     Tasks.call(
             getExecutor(),
             () ->
-                Tasks.await(
-                    FirebaseInstallations.getInstance(firebaseApp).getToken(forceRefresh)))
+                Tasks.await(FirebaseInstallations.getInstance(firebaseApp).getToken(forceRefresh)))
         .addOnCompleteListener(
             getExecutor(),
             task -> {

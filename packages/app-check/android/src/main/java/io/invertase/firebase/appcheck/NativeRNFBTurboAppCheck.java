@@ -230,8 +230,7 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
     Tasks.call(
             getExecutor(),
             () ->
-                Tasks.await(
-                    FirebaseAppCheck.getInstance(firebaseApp).getLimitedUseAppCheckToken()))
+                Tasks.await(FirebaseAppCheck.getInstance(firebaseApp).getLimitedUseAppCheckToken()))
         .addOnCompleteListener(
             getExecutor(),
             (task) -> {

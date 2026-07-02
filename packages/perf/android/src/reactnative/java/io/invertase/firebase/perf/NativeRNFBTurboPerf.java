@@ -148,7 +148,9 @@ public class NativeRNFBTurboPerf extends NativeRNFBTurboPerfSpec {
   public void stopHttpMetric(double id, ReadableMap metricData, Promise promise) {
     module
         .stopHttpMetric(
-            (int) id, Arguments.toBundle(metricData), Arguments.toBundle(metricData.getMap("attributes")))
+            (int) id,
+            Arguments.toBundle(metricData),
+            Arguments.toBundle(metricData.getMap("attributes")))
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {

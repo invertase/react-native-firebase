@@ -18,9 +18,9 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
-#import "RNFBRCTEventEmitter.h"
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBSharedUtils.h"
+#import "RNFBRCTEventEmitter.h"
 #import "RNFBStorageCommon.h"
 #import "RNFBStorageModule.h"
 #import "RNFBStorageTurboModules.h"
@@ -196,10 +196,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboStorage);
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#list
  */
 - (void)list:(NSString *)appName
-         url:(NSString *)url
- listOptions:(JS::NativeRNFBTurboStorage::StorageListOptions &)listOptions
-     resolve:(RCTPromiseResolveBlock)resolve
-      reject:(RCTPromiseRejectBlock)reject {
+            url:(NSString *)url
+    listOptions:(JS::NativeRNFBTurboStorage::StorageListOptions &)listOptions
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
   long maxResults = (long)listOptions.maxResults();
@@ -419,12 +419,12 @@ RCT_EXPORT_MODULE(NativeRNFBTurboStorage);
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putFile
  */
 - (void)putFile:(NSString *)appName
-            url:(NSString *)url
-  localFilePath:(NSString *)localFilePath
-       metadata:(NSDictionary *_Nullable)metadata
-         taskId:(double)taskId
-        resolve:(RCTPromiseResolveBlock)resolve
-         reject:(RCTPromiseRejectBlock)reject {
+              url:(NSString *)url
+    localFilePath:(NSString *)localFilePath
+         metadata:(NSDictionary *_Nullable)metadata
+           taskId:(double)taskId
+          resolve:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   NSNumber *taskIdNumber = @(taskId);
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
@@ -537,7 +537,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboStorage);
   NSString *key = [self createEmulatorKey:bucketUrl appName:firebaseApp.name];
 
   if (!emulatorConfigs[key]) {
-    [[FIRStorage storageForApp:firebaseApp URL:bucketUrl] useEmulatorWithHost:host port:(NSInteger)port];
+    [[FIRStorage storageForApp:firebaseApp URL:bucketUrl] useEmulatorWithHost:host
+                                                                         port:(NSInteger)port];
     emulatorConfigs[key] = @YES;
   }
 }
@@ -748,8 +749,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboStorage);
   return [_RCTTypedModuleConstants newWithUnsafeDictionary:[self storageConstantsDictionary]];
 }
 
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants::Builder>)
-    getConstants {
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants::Builder>)getConstants {
   return [self constantsToExport];
 }
 

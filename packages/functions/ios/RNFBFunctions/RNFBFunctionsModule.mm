@@ -18,11 +18,11 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
-#import "RNFBFunctionsTurboModules.h"
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBRCTEventEmitter.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBFunctionsModule.h"
+#import "RNFBFunctionsTurboModules.h"
 
 #if __has_include(<RNFBFunctions/RNFBFunctions-Swift.h>)
 // This import will work in situations where `use_frameworks!` is in use

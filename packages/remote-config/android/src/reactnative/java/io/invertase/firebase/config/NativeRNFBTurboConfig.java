@@ -48,8 +48,8 @@ public class NativeRNFBTurboConfig extends NativeRNFBTurboConfigSpec {
   private static final String SERVICE_NAME = "Config";
   private final UniversalFirebaseConfigModule module;
 
-  private static final HashMap<String, ConfigUpdateListenerRegistration> mConfigUpdateRegistrations =
-      new HashMap<>();
+  private static final HashMap<String, ConfigUpdateListenerRegistration>
+      mConfigUpdateRegistrations = new HashMap<>();
 
   public NativeRNFBTurboConfig(ReactApplicationContext reactContext) {
     super(reactContext);

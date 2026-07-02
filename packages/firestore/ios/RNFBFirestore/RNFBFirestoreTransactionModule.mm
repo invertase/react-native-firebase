@@ -16,9 +16,9 @@
  */
 
 #import <RNFBApp/RNFBRCTEventEmitter.h>
-#import "RNFBApp/RCTConvert+FIRApp.h"
 #import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTUtils.h>
+#import "RNFBApp/RCTConvert+FIRApp.h"
 
 #import "RNFBFirestoreTransactionModule.h"
 #import "RNFBFirestoreTurboModules.h"
@@ -26,7 +26,8 @@
 static __strong NSMutableDictionary *transactions;
 static NSString *const RNFB_FIRESTORE_TRANSACTION_EVENT = @"firestore_transaction_event";
 
-@interface RNFBFirestoreTransactionModule () <NativeRNFBTurboFirestoreTransactionSpec, RCTBridgeModule>
+@interface RNFBFirestoreTransactionModule () <NativeRNFBTurboFirestoreTransactionSpec,
+                                              RCTBridgeModule>
 @end
 
 @implementation RNFBFirestoreTransactionModule

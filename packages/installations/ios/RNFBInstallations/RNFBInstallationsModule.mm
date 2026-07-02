@@ -41,8 +41,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboInstallations)
 }
 
 - (void)deleteInstallations:(NSString *)appName
-       resolve:(RCTPromiseResolveBlock)resolve
-        reject:(RCTPromiseRejectBlock)reject {
+                    resolve:(RCTPromiseResolveBlock)resolve
+                     reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRInstallations *installations = [FIRInstallations installationsWithApp:firebaseApp];
   [installations deleteWithCompletion:^(NSError *_Nullable error) {

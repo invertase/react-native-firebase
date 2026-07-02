@@ -193,10 +193,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
   BOOL isUnhandledPromiseRejection = jsErrorDict.isUnhandledRejection();
 
   for (const auto &stackFrame : stackFrames) {
-    FIRStackFrame *customFrame =
-        [FIRStackFrame stackFrameWithSymbol:stackFrame.fn()
-                                       file:stackFrame.file()
-                                       line:(uint32_t)stackFrame.line()];
+    FIRStackFrame *customFrame = [FIRStackFrame stackFrameWithSymbol:stackFrame.fn()
+                                                                file:stackFrame.file()
+                                                                line:(uint32_t)stackFrame.line()];
     [stackTrace addObject:customFrame];
   }
 

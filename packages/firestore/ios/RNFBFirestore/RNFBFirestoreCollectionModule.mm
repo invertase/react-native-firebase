@@ -27,9 +27,9 @@
 // directory. See firebase-ios-sdk#12611 for more context.
 #import "RNFBFirestore-Swift.h"
 #endif
-#import "RNFBApp/RCTConvert+FIRApp.h"
 #import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTUtils.h>
+#import "RNFBApp/RCTConvert+FIRApp.h"
 
 #import "RNFBFirestoreCollectionModule.h"
 #import "RNFBFirestoreCommon.h"
@@ -38,7 +38,8 @@
 static __strong NSMutableDictionary *collectionSnapshotListeners;
 static NSString *const RNFB_FIRESTORE_COLLECTION_SYNC = @"firestore_collection_sync_event";
 
-@interface RNFBFirestoreCollectionModule () <NativeRNFBTurboFirestoreCollectionSpec, RCTBridgeModule>
+@interface RNFBFirestoreCollectionModule () <NativeRNFBTurboFirestoreCollectionSpec,
+                                             RCTBridgeModule>
 @end
 
 @implementation RNFBFirestoreCollectionModule
@@ -287,8 +288,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreCollection);
       [RNFBFirestoreCommon
           promiseRejectFirestoreException:reject
                                     error:[NSError errorWithDomain:@"RNFB Firestore"
-                                                                code:0
-                                                            userInfo:@{NSLocalizedDescriptionKey : reason}]];
+                                                              code:0
+                                                          userInfo:@{
+                                                            NSLocalizedDescriptionKey : reason
+                                                          }]];
       return;
     }
   }

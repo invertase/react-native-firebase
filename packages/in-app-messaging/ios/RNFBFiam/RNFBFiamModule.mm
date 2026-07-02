@@ -59,8 +59,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFiam)
 }
 
 - (void)setMessagesDisplaySuppressed:(BOOL)enabled
-                            resolve:(RCTPromiseResolveBlock)resolve
-                             reject:(RCTPromiseRejectBlock)reject {
+                             resolve:(RCTPromiseResolveBlock)resolve
+                              reject:(RCTPromiseRejectBlock)reject {
   [FIRInAppMessaging inAppMessaging].messageDisplaySuppressed = (BOOL)enabled;
   resolve([NSNull null]);
 }

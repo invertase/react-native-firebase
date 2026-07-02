@@ -23,19 +23,20 @@ import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.g
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
 
 import android.util.SparseArray;
+import com.facebook.fbreact.specs.NativeRNFBTurboFirestoreDocumentSpec;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.*;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
-import com.facebook.fbreact.specs.NativeRNFBTurboFirestoreDocumentSpec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class NativeRNFBTurboFirestoreDocument extends NativeRNFBTurboFirestoreDocumentSpec {
-  private final FirestoreTurboModuleSupport turboSupport = new FirestoreTurboModuleSupport("RNFBDocument");
+  private final FirestoreTurboModuleSupport turboSupport =
+      new FirestoreTurboModuleSupport("RNFBDocument");
   private static final String SERVICE_NAME = "FirestoreDocument";
   private static SparseArray<ListenerRegistration> documentSnapshotListeners = new SparseArray<>();
 
@@ -57,7 +58,11 @@ public class NativeRNFBTurboFirestoreDocument extends NativeRNFBTurboFirestoreDo
 
   @Override
   public void documentOnSnapshot(
-      String appName, String databaseId, String path, double listenerId, ReadableMap listenerOptions) {
+      String appName,
+      String databaseId,
+      String path,
+      double listenerId,
+      ReadableMap listenerOptions) {
     if (documentSnapshotListeners.get((int) listenerId) != null) {
       return;
     }
@@ -68,7 +73,8 @@ public class NativeRNFBTurboFirestoreDocument extends NativeRNFBTurboFirestoreDo
     final EventListener<DocumentSnapshot> listener =
         (documentSnapshot, exception) -> {
           if (exception != null) {
-            ListenerRegistration listenerRegistration = documentSnapshotListeners.get((int) listenerId);
+            ListenerRegistration listenerRegistration =
+                documentSnapshotListeners.get((int) listenerId);
             if (listenerRegistration != null) {
               listenerRegistration.remove();
               documentSnapshotListeners.remove((int) listenerId);
@@ -176,7 +182,9 @@ public class NativeRNFBTurboFirestoreDocument extends NativeRNFBTurboFirestoreDo
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
-    Tasks.call(turboSupport.getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data))
+    Tasks.call(
+            turboSupport.getTransactionalExecutor(),
+            () -> parseReadableMap(firebaseFirestore, data))
         .continueWithTask(
             turboSupport.getTransactionalExecutor(),
             task -> {
@@ -216,7 +224,9 @@ public class NativeRNFBTurboFirestoreDocument extends NativeRNFBTurboFirestoreDo
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
-    Tasks.call(turboSupport.getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data))
+    Tasks.call(
+            turboSupport.getTransactionalExecutor(),
+            () -> parseReadableMap(firebaseFirestore, data))
         .continueWithTask(
             turboSupport.getTransactionalExecutor(),
             task -> documentReference.update(Objects.requireNonNull(task.getResult())))
@@ -235,7 +245,9 @@ public class NativeRNFBTurboFirestoreDocument extends NativeRNFBTurboFirestoreDo
       String appName, String databaseId, ReadableArray writes, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
 
-    Tasks.call(turboSupport.getTransactionalExecutor(), () -> parseDocumentBatches(firebaseFirestore, writes))
+    Tasks.call(
+            turboSupport.getTransactionalExecutor(),
+            () -> parseDocumentBatches(firebaseFirestore, writes))
         .continueWithTask(
             turboSupport.getTransactionalExecutor(),
             task -> {
@@ -302,7 +314,9 @@ public class NativeRNFBTurboFirestoreDocument extends NativeRNFBTurboFirestoreDo
   private void sendOnSnapshotEvent(
       String appName, String databaseId, double listenerId, DocumentSnapshot documentSnapshot) {
     try {
-      Tasks.call(turboSupport.getExecutor(), () -> snapshotToWritableMap(appName, databaseId, documentSnapshot))
+      Tasks.call(
+              turboSupport.getExecutor(),
+              () -> snapshotToWritableMap(appName, databaseId, documentSnapshot))
           .addOnCompleteListener(
               task -> {
                 if (task.isSuccessful()) {

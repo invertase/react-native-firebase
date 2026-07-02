@@ -18,9 +18,9 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTConvert.h>
 
-#import "RNFBConfigModule.h"
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBSharedUtils.h"
+#import "RNFBConfigModule.h"
 
 static NSString *const ON_CONFIG_UPDATED_EVENT = @"on_config_updated";
 
@@ -131,7 +131,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboConfig)
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants::Builder>)
     constantsToExport {
   return [_RCTTypedModuleConstants
-      newWithUnsafeDictionary:[self getConstantsForApp:firebaseAppForName(DEFAULT_APP_DISPLAY_NAME)]];
+      newWithUnsafeDictionary:[self
+                                  getConstantsForApp:firebaseAppForName(DEFAULT_APP_DISPLAY_NAME)]];
 }
 
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants::Builder>)getConstants {

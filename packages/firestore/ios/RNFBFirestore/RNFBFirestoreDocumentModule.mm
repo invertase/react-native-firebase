@@ -16,8 +16,8 @@
  */
 
 #import <RNFBApp/RNFBRCTEventEmitter.h>
-#import "RNFBApp/RCTConvert+FIRApp.h"
 #import <React/RCTUtils.h>
+#import "RNFBApp/RCTConvert+FIRApp.h"
 
 #import "RNFBFirestoreDocumentModule.h"
 #import "RNFBFirestoreTurboModules.h"
@@ -71,8 +71,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreDocument);
                 databaseId:(NSString *)databaseId
                       path:(NSString *)path
                 listenerId:(double)listenerId
-     snapshotListenOptions:
-         (JS::NativeRNFBTurboFirestoreDocument::FirestoreSnapshotListenOptions &)snapshotListenOptions {
+     snapshotListenOptions:(JS::NativeRNFBTurboFirestoreDocument::FirestoreSnapshotListenOptions &)
+                               snapshotListenOptions {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   NSNumber *listenerIdNumber = @(listenerId);
 

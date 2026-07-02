@@ -27,18 +27,19 @@ import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.g
 
 import android.os.AsyncTask;
 import android.util.SparseArray;
+import com.facebook.fbreact.specs.NativeRNFBTurboFirestoreTransactionSpec;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.*;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
-import com.facebook.fbreact.specs.NativeRNFBTurboFirestoreTransactionSpec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class NativeRNFBTurboFirestoreTransaction extends NativeRNFBTurboFirestoreTransactionSpec {
-  private final FirestoreTurboModuleSupport turboSupport = new FirestoreTurboModuleSupport("RNFBTransaction");
+  private final FirestoreTurboModuleSupport turboSupport =
+      new FirestoreTurboModuleSupport("RNFBTransaction");
   private static final String SERVICE_NAME = "FirestoreTransaction";
   private SparseArray<ReactNativeFirebaseFirestoreTransactionHandler> transactionHandlers =
       new SparseArray<>();
@@ -113,7 +114,8 @@ public class NativeRNFBTurboFirestoreTransaction extends NativeRNFBTurboFirestor
   @Override
   public void transactionApplyBuffer(
       String appName, String databaseId, double transactionId, ReadableArray commandBuffer) {
-    ReactNativeFirebaseFirestoreTransactionHandler handler = transactionHandlers.get((int) transactionId);
+    ReactNativeFirebaseFirestoreTransactionHandler handler =
+        transactionHandlers.get((int) transactionId);
 
     if (handler != null) {
       handler.signalBufferReceived(commandBuffer);

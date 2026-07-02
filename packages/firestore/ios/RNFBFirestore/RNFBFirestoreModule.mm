@@ -16,14 +16,14 @@
  */
 
 #import "RNFBFirestoreModule.h"
-#import "RNFBApp/RCTConvert+FIRApp.h"
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTUtils.h>
 #import "FirebaseFirestoreInternal/FIRPersistentCacheIndexManager.h"
+#import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBFirestoreCommon.h"
-#import "RNFBPreferences.h"
 #import "RNFBFirestoreTurboModules.h"
+#import "RNFBPreferences.h"
 
 NSMutableDictionary *emulatorConfigs;
 static __strong NSMutableDictionary *snapshotsInSyncListeners;
@@ -264,14 +264,13 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestore);
                                                          databaseId:databaseId];
 
   id<FIRListenerRegistration> listener = [firestore addSnapshotsInSyncListener:^{
-    [[RNFBRCTEventEmitter shared]
-        sendEventWithName:RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC
-                     body:@{
-                       @"appName" : appName,
-                       @"databaseId" : databaseId,
-                       @"listenerId" : listenerIdNumber,
-                       @"body" : @{}
-                     }];
+    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC
+                                               body:@{
+                                                 @"appName" : appName,
+                                                 @"databaseId" : databaseId,
+                                                 @"listenerId" : listenerIdNumber,
+                                                 @"body" : @{}
+                                               }];
   }];
 
   snapshotsInSyncListeners[listenerIdNumber] = listener;

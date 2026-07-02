@@ -26,15 +26,16 @@ import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.g
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getQueryForFirestore;
 
 import android.util.SparseArray;
+import com.facebook.fbreact.specs.NativeRNFBTurboFirestoreCollectionSpec;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.*;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
-import com.facebook.fbreact.specs.NativeRNFBTurboFirestoreCollectionSpec;
 import java.util.ArrayList;
 
 public class NativeRNFBTurboFirestoreCollection extends NativeRNFBTurboFirestoreCollectionSpec {
-  private final FirestoreTurboModuleSupport turboSupport = new FirestoreTurboModuleSupport("RNFBCollection");
+  private final FirestoreTurboModuleSupport turboSupport =
+      new FirestoreTurboModuleSupport("RNFBCollection");
   private static final String SERVICE_NAME = "FirestoreCollection";
   private static SparseArray<ListenerRegistration> collectionSnapshotListeners =
       new SparseArray<>();
@@ -372,7 +373,8 @@ public class NativeRNFBTurboFirestoreCollection extends NativeRNFBTurboFirestore
     final EventListener<QuerySnapshot> listener =
         (querySnapshot, exception) -> {
           if (exception != null) {
-            ListenerRegistration listenerRegistration = collectionSnapshotListeners.get((int) listenerId);
+            ListenerRegistration listenerRegistration =
+                collectionSnapshotListeners.get((int) listenerId);
             if (listenerRegistration != null) {
               listenerRegistration.remove();
               collectionSnapshotListeners.remove((int) listenerId);
