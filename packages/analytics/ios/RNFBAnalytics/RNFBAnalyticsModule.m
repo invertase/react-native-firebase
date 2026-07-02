@@ -16,6 +16,7 @@
  */
 
 #import <Firebase/Firebase.h>
+#import <React/RCTBridgeModule.h>
 #import <React/RCTUtils.h>
 
 #if __has_include(<RNFBAnalytics/RNFBAnalytics-Swift.h>)
