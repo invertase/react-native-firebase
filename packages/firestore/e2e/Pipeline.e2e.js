@@ -1970,6 +1970,47 @@ describe('FirestorePipeline', function () {
         data.meta.should.eql({ active: true, label: 'item', score: 42 });
         data.scoreWithTail.should.eql([42, 'tail']);
       });
+
+      it('routes nested constant envelopes inside map literals consistently', async function () {
+        // P-011 parity: a serialized { exprType: "constant", value: … } envelope
+        // that appears as a value inside a map literal must be treated as
+        // expression-like and re-emerge as a constant, matching iOS. Android
+        // previously excluded "constant" from isExpressionLike and descended it
+        // as a literal map, mishandling nested constants (e.g. ref-shaped maps).
+        const { execute, field, constant, map, array } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          score: 7,
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              map({
+                header: map({
+                  kind: constant('doc'),
+                  version: constant(2),
+                  docPath: constant('collection/document'),
+                }),
+                tags: array([constant('a'), constant('b')]),
+                score: field('score'),
+              }).as('envelope'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.envelope.should.eql({
+          header: { kind: 'doc', version: 2, docPath: 'collection/document' },
+          tags: ['a', 'b'],
+          score: 7,
+        });
+      });
     });
 
     describe('array operators', function () {

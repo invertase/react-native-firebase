@@ -838,9 +838,10 @@ final class ReactNativeFirebaseFirestorePipelineParser {
       if ("pipelinevalue".equals(normalizedType)) {
         return false;
       }
-      if ("constant".equals(normalizedType)) {
-        return false;
-      }
+      // A serialized constant envelope ({ exprType: "constant", value: … }) is
+      // expression-like in value contexts so it routes through the expression
+      // tree and re-emerges as a constant expression, matching iOS. Only
+      // PipelineValue is treated as an opaque non-expression here.
     }
     if (isReferencePathConstantMap(map)) {
       return false;
