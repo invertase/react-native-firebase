@@ -252,59 +252,6 @@ jest.doMock('react-native', () => {
           sendUnsentReports: jest.fn(),
           setCrashlyticsCollectionEnabled: jest.fn(),
         },
-        RNFBDatabaseModule: {
-          constants: {
-            isDatabaseCollectionEnabled: true,
-            url: 'https://test.firebaseio.com',
-            ref: 'ref()',
-          },
-          on: jest.fn(),
-          off: jest.fn(),
-          once: jest.fn(
-            (_appName: any, _customUrl: any, path: any, _modifiers: any, eventType: any) => {
-              // Database native methods receive (appName, customUrlOrRegion, ...actualArgs)
-              let key = 'test';
-              if (path && typeof path === 'string') {
-                const parts = path.split('/').filter(p => p);
-                key = parts[parts.length - 1] || 'test';
-              }
-
-              const snapshotData = {
-                key,
-                value: null,
-                exists: false,
-                childKeys: [],
-                priority: null,
-              };
-
-              if (eventType === 'value') {
-                return Promise.resolve(snapshotData);
-              }
-
-              return Promise.resolve({
-                snapshot: snapshotData,
-                previousChildName: null,
-              });
-            },
-          ),
-          useEmulator: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          set: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          update: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          setWithPriority: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          remove: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          setPriority: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          keepSynced: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          transactionStart: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          transactionTryCommit: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          goOnline: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          goOffline: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          setPersistenceEnabled: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          setLoggingEnabled: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          setPersistenceCacheSizeBytes: jest.fn((_appName: any, _customUrl: any) =>
-            Promise.resolve(),
-          ),
-          getServerTime: jest.fn((_appName: any, _customUrl: any) => Promise.resolve(Date.now())),
-        },
         NativeRNFBTurboFirestore: {
           setLogLevel: jest.fn(),
           loadBundle: jest.fn(() =>
@@ -384,6 +331,45 @@ jest.doMock('react-native', () => {
               exists: true,
             }),
           ),
+        },
+        NativeRNFBTurboDatabase: {
+          goOnline: jest.fn(() => Promise.resolve()),
+          goOffline: jest.fn(() => Promise.resolve()),
+          setPersistenceEnabled: jest.fn(),
+          setLoggingEnabled: jest.fn(),
+          setPersistenceCacheSizeBytes: jest.fn(),
+          useEmulator: jest.fn(),
+        },
+        NativeRNFBTurboDatabaseReference: {
+          set: jest.fn(() => Promise.resolve()),
+          update: jest.fn(() => Promise.resolve()),
+          setWithPriority: jest.fn(() => Promise.resolve()),
+          remove: jest.fn(() => Promise.resolve()),
+          setPriority: jest.fn(() => Promise.resolve()),
+        },
+        NativeRNFBTurboDatabaseQuery: {
+          once: jest.fn(() =>
+            Promise.resolve({
+              value: null,
+              key: null,
+              exists: false,
+              childKeys: [],
+            }),
+          ),
+          on: jest.fn(),
+          off: jest.fn(),
+          keepSynced: jest.fn(() => Promise.resolve()),
+        },
+        NativeRNFBTurboDatabaseOnDisconnect: {
+          onDisconnectCancel: jest.fn(() => Promise.resolve()),
+          onDisconnectRemove: jest.fn(() => Promise.resolve()),
+          onDisconnectSet: jest.fn(() => Promise.resolve()),
+          onDisconnectSetWithPriority: jest.fn(() => Promise.resolve()),
+          onDisconnectUpdate: jest.fn(() => Promise.resolve()),
+        },
+        NativeRNFBTurboDatabaseTransaction: {
+          transactionStart: jest.fn(),
+          transactionTryCommit: jest.fn(),
         },
         NativeRNFBTurboFiam: {
           getConstants: () => ({

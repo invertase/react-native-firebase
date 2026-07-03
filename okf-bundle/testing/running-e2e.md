@@ -97,10 +97,11 @@ macOS: `yarn tests:macos:test-cover` only — same `:8090` transport, no Detox.
 
 **Launch gate (orchestration race fix)** — `firebase.test.js` starts the test runner with `RNFB_JET_DEFER_RUN=1`. It listens on 8090 and **defers** `server.run()` until the host signals launch success:
 
-1. Host waits for TCP **8090**, then Metro (debug) if needed, then `launchAppWithRetry`.
-2. Host `POST`s **`/orchestrate-state`** (`{ "phase": "launch-pending" | "launch-ok" | … }`) to the control port (best-effort diagnostics).
-3. After `launchApp` succeeds, host `POST`s **`/launch-ready`** → test runner calls `server.run()` and the app may receive the mocha-remote `run` action.
-4. Mocha tests must not start during a stuck or retried `launchApp`; on inner launch retry the host may kill and respawn the test runner before `terminateApp`/simulator reboot.
+1. On Android, host force-stops both test packages and clears any stray **8090** listener before spawning Jet.
+2. Host waits for TCP **8090**, then Metro (debug) if needed, then `launchAppWithRetry`.
+3. Host `POST`s **`/orchestrate-state`** (`{ "phase": "launch-pending" | "launch-ok" | … }`) to the control port (best-effort diagnostics).
+4. After `launchApp` succeeds, host `POST`s **`/launch-ready`** → test runner calls `server.run()` and the app may receive the mocha-remote `run` action.
+5. Mocha tests must not start during a stuck or retried `launchApp`; on inner launch retry the host may kill and respawn the test runner before `terminateApp`/simulator reboot.
 
 **Log markers** — `[rnfb-e2e] orchestrate-state=…`, `[jet-control] deferring server.run until POST /launch-ready`, `[jet-control] launch-ready received`, `[jet-control] listening on http://…:8091`, `[jet-coverage] …`, `Jet client connected`.
 
@@ -165,15 +166,34 @@ No in-flight test run on the target platform:
 
 | Platform | Clear when |
 |----------|------------|
-| **Android** | [Host-clear probes](#host-clear-probes) pass (no instrumentation PID) |
+| **Android** | [Android app reset](#android-app-reset-blocking) + [host-clear probes](#host-clear-probes) pass |
 | **iOS** | [Host-clear probes](#host-clear-probes) pass — **zero booted simulators** and no stray listener on `:8090`. Detox boots `iPhone 17` from `tests/.detoxrc.js`; do not pre-boot or leave simulators running. |
 | **macOS** | [Host-clear probes](#host-clear-probes) pass (no `io.invertase.testing` process) |
 
 Also wait for any visible unfinished `yarn tests:*:test-cover`.
 
+<a id="android-app-reset-blocking"></a>
+
+**Android app reset (blocking)** — run **before every** Android `:test-cover`, not only after a failed run:
+
+```bash
+adb -s emulator-5554 shell am force-stop com.invertase.testing
+adb -s emulator-5554 shell am force-stop com.invertase.testing.test
+```
+
+The main app (`com.invertase.testing`) can sit on **“waiting for jet to start tests…”** while the [host-clear probe](#host-clear-probes) still passes (it only checks `com.invertase.testing.test`). A stale main app then connects as a **second Jet client** after Detox launches a fresh run → `Received a message from the client, but server wasn't running` and no Mocha summary. Force-stop **both** packages, then re-run the probe.
+
+On **darwin** hosts, also clear the macOS test app before Android `:test-cover` — macOS and Android share Jet **`:8090`**. Alternating macOS and Android runs without killing `io.invertase.testing` leaves a stale macOS Jet client that connects when Android starts → duplicate clients and `server wasn't running`.
+
+```bash
+! pgrep -x io.invertase.testing >/dev/null 2>&1
+```
+
+(`firebase.test.js` runs this automatically via `ensureAndroidJetHostClear` before spawning Android Jet; use the probe manually when prepping from the runbook.)
+
 <a id="host-clear-probes"></a>
 
-**Host-clear probes** — run the block for your platform; **exit 0 = clear** (chain with `&&`):
+**Host-clear probes** — run after [Android app reset](#android-app-reset-blocking) (Android) or directly (iOS/macOS); **exit 0 = clear** (chain with `&&`):
 
 ```bash
 # iOS — booted-device count must be 0
@@ -189,12 +209,13 @@ test -z "$(lsof -nP -iTCP:8090 -sTCP:LISTEN -t 2>/dev/null || true)"
 
 <a id="pre-flight-recovery"></a>
 
-**Pre-flight recovery** — when probes fail after abort, kill, or `EADDRINUSE` on `:8090`. Then re-run [host-clear probes](#host-clear-probes).
+**Pre-flight recovery** — when probes fail **after** [Android app reset](#android-app-reset-blocking), abort, kill, or `EADDRINUSE` on `:8090`. Before any new `:test-cover`, kill the stray **8090** listener, re-run force-stop (Android) or the iOS/macOS steps below, then [host-clear probes](#host-clear-probes).
 
 ```bash
-# Android
+# Android — force-stop both apps, then clear the Jet WS listener
 adb -s emulator-5554 shell am force-stop com.invertase.testing
 adb -s emulator-5554 shell am force-stop com.invertase.testing.test
+lsof -nP -iTCP:8090 -sTCP:LISTEN -t | xargs kill 2>/dev/null || true
 
 # iOS — Detox re-boots iPhone 17 after shutdown booted
 lsof -nP -iTCP:8090 -sTCP:LISTEN -t | xargs kill 2>/dev/null || true
@@ -202,6 +223,8 @@ pkill -f 'detox test --configuration ios' 2>/dev/null || true
 pkill -f 'jet.js --target=ios' 2>/dev/null || true
 xcrun simctl shutdown booted
 ```
+
+After Android recovery, verify `pidof com.invertase.testing.test` is empty and `:8090` is closed before rerunning `:test-cover`.
 
 Do **not** use `boot-simulator.sh` or `simctl shutdown all` as routine prep ([what not to do](#what-not-to-do)).
 
@@ -332,7 +355,7 @@ Each run owns its blocking `:test-cover` and returns summaries only.
 
 ### Interrupted run (abort, killed terminal, EADDRINUSE on :8090)
 
-Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) pass, then rerun from repo root: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover` (foreground; tee if logging).
+Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) pass, then rerun from repo root: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover` (foreground; tee if logging). Keep one `:test-cover` active at a time on a host.
 
 ### What not to do
 

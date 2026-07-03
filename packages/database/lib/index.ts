@@ -50,14 +50,14 @@ import type {
 import { version } from './version';
 import fallBackModule from './web/RNFBDatabaseModule';
 
-const nativeModuleName = 'RNFBDatabaseModule';
+const nativeModuleName = 'NativeRNFBTurboDatabase';
 
 const nativeModuleNames = [
   nativeModuleName,
-  'RNFBDatabaseReferenceModule',
-  'RNFBDatabaseQueryModule',
-  'RNFBDatabaseOnDisconnectModule',
-  'RNFBDatabaseTransactionModule',
+  'NativeRNFBTurboDatabaseReference',
+  'NativeRNFBTurboDatabaseQuery',
+  'NativeRNFBTurboDatabaseOnDisconnect',
+  'NativeRNFBTurboDatabaseTransaction',
 ] as const;
 
 function ap(reference: DatabaseReference): DatabaseReferenceInternal {
@@ -218,6 +218,7 @@ const config: ModuleConfig = {
   nativeEvents: ['database_transaction_event', 'database_sync_event'],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
+  turboModule: true,
 };
 
 export const SDK_VERSION = version;

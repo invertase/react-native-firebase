@@ -18,19 +18,34 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
+#import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBDatabaseCommon.h"
 #import "RNFBDatabaseTransactionModule.h"
+#import "RNFBDatabaseTurboModules.h"
 #import "RNFBRCTEventEmitter.h"
 #import "RNFBSharedUtils.h"
 
 static __strong NSMutableDictionary *transactions;
 static NSString *const RNFB_DATABASE_TRANSACTION_EVENT = @"database_transaction_event";
 
+@interface RNFBDatabaseTransactionModule () <NativeRNFBTurboDatabaseTransactionSpec,
+                                             RCTBridgeModule>
+@end
+
 @implementation RNFBDatabaseTransactionModule
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboDatabaseTransactionSpecJSI>(params);
+}
+
+RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseTransaction);
+
++ (BOOL)requiresMainQueueSetup {
+  return NO;
+}
 
 - (dispatch_queue_t)methodQueue {
   return [RNFBDatabaseCommon getDispatchQueue];
@@ -48,15 +63,32 @@ RCT_EXPORT_MODULE();
   return self;
 }
 
+- (void)dealloc {
+  [self invalidate];
+}
+
+- (void)invalidate {
+  dispatch_sync(_transactionQueue, ^{
+    for (NSString *key in [transactions allKeys]) {
+      NSMutableDictionary *transactionState = transactions[key];
+      [transactionState setValue:@true forKey:@"abort"];
+      dispatch_semaphore_t sema = [transactionState valueForKey:@"semaphore"];
+      if (sema) {
+        dispatch_semaphore_signal(sema);
+      }
+      [transactions removeObjectForKey:key];
+    }
+  });
+}
+
 #pragma mark -
 #pragma mark Firebase Database
 
-RCT_EXPORT_METHOD(transactionStart
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSString *)path
-                  : (nonnull NSNumber *)transactionId
-                  : (BOOL)applyLocally) {
+- (void)transactionStart:(NSString *)app
+                   dbURL:(NSString *)dbURL
+                    path:(NSString *)path
+           transactionId:(double)transactionId
+            applyLocally:(BOOL)applyLocally {
   dispatch_async(_transactionQueue, ^{
     NSMutableDictionary *transactionState = [NSMutableDictionary new];
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
@@ -64,19 +96,20 @@ RCT_EXPORT_METHOD(transactionStart
 #pragma ide diagnostic ignored "err_typecheck_convert_incompatible"
     transactionState[@"semaphore"] = sema;
 #pragma clang diagnostic pop
+    FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
     FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
     FIRDatabaseReference *firDatabaseReference =
         [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
 
     id runTransactionBlock = ^FIRTransactionResult *(FIRMutableData *currentData) {
       dispatch_barrier_async(self->_transactionQueue, ^{
-        [transactions setValue:transactionState forKey:[transactionId stringValue]];
+        [transactions setValue:transactionState forKey:[@(transactionId) stringValue]];
 
         [[RNFBRCTEventEmitter shared]
             sendEventWithName:RNFB_DATABASE_TRANSACTION_EVENT
                          body:@{
                            @"appName" : [RNFBSharedUtils getAppJavaScriptName:firDatabase.app.name],
-                           @"id" : transactionId,
+                           @"id" : @(transactionId),
                            @"body" : @{
                              @"type" : @"update",
                              @"value" : currentData.value,
@@ -84,10 +117,6 @@ RCT_EXPORT_METHOD(transactionStart
                          }];
       });
 
-      // wait for the js event handler to call tryCommitTransaction
-      // this wait occurs on the Firebase Worker Queue
-      // so if the tryCommitTransaction fails to signal the semaphore
-      // no further blocks will be executed by Firebase until the timeout expires
       dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC);
       BOOL timedout = dispatch_semaphore_wait(sema, delayTime) != 0;
 
@@ -95,7 +124,7 @@ RCT_EXPORT_METHOD(transactionStart
       id value = [transactionState valueForKey:@"value"];
 
       dispatch_barrier_async(self->_transactionQueue, ^{
-        [transactions removeObjectForKey:[transactionId stringValue]];
+        [transactions removeObjectForKey:[@(transactionId) stringValue]];
       });
 
       if (abort) {
@@ -125,7 +154,7 @@ RCT_EXPORT_METHOD(transactionStart
       [[RNFBRCTEventEmitter shared]
           sendEventWithName:RNFB_DATABASE_TRANSACTION_EVENT
                        body:@{
-                         @"id" : transactionId,
+                         @"id" : @(transactionId),
                          @"appName" : [RNFBSharedUtils getAppJavaScriptName:firDatabase.app.name],
                          @"body" : resultMap,
                        }];
@@ -137,19 +166,18 @@ RCT_EXPORT_METHOD(transactionStart
   });
 }
 
-RCT_EXPORT_METHOD(transactionTryCommit
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (nonnull NSNumber *)transactionId
-                  : (NSDictionary *)updates) {
+- (void)transactionTryCommit:(NSString *)app
+                       dbURL:(NSString *)dbURL
+               transactionId:(double)transactionId
+                     updates:(NSDictionary *)updates {
   __block NSMutableDictionary *transactionState;
 
   dispatch_sync(_transactionQueue, ^{
-    transactionState = transactions[[transactionId stringValue]];
+    transactionState = transactions[[@(transactionId) stringValue]];
   });
 
   if (!transactionState) {
-    NSLog(@"tryCommitTransaction for unknown ID %@", transactionId);
+    NSLog(@"tryCommitTransaction for unknown ID %@", @(transactionId));
     return;
   }
 
@@ -163,10 +191,6 @@ RCT_EXPORT_METHOD(transactionTryCommit
   }
 
   dispatch_semaphore_signal([transactionState valueForKey:@"semaphore"]);
-}
-
-+ (BOOL)requiresMainQueueSetup {
-  return YES;
 }
 
 @end

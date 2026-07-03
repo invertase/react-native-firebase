@@ -19,23 +19,23 @@ package io.invertase.firebase.database;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 
+import com.facebook.fbreact.specs.NativeRNFBTurboDatabaseOnDisconnectSpec;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import java.util.Map;
 
-public class ReactNativeFirebaseDatabaseOnDisconnectModule extends ReactNativeFirebaseModule {
+public class NativeRNFBTurboDatabaseOnDisconnect extends NativeRNFBTurboDatabaseOnDisconnectSpec {
   private static final String SERVICE_NAME = "DatabaseOnDisconnect";
   private final UniversalFirebaseDatabaseOnDisconnectModule module;
 
-  ReactNativeFirebaseDatabaseOnDisconnectModule(ReactApplicationContext reactContext) {
-    super(reactContext, SERVICE_NAME);
+  public NativeRNFBTurboDatabaseOnDisconnect(ReactApplicationContext reactContext) {
+    super(reactContext);
     module = new UniversalFirebaseDatabaseOnDisconnectModule(reactContext, SERVICE_NAME);
   }
 
-  @ReactMethod
+  @Override
   public void onDisconnectCancel(String app, String dbURL, String path, Promise promise) {
     module
         .onDisconnectCancel(app, dbURL, path)
@@ -44,12 +44,13 @@ public class ReactNativeFirebaseDatabaseOnDisconnectModule extends ReactNativeFi
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
               } else {
-                rejectPromiseWithExceptionMap(promise, task.getException());
+                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
+                    promise, task.getException());
               }
             });
   }
 
-  @ReactMethod
+  @Override
   public void onDisconnectRemove(String app, String dbURL, String path, Promise promise) {
     module
         .onDisconnectRemove(app, dbURL, path)
@@ -58,12 +59,13 @@ public class ReactNativeFirebaseDatabaseOnDisconnectModule extends ReactNativeFi
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
               } else {
-                rejectPromiseWithExceptionMap(promise, task.getException());
+                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
+                    promise, task.getException());
               }
             });
   }
 
-  @ReactMethod
+  @Override
   public void onDisconnectSet(
       String app, String dbURL, String path, ReadableMap props, Promise promise) {
     module
@@ -73,12 +75,13 @@ public class ReactNativeFirebaseDatabaseOnDisconnectModule extends ReactNativeFi
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
               } else {
-                rejectPromiseWithExceptionMap(promise, task.getException());
+                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
+                    promise, task.getException());
               }
             });
   }
 
-  @ReactMethod
+  @Override
   public void onDisconnectSetWithPriority(
       String app, String dbURL, String path, ReadableMap props, Promise promise) {
     module
@@ -89,12 +92,13 @@ public class ReactNativeFirebaseDatabaseOnDisconnectModule extends ReactNativeFi
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
               } else {
-                rejectPromiseWithExceptionMap(promise, task.getException());
+                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
+                    promise, task.getException());
               }
             });
   }
 
-  @ReactMethod
+  @Override
   public void onDisconnectUpdate(
       String app, String dbURL, String path, ReadableMap props, Promise promise) {
     @SuppressWarnings("unchecked")
@@ -106,7 +110,8 @@ public class ReactNativeFirebaseDatabaseOnDisconnectModule extends ReactNativeFi
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
               } else {
-                rejectPromiseWithExceptionMap(promise, task.getException());
+                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
+                    promise, task.getException());
               }
             });
   }

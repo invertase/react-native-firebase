@@ -30,11 +30,11 @@ public class ReactNativeFirebaseDatabasePackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebaseDatabaseModule(reactContext));
-    modules.add(new ReactNativeFirebaseDatabaseReferenceModule(reactContext));
-    modules.add(new ReactNativeFirebaseDatabaseQueryModule(reactContext));
-    modules.add(new ReactNativeFirebaseDatabaseOnDisconnectModule(reactContext));
-    modules.add(new ReactNativeFirebaseDatabaseTransactionModule(reactContext));
+    modules.add(new NativeRNFBTurboDatabase(reactContext));
+    modules.add(new NativeRNFBTurboDatabaseReference(reactContext));
+    modules.add(new NativeRNFBTurboDatabaseQuery(reactContext));
+    modules.add(new NativeRNFBTurboDatabaseOnDisconnect(reactContext));
+    modules.add(new NativeRNFBTurboDatabaseTransaction(reactContext));
     return modules;
   }
 

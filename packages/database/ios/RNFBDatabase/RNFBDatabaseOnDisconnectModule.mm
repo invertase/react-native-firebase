@@ -18,14 +18,29 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
+#import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBDatabaseCommon.h"
 #import "RNFBDatabaseOnDisconnectModule.h"
+#import "RNFBDatabaseTurboModules.h"
+
+@interface RNFBDatabaseOnDisconnectModule () <NativeRNFBTurboDatabaseOnDisconnectSpec,
+                                              RCTBridgeModule>
+@end
 
 @implementation RNFBDatabaseOnDisconnectModule
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboDatabaseOnDisconnectSpecJSI>(params);
+}
+
+RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseOnDisconnect);
+
++ (BOOL)requiresMainQueueSetup {
+  return NO;
+}
 
 - (dispatch_queue_t)methodQueue {
   return [RNFBDatabaseCommon getDispatchQueue];
@@ -34,12 +49,12 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Database
 
-RCT_EXPORT_METHOD(onDisconnectCancel
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSString *)path
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)onDisconnectCancel:(NSString *)app
+                     dbURL:(NSString *)dbURL
+                      path:(NSString *)path
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
@@ -54,12 +69,12 @@ RCT_EXPORT_METHOD(onDisconnectCancel
       }];
 }
 
-RCT_EXPORT_METHOD(onDisconnectRemove
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSString *)path
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)onDisconnectRemove:(NSString *)app
+                     dbURL:(NSString *)dbURL
+                      path:(NSString *)path
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
@@ -74,13 +89,13 @@ RCT_EXPORT_METHOD(onDisconnectRemove
       }];
 }
 
-RCT_EXPORT_METHOD(onDisconnectSet
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSString *)path
-                  : (NSDictionary *)props
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)onDisconnectSet:(NSString *)app
+                  dbURL:(NSString *)dbURL
+                   path:(NSString *)path
+                  props:(NSDictionary *)props
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
@@ -95,13 +110,13 @@ RCT_EXPORT_METHOD(onDisconnectSet
                          }];
 }
 
-RCT_EXPORT_METHOD(onDisconnectSetWithPriority
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSString *)path
-                  : (NSDictionary *)props
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)onDisconnectSetWithPriority:(NSString *)app
+                              dbURL:(NSString *)dbURL
+                               path:(NSString *)path
+                              props:(NSDictionary *)props
+                            resolve:(RCTPromiseResolveBlock)resolve
+                             reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
@@ -117,13 +132,13 @@ RCT_EXPORT_METHOD(onDisconnectSetWithPriority
                          }];
 }
 
-RCT_EXPORT_METHOD(onDisconnectUpdate
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSString *)path
-                  : (NSDictionary *)props
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)onDisconnectUpdate:(NSString *)app
+                     dbURL:(NSString *)dbURL
+                      path:(NSString *)path
+                     props:(NSDictionary *)props
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];

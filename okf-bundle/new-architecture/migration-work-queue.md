@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-07-02):** Phase **4** — **next pickup:** `database` + remaining Tier A/B. P4m committed; P4a events deferred to Phase C ([ADR-4](architecture-decisions.md#newarch-ad-4--events-deferred-to-phase-c--accepted)).
+> **IN PROGRESS (2026-07-02):** Phase **4** remaining complex — P4d `database` committed; next pickup from phase table (Tier A/B packages not yet queued).
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -322,11 +322,11 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 ## Current snapshot
 
-**Label:** `phase-4-messaging` (2026-07-02); **harness:** area-focused (`messaging`)
+**Label:** `phase-4-database` (2026-07-02); **harness:** area-focused (`database`)
 
-**Next item:** Phase **4** `messaging` TurboModule migration
+**Next item:** Phase **4** remaining complex (pick next Tier A/B package — no arbiter row yet)
 
-**Current gates:** P4m committed. **Next:** Phase 4 `database` (or next Tier A/B item).
+**Current gates:** P4d all gates **closed** — committed `feat(database)!: migrate database to TurboModules` 2026-07-02. Delta review: macOS 213 / iOS 219 / Android 220 passing.
 
 **Host rule:** one `:test-cover` at a time — never parallel subagents with e2e.
 
@@ -357,6 +357,7 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Phase 3.5 guardrails | P3.5 | **closed** | **closed** | **closed** | done | `full` | `fix: add codegen verify and spec-native parity tests` | Committed `64f99c53d` 2026-07-02. |
 | Phase 4a messaging event decision | P4a | n/a | n/a | n/a | done | `none` | none | **Defer** events to Phase C — [NewArch-AD-4 § messaging](architecture-decisions.md#messaging--defer-eventemitter-cutover-migrate-shell-only-in-phase-4). |
 | Phase 4 `messaging` TurboModules | P4m | **closed** | **closed** | **closed** | done | `area-focused` | `feat(messaging)!: migrate messaging to TurboModules` | Turbo shell only (AD-4 event path preserved). Jest 38/38 + parity 32/32; codegen:verify incl messaging; legacy Java removed. iOS/Android area e2e green on method-call + listener-registration scope. Foreground `onMessage` delivery test **left `xit`** — flaky FCM harness; re-enable in [Phase C](#deferred-cleanup-phase-eventemitter). |
+| Phase 4 `database` TurboModules | P4d | **closed** | **closed** | **closed** | done | `area-focused` | `feat(database)!: migrate database to TurboModules` | 5 Turbo specs/shells + committed codegen; Jest 49 + parity 38; area e2e macOS 213 / iOS 219 / Android 220 (delta logs `/tmp/rnfb-e2e-*-database-delta-review.log`). Remediation: invalidate/teardown parity (Reference+Transaction), onComplete guard, contract test 22 methods, jest mock cleanup. Orchestration: macOS/Android `:8090` pre-flight in `firebase.test.js` + OKF. **Deferred minor:** void spec vs Promise JS API; silent Query `RejectedExecutionException` post-invalidate. |
 | Phase Docs — NA reqs + consolidation | PDoc | open | open | open | documentation | `none` | `docs: new-architecture requirements + migration consolidation` | Opportunistic; does not gate 4. |
 | Phase PD — platform divergence | PPD | open | open | open | documentation | `none` | `docs(<pkg>): …` per package | Opportunistic; gap-analysis first. |
 | Phase R — remove `NativeModules` fallback | PR-fallback | open | open | open | pre-merge-validation | `full` | (Phase R) | Decision B. Jest + `app` e2e "unknown module throws". |

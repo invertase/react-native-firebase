@@ -17,19 +17,33 @@
 
 #import <React/RCTUtils.h>
 
+#import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBDatabaseCommon.h"
 #import "RNFBDatabaseQuery.h"
 #import "RNFBDatabaseQueryModule.h"
+#import "RNFBDatabaseTurboModules.h"
 #import "RNFBRCTEventEmitter.h"
 
 static __strong NSMutableDictionary *queryDictionary;
 static NSString *const RNFB_DATABASE_SYNC = @"database_sync_event";
 
+@interface RNFBDatabaseQueryModule () <NativeRNFBTurboDatabaseQuerySpec, RCTBridgeModule>
+@end
+
 @implementation RNFBDatabaseQueryModule
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboDatabaseQuerySpecJSI>(params);
+}
+
+RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseQuery);
+
++ (BOOL)requiresMainQueueSetup {
+  return NO;
+}
 
 - (dispatch_queue_t)methodQueue {
   return [RNFBDatabaseCommon getDispatchQueue];
@@ -85,7 +99,6 @@ RCT_EXPORT_MODULE();
   FIRDataEventType firDataEventType =
       (FIRDataEventType)[RNFBDatabaseCommon getEventTypeFromName:eventType];
 
-  // On success
   id andPreviousSiblingKeyWithBlock =
       ^(FIRDataSnapshot *_Nonnull dataSnapshot, NSString *_Nullable previousChildName) {
         NSDictionary *data;
@@ -98,7 +111,6 @@ RCT_EXPORT_MODULE();
         resolve(data);
       };
 
-  // On error
   id errorBlock = ^(NSError *_Nonnull error) {
     [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
   };
@@ -181,14 +193,14 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Database
 
-RCT_EXPORT_METHOD(once
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSString *)path
-                  : (NSArray *)modifiers
-                  : (NSString *)eventType
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)once:(NSString *)app
+        dbURL:(NSString *)dbURL
+         path:(NSString *)path
+    modifiers:(NSArray *)modifiers
+    eventType:(NSString *)eventType
+      resolve:(RCTPromiseResolveBlock)resolve
+       reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
@@ -198,13 +210,14 @@ RCT_EXPORT_METHOD(once
   [self addOnceEventListener:databaseQuery eventType:eventType resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(on : (FIRApp *)firebaseApp : (NSString *)dbURL : (NSDictionary *)props) {
+- (void)on:(NSString *)app dbURL:(NSString *)dbURL props:(NSDictionary *)props {
   NSString *key = [props valueForKey:@"key"];
   NSString *path = [props valueForKey:@"path"];
   NSString *eventType = [props valueForKey:@"eventType"];
   NSArray *modifiers = [props valueForKey:@"modifiers"];
   NSDictionary *registration = [props valueForKey:@"registration"];
 
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:key firebaseDatabase:firDatabase path:path];
@@ -214,9 +227,7 @@ RCT_EXPORT_METHOD(on : (FIRApp *)firebaseApp : (NSString *)dbURL : (NSDictionary
   [self addEventListener:databaseQuery eventType:eventType registration:registration];
 }
 
-RCT_EXPORT_METHOD(off
-                  : (NSString *)queryKey eventRegistrationKey
-                  : (NSString *)eventRegistrationKey) {
+- (void)off:(NSString *)queryKey eventRegistrationKey:(NSString *)eventRegistrationKey {
   RNFBDatabaseQuery *databaseQuery = queryDictionary[queryKey];
 
   if (databaseQuery != nil) {
@@ -229,15 +240,15 @@ RCT_EXPORT_METHOD(off
   }
 }
 
-RCT_EXPORT_METHOD(keepSynced
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSString *)key
-                  : (NSString *)path
-                  : (NSArray *)modifiers
-                  : (BOOL)value
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)keepSynced:(NSString *)app
+             dbURL:(NSString *)dbURL
+               key:(NSString *)key
+              path:(NSString *)path
+         modifiers:(NSArray *)modifiers
+           enabled:(BOOL)value
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
@@ -245,10 +256,6 @@ RCT_EXPORT_METHOD(keepSynced
                                                           modifiers:modifiers];
   [databaseQuery.query keepSynced:value];
   resolve([NSNull null]);
-}
-
-+ (BOOL)requiresMainQueueSetup {
-  return YES;
 }
 
 @end

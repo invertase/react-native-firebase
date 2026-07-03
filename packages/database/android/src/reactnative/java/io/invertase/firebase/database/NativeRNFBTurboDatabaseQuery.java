@@ -21,6 +21,8 @@ import static io.invertase.firebase.common.RCTConvertFirebase.readableMapToWrita
 import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.*;
 import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
 
+import androidx.annotation.CallSuper;
+import com.facebook.fbreact.specs.NativeRNFBTurboDatabaseQuerySpec;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.*;
@@ -33,15 +35,17 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseModule {
-  private static final String SERVICE_NAME = "DatabaseQuery";
+public class NativeRNFBTurboDatabaseQuery extends NativeRNFBTurboDatabaseQuerySpec {
+  private final DatabaseTurboModuleSupport turboSupport =
+      new DatabaseTurboModuleSupport("RNFBDatabaseQuery");
   private HashMap<String, ReactNativeFirebaseDatabaseQuery> queryMap = new HashMap<>();
 
-  ReactNativeFirebaseDatabaseQueryModule(ReactApplicationContext reactContext) {
-    super(reactContext, SERVICE_NAME);
+  public NativeRNFBTurboDatabaseQuery(ReactApplicationContext reactContext) {
+    super(reactContext);
   }
 
   @Override
+  @CallSuper
   public void invalidate() {
     Iterator refIterator = queryMap.entrySet().iterator();
     while (refIterator.hasNext()) {
@@ -49,31 +53,18 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       ReactNativeFirebaseDatabaseQuery databaseQuery =
           (ReactNativeFirebaseDatabaseQuery) pair.getValue();
       databaseQuery.removeAllEventListeners();
-      refIterator.remove(); // avoids a ConcurrentModificationException
+      refIterator.remove();
     }
 
+    turboSupport.invalidate();
     super.invalidate();
   }
 
-  /**
-   * Returns an uncached ReactNativeFirebaseDatabaseQuery instance, used when no cleanup is needed
-   * (e.g. once).
-   *
-   * @param reference
-   * @param modifiers
-   */
   private ReactNativeFirebaseDatabaseQuery getDatabaseQueryInstance(
       DatabaseReference reference, ReadableArray modifiers) {
     return new ReactNativeFirebaseDatabaseQuery(reference, modifiers);
   }
 
-  /**
-   * Caches a ReactNativeFirebaseDatabaseQuery instance from the query key and caches it for later
-   * use (e.g. on/off)
-   *
-   * @param reference
-   * @param modifiers
-   */
   private ReactNativeFirebaseDatabaseQuery getDatabaseQueryInstance(
       String key, DatabaseReference reference, ReadableArray modifiers) {
     ReactNativeFirebaseDatabaseQuery cachedDatabaseQuery = queryMap.get(key);
@@ -89,12 +80,6 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     return databaseQuery;
   }
 
-  /**
-   * ref().once('value')
-   *
-   * @param databaseQuery
-   * @param promise
-   */
   private void addOnceValueEventListener(
       ReactNativeFirebaseDatabaseQuery databaseQuery, Promise promise) {
     ValueEventListener onceValueEventListener =
@@ -102,17 +87,18 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
           @Override
           public void onDataChange(@Nonnull DataSnapshot dataSnapshot) {
             try {
-              Tasks.call(getExecutor(), () -> snapshotToMap(dataSnapshot))
+              Tasks.call(turboSupport.getExecutor(), () -> snapshotToMap(dataSnapshot))
                   .addOnCompleteListener(
                       task -> {
                         if (task.isSuccessful()) {
                           promise.resolve(task.getResult());
                         } else {
-                          rejectPromiseWithExceptionMap(promise, task.getException());
+                          ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
+                              promise, task.getException());
                         }
                       });
             } catch (java.util.concurrent.RejectedExecutionException e) {
-              rejectPromiseWithExceptionMap(promise, e);
+              ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(promise, e);
             }
           }
 
@@ -128,13 +114,6 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     databaseQuery.addSingleValueEventListener(onceValueEventListener);
   }
 
-  /**
-   * ref().once('child_*') handler
-   *
-   * @param eventType
-   * @param databaseQuery
-   * @param promise
-   */
   private void addChildOnceEventListener(
       String eventType, ReactNativeFirebaseDatabaseQuery databaseQuery, Promise promise) {
     ChildEventListener childEventListener =
@@ -145,18 +124,19 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
               databaseQuery.removeEventListener(this);
               try {
                 Tasks.call(
-                        getExecutor(),
+                        turboSupport.getExecutor(),
                         () -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
                     .addOnCompleteListener(
                         task -> {
                           if (task.isSuccessful()) {
                             promise.resolve(task.getResult());
                           } else {
-                            rejectPromiseWithExceptionMap(promise, task.getException());
+                            ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
+                                promise, task.getException());
                           }
                         });
               } catch (java.util.concurrent.RejectedExecutionException e) {
-                rejectPromiseWithExceptionMap(promise, e);
+                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(promise, e);
               }
             }
           }
@@ -167,18 +147,19 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
               databaseQuery.removeEventListener(this);
               try {
                 Tasks.call(
-                        getExecutor(),
+                        turboSupport.getExecutor(),
                         () -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
                     .addOnCompleteListener(
                         task -> {
                           if (task.isSuccessful()) {
                             promise.resolve(task.getResult());
                           } else {
-                            rejectPromiseWithExceptionMap(promise, task.getException());
+                            ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
+                                promise, task.getException());
                           }
                         });
               } catch (java.util.concurrent.RejectedExecutionException e) {
-                rejectPromiseWithExceptionMap(promise, e);
+                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(promise, e);
               }
             }
           }
@@ -188,17 +169,20 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
             if ("child_removed".equals(eventType)) {
               databaseQuery.removeEventListener(this);
               try {
-                Tasks.call(getExecutor(), () -> snapshotWithPreviousChildToMap(dataSnapshot, null))
+                Tasks.call(
+                        turboSupport.getExecutor(),
+                        () -> snapshotWithPreviousChildToMap(dataSnapshot, null))
                     .addOnCompleteListener(
                         task -> {
                           if (task.isSuccessful()) {
                             promise.resolve(task.getResult());
                           } else {
-                            rejectPromiseWithExceptionMap(promise, task.getException());
+                            ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
+                                promise, task.getException());
                           }
                         });
               } catch (java.util.concurrent.RejectedExecutionException e) {
-                rejectPromiseWithExceptionMap(promise, e);
+                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(promise, e);
               }
             }
           }
@@ -209,18 +193,19 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
               databaseQuery.removeEventListener(this);
               try {
                 Tasks.call(
-                        getExecutor(),
+                        turboSupport.getExecutor(),
                         () -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
                     .addOnCompleteListener(
                         task -> {
                           if (task.isSuccessful()) {
                             promise.resolve(task.getResult());
                           } else {
-                            rejectPromiseWithExceptionMap(promise, task.getException());
+                            ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
+                                promise, task.getException());
                           }
                         });
               } catch (java.util.concurrent.RejectedExecutionException e) {
-                rejectPromiseWithExceptionMap(promise, e);
+                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(promise, e);
               }
             }
           }
@@ -238,13 +223,6 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     databaseQuery.addSingleChildEventListener(childEventListener);
   }
 
-  /**
-   * ref().on('value') handler
-   *
-   * @param key
-   * @param databaseQuery
-   * @param registration
-   */
   private void addValueEventListener(
       String key, ReactNativeFirebaseDatabaseQuery databaseQuery, ReadableMap registration) {
     final String eventRegistrationKey = registration.getString("eventRegistrationKey");
@@ -321,13 +299,6 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     }
   }
 
-  /**
-   * Handles value/child update events.
-   *
-   * @param eventType
-   * @param dataSnapshot
-   * @param previousChildName
-   */
   private void handleDatabaseEvent(
       final String key,
       final String eventType,
@@ -337,7 +308,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     final String eventRegistrationKey = registration.getString("eventRegistrationKey");
     try {
       Tasks.call(
-              getTransactionalExecutor(eventRegistrationKey),
+              turboSupport.getTransactionalExecutor(eventRegistrationKey),
               () -> {
                 if (eventType.equals("value")) {
                   return snapshotToMap(dataSnapshot);
@@ -346,7 +317,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
                 }
               })
           .addOnCompleteListener(
-              getExecutor(),
+              turboSupport.getExecutor(),
               task -> {
                 if (task.isSuccessful()) {
                   WritableMap data = task.getResult();
@@ -366,16 +337,9 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
               });
     } catch (java.util.concurrent.RejectedExecutionException e) {
       // Event arrived after module invalidation shut down an executor.
-      // Safe to drop when tearing down; no JS listener will consume the event.
     }
   }
 
-  /**
-   * Handles a database listener cancellation error.
-   *
-   * @param registration
-   * @param error
-   */
   private void handleDatabaseEventError(String key, ReadableMap registration, DatabaseError error) {
     WritableMap event = Arguments.createMap();
     UniversalDatabaseException databaseException =
@@ -395,17 +359,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
         new ReactNativeFirebaseDatabaseEvent(ReactNativeFirebaseDatabaseEvent.EVENT_SYNC, event));
   }
 
-  /**
-   * ref().once('*')
-   *
-   * @param app
-   * @param dbURL
-   * @param path
-   * @param modifiers
-   * @param eventType
-   * @param promise
-   */
-  @ReactMethod
+  @Override
   public void once(
       String app,
       String dbURL,
@@ -422,14 +376,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     }
   }
 
-  /**
-   * ref().on('*')
-   *
-   * @param app
-   * @param dbURL
-   * @param props
-   */
-  @ReactMethod
+  @Override
   public void on(String app, String dbURL, ReadableMap props) {
     String key = props.getString("key");
     ReadableArray modifiers = props.getArray("modifiers");
@@ -447,14 +394,13 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     }
   }
 
-  /** ref().off('*') */
-  @ReactMethod
+  @Override
   public void off(String queryKey, String eventRegistrationKey) {
     ReactNativeFirebaseDatabaseQuery databaseQuery = queryMap.get(queryKey);
 
     if (databaseQuery != null) {
       databaseQuery.removeEventListener(eventRegistrationKey);
-      removeEventListeningExecutor(eventRegistrationKey);
+      turboSupport.removeEventListeningExecutor(eventRegistrationKey);
 
       if (!databaseQuery.hasListeners()) {
         queryMap.remove(queryKey);
@@ -462,27 +408,17 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     }
   }
 
-  /**
-   * ref().keepSynced('*')
-   *
-   * @param app
-   * @param dbURL
-   * @param path
-   * @param modifiers
-   * @param bool
-   * @param promise
-   */
-  @ReactMethod
+  @Override
   public void keepSynced(
       String app,
       String dbURL,
       String key,
       String path,
       ReadableArray modifiers,
-      Boolean bool,
+      boolean enabled,
       Promise promise) {
     DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
-    getDatabaseQueryInstance(key, reference, modifiers).query.keepSynced(bool);
+    getDatabaseQueryInstance(key, reference, modifiers).query.keepSynced(enabled);
     promise.resolve(null);
   }
 }

@@ -22,6 +22,7 @@ export const MIGRATED_TURBO_PACKAGES = [
   'storage',
   'functions',
   'messaging',
+  'database',
 ] as const;
 
 export type MigratedTurboPackage = (typeof MIGRATED_TURBO_PACKAGES)[number];

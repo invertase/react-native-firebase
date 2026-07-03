@@ -18,17 +18,31 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
+#import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBDatabaseCommon.h"
 #import "RNFBDatabaseModule.h"
+#import "RNFBDatabaseTurboModules.h"
 #import "RNFBPreferences.h"
 
 static __strong NSMutableDictionary *emulatorSettings;
+
+@interface RNFBDatabaseModule () <NativeRNFBTurboDatabaseSpec, RCTBridgeModule>
+@end
 
 @implementation RNFBDatabaseModule
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboDatabaseSpecJSI>(params);
+}
+
+RCT_EXPORT_MODULE(NativeRNFBTurboDatabase);
+
++ (BOOL)requiresMainQueueSetup {
+  return NO;
+}
 
 - (dispatch_queue_t)methodQueue {
   return [RNFBDatabaseCommon getDispatchQueue];
@@ -37,31 +51,29 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Database
 
-RCT_EXPORT_METHOD(goOnline
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)goOnline:(NSString *)app
+           dbURL:(NSString *)dbURL
+         resolve:(RCTPromiseResolveBlock)resolve
+          reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] goOnline];
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(goOffline
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)goOffline:(NSString *)app
+            dbURL:(NSString *)dbURL
+          resolve:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] goOffline];
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(useEmulator
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (nonnull NSString *)host
-                  : (NSInteger)port) {
-  // javascript may hot reload, losing state, and native throws an error if you double-request
-  // so we keep track of useEmulator calls here to avoid calling native twice
+- (void)useEmulator:(NSString *)app
+              dbURL:(NSString *)dbURL
+               host:(NSString *)host
+               port:(double)port {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   if (emulatorSettings == nil) {
     emulatorSettings = [NSMutableDictionary dictionary];
   }
@@ -72,29 +84,25 @@ RCT_EXPORT_METHOD(useEmulator
   }
 
   if (!emulatorSettings[configKey]) {
-    [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] useEmulatorWithHost:host
-                                                                                   port:port];
+    [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp
+                                     dbURL:dbURL] useEmulatorWithHost:host port:(NSInteger)port];
     emulatorSettings[configKey] = @YES;
   }
 }
 
-RCT_EXPORT_METHOD(setPersistenceEnabled
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (BOOL)enabled) {
+- (void)setPersistenceEnabled:(NSString *)app dbURL:(NSString *)dbURL enabled:(BOOL)enabled {
   [[RNFBPreferences shared] setBooleanValue:DATABASE_PERSISTENCE_ENABLED boolValue:enabled];
 }
 
-RCT_EXPORT_METHOD(setLoggingEnabled : (FIRApp *)firebaseApp : (NSString *)dbURL : (BOOL)enabled) {
+- (void)setLoggingEnabled:(NSString *)app dbURL:(NSString *)dbURL enabled:(BOOL)enabled {
   [[RNFBPreferences shared] setBooleanValue:DATABASE_LOGGING_ENABLED boolValue:enabled];
 }
 
-RCT_EXPORT_METHOD(setPersistenceCacheSizeBytes
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSNumber *_Nonnull)bytes) {
+- (void)setPersistenceCacheSizeBytes:(NSString *)app
+                               dbURL:(NSString *)dbURL
+                      cacheSizeBytes:(double)cacheSizeBytes {
   [[RNFBPreferences shared] setIntegerValue:DATABASE_PERSISTENCE_CACHE_SIZE
-                               integerValue:[bytes intValue]];
+                               integerValue:(NSInteger)cacheSizeBytes];
 }
 
 @end

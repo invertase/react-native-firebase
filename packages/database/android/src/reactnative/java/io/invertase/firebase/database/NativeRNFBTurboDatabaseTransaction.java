@@ -21,27 +21,44 @@ import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.get
 
 import android.os.AsyncTask;
 import android.util.SparseArray;
+import com.facebook.fbreact.specs.NativeRNFBTurboDatabaseTransactionSpec;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.database.*;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import javax.annotation.Nonnull;
 
-public class ReactNativeFirebaseDatabaseTransactionModule extends ReactNativeFirebaseModule {
+public class NativeRNFBTurboDatabaseTransaction extends NativeRNFBTurboDatabaseTransactionSpec {
   private static final String SERVICE_NAME = "DatabaseTransaction";
   private static SparseArray<ReactNativeFirebaseDatabaseTransactionHandler> transactionHandlers =
       new SparseArray<>();
+  private final DatabaseTurboModuleSupport turboSupport =
+      new DatabaseTurboModuleSupport("RNFBDatabaseTransaction");
 
-  ReactNativeFirebaseDatabaseTransactionModule(ReactApplicationContext reactContext) {
-    super(reactContext, SERVICE_NAME);
+  public NativeRNFBTurboDatabaseTransaction(ReactApplicationContext reactContext) {
+    super(reactContext);
   }
 
-  @ReactMethod
+  @Override
+  public void invalidate() {
+    for (int i = 0, size = transactionHandlers.size(); i < size; i++) {
+      int key = transactionHandlers.keyAt(i);
+      ReactNativeFirebaseDatabaseTransactionHandler transactionHandler =
+          transactionHandlers.get(key);
+
+      if (transactionHandler != null) {
+        transactionHandler.abort();
+      }
+    }
+
+    transactionHandlers.clear();
+    turboSupport.invalidate();
+  }
+
+  @Override
   public void transactionStart(
-      String app, String dbURL, String path, int transactionId, Boolean applyLocally) {
+      String app, String dbURL, String path, double transactionId, boolean applyLocally) {
     AsyncTask.execute(
         () -> {
           DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
@@ -52,12 +69,11 @@ public class ReactNativeFirebaseDatabaseTransactionModule extends ReactNativeFir
                 @Override
                 public Transaction.Result doTransaction(@Nonnull MutableData mutableData) {
                   final ReactNativeFirebaseDatabaseTransactionHandler transactionHandler =
-                      new ReactNativeFirebaseDatabaseTransactionHandler(transactionId, app, dbURL);
-                  transactionHandlers.put(transactionId, transactionHandler);
+                      new ReactNativeFirebaseDatabaseTransactionHandler(
+                          (int) transactionId, app, dbURL);
+                  transactionHandlers.put((int) transactionId, transactionHandler);
                   final WritableMap updatesMap = transactionHandler.createUpdateMap(mutableData);
 
-                  // emit the updates to js using an async task
-                  // otherwise it gets blocked by the lock await
                   AsyncTask.execute(
                       () -> {
                         ReactNativeFirebaseEventEmitter emitter =
@@ -68,10 +84,9 @@ public class ReactNativeFirebaseDatabaseTransactionModule extends ReactNativeFir
                                 ReactNativeFirebaseTransactionEvent.EVENT_TRANSACTION,
                                 updatesMap,
                                 app,
-                                transactionId));
+                                (int) transactionId));
                       });
 
-                  // wait for js to return the updates (js calls transactionTryCommit)
                   try {
                     transactionHandler.await();
                   } catch (InterruptedException e) {
@@ -95,7 +110,13 @@ public class ReactNativeFirebaseDatabaseTransactionModule extends ReactNativeFir
                 public void onComplete(
                     DatabaseError error, boolean committed, DataSnapshot snapshot) {
                   ReactNativeFirebaseDatabaseTransactionHandler transactionHandler =
-                      transactionHandlers.get(transactionId);
+                      transactionHandlers.get((int) transactionId);
+
+                  if (transactionHandler == null) {
+                    transactionHandlers.delete((int) transactionId);
+                    return;
+                  }
+
                   WritableMap resultMap =
                       transactionHandler.createResultMap(error, committed, snapshot);
 
@@ -107,19 +128,20 @@ public class ReactNativeFirebaseDatabaseTransactionModule extends ReactNativeFir
                           ReactNativeFirebaseTransactionEvent.EVENT_TRANSACTION,
                           resultMap,
                           app,
-                          transactionId));
+                          (int) transactionId));
 
-                  transactionHandlers.delete(transactionId);
+                  transactionHandlers.delete((int) transactionId);
                 }
               },
               applyLocally);
         });
   }
 
-  @ReactMethod
+  @Override
   public void transactionTryCommit(
-      String app, String dbURL, int transactionId, ReadableMap updates) {
-    ReactNativeFirebaseDatabaseTransactionHandler handler = transactionHandlers.get(transactionId);
+      String app, String dbURL, double transactionId, ReadableMap updates) {
+    ReactNativeFirebaseDatabaseTransactionHandler handler =
+        transactionHandlers.get((int) transactionId);
 
     if (handler != null) {
       handler.signalUpdateReceived(updates);

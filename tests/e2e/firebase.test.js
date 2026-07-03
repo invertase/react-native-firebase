@@ -98,6 +98,10 @@ let lastJetAttemptContext;
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+function isCI() {
+  return process.env.CI === 'true' || process.env.CI === true;
+}
+
 function resolveDetoxConfigurationName() {
   if (process.env.DETOX_CONFIGURATION) {
     return process.env.DETOX_CONFIGURATION;
@@ -298,6 +302,113 @@ function parseGuestLoad1Min(loadavgLine) {
   return Number.isFinite(load) ? load : NaN;
 }
 
+function killTcpPortListener(port, label) {
+  let pidList = '';
+  try {
+    pidList = execSync(`lsof -nP -iTCP:${port} -sTCP:LISTEN -t 2>/dev/null || true`, {
+      encoding: 'utf8',
+      timeout: 5000,
+    }).trim();
+  } catch (err) {
+    console.warn(`[rnfb-e2e] ${label}: unable to inspect :${port} listener: ${err?.message || err}`);
+    return;
+  }
+
+  const pids = pidList
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter(pid => /^\d+$/.test(pid));
+  if (pids.length === 0) {
+    console.log(`[rnfb-e2e] ${label}: no listener on :${port}`);
+    return;
+  }
+
+  console.warn(`[rnfb-e2e] ${label}: killing stray listener on :${port} pid=${pids.join(',')}`);
+  try {
+    execSync(`kill ${pids.join(' ')}`, { stdio: 'inherit', timeout: 5000 });
+  } catch (err) {
+    console.warn(`[rnfb-e2e] ${label}: failed to kill :${port} listener: ${err?.message || err}`);
+  }
+}
+
+async function ensureTcpPortClosed(port, label, timeoutMs = KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS) {
+  killTcpPortListener(port, label);
+  await waitForTcpPortClosed(port, '127.0.0.1', timeoutMs);
+}
+
+function forceStopAndroidTestingApps(label) {
+  const adb = resolveAdbPath();
+  const serial = resolveAndroidSerial();
+  const packages = ['com.invertase.testing', 'com.invertase.testing.test'];
+
+  for (const appId of packages) {
+    try {
+      console.log(`[rnfb-e2e] ${label}: force-stopping ${appId} serial=${serial}`);
+      execSync(`${adb} -s ${serial} shell am force-stop ${appId}`, {
+        stdio: 'inherit',
+        timeout: 15000,
+      });
+    } catch (err) {
+      console.warn(`[rnfb-e2e] ${label}: force-stop ${appId} failed: ${err?.message || err}`);
+    }
+  }
+}
+
+async function waitForAndroidInstrumentationStopped(label, timeoutMs = 30000) {
+  const serial = resolveAndroidSerial();
+  const deadline = Date.now() + timeoutMs;
+
+  while (Date.now() < deadline) {
+    try {
+      const pid = adbShell(serial, 'pidof com.invertase.testing.test', 5000);
+      if (!pid) {
+        console.log(`[rnfb-e2e] ${label}: instrumentation pid clear`);
+        return;
+      }
+      console.log(`[rnfb-e2e] ${label}: waiting for instrumentation pid=${pid}`);
+    } catch (_) {
+      console.log(`[rnfb-e2e] ${label}: instrumentation pid clear`);
+      return;
+    }
+    await sleep(1000);
+  }
+
+  throw new Error(`[rnfb-e2e] ${label}: instrumentation pid still present after ${timeoutMs}ms`);
+}
+
+function clearStaleMacOsTestingForSharedJetPort(label) {
+  if (process.platform !== 'darwin') {
+    return;
+  }
+
+  console.log(
+    `[rnfb-e2e] ${label}: killing stale macOS io.invertase.testing for shared :${JET_REMOTE_PORT}`,
+  );
+  try {
+    execSync('killall "io.invertase.testing"', { stdio: 'inherit', timeout: 5000 });
+  } catch (_) {
+    // not running — expected
+  }
+
+  try {
+    execSync("pkill -f 'tests:macos:test-cover|jet --target=macos' 2>/dev/null || true", {
+      stdio: 'inherit',
+      timeout: 5000,
+    });
+  } catch (_) {
+    // no stray macOS jet — expected
+  }
+}
+
+async function ensureAndroidJetHostClear(label = 'android-jet-host-clear') {
+  console.log(`[rnfb-e2e] ${label}: clearing Android apps and Jet port before spawn`);
+  clearStaleMacOsTestingForSharedJetPort(label);
+  forceStopAndroidTestingApps(label);
+  await waitForAndroidInstrumentationStopped(label);
+  await ensureTcpPortClosed(JET_REMOTE_PORT, label);
+  console.log(`[rnfb-e2e] ${label}: host clear`);
+}
+
 function rebootAndroidEmulator() {
   const adb = resolveAdbPath();
   const serial = resolveAndroidSerial();
@@ -362,6 +473,12 @@ async function waitForAndroidEmulatorReady() {
         }
       }
 
+      if (!isCI()) {
+        console.log('[rnfb-e2e] android-ready: skipping settle/load (not CI)');
+        console.log(`[rnfb-e2e] Android emulator ready serial=${serial}`);
+        return;
+      }
+
       if (!bootSettleDone) {
         console.log(
           `[rnfb-e2e] android-ready boot complete; settling ${ANDROID_BOOT_SETTLE_MS}ms before load polling`,
@@ -408,25 +525,12 @@ async function drainJetAttempt(platform) {
   console.warn('[rnfb-e2e] Draining Jet attempt before outer retry...');
 
   if (platform === 'android') {
-    const adb = resolveAdbPath();
-    const serial = resolveAndroidSerial();
     try {
       await device.terminateApp();
     } catch (_) {
       // Detox may already be disconnected.
     }
-    try {
-      execSync(`${adb} -s ${serial} shell am force-stop com.invertase.testing`, {
-        stdio: 'inherit',
-        timeout: 15000,
-      });
-      execSync(`${adb} -s ${serial} shell am force-stop com.invertase.testing.test`, {
-        stdio: 'inherit',
-        timeout: 15000,
-      });
-    } catch (err) {
-      console.warn(`[rnfb-e2e] force-stop during drain: ${err?.message || err}`);
-    }
+    forceStopAndroidTestingApps('drain');
   } else {
     try {
       await device.terminateApp();
@@ -454,25 +558,10 @@ async function drainJetAttempt(platform) {
     }
   }
 
-  await waitForTcpPortClosed(JET_REMOTE_PORT);
-
   if (platform === 'android') {
-    const adb = resolveAdbPath();
-    const serial = resolveAndroidSerial();
-
-    const instrumentationDeadline = Date.now() + 30000;
-    while (Date.now() < instrumentationDeadline) {
-      try {
-        const pid = adbShell(serial, 'pidof com.invertase.testing.test', 5000);
-        if (!pid) {
-          break;
-        }
-        console.log(`[rnfb-e2e] drain waiting for instrumentation pid=${pid}`);
-      } catch (_) {
-        break;
-      }
-      await sleep(1000);
-    }
+    await ensureAndroidJetHostClear('drain');
+  } else {
+    await waitForTcpPortClosed(JET_REMOTE_PORT);
   }
 
   console.log('[rnfb-e2e] Jet attempt drain complete');
@@ -869,7 +958,7 @@ function createJetSession(jetArgs, testsDir) {
   };
 }
 
-function runJetE2eAttempt(attempt) {
+async function runJetE2eAttempt(attempt) {
   cachedUsesLiveMetro = undefined;
   cacheUsesLiveMetro();
 
@@ -879,6 +968,10 @@ function runJetE2eAttempt(attempt) {
     process.platform === 'win32'
       ? ['jet', `--target=${platform}`]
       : ['jet', `--target=${platform}`, '--coverage'];
+
+  if (platform === 'android') {
+    await ensureAndroidJetHostClear(`jet-attempt-${attempt}`);
+  }
 
   const jetSession = createJetSession(jetArgs, testsDir);
 

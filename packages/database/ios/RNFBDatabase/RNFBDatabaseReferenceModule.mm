@@ -18,29 +18,50 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
+#import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBDatabaseCommon.h"
 #import "RNFBDatabaseReferenceModule.h"
+#import "RNFBDatabaseTurboModules.h"
+
+@interface RNFBDatabaseReferenceModule () <NativeRNFBTurboDatabaseReferenceSpec, RCTBridgeModule>
+@end
 
 @implementation RNFBDatabaseReferenceModule
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboDatabaseReferenceSpecJSI>(params);
+}
+
+RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseReference);
+
++ (BOOL)requiresMainQueueSetup {
+  return NO;
+}
 
 - (dispatch_queue_t)methodQueue {
   return [RNFBDatabaseCommon getDispatchQueue];
 }
 
+- (void)dealloc {
+  [self invalidate];
+}
+
+- (void)invalidate {
+}
+
 #pragma mark -
 #pragma mark Firebase Database
 
-RCT_EXPORT_METHOD(set
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSString *)path
-                  : (NSDictionary *)props
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)set:(NSString *)app
+      dbURL:(NSString *)dbURL
+       path:(NSString *)path
+      props:(NSDictionary *)props
+    resolve:(RCTPromiseResolveBlock)resolve
+     reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
@@ -55,13 +76,13 @@ RCT_EXPORT_METHOD(set
              }];
 }
 
-RCT_EXPORT_METHOD(update
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSString *)path
-                  : (NSDictionary *)props
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)update:(NSString *)app
+         dbURL:(NSString *)dbURL
+          path:(NSString *)path
+         props:(NSDictionary *)props
+       resolve:(RCTPromiseResolveBlock)resolve
+        reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
@@ -76,13 +97,13 @@ RCT_EXPORT_METHOD(update
                       }];
 }
 
-RCT_EXPORT_METHOD(setWithPriority
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSString *)path
-                  : (NSDictionary *)props
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setWithPriority:(NSString *)app
+                  dbURL:(NSString *)dbURL
+                   path:(NSString *)path
+                  props:(NSDictionary *)props
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
@@ -98,12 +119,12 @@ RCT_EXPORT_METHOD(setWithPriority
              }];
 }
 
-RCT_EXPORT_METHOD(remove
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSString *)path
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)remove:(NSString *)app
+         dbURL:(NSString *)dbURL
+          path:(NSString *)path
+       resolve:(RCTPromiseResolveBlock)resolve
+        reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
@@ -118,13 +139,13 @@ RCT_EXPORT_METHOD(remove
       }];
 }
 
-RCT_EXPORT_METHOD(setPriority
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)dbURL
-                  : (NSString *)path
-                  : (NSDictionary *)props
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)setPriority:(NSString *)app
+              dbURL:(NSString *)dbURL
+               path:(NSString *)path
+              props:(NSDictionary *)props
+            resolve:(RCTPromiseResolveBlock)resolve
+             reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];

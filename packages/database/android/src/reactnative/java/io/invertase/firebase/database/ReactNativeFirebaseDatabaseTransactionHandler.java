@@ -81,6 +81,17 @@ public class ReactNativeFirebaseDatabaseTransactionHandler {
     }
   }
 
+  /** Abort the currently in progress transaction if any. */
+  void abort() {
+    lock.lock();
+    try {
+      abort = true;
+      condition.signalAll();
+    } finally {
+      lock.unlock();
+    }
+  }
+
   /** Wait for signalUpdateReceived to signal condition */
   void await() throws InterruptedException {
     lock.lock();

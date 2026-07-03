@@ -79,7 +79,8 @@ class DatabaseSyncTree {
   }
 
   private get native(): RNFBDatabaseModule {
-    return getReactNativeModule('RNFBDatabaseQueryModule') as unknown as RNFBDatabaseModule;
+    // NewArch-AD-18 E9: query host for sync tree off(); merged surface exposes off via composite.
+    return getReactNativeModule('NativeRNFBTurboDatabaseQuery') as unknown as RNFBDatabaseModule;
   }
 
   private _allocate(

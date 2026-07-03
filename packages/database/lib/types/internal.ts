@@ -181,7 +181,11 @@ export interface RNFBDatabaseModule {
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBDatabaseModule: RNFBDatabaseModule;
+    NativeRNFBTurboDatabase: RNFBDatabaseModule;
+    NativeRNFBTurboDatabaseReference: RNFBDatabaseModule;
+    NativeRNFBTurboDatabaseQuery: RNFBDatabaseModule;
+    NativeRNFBTurboDatabaseOnDisconnect: RNFBDatabaseModule;
+    NativeRNFBTurboDatabaseTransaction: RNFBDatabaseModule;
   }
 }
 

@@ -24,6 +24,7 @@ const MIGRATED_PACKAGES = [
   'crashlytics',
   'storage',
   'functions',
+  'database',
 ];
 
 function parseCodegenCommand(script) {
