@@ -85,9 +85,10 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 | Android NodeBuilder | ~55% → **67.5%** | **75.18%** (1324/1761) |
 | Android Executor | 49% → 58% → ~60.94% (O) → **~97% live** (Q) | **76.59%** jacoco (386/504) — full-tier jacoco below Q live estimate |
 | TS `pipeline_runtime.ts` | 86% → **90.62%** | **91.07%** (204/224) |
-| TS `expressions.ts` | 89% → **93.61%** | **93.61%** (flat) |
+| TS `expressions.ts` | 89% → **93.61%** | **93.98%** (250/266) |
 | TS `pipeline_validate.ts` | ~93% → **100% lines** (P Jest) | **88.64%** e2e lcov (78/88) |
-| iOS NodeBuilder | ~68.89% → ~70%+ (N) | **n/a** — `coverage/ios-native/lcov.info` missing |
+| iOS NodeBuilder | ~68.89% → ~70%+ (N) | **69.10%** (1516/2194) |
+| iOS operand modes L919–1006 | **27 missed** | **17 missed** @ **72.58%** (45/62) |
 | Android loop L900 band | 106 → **64** missed (M) | **65** missed @ **71.98%** (167/232) |
 
 | **Q** Intractability audit | `refactor(firestore, android): remove dead pipeline Executor lowering code` | **closed** | **closed** | **closed** | — | — | — | −238 lines; 151 Android pass; intractable caps in queue |
@@ -329,7 +330,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **R-iOS fix:** `coerceStageOptionFieldName` for unnest/findNearest; limit/offset defer to bridge factory. Area-focused 151/0; full-tier iOS re-run 838/0.
 
-**Gap map:** `bash scripts/map-pipeline-coverage-gaps.sh after-phase-r-final`; snapshot `scripts/snapshot-pipeline-coverage.sh after-phase-r-final`.
+**Gap map:** `bash scripts/map-pipeline-coverage-gaps.sh after-phase-r-final`; snapshot `scripts/snapshot-pipeline-coverage.sh after-phase-r-final`. TS + iOS + Android coverage artifacts present (`coverage/lcov.info`, `coverage/ios-native/lcov.info`, Jacoco).
 
 ---
 
