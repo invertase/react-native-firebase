@@ -3188,6 +3188,115 @@ describe('FirestorePipeline', function () {
       });
     });
 
+    describe('exit frame and receiver expression lowering coverage', function () {
+      it('lowers vector distance receiver chains with expression vector operands', async function () {
+        const { execute, field, cosineDistance, dotProduct } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc, vector } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          embedding: vector([1.0, 0.0, 0.0]),
+          query: vector([0.0, 1.0, 0.0]),
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              cosineDistance(field('embedding'), field('query')).as('globalCosDist'),
+              field('embedding').dotProduct(field('query')).as('fluentDot'),
+              field('embedding').euclideanDistance(field('query')).as('fluentEuclid'),
+              dotProduct(field('embedding'), field('query')).as('globalDot'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        should(data.globalCosDist).be.approximately(1, 0.0001);
+        should(data.fluentDot).be.approximately(0, 0.0001);
+        should(data.fluentEuclid).be.approximately(Math.sqrt(2), 0.0001);
+        should(data.globalDot).be.approximately(0, 0.0001);
+      });
+
+      it('lowers fluent receiver exit frames with expression map, array, and extrema operands', async function () {
+        const { execute, field, logicalMaximum, logicalMinimum } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          metadata: { theme: 'dark', locale: 'en' },
+          keyName: 'theme',
+          scores: [10, 25, 40],
+          idx: 1,
+          bidA: 100,
+          bidB: 150,
+          bidC: 120,
+          askA: 200,
+          askB: 175,
+          askC: 190,
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              field('metadata').mapGet(field('keyName')).as('fluentMapGet'),
+              field('scores').arrayGet(field('idx')).as('fluentArrayGet'),
+              field('bidA').logicalMaximum(field('bidB'), field('bidC')).as('fluentMaxBid'),
+              field('askA').logicalMinimum(field('askB'), field('askC')).as('fluentMinAsk'),
+              logicalMaximum(field('bidA'), field('bidB'), field('bidC')).as('globalMaxBid'),
+              logicalMinimum(field('askA'), field('askB'), field('askC')).as('globalMinAsk'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.fluentMapGet.should.equal('dark');
+        data.fluentArrayGet.should.equal(25);
+        data.fluentMaxBid.should.equal(150);
+        data.fluentMinAsk.should.equal(175);
+        data.globalMaxBid.should.equal(150);
+        data.globalMinAsk.should.equal(175);
+      });
+
+      it('lowers boolean receiver and logical exit frames with expression operands', async function () {
+        const { execute, field, or, and } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/boolean-receiver-exit-frames`,
+        );
+
+        await Promise.all([
+          setDoc(doc(coll, 'match-a'), { score: 12, threshold: 10, tier: 'gold', region: 'EU' }),
+          setDoc(doc(coll, 'match-b'), { score: 12, threshold: 10, tier: 'silver', region: 'US' }),
+          setDoc(doc(coll, 'skip'), { score: 3, threshold: 10, tier: 'bronze', region: 'APAC' }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where(
+              and(
+                field('score').greaterThan(field('threshold')),
+                or(field('tier').equal('gold'), field('region').equal('US')),
+              ),
+            )
+            .select('score', 'tier', 'region'),
+        );
+
+        snapshot.results.should.have.length(2);
+        const tiers = snapshot.results.map(row => row.data().tier).sort();
+        tiers.should.eql(['gold', 'silver']);
+      });
+    });
+
     describe('operand mode rhs shape coverage', function () {
       it('coerces string, array, and boolean rhs shapes in comparisons and arithmetic', async function () {
         const { execute, field, constant, add, multiply, mod, equal, equalAny, greaterThan, and } =

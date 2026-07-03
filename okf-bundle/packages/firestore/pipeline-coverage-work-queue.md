@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS:** **M** — `commit`. **L** landing now.
+> **IN PROGRESS:** **N** queued — iOS stage coercion (~293 missed).
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -76,12 +76,12 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 
 ## Current snapshot
 
-**Label:** `lm-commit-pending`; **harness:** full test app (committed)
+**Label:** `n-queued`; **harness:** full test app (committed)
 
 **Next item:** **N** — iOS stage coercion (~293 missed).
 
 | **L** parsed-aggregate tail | `test(firestore): cover pipeline aggregate expression argument lowering on Android` | **closed** | **closed** | **closed** | — | — | — | `arrayAgg`/`arrayAggDistinct` expr args |
-| **M** exit/receiver/vector | `test(firestore): cover pipeline exit frame and receiver expression lowering on Android` | **closed** | **closed** | open | `commit` | — | — | review 141/141/136; NodeBuilder 75.03%; exit 73→44 missed |
+| **M** exit/receiver/vector | `test(firestore): cover pipeline exit frame and receiver expression lowering on Android` | **closed** | **closed** | **closed** | — | — | — | 3 e2e; NodeBuilder 75.03%; exit 73→44 missed |
 
 | **J2** P-005 `integerLiteral` | `fix(firestore, android): align pipeline integerLiteral constant lowering with iOS` | **closed** | **closed** | **closed** | — | — | — | P-005 → Resolved; CFBoolean deferral accepted |
 | **J3** P-010 stage option expressions | `fix(firestore, android): align pipeline stage option expression fields with iOS` | **closed** | **closed** | **closed** | — | — | — | P-010 → Resolved |
@@ -306,7 +306,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **M** commit pending. **L** complete.
+**Current gates:** **N** queued. **L** and **M** complete.
 
 ---
 
