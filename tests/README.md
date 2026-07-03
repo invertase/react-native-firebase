@@ -105,6 +105,7 @@ This action will launch a new simulator (if not already open) and run the tests 
 > Or you can change this name in the `package.json` of the tests project (don't commit the change though please).
 > **DO NOT** rename an existing AVD to this name - it will not work, rename does not change the file path currently so Detox will
 > fail to find the AVD in the correct directory. Create a new one with Google Play Services.
+> Detox cold-boots `TestingAVD` on every run (`-no-snapshot-load`) to avoid Quick Boot gray-screen failures — see [running e2e § Android gray screen](../okf-bundle/testing/running-e2e.md#android-emulator-gray-screen--quick-boot-blocking).
 
 #### Android
 

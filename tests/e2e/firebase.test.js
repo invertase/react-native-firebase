@@ -67,6 +67,10 @@ const ANDROID_PACKAGE_HANDLER_TIMEOUT_MS = parseInt(
   10,
 );
 const ANDROID_BOOT_SETTLE_MS = parseInt(process.env.RNFB_ANDROID_BOOT_SETTLE_MS || '30000', 10);
+const ANDROID_AVD_NAME = process.env.RNFB_ANDROID_AVD_NAME || 'TestingAVD';
+const ANDROID_EMULATOR_COLD_BOOT_ARGS = (
+  process.env.RNFB_ANDROID_EMULATOR_BOOT_ARGS || '-no-snapshot-load -no-snapshot-save'
+).trim();
 const DRAIN_ORCHESTRATE_TIMEOUT_MS = parseInt(
   process.env.RNFB_DRAIN_ORCHESTRATE_TIMEOUT_MS || '30000',
   10,
@@ -277,6 +281,31 @@ function resolveAdbPath() {
   return sdkRoot ? path.join(sdkRoot, 'platform-tools', 'adb') : 'adb';
 }
 
+function resolveEmulatorPath() {
+  const sdkRoot = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT;
+  if (!sdkRoot) {
+    throw new Error('ANDROID_HOME or ANDROID_SDK_ROOT is required to cold boot the Android emulator');
+  }
+  return path.join(sdkRoot, 'emulator', 'emulator');
+}
+
+function resolveAndroidEmulatorPort(serial) {
+  const portMatch = serial.match(/^emulator-(\d+)$/);
+  return portMatch ? portMatch[1] : '5554';
+}
+
+function adbDeviceState(serial) {
+  const adb = resolveAdbPath();
+  try {
+    return execSync(`${adb} -s ${serial} get-state`, {
+      encoding: 'utf8',
+      timeout: 5000,
+    }).trim();
+  } catch (_) {
+    return 'unknown';
+  }
+}
+
 function resolveAndroidSerial() {
   try {
     if (typeof device !== 'undefined' && device?.id) {
@@ -409,13 +438,49 @@ async function ensureAndroidJetHostClear(label = 'android-jet-host-clear') {
   console.log(`[rnfb-e2e] ${label}: host clear`);
 }
 
-function rebootAndroidEmulator() {
+function coldBootAndroidEmulator() {
   const adb = resolveAdbPath();
   const serial = resolveAndroidSerial();
-  console.warn(`[rnfb-e2e] Rebooting Android emulator serial=${serial} via adb reboot`);
+  const port = resolveAndroidEmulatorPort(serial);
+  const coldBootSerial = `emulator-${port}`;
+  const emulatorPath = resolveEmulatorPath();
+  const extraBootArgs = ANDROID_EMULATOR_COLD_BOOT_ARGS.split(/\s+/).filter(Boolean);
 
-  execSync(`${adb} -s ${serial} reboot`, { stdio: 'inherit' });
-  execSync(`${adb} -s ${serial} wait-for-device`, {
+  console.warn(
+    `[rnfb-e2e] Cold booting Android emulator serial=${serial} avd=${ANDROID_AVD_NAME} ` +
+      `(kill + relaunch with ${extraBootArgs.join(' ')})`,
+  );
+
+  try {
+    execSync(`${adb} -s ${serial} emu kill`, { stdio: 'inherit', timeout: 60000 });
+  } catch (err) {
+    console.warn(`[rnfb-e2e] emu kill failed (continuing): ${err?.message || err}`);
+  }
+
+  try {
+    execSync(`pkill -f "qemu-system.*@${ANDROID_AVD_NAME}"`, { stdio: 'ignore', timeout: 5000 });
+  } catch (_) {
+    // No matching emulator process.
+  }
+
+  const emulatorArgs = [
+    '-verbose',
+    '-no-audio',
+    '-no-boot-anim',
+    '-read-only',
+    '-port',
+    port,
+    ...extraBootArgs,
+    `@${ANDROID_AVD_NAME}`,
+  ];
+
+  const child = spawn(emulatorPath, emulatorArgs, {
+    detached: true,
+    stdio: 'ignore',
+  });
+  child.unref();
+
+  execSync(`${adb} -s ${coldBootSerial} wait-for-device`, {
     stdio: 'inherit',
     timeout: REBOOT_ANDROID_EMULATOR_TIMEOUT_MS,
   });
@@ -430,6 +495,17 @@ async function waitForAndroidEmulatorReady() {
 
   while (Date.now() < deadline) {
     try {
+      const deviceState = adbDeviceState(serial);
+      if (deviceState === 'offline') {
+        stableLoadPolls = 0;
+        console.warn(
+          `[rnfb-e2e] android-ready probe serial=${serial} state=offline (Quick Boot gray screen?) — ` +
+            'kill emulator and rerun; Detox should cold boot with -no-snapshot-load',
+        );
+        await sleep(ANDROID_READY_POLL_MS);
+        continue;
+      }
+
       const bootCompleted = adbShell(serial, 'getprop sys.boot_completed');
       const bootDev = adbShell(serial, 'getprop dev.bootcomplete');
       const provisioned = adbShell(serial, 'settings get global device_provisioned');
@@ -1079,7 +1155,7 @@ describe('Jet Tests', function () {
           if (platform === 'ios' && process.platform === 'darwin') {
             await rebootIosSimulator(testsDir);
           } else if (platform === 'android') {
-            rebootAndroidEmulator();
+            coldBootAndroidEmulator();
             await waitForAndroidEmulatorReady();
           } else {
             try {

@@ -502,7 +502,34 @@ See also: [unit-focused-tier loop](#unit-focused-tier-iteration-loop), [dispatch
 - **adb empty** — `adb kill-server && adb start-server && adb devices`
 - **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, …). Stray listener on `:8090` after a run → [pre-flight recovery](#pre-flight-recovery), then restart background services with [Rules §1–2](#rules) (`yarn tests:packager:jet`, `yarn tests:emulator:start`).
 
-### iOS Detox framework cache (blocking)
+### Android emulator gray screen / Quick Boot (blocking)
+
+Detox's default emulator launch **restores the AVD Quick Boot snapshot** unless told otherwise. On `TestingAVD` that can leave the device **`offline` on a gray screen** — `adb devices` shows `emulator-XXXX offline` and Detox hangs on `wait-for-device`.
+
+**Root cause:** warm boot paths — Quick Boot snapshot restore on Detox launch, and (pre-fix) `adb reboot` on Jet retry — skip a full cold boot.
+
+**Fix (committed):** [`tests/.detoxrc.js`](../../tests/.detoxrc.js) sets `bootArgs: '-no-snapshot-load -no-snapshot-save'` on the `TestingAVD` device. Jet retry in [`tests/e2e/firebase.test.js`](../../tests/e2e/firebase.test.js) cold-restarts the same emulator (kill + relaunch with the same args) instead of `adb reboot`.
+
+**Detect:**
+
+```bash
+adb devices -l   # emulator-XXXX offline
+pgrep -fl 'qemu-system.*TestingAVD'
+rg 'SPAWN_CMD.*@TestingAVD' /tmp/rnfb-e2e-android.log   # no -no-snapshot-load → stale runbook / config
+```
+
+**Recovery before `:test-cover`:**
+
+```bash
+adb -s emulator-5554 emu kill 2>/dev/null || true
+pkill -f 'qemu-system.*TestingAVD' 2>/dev/null || true
+adb kill-server && adb start-server && adb devices   # must be empty
+# If gray screen persists after cold-boot config, wipe Quick Boot snapshots:
+# rm -rf ~/.android/avd/TestingAVD.avd/snapshots
+```
+
+Then rerun [pre-flight](#pre-flight-is-the-host-clear-to-start) and `yarn tests:android:test-cover`. Cold boot adds ~30–60s to the first Android launch vs Quick Boot — expected.
+
 
 Detox injects a prebuilt **`Detox.framework`** and XCUITest runner from a versioned cache under **`~/Library/Detox/ios/`** (hashed by Xcode version). iOS `:test-cover` / `:build` **fail before any test runs** if that cache is missing or stale (common after Xcode upgrade, first checkout, or a failed Detox postinstall).
 
