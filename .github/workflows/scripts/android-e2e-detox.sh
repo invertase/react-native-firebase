@@ -25,8 +25,9 @@ nohup ./.github/workflows/scripts/resource-monitor-android.sh &
 
 yarn tests:android:test-cover --headless || TEST_EXIT=$?
 
-cleanup_android_e2e
-trap - EXIT
-
+# Pull coverage.ec and run Jacoco while the emulator and app filesDir are still
+# intact. cleanup_android_e2e (emu kill) must run only after post-e2e — reordering
+# here regressed native uploads when this script replaced the inline CI script.
 yarn tests:android:post-e2e-coverage || true
+
 exit "$TEST_EXIT"

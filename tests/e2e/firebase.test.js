@@ -19,7 +19,7 @@ const { execSync, spawn } = require('child_process');
 const net = require('net');
 const path = require('path');
 
-const { pullIosCoverage } = require('../scripts/pull-native-coverage');
+const { pullIosCoverage, pullAndroidCoverageWithRetry } = require('../scripts/pull-native-coverage');
 const { recordE2eCloudMetricFromHost } = require('../../packages/app/e2e/cloud-metrics');
 
 const E2E_TEST_PROJECT = 'react-native-firebase-testing';
@@ -1000,6 +1000,18 @@ describe('Jet Tests', function () {
         pullIosCoverage(deviceId, { testsDir });
       } catch (e) {
         throw new Error(`Failed to download native coverage data: ${e.message}`);
+      }
+    } else if (platform === 'android') {
+      const pulled = await pullAndroidCoverageWithRetry(deviceId, {
+        softFail: true,
+        testsDir,
+        retries: 5,
+        intervalMs: 1000,
+      });
+      if (!pulled) {
+        console.warn(
+          '[native-coverage] Android .ec not pulled on Jet close; post-e2e will retry',
+        );
       }
     }
   });

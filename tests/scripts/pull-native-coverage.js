@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const TEST_APP_PACKAGE = 'com.invertase.testing';
-const ANDROID_COVERAGE_EMU_PATH = `/data/user/0/${TEST_APP_PACKAGE}/files/coverage.ec`;
+const ANDROID_COVERAGE_RELATIVE_PATH = 'files/coverage.ec';
 
 function getAdbBinary() {
   return process.env.ANDROID_HOME
@@ -41,7 +41,7 @@ function androidCoverageFileExists(deviceId) {
 
   try {
     execSync(
-      `${adb} ${serial} shell "run-as ${TEST_APP_PACKAGE} test -f ${ANDROID_COVERAGE_EMU_PATH}"`,
+      `${adb} ${serial} shell "run-as ${TEST_APP_PACKAGE} test -f ${ANDROID_COVERAGE_RELATIVE_PATH}"`,
       { stdio: 'pipe' },
     );
     return true;
@@ -60,7 +60,7 @@ function pullAndroidCoverage(deviceId, options = {}) {
 
   try {
     execSync(
-      `${adb} ${serial} shell "run-as ${TEST_APP_PACKAGE} cat ${ANDROID_COVERAGE_EMU_PATH} > ${emuDest}"`,
+      `${adb} ${serial} shell "run-as ${TEST_APP_PACKAGE} cat ${ANDROID_COVERAGE_RELATIVE_PATH} > ${emuDest}"`,
     );
     fs.mkdirSync(localDestDir, { recursive: true });
     execSync(`${adb} ${serial} pull ${emuDest} ${localDestFile}`);
@@ -92,7 +92,7 @@ async function pullAndroidCoverageWithRetry(deviceId, options = {}) {
       }
     } else if (attempt === 1 || attempt % 5 === 0) {
       console.log(
-        `[native-coverage] Waiting for ${ANDROID_COVERAGE_EMU_PATH} (attempt ${attempt}/${retries})`,
+        `[native-coverage] Waiting for ${ANDROID_COVERAGE_RELATIVE_PATH} (attempt ${attempt}/${retries})`,
       );
     }
 
@@ -181,8 +181,19 @@ async function main() {
 
   if (args.includes('--android-post-e2e')) {
     const deviceId = resolveAndroidDeviceId();
+    const testsDir = path.resolve(__dirname, '..');
+    const localDestFile = path.join(
+      testsDir,
+      'android/app/build/output/coverage/emulator_coverage.ec',
+    );
     console.log(`[native-coverage] Post-e2e Android coverage on ${deviceId}`);
-    const pulled = await pullAndroidCoverageWithRetry(deviceId, { softFail: true });
+    let pulled = null;
+    if (fs.existsSync(localDestFile)) {
+      console.log(`[native-coverage] Using existing ${localDestFile} from Jet-close pull`);
+      pulled = localDestFile;
+    } else {
+      pulled = await pullAndroidCoverageWithRetry(deviceId, { softFail: true, testsDir });
+    }
     const reportOk = runJacocoAndroidTestReport();
     if (!pulled) {
       console.warn('[native-coverage] Jacoco report may be empty (no coverage.ec pulled)');

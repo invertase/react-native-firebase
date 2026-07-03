@@ -284,6 +284,7 @@ jobs:
         with:
           files: tests/android/app/build/reports/jacoco/jacocoAndroidTestReport/jacocoAndroidTestReport.xml
           flags: android-native
+          disable_search: true
           verbose: true
 
       - name: Upload Emulator Log
