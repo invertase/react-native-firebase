@@ -3857,6 +3857,40 @@ describe('FirestorePipeline', function () {
         );
       });
 
+      it('routes forceIndex collection hint rawOptions through native builder', async function () {
+        if (Platform.other || Platform.ios) {
+          return;
+        }
+
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/force-index-hint`,
+        );
+        const runId = Utils.randString(12, '#aA');
+
+        await setDoc(doc(coll, 'hint-a'), { runId, value: 1 });
+
+        await expectAsyncError(
+          () =>
+            execute(
+              db
+                .pipeline()
+                .collection({
+                  collectionRef: coll,
+                  rawOptions: {
+                    forceIndex: 'composite-index-placeholder',
+                  },
+                })
+                .where(field('runId').equal(runId))
+                .select('value'),
+            ),
+          ['invalid-argument', 'invalid argument', 'Failed to execute pipeline'],
+        );
+      });
+
       it('executes createFrom(query) with composite and array filter operands', async function () {
         const { execute } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc, query, where, orderBy, limit } =
@@ -3991,6 +4025,107 @@ describe('FirestorePipeline', function () {
         unnestSnapshot.results[1].data().attempt.should.equal(1);
       });
 
+      it('executes unnest when indexField coerces to empty string', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/unnest-empty-index-field`,
+        );
+
+        await setDoc(doc(coll, 'u1'), { name: 'A', scores: [5, 7] });
+
+        const pipeline = db
+          .pipeline()
+          .collection(coll)
+          .where(field('name').equal('A'))
+          .unnest({ selectable: field('scores').as('score'), indexField: 'attempt' })
+          .sort(field('name').ascending(), field('score').ascending())
+          .select('name', 'score');
+
+        const unnestStage = pipeline._stages.find(stage => stage.stage === 'unnest');
+        unnestStage.options.indexField = '';
+
+        const snapshot = await execute(pipeline);
+
+        snapshot.results.should.have.length(2);
+        snapshot.results[0].data().score.should.equal(5);
+        snapshot.results[1].data().score.should.equal(7);
+      });
+
+      it('executes rawStage with array arguments and field-path stage options', async function () {
+        if (Platform.other || Platform.ios) {
+          return;
+        }
+
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/raw-stage-array-args`,
+        );
+
+        await setDoc(doc(coll, 'base'), { rating: 4, boost: 1 });
+
+        await expectAsyncError(
+          () =>
+            execute(
+              db
+                .pipeline()
+                .collection(coll)
+                .rawStage('score', [field('rating'), field('boost')], {
+                  filterField: field('rating'),
+                  enabled: true,
+                })
+                .select('rating'),
+            ),
+          ['invalid-argument', 'Failed to execute pipeline', 'firestore/'],
+        );
+      });
+
+      it('routes findNearest non-field distanceField expression through native executor', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { execute, constant } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc, vector } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/find-nearest-expr-distance-field`,
+        );
+
+        await setDoc(doc(coll, 'near'), { name: 'near', embedding: vector([1.0, 0.0, 0.0]) });
+
+        const pipeline = db
+          .pipeline()
+          .collection(coll)
+          .findNearest({
+            field: 'embedding',
+            vectorValue: [1.0, 0.0, 0.0],
+            distanceMeasure: 'COSINE',
+            limit: 1,
+            distanceField: 'matchDistance',
+          })
+          .select('name', 'matchDistance');
+
+        const findNearestStage = pipeline._stages.find(stage => stage.stage === 'findNearest');
+        findNearestStage.options.distanceField = constant('matchDistance');
+
+        const snapshot = await execute(pipeline);
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().name.should.equal('near');
+        should(snapshot.results[0].data().matchDistance).be.a.Number();
+      });
+
       it('routes rawStage through native bridge factory', async function () {
         if (Platform.other || Platform.ios) {
           return;
@@ -4121,6 +4256,98 @@ describe('FirestorePipeline', function () {
 
         snapshot.results.should.have.length(1);
         snapshot.results[0].data().name.should.equal('dot');
+      });
+
+      it('rejects non-numeric limit and offset at native coerce boundary', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/native-coerce-limit-offset`,
+        );
+
+        await setDoc(doc(coll, 'base'), { value: 1 });
+
+        const limitPipeline = db.pipeline().collection(coll).limit(5);
+        limitPipeline._stages.find(stage => stage.stage === 'limit').options.limit = 'bad';
+        await expectAsyncError(
+          () => execute(limitPipeline),
+          'pipelineExecute() expected stage.options.limit to be a number.',
+        );
+
+        const offsetPipeline = db.pipeline().collection(coll).offset(1);
+        offsetPipeline._stages.find(stage => stage.stage === 'offset').options.offset = 'bad';
+        await expectAsyncError(
+          () => execute(offsetPipeline),
+          'pipelineExecute() expected stage.options.offset to be a number.',
+        );
+      });
+
+      it('rejects non-string ignoreIndexFields entries at native boundary', async function () {
+        if (Platform.other || Platform.ios) {
+          return;
+        }
+
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/native-ignore-index-fields-coerce`,
+        );
+        const runId = Utils.randString(12, '#aA');
+
+        await setDoc(doc(coll, 'base'), { runId, value: 1 });
+
+        const pipeline = db
+          .pipeline()
+          .collection({
+            collectionRef: coll,
+            rawOptions: { ignoreIndexFields: ['value'] },
+          })
+          .where(field('runId').equal(runId));
+
+        pipeline._source.rawOptions.ignoreIndexFields = [123];
+
+        await expectAsyncError(
+          () => execute(pipeline),
+          'pipelineExecute() expected pipeline.source.rawOptions.ignoreIndexFields values to be strings.',
+        );
+      });
+
+      it('rejects unsupported rawStage option value types at native boundary', async function () {
+        if (Platform.other || Platform.ios) {
+          return;
+        }
+
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/native-raw-stage-option-type`,
+        );
+
+        await setDoc(doc(coll, 'base'), { rating: 4 });
+
+        const pipeline = db
+          .pipeline()
+          .collection(coll)
+          .rawStage('score', { input: field('rating') }, { enabled: true });
+
+        pipeline._stages.find(stage => stage.stage === 'rawStage').options.options.badOption = [
+          1, 2,
+        ];
+
+        await expectAsyncError(
+          () => execute(pipeline),
+          'pipelineExecute() received an unsupported raw stage option value for key: badOption.',
+        );
       });
     });
   });
