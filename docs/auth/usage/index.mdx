@@ -24,6 +24,15 @@ cd ios/ && pod install
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/auth/usage/installation/ios) and [Android](/auth/usage/installation/android).
 
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+**Platform notes:** Several firebase-js-sdk web helpers throw on React Native (`setPersistence`, `getRedirectResult`, `revokeAccessToken`, `useDeviceLanguage`, `linkWithPhoneNumber`, `reauthenticateWithPhoneNumber`). `useUserAccessGroup` is **iOS only**. See [Migrating to v26 — Platform behavior differences](/migrating-to-v26#platform-behavior-differences).
+
 # What does it do
 
 Firebase Authentication provides backend services & easy-to-use SDKs to authenticate users to your app. It supports

@@ -11,6 +11,7 @@ If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating
 
 ## Table of contents
 
+- [New Architecture requirement](/migrating-to-v26#new-architecture-requirement)
 - [General pattern](/migrating-to-v26#general-pattern)
 - [App](/migrating-to-v26#app)
 - [Machine Learning (ML)](/migrating-to-v26#machine-learning-ml)
@@ -29,6 +30,72 @@ If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating
 - [Authentication](/migrating-to-v26#authentication)
 - [Cloud Firestore](/migrating-to-v26#cloud-firestore)
 - [Automated migration checklist](/migrating-to-v26#automated-migration-checklist)
+
+## New Architecture requirement
+
+From v26 onward, **every React Native Firebase package with a native bridge** is implemented as a **Codegen TurboModule** and **requires React Native's New Architecture**. The legacy bridge modules were removed in the coordinated v26 break.
+
+If you cannot enable New Architecture yet, **stay on v25** (or v23 if you still depend on legacy-architecture Cloud Functions — see below).
+
+### Exceptions (no New Architecture requirement)
+
+| Package                           | Why                                                                                  |
+| --------------------------------- | ------------------------------------------------------------------------------------ |
+| `@react-native-firebase/ai`       | Pure JavaScript — uses the firebase-js-sdk web interop layer; no native TurboModule. |
+| `@react-native-firebase/vertexai` | Pure JavaScript — same as `ai`; deprecated in favor of `@react-native-firebase/ai`.  |
+
+### Cloud Functions (already required since v24)
+
+`@react-native-firebase/functions` has required New Architecture **since v24** ([Migrating to v24 — Cloud Functions](/migrating-to-v24#cloud-functions)). v26 extends the same requirement to all remaining native modules.
+
+### Enable New Architecture
+
+**React Native CLI (Android)** — set in `android/gradle.properties`:
+
+```properties
+newArchEnabled=true
+```
+
+**React Native CLI (iOS)** — New Architecture is enabled when `RCT_NEW_ARCH_ENABLED=1` during `pod install` (React Native sets this from `newArchEnabled` on recent templates). Follow the [React Native New Architecture guide](https://reactnative.dev/docs/the-new-architecture/landing-page) for your RN version.
+
+**Expo** — enable in your app config (Expo SDK 52+):
+
+```json
+{
+  "expo": {
+    "newArchEnabled": true
+  }
+}
+```
+
+Rebuild native projects after changing this (`pod install`, clean Android build).
+
+### If New Architecture is disabled
+
+Native builds fail early with explicit guards:
+
+- **Android:** Gradle scripts print `New Architecture support is required for @react-native-firebase/<package>` and fail the build.
+- **iOS:** `pod install` fails with `<PodName> requires New Architecture. Enable New Architecture to use this module`.
+
+### Platform behavior differences
+
+When migrating from firebase-js-sdk web examples, watch for these high-impact runtime divergences:
+
+| Area                          | firebase-js-sdk (web)                                                                                                                        | React Native Firebase                                                                                                                                                                                                                                                                      |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Auth**                      | Browser persistence, redirects, reCAPTCHA, `revokeAccessToken`, `useDeviceLanguage`, `linkWithPhoneNumber` / `reauthenticateWithPhoneNumber` | Native iOS/Android SDKs manage persistence. Several web-only helpers **throw synchronously** on React Native (`setPersistence`, `getRedirectResult`, `revokeAccessToken`, `useDeviceLanguage`, `linkWithPhoneNumber`, `reauthenticateWithPhoneNumber`). Use native provider flows instead. |
+| **Analytics**                 | Cross-platform modular API                                                                                                                   | On-device conversion measurement helpers (`initiateOnDeviceConversionMeasurement*`) are **iOS only**; on Android and web the JS layer resolves without calling native (no-op). `logTransaction` (verified iOS in-app purchase events) is **iOS only** and **rejects** on other platforms.  |
+| **Realtime Database**         | `goOnline` / `goOffline` are synchronous; web transport toggles                                                                              | RN helpers are **async** (native bridge). `getServerTime`, `setPersistenceEnabled`, and `setPersistenceCacheSizeBytes` are RN-specific. `forceLongPolling` / `forceWebSockets` **throw** — transport is native-controlled.                                                                 |
+| **Phone Number Verification** | N/A (Android SDK only)                                                                                                                       | **Android only** — all entry points throw on iOS and Web.                                                                                                                                                                                                                                  |
+| **Cloud Storage**             | `uploadBytes` / `uploadString` from JS blobs                                                                                                 | `putFile` and `writeToFile` are **native-only** file-path APIs with no firebase-js-sdk equivalent. Retry-time setters are modular functions on RN, not instance properties.                                                                                                                |
+| **Cloud Messaging**           | Web push / service-worker surface                                                                                                            | FCM token lifecycle, permissions, background handlers, and **APNs token APIs are iOS only**. Event delivery still uses the legacy native event proxy during the TurboModule migration; behavior matches pre-v26 releases but will change when Codegen events land in a future release.     |
+| **Remote Config**             | `reset()` clears server and local state                                                                                                      | `reset()` is **Android only** — iOS does not clear activated, fetched, or default Remote Config values. `setDefaultsFromResource` loads from native resource files (`.plist` / XML).                                                                                                       |
+| **Performance**               | `initializePerformance` returns synchronously; trace `start`/`stop` are sync                                                                 | `initializePerformance` is **synchronous** on RN (applies settings to the native instance). Trace `start`/`stop` are **async** through the native bridge.                                                                                                                                  |
+| **Firestore**                 | IndexedDB persistence, `memoryLocalCache`, `persistentLocalCache`                                                                            | Local cache factories and IndexedDB APIs are **web only**. Persistence is controlled by the native Firestore SDK. `initializeFirestore` is **async** on RN.                                                                                                                                |
+| **App Check**                 | reCAPTCHA version 3 / Enterprise web providers                                                                                               | Use `ReactNativeFirebaseAppCheckProvider` for Device Check, App Attest, Play Integrity, etc. Web reCAPTCHA provider classes have **no RN equivalent**.                                                                                                                                     |
+| **RN-native-only modules**    | No web SDK                                                                                                                                   | `crashlytics`, `in-app-messaging`, `app-distribution`, and `ml` are **React Native only** — no firebase-js-sdk modular surface.                                                                                                                                                            |
+
+Per-package notes also appear in each module's [usage](/) page under **Platform support**.
 
 ## General pattern
 

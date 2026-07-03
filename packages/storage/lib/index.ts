@@ -462,31 +462,31 @@ export function uploadString(
 // Methods not on the Firebase JS SDK below
 
 /**
- * Sets the maximum time in milliseconds to retry a download if a failure occurs.. android & iOS only.
- * @param storage - Storage instance.
- * @param time - The new maximum operation retry time in milliseconds.
- * @returns {Promise<void>}
+ * Sets the maximum time in milliseconds to retry non-upload/download operations.
+ *
+ * @remarks React Native Firebase-specific modular helper. The firebase-js-sdk exposes this as a
+ * writable property on the `FirebaseStorage` instance. **Android and iOS only.**
  */
 export function setMaxOperationRetryTime(storage: FirebaseStorage, time: number): Promise<void> {
   return (storage as StorageInternal).setMaxOperationRetryTime(time);
 }
 
 /**
- * Sets the maximum time in milliseconds to retry an upload if a failure occurs. android & iOS only.
- * @param storage - Storage instance.
- * @param time - The new maximum operation retry time in milliseconds.
- * @returns {Promise<void>}
+ * Sets the maximum time in milliseconds to retry an upload if a failure occurs.
+ *
+ * @remarks React Native Firebase-specific modular helper. The firebase-js-sdk exposes this as a
+ * writable property on the `FirebaseStorage` instance. **Android and iOS only.**
  */
 export function setMaxUploadRetryTime(storage: FirebaseStorage, time: number): Promise<void> {
   return (storage as StorageInternal).setMaxUploadRetryTime(time);
 }
 
 /**
- * Puts a file from local disk onto the storage bucket.
- * @param storageRef - Storage Reference instance.
- * @param filePath The local file path to upload to the bucket at the reference location.
- * @param metadata Any additional `UploadMetadata` for this task.
- * @returns {Task}
+ * Uploads a file from a local device path to Cloud Storage.
+ *
+ * @remarks React Native Firebase-specific API with **no firebase-js-sdk equivalent**. Use
+ * `FilePath` from `@react-native-firebase/app` for portable device paths. **Native only**
+ * — throws on Web interop.
  */
 export function putFile(
   storageRef: StorageReference,
@@ -497,10 +497,11 @@ export function putFile(
 }
 
 /**
- * Downloads a file to the specified local file path on the device.
- * @param storageRef - Storage Reference instance.
- * @param filePath The local file path to upload to on the device.
- * @returns {Task}
+ * Downloads a Cloud Storage object to a local device file path.
+ *
+ * @remarks React Native Firebase-specific API with **no firebase-js-sdk equivalent**. Use
+ * `FilePath` from `@react-native-firebase/app` for portable device paths. **Native only**
+ * — throws on Web interop.
  */
 export function writeToFile(storageRef: StorageReference, filePath: string): Task {
   return (storageRef as StorageReferenceInternal).writeToFile(filePath);
@@ -508,9 +509,9 @@ export function writeToFile(storageRef: StorageReference, filePath: string): Tas
 
 /**
  * Sets the maximum time in milliseconds to retry a download if a failure occurs.
- * @param storage - Storage instance.
- * @param time - The new maximum download retry time in milliseconds.
- * @returns {Promise<void>}
+ *
+ * @remarks React Native Firebase-specific modular helper with no direct firebase-js-sdk equivalent.
+ * **Android and iOS only.**
  */
 export function setMaxDownloadRetryTime(storage: FirebaseStorage, time: number): Promise<void> {
   return (storage as StorageInternal).setMaxDownloadRetryTime(time);

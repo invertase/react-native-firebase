@@ -245,10 +245,24 @@ export function connectDatabaseEmulator(
   (db as DatabaseWithMethodsInternal).useEmulator(host, port, options);
 }
 
+/**
+ * Manually disconnects the Realtime Database client from the server.
+ *
+ * @remarks On React Native Firebase the underlying native call is **async** (`Promise<void>`),
+ * but this modular helper matches the firebase-js-sdk fire-and-forget `void` signature — the
+ * promise is not returned. Prefer awaiting the instance method when you need completion.
+ */
 export function goOffline(db: Database): void {
   (db as DatabaseWithMethodsInternal).goOffline();
 }
 
+/**
+ * Manually re-establishes the Realtime Database connection.
+ *
+ * @remarks On React Native Firebase the underlying native call is **async** (`Promise<void>`),
+ * but this modular helper matches the firebase-js-sdk fire-and-forget `void` signature — the
+ * promise is not returned. Prefer awaiting the instance method when you need completion.
+ */
 export function goOnline(db: Database): void {
   (db as DatabaseWithMethodsInternal).goOnline();
 }
@@ -261,6 +275,13 @@ export function refFromURL(db: Database, url: string): DatabaseReference {
   return (db as DatabaseWithMethodsInternal).refFromURL(url);
 }
 
+/**
+ * Enables or disables disk persistence for the Realtime Database instance.
+ *
+ * @remarks React Native Firebase-specific API with no firebase-js-sdk modular equivalent.
+ * Must be called before any database references are used. Persistence is provided by the
+ * native iOS/Android SDK, not the web IndexedDB stack.
+ */
 export function setPersistenceEnabled(db: Database, enabled: boolean): Promise<void> {
   return (db as DatabaseWithMethodsInternal).setPersistenceEnabled(enabled) as Promise<void>;
 }
@@ -269,14 +290,28 @@ export function setLoggingEnabled(db: Database, enabled: boolean): Promise<void>
   return (db as DatabaseWithMethodsInternal).setLoggingEnabled(enabled) as Promise<void>;
 }
 
+/**
+ * Sets the on-disk persistence cache size in bytes.
+ *
+ * @remarks React Native Firebase-specific API with no firebase-js-sdk modular equivalent.
+ * Valid range is 1 MB–100 MB. Must be called before any database references are used.
+ */
 export function setPersistenceCacheSizeBytes(db: Database, bytes: number): Promise<void> {
   return (db as DatabaseWithMethodsInternal).setPersistenceCacheSizeBytes(bytes) as Promise<void>;
 }
 
+/**
+ * @remarks **Not implemented on React Native Firebase.** Always throws — transport mode is
+ * controlled by the native Realtime Database SDK.
+ */
 export function forceLongPolling(): void {
   throw new Error('forceLongPolling() is not implemented');
 }
 
+/**
+ * @remarks **Not implemented on React Native Firebase.** Always throws — transport mode is
+ * controlled by the native Realtime Database SDK.
+ */
 export function forceWebSockets(): void {
   throw new Error('forceWebSockets() is not implemented');
 }
@@ -285,6 +320,12 @@ export function serverTimestamp(): object {
   return ServerValue.TIMESTAMP;
 }
 
+/**
+ * Returns the current server time as a `Date`, adjusted for clock skew.
+ *
+ * @remarks React Native Firebase-specific helper with no firebase-js-sdk modular equivalent.
+ * Reads the native `.info/serverTimeOffset` listener maintained by the database module.
+ */
 export function getServerTime(db: Database): Date {
   return (db as DatabaseWithMethodsInternal).getServerTime();
 }

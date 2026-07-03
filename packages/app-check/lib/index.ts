@@ -255,6 +255,13 @@ function getModularAppCheck(app?: FirebaseApp): AppCheck {
   return getOrCreateModularInstance(FirebaseAppCheckModule, config, app) as unknown as AppCheck;
 }
 
+/**
+ * Initializes App Check for the given Firebase app.
+ *
+ * @remarks On native platforms use {@link ReactNativeFirebaseAppCheckProvider} to configure
+ * Device Check, App Attest, Play Integrity, or debug providers. firebase-js-sdk
+ * `ReCaptchaEnterpriseProvider` / `ReCaptchaV3Provider` are **web only** and have no RN equivalent.
+ */
 export async function initializeAppCheck(
   app?: FirebaseApp,
   options?: AppCheckOptions,

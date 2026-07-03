@@ -11,6 +11,15 @@ The App module is available by default once you have installed the React Native 
 - Creating [Secondary Firebase App Instances](/app/usage#secondary-apps).
 - Exposing [Utilities](/app/utils) to aid development.
 
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+**Platform notes:** `initializeApp` is async on React Native (native bridge). `registerVersion` is **web only** and throws on native platforms.
+
 # Secondary Apps
 
 Unlike the Firebase Web SDK, there is no need to manually call the [`initializeApp`](https://firebase.google.com/docs/web/setup#add-sdks-initialize)

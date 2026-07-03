@@ -1299,9 +1299,13 @@ export function logEvent(
   return analytics.logEvent(name, params, options);
 }
 
-/** Logs verified in-app purchase events in Google Analytics for Firebase
- * after a purchase is successful.
- * Modular API only; iOS only (StoreKit 2). Throws on Android and web before reaching native.
+/**
+ * Logs verified in-app purchase events in Google Analytics for Firebase after a purchase is
+ * successful.
+ *
+ * @remarks iOS only (StoreKit 2). On Android and web the promise **rejects** before reaching
+ * native — unlike `initiateOnDeviceConversionMeasurement*`, which resolve as a no-op on
+ * non-iOS platforms.
  */
 export function logTransaction(analytics: Analytics, transaction_id: string): Promise<void> {
   if (Platform.OS !== 'ios') {
@@ -1801,6 +1805,10 @@ export function setDefaultEventParameters(
 /**
  * start privacy-sensitive on-device conversion management.
  * This is iOS-only.
+ *
+ * @remarks On Android and web the promise resolves without calling native (no-op). Unlike
+ * `logTransaction`, non-iOS platforms do not reject.
+ *
  * @param {FirebaseAnalytics} analytics - Analytics instance.
  * @param {string} emailAddress - Email address, properly formatted complete with domain name e.g, 'user@example.com'.
  * @returns {Promise<void>}
@@ -1818,6 +1826,9 @@ export function initiateOnDeviceConversionMeasurementWithEmailAddress(
  * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
  * {@link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials}
  *
+ * @remarks On Android and web the promise resolves without calling native (no-op). Unlike
+ * `logTransaction`, non-iOS platforms do not reject.
+ *
  * @param analytics Analytics instance.
  * @param hashedEmailAddress sha256-hashed of normalized email address, properly formatted complete with domain name e.g, 'user@example.com'
  */
@@ -1831,6 +1842,10 @@ export function initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
 /**
  * start privacy-sensitive on-device conversion management.
  * This is iOS-only.
+ *
+ * @remarks On Android and web the promise resolves without calling native (no-op). Unlike
+ * `logTransaction`, non-iOS platforms do not reject.
+ *
  * @param {FirebaseAnalytics} analytics - Analytics instance.
  * @param {string} phoneNumber - Phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
  * @returns {Promise<void>}
@@ -1847,6 +1862,9 @@ export function initiateOnDeviceConversionMeasurementWithPhoneNumber(
  * This is iOS-only.
  * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
  * {@link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials}
+ *
+ * @remarks On Android and web the promise resolves without calling native (no-op). Unlike
+ * `logTransaction`, non-iOS platforms do not reject.
  *
  * @param analytics Analytics instance.
  * @param hashedPhoneNumber sha256-hashed of normalized phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.

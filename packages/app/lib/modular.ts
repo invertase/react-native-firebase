@@ -40,10 +40,9 @@ export function deleteApp(app: ReactNativeFirebase.FirebaseApp): Promise<void> {
 
 /**
  * Registers a library's name and version for platform logging purposes.
- * @param _libraryKeyOrName - library name or key.
- * @param _version - library version.
- * @param _variant - library variant. Optional.
- * @returns Promise<void>
+ *
+ * @remarks **Web only.** Always throws on React Native Firebase — native SDK version registration
+ * is handled by the Firebase iOS/Android SDKs.
  */
 export function registerVersion(
   _libraryKeyOrName: string,
@@ -73,6 +72,11 @@ export function getApps(): ReactNativeFirebase.FirebaseApp[] {
 
 /**
  * Initializes a Firebase app with the provided options and name.
+ *
+ * @remarks On React Native Firebase this is **async** (`Promise<FirebaseApp>`) because secondary
+ * app creation crosses the native bridge. The default app is still configured from native
+ * `GoogleService-Info.plist` / `google-services.json` at launch.
+ *
  * @param options - Options to configure the services used in the app.
  * @param configOrName - The optional name of the app, or config for the app to initialize (a name of '[DEFAULT]' will be used if omitted).
  * @returns The initialized Firebase app.

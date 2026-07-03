@@ -46,6 +46,8 @@ Codegen spec/module names use the `NativeRNFBTurbo*` prefix (`NativeRNFBTurboAut
 
 Strong Codegen types wherever the API allows. Source of truth: `packages/*/lib/types/internal.ts`, native method inventories, firebase-js-sdk shapes. Use `Object` / open maps only where payloads are genuinely dynamic.
 
+**Codegen-safe naming:** Spec methods and generated symbols must avoid language keywords or reserved identifiers across TypeScript, C++, Java, and ObjC++ targets. Known blockers from this migration: `delete` as a method name breaks generated native code, and TypeScript primitive `object` is rejected by RN Codegen for NativeModule specs (`TSObjectKeyword`). Procedure and the current reserved-word checklist live in [implementation workflow § Codegen-safe names and types](turbomodule-implementation-workflow.md#codegen-safe-names-and-types-blocking).
+
 ---
 
 ## NewArch-AD-4 — Events deferred to Phase C — **Accepted**

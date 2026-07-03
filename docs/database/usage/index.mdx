@@ -24,6 +24,15 @@ cd ios/ && pod install && cd ..
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/database/usage/installation/ios) and [Android](/database/usage/installation/android).
 
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+**Platform notes:** `getServerTime`, `setPersistenceEnabled`, and `setPersistenceCacheSizeBytes` are RN-specific. `goOnline` / `goOffline` cross the async native bridge. `forceLongPolling` / `forceWebSockets` throw — transport is native-controlled.
+
 # What does it do
 
 The Realtime Database is a cloud-hosted database. Data is stored as JSON and synchronized in realtime to every connected

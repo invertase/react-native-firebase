@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-07-02):** Phase **R** — remove `NativeModules` fallback (PR-fallback). Phases 0–5 complete.
+> **IN PROGRESS (2026-07-03):** Phases **Docs** + **PD** committed. Next: opportunistic Phase **S** / **C** / merge handoff.
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -172,8 +172,8 @@ Pick **one** of `firestore` or `auth` in Phase 1 (firestore = multi-module + pip
 | **NB** | Interruption batch — JS infra/test/chore (standalone commits) | **done** | `app` resolver refactor+perf, shared contract-test helper, harness snapshot; `compare-types` **S0** — [§ interruption batch](#interruption-batch-standalone-commits) |
 | **3.5** | Guardrails — spec↔native parity + codegen-drift CI (**gates 4**) | **done** | all migrated packages — [§ Phase 3.5](#phase-35-guardrails) |
 | **4a** | messaging event decision — gap-analysis (**gates 4**) | **done** | `messaging` — [§ Phase 4a](#phase-4a-messaging-event-decision) |
-| **Docs** | New-Architecture requirements + migration-doc consolidation | queued (opportunistic) | docs — [§ Phase Docs](#phase-docs-new-architecture-requirements-and-doc-consolidation) |
-| **PD** | Platform-divergence documentation | queued (opportunistic) | multi-package JSDoc/docs — [§ Phase PD](#phase-pd-platform-divergence-documentation) |
+| **Docs** | New-Architecture requirements + migration-doc consolidation | **done** | docs — [§ Phase Docs](#phase-docs-new-architecture-requirements-and-doc-consolidation) |
+| **PD** | Platform-divergence documentation | **done** | multi-package JSDoc/docs — [§ Phase PD](#phase-pd-platform-divergence-documentation) |
 | **4** | Remaining complex | **done** | `firestore`, `messaging`, `database`, `auth` |
 | **5** | Android-only / misc | **done** | `phone-number-verification` |
 | **S** | Sync conversion (forced-async → sync) | queued (scope open — [NewArch-AD-16](architecture-decisions.md#newarch-ad-16--phase-s-asyncsync-conversion--open)); prereq **S0** ([interruption batch](#interruption-batch-standalone-commits)) | All migrated packages — [§ sync conversion](#phase-s-sync-conversion-forced-async--sync) |
@@ -322,11 +322,11 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 ## Current snapshot
 
-**Label:** `phase-r-fallback` (2026-07-02); **harness:** full (no narrowing for final review)
+**Label:** `phase-docs-pd` (2026-07-03) — **complete**
 
-**Next item:** Phase **R** PR-fallback — remove `NativeModules` fallback
+**Next item:** Phase **S** (async→sync) or merge / coordinated major handoff
 
-**Current gates:** PR-fallback all gates **closed** — committed as `refactor: cleanup legacy arch native module fallback`. Proof run + review green.
+**Current gates:** PDoc + PPD all gates **closed** — committed `docs: document all API gaps / platform divergence / migration items` (remediation amended: analytics no-op semantics, messaging AD-4 JSDoc breadth, logTransaction platform note).
 
 **Host rule:** one `:test-cover` at a time — never parallel subagents with e2e.
 
@@ -360,8 +360,8 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Phase 4 `database` TurboModules | P4d | **closed** | **closed** | **closed** | done | `area-focused` | `feat(database)!: migrate database to TurboModules` | 5 Turbo specs/shells + committed codegen; Jest 49 + parity 38; area e2e macOS 213 / iOS 219 / Android 220 (delta logs `/tmp/rnfb-e2e-*-database-delta-review.log`). Remediation: invalidate/teardown parity (Reference+Transaction), onComplete guard, contract test 22 methods, jest mock cleanup. Orchestration: macOS/Android `:8090` pre-flight in `firebase.test.js` + OKF. **Deferred minor:** void spec vs Promise JS API; silent Query `RejectedExecutionException` post-invalidate. |
 | Phase 4 `auth` TurboModules | P4u | **closed** | **closed** | **closed** | done | `area-focused` | `feat(auth)!: migrate auth to TurboModules` | 60-method spec + shells; review e2e macOS 171 / iOS 185 / Android 192. Follow-up committed: `fix(auth): rename delete turbo method for C++ codegen compatibility`. |
 | Phase 5 `phone-number-verification` TurboModules | P5pnv | **closed** | **closed** | **closed** | done | `area-focused` | `feat(phone-number-verification)!: migrate phone-number-verification to TurboModules` | Android-only 6-method spec; review e2e Android 40/2 pending (log `/tmp/rnfb-e2e-android-pnv-review.log`). AD-18 E10 direct resolver. Parity registered. **Bundled auth fix:** separate commit `fix(auth): rename delete turbo method for C++ codegen compatibility`. |
-| Phase Docs — NA reqs + consolidation | PDoc | open | open | open | documentation | `none` | `docs: new-architecture requirements + migration consolidation` | Opportunistic; does not gate 4. |
-| Phase PD — platform divergence | PPD | open | open | open | documentation | `none` | `docs(<pkg>): …` per package | Opportunistic; gap-analysis first. |
+| Phase Docs — NA reqs + consolidation | PDoc | **closed** | **closed** | **closed** | done | `none` | `docs: document all API gaps / platform divergence / migration items` | v26 NA section + platform table; lint/reference:api green. |
+| Phase PD — platform divergence | PPD | **closed** | **closed** | **closed** | done | `none` | `docs: document all API gaps / platform divergence / migration items` | 19 pkg usage notes + JSDoc @remarks; serious review findings remediated in same commit. |
 | Phase R — remove `NativeModules` fallback | PR-fallback | **closed** | **closed** | **closed** | done | `full` + RNFBDebug | `refactor: cleanup legacy arch native module fallback` | Proof 683/823/849 (`/tmp/rnfb-e2e-phaseR-proof-*.log`). Review 2026-07-03: no critical/serious. Android cold boot committed separately. |
 
 ---

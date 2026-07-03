@@ -27,6 +27,15 @@ you can follow the manual installation steps for [iOS](/firestore/usage/installa
 If you have started to receive a `app:mergeDexDebug` error after adding Cloud Firestore, please read the
 [Enabling Multidex](/enabling-multidex) documentation for more information on how to resolve this error.
 
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK); macOS via firebase-js-sdk web interop                      |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+**Platform notes:** IndexedDB persistence and `memoryLocalCache` / `persistentLocalCache` are **web only**. Native persistence is controlled by the iOS/Android Firestore SDK. `initializeFirestore` is async on React Native.
+
 # What does it do
 
 Firestore is a flexible, scalable NoSQL cloud database to store and sync data. It keeps your data in sync across client

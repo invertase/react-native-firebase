@@ -24,6 +24,15 @@ cd ios/ && pod install
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/analytics/usage/installation/ios) and [Android](/analytics/usage/installation/android).
 
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+**Platform notes:** On-device conversion measurement helpers (`initiateOnDeviceConversionMeasurement*`) are **iOS only**; on Android and web the JS layer resolves without calling native (no-op). `logTransaction` (verified iOS in-app purchase events) is **iOS only** and **rejects** on other platforms. Analytics supports only the default Firebase app.
+
 # What does it do
 
 Analytics collects usage and behavior data for your app. Its two primary concerns are:

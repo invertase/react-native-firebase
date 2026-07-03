@@ -627,14 +627,18 @@ export function isSupported(): Promise<boolean> {
 /**
  * Deletes all activated, fetched and defaults configs and
  * resets all Firebase Remote Config settings.
- * Android only. iOS does not reset anything.
+ *
+ * @remarks **Android only.** iOS does not clear activated, fetched, or default configs.
  */
 export function reset(remoteConfig: RemoteConfig): Promise<void> {
   return rc(remoteConfig).reset();
 }
 
 /**
- * Sets defaults based on a native resource.
+ * Sets defaults based on a native resource file.
+ *
+ * @remarks Loads defaults from a platform resource — iOS `.plist` or Android XML — identified
+ * by `resourceName`. No firebase-js-sdk modular equivalent.
  */
 export function setDefaultsFromResource(
   remoteConfig: RemoteConfig,

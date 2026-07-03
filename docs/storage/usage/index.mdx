@@ -24,6 +24,15 @@ cd ios/ && pod install
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/storage/usage/installation/ios) and [Android](/storage/usage/installation/android).
 
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+**Platform notes:** `putFile` and `writeToFile` are **native-only** file-path APIs with no firebase-js-sdk equivalent. Use `FilePath` from `@react-native-firebase/app` for device paths.
+
 # What does it do
 
 Storage is built for app developers who need to store and serve user-generated content, such as photos or videos.

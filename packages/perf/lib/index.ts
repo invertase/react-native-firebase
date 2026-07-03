@@ -191,6 +191,12 @@ export function getPerformance(app?: FirebaseApp): FirebasePerformance {
   ) as unknown as FirebasePerformance;
 }
 
+/**
+ * Creates a Performance Monitoring instance and applies optional settings.
+ *
+ * @remarks Returns **synchronously** on React Native Firebase (unlike some async firebase-js-sdk
+ * initialization paths). Settings are applied to the native Performance SDK instance.
+ */
 export function initializePerformance(
   app: FirebaseApp,
   settings?: PerformanceSettings,
@@ -207,6 +213,13 @@ export function initializePerformance(
   return perf;
 }
 
+/**
+ * Creates a custom performance trace.
+ *
+ * @remarks On React Native Firebase, {@link PerformanceTrace.start} and
+ * {@link PerformanceTrace.stop} are **async** (native bridge). The firebase-js-sdk web
+ * `PerformanceTrace` uses synchronous `start`/`stop`.
+ */
 export function trace(performance: FirebasePerformance, name: string): PerformanceTrace {
   return perfInternal(performance).newTrace(name) as unknown as PerformanceTrace;
 }

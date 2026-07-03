@@ -29,6 +29,15 @@ cd ios/ && pod install
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/ml/usage/installation/ios) and [Android](/ml/usage/installation/android).
 
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+> **React Native only:** There is no firebase-js-sdk web equivalent for the legacy Firebase ML custom-model API.
+
 # What does it do
 
 All Firebase ML services are cloud-based, with on-device APIs handled by the new, separate [Google MLKit](https://developers.google.com/ml-kit/) (Usable in react-native

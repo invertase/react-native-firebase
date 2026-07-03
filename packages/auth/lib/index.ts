@@ -1496,7 +1496,8 @@ export function setLanguageCode(auth: Auth, languageCode: string | null): Promis
 /**
  * Configures iOS keychain access group sharing for the Auth instance.
  *
- * @remarks React Native Firebase-specific iOS helper with no firebase-js-sdk equivalent.
+ * @remarks **iOS only** React Native Firebase helper with no firebase-js-sdk equivalent.
+ * Enables sharing auth state across apps in the same access group (e.g. app extensions).
  */
 export function useUserAccessGroup(auth: Auth, userAccessGroup: string): Promise<void> {
   const authInternal = getAuthInternal(auth);
@@ -1824,7 +1825,8 @@ export function getAdditionalUserInfo(userCredential: UserCredential): Additiona
 /**
  * Returns the configured custom auth domain for the Auth instance.
  *
- * @remarks React Native Firebase-specific helper with no firebase-js-sdk equivalent.
+ * @remarks React Native Firebase-specific helper with no firebase-js-sdk modular equivalent.
+ * Reads the custom domain configured for the Firebase project through the native Auth SDK.
  */
 export function getCustomAuthDomain(auth: Auth): Promise<string> {
   const authInternal = getAuthInternal(auth);

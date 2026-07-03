@@ -15,6 +15,12 @@
  *
  */
 
+/**
+ * @module @react-native-firebase/phone-number-verification
+ *
+ * @remarks **Android only.** The Firebase Phone Number Verification SDK does not support iOS or
+ * Web. Every exported function throws when `Platform.OS !== 'android'`.
+ */
 import { Platform } from 'react-native';
 import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 

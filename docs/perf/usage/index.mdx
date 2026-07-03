@@ -48,6 +48,15 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 ```
 
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+**Platform notes:** `initializePerformance` returns synchronously on RN. Custom trace `start`/`stop` are async through the native bridge (unlike the web SDK).
+
 # What does it do
 
 Performance Monitoring allows you to gain insight into key performance characteristics within your React Native application.

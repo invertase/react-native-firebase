@@ -235,6 +235,9 @@ TOTP
 triaging
 TurboModule
 TurboModules
+Codegen
+IndexedDB
+pre-v26
 typings
 TypeDoc
 UI

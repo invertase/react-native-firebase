@@ -53,7 +53,7 @@ Phase 0 `app` is the first package with **two TurboModule specs in one `codegenC
 ## Spec authoring (`gap-analysis` / pre-`implementation`)
 
 1. Inventory `@ReactMethod` / `RCT_EXPORT_METHOD` from existing Java/ObjC sources.
-2. Draft `specs/NativeRNFBTurbo*.ts` — strong types from `lib/types/internal.ts` and firebase-js-sdk shapes; `Object` / open maps only for genuinely dynamic payloads.
+2. Draft `specs/NativeRNFBTurbo*.ts` — strong types from `lib/types/internal.ts` and firebase-js-sdk shapes; `Object` / open maps only for genuinely dynamic payloads. Follow [Codegen-safe names and types](#codegen-safe-names-and-types-blocking) before running codegen.
 3. Naming: `NativeRNFBTurbo*` prefix (decision [NewArch-AD-2](architecture-decisions.md#newarch-ad-2--naming-nativernfbturbo--accepted)).
 4. Regenerate codegen output; commit under `android/.../generated` and `ios/generated` — [§ Running codegen](#running-codegen-canonical).
 5. For Phase 0 (`app`): include unified module resolver work in `packages/app` ([queue § reference pattern](migration-work-queue.md#reference-pattern-functions)).
@@ -91,6 +91,19 @@ Per package, repeat the [`functions`](../../../packages/functions/) shape:
 5. **iOS** — `.mm` implements spec; `- (std::shared_ptr<TurboModule>)getTurboModule:` returns generated JSI class.
 6. **JS** — update namespace config; no public API changes unless unavoidable.
 7. **Native business logic** — prefer keeping ObjC++/Java shell + existing Swift helpers; language modernization is out of scope ([queue rationale](migration-work-queue.md#reference-pattern-functions)).
+
+### Codegen-safe names and types (blocking)
+
+React Native Codegen turns `specs/NativeRNFBTurbo*.ts` into TypeScript, C++, Java, and ObjC++ artifacts. A name or type that is legal in TypeScript can still break generated native code. Check this list during **spec authoring** and before `yarn codegen`.
+
+| Category | Do not use | Use instead | Why |
+|----------|------------|-------------|-----|
+| Method names | `delete` | `deleteUser`, `deleteToken`, `deleteItem`, etc. | `delete` collides with generated C++ / native language keywords. |
+| Type annotations | `object` | A shaped object type, `Object` for truly dynamic Codegen maps, or a named interface | RN Codegen rejects TypeScript `object` (`TSObjectKeyword`) in NativeModule specs. |
+| Dynamic maps | Unshaped catch-all payloads when fields are known | A named `interface` with explicit fields | Strong typed specs are easier to review and catch native/JS drift. |
+| Any generated symbol | Language keywords / reserved identifiers (`class`, `default`, `new`, `switch`, `case`, `try`, `catch`, `return`, `void`, `static`, `public`, `private`, `protected`, `namespace`, `operator`, `template`, `this`, `self`) | A domain-specific method or field name | Codegen emits bindings in multiple languages; avoid words reserved in any generated target. |
+
+If Codegen requires a wrapper-object type such as `Object`, add a narrow lint disable in the spec file with a comment or local scope; do **not** "fix" it to primitive `object`, because that breaks Codegen. If a legacy method already uses a reserved word, rename the TurboModule spec method and keep the public JS API stable via the wrapper layer.
 
 ### TurboModule native registration checklist (blocking)
 

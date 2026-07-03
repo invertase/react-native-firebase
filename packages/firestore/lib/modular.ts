@@ -329,6 +329,12 @@ export function clearPersistence(firestore: Firestore): Promise<void> {
   return (firestore as FirestoreInternal).clearPersistence();
 }
 
+/**
+ * Clears IndexedDB persistence for the given Firestore instance.
+ *
+ * @remarks Alias for {@link clearPersistence} on React Native Firebase. IndexedDB APIs are
+ * **web only** — this helper calls the native persistence clear path on iOS/Android.
+ */
 export function clearIndexedDbPersistence(firestore: Firestore): Promise<void> {
   return (firestore as FirestoreInternal).clearPersistence();
 }
@@ -341,6 +347,13 @@ export function waitForPendingWrites(firestore: Firestore): Promise<void> {
   return (firestore as FirestoreInternal).waitForPendingWrites();
 }
 
+/**
+ * Creates a Firestore instance with the given settings.
+ *
+ * @remarks **Async on React Native Firebase** — settings are applied through the native bridge.
+ * Web-only `settings.localCache` values (`memoryLocalCache`, `persistentLocalCache`, IndexedDB
+ * factories) are **not supported**; persistence is controlled by the native Firestore SDK.
+ */
 export async function initializeFirestore(
   app: FirebaseApp,
   settings: FirestoreSettings,

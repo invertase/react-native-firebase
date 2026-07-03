@@ -39,6 +39,15 @@ You may find excluding the `i386` architecture via an addition to the `ios/Podfi
     end
 ```
 
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+**Platform notes:** Use `ReactNativeFirebaseAppCheckProvider` for native attestation (Device Check, App Attest, Play Integrity). firebase-js-sdk `ReCaptchaEnterpriseProvider` and `ReCaptchaV3Provider` are **web only**.
+
 # What does it do
 
 App Check works alongside other Firebase services to help protect your backend resources from abuse, such as billing fraud or phishing. With App Check, devices running your app will use an app or device attestation provider that attests to one or both of the following:

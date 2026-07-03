@@ -26,6 +26,15 @@ cd ios/ && pod install
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/remote-config/usage/installation/ios) and [Android](/remote-config/usage/installation/android).
 
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+**Platform notes:** `reset()` is **Android only** — iOS does not clear activated, fetched, or default Remote Config values. `setDefaultsFromResource` loads from native `.plist` / XML resource files.
+
 # What does it do
 
 Remote Config allows you to change the appearance and/or functionality of your app without requiring an app update.

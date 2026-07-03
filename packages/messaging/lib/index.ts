@@ -566,7 +566,10 @@ export function getToken(
 }
 
 /**
- * When any FCM payload is received, the listener callback is called with a `RemoteMessage`.
+ * Subscribes to foreground FCM messages.
+ *
+ * @remarks Event delivery uses the legacy native event proxy shared across RN Firebase modules
+ * (not yet migrated to Codegen TurboModule events). Behavior matches pre-v26 releases.
  */
 export function onMessage(
   messaging: Messaging,
@@ -578,6 +581,9 @@ export function onMessage(
 /**
  * When the user presses a notification displayed via FCM, this listener will be called if the app
  * has opened from a background state.
+ *
+ * @remarks Event delivery uses the legacy native event proxy shared across RN Firebase modules
+ * (not yet migrated to Codegen TurboModule events). Behavior matches pre-v26 releases.
  */
 export function onNotificationOpenedApp(
   messaging: Messaging,
@@ -588,6 +594,9 @@ export function onNotificationOpenedApp(
 
 /**
  * Called when a new registration token is generated for the device.
+ *
+ * @remarks Event delivery uses the legacy native event proxy shared across RN Firebase modules
+ * (not yet migrated to Codegen TurboModule events). Behavior matches pre-v26 releases.
  */
 export function onTokenRefresh(messaging: Messaging, listener: (token: string) => any): () => void {
   return messaging.onTokenRefresh(listener);
@@ -670,14 +679,19 @@ export function unregisterDeviceForRemoteMessages(messaging: Messaging): Promise
 }
 
 /**
- * On iOS, it is possible to get the users APNs token.
+ * Returns the APNs device token on iOS.
+ *
+ * @remarks **iOS only.** Returns `null` when no token is available. There is no firebase-js-sdk
+ * modular equivalent — web push uses a different token lifecycle.
  */
 export function getAPNSToken(messaging: Messaging): Promise<string | null> {
   return messaging.getAPNSToken();
 }
 
 /**
- * On iOS, sets the APNs Token received by the application delegate.
+ * Sets the APNs device token received by the application delegate.
+ *
+ * @remarks **iOS only.** `type` must be `'prod'`, `'sandbox'`, or `'unknown'`.
  */
 export function setAPNSToken(messaging: Messaging, token: string, type?: string): Promise<void> {
   return messaging.setAPNSToken(token, type);
@@ -697,6 +711,9 @@ export function hasPermission(messaging: Messaging): Promise<AuthorizationStatus
 
 /**
  * Called when the FCM server deletes pending messages.
+ *
+ * @remarks Event delivery uses the legacy native event proxy shared across RN Firebase modules
+ * (not yet migrated to Codegen TurboModule events). Behavior matches pre-v26 releases.
  */
 export function onDeletedMessages(messaging: Messaging, listener: () => void): () => void {
   return messaging.onDeletedMessages(listener);
@@ -715,6 +732,9 @@ export function onMessageSent(
 /**
  * When sending a `RemoteMessage`, this listener is called when an error is thrown and the
  * message could not be sent.
+ *
+ * @remarks Event delivery uses the legacy native event proxy shared across RN Firebase modules
+ * (not yet migrated to Codegen TurboModule events). Behavior matches pre-v26 releases.
  */
 export function onSendError(
   messaging: Messaging,
@@ -725,6 +745,9 @@ export function onSendError(
 
 /**
  * Set a message handler function which is called when the app is in the background or terminated.
+ *
+ * @remarks Event delivery uses the legacy native event proxy shared across RN Firebase modules
+ * (not yet migrated to Codegen TurboModule events). Behavior matches pre-v26 releases.
  */
 export function setBackgroundMessageHandler(
   messaging: Messaging,
