@@ -108,7 +108,7 @@ export default class User {
   }
 
   delete(): Promise<void> {
-    return this._auth.native.delete().then(() => {
+    return this._auth.native.deleteUser().then(() => {
       this._auth._setUser(null);
     });
   }

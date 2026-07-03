@@ -17,15 +17,18 @@ package io.invertase.firebase.auth;
  *
  */
 
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithExceptionMap;
+
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Parcel;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import com.facebook.fbreact.specs.NativeRNFBTurboAuthSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -75,8 +78,8 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import io.invertase.firebase.app.NativeRNFBTurboApp;
 import io.invertase.firebase.common.ReactNativeFirebaseEvent;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.SharedUtils;
+import io.invertase.firebase.common.TaskExecutorService;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -86,13 +89,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "JavaDoc"})
-class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
+public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
   // Easier to use would be Instant and DateTimeFormatter, but these are only available in API 26+
   // According to https://stackoverflow.com/a/2202300 this is not the optimal solution, but we only
   // get a unix timestamp so we can hardcode the timezone.
@@ -116,8 +120,15 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   // https://github.com/invertase/react-native-firebase/issues/4911
   private HashMap<String, AuthCredential> credentials = new HashMap<>();
 
-  ReactNativeFirebaseAuthModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
+  private final TaskExecutorService executorService;
+
+  public NativeRNFBTurboAuth(ReactApplicationContext reactContext) {
+    super(reactContext);
+    executorService = new TaskExecutorService("NativeRNFBTurboAuth");
+  }
+
+  private ExecutorService getExecutor() {
+    return executorService.getExecutor();
   }
 
   @Override
@@ -161,7 +172,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     mTotpSecrets.clear();
   }
 
-  @ReactMethod
+  @Override
   public void configureAuthDomain(final String appName) {
     Log.d(TAG, "configureAuthDomain");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -173,7 +184,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void getCustomAuthDomain(final String appName, final Promise promise) {
     Log.d(TAG, "configureAuthDomain");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -182,7 +193,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /** Add a new auth state listener - if one doesn't exist already */
-  @ReactMethod
+  @Override
   public void addAuthStateListener(final String appName) {
     Log.d(TAG, "addAuthStateListener");
 
@@ -215,7 +226,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /** Removes the current auth state listener */
-  @ReactMethod
+  @Override
   public void removeAuthStateListener(String appName) {
     Log.d(TAG, "removeAuthStateListener");
 
@@ -231,7 +242,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /** Add a new id token listener - if one doesn't exist already */
-  @ReactMethod
+  @Override
   public void addIdTokenListener(final String appName) {
     Log.d(TAG, "addIdTokenListener");
 
@@ -265,7 +276,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /** Removes the current id token listener */
-  @ReactMethod
+  @Override
   public void removeIdTokenListener(String appName) {
     Log.d(TAG, "removeIdTokenListener");
 
@@ -292,7 +303,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param forceRecaptchaFlow
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void forceRecaptchaFlowForTesting(
       String appName, boolean forceRecaptchaFlow, Promise promise) {
     Log.d(TAG, "forceRecaptchaFlowForTesting");
@@ -315,7 +326,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param smsCode
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void setAutoRetrievedSmsCodeForPhoneNumber(
       String appName, String phoneNumber, String smsCode, Promise promise) {
     Log.d(TAG, "setAutoRetrievedSmsCodeForPhoneNumber");
@@ -333,7 +344,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param disabled
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void setAppVerificationDisabledForTesting(
       String appName, boolean disabled, Promise promise) {
     Log.d(TAG, "setAppVerificationDisabledForTesting");
@@ -344,7 +355,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     promise.resolve(null);
   }
 
-  @ReactMethod
+  @Override
+  public void useUserAccessGroup(String appName, String userAccessGroup, Promise promise) {
+    promise.resolve(null);
+  }
+
+  @Override
   public void signOut(String appName, Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -358,8 +374,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
   }
 
-  @ReactMethod
-  private void signInAnonymously(String appName, final Promise promise) {
+  @Override
+  public void signInAnonymously(String appName, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
@@ -385,8 +401,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param password
    * @param promise
    */
-  @ReactMethod
-  private void createUserWithEmailAndPassword(
+  @Override
+  public void createUserWithEmailAndPassword(
       String appName, final String email, final String password, final Promise promise) {
     Log.d(TAG, "createUserWithEmailAndPassword");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -413,7 +429,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param email
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void isSignInWithEmailLink(String appName, String emailLink, final Promise promise) {
     Log.d(TAG, "isSignInWithEmailLink");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -428,8 +444,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param password
    * @param promise
    */
-  @ReactMethod
-  private void signInWithEmailAndPassword(
+  @Override
+  public void signInWithEmailAndPassword(
       String appName, final String email, final String password, final Promise promise) {
     Log.d(TAG, "signInWithEmailAndPassword");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -457,8 +473,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param emailLink
    * @param promise
    */
-  @ReactMethod
-  private void signInWithEmailLink(
+  @Override
+  public void signInWithEmailLink(
       String appName, final String email, final String emailLink, final Promise promise) {
     Log.d(TAG, "signInWithEmailLink");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -483,8 +499,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
   }
 
-  @ReactMethod
-  private void signInWithCustomToken(String appName, final String token, final Promise promise) {
+  @Override
+  public void signInWithCustomToken(String appName, final String token, final Promise promise) {
     Log.d(TAG, "signInWithCustomToken");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -509,7 +525,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param authorizationCode
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void revokeToken(String appName, final String authorizationCode, final Promise promise) {
     Log.d(TAG, "revokeToken");
 
@@ -524,7 +540,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param email
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void sendPasswordResetEmail(
       String appName, final String email, ReadableMap actionCodeSettings, final Promise promise) {
     Log.d(TAG, "sendPasswordResetEmail");
@@ -559,7 +575,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param email
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void sendSignInLinkToEmail(
       String appName, String email, ReadableMap actionCodeSettings, final Promise promise) {
     Log.d(TAG, "sendSignInLinkToEmail");
@@ -589,12 +605,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * ---------------------- */
 
   /**
-   * delete
+   * deleteUser
    *
    * @param promise Promise
    */
-  @ReactMethod
-  public void delete(String appName, final Promise promise) {
+  @Override
+  public void deleteUser(String appName, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
@@ -625,7 +641,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    *
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void reload(String appName, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -658,7 +674,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    *
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void sendEmailVerification(
       String appName, ReadableMap actionCodeSettings, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -697,7 +713,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    *
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void verifyBeforeUpdateEmail(
       String appName, String email, ReadableMap actionCodeSettings, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -738,7 +754,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param email
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void updateEmail(String appName, final String email, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -772,7 +788,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param password
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void updatePassword(String appName, final String password, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -808,8 +824,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param authSecret
    * @param promise
    */
-  @ReactMethod
-  private void updatePhoneNumber(
+  @Override
+  public void updatePhoneNumber(
       String appName, String provider, String authToken, String authSecret, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -856,7 +872,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param props
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void updateProfile(String appName, ReadableMap props, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -898,8 +914,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
   }
 
-  @ReactMethod
-  private void signInWithCredential(
+  @Override
+  public void signInWithCredential(
       String appName, String provider, String authToken, String authSecret, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -930,8 +946,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
   }
 
-  @ReactMethod
-  private void signInWithProvider(String appName, ReadableMap provider, final Promise promise) {
+  @Override
+  public void signInWithProvider(String appName, ReadableMap provider, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
@@ -1003,7 +1019,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param appName
    * @param phoneNumber
    */
-  @ReactMethod
+  @Override
   public void signInWithPhoneNumber(
       String appName, final String phoneNumber, final boolean forceResend, final Promise promise) {
     Log.d(TAG, "signInWithPhoneNumber");
@@ -1112,7 +1128,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void getSession(final String appName, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -1135,7 +1151,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
+  @Override
   public void unenrollMultiFactor(
       final String appName, final String factorUID, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -1155,7 +1171,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
+  @Override
   public void verifyPhoneNumberWithMultiFactorInfo(
       final String appName, final String hintUid, final String sessionKey, final Promise promise) {
     final MultiFactorResolver resolver = mCachedResolvers.get(sessionKey);
@@ -1224,7 +1240,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     PhoneAuthProvider.verifyPhoneNumber(phoneAuthOptions);
   }
 
-  @ReactMethod
+  @Override
   public void verifyPhoneNumberForMultiFactor(
       final String appName,
       final String phoneNumber,
@@ -1274,7 +1290,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     PhoneAuthProvider.verifyPhoneNumber(phoneAuthOptions);
   }
 
-  @ReactMethod
+  @Override
   public void finalizeMultiFactorEnrollment(
       final String appName,
       final String verificationId,
@@ -1305,7 +1321,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
+  @Override
   public void generateQrCodeUrl(
       final String appName,
       final String secretKey,
@@ -1322,7 +1338,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     promise.resolve(secret.generateQrCodeUrl(account, issuer));
   }
 
-  @ReactMethod
+  @Override
   public void openInOtpApp(final String appName, final String secretKey, final String qrCodeUri) {
     TotpSecret secret = mTotpSecrets.get(secretKey);
     if (secret != null) {
@@ -1330,7 +1346,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void finalizeTotpEnrollment(
       final String appName,
       final String totpSecret,
@@ -1408,7 +1424,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
+  @Override
   public void resolveMultiFactorSignIn(
       final String appName,
       final String session,
@@ -1421,7 +1437,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     resolveMultiFactorCredential(credential, session, promise);
   }
 
-  @ReactMethod
+  @Override
   public void resolveTotpSignIn(
       final String appName,
       final String sessionKey,
@@ -1456,7 +1472,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
+  @Override
   public void generateTotpSecret(
       final String appName, final String sessionKey, final Promise promise) {
 
@@ -1485,7 +1501,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
+  @Override
   public void confirmationResultConfirm(
       String appName, final String verificationCode, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -1526,12 +1542,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param phoneNumber
    * @param timeout
    */
-  @ReactMethod
+  @Override
   public void verifyPhoneNumber(
       final String appName,
       final String phoneNumber,
       final String requestKey,
-      final int timeout,
+      final double timeout,
       final boolean forceResend) {
     Log.d(TAG, "verifyPhoneNumber:" + phoneNumber);
 
@@ -1625,10 +1641,15 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       if (forceResend && mForceResendingToken != null) {
         PhoneAuthProvider.getInstance(firebaseAuth)
             .verifyPhoneNumber(
-                phoneNumber, timeout, TimeUnit.SECONDS, activity, callbacks, mForceResendingToken);
+                phoneNumber,
+                (long) timeout,
+                TimeUnit.SECONDS,
+                activity,
+                callbacks,
+                mForceResendingToken);
       } else {
         PhoneAuthProvider.getInstance(firebaseAuth)
-            .verifyPhoneNumber(phoneNumber, timeout, TimeUnit.SECONDS, activity, callbacks);
+            .verifyPhoneNumber(phoneNumber, (long) timeout, TimeUnit.SECONDS, activity, callbacks);
       }
     }
   }
@@ -1640,7 +1661,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param newPassword
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void confirmPasswordReset(
       String appName, String code, String newPassword, final Promise promise) {
     Log.d(TAG, "confirmPasswordReset");
@@ -1670,7 +1691,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param code
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void applyActionCode(String appName, String code, final Promise promise) {
     Log.d(TAG, "applyActionCode");
 
@@ -1697,7 +1718,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param code
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void checkActionCode(String appName, String code, final Promise promise) {
     Log.d(TAG, "checkActionCode");
 
@@ -1760,8 +1781,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param authSecret
    * @param promise
    */
-  @ReactMethod
-  private void linkWithCredential(
+  @Override
+  public void linkWithCredential(
       String appName, String provider, String authToken, String authSecret, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -1814,8 +1835,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param provider
    * @param promise
    */
-  @ReactMethod
-  private void linkWithProvider(String appName, ReadableMap provider, final Promise promise) {
+  @Override
+  public void linkWithProvider(String appName, ReadableMap provider, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
@@ -1888,7 +1909,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void unlink(final String appName, final String providerId, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -1914,8 +1935,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
   }
 
-  @ReactMethod
-  private void reauthenticateWithCredential(
+  @Override
+  public void reauthenticateWithCredential(
       String appName, String provider, String authToken, String authSecret, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -1957,8 +1978,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param provider
    * @param promise
    */
-  @ReactMethod
-  private void reauthenticateWithProvider(
+  @Override
+  public void reauthenticateWithProvider(
       String appName, ReadableMap provider, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -2109,8 +2130,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param forceRefresh
    * @param promise
    */
-  @ReactMethod
-  public void getIdToken(String appName, Boolean forceRefresh, final Promise promise) {
+  @Override
+  public void getIdToken(String appName, boolean forceRefresh, final Promise promise) {
     Log.d(TAG, "getIdToken");
 
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -2145,8 +2166,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param forceRefresh
    * @param promise
    */
-  @ReactMethod
-  public void getIdTokenResult(String appName, Boolean forceRefresh, final Promise promise) {
+  @Override
+  public void getIdTokenResult(String appName, boolean forceRefresh, final Promise promise) {
     Log.d(TAG, "getIdTokenResult");
 
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -2206,7 +2227,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param email
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void fetchSignInMethodsForEmail(String appName, String email, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -2245,7 +2266,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param appName
    * @param code
    */
-  @ReactMethod
+  @Override
   public void setLanguageCode(String appName, String code) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -2264,7 +2285,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param tenantId
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void setTenantId(String appName, String tenantId, final Promise promise) {
     try {
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -2281,7 +2302,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    *
    * @param appName
    */
-  @ReactMethod
+  @Override
   public void useDeviceLanguage(String appName) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -2289,7 +2310,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     firebaseAuth.useAppLanguage();
   }
 
-  @ReactMethod
+  @Override
   public void verifyPasswordResetCode(String appName, String code, final Promise promise) {
     Log.d(TAG, "verifyPasswordResetCode");
 
@@ -2312,14 +2333,14 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
-  public void useEmulator(String appName, String host, int port) {
+  @Override
+  public void useEmulator(String appName, String host, double port) {
 
     if (emulatorConfigs.get(appName) == null) {
       emulatorConfigs.put(appName, "true");
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
       FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-      firebaseAuth.useEmulator(host, port);
+      firebaseAuth.useEmulator(host, (int) port);
     }
   }
 
@@ -2809,7 +2830,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @return
    */
   @Override
-  public Map<String, Object> getConstants() {
+  protected Map<String, Object> getTypedExportedConstants() {
     Map<String, Object> constants = new HashMap<>();
 
     List<FirebaseApp> firebaseAppList = FirebaseApp.getApps(getReactApplicationContext());

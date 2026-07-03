@@ -22,6 +22,7 @@
 #import "RNFBApp/RNFBAppModule.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBAuthModule.h"
+#import "RNFBAuthTurboModules.h"
 
 static NSString *const keyIOS = @"iOS";
 static NSString *const keyUrl = @"url";
@@ -65,10 +66,15 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
 
 + (BOOL)requiresMainQueueSetup {
-  return YES;
+  return NO;
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRNFBTurboAuthSpecJSI>(params);
 }
 
 - (id)init {
@@ -119,7 +125,9 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Auth Methods
 
-RCT_EXPORT_METHOD(addAuthStateListener : (FIRApp *)firebaseApp) {
+- (void)addAuthStateListener:(NSString *)appName {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   if (![authStateHandlers valueForKey:firebaseApp.name]) {
     FIRAuthStateDidChangeListenerHandle newListenerHandle = [[FIRAuth authWithApp:firebaseApp]
         addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
@@ -135,7 +143,9 @@ RCT_EXPORT_METHOD(addAuthStateListener : (FIRApp *)firebaseApp) {
   }
 }
 
-RCT_EXPORT_METHOD(removeAuthStateListener : (FIRApp *)firebaseApp) {
+- (void)removeAuthStateListener:(NSString *)appName {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   if ([authStateHandlers valueForKey:firebaseApp.name]) {
     [[FIRAuth authWithApp:firebaseApp]
         removeAuthStateDidChangeListener:[authStateHandlers valueForKey:firebaseApp.name]];
@@ -143,7 +153,9 @@ RCT_EXPORT_METHOD(removeAuthStateListener : (FIRApp *)firebaseApp) {
   }
 }
 
-RCT_EXPORT_METHOD(addIdTokenListener : (FIRApp *)firebaseApp) {
+- (void)addIdTokenListener:(NSString *)appName {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   if (![idTokenHandlers valueForKey:firebaseApp.name]) {
     FIRIDTokenDidChangeListenerHandle newListenerHandle = [[FIRAuth authWithApp:firebaseApp]
         addIDTokenDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
@@ -161,7 +173,9 @@ RCT_EXPORT_METHOD(addIdTokenListener : (FIRApp *)firebaseApp) {
   }
 }
 
-RCT_EXPORT_METHOD(removeIdTokenListener : (FIRApp *)firebaseApp) {
+- (void)removeIdTokenListener:(NSString *)appName {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   if ([idTokenHandlers valueForKey:firebaseApp.name]) {
     [[FIRAuth authWithApp:firebaseApp]
         removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:firebaseApp.name]];
@@ -169,7 +183,9 @@ RCT_EXPORT_METHOD(removeIdTokenListener : (FIRApp *)firebaseApp) {
   }
 }
 
-RCT_EXPORT_METHOD(configureAuthDomain : (FIRApp *)firebaseApp) {
+- (void)configureAuthDomain:(NSString *)appName {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   NSString *authDomain = [RNFBAppModule getCustomDomain:firebaseApp.name];
   DLog(@"RNFBAuth app: %@ customAuthDomain: %@", firebaseApp.name, authDomain);
   if (authDomain != nil) {
@@ -177,22 +193,45 @@ RCT_EXPORT_METHOD(configureAuthDomain : (FIRApp *)firebaseApp) {
   }
 }
 
-RCT_EXPORT_METHOD(getCustomAuthDomain
-                  : (FIRApp *)firebaseApp
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)getCustomAuthDomain:(NSString *)appName
+                    resolve:(RCTPromiseResolveBlock)resolve
+                     reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   resolve([FIRAuth authWithApp:firebaseApp].customAuthDomain);
 }
 
-RCT_EXPORT_METHOD(setAppVerificationDisabledForTesting : (FIRApp *)firebaseApp : (BOOL)disabled) {
+- (void)setAppVerificationDisabledForTesting:(NSString *)appName
+                                    disabled:(BOOL)disabled
+                                     resolve:(RCTPromiseResolveBlock)resolve
+                                      reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   [FIRAuth authWithApp:firebaseApp].settings.appVerificationDisabledForTesting = disabled;
+  resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(useUserAccessGroup
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)userAccessGroup
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)forceRecaptchaFlowForTesting:(NSString *)appName
+                  forceRecaptchaFlow:(BOOL)forceRecaptchaFlow
+                             resolve:(RCTPromiseResolveBlock)resolve
+                              reject:(RCTPromiseRejectBlock)reject {
+  resolve([NSNull null]);
+}
+
+- (void)setAutoRetrievedSmsCodeForPhoneNumber:(NSString *)appName
+                                  phoneNumber:(NSString *)phoneNumber
+                                      smsCode:(NSString *)smsCode
+                                      resolve:(RCTPromiseResolveBlock)resolve
+                                       reject:(RCTPromiseRejectBlock)reject {
+  resolve([NSNull null]);
+}
+
+- (void)useUserAccessGroup:(NSString *)appName
+           userAccessGroup:(NSString *)userAccessGroup
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   NSError *error;
   [[FIRAuth authWithApp:firebaseApp] useUserAccessGroup:userAccessGroup error:&error];
 
@@ -204,10 +243,11 @@ RCT_EXPORT_METHOD(useUserAccessGroup
   return;
 }
 
-RCT_EXPORT_METHOD(signOut
-                  : (FIRApp *)firebaseApp
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)signOut:(NSString *)appName
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
@@ -224,10 +264,11 @@ RCT_EXPORT_METHOD(signOut
   [self promiseNoUser:resolve rejecter:reject isError:YES];
 }
 
-RCT_EXPORT_METHOD(signInAnonymously
-                  : (FIRApp *)firebaseApp
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)signInAnonymously:(NSString *)appName
+                  resolve:(RCTPromiseResolveBlock)resolve
+                   reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   [[FIRAuth authWithApp:firebaseApp]
       signInAnonymouslyWithCompletion:^(FIRAuthDataResult *authResult, NSError *error) {
         if (error) {
@@ -238,12 +279,13 @@ RCT_EXPORT_METHOD(signInAnonymously
       }];
 }
 
-RCT_EXPORT_METHOD(signInWithEmailAndPassword
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)email
-                  : (NSString *)password
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)signInWithEmailAndPassword:(NSString *)appName
+                             email:(NSString *)email
+                          password:(NSString *)password
+                           resolve:(RCTPromiseResolveBlock)resolve
+                            reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   [[FIRAuth authWithApp:firebaseApp]
       signInWithEmail:email
              password:password
@@ -256,21 +298,23 @@ RCT_EXPORT_METHOD(signInWithEmailAndPassword
            }];
 }
 
-RCT_EXPORT_METHOD(isSignInWithEmailLink
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)emailLink
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)isSignInWithEmailLink:(NSString *)appName
+                    emailLink:(NSString *)emailLink
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   resolve(
       @([RCTConvert BOOL:@([[FIRAuth authWithApp:firebaseApp] isSignInWithEmailLink:emailLink])]));
 }
 
-RCT_EXPORT_METHOD(signInWithEmailLink
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)email
-                  : (NSString *)emailLink
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)signInWithEmailLink:(NSString *)appName
+                      email:(NSString *)email
+                  emailLink:(NSString *)emailLink
+                    resolve:(RCTPromiseResolveBlock)resolve
+                     reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   [[FIRAuth authWithApp:firebaseApp]
       signInWithEmail:email
                  link:emailLink
@@ -283,12 +327,13 @@ RCT_EXPORT_METHOD(signInWithEmailLink
            }];
 }
 
-RCT_EXPORT_METHOD(createUserWithEmailAndPassword
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)email
-                  : (NSString *)password
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)createUserWithEmailAndPassword:(NSString *)appName
+                                 email:(NSString *)email
+                              password:(NSString *)password
+                               resolve:(RCTPromiseResolveBlock)resolve
+                                reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   [[FIRAuth authWithApp:firebaseApp]
       createUserWithEmail:email
                  password:password
@@ -301,10 +346,11 @@ RCT_EXPORT_METHOD(createUserWithEmailAndPassword
                }];
 }
 
-RCT_EXPORT_METHOD(delete
-                  : (FIRApp *)firebaseApp
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)deleteUser:(NSString *)appName
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
@@ -320,10 +366,11 @@ RCT_EXPORT_METHOD(delete
   }
 }
 
-RCT_EXPORT_METHOD(reload
-                  : (FIRApp *)firebaseApp
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)reload:(NSString *)appName
+       resolve:(RCTPromiseResolveBlock)resolve
+        reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
   if (user) {
     [self reloadAndReturnUser:user resolver:resolve rejecter:reject firebaseApp:firebaseApp];
@@ -332,11 +379,12 @@ RCT_EXPORT_METHOD(reload
   }
 }
 
-RCT_EXPORT_METHOD(sendEmailVerification
-                  : (FIRApp *)firebaseApp
-                  : (NSDictionary *)actionCodeSettings
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)sendEmailVerification:(NSString *)appName
+           actionCodeSettings:(NSDictionary *)actionCodeSettings
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
   if (user) {
     id handler = ^(NSError *_Nullable error) {
@@ -358,12 +406,13 @@ RCT_EXPORT_METHOD(sendEmailVerification
   }
 }
 
-RCT_EXPORT_METHOD(verifyBeforeUpdateEmail
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)email
-                  : (NSDictionary *)actionCodeSettings
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)verifyBeforeUpdateEmail:(NSString *)appName
+                          email:(NSString *)email
+             actionCodeSettings:(NSDictionary *)actionCodeSettings
+                        resolve:(RCTPromiseResolveBlock)resolve
+                         reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
   if (user) {
     id handler = ^(NSError *_Nullable error) {
@@ -387,11 +436,12 @@ RCT_EXPORT_METHOD(verifyBeforeUpdateEmail
   }
 }
 
-RCT_EXPORT_METHOD(updateEmail
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)email
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)updateEmail:(NSString *)appName
+              email:(NSString *)email
+            resolve:(RCTPromiseResolveBlock)resolve
+             reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
@@ -411,11 +461,12 @@ RCT_EXPORT_METHOD(updateEmail
   }
 }
 
-RCT_EXPORT_METHOD(updatePassword
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)password
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)updatePassword:(NSString *)appName
+              password:(NSString *)password
+               resolve:(RCTPromiseResolveBlock)resolve
+                reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
@@ -434,13 +485,14 @@ RCT_EXPORT_METHOD(updatePassword
 }
 
 #if TARGET_OS_IOS
-RCT_EXPORT_METHOD(updatePhoneNumber
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)provider
-                  : (NSString *)authToken
-                  : (NSString *)authSecret
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)updatePhoneNumber:(NSString *)appName
+                 provider:(NSString *)provider
+                authToken:(NSString *)authToken
+               authSecret:(NSString *)authSecret
+                  resolve:(RCTPromiseResolveBlock)resolve
+                   reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
@@ -476,11 +528,12 @@ RCT_EXPORT_METHOD(updatePhoneNumber
 }
 #endif
 
-RCT_EXPORT_METHOD(updateProfile
-                  : (FIRApp *)firebaseApp
-                  : (NSDictionary *)props
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)updateProfile:(NSString *)appName
+                props:(NSDictionary *)props
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
@@ -512,11 +565,12 @@ RCT_EXPORT_METHOD(updateProfile
   }
 }
 
-RCT_EXPORT_METHOD(getIdToken
-                  : (FIRApp *)firebaseApp
-                  : (BOOL)forceRefresh
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)getIdToken:(NSString *)appName
+      forceRefresh:(BOOL)forceRefresh
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
@@ -533,11 +587,12 @@ RCT_EXPORT_METHOD(getIdToken
   }
 }
 
-RCT_EXPORT_METHOD(getIdTokenResult
-                  : (FIRApp *)firebaseApp
-                  : (BOOL)forceRefresh
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)getIdTokenResult:(NSString *)appName
+            forceRefresh:(BOOL)forceRefresh
+                 resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
@@ -579,13 +634,14 @@ RCT_EXPORT_METHOD(getIdTokenResult
   }
 }
 
-RCT_EXPORT_METHOD(signInWithCredential
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)provider
-                  : (NSString *)authToken
-                  : (NSString *)authSecret
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)signInWithCredential:(NSString *)appName
+                    provider:(NSString *)provider
+                   authToken:(NSString *)authToken
+                  authSecret:(NSString *)authSecret
+                     resolve:(RCTPromiseResolveBlock)resolve
+                      reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRAuthCredential *credential = [self getCredentialForProvider:provider
                                                            token:authToken
                                                           secret:authSecret
@@ -611,11 +667,12 @@ RCT_EXPORT_METHOD(signInWithCredential
                 }];
 }
 
-RCT_EXPORT_METHOD(signInWithProvider
-                  : (FIRApp *)firebaseApp
-                  : (NSDictionary *)provider
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)signInWithProvider:(NSString *)appName
+                  provider:(NSDictionary *)provider
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   NSString *providerId = provider[@"providerId"];
   if (providerId == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
@@ -671,12 +728,13 @@ RCT_EXPORT_METHOD(signInWithProvider
 #endif
 }
 
-RCT_EXPORT_METHOD(confirmPasswordReset
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)code
-                  : (NSString *)newPassword
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)confirmPasswordReset:(NSString *)appName
+                        code:(NSString *)code
+                 newPassword:(NSString *)newPassword
+                     resolve:(RCTPromiseResolveBlock)resolve
+                      reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   [[FIRAuth authWithApp:firebaseApp]
       confirmPasswordResetWithCode:code
                        newPassword:newPassword
@@ -689,11 +747,12 @@ RCT_EXPORT_METHOD(confirmPasswordReset
                         }];
 }
 
-RCT_EXPORT_METHOD(applyActionCode
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)code
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)applyActionCode:(NSString *)appName
+                   code:(NSString *)code
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   [[FIRAuth authWithApp:firebaseApp]
       applyActionCode:code
            completion:^(NSError *_Nullable error) {
@@ -707,11 +766,12 @@ RCT_EXPORT_METHOD(applyActionCode
            }];
 }
 
-RCT_EXPORT_METHOD(checkActionCode
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)code
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)checkActionCode:(NSString *)appName
+                   code:(NSString *)code
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   [[FIRAuth authWithApp:firebaseApp]
       checkActionCode:code
            completion:^(FIRActionCodeInfo *_Nullable info, NSError *_Nullable error) {
@@ -763,11 +823,12 @@ RCT_EXPORT_METHOD(checkActionCode
            }];
 }
 
-RCT_EXPORT_METHOD(revokeToken
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)authorizationCode
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)revokeToken:(NSString *)appName
+    authorizationCode:(NSString *)authorizationCode
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   [[FIRAuth authWithApp:firebaseApp]
       revokeTokenWithAuthorizationCode:authorizationCode
                             completion:^(NSError *_Nullable error) {
@@ -779,12 +840,13 @@ RCT_EXPORT_METHOD(revokeToken
                             }];
 }
 
-RCT_EXPORT_METHOD(sendPasswordResetEmail
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)email
-                  : (NSDictionary *)actionCodeSettings
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)sendPasswordResetEmail:(NSString *)appName
+                         email:(NSString *)email
+            actionCodeSettings:(NSDictionary *)actionCodeSettings
+                       resolve:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   id handler = ^(NSError *_Nullable error) {
     if (error) {
       [self promiseRejectAuthException:reject error:error];
@@ -803,12 +865,13 @@ RCT_EXPORT_METHOD(sendPasswordResetEmail
   }
 }
 
-RCT_EXPORT_METHOD(sendSignInLinkToEmail
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)email
-                  : (NSDictionary *)actionCodeSettings
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)sendSignInLinkToEmail:(NSString *)appName
+                        email:(NSString *)email
+           actionCodeSettings:(NSDictionary *)actionCodeSettings
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   id handler = ^(NSError *_Nullable error) {
     if (error) {
       [self promiseRejectAuthException:reject error:error];
@@ -823,11 +886,12 @@ RCT_EXPORT_METHOD(sendSignInLinkToEmail
                                                 completion:handler];
 }
 
-RCT_EXPORT_METHOD(signInWithCustomToken
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)customToken
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)signInWithCustomToken:(NSString *)appName
+                  customToken:(NSString *)customToken
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   [[FIRAuth authWithApp:firebaseApp]
       signInWithCustomToken:customToken
                  completion:^(FIRAuthDataResult *authResult, NSError *error) {
@@ -840,12 +904,16 @@ RCT_EXPORT_METHOD(signInWithCustomToken
 }
 
 #if TARGET_OS_IOS
-RCT_EXPORT_METHOD(signInWithPhoneNumber
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)phoneNumber
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)signInWithPhoneNumber:(NSString *)appName
+                  phoneNumber:(NSString *)phoneNumber
+                  forceResend:(BOOL)forceResend
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   DLog(@"SignInWthPhoneNumber instance: %@", firebaseApp.name);
+
+  (void)forceResend;
 
   [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
       verifyPhoneNumber:phoneNumber
@@ -860,12 +928,13 @@ RCT_EXPORT_METHOD(signInWithPhoneNumber
                }
              }];
 }
-RCT_EXPORT_METHOD(verifyPhoneNumberWithMultiFactorInfo
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)hintUid
-                  : (NSString *)sessionKey
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)verifyPhoneNumberWithMultiFactorInfo:(NSString *)appName
+                                     hintUid:(NSString *)hintUid
+                                  sessionKey:(NSString *)sessionKey
+                                     resolve:(RCTPromiseResolveBlock)resolve
+                                      reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   if ([cachedResolver valueForKey:sessionKey] == nil) {
     [RNFBSharedUtils
         rejectPromiseWithUserInfo:reject
@@ -905,16 +974,17 @@ RCT_EXPORT_METHOD(verifyPhoneNumberWithMultiFactorInfo
                                 }];
 }
 
-RCT_EXPORT_METHOD(verifyPhoneNumberForMultiFactor
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)phoneNumber
-                  : (NSString *)sessionId
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)verifyPhoneNumberForMultiFactor:(NSString *)appName
+                            phoneNumber:(NSString *)phoneNumber
+                             sessionKey:(NSString *)sessionKey
+                                resolve:(RCTPromiseResolveBlock)resolve
+                                 reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   DLog(@"verifyPhoneNumberForMultifactor using app: %@", firebaseApp.name);
   DLog(@"verifyPhoneNumberForMultifactor phoneNumber: %@", phoneNumber);
-  DLog(@"verifyPhoneNumberForMultifactor sessionId: %@", sessionId);
-  FIRMultiFactorSession *session = cachedSessions[sessionId];
+  DLog(@"verifyPhoneNumberForMultifactor sessionKey: %@", sessionKey);
+  FIRMultiFactorSession *session = cachedSessions[sessionKey];
   if (session == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                       userInfo:(NSMutableDictionary *)@{
@@ -937,13 +1007,14 @@ RCT_EXPORT_METHOD(verifyPhoneNumberForMultiFactor
               }];
 }
 
-RCT_EXPORT_METHOD(resolveMultiFactorSignIn
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)sessionKey
-                  : (NSString *)verificationId
-                  : (NSString *)verificationCode
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)resolveMultiFactorSignIn:(NSString *)appName
+                         session:(NSString *)session
+                  verificationId:(NSString *)verificationId
+                verificationCode:(NSString *)verificationCode
+                         resolve:(RCTPromiseResolveBlock)resolve
+                          reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   DLog(@"using instance resolve MultiFactorSignIn: %@", firebaseApp.name);
 
   FIRPhoneAuthCredential *credential =
@@ -955,28 +1026,28 @@ RCT_EXPORT_METHOD(resolveMultiFactorSignIn
   FIRMultiFactorAssertion *assertion =
       [FIRPhoneMultiFactorGenerator assertionWithCredential:credential];
 
-  [cachedResolver[sessionKey] resolveSignInWithAssertion:assertion
-                                              completion:^(FIRAuthDataResult *_Nullable authResult,
-                                                           NSError *_Nullable error) {
-                                                DLog(@"authError: %@", error) if (error) {
-                                                  [self promiseRejectAuthException:reject
-                                                                             error:error];
-                                                }
-                                                else {
-                                                  [self promiseWithAuthResult:resolve
-                                                                     rejecter:reject
-                                                                   authResult:authResult];
-                                                }
-                                              }];
+  [cachedResolver[session] resolveSignInWithAssertion:assertion
+                                           completion:^(FIRAuthDataResult *_Nullable authResult,
+                                                        NSError *_Nullable error) {
+                                             DLog(@"authError: %@", error) if (error) {
+                                               [self promiseRejectAuthException:reject error:error];
+                                             }
+                                             else {
+                                               [self promiseWithAuthResult:resolve
+                                                                  rejecter:reject
+                                                                authResult:authResult];
+                                             }
+                                           }];
 }
 
-RCT_EXPORT_METHOD(resolveTotpSignIn
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)sessionKey
-                  : (NSString *)uid
-                  : (NSString *)oneTimePassword
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)resolveTotpSignIn:(NSString *)appName
+               sessionKey:(NSString *)sessionKey
+                      uid:(NSString *)uid
+          oneTimePassword:(NSString *)oneTimePassword
+                  resolve:(RCTPromiseResolveBlock)resolve
+                   reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   DLog(@"using instance resolve TotpSignIn: %@", firebaseApp.name);
 
   FIRMultiFactorAssertion *assertion =
@@ -997,11 +1068,12 @@ RCT_EXPORT_METHOD(resolveTotpSignIn
                                               }];
 }
 
-RCT_EXPORT_METHOD(generateTotpSecret
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)sessionKey
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)generateTotpSecret:(NSString *)appName
+                sessionKey:(NSString *)sessionKey
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   DLog(@"using instance resolve generateTotpSecret: %@", firebaseApp.name);
 
   FIRMultiFactorSession *session = cachedSessions[sessionKey];
@@ -1026,13 +1098,14 @@ RCT_EXPORT_METHOD(generateTotpSecret
                                 }];
 }
 
-RCT_EXPORT_METHOD(generateQrCodeUrl
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)secretKey
-                  : (NSString *)accountName
-                  : (NSString *)issuer
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)generateQrCodeUrl:(NSString *)appName
+                secretKey:(NSString *)secretKey
+              accountName:(NSString *)accountName
+                   issuer:(NSString *)issuer
+                  resolve:(RCTPromiseResolveBlock)resolve
+                   reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   DLog(@"generateQrCodeUrl using instance resolve generateQrCodeUrl: %@", firebaseApp.name);
   DLog(@"generateQrCodeUrl using secretKey: %@", secretKey);
   FIRTOTPSecret *totpSecret = cachedTotpSecrets[secretKey];
@@ -1041,20 +1114,22 @@ RCT_EXPORT_METHOD(generateQrCodeUrl
   resolve(url);
 }
 
-RCT_EXPORT_METHOD(openInOtpApp
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)secretKey
-                  : (NSString *)qrCodeUri) {
+- (void)openInOtpApp:(NSString *)appName
+           secretKey:(NSString *)secretKey
+           qrCodeUri:(NSString *)qrCodeUri {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   DLog(@"generateQrCodeUrl using secretKey: %@", secretKey);
   FIRTOTPSecret *totpSecret = cachedTotpSecrets[secretKey];
   DLog(@"openInOtpApp using qrCodeUri: %@", qrCodeUri);
   [totpSecret openInOTPAppWithQRCodeURL:qrCodeUri];
 }
 
-RCT_EXPORT_METHOD(getSession
-                  : (FIRApp *)firebaseApp
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)getSession:(NSString *)appName
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
   [[user multiFactor] getSessionWithCompletion:^(FIRMultiFactorSession *_Nullable session,
                                                  NSError *_Nullable error) {
@@ -1069,11 +1144,12 @@ RCT_EXPORT_METHOD(getSession
   }];
 }
 
-RCT_EXPORT_METHOD(unenrollMultiFactor
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)factorUID
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)unenrollMultiFactor:(NSString *)appName
+                  factorUID:(NSString *)factorUID
+                    resolve:(RCTPromiseResolveBlock)resolve
+                     reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   DLog(@"using instance unenrollMultiFactor: %@", firebaseApp.name);
 
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
@@ -1089,13 +1165,14 @@ RCT_EXPORT_METHOD(unenrollMultiFactor
                                }];
 }
 
-RCT_EXPORT_METHOD(finalizeMultiFactorEnrollment
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)verificationId
-                  : (NSString *)verificationCode
-                  : (NSString *_Nullable)displayName
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)finalizeMultiFactorEnrollment:(NSString *)appName
+                       verificationId:(NSString *)verificationId
+                     verificationCode:(NSString *)verificationCode
+                          displayName:(NSString *_Nullable)displayName
+                              resolve:(RCTPromiseResolveBlock)resolve
+                               reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   DLog(@"using instance finalizeMultifactorEnrollment: %@", firebaseApp.name);
 
   FIRPhoneAuthCredential *credential =
@@ -1118,13 +1195,14 @@ RCT_EXPORT_METHOD(finalizeMultiFactorEnrollment
                              }];
 }
 
-RCT_EXPORT_METHOD(finalizeTotpEnrollment
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)totpSecret
-                  : (NSString *)verificationCode
-                  : (NSString *_Nullable)displayName
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)finalizeTotpEnrollment:(NSString *)appName
+                    totpSecret:(NSString *)totpSecret
+              verificationCode:(NSString *)verificationCode
+                   displayName:(NSString *_Nullable)displayName
+                       resolve:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   DLog(@"using instance finalizeTotpEnrollment: %@", firebaseApp.name);
 
   FIRTOTPSecret *cachedTotpSecret = cachedTotpSecrets[totpSecret];
@@ -1149,10 +1227,13 @@ RCT_EXPORT_METHOD(finalizeTotpEnrollment
                              }];
 }
 
-RCT_EXPORT_METHOD(verifyPhoneNumber
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)phoneNumber
-                  : (NSString *)requestKey) {
+- (void)verifyPhoneNumber:(NSString *)appName
+              phoneNumber:(NSString *)phoneNumber
+               requestKey:(NSString *)requestKey
+                  timeout:(double)timeout
+              forceResend:(BOOL)forceResend {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   DLog(@"using instance verifyPhoneNumber: %@", firebaseApp.name);
 
   [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
@@ -1184,11 +1265,12 @@ RCT_EXPORT_METHOD(verifyPhoneNumber
              }];
 }
 
-RCT_EXPORT_METHOD(confirmationResultConfirm
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)verificationCode
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)confirmationResultConfirm:(NSString *)appName
+                 verificationCode:(NSString *)verificationCode
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
   NSString *verificationId = [defaults stringForKey:@"authVerificationID"];
 
@@ -1210,13 +1292,14 @@ RCT_EXPORT_METHOD(confirmationResultConfirm
 }
 #endif
 
-RCT_EXPORT_METHOD(linkWithCredential
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)provider
-                  : (NSString *)authToken
-                  : (NSString *)authSecret
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)linkWithCredential:(NSString *)appName
+                  provider:(NSString *)provider
+                 authToken:(NSString *)authToken
+                authSecret:(NSString *)authSecret
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRAuthCredential *credential = [self getCredentialForProvider:provider
                                                            token:authToken
                                                           secret:authSecret
@@ -1246,11 +1329,12 @@ RCT_EXPORT_METHOD(linkWithCredential
   }
 }
 
-RCT_EXPORT_METHOD(linkWithProvider
-                  : (FIRApp *)firebaseApp
-                  : (NSDictionary *)provider
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)linkWithProvider:(NSString *)appName
+                provider:(NSDictionary *)provider
+                 resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   NSString *providerId = provider[@"providerId"];
   if (providerId == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
@@ -1311,11 +1395,12 @@ RCT_EXPORT_METHOD(linkWithProvider
 #endif
 }
 
-RCT_EXPORT_METHOD(unlink
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)providerId
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)unlink:(NSString *)appName
+    providerId:(NSString *)providerId
+       resolve:(RCTPromiseResolveBlock)resolve
+        reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
@@ -1335,13 +1420,14 @@ RCT_EXPORT_METHOD(unlink
   }
 }
 
-RCT_EXPORT_METHOD(reauthenticateWithCredential
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)provider
-                  : (NSString *)authToken
-                  : (NSString *)authSecret
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)reauthenticateWithCredential:(NSString *)appName
+                            provider:(NSString *)provider
+                           authToken:(NSString *)authToken
+                          authSecret:(NSString *)authSecret
+                             resolve:(RCTPromiseResolveBlock)resolve
+                              reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   FIRAuthCredential *credential = [self getCredentialForProvider:provider
                                                            token:authToken
                                                           secret:authSecret
@@ -1375,11 +1461,12 @@ RCT_EXPORT_METHOD(reauthenticateWithCredential
   }
 }
 
-RCT_EXPORT_METHOD(reauthenticateWithProvider
-                  : (FIRApp *)firebaseApp
-                  : (NSDictionary *)provider
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)reauthenticateWithProvider:(NSString *)appName
+                          provider:(NSDictionary *)provider
+                           resolve:(RCTPromiseResolveBlock)resolve
+                            reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   NSString *providerId = provider[@"providerId"];
   if (providerId == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
@@ -1440,11 +1527,12 @@ RCT_EXPORT_METHOD(reauthenticateWithProvider
 #endif
 }
 
-RCT_EXPORT_METHOD(fetchSignInMethodsForEmail
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)email
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)fetchSignInMethodsForEmail:(NSString *)appName
+                             email:(NSString *)email
+                           resolve:(RCTPromiseResolveBlock)resolve
+                            reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   [[FIRAuth authWithApp:firebaseApp]
       fetchSignInMethodsForEmail:email
                       completion:^(NSArray<NSString *> *_Nullable providers,
@@ -1460,7 +1548,9 @@ RCT_EXPORT_METHOD(fetchSignInMethodsForEmail
                       }];
 }
 
-RCT_EXPORT_METHOD(setLanguageCode : (FIRApp *)firebaseApp : (NSString *)code) {
+- (void)setLanguageCode:(NSString *)appName code:(NSString *)code {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   if (code) {
     [FIRAuth authWithApp:firebaseApp].languageCode = code;
   } else {
@@ -1468,19 +1558,28 @@ RCT_EXPORT_METHOD(setLanguageCode : (FIRApp *)firebaseApp : (NSString *)code) {
   }
 }
 
-RCT_EXPORT_METHOD(setTenantId : (FIRApp *)firebaseApp : (NSString *)tenantID) {
-  [FIRAuth authWithApp:firebaseApp].tenantID = tenantID;
+- (void)setTenantId:(NSString *)appName
+           tenantId:(NSString *)tenantId
+            resolve:(RCTPromiseResolveBlock)resolve
+             reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
+  [FIRAuth authWithApp:firebaseApp].tenantID = tenantId;
+  resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(useDeviceLanguage : (FIRApp *)firebaseApp) {
+- (void)useDeviceLanguage:(NSString *)appName {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   [[FIRAuth authWithApp:firebaseApp] useAppLanguage];
 }
 
-RCT_EXPORT_METHOD(verifyPasswordResetCode
-                  : (FIRApp *)firebaseApp
-                  : (NSString *)code
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)verifyPasswordResetCode:(NSString *)appName
+                           code:(NSString *)code
+                        resolve:(RCTPromiseResolveBlock)resolve
+                         reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   [[FIRAuth authWithApp:firebaseApp]
       verifyPasswordResetCode:code
                    completion:^(NSString *_Nullable email, NSError *_Nullable error) {
@@ -1492,12 +1591,11 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode
                    }];
 }
 
-RCT_EXPORT_METHOD(useEmulator
-                  : (FIRApp *)firebaseApp
-                  : (nonnull NSString *)host
-                  : (NSInteger)port) {
+- (void)useEmulator:(NSString *)appName host:(nonnull NSString *)host port:(double)port {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
   if (!emulatorConfigs[firebaseApp.name]) {
-    [[FIRAuth authWithApp:firebaseApp] useEmulatorWithHost:host port:port];
+    [[FIRAuth authWithApp:firebaseApp] useEmulatorWithHost:host port:(NSInteger)port];
     emulatorConfigs[firebaseApp.name] = @YES;
   }
 }
@@ -1806,7 +1904,15 @@ RCT_EXPORT_METHOD(useEmulator
   return output;
 }
 
-- (NSDictionary *)constantsToExport {
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboAuth::Constants::Builder>)constantsToExport {
+  return [_RCTTypedModuleConstants newWithUnsafeDictionary:[self authConstantsDictionary]];
+}
+
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboAuth::Constants::Builder>)getConstants {
+  return [self constantsToExport];
+}
+
+- (NSDictionary *)authConstantsDictionary {
   NSDictionary *firebaseApps = [FIRApp allApps];
   NSMutableDictionary *constants = [NSMutableDictionary new];
   NSMutableDictionary *appLanguage = [NSMutableDictionary new];

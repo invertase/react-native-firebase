@@ -150,7 +150,15 @@ jest.doMock('react-native', () => {
           eventsNotifyReady: jest.fn(),
           removeListeners: jest.fn(),
         },
-        RNFBAuthModule: {
+        NativeRNFBTurboAuth: {
+          getConstants: () => ({
+            APP_LANGUAGE: {
+              '[DEFAULT]': 'en-US',
+            },
+            APP_USER: {
+              '[DEFAULT]': null,
+            },
+          }),
           APP_LANGUAGE: {
             '[DEFAULT]': 'en-US',
           },
@@ -186,8 +194,7 @@ jest.doMock('react-native', () => {
           useEmulator: jest.fn(),
           getCustomAuthDomain: jest.fn(() => Promise.resolve(null)),
           configureAuthDomain: jest.fn(() => Promise.resolve()),
-          // User methods
-          deleteObject: jest.fn(() => Promise.resolve()),
+          delete: jest.fn(() => Promise.resolve()),
           getIdToken: jest.fn(() => Promise.resolve('mock-token')),
           getIdTokenResult: jest.fn(() => Promise.resolve({ token: 'mock-token' })),
           linkWithCredential: jest.fn(() => Promise.resolve({ user: null })),
@@ -202,6 +209,22 @@ jest.doMock('react-native', () => {
           updatePhoneNumber: jest.fn(() => Promise.resolve(null)),
           updateProfile: jest.fn(() => Promise.resolve(null)),
           verifyBeforeUpdateEmail: jest.fn(() => Promise.resolve(null)),
+          forceRecaptchaFlowForTesting: jest.fn(() => Promise.resolve()),
+          setAppVerificationDisabledForTesting: jest.fn(() => Promise.resolve()),
+          setAutoRetrievedSmsCodeForPhoneNumber: jest.fn(() => Promise.resolve()),
+          removeAuthStateListener: jest.fn(),
+          removeIdTokenListener: jest.fn(),
+          getSession: jest.fn(() => Promise.resolve('session')),
+          unenrollMultiFactor: jest.fn(() => Promise.resolve()),
+          finalizeMultiFactorEnrollment: jest.fn(() => Promise.resolve()),
+          finalizeTotpEnrollment: jest.fn(() => Promise.resolve()),
+          generateTotpSecret: jest.fn(() => Promise.resolve({ secretKey: 'secret' })),
+          generateQrCodeUrl: jest.fn(() => Promise.resolve('qr-url')),
+          openInOtpApp: jest.fn(),
+          resolveMultiFactorSignIn: jest.fn(() => Promise.resolve({ user: null })),
+          confirmationResultConfirm: jest.fn(() => Promise.resolve({ user: null })),
+          verifyPhoneNumber: jest.fn(),
+          useDeviceLanguage: jest.fn(),
         },
         NativeRNFBTurboAppCheck: {
           activate: jest.fn(),

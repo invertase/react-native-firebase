@@ -667,7 +667,7 @@ export default {
    * @param {string} appName - The name of the app to get the auth instance for.
    * @returns {Promise<null>}
    */
-  async delete(appName: string) {
+  async deleteUser(appName: string) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 

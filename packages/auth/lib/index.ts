@@ -148,7 +148,7 @@ type AuthErrorWithCodeInternal = Error & {
 const nativeEvents = ['auth_state_changed', 'auth_id_token_changed', 'phone_auth_state_changed'];
 
 const namespace = 'auth';
-const nativeModuleName = 'RNFBAuthModule';
+const nativeModuleName = 'NativeRNFBTurboAuth';
 
 const config: ModuleConfig = {
   namespace,
@@ -156,6 +156,7 @@ const config: ModuleConfig = {
   nativeEvents,
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
+  turboModule: true,
 };
 
 type BeforeAuthStateChangedEntry = {
@@ -474,20 +475,8 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   signInWithPhoneNumber(phoneNumber: string, forceResend?: boolean): Promise<ConfirmationResult> {
-    if (isAndroid) {
-      return this.native
-        .signInWithPhoneNumber(phoneNumber, forceResend || false)
-        .then(
-          (result: NativePhoneAuthCredentialInternal) =>
-            new ConfirmationResultClass(
-              this as unknown as AuthInternal,
-              result.verificationId,
-            ) as unknown as ConfirmationResult,
-        );
-    }
-
     return this.native
-      .signInWithPhoneNumber(phoneNumber)
+      .signInWithPhoneNumber(phoneNumber, forceResend || false)
       .then(
         (result: NativePhoneAuthCredentialInternal) =>
           new ConfirmationResultClass(

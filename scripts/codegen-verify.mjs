@@ -25,6 +25,7 @@ const MIGRATED_PACKAGES = [
   'storage',
   'functions',
   'database',
+  'auth',
 ];
 
 function parseCodegenCommand(script) {

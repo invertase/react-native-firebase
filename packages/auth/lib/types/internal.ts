@@ -286,7 +286,7 @@ export interface RNFBAuthModule {
   useEmulator(host: string, port?: number): void;
   getCustomAuthDomain(): Promise<string>;
   confirmationResultConfirm(verificationCode: string): Promise<NativeUserCredentialInternal>;
-  delete(): Promise<void>;
+  deleteUser(): Promise<void>;
   getIdToken(forceRefresh: boolean): Promise<string>;
   getIdTokenResult(forceRefresh: boolean): Promise<IdTokenResult>;
   linkWithCredential(
@@ -465,6 +465,6 @@ export type MultiFactorResolverInternal = MultiFactorResolver;
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBAuthModule: RNFBAuthModule;
+    NativeRNFBTurboAuth: RNFBAuthModule;
   }
 }

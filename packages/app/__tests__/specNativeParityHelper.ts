@@ -23,6 +23,7 @@ export const MIGRATED_TURBO_PACKAGES = [
   'functions',
   'messaging',
   'database',
+  'auth',
 ] as const;
 
 export type MigratedTurboPackage = (typeof MIGRATED_TURBO_PACKAGES)[number];
@@ -35,6 +36,28 @@ export type SpecParityContext = {
   iosHeaderPath: string;
 };
 
+export type SpecParityContextEntry = {
+  moduleName: string;
+  specPath: string;
+  androidSpecPath: string;
+  iosHeaderPath: string;
+};
+
+/** Explicit spec/native paths for packages with non-default codegen layout (see database/messaging guardrail commits). */
+export const PACKAGE_SPEC_PARITY_CONTEXTS: Partial<
+  Record<MigratedTurboPackage, readonly SpecParityContextEntry[]>
+> = {
+  auth: [
+    {
+      moduleName: 'NativeRNFBTurboAuth',
+      specPath: 'packages/auth/specs/NativeRNFBTurboAuth.ts',
+      androidSpecPath:
+        'packages/auth/android/src/main/java/io/invertase/firebase/auth/generated/java/com/facebook/fbreact/specs/NativeRNFBTurboAuthSpec.java',
+      iosHeaderPath:
+        'packages/auth/ios/generated/RNFBAuthTurboModules/RNFBAuthTurboModules.h',
+    },
+  ],
+};
 export function extractSpecMethods(specContent: string, fileName = 'spec.ts'): string[] {
   const sourceFile = ts.createSourceFile(
     fileName,
