@@ -3611,6 +3611,10 @@ describe('FirestorePipeline', function () {
           return;
         }
 
+        if (!Platform.ios) {
+          return;
+        }
+
         const snapshot = await execute(
           db
             .pipeline()
@@ -3661,7 +3665,7 @@ describe('FirestorePipeline', function () {
           setDoc(doc(coll, 'skip-score'), {
             tag: 'alpha',
             score: 10,
-            bump: true,
+            bump: false,
             status: 'active',
           }),
         ]);

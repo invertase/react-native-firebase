@@ -789,12 +789,10 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
   String coerceStageOptionFieldName(
       ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (value
-        instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) {
+    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) {
       return ((ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) value).path;
     }
-    if (value
-        instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) {
+    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) {
       return coerceStringValueNode(
           ((ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) value).value,
           fieldName);
@@ -2061,8 +2059,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         return;
       case "timestamptruncate":
         requireArgumentCount(args, 2, functionName, fieldName);
-        scheduleReceiverExpressionChain(
-            normalizedName, functionName, args, fieldName, box, stack);
+        scheduleReceiverExpressionChain(normalizedName, functionName, args, fieldName, box, stack);
         return;
       default:
         scheduleRawExpressionFunction(functionName, args, fieldName, box, stack);
@@ -2083,7 +2080,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     stack.push(new ExitObjectRawExpressionFunctionFrame(box, functionName, childBoxes));
     for (int i = args.size() - 1; i >= 0; i--) {
       ExpressionCoercionMode argMode =
-          isArithmeticFunction(normalizedName) && i > 0
+          isArithmeticFunction(normalizedName)
               ? ExpressionCoercionMode.NUMERIC_OPERAND
               : ExpressionCoercionMode.EXPRESSION_VALUE;
       stack.push(
@@ -3409,12 +3406,11 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       Map<String, Object> map = (Map<String, Object>) value;
       Object exprType = map.get("exprType");
       if (exprType instanceof String && "constant".equalsIgnoreCase((String) exprType)) {
-        Object constantValue = map.get("value");
-        if (constantValue instanceof Boolean) {
-          enterFrame.box.value = constantExpression(((Boolean) constantValue) ? 1 : 0);
-          return true;
+        Object resolved = resolveConstantValue(map, fieldName);
+        if (resolved instanceof Boolean) {
+          resolved = ((Boolean) resolved) ? 1 : 0;
         }
-        enterFrame.box.value = constantExpression(resolveConstantValue(map, fieldName));
+        enterFrame.box.value = constantExpression(resolved);
         return true;
       }
       return false;

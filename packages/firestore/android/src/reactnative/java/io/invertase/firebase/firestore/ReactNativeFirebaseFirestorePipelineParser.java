@@ -465,8 +465,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             requireValue(stageOptions, "vectorValue", "stage.options.vectorValue"),
             requireString(stageOptions, "distanceMeasure", "stage.options.distanceMeasure"),
             stageOptions.get("limit"),
-            optionalExpressionNode(
-                stageOptions, "distanceField", "stage.options.distanceField"));
+            optionalExpressionNode(stageOptions, "distanceField", "stage.options.distanceField"));
       case "replaceWith":
         return new ParsedReplaceWithStage(
             parseExpressionNode(
