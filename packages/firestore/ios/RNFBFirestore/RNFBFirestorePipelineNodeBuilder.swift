@@ -290,6 +290,20 @@ final class RNFBFirestorePipelineNodeBuilder {
     try coerceFieldPath(serializeExpressionNode(value), fieldName: fieldName)
   }
 
+  func coerceStageOptionFieldName(
+    _ value: RNFBFirestoreParsedExpressionNode,
+    fieldName: String
+  ) throws -> String {
+    switch value {
+    case let .field(path):
+      return path
+    case let .constant(constantValue):
+      return try coerceStringValue(serializeValueNode(constantValue), fieldName: fieldName)
+    default:
+      return try coerceFieldPath(serializeExpressionNode(value), fieldName: fieldName)
+    }
+  }
+
   func coerceExpression(_ value: Any, fieldName: String) throws -> ExprBridge {
     try coerceExpressionTree(value, fieldName: fieldName, mode: .expression)
   }
@@ -483,6 +497,14 @@ final class RNFBFirestorePipelineNodeBuilder {
       throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be a number.")
     }
     return Int(try coerceNumber(value, fieldName: fieldName))
+  }
+
+  private func coerceStringValue(_ value: Any, fieldName: String) throws -> String {
+    let resolved = try resolveConstantValue(value, fieldName: fieldName)
+    guard let string = resolved as? String else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to resolve to a string.")
+    }
+    return string
   }
 
   func requireValue(

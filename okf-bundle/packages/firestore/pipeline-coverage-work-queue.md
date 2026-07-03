@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS:** **R** — queued (pre-merge full harness restore + 3-platform snapshot).
+> **IN PROGRESS:** **R** — R-iOS fix committed pending; full-tier iOS re-run to close **R**.
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -67,7 +67,7 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 | **O**  | Android Executor remainder            | **✅** | 58%→60.94%; 7 e2e; ~130 missed dead-code → Phase Q |
 | **P**  | Jest-only TS paths                    | **✅** | 100% lines pipeline_validate; L49 → Q |
 | **Q**  | Intractability audit                  | **✅** | −238 Executor dead lines; intractable caps documented |
-| **R**  | Pre-merge harness restore             | **queued** | full 3-platform snapshot |
+| **R**  | Pre-merge harness restore             | **blocked** | macOS 698/0; Android 866/0; **iOS 835/3** — see [Phase R](#phase-r--pre-merge-snapshot) |
 
 
 **Compare-types exports:** out of scope until **R**. During **J**, no new `Platform.android` / `Platform.ios` branches for coverage; file drift, fix in **J**, or document SDK limitation.
@@ -76,9 +76,21 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 
 ## Current snapshot
 
-**Label:** `r-pre-merge-full`; **harness:** full app (committed defaults)
+**Label:** `after-phase-r-final`; **harness:** full app (committed defaults; no `harness.overrides.js`)
 
-**Next item:** **R** — revert harness overrides; unfocused 3-platform `:test-cover`.
+**Next item:** **R-iOS review** → full-tier iOS `:test-cover` → close **R**.
+
+**R-iOS fix (uncommitted):** iOS bridge parity — `coerceStageOptionFieldName` for unnest/findNearest; limit/offset defer to bridge factory. Area-focused: **151/0** (`/tmp/rnfb-e2e-ios-area-pipeline-fix.log`).
+
+| Metric | Baseline (early / post-phase) | Phase R (`after-phase-r-final`) |
+| ------ | ----------------------------- | -------------------------------- |
+| Android NodeBuilder | ~55% → **67.5%** | **75.18%** (1324/1761) |
+| Android Executor | 49% → 58% → ~60.94% (O) → **~97% live** (Q) | **76.59%** jacoco (386/504) — full-tier jacoco below Q live estimate |
+| TS `pipeline_runtime.ts` | 86% → **90.62%** | **91.07%** (204/224) |
+| TS `expressions.ts` | 89% → **93.61%** | **93.61%** (flat) |
+| TS `pipeline_validate.ts` | ~93% → **100% lines** (P Jest) | **88.64%** e2e lcov (78/88) |
+| iOS NodeBuilder | ~68.89% → ~70%+ (N) | **n/a** — `coverage/ios-native/lcov.info` missing |
+| Android loop L900 band | 106 → **64** missed (M) | **65** missed @ **71.98%** (167/232) |
 
 | **Q** Intractability audit | `refactor(firestore, android): remove dead pipeline Executor lowering code` | **closed** | **closed** | **closed** | — | — | — | −238 lines; 151 Android pass; intractable caps in queue |
 
@@ -305,7 +317,27 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **R** queued. **K–Q** complete.
+**Current gates:** **R** — `review_gate` **closed** (R-iOS); commit + full-tier iOS pending. **K–Q** complete.
+
+## Phase R — pre-merge snapshot
+
+**Status:** partial — preflight recovery required once (stale `:8090` / macOS Jet from prior run); functions `:5001` confirmed up for all runs.
+
+| Platform | Exit | Pass / Fail / Pending | Log |
+| -------- | ---- | --------------------- | --- |
+| macOS | 0 | 698 / 0 / 38 | `/tmp/rnfb-e2e-macos-r-full.log` |
+| iOS | 1 | 835 / **3** / 87 | `/tmp/rnfb-e2e-ios-r-full.log` |
+| Android | 0 | 866 / 0 / 58 | `/tmp/rnfb-e2e-android-r-full.log` |
+
+**iOS failures** (`executor parser and bridge factory coverage` in `Pipeline.e2e.js`):
+
+1. `executes unnest when indexField coerces to empty string` — TS runtime throws before native (`pipeline_runtime.ts:854`).
+2. `routes findNearest non-field distanceField expression through native executor` — `[firestore/invalid-argument]` at execute.
+3. `rejects non-numeric limit and offset at native coerce boundary` — `expectAsyncError` false (error not thrown or wrong message).
+
+**Arbiter:** `next_work_type: independent-review`; `validation_tier: area-focused`; platform **ios**; frozen tree. After review: commit R-iOS fix → full-tier iOS `:test-cover` (no harness overrides) → close **R**.
+
+**Gap map:** `bash scripts/map-pipeline-coverage-gaps.sh after-phase-r-final`; snapshot `scripts/snapshot-pipeline-coverage.sh after-phase-r-final`.
 
 ---
 

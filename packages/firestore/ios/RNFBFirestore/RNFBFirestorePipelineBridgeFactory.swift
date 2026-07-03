@@ -260,7 +260,11 @@ final class RNFBFirestorePipelineBridgeFactory {
       let alias = nodeBuilder.coerceAlias(from: parsed.selectable) ?? "_unnest"
       let indexExpr: ExprBridge?
       if let indexField = parsed.indexField {
-        indexExpr = try nodeBuilder.coerceExpression(indexField, fieldName: "stage.options.indexField")
+        let indexFieldName = try nodeBuilder.coerceStageOptionFieldName(
+          indexField,
+          fieldName: "stage.options.indexField"
+        )
+        indexExpr = indexFieldName.isEmpty ? nil : FieldBridge(name: indexFieldName)
       } else {
         indexExpr = nil
       }
@@ -300,7 +304,19 @@ final class RNFBFirestorePipelineBridgeFactory {
     )
     let distanceFieldExpr: ExprBridge?
     if let distanceField = stage.distanceField {
-      distanceFieldExpr = try nodeBuilder.coerceExpression(distanceField, fieldName: "stage.options.distanceField")
+      let expression = try nodeBuilder.coerceExpression(
+        distanceField,
+        fieldName: "stage.options.distanceField"
+      )
+      if expression is FieldBridge {
+        distanceFieldExpr = expression
+      } else {
+        let fieldName = try nodeBuilder.coerceStageOptionFieldName(
+          distanceField,
+          fieldName: "stage.options.distanceField"
+        )
+        distanceFieldExpr = FieldBridge(name: fieldName)
+      }
     } else {
       distanceFieldExpr = nil
     }

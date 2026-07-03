@@ -139,11 +139,11 @@ struct RNFBFirestoreParsedSortStage {
 }
 
 struct RNFBFirestoreParsedLimitStage {
-  let limit: NSNumber
+  let limit: Any
 }
 
 struct RNFBFirestoreParsedOffsetStage {
-  let offset: NSNumber
+  let offset: Any
 }
 
 struct RNFBFirestoreParsedAggregateStage {
@@ -554,11 +554,11 @@ enum RNFBFirestorePipelineParser {
       ))
     case "limit":
       return .limitStage(RNFBFirestoreParsedLimitStage(
-        limit: try requireNumber(options, key: "limit", fieldName: "\(fieldName).options.limit")
+        limit: try requireValue(options, key: "limit", fieldName: "stage.options.limit")
       ))
     case "offset":
       return .offsetStage(RNFBFirestoreParsedOffsetStage(
-        offset: try requireNumber(options, key: "offset", fieldName: "\(fieldName).options.offset")
+        offset: try requireValue(options, key: "offset", fieldName: "stage.options.offset")
       ))
     case "aggregate":
       return .aggregateStage(try parseAggregateStage(options, fieldName: "\(fieldName).options"))
