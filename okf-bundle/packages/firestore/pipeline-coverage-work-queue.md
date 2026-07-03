@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS:** **Merge gate** — static `pre-merge-validation` (compare-types, tsc, lint, Jest). **R** closed. PR [9086](https://github.com/invertase/react-native-firebase/pull/9086).
+> **COMPLETE:** **Merge gate** closed — static pre-merge green; **R** closed. Ready for PR [9086](https://github.com/invertase/react-native-firebase/pull/9086) force-push + CI.
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -78,11 +78,9 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 
 **Label:** `after-phase-r-final`; **harness:** full app (committed defaults)
 
-**Next item:** **Merge gate** — `yarn compare:types` + handoff checklist ([validation-checklist](../../testing/validation-checklist.md)); then PR 9086 force-push / CI.
+**Next item:** force-push branch → PR 9086 CI → paste [PR post draft](#pr-post-draft-coverage-table--copy-for-merge-comment).
 
----
-
-## PR post draft (coverage table — copy for merge comment)
+**Current gates:** **Merge gate** **closed** (2026-07-03). compare:types 19/19 documented; Jest 1146/1146; tsc + lint green. **K–R** complete.
 
 **E2e (Phase R full tier):** macOS **698**/0, iOS **838**/0, Android **866**/0 passing.
 
@@ -100,15 +98,6 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 **Notable commits:** parity J0–J6; coverage K–Q (−238 Executor dead lines); R-iOS `38cc8815a`; android coverage upload `94299783a`.
 
 ---
-| ------ | ----------------------------- | -------------------------------- |
-| Android NodeBuilder | ~55% → **67.5%** | **75.18%** (1324/1761) |
-| Android Executor | 49% → 58% → ~60.94% (O) → **~97% live** (Q) | **76.59%** jacoco (386/504) — full-tier jacoco below Q live estimate |
-| TS `pipeline_runtime.ts` | 86% → **90.62%** | **91.07%** (204/224) |
-| TS `expressions.ts` | 89% → **93.61%** | **93.98%** (250/266) |
-| TS `pipeline_validate.ts` | ~93% → **100% lines** (P Jest) | **88.64%** e2e lcov (78/88) |
-| iOS NodeBuilder | ~68.89% → ~70%+ (N) | **69.10%** (1516/2194) |
-| iOS operand modes L919–1006 | **27 missed** | **17 missed** @ **72.58%** (45/62) |
-| Android loop L900 band | 106 → **64** missed (M) | **65** missed @ **71.98%** (167/232) |
 
 | **Q** Intractability audit | `refactor(firestore, android): remove dead pipeline Executor lowering code` | **closed** | **closed** | **closed** | — | — | — | −238 lines; 151 Android pass; intractable caps in queue |
 
