@@ -126,18 +126,14 @@ function getCachedOnDisconnectInstance(refValue: WebDatabaseReference): WebOnDis
 }
 
 const databaseFallbackModule: Record<string, unknown> = {
-  goOnline(appName: string, dbURL: string): Promise<void> {
-    return guard(async () => {
-      const db = getCachedDatabaseInstance(appName, dbURL);
-      goOnline(db);
-    });
+  goOnline(appName: string, dbURL: string): void {
+    const db = getCachedDatabaseInstance(appName, dbURL);
+    goOnline(db);
   },
 
-  goOffline(appName: string, dbURL: string): Promise<void> {
-    return guard(async () => {
-      const db = getCachedDatabaseInstance(appName, dbURL);
-      goOffline(db);
-    });
+  goOffline(appName: string, dbURL: string): void {
+    const db = getCachedDatabaseInstance(appName, dbURL);
+    goOffline(db);
   },
 
   setPersistenceEnabled(): Promise<void> {

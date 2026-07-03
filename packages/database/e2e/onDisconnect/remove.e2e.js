@@ -30,7 +30,7 @@ describe('database().ref().onDisconnect().remove()', function () {
       const db = getDatabase();
 
       // Ensures the db is online before running each test
-      await goOnline(db);
+      goOnline(db);
     });
 
     it('throws if onComplete is not a function', function () {
@@ -61,8 +61,8 @@ describe('database().ref().onDisconnect().remove()', function () {
 
       await set(childRef, 'foobar');
       await onDisconnect(childRef).remove();
-      await goOffline(db);
-      await goOnline(db);
+      goOffline(db);
+      goOnline(db);
       const snapshot = await get(childRef);
       snapshot.exists().should.eql(false);
     });
@@ -79,8 +79,8 @@ describe('database().ref().onDisconnect().remove()', function () {
       await set(childRef, 'foo');
 
       await onDisconnect(childRef).remove(callback);
-      await goOffline(db);
-      await goOnline(db);
+      goOffline(db);
+      goOnline(db);
 
       callback.should.be.calledOnce();
     });

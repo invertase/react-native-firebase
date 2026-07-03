@@ -51,22 +51,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabase);
 #pragma mark -
 #pragma mark Firebase Database
 
-- (void)goOnline:(NSString *)app
-           dbURL:(NSString *)dbURL
-         resolve:(RCTPromiseResolveBlock)resolve
-          reject:(RCTPromiseRejectBlock)reject {
+- (void)goOnline:(NSString *)app dbURL:(NSString *)dbURL {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] goOnline];
-  resolve([NSNull null]);
 }
 
-- (void)goOffline:(NSString *)app
-            dbURL:(NSString *)dbURL
-          resolve:(RCTPromiseResolveBlock)resolve
-           reject:(RCTPromiseRejectBlock)reject {
+- (void)goOffline:(NSString *)app dbURL:(NSString *)dbURL {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] goOffline];
-  resolve([NSNull null]);
 }
 
 - (void)useEmulator:(NSString *)app

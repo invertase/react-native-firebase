@@ -20,8 +20,8 @@ protected:
   NativeRNFBTurboDatabaseCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
-  virtual jsi::Value goOnline(jsi::Runtime &rt, jsi::String app, jsi::String dbURL) = 0;
-  virtual jsi::Value goOffline(jsi::Runtime &rt, jsi::String app, jsi::String dbURL) = 0;
+  virtual void goOnline(jsi::Runtime &rt, jsi::String app, jsi::String dbURL) = 0;
+  virtual void goOffline(jsi::Runtime &rt, jsi::String app, jsi::String dbURL) = 0;
   virtual void setPersistenceEnabled(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, bool enabled) = 0;
   virtual void setLoggingEnabled(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, bool enabled) = 0;
   virtual void setPersistenceCacheSizeBytes(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, double cacheSizeBytes) = 0;
@@ -56,20 +56,20 @@ private:
 
     }
 
-    jsi::Value goOnline(jsi::Runtime &rt, jsi::String app, jsi::String dbURL) override {
+    void goOnline(jsi::Runtime &rt, jsi::String app, jsi::String dbURL) override {
       static_assert(
           bridging::getParameterCount(&T::goOnline) == 3,
           "Expected goOnline(...) to have 3 parameters");
 
-      return bridging::callFromJs<jsi::Value>(
+      return bridging::callFromJs<void>(
           rt, &T::goOnline, jsInvoker_, instance_, std::move(app), std::move(dbURL));
     }
-    jsi::Value goOffline(jsi::Runtime &rt, jsi::String app, jsi::String dbURL) override {
+    void goOffline(jsi::Runtime &rt, jsi::String app, jsi::String dbURL) override {
       static_assert(
           bridging::getParameterCount(&T::goOffline) == 3,
           "Expected goOffline(...) to have 3 parameters");
 
-      return bridging::callFromJs<jsi::Value>(
+      return bridging::callFromJs<void>(
           rt, &T::goOffline, jsInvoker_, instance_, std::move(app), std::move(dbURL));
     }
     void setPersistenceEnabled(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, bool enabled) override {

@@ -30,7 +30,7 @@ describe('database().ref().onDisconnect().set()', function () {
       const db = getDatabase();
 
       // Ensures the db is online before running each test
-      await goOnline(db);
+      goOnline(db);
     });
 
     it('throws if value is not a defined', function () {
@@ -75,8 +75,8 @@ describe('database().ref().onDisconnect().set()', function () {
       const value = Date.now();
 
       await onDisconnect(dbRef).set(value);
-      await goOffline(db);
-      await goOnline(db);
+      goOffline(db);
+      goOnline(db);
 
       const snapshot = await get(dbRef);
       snapshot.val().should.eql(value);
@@ -93,8 +93,8 @@ describe('database().ref().onDisconnect().set()', function () {
       await set(dbRef, 'foo');
 
       await onDisconnect(dbRef).set('bar', callback);
-      await goOffline(db);
-      await goOnline(db);
+      goOffline(db);
+      goOnline(db);
 
       callback.should.be.calledOnce();
     });

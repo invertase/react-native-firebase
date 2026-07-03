@@ -20,8 +20,6 @@ package io.invertase.firebase.database;
 import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
 
 import android.content.Context;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 
 public class UniversalFirebaseDatabaseModule extends UniversalFirebaseModule {
@@ -30,19 +28,11 @@ public class UniversalFirebaseDatabaseModule extends UniversalFirebaseModule {
     super(context, serviceName);
   }
 
-  Task<Void> goOnline(String appName, String dbURL) {
-    return Tasks.call(
-        () -> {
-          getDatabaseForApp(appName, dbURL).goOnline();
-          return null;
-        });
+  void goOnline(String appName, String dbURL) {
+    getDatabaseForApp(appName, dbURL).goOnline();
   }
 
-  Task<Void> goOffline(String appName, String dbURL) {
-    return Tasks.call(
-        () -> {
-          getDatabaseForApp(appName, dbURL).goOffline();
-          return null;
-        });
+  void goOffline(String appName, String dbURL) {
+    getDatabaseForApp(appName, dbURL).goOffline();
   }
 }

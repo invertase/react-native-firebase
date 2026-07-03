@@ -30,7 +30,7 @@ describe('database().ref().onDisconnect().update()', function () {
       const db = getDatabase();
 
       // Ensures the db is online before running each test
-      await goOnline(db);
+      goOnline(db);
     });
 
     it('throws if values is not an object', async function () {
@@ -112,8 +112,8 @@ describe('database().ref().onDisconnect().update()', function () {
       await onDisconnect(child(dbRef, 'foo')).update({
         bar: value,
       });
-      await goOffline(db);
-      await goOnline(db);
+      goOffline(db);
+      goOnline(db);
 
       const snapshot = await get(child(dbRef, 'foo'), 'value');
       snapshot.val().should.eql(
@@ -133,8 +133,8 @@ describe('database().ref().onDisconnect().update()', function () {
       // Set an initial value
       await set(dbRef, 'foo');
       await onDisconnect(dbRef).update({ foo: 'bar' }, callback);
-      await goOffline(db);
-      await goOnline(db);
+      goOffline(db);
+      goOnline(db);
 
       callback.should.be.calledOnce();
     });

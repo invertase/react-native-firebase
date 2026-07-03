@@ -112,7 +112,7 @@ describe('database()', function () {
     describe('goOnline()', function () {
       it('calls goOnline successfully', async function () {
         const { getDatabase, goOnline } = databaseModular;
-        await goOnline(getDatabase());
+        goOnline(getDatabase());
       });
     });
 
@@ -122,9 +122,9 @@ describe('database()', function () {
         const db = getDatabase();
 
         // await Utils.sleep(5000);
-        await goOffline(db);
+        goOffline(db);
 
-        await goOnline(db);
+        goOnline(db);
       });
     });
 

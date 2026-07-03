@@ -23,13 +23,13 @@ describe("database().ref('.info/connected')", function () {
     before(async function () {
       const { getDatabase, goOnline } = databaseModular;
 
-      await goOnline(getDatabase());
+      goOnline(getDatabase());
     });
 
     after(async function () {
       const { getDatabase, goOnline } = databaseModular;
 
-      await goOnline(getDatabase());
+      goOnline(getDatabase());
     });
 
     xit('returns true when used with once', async function () {
@@ -60,9 +60,9 @@ describe("database().ref('.info/connected')", function () {
       };
 
       onValue(dbRef, handler);
-      await goOffline(db);
+      goOffline(db);
       await Utils.sleep(1000); // FIXME why is this sleep needed here? callback is called immediately
-      await goOnline(db);
+      goOnline(db);
       off('value', handler);
 
       await Utils.spyToBeCalledTimesAsync(callback, 2);

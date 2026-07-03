@@ -133,12 +133,12 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName> {
     return new DatabaseReferenceImpl(this, path || '/');
   }
 
-  goOnline(): Promise<void> {
-    return this.nativeModule.goOnline();
+  goOnline(): void {
+    this.nativeModule.goOnline();
   }
 
-  goOffline(): Promise<void> {
-    return this.nativeModule.goOffline();
+  goOffline(): void {
+    this.nativeModule.goOffline();
   }
 
   setPersistenceEnabled(enabled: boolean): Promise<void> {
@@ -247,10 +247,6 @@ export function connectDatabaseEmulator(
 
 /**
  * Manually disconnects the Realtime Database client from the server.
- *
- * @remarks On React Native Firebase the underlying native call is **async** (`Promise<void>`),
- * but this modular helper matches the firebase-js-sdk fire-and-forget `void` signature — the
- * promise is not returned. Prefer awaiting the instance method when you need completion.
  */
 export function goOffline(db: Database): void {
   (db as DatabaseWithMethodsInternal).goOffline();
@@ -258,10 +254,6 @@ export function goOffline(db: Database): void {
 
 /**
  * Manually re-establishes the Realtime Database connection.
- *
- * @remarks On React Native Firebase the underlying native call is **async** (`Promise<void>`),
- * but this modular helper matches the firebase-js-sdk fire-and-forget `void` signature — the
- * promise is not returned. Prefer awaiting the instance method when you need completion.
  */
 export function goOnline(db: Database): void {
   (db as DatabaseWithMethodsInternal).goOnline();

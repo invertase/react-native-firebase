@@ -231,7 +231,7 @@ The "keep async if it does network/IO/disk" rule in the discriminator **assumes*
 | `needs-native-change` | `analytics` fire-and-forget setters/events; `app-check/initializeAppCheck`; `firestore/initializeFirestore`; `storage` task controls; storage retry setters | Web APIs are sync or fire-and-forget, but RNFB native paths currently wrap async work or need behavior clarification before sync conversion. |
 | `keep-async` | Firestore persistent cache index manager delete/enable/disable | Web returns `void` but starts real persistent-cache work; do not block JS thread. |
 
-**Next slice:** `app/registerVersion` because RNFB already behaves synchronously and Phase S should only change the public type/compare-types entry. Planned subject: `refactor(app): return sync parity for registerVersion`.
+**Next slice:** `convert` inventory complete (2026-07-03). Remaining gap-analysis verdicts (`needs-native-change`, `keep-async`) are out of Phase S scope until native behavior is clarified or documented only.
 
 ---
 
@@ -332,9 +332,9 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 **Label:** `phase-s-sync-conversion` (2026-07-03)
 
-**Next item:** Phase **S** database sync controls (`PS-database-online` — after perf commit)
+**Next item:** Phase **S** `convert` inventory **complete** — deferred `needs-native-change` / `keep-async` items documented in gap-analysis table
 
-**Current gates:** PS-perf-metrics all gates **closed** — committing `refactor(perf): return sync parity for metric controls`.
+**Current gates:** PS-database-online all gates **closed** — committing `refactor(database): return sync parity for connection controls`.
 
 **Host rule:** one `:test-cover` at a time — never parallel subagents with e2e.
 
@@ -375,6 +375,7 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Phase S `app/registerVersion` sync parity | PS-app-registerVersion | **closed** | **closed** | **closed** | done | `area-focused` | `refactor(app): return sync parity for registerVersion` | Implemented 2026-07-03: `registerVersion(): void`, sync throw Jest assertion, removed stale `configs/app.ts` async-vs-sync entry. Green: `lerna:prepare`, `tsc:compile`, `tsc:compile:consumer`, focused app Jest 10/10, `reference:api`, `compare:types`, `lint:js`. Independent review: no findings; no e2e needed for type-only scope. |
 | Phase S auth parser/TOTP sync parity | PS-auth-parsers | **closed** | **closed** | **closed** | done | `area-focused` | `refactor(auth): return sync parity for auth parsers` | Committed 2026-07-03. Sync `isSignInWithEmailLink` + `TotpSecret.generateQrCodeUrl`; native sync error shape; jest.setup; tests + e2e sync calls; compare-types + v26 doc. Validation: Jest 91/91, compare:types, lint, reference:api, codegen:verify exit 0. Android area e2e 159/15/0 (`/tmp/rnfb-e2e-android-auth-phaseS-final.log`). |
 | Phase S perf metric controls sync parity | PS-perf-metrics | **closed** | **closed** | **closed** | done | `area-focused` | `refactor(perf): return sync parity for metric controls` | Sync trace/http/screen start/stop; Android *Sync helpers; iOS sync shells. Jest 10/10; compare:types, lint, reference:api green. Review e2e iOS/Android 60/2/0 (`/tmp/rnfb-e2e-*-perf-review.log`). macOS N/A (module skip). Remediation: perf usage docs await removed. |
+| Phase S database connection sync parity | PS-database-online | **closed** | **closed** | **closed** | done | `area-focused` | `refactor(database): return sync parity for connection controls` | Sync turbo + instance goOnline/goOffline; Android direct SDK calls; e2e await removed on modular calls. Jest 52/52; codegen:verify exit 0. Review e2e macOS 181/10/0, iOS 182/9/0, Android 183/8/0 (`/tmp/rnfb-e2e-*-database-review.log`). |
 
 ---
 

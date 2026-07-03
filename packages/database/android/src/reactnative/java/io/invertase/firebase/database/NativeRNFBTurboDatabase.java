@@ -20,9 +20,7 @@ package io.invertase.firebase.database;
 import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.addEmulatorConfig;
 
 import com.facebook.fbreact.specs.NativeRNFBTurboDatabaseSpec;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.UniversalFirebasePreferences;
 
 public class NativeRNFBTurboDatabase extends NativeRNFBTurboDatabaseSpec {
@@ -35,33 +33,13 @@ public class NativeRNFBTurboDatabase extends NativeRNFBTurboDatabaseSpec {
   }
 
   @Override
-  public void goOnline(String app, String dbURL, Promise promise) {
-    module
-        .goOnline(app, dbURL)
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                promise.resolve(task.getResult());
-              } else {
-                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
-                    promise, task.getException());
-              }
-            });
+  public void goOnline(String app, String dbURL) {
+    module.goOnline(app, dbURL);
   }
 
   @Override
-  public void goOffline(String app, String dbURL, Promise promise) {
-    module
-        .goOffline(app, dbURL)
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                promise.resolve(task.getResult());
-              } else {
-                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
-                    promise, task.getException());
-              }
-            });
+  public void goOffline(String app, String dbURL) {
+    module.goOffline(app, dbURL);
   }
 
   @Override

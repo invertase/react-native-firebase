@@ -165,4 +165,35 @@ describe('TurboModule wrapper contract (NewArch-AD-17.1)', function () {
 
     expect(Object.keys(wrapped).sort()).toEqual([...ALL_SPEC_METHODS].sort());
   });
+  it('returns synchronously from goOnline and goOffline on the main host (Phase S)', function () {
+    const goOnlineMock = jest.fn();
+    const goOfflineMock = jest.fn();
+
+    jest
+      .mocked(TurboModuleRegistry.get)
+      .mockReturnValueOnce(
+        createTurboModuleFixture({ goOnline: goOnlineMock, goOffline: goOfflineMock }),
+      )
+      .mockReturnValueOnce(createTurboModuleFixture({}))
+      .mockReturnValueOnce(createTurboModuleFixture({}))
+      .mockReturnValueOnce(createTurboModuleFixture({}))
+      .mockReturnValueOnce(createTurboModuleFixture({}));
+
+    const wrapped = getNativeModule(
+      createMergeModule('databaseSyncConnection'),
+    ) as WrappedNativeModule & {
+      goOnline: () => unknown;
+      goOffline: () => unknown;
+    };
+
+    const onlineResult = wrapped.goOnline();
+    expect(onlineResult).toBeUndefined();
+    expect(onlineResult).not.toBeInstanceOf(Promise);
+    expect(goOnlineMock).toHaveBeenCalledTimes(1);
+
+    const offlineResult = wrapped.goOffline();
+    expect(offlineResult).toBeUndefined();
+    expect(offlineResult).not.toBeInstanceOf(Promise);
+    expect(goOfflineMock).toHaveBeenCalledTimes(1);
+  });
 });

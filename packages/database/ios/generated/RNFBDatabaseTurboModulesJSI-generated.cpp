@@ -12,18 +12,20 @@
 namespace facebook::react {
 
 static jsi::Value __hostFunction_NativeRNFBTurboDatabaseCxxSpecJSI_goOnline(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeRNFBTurboDatabaseCxxSpecJSI *>(&turboModule)->goOnline(
+  static_cast<NativeRNFBTurboDatabaseCxxSpecJSI *>(&turboModule)->goOnline(
     rt,
     count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
     count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt)
   );
+  return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeRNFBTurboDatabaseCxxSpecJSI_goOffline(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeRNFBTurboDatabaseCxxSpecJSI *>(&turboModule)->goOffline(
+  static_cast<NativeRNFBTurboDatabaseCxxSpecJSI *>(&turboModule)->goOffline(
     rt,
     count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
     count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt)
   );
+  return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeRNFBTurboDatabaseCxxSpecJSI_setPersistenceEnabled(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   static_cast<NativeRNFBTurboDatabaseCxxSpecJSI *>(&turboModule)->setPersistenceEnabled(

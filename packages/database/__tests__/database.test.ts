@@ -229,4 +229,33 @@ describe('Database', function () {
       expect(update).toBeDefined();
     });
   });
+
+  describe('synchronous connection control parity', function () {
+    it('`goOnline()` and `goOffline()` return synchronously (not Promises)', function () {
+      const db = getDatabase();
+
+      const onlineResult = goOnline(db);
+      expect(onlineResult).toBeUndefined();
+      expect(onlineResult).not.toBeInstanceOf(Promise);
+
+      const offlineResult = goOffline(db);
+      expect(offlineResult).toBeUndefined();
+      expect(offlineResult).not.toBeInstanceOf(Promise);
+    });
+
+    it('database instance `goOnline()` / `goOffline()` return synchronously (not Promises)', function () {
+      const db = getDatabase() as ReturnType<typeof getDatabase> & {
+        goOnline(): void;
+        goOffline(): void;
+      };
+
+      const onlineResult = db.goOnline();
+      expect(onlineResult).toBeUndefined();
+      expect(onlineResult).not.toBeInstanceOf(Promise);
+
+      const offlineResult = db.goOffline();
+      expect(offlineResult).toBeUndefined();
+      expect(offlineResult).not.toBeInstanceOf(Promise);
+    });
+  });
 });

@@ -14,12 +14,12 @@ namespace facebook::react {
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboDatabaseSpecJSI_goOnline(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "goOnline", "(Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "goOnline", "(Ljava/lang/String;Ljava/lang/String;)V", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboDatabaseSpecJSI_goOffline(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "goOffline", "(Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "goOffline", "(Ljava/lang/String;Ljava/lang/String;)V", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboDatabaseSpecJSI_setPersistenceEnabled(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {

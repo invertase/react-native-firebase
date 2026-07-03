@@ -13,7 +13,6 @@
 package com.facebook.fbreact.specs;
 
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -34,11 +33,11 @@ public abstract class NativeRNFBTurboDatabaseSpec extends ReactContextBaseJavaMo
 
   @ReactMethod
   @DoNotStrip
-  public abstract void goOnline(String app, String dbURL, Promise promise);
+  public abstract void goOnline(String app, String dbURL);
 
   @ReactMethod
   @DoNotStrip
-  public abstract void goOffline(String app, String dbURL, Promise promise);
+  public abstract void goOffline(String app, String dbURL);
 
   @ReactMethod
   @DoNotStrip

@@ -341,8 +341,8 @@ jest.doMock('react-native', () => {
           ),
         },
         NativeRNFBTurboDatabase: {
-          goOnline: jest.fn(() => Promise.resolve()),
-          goOffline: jest.fn(() => Promise.resolve()),
+          goOnline: jest.fn(),
+          goOffline: jest.fn(),
           setPersistenceEnabled: jest.fn(),
           setLoggingEnabled: jest.fn(),
           setPersistenceCacheSizeBytes: jest.fn(),

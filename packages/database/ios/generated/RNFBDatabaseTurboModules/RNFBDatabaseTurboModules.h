@@ -36,13 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol NativeRNFBTurboDatabaseSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)goOnline:(NSString *)app
-           dbURL:(NSString *)dbURL
-         resolve:(RCTPromiseResolveBlock)resolve
-          reject:(RCTPromiseRejectBlock)reject;
+           dbURL:(NSString *)dbURL;
 - (void)goOffline:(NSString *)app
-            dbURL:(NSString *)dbURL
-          resolve:(RCTPromiseResolveBlock)resolve
-           reject:(RCTPromiseRejectBlock)reject;
+            dbURL:(NSString *)dbURL;
 - (void)setPersistenceEnabled:(NSString *)app
                         dbURL:(NSString *)dbURL
                       enabled:(BOOL)enabled;

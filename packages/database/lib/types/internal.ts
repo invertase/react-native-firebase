@@ -132,8 +132,8 @@ export interface DatabaseEventEmitterInternal {
 
 /** Wrapped native module interface for database. */
 export interface RNFBDatabaseModule {
-  goOnline(): Promise<void>;
-  goOffline(): Promise<void>;
+  goOnline(): void;
+  goOffline(): void;
   setPersistenceEnabled(enabled: boolean): Promise<void>;
   setLoggingEnabled(enabled: boolean): Promise<void>;
   setPersistenceCacheSizeBytes(bytes: number): Promise<void>;

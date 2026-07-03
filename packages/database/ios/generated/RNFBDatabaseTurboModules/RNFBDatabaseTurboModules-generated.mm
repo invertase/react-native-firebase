@@ -27,11 +27,11 @@
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboDatabaseSpecJSI_goOnline(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "goOnline", @selector(goOnline:dbURL:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "goOnline", @selector(goOnline:dbURL:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboDatabaseSpecJSI_goOffline(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "goOffline", @selector(goOffline:dbURL:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "goOffline", @selector(goOffline:dbURL:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboDatabaseSpecJSI_setPersistenceEnabled(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
