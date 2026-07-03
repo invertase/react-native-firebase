@@ -27,8 +27,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
@@ -57,7 +55,6 @@ import com.google.firebase.firestore.pipeline.Selectable;
 import com.google.firebase.firestore.pipeline.UnnestOptions;
 import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -111,28 +108,6 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       this.sourcePipeline = sourcePipeline;
       this.stages = stages;
       this.box = box;
-    }
-  }
-
-  private abstract static class ReadableContainerBuildFrame {}
-
-  private static final class ReadableMapBuildFrame extends ReadableContainerBuildFrame {
-    final ReadableMap source;
-    final Map<String, Object> target;
-
-    ReadableMapBuildFrame(ReadableMap source, Map<String, Object> target) {
-      this.source = source;
-      this.target = target;
-    }
-  }
-
-  private static final class ReadableArrayBuildFrame extends ReadableContainerBuildFrame {
-    final ReadableArray source;
-    final List<Object> target;
-
-    ReadableArrayBuildFrame(ReadableArray source, List<Object> target) {
-      this.source = source;
-      this.target = target;
     }
   }
 
@@ -441,10 +416,6 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       return applySampleStage(
           pipeline, (ReactNativeFirebaseFirestorePipelineParser.ParsedSampleStage) stage);
     }
-    if (stage instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedUnionStage) {
-      return applyUnionStage(
-          pipeline, (ReactNativeFirebaseFirestorePipelineParser.ParsedUnionStage) stage);
-    }
     if (stage instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedUnnestStage) {
       return applyUnnestStage(
           pipeline, (ReactNativeFirebaseFirestorePipelineParser.ParsedUnnestStage) stage);
@@ -658,13 +629,6 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
         "pipelineExecute() expected sample stage to include documents or percentage.");
   }
 
-  private Pipeline applyUnionStage(
-      Pipeline pipeline, ReactNativeFirebaseFirestorePipelineParser.ParsedUnionStage stage)
-      throws PipelineValidationException {
-    throw new PipelineValidationException(
-        "pipelineExecute() failed to build nested union pipeline.");
-  }
-
   private Pipeline applyUnnestStage(
       Pipeline pipeline, ReactNativeFirebaseFirestorePipelineParser.ParsedUnnestStage stage)
       throws PipelineValidationException {
@@ -705,49 +669,6 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     }
 
     return pipeline.rawStage(rawStage);
-  }
-
-  private <T extends com.google.firebase.firestore.pipeline.AbstractOptions<T>>
-      T applyPrimitiveRawOptions(T options, Map<String, Object> rawOptions)
-          throws PipelineValidationException {
-    for (Map.Entry<String, Object> entry : rawOptions.entrySet()) {
-      String key = entry.getKey();
-      Object rawValue = entry.getValue();
-      if (rawValue == null) {
-        continue;
-      }
-      if (rawValue instanceof Boolean) {
-        options = options.with(key, (Boolean) rawValue);
-        continue;
-      }
-      if (rawValue instanceof String) {
-        options = options.with(key, (String) rawValue);
-        continue;
-      }
-      if (rawValue instanceof Number) {
-        Number numberValue = (Number) rawValue;
-        if (numberValue instanceof Double || numberValue instanceof Float) {
-          options = options.with(key, numberValue.doubleValue());
-        } else {
-          options = options.with(key, numberValue.longValue());
-        }
-        continue;
-      }
-      if (rawValue instanceof List) {
-        throw new PipelineValidationException(
-            "pipelineExecute() received an unsupported raw option array for key: " + key + ".");
-      }
-      if (rawValue instanceof Map) {
-        String fieldPath = nodeBuilder.coerceFieldPath(rawValue, "options.rawOptions." + key);
-        options = options.with(key, Expression.field(fieldPath));
-        continue;
-      }
-
-      throw new PipelineValidationException(
-          "pipelineExecute() received an unsupported raw option value for key: " + key + ".");
-    }
-
-    return options;
   }
 
   private Pipeline.ExecuteOptions applyExecuteRawOptions(
@@ -1003,165 +924,6 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       }
     }
     return normalized;
-  }
-
-  private Object getJavaValue(ReadableMap map, String key) {
-    if (map == null || !map.hasKey(key)) {
-      return null;
-    }
-
-    ReadableType type = map.getType(key);
-    if (type == ReadableType.Null) {
-      return null;
-    }
-
-    switch (type) {
-      case Boolean:
-        return map.getBoolean(key);
-      case Number:
-        return coerceNumber(map.getDouble(key));
-      case String:
-        return map.getString(key);
-      case Map:
-        ReadableMap nestedMap = map.getMap(key);
-        return nestedMap == null ? null : readableMapToJava(nestedMap);
-      case Array:
-        ReadableArray nestedArray = map.getArray(key);
-        return nestedArray == null ? null : readableArrayToJava(nestedArray);
-      case Null:
-      default:
-        return null;
-    }
-  }
-
-  private Map<String, Object> readableMapToJava(ReadableMap readableMap) {
-    Map<String, Object> output = new HashMap<>();
-    ArrayDeque<ReadableContainerBuildFrame> stack = new ArrayDeque<>();
-    stack.push(new ReadableMapBuildFrame(readableMap, output));
-    populateReadableContainers(stack);
-    return output;
-  }
-
-  private List<Object> readableArrayToJava(ReadableArray readableArray) {
-    List<Object> output = new java.util.ArrayList<>();
-    ArrayDeque<ReadableContainerBuildFrame> stack = new ArrayDeque<>();
-    stack.push(new ReadableArrayBuildFrame(readableArray, output));
-    populateReadableContainers(stack);
-    return output;
-  }
-
-  private void populateReadableContainers(ArrayDeque<ReadableContainerBuildFrame> stack) {
-    // Use an explicit stack so deeply nested pipeline inputs do not rely on JVM recursion depth.
-    while (!stack.isEmpty()) {
-      ReadableContainerBuildFrame frame = stack.pop();
-
-      if (frame instanceof ReadableMapBuildFrame) {
-        ReadableMapBuildFrame mapFrame = (ReadableMapBuildFrame) frame;
-        ReadableMapKeySetIterator iterator = mapFrame.source.keySetIterator();
-
-        while (iterator.hasNextKey()) {
-          String key = iterator.nextKey();
-          ReadableType type = mapFrame.source.getType(key);
-          if (type == ReadableType.Null) {
-            mapFrame.target.put(key, null);
-            continue;
-          }
-
-          switch (type) {
-            case Boolean:
-              mapFrame.target.put(key, mapFrame.source.getBoolean(key));
-              break;
-            case Number:
-              mapFrame.target.put(key, coerceNumber(mapFrame.source.getDouble(key)));
-              break;
-            case String:
-              mapFrame.target.put(key, mapFrame.source.getString(key));
-              break;
-            case Map:
-              ReadableMap nestedMap = mapFrame.source.getMap(key);
-              if (nestedMap == null) {
-                mapFrame.target.put(key, null);
-                break;
-              }
-
-              Map<String, Object> nestedMapOutput = new HashMap<>();
-              mapFrame.target.put(key, nestedMapOutput);
-              stack.push(new ReadableMapBuildFrame(nestedMap, nestedMapOutput));
-              break;
-            case Array:
-              ReadableArray nestedArray = mapFrame.source.getArray(key);
-              if (nestedArray == null) {
-                mapFrame.target.put(key, null);
-                break;
-              }
-
-              List<Object> nestedArrayOutput = new java.util.ArrayList<>();
-              mapFrame.target.put(key, nestedArrayOutput);
-              stack.push(new ReadableArrayBuildFrame(nestedArray, nestedArrayOutput));
-              break;
-            case Null:
-            default:
-              mapFrame.target.put(key, null);
-          }
-        }
-
-        continue;
-      }
-
-      ReadableArrayBuildFrame arrayFrame = (ReadableArrayBuildFrame) frame;
-      for (int i = 0; i < arrayFrame.source.size(); i++) {
-        ReadableType type = arrayFrame.source.getType(i);
-        if (type == ReadableType.Null) {
-          arrayFrame.target.add(null);
-          continue;
-        }
-
-        switch (type) {
-          case Boolean:
-            arrayFrame.target.add(arrayFrame.source.getBoolean(i));
-            break;
-          case Number:
-            arrayFrame.target.add(coerceNumber(arrayFrame.source.getDouble(i)));
-            break;
-          case String:
-            arrayFrame.target.add(arrayFrame.source.getString(i));
-            break;
-          case Map:
-            ReadableMap nestedMap = arrayFrame.source.getMap(i);
-            if (nestedMap == null) {
-              arrayFrame.target.add(null);
-              break;
-            }
-
-            Map<String, Object> nestedMapOutput = new HashMap<>();
-            arrayFrame.target.add(nestedMapOutput);
-            stack.push(new ReadableMapBuildFrame(nestedMap, nestedMapOutput));
-            break;
-          case Array:
-            ReadableArray nestedArray = arrayFrame.source.getArray(i);
-            if (nestedArray == null) {
-              arrayFrame.target.add(null);
-              break;
-            }
-
-            List<Object> nestedArrayOutput = new java.util.ArrayList<>();
-            arrayFrame.target.add(nestedArrayOutput);
-            stack.push(new ReadableArrayBuildFrame(nestedArray, nestedArrayOutput));
-            break;
-          case Null:
-          default:
-            arrayFrame.target.add(null);
-            break;
-        }
-      }
-    }
-  }
-
-  private Number coerceNumber(double value) {
-    if (Math.floor(value) == value && value <= Long.MAX_VALUE && value >= Long.MIN_VALUE) {
-      return (long) value;
-    }
-    return value;
   }
 
   private String optionalString(Map<String, Object> map, String key) {

@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS:** **Q** — `implementation` (intractability audit + dead-code triage).
+> **IN PROGRESS:** **R** — queued (pre-merge full harness restore + 3-platform snapshot).
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -66,8 +66,8 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 | **N**  | iOS stage coercion                    | **✅** | iOS/web stage coercion + operand tail; macOS 139 / iOS 144 / Android 144 area-focused |
 | **O**  | Android Executor remainder            | **✅** | 58%→60.94%; 7 e2e; ~130 missed dead-code → Phase Q |
 | **P**  | Jest-only TS paths                    | **✅** | 100% lines pipeline_validate; L49 → Q |
-| **Q**  | Intractability audit                  | **in progress** | measured caps; Executor dead-code cluster |
-| **R**  | Pre-merge harness restore             | queued                    | **Full** unfocused 3-platform snapshot — [full validation tier](../../testing/running-e2e.md#e2e-validation-tiers-unit-focused-area-focused-full) *(was old P)* |
+| **Q**  | Intractability audit                  | **✅** | −238 Executor dead lines; intractable caps documented |
+| **R**  | Pre-merge harness restore             | **queued** | full 3-platform snapshot |
 
 
 **Compare-types exports:** out of scope until **R**. During **J**, no new `Platform.android` / `Platform.ios` branches for coverage; file drift, fix in **J**, or document SDK limitation.
@@ -76,12 +76,11 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 
 ## Current snapshot
 
-**Label:** `q-audit-dead-code`; **harness:** per subagent tier
+**Label:** `r-pre-merge-full`; **harness:** full app (committed defaults)
 
-**Next item:** **Q** — audit intractable/dead paths; remove provably dead Executor helpers if safe.
+**Next item:** **R** — revert harness overrides; unfocused 3-platform `:test-cover`.
 
-| **P** Jest validation paths | `test(firestore): expand pipeline validate Jest coverage` | **closed** | **closed** | **closed** | — | — | — | 100% lines / 98.95% branches; L49 default-param deferred |
-| **Q** Intractability audit | — | open | open | open | `implementation` | `unit-focused` | android | Executor dead-code (~130 missed); validateSource L49 |
+| **Q** Intractability audit | `refactor(firestore, android): remove dead pipeline Executor lowering code` | **closed** | **closed** | **closed** | — | — | — | −238 lines; 151 Android pass; intractable caps in queue |
 
 | **J2** P-005 `integerLiteral` | `fix(firestore, android): align pipeline integerLiteral constant lowering with iOS` | **closed** | **closed** | **closed** | — | — | — | P-005 → Resolved; CFBoolean deferral accepted |
 | **J3** P-010 stage option expressions | `fix(firestore, android): align pipeline stage option expression fields with iOS` | **closed** | **closed** | **closed** | — | — | — | P-010 → Resolved |
@@ -121,7 +120,7 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 | TS `expressions.ts`         | 89%               | **93.61% (249/266)**   | K batch (+1 e2e line)                  | **K** |
 | Android NodeBuilder         | 67.5% (1167/1729) | **75.03% (1322/1762)** | M: exit −29 missed; loop −12 | L, M  |
 | Android loop L900–1299      | 106 missed        | **64 missed**          | M: −12 from baseline 76    | M     |
-| Android Executor            | 58%               | **60.94% (387/635)**   | O: +7 e2e; dead-code → Q              | O, Q  |
+| Android Executor            | 58%               | **~97% live (387/~397)** post-Q dead removal | Q: −238 lines dead; jacoco regen at commit | O, Q  |
 | iOS NodeBuilder             | 68.89%            | **~70%+ (Phase N)**    | G: +15 hit; N: stage coercion          | N     |
 | iOS operand modes L919–1006 | 27 missed         | **reduced (Phase N)**  | N operand tail e2e                     | N, Q  |
 
@@ -306,7 +305,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **Q** `implementation_gate` open. **P** complete.
+**Current gates:** **R** queued. **K–Q** complete.
 
 ---
 
@@ -355,6 +354,29 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 6. One focused commit per logical change (message describes **what**, not phase letter)
 
 **Pitfalls:** iOS `constant(0/1)` → bool (use `constant(2+)`); raw AND where is Android-native (`Platform.other` skip on macOS; document); Detox boots AVD, no manual `emulator -avd`.
+
+---
+
+## Phase Q — intractability audit (in progress)
+
+**Audit method:** caller grep + `buildNativePipeline` stack trace for union routing; Parser owns `readableMapToJava` for execute entry.
+
+**Removed (Android Executor, zero callers):**
+
+| Cluster | Lines | Rationale |
+| ------- | ----- | --------- |
+| `getJavaValue` / `readableMapToJava` / `readableArrayToJava` / `populateReadableContainers` + frame classes | ~200 | Duplicate Parser helpers; no call sites in Executor |
+| `applyPrimitiveRawOptions` | ~42 | Superseded by `applyPrimitiveRawStageOptions` (live at `applyRawStage`) |
+| `applyUnionStage` + `applyStage` union branch | ~9 | Unions handled in `buildNativePipeline` via `PendingUnionPipelineStage`; `ParsedUnionStage` never reaches `applyStage` |
+
+**Intractable (document only — no removal):**
+
+| Cap | Location | Rationale |
+| --- | -------- | --------- |
+| `validateSource` default param | `pipeline_validate.ts` L49 | Sole call site passes explicit `` `${fieldName}.source` ``; default unreachable; harmless |
+| Map passthrough execute success | NodeBuilder L1208–1219 (G) | Firestore rejects `map(field(…))` execute |
+| Map execute / task-guard tails | Executor `resolvePipelineTask` empty-exception arm | e2e-only; no stable probe |
+| iOS operand-mode tail | NodeBuilder L928–1006 | Bridge parity closed; residual misses are SDK-shaped |
 
 ---
 
