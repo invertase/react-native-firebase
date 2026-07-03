@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS:** **R** — R-iOS fix committed pending; full-tier iOS re-run to close **R**.
+> **COMPLETE:** **R** closed — 3-platform full-tier green (698/838/866 passing). **Next:** compare-types / merge readiness (PR 9086).
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -67,20 +67,18 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 | **O**  | Android Executor remainder            | **✅** | 58%→60.94%; 7 e2e; ~130 missed dead-code → Phase Q |
 | **P**  | Jest-only TS paths                    | **✅** | 100% lines pipeline_validate; L49 → Q |
 | **Q**  | Intractability audit                  | **✅** | −238 Executor dead lines; intractable caps documented |
-| **R**  | Pre-merge harness restore             | **blocked** | macOS 698/0; Android 866/0; **iOS 835/3** — see [Phase R](#phase-r--pre-merge-snapshot) |
+| **R**  | Pre-merge harness restore             | **✅** | 698/0 macOS; 866/0 Android; iOS 838/0 after `38cc8815a` fix |
 
 
-**Compare-types exports:** out of scope until **R**. During **J**, no new `Platform.android` / `Platform.ios` branches for coverage; file drift, fix in **J**, or document SDK limitation.
+**Compare-types exports:** unblocked — **R** complete.
 
 ---
 
 ## Current snapshot
 
-**Label:** `after-phase-r-final`; **harness:** full app (committed defaults; no `harness.overrides.js`)
+**Label:** `after-phase-r-final`; **harness:** full app (committed defaults)
 
-**Next item:** **R-iOS review** → full-tier iOS `:test-cover` → close **R**.
-
-**R-iOS fix (uncommitted):** iOS bridge parity — `coerceStageOptionFieldName` for unnest/findNearest; limit/offset defer to bridge factory. Area-focused: **151/0** (`/tmp/rnfb-e2e-ios-area-pipeline-fix.log`).
+**Next item:** compare-types + PR 9086 merge readiness.
 
 | Metric | Baseline (early / post-phase) | Phase R (`after-phase-r-final`) |
 | ------ | ----------------------------- | -------------------------------- |
@@ -317,25 +315,19 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **R** — `review_gate` **closed** (R-iOS); commit + full-tier iOS pending. **K–Q** complete.
+**Current gates:** **R** **closed**. **K–R** complete. `next_work_type: pre-merge-validation` (compare-types).
 
 ## Phase R — pre-merge snapshot
 
-**Status:** partial — preflight recovery required once (stale `:8090` / macOS Jet from prior run); functions `:5001` confirmed up for all runs.
+**Status:** **closed** — full-tier 3-platform; iOS fix `38cc8815a` (`fix(firestore, ios): align pipeline stage option coercion with Android`).
 
 | Platform | Exit | Pass / Fail / Pending | Log |
 | -------- | ---- | --------------------- | --- |
 | macOS | 0 | 698 / 0 / 38 | `/tmp/rnfb-e2e-macos-r-full.log` |
-| iOS | 1 | 835 / **3** / 87 | `/tmp/rnfb-e2e-ios-r-full.log` |
+| iOS | 0 | **838** / 0 / 87 | `/tmp/rnfb-e2e-ios-r-full-rerun.log` |
 | Android | 0 | 866 / 0 / 58 | `/tmp/rnfb-e2e-android-r-full.log` |
 
-**iOS failures** (`executor parser and bridge factory coverage` in `Pipeline.e2e.js`):
-
-1. `executes unnest when indexField coerces to empty string` — TS runtime throws before native (`pipeline_runtime.ts:854`).
-2. `routes findNearest non-field distanceField expression through native executor` — `[firestore/invalid-argument]` at execute.
-3. `rejects non-numeric limit and offset at native coerce boundary` — `expectAsyncError` false (error not thrown or wrong message).
-
-**Arbiter:** `next_work_type: independent-review`; `validation_tier: area-focused`; platform **ios**; frozen tree. After review: commit R-iOS fix → full-tier iOS `:test-cover` (no harness overrides) → close **R**.
+**R-iOS fix:** `coerceStageOptionFieldName` for unnest/findNearest; limit/offset defer to bridge factory. Area-focused 151/0; full-tier iOS re-run 838/0.
 
 **Gap map:** `bash scripts/map-pipeline-coverage-gaps.sh after-phase-r-final`; snapshot `scripts/snapshot-pipeline-coverage.sh after-phase-r-final`.
 
