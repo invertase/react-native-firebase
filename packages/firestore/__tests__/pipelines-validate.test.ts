@@ -83,6 +83,14 @@ describe('validateSerializedPipeline — failure branches', function () {
       ).toThrow(
         'pipelineExecute() expected pipeline.source.documents to contain only non-empty strings.',
       );
+      expect(() =>
+        validateSerializedPipeline({
+          source: { source: 'documents', documents: 'not-an-array' },
+          stages: [],
+        }),
+      ).toThrow(
+        'pipelineExecute() expected pipeline.source.documents to contain at least one value.',
+      );
     });
 
     it('validates the query source shape', function () {
@@ -143,6 +151,11 @@ describe('validateSerializedPipeline — failure branches', function () {
           validateSerializedPipeline(pipelineWithStage({ stage, options: { [key]: [] } })),
         ).toThrow(`stage.options.${key} to contain at least one value.`);
       }
+      expect(() =>
+        validateSerializedPipeline(
+          pipelineWithStage({ stage: 'select', options: { selections: 'not-an-array' } }),
+        ),
+      ).toThrow('stage.options.selections to contain at least one value.');
     });
 
     it('validates the sample stage', function () {
@@ -168,6 +181,28 @@ describe('validateSerializedPipeline — failure branches', function () {
         'pipelineExecute() expected stage.options.other to be a serialized pipeline object.',
       );
 
+      expect(() =>
+        validateSerializedPipeline(
+          pipelineWithStage({
+            stage: 'union',
+            options: { other: { stages: [] } },
+          }),
+        ),
+      ).toThrow(
+        'pipelineExecute() expected stage.options.other to be a serialized pipeline object.',
+      );
+
+      expect(() =>
+        validateSerializedPipeline(
+          pipelineWithStage({
+            stage: 'union',
+            options: { other: { source: { source: 'database' }, stages: 'not-an-array' } },
+          }),
+        ),
+      ).toThrow(
+        'pipelineExecute() expected stage.options.other to be a serialized pipeline object.',
+      );
+
       // Valid union recurses into the nested pipeline (and surfaces nested errors).
       expect(() =>
         validateSerializedPipeline(
@@ -186,6 +221,29 @@ describe('validateSerializedPipeline — failure branches', function () {
           }),
         ),
       ).not.toThrow();
+    });
+
+    it('uses nested field paths when validating under a custom root or union child', function () {
+      expect(() =>
+        validateSerializedPipeline(
+          pipelineWithStage({ stage: 'select', options: { selections: [] } }),
+          'nested',
+        ),
+      ).toThrow('nested.stages[0].options.selections to contain at least one value.');
+
+      expect(() =>
+        validateSerializedPipeline(
+          pipelineWithStage({
+            stage: 'union',
+            options: {
+              other: {
+                source: { source: 'database' },
+                stages: [{ stage: 'select', options: { selections: [] } }],
+              },
+            },
+          }),
+        ),
+      ).toThrow('stage.options.other.stages[0].options.selections to contain at least one value.');
     });
 
     it('accepts option-less stages and rejects unknown stages', function () {
@@ -283,6 +341,12 @@ describe('validatePipelineExecuteRequest', function () {
   it('throws when the pipeline is invalid', function () {
     expect(() => validatePipelineExecuteRequest({ source: 'no', stages: [] }, undefined)).toThrow(
       'pipelineExecute() expected pipeline.source to be an object.',
+    );
+  });
+
+  it('throws when options are invalid', function () {
+    expect(() => validatePipelineExecuteRequest(validPipeline(), { indexMode: 'fast' })).toThrow(
+      'pipelineExecute() expected options.indexMode to equal "recommended".',
     );
   });
 });

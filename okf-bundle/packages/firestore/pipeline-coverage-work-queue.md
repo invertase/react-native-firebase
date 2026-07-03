@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS:** **P** — `implementation` (Jest-only TS validation paths).
+> **IN PROGRESS:** **Q** — `implementation` (intractability audit + dead-code triage).
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -65,8 +65,8 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 | **M**  | Android exit frames + receiver chains | **✅** | 3 e2e; NodeBuilder 75.03%; exit −29 missed |
 | **N**  | iOS stage coercion                    | **✅** | iOS/web stage coercion + operand tail; macOS 139 / iOS 144 / Android 144 area-focused |
 | **O**  | Android Executor remainder            | **✅** | 58%→60.94%; 7 e2e; ~130 missed dead-code → Phase Q |
-| **P**  | Jest-only TS paths                    | **in progress** | validation branches *(was old N)* |
-| **Q**  | Intractability audit                  | queued                    | measured caps per file *(was old O)*                                                                                                               |
+| **P**  | Jest-only TS paths                    | **✅** | 100% lines pipeline_validate; L49 → Q |
+| **Q**  | Intractability audit                  | **in progress** | measured caps; Executor dead-code cluster |
 | **R**  | Pre-merge harness restore             | queued                    | **Full** unfocused 3-platform snapshot — [full validation tier](../../testing/running-e2e.md#e2e-validation-tiers-unit-focused-area-focused-full) *(was old P)* |
 
 
@@ -76,12 +76,12 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 
 ## Current snapshot
 
-**Label:** `p-impl-jest-validate`; **harness:** subagent applies overrides locally
+**Label:** `q-audit-dead-code`; **harness:** per subagent tier
 
-**Next item:** **P** — Jest coverage for unreachable `pipeline_validate.ts` guards.
+**Next item:** **Q** — audit intractable/dead paths; remove provably dead Executor helpers if safe.
 
-| **O** Android Executor | `test(firestore): cover pipeline Android Executor remainder paths` | **closed** | **closed** | **closed** | — | — | — | 7 e2e; 58%→60.94%; 151 Android area-focused; dead-code cluster → Q |
-| **P** Jest validation paths | — | open | open | open | `implementation` | `unit-focused` | macOS | `pipeline_validate.ts` remaining guards |
+| **P** Jest validation paths | `test(firestore): expand pipeline validate Jest coverage` | **closed** | **closed** | **closed** | — | — | — | 100% lines / 98.95% branches; L49 default-param deferred |
+| **Q** Intractability audit | — | open | open | open | `implementation` | `unit-focused` | android | Executor dead-code (~130 missed); validateSource L49 |
 
 | **J2** P-005 `integerLiteral` | `fix(firestore, android): align pipeline integerLiteral constant lowering with iOS` | **closed** | **closed** | **closed** | — | — | — | P-005 → Resolved; CFBoolean deferral accepted |
 | **J3** P-010 stage option expressions | `fix(firestore, android): align pipeline stage option expression fields with iOS` | **closed** | **closed** | **closed** | — | — | — | P-010 → Resolved |
@@ -306,7 +306,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **P** `implementation_gate` open. **N** and **O** complete.
+**Current gates:** **Q** `implementation_gate` open. **P** complete.
 
 ---
 
