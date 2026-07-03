@@ -141,6 +141,13 @@ describe('Auth', function () {
       expect(isSignInWithEmailLink).toBeDefined();
     });
 
+    it('`isSignInWithEmailLink` returns synchronously', function () {
+      const result = isSignInWithEmailLink(getAuth(), 'https://example.com/link');
+
+      expect(result).toBe(false);
+      expect(result).not.toBeInstanceOf(Promise);
+    });
+
     it('`onAuthStateChanged` function is properly exposed to end user', function () {
       expect(onAuthStateChanged).toBeDefined();
     });
@@ -240,6 +247,67 @@ describe('Auth', function () {
     it('`parseActionCodeURL` returns null for invalid action links', function () {
       expect(parseActionCodeURL('https://example.com/not-an-action-link')).toBeNull();
       expect(ActionCodeURL.parseLink('https://example.com/not-an-action-link')).toBeNull();
+    });
+
+    it('`TotpSecret.generateQrCodeUrl` returns synchronously with default account and issuer', function () {
+      const generateQrCodeUrl = jest.fn(
+        (_secretKey: string, _account: string, _issuer: string) => 'otpauth://totp/example',
+      );
+      const secret = new TotpSecret('secret-key', {
+        app: { name: '[DEFAULT]' },
+        currentUser: { email: 'user@example.com' },
+        native: { generateQrCodeUrl },
+      } as never);
+
+      const result = secret.generateQrCodeUrl();
+
+      expect(result).toBe('otpauth://totp/example');
+      expect(result).not.toBeInstanceOf(Promise);
+      expect(generateQrCodeUrl).toHaveBeenCalledWith('secret-key', 'user@example.com', '[DEFAULT]');
+    });
+
+    it('`TotpSecret.generateQrCodeUrl` throws auth/invalid-multi-factor-secret for a missing secret', function () {
+      const generateQrCodeUrl = jest.fn((_secretKey: string, _account: string, _issuer: string) => {
+        const error = new Error("can't find secret for provided key");
+        error.name = 'invalid-multi-factor-secret';
+        throw error;
+      });
+      const secret = new TotpSecret('missing-secret-key', {
+        app: { name: '[DEFAULT]' },
+        currentUser: { email: 'user@example.com' },
+        native: { generateQrCodeUrl },
+      } as never);
+
+      expect(() => secret.generateQrCodeUrl()).toThrow(
+        "[auth/invalid-multi-factor-secret] can't find secret for provided key",
+      );
+      expect(generateQrCodeUrl).toHaveBeenCalledWith(
+        'missing-secret-key',
+        'user@example.com',
+        '[DEFAULT]',
+      );
+    });
+
+    it('`TotpSecret.generateQrCodeUrl` forwards explicit account and issuer synchronously', function () {
+      const generateQrCodeUrl = jest.fn(
+        (_secretKey: string, _account: string, _issuer: string) =>
+          'otpauth://totp/Example%20App:account%40example.com',
+      );
+      const secret = new TotpSecret('secret-key', {
+        app: { name: '[DEFAULT]' },
+        currentUser: { email: 'user@example.com' },
+        native: { generateQrCodeUrl },
+      } as never);
+
+      const result = secret.generateQrCodeUrl('account@example.com', 'Example App');
+
+      expect(result).toBe('otpauth://totp/Example%20App:account%40example.com');
+      expect(result).not.toBeInstanceOf(Promise);
+      expect(generateQrCodeUrl).toHaveBeenCalledWith(
+        'secret-key',
+        'account@example.com',
+        'Example App',
+      );
     });
 
     it('`deleteUser` function is properly exposed to end user', function () {

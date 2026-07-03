@@ -427,14 +427,13 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
    * isSignInWithEmailLink
    *
    * @param email
-   * @param promise
    */
   @Override
-  public void isSignInWithEmailLink(String appName, String emailLink, final Promise promise) {
+  public boolean isSignInWithEmailLink(String appName, String emailLink) {
     Log.d(TAG, "isSignInWithEmailLink");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-    promise.resolve(firebaseAuth.isSignInWithEmailLink(emailLink));
+    return firebaseAuth.isSignInWithEmailLink(emailLink);
   }
 
   /**
@@ -1322,20 +1321,15 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
   }
 
   @Override
-  public void generateQrCodeUrl(
-      final String appName,
-      final String secretKey,
-      final String account,
-      final String issuer,
-      final Promise promise) {
+  public String generateQrCodeUrl(
+      final String appName, final String secretKey, final String account, final String issuer) {
 
     TotpSecret secret = mTotpSecrets.get(secretKey);
     if (secret == null) {
-      rejectPromiseWithCodeAndMessage(
-          promise, "invalid-multi-factor-secret", "can't find secret for provided key");
-      return;
+      throw new ReactNativeFirebaseAuthSyncException(
+          "invalid-multi-factor-secret", "can't find secret for provided key");
     }
-    promise.resolve(secret.generateQrCodeUrl(account, issuer));
+    return secret.generateQrCodeUrl(account, issuer);
   }
 
   @Override

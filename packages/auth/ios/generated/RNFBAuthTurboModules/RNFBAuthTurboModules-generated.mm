@@ -79,7 +79,7 @@ namespace facebook::react {
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_isSignInWithEmailLink(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "isSignInWithEmailLink", @selector(isSignInWithEmailLink:emailLink:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, BooleanKind, "isSignInWithEmailLink", @selector(isSignInWithEmailLink:emailLink:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_signInWithEmailAndPassword(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -179,7 +179,7 @@ namespace facebook::react {
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_generateQrCodeUrl(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "generateQrCodeUrl", @selector(generateQrCodeUrl:secretKey:account:issuer:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, "generateQrCodeUrl", @selector(generateQrCodeUrl:secretKey:account:issuer:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_openInOtpApp(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {

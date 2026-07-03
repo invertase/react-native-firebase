@@ -205,11 +205,6 @@ const config: PackageConfig = {
         'RN Firebase modular UserCredential includes optional enumerable additionalUserInfo (firebase-js-sdk core fields plus preserved native bridge keys). firebase-js-sdk keeps additionalUserInfo off the public UserCredential interface — use getAdditionalUserInfo there.',
     },
     {
-      name: 'isSignInWithEmailLink',
-      reason:
-        'iOS/Android: Promise<boolean> via native bridge. Other/All: not aligned yet; firebase-js-sdk synchronous boolean is possible on Other/Hermes and Other/Web.',
-    },
-    {
       name: 'linkWithRedirect',
       reason:
         'iOS/Android: resolves immediately with UserCredential. Other/Hermes: not applicable (no DOM). Other/Web: not delegated yet; firebase-js-sdk redirect flow is possible.',
@@ -241,8 +236,7 @@ const config: PackageConfig = {
     },
     {
       name: 'TotpSecret',
-      reason:
-        'iOS/Android: generateQrCodeUrl is Promise<string> via native bridge; openInOtpApp is an RN-only helper. Other/All: js-sdk synchronous generateQrCodeUrl is possible when MFA is supported on Other.',
+      reason: 'RN Firebase extension: openInOtpApp is an RN-only helper.',
     },
     {
       name: 'User',

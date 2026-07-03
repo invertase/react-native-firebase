@@ -24,6 +24,12 @@
 #import "RNFBAuthModule.h"
 #import "RNFBAuthTurboModules.h"
 
+static void RNFBAuthThrowSyncErrorWithCode(NSString *code, NSString *message) {
+  @throw [NSException exceptionWithName:code
+                                 reason:message
+                               userInfo:@{@"code" : code, @"message" : message}];
+}
+
 static NSString *const keyIOS = @"iOS";
 static NSString *const keyUrl = @"url";
 static NSString *const keyUid = @"uid";
@@ -298,14 +304,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
            }];
 }
 
-- (void)isSignInWithEmailLink:(NSString *)appName
-                    emailLink:(NSString *)emailLink
-                      resolve:(RCTPromiseResolveBlock)resolve
-                       reject:(RCTPromiseRejectBlock)reject {
+- (NSNumber *)isSignInWithEmailLink:(NSString *)appName emailLink:(NSString *)emailLink {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
-  resolve(
-      @([RCTConvert BOOL:@([[FIRAuth authWithApp:firebaseApp] isSignInWithEmailLink:emailLink])]));
+  return
+      @([RCTConvert BOOL:@([[FIRAuth authWithApp:firebaseApp] isSignInWithEmailLink:emailLink])]);
 }
 
 - (void)signInWithEmailLink:(NSString *)appName
@@ -1098,20 +1101,22 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                                 }];
 }
 
-- (void)generateQrCodeUrl:(NSString *)appName
-                secretKey:(NSString *)secretKey
-              accountName:(NSString *)accountName
-                   issuer:(NSString *)issuer
-                  resolve:(RCTPromiseResolveBlock)resolve
-                   reject:(RCTPromiseRejectBlock)reject {
+- (NSString *)generateQrCodeUrl:(NSString *)appName
+                      secretKey:(NSString *)secretKey
+                        account:(NSString *)account
+                         issuer:(NSString *)issuer {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   DLog(@"generateQrCodeUrl using instance resolve generateQrCodeUrl: %@", firebaseApp.name);
   DLog(@"generateQrCodeUrl using secretKey: %@", secretKey);
   FIRTOTPSecret *totpSecret = cachedTotpSecrets[secretKey];
-  NSString *url = [totpSecret generateQRCodeURLWithAccountName:accountName issuer:issuer];
+  if (!totpSecret) {
+    RNFBAuthThrowSyncErrorWithCode(
+        @"invalid-multi-factor-secret", @"can't find secret for provided key");
+  }
+  NSString *url = [totpSecret generateQRCodeURLWithAccountName:account issuer:issuer];
   DLog(@"generateQrCodeUrl got QR Code URL %@", url);
-  resolve(url);
+  return url;
 }
 
 - (void)openInOtpApp:(NSString *)appName

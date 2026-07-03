@@ -34,7 +34,7 @@ public:
   virtual jsi::Value signOut(jsi::Runtime &rt, jsi::String appName) = 0;
   virtual jsi::Value signInAnonymously(jsi::Runtime &rt, jsi::String appName) = 0;
   virtual jsi::Value createUserWithEmailAndPassword(jsi::Runtime &rt, jsi::String appName, jsi::String email, jsi::String password) = 0;
-  virtual jsi::Value isSignInWithEmailLink(jsi::Runtime &rt, jsi::String appName, jsi::String emailLink) = 0;
+  virtual bool isSignInWithEmailLink(jsi::Runtime &rt, jsi::String appName, jsi::String emailLink) = 0;
   virtual jsi::Value signInWithEmailAndPassword(jsi::Runtime &rt, jsi::String appName, jsi::String email, jsi::String password) = 0;
   virtual jsi::Value signInWithEmailLink(jsi::Runtime &rt, jsi::String appName, jsi::String email, jsi::String emailLink) = 0;
   virtual jsi::Value signInWithCustomToken(jsi::Runtime &rt, jsi::String appName, jsi::String token) = 0;
@@ -59,7 +59,7 @@ public:
   virtual jsi::Value resolveMultiFactorSignIn(jsi::Runtime &rt, jsi::String appName, jsi::String session, jsi::String verificationId, jsi::String verificationCode) = 0;
   virtual jsi::Value resolveTotpSignIn(jsi::Runtime &rt, jsi::String appName, jsi::String sessionKey, jsi::String uid, jsi::String oneTimePassword) = 0;
   virtual jsi::Value generateTotpSecret(jsi::Runtime &rt, jsi::String appName, jsi::String sessionKey) = 0;
-  virtual jsi::Value generateQrCodeUrl(jsi::Runtime &rt, jsi::String appName, jsi::String secretKey, jsi::String account, jsi::String issuer) = 0;
+  virtual jsi::String generateQrCodeUrl(jsi::Runtime &rt, jsi::String appName, jsi::String secretKey, jsi::String account, jsi::String issuer) = 0;
   virtual void openInOtpApp(jsi::Runtime &rt, jsi::String appName, jsi::String secretKey, jsi::String qrCodeUri) = 0;
   virtual jsi::Value getSession(jsi::Runtime &rt, jsi::String appName) = 0;
   virtual jsi::Value unenrollMultiFactor(jsi::Runtime &rt, jsi::String appName, jsi::String factorUID) = 0;
@@ -223,12 +223,12 @@ private:
       return bridging::callFromJs<jsi::Value>(
           rt, &T::createUserWithEmailAndPassword, jsInvoker_, instance_, std::move(appName), std::move(email), std::move(password));
     }
-    jsi::Value isSignInWithEmailLink(jsi::Runtime &rt, jsi::String appName, jsi::String emailLink) override {
+    bool isSignInWithEmailLink(jsi::Runtime &rt, jsi::String appName, jsi::String emailLink) override {
       static_assert(
           bridging::getParameterCount(&T::isSignInWithEmailLink) == 3,
           "Expected isSignInWithEmailLink(...) to have 3 parameters");
 
-      return bridging::callFromJs<jsi::Value>(
+      return bridging::callFromJs<bool>(
           rt, &T::isSignInWithEmailLink, jsInvoker_, instance_, std::move(appName), std::move(emailLink));
     }
     jsi::Value signInWithEmailAndPassword(jsi::Runtime &rt, jsi::String appName, jsi::String email, jsi::String password) override {
@@ -423,12 +423,12 @@ private:
       return bridging::callFromJs<jsi::Value>(
           rt, &T::generateTotpSecret, jsInvoker_, instance_, std::move(appName), std::move(sessionKey));
     }
-    jsi::Value generateQrCodeUrl(jsi::Runtime &rt, jsi::String appName, jsi::String secretKey, jsi::String account, jsi::String issuer) override {
+    jsi::String generateQrCodeUrl(jsi::Runtime &rt, jsi::String appName, jsi::String secretKey, jsi::String account, jsi::String issuer) override {
       static_assert(
           bridging::getParameterCount(&T::generateQrCodeUrl) == 5,
           "Expected generateQrCodeUrl(...) to have 5 parameters");
 
-      return bridging::callFromJs<jsi::Value>(
+      return bridging::callFromJs<jsi::String>(
           rt, &T::generateQrCodeUrl, jsInvoker_, instance_, std::move(appName), std::move(secretKey), std::move(account), std::move(issuer));
     }
     void openInOtpApp(jsi::Runtime &rt, jsi::String appName, jsi::String secretKey, jsi::String qrCodeUri) override {

@@ -558,6 +558,11 @@ The namespaced API for `@react-native-firebase/auth` has been **removed**. This 
 | `auth().useEmulator(url)`                | `connectAuthEmulator(getAuth(), url, options?)`                 |
 | `firebase.auth.EmailAuthProvider`        | `EmailAuthProvider` (named export)                              |
 
+## Signature changes
+
+- `isSignInWithEmailLink(auth, emailLink)` now returns `boolean` synchronously, matching firebase-js-sdk.
+- `TotpSecret.generateQrCodeUrl(accountName?, issuer?)` now returns `string` synchronously, matching firebase-js-sdk. When `accountName` or `issuer` is omitted, React Native Firebase fills the same defaults from the current user email and Firebase app name.
+
 ## Example
 
 ```js

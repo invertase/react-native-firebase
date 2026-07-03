@@ -84,7 +84,7 @@ static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_createUser
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_isSignInWithEmailLink(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "isSignInWithEmailLink", "(Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, BooleanKind, "isSignInWithEmailLink", "(Ljava/lang/String;Ljava/lang/String;)Z", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_signInWithEmailAndPassword(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -209,7 +209,7 @@ static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_generateTo
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_generateQrCodeUrl(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "generateQrCodeUrl", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, StringKind, "generateQrCodeUrl", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_openInOtpApp(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {

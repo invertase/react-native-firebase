@@ -98,10 +98,8 @@ namespace JS {
                               password:(NSString *)password
                                resolve:(RCTPromiseResolveBlock)resolve
                                 reject:(RCTPromiseRejectBlock)reject;
-- (void)isSignInWithEmailLink:(NSString *)appName
-                    emailLink:(NSString *)emailLink
-                      resolve:(RCTPromiseResolveBlock)resolve
-                       reject:(RCTPromiseRejectBlock)reject;
+- (NSNumber *)isSignInWithEmailLink:(NSString *)appName
+                          emailLink:(NSString *)emailLink;
 - (void)signInWithEmailAndPassword:(NSString *)appName
                              email:(NSString *)email
                           password:(NSString *)password
@@ -212,12 +210,10 @@ namespace JS {
                 sessionKey:(NSString *)sessionKey
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject;
-- (void)generateQrCodeUrl:(NSString *)appName
-                secretKey:(NSString *)secretKey
-                  account:(NSString *)account
-                   issuer:(NSString *)issuer
-                  resolve:(RCTPromiseResolveBlock)resolve
-                   reject:(RCTPromiseRejectBlock)reject;
+- (NSString *)generateQrCodeUrl:(NSString *)appName
+                      secretKey:(NSString *)secretKey
+                        account:(NSString *)account
+                         issuer:(NSString *)issuer;
 - (void)openInOtpApp:(NSString *)appName
            secretKey:(NSString *)secretKey
            qrCodeUri:(NSString *)qrCodeUri;

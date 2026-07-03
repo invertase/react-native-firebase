@@ -1,4 +1,4 @@
-import { describe, it, jest } from '@jest/globals';
+import { describe, expect, it, jest } from '@jest/globals';
 import { assertTurboContract } from '../../app/__tests__/turboModuleContractHelper';
 
 const SPEC_METHODS = [
@@ -80,23 +80,32 @@ describe('TurboModule wrapper contract (NewArch-AD-17.1)', function () {
           APP_USER: { '[DEFAULT]': null },
         },
         createMock: method =>
-          jest.fn(() =>
-            method === 'configureAuthDomain' ||
-            method === 'addAuthStateListener' ||
-            method === 'removeAuthStateListener' ||
-            method === 'addIdTokenListener' ||
-            method === 'removeIdTokenListener' ||
-            method === 'setLanguageCode' ||
-            method === 'useDeviceLanguage' ||
-            method === 'openInOtpApp' ||
-            method === 'verifyPhoneNumber' ||
-            method === 'useEmulator' ||
-            method === 'isSignInWithEmailLink'
-              ? method === 'isSignInWithEmailLink'
-                ? false
-                : undefined
-              : Promise.resolve(),
-          ),
+          jest.fn(() => {
+            if (method === 'isSignInWithEmailLink') {
+              return false;
+            }
+
+            if (method === 'generateQrCodeUrl') {
+              return 'otpauth://totp/example';
+            }
+
+            if (
+              method === 'configureAuthDomain' ||
+              method === 'addAuthStateListener' ||
+              method === 'removeAuthStateListener' ||
+              method === 'addIdTokenListener' ||
+              method === 'removeIdTokenListener' ||
+              method === 'setLanguageCode' ||
+              method === 'useDeviceLanguage' ||
+              method === 'openInOtpApp' ||
+              method === 'verifyPhoneNumber' ||
+              method === 'useEmulator'
+            ) {
+              return undefined;
+            }
+
+            return Promise.resolve();
+          }),
       },
       {
         createUserWithEmailAndPassword: wrapped => {
@@ -160,7 +169,9 @@ describe('TurboModule wrapper contract (NewArch-AD-17.1)', function () {
           void wrapped.generateTotpSecret('session');
         },
         generateQrCodeUrl: wrapped => {
-          void wrapped.generateQrCodeUrl('secret', 'account', 'issuer');
+          const result = wrapped.generateQrCodeUrl('secret', 'account', 'issuer');
+          expect(result).toBe('otpauth://totp/example');
+          expect(result).not.toBeInstanceOf(Promise);
         },
         openInOtpApp: wrapped => {
           wrapped.openInOtpApp('secret', 'otpauth://totp/example');
@@ -197,6 +208,11 @@ describe('TurboModule wrapper contract (NewArch-AD-17.1)', function () {
         },
         useEmulator: wrapped => {
           wrapped.useEmulator('localhost', 9099);
+        },
+        isSignInWithEmailLink: wrapped => {
+          const result = wrapped.isSignInWithEmailLink('https://example.com/link');
+          expect(result).toBe(false);
+          expect(result).not.toBeInstanceOf(Promise);
         },
         forceRecaptchaFlowForTesting: wrapped => {
           void wrapped.forceRecaptchaFlowForTesting(true);

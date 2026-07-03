@@ -274,7 +274,7 @@ export interface RNFBAuthModule {
     actionCodeSettings?: ActionCodeSettings | null,
   ): Promise<void>;
   sendSignInLinkToEmail(email: string, actionCodeSettings?: ActionCodeSettings): Promise<void>;
-  isSignInWithEmailLink(emailLink: string): Promise<boolean>;
+  isSignInWithEmailLink(emailLink: string): boolean;
   signInWithEmailLink(email: string, emailLink?: string): Promise<NativeUserCredentialInternal>;
   confirmPasswordReset(code: string, newPassword: string): Promise<void>;
   applyActionCode(code: string): Promise<NativeUserInternal | null | undefined>;
@@ -334,7 +334,7 @@ export interface RNFBAuthModule {
   unenrollMultiFactor(enrollmentId: string | MultiFactorInfo): Promise<void>;
   getMultiFactorResolver(error: unknown): MultiFactorResolverResultInternal | null;
   generateTotpSecret(session: MultiFactorSession): Promise<{ secretKey: string }>;
-  generateQrCodeUrl(secretKey: string, accountName: string, issuer: string): Promise<string>;
+  generateQrCodeUrl(secretKey: string, accountName: string, issuer: string): string;
   openInOtpApp(secretKey: string, qrCodeUrl: string): string | void;
   assertionForSignIn(
     uid: string,
@@ -355,7 +355,7 @@ export type AuthInternal = Auth & {
   fetchSignInMethodsForEmail(email: string): Promise<string[]>;
   getCustomAuthDomain(): Promise<string>;
   getMultiFactorResolver(error: unknown): MultiFactorResolverResultInternal | null;
-  isSignInWithEmailLink(emailLink: string): Promise<boolean>;
+  isSignInWithEmailLink(emailLink: string): boolean;
   onAuthStateChanged(
     listenerOrObserver: import('./auth').CallbackOrObserver<AuthListenerCallbackInternal>,
   ): () => void;

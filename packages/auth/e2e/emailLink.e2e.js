@@ -66,7 +66,7 @@ describe('auth() -> emailLink Provider', function () {
     });
   });
   describe('isSignInWithEmailLink', function () {
-    it('should return true/false', async function () {
+    it('should return true/false', function () {
       const { getAuth, isSignInWithEmailLink } = authModular;
 
       const auth = getAuth();
@@ -79,14 +79,14 @@ describe('auth() -> emailLink Provider', function () {
 
       // ios does not require apiKey, but android and web/other do
       if (!Platform.ios) {
-        should.equal(false, await isSignInWithEmailLink(auth, emailLink1));
+        should.equal(false, isSignInWithEmailLink(auth, emailLink1));
       } else {
-        should.equal(true, await isSignInWithEmailLink(auth, emailLink1));
+        should.equal(true, isSignInWithEmailLink(auth, emailLink1));
       }
-      should.equal(false, await isSignInWithEmailLink(auth, emailLink2));
-      should.equal(false, await isSignInWithEmailLink(auth, emailLink3));
-      should.equal(true, await isSignInWithEmailLink(auth, emailLink4));
-      should.equal(true, await isSignInWithEmailLink(auth, emailLink5));
+      should.equal(false, isSignInWithEmailLink(auth, emailLink2));
+      should.equal(false, isSignInWithEmailLink(auth, emailLink3));
+      should.equal(true, isSignInWithEmailLink(auth, emailLink4));
+      should.equal(true, isSignInWithEmailLink(auth, emailLink5));
     });
   });
 

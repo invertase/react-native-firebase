@@ -15,6 +15,7 @@
  */
 
 import { isString } from '@react-native-firebase/app/dist/module/common';
+import { rethrowAuthSyncNativeError } from './internal/syncNativeError';
 import type { AuthInternal } from './types/internal';
 
 export class TotpSecret {
@@ -41,17 +42,29 @@ export class TotpSecret {
    *
    * @param accountName the name of the account/app along with a user identifier.
    * @param issuer issuer of the TOTP (likely the app name).
-   * @returns A Promise that resolves to a QR code URL string. Unlike the firebase-js-sdk synchronous
-   * return type, this method is async because QR code generation is performed through the React Native
-   * native auth bridge.
+   * @returns A QR code URL string.
    */
-  async generateQrCodeUrl(accountName?: string, issuer?: string): Promise<string> {
-    // accountName and issure are nullable in the API specification but are
-    // required by tha native SDK. The JS SDK returns '' if they are missing/empty.
-    if (!isString(accountName) || !isString(issuer) || accountName === '' || issuer === '') {
-      return '';
+  generateQrCodeUrl(accountName?: string, issuer?: string): string {
+    let resolvedAccountName = accountName;
+    let resolvedIssuer = issuer;
+
+    if (!isString(resolvedAccountName) || resolvedAccountName === '') {
+      resolvedAccountName = this.auth.currentUser?.email ?? 'unknownuser';
     }
-    return this.auth.native.generateQrCodeUrl(this.secretKey, accountName, issuer);
+
+    if (!isString(resolvedIssuer) || resolvedIssuer === '') {
+      resolvedIssuer = this.auth.app.name;
+    }
+
+    try {
+      return this.auth.native.generateQrCodeUrl(
+        this.secretKey,
+        resolvedAccountName,
+        resolvedIssuer,
+      );
+    } catch (error) {
+      rethrowAuthSyncNativeError(error);
+    }
   }
 
   /**

@@ -230,8 +230,10 @@ const totpAssertionForEnrollment: TotpMultiFactorAssertion =
   TotpMultiFactorGenerator.assertionForEnrollment(totpSecret, '123456');
 const generatedTotpSecret: Promise<TotpSecret> =
   TotpMultiFactorGenerator.generateSecret(multiFactorSession);
+const isEmailLink: boolean = isSignInWithEmailLink(modularAuth, 'https://example.com/link');
+const totpQrCodeUrl: string = totpSecret.generateQrCodeUrl('account@example.com', 'Example App');
 console.log(modularAuth.app.name, modularAuthFromApp.app.name, initializedAuth.app.name);
-console.log(phoneVerificationId);
+console.log(phoneVerificationId, isEmailLink, totpQrCodeUrl);
 console.log(totpAssertionForSignIn, totpAssertionForEnrollment, generatedTotpSecret);
 
 const emailCredential = EmailAuthProvider.credential('test@example.com', 'password123');

@@ -644,7 +644,7 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     );
   }
 
-  isSignInWithEmailLink(emailLink: string): Promise<boolean> {
+  isSignInWithEmailLink(emailLink: string): boolean {
     return this.native.isSignInWithEmailLink(emailLink);
   }
 
@@ -1152,10 +1152,8 @@ export function getRedirectResult(
 /**
  * Checks whether an email link is a valid sign-in with email link URL.
  *
- * @remarks React Native Firebase performs this check through the native bridge and returns
- * `Promise<boolean>`. The firebase-js-sdk returns a synchronous `boolean`.
  */
-export function isSignInWithEmailLink(auth: Auth, emailLink: string): Promise<boolean> {
+export function isSignInWithEmailLink(auth: Auth, emailLink: string): boolean {
   const authInternal = getAuthInternal(auth);
   return callAuthMethod(authInternal, authInternal.isSignInWithEmailLink, emailLink);
 }

@@ -118,9 +118,9 @@ public abstract class NativeRNFBTurboAuthSpec extends ReactContextBaseJavaModule
   @DoNotStrip
   public abstract void createUserWithEmailAndPassword(String appName, String email, String password, Promise promise);
 
-  @ReactMethod
+  @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
-  public abstract void isSignInWithEmailLink(String appName, String emailLink, Promise promise);
+  public abstract boolean isSignInWithEmailLink(String appName, String emailLink);
 
   @ReactMethod
   @DoNotStrip
@@ -218,9 +218,9 @@ public abstract class NativeRNFBTurboAuthSpec extends ReactContextBaseJavaModule
   @DoNotStrip
   public abstract void generateTotpSecret(String appName, String sessionKey, Promise promise);
 
-  @ReactMethod
+  @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
-  public abstract void generateQrCodeUrl(String appName, String secretKey, String account, String issuer, Promise promise);
+  public abstract String generateQrCodeUrl(String appName, String secretKey, String account, String issuer);
 
   @ReactMethod
   @DoNotStrip

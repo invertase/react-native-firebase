@@ -25,7 +25,7 @@ export interface Spec extends TurboModule {
   signOut(appName: string): Promise<void>;
   signInAnonymously(appName: string): Promise<Object>;
   createUserWithEmailAndPassword(appName: string, email: string, password: string): Promise<Object>;
-  isSignInWithEmailLink(appName: string, emailLink: string): Promise<boolean>;
+  isSignInWithEmailLink(appName: string, emailLink: string): boolean;
   signInWithEmailAndPassword(appName: string, email: string, password: string): Promise<Object>;
   signInWithEmailLink(appName: string, email: string, emailLink: string): Promise<Object>;
   signInWithCustomToken(appName: string, token: string): Promise<Object>;
@@ -90,12 +90,7 @@ export interface Spec extends TurboModule {
     oneTimePassword: string,
   ): Promise<Object>;
   generateTotpSecret(appName: string, sessionKey: string): Promise<Object>;
-  generateQrCodeUrl(
-    appName: string,
-    secretKey: string,
-    account: string,
-    issuer: string,
-  ): Promise<string>;
+  generateQrCodeUrl(appName: string, secretKey: string, account: string, issuer: string): string;
   openInOtpApp(appName: string, secretKey: string, qrCodeUri: string): void;
   getSession(appName: string): Promise<string>;
   unenrollMultiFactor(appName: string, factorUID: string): Promise<void>;

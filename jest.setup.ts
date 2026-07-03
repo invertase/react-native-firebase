@@ -204,7 +204,7 @@ jest.doMock('react-native', () => {
           finalizeMultiFactorEnrollment: jest.fn(() => Promise.resolve()),
           finalizeTotpEnrollment: jest.fn(() => Promise.resolve()),
           generateTotpSecret: jest.fn(() => Promise.resolve({ secretKey: 'secret' })),
-          generateQrCodeUrl: jest.fn(() => Promise.resolve('qr-url')),
+          generateQrCodeUrl: jest.fn(() => 'qr-url'),
           openInOtpApp: jest.fn(),
           resolveMultiFactorSignIn: jest.fn(() => Promise.resolve({ user: null })),
           confirmationResultConfirm: jest.fn(() => Promise.resolve({ user: null })),

@@ -583,13 +583,15 @@ export default {
    * Check if a sign in with email link is valid
    * @param {string} appName - The name of the app to get the auth instance for.
    * @param {string} emailLink - The email link to sign in with.
-   * @returns {Promise<boolean>} - Whether the link is a valid sign in with email link.
+   * @returns {boolean} - Whether the link is a valid sign in with email link.
    */
-  async isSignInWithEmailLink(appName: string, emailLink: string) {
-    return guard(async () => {
+  isSignInWithEmailLink(appName: string, emailLink: string) {
+    try {
       const auth = getCachedAuthInstance(appName);
-      return await isSignInWithEmailLink(auth, emailLink);
-    });
+      return isSignInWithEmailLink(auth, emailLink);
+    } catch (e) {
+      throw getWebError(e as Error & { code?: string });
+    }
   },
 
   /**
@@ -1254,10 +1256,11 @@ export default {
   generateQrCodeUrl(_appName: string, secretKey: string, accountName?: string, issuer?: string) {
     const totpSecret = totpSecretMap.get(secretKey);
     if (!totpSecret) {
-      return rejectPromiseWithCodeAndMessage(
-        'invalid-multi-factor-secret',
-        "can't find secret for provided key",
-      );
+      throw getWebError({
+        name: 'FirebaseError',
+        code: 'auth/invalid-multi-factor-secret',
+        message: "can't find secret for provided key",
+      });
     }
     return totpSecret.generateQrCodeUrl(accountName, issuer);
   },
