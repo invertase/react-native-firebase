@@ -273,26 +273,25 @@ const config: PackageConfig = {
       name: 'deleteAllPersistentCacheIndexes',
       reason:
         'Returns `Promise<void>` in RN Firebase vs `void` in the firebase-js-sdk. ' +
-        'The RN implementation is async because it delegates to the native module.',
+        'Phase S hint: **keep-async: deferred persistent-cache IO** (web void schedules disk/index work; see PS-S2-gap).',
     },
     {
       name: 'disablePersistentCacheIndexAutoCreation',
       reason:
         'Returns `Promise<void>` in RN Firebase vs `void` in the firebase-js-sdk. ' +
-        'The RN implementation is async because it delegates to the native module.',
+        'Phase S hint: **keep-async: deferred persistent-cache IO** (see PS-S2-gap).',
     },
     {
       name: 'enablePersistentCacheIndexAutoCreation',
       reason:
         'Returns `Promise<void>` in RN Firebase vs `void` in the firebase-js-sdk. ' +
-        'The RN implementation is async because it delegates to the native module.',
+        'Phase S hint: **keep-async: deferred persistent-cache IO** (see PS-S2-gap).',
     },
     {
       name: 'initializeFirestore',
       reason:
-        'Returns `Promise<Firestore>` in RN Firebase vs `Firestore` in the ' +
-        'firebase-js-sdk. The RN implementation is async because it initialises ' +
-        'the native Firestore module.',
+        'Returns `Promise<Firestore>` in RN Firebase vs `Firestore` in the firebase-js-sdk. ' +
+        'Phase S hint: **Promise that could maybe sync-void+gate** (in-memory settings visible before return; see PS-S2-gap).',
     },
     {
       name: 'onSnapshotsInSync',

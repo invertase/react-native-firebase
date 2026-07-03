@@ -54,14 +54,16 @@ const config: PackageConfig = {
       reason:
         'RN Firebase-specific function for setting the maximum retry time for ' +
         'non-upload/download operations on Android and iOS. The firebase-js-sdk ' +
-        'exposes this as a writable property on the `FirebaseStorage` instance.',
+        'exposes this as a writable property on the `FirebaseStorage` instance. ' +
+        'Phase S hint: **Promise that could maybe sync-void+queue** (sync JS field + native setter; see PS-S2-gap).',
     },
     {
       name: 'setMaxUploadRetryTime',
       reason:
         'RN Firebase-specific function for setting the maximum upload retry time ' +
         'on Android and iOS. The firebase-js-sdk exposes this as a writable property ' +
-        'on the `FirebaseStorage` instance.',
+        'on the `FirebaseStorage` instance. ' +
+        'Phase S hint: **Promise that could maybe sync-void+queue** (see PS-S2-gap).',
     },
     {
       name: 'setMaxDownloadRetryTime',
@@ -144,9 +146,9 @@ const config: PackageConfig = {
       name: 'UploadTask',
       reason:
         'RN Firebase returns `Promise<boolean>` from `cancel()`, `pause()`, and ' +
-        '`resume()` to communicate asynchronously with the native iOS/Android modules, ' +
-        'whereas the firebase-js-sdk returns a synchronous `boolean`. Error callback ' +
-        'types also use `NativeFirebaseError` instead of `StorageError`.',
+        '`resume()` whereas the firebase-js-sdk returns a synchronous `boolean`. ' +
+        'Error callback types also use `NativeFirebaseError` instead of `StorageError`. ' +
+        'Phase S hint: **convert after native fix** (sync boolean from native task state; see PS-S2-gap).',
     },
     {
       name: 'EmulatorMockTokenOptions',

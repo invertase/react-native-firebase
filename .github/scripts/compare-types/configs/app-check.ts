@@ -89,7 +89,8 @@ const config: PackageConfig = {
     {
       name: 'initializeAppCheck',
       reason:
-        'RN Firebase returns `Promise<AppCheck>` because App Check initialization crosses the native bridge, whereas the firebase-js-sdk returns `AppCheck` synchronously.',
+        'RN Firebase returns `Promise<AppCheck>` whereas the firebase-js-sdk returns `AppCheck` synchronously. ' +
+        'Phase S hint: **Promise that could maybe sync-void+queue** after provider/refresh state is installed synchronously (see PS-S2-gap).',
     },
     {
       name: 'AppCheckOptions',

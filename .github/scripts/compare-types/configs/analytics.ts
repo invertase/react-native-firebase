@@ -100,12 +100,42 @@ const config: PackageConfig = {
   ],
 
   differentShape: [
-    { name: 'logEvent', reason: 'RN Firebase `logEvent` returns `Promise<void>` because Analytics calls cross the native bridge, and RN overloads omit the web `[key: string]: any` index signature on event params.' },
-    { name: 'setAnalyticsCollectionEnabled', reason: 'RN Firebase returns `Promise<void>` (or `Promise<null>`) because the operation crosses the native bridge, whereas the firebase-js-sdk web modular API is synchronous.' },
-    { name: 'setConsent', reason: 'RN Firebase returns `Promise<void>` (or `Promise<null>`) because the operation crosses the native bridge, whereas the firebase-js-sdk web modular API is synchronous.' },
-    { name: 'setDefaultEventParameters', reason: 'RN Firebase returns `Promise<void>` (or `Promise<null>`) because the operation crosses the native bridge, whereas the firebase-js-sdk web modular API is synchronous.' },
-    { name: 'setUserId', reason: 'RN Firebase returns `Promise<void>` (or `Promise<null>`) because the operation crosses the native bridge, whereas the firebase-js-sdk web modular API is synchronous.' },
-    { name: 'setUserProperties', reason: 'RN Firebase returns `Promise<void>` (or `Promise<null>`) because the operation crosses the native bridge, whereas the firebase-js-sdk web modular API is synchronous.' },
+    {
+      name: 'logEvent',
+      reason:
+        'RN Firebase `logEvent` returns `Promise<void>` and RN overloads omit the web `[key: string]: any` index signature on event params. ' +
+        'Phase S hint: **Promise that could maybe sync-void+queue** (ordered native fire-and-forget; see PS-S2-gap).',
+    },
+    {
+      name: 'setAnalyticsCollectionEnabled',
+      reason:
+        'RN Firebase returns `Promise<void>` whereas the firebase-js-sdk web modular API is synchronous. ' +
+        'Phase S hint: **Promise that could maybe sync-void+queue** (see PS-S2-gap).',
+    },
+    {
+      name: 'setConsent',
+      reason:
+        'RN Firebase returns `Promise<void>` whereas the firebase-js-sdk web modular API is synchronous. ' +
+        'Phase S hint: **Promise that could maybe sync-void+queue** (see PS-S2-gap).',
+    },
+    {
+      name: 'setDefaultEventParameters',
+      reason:
+        'RN Firebase returns `Promise<void>` whereas the firebase-js-sdk web modular API is synchronous. ' +
+        'Phase S hint: **Promise that could maybe sync-void+queue** (see PS-S2-gap).',
+    },
+    {
+      name: 'setUserId',
+      reason:
+        'RN Firebase returns `Promise<void>` whereas the firebase-js-sdk web modular API is synchronous. ' +
+        'Phase S hint: **Promise that could maybe sync-void+queue** (see PS-S2-gap).',
+    },
+    {
+      name: 'setUserProperties',
+      reason:
+        'RN Firebase returns `Promise<void>` whereas the firebase-js-sdk web modular API is synchronous. ' +
+        'Phase S hint: **Promise that could maybe sync-void+queue** (see PS-S2-gap).',
+    },
     { name: 'Analytics', reason: 'RN Firebase extends the Analytics service interface with native bridge methods (collection toggles, predefined event helpers, and iOS on-device conversion measurement) that are not on the firebase-js-sdk web service type.' },
     { name: 'ConsentSettings', reason: 'RN Firebase maps most consent flags to native boolean toggles, while the firebase-js-sdk uses `ConsentStatusString` for web gtag consent modes.' },
     { name: 'Currency', reason: 'RN Firebase narrows Analytics currency values to `number` for native event payloads, while the firebase-js-sdk also allows string currency codes for web gtag events.' },

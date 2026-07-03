@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-07-03):** Phase **S** — async→sync conversion review before merge. Phases 0–5, Docs/PD, and R are complete.
+> **IN PROGRESS (2026-07-03):** Phase **S** — `convert` inventory complete; **S2** native-change follow-up queued ([§ Phase S2](#phase-s2-native-change-follow-up-gap-analysis-2026-07-03)). Phases 0–5, Docs/PD, and R are complete.
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -176,7 +176,7 @@ Pick **one** of `firestore` or `auth` in Phase 1 (firestore = multi-module + pip
 | **PD** | Platform-divergence documentation | **done** | multi-package JSDoc/docs — [§ Phase PD](#phase-pd-platform-divergence-documentation) |
 | **4** | Remaining complex | **done** | `firestore`, `messaging`, `database`, `auth` |
 | **5** | Android-only / misc | **done** | `phone-number-verification` |
-| **S** | Sync conversion (forced-async → sync) | **in progress** (gap-analysis complete; first slice `app/registerVersion`); prereq **S0** complete ([interruption batch](#interruption-batch-standalone-commits)) | All migrated packages — [§ sync conversion](#phase-s-sync-conversion-forced-async--sync) |
+| **S** | Sync conversion (forced-async → sync) | **convert done**; **S2** queued ([§ Phase S2](#phase-s2-native-change-follow-up-gap-analysis-2026-07-03)); prereq **S0** complete ([interruption batch](#interruption-batch-standalone-commits)) | [§ sync conversion](#phase-s-sync-conversion-forced-async--sync) |
 | **R** | Pre-merge full validation | **done** | Revert harness narrowing; remove `NativeModules` fallback + throw test ([§ Phase R additions](#phase-r-additions)); [full tier](../testing/running-e2e.md#e2e-validation-tiers-unit-focused-area-focused-full) 3-platform before coordinated major |
 | **C** | EventEmitter cleanup | deferred | All — [§ deferred cleanup](#deferred-cleanup-phase-eventemitter) |
 | **E** | Shared-state encapsulation | deferred (optional) | `app` + readers — [§ Phase E](#phase-e-shared-state-encapsulation-optional) |
@@ -232,6 +232,41 @@ The "keep async if it does network/IO/disk" rule in the discriminator **assumes*
 | `keep-async` | Firestore persistent cache index manager delete/enable/disable | Web returns `void` but starts real persistent-cache work; do not block JS thread. |
 
 **Next slice:** `convert` inventory complete (2026-07-03). Remaining gap-analysis verdicts (`needs-native-change`, `keep-async`) are out of Phase S scope until native behavior is clarified or documented only.
+
+### Phase S2: native-change follow-up (gap-analysis 2026-07-03)
+
+Deep read-only analysis of **`needs-native-change`** and **`keep-async`** candidates after the `convert` inventory shipped. Canonical evidence table for discussion and future implementation slices. Compare-types `differentShape` entries for these methods carry **Phase S hint** phrases (short pointers only — this table holds the real state).
+
+**Hint vocabulary (compare-types annotations):**
+
+| Phrase | Meaning |
+|--------|---------|
+| *(none — entry removed)* | Phase S `convert` complete; no async-vs-sync delta |
+| **Promise that could maybe sync-void+queue** | Web is sync/fire-and-forget; RN may return void after sync local state update + ordered background native dispatch |
+| **Promise that could maybe sync-void+gate** | Web returns sync instance/state; RN must not return until in-memory settings visible to all later native entry points (or gate ops until background work completes) |
+| **convert after native fix** | Native shell close to sync; fix semantics first (e.g. boolean return), then drop Promise |
+| **keep-async: deferred persistent-cache IO** | Web `void` schedules real disk/index work; do not block JS; Promise may mean dispatch-only today |
+
+**Executive summary:** Sync return while queueing background work is valid only when RNFB updates the same **synchronous observable state** web updates before return, or when the web API is truly fire-and-forget with no ordering dependency. Queue-only is insufficient when the next line of user code assumes the effect is visible (`initializeFirestore` settings, analytics ordering, upload retry times at task construction). Firestore persistent cache index manager methods are **`keep-async`**: web `void` schedules persistent-cache work; **`sync-void+gate`** would need a native completion signal RNFB does not expose today.
+
+| Method | Package | compare:types | Web SDK (sync state before return?) | RNFB today | Verdict | Recommended path | Risks if forced sync void | Notes |
+|--------|---------|---------------|-------------------------------------|------------|---------|------------------|---------------------------|-------|
+| `logEvent` | analytics | `differentShape` | `void`; async pipeline; init/measurement ordering internal | Android `Tasks.call`; iOS direct | needs-native-change → sync-void+queue | Ordered fire-and-forget queue or direct native if SDK proven cheap | Unordered queue races with setters | Web does not expose completion |
+| `setAnalyticsCollectionEnabled` | analytics | `differentShape` | `void`; ga-disable after init | Android `Tasks.call`; iOS direct | needs-native-change → sync-void+queue | Same ordered path as events | Events logged with old collection flag | |
+| `setConsent` | analytics | `differentShape` | Sync init stash or immediate gtag | Android `Tasks.call`; iOS direct | needs-native-change → sync-void+queue | Serial queue shared with analytics calls | Immediate logEvent uses old consent | |
+| `setDefaultEventParameters` | analytics | `differentShape` | Sync init stash or immediate gtag | Android `Tasks.call`; iOS direct | needs-native-change → sync-void+queue | **Clearest ordering requirement** | Next event misses defaults | |
+| `setUserId` / `setUserProperties` | analytics | `differentShape` | Init-ordered or immediate gtag | Android `Tasks.call`; iOS direct | needs-native-change → sync-void+queue | Same analytics queue | Stale id/properties on next event | Android SDK source dive for direct-call safety |
+| RNFB-only analytics helpers | analytics | `extraInRN` | N/A | Same native path | Not Phase S parity | Align if core analytics goes fire-and-forget | Public API break without web signal | Out of compare-types completion criteria |
+| `initializeAppCheck` | app-check | `differentShape` | Sync provider/state install; token fetch background | JS awaits native configure | needs-native-change → sync-void+queue | Sync return after provider/refresh state installed | getToken/listeners race before provider ready | Native provider install source dive |
+| `initializeFirestore` | firestore | `differentShape` | Returns instance; lazy config but ordered internally | JS awaits settings(); native prefs write async | needs-native-change → sync-void+gate | In-memory settings registry visible before return | Immediate writes/listeners with old settings | Queue-only insufficient |
+| `UploadTask.pause/resume/cancel` | storage | `UploadTask` `differentShape` | Sync state machine + boolean | Android bool via Promise; iOS bool path incomplete | convert after native fix | Sync boolean from native task state | Lying about pause/cancel state | iOS shell review needed |
+| `setMaxOperationRetryTime` / `setMaxUploadRetryTime` | storage | `extraInRN` + `FirebaseStorage` shape | Sync in-memory field update | JS field then native resolve | sync-void+queue / convert | Sync void; native before return | Upload task captures stale retry at construction | Upload retry stronger ordering than operation retry |
+| `setMaxDownloadRetryTime` | storage | `extraInRN` | N/A (RN-only) | Same pattern | Not parity | Consistency if siblings change | RN-only API | |
+| `enablePersistentCacheIndexAutoCreation` | firestore | `differentShape` | `void`; schedules persistent-cache work | Native resolves immediately; no completion hook | **keep-async** | Keep Promise or document dispatch-only | Queries/listeners race index config | |
+| `disablePersistentCacheIndexAutoCreation` | firestore | `differentShape` | same | same | **keep-async** | same | Stale auto-creation until SDK finishes | |
+| `deleteAllPersistentCacheIndexes` | firestore | `differentShape` | `void` + deferred disk/index work | same | **keep-async** | Do not Phase S convert | Immediate queries use old indexes | sync-void+gate needs native completion signal |
+
+**Suggested implementation slices (when resumed):** PS-S2-storage-tasks (closest to convert) → PS-S2-analytics-queue → PS-S2-app-check-init → PS-S2-firestore-init; PS-S2-firestore-index = document/keep-async only.
 
 ---
 
@@ -332,9 +367,9 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 **Label:** `phase-s-sync-conversion` (2026-07-03)
 
-**Next item:** Phase **S** `convert` inventory **complete** — deferred `needs-native-change` / `keep-async` items documented in gap-analysis table
+**Next item:** Phase **S2** native-change follow-up — analysis queued; pick slice when resumed ([§ Phase S2](#phase-s2-native-change-follow-up-gap-analysis-2026-07-03))
 
-**Current gates:** PS-database-online all gates **closed** — committing `refactor(database): return sync parity for connection controls`.
+**Current gates:** Phase S `convert` inventory **complete** (four commits on `new-architecture`). PS-S2-gap analysis **done** — implementation deferred.
 
 **Host rule:** one `:test-cover` at a time — never parallel subagents with e2e.
 
@@ -376,6 +411,7 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Phase S auth parser/TOTP sync parity | PS-auth-parsers | **closed** | **closed** | **closed** | done | `area-focused` | `refactor(auth): return sync parity for auth parsers` | Committed 2026-07-03. Sync `isSignInWithEmailLink` + `TotpSecret.generateQrCodeUrl`; native sync error shape; jest.setup; tests + e2e sync calls; compare-types + v26 doc. Validation: Jest 91/91, compare:types, lint, reference:api, codegen:verify exit 0. Android area e2e 159/15/0 (`/tmp/rnfb-e2e-android-auth-phaseS-final.log`). |
 | Phase S perf metric controls sync parity | PS-perf-metrics | **closed** | **closed** | **closed** | done | `area-focused` | `refactor(perf): return sync parity for metric controls` | Sync trace/http/screen start/stop; Android *Sync helpers; iOS sync shells. Jest 10/10; compare:types, lint, reference:api green. Review e2e iOS/Android 60/2/0 (`/tmp/rnfb-e2e-*-perf-review.log`). macOS N/A (module skip). Remediation: perf usage docs await removed. |
 | Phase S database connection sync parity | PS-database-online | **closed** | **closed** | **closed** | done | `area-focused` | `refactor(database): return sync parity for connection controls` | Sync turbo + instance goOnline/goOffline; Android direct SDK calls; e2e await removed on modular calls. Jest 52/52; codegen:verify exit 0. Review e2e macOS 181/10/0, iOS 182/9/0, Android 183/8/0 (`/tmp/rnfb-e2e-*-database-review.log`). |
+| Phase S2 native-change gap-analysis | PS-S2-gap | n/a | n/a | n/a | done | `none` | none | Completed 2026-07-03. Full table [§ Phase S2](#phase-s2-native-change-follow-up-gap-analysis-2026-07-03); compare-types hint phrases updated. Implementation slices deferred (storage tasks closest). |
 
 ---
 
