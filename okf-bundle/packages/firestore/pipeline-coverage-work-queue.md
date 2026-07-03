@@ -324,10 +324,6 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **Merge gate** open — `pre-merge-validation` static checks. **R** closed. **K–R** complete.
-
-| Metric | Baseline (early / post-phase) | Phase R (`after-phase-r-final`) |
-
 ## Phase R — pre-merge snapshot
 
 **Status:** **closed** — full-tier 3-platform; iOS fix `38cc8815a` (`fix(firestore, ios): align pipeline stage option coercion with Android`).
