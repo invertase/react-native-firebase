@@ -119,7 +119,8 @@ export function extractSpecMethods(specContent: string, fileName = 'spec.ts'): s
 
 export function extractAndroidReactMethods(javaContent: string): string[] {
   const methods: string[] = [];
-  const methodRegex = /@ReactMethod\s+(?:@DoNotStrip\s+)?public abstract void (\w+)\s*\(/g;
+  const methodRegex =
+    /@ReactMethod(?:\([^)]*\))?\s+(?:@DoNotStrip\s+)?public abstract [\w.]+ (\w+)\s*\(/g;
   let match = methodRegex.exec(javaContent);
   while (match) {
     const name = match[1];

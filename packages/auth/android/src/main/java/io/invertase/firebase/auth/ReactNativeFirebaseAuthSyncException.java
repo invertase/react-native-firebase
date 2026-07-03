@@ -18,8 +18,8 @@ package io.invertase.firebase.auth;
  */
 
 /**
- * Structured sync TurboModule error carrying the same RNFB {@code code}/{@code message} pair used by
- * {@code rejectPromiseWithCodeAndMessage}.
+ * Structured sync TurboModule error carrying the same RNFB {@code code}/{@code message} pair used
+ * by {@code rejectPromiseWithCodeAndMessage}.
  */
 public class ReactNativeFirebaseAuthSyncException extends RuntimeException {
   private final String code;

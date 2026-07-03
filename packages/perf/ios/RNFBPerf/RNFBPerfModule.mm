@@ -162,8 +162,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   }
 }
 
-- (void)stopHttpMetric:(double)id
-            metricData:(JS::NativeRNFBTurboPerf::HttpMetricData &)metricData {
+- (void)stopHttpMetric:(double)id metricData:(JS::NativeRNFBTurboPerf::HttpMetricData &)metricData {
   FIRHTTPMetric *httpMetric;
   @synchronized([self class]) {
     httpMetric = httpMetrics[@((int)id)];

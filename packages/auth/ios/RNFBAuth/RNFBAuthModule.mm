@@ -1111,8 +1111,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
   DLog(@"generateQrCodeUrl using secretKey: %@", secretKey);
   FIRTOTPSecret *totpSecret = cachedTotpSecrets[secretKey];
   if (!totpSecret) {
-    RNFBAuthThrowSyncErrorWithCode(
-        @"invalid-multi-factor-secret", @"can't find secret for provided key");
+    RNFBAuthThrowSyncErrorWithCode(@"invalid-multi-factor-secret",
+                                   @"can't find secret for provided key");
   }
   NSString *url = [totpSecret generateQRCodeURLWithAccountName:account issuer:issuer];
   DLog(@"generateQrCodeUrl got QR Code URL %@", url);
