@@ -17,29 +17,44 @@ package io.invertase.firebase.pnv;
  *
  */
 
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
+
 import android.app.Activity;
+import com.facebook.fbreact.specs.NativeRNFBTurboPnvSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.pnv.FirebasePhoneNumberVerification;
 import com.google.firebase.pnv.FirebasePhoneNumberVerificationException;
 import com.google.firebase.pnv.VerificationSupportResult;
 import com.google.firebase.pnv.VerifiedPhoneNumberTokenResult;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import io.invertase.firebase.common.TaskExecutorService;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
-public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
+public class NativeRNFBTurboPnv extends NativeRNFBTurboPnvSpec {
   private static final String TAG = "Pnv";
 
   private final FirebasePhoneNumberVerification fpnv;
+  private final TaskExecutorService executorService;
 
-  ReactNativeFirebasePnvModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
+  public NativeRNFBTurboPnv(ReactApplicationContext reactContext) {
+    super(reactContext);
     fpnv = FirebasePhoneNumberVerification.getInstance();
+    executorService = new TaskExecutorService(TAG);
+  }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+    executorService.shutdown();
+  }
+
+  private Executor getExecutor() {
+    return executorService.getExecutor();
   }
 
   private static String reasonToString(int reason) {
@@ -150,7 +165,7 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
     return map;
   }
 
-  @ReactMethod
+  @Override
   public void enableTestSession(String token, Promise promise) {
     try {
       fpnv.enableTestSession(token);
@@ -160,7 +175,7 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void getVerificationSupportInfo(Promise promise) {
     fpnv.getVerificationSupportInfo()
         .addOnSuccessListener(
@@ -175,9 +190,9 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
-  public void getVerificationSupportInfoForSimSlot(int simSlot, Promise promise) {
-    fpnv.getVerificationSupportInfo(simSlot)
+  @Override
+  public void getVerificationSupportInfoForSimSlot(double simSlot, Promise promise) {
+    fpnv.getVerificationSupportInfo((int) simSlot)
         .addOnSuccessListener(
             getExecutor(),
             results -> {
@@ -190,7 +205,7 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
+  @Override
   public void getVerifiedPhoneNumber(Promise promise) {
     Activity activity = getCurrentActivity();
     if (activity == null) {
@@ -211,7 +226,7 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
+  @Override
   public void getDigitalCredentialPayload(String nonce, Promise promise) {
     fpnv.getDigitalCredentialPayload(nonce)
         .addOnSuccessListener(
@@ -226,7 +241,7 @@ public class ReactNativeFirebasePnvModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
+  @Override
   public void exchangeCredentialResponseForPhoneNumber(String dcApiResponse, Promise promise) {
     fpnv.exchangeCredentialResponseForPhoneNumber(dcApiResponse)
         .addOnSuccessListener(

@@ -24,6 +24,7 @@ export const MIGRATED_TURBO_PACKAGES = [
   'messaging',
   'database',
   'auth',
+  'phone-number-verification',
 ] as const;
 
 export type MigratedTurboPackage = (typeof MIGRATED_TURBO_PACKAGES)[number];
@@ -55,6 +56,16 @@ export const PACKAGE_SPEC_PARITY_CONTEXTS: Partial<
         'packages/auth/android/src/main/java/io/invertase/firebase/auth/generated/java/com/facebook/fbreact/specs/NativeRNFBTurboAuthSpec.java',
       iosHeaderPath:
         'packages/auth/ios/generated/RNFBAuthTurboModules/RNFBAuthTurboModules.h',
+    },
+  ],
+  'phone-number-verification': [
+    {
+      moduleName: 'NativeRNFBTurboPnv',
+      specPath: 'packages/phone-number-verification/specs/NativeRNFBTurboPnv.ts',
+      androidSpecPath:
+        'packages/phone-number-verification/android/src/reactnative/java/io/invertase/firebase/pnv/generated/java/com/facebook/fbreact/specs/NativeRNFBTurboPnvSpec.java',
+      iosHeaderPath:
+        'packages/phone-number-verification/ios/generated/RNFBPnvTurboModules/RNFBPnvTurboModules.h',
     },
   ],
 };
@@ -188,9 +199,27 @@ function findSingleMatch(rootDir: string, pattern: RegExp, label: string): strin
   return matches[0];
 }
 
+function resolveParityContext(
+  packageName: MigratedTurboPackage,
+  entry: SpecParityContextEntry,
+): SpecParityContext {
+  return {
+    packageName,
+    moduleName: entry.moduleName,
+    specPath: path.join(REPO_ROOT, entry.specPath),
+    androidSpecPath: path.join(REPO_ROOT, entry.androidSpecPath),
+    iosHeaderPath: path.join(REPO_ROOT, entry.iosHeaderPath),
+  };
+}
+
 export function discoverPackageSpecContexts(
   packageName: MigratedTurboPackage,
 ): SpecParityContext[] {
+  const explicitContexts = PACKAGE_SPEC_PARITY_CONTEXTS[packageName];
+  if (explicitContexts?.length) {
+    return explicitContexts.map(entry => resolveParityContext(packageName, entry));
+  }
+
   const packageDir = path.join(REPO_ROOT, 'packages', packageName);
   const specsDir = path.join(packageDir, 'specs');
   const specFiles = fs

@@ -25,7 +25,8 @@ export type * from './types/pnv';
 
 const UNSUPPORTED_MSG = 'Firebase Phone Number Verification is only supported on Android.';
 
-const NATIVE_MODULE_NAME = 'RNFBPnvModule';
+// NewArch-AD-18 E10: package bypasses createModuleNamespace by design.
+const NATIVE_MODULE_NAME = 'NativeRNFBTurboPnv';
 
 interface NativePnvModule {
   enableTestSession(token: string): Promise<void>;
@@ -38,9 +39,14 @@ interface NativePnvModule {
   ): Promise<VerifiedPhoneNumberTokenResult>;
 }
 
+let memoizedNativeModule: NativePnvModule | null = null;
+
 function getNativeModule(): NativePnvModule {
   if (Platform.OS !== 'android') {
     throw new Error(UNSUPPORTED_MSG);
+  }
+  if (memoizedNativeModule) {
+    return memoizedNativeModule;
   }
   const mod = getReactNativeModule(NATIVE_MODULE_NAME);
   if (!mod) {
@@ -48,7 +54,8 @@ function getNativeModule(): NativePnvModule {
       `Could not find native module '${NATIVE_MODULE_NAME}'. Ensure @react-native-firebase/phone-number-verification is linked.`,
     );
   }
-  return mod as unknown as NativePnvModule;
+  memoizedNativeModule = mod as unknown as NativePnvModule;
+  return memoizedNativeModule;
 }
 
 /**

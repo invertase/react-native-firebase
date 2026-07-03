@@ -26,6 +26,7 @@ const MIGRATED_PACKAGES = [
   'functions',
   'database',
   'auth',
+  'phone-number-verification',
 ];
 
 function parseCodegenCommand(script) {

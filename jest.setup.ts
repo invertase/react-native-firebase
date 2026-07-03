@@ -457,6 +457,32 @@ jest.doMock('react-native', () => {
           startHttpMetric: jest.fn(() => Promise.resolve()),
           stopHttpMetric: jest.fn(() => Promise.resolve()),
         },
+        NativeRNFBTurboPnv: {
+          enableTestSession: jest.fn(() => Promise.resolve()),
+          getVerificationSupportInfo: jest.fn(() => Promise.resolve([])),
+          getVerificationSupportInfoForSimSlot: jest.fn(() => Promise.resolve([])),
+          getVerifiedPhoneNumber: jest.fn(() =>
+            Promise.resolve({
+              phoneNumber: '+15555550100',
+              token: 'jwt',
+              expirationTimestamp: 0,
+              issuedAtTimestamp: 0,
+              nonce: null,
+              claims: null,
+            }),
+          ),
+          getDigitalCredentialPayload: jest.fn(() => Promise.resolve('payload')),
+          exchangeCredentialResponseForPhoneNumber: jest.fn(() =>
+            Promise.resolve({
+              phoneNumber: '+15555550100',
+              token: 'jwt',
+              expirationTimestamp: 0,
+              issuedAtTimestamp: 0,
+              nonce: null,
+              claims: null,
+            }),
+          ),
+        },
         NativeRNFBTurboML: {},
         NativeRNFBTurboConfig: {
           getConstants: () => ({
