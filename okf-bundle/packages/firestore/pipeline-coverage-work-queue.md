@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **COMPLETE:** **R** closed — 3-platform full-tier green (698/838/866 passing). **Next:** compare-types / merge readiness (PR 9086).
+> **IN PROGRESS:** **Merge gate** — static `pre-merge-validation` (compare-types, tsc, lint, Jest). **R** closed. PR [9086](https://github.com/invertase/react-native-firebase/pull/9086).
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -78,9 +78,28 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 
 **Label:** `after-phase-r-final`; **harness:** full app (committed defaults)
 
-**Next item:** compare-types + PR 9086 merge readiness.
+**Next item:** **Merge gate** — `yarn compare:types` + handoff checklist ([validation-checklist](../../testing/validation-checklist.md)); then PR 9086 force-push / CI.
 
-| Metric | Baseline (early / post-phase) | Phase R (`after-phase-r-final`) |
+---
+
+## PR post draft (coverage table — copy for merge comment)
+
+**E2e (Phase R full tier):** macOS **698**/0, iOS **838**/0, Android **866**/0 passing.
+
+| Target | Phase A baseline | Phase R final | Delta |
+| ------ | ---------------- | ------------- | ----- |
+| TS `pipeline_runtime.ts` | **86%** | **91.07%** (204/224) | **+5.07 pp** |
+| TS `expressions.ts` | **89%** | **93.98%** (250/266) | **+4.98 pp** |
+| TS `pipeline_validate.ts` | **~93%** | **88.64%** (78/88) | −4.36 pp (e2e lcov vs macOS/Jest mix) |
+| Android NodeBuilder | **67.5%** (1167/1729) | **75.18%** (1324/1761) | **+7.68 pp** |
+| Android Executor | **~49%** / **58%** (post-E) | **76.59%** (386/504) | **+18.6–27.6 pp** |
+| iOS NodeBuilder | **68.89%** | **69.10%** (1516/2194) | **+0.21 pp** |
+| Android EnterObject loop (L900 band) | **106 missed** | **65 missed** (71.98%) | **−41 missed** |
+| iOS operand modes (L919–1006) | **27 missed** (69.32%) | **17 missed** (72.58%) | **−10 missed** |
+
+**Notable commits:** parity J0–J6; coverage K–Q (−238 Executor dead lines); R-iOS `38cc8815a`; android coverage upload `94299783a`.
+
+---
 | ------ | ----------------------------- | -------------------------------- |
 | Android NodeBuilder | ~55% → **67.5%** | **75.18%** (1324/1761) |
 | Android Executor | 49% → 58% → ~60.94% (O) → **~97% live** (Q) | **76.59%** jacoco (386/504) — full-tier jacoco below Q live estimate |
@@ -316,7 +335,9 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **R** **closed**. **K–R** complete. `next_work_type: pre-merge-validation` (compare-types).
+**Current gates:** **Merge gate** open — `pre-merge-validation` static checks. **R** closed. **K–R** complete.
+
+| Metric | Baseline (early / post-phase) | Phase R (`after-phase-r-final`) |
 
 ## Phase R — pre-merge snapshot
 
