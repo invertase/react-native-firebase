@@ -26,23 +26,8 @@ jest.doMock('react-native', () => {
   // make sure PlatformConstants is visible otherwise turbo modules default init fails
   ReactNative.NativeModules['PlatformConstants'] = {};
 
-  return Object.setPrototypeOf(
-    {
-      Platform: {
-        OS: 'android',
-        select: () => {},
-      },
-      TurboModuleRegistry: {
-        get: jest.fn(() => undefined),
-        getEnforcing: jest.fn(() => {
-          throw new Error('TurboModuleRegistry.getEnforcing: module not found');
-        }),
-      },
-      AppRegistry: {
-        registerHeadlessTask: jest.fn(),
-      },
-      NativeModules: {
-        ...ReactNative.NativeModules,
+  const turboModuleLookup: Record<string, unknown> = {
+    ...ReactNative.NativeModules,
         NativeRNFBTurboAnalytics: {
           logEvent: jest.fn(),
           setAnalyticsCollectionEnabled: jest.fn(),
@@ -646,7 +631,28 @@ jest.doMock('react-native', () => {
           list: jest.fn(() => Promise.resolve({ items: [], prefixes: [], pageToken: null })),
           listAll: jest.fn(() => Promise.resolve({ items: [], prefixes: [], pageToken: null })),
         },
+  };
+
+  return Object.setPrototypeOf(
+    {
+      Platform: {
+        OS: 'android',
+        select: () => {},
       },
+      TurboModuleRegistry: {
+        get: jest.fn((moduleName: string) => turboModuleLookup[moduleName]),
+        getEnforcing: jest.fn((moduleName: string) => {
+          const mod = turboModuleLookup[moduleName];
+          if (!mod) {
+            throw new Error('TurboModuleRegistry.getEnforcing: module not found');
+          }
+          return mod;
+        }),
+      },
+      AppRegistry: {
+        registerHeadlessTask: jest.fn(),
+      },
+      NativeModules: turboModuleLookup,
     },
     ReactNative,
   );

@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { NativeModules, TurboModuleRegistry } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
 
 const DYNAMIC_CONSTANT_KEYS = new Set(['androidPlayServices']);
 
@@ -42,16 +42,20 @@ function withTurboConstants(
 }
 
 /**
- * Unified native module resolver — TurboModule first, legacy NativeModules fallback.
+ * Unified native module resolver — TurboModule only (NewArch-AD-6 Phase R).
  */
-export function getReactNativeModule(moduleName: string): Record<string, unknown> | undefined {
+export function getReactNativeModule(moduleName: string): Record<string, unknown> {
   const turboModule = TurboModuleRegistry.get(moduleName);
+  if (!turboModule) {
+    throw new Error(`Native module ${moduleName} is not registered.`);
+  }
+
   const nativeModule = withTurboConstants(
     moduleName,
-    (turboModule ?? NativeModules[moduleName]) as Record<string, unknown> | undefined,
-  );
+    turboModule as Record<string, unknown>,
+  ) as Record<string, unknown>;
 
-  if (!globalThis.RNFBDebug || !nativeModule) {
+  if (!globalThis.RNFBDebug) {
     return nativeModule;
   }
 
