@@ -3378,6 +3378,8 @@ describe('FirestorePipeline', function () {
           last,
           minimum,
           maximum,
+          arrayAgg,
+          arrayAggDistinct,
         } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
@@ -3419,6 +3421,8 @@ describe('FirestorePipeline', function () {
                 last(add(constant(0), field('bonus'))).as('lastBonus'),
                 minimum(multiply(field('revenue'), constant(1))).as('minScaled'),
                 maximum(add(field('revenue'), field('bonus'))).as('maxTotal'),
+                arrayAgg(add(field('revenue'), field('bonus'))).as('allTotals'),
+                arrayAggDistinct(multiply(field('bonus'), constant(1))).as('distinctBonuses'),
               ],
             }),
         );
@@ -3429,6 +3433,8 @@ describe('FirestorePipeline', function () {
         extendedData.lastBonus.should.equal(20);
         extendedData.minScaled.should.equal(100);
         extendedData.maxTotal.should.equal(220);
+        [...extendedData.allTotals].sort((a, b) => a - b).should.eql([110, 220]);
+        [...extendedData.distinctBonuses].sort((a, b) => a - b).should.eql([10, 20]);
       });
     });
   });
