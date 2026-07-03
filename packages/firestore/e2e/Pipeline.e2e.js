@@ -3473,6 +3473,240 @@ describe('FirestorePipeline', function () {
       });
     });
 
+    describe('iOS NodeBuilder stage coercion and operand tail coverage', function () {
+      it('exercises stage option coercion for findNearest dot product and transform stages', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { execute, field, constant, add, countAll } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc, vector } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/stage-coercion-options`,
+        );
+
+        await Promise.all([
+          setDoc(doc(coll, 'v1'), {
+            name: 'alpha',
+            region: 'EU',
+            score: 40,
+            embedding: vector([1.0, 0.0, 0.0]),
+          }),
+          setDoc(doc(coll, 'v2'), {
+            name: 'beta',
+            region: 'EU',
+            score: 70,
+            embedding: vector([0.0, 1.0, 0.0]),
+          }),
+          setDoc(doc(coll, 'v3'), {
+            name: 'gamma',
+            region: 'US',
+            score: 55,
+            embedding: vector([0.0, 0.0, 1.0]),
+          }),
+        ]);
+
+        const dotSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .findNearest({
+              field: 'embedding',
+              vectorValue: [1.0, 0.0, 0.0],
+              distanceMeasure: 'DOT_PRODUCT',
+              limit: 2,
+            })
+            .select('name'),
+        );
+
+        dotSnapshot.results.should.have.length(2);
+        dotSnapshot.results[0].data().name.should.equal('alpha');
+
+        const transformSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where(field('region').equal('EU'))
+            .addFields(add(field('score'), constant(5)).as('scorePlusFive'))
+            .sort(field('scorePlusFive').descending(), field('name').ascending())
+            .offset(1)
+            .limit(1)
+            .select('name', 'scorePlusFive'),
+        );
+
+        transformSnapshot.results.should.have.length(1);
+        transformSnapshot.results[0].data().name.should.equal('alpha');
+        transformSnapshot.results[0].data().scorePlusFive.should.equal(45);
+
+        const groupedSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .aggregate({
+              accumulators: [countAll().as('rows')],
+              groups: [field('region').as('regionKey')],
+            })
+            .sort(field('regionKey').ascending()),
+        );
+
+        groupedSnapshot.results.should.have.length(2);
+        groupedSnapshot.results[0].data().regionKey.should.equal('EU');
+        groupedSnapshot.results[0].data().rows.should.equal(2);
+      });
+
+      it('covers remaining comparison and numeric operand rhs coercion tails', async function () {
+        const {
+          execute,
+          field,
+          subtract,
+          divide,
+          pow,
+          equal,
+          notEqual,
+          lessThanOrEqual,
+          greaterThanOrEqual,
+          greaterThan,
+          and,
+        } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          base: 20,
+          divisor: 4,
+          exp: 3,
+          tag: 'alpha',
+          mirrorTag: 'alpha',
+          score: 42,
+          cap: '50',
+          status: 'active',
+        });
+
+        if (Platform.other) {
+          const macSnapshot = await execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(
+                subtract(field('base'), true).as('subTrue'),
+                divide(field('base'), false).as('divFalse'),
+                pow(field('exp'), true).as('powTrue'),
+                equal(field('tag'), field('mirrorTag')).as('tagsMatch'),
+                equal(field('tag'), 'alpha').as('tagStringRhs'),
+                lessThanOrEqual(field('score'), '50').as('scoreLteString'),
+              ),
+          );
+
+          macSnapshot.results.should.have.length(1);
+          const macData = macSnapshot.results[0].data();
+          macData.subTrue.should.equal(19);
+          macData.divFalse.should.equal(0);
+          macData.powTrue.should.equal(3);
+          macData.tagsMatch.should.equal(true);
+          macData.tagStringRhs.should.equal(true);
+          macData.scoreLteString.should.equal(true);
+          return;
+        }
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              subtract(field('base'), true).as('subTrue'),
+              subtract(field('base'), '5').as('subString'),
+              divide(field('base'), field('divisor')).as('divField'),
+              pow(field('exp'), true).as('powTrue'),
+              equal(field('tag'), field('mirrorTag')).as('tagsMatch'),
+              equal(field('tag'), 'alpha').as('tagStringRhs'),
+              notEqual(field('status'), 'inactive').as('statusActive'),
+              lessThanOrEqual(field('score'), '50').as('scoreLteString'),
+              greaterThanOrEqual(field('base'), false).as('baseGteFalse'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.subTrue.should.equal(19);
+        data.subString.should.equal(15);
+        data.divField.should.equal(5);
+        data.powTrue.should.equal(3);
+        data.tagsMatch.should.equal(true);
+        data.tagStringRhs.should.equal(true);
+        data.statusActive.should.equal(true);
+        data.scoreLteString.should.equal(true);
+        data.baseGteFalse.should.equal(true);
+
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/operand-tail-raw-where`,
+        );
+
+        await Promise.all([
+          setDoc(doc(coll, 'match'), {
+            tag: 'alpha',
+            score: 42,
+            bump: true,
+            status: 'active',
+          }),
+          setDoc(doc(coll, 'skip-tag'), {
+            tag: 'beta',
+            score: 42,
+            bump: true,
+            status: 'active',
+          }),
+          setDoc(doc(coll, 'skip-score'), {
+            tag: 'alpha',
+            score: 10,
+            bump: true,
+            status: 'active',
+          }),
+        ]);
+
+        const filtered = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where({
+              condition: {
+                operator: 'AND',
+                queries: [
+                  { operator: '==', fieldPath: 'tag', value: 'alpha' },
+                  { operator: '==', fieldPath: 'bump', value: true },
+                  { operator: '==', fieldPath: 'status', value: 'active' },
+                ],
+              },
+            })
+            .select('tag', 'score', 'status'),
+        );
+
+        filtered.results.should.have.length(1);
+        filtered.results[0].data().tag.should.equal('alpha');
+        filtered.results[0].data().score.should.equal(42);
+
+        const whereSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where(
+              and(
+                equal(field('tag'), 'alpha'),
+                equal(field('status'), 'active'),
+                greaterThanOrEqual(field('score'), false),
+                greaterThan(field('score'), 20),
+              ),
+            )
+            .select('tag', 'score'),
+        );
+
+        whereSnapshot.results.should.have.length(1);
+        whereSnapshot.results[0].data().score.should.equal(42);
+      });
+    });
+
     describe('aggregate expression argument lowering', function () {
       it('evaluates aggregates with computed expression arguments', async function () {
         const {

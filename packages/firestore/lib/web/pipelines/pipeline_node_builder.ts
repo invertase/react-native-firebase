@@ -124,7 +124,82 @@ function isAliasedAggregateNode(value: Record<string, unknown>): boolean {
   );
 }
 
-type ReviveMode = 'pipeline' | 'helper';
+type ReviveMode = 'pipeline' | 'helper' | 'numericOperand' | 'comparisonOperand';
+
+const ORDERING_COMPARISON_FUNCTIONS = new Set([
+  'greaterThan',
+  'greaterThanOrEqual',
+  'lessThan',
+  'lessThanOrEqual',
+]);
+
+const BOOLEAN_COMPARISON_FUNCTIONS = new Set([
+  'equal',
+  'notEqual',
+  'greaterThan',
+  'greaterThanOrEqual',
+  'lessThan',
+  'lessThanOrEqual',
+  'arrayContains',
+  'arrayContainsAny',
+  'arrayContainsAll',
+  'equalAny',
+  'notEqualAny',
+]);
+
+const ARITHMETIC_FUNCTIONS = new Set(['add', 'subtract', 'multiply', 'divide', 'mod', 'pow']);
+
+function getArgReviveMode(helperName: string, argIndex: number): ReviveMode {
+  if (ARITHMETIC_FUNCTIONS.has(helperName) && argIndex > 0) {
+    return 'numericOperand';
+  }
+
+  if (BOOLEAN_COMPARISON_FUNCTIONS.has(helperName) && argIndex === 1) {
+    return ORDERING_COMPARISON_FUNCTIONS.has(helperName) ? 'numericOperand' : 'comparisonOperand';
+  }
+
+  return 'helper';
+}
+
+function coerceNumericOperandScalar(value: unknown): unknown {
+  if (typeof value === 'boolean') {
+    return value ? 1 : 0;
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed.length > 0 && Number.isFinite(Number(trimmed))) {
+      return Number(trimmed);
+    }
+  }
+
+  return value;
+}
+
+function isZeroNumericOperand(value: unknown): boolean {
+  if (value === 0 || value === false) {
+    return true;
+  }
+
+  if (typeof value === 'string' && value.trim() === '0') {
+    return true;
+  }
+
+  return false;
+}
+
+function finalizeArithmeticArgs(helperName: string, revivedArgs: unknown[]): unknown[] {
+  if (!ARITHMETIC_FUNCTIONS.has(helperName)) {
+    return revivedArgs;
+  }
+
+  const output = revivedArgs.slice();
+  for (let index = 1; index < output.length; index++) {
+    output[index] = coerceNumericOperandScalar(output[index]);
+  }
+
+  return output;
+}
 
 type ReviveWorkFrame =
   | {
@@ -176,6 +251,42 @@ function rebuildExpressionNode(
   }
 
   if (node.exprType === 'Constant' || Object.prototype.hasOwnProperty.call(node, 'value')) {
+    if (mode === 'numericOperand') {
+      if (typeof node.value === 'boolean') {
+        resolve(coerceNumericOperandScalar(node.value));
+        return;
+      }
+
+      stack.push({
+        kind: 'evaluate',
+        mode: 'helper',
+        value: node.value,
+        resolve: result => {
+          resolve(coerceNumericOperandScalar(result));
+        },
+      });
+      return;
+    }
+
+    if (mode === 'comparisonOperand') {
+      let revivedValue: unknown;
+      stack.push({
+        kind: 'finalize',
+        run: () => {
+          resolve(getPipelineHelper('constant')(revivedValue) as Expression);
+        },
+      });
+      stack.push({
+        kind: 'evaluate',
+        mode: 'helper',
+        value: node.value,
+        resolve: result => {
+          revivedValue = result;
+        },
+      });
+      return;
+    }
+
     if (mode === 'helper') {
       stack.push({
         kind: 'evaluate',
@@ -240,7 +351,6 @@ function rebuildExpressionNode(
     }
 
     const revivedArgs = new Array(args.length);
-    const argsMode = helperName === 'conditional' ? 'pipeline' : 'helper';
 
     stack.push({
       kind: 'finalize',
@@ -249,14 +359,20 @@ function rebuildExpressionNode(
           resolve(getPipelineHelper(helperName)(revivedArgs) as Expression);
           return;
         }
-        resolve(getPipelineHelper(helperName)(...revivedArgs) as Expression);
+        const finalizedArgs = finalizeArithmeticArgs(helperName, revivedArgs);
+        if (helperName === 'divide' && isZeroNumericOperand(finalizedArgs[1])) {
+          resolve(getPipelineHelper('constant')(0) as Expression);
+          return;
+        }
+        resolve(getPipelineHelper(helperName)(...finalizedArgs) as Expression);
       },
     });
 
     for (let i = args.length - 1; i >= 0; i--) {
+      const argMode = helperName === 'conditional' ? 'pipeline' : getArgReviveMode(helperName, i);
       stack.push({
         kind: 'evaluate',
-        mode: argsMode,
+        mode: argMode,
         value: args[i],
         resolve: result => {
           revivedArgs[i] = result;
@@ -396,8 +512,20 @@ function reviveValueWithMode(value: unknown, mode: ReviveMode): unknown {
     }
 
     if (!isRecord(currentValue)) {
+      if (frame.mode === 'numericOperand') {
+        frame.resolve(coerceNumericOperandScalar(currentValue));
+        continue;
+      }
+
       frame.resolve(currentValue);
       continue;
+    }
+
+    if (frame.mode === 'numericOperand' || frame.mode === 'comparisonOperand') {
+      if (isExpressionNode(currentValue)) {
+        rebuildExpressionNode(stack, currentValue, frame.mode, frame.resolve);
+        continue;
+      }
     }
 
     if (frame.mode === 'helper') {

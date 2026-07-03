@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **IN PROGRESS:** **N** queued — iOS stage coercion (~293 missed).
+> **IN PROGRESS:** **N** — `implementation` (**one subagent**, serial e2e only).
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -63,7 +63,7 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 | **K**  | TS `pipeline_runtime` + `expressions` | **✅** | Jest alias/normalization batch; expressions e2e receiver probe |
 | **L**  | Android parsed-aggregate tail         | **✅** | expression-arg `arrayAgg`/`arrayAggDistinct` e2e; parsed tail 258/408 |
 | **M**  | Android exit frames + receiver chains | **✅** | 3 e2e; NodeBuilder 75.03%; exit −29 missed |
-| **N**  | iOS stage coercion                    | queued                    | ~293 missed; operand tail *(was old L)*                                                                                                            |
+| **N**  | iOS stage coercion                    | **in progress** | `implementation`; operand tail L919–1006 |
 | **O**  | Android Executor remainder            | queued                    | sub-60% after E *(was old M)*                                                                                                                      |
 | **P**  | Jest-only TS paths                    | queued                    | validation branches *(was old N)*                                                                                                                  |
 | **Q**  | Intractability audit                  | queued                    | measured caps per file *(was old O)*                                                                                                               |
@@ -76,12 +76,13 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 
 ## Current snapshot
 
-**Label:** `n-queued`; **harness:** full test app (committed)
+**Label:** `n-impl-serial-single`; **harness:** HEAD (subagent applies Pattern A locally)
 
-**Next item:** **N** — iOS stage coercion (~293 missed).
+**Next item:** **N** — one subagent: prepare → macOS `:test-cover` → iOS `:test-cover` (serial).
 
 | **L** parsed-aggregate tail | `test(firestore): cover pipeline aggregate expression argument lowering on Android` | **closed** | **closed** | **closed** | — | — | — | `arrayAgg`/`arrayAggDistinct` expr args |
 | **M** exit/receiver/vector | `test(firestore): cover pipeline exit frame and receiver expression lowering on Android` | **closed** | **closed** | **closed** | — | — | — | 3 e2e; NodeBuilder 75.03%; exit 73→44 missed |
+| **N** iOS stage coercion | — | open | open | open | `implementation` | `unit-focused` | ios | WIP fix: web `pipeline_node_builder.ts` + iOS Swift operand coercion; serial re-val pending |
 
 | **J2** P-005 `integerLiteral` | `fix(firestore, android): align pipeline integerLiteral constant lowering with iOS` | **closed** | **closed** | **closed** | — | — | — | P-005 → Resolved; CFBoolean deferral accepted |
 | **J3** P-010 stage option expressions | `fix(firestore, android): align pipeline stage option expression fields with iOS` | **closed** | **closed** | **closed** | — | — | — | P-010 → Resolved |
@@ -306,7 +307,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Gate for Phase K+:** J0 complete + **J0b** committed + J1–J6 bridge commits + parity **Resolved** updated.
 
-**Current gates:** **N** queued. **L** and **M** complete.
+**Current gates:** **N** `implementation_gate` open. **L** and **M** complete.
 
 ---
 

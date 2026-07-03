@@ -1595,10 +1595,15 @@ final class RNFBFirestorePipelineNodeBuilder {
           if let map = value as? [String: Any],
              let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
             if let boolValue = map["value"] as? Bool {
-              box.value = ConstantBridge(boolValue ? 1 : 0)
+              box.value = ConstantBridge(boolValue ? 1.0 : 0.0)
               continue
             }
-            box.value = try scalarConstantBridge(fromConstantMap: map, fieldName: currentFieldName)
+            if let number = map["value"] as? NSNumber, isBooleanNSNumber(number) {
+              box.value = ConstantBridge(number.boolValue ? 1.0 : 0.0)
+              continue
+            }
+            let constantValue = try constantExpressionValue(fromConstantMap: map, fieldName: currentFieldName)
+            box.value = try numericOperandConstantBridge(from: constantValue)
             continue
           }
           if let values = value as? [Any] {
@@ -1606,19 +1611,19 @@ final class RNFBFirestorePipelineNodeBuilder {
             continue
           }
           if let stringValue = value as? String {
-            box.value = ConstantBridge(stringValue)
+            box.value = try numericOperandConstantBridge(from: stringValue)
             continue
           }
           if let boolValue = value as? Bool {
-            box.value = ConstantBridge(boolValue ? 1 : 0)
+            box.value = ConstantBridge(boolValue ? 1.0 : 0.0)
             continue
           }
           if let number = value as? NSNumber, isBooleanNSNumber(number) {
-            box.value = ConstantBridge(number.boolValue ? 1 : 0)
+            box.value = ConstantBridge(number.boolValue ? 1.0 : 0.0)
             continue
           }
           if isImmediateExpressionConstant(value) {
-            box.value = scalarConstantBridge(from: value)
+            box.value = try numericOperandConstantBridge(from: value)
             continue
           }
           stack.append(.enter(value, currentFieldName, .expression, box))
@@ -1726,14 +1731,20 @@ final class RNFBFirestorePipelineNodeBuilder {
               let leftFieldPath = try coerceFieldPath(fieldValue, fieldName: "\(currentField).fieldPath")
               let right = map["value"] ?? map["right"] ?? map["operand"] ?? NSNull()
               let rightBox = ExprBridgeBox()
+              let comparisonFunction = mapOperatorToFunction(normalizedOperator)
+              let normalizedComparisonFunction = canonicalizeFunctionName(comparisonFunction)
+              let rawWhereRightOperandMode: ExpressionCoercionMode =
+                orderingComparisonFunctions.contains(normalizedComparisonFunction)
+                  ? .numericOperand
+                  : .comparisonOperand
               stack.append(.binaryOperatorExit(
                 box,
-                mapOperatorToFunction(normalizedOperator),
+                comparisonFunction,
                 leftFieldPath,
                 rightBox,
                 currentField
               ))
-              stack.append(.enter(right, "\(currentField).value", .comparisonOperand, rightBox))
+              stack.append(.enter(right, "\(currentField).value", rawWhereRightOperandMode, rightBox))
               break expressionLoop
             }
 
@@ -2085,12 +2096,10 @@ final class RNFBFirestorePipelineNodeBuilder {
           }
         }
       case let .functionExit(box, name, argBoxes, currentFieldName):
-        box.value = FunctionExprBridge(
-          name: name,
-          args: try argBoxes.enumerated().map { index, argBox in
-            try requireExpressionValue(argBox, fieldName: "\(currentFieldName).args[\(index)]")
-          }
-        )
+        let args = try argBoxes.enumerated().map { index, argBox in
+          try requireExpressionValue(argBox, fieldName: "\(currentFieldName).args[\(index)]")
+        }
+        box.value = FunctionExprBridge(name: name, args: args)
         if RNFBFirestorePipelineDebug.enabled,
            name == "add" || name.contains("array") || name.contains("equal") || name.contains("greater") {
           RNFBFirestorePipelineDebug.log(
@@ -2197,6 +2206,27 @@ final class RNFBFirestorePipelineNodeBuilder {
   private func isImmediateExpressionConstant(_ value: Any) -> Bool {
     value is NSNull || value is NSNumber || value is Date || value is Timestamp ||
       value is GeoPoint || value is DocumentReference || value is VectorValue
+  }
+
+
+  private func numericOperandConstantBridge(from value: Any) throws -> ExprBridge {
+    if let boolValue = value as? Bool {
+      return ConstantBridge(boolValue ? 1.0 : 0.0)
+    }
+    if let number = value as? NSNumber, isBooleanNSNumber(number) {
+      return ConstantBridge(number.boolValue ? 1.0 : 0.0)
+    }
+    if let stringValue = value as? String {
+      let trimmed = stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+      if !trimmed.isEmpty, let parsed = Double(trimmed), parsed.isFinite {
+        if let intValue = wholeNumberInt(from: NSNumber(value: parsed)) {
+          return ConstantBridge(intValue)
+        }
+        return ConstantBridge(parsed)
+      }
+      return ConstantBridge(stringValue)
+    }
+    return scalarConstantBridge(from: value)
   }
 
   private func tryIntegerLiteral(from value: Any) -> Int? {
