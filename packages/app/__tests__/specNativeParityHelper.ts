@@ -44,7 +44,10 @@ export type SpecParityContextEntry = {
   iosHeaderPath: string;
 };
 
-/** Explicit spec/native paths for packages with non-default codegen layout (see database/messaging guardrail commits). */
+/**
+ * Explicit spec/native paths for packages with non-default codegen layout (see
+ * database/messaging guardrail commits).
+ */
 export const PACKAGE_SPEC_PARITY_CONTEXTS: Partial<
   Record<MigratedTurboPackage, readonly SpecParityContextEntry[]>
 > = {
@@ -54,8 +57,7 @@ export const PACKAGE_SPEC_PARITY_CONTEXTS: Partial<
       specPath: 'packages/auth/specs/NativeRNFBTurboAuth.ts',
       androidSpecPath:
         'packages/auth/android/src/main/java/io/invertase/firebase/auth/generated/java/com/facebook/fbreact/specs/NativeRNFBTurboAuthSpec.java',
-      iosHeaderPath:
-        'packages/auth/ios/generated/RNFBAuthTurboModules/RNFBAuthTurboModules.h',
+      iosHeaderPath: 'packages/auth/ios/generated/RNFBAuthTurboModules/RNFBAuthTurboModules.h',
     },
   ],
   'phone-number-verification': [

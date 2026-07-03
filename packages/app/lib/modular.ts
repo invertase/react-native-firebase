@@ -48,7 +48,7 @@ export function registerVersion(
   _libraryKeyOrName: string,
   _version: string,
   _variant?: string,
-): Promise<void> {
+): void {
   throw new Error('registerVersion is only supported on Web');
 }
 

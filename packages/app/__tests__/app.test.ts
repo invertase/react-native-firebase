@@ -21,6 +21,12 @@ describe('App', function () {
       expect(registerVersion).toBeDefined();
     });
 
+    it('`registerVersion` throws synchronously on react-native', function () {
+      expect(() => registerVersion('test-library', '1.0.0')).toThrow(
+        'registerVersion is only supported on Web',
+      );
+    });
+
     it('`onLog` function is properly exposed to end user', function () {
       expect(onLog).toBeDefined();
     });

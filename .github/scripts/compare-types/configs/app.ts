@@ -129,11 +129,6 @@ const config: PackageConfig = {
         'Returns `Promise<ReactNativeFirebase.FirebaseApp>` because initialization crosses the native bridge. Accepts `ReactNativeFirebase.FirebaseAppOptions` and optional `ReactNativeFirebase.FirebaseAppConfig` (name / auth domain) instead of firebase-js-sdk `(FirebaseOptions, string)` only.',
     },
     {
-      name: 'registerVersion',
-      reason:
-        'Returns `Promise<void>` in RN Firebase vs `void` in firebase-js-sdk. Bridge-forced async today — Phase S sync-conversion candidate when native work is in-memory only.',
-    },
-    {
       name: 'setLogLevel',
       reason:
         'Parameter type is `ReactNativeFirebase.LogLevelString` instead of firebase-js-sdk `LogLevelString`. Accepted values match (`debug`, `verbose`, `info`, `warn`, `error`, `silent`).',

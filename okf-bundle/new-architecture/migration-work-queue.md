@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # TurboModule migration — work queue
 
-> **IN PROGRESS (2026-07-03):** Phases **Docs** + **PD** committed. Next: opportunistic Phase **S** / **C** / merge handoff.
+> **IN PROGRESS (2026-07-03):** Phase **S** — async→sync conversion review before merge. Phases 0–5, Docs/PD, and R are complete.
 > **Goal/order:** app foundation → hard probe → easy wins → remaining complex → sync conversion → coordinated break → cleanup (events, shared-state encapsulation). Decisions: [architecture-decisions.md](architecture-decisions.md). Links: [implementation workflow](turbomodule-implementation-workflow.md), [change authoring](../testing/change-authoring-workflow.md), [functions reference](../../../packages/functions/) ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603)).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md).
@@ -26,7 +26,7 @@ Durable architectural decisions are owned by **[architecture-decisions.md](archi
 | [NewArch-AD-3](architecture-decisions.md#newarch-ad-3--strong-codegen-typing--accepted) | Strong Codegen typing |
 | [NewArch-AD-4](architecture-decisions.md#newarch-ad-4--events-deferred-to-phase-c--accepted) | Events deferred to [Phase C](#deferred-cleanup-phase-eventemitter) |
 | [NewArch-AD-5](architecture-decisions.md#newarch-ad-5--commit-generated-code--accepted) | Commit generated code |
-| [NewArch-AD-6](architecture-decisions.md#newarch-ad-6--unified-native-module-resolver--accepted) | Unified resolver (`TurboModuleRegistry.get ?? NativeModules`) |
+| [NewArch-AD-6](architecture-decisions.md#newarch-ad-6--unified-native-module-resolver--accepted) | Unified resolver; Phase R final state is TurboModule-only (no `NativeModules` fallback) |
 | [NewArch-AD-7](architecture-decisions.md#newarch-ad-7--codegenconfigname--aggregate-library-name-one-codegenconfig-per-package--accepted) | `codegenConfig.name` = `RNFB<Package>TurboModules` (all packages) |
 | [NewArch-AD-8](architecture-decisions.md#newarch-ad-8--turbomodule-js-enumeration-forin--objectcreate--accepted) | Enumerate with `for...in` + `Object.create` |
 | [NewArch-AD-9](architecture-decisions.md#newarch-ad-9--requiresmainqueuesetup-returns-no--accepted) | `requiresMainQueueSetup` returns `NO` |
@@ -176,7 +176,7 @@ Pick **one** of `firestore` or `auth` in Phase 1 (firestore = multi-module + pip
 | **PD** | Platform-divergence documentation | **done** | multi-package JSDoc/docs — [§ Phase PD](#phase-pd-platform-divergence-documentation) |
 | **4** | Remaining complex | **done** | `firestore`, `messaging`, `database`, `auth` |
 | **5** | Android-only / misc | **done** | `phone-number-verification` |
-| **S** | Sync conversion (forced-async → sync) | queued (scope open — [NewArch-AD-16](architecture-decisions.md#newarch-ad-16--phase-s-asyncsync-conversion--open)); prereq **S0** ([interruption batch](#interruption-batch-standalone-commits)) | All migrated packages — [§ sync conversion](#phase-s-sync-conversion-forced-async--sync) |
+| **S** | Sync conversion (forced-async → sync) | **in progress** (gap-analysis complete; first slice `app/registerVersion`); prereq **S0** complete ([interruption batch](#interruption-batch-standalone-commits)) | All migrated packages — [§ sync conversion](#phase-s-sync-conversion-forced-async--sync) |
 | **R** | Pre-merge full validation | **done** | Revert harness narrowing; remove `NativeModules` fallback + throw test ([§ Phase R additions](#phase-r-additions)); [full tier](../testing/running-e2e.md#e2e-validation-tiers-unit-focused-area-focused-full) 3-platform before coordinated major |
 | **C** | EventEmitter cleanup | deferred | All — [§ deferred cleanup](#deferred-cleanup-phase-eventemitter) |
 | **E** | Shared-state encapsulation | deferred (optional) | `app` + readers — [§ Phase E](#phase-e-shared-state-encapsulation-optional) |
@@ -203,7 +203,7 @@ Pick **one** of `firestore` or `auth` in Phase 1 (firestore = multi-module + pip
 
 This is a **coordinated public-API change** (async→sync is observable to consumers) and ships in the same major as the migration — see [implementation workflow § Phase S](turbomodule-implementation-workflow.md#phase-s-sync-conversion-forced-async--sync).
 
-### Gap-analysis (deferred — capture only, do not size yet)
+### Gap-analysis (completed 2026-07-03)
 
 The "keep async if it does network/IO/disk" rule in the discriminator **assumes** that where firebase-js-sdk is synchronous, the work is genuinely in-memory and non-blocking. That assumption is **unverified** and is the core thing the gap-analysis must establish. Open question to resolve:
 
@@ -223,7 +223,15 @@ The "keep async if it does network/IO/disk" rule in the discriminator **assumes*
 
 **Candidate sources:** the `compare:types` async-vs-sync entries **plus** a manual sweep of `Promise`-returning methods whose firebase-js-sdk equivalent is sync but which `compare:types` does not flag (e.g. unregistered packages or utils-only exports). The third verdict (`needs-native-change`) is the interesting one the user raised: cases where we are async only because our native implementation chose IO, not because the operation requires it.
 
-**Defer the actual inventory** — this section is the brief for it.
+**Inventory result (2026-07-03):**
+
+| Verdict | Candidate(s) | Notes |
+|---------|--------------|-------|
+| `convert` | `app/registerVersion`; `auth/isSignInWithEmailLink`; `auth/TotpSecret.generateQrCodeUrl`; `perf` trace/http/screen `start`/`stop`; likely `database` `goOnline`/`goOffline` instance surface | Highest confidence: web/native behavior is parser, string construction, cached object, or in-memory SDK state. |
+| `needs-native-change` | `analytics` fire-and-forget setters/events; `app-check/initializeAppCheck`; `firestore/initializeFirestore`; `storage` task controls; storage retry setters | Web APIs are sync or fire-and-forget, but RNFB native paths currently wrap async work or need behavior clarification before sync conversion. |
+| `keep-async` | Firestore persistent cache index manager delete/enable/disable | Web returns `void` but starts real persistent-cache work; do not block JS thread. |
+
+**Next slice:** `app/registerVersion` because RNFB already behaves synchronously and Phase S should only change the public type/compare-types entry. Planned subject: `refactor(app): return sync parity for registerVersion`.
 
 ---
 
@@ -322,11 +330,11 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 
 ## Current snapshot
 
-**Label:** `phase-docs-pd` (2026-07-03) — **complete**
+**Label:** `phase-s-sync-conversion` (2026-07-03)
 
-**Next item:** Phase **S** (async→sync) or merge / coordinated major handoff
+**Next item:** Phase **S** auth parser/TOTP URL sync conversion implementation
 
-**Current gates:** PDoc + PPD all gates **closed** — committed `docs: document all API gaps / platform divergence / migration items` (remediation amended: analytics no-op semantics, messaging AD-4 JSDoc breadth, logTransaction platform note).
+**Current gates:** Phase **S** `app/registerVersion` gates **closed**; next pickup is auth parser/TOTP URL sync conversion.
 
 **Host rule:** one `:test-cover` at a time — never parallel subagents with e2e.
 
@@ -359,10 +367,13 @@ Skip steps 1–2 when spec shape is known (most Tier D packages).
 | Phase 4 `messaging` TurboModules | P4m | **closed** | **closed** | **closed** | done | `area-focused` | `feat(messaging)!: migrate messaging to TurboModules` | Turbo shell only (AD-4 event path preserved). Jest 38/38 + parity 32/32; codegen:verify incl messaging; legacy Java removed. iOS/Android area e2e green on method-call + listener-registration scope. Foreground `onMessage` delivery test **left `xit`** — flaky FCM harness; re-enable in [Phase C](#deferred-cleanup-phase-eventemitter). |
 | Phase 4 `database` TurboModules | P4d | **closed** | **closed** | **closed** | done | `area-focused` | `feat(database)!: migrate database to TurboModules` | 5 Turbo specs/shells + committed codegen; Jest 49 + parity 38; area e2e macOS 213 / iOS 219 / Android 220 (delta logs `/tmp/rnfb-e2e-*-database-delta-review.log`). Remediation: invalidate/teardown parity (Reference+Transaction), onComplete guard, contract test 22 methods, jest mock cleanup. Orchestration: macOS/Android `:8090` pre-flight in `firebase.test.js` + OKF. **Deferred minor:** void spec vs Promise JS API; silent Query `RejectedExecutionException` post-invalidate. |
 | Phase 4 `auth` TurboModules | P4u | **closed** | **closed** | **closed** | done | `area-focused` | `feat(auth)!: migrate auth to TurboModules` | 60-method spec + shells; review e2e macOS 171 / iOS 185 / Android 192. Follow-up committed: `fix(auth): rename delete turbo method for C++ codegen compatibility`. |
-| Phase 5 `phone-number-verification` TurboModules | P5pnv | **closed** | **closed** | **closed** | done | `area-focused` | `feat(phone-number-verification)!: migrate phone-number-verification to TurboModules` | Android-only 6-method spec; review e2e Android 40/2 pending (log `/tmp/rnfb-e2e-android-pnv-review.log`). AD-18 E10 direct resolver. Parity registered. **Bundled auth fix:** separate commit `fix(auth): rename delete turbo method for C++ codegen compatibility`. |
+| Phase 5 `phone-number-verification` TurboModules | P5pnv | **closed** | **closed** | **closed** | done | `area-focused` | `feat(phone-number-verification)!: migrate phone-number-verification to TurboModules` | Android-only 6-method spec; AD-18 E10 direct resolver. Parity registered; later full Android Phase R proof covered the package path. |
 | Phase Docs — NA reqs + consolidation | PDoc | **closed** | **closed** | **closed** | done | `none` | `docs: document all API gaps / platform divergence / migration items` | v26 NA section + platform table; lint/reference:api green. |
 | Phase PD — platform divergence | PPD | **closed** | **closed** | **closed** | done | `none` | `docs: document all API gaps / platform divergence / migration items` | 19 pkg usage notes + JSDoc @remarks; serious review findings remediated in same commit. |
 | Phase R — remove `NativeModules` fallback | PR-fallback | **closed** | **closed** | **closed** | done | `full` + RNFBDebug | `refactor: cleanup legacy arch native module fallback` | Proof 683/823/849 (`/tmp/rnfb-e2e-phaseR-proof-*.log`). Review 2026-07-03: no critical/serious. Android cold boot committed separately. |
+| Phase S gap-analysis | PS-gap | n/a | n/a | n/a | done | `none` | none | Completed 2026-07-03. First implementation slice: `app/registerVersion`; follow-ups: auth parser/TOTP URL, then perf metric controls. |
+| Phase S `app/registerVersion` sync parity | PS-app-registerVersion | **closed** | **closed** | **closed** | done | `area-focused` | `refactor(app): return sync parity for registerVersion` | Implemented 2026-07-03: `registerVersion(): void`, sync throw Jest assertion, removed stale `configs/app.ts` async-vs-sync entry. Green: `lerna:prepare`, `tsc:compile`, `tsc:compile:consumer`, focused app Jest 10/10, `reference:api`, `compare:types`, `lint:js`. Independent review: no findings; no e2e needed for type-only scope. |
+| Phase S auth parser/TOTP sync parity | PS-auth-parsers | **open** | **open** | **open** | `implementation` | `unit-focused` | `refactor(auth): return sync parity for auth parsers` | Candidate methods: `isSignInWithEmailLink` and `TotpSecret.generateQrCodeUrl`; gap-analysis classified both as parser/string-only with cached native SDK objects. |
 
 ---
 
