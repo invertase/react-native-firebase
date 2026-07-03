@@ -29,46 +29,52 @@ static jsi::Value __hostFunction_NativeRNFBTurboPerfCxxSpecJSI_instrumentationEn
   );
 }
 static jsi::Value __hostFunction_NativeRNFBTurboPerfCxxSpecJSI_startTrace(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeRNFBTurboPerfCxxSpecJSI *>(&turboModule)->startTrace(
+  static_cast<NativeRNFBTurboPerfCxxSpecJSI *>(&turboModule)->startTrace(
     rt,
     count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber(),
     count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt)
   );
+  return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeRNFBTurboPerfCxxSpecJSI_stopTrace(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeRNFBTurboPerfCxxSpecJSI *>(&turboModule)->stopTrace(
+  static_cast<NativeRNFBTurboPerfCxxSpecJSI *>(&turboModule)->stopTrace(
     rt,
     count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber(),
     count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt)
   );
+  return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeRNFBTurboPerfCxxSpecJSI_startScreenTrace(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeRNFBTurboPerfCxxSpecJSI *>(&turboModule)->startScreenTrace(
+  static_cast<NativeRNFBTurboPerfCxxSpecJSI *>(&turboModule)->startScreenTrace(
     rt,
     count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber(),
     count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt)
   );
+  return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeRNFBTurboPerfCxxSpecJSI_stopScreenTrace(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeRNFBTurboPerfCxxSpecJSI *>(&turboModule)->stopScreenTrace(
+  static_cast<NativeRNFBTurboPerfCxxSpecJSI *>(&turboModule)->stopScreenTrace(
     rt,
     count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber()
   );
+  return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeRNFBTurboPerfCxxSpecJSI_startHttpMetric(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeRNFBTurboPerfCxxSpecJSI *>(&turboModule)->startHttpMetric(
+  static_cast<NativeRNFBTurboPerfCxxSpecJSI *>(&turboModule)->startHttpMetric(
     rt,
     count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber(),
     count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
     count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt)
   );
+  return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeRNFBTurboPerfCxxSpecJSI_stopHttpMetric(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeRNFBTurboPerfCxxSpecJSI *>(&turboModule)->stopHttpMetric(
+  static_cast<NativeRNFBTurboPerfCxxSpecJSI *>(&turboModule)->stopHttpMetric(
     rt,
     count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber(),
     count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt)
   );
+  return jsi::Value::undefined();
 }
 
 NativeRNFBTurboPerfCxxSpecJSI::NativeRNFBTurboPerfCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)

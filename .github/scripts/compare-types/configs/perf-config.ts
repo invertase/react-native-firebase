@@ -62,9 +62,9 @@ const config: PackageConfig = {
     {
       name: 'PerformanceTrace',
       reason:
-        'React Native uses async `start`/`stop` (`Promise<null>`) because work crosses the native bridge. ' +
-        'The web SDK uses synchronous `start`/`stop` and exposes `record()`. RN Firebase exposes ' +
-        '`getMetrics` and `removeMetric` for native-backed custom metrics instead of the web shape.',
+        'React Native uses synchronous `start`/`stop` (in-memory native calls via TurboModules), matching ' +
+        'the firebase-js-sdk web `start`/`stop`. The web SDK additionally exposes `record()`, while RN Firebase ' +
+        'exposes `getMetrics` and `removeMetric` for native-backed custom metrics instead.',
     },
   ],
 };

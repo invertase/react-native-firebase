@@ -65,99 +65,44 @@ public class NativeRNFBTurboPerf extends NativeRNFBTurboPerfSpec {
   }
 
   @Override
-  public void startTrace(double id, String identifier, Promise promise) {
-    module
-        .startTrace((int) id, identifier)
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                promise.resolve(task.getResult());
-              } else {
-                promise.reject(task.getException());
-              }
-            });
+  public void startTrace(double id, String identifier) {
+    module.startTraceSync((int) id, identifier);
   }
 
   @Override
-  public void stopTrace(double id, ReadableMap traceData, Promise promise) {
-    module
-        .stopTrace(
-            (int) id,
-            Arguments.toBundle(traceData.getMap("metrics")),
-            Arguments.toBundle(traceData.getMap("attributes")))
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                promise.resolve(task.getResult());
-              } else {
-                promise.reject(task.getException());
-              }
-            });
+  public void stopTrace(double id, ReadableMap traceData) {
+    module.stopTraceSync(
+        (int) id,
+        Arguments.toBundle(traceData.getMap("metrics")),
+        Arguments.toBundle(traceData.getMap("attributes")));
   }
 
   @Override
-  public void startScreenTrace(double id, String identifier, Promise promise) {
+  public void startScreenTrace(double id, String identifier) {
     Activity currentActivity = getCurrentActivity();
 
     if (currentActivity == null) {
-      promise.resolve(null);
       return;
     }
 
-    module
-        .startScreenTrace(currentActivity, (int) id, identifier)
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                promise.resolve(task.getResult());
-              } else {
-                promise.reject(task.getException());
-              }
-            });
+    module.startScreenTraceSync(currentActivity, (int) id, identifier);
   }
 
   @Override
-  public void stopScreenTrace(double id, Promise promise) {
-    module
-        .stopScreenTrace((int) id)
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                promise.resolve(task.getResult());
-              } else {
-                promise.reject(task.getException());
-              }
-            });
+  public void stopScreenTrace(double id) {
+    module.stopScreenTraceSync((int) id);
   }
 
   @Override
-  public void startHttpMetric(double id, String url, String httpMethod, Promise promise) {
-    module
-        .startHttpMetric((int) id, url, httpMethod)
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                promise.resolve(task.getResult());
-              } else {
-                promise.reject(task.getException());
-              }
-            });
+  public void startHttpMetric(double id, String url, String httpMethod) {
+    module.startHttpMetricSync((int) id, url, httpMethod);
   }
 
   @Override
-  public void stopHttpMetric(double id, ReadableMap metricData, Promise promise) {
-    module
-        .stopHttpMetric(
-            (int) id,
-            Arguments.toBundle(metricData),
-            Arguments.toBundle(metricData.getMap("attributes")))
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                promise.resolve(task.getResult());
-              } else {
-                promise.reject(task.getException());
-              }
-            });
+  public void stopHttpMetric(double id, ReadableMap metricData) {
+    module.stopHttpMetricSync(
+        (int) id,
+        Arguments.toBundle(metricData),
+        Arguments.toBundle(metricData.getMap("attributes")));
   }
 }

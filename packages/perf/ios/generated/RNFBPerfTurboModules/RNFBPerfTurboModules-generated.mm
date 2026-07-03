@@ -46,27 +46,27 @@ namespace facebook::react {
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_startTrace(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "startTrace", @selector(startTrace:identifier:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "startTrace", @selector(startTrace:identifier:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_stopTrace(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "stopTrace", @selector(stopTrace:traceData:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "stopTrace", @selector(stopTrace:traceData:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_startScreenTrace(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "startScreenTrace", @selector(startScreenTrace:identifier:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "startScreenTrace", @selector(startScreenTrace:identifier:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_stopScreenTrace(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "stopScreenTrace", @selector(stopScreenTrace:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "stopScreenTrace", @selector(stopScreenTrace:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_startHttpMetric(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "startHttpMetric", @selector(startHttpMetric:url:httpMethod:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "startHttpMetric", @selector(startHttpMetric:url:httpMethod:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_stopHttpMetric(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "stopHttpMetric", @selector(stopHttpMetric:metricData:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "stopHttpMetric", @selector(stopHttpMetric:metricData:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {

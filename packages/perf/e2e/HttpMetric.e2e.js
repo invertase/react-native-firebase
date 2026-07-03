@@ -24,24 +24,24 @@ describe('HttpMetric modular', function () {
         const { getPerformance, httpMetric } = perfModular;
         const perf = getPerformance();
         const httpMetricRequest = httpMetric(perf, aCoolUrl, 'GET');
-        await httpMetricRequest.start();
+        httpMetricRequest.start();
         httpMetricRequest.setHttpResponseCode(200);
         should.equal(httpMetricRequest._started, true);
         await Utils.sleep(75);
-        await httpMetricRequest.stop();
+        httpMetricRequest.stop();
       });
 
-      it('resolves null if already started', async function () {
+      it('returns undefined if already started', async function () {
         const { getPerformance, httpMetric } = perfModular;
         const perf = getPerformance();
         const httpMetricRequest = httpMetric(perf, aCoolUrl, 'POST');
 
-        await httpMetricRequest.start();
+        httpMetricRequest.start();
         should.equal(httpMetricRequest._started, true);
         httpMetricRequest.setHttpResponseCode(200);
-        should.equal(await httpMetricRequest.start(), null);
+        should.equal(httpMetricRequest.start(), undefined);
         await Utils.sleep(75);
-        await httpMetricRequest.stop();
+        httpMetricRequest.stop();
       });
     });
 
@@ -50,7 +50,7 @@ describe('HttpMetric modular', function () {
         const { getPerformance, httpMetric } = perfModular;
         const perf = getPerformance();
         const httpMetricRequest = httpMetric(perf, aCoolUrl, 'GET');
-        await httpMetricRequest.start();
+        httpMetricRequest.start();
         httpMetricRequest.setHttpResponseCode(500);
         httpMetricRequest.setRequestPayloadSize(1337);
         httpMetricRequest.setResponseContentType('application/invertase');
@@ -58,25 +58,25 @@ describe('HttpMetric modular', function () {
         httpMetricRequest.putAttribute('foo', 'bar');
         httpMetricRequest.putAttribute('bar', 'foo');
         await Utils.sleep(100);
-        await httpMetricRequest.stop();
+        httpMetricRequest.stop();
         should.equal(httpMetricRequest._stopped, true);
       });
 
-      it('resolves null if already stopped', async function () {
+      it('returns undefined if already stopped', async function () {
         const { getPerformance, httpMetric } = perfModular;
         const perf = getPerformance();
         const httpMetricRequest = httpMetric(perf, aCoolUrl, 'POST');
-        await httpMetricRequest.start();
+        httpMetricRequest.start();
         await Utils.sleep(100);
-        await httpMetricRequest.stop();
-        should.equal(await httpMetricRequest.stop(), null);
+        httpMetricRequest.stop();
+        should.equal(httpMetricRequest.stop(), undefined);
       });
 
       it('handles floating point numbers', async function () {
         const { getPerformance, httpMetric } = perfModular;
         const perf = getPerformance();
         const httpMetricRequest = httpMetric(perf, aCoolUrl, 'POST');
-        await httpMetricRequest.start();
+        httpMetricRequest.start();
         const floatingPoint = 500.447553;
 
         httpMetricRequest.setHttpResponseCode(floatingPoint);
@@ -84,7 +84,7 @@ describe('HttpMetric modular', function () {
         httpMetricRequest.setRequestPayloadSize(floatingPoint);
 
         await Utils.sleep(100);
-        await httpMetricRequest.stop();
+        httpMetricRequest.stop();
       });
     });
 

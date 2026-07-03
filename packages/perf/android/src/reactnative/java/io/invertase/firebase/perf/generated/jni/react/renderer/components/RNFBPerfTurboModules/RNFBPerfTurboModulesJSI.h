@@ -147,12 +147,12 @@ public:
   virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
   virtual jsi::Value setPerformanceCollectionEnabled(jsi::Runtime &rt, bool enabled) = 0;
   virtual jsi::Value instrumentationEnabled(jsi::Runtime &rt, bool enabled) = 0;
-  virtual jsi::Value startTrace(jsi::Runtime &rt, double id, jsi::String identifier) = 0;
-  virtual jsi::Value stopTrace(jsi::Runtime &rt, double id, jsi::Object traceData) = 0;
-  virtual jsi::Value startScreenTrace(jsi::Runtime &rt, double id, jsi::String identifier) = 0;
-  virtual jsi::Value stopScreenTrace(jsi::Runtime &rt, double id) = 0;
-  virtual jsi::Value startHttpMetric(jsi::Runtime &rt, double id, jsi::String url, jsi::String httpMethod) = 0;
-  virtual jsi::Value stopHttpMetric(jsi::Runtime &rt, double id, jsi::Object metricData) = 0;
+  virtual void startTrace(jsi::Runtime &rt, double id, jsi::String identifier) = 0;
+  virtual void stopTrace(jsi::Runtime &rt, double id, jsi::Object traceData) = 0;
+  virtual void startScreenTrace(jsi::Runtime &rt, double id, jsi::String identifier) = 0;
+  virtual void stopScreenTrace(jsi::Runtime &rt, double id) = 0;
+  virtual void startHttpMetric(jsi::Runtime &rt, double id, jsi::String url, jsi::String httpMethod) = 0;
+  virtual void stopHttpMetric(jsi::Runtime &rt, double id, jsi::Object metricData) = 0;
 
 };
 
@@ -207,52 +207,52 @@ private:
       return bridging::callFromJs<jsi::Value>(
           rt, &T::instrumentationEnabled, jsInvoker_, instance_, std::move(enabled));
     }
-    jsi::Value startTrace(jsi::Runtime &rt, double id, jsi::String identifier) override {
+    void startTrace(jsi::Runtime &rt, double id, jsi::String identifier) override {
       static_assert(
           bridging::getParameterCount(&T::startTrace) == 3,
           "Expected startTrace(...) to have 3 parameters");
 
-      return bridging::callFromJs<jsi::Value>(
+      return bridging::callFromJs<void>(
           rt, &T::startTrace, jsInvoker_, instance_, std::move(id), std::move(identifier));
     }
-    jsi::Value stopTrace(jsi::Runtime &rt, double id, jsi::Object traceData) override {
+    void stopTrace(jsi::Runtime &rt, double id, jsi::Object traceData) override {
       static_assert(
           bridging::getParameterCount(&T::stopTrace) == 3,
           "Expected stopTrace(...) to have 3 parameters");
 
-      return bridging::callFromJs<jsi::Value>(
+      return bridging::callFromJs<void>(
           rt, &T::stopTrace, jsInvoker_, instance_, std::move(id), std::move(traceData));
     }
-    jsi::Value startScreenTrace(jsi::Runtime &rt, double id, jsi::String identifier) override {
+    void startScreenTrace(jsi::Runtime &rt, double id, jsi::String identifier) override {
       static_assert(
           bridging::getParameterCount(&T::startScreenTrace) == 3,
           "Expected startScreenTrace(...) to have 3 parameters");
 
-      return bridging::callFromJs<jsi::Value>(
+      return bridging::callFromJs<void>(
           rt, &T::startScreenTrace, jsInvoker_, instance_, std::move(id), std::move(identifier));
     }
-    jsi::Value stopScreenTrace(jsi::Runtime &rt, double id) override {
+    void stopScreenTrace(jsi::Runtime &rt, double id) override {
       static_assert(
           bridging::getParameterCount(&T::stopScreenTrace) == 2,
           "Expected stopScreenTrace(...) to have 2 parameters");
 
-      return bridging::callFromJs<jsi::Value>(
+      return bridging::callFromJs<void>(
           rt, &T::stopScreenTrace, jsInvoker_, instance_, std::move(id));
     }
-    jsi::Value startHttpMetric(jsi::Runtime &rt, double id, jsi::String url, jsi::String httpMethod) override {
+    void startHttpMetric(jsi::Runtime &rt, double id, jsi::String url, jsi::String httpMethod) override {
       static_assert(
           bridging::getParameterCount(&T::startHttpMetric) == 4,
           "Expected startHttpMetric(...) to have 4 parameters");
 
-      return bridging::callFromJs<jsi::Value>(
+      return bridging::callFromJs<void>(
           rt, &T::startHttpMetric, jsInvoker_, instance_, std::move(id), std::move(url), std::move(httpMethod));
     }
-    jsi::Value stopHttpMetric(jsi::Runtime &rt, double id, jsi::Object metricData) override {
+    void stopHttpMetric(jsi::Runtime &rt, double id, jsi::Object metricData) override {
       static_assert(
           bridging::getParameterCount(&T::stopHttpMetric) == 3,
           "Expected stopHttpMetric(...) to have 3 parameters");
 
-      return bridging::callFromJs<jsi::Value>(
+      return bridging::callFromJs<void>(
           rt, &T::stopHttpMetric, jsInvoker_, instance_, std::move(id), std::move(metricData));
     }
 

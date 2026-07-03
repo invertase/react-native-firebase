@@ -36,24 +36,24 @@ export default class ScreenTrace {
     this._stopped = false;
   }
 
-  start(): Promise<null> {
+  start(): void {
     if (isIOS) {
-      return Promise.reject(new Error('Custom screentraces are currently not supported on iOS.'));
+      throw new Error('Custom screentraces are currently not supported on iOS.');
     }
     if (this._started) {
-      return Promise.resolve(null);
+      return;
     }
     this._started = true;
 
-    return this.native.startScreenTrace(this._id, this._identifier);
+    this.native.startScreenTrace(this._id, this._identifier);
   }
 
-  stop(): Promise<null> {
+  stop(): void {
     if (!this._started || this._stopped) {
-      return Promise.resolve(null);
+      return;
     }
     this._stopped = true;
 
-    return this.native.stopScreenTrace(this._id);
+    this.native.stopScreenTrace(this._id);
   }
 }

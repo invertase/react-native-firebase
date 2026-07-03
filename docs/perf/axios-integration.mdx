@@ -32,7 +32,7 @@ axios.interceptors.request.use(async function (config) {
     // add any extra metric attributes, if required
     // httpMetricInstance.putAttribute('userId', '12345678');
 
-    await httpMetricInstance.start();
+    httpMetricInstance.start();
   } finally {
     return config;
   }
@@ -62,7 +62,7 @@ axios.interceptors.response.use(
 
       httpMetric.setHttpResponseCode(response.status);
       httpMetric.setResponseContentType(response.headers['content-type']);
-      await httpMetric.stop();
+      httpMetric.stop();
     } finally {
       return response;
     }
@@ -78,7 +78,7 @@ axios.interceptors.response.use(
 
       httpMetric.setHttpResponseCode(error.response.status);
       httpMetric.setResponseContentType(error.response.headers['content-type']);
-      await httpMetric.stop();
+      httpMetric.stop();
     } finally {
       // Ensure failed requests throw after interception
       return Promise.reject(error);

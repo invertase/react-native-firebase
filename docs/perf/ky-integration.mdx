@@ -38,7 +38,7 @@ const api = ky.create({
         // options.metric.putAttribute('userId', '12345678');
         // options.metric.setRequestPayloadSize(1234)
 
-        await options.metric.start();
+        options.metric.start();
       },
     ],
   },
@@ -73,7 +73,7 @@ const api = ky.create({
         metric.setHttpResponseCode(status);
         metric.setResponseContentType(getHeader('Content-Type', headers));
         metric.setResponsePayloadSize(getContentLength(headers));
-        await metric.stop();
+        metric.stop();
       },
     ],
   },
@@ -113,7 +113,7 @@ const api = ky.create({
         // options.metric.putAttribute('userId', '12345678');
         // options.metric.setRequestPayloadSize(1234)
 
-        await options.metric.start();
+        options.metric.start();
       },
     ],
 
@@ -124,7 +124,7 @@ const api = ky.create({
         metric.setHttpResponseCode(status);
         metric.setResponseContentType(getHeader('Content-Type', headers));
         metric.setResponsePayloadSize(getContentLength(headers));
-        await metric.stop();
+        metric.stop();
       },
     ],
   },

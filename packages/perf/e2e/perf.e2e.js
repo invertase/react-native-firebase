@@ -120,26 +120,26 @@ describe('perf() modular', function () {
     });
 
     describe('startTrace()', function () {
-      it('resolves a started instance of Trace', async function () {
+      it('returns a started instance of Trace', async function () {
         const { getPerformance, trace } = perfModular;
         const perf = getPerformance();
         const traceInvertase = trace(perf, 'invertase');
-        await traceInvertase.start();
+        traceInvertase.start();
         traceInvertase.constructor.name.should.be.equal('Trace');
         traceInvertase._identifier.should.equal('invertase');
         traceInvertase._started.should.equal(true);
-        await traceInvertase.stop();
+        traceInvertase.stop();
       });
     });
 
     describe('startScreenTrace()', function () {
-      it('resolves a started instance of a ScreenTrace', async function () {
+      it('returns a started instance of a ScreenTrace', async function () {
         if (Platform.android) {
           const { getPerformance, startScreenTrace } = perfModular;
-          const screenTrace = await startScreenTrace(getPerformance(), 'FooScreen');
+          const screenTrace = startScreenTrace(getPerformance(), 'FooScreen');
           screenTrace.constructor.name.should.be.equal('ScreenTrace');
           screenTrace._identifier.should.equal('FooScreen');
-          await screenTrace.stop();
+          screenTrace.stop();
           screenTrace._stopped.should.equal(true);
         }
       });

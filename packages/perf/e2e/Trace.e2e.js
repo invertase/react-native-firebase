@@ -22,23 +22,23 @@ describe('Trace modular', function () {
         const { getPerformance, trace } = perfModular;
         const perf = getPerformance();
         const traceInvertase = trace(perf, 'invertase');
-        await traceInvertase.start();
+        traceInvertase.start();
         should.equal(traceInvertase._started, true);
         traceInvertase.putAttribute('foo', 'bar');
         traceInvertase.putMetric('stars', 9001);
         await Utils.sleep(125);
-        await traceInvertase.stop();
+        traceInvertase.stop();
       });
 
-      it('resolves null if already started', async function () {
+      it('returns undefined if already started', async function () {
         const { getPerformance, trace } = perfModular;
         const perf = getPerformance();
         const traceInvertase = trace(perf, 'invertase');
-        await traceInvertase.start();
+        traceInvertase.start();
         should.equal(traceInvertase._started, true);
-        should.equal(await traceInvertase.start(), null);
+        should.equal(traceInvertase.start(), undefined);
         await Utils.sleep(125);
-        await traceInvertase.stop();
+        traceInvertase.stop();
       });
     });
 
@@ -47,24 +47,24 @@ describe('Trace modular', function () {
         const { getPerformance, trace } = perfModular;
         const perf = getPerformance();
         const traceInvertase = trace(perf, 'invertase');
-        await traceInvertase.start();
+        traceInvertase.start();
         traceInvertase.putAttribute('foo', 'bar');
         traceInvertase.putAttribute('bar', 'foo');
         traceInvertase.putMetric('leet', 1337);
         traceInvertase.putMetric('chickens', 12);
         await Utils.sleep(100);
-        await traceInvertase.stop();
+        traceInvertase.stop();
         should.equal(traceInvertase._stopped, true);
       });
 
-      it('resolves null if already stopped', async function () {
+      it('returns undefined if already stopped', async function () {
         const { getPerformance, trace } = perfModular;
         const perf = getPerformance();
         const traceInvertase = trace(perf, 'invertase');
-        await traceInvertase.start();
+        traceInvertase.start();
         await Utils.sleep(100);
-        await traceInvertase.stop();
-        should.equal(await traceInvertase.stop(), null);
+        traceInvertase.stop();
+        should.equal(traceInvertase.stop(), undefined);
       });
     });
     // describe('removeAttribute()', function () {

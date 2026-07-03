@@ -104,29 +104,17 @@ namespace JS {
                        resolve:(RCTPromiseResolveBlock)resolve
                         reject:(RCTPromiseRejectBlock)reject;
 - (void)startTrace:(double)id
-        identifier:(NSString *)identifier
-           resolve:(RCTPromiseResolveBlock)resolve
-            reject:(RCTPromiseRejectBlock)reject;
+        identifier:(NSString *)identifier;
 - (void)stopTrace:(double)id
-        traceData:(JS::NativeRNFBTurboPerf::TraceData &)traceData
-          resolve:(RCTPromiseResolveBlock)resolve
-           reject:(RCTPromiseRejectBlock)reject;
+        traceData:(JS::NativeRNFBTurboPerf::TraceData &)traceData;
 - (void)startScreenTrace:(double)id
-              identifier:(NSString *)identifier
-                 resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject;
-- (void)stopScreenTrace:(double)id
-                resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject;
+              identifier:(NSString *)identifier;
+- (void)stopScreenTrace:(double)id;
 - (void)startHttpMetric:(double)id
                     url:(NSString *)url
-             httpMethod:(NSString *)httpMethod
-                resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject;
+             httpMethod:(NSString *)httpMethod;
 - (void)stopHttpMetric:(double)id
-            metricData:(JS::NativeRNFBTurboPerf::HttpMetricData &)metricData
-               resolve:(RCTPromiseResolveBlock)resolve
-                reject:(RCTPromiseRejectBlock)reject;
+            metricData:(JS::NativeRNFBTurboPerf::HttpMetricData &)metricData;
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboPerf::Constants::Builder>)constantsToExport;
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboPerf::Constants::Builder>)getConstants;
 

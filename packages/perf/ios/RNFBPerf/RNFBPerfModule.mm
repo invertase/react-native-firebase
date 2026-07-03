@@ -92,24 +92,16 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   resolve([NSNull null]);
 }
 
-- (void)startTrace:(double)id
-        identifier:(NSString *)identifier
-           resolve:(RCTPromiseResolveBlock)resolve
-            reject:(RCTPromiseRejectBlock)reject {
+- (void)startTrace:(double)id identifier:(NSString *)identifier {
   FIRTrace *trace = [[FIRPerformance sharedInstance] traceWithName:identifier];
   [trace start];
 
   @synchronized([self class]) {
     traces[@((int)id)] = trace;
   }
-
-  resolve([NSNull null]);
 }
 
-- (void)stopTrace:(double)id
-        traceData:(JS::NativeRNFBTurboPerf::TraceData &)traceData
-          resolve:(RCTPromiseResolveBlock)resolve
-           reject:(RCTPromiseRejectBlock)reject {
+- (void)stopTrace:(double)id traceData:(JS::NativeRNFBTurboPerf::TraceData &)traceData {
   FIRTrace *trace;
   @synchronized([self class]) {
     trace = traces[@((int)id)];
@@ -132,28 +124,17 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   @synchronized([self class]) {
     [traces removeObjectForKey:@((int)id)];
   }
-
-  resolve([NSNull null]);
 }
 
-- (void)startScreenTrace:(double)id
-              identifier:(NSString *)identifier
-                 resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject {
-  resolve([NSNull null]);
+- (void)startScreenTrace:(double)id identifier:(NSString *)identifier {
+  // Custom screen traces are not supported on iOS.
 }
 
-- (void)stopScreenTrace:(double)id
-                resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject {
-  resolve([NSNull null]);
+- (void)stopScreenTrace:(double)id {
+  // Custom screen traces are not supported on iOS.
 }
 
-- (void)startHttpMetric:(double)id
-                    url:(NSString *)url
-             httpMethod:(NSString *)httpMethod
-                resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject {
+- (void)startHttpMetric:(double)id url:(NSString *)url httpMethod:(NSString *)httpMethod {
   FIRHTTPMethod method = FIRHTTPMethodGET;
   NSURL *toNSURL = [NSURL URLWithString:url];
   if ([httpMethod compare:@"put" options:NSCaseInsensitiveSearch] == NSOrderedSame)
@@ -179,14 +160,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   @synchronized([self class]) {
     httpMetrics[@((int)id)] = httpMetric;
   }
-
-  resolve([NSNull null]);
 }
 
 - (void)stopHttpMetric:(double)id
-            metricData:(JS::NativeRNFBTurboPerf::HttpMetricData &)metricData
-               resolve:(RCTPromiseResolveBlock)resolve
-                reject:(RCTPromiseRejectBlock)reject {
+            metricData:(JS::NativeRNFBTurboPerf::HttpMetricData &)metricData {
   FIRHTTPMetric *httpMetric;
   @synchronized([self class]) {
     httpMetric = httpMetrics[@((int)id)];
@@ -219,8 +196,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   @synchronized([self class]) {
     [httpMetrics removeObjectForKey:@((int)id)];
   }
-
-  resolve([NSNull null]);
 }
 
 @end

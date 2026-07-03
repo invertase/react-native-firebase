@@ -87,18 +87,18 @@ export default class Trace extends MetricWithAttributes {
     delete this._metrics[metric];
   }
 
-  start(): Promise<null> {
+  start(): void {
     if (this._started) {
-      return Promise.resolve(null);
+      return;
     }
     this._started = true;
 
-    return this.native.startTrace(this._id, this._identifier);
+    this.native.startTrace(this._id, this._identifier);
   }
 
-  stop(): Promise<null> {
+  stop(): void {
     if (this._stopped) {
-      return Promise.resolve(null);
+      return;
     }
     this._stopped = true;
 
@@ -107,6 +107,6 @@ export default class Trace extends MetricWithAttributes {
       attributes: Object.assign({}, this._attributes),
     };
 
-    return this.native.stopTrace(this._id, traceData);
+    this.native.stopTrace(this._id, traceData);
   }
 }

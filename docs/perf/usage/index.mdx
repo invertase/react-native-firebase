@@ -55,7 +55,7 @@ apply plugin: 'com.google.firebase.firebase-perf'
 | **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** `initializePerformance` returns synchronously on RN. Custom trace `start`/`stop` are async through the native bridge (unlike the web SDK).
+**Platform notes:** `initializePerformance` returns synchronously on RN. Trace, HTTP metric, and screen trace `start`/`stop` are synchronous through TurboModules, matching firebase-js-sdk.
 
 # What does it do
 
@@ -81,14 +81,14 @@ Below is how you would measure the amount of time it would take to complete a sp
 ```jsx
 import { getPerformance, trace } from '@react-native-firebase/perf';
 
-async function customTrace() {
+function customTrace() {
   const perf = getPerformance();
   const t = trace(perf, 'custom_trace');
 
-  await t.start();
+  t.start();
   t.putAttribute('user', 'abcd');
   t.putMetric('credits', 30);
-  await t.stop();
+  t.stop();
 }
 ```
 
@@ -99,10 +99,10 @@ Record a custom screen rendering trace (slow frames / frozen frames)
 ```jsx
 import { getPerformance, startScreenTrace } from '@react-native-firebase/perf';
 
-async function screenTrace() {
+function screenTrace() {
   try {
-    const screenTrace = await startScreenTrace(getPerformance(), 'FooScreen');
-    await screenTrace.stop();
+    const screenTrace = startScreenTrace(getPerformance(), 'FooScreen');
+    screenTrace.stop();
   } catch (e) {
     // rejects if iOS or (Android == 8 || Android == 8.1)
     // or if hardware acceleration is off
@@ -122,14 +122,14 @@ async function getRequest(url) {
 
   metric.putAttribute('user', 'abcd');
 
-  await metric.start();
+  metric.start();
 
   const response = await fetch(url);
   metric.setHttpResponseCode(response.status);
   metric.setResponseContentType(response.headers.get('Content-Type'));
   metric.setResponsePayloadSize(response.headers.get('Content-Length'));
 
-  await metric.stop();
+  metric.stop();
 
   return response.json();
 }

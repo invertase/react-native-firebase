@@ -29,32 +29,32 @@ static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_instrument
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_startTrace(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "startTrace", "(DLjava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "startTrace", "(DLjava/lang/String;)V", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_stopTrace(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "stopTrace", "(DLcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "stopTrace", "(DLcom/facebook/react/bridge/ReadableMap;)V", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_startScreenTrace(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "startScreenTrace", "(DLjava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "startScreenTrace", "(DLjava/lang/String;)V", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_stopScreenTrace(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "stopScreenTrace", "(DLcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "stopScreenTrace", "(D)V", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_startHttpMetric(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "startHttpMetric", "(DLjava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "startHttpMetric", "(DLjava/lang/String;Ljava/lang/String;)V", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboPerfSpecJSI_stopHttpMetric(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "stopHttpMetric", "(DLcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "stopHttpMetric", "(DLcom/facebook/react/bridge/ReadableMap;)V", args, count, cachedMethodId);
 }
 
 NativeRNFBTurboPerfSpecJSI::NativeRNFBTurboPerfSpecJSI(const JavaTurboModule::InitParams &params)

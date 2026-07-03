@@ -87,18 +87,18 @@ export default class HttpMetric extends MetricWithAttributes {
     this._responseContentType = contentType;
   }
 
-  start(): Promise<null> {
+  start(): void {
     if (this._started) {
-      return Promise.resolve(null);
+      return;
     }
     this._started = true;
 
-    return this.native.startHttpMetric(this._id, this._url, this._httpMethod);
+    this.native.startHttpMetric(this._id, this._url, this._httpMethod);
   }
 
-  stop(): Promise<null> {
+  stop(): void {
     if (this._stopped) {
-      return Promise.resolve(null);
+      return;
     }
     this._stopped = true;
 
@@ -125,6 +125,6 @@ export default class HttpMetric extends MetricWithAttributes {
       metricData.responseContentType = this._responseContentType;
     }
 
-    return this.native.stopHttpMetric(this._id, metricData);
+    this.native.stopHttpMetric(this._id, metricData);
   }
 }

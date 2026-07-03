@@ -184,4 +184,92 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
           return null;
         });
   }
+
+  // --- Synchronous variants for the TurboModule (all work is in-memory, no network/disk) ---
+
+  void startTraceSync(int id, String identifier) {
+    Trace trace = FirebasePerformance.getInstance().newTrace(identifier);
+    trace.start();
+    traces.put(id, trace);
+  }
+
+  void stopTraceSync(int id, Bundle metrics, Bundle attributes) {
+    Trace trace = traces.get(id);
+    // Traces can be cleared during module teardown before JS stops them.
+    if (trace == null) {
+      return;
+    }
+
+    Set<String> metricKeys = metrics.keySet();
+    Set<String> attributeKeys = attributes.keySet();
+
+    for (String metricKey : metricKeys) {
+      Double value = ((double) metrics.get(metricKey));
+      trace.putMetric(metricKey, value.intValue());
+    }
+
+    for (String attributeKey : attributeKeys) {
+      trace.putAttribute(
+          attributeKey, (String) Objects.requireNonNull(attributes.get(attributeKey)));
+    }
+
+    trace.stop();
+    traces.remove(id);
+  }
+
+  void startScreenTraceSync(Activity activity, int id, String identifier) {
+    ScreenTrace screenTrace = new ScreenTrace(activity, identifier);
+    screenTrace.recordScreenTrace();
+    screenTraces.put(id, screenTrace);
+  }
+
+  void stopScreenTraceSync(int id) {
+    ScreenTrace trace = screenTraces.get(id);
+    // Screen traces can be cleared during module teardown before JS stops them.
+    if (trace == null) {
+      return;
+    }
+    trace.sendScreenTrace();
+    screenTraces.remove(id);
+  }
+
+  void startHttpMetricSync(int id, String url, String httpMethod) {
+    HttpMetric httpMetric = FirebasePerformance.getInstance().newHttpMetric(url, httpMethod);
+    httpMetric.start();
+    httpMetrics.put(id, httpMetric);
+  }
+
+  void stopHttpMetricSync(int id, Bundle httpMetricConfig, Bundle attributes) {
+    HttpMetric httpMetric = httpMetrics.get(id);
+    // HTTP metrics can be cleared during module teardown before JS stops them.
+    if (httpMetric == null) {
+      return;
+    }
+
+    if (httpMetricConfig.containsKey("httpResponseCode")) {
+      httpMetric.setHttpResponseCode((int) httpMetricConfig.getDouble("httpResponseCode"));
+    }
+
+    if (httpMetricConfig.containsKey("requestPayloadSize")) {
+      httpMetric.setRequestPayloadSize((int) httpMetricConfig.getDouble("requestPayloadSize"));
+    }
+
+    if (httpMetricConfig.containsKey("responsePayloadSize")) {
+      httpMetric.setResponsePayloadSize((int) httpMetricConfig.getDouble("responsePayloadSize"));
+    }
+
+    if (httpMetricConfig.containsKey("responseContentType")) {
+      httpMetric.setResponseContentType(httpMetricConfig.getString("responseContentType"));
+    }
+
+    Set<String> attributeKeys = attributes.keySet();
+
+    for (String attributeKey : attributeKeys) {
+      httpMetric.putAttribute(
+          attributeKey, Objects.requireNonNull(attributes.getString(attributeKey)));
+    }
+
+    httpMetric.stop();
+    httpMetrics.remove(id);
+  }
 }

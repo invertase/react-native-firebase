@@ -44,7 +44,7 @@ export type HttpMethod =
 /**
  * A performance trace (aligned with {@link https://firebase.google.com/docs/reference/js/performance.performancetrace | PerformanceTrace} in the Firebase JS SDK).
  *
- * @remarks React Native uses async `start`/`stop` (native bridge). The web SDK uses synchronous `start`/`stop`. React Native also exposes `getMetrics` and `removeMetric`, which are not on the web `PerformanceTrace` type.
+ * @remarks React Native uses synchronous `start`/`stop` (in-memory native calls via TurboModules), matching the firebase-js-sdk web `PerformanceTrace`. React Native also exposes `getMetrics` and `removeMetric`, which are not on the web `PerformanceTrace` type.
  */
 export interface PerformanceTrace {
   getAttribute(attr: string): string | undefined;
@@ -54,16 +54,16 @@ export interface PerformanceTrace {
   putMetric(metricName: string, num: number): void;
   incrementMetric(metricName: string, num?: number): void;
   removeMetric(metricName: string): void;
-  start(): Promise<null>;
-  stop(): Promise<null>;
+  start(): void;
+  stop(): void;
 }
 
 /**
  * Screen trace for slow/frozen frames (React Native).
  */
 export interface ScreenTrace {
-  start(): Promise<null>;
-  stop(): Promise<null>;
+  start(): void;
+  stop(): void;
 }
 
 /**
@@ -78,8 +78,8 @@ export interface HttpMetric {
   setRequestPayloadSize(bytes: number | null): void;
   setResponsePayloadSize(bytes: number | null): void;
   setResponseContentType(contentType: string | null): void;
-  start(): Promise<null>;
-  stop(): Promise<null>;
+  start(): void;
+  stop(): void;
 }
 
 /**

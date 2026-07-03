@@ -29,9 +29,9 @@ export interface PerfInternal extends FirebasePerformance {
    */
   setPerformanceCollectionEnabled(enabled: boolean): Promise<null>;
   newTrace(name: string): PerformanceTrace;
-  startTrace(name: string): Promise<PerformanceTrace>;
+  startTrace(name: string): PerformanceTrace;
   newScreenTrace(screenName: string): ScreenTrace;
-  startScreenTrace(screenName: string): Promise<ScreenTrace>;
+  startScreenTrace(screenName: string): ScreenTrace;
   newHttpMetric(url: string, httpMethod: HttpMethod): HttpMetric;
 }
 
@@ -53,12 +53,12 @@ export interface RNFBPerfNativeModule {
   isInstrumentationEnabled: boolean;
   setPerformanceCollectionEnabled(enabled: boolean): Promise<null>;
   instrumentationEnabled(enabled: boolean): Promise<null>;
-  startTrace(id: number, identifier: string): Promise<null>;
-  stopTrace(id: number, traceData: RNFBPerfTraceData): Promise<null>;
-  startHttpMetric(id: number, url: string, httpMethod: HttpMethod): Promise<null>;
-  stopHttpMetric(id: number, metricData: RNFBPerfHttpMetricData): Promise<null>;
-  startScreenTrace(id: number, identifier: string): Promise<null>;
-  stopScreenTrace(id: number): Promise<null>;
+  startTrace(id: number, identifier: string): void;
+  stopTrace(id: number, traceData: RNFBPerfTraceData): void;
+  startHttpMetric(id: number, url: string, httpMethod: HttpMethod): void;
+  stopHttpMetric(id: number, metricData: RNFBPerfHttpMetricData): void;
+  startScreenTrace(id: number, identifier: string): void;
+  stopScreenTrace(id: number): void;
 }
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {

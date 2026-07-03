@@ -33,12 +33,12 @@ export interface Spec extends TurboModule {
 
   setPerformanceCollectionEnabled(enabled: boolean): Promise<void>;
   instrumentationEnabled(enabled: boolean): Promise<void>;
-  startTrace(id: number, identifier: string): Promise<void>;
-  stopTrace(id: number, traceData: TraceData): Promise<void>;
-  startScreenTrace(id: number, identifier: string): Promise<void>;
-  stopScreenTrace(id: number): Promise<void>;
-  startHttpMetric(id: number, url: string, httpMethod: HttpMethod): Promise<void>;
-  stopHttpMetric(id: number, metricData: HttpMetricData): Promise<void>;
+  startTrace(id: number, identifier: string): void;
+  stopTrace(id: number, traceData: TraceData): void;
+  startScreenTrace(id: number, identifier: string): void;
+  stopScreenTrace(id: number): void;
+  startHttpMetric(id: number, url: string, httpMethod: HttpMethod): void;
+  stopHttpMetric(id: number, metricData: HttpMetricData): void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('NativeRNFBTurboPerf');

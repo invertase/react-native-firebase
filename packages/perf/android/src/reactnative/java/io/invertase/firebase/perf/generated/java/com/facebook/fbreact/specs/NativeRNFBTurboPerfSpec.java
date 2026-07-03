@@ -76,25 +76,25 @@ public abstract class NativeRNFBTurboPerfSpec extends ReactContextBaseJavaModule
 
   @ReactMethod
   @DoNotStrip
-  public abstract void startTrace(double id, String identifier, Promise promise);
+  public abstract void startTrace(double id, String identifier);
 
   @ReactMethod
   @DoNotStrip
-  public abstract void stopTrace(double id, ReadableMap traceData, Promise promise);
+  public abstract void stopTrace(double id, ReadableMap traceData);
 
   @ReactMethod
   @DoNotStrip
-  public abstract void startScreenTrace(double id, String identifier, Promise promise);
+  public abstract void startScreenTrace(double id, String identifier);
 
   @ReactMethod
   @DoNotStrip
-  public abstract void stopScreenTrace(double id, Promise promise);
+  public abstract void stopScreenTrace(double id);
 
   @ReactMethod
   @DoNotStrip
-  public abstract void startHttpMetric(double id, String url, String httpMethod, Promise promise);
+  public abstract void startHttpMetric(double id, String url, String httpMethod);
 
   @ReactMethod
   @DoNotStrip
-  public abstract void stopHttpMetric(double id, ReadableMap metricData, Promise promise);
+  public abstract void stopHttpMetric(double id, ReadableMap metricData);
 }

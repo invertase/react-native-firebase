@@ -131,9 +131,10 @@ class FirebasePerfModule extends FirebaseModule<typeof nativeModuleName> {
     return new TraceImpl(this.native, identifier);
   }
 
-  startTrace(identifier: string): Promise<TraceImpl> {
+  startTrace(identifier: string): TraceImpl {
     const traceInstance = this.newTrace(identifier);
-    return traceInstance.start().then(() => traceInstance);
+    traceInstance.start();
+    return traceInstance;
   }
 
   newScreenTrace(identifier: string): ScreenTraceImpl {
@@ -146,9 +147,10 @@ class FirebasePerfModule extends FirebaseModule<typeof nativeModuleName> {
     return new ScreenTraceImpl(this.native, identifier);
   }
 
-  startScreenTrace(identifier: string): Promise<ScreenTraceImpl> {
+  startScreenTrace(identifier: string): ScreenTraceImpl {
     const screenTrace = this.newScreenTrace(identifier);
-    return screenTrace.start().then(() => screenTrace);
+    screenTrace.start();
+    return screenTrace;
   }
 
   newHttpMetric(url: string, httpMethod: HttpMethod): HttpMetricImpl {
@@ -217,8 +219,8 @@ export function initializePerformance(
  * Creates a custom performance trace.
  *
  * @remarks On React Native Firebase, {@link PerformanceTrace.start} and
- * {@link PerformanceTrace.stop} are **async** (native bridge). The firebase-js-sdk web
- * `PerformanceTrace` uses synchronous `start`/`stop`.
+ * {@link PerformanceTrace.stop} are **synchronous** (in-memory native calls via TurboModules),
+ * matching the firebase-js-sdk web `PerformanceTrace`.
  */
 export function trace(performance: FirebasePerformance, name: string): PerformanceTrace {
   return perfInternal(performance).newTrace(name) as unknown as PerformanceTrace;
@@ -239,8 +241,8 @@ export function newScreenTrace(performance: FirebasePerformance, screenName: str
 export function startScreenTrace(
   performance: FirebasePerformance,
   screenName: string,
-): Promise<ScreenTrace> {
-  return perfInternal(performance).startScreenTrace(screenName) as unknown as Promise<ScreenTrace>;
+): ScreenTrace {
+  return perfInternal(performance).startScreenTrace(screenName) as unknown as ScreenTrace;
 }
 
 export type * from './types/perf';
