@@ -7,7 +7,6 @@ import {
   onTokenChanged,
   CustomProvider,
   SDK_VERSION,
-  type AppCheck,
   type AppCheckOptions,
   type AppCheckTokenResult,
 } from '.';
@@ -19,11 +18,8 @@ const options: AppCheckOptions = {
     },
   },
 };
-const appCheck = {} as AppCheck;
-
-initializeAppCheck(getApp(), options).then((instance: AppCheck) => {
-  console.log(instance.app.name);
-});
+const appCheck = initializeAppCheck(getApp(), options);
+console.log(appCheck.app.name);
 
 getToken(appCheck).then((result: AppCheckTokenResult) => {
   console.log(result.token);

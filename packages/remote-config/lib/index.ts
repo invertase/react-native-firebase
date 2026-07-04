@@ -43,6 +43,7 @@ import type {
   FetchStatus,
   LogLevel,
   RemoteConfig,
+  RemoteConfigOptions,
   RemoteConfigSettings,
   Unsubscribe,
   Value,
@@ -536,7 +537,8 @@ export const SDK_VERSION = version;
  * Returns a RemoteConfig instance for the given app.
  * @param app - FirebaseApp. Optional.
  */
-export function getRemoteConfig(app?: FirebaseApp): RemoteConfig {
+export function getRemoteConfig(app?: FirebaseApp, options?: RemoteConfigOptions): RemoteConfig {
+  void options;
   return getOrCreateModularInstance(FirebaseConfigModule, config, app) as unknown as RemoteConfig;
 }
 
@@ -682,9 +684,13 @@ export type {
   ConfigUpdate,
   ConfigUpdateObserver,
   CustomSignals,
+  FetchResponse,
   FetchStatus,
+  FirebaseExperimentDescription,
+  FirebaseRemoteConfigObject,
   LogLevel,
   RemoteConfig,
+  RemoteConfigOptions,
   RemoteConfigSettings,
   Unsubscribe,
   Value,

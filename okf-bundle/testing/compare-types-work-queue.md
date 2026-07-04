@@ -8,7 +8,8 @@ timestamp: 2026-07-03T00:00:00Z
 
 # Compare-types parity — work queue
 
-> **IN PROGRESS:** **A** — A6/A9 deferred; Phase A implementation committed. **Next:** B0 grilling or A6/A9 consensus.
+> **IN PROGRESS:** **B1** — `constant` `preferIntegers` after Phase B commit. **Next:** B1 `implementation` → `independent-review`.
+> **Stack:** `main` → `new-architecture` ([#9080](https://github.com/invertase/react-native-firebase/pull/9080)) → `pipeline-continue-workqueue` ([#9086](https://github.com/invertase/react-native-firebase/pull/9086)) → **`compare-types-work-queue`** (frontier).
 > **Goal:** shrink `.github/scripts/compare-types/configs/*.ts` by fixing real drift or tightening intractable documentation — not blanket parity for native-only surfaces. Machinery: [compare-types README](../../../.github/scripts/compare-types/README.md). Term ids: [iteration vocabulary](iteration-vocabulary.md). Policy: [documentation policy](../documentation-policy.md).
 
 ---
@@ -50,7 +51,7 @@ Before any item's `implementation`:
 | Phase | Focus | Status | Outcome |
 | ----- | ----- | ------ | ------- |
 | **A** | Tier 1 — types/docs only | **partial** | A1–A5, A7–A8, A10 committed; A6/A9 deferred |
-| **B** | Tier 2 — moderate / Phase S | **queued** | — |
+| **B** | Tier 2 — moderate / Phase S | **partial** | B4–B9 committed; B1/B2 open; B3/B10 deferred |
 | **C** | Tier 3 — hard / structural | **queued** | — |
 | **D** | Tier 4 — document intractable | **queued** | — |
 
@@ -60,9 +61,9 @@ Before any item's `implementation`:
 
 **Label:** `baseline-2026-07-03`
 
-**Next item:** **A6/A9** (deferred — team consensus) or **B0** Phase B grilling.
+**Next item:** **B1** — `constant` `preferIntegers`.
 
-**Current gates:** A0, A1–A5, A7–A8, A10 committed. A6, A9 deferred. A0 `commit_gate` closes with bundled queue doc in Phase A commit.
+**Current gates:** Phase A + B4–B9 committed. B1 `implementation_gate` open. B2 unblocked (pipeline R complete). B3 blocked. B10 → C1.
 
 ---
 
@@ -81,17 +82,17 @@ Before any item's `implementation`:
 | **A8** | functions | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — registry + config; `FunctionsError` documented |
 | **A9** | remote-config | — | open | open | open | — | `unit-focused` | `ValueSource` — **deferred**; lean option 1; team consensus |
 | **A10** | cross-cutting | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — app structural + callbacks |
-| **B0** | Phase B scope | — | open | open | open | `gap-analysis` | `none` | [Grilling](#phase-b--tier-2-moderate--phase-s-sync) |
-| **B1** | firestore-pipelines | — | open | open | open | — | `unit-focused` | `constant(..., { preferIntegers })` |
-| **B2** | firestore-pipelines | — | open | open | open | — | `area-focused` | Missing: `documentMatches`, `geoDistance`, `score`, `parent`, `DefineStageOptions`, `SearchStageOptions` |
-| **B3** | storage | — | open | open | open | — | `area-focused` | `UploadTask` cancel/pause/resume sync `boolean` (PS-S2) |
-| **B4** | analytics | — | open | open | open | — | `unit-focused` | `logEvent` sync `void` (Phase S) |
-| **B5** | app-check | — | open | open | open | — | `area-focused` | `initializeAppCheck` sync return (Phase S) |
-| **B6** | firestore | — | open | open | open | — | `area-focused` | `initializeFirestore` sync return (Phase S) |
-| **B7** | remote-config | — | open | open | open | — | `unit-focused` | `FetchStatus` literal alignment vs native bridge |
-| **B8** | remote-config | — | open | open | open | — | `unit-focused` | `getRemoteConfig` optional `RemoteConfigOptions` |
-| **B9** | firestore | — | open | open | open | — | `unit-focused` | `aggregateFieldEqual` missing export |
-| **B10** | firestore | — | open | open | open | — | `area-focused` | `runTransaction` optional `TransactionOptions` / `maxAttempts` |
+| **B0** | Phase B scope | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `none` | Gap-analysis + grilling decisions 2026-07-03 — see [Phase B Notes](#phase-b-notes) |
+| **B1** | firestore-pipelines | — | open | open | open | `implementation` | `unit-focused` | `constant` `preferIntegers` |
+| **B2** | firestore-pipelines | — | open | open | open | `implementation` | `area-focused` | 6× `missingInRN` |
+| **B3** | storage | — | open | open | open | — | `area-focused` | **Blocked** — Phase S native sync |
+| **B4** | analytics | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | logEvent sync void |
+| **B5** | app-check | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `area-focused` | initializeAppCheck sync AppCheck |
+| **B6** | firestore | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `area-focused` | initializeFirestore sync Firestore |
+| **B7** | remote-config | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | FetchStatus native literals documented |
+| **B8** | remote-config | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | RemoteConfigOptions on getRemoteConfig |
+| **B9** | firestore | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | aggregateFieldEqual exported |
+| **B10** | firestore | — | open | open | open | — | `area-focused` | **→ C1** — native `maxAttempts` blocked |
 | **C0** | Phase C scope | — | open | open | open | `gap-analysis` | `none` | [Grilling](#phase-c--tier-3-hard--structural) |
 | **C1** | firestore | — | open | open | open | — | `area-focused` | ~25 `missingInRN` (local cache, serialization, aggregates) |
 | **C2** | firestore | — | open | open | open | — | `none` | Wrapper shapes: `DocumentReference`, `Firestore`, snapshots, `Transaction` |
@@ -219,7 +220,25 @@ Before any item's `implementation`:
 
 ### Phase B Notes
 
-_(Populated by B0 grilling.)_
+**Gap-analysis (2026-07-03):** Phase S / TurboModule sync infra landed on `new-architecture`. Pipeline queue: compare-types exports were **out of scope until phase R** on `main` — **stale on this branch:** [pipeline coverage queue](../packages/firestore/pipeline-coverage-work-queue.md) shows **K–R complete**, merge gate closed 2026-07-03, **compare-types exports unblocked**.
+
+**Grilling decisions (B0):**
+- **B1, B2:** Were deferred until pipeline **R** — **R is complete** on `pipeline-continue-workqueue`; proceed per [pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md).
+- **B7:** Reclassify **→ Phase D** — document native `no_fetch_yet`/`throttled` literals (mirror deferred A9).
+- **B10:** Reclassify **→ C1** — native `maxAttempts` not wired.
+- **B3, B5, B6:** Attempt **JS façade** for compare-types shape (true sync needs Phase S); B3 fix iOS `setTaskStatus` resolve bug if touched.
+- **B4:** Analytics registry + `logEvent` sync `void` JS shim.
+- **B8, B9:** Quick wins — types/JS only.
+
+**Ordering:** B9 → B8 → B7-doc → B4 → B5/B6 façades → **B1/B2** (unblocked) | defer B3/B10.
+
+**Validation:** B8/B9/B7-doc/B4 — unit-focused (no e2e). B3/B5/B6 if native touched — area-focused + `:test-cover`. B1/B2 — pipeline workflow e2e when unblocked.
+
+**Batching:** Per-package PRs: firestore (B9), remote-config (B8, B7), analytics (B4), storage (B3), app-check (B5), firestore (B6).
+
+**Done signal:** Row removal when fixed; B7 reason-harden only (D treatment).
+
+**Review notes (2026-07-03):** B5/B6 JS façades accepted for compare-types shape — sync return, async native via `void`; true runtime parity awaits Phase S. Follow-up: durable OKF note, `aggregateFieldEqual` unit tests.
 
 ---
 

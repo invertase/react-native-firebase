@@ -82,12 +82,6 @@ const config: PackageConfig = {
   ],
   differentShape: [
     {
-      name: 'initializeAppCheck',
-      reason:
-        'RN Firebase returns `Promise<AppCheck>` whereas the firebase-js-sdk returns `AppCheck` synchronously. ' +
-        'Phase S hint: **Promise that could maybe sync-void+queue** after provider/refresh state is installed synchronously (see PS-S2-gap).',
-    },
-    {
       name: 'AppCheckOptions',
       reason:
         'RN Firebase accepts `CustomProvider`, `ReactNativeFirebaseAppCheckProvider`, or a RN-specific provider config object instead of the firebase-js-sdk reCAPTCHA provider classes.',

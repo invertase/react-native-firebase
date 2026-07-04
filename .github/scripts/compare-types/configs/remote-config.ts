@@ -18,34 +18,10 @@ import type { PackageConfig } from '../src/types';
 const config: PackageConfig = {
   missingInRN: [
     {
-      name: 'FetchResponse',
-      reason:
-        'Part of the firebase-js-sdk initialization options surface. RN Firebase ' +
-        'does not expose `RemoteConfigOptions` or the web fetch-response bootstrap path.',
-    },
-    {
       name: 'FetchType',
       reason:
         'Used by the firebase-js-sdk web fetch-response bootstrap path. RN Firebase ' +
         'does not expose that initialization surface.',
-    },
-    {
-      name: 'FirebaseExperimentDescription',
-      reason:
-        'Only used by the firebase-js-sdk fetch-response bootstrap types. RN Firebase ' +
-        'does not expose that initialization surface.',
-    },
-    {
-      name: 'FirebaseRemoteConfigObject',
-      reason:
-        'Only used by the firebase-js-sdk fetch-response bootstrap types. RN Firebase ' +
-        'does not expose that initialization surface.',
-    },
-    {
-      name: 'RemoteConfigOptions',
-      reason:
-        'The firebase-js-sdk supports optional initialization options when creating ' +
-        'a Remote Config instance. RN Firebase does not expose this initialization API.',
     },
   ],
   // ---------------------------------------------------------------------------
@@ -84,16 +60,11 @@ const config: PackageConfig = {
     {
       name: 'FetchStatus',
       reason:
-        'RN Firebase preserves the long-standing native string literals ' +
-        '(`no_fetch_yet` / `throttled`) used by both the namespaced API and native bridge, ' +
-        'instead of the firebase-js-sdk web literals (`no-fetch-yet` / `throttle`).',
-    },
-    {
-      name: 'getRemoteConfig',
-      reason:
-        'The firebase-js-sdk accepts an optional `RemoteConfigOptions` second argument. ' +
-        'RN Firebase only accepts the optional app instance and does not expose the ' +
-        'initialization-options surface.',
+        'Intentional native bridge contract: RN Firebase preserves underscore literals ' +
+        '(`no_fetch_yet`, `throttled`) returned by the iOS/Android Remote Config SDKs and ' +
+        'used by the long-standing namespaced API. Aligning to firebase-js-sdk hyphen literals ' +
+        '(`no-fetch-yet`, `throttle`) would be a breaking change for existing comparisons and ' +
+        'cannot be normalized without native/bridge churn; not planned for compare-types parity.',
     },
     {
       name: 'ValueSource',

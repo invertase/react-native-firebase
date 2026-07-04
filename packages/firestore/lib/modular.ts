@@ -24,6 +24,7 @@ import { LoadBundleTask } from './LoadBundleTask';
 import { version } from './version';
 import {
   AggregateField,
+  aggregateFieldEqual,
   fieldPathFromArgument,
   AggregateQuerySnapshot,
 } from './FirestoreAggregate';
@@ -359,22 +360,23 @@ export function waitForPendingWrites(firestore: Firestore): Promise<void> {
 /**
  * Creates a Firestore instance with the given settings.
  *
- * @remarks **Async on React Native Firebase** — settings are applied through the native bridge.
- * Web-only `settings.localCache` values (`memoryLocalCache`, `persistentLocalCache`, IndexedDB
- * factories) are **not supported**; persistence is controlled by the native Firestore SDK.
+ * @remarks Returns synchronously for firebase-js-sdk parity; settings are applied through the
+ * native bridge in the background. Web-only `settings.localCache` values (`memoryLocalCache`,
+ * `persistentLocalCache`, IndexedDB factories) are **not supported**; persistence is controlled
+ * by the native Firestore SDK.
  */
-export async function initializeFirestore(
+export function initializeFirestore(
   app: FirebaseApp,
   settings: FirestoreSettings,
   databaseId?: string,
-): Promise<Firestore> {
+): Firestore {
   const firestore = getOrCreateModularInstance(
     FirebaseFirestoreModule,
     config,
     app,
     databaseId,
   ) as unknown as FirestoreInternal;
-  await firestore.settings(settings);
+  void firestore.settings(settings);
   return firestore as Firestore;
 }
 
@@ -496,6 +498,8 @@ export function average(field: string | FieldPath): AggregateField<number | null
 export function count(): AggregateField<number> {
   return new AggregateField('count');
 }
+
+export { aggregateFieldEqual };
 
 export function loadBundle(
   firestore: Firestore,

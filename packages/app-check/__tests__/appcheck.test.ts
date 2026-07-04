@@ -20,8 +20,8 @@ describe('appCheck()', function () {
       expect(initializeAppCheck).toBeDefined();
     });
 
-    it('`initializeAppCheck` rejects missing options at runtime', async function () {
-      await expect(initializeAppCheck(undefined, undefined)).rejects.toThrow(
+    it('`initializeAppCheck` throws when options are missing at runtime', function () {
+      expect(() => initializeAppCheck(undefined, undefined)).toThrow(
         'Invalid configuration: no options defined.',
       );
     });

@@ -12,6 +12,8 @@ If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating
 ## Table of contents
 
 - [New Architecture requirement](/migrating-to-v26#new-architecture-requirement)
+- [Platform behavior differences](/migrating-to-v26#platform-behavior-differences)
+- [firebase-js-sdk API parity improvements](/migrating-to-v26#firebase-js-sdk-api-parity-improvements)
 - [General pattern](/migrating-to-v26#general-pattern)
 - [App](/migrating-to-v26#app)
 - [Machine Learning (ML)](/migrating-to-v26#machine-learning-ml)
@@ -91,11 +93,62 @@ When migrating from firebase-js-sdk web examples, watch for these high-impact ru
 | **Cloud Messaging**           | Web push / service-worker surface                                                                                                            | FCM token lifecycle, permissions, background handlers, and **APNs token APIs are iOS only**. Event delivery still uses the legacy native event proxy during the TurboModule migration; behavior matches pre-v26 releases but will change when Codegen events land in a future release.     |
 | **Remote Config**             | `reset()` clears server and local state                                                                                                      | `reset()` is **Android only** — iOS does not clear activated, fetched, or default Remote Config values. `setDefaultsFromResource` loads from native resource files (`.plist` / XML).                                                                                                       |
 | **Performance**               | `initializePerformance` returns synchronously; trace `start`/`stop` are sync                                                                 | `initializePerformance` is **synchronous** on RN (applies settings to the native instance). Trace, HTTP metric, and screen trace `start`/`stop` are **synchronous** through TurboModules, matching firebase-js-sdk.                                                                        |
-| **Firestore**                 | IndexedDB persistence, `memoryLocalCache`, `persistentLocalCache`                                                                            | Local cache factories and IndexedDB APIs are **web only**. Persistence is controlled by the native Firestore SDK. `initializeFirestore` is **async** on RN.                                                                                                                                |
+| **Firestore**                 | IndexedDB persistence, `memoryLocalCache`, `persistentLocalCache`                                                                            | Local cache factories and IndexedDB APIs are **web only**. Persistence is controlled by the native Firestore SDK. `initializeFirestore` returns **`Firestore` synchronously** (settings apply in the background).                                                                                                                                |
 | **App Check**                 | reCAPTCHA version 3 / Enterprise web providers                                                                                               | Use `ReactNativeFirebaseAppCheckProvider` for Device Check, App Attest, Play Integrity, etc. Web reCAPTCHA provider classes have **no RN equivalent**.                                                                                                                                     |
 | **RN-native-only modules**    | No web SDK                                                                                                                                   | `crashlytics`, `in-app-messaging`, `app-distribution`, and `ml` are **React Native only** — no firebase-js-sdk modular surface.                                                                                                                                                            |
 
 Per-package notes also appear in each module's [usage](/) page under **Platform support**.
+
+## firebase-js-sdk API parity improvements
+
+v26 aligns React Native Firebase modular types and several runtime signatures with **firebase-js-sdk** where TurboModules removed bridge-forced `Promise` wrappers. Use this section when porting web SDK examples or when scripted upgrades hit TypeScript or runtime errors.
+
+**Agent rule:** If a method below is **sync**, remove `await` and any `.then()` / `.catch()` chain on its return value — sync APIs return `void` or a value directly; calling `.then()` on `void` throws at runtime.
+
+### Phase S — TurboModule sync conversion (new-architecture)
+
+| Method | Before (pre-v26 / legacy bridge) | After (v26) | Notes |
+| ------ | -------------------------------- | ----------- | ----- |
+| `registerVersion(library, version, variant?)` | `Promise<void>` (web) | `void` — throws on RN | Web-only on RN; remove `await` if copied from web samples |
+| `isSignInWithEmailLink(auth, emailLink)` | `Promise<boolean>` | `boolean` | Remove `await` |
+| `TotpSecret.generateQrCodeUrl(accountName?, issuer?)` | `Promise<string>` | `string` | Remove `await`; omitted args default from current user / app name |
+| `trace(…).start()` / `.stop()` | `Promise<null>` | `void` | Remove `await` on perf trace lifecycle |
+| `httpMetric(…).start()` / `.stop()` | `Promise<null>` | `void` | Same as traces |
+| `ScreenTrace.start()` / `.stop()` | `Promise<null>` | `void` | Same as traces |
+| `startScreenTrace(performance, screenName)` | `Promise<ScreenTrace>` | `ScreenTrace` | Remove `await` |
+| `goOnline(db)` / `goOffline(db)` | `Promise<void>` | `void` | Remove `await` |
+
+### Compare-types Phase A — type parity (no runtime sync change unless noted)
+
+| Export / method | Before | After | Notes |
+| --------------- | ------ | ----- | ----- |
+| `onSnapshotsInSync(firestore, observer)` | `next?: () => void`; `error?: Error` | `next?: (value: void) => void`; `error?: FirestoreError` | Callback overload `onSnapshotsInSync(firestore, () => {})` unchanged |
+| `uploadBytes(ref, data, metadata?)` | Return type `TaskResult` | `UploadResult` | Alias rename only |
+| `uploadBytesResumable(ref, data, metadata?)` | Return type `Task` | `UploadTask` | Alias rename only |
+| Storage / Remote Config error callbacks | `NativeFirebaseError` | `FirebaseError` / `StorageError` | `NativeFirebaseError` remains assignable to `FirebaseError` |
+| `AppCheckTokenListener` | Not exported | Exported type alias | Matches firebase-js-sdk observer typing |
+| `FunctionsError`, `FunctionsErrorCodeCore` | Missing or misaligned | Exported / aligned | Registry + compare-types config |
+| `firestore/pipelines` (`StageOptions`, `TimeGranularity`, `isType`, …) | Declaration drift | Aligned to SDK `.d.ts` | Type-only; no call-shape change |
+
+### Compare-types Phase B — sync façades (native work may still be async)
+
+| Method | Before | After | Notes |
+| ------ | ------ | ----- | ----- |
+| `logEvent(analytics, …)` | `Promise<void>` | `void` | Fire-and-forget; remove `await` / `.then()` |
+| `initializeAppCheck(app?, options?)` | `Promise<AppCheck>` | `AppCheck` | Returns handle immediately; provider setup continues natively |
+| `initializeFirestore(app, settings, databaseId?)` | `Promise<Firestore>` | `Firestore` | Returns instance immediately; `settings()` runs on native bridge |
+| `getRemoteConfig(app?, options?)` | `(app?)` only | `(app?, options?: RemoteConfigOptions)` | `options` accepted for parity; no-op on native |
+| `aggregateFieldEqual()` | Not exported | Exported | Aggregate query helper |
+| `LastFetchStatus` literals | — | — | **Unchanged** — native still uses `no_fetch_yet` / `throttled` (documented drift) |
+
+### Observer and Promise pitfalls
+
+| Pitfall | Symptom | Fix |
+| ------- | ------- | --- |
+| `.then()` on sync API | `TypeError: … .then is not a function` | Use direct call: `logEvent(…)` not `logEvent(…).then(…)` |
+| `await` on sync API | Unnecessary microtask delay; misleading types in strict TS | Drop `await` where the table above marks the API sync |
+| `onConfigUpdate(remoteConfig, observer)` | Runtime throw: observer must include **both** `next` and `error` functions | Pass `{ next: (update) => {…}, error: (err) => {…} }` — do not omit `error` |
+| `onSnapshotsInSync` observer form | Type error on `error` callback | Type `error` as `(error: FirestoreError) => void`, or use the `() => void` callback overload |
 
 ## General pattern
 
@@ -420,6 +473,10 @@ The namespaced API for `@react-native-firebase/app-check` has been **removed**. 
 | `FirebaseAppCheckTypes`     | Import `AppCheck`, `AppCheckTokenResult`, etc. from package root |
 | `appCheck().getToken()`     | `getToken(appCheck, forceRefresh?)`                              |
 
+## Signature changes
+
+- `initializeAppCheck(app?, options?)` returns `AppCheck` synchronously (previously `Promise<AppCheck>`). Native provider setup continues in the background — remove `await` and do not chain `.then()`.
+
 # Analytics
 
 The namespaced API for `@react-native-firebase/analytics` has been **removed**. This package is **modular-only** — use `getAnalytics()` and root-level helper functions.
@@ -437,6 +494,10 @@ Analytics supports only the **default Firebase app** (same as before). Calling `
 | `analytics().setUserId(...)` etc.                            | `setUserId(analytics, ...)`, `setConsent(analytics, ...)`, etc.                        |
 | Deprecated helper events (`logScreenView`, `logPurchase`, …) | Still exported as modular helpers; prefer `logEvent(analytics, 'screen_view', params)` |
 
+## Signature changes
+
+- `logEvent(analytics, …)` returns `void` synchronously (previously `Promise<void>`). Remove `await` and `.then()` chains.
+
 ## Example
 
 ```js
@@ -453,7 +514,7 @@ await analytics().setUserId('user-123');
 import { getAnalytics, logEvent, setUserId } from '@react-native-firebase/analytics';
 
 const analytics = getAnalytics();
-await logEvent(analytics, 'screen_view', { screen_name: 'Home' });
+logEvent(analytics, 'screen_view', { screen_name: 'Home' });
 await setUserId(analytics, 'user-123');
 ```
 
@@ -611,6 +672,11 @@ The namespaced API for `@react-native-firebase/firestore` has been **removed**. 
 | `firestore().settings(...)`                    | `initializeFirestore(app, settings, databaseId?)`                                     |
 | `firestore.FieldValue` / `firestore.Timestamp` | `FieldValue`, `Timestamp`, `FieldPath`, `Bytes`, `GeoPoint`, `Filter` (named exports) |
 | `firestore.Blob`                               | `Bytes`                                                                               |
+
+## Signature changes
+
+- `initializeFirestore(app, settings, databaseId?)` returns `Firestore` synchronously (previously `Promise<Firestore>`). Remove `await` and `.then()`; settings apply on the native bridge after return.
+- `aggregateFieldEqual()` is now exported for aggregate queries (firebase-js-sdk parity).
 
 ## Example
 

@@ -290,11 +290,10 @@ connectFirestoreEmulator(modFirestore1, 'localhost', 8080, {
 setLogLevel('debug');
 
 // ----- initializeFirestore -----
-initializeFirestore(getApp(), {
+const initializedFirestore = initializeFirestore(getApp(), {
   cacheSizeBytes: CACHE_SIZE_UNLIMITED,
-}).then((fs: Firestore) => {
-  console.log(fs.app.name);
 });
+console.log(initializedFirestore.app.name);
 
 // ----- doc, collection, collectionGroup, refEqual -----
 const modColl = collection(modFirestore1, 'users');

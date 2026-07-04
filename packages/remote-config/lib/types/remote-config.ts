@@ -23,6 +23,32 @@ export type FetchStatus = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
 
 export type ValueSource = 'static' | 'default' | 'remote';
 
+export interface FirebaseRemoteConfigObject {
+  [key: string]: string;
+}
+
+export interface FirebaseExperimentDescription {
+  experimentId: string;
+  variantId: string;
+  experimentStartTime: string;
+  triggerTimeoutMillis: string;
+  timeToLiveMillis: string;
+  affectedParameterKeys?: string[];
+}
+
+export interface FetchResponse {
+  status: number;
+  eTag?: string;
+  config?: FirebaseRemoteConfigObject;
+  templateVersion?: number;
+  experiments?: FirebaseExperimentDescription[];
+}
+
+export interface RemoteConfigOptions {
+  templateId?: string;
+  initialFetchResponse?: FetchResponse;
+}
+
 export interface Value {
   getSource(): ValueSource;
   asBoolean(): boolean;

@@ -975,7 +975,7 @@ export function logEvent(
     payment_type?: EventParams['payment_type'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -988,7 +988,7 @@ export function logEvent(
     shipping_tier?: EventParams['shipping_tier'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -999,7 +999,7 @@ export function logEvent(
     value?: EventParams['value'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1010,7 +1010,7 @@ export function logEvent(
     value?: EventParams['value'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1023,7 +1023,7 @@ export function logEvent(
     [key: string]: any;
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1034,7 +1034,7 @@ export function logEvent(
     [key: string]: any;
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1045,7 +1045,7 @@ export function logEvent(
     [key: string]: any;
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1055,7 +1055,7 @@ export function logEvent(
     value?: EventParams['value'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1064,7 +1064,7 @@ export function logEvent(
     method: EventParams['method'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1076,7 +1076,7 @@ export function logEvent(
     [key: string]: any;
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1093,7 +1093,7 @@ export function logEvent(
     [key: string]: any;
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1109,7 +1109,7 @@ export function logEvent(
     transaction_id?: EventParams['transaction_id'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1120,7 +1120,7 @@ export function logEvent(
     currency?: EventParams['currency'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1131,7 +1131,7 @@ export function logEvent(
     [key: string]: any;
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1148,7 +1148,7 @@ export function logEvent(
     travel_class?: string;
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1158,7 +1158,7 @@ export function logEvent(
     item_id: EventParams['item_id'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1170,7 +1170,7 @@ export function logEvent(
     item_list_name: EventParams['item_list_name'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1184,7 +1184,7 @@ export function logEvent(
     promotion_name: EventParams['promotion_name'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1195,7 +1195,7 @@ export function logEvent(
     [key: string]: any;
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1206,7 +1206,7 @@ export function logEvent(
     method: EventParams['method'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1215,7 +1215,7 @@ export function logEvent(
     method: EventParams['method'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1224,7 +1224,7 @@ export function logEvent(
     [key: string]: any;
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1235,7 +1235,7 @@ export function logEvent(
     value?: EventParams['value'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1246,7 +1246,7 @@ export function logEvent(
     value?: EventParams['value'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1257,7 +1257,7 @@ export function logEvent(
     item_list_name?: EventParams['item_list_name'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1271,7 +1271,7 @@ export function logEvent(
     promotion_name?: EventParams['promotion_name'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
@@ -1280,7 +1280,7 @@ export function logEvent(
     search_term: EventParams['search_term'];
   },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 // Generic fallback for custom event names
 export function logEvent<T extends string>(
@@ -1288,15 +1288,15 @@ export function logEvent<T extends string>(
   name: CustomEventName<T>,
   params?: { [key: string]: any },
   options?: AnalyticsCallOptions,
-): Promise<void>;
+): void;
 
 export function logEvent(
   analytics: Analytics,
   name: string,
   params: { [key: string]: any } = {},
   options: AnalyticsCallOptions = { global: false },
-): Promise<void> {
-  return analytics.logEvent(name, params, options);
+): void {
+  void analytics.logEvent(name, params, options);
 }
 
 /**

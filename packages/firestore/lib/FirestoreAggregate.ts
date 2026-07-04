@@ -122,3 +122,18 @@ export function fieldPathFromArgument(path: string | FieldPath): FieldPath {
   }
   throw new Error('Field path arguments must be of type `string` or `FieldPath`');
 }
+
+/**
+ * Compares two `AggregateField` instances for equality.
+ */
+export function aggregateFieldEqual(
+  left: AggregateField<unknown>,
+  right: AggregateField<unknown>,
+): boolean {
+  return (
+    left instanceof AggregateField &&
+    right instanceof AggregateField &&
+    left.aggregateType === right.aggregateType &&
+    left._internalFieldPath?._toPath() === right._internalFieldPath?._toPath()
+  );
+}

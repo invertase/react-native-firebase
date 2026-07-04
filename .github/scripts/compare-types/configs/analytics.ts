@@ -103,8 +103,9 @@ const config: PackageConfig = {
     {
       name: 'logEvent',
       reason:
-        'RN Firebase `logEvent` returns `Promise<void>` and RN overloads omit the web `[key: string]: any` index signature on event params. ' +
-        'Phase S hint: **Promise that could maybe sync-void+queue** (ordered native fire-and-forget; see PS-S2-gap).',
+        'Return type aligned to firebase-js-sdk sync `void` (Phase B). Remaining drift is ' +
+        'cosmetic: firebase-js-sdk overloads include `[key: string]: any` index signatures and ' +
+        'slightly different property ordering on typed event params; behaviour is equivalent.',
     },
     {
       name: 'setAnalyticsCollectionEnabled',

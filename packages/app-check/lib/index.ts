@@ -258,19 +258,17 @@ function getModularAppCheck(app?: FirebaseApp): AppCheck {
 /**
  * Initializes App Check for the given Firebase app.
  *
- * @remarks On native platforms use {@link ReactNativeFirebaseAppCheckProvider} to configure
+ * @remarks Returns synchronously for firebase-js-sdk parity; native provider setup continues in
+ * the background. On native platforms use {@link ReactNativeFirebaseAppCheckProvider} to configure
  * Device Check, App Attest, Play Integrity, or debug providers. firebase-js-sdk
  * `ReCaptchaEnterpriseProvider` / `ReCaptchaV3Provider` are **web only** and have no RN equivalent.
  */
-export async function initializeAppCheck(
-  app?: FirebaseApp,
-  options?: AppCheckOptions,
-): Promise<AppCheck> {
+export function initializeAppCheck(app?: FirebaseApp, options?: AppCheckOptions): AppCheck {
   if (!isObject(options)) {
     throw new Error('Invalid configuration: no options defined.');
   }
   const appCheck = getModularAppCheck(app);
-  await (appCheck as AppCheckInternal).initializeAppCheck(options);
+  void (appCheck as AppCheckInternal).initializeAppCheck(options);
   return appCheck;
 }
 
