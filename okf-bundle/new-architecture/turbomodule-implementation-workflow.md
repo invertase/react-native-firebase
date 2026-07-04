@@ -211,7 +211,7 @@ Runs **after** every native package is on TurboModules (Phases 0–5), **before*
 
 **Completion signal (per package):** the corresponding async-vs-sync entry is removed from the package's `compare:types` config and `yarn compare:types` is clean for that package ([validation checklist § type parity](../testing/validation-checklist.md#api-reference-and-type-parity)).
 
-**Caution:** sync across JSI runs on the JS thread — never convert a method that does real I/O. When unsure, keep it async; over-converting is a perf/ANR risk, under-converting is harmless.
+**Caution:** sync across JSI runs on the JS thread — never convert a method that does real I/O. When unsure, keep it async: over-converting is a perf/ANR risk; under-converting keeps the correct async signature but leaves a documented async→sync parity gap tracked in `compare:types` until resolved.
 
 ## TurboModule `documentation`
 

@@ -55,7 +55,7 @@ For any package registered in `compare:types`, type parity is a **review-gate re
 
 - no undocumented differences,
 - no stale config entries,
-- and any intentional RN-only exports documented in that package config.
+- and any intentional RN-only exports documented in that package config to the [compare-types justification bar](../../.github/scripts/compare-types/README.md#justification-bar).
 
 If `yarn compare:types` fails because of unrelated packages, keep the touched package's result in the handoff and add/fix a work-queue item for the unrelated drift. Do not close a review gate for a registered package when its own compare-types output is failing.
 

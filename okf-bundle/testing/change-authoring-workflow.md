@@ -31,8 +31,8 @@ flowchart TD
   IG -->|yes| REV
 
   REV["independent-review<br/>tier: area-focused<br/>frozen tree"]
-  REV --> RG{review gate<br/>green?}
-  RG -->|blocking findings| IMPL
+  REV --> RG{all findings<br/>resolved?}
+  RG -->|any unresolved| IMPL
   RG -->|yes| DOC
 
   DOC{User-facing or<br/>OKF durable updates?}
@@ -98,12 +98,44 @@ E2e scope, pre-flight, and harness gate: [running e2e § agent rule](running-e2e
 | Gate | Closes when |
 |------|-------------|
 | `implementation` | `implementation` work type complete — code plus **unit-focused**-tier checks green on **every required platform** when native bridge or embed path changed ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)); [static analysis](validation-checklist.md#lint-and-formatting) green on the diff |
-| `review` | `independent-review` complete — **area-focused**-tier checks green on frozen tree; applicable [validation checklist](validation-checklist.md) rows green (including static analysis) |
+| `review` | `independent-review` complete — **area-focused**-tier checks green on frozen tree; applicable [validation checklist](validation-checklist.md) rows green (including static analysis); **every review finding resolved** ([§ quality standards](#quality-standards)) |
 | `commit` | Durable commit exists for the item |
 
 **Trust rule:** Code on disk or in git with `review` still **open** is unverified until `independent-review` closes the gate.
 
-If review finds blocking issues, return to **`implementation`** (`unit-focused`), then repeat **`independent-review`** (`area-focused`).
+Any unresolved review finding returns the item to **`implementation`** (`unit-focused`), then repeats **`independent-review`** (`area-focused`) — see [§ quality standards](#quality-standards).
+
+## Quality standards
+
+Two authoring standards gate every item, and both admit the same narrow set of [acceptable exceptions](#acceptable-exceptions) — the only things that may be documented and tracked instead of fixed.
+
+<a id="acceptable-exceptions-intractable-limitation-bar"></a>
+
+### Acceptable exceptions
+
+Only two things may be documented and tracked instead of fixed. **Both require the user's explicit acceptance and confirmation plus a recorded rationale** — an agent or reviewer may not grant either on its own, and the item stays tracked until resolved.
+
+1. **Intractable-limitation bar.** The gap or firebase-js-sdk divergence is caused by an intractable technical limitation of the language, platform SDK, compiler, or toolchain, shown with evidence — e.g. a compiler/codegen-expanded branch that is provably unreachable, or a native SDK that does not expose the capability, cited by version.
+2. **User-accepted deferral.** The gap is addressable, but the user explicitly defers it with a documented rationale — e.g. it needs architectural design or human review not available now, or the compute cost is not currently justified.
+
+Anything else is drift or a defect, never a self-justifying exception:
+
+- **If code can be authored, a test that exercises it can be authored** — otherwise it is dead code; delete it, do not document it.
+- **A divergence with no accepted exception is drift** — align to firebase-js-sdk and remove any config entry.
+- Convenience, time pressure, "harmless", "low-value", or "low-risk" carry weight **only** through an explicit user-accepted deferral (2), never on an agent's own authority.
+
+<a id="review-findings--resolve-do-not-defer"></a>
+
+### Review findings — resolve, do not defer
+
+`independent-review` classifies findings **critical / serious / minor / nit**. The **`review` gate closes only when every finding — including minor and nit — is resolved by a fix**, unless the finding is covered by one of the two [acceptable exceptions](#acceptable-exceptions). An agent or reviewer may **not** defer a finding on its own authority: "green with minors" is not green, and parity, quality, and coverage gaps are cheapest to fix while the diff is fresh.
+
+A finding covered by an accepted exception is recorded — with evidence or the user's rationale — and tracked, not silently dropped. A finding that is neither fixed nor covered by an accepted exception returns the item to **`implementation`**.
+
+Domain applications reference this section rather than restating it:
+
+- **Coverage completion:** [coverage design § expectations](coverage-design.md#coverage-expectations-policy).
+- **Type parity / API drift:** [compare-types justification bar](../../.github/scripts/compare-types/README.md#justification-bar).
 
 ## Frozen tree
 

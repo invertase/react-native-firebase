@@ -15,6 +15,18 @@ Every difference must have an entry in the package's `configs/<package-name>.ts`
 - A difference is **undocumented** — add it to `configs/<package-name>.ts` with a reason, or fix the RN Firebase types to match.
 - A config entry is **stale** — the API now matches the firebase-js-sdk, so the entry should be removed from `configs/<package-name>.ts`.
 
+<a id="justification-bar"></a>
+
+### Justification bar
+
+A documented difference is not a free pass. Every `missingInRN`, `extraInRN`, and `differentShape` entry must clear one of the OKF change-authoring [acceptable exceptions](../../../okf-bundle/testing/change-authoring-workflow.md#acceptable-exceptions): an evidence-backed **intractable technical reason** (platform SDK, native bridge, Hermes/Metro, or toolchain limitation), **or** a **user-accepted deferral** with a documented rationale (e.g. an alignment that needs architectural review). Both require the user's explicit acceptance — convenience, "harmless", or optional-parameter drift never qualifies on its own:
+
+- **`missingInRN`** — an export we simply have not built yet is a backlog item, not a documented difference; only keep it here when it clears an acceptable exception.
+- **`extraInRN`** — an RN-only export, overload, or parameter is **drift, not a feature**. If firebase-js-sdk does not expose it and no acceptable exception applies, remove it rather than documenting it.
+- **`differentShape`** — align the RN Firebase types to firebase-js-sdk and remove the entry unless the shape difference is forced by an intractable reason (e.g. a native module that can only resolve `Promise<null>`) or a user-accepted deferral.
+
+When implementing a `missingInRN` export, do not introduce new `extraInRN` / `differentShape` drift that would not itself clear an acceptable exception.
+
 ## Prerequisites
 
 The root repository dependencies must be installed because the script reads the Firebase JS SDK types from the installed root `node_modules/firebase` package.

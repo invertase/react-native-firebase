@@ -22,11 +22,11 @@ Codecov merges CI uploads. Project-level % can be noise; **file-level changed-so
 For **new code**:
 
 * **Coverage only goes up** on files the change touches.
-* **100% is the goal** for touched TS/native sources. "Mostly covered" is not enough.
-* **Gaps need quantified intractability** — e.g. "~NN% unreachable Swift codegen"; no hand-waving.
-* **Any other gap is either testable or dead code** — add tests (negative paths, failure branches, every reachable branch) or delete unreachable/duplicate/superseded code. Large uncovered blocks: ask "is this reachable?" before writing tests.
+* **100% on touched TS/native sources is the requirement**, not an aspiration. "Mostly covered" does not close the gate.
+* **The only acceptable uncovered line is covered by an [acceptable exception](change-authoring-workflow.md#acceptable-exceptions)** — an evidence-backed intractable limitation, quantified (e.g. "~NN% provably-unreachable Swift codegen"), or a user-accepted deferral with recorded rationale.
+* **Every other gap is testable or dead code** — add the test (negative paths, failure branches, every reachable branch) or delete the unreachable/duplicate/superseded code.
 
-Gap passes should **add tests and remove dead code** together.
+An uncovered line surfaced in `independent-review` is a review finding subject to [zero-deferral resolution](change-authoring-workflow.md#review-findings--resolve-do-not-defer): fix it (add the test or delete the code) or clear it against the bar. Gap passes **add tests and remove dead code** together.
 
 ## Coverage as completion signal
 

@@ -64,15 +64,9 @@ Primary backlog: **`missingInRN`** in `.github/scripts/compare-types/configs/fir
 
 `compare-types` config is backlog, not permission.
 
-### Shape differences: `differentShape`
+### Shape differences: `differentShape` / `extraInRN`
 
-Each entry needs a strict, intractable RN technical reason (bridge, platform SDK, Hermes/Metro, etc.).
-
-- If indefensible, align RNFB to firebase-js-sdk and remove the entry.
-- Do not use `differentShape` for avoidable drift (formatting, naming, optional params).
-- When implementing a `missingInRN` export, do not introduce new `differentShape` drift without the same intractability bar.
-
-`extraInRN`: justify RN-specific surface or remove.
+Every documented difference must clear the [compare-types justification bar](../../../.github/scripts/compare-types/README.md#justification-bar). Avoidable drift is aligned to firebase-js-sdk and the entry removed; do not introduce new `differentShape` / `extraInRN` drift when implementing a `missingInRN` export.
 
 ## Pipeline `implementation`
 

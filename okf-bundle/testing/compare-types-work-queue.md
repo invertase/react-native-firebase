@@ -77,10 +77,10 @@ Before any item's `implementation`:
 | **A3** | firestore-pipelines | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — `TimeGranularity` row removed |
 | **A4** | firestore-pipelines | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — `isType` row removed |
 | **A5** | storage | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — upload return type rows removed |
-| **A6** | storage | — | open | open | open | — | `unit-focused` | `TaskEvent` / `TaskState` — **deferred**; lean option 1 (keep const + export type, document drift); team consensus |
+| **A6** | storage | — | open | open | open | — | `unit-focused` | `TaskEvent` / `TaskState` — **user-accepted deferral** ([acceptable exceptions](change-authoring-workflow.md#acceptable-exceptions)): const-vs-literal alignment needs architectural review; accepted for now, tracked. Resolve by SDK alignment or recorded rationale once reviewed |
 | **A7** | app-check | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — `AppCheckTokenListener` removed |
 | **A8** | functions | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — registry + config; `FunctionsError` documented |
-| **A9** | remote-config | — | open | open | open | — | `unit-focused` | `ValueSource` — **deferred**; lean option 1; team consensus |
+| **A9** | remote-config | — | open | open | open | — | `unit-focused` | `ValueSource` — **user-accepted deferral** ([acceptable exceptions](change-authoring-workflow.md#acceptable-exceptions)): const-vs-literal alignment needs architectural review; accepted for now, tracked. Resolve by SDK alignment or recorded rationale once reviewed |
 | **A10** | cross-cutting | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — app structural + callbacks |
 | **B0** | Phase B scope | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `none` | Gap-analysis + grilling decisions 2026-07-03 — see [Phase B Notes](#phase-b-notes) |
 | **B1** | firestore-pipelines | `refactor(firestore/pipelines): add constant preferIntegers option` | closed | closed | closed | — | `area-focused` | Re-review green 2026-07-04: parser integerLiteral iOS/Android, preferIntegers e2e, sdk-compat; macOS 147 / iOS 152 / Android 152 |
@@ -174,8 +174,8 @@ Before any item's `implementation`:
 
 **Grilling decisions:**
 - **A10 (confirmed):** App-level structural assignability for `NativeFirebaseError` → `FirebaseError`, then update callback params in remote-config + storage; remove config rows. Runtime stays `NativeFirebaseError`; SDK drop-in via `FirebaseError`; RN extras via `'namespace' in error` or cast.
-- **A6 (deferred — team consensus):** Lean **option 1** — keep `TaskEvent`/`TaskState` const exports, ensure type aliases publicly exported, document as intentional RN ergonomics (SDK literal-only). Do not strip constants for compare-types parity without team agreement. Likely reclassify to Phase D if consensus confirms.
-- **A9 (deferred — team consensus):** Lean **option 1** — keep `ValueSource` const, add `ValueSource` to modular `export type {}`, document as intentional RN ergonomics. Likely reclassify to Phase D if consensus confirms.
+- **A6 (user-accepted deferral):** `TaskEvent`/`TaskState` const-vs-literal alignment needs architectural design/human review not available now, so it is a [user-accepted deferral](change-authoring-workflow.md#acceptable-exceptions) — accepted for now and tracked, not closed by documenting convenience drift. Once reviewed, resolve by aligning to the SDK (literal-only) or by recording the rationale (e.g. removing a shipped public const is a breaking change). Do not strip constants before that review.
+- **A9 (user-accepted deferral):** Same as A6 for `ValueSource` const vs SDK literal union — accepted and tracked pending architectural review; resolve by SDK alignment or recorded rationale, not convenience.
 
 **Scope (gap-analysis defaults — locked unless revised):** Per-package PR batching; hand-edit firestore-pipelines sources; `compare:types` + tsc + jest, no e2e; ordering A8 infra → A10 app → parallel A1, A2–A4, A5, A7, A8 aliases → A10 consumers (skip A6, A9 until consensus).
 
@@ -296,10 +296,10 @@ _(Populated by C0 grilling.)_
 | ------ | ----------- |
 | SDK_VERSION | Remove from modular exports vs keep documented forever? |
 | D3 errors | Publish policy doc in OKF for `NativeFirebaseError` branding? |
-| Audit bar | What makes a `differentShape` reason “intractable” vs “lazy”? |
+| Audit bar | **Resolved** — canonical [compare-types justification bar](../../../.github/scripts/compare-types/README.md#justification-bar) / [intractable-limitation bar](change-authoring-workflow.md#acceptable-exceptions-intractable-limitation-bar): evidence-backed platform/toolchain limitation only; convenience drift aligns to firebase-js-sdk. |
 | Deliverable | D phase = documentation commits only? |
 
-**Deliverable:** Phase D Notes; optional durable doc in `okf-bundle/testing/` for compare-types intractability rubric.
+**Deliverable:** Phase D Notes. Intractability rubric is canonical in the [compare-types justification bar](../../../.github/scripts/compare-types/README.md#justification-bar) — reference it; do not restate.
 
 ### Items
 

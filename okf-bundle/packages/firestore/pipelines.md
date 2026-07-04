@@ -163,16 +163,16 @@ Live-path holes concentrate in **expression lowering** and **stage coercion**, n
 
 Quantified tables/priorities: [work queue](pipeline-coverage-work-queue.md). Script: `bash scripts/map-pipeline-coverage-gaps.sh <label>`.
 
-### DEFERRED: native coverage to 100% (pending approval)
+### Native coverage — live-path gap inventory
 
-**Status: needed, not done.** Per [Coverage expectations](/testing/coverage-design.md):
+Durable inventory of where live-path holes concentrate (live status and quantified baselines belong in the [work queue](pipeline-coverage-work-queue.md), not here):
 
 1. **E2e per live-but-untested operator/stage** in `coerceExpressionTree` (iOS) and live Android lowering, plus remaining executor error branches.
 2. **Android parsed-aggregate tail** — partially live (`coerceAliasedAggregate` from Executor); target with e2e, not deletion.
 
-Baselines: iOS NodeBuilder ~69%, Android NodeBuilder ~68%, Android Executor ~58%. Prefer cost-efficient passes.
+Completion standard: [coverage expectations](/testing/coverage-design.md#coverage-expectations-policy) — touched sources reach 100% or an evidence-backed intractable limit; no cost/convenience deferral.
 
-**Compare-types exports:** deferred — separate track from coverage expansion ([work queue](pipeline-coverage-work-queue.md)).
+**Compare-types exports:** tracked separately from coverage expansion ([work queue](pipeline-coverage-work-queue.md)).
 
 # Integer / boolean coercion (iOS bridge)
 

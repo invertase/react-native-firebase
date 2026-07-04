@@ -90,7 +90,7 @@ Complete modular-only checklist (one focused commit scope):
 
 ## Per-module `independent-review`
 
-On a **frozen tree** — [change authoring § independent-review](testing/change-authoring-workflow.md#independent-review), plus removal greps and module-specific **area-focused** e2e on [**every required platform**](testing/running-e2e.md#platform-coverage-gate-blocking) (no `.only`; **no Android/macOS shortcuts**). Minor/nit findings: fix or defer-with-rationale, then delta re-review before `commit`.
+On a **frozen tree** — [change authoring § independent-review](testing/change-authoring-workflow.md#independent-review), plus removal greps and module-specific **area-focused** e2e on [**every required platform**](testing/running-e2e.md#platform-coverage-gate-blocking) (no `.only`; **no Android/macOS shortcuts**). Resolve **every** finding, including minor/nit — fix it, or record a user-accepted [exception](testing/change-authoring-workflow.md#acceptable-exceptions) ([review findings](testing/change-authoring-workflow.md#review-findings--resolve-do-not-defer)); no self-authorized deferral — then delta re-review before `commit`.
 
 ## Module area harness
 
