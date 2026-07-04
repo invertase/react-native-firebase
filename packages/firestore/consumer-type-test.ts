@@ -908,11 +908,15 @@ const xDb = getFirestore();
 
 // ----- constant: all overloads -----
 const _cNum: Expression = constant(42);
+const _cNumPreferInt: Expression = constant(42, { preferIntegers: true });
+const _cNumNoPreferInt: Expression = constant(42, { preferIntegers: false });
 const _cStr: Expression = constant('hello');
 const _cBool: BooleanExpression = constant(true);
 const _cNull: Expression = constant(null);
 const _cUnknown: Expression = constant({ nested: true });
 void _cNum;
+void _cNumPreferInt;
+void _cNumNoPreferInt;
 void _cStr;
 void _cBool;
 void _cNull;

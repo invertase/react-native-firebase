@@ -2937,6 +2937,41 @@ describe('FirestorePipeline', function () {
         data.computedMap.should.eql({ total: 15, doubled: 4, active: true });
       });
 
+      it('evaluates constant preferIntegers through native integerLiteral path', async function () {
+        const { execute, constant } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), { marker: true });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              constant(1, { preferIntegers: true }).as('forcedOne'),
+              constant(0, { preferIntegers: true }).as('forcedZero'),
+              constant(1.5, { preferIntegers: true }).as('forcedOnePointFive'),
+              constant(42, { preferIntegers: false }).as('plainFortyTwo'),
+              constant(1.5, { preferIntegers: false }).as('plainOnePointFive'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.forcedOne.should.equal(1);
+        data.forcedZero.should.equal(0);
+        data.forcedOnePointFive.should.equal(1.5);
+        data.plainFortyTwo.should.equal(42);
+        data.plainOnePointFive.should.equal(1.5);
+        (typeof data.forcedOne).should.equal('number');
+        (typeof data.forcedZero).should.equal('number');
+        (typeof data.forcedOnePointFive).should.equal('number');
+        (typeof data.plainFortyTwo).should.equal('number');
+        (typeof data.plainOnePointFive).should.equal('number');
+      });
+
       it('unwraps constant-wrapped array arguments during native lowering', async function () {
         const { execute, field, constant, array, add } = firestorePipelinesModular;
         const { getFirestore, doc, setDoc } = firestoreModular;

@@ -802,6 +802,31 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     return rootBox.value;
   }
 
+  private static Object constantValueFromSerializedConstantMap(Map<?, ?> map) {
+    Object value = map.get("value");
+    if (Boolean.TRUE.equals(map.get("integerLiteral"))) {
+      return coerceIntegerLiteralConstantValue(value);
+    }
+    return value;
+  }
+
+  private static Object coerceIntegerLiteralConstantValue(Object value) {
+    if (value instanceof Boolean) {
+      return ((Boolean) value) ? 1 : 0;
+    }
+    if (value instanceof Number) {
+      Number number = (Number) value;
+      double doubleValue = number.doubleValue();
+      if (Double.isFinite(doubleValue)
+          && doubleValue == Math.rint(doubleValue)
+          && doubleValue >= Integer.MIN_VALUE
+          && doubleValue <= Integer.MAX_VALUE) {
+        return number.intValue();
+      }
+    }
+    return value;
+  }
+
   private static boolean isReferencePathConstantMap(Map<?, ?> map) {
     Object pathValue = map.get("path");
     if (!(pathValue instanceof String)) {
@@ -996,7 +1021,9 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             if ("constant".equals(normalizedType)) {
               ParsedValueNodeBox valueBox = new ParsedValueNodeBox();
               stack.push(new ExpressionConstantExitFrame(enterFrame.box, valueBox, fieldName));
-              stack.push(new ValueEnterFrame(map.get("value"), valueBox, fieldName + ".value"));
+              stack.push(
+                  new ValueEnterFrame(
+                      constantValueFromSerializedConstantMap(map), valueBox, fieldName + ".value"));
               continue;
             }
             if ("variable".equals(normalizedType)) {

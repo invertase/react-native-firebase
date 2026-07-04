@@ -58,13 +58,7 @@ const config: PackageConfig = {
         'RN Firebase exposes a local type discriminator alias for pipeline expression helpers.',
     },
   ],
-  differentShape: [
-    {
-      name: 'constant',
-      reason:
-        'firebase-js-sdk added an optional `preferIntegers` option to pipeline constant expressions; not yet exposed by RN Firebase pipelines.',
-    },
-  ],
+  differentShape: [],
 };
 
 export default config;

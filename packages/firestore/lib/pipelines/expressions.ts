@@ -607,7 +607,30 @@ function createField(path: unknown): FieldNode {
   });
 }
 
-function createConstant(value: unknown): ConstantExpressionNode {
+function applyConstantIntegerLiteralTag(
+  node: ConstantExpressionNode,
+  value: unknown,
+  options?: { preferIntegers?: boolean },
+): void {
+  const record = node as unknown as Record<string, unknown>;
+
+  if (options === undefined) {
+    if (typeof value === 'number' && Number.isInteger(value)) {
+      // iOS RN bridge can coerce 0/1 integer constants to booleans; tag explicit integers.
+      record.integerLiteral = true;
+    }
+    return;
+  }
+
+  if (options.preferIntegers === true) {
+    record.integerLiteral = true;
+  }
+}
+
+function createConstant(
+  value: unknown,
+  options?: { preferIntegers?: boolean },
+): ConstantExpressionNode {
   const node = createNode(expressionProto, {
     [RUNTIME_NODE_SYMBOL]: true,
     __kind: 'expression',
@@ -615,10 +638,7 @@ function createConstant(value: unknown): ConstantExpressionNode {
     value,
   }) as ConstantExpressionNode;
 
-  if (typeof value === 'number' && Number.isInteger(value)) {
-    // iOS RN bridge can coerce 0/1 integer constants to booleans; tag explicit integers.
-    (node as unknown as Record<string, unknown>).integerLiteral = true;
-  }
+  applyConstantIntegerLiteralTag(node, value, options);
 
   return node;
 }
@@ -1267,7 +1287,10 @@ export function array(_elements: unknown[]): FunctionExpression {
 /**
  * @beta
  * Creates a constant expression for a number value.
+ *
+ * @param _options - Optional `{ preferIntegers }` to force integer literal tagging on native.
  */
+export function constant(_value: number, _options?: { preferIntegers?: boolean }): Expression;
 export function constant(_value: number): Expression;
 /**
  * @beta
@@ -1291,8 +1314,13 @@ export function constant(_value: null): Expression;
 export function constant(_value: unknown): Expression;
 export function constant(
   _value: number | string | boolean | null | unknown,
+  _options?: { preferIntegers?: boolean },
 ): Expression | BooleanExpression {
-  return createConstant(normalizeRawValue(_value));
+  const normalized = normalizeRawValue(_value);
+  if (typeof _value === 'number' && _options !== undefined) {
+    return createConstant(normalized, _options);
+  }
+  return createConstant(normalized);
 }
 
 /**

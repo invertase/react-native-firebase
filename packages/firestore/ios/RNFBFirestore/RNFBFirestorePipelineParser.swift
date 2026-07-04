@@ -1201,8 +1201,12 @@ enum RNFBFirestorePipelineParser {
             }
             if normalizedType == "constant" {
               let valueBox = ParsedValueNodeBox()
+              var constantValue = map["value"] as Any
+              if map["integerLiteral"] as? Bool == true {
+                constantValue = coerceIntegerLiteralConstantValue(constantValue)
+              }
               stack.append(.expressionConstantExit(box, valueBox, fieldName))
-              stack.append(.valueEnter(map["value"] as Any, valueBox, "\(fieldName).value"))
+              stack.append(.valueEnter(constantValue, valueBox, "\(fieldName).value"))
               continue
             }
             if normalizedType == "variable" {
@@ -1362,6 +1366,29 @@ enum RNFBFirestorePipelineParser {
 
     let normalized = direction.lowercased()
     return normalized == "desc" || normalized == "descending"
+  }
+
+
+  private static func coerceIntegerLiteralConstantValue(_ value: Any) -> Any {
+    if let boolValue = value as? Bool {
+      return boolValue ? 1 : 0
+    }
+    if let number = value as? NSNumber {
+      if CFGetTypeID(number) == CFBooleanGetTypeID() {
+        return number.boolValue ? 1 : 0
+      }
+      let doubleValue = number.doubleValue
+      if doubleValue.isFinite,
+         doubleValue.rounded() == doubleValue,
+         doubleValue >= Double(Int.min),
+         doubleValue <= Double(Int.max) {
+        return number.intValue
+      }
+    }
+    if let intValue = value as? Int {
+      return intValue
+    }
+    return value
   }
 
   private static func mapOperatorToFunction(_ operatorName: String) -> String {

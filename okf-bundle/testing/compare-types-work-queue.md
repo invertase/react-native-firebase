@@ -51,7 +51,7 @@ Before any item's `implementation`:
 | Phase | Focus | Status | Outcome |
 | ----- | ----- | ------ | ------- |
 | **A** | Tier 1 — types/docs only | **partial** | A1–A5, A7–A8, A10 committed; A6/A9 deferred |
-| **B** | Tier 2 — moderate / Phase S | **partial** | B4–B9 committed; B1/B2 open; B3/B10 deferred |
+| **B** | Tier 2 — moderate / Phase S | **partial** | B1, B4–B9 committed; B2 open; B3/B10 deferred |
 | **C** | Tier 3 — hard / structural | **queued** | — |
 | **D** | Tier 4 — document intractable | **queued** | — |
 
@@ -61,9 +61,9 @@ Before any item's `implementation`:
 
 **Label:** `baseline-2026-07-03`
 
-**Next item:** **B1** — `constant` `preferIntegers`.
+**Next item:** **B2** — search stage spine + 6× `missingInRN` (`gap-analysis`).
 
-**Current gates:** Phase A + B4–B9 committed. B1 `implementation_gate` open. B2 unblocked (pipeline R complete). B3 blocked. B10 → C1.
+**Current gates:** B1 closed. B2 `implementation_gate` open. B3 blocked. B10 → C1.
 
 ---
 
@@ -83,8 +83,8 @@ Before any item's `implementation`:
 | **A9** | remote-config | — | open | open | open | — | `unit-focused` | `ValueSource` — **deferred**; lean option 1; team consensus |
 | **A10** | cross-cutting | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — app structural + callbacks |
 | **B0** | Phase B scope | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `none` | Gap-analysis + grilling decisions 2026-07-03 — see [Phase B Notes](#phase-b-notes) |
-| **B1** | firestore-pipelines | — | open | open | open | `implementation` | `unit-focused` | `constant` `preferIntegers` |
-| **B2** | firestore-pipelines | — | open | open | open | `implementation` | `area-focused` | 6× `missingInRN` |
+| **B1** | firestore-pipelines | `refactor(firestore/pipelines): add constant preferIntegers option` | closed | closed | closed | — | `area-focused` | Re-review green 2026-07-04: parser integerLiteral iOS/Android, preferIntegers e2e, sdk-compat; macOS 147 / iOS 152 / Android 152 |
+| **B2** | firestore-pipelines | — | open | open | open | `gap-analysis` | `area-focused` | 6× `missingInRN`; search spine first |
 | **B3** | storage | — | open | open | open | — | `area-focused` | **Blocked** — Phase S native sync |
 | **B4** | analytics | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | logEvent sync void |
 | **B5** | app-check | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `area-focused` | initializeAppCheck sync AppCheck |

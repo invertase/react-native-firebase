@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 import { getFirestore } from '../lib';
-import { field, timestampDiff, timestampExtract } from '../lib/pipelines';
+import { constant, field, timestampDiff, timestampExtract } from '../lib/pipelines';
+import type { ConstantExpression } from '../lib/pipelines/expressions';
 import '../lib/pipelines';
 
 /** Standalone firebase-js-sdk helpers that must not get fluent `.name()` chains. */
@@ -162,6 +163,52 @@ describe('pipelines serialization matrix', function () {
           { exprType: 'Field', path: 'timezone' },
         ],
       });
+    });
+  });
+
+  describe('constant preferIntegers option', function () {
+    const db: any = getFirestore();
+
+    it('auto-tags integer literals when options are omitted', function () {
+      expect(selectExpr(db, (constant(1) as ConstantExpression).as('one'))).toMatchObject({
+        exprType: 'Constant',
+        value: 1,
+        integerLiteral: true,
+      });
+    });
+
+    it('serializes integerLiteral when preferIntegers is true', function () {
+      expect(
+        selectExpr(
+          db,
+          (constant(1.5, { preferIntegers: true }) as ConstantExpression).as('onePointFive'),
+        ),
+      ).toMatchObject({
+        exprType: 'Constant',
+        value: 1.5,
+        integerLiteral: true,
+      });
+    });
+
+    it('omits integerLiteral when preferIntegers is false', function () {
+      const serialized = selectExpr(
+        db,
+        (constant(1, { preferIntegers: false }) as ConstantExpression).as('one'),
+      );
+      expect(serialized).toMatchObject({
+        exprType: 'Constant',
+        value: 1,
+      });
+      expect(serialized).not.toHaveProperty('integerLiteral');
+    });
+
+    it('omits integerLiteral for non-integers when options are omitted', function () {
+      const serialized = selectExpr(db, (constant(1.5) as ConstantExpression).as('onePointFive'));
+      expect(serialized).toMatchObject({
+        exprType: 'Constant',
+        value: 1.5,
+      });
+      expect(serialized).not.toHaveProperty('integerLiteral');
     });
   });
 });
