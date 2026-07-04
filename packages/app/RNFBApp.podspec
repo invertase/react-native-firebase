@@ -38,9 +38,13 @@ Pod::Spec.new do |s|
     Pod::UI.puts '[react-native-firebase] '.yellow + "Suppress this with environment variable RNFB_SUPPRESS_NEW_ARCHITECTURE_WARNING=1"
   end
 
-  # App must define modules for static framework integration of other packages to work
+  # App must define modules for static framework integration of other packages to work.
+  # CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES is required so RNFB's umbrella,
+  # which re-exports <React/...> imports, validates when consumers build with use_frameworks!
+  # (the default on Expo, and required for the firebase-ios-sdk).
   s.pod_target_xcconfig = {
     "DEFINES_MODULE" => "YES",
+    "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
   }
 
   # React Native dependencies
@@ -48,6 +52,12 @@ Pod::Spec.new do |s|
     install_modules_dependencies(s);
   else
     s.dependency "React-Core"
+  end
+
+  # Wire up prebuilt React-Core (RN 0.83+, default on 0.84+) so the legacy
+  # <React/...> header imports resolve when RCT_USE_PREBUILT_RNCORE=1.
+  if defined?(add_rncore_dependency)
+    add_rncore_dependency(s)
   end
 
   if (ENV.include?('FIREBASE_SDK_VERSION'))

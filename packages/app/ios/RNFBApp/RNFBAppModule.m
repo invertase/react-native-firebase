@@ -16,6 +16,7 @@
  */
 
 #import <Firebase/Firebase.h>
+#import <React/RCTBridgeModule.h>
 #import <React/RCTUtils.h>
 
 #import "RNFBAppModule.h"

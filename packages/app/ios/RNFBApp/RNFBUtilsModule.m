@@ -15,6 +15,7 @@
  *
  */
 
+#import <React/RCTBridgeModule.h>
 #import <React/RCTUtils.h>
 
 #import "RNFBApp/RNFBSharedUtils.h"

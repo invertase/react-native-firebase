@@ -15,6 +15,14 @@
  *
  */
 
+// clang-format off
+// React headers must be imported before any RNFBApp header: under
+// use_frameworks!, RNFBApp's framework module absorbs the React headers its
+// public headers include, hiding their declarations and macros from this file
+// if the RNFBApp module is loaded first.
+#import <React/RCTBridgeModule.h>
+#import <React/RCTUtils.h>
+// clang-format on
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 #if __has_include(<RNFBFirestore/RNFBFirestore-Swift.h>)
 // This import will work in situations where `use_frameworks!` is in use
@@ -27,7 +35,6 @@
 // directory. See firebase-ios-sdk#12611 for more context.
 #import "RNFBFirestore-Swift.h"
 #endif
-#import <React/RCTUtils.h>
 
 #import "RNFBFirestoreCollectionModule.h"
 #import "RNFBFirestoreCommon.h"

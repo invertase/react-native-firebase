@@ -36,6 +36,18 @@ Pod::Spec.new do |s|
 
   install_modules_dependencies(s);
 
+  # Wire up prebuilt React-Core (RN 0.83+, default on 0.84+) so the legacy
+  # <React/...> header imports resolve when RCT_USE_PREBUILT_RNCORE=1.
+  if defined?(add_rncore_dependency)
+    add_rncore_dependency(s)
+  end
+
+  # RNFB public headers re-export non-modular <React/...> imports. Required so
+  # the framework module validates when consumers build with use_frameworks!.
+  s.pod_target_xcconfig = {
+    "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
+  }
+
   # Fail fast for old architecture users, but safely in case the variable goes away
   # completely in future react-native versions
   if defined?(ENV["RCT_NEW_ARCH_ENABLED"]) != nil && (ENV["RCT_NEW_ARCH_ENABLED"] == '0')
