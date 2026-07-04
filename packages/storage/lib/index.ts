@@ -38,8 +38,9 @@ import type {
   SettableMetadata,
   StorageReference,
   Task,
-  TaskResult,
   UploadMetadata,
+  UploadResult,
+  UploadTask,
 } from './types/storage';
 import type { StorageInternal, StorageReferenceInternal } from './types/internal';
 
@@ -417,13 +418,13 @@ export function updateMetadata(
  * @param _storageRef - Storage `Reference` instance.
  * @param _data - The data (Blob | Uint8Array | ArrayBuffer) to upload to the storage bucket at the reference location.
  * @param _metadata - A Storage `UploadMetadata` instance to update. Optional.
- * @returns {Promise<TaskResult>}
+ * @returns {Promise<UploadResult>}
  */
 export async function uploadBytes(
   _storageRef: StorageReference,
   _data: Blob | Uint8Array | ArrayBuffer,
   _metadata?: UploadMetadata,
-): Promise<TaskResult> {
+): Promise<UploadResult> {
   throw new Error('`uploadBytes()` is not implemented');
 }
 
@@ -432,13 +433,13 @@ export async function uploadBytes(
  * @param storageRef - Storage `Reference` instance.
  * @param data - The data (Blob | Uint8Array | ArrayBuffer) to upload to the storage bucket at the reference location.
  * @param metadata - A Storage `UploadMetadata` instance to update. Optional.
- * @returns {Task}
+ * @returns {UploadTask}
  */
 export function uploadBytesResumable(
   storageRef: StorageReference,
   data: Blob | Uint8Array | ArrayBuffer,
   metadata?: UploadMetadata,
-): Task {
+): UploadTask {
   return (storageRef as StorageReferenceInternal).put(data, metadata);
 }
 

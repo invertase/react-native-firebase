@@ -26,11 +26,11 @@ import type { Bytes } from '../modular/Bytes';
 export type ExpressionType =
   | 'Field'
   | 'Constant'
-  | 'Variable'
   | 'Function'
   | 'AggregateFunction'
   | 'ListOfExpressions'
   | 'AliasedExpression'
+  | 'Variable'
   | 'PipelineValue';
 
 /**
@@ -70,12 +70,7 @@ export type TimeUnit = 'microsecond' | 'millisecond' | 'second' | 'minute' | 'ho
  * Time granularity for timestampTruncate.
  */
 export type TimeGranularity =
-  | 'microsecond'
-  | 'millisecond'
-  | 'second'
-  | 'minute'
-  | 'hour'
-  | 'day'
+  | TimeUnit
   | 'week'
   | 'week(monday)'
   | 'week(tuesday)'
@@ -84,11 +79,11 @@ export type TimeGranularity =
   | 'week(friday)'
   | 'week(saturday)'
   | 'week(sunday)'
-  | 'isoWeek'
+  | 'isoweek'
   | 'month'
   | 'quarter'
   | 'year'
-  | 'isoYear';
+  | 'isoyear';
 
 /**
  * @beta
@@ -2253,9 +2248,9 @@ export function isError(_value: Expression): BooleanExpression {
   return callBooleanHelper('isError', arguments);
 }
 
-export function isType(_fieldName: string, _type: Type): BooleanExpression;
-export function isType(_expression: Expression, _type: Type): BooleanExpression;
-export function isType(_fieldOrExpr: string | Expression, _type: Type): BooleanExpression {
+export function isType(_fieldName: string, _type: string): BooleanExpression;
+export function isType(_expression: Expression, _type: string): BooleanExpression;
+export function isType(_fieldOrExpr: string | Expression, _type: string): BooleanExpression {
   return callBooleanHelper('isType', arguments);
 }
 
@@ -2634,22 +2629,22 @@ export function timestampSubtract(
  * Difference between two timestamps in the given unit.
  */
 export function timestampDiff(
-  _endExpression: Expression,
+  _endFieldName: string,
   _startFieldName: string,
   _unit: TimeUnit | Expression,
 ): FunctionExpression;
 export function timestampDiff(
-  _endExpression: Expression,
+  _endFieldName: string,
   _startExpression: Expression,
   _unit: TimeUnit | Expression,
 ): FunctionExpression;
 export function timestampDiff(
-  _endFieldName: string,
+  _endExpression: Expression,
   _startFieldName: string,
   _unit: TimeUnit | Expression,
 ): FunctionExpression;
 export function timestampDiff(
-  _endFieldName: string,
+  _endExpression: Expression,
   _startExpression: Expression,
   _unit: TimeUnit | Expression,
 ): FunctionExpression;

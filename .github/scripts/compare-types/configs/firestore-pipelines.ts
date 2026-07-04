@@ -64,31 +64,6 @@ const config: PackageConfig = {
       reason:
         'firebase-js-sdk added an optional `preferIntegers` option to pipeline constant expressions; not yet exposed by RN Firebase pipelines.',
     },
-    {
-      name: 'isType',
-      reason:
-        'RN Firebase accepts its local `Type` alias where the firebase-js-sdk declaration accepts a string.',
-    },
-    {
-      name: 'ExpressionType',
-      reason:
-        'Declaration member ordering differs from the firebase-js-sdk file, but the same expression kinds are supported (including `PipelineValue`).',
-    },
-    {
-      name: 'StageOptions',
-      reason:
-        'Declaration formatting differs for the raw options object, but the public shape is equivalent.',
-    },
-    {
-      name: 'TimeGranularity',
-      reason:
-        'RN Firebase uses the existing `isoWeek` and `isoYear` casing while the firebase-js-sdk declaration includes lowercase variants.',
-    },
-    {
-      name: 'timestampDiff',
-      reason:
-        'Declaration overload ordering differs from the firebase-js-sdk file, but all four end/start field and expression combinations are supported.',
-    },
   ],
 };
 

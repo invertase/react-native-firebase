@@ -82,13 +82,6 @@ const config: PackageConfig = {
   ],
   differentShape: [
     {
-      name: 'ConfigUpdateObserver',
-      reason:
-        'The `error` callback parameter uses `ReactNativeFirebase.NativeFirebaseError` ' +
-        'instead of `FirebaseError` from `@firebase/app`. Both represent Firebase ' +
-        'errors but the RN type extends the native bridge error structure.',
-    },
-    {
       name: 'FetchStatus',
       reason:
         'RN Firebase preserves the long-standing native string literals ' +

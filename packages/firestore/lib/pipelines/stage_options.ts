@@ -109,7 +109,7 @@ export interface PipelineRawStageOptions {
  * @beta
  * Options defining how a Stage is evaluated. Base type for stage option types.
  */
-export interface StageOptions {
+export type StageOptions = {
   /**
    * @beta
    * Escape hatch for options not known at build time (e.g. backend-specific snake_case options).
@@ -117,7 +117,7 @@ export interface StageOptions {
   rawOptions?: {
     [name: string]: unknown;
   };
-}
+};
 
 /**
  * @beta

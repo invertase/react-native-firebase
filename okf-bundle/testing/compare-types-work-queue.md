@@ -8,7 +8,7 @@ timestamp: 2026-07-03T00:00:00Z
 
 # Compare-types parity — work queue
 
-> **IN PROGRESS:** **A** — item **A0** (grilling) queued.
+> **IN PROGRESS:** **A** — A6/A9 deferred; Phase A implementation committed. **Next:** B0 grilling or A6/A9 consensus.
 > **Goal:** shrink `.github/scripts/compare-types/configs/*.ts` by fixing real drift or tightening intractable documentation — not blanket parity for native-only surfaces. Machinery: [compare-types README](../../../.github/scripts/compare-types/README.md). Term ids: [iteration vocabulary](iteration-vocabulary.md). Policy: [documentation policy](../documentation-policy.md).
 
 ---
@@ -49,7 +49,7 @@ Before any item's `implementation`:
 
 | Phase | Focus | Status | Outcome |
 | ----- | ----- | ------ | ------- |
-| **A** | Tier 1 — types/docs only | **queued** | — |
+| **A** | Tier 1 — types/docs only | **partial** | A1–A5, A7–A8, A10 committed; A6/A9 deferred |
 | **B** | Tier 2 — moderate / Phase S | **queued** | — |
 | **C** | Tier 3 — hard / structural | **queued** | — |
 | **D** | Tier 4 — document intractable | **queued** | — |
@@ -60,9 +60,9 @@ Before any item's `implementation`:
 
 **Label:** `baseline-2026-07-03`
 
-**Next item:** **A0** — Phase A grilling session.
+**Next item:** **A6/A9** (deferred — team consensus) or **B0** Phase B grilling.
 
-**Current gates:** All items `implementation_gate` / `review_gate` / `commit_gate` **open**.
+**Current gates:** A0, A1–A5, A7–A8, A10 committed. A6, A9 deferred. A0 `commit_gate` closes with bundled queue doc in Phase A commit.
 
 ---
 
@@ -70,17 +70,17 @@ Before any item's `implementation`:
 
 | Item | Package / scope | `commit_subject` | `implementation_gate` | `review_gate` | `commit_gate` | `next_work_type` | `validation_tier` | Notes |
 | ---- | --------------- | ---------------- | ----------------------- | ------------- | ------------- | ---------------- | ------------------- | ----- |
-| **A0** | Phase A scope | — | open | open | open | `gap-analysis` | `none` | [Grilling](#phase-a--tier-1-typesdocs-only) — resolve before A1+ |
-| **A1** | firestore | — | open | open | open | — | `unit-focused` | `onSnapshotsInSync` observer callback types |
-| **A2** | firestore-pipelines | — | open | open | open | — | `unit-focused` | `StageOptions`, `ExpressionType`, `timestampDiff` declaration alignment |
-| **A3** | firestore-pipelines | — | open | open | open | — | `unit-focused` | `TimeGranularity` casing / union |
-| **A4** | firestore-pipelines | — | open | open | open | — | `unit-focused` | `isType` param `string \| Type` |
-| **A5** | storage | — | open | open | open | — | `unit-focused` | `uploadBytes`/`UploadResult`, `Task`/`UploadTask` alias names |
-| **A6** | storage | — | open | open | open | — | `unit-focused` | `TaskEvent` / `TaskState` literal vs const-object |
-| **A7** | app-check | — | open | open | open | — | `unit-focused` | Re-export `AppCheckTokenListener` |
-| **A8** | functions | — | open | open | open | — | `unit-focused` | `FunctionsError` / `FunctionsErrorCodeCore` aliases |
-| **A9** | remote-config | — | open | open | open | — | `unit-focused` | `ValueSource` type alias vs const object |
-| **A10** | cross-cutting | — | open | open | open | — | `unit-focused` | `NativeFirebaseError` assignable to `FirebaseError` in public callbacks |
+| **A0** | Phase A scope | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `none` | Grilling closed 2026-07-03 — see [Phase A Notes](#phase-a-notes) |
+| **A1** | firestore | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green; `onSnapshotsInSync` row removed |
+| **A2** | firestore-pipelines | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — A2 rows removed (batched A2–A4) |
+| **A3** | firestore-pipelines | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — `TimeGranularity` row removed |
+| **A4** | firestore-pipelines | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — `isType` row removed |
+| **A5** | storage | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — upload return type rows removed |
+| **A6** | storage | — | open | open | open | — | `unit-focused` | `TaskEvent` / `TaskState` — **deferred**; lean option 1 (keep const + export type, document drift); team consensus |
+| **A7** | app-check | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — `AppCheckTokenListener` removed |
+| **A8** | functions | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — registry + config; `FunctionsError` documented |
+| **A9** | remote-config | — | open | open | open | — | `unit-focused` | `ValueSource` — **deferred**; lean option 1; team consensus |
+| **A10** | cross-cutting | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — app structural + callbacks |
 | **B0** | Phase B scope | — | open | open | open | `gap-analysis` | `none` | [Grilling](#phase-b--tier-2-moderate--phase-s-sync) |
 | **B1** | firestore-pipelines | — | open | open | open | — | `unit-focused` | `constant(..., { preferIntegers })` |
 | **B2** | firestore-pipelines | — | open | open | open | — | `area-focused` | Missing: `documentMatches`, `geoDistance`, `score`, `parent`, `DefineStageOptions`, `SearchStageOptions` |
@@ -149,7 +149,36 @@ Before any item's `implementation`:
 
 ### Phase A Notes
 
-_(Populated by A0 grilling.)_
+**Gap-analysis (2026-07-03):** All A1–A9 are types-only; no native bridge edits. A8 needs compare-types registry + baseline config first (`functions` not registered). A6/A9 moderate: const objects used in tests (`TaskEvent.STATE_CHANGED`, `ValueSource.REMOTE`) — dual const+SDK-type pattern likely. A10 touches `remote-config` + `storage` callbacks; app-level `NativeFirebaseError` structural assignability recommended before consumer updates.
+
+**Proposed batching (per package, not per item):**
+
+| Batch | Items |
+| ----- | ----- |
+| firestore | A1 |
+| firestore-pipelines | A2, A3, A4 |
+| storage | A5 (+ storage slice of A10); A6 deferred |
+| app-check | A7 |
+| functions | A8 (+ registry infra) |
+| app | A10 structural |
+| remote-config | A10 slice; A9 deferred |
+
+**Proposed ordering:** A8 infra → A10 app structural → parallel A1, A2–A4, A5–A6, A7, A8 aliases, A9 → A10 consumers.
+
+**Validation:** `yarn compare:types` + `yarn tsc:compile` + `yarn tsc:compile:consumer` + affected `yarn tests:jest` — no e2e for Phase A.
+
+**Done signal:** Remove config row when shapes match; do not narrow reasons for cosmetic equivalence (reason-narrow reserved for Phase D intractability).
+
+**Deferrals:** UploadTask sync `boolean` stays B3. **A6, A9 deferred** — team consensus before pickup (lean option 1 below).
+
+**Grilling decisions:**
+- **A10 (confirmed):** App-level structural assignability for `NativeFirebaseError` → `FirebaseError`, then update callback params in remote-config + storage; remove config rows. Runtime stays `NativeFirebaseError`; SDK drop-in via `FirebaseError`; RN extras via `'namespace' in error` or cast.
+- **A6 (deferred — team consensus):** Lean **option 1** — keep `TaskEvent`/`TaskState` const exports, ensure type aliases publicly exported, document as intentional RN ergonomics (SDK literal-only). Do not strip constants for compare-types parity without team agreement. Likely reclassify to Phase D if consensus confirms.
+- **A9 (deferred — team consensus):** Lean **option 1** — keep `ValueSource` const, add `ValueSource` to modular `export type {}`, document as intentional RN ergonomics. Likely reclassify to Phase D if consensus confirms.
+
+**Scope (gap-analysis defaults — locked unless revised):** Per-package PR batching; hand-edit firestore-pipelines sources; `compare:types` + tsc + jest, no e2e; ordering A8 infra → A10 app → parallel A1, A2–A4, A5, A7, A8 aliases → A10 consumers (skip A6, A9 until consensus).
+
+**firestore-pipelines:** Hand-edit `packages/firestore/lib/pipelines/*.ts`; no SDK codegen.
 
 ---
 

@@ -22,6 +22,7 @@ import {
   type FirebaseStorage,
   type StorageReference,
 } from '.';
+import type { StorageObserver } from './lib/types/storage';
 
 const storage = getStorage();
 console.log(storage.app.name);
@@ -53,3 +54,10 @@ console.log(SDK_VERSION);
 
 const typedStorage: FirebaseStorage = storage;
 console.log(typedStorage.app.name);
+
+const _nullNextObserver: StorageObserver<unknown> = { next: null };
+const _nullErrorObserver: StorageObserver<unknown> = { error: null };
+const _nullCompleteObserver: StorageObserver<unknown> = { complete: null };
+void _nullNextObserver;
+void _nullErrorObserver;
+void _nullCompleteObserver;

@@ -294,14 +294,6 @@ const config: PackageConfig = {
         'Phase S hint: **Promise that could maybe sync-void+gate** (in-memory settings visible before return; see PS-S2-gap).',
     },
     {
-      name: 'onSnapshotsInSync',
-      reason:
-        'The observer `next` callback has no parameter in RN Firebase vs ' +
-        '`(value: void) => void` in the firebase-js-sdk, and the `error` callback ' +
-        'uses `Error` instead of `FirestoreError`. Both differences are cosmetic; ' +
-        'the behaviour is equivalent.',
-    },
-    {
       name: 'runTransaction',
       reason:
         'The firebase-js-sdk accepts an optional `TransactionOptions` parameter ' +

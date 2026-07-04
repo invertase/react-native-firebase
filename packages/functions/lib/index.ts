@@ -440,7 +440,7 @@ const config: ModuleConfig = {
 };
 
 export const SDK_VERSION = version;
-export { HttpsError };
+export { HttpsError, HttpsError as FunctionsError };
 
 /**
  * Returns a {@link Functions} instance for the default or given {@link FirebaseApp}.
@@ -504,6 +504,8 @@ export type {
   HttpsCallableResult,
   Functions,
   FunctionsErrorCode,
+  FunctionsErrorCodeCore,
+  HttpsErrorCodeValue,
 } from './types/functions';
 
 setReactNativeModule(nativeModuleName, fallBackModule);

@@ -14,7 +14,16 @@
  *  limitations under the License.
  */
 
-import { getApp, getApps, getUtils, initializeApp, SDK_VERSION, FilePath } from '.';
+import {
+  getApp,
+  getApps,
+  getUtils,
+  initializeApp,
+  SDK_VERSION,
+  FilePath,
+} from '.';
+import type { ReactNativeFirebase } from '.';
+import type { FirebaseError } from '@firebase/app';
 
 // modular app accessors
 console.log(getUtils().app.name);
@@ -41,3 +50,7 @@ modularUtils.resolutionForPlayServices();
 // checks root exists
 console.log(SDK_VERSION);
 console.log(getApps().length);
+
+// NativeFirebaseError is structurally assignable to FirebaseError for SDK callback parity
+export type NativeFirebaseErrorAssignableToFirebaseError =
+  ReactNativeFirebase.NativeFirebaseError extends FirebaseError ? true : false;

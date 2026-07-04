@@ -47,6 +47,7 @@ import type {
   LogLevel,
   Unsubscribe,
   LoadBundleTaskProgress,
+  FirestoreError,
 } from './types/firestore';
 import type {
   CollectionReferenceInternal,
@@ -225,14 +226,22 @@ let snapshotInSyncListenerId = 0;
 
 export function onSnapshotsInSync(
   firestore: Firestore,
-  observer: { next?: () => void; error?: (error: Error) => void; complete?: () => void },
+  observer: {
+    next?: (value: void) => void;
+    error?: (error: FirestoreError) => void;
+    complete?: () => void;
+  },
 ): Unsubscribe;
 export function onSnapshotsInSync(firestore: Firestore, onSync: () => void): Unsubscribe;
 export function onSnapshotsInSync(
   firestore: Firestore,
   callback:
     | (() => void)
-    | { next?: () => void; error?: (error: Error) => void; complete?: () => void },
+    | {
+        next?: (value: void) => void;
+        error?: (error: FirestoreError) => void;
+        complete?: () => void;
+      },
 ): Unsubscribe {
   const listenerId = snapshotInSyncListenerId++;
   const syncFirestore = firestore as FirestoreInternal;

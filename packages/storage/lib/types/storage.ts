@@ -15,6 +15,7 @@
  *
  */
 import type { FirebaseApp, ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseError } from '@firebase/app';
 import type {
   CompleteFn,
   NextFn,
@@ -22,6 +23,14 @@ import type {
 } from '@react-native-firebase/app/dist/module/types/common';
 export type { CompleteFn, NextFn, Unsubscribe };
 export type NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
+
+/**
+ * Storage failure error type for public observer callbacks.
+ * Runtime values are {@link NativeFirebaseError} instances structurally compatible with `FirebaseError`.
+ * @public
+ */
+export type StorageError = FirebaseError;
+
 /**
  * Storage module instance
  */
@@ -260,7 +269,7 @@ export const TaskState = {
  */
 export interface StorageObserver<T> {
   next?: NextFn<T> | null;
-  error?: ((error: NativeFirebaseError) => void) | null;
+  error?: ((error: StorageError) => void) | null;
   complete?: CompleteFn | null;
 }
 
@@ -281,7 +290,7 @@ export interface UploadTask {
   /**
    * Equivalent to calling `then(null, onRejected)`.
    */
-  catch(onRejected: (error: NativeFirebaseError) => unknown): Promise<unknown>;
+  catch(onRejected: (error: StorageError) => unknown): Promise<unknown>;
 
   /**
    * Listens for events on this task.
@@ -295,7 +304,7 @@ export interface UploadTask {
       | StorageObserver<UploadTaskSnapshot>
       | null
       | ((snapshot: UploadTaskSnapshot) => unknown),
-    error?: ((error: NativeFirebaseError) => unknown) | null,
+    error?: ((error: StorageError) => unknown) | null,
     complete?: CompleteFn | null,
   ): Unsubscribe | Subscribe<UploadTaskSnapshot>;
 
@@ -321,7 +330,7 @@ export interface UploadTask {
    */
   then(
     onFulfilled?: ((snapshot: UploadTaskSnapshot) => unknown) | null,
-    onRejected?: ((error: NativeFirebaseError) => unknown) | null,
+    onRejected?: ((error: StorageError) => unknown) | null,
   ): Promise<unknown>;
 }
 
@@ -380,7 +389,7 @@ export interface UploadResult {
 
 export type Subscribe<T> = (
   nextOrObserver?: StorageObserver<T> | null | NextFn<T>,
-  error?: ((error: NativeFirebaseError) => unknown) | null,
+  error?: ((error: StorageError) => unknown) | null,
   complete?: CompleteFn | null,
 ) => Unsubscribe;
 

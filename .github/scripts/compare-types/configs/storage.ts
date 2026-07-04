@@ -26,13 +26,6 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   missingInRN: [
     {
-      name: 'StorageError',
-      reason:
-        'RN Firebase surfaces Storage failures as `NativeFirebaseError` instances from ' +
-        '`@react-native-firebase/app` rather than exporting the firebase-js-sdk web ' +
-        '`StorageError` subclass.',
-    },
-    {
       name: 'StorageErrorCode',
       reason:
         'RN Firebase does not export the firebase-js-sdk `StorageErrorCode` enum. ' +
@@ -136,18 +129,9 @@ const config: PackageConfig = {
         'firebase-js-sdk declares them as mutable properties.',
     },
     {
-      name: 'StorageObserver',
-      reason:
-        'The `error` callback parameter uses `NativeFirebaseError` instead of ' +
-        '`StorageError`. Both represent Firebase Storage errors but the RN type ' +
-        'extends the native bridge error structure.',
-    },
-    {
       name: 'UploadTask',
       reason:
-        'RN Firebase returns `Promise<boolean>` from `cancel()`, `pause()`, and ' +
-        '`resume()` whereas the firebase-js-sdk returns a synchronous `boolean`. ' +
-        'Error callback types also use `NativeFirebaseError` instead of `StorageError`. ' +
+        'RN Firebase returns `Promise<boolean>` from `cancel()`, `pause()`, and `resume()` whereas the firebase-js-sdk returns a synchronous `boolean`. ' +
         'Phase S hint: **convert after native fix** (sync boolean from native task state; see PS-S2-gap).',
     },
     {
@@ -172,20 +156,6 @@ const config: PackageConfig = {
         'Returns `NodeJS.ReadableStream` in RN Firebase instead of `ReadableStream` ' +
         '(the Web Streams API type). The Node.js stream type is used because the ' +
         'React Native environment does not have the Web Streams API.',
-    },
-    {
-      name: 'uploadBytes',
-      reason:
-        'Returns `Promise<TaskResult>` in RN Firebase instead of `Promise<UploadResult>`. ' +
-        '`TaskResult` is a type alias for `UploadResult`, so the runtime shape is identical; ' +
-        'the different name is for consistency with the native task system.',
-    },
-    {
-      name: 'uploadBytesResumable',
-      reason:
-        'Returns `Task` in RN Firebase instead of `UploadTask`. `Task` is a type alias ' +
-        'for `UploadTask`, so the runtime shape is identical; the different name is for ' +
-        'consistency with the native task system.',
     },
     {
       name: 'uploadString',

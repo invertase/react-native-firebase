@@ -15,8 +15,7 @@
  *
  */
 
-import type { FirebaseApp } from '@firebase/app';
-import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseApp, FirebaseError } from '@firebase/app';
 
 export type LogLevel = 'debug' | 'error' | 'silent';
 
@@ -42,7 +41,7 @@ export interface ConfigUpdate {
 
 export interface ConfigUpdateObserver {
   next: (configUpdate: ConfigUpdate) => void;
-  error: (error: ReactNativeFirebase.NativeFirebaseError) => void;
+  error: (error: FirebaseError) => void;
   complete: () => void;
 }
 

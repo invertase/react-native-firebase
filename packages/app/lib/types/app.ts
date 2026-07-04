@@ -27,6 +27,11 @@ export namespace ReactNativeFirebase {
     readonly code: string;
 
     /**
+     * Optional extra data included with the error, matching FirebaseError from `@firebase/app`.
+     */
+    customData?: Record<string, unknown>;
+
+    /**
      * Firebase error message
      */
     readonly message: string;

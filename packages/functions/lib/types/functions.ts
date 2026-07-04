@@ -80,7 +80,7 @@ export interface HttpsCallable<
 
 // ============ Error Code Types ============
 
-export type FunctionsErrorCode =
+export type FunctionsErrorCodeCore =
   | 'ok'
   | 'cancelled'
   | 'unknown'
@@ -97,7 +97,19 @@ export type FunctionsErrorCode =
   | 'internal'
   | 'unavailable'
   | 'data-loss'
-  | 'unauthenticated'
+  | 'unauthenticated';
+
+/**
+ * Standard Functions error code, including the `functions/` product prefix.
+ * @public
+ */
+export type FunctionsErrorCode = `functions/${FunctionsErrorCodeCore}`;
+
+/**
+ * Error codes returned by {@link HttpsError} at runtime (unprefixed, includes RN-specific codes).
+ */
+export type HttpsErrorCodeValue =
+  | FunctionsErrorCodeCore
   | 'unsupported-type'
   | 'failed-to-parse-wrapped-number';
 
@@ -124,7 +136,7 @@ export interface HttpsErrorCode {
 }
 
 export interface HttpsError extends Error {
-  readonly code: FunctionsErrorCode;
+  readonly code: HttpsErrorCodeValue;
   readonly details?: unknown;
 }
 
