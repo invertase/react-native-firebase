@@ -303,6 +303,14 @@ function applyPipelineStage(
       ) as WebPipelineInstance;
     case 'findNearest':
       return method.call(current, normalizeWebFindNearestOptions(stageArgs)) as WebPipelineInstance;
+    case 'search':
+      return method.call(current, stageArgs) as WebPipelineInstance;
+    case 'define':
+      return (
+        Array.isArray(stageArgs.variables) && stageArgs.variables.length > 0
+          ? method.call(current, ...stageArgs.variables)
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     default:
       return method.call(current, stageArgs) as WebPipelineInstance;
   }

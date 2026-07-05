@@ -988,4 +988,75 @@ describe('Firestore pipelines runtime', function () {
       stages: [],
     });
   });
+
+  it('serializes search, define, and B2 expression helpers', function () {
+    const {
+      field,
+      documentMatches,
+      score,
+      geoDistance,
+      parent,
+      variable,
+    } = require('../lib/pipelines');
+    const { GeoPoint } = require('../lib/FirestoreGeoPoint');
+    const db: any = getFirestore();
+
+    const searchSerialized = db
+      .pipeline()
+      .collection('restaurants')
+      .search({
+        query: documentMatches('waffles'),
+        sort: [score().descending()],
+        addFields: [score().as('searchScore')],
+      })
+      .serialize();
+
+    expect(searchSerialized.stages[0]).toMatchObject({
+      stage: 'search',
+      options: {
+        query: {
+          exprType: 'Function',
+          name: 'documentMatches',
+          args: [{ exprType: 'Constant', value: 'waffles' }],
+        },
+        sort: [{ direction: 'descending' }],
+        addFields: [
+          {
+            alias: 'searchScore',
+            expr: { exprType: 'Function', name: 'score', args: [] },
+          },
+        ],
+      },
+    });
+
+    const defineSerialized = db
+      .pipeline()
+      .collection('products')
+      .define(field('price').as('unitPrice'))
+      .where(field('price').greaterThan(variable('unitPrice')))
+      .serialize();
+
+    expect(defineSerialized.stages[0]).toMatchObject({
+      stage: 'define',
+      options: {
+        variables: [{ path: 'price', alias: 'unitPrice', as: 'unitPrice' }],
+      },
+    });
+
+    const exprPipeline = db
+      .pipeline()
+      .collection('places')
+      .search({
+        query: field('location').geoDistance(new GeoPoint(0, 0)).lessThanOrEqual(1000),
+        sort: geoDistance('location', new GeoPoint(1, 2)).ascending(),
+        addFields: [parent('users/alice').as('parentRef')],
+      })
+      .serialize();
+
+    expect(exprPipeline.stages[0].options.query).toBeDefined();
+    expect(exprPipeline.stages[0].options.sort).toBeDefined();
+    expect(exprPipeline.stages[0].options.addFields).toHaveLength(1);
+    expect(field('x').geoDistance).toBeDefined();
+    expect(field('x').documentMatches).toBeUndefined();
+  });
 });

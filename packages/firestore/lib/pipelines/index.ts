@@ -62,6 +62,8 @@ export type {
   SubcollectionStageOptions,
   UnionStageOptions,
   UnnestStageOptions,
+  DefineStageOptions,
+  SearchStageOptions,
   WhereStageOptions,
 } from './stage_options';
 export type { PipelineExecuteOptions } from './pipeline_options';
@@ -99,6 +101,10 @@ export {
   divide,
   multiply,
   documentId,
+  parent,
+  documentMatches,
+  score,
+  geoDistance,
   sum,
   count,
   average,

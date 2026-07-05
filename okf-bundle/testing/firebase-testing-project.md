@@ -212,57 +212,48 @@ Restart emulator after rebuilding `functions/` — [running e2e § Rules #2](run
 
 # Cloud project: deploy rules and indexes
 
-Firebase CLI must be authenticated for `react-native-firebase-testing`. Scripts use repo `firebase-tools`; global install optional.
+Firebase CLI must be authenticated for `react-native-firebase-testing`. Scripts resolve `firebase-tools` from the repo (see [`firebase-cli.sh`](../../.github/workflows/scripts/firebase-cli.sh)); a global install is optional.
 
-## Multi-database `firebase.json`
+## Firebase tooling version and coordinated surfaces
 
-```json
-"firestore": [
-  { "database": "(default)", "rules": "firestore.rules", "indexes": "firestore.indexes.json" },
-  { "database": "pipelines-e2e", "rules": "firestore.pipelines-e2e.rules", "indexes": "firestore.pipelines-e2e.indexes.json" }
-]
-```
+`firebase-tools` **≥ 15.17.0** is required to deploy Firestore **search** composite indexes (`searchConfig` on index fields; [firebase-tools#10431](https://github.com/firebase/firebase-tools/pull/10431)). After bumping tooling or Firebase JS/native SDKs, update every surface that pins or consumes them:
 
-## Pull indexes from cloud (sync repo → truth)
+| Surface | Location |
+|---------|----------|
+| JS `firebase-tools` | Repo root `package.json`, `tests/package.json`, `.github/workflows/scripts/functions/package.json` — run `yarn` at repo root and `yarn` in `functions/` |
+| JS Firebase SDK (compare-types) | Repo root `firebase` dependency — [`.github/scripts/compare-types/`](../../.github/scripts/compare-types/) does **not** declare `firebase-tools`; it uses root `node_modules/firebase` for SDK types only |
+| Native test apps | `tests/android/build.gradle`, `tests/android/app/build.gradle`, `tests/ios/Podfile`, `tests/macos/Podfile` |
 
-```bash
-cd .github/workflows/scripts
-./sync-firestore-indexes.sh
-```
+Verify CLI: `node_modules/.bin/firebase --version`.
 
-Uses `firebase firestore:indexes --database …`. No CLI pulls security rules; edit `.rules` in repo.
+## Multi-database deploy config
 
-**Sync `(default)` indexes before deploy** if cloud has indexes not in repo; deploy deletes missing indexes.
+Emulator vs cloud split: [`README-firestore.md`](../../.github/workflows/scripts/README-firestore.md). Cloud deploy uses `firebase.deploy.json` (multi-database array); `firebase.json` stays single-database for the emulator.
 
-## Deploy to cloud
+## Index change workflow (sync → edit → deploy → verify)
 
-```bash
-cd .github/workflows/scripts
-./deploy-firestore.sh
-```
+Wrong index JSON or an old CLI can yield **deploy exit 0** without the intended index in cloud. Use this cycle for `(default)` and `pipelines-e2e`:
 
-Deploys **both** databases via `firebase deploy --only firestore`.
+1. `./sync-firestore-indexes.sh` — baseline from cloud
+2. Edit `firestore.indexes.json` and/or `firestore.pipelines-e2e.indexes.json` in-repo
+3. `./deploy-firestore.sh` — deploys both DBs and runs [`verify-firestore-indexes.sh`](../../.github/workflows/scripts/verify-firestore-indexes.sh)
+4. `./sync-firestore-indexes.sh` again
+5. **Verify** the pulled JSON matches baseline plus intended changes (e.g. `search-text` / `menu` `searchConfig` for pipeline search e2e). If deploy succeeded but post-sync pull **does not** include the change → **stop**; do not run pipeline search e2e until triaged (CLI version, JSON schema, index `BUILDING` in console).
 
-**Do not use** `--only firestore:indexes` or `firestore:rules`; with multi-DB array they can exit 0 while deploying nothing ([firebase-tools#10447](https://github.com/firebase/firebase-tools/issues/10447)).
+There is no `firebase firestore:rules` pull; edit `.rules` files in-repo.
 
-### Vector indexes (`findNearest`)
+**`(default)` safety:** sync `(default)` indexes before deploy if cloud has indexes not in repo — deploy removes indexes missing from the repo file.
 
-Vector indexes live in **`firestore.pipelines-e2e.indexes.json`**, not rules:
+**Deploy target:** `firebase deploy --only firestore --config firebase.deploy.json`. Do **not** use `--only firestore:indexes` or `firestore:rules`; with multi-DB config they can exit 0 while deploying nothing ([firebase-tools#10447](https://github.com/firebase/firebase-tools/issues/10447)).
 
-```json
-{
-  "collectionGroup": "find-nearest",
-  "queryScope": "COLLECTION",
-  "fields": [
-    {
-      "fieldPath": "embedding",
-      "vectorConfig": { "dimension": 3, "flat": {} }
-    }
-  ]
-}
-```
+### Index types on `pipelines-e2e`
 
-After deploy, index creation is async; `findNearest` may wait/stay skipped until console shows `READY`.
+| Kind | Repo file | Notes |
+|------|-----------|--------|
+| Vector `findNearest` | `firestore.pipelines-e2e.indexes.json` — `vectorConfig` on `find-nearest` / `embedding` | Async until console shows `READY` |
+| Full-text search | Same file — composite index on `search-text` with `searchConfig` on `menu`, `"density": "SPARSE_ANY"` (not `fieldOverrides` / `searchConfiguration`) | Required for `documentMatches` search e2e; verify script enforces cloud presence |
+
+Post-deploy verification: `./verify-firestore-indexes.sh` (optional env: `FIRESTORE_VERIFY_DATABASE`, `MIN_FIREBASE_TOOLS_VERSION`). Index creation may remain `BUILDING`; search e2e may fail until `READY`.
 
 ### `pipelines-e2e` rules
 
@@ -292,11 +283,11 @@ Pipeline-only debugging may temporarily scope `tests/app.js` to `Pipeline.e2e.js
 | **Why pipelines split from emulator** | Emulator multi-database + shared rules bundle broke Standard e2e security-rules testing; `pipelines-e2e` moved to dedicated cloud rules/indexes files |
 | `second-rnfb` on emulator | Same `firestore.rules` file with `database == "second-rnfb"` guards — not a separate `firebase.json` deploy entry |
 | `helpers.wipe()` | Emulator REST only; does not clear cloud `pipelines-e2e` |
-| Index deploy safety | Pull `(default)` indexes before `deploy-firestore.sh` |
+| Index deploy safety | Sync → edit → deploy → verify cycle; `verify-firestore-indexes.sh`; CLI ≥ 15.17.0 for search indexes |
 | Multi-DB deploy | Use `--only firestore`, not `:indexes` / `:rules` sub-targets |
 | Emulator rules | File edits + restart (or hot-reload for rules); no `firebase deploy` |
 | `cp` / shell aliases | Use `/bin/cp -f` or `sync-firestore-indexes.sh` — interactive `cp` alias can hang on overwrite prompts |
-| Vector search | Index in `firestore.pipelines-e2e.indexes.json`; deploy to cloud; not emulator rules |
+| Vector + text search | Indexes in `firestore.pipelines-e2e.indexes.json`; deploy + verify; not emulator rules |
 | Firestore cache | `clearIndexedDbPersistence` in `tests/app.js` for non-macOS platforms between runs |
 | Native coverage | iOS profraw pulled in `finally` even when Jet fails — see [Coverage design](/testing/coverage-design.md) |
 | Installations / RC | Live FIS + RC on shared project; not emulated — parallel matrix can 503 / “Too many server requests” |

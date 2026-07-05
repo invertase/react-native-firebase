@@ -2,6 +2,7 @@ package io.invertase.firebase.firestore;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.pipeline.AggregateFunction;
 import com.google.firebase.firestore.pipeline.AliasedAggregate;
 import com.google.firebase.firestore.pipeline.BooleanExpression;
@@ -27,6 +28,11 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
   }
 
   private NestedPipelineBuilder nestedPipelineBuilder;
+  private final FirebaseFirestore firestore;
+
+  ReactNativeFirebaseFirestorePipelineNodeBuilder(FirebaseFirestore firestore) {
+    this.firestore = firestore;
+  }
 
   void setNestedPipelineBuilder(NestedPipelineBuilder nestedPipelineBuilder) {
     this.nestedPipelineBuilder = nestedPipelineBuilder;
@@ -335,6 +341,26 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       this.box = box;
       this.functionName = functionName;
       this.childBoxes = childBoxes;
+    }
+  }
+
+  private static final class ExitObjectDocumentMatchesExpressionFrame implements ObjectLoweringFrame {
+    final LoweredExpressionBox box;
+    final LoweredExpressionBox queryBox;
+
+    ExitObjectDocumentMatchesExpressionFrame(LoweredExpressionBox box, LoweredExpressionBox queryBox) {
+      this.box = box;
+      this.queryBox = queryBox;
+    }
+  }
+
+  private static final class ExitObjectParentExpressionFrame implements ObjectLoweringFrame {
+    final LoweredExpressionBox box;
+    final LoweredExpressionBox pathBox;
+
+    ExitObjectParentExpressionFrame(LoweredExpressionBox box, LoweredExpressionBox pathBox) {
+      this.box = box;
+      this.pathBox = pathBox;
     }
   }
 
@@ -803,6 +829,17 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
   Selectable coerceSelectable(
       ReactNativeFirebaseFirestorePipelineParser.ParsedSelectableNode value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    if (value.alias == null || value.alias.isEmpty()) {
+      if (value.expression
+          instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) {
+        String name =
+            ((ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode)
+                    value.expression)
+                .name;
+        return Expression.variable(name).alias(name);
+      }
+    }
+
     Expression expr = coerceExpression(value.expression, fieldName + ".expr");
     if (value.alias != null && !value.alias.isEmpty()) {
       return expr.alias(value.alias);
@@ -815,6 +852,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             + fieldName
             + " to include an alias for computed expressions.");
   }
+
 
   Ordering coerceOrdering(
       ReactNativeFirebaseFirestorePipelineParser.ParsedOrderingNode value, String fieldName)
@@ -1155,6 +1193,20 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             && tryEnterComparisonOperandConstant(enterFrame, stack)) {
           continue;
         }
+        if (enterFrame.value instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> map = (Map<String, Object>) enterFrame.value;
+          Object constantValue = unwrapConstantValue(map, enterFrame.fieldName);
+          Object resolvedValue = constantValue != null ? constantValue : map;
+          if (resolvedValue instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> resolvedMap = (Map<String, Object>) resolvedValue;
+            if (isSerializedReferencePathConstantMap(resolvedMap)) {
+              enterFrame.box.value = Expression.constant((String) resolvedMap.get("path"));
+              continue;
+            }
+          }
+        }
         if (containsLowerableExpression(enterFrame.value)) {
           stack.push(
               new EnterObjectExpressionFrame(
@@ -1356,6 +1408,22 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         exitFrame.box.value =
             Expression.rawFunction(
                 normalizeExpressionFunctionName(exitFrame.functionName), expressions);
+        continue;
+      }
+
+
+      if (frame instanceof ExitObjectDocumentMatchesExpressionFrame) {
+        ExitObjectDocumentMatchesExpressionFrame exitFrame =
+            (ExitObjectDocumentMatchesExpressionFrame) frame;
+        exitFrame.box.value =
+            BooleanExpression.rawFunction(
+                "documentMatches", new Expression[] {exitFrame.queryBox.value});
+        continue;
+      }
+
+      if (frame instanceof ExitObjectParentExpressionFrame) {
+        ExitObjectParentExpressionFrame exitFrame = (ExitObjectParentExpressionFrame) frame;
+        exitFrame.box.value = Expression.parent(exitFrame.pathBox.value);
         continue;
       }
 
@@ -2033,6 +2101,44 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         requireArgumentCount(args, 0, functionName, fieldName);
         box.value = Expression.currentTimestamp();
         return;
+      case "score":
+        requireArgumentCount(args, 0, functionName, fieldName);
+        box.value = Expression.score();
+        return;
+      case "currentdocument":
+        requireArgumentCount(args, 0, functionName, fieldName);
+        box.value = Expression.currentDocument();
+        return;
+      case "parent":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        if (!containsLowerableExpression(args.get(0))) {
+          String documentPath = coerceDocumentPathValue(args.get(0), fieldName + ".args[0]");
+          DocumentReference reference = firestore.document(documentPath);
+          box.value = Expression.parent(reference);
+          return;
+        }
+        {
+          LoweredExpressionBox pathBox = new LoweredExpressionBox();
+          stack.push(
+              new ExitObjectParentExpressionFrame(box, pathBox));
+          stack.push(
+              new EnterObjectExpressionValueFrame(args.get(0), fieldName + ".args[0]", pathBox));
+          return;
+        }
+      case "documentmatches":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        if (!containsLowerableExpression(args.get(0))) {
+          String query = coerceStringValue(args.get(0), fieldName + ".args[0]");
+          box.value = Expression.documentMatches(query);
+          return;
+        }
+        {
+          LoweredExpressionBox queryBox = new LoweredExpressionBox();
+          stack.push(new ExitObjectDocumentMatchesExpressionFrame(box, queryBox));
+          stack.push(
+              new EnterObjectExpressionValueFrame(args.get(0), fieldName + ".args[0]", queryBox));
+          return;
+        }
       case "istype":
         {
           requireArgumentCount(args, 2, functionName, fieldName);
@@ -2340,6 +2446,30 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     }
     throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
         "pipelineExecute() expected " + fieldName + " to resolve to a string.");
+  }
+
+  private String coerceDocumentPathValue(Object value, String fieldName)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    Object resolved = value;
+    if (value instanceof Map) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> map = (Map<String, Object>) value;
+      Object constantValue = unwrapConstantValue(map, fieldName);
+      if (constantValue != null) {
+        resolved = constantValue;
+      }
+    }
+    if (resolved instanceof DocumentReference) {
+      return ((DocumentReference) resolved).getPath();
+    }
+    if (resolved instanceof Map) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> map = (Map<String, Object>) resolved;
+      if (isSerializedReferencePathConstantMap(map)) {
+        return (String) map.get("path");
+      }
+    }
+    return coerceStringValue(resolved, fieldName);
   }
 
   private Object resolveConstantValue(Object value, String fieldName)

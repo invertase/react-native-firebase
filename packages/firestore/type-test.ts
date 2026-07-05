@@ -225,6 +225,10 @@ import {
   cosineDistance,
   dotProduct,
   euclideanDistance,
+  documentMatches,
+  score,
+  geoDistance,
+  parent,
   vectorLength,
   pipelineResultEqual,
 } from '@react-native-firebase/firestore/pipelines';
@@ -255,6 +259,8 @@ import type {
   DistinctStageOptions,
   DocumentsStageOptions,
   FindNearestStageOptions,
+  SearchStageOptions,
+  DefineStageOptions,
   LimitStageOptions,
   OffsetStageOptions,
   RemoveFieldsStageOptions,
@@ -801,6 +807,29 @@ const pipelineFindNearest = pipelineDb
   });
 void pipelineFindNearest;
 
+const pipelineSearch = pipelineDb
+  .pipeline()
+  .collection('restaurants')
+  .search({
+    query: documentMatches('waffles OR pancakes'),
+    sort: descending(score()),
+    addFields: [(score() as FunctionExpression).as('searchScore')],
+  });
+void pipelineSearch;
+
+const pipelineDefine = pipelineDb
+  .pipeline()
+  .collection('products')
+  .define(field('price').as('unitPrice'))
+  .where(lessThan(field('price'), constant(100)));
+void pipelineDefine;
+
+void documentMatches('breakfast');
+void score();
+void geoDistance('location', new GeoPoint(37.0, -122.0));
+void field('location').geoDistance(new GeoPoint(37.0, -122.0));
+void parent('users/alice');
+
 const pipelineSampleAndUnnest = pipelineDb
   .pipeline()
   .collection('users')
@@ -860,6 +889,8 @@ type _AllPipelineTypes = [
   DistinctStageOptions,
   DocumentsStageOptions,
   FindNearestStageOptions,
+  SearchStageOptions,
+  DefineStageOptions,
   LimitStageOptions,
   OffsetStageOptions,
   RemoveFieldsStageOptions,
@@ -1741,6 +1772,14 @@ const findNearestStageOpts: FindNearestStageOptions = {
   distanceField: 'dist',
   limit: 5,
 };
+const searchStageOpts: SearchStageOptions = {
+  query: documentMatches('breakfast'),
+  sort: [descending(score())],
+  addFields: [(score() as FunctionExpression).as('searchScore')],
+};
+const defineStageOpts: DefineStageOptions = {
+  variables: [field('price').as('unitPrice')],
+};
 const unionStageOpts: UnionStageOptions = {
   other: xDb.pipeline().collection('backup'),
 };
@@ -1768,6 +1807,8 @@ void collectionGroupStageOpts;
 void databaseStageOpts;
 void documentsStageOpts;
 void findNearestStageOpts;
+void searchStageOpts;
+void defineStageOpts;
 void unionStageOpts;
 void unnestStageOpts;
 void executeOpts;

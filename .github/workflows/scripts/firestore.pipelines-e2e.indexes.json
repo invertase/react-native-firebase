@@ -11,7 +11,28 @@
             "flat": {}
           }
         }
-      ]
+      ],
+      "density": "DENSE"
+    },
+    {
+      "collectionGroup": "search-text",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "menu",
+          "searchConfig": {
+            "textSpec": {
+              "indexSpecs": [
+                {
+                  "indexType": "TOKENIZED",
+                  "matchType": "MATCH_GLOBALLY"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "density": "SPARSE_ANY"
     }
   ],
   "fieldOverrides": []

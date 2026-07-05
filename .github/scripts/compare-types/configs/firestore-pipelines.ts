@@ -21,36 +21,7 @@ import type { PackageConfig } from '../src/types';
 
 const config: PackageConfig = {
   nameMapping: {},
-  missingInRN: [
-    {
-      name: 'documentMatches',
-      reason:
-        'Newer firebase-js-sdk document expression helper not yet exposed by RN Firebase pipelines.',
-    },
-    {
-      name: 'geoDistance',
-      reason:
-        'Newer firebase-js-sdk geospatial expression helper not yet exposed by RN Firebase pipelines.',
-    },
-    {
-      name: 'score',
-      reason:
-        'Newer firebase-js-sdk search score expression helper not yet exposed by RN Firebase pipelines.',
-    },
-    {
-      name: 'DefineStageOptions',
-      reason: 'Newer firebase-js-sdk stage options type not yet exposed by RN Firebase pipelines.',
-    },
-    {
-      name: 'parent',
-      reason: 'Newer firebase-js-sdk parent stage helper not yet exposed by RN Firebase pipelines.',
-    },
-    {
-      name: 'SearchStageOptions',
-      reason:
-        'Newer firebase-js-sdk search stage options type not yet exposed by RN Firebase pipelines.',
-    },
-  ],
+  missingInRN: [],
   extraInRN: [
     {
       name: 'Type',

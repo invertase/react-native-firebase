@@ -82,6 +82,8 @@ enum RNFBFirestoreParsedPipelineStage {
   case aggregateStage(RNFBFirestoreParsedAggregateStage)
   case distinctStage(RNFBFirestoreParsedDistinctStage)
   case findNearestStage(RNFBFirestoreParsedFindNearestStage)
+  case searchStage(RNFBFirestoreParsedSearchStage)
+  case defineStage(RNFBFirestoreParsedDefineStage)
   case replaceWithStage(RNFBFirestoreParsedReplaceWithStage)
   case sampleStage(RNFBFirestoreParsedSampleStage)
   case unionStage(RNFBFirestoreParsedUnionStage)
@@ -100,6 +102,8 @@ enum RNFBFirestoreParsedPipelineStage {
     case .aggregateStage: return "aggregate"
     case .distinctStage: return "distinct"
     case .findNearestStage: return "findNearest"
+    case .searchStage: return "search"
+    case .defineStage: return "define"
     case .replaceWithStage: return "replaceWith"
     case .sampleStage: return "sample"
     case .unionStage: return "union"
@@ -163,6 +167,20 @@ struct RNFBFirestoreParsedFindNearestStage {
   let distanceField: RNFBFirestoreParsedExpressionNode?
 }
 
+struct RNFBFirestoreParsedSearchStage {
+  let query: RNFBFirestoreParsedExpressionNode
+  let languageCode: String?
+  let retrievalDepth: NSNumber?
+  let sort: [RNFBFirestoreParsedOrderingNode]
+  let offset: NSNumber?
+  let limit: NSNumber?
+  let addFields: [RNFBFirestoreParsedSelectableNode]
+}
+
+struct RNFBFirestoreParsedDefineStage {
+  let variables: [RNFBFirestoreParsedSelectableNode]
+}
+
 struct RNFBFirestoreParsedReplaceWithStage {
   let value: RNFBFirestoreParsedExpressionNode
 }
@@ -194,7 +212,7 @@ enum RNFBFirestorePipelineParser {
 
   private static let knownStages: Set<String> = [
     "where", "select", "addFields", "removeFields", "sort", "limit", "offset",
-    "aggregate", "distinct", "findNearest", "replaceWith", "sample", "union", "unnest", "rawStage",
+    "aggregate", "distinct", "findNearest", "search", "define", "replaceWith", "sample", "union", "unnest", "rawStage",
   ]
 
   private final class ParsedPipelineRequestBox {
@@ -571,6 +589,10 @@ enum RNFBFirestorePipelineParser {
       ))
     case "findNearest":
       return .findNearestStage(try parseFindNearestStage(options, fieldName: "\(fieldName).options"))
+    case "search":
+      return .searchStage(try parseSearchStage(options, fieldName: "\(fieldName).options"))
+    case "define":
+      return .defineStage(try parseDefineStage(options, fieldName: "\(fieldName).options"))
     case "replaceWith":
       return .replaceWithStage(RNFBFirestoreParsedReplaceWithStage(
         value: try parseExpressionNode(
@@ -765,6 +787,22 @@ enum RNFBFirestorePipelineParser {
     return number
   }
 
+  private static func optionalString(
+    _ map: [String: Any],
+    key: String,
+    fieldName: String
+  ) throws -> String? {
+    guard let value = map[key] else {
+      return nil
+    }
+
+    guard let stringValue = value as? String else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be a string.")
+    }
+
+    return stringValue
+  }
+
   private static func requireStringArray(
     _ map: [String: Any],
     key: String,
@@ -828,6 +866,55 @@ enum RNFBFirestorePipelineParser {
       distanceMeasure: distanceMeasure,
       limit: try optionalNumber(options, key: "limit", fieldName: "\(fieldName).limit"),
       distanceField: try optionalExpressionNode(options, key: "distanceField", fieldName: "\(fieldName).distanceField")
+    )
+  }
+
+  private static func parseSearchStage(
+    _ options: [String: Any],
+    fieldName: String
+  ) throws -> RNFBFirestoreParsedSearchStage {
+    let sort: [RNFBFirestoreParsedOrderingNode]
+    if options["sort"] != nil {
+      let sortValues = try requireArray(options, key: "sort", fieldName: "\(fieldName).sort")
+      sort = try parseOrderingNodes(sortValues, fieldName: "\(fieldName).sort")
+    } else {
+      sort = []
+    }
+
+    let addFields: [RNFBFirestoreParsedSelectableNode]
+    if options["addFields"] != nil {
+      addFields = try parseSelectableNodes(
+        requireArray(options, key: "addFields", fieldName: "\(fieldName).addFields"),
+        fieldName: "\(fieldName).addFields",
+        requireNonEmpty: false
+      )
+    } else {
+      addFields = []
+    }
+
+    return RNFBFirestoreParsedSearchStage(
+      query: try parseExpressionNode(
+        requireValue(options, key: "query", fieldName: "\(fieldName).query"),
+        fieldName: "\(fieldName).query"
+      ),
+      languageCode: try optionalString(options, key: "languageCode", fieldName: "\(fieldName).languageCode"),
+      retrievalDepth: try optionalNumber(options, key: "retrievalDepth", fieldName: "\(fieldName).retrievalDepth"),
+      sort: sort,
+      offset: try optionalNumber(options, key: "offset", fieldName: "\(fieldName).offset"),
+      limit: try optionalNumber(options, key: "limit", fieldName: "\(fieldName).limit"),
+      addFields: addFields
+    )
+  }
+
+  private static func parseDefineStage(
+    _ options: [String: Any],
+    fieldName: String
+  ) throws -> RNFBFirestoreParsedDefineStage {
+    RNFBFirestoreParsedDefineStage(
+      variables: try parseSelectableNodes(
+        requireArray(options, key: "variables", fieldName: "\(fieldName).variables"),
+        fieldName: "\(fieldName).variables"
+      )
     )
   }
 
@@ -933,14 +1020,19 @@ enum RNFBFirestorePipelineParser {
     }
 
     let direction = (map["direction"] as? String) ?? "asc"
-    let expressionValue = firstNonNil(
-      map["expression"],
-      map["expr"],
-      map["field"],
-      map["fieldPath"],
-      map["path"],
-      value
-    ) as Any
+    let expressionValue: Any
+    if (map["__kind"] as? String) == "ordering", let expr = map["expr"] {
+      expressionValue = expr
+    } else {
+      expressionValue = firstNonNil(
+        map["expression"],
+        map["expr"],
+        map["field"],
+        map["fieldPath"],
+        map["path"],
+        value
+      ) as Any
+    }
 
     return RNFBFirestoreParsedOrderingNode(
       expression: try parseExpressionNode(expressionValue, fieldName: fieldName),
@@ -1095,12 +1187,32 @@ enum RNFBFirestorePipelineParser {
   }
 
   private static func isExpressionLike(_ map: [String: Any]) -> Bool {
+    if isSerializedReferencePathConstantMap(map) {
+      return false
+    }
     if let exprType = map["exprType"] as? String, exprType.lowercased() == "pipelinevalue" {
       return false
     }
     return map["exprType"] != nil || map["operator"] != nil || map["name"] != nil || map["expr"] != nil ||
       map["expression"] != nil || map["fieldPath"] != nil || map["path"] != nil ||
       map["segments"] != nil || map["_segments"] != nil
+  }
+
+  private static func isSerializedReferencePathConstantMap(_ map: [String: Any]) -> Bool {
+    guard let path = map["path"] as? String, path.contains("/") else {
+      return false
+    }
+
+    for key in map.keys {
+      switch key {
+      case "path", "firestore", "alias", "as", "__kind":
+        continue
+      default:
+        return false
+      }
+    }
+
+    return true
   }
 
   private static func coerceFieldPath(
@@ -1237,6 +1349,12 @@ enum RNFBFirestorePipelineParser {
             for index in rawArgs.indices.reversed() {
               stack.append(.valueEnter(rawArgs[index], argBoxes[index], "\(fieldName).args[\(index)]"))
             }
+            continue
+          }
+
+          if isSerializedReferencePathConstantMap(map) {
+            let path = try coerceFieldPath(value, fieldName: fieldName)
+            box.value = .constant(.primitive(path))
             continue
           }
 

@@ -26,6 +26,7 @@ import type {
   BooleanExpression,
   Expression,
   AliasedAggregate,
+  AliasedExpression,
 } from './expressions';
 
 /**
@@ -49,6 +50,28 @@ export interface PipelineAggregateOptions {
  */
 export interface PipelineDistinctOptions {
   groups?: (Field | string)[];
+}
+
+/**
+ * @beta
+ * Options for pipeline define() stage.
+ */
+export interface PipelineDefineOptions {
+  variables?: AliasedExpression[];
+}
+
+/**
+ * @beta
+ * Options for pipeline search() stage (full-text and geo search).
+ */
+export interface PipelineSearchOptions {
+  query: BooleanExpression | string;
+  languageCode?: string;
+  retrievalDepth?: number;
+  sort?: Ordering | Ordering[];
+  offset?: number;
+  limit?: number;
+  addFields?: Selectable[];
 }
 
 /**
@@ -373,6 +396,60 @@ export type UnnestStageOptions = StageOptions & {
    * If set, specifies the field on the output documents that will contain the offset (starting at zero) that the element is from the original array.
    */
   indexField?: string;
+};
+
+/**
+ * @beta
+ * Options defining how a Define stage is evaluated. See {@link Pipeline.define}.
+ */
+export type DefineStageOptions = StageOptions & {
+  /**
+   * @beta
+   * The variables to define.
+   */
+  variables: AliasedExpression[];
+};
+
+/**
+ * @beta
+ * Options defining how a Search stage is evaluated. See {@link Pipeline.search}.
+ */
+export type SearchStageOptions = StageOptions & {
+  /**
+   * @beta
+   * Specifies the search query that will be used to query and score documents by the search stage.
+   */
+  query: BooleanExpression | string;
+  /**
+   * @beta
+   * The BCP-47 language code of text in the search query, such as "en" or "sr".
+   */
+  languageCode?: string;
+  /**
+   * @beta
+   * The maximum number of documents to retrieve from the search index before scoring and sorting.
+   */
+  retrievalDepth?: number;
+  /**
+   * @beta
+   * Orderings specify how the returned documents are sorted. One or more orderings are required.
+   */
+  sort?: Ordering | Ordering[];
+  /**
+   * @beta
+   * The number of documents to skip from the beginning of the search result set.
+   */
+  offset?: number;
+  /**
+   * @beta
+   * The maximum number of documents to return from the search stage after scoring and sorting.
+   */
+  limit?: number;
+  /**
+   * @beta
+   * The fields to add to each document, specified as a Selectable.
+   */
+  addFields?: Selectable[];
 };
 
 /**

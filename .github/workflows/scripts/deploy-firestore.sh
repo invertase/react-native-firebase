@@ -22,3 +22,7 @@ echo ""
 # Use full firestore target (not firestore:rules / firestore:indexes) — sub-targets can
 # silently no-op with multi-database config.
 "${FIREBASE_CMD[@]}" deploy --only firestore --config firebase.deploy.json
+
+echo ""
+echo "Running post-deploy index verification..."
+"$SCRIPT_DIR/verify-firestore-indexes.sh"

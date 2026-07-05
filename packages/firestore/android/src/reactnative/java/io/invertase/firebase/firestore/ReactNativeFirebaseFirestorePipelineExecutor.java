@@ -38,11 +38,13 @@ import com.google.firebase.firestore.PipelineResult;
 import com.google.firebase.firestore.PipelineSource;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.pipeline.AggregateStage;
+import com.google.firebase.firestore.pipeline.AliasedExpression;
 import com.google.firebase.firestore.pipeline.AliasedAggregate;
 import com.google.firebase.firestore.pipeline.BooleanExpression;
 import com.google.firebase.firestore.pipeline.CollectionGroupOptions;
 import com.google.firebase.firestore.pipeline.CollectionHints;
 import com.google.firebase.firestore.pipeline.CollectionSourceOptions;
+import com.google.firebase.firestore.pipeline.DefineStage;
 import com.google.firebase.firestore.pipeline.Expression;
 import com.google.firebase.firestore.pipeline.Field;
 import com.google.firebase.firestore.pipeline.FindNearestOptions;
@@ -51,6 +53,7 @@ import com.google.firebase.firestore.pipeline.Ordering;
 import com.google.firebase.firestore.pipeline.RawOptions;
 import com.google.firebase.firestore.pipeline.RawStage;
 import com.google.firebase.firestore.pipeline.SampleStage;
+import com.google.firebase.firestore.pipeline.SearchStage;
 import com.google.firebase.firestore.pipeline.Selectable;
 import com.google.firebase.firestore.pipeline.UnnestOptions;
 import java.util.ArrayDeque;
@@ -113,7 +116,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
 
   ReactNativeFirebaseFirestorePipelineExecutor(FirebaseFirestore firestore) {
     this.firestore = firestore;
-    this.nodeBuilder = new ReactNativeFirebaseFirestorePipelineNodeBuilder();
+    this.nodeBuilder = new ReactNativeFirebaseFirestorePipelineNodeBuilder(firestore);
     this.nodeBuilder.setNestedPipelineBuilder(this::buildNativePipeline);
   }
 
@@ -408,6 +411,14 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       return applyFindNearestStage(
           pipeline, (ReactNativeFirebaseFirestorePipelineParser.ParsedFindNearestStage) stage);
     }
+    if (stage instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedSearchStage) {
+      return applySearchStage(
+          pipeline, (ReactNativeFirebaseFirestorePipelineParser.ParsedSearchStage) stage);
+    }
+    if (stage instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedDefineStage) {
+      return applyDefineStage(
+          pipeline, (ReactNativeFirebaseFirestorePipelineParser.ParsedDefineStage) stage);
+    }
     if (stage instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedReplaceWithStage) {
       return applyReplaceWithStage(
           pipeline, (ReactNativeFirebaseFirestorePipelineParser.ParsedReplaceWithStage) stage);
@@ -603,6 +614,79 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     }
 
     return pipeline.findNearest(fieldPath, Expression.vector(vector), distanceMeasure, options);
+  }
+
+  private Pipeline applySearchStage(
+      Pipeline pipeline, ReactNativeFirebaseFirestorePipelineParser.ParsedSearchStage stage)
+      throws PipelineValidationException {
+    BooleanExpression query =
+        nodeBuilder.coerceBooleanExpression(stage.query, "stage.options.query");
+    SearchStage searchStage = SearchStage.Companion.withQuery(query);
+
+    if (stage.languageCode != null && !stage.languageCode.isEmpty()) {
+      searchStage = searchStage.withLanguageCode(stage.languageCode);
+    }
+    if (stage.retrievalDepth != null) {
+      searchStage =
+          searchStage.withRetrievalDepth(coerceLong(stage.retrievalDepth, "stage.options.retrievalDepth"));
+    }
+    if (stage.sort != null && !stage.sort.isEmpty()) {
+      Ordering[] orderings = new Ordering[stage.sort.size()];
+      for (int i = 0; i < stage.sort.size(); i++) {
+        orderings[i] =
+            nodeBuilder.coerceOrdering(stage.sort.get(i), "stage.options.sort[" + i + "]");
+      }
+      searchStage = searchStage.withSort(orderings[0], Arrays.copyOfRange(orderings, 1, orderings.length));
+    }
+    if (stage.offset != null) {
+      searchStage = searchStage.withOffset(coerceLong(stage.offset, "stage.options.offset"));
+    }
+    if (stage.limit != null) {
+      searchStage = searchStage.withLimit(coerceLong(stage.limit, "stage.options.limit"));
+    }
+    if (stage.addFields != null && !stage.addFields.isEmpty()) {
+      Selectable[] selectables = new Selectable[stage.addFields.size()];
+      for (int i = 0; i < stage.addFields.size(); i++) {
+        selectables[i] =
+            nodeBuilder.coerceSelectable(stage.addFields.get(i), "stage.options.addFields[" + i + "]");
+      }
+      searchStage =
+          searchStage.withAddFields(selectables[0], Arrays.copyOfRange(selectables, 1, selectables.length));
+    }
+
+    return pipeline.search(searchStage);
+  }
+
+  private Pipeline applyDefineStage(
+      Pipeline pipeline, ReactNativeFirebaseFirestorePipelineParser.ParsedDefineStage stage)
+      throws PipelineValidationException {
+    List<ReactNativeFirebaseFirestorePipelineParser.ParsedSelectableNode> variables = stage.variables;
+    if (variables.isEmpty()) {
+      throw new PipelineValidationException(
+          "pipelineExecute() expected stage.options.variables to contain at least one value.");
+    }
+
+    AliasedExpression[] aliasedExpressions = new AliasedExpression[variables.size()];
+    for (int i = 0; i < variables.size(); i++) {
+      ReactNativeFirebaseFirestorePipelineParser.ParsedSelectableNode variable =
+          variables.get(i);
+      String alias = variable.alias;
+      if (alias == null || alias.isEmpty()) {
+        throw new PipelineValidationException(
+            "pipelineExecute() expected stage.options.variables["
+                + i
+                + "] to include an alias.");
+      }
+      Expression expression =
+          nodeBuilder.coerceExpression(
+              variable.expression, "stage.options.variables[" + i + "].expr");
+      aliasedExpressions[i] = new AliasedExpression(alias, expression);
+    }
+
+    AliasedExpression first = aliasedExpressions[0];
+    AliasedExpression[] rest =
+        Arrays.copyOfRange(aliasedExpressions, 1, aliasedExpressions.length);
+    return pipeline.define(first, rest);
   }
 
   private Pipeline applyReplaceWithStage(

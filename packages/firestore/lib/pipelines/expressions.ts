@@ -17,6 +17,7 @@
 
 import type { DocumentReference } from '../types/firestore';
 import type { VectorValue } from '../FirestoreVectorValue';
+import type { GeoPoint } from '../FirestoreGeoPoint';
 import type { Bytes } from '../modular/Bytes';
 
 /**
@@ -162,6 +163,11 @@ export interface Selectable {
  */
 export interface Field extends Selectable, FluentExpressionMethods {
   readonly _brand?: 'Field';
+  /**
+   * @beta
+   * Evaluates to geospatial distance in meters (search stage only).
+   */
+  geoDistance(location: GeoPoint | Expression): FunctionExpression;
 }
 
 /**
@@ -297,6 +303,7 @@ interface RuntimeAliasedAggregateNode extends RuntimeNodeBase {
 }
 
 type RuntimeExpressionMethods = FluentExpressionMethods;
+type RuntimeFieldMethods = RuntimeExpressionMethods & Pick<Field, 'geoDistance'>;
 type RuntimeOrderingMethods = Pick<Ordering, 'ascending' | 'descending'>;
 type RuntimeAggregateMethods = Pick<Accumulator, 'as'>;
 
@@ -436,6 +443,7 @@ const EXPRESSION_METHOD_NAMES = [
   'divide',
   'multiply',
   'documentId',
+  'parent',
   'sum',
   'count',
   'average',
@@ -579,7 +587,19 @@ function createExpressionProto(): RuntimeExpressionMethods {
   return proto as RuntimeExpressionMethods;
 }
 
+function createFieldProto(): RuntimeFieldMethods {
+  const proto = Object.create(createExpressionProto()) as RuntimeFieldMethods;
+  proto.geoDistance = function (
+    this: RuntimeExpressionFluentNode,
+    location: unknown,
+  ): FunctionExpressionNode {
+    return createFunctionExpression('geoDistance', [this, toExpressionArgument(location)]);
+  };
+  return proto;
+}
+
 const expressionProto = createExpressionProto();
+const fieldProto = createFieldProto();
 
 const aggregateProto: RuntimeAggregateMethods = {
   as(this: AggregateNode, name: string): AliasedAggregateNode {
@@ -598,7 +618,7 @@ const orderingProto: RuntimeOrderingMethods = {
 };
 
 function createField(path: unknown): FieldNode {
-  return createNode(expressionProto, {
+  return createNode(fieldProto, {
     [RUNTIME_NODE_SYMBOL]: true,
     __kind: 'expression',
     exprType: 'Field',
@@ -845,6 +865,7 @@ function normalizeGlobalArguments(name: string, args: unknown[]): RuntimeNode[] 
     case 'cosineDistance':
     case 'dotProduct':
     case 'euclideanDistance':
+    case 'geoDistance':
     case 'isAbsent':
     case 'isType':
     case 'logicalMaximum':
@@ -948,7 +969,12 @@ function createMethodResult(
     ]);
   }
 
-  if ((canonicalName === 'currentTimestamp' || canonicalName === 'rand') && rawArgs.length === 0) {
+  if (
+    (canonicalName === 'currentTimestamp' ||
+      canonicalName === 'rand' ||
+      canonicalName === 'score') &&
+    rawArgs.length === 0
+  ) {
     return createFunctionExpression(canonicalName, []);
   }
 
@@ -1438,6 +1464,47 @@ export function documentId(
   _documentPath: string | DocumentReference | Expression,
 ): FunctionExpression {
   return callFunctionHelper('documentId', arguments);
+}
+
+/**
+ * @beta
+ * Returns the parent document reference of a document path or expression.
+ */
+export function parent(_documentPath: string | DocumentReference): FunctionExpression;
+/**
+ * @beta
+ * Returns the parent document reference from a path expression.
+ */
+export function parent(_documentPathExpr: Expression): FunctionExpression;
+export function parent(_documentPath: string | DocumentReference | Expression): FunctionExpression {
+  return callFunctionHelper('parent', arguments);
+}
+
+/**
+ * @beta
+ * Full-text search predicate for use within a search stage.
+ */
+export function documentMatches(_rquery: string | Expression): BooleanExpression {
+  return callBooleanHelper('documentMatches', arguments);
+}
+
+/**
+ * @beta
+ * Search relevance score expression for use within a search stage.
+ */
+export function score(): Expression {
+  return createFunctionExpression('score', []);
+}
+
+/**
+ * @beta
+ * Geospatial distance in meters between a field location and a query point (search stage only).
+ */
+export function geoDistance(
+  _fieldName: string | Field,
+  _location: GeoPoint | Expression,
+): Expression {
+  return callFunctionHelper('geoDistance', arguments);
 }
 
 /**

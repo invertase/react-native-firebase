@@ -73,6 +73,8 @@ No permanent `Platform.android` / `Platform.ios` e2e workaround without registry
 | **P-026** | findNearest validation | L4011–4013 | Vacuous pass |
 | **P-027** | empty addFields/removeFields | L4047–4049 | Vacuous pass |
 | **P-028** | findNearest DOTPRODUCT alias | L4073–4075 | Vacuous pass |
+| **P-035** | Search stage + text index | L3007–3036 | Vacuous pass on macOS-js; firebase-js-sdk path requires deployed composite search index on `pipelines-e2e` — native iOS/Android run full assertions after index deploy |
+| **P-036** | `define` stage + `parent()` | L2975–3094 | Vacuous pass on macOS-js for define and parent; web SDK rejects `parent(...)` operand shapes (STRING/MAP vs Reference) — native iOS/Android only (define L2975–2996; parent probes L2998–3094) |
 
 **macOS count note:** lower macOS total is app `utils*` registration, not Pipeline drift. Pipeline tests register on every platform; some macOS passes are vacuous (table).
 
@@ -85,6 +87,7 @@ No permanent `Platform.android` / `Platform.ios` e2e workaround without registry
 | **P-029** | Android receiver-chain / deferred-unary lowering vs iOS direct `coerceExpressionTree` — no known e2e split |
 | **P-030** | iOS-only builder features: `xor`/`nor`, `pipelinevalue` direct build, `.condition` boolean unwrap — low traffic |
 | **P-031** | iOS `rawStage` skip (L3981) + iOS index-hint skip (L3796) — align with P-014/P-015 SDK gaps |
+| **P-037** | `coerceDocumentPathValue` `DocumentReference` branches (iOS L548, Android L2463) | **Wire-unreachable** from RN pipeline execute: JS `serializeValue` (`packages/firestore/lib/pipelines/pipeline_runtime.ts` L313–318) always sends document/collection refs as `{ path }` constant maps, never a live `DocumentReference` on the bridge. Native branches are defensive parity for non-JS callers. **Intractable** native coverage gap (not missing e2e): parent wire shapes exercised in `pipelines-serialization-matrix.test.ts` (DocumentReference → `{ path }` constant) and `Pipeline.e2e.js` L2998–3094 (ref, constant-wrapped path map, string, field `__name__` deferred path). |
 
 ---
 

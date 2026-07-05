@@ -2972,6 +2972,161 @@ describe('FirestorePipeline', function () {
         (typeof data.plainOnePointFive).should.equal('number');
       });
 
+      it('executes define stage with pipeline variables', async function () {
+        if (Platform.other) {
+          return;
+        }
+        const { execute, field, variable } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), { price: 40, label: 'child' });
+
+        const defineSnapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .define(field('price').as('halfPrice'))
+            .select(field('label'), variable('halfPrice')),
+        );
+
+        defineSnapshot.results.should.have.length(1);
+        defineSnapshot.results[0].data().should.eql({ label: 'child', halfPrice: 40 });
+      });
+
+      it('executes parent expression helper', async function () {
+        if (Platform.other) {
+          return;
+        }
+        const { execute, parent } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const parentDocPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+        const childPath = `${parentDocPath}/define-parent/child-doc`;
+        const childRef = doc(db, childPath);
+
+        await setDoc(doc(db, parentDocPath), { label: 'parent' });
+        await setDoc(childRef, { price: 40, label: 'child' });
+
+        const parentSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(`${parentDocPath}/define-parent`)
+            .select(parent(childRef).as('parentPath')),
+        );
+
+        parentSnapshot.results.should.have.length(1);
+        parentSnapshot.results[0].data().parentPath.path.should.equal(parentDocPath);
+      });
+
+      it('executes parent expression with constant-wrapped string document path', async function () {
+        if (Platform.other) {
+          return;
+        }
+        const { execute, parent, constant } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const parentDocPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+        const childPath = `${parentDocPath}/define-parent/child-doc`;
+
+        await setDoc(doc(db, parentDocPath), { label: 'parent' });
+        await setDoc(doc(db, childPath), { price: 40, label: 'child' });
+
+        const parentSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(`${parentDocPath}/define-parent`)
+            .select(parent(constant(childPath)).as('parentPath')),
+        );
+
+        parentSnapshot.results.should.have.length(1);
+        parentSnapshot.results[0].data().parentPath.path.should.equal(parentDocPath);
+      });
+
+      it('executes parent expression with string document path', async function () {
+        // Regression: constant-envelope string paths must lower via coerceDocumentPathValue(resolved).
+        if (Platform.other) {
+          return;
+        }
+        const { execute, parent } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const parentDocPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+        const childPath = `${parentDocPath}/define-parent/child-doc`;
+
+        await setDoc(doc(db, parentDocPath), { label: 'parent' });
+        await setDoc(doc(db, childPath), { price: 40, label: 'child' });
+
+        const parentSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(`${parentDocPath}/define-parent`)
+            .select(parent(childPath).as('parentPath')),
+        );
+
+        parentSnapshot.results.should.have.length(1);
+        parentSnapshot.results[0].data().parentPath.path.should.equal(parentDocPath);
+      });
+
+      it('executes parent expression with lowerable document path expression', async function () {
+        // Native: parent() deferred lowering when arg is a lowerable expression (field ref, not constant fast-path).
+        if (Platform.other) {
+          return;
+        }
+        const { execute, parent, field } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const parentDocPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+        const childPath = `${parentDocPath}/define-parent/child-doc`;
+
+        await setDoc(doc(db, parentDocPath), { label: 'parent' });
+        await setDoc(doc(db, childPath), { label: 'child' });
+
+        const parentSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(`${parentDocPath}/define-parent`)
+            .select(parent(field('__name__')).as('parentPath')),
+        );
+
+        parentSnapshot.results.should.have.length(1);
+        parentSnapshot.results[0].data().parentPath.path.should.equal(parentDocPath);
+      });
+
+      it('executes search stage with documentMatches and score', async function () {
+        if (Platform.other) {
+          return;
+        }
+        const { execute, documentMatches, score } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const collPath = `${COLLECTION}/${Utils.randString(12, '#aA')}/search-text`;
+        const coll = collection(db, collPath);
+
+        await Promise.all([
+          setDoc(doc(coll, 'a'), { menu: 'waffles and coffee', label: 'A' }),
+          setDoc(doc(coll, 'b'), { menu: 'pancakes only', label: 'B' }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(collPath)
+            .search({
+              query: documentMatches('waffles'),
+              sort: [score().descending()],
+              addFields: [score().as('searchScore')],
+              limit: 5,
+            }),
+        );
+
+        snapshot.results.length.should.be.greaterThan(0);
+        const labels = snapshot.results.map(result => result.data().label);
+        labels[0].should.eql('A');
+        labels.should.not.containEql('B');
+      });
+
       it('unwraps constant-wrapped array arguments during native lowering', async function () {
         const { execute, field, constant, array, add } = firestorePipelinesModular;
         const { getFirestore, doc, setDoc } = firestoreModular;

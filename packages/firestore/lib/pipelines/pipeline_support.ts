@@ -37,6 +37,8 @@ export const PIPELINE_STAGE_TYPES = [
   'aggregate',
   'distinct',
   'findNearest',
+  'search',
+  'define',
   'replaceWith',
   'sample',
   'union',

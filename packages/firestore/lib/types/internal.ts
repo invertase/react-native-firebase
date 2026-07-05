@@ -296,6 +296,24 @@ export type FirestorePipelineStageInternal =
       };
     }
   | {
+      stage: 'search';
+      options: {
+        query: FirestorePipelineExpressionInternal | string;
+        languageCode?: string;
+        retrievalDepth?: number;
+        sort?: FirestorePipelineOrderingInternal[];
+        offset?: number;
+        limit?: number;
+        addFields?: FirestorePipelineSelectableInternal[];
+      };
+    }
+  | {
+      stage: 'define';
+      options: {
+        variables: FirestorePipelineSelectableInternal[];
+      };
+    }
+  | {
       stage: 'replaceWith';
       options: {
         map:

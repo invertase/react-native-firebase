@@ -231,7 +231,7 @@ final class RNFBFirestorePipelineNodeBuilder {
     var output: [String: ExprBridge] = [:]
     for (index, value) in values.enumerated() {
       let expression = try coerceExpression(value.expression, fieldName: "\(fieldName)[\(index)].expr")
-      let alias = coerceAlias(from: value) ?? expressionAlias(expression) ?? "field_\(index)"
+      let alias = selectableOutputAlias(from: value, expression: expression, index: index)
       output[alias] = expression
     }
     return output
@@ -246,11 +246,29 @@ final class RNFBFirestorePipelineNodeBuilder {
     }
 
     return try values.enumerated().map { index, value in
-      OrderingBridge(
-        expr: try coerceExpression(value.expression, fieldName: "\(fieldName)[\(index)].expr"),
-        direction: value.descending ? "descending" : "ascending"
-      )
+      try coerceOrdering(value, fieldName: "\(fieldName)[\(index)]")
     }
+  }
+
+  func coerceOrdering(
+    _ value: RNFBFirestoreParsedOrderingNode,
+    fieldName: String
+  ) throws -> OrderingBridge {
+    let expression: ExprBridge
+    if value.fieldShortcut, case let .field(path) = value.expression {
+      expression = FieldBridge(name: path)
+    } else if case let .function(name, args) = value.expression,
+              canonicalizeFunctionName(name) == "score",
+              args.isEmpty {
+      expression = Score().bridge
+    } else {
+      expression = try coerceExpression(value.expression, fieldName: "\(fieldName).expr")
+    }
+
+    return OrderingBridge(
+      expr: expression,
+      direction: value.descending ? "descending" : "ascending"
+    )
   }
 
   func coerceAliasedAggregate(
@@ -366,7 +384,20 @@ final class RNFBFirestorePipelineNodeBuilder {
     var output: [String: ExprBridge] = [:]
     for (index, value) in values.enumerated() {
       let expression = try coerceExpression(value, fieldName: "\(fieldName)[\(index)]")
-      let alias = coerceAlias(from: value) ?? expressionAlias(expression) ?? "field_\(index)"
+      let alias: String
+      if let explicitAlias = coerceAlias(from: value), !explicitAlias.isEmpty {
+        alias = explicitAlias
+      } else if let map = value as? [String: Any],
+                let kind = (map["exprType"] as? String)?.lowercased(),
+                kind == "variable",
+                let name = map["name"] as? String,
+                !name.isEmpty {
+        alias = name
+      } else if let fieldAlias = expressionAlias(expression) {
+        alias = fieldAlias
+      } else {
+        alias = "field_\(index)"
+      }
       output[alias] = expression
     }
     return output
@@ -507,6 +538,25 @@ final class RNFBFirestorePipelineNodeBuilder {
     return string
   }
 
+  private func coerceDocumentPathValue(_ value: Any, fieldName: String) throws -> String {
+    var resolved: Any = value
+    if let map = value as? [String: Any],
+       let constantValue = try unwrapConstantValue(map, fieldName: fieldName) {
+      resolved = constantValue
+    }
+    if let reference = resolved as? DocumentReference {
+      return reference.path
+    }
+    if let map = resolved as? [String: Any], isSerializedReferencePathConstantMap(map) {
+      return try coerceFieldPath(map, fieldName: fieldName)
+    }
+    return try coerceStringValue(resolved, fieldName: fieldName)
+  }
+
+  private func buildParentExprBridge(referenceArg: ExprBridge) -> ExprBridge {
+    FunctionExprBridge(name: "parent", args: [referenceArg])
+  }
+
   func requireValue(
     _ map: [String: Any],
     key: String,
@@ -598,6 +648,10 @@ final class RNFBFirestorePipelineNodeBuilder {
       }
 
       if let map = currentValue as? [String: Any] {
+        if isSerializedReferencePathConstantMap(map) {
+          return false
+        }
+
         if isSerializedExpressionLike(map) {
           return true
         }
@@ -706,9 +760,30 @@ final class RNFBFirestorePipelineNodeBuilder {
       return false
     }
 
+    if isSerializedReferencePathConstantMap(map) {
+      return false
+    }
+
     return map["exprType"] != nil || map["operator"] != nil || map["name"] != nil || map["expr"] != nil ||
       map["expression"] != nil || map["fieldPath"] != nil || map["path"] != nil ||
       map["segments"] != nil || map["_segments"] != nil
+  }
+
+  private func isSerializedReferencePathConstantMap(_ map: [String: Any]) -> Bool {
+    guard let path = map["path"] as? String, path.contains("/") else {
+      return false
+    }
+
+    for key in map.keys {
+      switch key {
+      case "path", "firestore", "alias", "as", "__kind":
+        continue
+      default:
+        return false
+      }
+    }
+
+    return true
   }
 
   private let booleanComparisonFunctions: Set<String> = [
@@ -1212,7 +1287,13 @@ final class RNFBFirestorePipelineNodeBuilder {
         case "field":
           return Field(try coerceFieldPath(map, fieldName: currentField))
         case "constant":
-          return firebaseConstantExpression(try constantExpressionValue(fromConstantMap: map, fieldName: currentField))
+          let constantValue = try constantExpressionValue(fromConstantMap: map, fieldName: currentField)
+          if let refMap = constantValue as? [String: Any], isSerializedReferencePathConstantMap(refMap),
+             let firestore = currentFirestore {
+            let reference = firestore.document(try coerceFieldPath(refMap, fieldName: "\(currentField).value"))
+            return firebaseConstantExpression(reference)
+          }
+          return firebaseConstantExpression(constantValue)
         case "variable":
           guard let name = map["name"] as? String, !name.isEmpty else {
             throw PipelineValidationError(
@@ -1557,6 +1638,25 @@ final class RNFBFirestorePipelineNodeBuilder {
     return rootBox.value as Any
   }
 
+
+  private func bridgeFromPipelineExpression(_ expression: any FirebaseFirestore.Expression, fieldName: String) throws -> ExprBridge {
+    if let bridge = bridgeFromSDKValue(expression) {
+      return bridge
+    }
+    throw PipelineValidationError(
+      "pipelineExecute() could not convert \(fieldName) into an expression bridge.")
+  }
+
+  private func bridgeFromPipelineBooleanExpression(
+    _ expression: any FirebaseFirestore.BooleanExpression,
+    fieldName: String
+  ) throws -> ExprBridge {
+    if let bridge = bridgeFromSDKValue(expression) {
+      return bridge
+    }
+    return try booleanExpressionBridge(expression, fieldName: fieldName)
+  }
+
   // NOTE: iOS pipeline function lowering lives in this builder.
   //
   // If a serialized JS pipeline function is not supported by the currently linked
@@ -1586,6 +1686,18 @@ final class RNFBFirestorePipelineNodeBuilder {
           if let map = value as? [String: Any],
              let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
             box.value = try scalarConstantBridge(fromConstantMap: map, fieldName: currentFieldName)
+            continue
+          }
+          if let map = value as? [String: Any], isSerializedReferencePathConstantMap(map) {
+            guard let firestore = currentFirestore else {
+              throw PipelineValidationError(
+                "pipelineExecute() expected \(currentFieldName) to resolve against a Firestore instance.")
+            }
+            let reference = firestore.document(try coerceFieldPath(map, fieldName: currentFieldName))
+            box.value = try expressionBridge(
+              firebaseConstantExpression(reference),
+              fieldName: currentFieldName
+            )
             continue
           }
           if containsSerializedExpression(value) {
@@ -1893,6 +2005,57 @@ final class RNFBFirestorePipelineNodeBuilder {
                     argBoxes[index]
                   ))
                 }
+                break expressionLoop
+              }
+
+
+              if normalized == "score" {
+                guard rawArgs.isEmpty else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).score to include no arguments.")
+                }
+                box.value = Score().bridge
+                break expressionLoop
+              }
+
+              if normalized == "documentmatches" {
+                guard rawArgs.count == 1 else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).documentMatches to include exactly 1 argument.")
+                }
+                if containsSerializedExpression(rawArgs[0]) {
+                  let queryBridge = try coerceExpression(
+                    rawArgs[0],
+                    fieldName: "\(currentField).args[0]"
+                  )
+                  box.value = FunctionExprBridge(name: "document_matches", args: [queryBridge])
+                } else {
+                  let query = try coerceStringValue(rawArgs[0], fieldName: "\(currentField).args[0]")
+                  box.value = DocumentMatches(query).bridge
+                }
+                break expressionLoop
+              }
+
+              if normalized == "parent" {
+                guard rawArgs.count == 1 else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).parent to include exactly 1 argument.")
+                }
+                if containsSerializedExpression(rawArgs[0]) {
+                  let baseBridge = try coerceExpression(
+                    rawArgs[0],
+                    fieldName: "\(currentField).args[0]"
+                  )
+                  box.value = buildParentExprBridge(referenceArg: baseBridge)
+                  break expressionLoop
+                }
+                let documentPath = try coerceDocumentPathValue(rawArgs[0], fieldName: "\(currentField).args[0]")
+                guard let firestore = currentFirestore else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).parent to resolve against a Firestore instance.")
+                }
+                let reference = firestore.document(documentPath)
+                box.value = buildParentExprBridge(referenceArg: ConstantBridge(reference))
                 break expressionLoop
               }
 
@@ -2420,6 +2583,23 @@ final class RNFBFirestorePipelineNodeBuilder {
     }
 
     return nil
+  }
+
+  private func selectableOutputAlias(
+    from value: RNFBFirestoreParsedSelectableNode,
+    expression: ExprBridge,
+    index: Int
+  ) -> String {
+    if let alias = coerceAlias(from: value), !alias.isEmpty {
+      return alias
+    }
+    if case let .variable(name) = value.expression, !name.isEmpty {
+      return name
+    }
+    if let fieldAlias = expressionAlias(expression) {
+      return fieldAlias
+    }
+    return "field_\(index)"
   }
 
   private func expressionAlias(_ expression: ExprBridge) -> String? {

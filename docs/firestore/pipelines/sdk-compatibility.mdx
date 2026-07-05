@@ -20,16 +20,11 @@ CI enforces parity through `yarn compare:types` and the `firestore-pipelines` al
 
 # Not yet available in React Native Firebase
 
-These firebase-js-sdk pipeline exports are **not** exposed yet. They are listed in the repository compare-types allowlist until implemented:
+All pipeline exports tracked in the compare-types allowlist through B2 are now supported. Check release notes when upgrading for newly added firebase-js-sdk pipeline APIs.
 
-| Export               | Kind       | Notes                                              |
-| -------------------- | ---------- | -------------------------------------------------- |
-| `documentMatches`    | Expression | Document matching helper (requires `search` stage) |
-| `geoDistance`        | Expression | Geospatial distance (requires `search` stage)      |
-| `score`              | Expression | Full-text search score                             |
-| `parent`             | Stage      | Parent document stage                              |
-| `DefineStageOptions` | Type       | Options for define stage                           |
-| `SearchStageOptions` | Type       | Full-text search stage options                     |
+## Platform notes
+
+Compare-types parity does not guarantee identical runtime behavior on every target. The `parent()` expression helper may be unavailable on web and on macOS when pipelines execute through the firebase-js-sdk interop path (**P-036**). Pipelines that use the search stage with text matching need a deployed composite search index on the Enterprise `pipelines-e2e` database used in CI (**P-035**); native iOS and Android e2e cover search after that index is deployed. The `geoDistance` helper is covered for types and serialization; dedicated runtime e2e is deferred because native platforms lower it through the generic function path. Maintainer drift IDs and e2e expectations are tracked in [`okf-bundle/packages/firestore/pipeline-platform-parity.md`](https://github.com/invertase/react-native-firebase/blob/main/okf-bundle/packages/firestore/pipeline-platform-parity.md).
 
 If you depend on one of these, follow [Firebase pipeline release notes](https://firebase.google.com/support/release-notes/js) and React Native Firebase changelogs, or open a feature request with your use case.
 

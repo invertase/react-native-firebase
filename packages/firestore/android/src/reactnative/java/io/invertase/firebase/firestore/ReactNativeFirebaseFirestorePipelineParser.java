@@ -31,6 +31,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
               "aggregate",
               "distinct",
               "findNearest",
+              "search",
+              "define",
               "replaceWith",
               "sample",
               "union",
@@ -466,6 +468,22 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             requireString(stageOptions, "distanceMeasure", "stage.options.distanceMeasure"),
             stageOptions.get("limit"),
             optionalExpressionNode(stageOptions, "distanceField", "stage.options.distanceField"));
+      case "search":
+        return new ParsedSearchStage(
+            parseExpressionNode(
+                requireValue(stageOptions, "query", "stage.options.query"),
+                "stage.options.query"),
+            optionalString(stageOptions, "languageCode"),
+            stageOptions.get("retrievalDepth"),
+            optionalOrderingNodes(stageOptions, "sort", "stage.options.sort"),
+            stageOptions.get("offset"),
+            stageOptions.get("limit"),
+            optionalSelectableNodes(stageOptions, "addFields", "stage.options.addFields"));
+      case "define":
+        return new ParsedDefineStage(
+            parseSelectableNodes(
+                requireArray(stageOptions, "variables", "stage.options.variables"),
+                "stage.options.variables"));
       case "replaceWith":
         return new ParsedReplaceWithStage(
             parseExpressionNode(
@@ -640,6 +658,13 @@ final class ReactNativeFirebaseFirestorePipelineParser {
       output.add(parseOrderingNode(values.get(i), fieldName + "[" + i + "]"));
     }
     return output;
+  }
+
+  private static List<ParsedOrderingNode> optionalOrderingNodes(
+      Map<String, Object> map, String key, String fieldName)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    List<Object> values = optionalArray(map, key, fieldName);
+    return values == null ? null : parseOrderingNodes(values, fieldName);
   }
 
   private static List<ParsedAggregateNode> parseAggregateNodes(
@@ -1674,6 +1699,43 @@ final class ReactNativeFirebaseFirestorePipelineParser {
       this.distanceMeasure = distanceMeasure;
       this.limit = limit;
       this.distanceField = distanceField;
+    }
+  }
+
+  static final class ParsedSearchStage extends ParsedPipelineStage {
+    final ParsedExpressionNode query;
+    final String languageCode;
+    final Object retrievalDepth;
+    final List<ParsedOrderingNode> sort;
+    final Object offset;
+    final Object limit;
+    final List<ParsedSelectableNode> addFields;
+
+    ParsedSearchStage(
+        ParsedExpressionNode query,
+        String languageCode,
+        Object retrievalDepth,
+        List<ParsedOrderingNode> sort,
+        Object offset,
+        Object limit,
+        List<ParsedSelectableNode> addFields) {
+      super("search");
+      this.query = query;
+      this.languageCode = languageCode;
+      this.retrievalDepth = retrievalDepth;
+      this.sort = sort;
+      this.offset = offset;
+      this.limit = limit;
+      this.addFields = addFields;
+    }
+  }
+
+  static final class ParsedDefineStage extends ParsedPipelineStage {
+    final List<ParsedSelectableNode> variables;
+
+    ParsedDefineStage(List<ParsedSelectableNode> variables) {
+      super("define");
+      this.variables = variables;
     }
   }
 

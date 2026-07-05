@@ -278,6 +278,27 @@ describe('validateSerializedPipeline — failure branches', function () {
           validateSerializedPipeline(pipelineWithStage({ stage, options })),
         ).not.toThrow();
       }
+      expect(() =>
+        validateSerializedPipeline(
+          pipelineWithStage({
+            stage: 'search',
+            options: { query: { exprType: 'Function', name: 'documentMatches', args: [] } },
+          }),
+        ),
+      ).not.toThrow();
+      expect(() =>
+        validateSerializedPipeline(
+          pipelineWithStage({ stage: 'define', options: { variables: [{}] } }),
+        ),
+      ).not.toThrow();
+      expect(() =>
+        validateSerializedPipeline(pipelineWithStage({ stage: 'search', options: {} })),
+      ).toThrow('pipelineExecute() expected search stage to include query.');
+      expect(() =>
+        validateSerializedPipeline(pipelineWithStage({ stage: 'define', options: {} })),
+      ).toThrow(
+        'pipelineExecute() expected stage.options.variables to contain at least one value.',
+      );
     });
 
     it('accepts a valid subcollection source', function () {
@@ -285,6 +306,59 @@ describe('validateSerializedPipeline — failure branches', function () {
         validateSerializedPipeline({
           source: { source: 'subcollection', path: 'reviews' },
           stages: [],
+        }),
+      ).not.toThrow();
+    });
+
+    it('accepts parent expression with document path constants', function () {
+      expect(() =>
+        validateSerializedPipeline({
+          source: { source: 'collection', path: 'events' },
+          stages: [
+            {
+              stage: 'select',
+              options: {
+                selections: [
+                  {
+                    alias: 'parentRef',
+                    expr: {
+                      exprType: 'Function',
+                      name: 'parent',
+                      args: [{ exprType: 'Constant', value: 'users/alice/posts/post1' }],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+      ).not.toThrow();
+
+      expect(() =>
+        validateSerializedPipeline({
+          source: { source: 'collection', path: 'events' },
+          stages: [
+            {
+              stage: 'select',
+              options: {
+                selections: [
+                  {
+                    alias: 'parentRef',
+                    expr: {
+                      exprType: 'Function',
+                      name: 'parent',
+                      args: [
+                        {
+                          exprType: 'Constant',
+                          value: { path: 'users/alice/posts/post1' },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
         }),
       ).not.toThrow();
     });

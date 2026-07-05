@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import { getFirestore } from '../lib';
-import { constant, field, timestampDiff, timestampExtract } from '../lib/pipelines';
+import { constant, field, parent, timestampDiff, timestampExtract } from '../lib/pipelines';
 import type { ConstantExpression } from '../lib/pipelines/expressions';
 import '../lib/pipelines';
 
@@ -13,6 +13,52 @@ function selectExpr(db: any, expr: unknown) {
 }
 
 describe('pipelines serialization matrix', function () {
+  describe('parent document path serialization', function () {
+    const db: any = getFirestore();
+
+    it('serializes string document paths as constant parent args', function () {
+      expect(selectExpr(db, parent('users/alice/posts/post1').as('parentRef'))).toMatchObject({
+        exprType: 'Function',
+        name: 'parent',
+        args: [{ exprType: 'Constant', value: 'users/alice/posts/post1' }],
+      });
+    });
+
+    it('serializes constant-wrapped string document paths for parent args', function () {
+      const wrapped = constant('users/alice/posts/post1') as ConstantExpression;
+      expect(selectExpr(db, parent(wrapped).as('parentRef'))).toMatchObject({
+        exprType: 'Function',
+        name: 'parent',
+        args: [{ exprType: 'Constant', value: 'users/alice/posts/post1' }],
+      });
+    });
+    it('serializes DocumentReference document paths as path constant parent args', function () {
+      const ref = db.doc('users/alice/posts/post1');
+      expect(selectExpr(db, parent(ref).as('parentRef'))).toMatchObject({
+        exprType: 'Function',
+        name: 'parent',
+        args: [{ exprType: 'Constant', value: { path: 'users/alice/posts/post1' } }],
+      });
+    });
+
+    it('serializes constant-wrapped reference path maps for parent args', function () {
+      const wrapped = constant({ path: 'users/alice/posts/post1' }) as ConstantExpression;
+      expect(selectExpr(db, parent(wrapped).as('parentRef'))).toMatchObject({
+        exprType: 'Function',
+        name: 'parent',
+        args: [{ exprType: 'Constant', value: { path: 'users/alice/posts/post1' } }],
+      });
+    });
+
+    it('serializes lowerable field path expressions for parent args', function () {
+      expect(selectExpr(db, parent(field('docPath')).as('parentRef'))).toMatchObject({
+        exprType: 'Function',
+        name: 'parent',
+        args: [{ exprType: 'Field', path: 'docPath' }],
+      });
+    });
+  });
+
   describe('standalone-only expression helpers', function () {
     it.each(STANDALONE_ONLY_EXPRESSIONS)('does not expose fluent %s on field()', function (name) {
       expect(typeof (field('x') as any)[name]).toBe('undefined');

@@ -67,16 +67,25 @@ import type { PipelineResult, PipelineSnapshot } from './pipeline-result';
 import type {
   PipelineAggregateOptions,
   PipelineDistinctOptions,
+  PipelineDefineOptions,
   PipelineFindNearestOptions,
   PipelineRawStageOptions,
   PipelineReplaceWithOptions,
   PipelineSampleOptions,
+  PipelineSearchOptions,
   PipelineUnionOptions,
   PipelineUnnestOptions,
+  DefineStageOptions,
+  SearchStageOptions,
 } from './stage_options';
 import type { PipelineExecuteOptions } from './pipeline_options';
 import { validateExecuteOptions, validateSerializedPipeline } from './pipeline_validate';
-import { createPipelineSubqueryExpression, type FunctionExpression } from './expressions';
+import {
+  createPipelineSubqueryExpression,
+  documentMatches,
+  type AliasedExpression,
+  type FunctionExpression,
+} from './expressions';
 
 const PIPELINE_RUNTIME_SYMBOL = Symbol.for('RNFBFirestorePipelineRuntime');
 const PIPELINE_RUNTIME_INSTALLER_SYMBOL = Symbol.for('RNFBFirestorePipelineRuntimeInstaller');
@@ -507,6 +516,42 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
 
   findNearest(options: PipelineFindNearestOptions): Pipeline<T> {
     return this.append('findNearest', options as unknown as Record<string, unknown>);
+  }
+
+  search(options: PipelineSearchOptions | SearchStageOptions): Pipeline<T> {
+    const normalized: Record<string, unknown> = { ...options };
+    const query = normalized.query;
+    if (isString(query)) {
+      normalized.query = documentMatches(query);
+    }
+    if (normalized.sort !== undefined && !isArray(normalized.sort)) {
+      normalized.sort = [normalized.sort];
+    }
+    return this.append('search', normalized);
+  }
+
+  define(
+    aliasedExpression: AliasedExpression,
+    ...additionalExpressions: AliasedExpression[]
+  ): Pipeline<T>;
+  define(options: DefineStageOptions | PipelineDefineOptions): Pipeline<T>;
+  define(
+    firstOrOptions: AliasedExpression | DefineStageOptions | PipelineDefineOptions,
+    ...additionalExpressions: AliasedExpression[]
+  ): Pipeline<T> {
+    if (
+      isRecord(firstOrOptions) &&
+      hasAnyKey(firstOrOptions, ['variables']) &&
+      !hasAnyKey(firstOrOptions, ['__kind', 'exprType', 'expr', 'alias'])
+    ) {
+      return this.append('define', {
+        variables: firstOrOptions.variables ?? [],
+      });
+    }
+
+    return this.append('define', {
+      variables: [firstOrOptions, ...additionalExpressions],
+    });
   }
 
   replaceWith(fieldName: string): Pipeline<T>;

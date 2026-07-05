@@ -48,6 +48,11 @@ firebase firestore:indexes --project react-native-firebase-testing --database pi
 
 There is no `firebase firestore:rules` pull command; edit the `.rules` files in-repo and deploy.
 
+
+## Index deploy verify cycle
+
+Canonical workflow (CLI ≥ 15.17.0 for search indexes): sync → edit JSON → `./deploy-firestore.sh` (runs `verify-firestore-indexes.sh`) → sync again → confirm cloud pull matches intent. Full policy and tooling surfaces: [okf-bundle Firebase testing project doc](../../../okf-bundle/testing/firebase-testing-project.md#index-change-workflow-sync--edit--deploy--verify).
+
 ## Deploy to cloud
 
 ```bash

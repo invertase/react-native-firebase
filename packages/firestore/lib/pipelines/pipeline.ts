@@ -18,12 +18,16 @@
 import type {
   PipelineAggregateOptions,
   PipelineDistinctOptions,
+  PipelineDefineOptions,
   PipelineFindNearestOptions,
   PipelineReplaceWithOptions,
   PipelineSampleOptions,
+  PipelineSearchOptions,
   PipelineUnionOptions,
   PipelineUnnestOptions,
   PipelineRawStageOptions,
+  DefineStageOptions,
+  SearchStageOptions,
 } from './stage_options';
 import type {
   BooleanExpression,
@@ -31,6 +35,7 @@ import type {
   Field,
   Ordering,
   AliasedAggregate,
+  AliasedExpression,
   FunctionExpression,
 } from './expressions';
 import type { DocumentData } from '../types/firestore';
@@ -78,6 +83,24 @@ export interface Pipeline<T = DocumentData> {
   distinct(options: PipelineDistinctOptions): Pipeline<T>;
 
   findNearest(options: PipelineFindNearestOptions): Pipeline<T>;
+
+  /**
+   * @beta
+   * Add a search stage to the pipeline (full-text and geo search). Must be the first stage.
+   */
+  search(options: PipelineSearchOptions): Pipeline<T>;
+  search(options: SearchStageOptions): Pipeline<T>;
+
+  /**
+   * @beta
+   * Defines one or more variables in the pipeline scope for reuse via variable().
+   */
+  define(
+    aliasedExpression: AliasedExpression,
+    ...additionalExpressions: AliasedExpression[]
+  ): Pipeline<T>;
+  define(options: DefineStageOptions): Pipeline<T>;
+  define(options: PipelineDefineOptions): Pipeline<T>;
 
   replaceWith(fieldName: string): Pipeline<T>;
   replaceWith(expr: Selectable): Pipeline<T>;
