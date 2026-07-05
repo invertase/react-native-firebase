@@ -630,6 +630,7 @@ Pre-merge applies once to the branch commit stream before merge/push intended fo
 2. [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes) pass before each platform run.
 3. Rebuild when needed (`tests:<platform>:build`; `yarn lerna:prepare` for `lib/**`). After TurboModule codegen or native bridge edits, see [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
 4. Full unfocused suite with coverage on **iOS, Android, macOS** — one platform at a time, all green.
+5. Record [validation evidence package](validation-checklist.md#validation-evidence-package) and [coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native touched — required before merge or push ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)).
 
 ## Notes
 

@@ -237,6 +237,8 @@ Breaking change (`!`): TurboModule migration requires New Architecture; legacy b
 
 **Never stage:** `tests/harness.overrides.js`, any `.only`, temporary sub-suite edits in `tests/app.js`.
 
+Before `git commit`: [validation evidence package](../../testing/validation-checklist.md#validation-evidence-package) recorded; [coverage evidence package](../../testing/coverage-design.md#coverage-evidence-package) when lib/native bridge touched ([change authoring § commit](../../testing/change-authoring-workflow.md#commit)).
+
 ## Gotchas
 
 * **macOS / web turbo name registration** — [`nativeModuleWeb.ts`](../../../packages/app/lib/internal/nativeModuleWeb.ts) registers JS-SDK shims by module name in the **registry object initializer** (not deferred to bottom-of-file calls) so `NativeRNFBTurbo*` names exist before `RNFBNativeEventEmitter` instantiates during circular imports. When [`APP_NATIVE_MODULE`](../../../packages/app/lib/internal/constants.ts) changes ([NewArch-AD-2](architecture-decisions.md#newarch-ad-2--naming-nativernfbturbo--accepted)), register **both** legacy `RNFBAppModule` and turbo keys. Missing registration → macOS **blank window** / `Native module NativeRNFBTurboApp is not registered` in `com.facebook.react.log:javascript`.

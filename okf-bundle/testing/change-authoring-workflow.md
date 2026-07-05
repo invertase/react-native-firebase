@@ -99,11 +99,37 @@ E2e scope, pre-flight, and harness gate: [running e2e § agent rule](running-e2e
 |------|-------------|
 | `implementation` | `implementation` work type complete — code plus **unit-focused**-tier checks green on **every required platform** when native bridge or embed path changed ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)); [static analysis](validation-checklist.md#lint-and-formatting) green on the diff |
 | `review` | `independent-review` complete — **area-focused**-tier checks green on frozen tree; applicable [validation checklist](validation-checklist.md) rows green (including static analysis); **every review finding resolved** ([§ quality standards](#quality-standards)) |
-| `commit` | Durable commit exists for the item |
+| `commit` | Durable commit exists for the item **after** prior gates closed with [recorded evidence](#validation-evidence-blocking) |
 
 **Trust rule:** Code on disk or in git with `review` still **open** is unverified until `independent-review` closes the gate.
 
 Any unresolved review finding returns the item to **`implementation`** (`unit-focused`), then repeats **`independent-review`** (`area-focused`) — see [§ quality standards](#quality-standards).
+
+<a id="validation-evidence-blocking"></a>
+
+### Validation evidence (blocking)
+
+Gates close **only** when **recorded evidence** shows the required validation tier ran and passed. Assumed green, implementer summaries without exit codes, or "tests passed earlier" without a log path **do not** close a gate.
+
+| Gate | Minimum evidence (record in work-queue notes or review handoff) |
+|------|------------------------------------------------------------------|
+| **`implementation`** | Prepare/tsc/jest **exit codes**; when native or macOS runtime touched: **e2e pass count per required platform** + log path (e.g. `/tmp/rnfb-e2e-*.log`); lint exit code |
+| **`review`** | Frozen-tree re-run of area-focused checklist; **coverage evidence package** when native or `packages/*/lib/**` bridge code touched ([coverage design § evidence package](coverage-design.md#coverage-evidence-package)); compare:types row for touched registered package |
+| **`commit`** | Prior gates closed **with evidence**; no `.only` / harness overrides staged |
+| **Publication** (`git push`, force-push, PR refresh) | **`review` gate closed on the exact commits being published**; evidence still valid (no product edits since last area-focused run) |
+
+**Investigate before close:** Any coverage plateau, parity asymmetry, or review finding gets **root-cause analysis** — add tests, delete dead code, or record an [acceptable exception](#acceptable-exceptions) with evidence. Do not label gaps "informational" or "defensive" without wire/runtime proof.
+
+<a id="forbidden-shortcuts"></a>
+
+### Forbidden shortcuts
+
+- **`git commit`** while the current work type's validation tier is incomplete or evidence is missing.
+- **`git push` / force-push / PR update** claiming remediation or review-green **without** fresh area-focused evidence after the last product edit on the published commits.
+- **History rewrite** (rebase, amend stack) **without** re-running validation for the rewritten scope — prior green results are **invalid**.
+- **Self-accepted** parity or coverage gaps — only [acceptable exceptions](#acceptable-exceptions) with user confirmation or intractability evidence in durable OKF (e.g. parity registry row).
+
+Publication is not a separate work type; it follows the same evidence bar as `review` + `commit`.
 
 ## Quality standards
 
@@ -209,7 +235,7 @@ On a **frozen tree**:
 1. Revert all `.only`.
 2. Keep area narrowing; run **area-focused**-tier e2e for loaded package spec(s) on [**every required platform**](running-e2e.md#platform-coverage-gate-blocking) (serial; pre-flight each run).
 3. Run applicable [validation checklist](validation-checklist.md) rows — **blocking:** [static analysis § lint and formatting](validation-checklist.md#lint-and-formatting) (`yarn lint:js` on the frozen tree; markdown/spellcheck when docs touched); `yarn reference:api` when public surface changed. For packages registered in `compare:types`, `yarn compare:types` is a **blocking review gate**: the touched package must have zero undocumented or stale differences before `review_gate` closes. If the global command fails on unrelated registered packages, record/fix that drift in the work queue; do not treat an unrelated failure as permission to skip the touched package's type-parity check.
-4. If the package workflow requires coverage: [coverage design § completion signal](coverage-design.md#coverage-as-completion-signal).
+4. **Coverage evidence package** — **blocking** when `packages/*/lib/**` or native bridge sources in the frozen diff: produce and attach per [coverage design § evidence package](coverage-design.md#coverage-evidence-package); investigate every non-100% reachable line before closing `review`.
 5. Outcome closes **review gate** or returns to **`implementation`**.
 
 Keep **`implementation`** and **`independent-review`** in separate passes ([§ frozen tree](#frozen-tree)).
@@ -232,6 +258,7 @@ Package workflows define **which module/spec** to load (e.g. Firestore → [pipe
 ## `commit`
 
 - One focused commit per item when gates close.
+- **Evidence required:** [§ validation evidence](#validation-evidence-blocking) must be recorded before `commit_gate` closes; orchestration summaries are not substitutes for exit codes, e2e counts, and coverage tables.
 - **Never stage:** `tests/harness.overrides.js`, any `.only`, temporary sub-suite edits in `tests/app.js`, or native instrumentation ([running e2e § before merge](running-e2e.md#before-merge-pr-handoff), [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)).
 - **Work queue:** before `git commit`, set the row's `commit_subject` to the commit's subject line, close `commit_gate`, and stage the queue doc **in the same commit** as the product change ([documentation policy § work queues](../documentation-policy.md#work-queue-documents)). Do not record SHAs in queue docs.
 

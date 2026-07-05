@@ -8,7 +8,7 @@ timestamp: 2026-06-25T12:00:00Z
 
 # Pipeline coverage and parity — work queue
 
-> **COMPLETE:** **Merge gate** closed — static pre-merge green; **R** closed. Ready for PR [9086](https://github.com/invertase/react-native-firebase/pull/9086) force-push + CI.
+> **COMPLETE:** **Merge gate** closed — static pre-merge green; **R** closed. Ready for PR [9086](https://github.com/invertase/react-native-firebase/pull/9086) force-push + CI **after** [validation evidence](../../testing/change-authoring-workflow.md#validation-evidence-blocking) still valid on published commits.
 > **Goal/order:** platform parity first; then TS/native coverage toward intractable limits. Links: [parity](pipeline-platform-parity.md), [SDK audit](pipeline-sdk-support-audit.md), [coverage](../../testing/coverage-design.md), [e2e](../../testing/running-e2e.md), [architecture](pipelines.md).
 
 ---
@@ -78,7 +78,7 @@ Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-au
 
 **Label:** `after-phase-r-final`; **harness:** full app (committed defaults)
 
-**Next item:** force-push branch → PR 9086 CI → paste [PR post draft](#pr-post-draft-coverage-table--copy-for-merge-comment).
+**Next item:** force-push branch → PR 9086 CI → paste [PR post draft](#pr-post-draft-coverage-table--copy-for-merge-comment) — only after [validation evidence](../../testing/change-authoring-workflow.md#validation-evidence-blocking) still valid on published commits.
 
 **Current gates:** **Merge gate** **closed** (2026-07-03). compare:types 19/19 documented; Jest 1146/1146; tsc + lint green. **K–R** complete.
 
@@ -255,7 +255,7 @@ Each J0 probe / J1–J6 bridge step follows **one** serial loop. No overlap. Wor
 | ----- | -------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **1** | `implementation`     | `implementation` | Code/e2e changes; Jest + **unit-focused** tier; `.only` / tight area narrowing OK locally; **no commit**                                                                         |
 | **2** | `independent-review` | `review`         | **Frozen tree**; **area-focused** tier; no `.only`; area narrowing only in `tests/app.js` + `tests/globals.js`; serial [host rule](../../testing/change-authoring-workflow.md#host-rule) |
-| **3** | `commit`             | `commit`         | One focused commit only after `review_gate` closed                                                                                                                          |
+| **3** | `commit`             | `commit`         | One focused commit only after `review_gate` closed **with** [validation/coverage evidence](../../testing/validation-checklist.md#validation-evidence-package) recorded |
 
 
 Canonical commands: [serialized dispatch](../../testing/running-e2e.md#serialized-e2e-dispatch), [one iteration](../../testing/running-e2e.md#running-one-iteration), [guard probes](pipeline-implementation-workflow.md#ios-guard-probe-iterations).

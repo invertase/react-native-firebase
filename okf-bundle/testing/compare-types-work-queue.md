@@ -8,7 +8,7 @@ timestamp: 2026-07-03T00:00:00Z
 
 # Compare-types parity — work queue
 
-> **IN PROGRESS:** **PR #9088** — coverage analysis NOT 100% on native parent/coerce; closing testable gaps. **No push** until coverage + review green.
+> **IN PROGRESS:** **PR #9088** — delta review **GREEN** (`e091775f8`/`5b1f68399`). Awaiting your OK to `git push --force-with-lease` **after** [validation evidence](change-authoring-workflow.md#validation-evidence-blocking) still valid on published commits.
 > **Stack:** `main` → `new-architecture` ([#9080](https://github.com/invertase/react-native-firebase/pull/9080)) → `pipeline-continue-workqueue` ([#9086](https://github.com/invertase/react-native-firebase/pull/9086)) → **`compare-types-work-queue`** (frontier).
 > **Goal:** shrink `.github/scripts/compare-types/configs/*.ts` by fixing real drift or tightening intractable documentation — not blanket parity for native-only surfaces. Machinery: [compare-types README](../../../.github/scripts/compare-types/README.md). Term ids: [iteration vocabulary](iteration-vocabulary.md). Policy: [documentation policy](../documentation-policy.md).
 
@@ -324,7 +324,7 @@ Per [change authoring workflow](change-authoring-workflow.md):
 1. **`gap-analysis`** — confirm diff still present (`yarn compare:types`); read SDK `.d.ts` + RN `dist/typescript`.
 2. **`implementation`** — fix types/product; **`unit-focused`** or **`area-focused`** per arbiter table.
 3. **`independent-review`** — frozen tree; `yarn compare:types` must show row removed or reason updated.
-4. **`commit`** — one focused commit; `commit_subject` set before commit ([documentation policy](../documentation-policy.md)).
+4. **`commit`** — one focused commit; `commit_subject` set before commit; [validation evidence package](validation-checklist.md#validation-evidence-package) recorded ([documentation policy](../documentation-policy.md)).
 5. Remove stale config entries when shapes match.
 
 **Grilling items (`*0`):** `gap-analysis` only — no product commits until scope Notes complete and gates on `*0` closed.

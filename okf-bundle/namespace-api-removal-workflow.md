@@ -112,9 +112,10 @@ refactor(<module>): remove deprecated namespaced API
 
 Before `git commit`:
 
-1. Set the queue row's `commit_subject` to that exact line (replace `<module>`).
-2. Close `commit_gate` and update the header/next-pickup line in [namespace API removal work queue](namespace-api-removal-work-queue.md).
-3. Stage product, user docs, durable OKF learnings, **and** the queue doc together — one commit.
+1. [Validation evidence package](testing/validation-checklist.md#validation-evidence-package) recorded; [coverage evidence package](testing/coverage-design.md#coverage-evidence-package) when lib/native bridge touched.
+2. Set the queue row's `commit_subject` to that exact line (replace `<module>`).
+3. Close `commit_gate` and update the header/next-pickup line in [namespace API removal work queue](namespace-api-removal-work-queue.md).
+4. Stage product, user docs, durable OKF learnings, **and** the queue doc together — one commit.
 
 **Never stage:** area narrowing, any `.only`, ad-hoc harness edits, or **`RNFBDebug = true`** in `tests/globals.js`.
 

@@ -117,6 +117,8 @@ feat(firestore): expose pipeline <export-name>
 
 **Never stage:** area narrowing in `tests/app.js` / `tests/globals.js`, any `.only`.
 
+Before `git commit`: [validation evidence package](../../testing/validation-checklist.md#validation-evidence-package) recorded; [coverage evidence package](../../testing/coverage-design.md#coverage-evidence-package) when lib/native bridge touched ([change authoring § commit](../../testing/change-authoring-workflow.md#commit)).
+
 ## Gotchas
 
 - **macOS is first-class** — web SDK interop; parity bugs often appear there first.

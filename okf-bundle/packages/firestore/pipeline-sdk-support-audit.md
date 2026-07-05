@@ -131,7 +131,7 @@ Probe order/gates/live status: [work queue](pipeline-coverage-work-queue.md#j0--
 2. Implement or fix native lowering; unify matching `Pipeline.e2e.js` assertions cross-platform.
 3. Run the implement/review gate defined in the [work queue runtime protocol](pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict).
 4. Record outcome:
-   - **`independent-review` pass** → `sdk-supported-bridge-ok`; close parity row; `commit` after `review_gate` closed.
+   - **`independent-review` pass** → `sdk-supported-bridge-ok`; close parity row; `commit` after `review_gate` closed **with** [validation/coverage evidence](../../testing/validation-checklist.md#validation-evidence-package) recorded.
    - **`invalid-argument` / pipeline execute error** → capture exact message; classify `sdk-unsupported-confirmed` or `rnfb-bridge-gap` (compare native request in debug logs).
 
 Android already runs full pipelines; macOS uses JS SDK. Probes focus on **native iOS/Android** execute paths.

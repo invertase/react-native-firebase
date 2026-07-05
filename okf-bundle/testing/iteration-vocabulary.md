@@ -52,11 +52,11 @@ Work queues use these **field names** (values: `open` | `closed`):
 |-------|--------|
 | `implementation_gate` | `implementation` work type complete |
 | `review_gate` | `independent-review` work type complete |
-| `commit_gate` | Durable commit exists for the item |
+| `commit_gate` | Durable commit exists for the item **after** prior gates closed with [validation evidence](change-authoring-workflow.md#validation-evidence-blocking) |
 
 What closes each gate, trust rules, and loop transitions: [change authoring § gates](change-authoring-workflow.md#gates).
 
-`commit_gate` closes when a durable commit exists whose subject matches the row's `commit_subject`.
+`commit_gate` closes when a durable commit exists whose subject matches the row's `commit_subject`, **after** `implementation_gate` and `review_gate` closed with [validation evidence](change-authoring-workflow.md#validation-evidence-blocking).
 
 Items may also be marked **`blocked`** when a dependency gate is open elsewhere.
 

@@ -44,6 +44,25 @@ File-level coverage, not green tests/types alone, marks completion.
 
 Do not hand off closable gaps. Package workflows may define snapshot tooling (e.g. [pipeline scripts](../packages/firestore/pipeline-implementation-workflow.md)).
 
+<a id="coverage-evidence-package"></a>
+
+## Coverage evidence package (blocking)
+
+Required before **`review` gate** closes when the frozen diff touches `packages/*/lib/**` or native bridge sources (`packages/*/{android,ios}/**`). Jest green alone is insufficient.
+
+Produce after fresh e2e on every required platform, then post-process native artifacts ([§ stale coverage](#stale-coverage-data)):
+
+| Section | Contents |
+|---------|----------|
+| **Artifacts** | Timestamps for `coverage/ios-native/lcov.info`, Android `jacocoAndroidTestReport.xml`, and any Jest coverage run |
+| **Touched regions** | Per-file or per-function line % for changed logic (not whole-package aggregates only) |
+| **Branch map** | Table: branch / input shape → test or e2e that exercises it |
+| **Gaps** | Every line or branch below 100%: **fix** (test or delete dead code), or **acceptable exception** with wire/runtime evidence in durable OKF (e.g. [pipeline platform parity](../packages/firestore/pipeline-platform-parity.md) probe row) |
+
+**Verdict line:** `100% on reachable touched lines` **or** `NOT 100%` with numbered gaps and disposition (fixed / intractable with evidence / user-accepted deferral).
+
+Reviewers treat missing or stale coverage evidence as a **blocking** finding — same bar as missing e2e counts ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)).
+
 ## Platform parity (pipeline and bridge code)
 
 For native-bridge features, **platform parity precedes coverage expansion**: iOS/Android/macOS behavior must match unless blocked by native SDK. RNFB bridge gaps are defects, not permanent `Platform.*` e2e branches.

@@ -56,7 +56,7 @@ Each module follows **one** serial loop. Work types: [change authoring workflow 
 | **3** | `implementation` | `implementation` | [Workflow checklist](namespace-api-removal-workflow.md#per-module-implementation); **unit-focused** tier; `.only` OK locally; **no commit** |
 | **4** | `independent-review` | `review` | **Frozen tree**; **area-focused** tier; removal greps; minor/nit → remediation + delta re-review |
 | **5** | `documentation` | — | Migration guide + OKF if durable learnings |
-| **6** | `commit` | `commit` | Set `commit_subject`, close gates in queue doc, stage queue **with** product commit; one focused commit |
+| **6** | `commit` | `commit` | [Validation evidence package](testing/validation-checklist.md#validation-evidence-package) recorded; set `commit_subject`, close gates in queue doc, stage queue **with** product commit; one focused commit |
 
 ---
 

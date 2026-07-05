@@ -114,6 +114,27 @@ Before handoff, follow [OKF policy](../documentation-policy.md#okf-update-contra
 
 Goal: each iteration improves OKF and removes conflicting guidance.
 
+<a id="validation-evidence-package"></a>
+
+## Validation evidence package (blocking)
+
+Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, or publishing (`git push` / PR update), record evidence per [change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking). Minimum template:
+
+```markdown
+| Step | Command | Exit | Evidence |
+|------|---------|------|----------|
+| prepare | yarn lerna:prepare | 0 | — |
+| jest | yarn tests:jest <paths> | 0 | N/N tests |
+| e2e macOS | yarn tests:macos:test-cover | 0 | X passing — /tmp/...log |
+| e2e iOS | yarn tests:ios:test-cover | 0 | Y passing — /tmp/...log |
+| e2e Android | yarn tests:android:test-cover | 0 | Z passing — /tmp/...log |
+| compare:types | yarn compare:types | 0 | <pkg> 0/0/0 |
+| lint | yarn lint:js | 0 | — |
+| coverage | post-process + region table | — | see coverage-design § evidence package |
+```
+
+**History rewrite invalidates** prior rows — re-run and replace the table after amend/rebase.
+
 ## Handoff checklist
 
 - [ ] `yarn lerna:prepare` (after any `packages/*/lib/**` edits)
@@ -125,8 +146,8 @@ Goal: each iteration improves OKF and removes conflicting guidance.
 - [ ] `yarn compare:types` (stale config entries removed)
 - [ ] `yarn lint:js` (+ markdown/spellcheck if docs; + platform lint if native)
 - [ ] E2e green on **every required platform** for the changed module ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking); [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking); no `.only`; committed `RNFBDebug` remains `false`)
-- [ ] Native coverage post-processing per [coverage-design](coverage-design.md)
-- [ ] [Coverage policy](coverage-design.md#coverage-expectations-policy) satisfied on touched files
+- [ ] [Validation evidence package](validation-checklist.md#validation-evidence-package) recorded (exit codes, e2e counts, log paths)
+- [ ] [Coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native bridge touched — gaps investigated to fix, delete, or acceptable-exception bar
 - [ ] OKF bundle reviewed/updated per § above
 
 Package workflows may add items (e.g. pipeline before/after snapshots — [pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md)).

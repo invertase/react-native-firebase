@@ -355,7 +355,7 @@ Each package (or one legacy module within a multi-module package) follows **one*
 | **3** | `implementation` | `implementation` | Spec, codegen, native, JS; Jest + **unit-focused** tier on **every required platform** when native bridge touched ([platform coverage gate](../testing/running-e2e.md#platform-coverage-gate-blocking)); handoff includes e2e platform matrix or env blocker — Jest-only insufficient; `.only` / area narrowing OK locally; **no commit** |
 | **4** | `independent-review` | `review` | **Frozen tree**; **area-focused** tier; no `.only`; [area harness](turbomodule-implementation-workflow.md#turbomodule-area-harness); serial [host rule](../testing/change-authoring-workflow.md#host-rule) |
 | **5** | `documentation` | — | User docs + durable OKF when applicable |
-| **6** | `commit` | `commit` | One focused commit only after `review_gate` closed |
+| **6** | `commit` | `commit` | One focused commit only after `review_gate` closed **with** [validation/coverage evidence](../testing/validation-checklist.md#validation-evidence-package) recorded |
 
 Canonical commands: [validation checklist](../testing/validation-checklist.md), [serialized dispatch](../testing/running-e2e.md#serialized-e2e-dispatch).
 
