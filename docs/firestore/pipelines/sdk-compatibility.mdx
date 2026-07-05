@@ -16,7 +16,6 @@ CI enforces parity through `yarn compare:types` and the `firestore-pipelines` al
 | Core pipeline builder (`pipeline()`, stages, `execute()`)                   | **Supported** on Android, iOS, and macOS                              |
 | Expression helpers (aggregates, strings, arrays, maps, timestamps, vectors) | **Mostly supported** — see gaps below                                 |
 | Newer firebase-js-sdk helpers (2025–2026)                                   | **Partial** — tracked in "Not yet available"                          |
-| firebase-js-sdk `Type` export                                               | **React Native Firebase only** — use `isType()` with our `Type` union |
 
 # Not yet available in React Native Firebase
 
@@ -35,15 +34,9 @@ These exports exist in both SDKs but differ in typing or optional parameters:
 | Export            | Difference                                                            |
 | ----------------- | --------------------------------------------------------------------- |
 | `timestampDiff`   | Declaration overload ordering differs; all four SDK shapes supported  |
-| `isType`          | RNFB accepts the local `Type` alias; JS SDK accepts a broader string  |
+| `isType`          | Accepts the type name as a `string`, matching the JS SDK              |
 | `StageOptions`    | Equivalent runtime shape; declaration formatting differs              |
 | `TimeGranularity` | RNFB uses `isoWeek` / `isoYear`; JS SDK also lists lowercase variants |
-
-# React Native Firebase only
-
-| Export | Notes                                                                   |
-| ------ | ----------------------------------------------------------------------- |
-| `Type` | Local type discriminator union used with `isType()` and related helpers |
 
 # Platform execution matrix
 

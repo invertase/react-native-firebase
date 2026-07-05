@@ -22,13 +22,7 @@ import type { PackageConfig } from '../src/types';
 const config: PackageConfig = {
   nameMapping: {},
   missingInRN: [],
-  extraInRN: [
-    {
-      name: 'Type',
-      reason:
-        'RN Firebase exposes a local type discriminator alias for pipeline expression helpers.',
-    },
-  ],
+  extraInRN: [],
   differentShape: [],
 };
 

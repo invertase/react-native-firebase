@@ -258,7 +258,6 @@ import type {
   FunctionExpression,
   AggregateFunction,
   ExpressionType,
-  Type as PipelineValueType,
   TimeGranularity,
   TimePart,
   TimeUnit,
@@ -902,7 +901,6 @@ type _AllPipelineTypes = [
   FunctionExpression,
   AggregateFunction,
   ExpressionType,
-  PipelineValueType,
   TimeGranularity,
   TimePart,
   TimeUnit,
@@ -1009,7 +1007,7 @@ void isAbsent(field('optionalField'));
 void isAbsent('optionalField');
 // isError
 void isError(field('computedField'));
-// isType: (string, Type) | (Expression, Type)
+// isType: (string, string) | (Expression, string)
 void isType(field('value'), 'string');
 void isType('value', 'number');
 // ifAbsent: (Expression, Expression) | (Expression, unknown) | (string, Expression)

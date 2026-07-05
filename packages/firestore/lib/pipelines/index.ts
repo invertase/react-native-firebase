@@ -35,7 +35,6 @@ export type {
   FunctionExpression,
   AggregateFunction,
   ExpressionType,
-  Type,
   TimeGranularity,
   TimePart,
   TimeUnit,
