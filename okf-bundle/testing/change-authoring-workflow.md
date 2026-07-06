@@ -113,8 +113,8 @@ Gates close **only** when **recorded evidence** shows the required validation ti
 
 | Gate | Minimum evidence (record in work-queue notes or review handoff) |
 |------|------------------------------------------------------------------|
-| **`implementation`** | Prepare/tsc/jest **exit codes**; when native or macOS runtime touched: **e2e pass count per required platform** + log path (e.g. `/tmp/rnfb-e2e-*.log`); lint exit code |
-| **`review`** | Frozen-tree re-run of area-focused checklist; **coverage evidence package** when native or `packages/*/lib/**` bridge code touched ([coverage design § evidence package](coverage-design.md#coverage-evidence-package)); compare:types row for touched registered package |
+| **`implementation`** | Prepare/tsc/jest **exit codes**; when native or macOS runtime touched: **e2e pass count per required platform** + log path (e.g. `/tmp/rnfb-e2e-*.log`); **`yarn lint` exit code 0**; when `docs/**` changed: **`yarn lint:markdown`** + **`yarn lint:spellcheck` exit code 0** |
+| **`review`** | Frozen-tree re-run of area-focused checklist; **`yarn lint` exit code 0**; when `docs/**` in frozen diff: **`yarn lint:markdown`** + **`yarn lint:spellcheck` exit code 0**; **coverage evidence package** when native or `packages/*/lib/**` bridge code touched ([coverage design § evidence package](coverage-design.md#coverage-evidence-package)); compare:types row for touched registered package |
 | **`commit`** | Prior gates closed **with evidence**; no `.only` / harness overrides staged |
 | **Publication** (`git push`, force-push, PR refresh) | **`review` gate closed on the exact commits being published**; evidence still valid (no product edits since last area-focused run) |
 
@@ -200,7 +200,7 @@ flowchart TD
 
 **Host rule:** one `:test-cover` at a time; never overlap **unit-focused** and **area-focused** tiers on one host ([§ host rule](#host-rule)).
 
-**Static analysis before handoff:** Before closing the **`implementation`** gate, run the [validation checklist § lint and formatting](validation-checklist.md#lint-and-formatting) rows (`yarn lint:js`; `yarn lint:markdown` / `yarn lint:spellcheck` when docs changed). Fix violations in product code — do not hand off with lint failures. Command list lives only in the checklist; do not duplicate here.
+**Static analysis before handoff:** Before closing the **`implementation`** gate, run the [validation checklist § lint and formatting](validation-checklist.md#lint-and-formatting) rows — **`yarn lint`** (CI Lint job: js + android + ios check) on every diff with package sources; **`yarn lint:markdown`** + **`yarn lint:spellcheck`** when `docs/**` changed (CI docs job). Fix violations in product code — do not hand off with lint failures. Command list lives only in the checklist; do not duplicate here.
 
 Step detail: [running e2e § unit-focused iteration loop](running-e2e.md#unit-focused-tier-iteration-loop).
 

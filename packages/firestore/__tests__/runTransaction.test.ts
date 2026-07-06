@@ -31,4 +31,14 @@ describe('runTransaction options passthrough', function () {
 
     expect(transactionBegin).toHaveBeenCalledWith(expect.any(Number), 0);
   });
+
+  it.each([0, -1])('throws when maxAttempts is %s', function (maxAttempts) {
+    const transactionBegin = jest.fn();
+    const handler = createHandler(transactionBegin);
+
+    expect(() => handler._add(async () => 'ok', { maxAttempts })).toThrow(
+      'Max attempts must be at least 1',
+    );
+    expect(transactionBegin).not.toHaveBeenCalled();
+  });
 });

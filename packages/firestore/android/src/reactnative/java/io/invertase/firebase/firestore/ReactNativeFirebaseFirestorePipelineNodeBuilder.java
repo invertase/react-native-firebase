@@ -344,11 +344,13 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     }
   }
 
-  private static final class ExitObjectDocumentMatchesExpressionFrame implements ObjectLoweringFrame {
+  private static final class ExitObjectDocumentMatchesExpressionFrame
+      implements ObjectLoweringFrame {
     final LoweredExpressionBox box;
     final LoweredExpressionBox queryBox;
 
-    ExitObjectDocumentMatchesExpressionFrame(LoweredExpressionBox box, LoweredExpressionBox queryBox) {
+    ExitObjectDocumentMatchesExpressionFrame(
+        LoweredExpressionBox box, LoweredExpressionBox queryBox) {
       this.box = box;
       this.queryBox = queryBox;
     }
@@ -852,7 +854,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             + fieldName
             + " to include an alias for computed expressions.");
   }
-
 
   Ordering coerceOrdering(
       ReactNativeFirebaseFirestorePipelineParser.ParsedOrderingNode value, String fieldName)
@@ -1410,7 +1411,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
                 normalizeExpressionFunctionName(exitFrame.functionName), expressions);
         continue;
       }
-
 
       if (frame instanceof ExitObjectDocumentMatchesExpressionFrame) {
         ExitObjectDocumentMatchesExpressionFrame exitFrame =
@@ -2119,8 +2119,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         }
         {
           LoweredExpressionBox pathBox = new LoweredExpressionBox();
-          stack.push(
-              new ExitObjectParentExpressionFrame(box, pathBox));
+          stack.push(new ExitObjectParentExpressionFrame(box, pathBox));
           stack.push(
               new EnterObjectExpressionValueFrame(args.get(0), fieldName + ".args[0]", pathBox));
           return;

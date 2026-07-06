@@ -546,9 +546,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboStorage);
 /**
  * @url N/A - RNFB Specific
  */
-- (NSNumber *)setTaskStatus:(NSString *)appName
-                     taskId:(double)taskId
-                     status:(double)status {
+- (NSNumber *)setTaskStatus:(NSString *)appName taskId:(double)taskId status:(double)status {
   NSNumber *taskIdNumber = @(taskId);
   id task = PENDING_TASKS[taskIdNumber];
   if (task == nil) {

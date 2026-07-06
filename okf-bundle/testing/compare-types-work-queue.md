@@ -8,7 +8,7 @@ timestamp: 2026-07-03T00:00:00Z
 
 # Compare-types parity — work queue
 
-> **IN PROGRESS:** **C1.3–C1.7 / C1.2b (Phase D)** — next document-only batch, or **C10** native sync.
+> **IN PROGRESS:** pre-merge remediation committed; next is push / pre-merge validation decision.
 > **Stack:** `main` → `new-architecture` ([#9080](https://github.com/invertase/react-native-firebase/pull/9080)) → `pipeline-continue-workqueue` ([#9086](https://github.com/invertase/react-native-firebase/pull/9086)) → **`compare-types-work-queue`** (frontier).
 > **Goal:** shrink `.github/scripts/compare-types/configs/*.ts` by fixing real drift or tightening intractable documentation — not blanket parity for native-only surfaces. Machinery: [compare-types README](../../../.github/scripts/compare-types/README.md). Term ids: [iteration vocabulary](iteration-vocabulary.md). Policy: [documentation policy](../documentation-policy.md).
 
@@ -27,11 +27,11 @@ Fixability-first — cheap type-only wins before native/structural work; confirm
 | Phase | Tier | Focus |
 | ----- | ---- | ----- |
 | **A** | 1 — Easiest | Types/docs only — no native bridge |
-| **B** | 2 — Moderate | Small product work + Phase S sync candidates |
+| **B** | 2 — Moderate | Small product work + TurboModule sync candidates |
 | **C** | 3 — Hard | Large implementation or structural wrapper typing |
 | **D** | 4 — Document | Intentional drift — audit & harden config reasons only |
 
-Each phase **starts with item `<phase>0` grilling** ([Matt Pocock grilling skill](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md)) — one question at a time until scope, ordering, fix-vs-document, and validation tier per item are locked.
+Each phase starts with item `<phase>0` `gap-analysis` / scope review — use decision branches until scope, ordering, fix-vs-document, and validation tier per item are locked.
 
 ---
 
@@ -53,7 +53,7 @@ Before any item's `implementation`:
 | Phase | Focus | Status | Outcome |
 | ----- | ----- | ------ | ------- |
 | **A** | Tier 1 — types/docs only | **partial** | A1–A5, A7–A8, A10 committed; A6/A9 deferred |
-| **B** | Tier 2 — moderate / Phase S | **complete** | B1–B9 committed (B3 ✅ 2026-07-05) |
+| **B** | Tier 2 — moderate / sync conversion | **complete** | B1–B9 committed (B3 ✅ 2026-07-05) |
 | **C** | Tier 3 — hard / structural | **in progress** | C1.1 ✅ committed; C1.2 ✅ committed; C1.2b documented |
 | **D** | Tier 4 — document intractable | **queued** | — |
 
@@ -61,11 +61,11 @@ Before any item's `implementation`:
 
 ## Current snapshot
 
-**Label:** `pre-merge-doc-review-2026-07-05`
+**Label:** `pre-merge-remediation-review-green-2026-07-05`
 
-**Next item:** pre-merge review for push readiness.
+**Next item:** pre-merge validation / push decision.
 
-**Current gates:** C1.1, C1.2, C1.2b all gates **closed**. v26 migration guide updated for B3, C1.1, C1.2, and C1.2b.
+**Current gates:** C1.1, C1.2, C1.2b all gates **closed**. Pre-merge remediation all gates **closed**; OKF consistency pass green.
 
 ---
 
@@ -73,7 +73,7 @@ Before any item's `implementation`:
 
 | Item | Package / scope | `commit_subject` | `implementation_gate` | `review_gate` | `commit_gate` | `next_work_type` | `validation_tier` | Notes |
 | ---- | --------------- | ---------------- | ----------------------- | ------------- | ------------- | ---------------- | ------------------- | ----- |
-| **A0** | Phase A scope | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `none` | Grilling closed 2026-07-03 — see [Phase A Notes](#phase-a-notes) |
+| **A0** | Phase A scope | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `none` | Scope review closed 2026-07-03 — see [Phase A Notes](#phase-a-notes) |
 | **A1** | firestore | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green; `onSnapshotsInSync` row removed |
 | **A2** | firestore-pipelines | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — A2 rows removed (batched A2–A4) |
 | **A3** | firestore-pipelines | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — `TimeGranularity` row removed |
@@ -84,7 +84,7 @@ Before any item's `implementation`:
 | **A8** | functions | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — registry + config; `FunctionsError` documented |
 | **A9** | remote-config | — | open | open | open | — | `unit-focused` | `ValueSource` — **user-accepted deferral** ([acceptable exceptions](change-authoring-workflow.md#acceptable-exceptions)): const-vs-literal alignment needs architectural review; accepted for now, tracked. Resolve by SDK alignment or recorded rationale once reviewed |
 | **A10** | cross-cutting | `fix(types): align compare-types modular API with firebase-js-sdk` | closed | closed | closed | — | `area-focused` | Review green — app structural + callbacks |
-| **B0** | Phase B scope | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `none` | Gap-analysis + grilling decisions 2026-07-03 — see [Phase B Notes](#phase-b-notes) |
+| **B0** | Phase B scope | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `none` | Gap-analysis + scope decisions 2026-07-03 — see [Phase B Notes](#phase-b-notes) |
 | **B1** | firestore-pipelines | `refactor(firestore/pipelines): add constant preferIntegers option` | closed | closed | closed | — | `area-focused` | Re-review green 2026-07-04: parser integerLiteral iOS/Android, preferIntegers e2e, sdk-compat; macOS 147 / iOS 152 / Android 152 |
 | **B2** | firestore-pipelines | `feat(firestore/pipelines): expose search stage and pipeline expressions` | closed | closed | closed | — | `area-focused` | 6× `missingInRN` cleared; macOS 150/150; iOS/Android 155/155; firebase-tools 15.22.4; search index verify cycle. Follow-up: dropped RN-only `Type` export → pipelines 0 documented diffs |
 | **B3** | storage | `refactor!(storage): sync UploadTask pause resume cancel booleans` | closed | closed | closed | — | `area-focused` | Committed 2026-07-05: sync `setTaskStatus` boolean; mid-transfer e2e; iOS upload-cancel skip — user-accepted + [firebase-ios-sdk#16353](https://github.com/firebase/firebase-ios-sdk/issues/16353) |
@@ -95,9 +95,10 @@ Before any item's `implementation`:
 | **B7** | remote-config | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | FetchStatus native literals documented |
 | **B8** | remote-config | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | RemoteConfigOptions on getRemoteConfig |
 | **B9** | firestore | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | aggregateFieldEqual exported |
-| **C0** | Phase C scope | — | open | open | open | `gap-analysis` | `none` | [Grilling](#phase-c--tier-3-hard--structural) |
+| **C0** | Phase C scope | — | open | open | open | `gap-analysis` | `none` | [Scope review](#phase-c--tier-3-hard--structural) |
 | **C1.2** | firestore | `feat(firestore): export aggregateQuerySnapshotEqual for SDK parity` | closed | closed | closed | — | `unit-focused` | Committed 2026-07-05: pure JS helper; jest 315/315 |
 | **C1.2b** | firestore | — | closed | closed | closed | — | `none` | User-accepted: FieldValue `maximum`/`minimum` — iOS Firebase Firestore 12.15.0 lacks APIs; config hardened 2026-07-05 |
+| **PMR-1** | pre-merge review remediation | `fix(firestore): validate TransactionOptions maxAttempts` | closed | closed | closed | — | `area-focused` | Review green: markdown/docs/config/runtime findings fixed; validation evidence recorded below |
 | **C1.3** | firestore | — | open | open | open | — | `none` | Local-cache config (15 exports) — **document-only** (Phase D): web/N/A on native |
 | **C1.4** | firestore | — | open | open | open | — | `none` | Snapshot serialization (3 exports) — **document-only** (Phase D): web-only |
 | **C1.5** | firestore | — | open | open | open | — | `none` | Index config (4 exports) — **document-only** (Phase D): deprecated in firebase-js-sdk; RNFB will not implement |
@@ -116,7 +117,7 @@ Before any item's `implementation`:
 | **C10.2** | analytics | — | open | open | open | `implementation` | `unit-focused` | B4 `logEvent` native follow-up + 5 setters — ordered serial analytics queue; clears 5× `differentShape` setter rows |
 | **C10.3** | app-check | — | open | open | open | `implementation` | `area-focused` | B5 `initializeAppCheck` follow-up — sync-void+gate; provider configured before return |
 | **C10.4** | firestore | — | open | open | open | `implementation` | `area-focused` | B6 `initializeFirestore` follow-up — sync-void+gate; in-memory settings registry before return |
-| **D0** | Phase D scope | — | open | open | open | `gap-analysis` | `none` | [Grilling](#phase-d--tier-4-document--leave) |
+| **D0** | Phase D scope | — | open | open | open | `gap-analysis` | `none` | [Scope review](#phase-d--tier-4-document--leave) |
 | **D1** | all packages | — | open | open | open | — | `none` | `SDK_VERSION` extra exports — policy |
 | **D2** | database, perf, … | — | open | open | open | — | `none` | RN-only native helpers |
 | **D3** | cross-cutting | — | open | open | open | — | `none` | Error branding: keep vs unify |
@@ -125,13 +126,30 @@ Before any item's `implementation`:
 
 ---
 
+## PMR-1 Notes
+
+Pre-merge remediation completed 2026-07-05. Findings fixed: markdown table formatting, Firestore compare-types rationale hardening, public OKF wording/state, transaction `maxAttempts` validation, user-facing v26 migration labels, and stale pipeline compatibility rows.
+
+| Command | Exit code | Evidence |
+| ------- | --------- | -------- |
+| `yarn lerna:prepare` | 0 | 20 packages prepared |
+| `yarn tsc:compile` | 0 | Root TypeScript compile green |
+| `yarn compare:types` | 0 | Registered package parity documented, no stale entries |
+| `yarn lint:js` | 0 | JS/TS lint green |
+| `yarn lint:markdown` | 0 | Prettier markdown check green |
+| `yarn tests:jest --watchman=false packages/firestore/__tests__/runTransaction.test.ts` | 0 | 1 suite, 4 tests passed |
+| `git diff --check` | 0 | Independent remediation review |
+| OKF consistency scan | green | Canonical ownership, DRY, links, and durability pass |
+
+---
+
 ## Phase A — Tier 1 (types/docs only)
 
 **Goal:** Remove or shrink `differentShape` rows with **TypeScript-only** changes; no native bridge edits.
 
-### A0 — Grilling (blocking)
+### A0 — Scope Review (blocking)
 
-**Method:** [Matt Pocock grilling skill](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md) — interview relentlessly, **one question at a time**, explore codebase before asking when possible.
+**Method:** `gap-analysis` with decision branches for scope, order, fix-vs-document, validation tier, and done signal.
 
 **Resolve before A1:**
 
@@ -141,7 +159,7 @@ Before any item's `implementation`:
 | A10 cross-cutting | Single `NativeFirebaseError` structural fix vs per-package callback types? |
 | firestore-pipelines | Declaration-only fixes — regenerate from SDK or hand-edit `.d.ts`? |
 | Validation | Is `yarn compare:types` + tsc sufficient for all A items, or any need e2e? |
-| Ordering | Strict A1→A10 or parallel by package after grilling? |
+| Ordering | Strict A1→A10 or parallel by package after scope review? |
 | Done signal | Config entry **removed** vs **reason narrowed** — rubric for “cosmetic equivalent”? |
 
 **Deliverable:** Phase A **Notes** below updated with decisions; `A0` gates closed; `next_work_type` on A1 set to `implementation`.
@@ -152,7 +170,7 @@ Before any item's `implementation`:
 | ---- | --------------- | ------------------------ | ------------ |
 | **A1** ✅ | firestore `onSnapshotsInSync` | Cosmetic callback signatures; behaviour equivalent | Align `next`/`error` types to SDK |
 | **A2** ✅ | firestore-pipelines `StageOptions`, `ExpressionType`, `timestampDiff` | Declaration ordering/format only | Match SDK declaration file |
-| **A3** ✅ | firestore-pipelines `TimeGranularity` | `isoWeek`/`isoYear` vs lowercase variants | Widen union or alias |
+| **A3** ✅ | firestore-pipelines `TimeGranularity` | Lowercase `isoweek`/`isoyear` literals aligned | Match SDK literals |
 | **A4** ✅ | firestore-pipelines `isType` | RN `Type` alias vs SDK `string` | Widen param type |
 | **A5** ✅ | storage `uploadBytes`, `uploadBytesResumable` | `TaskResult`/`Task` aliases identical at runtime | Rename to SDK export names |
 | **A6** ❓ | storage `TaskEvent`, `TaskState` | const object vs string-literal union | Export SDK-style literals |
@@ -185,7 +203,7 @@ Before any item's `implementation`:
 
 **Deferrals:** UploadTask sync `boolean` stays B3. **A6, A9 deferred** — team consensus before pickup (lean option 1 below).
 
-**Grilling decisions:**
+**Scope decisions:**
 - **A10 (confirmed):** App-level structural assignability for `NativeFirebaseError` → `FirebaseError`, then update callback params in remote-config + storage; remove config rows. Runtime stays `NativeFirebaseError`; SDK drop-in via `FirebaseError`; RN extras via `'namespace' in error` or cast.
 - **A6 (user-accepted deferral):** `TaskEvent`/`TaskState` const-vs-literal alignment needs architectural design/human review not available now, so it is a [user-accepted deferral](change-authoring-workflow.md#acceptable-exceptions) — accepted for now and tracked, not closed by documenting convenience drift. Once reviewed, resolve by aligning to the SDK (literal-only) or by recording the rationale (e.g. removing a shipped public const is a breaking change). Do not strip constants before that review.
 - **A9 (user-accepted deferral):** Same as A6 for `ValueSource` const vs SDK literal union — accepted and tracked pending architectural review; resolve by SDK alignment or recorded rationale, not convenience.
@@ -196,19 +214,19 @@ Before any item's `implementation`:
 
 ---
 
-## Phase B — Tier 2 (moderate / Phase S sync)
+## Phase B — Tier 2 (moderate / sync conversion)
 
-**Goal:** Small API additions and async→sync parity where Phase S / PS-S2 already flagged candidates.
+**Goal:** Small API additions and async→sync parity where TurboModule sync analysis already flagged candidates.
 
-### B0 — Grilling (blocking)
+### B0 — Scope Review (blocking)
 
-**Method:** [Grilling skill](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md).
+**Method:** `gap-analysis` with decision branches for dependencies, native scope, validation tier, and batching.
 
 **Resolve before B1:**
 
 | Branch | Questions |
 | ------ | ----------- |
-| Phase S dependency | Block B on `new-architecture` / Phase S merge? Which items require TurboModule sync path? |
+| Sync dependency | Block B on `new-architecture` / sync-infra merge? Which items require TurboModule sync path? |
 | B2 pipelines missing | One export per commit vs batched `documentMatches`+`score`? Native lowering required for each? |
 | B7 FetchStatus | Breaking change acceptable for literal rename (`no_fetch_yet` → `no-fetch-yet`)? |
 | Native scope | B3/B6 — confirm native can return sync bool / sync Firestore instance today |
@@ -223,18 +241,18 @@ Before any item's `implementation`:
 | **B1** ✅ | firestore-pipelines `constant` `preferIntegers` | Add optional param + wire lowering |
 | **B2** ✅ | firestore-pipelines 6× `missingInRN` | Implement pipeline expressions/types per [pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md) |
 | **B3** ✅ | storage `UploadTask` sync methods | Native sync TurboModule: spec `setTaskStatus` → `boolean`, codegen regen, iOS resolve fix; breaking-change queue |
-| **B4** ✅ | analytics `logEvent` | Phase S sync-void+queue |
-| **B5** ✅ | app-check `initializeAppCheck` | Phase S sync-void+gate |
-| **B6** ✅ | firestore `initializeFirestore` | Phase S sync return when settings in-memory |
+| **B4** ✅ | analytics `logEvent` | TurboModule sync-void queue |
+| **B5** ✅ | app-check `initializeAppCheck` | TurboModule sync-void gate |
+| **B6** ✅ | firestore `initializeFirestore` | TurboModule sync return when settings in-memory |
 | **B7** ✅ | remote-config `FetchStatus` | Align literals or document permanent native form |
 | **B8** ✅ | remote-config `getRemoteConfig` | Expose `RemoteConfigOptions` (no-op ok on native?) |
 | **B9** ✅ | firestore `aggregateFieldEqual` | Export helper if native supports |
 
 ### Phase B Notes
 
-**Gap-analysis (2026-07-03):** Phase S / TurboModule sync infra landed on `new-architecture`. Pipeline queue: compare-types exports were **out of scope until phase R** on `main` — **stale on this branch:** [pipeline coverage queue](../packages/firestore/pipeline-coverage-work-queue.md) shows **K–R complete**, merge gate closed 2026-07-03, **compare-types exports unblocked**.
+**Gap-analysis (2026-07-03):** TurboModule sync infra landed on `new-architecture`. Pipeline queue: compare-types exports were **out of scope until phase R** on `main` — **stale on this branch:** [pipeline coverage queue](../packages/firestore/pipeline-coverage-work-queue.md) shows **K–R complete**, merge gate closed 2026-07-03, **compare-types exports unblocked**.
 
-**Grilling decisions (B0):**
+**Scope decisions (B0):**
 - **B1, B2:** Were deferred until pipeline **R** — **R is complete** on `pipeline-continue-workqueue`; proceed per [pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md).
 - **B7:** Reclassify **→ Phase D** — document native `no_fetch_yet`/`throttled` literals (mirror deferred A9).
 - **B10:** Moved to **C1.1** (2026-07-05 gap-analysis) — `TransactionOptions` + `runTransaction` `maxAttempts`.
@@ -259,9 +277,9 @@ Before any item's `implementation`:
 
 **Goal:** Track large efforts — may spawn sub-queues or ADRs; many rows may remain documented after audit.
 
-### C0 — Grilling (blocking)
+### C0 — Scope Review (blocking)
 
-**Method:** [Grilling skill](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md).
+**Method:** `gap-analysis` with decision branches for structural items, document-only items, out-of-scope packages, and architecture-decision needs.
 
 **Resolve before C1.1:**
 
@@ -332,11 +350,11 @@ Gap-analysis 2026-07-05: replace Phase B compare-types façades (B4/B5/B6) and r
 
 ## Phase D — Tier 4 (document & leave)
 
-**Goal:** Harden `configs/*.ts` reasons; **no product fix** unless grilling reclassifies an item upward.
+**Goal:** Harden `configs/*.ts` reasons; **no product fix** unless `gap-analysis` reclassifies an item upward.
 
-### D0 — Grilling (blocking)
+### D0 — Scope Review (blocking)
 
-**Method:** [Grilling skill](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md).
+**Method:** `gap-analysis` with decision branches for keep/remove policy, error branding, and audit deliverables.
 
 **Resolve before D1:**
 
@@ -361,7 +379,7 @@ Gap-analysis 2026-07-05: replace Phase B compare-types façades (B4/B5/B6) and r
 
 ### Phase D Notes
 
-_(Populated by D0 grilling.)_
+_(Populated by D0 gap-analysis.)_
 
 ---
 
@@ -375,7 +393,7 @@ Per [change authoring workflow](change-authoring-workflow.md):
 4. **`commit`** — one focused commit; `commit_subject` set before commit; [validation evidence package](validation-checklist.md#validation-evidence-package) recorded ([documentation policy](../documentation-policy.md)).
 5. Remove stale config entries when shapes match.
 
-**Grilling items (`*0`):** `gap-analysis` only — no product commits until scope Notes complete and gates on `*0` closed.
+**Scope-review items (`*0`):** `gap-analysis` only — no product commits until scope Notes complete and gates on `*0` closed.
 
 ---
 

@@ -29,8 +29,9 @@ const config: PackageConfig = {
     {
       name: 'documentSnapshotFromJSON',
       reason:
-        'Deserialises a DocumentSnapshot from a JSON representation. Part of ' +
-        'the firebase-js-sdk serialization API not yet available in RN Firebase.',
+        'firebase-js-sdk reconstructs web SDK snapshot wrappers from JSON. RN Firebase ' +
+        'snapshots are native-backed wrappers, and the Android/iOS Firestore SDKs do not ' +
+        'expose cross-platform DocumentSnapshot JSON constructors.',
     },
     {
       name: 'enableIndexedDbPersistence',
@@ -58,21 +59,21 @@ const config: PackageConfig = {
     {
       name: 'memoryEagerGarbageCollector',
       reason:
-        'Factory for the memory eager garbage collector used with memoryLocalCache. ' +
-        'The local cache configuration API is not yet implemented in RN Firebase; ' +
-        'persistence is controlled via native platform settings.',
+        'Web local-cache component factory for memoryLocalCache. RN Firebase delegates ' +
+        'persistence to the native Firestore SDKs, which do not expose the firebase-js-sdk ' +
+        'LocalCache/GarbageCollector component model.',
     },
     {
       name: 'memoryLocalCache',
       reason:
-        'Factory for an in-memory local cache instance. The local cache ' +
-        'configuration API is not yet implemented in RN Firebase.',
+        'Web local-cache factory. React Native targets use the native Firestore SDK cache ' +
+        'configured through RN Firebase settings, not firebase-js-sdk LocalCache instances.',
     },
     {
       name: 'memoryLruGarbageCollector',
       reason:
-        'Factory for the memory LRU garbage collector used with memoryLocalCache. ' +
-        'The local cache configuration API is not yet implemented in RN Firebase.',
+        'Web local-cache component factory for memoryLocalCache. Native Firestore SDK cache ' +
+        'configuration does not expose a firebase-js-sdk MemoryLruGarbageCollector object.',
     },
     {
       name: 'minimum',
@@ -87,16 +88,15 @@ const config: PackageConfig = {
     {
       name: 'onSnapshotResume',
       reason:
-        'Resumes a snapshot listener from a previously-serialized resume token. ' +
-        'Part of the firebase-js-sdk snapshot serialization API not yet available ' +
-        'in RN Firebase.',
+        'firebase-js-sdk web snapshot resume API depends on serialized web SDK listener ' +
+        'state. RN Firebase listeners are backed by Android/iOS SDK listener state, and ' +
+        'those SDKs do not expose a compatible public resume-token constructor.',
     },
     {
       name: 'persistentLocalCache',
       reason:
-        'Factory for a persistent local cache instance. The local cache ' +
-        'configuration API is not yet implemented in RN Firebase; persistence ' +
-        'is controlled via native platform settings.',
+        'Web persistent local-cache factory. RN Firebase uses native Firestore persistence ' +
+        'settings instead of firebase-js-sdk PersistentLocalCache component instances.',
     },
     {
       name: 'persistentMultipleTabManager',
@@ -107,20 +107,22 @@ const config: PackageConfig = {
     {
       name: 'persistentSingleTabManager',
       reason:
-        'Factory for the persistent single-tab manager. The local cache ' +
-        'configuration API is not yet implemented in RN Firebase.',
+        'Web tab-manager factory for persistentLocalCache. React Native has no ' +
+        'firebase-js-sdk tab-manager component path; native persistence is controlled by ' +
+        'platform SDK settings.',
     },
     {
       name: 'querySnapshotFromJSON',
       reason:
-        'Deserialises a QuerySnapshot from a JSON representation. Part of ' +
-        'the firebase-js-sdk serialization API not yet available in RN Firebase.',
+        'firebase-js-sdk reconstructs web SDK query snapshot wrappers from JSON. RN Firebase ' +
+        'query snapshots are native-backed wrappers, and the Android/iOS Firestore SDKs do ' +
+        'not expose cross-platform QuerySnapshot JSON constructors.',
     },
     {
       name: 'setIndexConfiguration',
       reason:
-        'Configures Firestore indexes from a JSON or Protobuf configuration. ' +
-        'Deprecated in the firebase-js-sdk. Not implemented in RN Firebase.',
+        'Deprecated in firebase-js-sdk; React Native Firebase will not implement. Native ' +
+        'Firestore SDKs do not expose the web JSON/Protobuf index configuration API.',
     },
 
     // --- Types / Interfaces ---
@@ -133,44 +135,44 @@ const config: PackageConfig = {
     {
       name: 'Index',
       reason:
-        'Type used with setIndexConfiguration. Not implemented in RN Firebase ' +
-        'as setIndexConfiguration is not supported.',
+        'Deprecated firebase-js-sdk type used only by setIndexConfiguration. React Native ' +
+        'Firebase will not implement that web index configuration API.',
     },
     {
       name: 'IndexConfiguration',
       reason:
-        'Type used with setIndexConfiguration. Not implemented in RN Firebase ' +
-        'as setIndexConfiguration is not supported.',
+        'Deprecated firebase-js-sdk type used only by setIndexConfiguration. React Native ' +
+        'Firebase will not implement that web index configuration API.',
     },
     {
       name: 'IndexField',
       reason:
-        'Type used with setIndexConfiguration. Not implemented in RN Firebase ' +
-        'as setIndexConfiguration is not supported.',
+        'Deprecated firebase-js-sdk type used only by setIndexConfiguration. React Native ' +
+        'Firebase will not implement that web index configuration API.',
     },
     {
       name: 'MemoryCacheSettings',
       reason:
-        'Configuration interface for the memory local cache. The local cache ' +
-        'configuration API is not yet implemented in RN Firebase.',
+        'Web memory local-cache configuration interface. RN Firebase exposes native ' +
+        'Firestore persistence/cache settings rather than firebase-js-sdk LocalCache objects.',
     },
     {
       name: 'MemoryEagerGarbageCollector',
       reason:
-        'Interface for the memory eager garbage collector. The local cache ' +
-        'configuration API is not yet implemented in RN Firebase.',
+        'Web memory local-cache garbage-collector interface. Native Firestore SDK cache ' +
+        'configuration does not expose this firebase-js-sdk component model.',
     },
     {
       name: 'MemoryGarbageCollector',
       reason:
-        'Base interface for memory garbage collector strategies. The local cache ' +
-        'configuration API is not yet implemented in RN Firebase.',
+        'Web memory local-cache garbage-collector base interface. Native Firestore SDK cache ' +
+        'configuration does not expose this firebase-js-sdk component model.',
     },
     {
       name: 'MemoryLruGarbageCollector',
       reason:
-        'Interface for the memory LRU garbage collector. The local cache ' +
-        'configuration API is not yet implemented in RN Firebase.',
+        'Web memory local-cache LRU garbage-collector interface. Native Firestore SDK cache ' +
+        'configuration does not expose this firebase-js-sdk component model.',
     },
     {
       name: 'PersistentCacheIndexManager',
@@ -181,8 +183,8 @@ const config: PackageConfig = {
     {
       name: 'PersistentCacheSettings',
       reason:
-        'Configuration interface for the persistent local cache. The local cache ' +
-        'configuration API is not yet implemented in RN Firebase.',
+        'Web persistent local-cache configuration interface. RN Firebase uses native ' +
+        'Firestore persistence settings instead of firebase-js-sdk PersistentLocalCache objects.',
     },
     {
       name: 'PersistentMultipleTabManager',
@@ -193,20 +195,21 @@ const config: PackageConfig = {
     {
       name: 'PersistentSingleTabManager',
       reason:
-        'Interface for the persistent single-tab manager. The local cache ' +
-        'configuration API is not yet implemented in RN Firebase.',
+        'Web persistent-cache tab-manager interface. React Native has no firebase-js-sdk ' +
+        'single-tab manager path; native persistence is controlled by platform SDK settings.',
     },
     {
       name: 'PersistentSingleTabManagerSettings',
       reason:
-        'Configuration interface for the persistent single-tab manager. The local ' +
-        'cache configuration API is not yet implemented in RN Firebase.',
+        'Web persistent-cache single-tab manager settings. React Native has no ' +
+        'firebase-js-sdk tab-manager component path.',
     },
     {
       name: 'PersistentTabManager',
       reason:
-        'Base interface for persistent tab manager strategies. The local cache ' +
-        'configuration API is not yet implemented in RN Firebase.',
+        'Web persistent-cache tab-manager base interface. React Native has no ' +
+        'firebase-js-sdk tab-manager component path; native persistence is controlled by ' +
+        'platform SDK settings.',
     },
   ],
 
@@ -265,19 +268,22 @@ const config: PackageConfig = {
       name: 'deleteAllPersistentCacheIndexes',
       reason:
         'Returns `Promise<void>` in RN Firebase vs `void` in the firebase-js-sdk. ' +
-        'Phase S hint: **keep-async: deferred persistent-cache IO** (web void schedules disk/index work; see PS-S2-gap).',
+        'RN Firebase delegates persistent-cache index deletion to native SDK IO and exposes ' +
+        'completion/failure through the returned Promise; the web SDK starts the operation and returns void.',
     },
     {
       name: 'disablePersistentCacheIndexAutoCreation',
       reason:
         'Returns `Promise<void>` in RN Firebase vs `void` in the firebase-js-sdk. ' +
-        'Phase S hint: **keep-async: deferred persistent-cache IO** (see PS-S2-gap).',
+        'RN Firebase delegates persistent-cache index state to native SDK IO and exposes ' +
+        'completion/failure through the returned Promise; the web SDK starts the operation and returns void.',
     },
     {
       name: 'enablePersistentCacheIndexAutoCreation',
       reason:
         'Returns `Promise<void>` in RN Firebase vs `void` in the firebase-js-sdk. ' +
-        'Phase S hint: **keep-async: deferred persistent-cache IO** (see PS-S2-gap).',
+        'RN Firebase delegates persistent-cache index state to native SDK IO and exposes ' +
+        'completion/failure through the returned Promise; the web SDK starts the operation and returns void.',
     },
     {
       name: 'FirestoreSettings',

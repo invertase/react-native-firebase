@@ -471,8 +471,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
       case "search":
         return new ParsedSearchStage(
             parseExpressionNode(
-                requireValue(stageOptions, "query", "stage.options.query"),
-                "stage.options.query"),
+                requireValue(stageOptions, "query", "stage.options.query"), "stage.options.query"),
             optionalString(stageOptions, "languageCode"),
             stageOptions.get("retrievalDepth"),
             optionalOrderingNodes(stageOptions, "sort", "stage.options.sort"),

@@ -158,8 +158,7 @@ public class NativeRNFBTurboFirestoreTransaction extends NativeRNFBTurboFirestor
           // exit early if aborted - has to throw an exception otherwise will just keep
           // trying ...
           if (transactionHandler.aborted) {
-            throw new FirebaseFirestoreException(
-                "abort", FirebaseFirestoreException.Code.ABORTED);
+            throw new FirebaseFirestoreException("abort", FirebaseFirestoreException.Code.ABORTED);
           }
 
           // exit early if timeout from bridge - has to throw an exception otherwise will
@@ -184,8 +183,7 @@ public class NativeRNFBTurboFirestoreTransaction extends NativeRNFBTurboFirestor
             ReadableMap command = buffer.getMap(i);
             String path = Objects.requireNonNull(command).getString("path");
             String type = command.getString("type");
-            DocumentReference documentReference =
-                getDocumentForFirestore(firebaseFirestore, path);
+            DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
             switch (Objects.requireNonNull(type)) {
               case "SET":
@@ -203,8 +201,7 @@ public class NativeRNFBTurboFirestoreTransaction extends NativeRNFBTurboFirestor
                     fields.add((String) object);
                   }
 
-                  transaction.set(
-                      documentReference, serialized, SetOptions.mergeFields(fields));
+                  transaction.set(documentReference, serialized, SetOptions.mergeFields(fields));
                 } else {
                   transaction.set(documentReference, serialized);
                 }
@@ -233,45 +230,45 @@ public class NativeRNFBTurboFirestoreTransaction extends NativeRNFBTurboFirestor
     }
 
     transactionTask.addOnCompleteListener(
-            task -> {
-              if (transactionHandler.aborted) {
-                return;
-              }
+        task -> {
+          if (transactionHandler.aborted) {
+            return;
+          }
 
-              WritableMap eventMap = Arguments.createMap();
+          WritableMap eventMap = Arguments.createMap();
 
-              if (task.isSuccessful()) {
-                eventMap.putString("type", "complete");
+          if (task.isSuccessful()) {
+            eventMap.putString("type", "complete");
 
-                emitter.sendEvent(
-                    new ReactNativeFirebaseFirestoreEvent(
-                        ReactNativeFirebaseFirestoreEvent.TRANSACTION_EVENT_SYNC,
-                        eventMap,
-                        transactionHandler.getAppName(),
-                        databaseId,
-                        transactionHandler.getTransactionId()));
-              } else {
-                eventMap.putString("type", "error");
+            emitter.sendEvent(
+                new ReactNativeFirebaseFirestoreEvent(
+                    ReactNativeFirebaseFirestoreEvent.TRANSACTION_EVENT_SYNC,
+                    eventMap,
+                    transactionHandler.getAppName(),
+                    databaseId,
+                    transactionHandler.getTransactionId()));
+          } else {
+            eventMap.putString("type", "error");
 
-                Exception exception = task.getException();
-                WritableMap errorMap = Arguments.createMap();
+            Exception exception = task.getException();
+            WritableMap errorMap = Arguments.createMap();
 
-                UniversalFirebaseFirestoreException universalException =
-                    new UniversalFirebaseFirestoreException(
-                        (FirebaseFirestoreException) exception, exception.getCause());
-                errorMap.putString("code", universalException.getCode());
-                errorMap.putString("message", universalException.getMessage());
+            UniversalFirebaseFirestoreException universalException =
+                new UniversalFirebaseFirestoreException(
+                    (FirebaseFirestoreException) exception, exception.getCause());
+            errorMap.putString("code", universalException.getCode());
+            errorMap.putString("message", universalException.getMessage());
 
-                eventMap.putMap("error", errorMap);
+            eventMap.putMap("error", errorMap);
 
-                emitter.sendEvent(
-                    new ReactNativeFirebaseFirestoreEvent(
-                        ReactNativeFirebaseFirestoreEvent.TRANSACTION_EVENT_SYNC,
-                        eventMap,
-                        transactionHandler.getAppName(),
-                        databaseId,
-                        transactionHandler.getTransactionId()));
-              }
-            });
+            emitter.sendEvent(
+                new ReactNativeFirebaseFirestoreEvent(
+                    ReactNativeFirebaseFirestoreEvent.TRANSACTION_EVENT_SYNC,
+                    eventMap,
+                    transactionHandler.getAppName(),
+                    databaseId,
+                    transactionHandler.getTransactionId()));
+          }
+        });
   }
 }

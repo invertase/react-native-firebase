@@ -11,15 +11,15 @@ CI enforces parity through `yarn compare:types` and the `firestore-pipelines` al
 
 # Summary
 
-| Category                                                                    | Status                                                                |
-| --------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Core pipeline builder (`pipeline()`, stages, `execute()`)                   | **Supported** on Android, iOS, and macOS                              |
-| Expression helpers (aggregates, strings, arrays, maps, timestamps, vectors) | **Mostly supported** — see gaps below                                 |
-| Newer firebase-js-sdk helpers (2025–2026)                                   | **Partial** — tracked in "Not yet available"                          |
+| Category                                                                    | Status                                   |
+| --------------------------------------------------------------------------- | ---------------------------------------- |
+| Core pipeline builder (`pipeline()`, stages, `execute()`)                   | **Supported** on Android, iOS, and macOS |
+| Expression helpers (aggregates, strings, arrays, maps, timestamps, vectors) | **Supported** on Android, iOS, and macOS |
+| Current firebase-js-sdk pipeline exports                                    | **Supported** through compare-types      |
 
 # Not yet available in React Native Firebase
 
-All pipeline exports tracked in the compare-types allowlist through B2 are now supported. Check release notes when upgrading for newly added firebase-js-sdk pipeline APIs.
+All pipeline exports currently tracked in the compare-types allowlist are supported. Check release notes when upgrading for newly added firebase-js-sdk pipeline APIs.
 
 ## Platform notes
 
@@ -27,16 +27,9 @@ Compare-types parity does not guarantee identical runtime behavior on every targ
 
 If you depend on one of these, follow [Firebase pipeline release notes](https://firebase.google.com/support/release-notes/js) and React Native Firebase changelogs, or open a feature request with your use case.
 
-# Same name, slightly different shape
+# Type-shape parity
 
-These exports exist in both SDKs but differ in typing or optional parameters:
-
-| Export            | Difference                                                            |
-| ----------------- | --------------------------------------------------------------------- |
-| `timestampDiff`   | Declaration overload ordering differs; all four SDK shapes supported  |
-| `isType`          | Accepts the type name as a `string`, matching the JS SDK              |
-| `StageOptions`    | Equivalent runtime shape; declaration formatting differs              |
-| `TimeGranularity` | RNFB uses `isoWeek` / `isoYear`; JS SDK also lists lowercase variants |
+The current `firestore-pipelines` compare-types config has no `differentShape` entries. `StageOptions`, `TimeGranularity`, `isType`, and `timestampDiff` now match the firebase-js-sdk declarations, including the lowercase `isoweek` and `isoyear` time granularity literals.
 
 # Platform execution matrix
 

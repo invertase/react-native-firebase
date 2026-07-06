@@ -195,9 +195,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
   if (maxAttempts > 0) {
     FIRTransactionOptions *options = [[FIRTransactionOptions alloc] init];
     options.maxAttempts = (NSInteger)maxAttempts;
-    [firestore runTransactionWithOptions:options
-                                   block:transactionBlock
-                              completion:completionBlock];
+    [firestore runTransactionWithOptions:options block:transactionBlock completion:completionBlock];
   } else {
     [firestore runTransactionWithBlock:transactionBlock completion:completionBlock];
   }

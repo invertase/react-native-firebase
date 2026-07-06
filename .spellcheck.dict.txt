@@ -5,6 +5,7 @@ AdMob
 AirPods
 analytics
 Analytics
+args
 ANR
 APIs
 APIs.
@@ -88,6 +89,7 @@ FirebaseApp
 FirebaseCore
 firestore
 Firestore
+FieldValue
 geospatial
 Geospatial
 freeform
@@ -138,6 +140,7 @@ macOS
 MDX
 mlkit
 MLKit
+microtask
 mono-repo
 multidex
 Multidex

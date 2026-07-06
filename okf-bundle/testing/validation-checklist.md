@@ -92,9 +92,20 @@ yarn lint:markdown
 yarn lint:spellcheck
 ```
 
-Native (when platform sources in diff): `yarn lint:android`, `yarn lint:ios:check`. `lint:android` can flake; rerun once/twice if failure is not clearly in diff.
+**CI Lint job equivalent** (required before `review` / publication when the diff touches JS, Java, or Objective-C/C++ sources):
 
-Full aggregate (pre-merge optional): `yarn lint` (= js + android + ios check).
+```bash
+yarn lint                              # lint:js + lint:android + lint:ios:check — matches .github/workflows/linting.yml
+```
+
+`lint:android` runs `google-java-format` and fails if it would change committed files — commit formatter output. `lint:android` can flake; rerun once/twice if failure is not clearly in diff.
+
+**CI docs job equivalent** (required before `review` / publication when `docs/**` changed):
+
+```bash
+yarn lint:markdown                     # matches .github/workflows/docs.yml
+yarn lint:spellcheck
+```
 
 ## E2e with coverage
 
@@ -129,7 +140,9 @@ Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, 
 | e2e iOS | yarn tests:ios:test-cover | 0 | Y passing — /tmp/...log |
 | e2e Android | yarn tests:android:test-cover | 0 | Z passing — /tmp/...log |
 | compare:types | yarn compare:types | 0 | <pkg> 0/0/0 |
-| lint | yarn lint:js | 0 | — |
+| lint (CI) | yarn lint | 0 | — |
+| lint:markdown (CI docs) | yarn lint:markdown | 0 | when docs/** in diff |
+| lint:spellcheck (CI docs) | yarn lint:spellcheck | 0 | when docs/** in diff |
 | coverage | post-process + region table | — | see coverage-design § evidence package |
 ```
 
@@ -144,7 +157,7 @@ Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, 
 - [ ] `yarn tests:jest`
 - [ ] TurboModule wrapper contract ([NewArch-AD-17.1](../new-architecture/architecture-decisions.md#newarch-ad-171--jest-turbomodule-contract-test--accepted)) when `packages/app/lib/internal/registry/nativeModule.ts`, `nativeModuleAndroidIos.ts`, or TurboModule wrapper behavior changed: `yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts`
 - [ ] `yarn compare:types` (stale config entries removed)
-- [ ] `yarn lint:js` (+ markdown/spellcheck if docs; + platform lint if native)
+- [ ] `yarn lint` (CI Lint job); `yarn lint:markdown` + `yarn lint:spellcheck` when `docs/**` changed
 - [ ] E2e green on **every required platform** for the changed module ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking); [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking); no `.only`; committed `RNFBDebug` remains `false`)
 - [ ] [Validation evidence package](validation-checklist.md#validation-evidence-package) recorded (exit codes, e2e counts, log paths)
 - [ ] [Coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native bridge touched — gaps investigated to fix, delete, or acceptable-exception bar

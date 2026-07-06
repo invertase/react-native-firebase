@@ -38,13 +38,12 @@ import com.google.firebase.firestore.PipelineResult;
 import com.google.firebase.firestore.PipelineSource;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.pipeline.AggregateStage;
-import com.google.firebase.firestore.pipeline.AliasedExpression;
 import com.google.firebase.firestore.pipeline.AliasedAggregate;
+import com.google.firebase.firestore.pipeline.AliasedExpression;
 import com.google.firebase.firestore.pipeline.BooleanExpression;
 import com.google.firebase.firestore.pipeline.CollectionGroupOptions;
 import com.google.firebase.firestore.pipeline.CollectionHints;
 import com.google.firebase.firestore.pipeline.CollectionSourceOptions;
-import com.google.firebase.firestore.pipeline.DefineStage;
 import com.google.firebase.firestore.pipeline.Expression;
 import com.google.firebase.firestore.pipeline.Field;
 import com.google.firebase.firestore.pipeline.FindNearestOptions;
@@ -628,7 +627,8 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     }
     if (stage.retrievalDepth != null) {
       searchStage =
-          searchStage.withRetrievalDepth(coerceLong(stage.retrievalDepth, "stage.options.retrievalDepth"));
+          searchStage.withRetrievalDepth(
+              coerceLong(stage.retrievalDepth, "stage.options.retrievalDepth"));
     }
     if (stage.sort != null && !stage.sort.isEmpty()) {
       Ordering[] orderings = new Ordering[stage.sort.size()];
@@ -636,7 +636,8 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
         orderings[i] =
             nodeBuilder.coerceOrdering(stage.sort.get(i), "stage.options.sort[" + i + "]");
       }
-      searchStage = searchStage.withSort(orderings[0], Arrays.copyOfRange(orderings, 1, orderings.length));
+      searchStage =
+          searchStage.withSort(orderings[0], Arrays.copyOfRange(orderings, 1, orderings.length));
     }
     if (stage.offset != null) {
       searchStage = searchStage.withOffset(coerceLong(stage.offset, "stage.options.offset"));
@@ -648,10 +649,12 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       Selectable[] selectables = new Selectable[stage.addFields.size()];
       for (int i = 0; i < stage.addFields.size(); i++) {
         selectables[i] =
-            nodeBuilder.coerceSelectable(stage.addFields.get(i), "stage.options.addFields[" + i + "]");
+            nodeBuilder.coerceSelectable(
+                stage.addFields.get(i), "stage.options.addFields[" + i + "]");
       }
       searchStage =
-          searchStage.withAddFields(selectables[0], Arrays.copyOfRange(selectables, 1, selectables.length));
+          searchStage.withAddFields(
+              selectables[0], Arrays.copyOfRange(selectables, 1, selectables.length));
     }
 
     return pipeline.search(searchStage);
@@ -660,7 +663,8 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
   private Pipeline applyDefineStage(
       Pipeline pipeline, ReactNativeFirebaseFirestorePipelineParser.ParsedDefineStage stage)
       throws PipelineValidationException {
-    List<ReactNativeFirebaseFirestorePipelineParser.ParsedSelectableNode> variables = stage.variables;
+    List<ReactNativeFirebaseFirestorePipelineParser.ParsedSelectableNode> variables =
+        stage.variables;
     if (variables.isEmpty()) {
       throw new PipelineValidationException(
           "pipelineExecute() expected stage.options.variables to contain at least one value.");
@@ -668,14 +672,11 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
 
     AliasedExpression[] aliasedExpressions = new AliasedExpression[variables.size()];
     for (int i = 0; i < variables.size(); i++) {
-      ReactNativeFirebaseFirestorePipelineParser.ParsedSelectableNode variable =
-          variables.get(i);
+      ReactNativeFirebaseFirestorePipelineParser.ParsedSelectableNode variable = variables.get(i);
       String alias = variable.alias;
       if (alias == null || alias.isEmpty()) {
         throw new PipelineValidationException(
-            "pipelineExecute() expected stage.options.variables["
-                + i
-                + "] to include an alias.");
+            "pipelineExecute() expected stage.options.variables[" + i + "] to include an alias.");
       }
       Expression expression =
           nodeBuilder.coerceExpression(
@@ -684,8 +685,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     }
 
     AliasedExpression first = aliasedExpressions[0];
-    AliasedExpression[] rest =
-        Arrays.copyOfRange(aliasedExpressions, 1, aliasedExpressions.length);
+    AliasedExpression[] rest = Arrays.copyOfRange(aliasedExpressions, 1, aliasedExpressions.length);
     return pipeline.define(first, rest);
   }
 

@@ -104,9 +104,9 @@ Per-package notes also appear in each module's [usage](/) page under **Platform 
 
 v26 aligns React Native Firebase modular types and several runtime signatures with **firebase-js-sdk** where TurboModules removed bridge-forced `Promise` wrappers. Use this section when porting web SDK examples or when scripted upgrades hit TypeScript or runtime errors.
 
-**Agent rule:** If a method below is **sync**, remove `await` and any `.then()` / `.catch()` chain on its return value — sync APIs return `void` or a value directly; calling `.then()` on `void` throws at runtime.
+**Migration rule:** If a method below is **sync**, remove `await` and any `.then()` / `.catch()` chain on its return value — sync APIs return `void` or a value directly; calling `.then()` on `void` throws at runtime.
 
-### Phase S — TurboModule sync conversion (new-architecture)
+### Synchronous APIs enabled by TurboModules
 
 {/* prettier-ignore */}
 | Method | Before (pre-v26 / legacy bridge) | After (v26) | Notes |
@@ -121,7 +121,7 @@ v26 aligns React Native Firebase modular types and several runtime signatures wi
 | `goOnline(db)` / `goOffline(db)` | `Promise<void>` | `void` | Remove `await` |
 | `UploadTask.pause()` / `.resume()` / `.cancel()` | `Promise<boolean>` | `boolean` | Remove `await`; use the returned boolean directly |
 
-### Compare-types Phase A — type parity (no runtime sync change unless noted)
+### Type parity improvements
 
 {/* prettier-ignore */}
 | Export / method | Before | After | Notes |
@@ -134,7 +134,7 @@ v26 aligns React Native Firebase modular types and several runtime signatures wi
 | `FunctionsError`, `FunctionsErrorCodeCore` | Missing or misaligned | Exported / aligned | Registry + compare-types config |
 | `firestore/pipelines` (`StageOptions`, `TimeGranularity`, `isType`, …) | Declaration drift | Aligned to SDK `.d.ts` | Type-only; no call-shape change |
 
-### Compare-types Phase B — sync façades (native work may still be async)
+### Synchronous modular return values
 
 {/* prettier-ignore */}
 | Method | Before | After | Notes |
@@ -146,13 +146,13 @@ v26 aligns React Native Firebase modular types and several runtime signatures wi
 | `aggregateFieldEqual()` | Not exported | Exported | Aggregate query helper |
 | `LastFetchStatus` literals | — | — | **Unchanged** — native still uses `no_fetch_yet` / `throttled` (documented drift) |
 
-### Compare-types Phase C — Firestore parity additions
+### Firestore parity additions
 
 {/* prettier-ignore */}
 | Export / method | Before | After | Notes |
 | --------------- | ------ | ----- | ----- |
 | `TransactionOptions` | Not exported | Exported | Type for transaction retry options |
-| `runTransaction(firestore, updateFunction, options?)` | No options argument | Accepts `options?: TransactionOptions` | Supports `{ maxAttempts?: number }` on native iOS and Android |
+| `runTransaction(firestore, updateFunction, options?)` | No options argument | Accepts `options?: TransactionOptions` | `{ maxAttempts?: number }` on native iOS and Android; omitted options use the SDK default of **5** retries; explicit values **&lt; 1** throw `Max attempts must be at least 1` (firebase-js-sdk parity) |
 | `aggregateQuerySnapshotEqual()` | Not exported | Exported | Aggregate query snapshot equality helper, alongside `aggregateFieldEqual()` |
 | `maximum(n)` / `minimum(n)` FieldValue sentinels | Exported by firebase-js-sdk 12.15.0 | Not exported by RNFB yet | Android SDK 34.15.0 has native factories, but iOS Firebase Firestore SDK 12.15.0 does not; RNFB waits for cross-platform parity |
 
@@ -165,6 +165,7 @@ v26 aligns React Native Firebase modular types and several runtime signatures wi
 | `await` on sync API | Unnecessary microtask delay; misleading types in strict TS | Drop `await` where the table above marks the API sync |
 | `onConfigUpdate(remoteConfig, observer)` | Runtime throw: observer must include **both** `next` and `error` functions | Pass `{ next: (update) => {…}, error: (err) => {…} }` — do not omit `error` |
 | `onSnapshotsInSync` observer form | Type error on `error` callback | Type `error` as `(error: FirestoreError) => void`, or use the `() => void` callback overload |
+| `runTransaction(..., { maxAttempts: 0 })` or negative | Runtime throw: `Max attempts must be at least 1` | Omit `options` for the default **5** attempts, or pass `maxAttempts: 1` or higher |
 
 ## General pattern
 
@@ -697,7 +698,7 @@ The namespaced API for `@react-native-firebase/firestore` has been **removed**. 
 ## Signature changes
 
 - `initializeFirestore(app, settings, databaseId?)` returns `Firestore` synchronously (previously `Promise<Firestore>`). Remove `await` and `.then()`; settings apply on the native bridge after return.
-- `TransactionOptions` is now exported. `runTransaction(firestore, updateFunction, options?)` accepts `{ maxAttempts?: number }` and passes the retry limit to the native iOS and Android Firestore SDKs.
+- `TransactionOptions` is now exported. `runTransaction(firestore, updateFunction, options?)` accepts `{ maxAttempts?: number }` and passes the retry limit to the native iOS and Android Firestore SDKs. When `options` is omitted, the native default applies (**5** attempts, matching [firebase-js-sdk `runTransaction`](https://firebase.google.com/docs/reference/js/firestore_.md#runtransaction)). When `maxAttempts` is provided explicitly, values below **1** throw synchronously with `Max attempts must be at least 1` — the same validation as firebase-js-sdk.
 - `aggregateFieldEqual()` and `aggregateQuerySnapshotEqual()` are now exported for aggregate query equality checks (firebase-js-sdk parity).
 - FieldValue `maximum(n)` and `minimum(n)` sentinels from firebase-js-sdk 12.15.0 are not exported yet. Android Firebase Firestore SDK 34.15.0 supports them, but iOS Firebase Firestore SDK 12.15.0 does not expose matching `FIRFieldValue` factories, so React Native Firebase waits for cross-platform support.
 
@@ -765,7 +766,7 @@ For each modular-only package you use:
 | `storage`          | `firebase.storage()`, default `storage()`, `FirebaseStorageTypes`, instance/reference methods                                        | `getStorage()`, `ref`, `uploadBytesResumable`, `getDownloadURL`, `connectStorageEmulator`, `StringFormat`, `TaskEvent`, `TaskState`                            |
 | `firestore`        | `firebase.firestore()`, default `firestore()`, `FirebaseFirestoreTypes`, instance methods                                            | `getFirestore()`, `doc`, `collection`, `setDoc`, `writeBatch`, `runTransaction`, `connectFirestoreEmulator`, `FieldValue`, `Timestamp`, `Bytes`, `SDK_VERSION` |
 
-Also remove `await`, `.then()`, and `.catch()` from `UploadTask.pause()`, `UploadTask.resume()`, and `UploadTask.cancel()`. For Firestore transactions, import `TransactionOptions` when you pass `{ maxAttempts }`, and import `aggregateFieldEqual()` / `aggregateQuerySnapshotEqual()` for aggregate equality checks.
+Also remove `await`, `.then()`, and `.catch()` from `UploadTask.pause()`, `UploadTask.resume()`, and `UploadTask.cancel()`. For Firestore transactions, import `TransactionOptions` when you pass `{ maxAttempts }` (omit `options` for the default **5** retries; do not pass `0` or negative values). Import `aggregateFieldEqual()` / `aggregateQuerySnapshotEqual()` for aggregate equality checks.
 
 ## 3. Validate
 
