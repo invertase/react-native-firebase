@@ -559,7 +559,7 @@ protected:
   NativeRNFBTurboFirestoreTransactionCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
-  virtual void transactionBegin(jsi::Runtime &rt, jsi::String appName, jsi::String databaseId, double transactionId) = 0;
+  virtual void transactionBegin(jsi::Runtime &rt, jsi::String appName, jsi::String databaseId, double transactionId, double maxAttempts) = 0;
   virtual jsi::Value transactionGetDocument(jsi::Runtime &rt, jsi::String appName, jsi::String databaseId, double transactionId, jsi::String path) = 0;
   virtual void transactionDispose(jsi::Runtime &rt, jsi::String appName, jsi::String databaseId, double transactionId) = 0;
   virtual void transactionApplyBuffer(jsi::Runtime &rt, jsi::String appName, jsi::String databaseId, double transactionId, jsi::Array commandBuffer) = 0;
@@ -593,13 +593,13 @@ private:
 
     }
 
-    void transactionBegin(jsi::Runtime &rt, jsi::String appName, jsi::String databaseId, double transactionId) override {
+    void transactionBegin(jsi::Runtime &rt, jsi::String appName, jsi::String databaseId, double transactionId, double maxAttempts) override {
       static_assert(
-          bridging::getParameterCount(&T::transactionBegin) == 4,
-          "Expected transactionBegin(...) to have 4 parameters");
+          bridging::getParameterCount(&T::transactionBegin) == 5,
+          "Expected transactionBegin(...) to have 5 parameters");
 
       return bridging::callFromJs<void>(
-          rt, &T::transactionBegin, jsInvoker_, instance_, std::move(appName), std::move(databaseId), std::move(transactionId));
+          rt, &T::transactionBegin, jsInvoker_, instance_, std::move(appName), std::move(databaseId), std::move(transactionId), std::move(maxAttempts));
     }
     jsi::Value transactionGetDocument(jsi::Runtime &rt, jsi::String appName, jsi::String databaseId, double transactionId, jsi::String path) override {
       static_assert(

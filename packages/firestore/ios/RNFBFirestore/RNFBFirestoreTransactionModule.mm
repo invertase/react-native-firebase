@@ -69,7 +69,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
 
 - (void)transactionBegin:(NSString *)appName
               databaseId:(NSString *)databaseId
-           transactionId:(double)transactionId {
+           transactionId:(double)transactionId
+             maxAttempts:(double)maxAttempts {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   NSNumber *transactionIdNumber = @(transactionId);
 
@@ -191,7 +192,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
     }
   };
 
-  [firestore runTransactionWithBlock:transactionBlock completion:completionBlock];
+  if (maxAttempts > 0) {
+    FIRTransactionOptions *options = [[FIRTransactionOptions alloc] init];
+    options.maxAttempts = (NSInteger)maxAttempts;
+    [firestore runTransactionWithOptions:options
+                                   block:transactionBlock
+                              completion:completionBlock];
+  } else {
+    [firestore runTransactionWithBlock:transactionBlock completion:completionBlock];
+  }
 }
 
 - (void)transactionGetDocument:(NSString *)appName

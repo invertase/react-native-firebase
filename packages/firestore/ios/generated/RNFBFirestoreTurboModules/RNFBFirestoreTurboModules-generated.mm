@@ -278,7 +278,7 @@ namespace facebook::react {
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboFirestoreTransactionSpecJSI_transactionBegin(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "transactionBegin", @selector(transactionBegin:databaseId:transactionId:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "transactionBegin", @selector(transactionBegin:databaseId:transactionId:maxAttempts:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboFirestoreTransactionSpecJSI_transactionGetDocument(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -296,7 +296,7 @@ namespace facebook::react {
   NativeRNFBTurboFirestoreTransactionSpecJSI::NativeRNFBTurboFirestoreTransactionSpecJSI(const ObjCTurboModule::InitParams &params)
     : ObjCTurboModule(params) {
       
-        methodMap_["transactionBegin"] = MethodMetadata {3, __hostFunction_NativeRNFBTurboFirestoreTransactionSpecJSI_transactionBegin};
+        methodMap_["transactionBegin"] = MethodMetadata {4, __hostFunction_NativeRNFBTurboFirestoreTransactionSpecJSI_transactionBegin};
         
         
         methodMap_["transactionGetDocument"] = MethodMetadata {4, __hostFunction_NativeRNFBTurboFirestoreTransactionSpecJSI_transactionGetDocument};

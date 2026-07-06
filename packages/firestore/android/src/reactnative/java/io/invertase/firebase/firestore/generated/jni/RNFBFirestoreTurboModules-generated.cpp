@@ -185,7 +185,7 @@ NativeRNFBTurboFirestoreDocumentSpecJSI::NativeRNFBTurboFirestoreDocumentSpecJSI
 }
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboFirestoreTransactionSpecJSI_transactionBegin(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "transactionBegin", "(Ljava/lang/String;Ljava/lang/String;D)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "transactionBegin", "(Ljava/lang/String;Ljava/lang/String;DD)V", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboFirestoreTransactionSpecJSI_transactionGetDocument(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -205,7 +205,7 @@ static facebook::jsi::Value __hostFunction_NativeRNFBTurboFirestoreTransactionSp
 
 NativeRNFBTurboFirestoreTransactionSpecJSI::NativeRNFBTurboFirestoreTransactionSpecJSI(const JavaTurboModule::InitParams &params)
   : JavaTurboModule(params) {
-  methodMap_["transactionBegin"] = MethodMetadata {3, __hostFunction_NativeRNFBTurboFirestoreTransactionSpecJSI_transactionBegin};
+  methodMap_["transactionBegin"] = MethodMetadata {4, __hostFunction_NativeRNFBTurboFirestoreTransactionSpecJSI_transactionBegin};
   methodMap_["transactionGetDocument"] = MethodMetadata {4, __hostFunction_NativeRNFBTurboFirestoreTransactionSpecJSI_transactionGetDocument};
   methodMap_["transactionDispose"] = MethodMetadata {3, __hostFunction_NativeRNFBTurboFirestoreTransactionSpecJSI_transactionDispose};
   methodMap_["transactionApplyBuffer"] = MethodMetadata {4, __hostFunction_NativeRNFBTurboFirestoreTransactionSpecJSI_transactionApplyBuffer};

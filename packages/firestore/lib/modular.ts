@@ -49,6 +49,7 @@ import type {
   Unsubscribe,
   LoadBundleTaskProgress,
   FirestoreError,
+  TransactionOptions,
 } from './types/firestore';
 import type {
   CollectionReferenceInternal,
@@ -397,9 +398,12 @@ export function setLogLevel(logLevel: LogLevel): void {
 export function runTransaction<T>(
   firestore: Firestore,
   updateFunction: (transaction: Transaction) => Promise<T>,
+  options?: TransactionOptions,
 ): Promise<T> {
-  return (firestore as FirestoreInternal).runTransaction(updateFunction) as Promise<T>;
+  return (firestore as FirestoreInternal).runTransaction(updateFunction, options) as Promise<T>;
 }
+
+export type { TransactionOptions };
 
 export function getCountFromServer<AppModelType, DbModelType extends DocumentData>(
   query: Query<AppModelType, DbModelType>,

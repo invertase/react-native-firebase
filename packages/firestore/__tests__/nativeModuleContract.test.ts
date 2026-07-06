@@ -122,4 +122,44 @@ describe('TurboModule wrapper contract (NewArch-AD-17.1)', function () {
       'transactionBegin',
     ]);
   });
+
+  it('forwards maxAttempts through transactionBegin', function () {
+    const transactionBegin = jest.fn();
+    const hostTransaction = createTurboModuleFixture({ transactionBegin });
+
+    jest
+      .mocked(TurboModuleRegistry.get)
+      .mockReturnValueOnce(createTurboModuleFixture({}))
+      .mockReturnValueOnce(createTurboModuleFixture({}))
+      .mockReturnValueOnce(createTurboModuleFixture({}))
+      .mockReturnValueOnce(hostTransaction);
+
+    const config: ModuleConfig = {
+      namespace: 'firestoreContractMaxAttempts',
+      nativeModuleName: [
+        'NativeRNFBTurboFirestore',
+        'NativeRNFBTurboFirestoreCollection',
+        'NativeRNFBTurboFirestoreDocument',
+        'NativeRNFBTurboFirestoreTransaction',
+      ],
+      nativeEvents: false,
+      hasMultiAppSupport: true,
+      hasCustomUrlOrRegionSupport: true,
+      turboModule: true,
+    };
+
+    class MergeModule extends FirebaseModule<any> {
+      constructor() {
+        super({ name: '[DEFAULT]' } as any, config);
+      }
+    }
+
+    const wrapped = getNativeModule(new MergeModule()) as WrappedNativeModule & {
+      transactionBegin: (transactionId: number, maxAttempts: number) => void;
+    };
+
+    wrapped.transactionBegin(7, 5);
+
+    expect(transactionBegin).toHaveBeenCalledWith('[DEFAULT]', null, 7, 5);
+  });
 });

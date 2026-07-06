@@ -415,6 +415,10 @@ export declare class WriteBatch {
   commit(): Promise<void>;
 }
 
+export interface TransactionOptions {
+  readonly maxAttempts?: number;
+}
+
 export declare class LiteTransaction {}
 
 export declare class Transaction extends LiteTransaction {

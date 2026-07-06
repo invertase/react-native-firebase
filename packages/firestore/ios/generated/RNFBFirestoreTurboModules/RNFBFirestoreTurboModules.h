@@ -288,7 +288,8 @@ namespace facebook::react {
 
 - (void)transactionBegin:(NSString *)appName
               databaseId:(NSString *)databaseId
-           transactionId:(double)transactionId;
+           transactionId:(double)transactionId
+             maxAttempts:(double)maxAttempts;
 - (void)transactionGetDocument:(NSString *)appName
                     databaseId:(NSString *)databaseId
                  transactionId:(double)transactionId

@@ -50,6 +50,29 @@ describe('firestore.Transaction', function () {
       value.should.eql(expected);
     });
 
+    it('should accept optional TransactionOptions maxAttempts', async function () {
+      const { getFirestore, runTransaction, doc, setDoc, getDoc } = firestoreModular;
+      const db = getFirestore();
+      const ref = doc(db, `${COLLECTION}/transaction-options-${Date.now()}`);
+
+      await setDoc(ref, { count: 0 });
+
+      const value = await runTransaction(
+        db,
+        async transaction => {
+          const snapshot = await transaction.get(ref);
+          const count = snapshot.data()?.count ?? 0;
+          transaction.update(ref, { count: count + 1 });
+          return count + 1;
+        },
+        { maxAttempts: 5 },
+      );
+
+      value.should.eql(1);
+      const after = await getDoc(ref);
+      after.data()?.count.should.eql(1);
+    });
+
     it('should reject with user Error', async function () {
       const { getFirestore, runTransaction } = firestoreModular;
       const message = `Error: ${Date.now()}`;

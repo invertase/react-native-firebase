@@ -54,7 +54,12 @@ const config: PackageConfig = {
     {
       name: 'maximum',
       reason:
-        'Aggregate field helper added in firebase-js-sdk; not yet implemented in RN Firebase.',
+        'FieldValue set/update sentinel (`maximum(n: number)`) exported by firebase-js-sdk ' +
+        '12.15.0. Firebase Firestore iOS SDK 12.15.0 does not expose FIRFieldValue ' +
+        'maximum/minimum factories (see Firebase iOS FIRFieldValue reference). Firebase ' +
+        'Firestore Android SDK 34.15.0 (BOM) exposes FieldValue.maximum/minimum but RN ' +
+        'Firebase native serialization does not wire them; cross-platform parity deferred ' +
+        'until iOS SDK adds support. User-accepted gap (C1.2b).',
     },
     {
       name: 'memoryEagerGarbageCollector',
@@ -78,7 +83,12 @@ const config: PackageConfig = {
     {
       name: 'minimum',
       reason:
-        'Aggregate field helper added in firebase-js-sdk; not yet implemented in RN Firebase.',
+        'FieldValue set/update sentinel (`minimum(n: number)`) exported by firebase-js-sdk ' +
+        '12.15.0. Firebase Firestore iOS SDK 12.15.0 does not expose FIRFieldValue ' +
+        'maximum/minimum factories (see Firebase iOS FIRFieldValue reference). Firebase ' +
+        'Firestore Android SDK 34.15.0 (BOM) exposes FieldValue.maximum/minimum but RN ' +
+        'Firebase native serialization does not wire them; cross-platform parity deferred ' +
+        'until iOS SDK adds support. User-accepted gap (C1.2b).',
     },
     {
       name: 'onSnapshotResume',
@@ -204,12 +214,6 @@ const config: PackageConfig = {
         'Base interface for persistent tab manager strategies. The local cache ' +
         'configuration API is not yet implemented in RN Firebase.',
     },
-    {
-      name: 'TransactionOptions',
-      reason:
-        'Options object for runTransaction (e.g. maxAttempts). Not yet supported ' +
-        'by the RN Firebase native transaction implementation.',
-    },
   ],
 
   // ---------------------------------------------------------------------------
@@ -280,13 +284,6 @@ const config: PackageConfig = {
       reason:
         'Returns `Promise<void>` in RN Firebase vs `void` in the firebase-js-sdk. ' +
         'Phase S hint: **keep-async: deferred persistent-cache IO** (see PS-S2-gap).',
-    },
-    {
-      name: 'runTransaction',
-      reason:
-        'The firebase-js-sdk accepts an optional `TransactionOptions` parameter ' +
-        '(e.g. maxAttempts) which is not yet supported by the RN Firebase native ' +
-        'transaction implementation.',
     },
     {
       name: 'FirestoreSettings',

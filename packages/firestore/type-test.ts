@@ -340,6 +340,15 @@ runTransaction(modFirestore1, async tx => {
   return 'done';
 }).then(() => {});
 
+runTransaction(
+  modFirestore1,
+  async tx => {
+    tx.set(modDoc, { attempts: 1 });
+    return 'configured';
+  },
+  { maxAttempts: 5 },
+).then(() => {});
+
 // Root runtime exports must also carry the generic modular type surface.
 function acceptRootDocumentSnapshot(_snap: FirestoreDocumentSnapshot<DocumentData>) {}
 runTransaction(modFirestore1, async tx => {

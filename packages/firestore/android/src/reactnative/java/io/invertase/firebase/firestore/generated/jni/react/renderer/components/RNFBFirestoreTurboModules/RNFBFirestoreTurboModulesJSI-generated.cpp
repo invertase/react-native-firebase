@@ -312,7 +312,8 @@ static jsi::Value __hostFunction_NativeRNFBTurboFirestoreTransactionCxxSpecJSI_t
     rt,
     count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
     count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
-    count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asNumber()
+    count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asNumber(),
+    count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asNumber()
   );
   return jsi::Value::undefined();
 }
@@ -347,7 +348,7 @@ static jsi::Value __hostFunction_NativeRNFBTurboFirestoreTransactionCxxSpecJSI_t
 
 NativeRNFBTurboFirestoreTransactionCxxSpecJSI::NativeRNFBTurboFirestoreTransactionCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule("NativeRNFBTurboFirestoreTransaction", jsInvoker) {
-  methodMap_["transactionBegin"] = MethodMetadata {3, __hostFunction_NativeRNFBTurboFirestoreTransactionCxxSpecJSI_transactionBegin};
+  methodMap_["transactionBegin"] = MethodMetadata {4, __hostFunction_NativeRNFBTurboFirestoreTransactionCxxSpecJSI_transactionBegin};
   methodMap_["transactionGetDocument"] = MethodMetadata {4, __hostFunction_NativeRNFBTurboFirestoreTransactionCxxSpecJSI_transactionGetDocument};
   methodMap_["transactionDispose"] = MethodMetadata {3, __hostFunction_NativeRNFBTurboFirestoreTransactionCxxSpecJSI_transactionDispose};
   methodMap_["transactionApplyBuffer"] = MethodMetadata {4, __hostFunction_NativeRNFBTurboFirestoreTransactionCxxSpecJSI_transactionApplyBuffer};

@@ -542,7 +542,7 @@ export interface RNFBFirestoreModule {
   documentBatch(writes: Array<Record<string, unknown>>): Promise<void>;
 
   // --- Transaction module (NativeRNFBTurboFirestoreTransaction) ---
-  transactionBegin(transactionId: number): Promise<void>;
+  transactionBegin(transactionId: number, maxAttempts?: number): Promise<void>;
   transactionDispose(transactionId: number): void;
   transactionGetDocument(transactionId: number, path: string): Promise<unknown>;
   transactionApplyBuffer(transactionId: number, commandBuffer: unknown[]): void;
@@ -744,6 +744,7 @@ export interface FirestoreInternal extends ParentReferenceInternal, Firestore {
   ): void;
   runTransaction(
     updateFunction: (transaction: Transaction) => Promise<unknown>,
+    options?: { maxAttempts?: number },
     deprecationArg?: FirestoreModularDeprecationArg,
   ): Promise<unknown>;
   loadBundle(

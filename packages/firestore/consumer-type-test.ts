@@ -357,6 +357,15 @@ runTransaction(modFirestore1, async tx => {
   return 'done';
 }).then(() => {});
 
+runTransaction(
+  modFirestore1,
+  async tx => {
+    tx.set(modDoc, { attempts: 1 });
+    return 'configured';
+  },
+  { maxAttempts: 5 },
+).then(() => {});
+
 // Root runtime exports must also carry the public modular Transaction type surface.
 function acceptRootTransaction(tx: Transaction, tRef: DocumentReference<DocumentData>) {
   const chainedTx: Transaction = tx

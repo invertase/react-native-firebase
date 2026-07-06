@@ -302,14 +302,17 @@ export class FirebaseFirestoreModule extends FirebaseModule<'NativeRNFBTurboFire
     await this.native.enableNetwork();
   }
 
-  runTransaction(updateFunction: (transaction: unknown) => Promise<unknown>): Promise<unknown> {
+  runTransaction(
+    updateFunction: (transaction: unknown) => Promise<unknown>,
+    options?: { maxAttempts?: number },
+  ): Promise<unknown> {
     if (!isFunction(updateFunction)) {
       return Promise.reject(
         new Error("firebase.firestore().runTransaction(*) 'updateFunction' must be a function."),
       );
     }
 
-    return this._transactionHandler._add(updateFunction);
+    return this._transactionHandler._add(updateFunction, options);
   }
 
   settings(settings: Record<string, unknown>): Promise<void> {

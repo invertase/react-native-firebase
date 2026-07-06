@@ -3,7 +3,12 @@ import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
-  transactionBegin(appName: string, databaseId: string, transactionId: number): void;
+  transactionBegin(
+    appName: string,
+    databaseId: string,
+    transactionId: number,
+    maxAttempts: number,
+  ): void;
   transactionGetDocument(
     appName: string,
     databaseId: string,

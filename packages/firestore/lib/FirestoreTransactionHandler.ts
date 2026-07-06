@@ -138,7 +138,10 @@ export default class FirestoreTransactionHandler {
     }
   }
 
-  _add(updateFunction: (transaction: Transaction) => Promise<unknown>): Promise<unknown> {
+  _add(
+    updateFunction: (transaction: Transaction) => Promise<unknown>,
+    options?: { maxAttempts?: number },
+  ): Promise<unknown> {
     const id = generateTransactionId();
 
     const meta: TransactionMeta = {
@@ -152,8 +155,10 @@ export default class FirestoreTransactionHandler {
       transaction: new Transaction(this._firestore, meta),
     };
 
+    const maxAttempts = options?.maxAttempts ?? 0;
+
     return new Promise((resolve, reject) => {
-      this._firestore.native.transactionBegin(id);
+      this._firestore.native.transactionBegin(id, maxAttempts);
 
       meta.resolve = (result: unknown) => {
         this._remove(id);

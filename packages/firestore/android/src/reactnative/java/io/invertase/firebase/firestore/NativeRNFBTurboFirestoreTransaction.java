@@ -29,6 +29,7 @@ import android.os.AsyncTask;
 import android.util.SparseArray;
 import com.facebook.fbreact.specs.NativeRNFBTurboFirestoreTransactionSpec;
 import com.facebook.react.bridge.*;
+import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.*;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
@@ -123,7 +124,8 @@ public class NativeRNFBTurboFirestoreTransaction extends NativeRNFBTurboFirestor
   }
 
   @Override
-  public void transactionBegin(String appName, String databaseId, double transactionId) {
+  public void transactionBegin(
+      String appName, String databaseId, double transactionId, double maxAttempts) {
     ReactNativeFirebaseFirestoreTransactionHandler transactionHandler =
         new ReactNativeFirebaseFirestoreTransactionHandler(appName, (int) transactionId);
     transactionHandlers.put((int) transactionId, transactionHandler);
@@ -131,99 +133,106 @@ public class NativeRNFBTurboFirestoreTransaction extends NativeRNFBTurboFirestor
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
-    // Provides its own executor
-    firebaseFirestore
-        .runTransaction(
-            (Transaction.Function<Void>)
-                transaction -> {
-                  transactionHandler.resetState(transaction);
+    Transaction.Function<Void> transactionFunction =
+        transaction -> {
+          transactionHandler.resetState(transaction);
 
-                  AsyncTask.execute(
-                      () -> {
-                        WritableMap eventMap = Arguments.createMap();
-                        eventMap.putString("type", "update");
+          AsyncTask.execute(
+              () -> {
+                WritableMap eventMap = Arguments.createMap();
+                eventMap.putString("type", "update");
 
-                        // Send an update signal to JS - telling it to now run the transaction
-                        emitter.sendEvent(
-                            new ReactNativeFirebaseFirestoreEvent(
-                                ReactNativeFirebaseFirestoreEvent.TRANSACTION_EVENT_SYNC,
-                                eventMap,
-                                transactionHandler.getAppName(),
-                                databaseId,
-                                transactionHandler.getTransactionId()));
-                      });
+                // Send an update signal to JS - telling it to now run the transaction
+                emitter.sendEvent(
+                    new ReactNativeFirebaseFirestoreEvent(
+                        ReactNativeFirebaseFirestoreEvent.TRANSACTION_EVENT_SYNC,
+                        eventMap,
+                        transactionHandler.getAppName(),
+                        databaseId,
+                        transactionHandler.getTransactionId()));
+              });
 
-                  // wait for a signal to be received from JS land code
-                  transactionHandler.await();
+          // wait for a signal to be received from JS land code
+          transactionHandler.await();
 
-                  // exit early if aborted - has to throw an exception otherwise will just keep
-                  // trying ...
-                  if (transactionHandler.aborted) {
-                    throw new FirebaseFirestoreException(
-                        "abort", FirebaseFirestoreException.Code.ABORTED);
+          // exit early if aborted - has to throw an exception otherwise will just keep
+          // trying ...
+          if (transactionHandler.aborted) {
+            throw new FirebaseFirestoreException(
+                "abort", FirebaseFirestoreException.Code.ABORTED);
+          }
+
+          // exit early if timeout from bridge - has to throw an exception otherwise will
+          // just keep trying ...
+          if (transactionHandler.timeout) {
+            throw new FirebaseFirestoreException(
+                "timeout", FirebaseFirestoreException.Code.DEADLINE_EXCEEDED);
+          }
+
+          // process any buffered commands from JS land
+          ReadableArray buffer = transactionHandler.getCommandBuffer();
+
+          // exit early if no commands
+          if (buffer == null) {
+            return null;
+          }
+
+          // iterate over the user buffer running transactions in order
+          for (int i = 0, size = buffer.size(); i < size; i++) {
+            Map<String, Object> serialized;
+
+            ReadableMap command = buffer.getMap(i);
+            String path = Objects.requireNonNull(command).getString("path");
+            String type = command.getString("type");
+            DocumentReference documentReference =
+                getDocumentForFirestore(firebaseFirestore, path);
+
+            switch (Objects.requireNonNull(type)) {
+              case "SET":
+                serialized = parseReadableMap(firebaseFirestore, command.getMap("data"));
+                ReadableMap options = command.getMap("options");
+
+                if (Objects.requireNonNull(options).hasKey("merge")
+                    && options.getBoolean("merge")) {
+                  transaction.set(documentReference, serialized, SetOptions.merge());
+                } else if (options.hasKey("mergeFields")) {
+                  List<String> fields = new ArrayList<>();
+                  ReadableArray fieldPaths = options.getArray("mergeFields");
+
+                  for (Object object : toArrayList(fieldPaths)) {
+                    fields.add((String) object);
                   }
 
-                  // exit early if timeout from bridge - has to throw an exception otherwise will
-                  // just keep trying ...
-                  if (transactionHandler.timeout) {
-                    throw new FirebaseFirestoreException(
-                        "timeout", FirebaseFirestoreException.Code.DEADLINE_EXCEEDED);
-                  }
+                  transaction.set(
+                      documentReference, serialized, SetOptions.mergeFields(fields));
+                } else {
+                  transaction.set(documentReference, serialized);
+                }
 
-                  // process any buffered commands from JS land
-                  ReadableArray buffer = transactionHandler.getCommandBuffer();
+                break;
+              case "UPDATE":
+                serialized = parseReadableMap(firebaseFirestore, command.getMap("data"));
+                transaction.update(documentReference, serialized);
+                break;
+              case "DELETE":
+                transaction.delete(documentReference);
+                break;
+            }
+          }
 
-                  // exit early if no commands
-                  if (buffer == null) {
-                    return null;
-                  }
+          return null;
+        };
 
-                  // iterate over the user buffer running transactions in order
-                  for (int i = 0, size = buffer.size(); i < size; i++) {
-                    Map<String, Object> serialized;
+    Task<Void> transactionTask;
+    if (maxAttempts > 0) {
+      TransactionOptions transactionOptions =
+          new TransactionOptions.Builder().setMaxAttempts((int) maxAttempts).build();
+      transactionTask = firebaseFirestore.runTransaction(transactionOptions, transactionFunction);
+    } else {
+      transactionTask = firebaseFirestore.runTransaction(transactionFunction);
+    }
 
-                    ReadableMap command = buffer.getMap(i);
-                    String path = Objects.requireNonNull(command).getString("path");
-                    String type = command.getString("type");
-                    DocumentReference documentReference =
-                        getDocumentForFirestore(firebaseFirestore, path);
-
-                    switch (Objects.requireNonNull(type)) {
-                      case "SET":
-                        serialized = parseReadableMap(firebaseFirestore, command.getMap("data"));
-                        ReadableMap options = command.getMap("options");
-
-                        if (Objects.requireNonNull(options).hasKey("merge")
-                            && options.getBoolean("merge")) {
-                          transaction.set(documentReference, serialized, SetOptions.merge());
-                        } else if (options.hasKey("mergeFields")) {
-                          List<String> fields = new ArrayList<>();
-                          ReadableArray fieldPaths = options.getArray("mergeFields");
-
-                          for (Object object : toArrayList(fieldPaths)) {
-                            fields.add((String) object);
-                          }
-
-                          transaction.set(
-                              documentReference, serialized, SetOptions.mergeFields(fields));
-                        } else {
-                          transaction.set(documentReference, serialized);
-                        }
-
-                        break;
-                      case "UPDATE":
-                        serialized = parseReadableMap(firebaseFirestore, command.getMap("data"));
-                        transaction.update(documentReference, serialized);
-                        break;
-                      case "DELETE":
-                        transaction.delete(documentReference);
-                        break;
-                    }
-                  }
-
-                  return null;
-                })
-        .addOnCompleteListener(
+    transactionTask.addOnCompleteListener(
             task -> {
               if (transactionHandler.aborted) {
                 return;

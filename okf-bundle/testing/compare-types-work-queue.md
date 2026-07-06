@@ -8,7 +8,7 @@ timestamp: 2026-07-03T00:00:00Z
 
 # Compare-types parity — work queue
 
-> **IN PROGRESS:** **C1.1** — firestore `TransactionOptions` + `runTransaction` `maxAttempts`; implementer dispatched.
+> **IN PROGRESS:** **C1.2** — `aggregateQuerySnapshotEqual`; implementer dispatched.
 > **Stack:** `main` → `new-architecture` ([#9080](https://github.com/invertase/react-native-firebase/pull/9080)) → `pipeline-continue-workqueue` ([#9086](https://github.com/invertase/react-native-firebase/pull/9086)) → **`compare-types-work-queue`** (frontier).
 > **Goal:** shrink `.github/scripts/compare-types/configs/*.ts` by fixing real drift or tightening intractable documentation — not blanket parity for native-only surfaces. Machinery: [compare-types README](../../../.github/scripts/compare-types/README.md). Term ids: [iteration vocabulary](iteration-vocabulary.md). Policy: [documentation policy](../documentation-policy.md).
 
@@ -53,19 +53,19 @@ Before any item's `implementation`:
 | Phase | Focus | Status | Outcome |
 | ----- | ----- | ------ | ------- |
 | **A** | Tier 1 — types/docs only | **partial** | A1–A5, A7–A8, A10 committed; A6/A9 deferred |
-| **B** | Tier 2 — moderate / Phase S | **partial** | B1–B3 committed; B4–B9 committed |
-| **C** | Tier 3 — hard / structural | **in progress** | C1.1 implementation dispatched |
+| **B** | Tier 2 — moderate / Phase S | **complete** | B1–B9 committed (B3 ✅ 2026-07-05) |
+| **C** | Tier 3 — hard / structural | **in progress** | C1.1 ✅ committed; C1.2 implementation dispatched |
 | **D** | Tier 4 — document intractable | **queued** | — |
 
 ---
 
 ## Current snapshot
 
-**Label:** `c1.1-implementation-2026-07-05`
+**Label:** `c1.2-implementation-2026-07-05`
 
-**Next item:** **C1.1** — `implementation` (firestore `TransactionOptions` + `runTransaction` `maxAttempts`).
+**Next item:** **C1.2** — `implementation` (`aggregateQuerySnapshotEqual`).
 
-**Current gates:** B3 all gates **closed**. C1.1 `implementation_gate` **open** — implementer dispatched.
+**Current gates:** C1.1 all gates **closed**. C1.2b documented (user-accepted). C1.2 `implementation_gate` **open** — implementer dispatched.
 
 ---
 
@@ -88,7 +88,7 @@ Before any item's `implementation`:
 | **B1** | firestore-pipelines | `refactor(firestore/pipelines): add constant preferIntegers option` | closed | closed | closed | — | `area-focused` | Re-review green 2026-07-04: parser integerLiteral iOS/Android, preferIntegers e2e, sdk-compat; macOS 147 / iOS 152 / Android 152 |
 | **B2** | firestore-pipelines | `feat(firestore/pipelines): expose search stage and pipeline expressions` | closed | closed | closed | — | `area-focused` | 6× `missingInRN` cleared; macOS 150/150; iOS/Android 155/155; firebase-tools 15.22.4; search index verify cycle. Follow-up: dropped RN-only `Type` export → pipelines 0 documented diffs |
 | **B3** | storage | `refactor!(storage): sync UploadTask pause resume cancel booleans` | closed | closed | closed | — | `area-focused` | Committed 2026-07-05: sync `setTaskStatus` boolean; mid-transfer e2e; iOS upload-cancel skip — user-accepted + [firebase-ios-sdk#16353](https://github.com/firebase/firebase-ios-sdk/issues/16353) |
-| **C1.1** | firestore | — | open | open | open | `implementation` | `area-focused` | Wire `TransactionOptions` + `runTransaction` `maxAttempts` through transaction bridge; implementer dispatched 2026-07-05 |
+| **C1.1** | firestore | `feat(firestore): support TransactionOptions maxAttempts in runTransaction` | closed | closed | closed | — | `area-focused` | Committed 2026-07-05: TransactionOptions + runTransaction maxAttempts; e2e Transaction 20/20 iOS+Android |
 | **B4** | analytics | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | logEvent sync void |
 | **B5** | app-check | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `area-focused` | initializeAppCheck sync AppCheck |
 | **B6** | firestore | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `area-focused` | initializeFirestore sync Firestore |
@@ -96,9 +96,8 @@ Before any item's `implementation`:
 | **B8** | remote-config | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | RemoteConfigOptions on getRemoteConfig |
 | **B9** | firestore | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | aggregateFieldEqual exported |
 | **C0** | Phase C scope | — | open | open | open | `gap-analysis` | `none` | [Grilling](#phase-c--tier-3-hard--structural) |
-| **C1.1** | firestore | — | open | open | open | `implementation` | `area-focused` | **ex-B10** — `TransactionOptions` + `runTransaction` `maxAttempts`; native Android/iOS SDKs support; wire through transaction bridge |
-| **C1.2** | firestore | — | open | open | open | `implementation` | `unit-focused` | `aggregateQuerySnapshotEqual` (pure JS, mirror B9 `aggregateFieldEqual`); `maximum`/`minimum` → **C1.2b** blocked-on-native-sdk |
-| **C1.2b** | firestore | — | open | open | open | — | `none` | `maximum`/`minimum` — **document-only** (Phase D): native SDK limited; harden config reason |
+| **C1.2** | firestore | — | open | open | open | `implementation` | `unit-focused` | `aggregateQuerySnapshotEqual` (pure JS); implementer dispatched 2026-07-05 |
+| **C1.2b** | firestore | — | closed | closed | closed | — | `none` | User-accepted: FieldValue `maximum`/`minimum` — iOS Firebase Firestore 12.15.0 lacks APIs; config hardened 2026-07-05 |
 | **C1.3** | firestore | — | open | open | open | — | `none` | Local-cache config (15 exports) — **document-only** (Phase D): web/N/A on native |
 | **C1.4** | firestore | — | open | open | open | — | `none` | Snapshot serialization (3 exports) — **document-only** (Phase D): web-only |
 | **C1.5** | firestore | — | open | open | open | — | `none` | Index config (4 exports) — **document-only** (Phase D): deprecated in firebase-js-sdk; RNFB will not implement |
@@ -223,7 +222,7 @@ Before any item's `implementation`:
 | ---- | --------------- | ------------ |
 | **B1** ✅ | firestore-pipelines `constant` `preferIntegers` | Add optional param + wire lowering |
 | **B2** ✅ | firestore-pipelines 6× `missingInRN` | Implement pipeline expressions/types per [pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md) |
-| **B3** ❓ | storage `UploadTask` sync methods | Native sync TurboModule: spec `setTaskStatus` → `boolean`, codegen regen, iOS resolve fix; breaking-change queue |
+| **B3** ✅ | storage `UploadTask` sync methods | Native sync TurboModule: spec `setTaskStatus` → `boolean`, codegen regen, iOS resolve fix; breaking-change queue |
 | **B4** ✅ | analytics `logEvent` | Phase S sync-void+queue |
 | **B5** ✅ | app-check `initializeAppCheck` | Phase S sync-void+gate |
 | **B6** ✅ | firestore `initializeFirestore` | Phase S sync return when settings in-memory |
@@ -282,9 +281,9 @@ Gap-analysis 2026-07-05: 30 `missingInRN` entries + `differentShape: runTransact
 
 | Item | Exports | Verdict | Proposed fix |
 | ---- | ------- | ------- | ------------ |
-| **C1.1** | `TransactionOptions`, `runTransaction` | **implement** | Wire `maxAttempts` through JS → `transactionBegin` → native `runTransactionWithOptions` / `TransactionOptions` |
+| **C1.1** ✅ | `TransactionOptions`, `runTransaction` | **implement** | Wire `maxAttempts` through JS → `transactionBegin` → native `runTransactionWithOptions` / `TransactionOptions` |
 | **C1.2** | `aggregateQuerySnapshotEqual` | **implement** | Pure JS equality helper (mirror B9 `aggregateFieldEqual`) |
-| **C1.2b** ❓ | `maximum`, `minimum` | **document-only** | Native aggregate SDK: count/sum/avg only — accept gap; harden config reason (Phase D) |
+| **C1.2b** ✅ | `maximum`, `minimum` | **document-only** | FieldValue set/update sentinels — user-accepted gap; iOS SDK lacks APIs; see Phase C Notes |
 | **C1.3** ❓ | Local-cache factories + 9 types (15 exports) | **document-only** | Web/local-cache API; RN uses native `persistence`/`cacheSizeBytes` — accept gap (Phase D) |
 | **C1.4** ❓ | `documentSnapshotFromJSON`, `querySnapshotFromJSON`, `onSnapshotResume` | **document-only** | Web-only serialization API — accept gap (Phase D) |
 | **C1.5** ❓ | `setIndexConfiguration`, `Index`, `IndexConfiguration`, `IndexField` | **document-only** | **Deprecated in firebase-js-sdk; RNFB will not implement** — harden config reason (Phase D) |
@@ -321,7 +320,9 @@ Gap-analysis 2026-07-05: replace Phase B compare-types façades (B4/B5/B6) and r
 
 ### Phase C Notes
 
-**C1 gap-analysis (2026-07-05):** … Bulk of C1 is **accepted platform drift** — **document-only in Phase D** (C1.2b native-SDK-limited; C1.3–C1.6 web/deprecated; C1.7 D3 error-branding). Deprecated-in-SDK exports (C1.5, C1.6) use the batch rule: *"Deprecated in firebase-js-sdk; React Native Firebase will not implement."*
+**C1.2b analysis (2026-07-05, user-accepted):** Compare-types `maximum`/`minimum` are **FieldValue set/update sentinels** (`maximum(n: number): FieldValue` in firebase-js-sdk **12.15.0**), not aggregate-query helpers. **iOS Firebase Firestore 12.15.0** — `FIRFieldValue` public API has no maximum/minimum factories ([iOS reference](https://firebase.google.com/docs/reference/ios/firebasefirestore/api/reference/Classes/FIRFieldValue)). **Android Firebase Firestore BOM 34.15.0** — `FieldValue.maximum`/`minimum` exist for set/update ([Android reference](https://firebase.google.com/docs/reference/android/com/google/firebase/firestore/FieldValue)) but RNFB serialization (`RNFBFirestoreSerialize.m` / `ReactNativeFirebaseFirestoreSerialize.java`) does not wire them. Cross-platform parity deferred until iOS SDK exposes the APIs.
+
+**C1 gap-analysis (2026-07-05):** … Bulk of C1 is **accepted platform drift** — **document-only in Phase D** (C1.2b iOS-native-limited; C1.3–C1.6 web/deprecated; C1.7 D3 error-branding). Deprecated-in-SDK exports (C1.5, C1.6) use the batch rule: *"Deprecated in firebase-js-sdk; React Native Firebase will not implement."*
 
 **C10 gap-analysis (2026-07-05):** B4/B5/B6 closed compare-types with `void native.X()` façades while native remains async. Three shipped façades + seven still-`Promise` exports (analytics setters, storage retry setters) need native follow-up. B5/B6 config rows already removed — C10.3/C10.4 completion = behavioral correctness, not config row removal. C10.2 clears 5 analytics setter `differentShape` rows.
 

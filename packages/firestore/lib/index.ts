@@ -79,5 +79,6 @@ export type {
   QuerySnapshot,
   SnapshotMetadata,
   Transaction,
+  TransactionOptions,
   WriteBatch,
 } from './types/firestore';

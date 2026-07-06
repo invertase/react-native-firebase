@@ -35,7 +35,7 @@ public abstract class NativeRNFBTurboFirestoreTransactionSpec extends ReactConte
 
   @ReactMethod
   @DoNotStrip
-  public abstract void transactionBegin(String appName, String databaseId, double transactionId);
+  public abstract void transactionBegin(String appName, String databaseId, double transactionId, double maxAttempts);
 
   @ReactMethod
   @DoNotStrip

@@ -476,60 +476,70 @@ export default {
     }
   },
 
-  transactionBegin(appName: string, databaseId: string, transactionId: number): Promise<void> {
+  transactionBegin(
+    appName: string,
+    databaseId: string,
+    transactionId: number,
+    maxAttempts: number,
+  ): Promise<void> {
     return guard(async () => {
       const firestore = getCachedFirestoreInstance(appName, databaseId);
+      const transactionOptions = maxAttempts > 0 ? { maxAttempts } : undefined;
 
       try {
-        await runTransaction(firestore, async (tsx: Transaction) => {
-          transactionHandler[transactionId] = tsx;
+        await runTransaction(
+          firestore,
+          async (tsx: Transaction) => {
+            transactionHandler[transactionId] = tsx;
 
-          emitEvent('firestore_transaction_event', {
-            eventName: 'firestore_transaction_event',
-            body: { type: 'update' },
-            appName,
-            databaseId,
-            listenerId: transactionId,
-          });
+            emitEvent('firestore_transaction_event', {
+              eventName: 'firestore_transaction_event',
+              body: { type: 'update' },
+              appName,
+              databaseId,
+              listenerId: transactionId,
+            });
 
-          const getBuffer = (): TransactionCommand[] | undefined =>
-            transactionBuffer[transactionId];
+            const getBuffer = (): TransactionCommand[] | undefined =>
+              transactionBuffer[transactionId];
 
-          const buffer = await new Promise<TransactionCommand[]>(resolve => {
-            const interval = setInterval(() => {
-              const b = getBuffer();
-              if (b) {
-                clearInterval(interval);
-                resolve(b);
-              }
-            }, 100);
-          });
-
-          for (const serialized of buffer) {
-            const { path: docPath, type, data } = serialized;
-            const docRef = doc(firestore, docPath);
-
-            switch (type) {
-              case 'DELETE':
-                tsx.delete(docRef);
-                break;
-              case 'UPDATE':
-                tsx.update(docRef, readableToObject(firestore, data ?? {}));
-                break;
-              case 'SET': {
-                const options = serialized.options ?? {};
-                const setOptions: Record<string, unknown> = {};
-                if ('merge' in options) {
-                  setOptions.merge = options.merge;
-                } else if ('mergeFields' in options) {
-                  setOptions.mergeFields = options.mergeFields;
+            const buffer = await new Promise<TransactionCommand[]>(resolve => {
+              const interval = setInterval(() => {
+                const b = getBuffer();
+                if (b) {
+                  clearInterval(interval);
+                  resolve(b);
                 }
-                tsx.set(docRef, readableToObject(firestore, data ?? {}), setOptions);
-                break;
+              }, 100);
+            });
+
+            for (const serialized of buffer) {
+              const { path: docPath, type, data } = serialized;
+              const docRef = doc(firestore, docPath);
+
+              switch (type) {
+                case 'DELETE':
+                  tsx.delete(docRef);
+                  break;
+                case 'UPDATE':
+                  tsx.update(docRef, readableToObject(firestore, data ?? {}));
+                  break;
+                case 'SET': {
+                  const options = serialized.options ?? {};
+                  const setOptions: Record<string, unknown> = {};
+                  if ('merge' in options) {
+                    setOptions.merge = options.merge;
+                  } else if ('mergeFields' in options) {
+                    setOptions.mergeFields = options.mergeFields;
+                  }
+                  tsx.set(docRef, readableToObject(firestore, data ?? {}), setOptions);
+                  break;
+                }
               }
             }
-          }
-        });
+          },
+          transactionOptions,
+        );
 
         emitEvent('firestore_transaction_event', {
           eventName: 'firestore_transaction_event',
