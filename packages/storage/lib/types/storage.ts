@@ -269,14 +269,12 @@ export const TaskState = {
  */
 export interface StorageObserver<T> {
   next?: NextFn<T> | null;
-  error?: ((error: StorageError) => void) | null;
+  error?: ((error: StorageError) => unknown) | null;
   complete?: CompleteFn | null;
 }
 
 /**
  * Represents the process of uploading an object. Allows you to monitor and manage the upload.
- *
- * Note: React Native Firebase returns Promises for pause/resume/cancel to communicate with native iOS/Android.
  *
  * @public
  */
@@ -285,7 +283,7 @@ export interface UploadTask {
    * Cancels a running task. Has no effect on a complete or failed task.
    * @returns True if the cancel had an effect.
    */
-  cancel(): Promise<boolean>;
+  cancel(): boolean;
 
   /**
    * Equivalent to calling `then(null, onRejected)`.
@@ -312,13 +310,13 @@ export interface UploadTask {
    * Pauses a currently running task. Has no effect on a paused or failed task.
    * @returns True if the operation took effect, false if ignored.
    */
-  pause(): Promise<boolean>;
+  pause(): boolean;
 
   /**
    * Resumes a paused task. Has no effect on a currently running or failed task.
    * @returns True if the operation took effect, false if ignored.
    */
-  resume(): Promise<boolean>;
+  resume(): boolean;
 
   /**
    * A snapshot of the current task state.

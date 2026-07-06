@@ -516,14 +516,10 @@ export default {
    * @param appName - The app name.
    * @param taskId - The task ID.
    * @param status - The status.
-   * @return {Promise<boolean>} Whether the status was set.
+   * @return Whether the status was set.
    */
-  setTaskStatus(appName: string, taskId: string, status: number): Promise<boolean> {
-    // TODO this function implementation cannot
-    // be tested right now since we're unable
-    // to create a big enough upload to be able to
-    // pause/resume/cancel it in time.
-    return guard(async () => {
+  setTaskStatus(appName: string, taskId: string, status: number): boolean {
+    try {
       const task = tasks[taskId];
 
       // If the task doesn't exist, return false.
@@ -535,13 +531,13 @@ export default {
 
       switch (status) {
         case 0:
-          result = await task.pause();
+          result = task.pause();
           break;
         case 1:
-          result = await task.resume();
+          result = task.resume();
           break;
         case 2:
-          result = await task.cancel();
+          result = task.cancel();
           break;
       }
 
@@ -552,6 +548,8 @@ export default {
       });
 
       return result;
-    });
+    } catch (e) {
+      throw getWebError(e as Error & { code?: string });
+    }
   },
 };

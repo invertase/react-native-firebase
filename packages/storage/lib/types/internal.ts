@@ -172,7 +172,7 @@ export interface NativeRNFBTurboStorage {
    * - 1: resume
    * - 2: cancel
    */
-  setTaskStatus(taskId: number, status: number): Promise<boolean>;
+  setTaskStatus(taskId: number, status: number): boolean;
 
   /**
    * Configure storage emulator.

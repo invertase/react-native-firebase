@@ -40,7 +40,7 @@ export interface Spec extends TurboModule {
     metadata: Object | null,
     taskId: number,
   ): Promise<Object>;
-  setTaskStatus(appName: string, taskId: number, status: number): Promise<boolean>;
+  setTaskStatus(appName: string, taskId: number, status: number): boolean;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('NativeRNFBTurboStorage');

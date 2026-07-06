@@ -83,7 +83,7 @@ public:
   virtual jsi::Value writeToFile(jsi::Runtime &rt, jsi::String appName, jsi::String url, jsi::String localFilePath, double taskId) = 0;
   virtual jsi::Value putFile(jsi::Runtime &rt, jsi::String appName, jsi::String url, jsi::String localFilePath, std::optional<jsi::Object> metadata, double taskId) = 0;
   virtual jsi::Value putString(jsi::Runtime &rt, jsi::String appName, jsi::String url, jsi::String string, jsi::String format, std::optional<jsi::Object> metadata, double taskId) = 0;
-  virtual jsi::Value setTaskStatus(jsi::Runtime &rt, jsi::String appName, double taskId, double status) = 0;
+  virtual bool setTaskStatus(jsi::Runtime &rt, jsi::String appName, double taskId, double status) = 0;
 
 };
 
@@ -226,12 +226,12 @@ private:
       return bridging::callFromJs<jsi::Value>(
           rt, &T::putString, jsInvoker_, instance_, std::move(appName), std::move(url), std::move(string), std::move(format), std::move(metadata), std::move(taskId));
     }
-    jsi::Value setTaskStatus(jsi::Runtime &rt, jsi::String appName, double taskId, double status) override {
+    bool setTaskStatus(jsi::Runtime &rt, jsi::String appName, double taskId, double status) override {
       static_assert(
           bridging::getParameterCount(&T::setTaskStatus) == 4,
           "Expected setTaskStatus(...) to have 4 parameters");
 
-      return bridging::callFromJs<jsi::Value>(
+      return bridging::callFromJs<bool>(
           rt, &T::setTaskStatus, jsInvoker_, instance_, std::move(appName), std::move(taskId), std::move(status));
     }
 

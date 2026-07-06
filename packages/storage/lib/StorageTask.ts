@@ -314,21 +314,21 @@ export default class StorageTask {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#pause
    */
-  pause(): Promise<boolean> {
+  pause(): boolean {
     return this._storage.native.setTaskStatus(this._id, 0);
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#pause
    */
-  resume(): Promise<boolean> {
+  resume(): boolean {
     return this._storage.native.setTaskStatus(this._id, 1);
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#cancel
    */
-  cancel(): Promise<boolean> {
+  cancel(): boolean {
     return this._storage.native.setTaskStatus(this._id, 2);
   }
 }

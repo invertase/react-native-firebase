@@ -1,4 +1,4 @@
-import { describe, it, jest } from '@jest/globals';
+import { describe, expect, it, jest } from '@jest/globals';
 import { assertTurboContract } from '../../app/__tests__/turboModuleContractHelper';
 
 const SPEC_METHODS = [
@@ -33,11 +33,11 @@ describe('TurboModule wrapper contract (NewArch-AD-17.1)', function () {
         customUrlOrRegion: 'gs://test-bucket',
         createMock: method =>
           jest.fn(() =>
-            method === 'useEmulator' || method === 'setTaskStatus'
-              ? method === 'setTaskStatus'
-                ? Promise.resolve(true)
-                : undefined
-              : Promise.resolve(),
+            method === 'useEmulator'
+              ? undefined
+              : method === 'setTaskStatus'
+                ? true
+                : Promise.resolve(),
           ),
         customizeRaw: raw => {
           Object.defineProperty(raw, 'getConstants', {
@@ -86,7 +86,8 @@ describe('TurboModule wrapper contract (NewArch-AD-17.1)', function () {
           void wrapped.writeToFile('gs://test-bucket/path', '/tmp/file', 1);
         },
         setTaskStatus: wrapped => {
-          void wrapped.setTaskStatus(1, 0);
+          const result = wrapped.setTaskStatus(1, 0);
+          expect(result).toBe(true);
         },
         setMaxDownloadRetryTime: wrapped => {
           void wrapped.setMaxDownloadRetryTime(60000);

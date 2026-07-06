@@ -84,7 +84,7 @@ static facebook::jsi::Value __hostFunction_NativeRNFBTurboStorageSpecJSI_putStri
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboStorageSpecJSI_setTaskStatus(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "setTaskStatus", "(Ljava/lang/String;DDLcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, BooleanKind, "setTaskStatus", "(Ljava/lang/String;DD)Z", args, count, cachedMethodId);
 }
 
 NativeRNFBTurboStorageSpecJSI::NativeRNFBTurboStorageSpecJSI(const JavaTurboModule::InitParams &params)

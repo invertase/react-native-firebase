@@ -129,12 +129,6 @@ const config: PackageConfig = {
         'firebase-js-sdk declares them as mutable properties.',
     },
     {
-      name: 'UploadTask',
-      reason:
-        'RN Firebase returns `Promise<boolean>` from `cancel()`, `pause()`, and `resume()` whereas the firebase-js-sdk returns a synchronous `boolean`. ' +
-        'Phase S hint: **convert after native fix** (sync boolean from native task state; see PS-S2-gap).',
-    },
-    {
       name: 'EmulatorMockTokenOptions',
       reason:
         'The firebase-js-sdk `EmulatorMockTokenOptions` (from `@firebase/util`) is a ' +
@@ -180,6 +174,22 @@ const config: PackageConfig = {
         'declares it as a const object and derives the type via ' +
         '`(typeof TaskState)[keyof typeof TaskState]`. The RN const additionally includes ' +
         "a `CANCELLED` alias (with double-L) for `'canceled'` for backwards compatibility.",
+    },
+    {
+      name: 'StorageObserver',
+      reason:
+        'RN Firebase types `error` as `((error: StorageError) => unknown) | null`, placing ' +
+        '`| null` on the optional callback property. The firebase-js-sdk `.d.ts` parses as ' +
+        '`(error: StorageError) => void | null`, binding `| null` to the return type; RN aligns ' +
+        'with other task callback signatures (`unknown` return) and correct optional-null placement.',
+    },
+    {
+      name: 'UploadTask',
+      reason:
+        'RN Firebase types the `on()` `complete` parameter as `CompleteFn | null`, matching ' +
+        'observer callback semantics and the `Subscribe` helper. The firebase-js-sdk public ' +
+        '`.d.ts` compare surface shows `Unsubscribe | null` for that parameter — an extraction ' +
+        'artifact, not the intended complete-handler type.',
     },
   ],
 };

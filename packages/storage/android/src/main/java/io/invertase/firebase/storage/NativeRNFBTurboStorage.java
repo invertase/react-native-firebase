@@ -320,20 +320,16 @@ public class NativeRNFBTurboStorage extends NativeRNFBTurboStorageSpec {
   }
 
   @Override
-  public void setTaskStatus(String appName, double taskId, double status, Promise promise) {
+  public boolean setTaskStatus(String appName, double taskId, double status) {
     switch ((int) status) {
       case 0:
-        promise.resolve(ReactNativeFirebaseStorageTask.pauseTaskById((int) taskId));
-        break;
+        return ReactNativeFirebaseStorageTask.pauseTaskById((int) taskId);
       case 1:
-        promise.resolve(ReactNativeFirebaseStorageTask.resumeTaskById((int) taskId));
-        break;
+        return ReactNativeFirebaseStorageTask.resumeTaskById((int) taskId);
       case 2:
-        promise.resolve(ReactNativeFirebaseStorageTask.cancelTaskById((int) taskId));
-        break;
+        return ReactNativeFirebaseStorageTask.cancelTaskById((int) taskId);
       default:
-        promise.resolve(false);
-        break;
+        return false;
     }
   }
 

@@ -546,34 +546,66 @@ RCT_EXPORT_MODULE(NativeRNFBTurboStorage);
 /**
  * @url N/A - RNFB Specific
  */
-- (void)setTaskStatus:(NSString *)appName
-               taskId:(double)taskId
-               status:(double)status
-              resolve:(RCTPromiseResolveBlock)resolve
-               reject:(RCTPromiseRejectBlock)reject {
+- (NSNumber *)setTaskStatus:(NSString *)appName
+                     taskId:(double)taskId
+                     status:(double)status {
   NSNumber *taskIdNumber = @(taskId);
   id task = PENDING_TASKS[taskIdNumber];
   if (task == nil) {
-    resolve(@(NO));
-    return;
+    return @NO;
   }
+
+  FIRStorageTaskSnapshot *snapshot = nil;
+  if ([task isKindOfClass:[FIRStorageUploadTask class]]) {
+    snapshot = [(FIRStorageUploadTask *)task snapshot];
+  } else if ([task isKindOfClass:[FIRStorageDownloadTask class]]) {
+    snapshot = [(FIRStorageDownloadTask *)task snapshot];
+  } else {
+    return @NO;
+  }
+
+  FIRStorageTaskStatus currentStatus = snapshot.status;
 
   switch ((NSInteger)status) {
     case 0:
-      [task pause];
-      break;
-    case 1:
-      if ([task isKindOfClass:[FIRStorageDownloadTask class]]) {
-        [(FIRStorageDownloadTask *)task resume];
-      } else {
-        [(FIRStorageUploadTask *)task resume];
+      if (currentStatus != FIRStorageTaskStatusPause &&
+          (currentStatus == FIRStorageTaskStatusResume ||
+           currentStatus == FIRStorageTaskStatusProgress)) {
+        if ([task isKindOfClass:[FIRStorageDownloadTask class]]) {
+          [(FIRStorageDownloadTask *)task pause];
+        } else {
+          [(FIRStorageUploadTask *)task pause];
+        }
+        return @YES;
       }
-      break;
+      return @NO;
+    case 1:
+      if (currentStatus == FIRStorageTaskStatusPause) {
+        if ([task isKindOfClass:[FIRStorageDownloadTask class]]) {
+          [(FIRStorageDownloadTask *)task resume];
+        } else {
+          [(FIRStorageUploadTask *)task resume];
+        }
+        return @YES;
+      }
+      return @NO;
     case 2:
-      [task cancel];
-      break;
+      if (currentStatus != FIRStorageTaskStatusSuccess &&
+          currentStatus != FIRStorageTaskStatusFailure &&
+          (currentStatus == FIRStorageTaskStatusResume ||
+           currentStatus == FIRStorageTaskStatusProgress ||
+           currentStatus == FIRStorageTaskStatusPause)) {
+        [PENDING_TASKS removeObjectForKey:taskIdNumber];
+        if ([task isKindOfClass:[FIRStorageDownloadTask class]]) {
+          [(FIRStorageDownloadTask *)task cancel];
+        } else {
+          [(FIRStorageUploadTask *)task cancel];
+        }
+        return @YES;
+      }
+      return @NO;
     default:
-      break;
+      return @NO;
   }
 }
 

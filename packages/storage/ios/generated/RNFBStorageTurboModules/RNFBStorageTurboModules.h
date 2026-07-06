@@ -142,11 +142,9 @@ namespace JS {
            taskId:(double)taskId
           resolve:(RCTPromiseResolveBlock)resolve
            reject:(RCTPromiseRejectBlock)reject;
-- (void)setTaskStatus:(NSString *)appName
-               taskId:(double)taskId
-               status:(double)status
-              resolve:(RCTPromiseResolveBlock)resolve
-               reject:(RCTPromiseRejectBlock)reject;
+- (NSNumber *)setTaskStatus:(NSString *)appName
+                     taskId:(double)taskId
+                     status:(double)status;
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants::Builder>)constantsToExport;
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants::Builder>)getConstants;
 

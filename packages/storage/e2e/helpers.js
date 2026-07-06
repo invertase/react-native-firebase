@@ -10,6 +10,32 @@ const SEED_INITIAL_BACKOFF_MS = 250;
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+const LARGE_FIXTURE_RELATIVE_PATH = 'fixtures/large.bin';
+const DEFAULT_LARGE_FIXTURE_BYTES = 8 * 1024 * 1024;
+
+function createLargeFixtureBytes(sizeBytes) {
+  const data = new Uint8Array(sizeBytes);
+  for (let i = 0; i < sizeBytes; i += 65536) {
+    data[i] = i & 0xff;
+  }
+  return data;
+}
+
+async function seedLargeFixture(path, sizeBytes = DEFAULT_LARGE_FIXTURE_BYTES) {
+  const { getStorage, ref, uploadBytesResumable, TaskState } = storageModular;
+  const snapshot = await uploadBytesResumable(
+    ref(getStorage(), `${path}/${LARGE_FIXTURE_RELATIVE_PATH}`),
+    createLargeFixtureBytes(sizeBytes),
+    {
+      contentType: 'application/octet-stream',
+    },
+  );
+
+  if (snapshot.state !== TaskState.SUCCESS) {
+    throw new Error(`failed to seed large fixture (${sizeBytes} bytes): ${snapshot.state}`);
+  }
+}
+
 async function uploadSeedFixtures(path) {
   const { getStorage, ref, uploadString, StringFormat } = storageModular;
 
@@ -60,3 +86,7 @@ exports.wipe = function wipe(path) {
 
 exports.PATH = PATH;
 exports.WRITE_ONLY_NAME = WRITE_ONLY_NAME;
+exports.LARGE_FIXTURE_PATH = `${PATH}/${LARGE_FIXTURE_RELATIVE_PATH}`;
+exports.DEFAULT_LARGE_FIXTURE_BYTES = DEFAULT_LARGE_FIXTURE_BYTES;
+exports.createLargeFixtureBytes = createLargeFixtureBytes;
+exports.seedLargeFixture = seedLargeFixture;

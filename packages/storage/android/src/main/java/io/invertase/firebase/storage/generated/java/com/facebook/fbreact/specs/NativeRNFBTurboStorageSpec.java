@@ -119,7 +119,7 @@ public abstract class NativeRNFBTurboStorageSpec extends ReactContextBaseJavaMod
   @DoNotStrip
   public abstract void putString(String appName, String url, String string, String format, @Nullable ReadableMap metadata, double taskId, Promise promise);
 
-  @ReactMethod
+  @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
-  public abstract void setTaskStatus(String appName, double taskId, double status, Promise promise);
+  public abstract boolean setTaskStatus(String appName, double taskId, double status);
 }

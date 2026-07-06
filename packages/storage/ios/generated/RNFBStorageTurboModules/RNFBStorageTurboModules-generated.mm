@@ -84,7 +84,7 @@ namespace facebook::react {
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboStorageSpecJSI_setTaskStatus(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "setTaskStatus", @selector(setTaskStatus:taskId:status:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, BooleanKind, "setTaskStatus", @selector(setTaskStatus:taskId:status:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboStorageSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
