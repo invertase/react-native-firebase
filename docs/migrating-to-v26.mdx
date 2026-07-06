@@ -83,19 +83,20 @@ Native builds fail early with explicit guards:
 
 When migrating from firebase-js-sdk web examples, watch for these high-impact runtime divergences:
 
-| Area                          | firebase-js-sdk (web)                                                                                                                        | React Native Firebase                                                                                                                                                                                                                                                                      |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Auth**                      | Browser persistence, redirects, reCAPTCHA, `revokeAccessToken`, `useDeviceLanguage`, `linkWithPhoneNumber` / `reauthenticateWithPhoneNumber` | Native iOS/Android SDKs manage persistence. Several web-only helpers **throw synchronously** on React Native (`setPersistence`, `getRedirectResult`, `revokeAccessToken`, `useDeviceLanguage`, `linkWithPhoneNumber`, `reauthenticateWithPhoneNumber`). Use native provider flows instead. |
-| **Analytics**                 | Cross-platform modular API                                                                                                                   | On-device conversion measurement helpers (`initiateOnDeviceConversionMeasurement*`) are **iOS only**; on Android and web the JS layer resolves without calling native (no-op). `logTransaction` (verified iOS in-app purchase events) is **iOS only** and **rejects** on other platforms.  |
-| **Realtime Database**         | `goOnline` / `goOffline` are synchronous; web transport toggles                                                                              | `goOnline` / `goOffline` are **synchronous** through TurboModules, matching firebase-js-sdk. `getServerTime`, `setPersistenceEnabled`, and `setPersistenceCacheSizeBytes` are RN-specific. `forceLongPolling` / `forceWebSockets` **throw** — transport is native-controlled.              |
-| **Phone Number Verification** | N/A (Android SDK only)                                                                                                                       | **Android only** — all entry points throw on iOS and Web.                                                                                                                                                                                                                                  |
-| **Cloud Storage**             | `uploadBytes` / `uploadString` from JS blobs                                                                                                 | `putFile` and `writeToFile` are **native-only** file-path APIs with no firebase-js-sdk equivalent. Retry-time setters are modular functions on RN, not instance properties.                                                                                                                |
-| **Cloud Messaging**           | Web push / service-worker surface                                                                                                            | FCM token lifecycle, permissions, background handlers, and **APNs token APIs are iOS only**. Event delivery still uses the legacy native event proxy during the TurboModule migration; behavior matches pre-v26 releases but will change when Codegen events land in a future release.     |
-| **Remote Config**             | `reset()` clears server and local state                                                                                                      | `reset()` is **Android only** — iOS does not clear activated, fetched, or default Remote Config values. `setDefaultsFromResource` loads from native resource files (`.plist` / XML).                                                                                                       |
-| **Performance**               | `initializePerformance` returns synchronously; trace `start`/`stop` are sync                                                                 | `initializePerformance` is **synchronous** on RN (applies settings to the native instance). Trace, HTTP metric, and screen trace `start`/`stop` are **synchronous** through TurboModules, matching firebase-js-sdk.                                                                        |
-| **Firestore**                 | IndexedDB persistence, `memoryLocalCache`, `persistentLocalCache`                                                                            | Local cache factories and IndexedDB APIs are **web only**. Persistence is controlled by the native Firestore SDK. `initializeFirestore` returns **`Firestore` synchronously** (settings apply in the background).                                                                                                                                |
-| **App Check**                 | reCAPTCHA version 3 / Enterprise web providers                                                                                               | Use `ReactNativeFirebaseAppCheckProvider` for Device Check, App Attest, Play Integrity, etc. Web reCAPTCHA provider classes have **no RN equivalent**.                                                                                                                                     |
-| **RN-native-only modules**    | No web SDK                                                                                                                                   | `crashlytics`, `in-app-messaging`, `app-distribution`, and `ml` are **React Native only** — no firebase-js-sdk modular surface.                                                                                                                                                            |
+{/* prettier-ignore */}
+| Area | firebase-js-sdk (web) | React Native Firebase |
+| --- | --- | --- |
+| **Auth** | Browser persistence, redirects, reCAPTCHA, `revokeAccessToken`, `useDeviceLanguage`, `linkWithPhoneNumber` / `reauthenticateWithPhoneNumber` | Native iOS/Android SDKs manage persistence. Several web-only helpers **throw synchronously** on React Native (`setPersistence`, `getRedirectResult`, `revokeAccessToken`, `useDeviceLanguage`, `linkWithPhoneNumber`, `reauthenticateWithPhoneNumber`). Use native provider flows instead. |
+| **Analytics** | Cross-platform modular API | On-device conversion measurement helpers (`initiateOnDeviceConversionMeasurement*`) are **iOS only**; on Android and web the JS layer resolves without calling native (no-op). `logTransaction` (verified iOS in-app purchase events) is **iOS only** and **rejects** on other platforms. |
+| **Realtime Database** | `goOnline` / `goOffline` are synchronous; web transport toggles | `goOnline` / `goOffline` are **synchronous** through TurboModules, matching firebase-js-sdk. `getServerTime`, `setPersistenceEnabled`, and `setPersistenceCacheSizeBytes` are RN-specific. `forceLongPolling` / `forceWebSockets` **throw** — transport is native-controlled. |
+| **Phone Number Verification** | N/A (Android SDK only) | **Android only** — all entry points throw on iOS and Web. |
+| **Cloud Storage** | `uploadBytes` / `uploadString` from JS blobs; upload task controls return sync `boolean` | `putFile` and `writeToFile` are **native-only** file-path APIs. `UploadTask.pause()` / `.resume()` / `.cancel()` also return sync `boolean` values through native TurboModules. |
+| **Cloud Messaging** | Web push / service-worker surface | FCM token lifecycle, permissions, background handlers, and **APNs token APIs are iOS only**. Event delivery still uses the legacy native event proxy during the TurboModule migration; behavior matches pre-v26 releases but will change when Codegen events land in a future release. |
+| **Remote Config** | `reset()` clears server and local state | `reset()` is **Android only** — iOS does not clear activated, fetched, or default Remote Config values. `setDefaultsFromResource` loads from native resource files (`.plist` / XML). |
+| **Performance** | `initializePerformance` returns synchronously; trace `start`/`stop` are sync | `initializePerformance` is **synchronous** on RN (applies settings to the native instance). Trace, HTTP metric, and screen trace `start`/`stop` are **synchronous** through TurboModules, matching firebase-js-sdk. |
+| **Firestore** | IndexedDB persistence, `memoryLocalCache`, `persistentLocalCache`, FieldValue `maximum()` / `minimum()` sentinels | Local cache factories and IndexedDB APIs are **web only**. Persistence is controlled by the native Firestore SDK. `initializeFirestore` returns **`Firestore` synchronously**. FieldValue `maximum()` / `minimum()` are not exported yet because iOS SDK 12.15.0 lacks matching native factories. |
+| **App Check** | reCAPTCHA version 3 / Enterprise web providers | Use `ReactNativeFirebaseAppCheckProvider` for Device Check, App Attest, Play Integrity, etc. Web reCAPTCHA provider classes have **no RN equivalent**. |
+| **RN-native-only modules** | No web SDK | `crashlytics`, `in-app-messaging`, `app-distribution`, and `ml` are **React Native only** — no firebase-js-sdk modular surface. |
 
 Per-package notes also appear in each module's [usage](/) page under **Platform support**.
 
@@ -107,6 +108,7 @@ v26 aligns React Native Firebase modular types and several runtime signatures wi
 
 ### Phase S — TurboModule sync conversion (new-architecture)
 
+{/* prettier-ignore */}
 | Method | Before (pre-v26 / legacy bridge) | After (v26) | Notes |
 | ------ | -------------------------------- | ----------- | ----- |
 | `registerVersion(library, version, variant?)` | `Promise<void>` (web) | `void` — throws on RN | Web-only on RN; remove `await` if copied from web samples |
@@ -117,9 +119,11 @@ v26 aligns React Native Firebase modular types and several runtime signatures wi
 | `ScreenTrace.start()` / `.stop()` | `Promise<null>` | `void` | Same as traces |
 | `startScreenTrace(performance, screenName)` | `Promise<ScreenTrace>` | `ScreenTrace` | Remove `await` |
 | `goOnline(db)` / `goOffline(db)` | `Promise<void>` | `void` | Remove `await` |
+| `UploadTask.pause()` / `.resume()` / `.cancel()` | `Promise<boolean>` | `boolean` | Remove `await`; use the returned boolean directly |
 
 ### Compare-types Phase A — type parity (no runtime sync change unless noted)
 
+{/* prettier-ignore */}
 | Export / method | Before | After | Notes |
 | --------------- | ------ | ----- | ----- |
 | `onSnapshotsInSync(firestore, observer)` | `next?: () => void`; `error?: Error` | `next?: (value: void) => void`; `error?: FirestoreError` | Callback overload `onSnapshotsInSync(firestore, () => {})` unchanged |
@@ -132,6 +136,7 @@ v26 aligns React Native Firebase modular types and several runtime signatures wi
 
 ### Compare-types Phase B — sync façades (native work may still be async)
 
+{/* prettier-ignore */}
 | Method | Before | After | Notes |
 | ------ | ------ | ----- | ----- |
 | `logEvent(analytics, …)` | `Promise<void>` | `void` | Fire-and-forget; remove `await` / `.then()` |
@@ -141,8 +146,19 @@ v26 aligns React Native Firebase modular types and several runtime signatures wi
 | `aggregateFieldEqual()` | Not exported | Exported | Aggregate query helper |
 | `LastFetchStatus` literals | — | — | **Unchanged** — native still uses `no_fetch_yet` / `throttled` (documented drift) |
 
+### Compare-types Phase C — Firestore parity additions
+
+{/* prettier-ignore */}
+| Export / method | Before | After | Notes |
+| --------------- | ------ | ----- | ----- |
+| `TransactionOptions` | Not exported | Exported | Type for transaction retry options |
+| `runTransaction(firestore, updateFunction, options?)` | No options argument | Accepts `options?: TransactionOptions` | Supports `{ maxAttempts?: number }` on native iOS and Android |
+| `aggregateQuerySnapshotEqual()` | Not exported | Exported | Aggregate query snapshot equality helper, alongside `aggregateFieldEqual()` |
+| `maximum(n)` / `minimum(n)` FieldValue sentinels | Exported by firebase-js-sdk 12.15.0 | Not exported by RNFB yet | Android SDK 34.15.0 has native factories, but iOS Firebase Firestore SDK 12.15.0 does not; RNFB waits for cross-platform parity |
+
 ### Observer and Promise pitfalls
 
+{/* prettier-ignore */}
 | Pitfall | Symptom | Fix |
 | ------- | ------- | --- |
 | `.then()` on sync API | `TypeError: … .then is not a function` | Use direct call: `logEvent(…)` not `logEvent(…).then(…)` |
@@ -613,6 +629,11 @@ The namespaced API for `@react-native-firebase/storage` has been **removed**. Th
 | `storage().ref()`          | `ref(storage, path?)`                                                |
 | `storageRef.put()`         | `uploadBytesResumable(storageRef, data, metadata?)`                  |
 
+## Signature changes
+
+- `UploadTask.pause()`, `UploadTask.resume()`, and `UploadTask.cancel()` now return `boolean` synchronously (previously `Promise<boolean>`), matching firebase-js-sdk task semantics. Remove `await`, `.then()`, and `.catch()` from these control calls and use the returned boolean directly.
+- `cancel()` delegates to the native SDK. Android cancels active uploads; iOS active-upload cancel follows the current Firebase Storage iOS SDK 12.15.0 behavior tracked in [firebase-ios-sdk#16353](https://github.com/firebase/firebase-ios-sdk/issues/16353).
+
 # Authentication
 
 The namespaced API for `@react-native-firebase/auth` has been **removed**. This package is **modular-only** — use `getAuth()` / `initializeAuth()` and root-level helper functions.
@@ -667,7 +688,7 @@ The namespaced API for `@react-native-firebase/firestore` has been **removed**. 
 | `firestore().collection(...)`                  | `collection(getFirestore(), ...)`                                                     |
 | `firestore().doc(...)`                         | `doc(getFirestore(), ...)`                                                            |
 | `firestore().batch()`                          | `writeBatch(getFirestore())`                                                          |
-| `firestore().runTransaction(...)`              | `runTransaction(getFirestore(), ...)`                                                 |
+| `firestore().runTransaction(...)`              | `runTransaction(getFirestore(), updateFunction, options?)`                            |
 | `firestore().useEmulator(...)`                 | `connectFirestoreEmulator(getFirestore(), ...)`                                       |
 | `firestore().settings(...)`                    | `initializeFirestore(app, settings, databaseId?)`                                     |
 | `firestore.FieldValue` / `firestore.Timestamp` | `FieldValue`, `Timestamp`, `FieldPath`, `Bytes`, `GeoPoint`, `Filter` (named exports) |
@@ -676,7 +697,9 @@ The namespaced API for `@react-native-firebase/firestore` has been **removed**. 
 ## Signature changes
 
 - `initializeFirestore(app, settings, databaseId?)` returns `Firestore` synchronously (previously `Promise<Firestore>`). Remove `await` and `.then()`; settings apply on the native bridge after return.
-- `aggregateFieldEqual()` is now exported for aggregate queries (firebase-js-sdk parity).
+- `TransactionOptions` is now exported. `runTransaction(firestore, updateFunction, options?)` accepts `{ maxAttempts?: number }` and passes the retry limit to the native iOS and Android Firestore SDKs.
+- `aggregateFieldEqual()` and `aggregateQuerySnapshotEqual()` are now exported for aggregate query equality checks (firebase-js-sdk parity).
+- FieldValue `maximum(n)` and `minimum(n)` sentinels from firebase-js-sdk 12.15.0 are not exported yet. Android Firebase Firestore SDK 34.15.0 supports them, but iOS Firebase Firestore SDK 12.15.0 does not expose matching `FIRFieldValue` factories, so React Native Firebase waits for cross-platform support.
 
 ## Example
 
@@ -741,6 +764,8 @@ For each modular-only package you use:
 | `database`         | `firebase.database()`, default `database()`, `FirebaseDatabaseTypes`, instance methods                                               | `getDatabase()`, `ref`, `refFromURL`, `onValue`, `runTransaction`, `connectDatabaseEmulator`, etc.                                                             |
 | `storage`          | `firebase.storage()`, default `storage()`, `FirebaseStorageTypes`, instance/reference methods                                        | `getStorage()`, `ref`, `uploadBytesResumable`, `getDownloadURL`, `connectStorageEmulator`, `StringFormat`, `TaskEvent`, `TaskState`                            |
 | `firestore`        | `firebase.firestore()`, default `firestore()`, `FirebaseFirestoreTypes`, instance methods                                            | `getFirestore()`, `doc`, `collection`, `setDoc`, `writeBatch`, `runTransaction`, `connectFirestoreEmulator`, `FieldValue`, `Timestamp`, `Bytes`, `SDK_VERSION` |
+
+Also remove `await`, `.then()`, and `.catch()` from `UploadTask.pause()`, `UploadTask.resume()`, and `UploadTask.cancel()`. For Firestore transactions, import `TransactionOptions` when you pass `{ maxAttempts }`, and import `aggregateFieldEqual()` / `aggregateQuerySnapshotEqual()` for aggregate equality checks.
 
 ## 3. Validate
 

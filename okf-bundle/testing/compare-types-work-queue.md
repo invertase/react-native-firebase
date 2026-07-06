@@ -54,18 +54,18 @@ Before any item's `implementation`:
 | ----- | ----- | ------ | ------- |
 | **A** | Tier 1 — types/docs only | **partial** | A1–A5, A7–A8, A10 committed; A6/A9 deferred |
 | **B** | Tier 2 — moderate / Phase S | **complete** | B1–B9 committed (B3 ✅ 2026-07-05) |
-| **C** | Tier 3 — hard / structural | **in progress** | C1.1 ✅ committed; C1.2 review closed, ready for commit |
+| **C** | Tier 3 — hard / structural | **in progress** | C1.1 ✅ committed; C1.2 ✅ committed; C1.2b documented |
 | **D** | Tier 4 — document intractable | **queued** | — |
 
 ---
 
 ## Current snapshot
 
-**Label:** `c1.2-implementation-2026-07-05`
+**Label:** `pre-merge-doc-review-2026-07-05`
 
-**Next item:** **C1.3–C1.7** (Phase D document-only batch) or pick from queue.
+**Next item:** pre-merge review for push readiness.
 
-**Current gates:** C1.1, C1.2, C1.2b all gates **closed**.
+**Current gates:** C1.1, C1.2, C1.2b all gates **closed**. v26 migration guide updated for B3, C1.1, C1.2, and C1.2b.
 
 ---
 
