@@ -25,6 +25,7 @@ import { version } from './version';
 import {
   AggregateField,
   aggregateFieldEqual,
+  aggregateQuerySnapshotEqual,
   fieldPathFromArgument,
   AggregateQuerySnapshot,
 } from './FirestoreAggregate';
@@ -503,7 +504,7 @@ export function count(): AggregateField<number> {
   return new AggregateField('count');
 }
 
-export { aggregateFieldEqual };
+export { aggregateFieldEqual, aggregateQuerySnapshotEqual };
 
 export function loadBundle(
   firestore: Firestore,

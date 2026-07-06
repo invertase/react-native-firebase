@@ -27,12 +27,6 @@ const config: PackageConfig = {
   missingInRN: [
     // --- Functions ---
     {
-      name: 'aggregateQuerySnapshotEqual',
-      reason:
-        'Equality comparison helper for AggregateQuerySnapshot instances. Not ' +
-        'yet implemented in RN Firebase.',
-    },
-    {
       name: 'documentSnapshotFromJSON',
       reason:
         'Deserialises a DocumentSnapshot from a JSON representation. Part of ' +

@@ -23,6 +23,7 @@ import type {
   Query as FirestoreQuery,
 } from './types/firestore';
 import { FieldPath, fromDotSeparatedString } from './FieldPath';
+import { queryEqual } from './modular/query';
 
 import type FirestorePath from './FirestorePath';
 import type { Query as QueryImplementation } from './FirestoreQuery';
@@ -135,5 +136,41 @@ export function aggregateFieldEqual(
     right instanceof AggregateField &&
     left.aggregateType === right.aggregateType &&
     left._internalFieldPath?._toPath() === right._internalFieldPath?._toPath()
+  );
+}
+
+function aggregateSpecDataEqual(
+  left: AggregateSpecData<AggregateSpec>,
+  right: AggregateSpecData<AggregateSpec>,
+): boolean {
+  const leftKeys = Object.keys(left);
+  const rightKeys = Object.keys(right);
+  if (leftKeys.length !== rightKeys.length) {
+    return false;
+  }
+  for (const key of leftKeys) {
+    if (!Object.prototype.hasOwnProperty.call(right, key) || left[key] !== right[key]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Compares two `AggregateQuerySnapshot` instances for equality.
+ */
+export function aggregateQuerySnapshotEqual<
+  AggregateSpecType extends AggregateSpec,
+  AppModelType,
+  DbModelType extends DocumentData,
+>(
+  left: AggregateQuerySnapshot<AggregateSpecType, AppModelType, DbModelType>,
+  right: AggregateQuerySnapshot<AggregateSpecType, AppModelType, DbModelType>,
+): boolean {
+  return (
+    left instanceof AggregateQuerySnapshot &&
+    right instanceof AggregateQuerySnapshot &&
+    queryEqual(left.query, right.query) &&
+    aggregateSpecDataEqual(left.data(), right.data())
   );
 }

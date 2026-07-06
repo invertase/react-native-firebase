@@ -24,6 +24,7 @@ import {
   runTransaction,
   getCountFromServer,
   getAggregateFromServer,
+  aggregateQuerySnapshotEqual,
   sum,
   average,
   count,
@@ -427,6 +428,13 @@ getAggregateFromServer(modQuery1, aggSpec).then(
     console.log(snap.data());
   },
 );
+
+// ----- aggregateQuerySnapshotEqual -----
+getCountFromServer(modQuery1).then(snap1 => {
+  getCountFromServer(modQuery1).then(snap2 => {
+    console.log(aggregateQuerySnapshotEqual(snap1, snap2));
+  });
+});
 
 // ----- getDoc, getDocFromCache, getDocFromServer -----
 getDoc(modDoc).then(snap => snap.data());

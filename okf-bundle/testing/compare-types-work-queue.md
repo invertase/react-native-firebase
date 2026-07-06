@@ -8,7 +8,7 @@ timestamp: 2026-07-03T00:00:00Z
 
 # Compare-types parity — work queue
 
-> **IN PROGRESS:** **C1.2** — `aggregateQuerySnapshotEqual`; implementer dispatched.
+> **IN PROGRESS:** **C1.3–C1.7 / C1.2b (Phase D)** — next document-only batch, or **C10** native sync.
 > **Stack:** `main` → `new-architecture` ([#9080](https://github.com/invertase/react-native-firebase/pull/9080)) → `pipeline-continue-workqueue` ([#9086](https://github.com/invertase/react-native-firebase/pull/9086)) → **`compare-types-work-queue`** (frontier).
 > **Goal:** shrink `.github/scripts/compare-types/configs/*.ts` by fixing real drift or tightening intractable documentation — not blanket parity for native-only surfaces. Machinery: [compare-types README](../../../.github/scripts/compare-types/README.md). Term ids: [iteration vocabulary](iteration-vocabulary.md). Policy: [documentation policy](../documentation-policy.md).
 
@@ -54,7 +54,7 @@ Before any item's `implementation`:
 | ----- | ----- | ------ | ------- |
 | **A** | Tier 1 — types/docs only | **partial** | A1–A5, A7–A8, A10 committed; A6/A9 deferred |
 | **B** | Tier 2 — moderate / Phase S | **complete** | B1–B9 committed (B3 ✅ 2026-07-05) |
-| **C** | Tier 3 — hard / structural | **in progress** | C1.1 ✅ committed; C1.2 implementation dispatched |
+| **C** | Tier 3 — hard / structural | **in progress** | C1.1 ✅ committed; C1.2 review closed, ready for commit |
 | **D** | Tier 4 — document intractable | **queued** | — |
 
 ---
@@ -63,9 +63,9 @@ Before any item's `implementation`:
 
 **Label:** `c1.2-implementation-2026-07-05`
 
-**Next item:** **C1.2** — `implementation` (`aggregateQuerySnapshotEqual`).
+**Next item:** **C1.3–C1.7** (Phase D document-only batch) or pick from queue.
 
-**Current gates:** C1.1 all gates **closed**. C1.2b documented (user-accepted). C1.2 `implementation_gate` **open** — implementer dispatched.
+**Current gates:** C1.1, C1.2, C1.2b all gates **closed**.
 
 ---
 
@@ -96,7 +96,7 @@ Before any item's `implementation`:
 | **B8** | remote-config | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | RemoteConfigOptions on getRemoteConfig |
 | **B9** | firestore | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | aggregateFieldEqual exported |
 | **C0** | Phase C scope | — | open | open | open | `gap-analysis` | `none` | [Grilling](#phase-c--tier-3-hard--structural) |
-| **C1.2** | firestore | — | open | open | open | `implementation` | `unit-focused` | `aggregateQuerySnapshotEqual` (pure JS); implementer dispatched 2026-07-05 |
+| **C1.2** | firestore | `feat(firestore): export aggregateQuerySnapshotEqual for SDK parity` | closed | closed | closed | — | `unit-focused` | Committed 2026-07-05: pure JS helper; jest 315/315 |
 | **C1.2b** | firestore | — | closed | closed | closed | — | `none` | User-accepted: FieldValue `maximum`/`minimum` — iOS Firebase Firestore 12.15.0 lacks APIs; config hardened 2026-07-05 |
 | **C1.3** | firestore | — | open | open | open | — | `none` | Local-cache config (15 exports) — **document-only** (Phase D): web/N/A on native |
 | **C1.4** | firestore | — | open | open | open | — | `none` | Snapshot serialization (3 exports) — **document-only** (Phase D): web-only |
@@ -282,7 +282,7 @@ Gap-analysis 2026-07-05: 30 `missingInRN` entries + `differentShape: runTransact
 | Item | Exports | Verdict | Proposed fix |
 | ---- | ------- | ------- | ------------ |
 | **C1.1** ✅ | `TransactionOptions`, `runTransaction` | **implement** | Wire `maxAttempts` through JS → `transactionBegin` → native `runTransactionWithOptions` / `TransactionOptions` |
-| **C1.2** | `aggregateQuerySnapshotEqual` | **implement** | Pure JS equality helper (mirror B9 `aggregateFieldEqual`) |
+| **C1.2** ✅ | `aggregateQuerySnapshotEqual` | **implement** | Pure JS equality helper (mirror B9 `aggregateFieldEqual`) |
 | **C1.2b** ✅ | `maximum`, `minimum` | **document-only** | FieldValue set/update sentinels — user-accepted gap; iOS SDK lacks APIs; see Phase C Notes |
 | **C1.3** ❓ | Local-cache factories + 9 types (15 exports) | **document-only** | Web/local-cache API; RN uses native `persistence`/`cacheSizeBytes` — accept gap (Phase D) |
 | **C1.4** ❓ | `documentSnapshotFromJSON`, `querySnapshotFromJSON`, `onSnapshotResume` | **document-only** | Web-only serialization API — accept gap (Phase D) |
