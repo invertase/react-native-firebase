@@ -9,7 +9,7 @@ restart_simulator_logging() {
   local sim_app_log="${log_dir}/sim-app.log"
   local resource_log="${log_dir}/resource-monitor.log"
   local repo_root="${RNFB_REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}"
-  local log_predicate='process == "testing" OR (process == "SpringBoard" AND eventMessage CONTAINS "invertase")'
+  local log_predicate='process == "testing" OR (process == "SpringBoard" AND eventMessage CONTAINS "invertase") OR eventMessage CONTAINS[c] "RNFBStorage" OR eventMessage CONTAINS[c] "FIRStorage" OR eventMessage CONTAINS[c] "StorageTask"'
 
   if ! xcrun simctl list devices booted 2>/dev/null | grep -q Booted; then
     echo "[boot-status] phase=log_streams skipped=no_booted_simulator"

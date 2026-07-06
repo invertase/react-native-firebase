@@ -8,7 +8,7 @@ timestamp: 2026-07-03T00:00:00Z
 
 # Compare-types parity — work queue
 
-> **IN PROGRESS:** pre-merge remediation committed; next is push / pre-merge validation decision.
+> **IN PROGRESS:** iOS Storage upload pause/resume diagnosis (B3.1); iOS E2E temporarily skips that test.
 > **Stack:** `main` → `new-architecture` ([#9080](https://github.com/invertase/react-native-firebase/pull/9080)) → `pipeline-continue-workqueue` ([#9086](https://github.com/invertase/react-native-firebase/pull/9086)) → **`compare-types-work-queue`** (frontier).
 > **Goal:** shrink `.github/scripts/compare-types/configs/*.ts` by fixing real drift or tightening intractable documentation — not blanket parity for native-only surfaces. Machinery: [compare-types README](../../../.github/scripts/compare-types/README.md). Term ids: [iteration vocabulary](iteration-vocabulary.md). Policy: [documentation policy](../documentation-policy.md).
 
@@ -61,11 +61,11 @@ Before any item's `implementation`:
 
 ## Current snapshot
 
-**Label:** `pre-merge-remediation-review-green-2026-07-05`
+**Label:** `ios-storage-upload-pause-diagnosis-2026-07-06`
 
-**Next item:** pre-merge validation / push decision.
+**Next item:** B3.1 — local iOS e2e + CI `sim-app.log` review for upload pause/resume failure.
 
-**Current gates:** C1.1, C1.2, C1.2b all gates **closed**. Pre-merge remediation all gates **closed**; OKF consistency pass green.
+**Current gates:** B3.1 open (diagnosis). C1.1, C1.2, C1.2b and PMR-1 closed.
 
 ---
 
@@ -87,7 +87,8 @@ Before any item's `implementation`:
 | **B0** | Phase B scope | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `none` | Gap-analysis + scope decisions 2026-07-03 — see [Phase B Notes](#phase-b-notes) |
 | **B1** | firestore-pipelines | `refactor(firestore/pipelines): add constant preferIntegers option` | closed | closed | closed | — | `area-focused` | Re-review green 2026-07-04: parser integerLiteral iOS/Android, preferIntegers e2e, sdk-compat; macOS 147 / iOS 152 / Android 152 |
 | **B2** | firestore-pipelines | `feat(firestore/pipelines): expose search stage and pipeline expressions` | closed | closed | closed | — | `area-focused` | 6× `missingInRN` cleared; macOS 150/150; iOS/Android 155/155; firebase-tools 15.22.4; search index verify cycle. Follow-up: dropped RN-only `Type` export → pipelines 0 documented diffs |
-| **B3** | storage | `refactor!(storage): sync UploadTask pause resume cancel booleans` | closed | closed | closed | — | `area-focused` | Committed 2026-07-05: sync `setTaskStatus` boolean; mid-transfer e2e; iOS upload-cancel skip — user-accepted + [firebase-ios-sdk#16353](https://github.com/firebase/firebase-ios-sdk/issues/16353) |
+| **B3** | storage | `refactor!(storage): sync UploadTask pause resume cancel booleans` | closed | closed | closed | — | `area-focused` | Committed 2026-07-05: sync `setTaskStatus` boolean; mid-transfer e2e; iOS upload-cancel skip — user-accepted + [firebase-ios-sdk#16353](https://github.com/firebase/firebase-ios-sdk/issues/16353); iOS upload pause/resume e2e temporarily skipped 2026-07-06 (CI failure — see B3.1) |
+| **B3.1** | storage / iOS | `test(storage, ios): temporarily skip upload pause/resume testing` | open | open | open | `implementation` | `area-focused` | CI iOS debug+release fail `successfully pauses and resumes an upload` ([storage/unknown], ~50s); Android/macOS pass. **Local:** re-run `StorageTask.e2e.js` on iOS with test unskipped + `RNFBDebug`; capture `xcrun simctl spawn booted log stream` / native `NSError`. **CI:** `RNFB_SIM_LOG_STDOUT=1` + widened sim log predicate; review `sim-app.log` artifact on [Testing E2E iOS](https://github.com/invertase/react-native-firebase/actions/workflows/tests_e2e_ios.yml) runs before root-cause call |
 | **C1.1** | firestore | `feat(firestore): support TransactionOptions maxAttempts in runTransaction` | closed | closed | closed | — | `area-focused` | Committed 2026-07-05: TransactionOptions + runTransaction maxAttempts; e2e Transaction 20/20 iOS+Android |
 | **B4** | analytics | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `unit-focused` | logEvent sync void |
 | **B5** | app-check | `refactor!(types): align modular APIs with firebase-js-sdk sync signatures` | closed | closed | closed | — | `area-focused` | initializeAppCheck sync AppCheck |
@@ -256,7 +257,7 @@ Pre-merge remediation completed 2026-07-05. Findings fixed: markdown table forma
 - **B1, B2:** Were deferred until pipeline **R** — **R is complete** on `pipeline-continue-workqueue`; proceed per [pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md).
 - **B7:** Reclassify **→ Phase D** — document native `no_fetch_yet`/`throttled` literals (mirror deferred A9).
 - **B10:** Moved to **C1.1** (2026-07-05 gap-analysis) — `TransactionOptions` + `runTransaction` `maxAttempts`.
-- **B3:** Native sync TurboModule shipped; mid-transfer e2e enabled (8 MB fixture). iOS upload-cancel `it.skip` — user-accepted platform gap (FirebaseStorage 12.15.0); upstream [firebase-ios-sdk#16353](https://github.com/firebase/firebase-ios-sdk/issues/16353) filed 2026-07-05; related 750ms pause workaround since 2019-05-03 (RNFB #2043).
+- **B3:** Native sync TurboModule shipped; mid-transfer e2e enabled (8 MB fixture). iOS upload-cancel `it.skip` — user-accepted platform gap (FirebaseStorage 12.15.0); upstream [firebase-ios-sdk#16353](https://github.com/firebase/firebase-ios-sdk/issues/16353) filed 2026-07-05; related 750ms pause workaround since 2019-05-03 (RNFB #2043). iOS upload pause/resume e2e skipped 2026-07-06 pending B3.1 diagnosis (CI `[storage/unknown]`; download pause/resume still passes on iOS).
 - **B5, B6:** JS façade shipped for compare-types shape (true sync deferred where applicable).
 - **B4:** Analytics registry + `logEvent` sync `void` JS shim.
 - **B8, B9:** Quick wins — types/JS only.

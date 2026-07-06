@@ -357,11 +357,12 @@ jobs:
           command: RNFB_START_SIM_LOGS=0 ./.github/workflows/scripts/boot-simulator.sh
 
       - name: Start Simulator App Log
-        # One filtered sim log stream (testing + SpringBoard/invertase); optional sim video when record_screens.
+        # One filtered sim log stream (testing + SpringBoard/invertase + Storage); optional sim video when record_screens.
+        # RNFB_SIM_LOG_STDOUT=1 surfaces sim-app.log lines in the step log for iOS Storage diagnosis (B3.1).
         continue-on-error: true
         run: |
           chmod +x ./.github/workflows/scripts/boot-simulator.sh
-          RNFB_RECORD_SCREENS="${RNFB_RECORD_SCREENS}" RNFB_SIM_BOOT_MODE=logs ./.github/workflows/scripts/boot-simulator.sh
+          RNFB_RECORD_SCREENS="${RNFB_RECORD_SCREENS}" RNFB_SIM_BOOT_MODE=logs RNFB_SIM_LOG_STDOUT=1 ./.github/workflows/scripts/boot-simulator.sh
 
       - name: Wait for host load to settle
         continue-on-error: true
