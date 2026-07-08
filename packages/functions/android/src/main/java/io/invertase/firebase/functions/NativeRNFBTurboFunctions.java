@@ -53,6 +53,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   private static final String STREAMING_EVENT = "functions_streaming_event";
 
   private static final SparseArray<Object> functionsStreamingListeners = new SparseArray<>();
+  private static final Object functionsStreamingListenersLock = new Object();
   private final TaskExecutorService executorService;
 
   public NativeRNFBTurboFunctions(ReactApplicationContext reactContext) {
@@ -268,7 +269,9 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
 
                       @Override
                       public void onSubscribe(Subscription s) {
-                        functionsStreamingListeners.put(listenerId, s);
+                        synchronized (functionsStreamingListenersLock) {
+                          functionsStreamingListeners.put(listenerId, s);
+                        }
                         s.request(Long.MAX_VALUE);
                       }
 
@@ -287,7 +290,8 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
 
                         if (isFinalResult) {
                           emitStreamEvent(appName, listenerId, responseData, true, false, null);
-                          removeFunctionsStreamingListener(listenerId);
+                          // Map-only cleanup: do not cancel here (avoids cancel race with emit).
+                          unregisterFunctionsStreamingListener(listenerId);
                         } else {
                           emitStreamEvent(appName, listenerId, responseData, false, false, null);
                         }
@@ -297,33 +301,53 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                       public void onError(Throwable t) {
                         WritableMap errorMap = createErrorMap(t);
                         emitStreamEvent(appName, listenerId, null, true, true, errorMap);
-                        removeFunctionsStreamingListener(listenerId);
+                        unregisterFunctionsStreamingListener(listenerId);
                       }
 
                       @Override
                       public void onComplete() {
-                        Object listener = functionsStreamingListeners.get(listenerId);
-                        if (listener != null) {
+                        boolean stillRegistered;
+                        synchronized (functionsStreamingListenersLock) {
+                          stillRegistered = functionsStreamingListeners.get(listenerId) != null;
+                          if (stillRegistered) {
+                            functionsStreamingListeners.remove(listenerId);
+                          }
+                        }
+                        if (stillRegistered) {
                           emitStreamEvent(appName, listenerId, null, true, false, null);
-                          removeFunctionsStreamingListener(listenerId);
                         }
                       }
                     });
               } catch (Exception e) {
                 WritableMap errorMap = createErrorMap(e);
                 emitStreamEvent(appName, listenerId, null, true, true, errorMap);
-                removeFunctionsStreamingListener(listenerId);
+                unregisterFunctionsStreamingListener(listenerId);
               }
             });
   }
 
-  private void removeFunctionsStreamingListener(int listenerId) {
-    Object listener = functionsStreamingListeners.get(listenerId);
-    if (listener != null) {
-      if (listener instanceof Subscription) {
-        ((Subscription) listener).cancel();
-      }
+  /**
+   * Removes the listener from the map only. Does not cancel the subscription — used after terminal
+   * stream events so emit is not raced by cancel. Explicit {@link
+   * #removeFunctionsStreamingListener} still cancels and removes for the JS {@code
+   * removeFunctionsStreaming} API.
+   */
+  private void unregisterFunctionsStreamingListener(int listenerId) {
+    synchronized (functionsStreamingListenersLock) {
       functionsStreamingListeners.remove(listenerId);
+    }
+  }
+
+  /** Cancels the subscription and removes from the map (explicit JS teardown). */
+  private void removeFunctionsStreamingListener(int listenerId) {
+    synchronized (functionsStreamingListenersLock) {
+      Object listener = functionsStreamingListeners.get(listenerId);
+      if (listener != null) {
+        if (listener instanceof Subscription) {
+          ((Subscription) listener).cancel();
+        }
+        functionsStreamingListeners.remove(listenerId);
+      }
     }
   }
 
@@ -348,10 +372,6 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
         new FirebaseFunctionsStreamHandler(STREAMING_EVENT, body, appName, listenerId);
 
     ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(handler);
-
-    if (done) {
-      removeFunctionsStreamingListener(listenerId);
-    }
   }
 
   private void handleFunctionsException(Exception exception, Promise promise) {
@@ -435,14 +455,16 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
     super.invalidate();
 
     // Cancel all active streaming listeners before shutdown
-    for (int i = 0; i < functionsStreamingListeners.size(); i++) {
-      int listenerId = functionsStreamingListeners.keyAt(i);
-      Object listener = functionsStreamingListeners.get(listenerId);
-      if (listener instanceof Subscription) {
-        ((Subscription) listener).cancel();
+    synchronized (functionsStreamingListenersLock) {
+      for (int i = 0; i < functionsStreamingListeners.size(); i++) {
+        int listenerId = functionsStreamingListeners.keyAt(i);
+        Object listener = functionsStreamingListeners.get(listenerId);
+        if (listener instanceof Subscription) {
+          ((Subscription) listener).cancel();
+        }
       }
+      functionsStreamingListeners.clear();
     }
-    functionsStreamingListeners.clear();
 
     executorService.shutdown();
   }
