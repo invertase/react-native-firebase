@@ -51,10 +51,13 @@ Work queues use these **field names** (values: `open` | `closed`):
 | Field | Tracks |
 |-------|--------|
 | `implementation_gate` | `implementation` work type complete |
+| `coverage_evidence_gate` | [Coverage evidence package](coverage-design.md#coverage-evidence-package) complete with verdict line when lib/native bridge touched; otherwise `n/a` (treat as closed) |
 | `review_gate` | `independent-review` work type complete |
 | `commit_gate` | Durable commit exists for the item **after** prior gates closed with [validation evidence](change-authoring-workflow.md#validation-evidence-blocking) |
 
 What closes each gate, trust rules, and loop transitions: [change authoring § gates](change-authoring-workflow.md#gates). `commit_subject` match and staging: [change authoring § commit](change-authoring-workflow.md#commit).
+
+`commit_gate` closes when a durable commit exists whose subject matches the row's `commit_subject`, **after** `implementation_gate`, `coverage_evidence_gate` (when required), and `review_gate` closed with [validation evidence](change-authoring-workflow.md#validation-evidence-blocking).
 
 Items may also be marked **`blocked`** when a dependency gate is open elsewhere.
 
@@ -68,6 +71,7 @@ Ephemeral work queues may record:
 | `validation_tier` | `unit-focused` \| `area-focused` \| `full` |
 | `platform` | Optional scope (e.g. `ios`) |
 | `implementation_gate` | `open` \| `closed` |
+| `coverage_evidence_gate` | `open` \| `closed` \| `n/a` |
 | `review_gate` | `open` \| `closed` |
 | `commit_gate` | `open` \| `closed` |
 | `commit_subject` | Planned or landed **first line** of the item's focused commit (Conventional Commits subject). Staging, match, and no-SHA rules: [change authoring § commit](change-authoring-workflow.md#commit). |
