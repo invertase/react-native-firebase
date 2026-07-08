@@ -45,7 +45,7 @@ import {
 import { BackendName, getMockResponse } from './test-utils/mock-response';
 import { SpiedFunction } from 'jest-mock';
 
-const fakeModel = 'models/gemini-pro';
+const fakeModel = 'models/gemini-3.1-flash-lite';
 
 const fakeContents: Content[] = [{ role: 'user', parts: [{ text: 'hello' }] }];
 

@@ -28,6 +28,9 @@ import { initApiSettings } from './utils';
  *
  * This class should only be instantiated with {@link getTemplateImagenModel}.
  *
+ * @deprecated Imagen models are deprecated. Use {@link getGenerativeModel} with a Gemini image
+ * model such as `gemini-3.1-flash-lite-image` instead.
+ *
  * @beta
  */
 export class TemplateImagenModel {
