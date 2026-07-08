@@ -186,7 +186,7 @@ Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, 
 | lint:deps (lib diff)      | yarn lint:deps                       | 0    | when `packages/*/lib/**` in diff — [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)             |
 | lint:markdown (CI docs)   | yarn lint:markdown                   | 0    | when `docs/**` in diff                                                                                                                       |
 | lint:spellcheck (CI docs) | yarn lint:spellcheck                 | 0    | when `docs/**` in diff                                                                                                                       |
-| coverage                  | post-process + region table          | —    | see coverage-design § evidence package                                                                                                       |
+| coverage                  | post-process + region table          | —    | [coverage evidence package](coverage-design.md#coverage-evidence-package); closes `coverage_evidence_gate` when lib/native bridge or `packages/app/**/*.rb` touched |
 ```
 
 **History rewrite invalidates** prior rows — re-run and replace the table after amend/rebase.
@@ -207,7 +207,7 @@ Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, 
 - [ ] E2e green on **every required platform** for the changed module ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking); [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking); no `.only`; committed `RNFBDebug` remains `false`)
 - [ ] Android post-e2e merged Jacoco when Android native touched: `yarn tests:android:post-e2e-coverage` → `jacocoTestReport.xml` ([coverage design](coverage-design.md))
 - [ ] [Validation evidence package](validation-checklist.md#validation-evidence-package) recorded (exit codes, e2e counts, log paths)
-- [ ] [Coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native bridge **or** `packages/app/**/*.rb` touched — gaps investigated to fix, delete, or acceptable-exception bar
+- [ ] [Coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native bridge **or** `packages/app/**/*.rb` touched — `coverage_evidence_gate` closed with verdict line; gaps investigated to fix, delete, or acceptable-exception bar
 - [ ] OKF bundle reviewed/updated per § above
 
 Package workflows may add items (e.g. pipeline before/after snapshots — [pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md)).
