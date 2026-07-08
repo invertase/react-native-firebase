@@ -754,6 +754,58 @@ describe('functions() modular', function () {
         finalData.should.be.an.Object();
       });
 
+      it('should handle native streaming errors', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testStreamWithError',
+          e2eCallableTimeoutOptions(),
+        );
+
+        const { stream, data } = await functionRunner.stream({ shouldError: true, errorAfter: 2 });
+        let streamFailed = false;
+        try {
+          for await (const _chunk of stream) {
+            // drain until native onError propagates
+          }
+        } catch (e) {
+          streamFailed = true;
+          e.should.be.an.Error();
+        }
+        streamFailed.should.equal(true);
+        try {
+          await data;
+          return Promise.reject(new Error('Expected data promise to reject'));
+        } catch (e) {
+          e.should.be.an.Error();
+        }
+      });
+
+      it('should cancel streaming cleanly when iteration stops early', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testStreamingCallable',
+          e2eCallableTimeoutOptions(),
+        );
+        const { stream, data } = await functionRunner.stream({ count: 5, delay: 300 });
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+          if (chunks.length >= 2) {
+            break;
+          }
+        }
+        chunks.should.have.length(2);
+        // Generator `finally` removes the native listener; allow in-flight onComplete to finish.
+        await Promise.race([
+          data.catch(() => undefined),
+          new Promise(resolve => setTimeout(resolve, 1500)),
+        ]);
+      });
+
       it('should work with multiple streams in parallel', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
