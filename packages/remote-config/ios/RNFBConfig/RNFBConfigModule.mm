@@ -191,27 +191,58 @@ RCT_EXPORT_MODULE(NativeRNFBTurboConfig)
 - (void)fetchAndActivate:(NSString *)appName
                  resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject {
+  // NOTE: We deliberately do not use `-[FIRRemoteConfig fetchAndActivateWithCompletionHandler:]`
+  // here. Its `FIRRemoteConfigFetchAndActivateStatus` result only reflects whether the fetch
+  // succeeded (`SuccessFetchedFromRemote`) vs fell back to previously fetched data
+  // (`SuccessUsingPreFetchedData`) - it does NOT reflect whether activation actually changed any
+  // config values, so it reports `SuccessFetchedFromRemote` (=> we'd resolve `true`) even when the
+  // fetched values are identical to what's already active. See
+  // https://github.com/invertase/react-native-firebase/issues/7779
+  //
+  // Instead we perform the fetch + activate ourselves and resolve with the `changed` BOOL from
+  // `activateWithCompletion:`, which matches the semantics of our own `activate()` method as well
+  // as the Android implementation, both of which resolve `true` only when activation changed the
+  // in-use config values.
   FIRApp *firebaseApp = firebaseAppForName(appName);
-  FIRRemoteConfigFetchAndActivateCompletion completionHandler =
-      ^(FIRRemoteConfigFetchAndActivateStatus status, NSError *__nullable error) {
-        if (error) {
-          if (error.userInfo && error.userInfo[@"ActivationFailureReason"] != nil &&
-              [error.userInfo[@"ActivationFailureReason"] containsString:@"already activated"]) {
-            resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
-          } else {
-            [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-          }
-        } else {
-          if (status == FIRRemoteConfigFetchAndActivateStatusSuccessFetchedFromRemote) {
-            resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
-            return;
-          }
-          resolve([self resultWithConstants:@([RCTConvert BOOL:@(NO)]) firebaseApp:firebaseApp]);
+  __weak RNFBConfigModule *weakSelf = self;
+  FIRRemoteConfigFetchCompletion fetchCompletion =
+      ^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
+        RNFBConfigModule *strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
         }
+
+        if (error) {
+          [RNFBSharedUtils
+              rejectPromiseWithUserInfo:reject
+                               userInfo:[@{
+                                 @"code" : convertFIRRemoteConfigFetchStatusToNSString(status),
+                                 @"message" :
+                                     convertFIRRemoteConfigFetchStatusToNSStringDescription(status)
+                               } mutableCopy]];
+          return;
+        }
+
+        [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
+            activateWithCompletion:^(BOOL changed, NSError *_Nullable activateError) {
+              if (activateError) {
+                if (activateError.userInfo &&
+                    activateError.userInfo[@"ActivationFailureReason"] != nil &&
+                    [activateError.userInfo[@"ActivationFailureReason"]
+                        containsString:@"already activated"]) {
+                  resolve([strongSelf resultWithConstants:@([RCTConvert BOOL:@(NO)])
+                                              firebaseApp:firebaseApp]);
+                } else {
+                  [RNFBSharedUtils rejectPromiseWithNSError:reject error:activateError];
+                }
+              } else {
+                resolve([strongSelf resultWithConstants:@([RCTConvert BOOL:@(changed)])
+                                            firebaseApp:firebaseApp]);
+              }
+            }];
       };
 
-  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
-      fetchAndActivateWithCompletionHandler:completionHandler];
+  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] fetchWithCompletionHandler:fetchCompletion];
 }
 
 - (void)activate:(NSString *)appName
