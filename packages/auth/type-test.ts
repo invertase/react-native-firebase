@@ -6,6 +6,7 @@ import { getApp } from '@react-native-firebase/app';
 import {
   applyActionCode,
   ActionCodeOperation,
+  AppleAuthProvider,
   beforeAuthStateChanged,
   checkActionCode,
   confirmPasswordReset,
@@ -57,8 +58,10 @@ import {
   SDK_VERSION,
   type ActionCodeInfo,
   type ActionCodeSettings,
+  type AppleFullPersonName,
   type ApplicationVerifier,
   type Auth,
+  type AuthCredential,
   type AuthError,
   type AuthProvider,
   type AuthSettings,
@@ -142,13 +145,27 @@ const phoneAuthCredential: PhoneAuthCredential = PhoneAuthProvider.credential(
   'verification-id',
   '123456',
 );
+const appleFullPersonName: AppleFullPersonName = {
+  namePrefix: null,
+  givenName: 'Jonny',
+  middleName: null,
+  familyName: 'Appleseed',
+  nameSuffix: null,
+  nickname: null,
+};
 const oauthCredentialOptions: OAuthCredentialOptions = {
   idToken: 'id-token',
   accessToken: 'access-token',
   rawNonce: 'nonce',
+  fullName: appleFullPersonName,
 };
 const oauthCredential: OAuthCredential = new OAuthProvider('apple.com').credential(
   oauthCredentialOptions,
+);
+const appleCredential: AuthCredential = AppleAuthProvider.credential(
+  'apple-id-token',
+  'apple-raw-nonce',
+  appleFullPersonName,
 );
 const oauthCredentialFromJSON: OAuthCredential = OAuthProvider.credentialFromJSON({
   providerId: 'apple.com',
@@ -195,6 +212,7 @@ console.log(phoneAuthCredential.signInMethod);
 console.log(oauthCredentialOptions.idToken);
 console.log(oauthCredential.providerId);
 console.log(oauthCredential.rawNonce);
+console.log(appleCredential.providerId);
 console.log(oauthCredentialFromJSON.accessToken);
 console.log(facebookCredential.accessToken);
 console.log(facebookCredentialFromResult?.accessToken);
