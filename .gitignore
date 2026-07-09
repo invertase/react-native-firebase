@@ -606,3 +606,4 @@ mocks-lookup.ts
 .nx/
 .claude/
 .codex/
+Package.Resolved
