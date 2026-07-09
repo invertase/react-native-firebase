@@ -169,10 +169,36 @@ export interface ApplicationVerifier {
 
 export type CustomParameters = Record<string, string>;
 
+/**
+ * The user's full name, as shared by Sign in with Apple.
+ *
+ * Apple only shares this data on the user's first authorization for a given app; it is
+ * omitted from the `ASAuthorizationAppleIDCredential` on subsequent sign-ins, so it should be
+ * captured and forwarded on the first sign-in.
+ */
+export interface AppleFullPersonName {
+  namePrefix?: string | null;
+  givenName?: string | null;
+  middleName?: string | null;
+  familyName?: string | null;
+  nameSuffix?: string | null;
+  nickname?: string | null;
+}
+
 export interface OAuthCredentialOptions {
   idToken?: string;
   accessToken?: string;
   rawNonce?: string;
+  /**
+   * The user's full name, as shared by Sign in with Apple on the user's first authorization.
+   *
+   * @remarks Only forwarded to the native SDK for the `apple.com` provider on iOS, where it is
+   * passed to `FIROAuthProvider.appleCredentialWithIDToken:rawNonce:fullName:` so Firebase can
+   * store it as {@link User.displayName} while creating the account. The Firebase Android SDK
+   * has no equivalent credential-level API; on Android (and Web) this field is ignored and the
+   * display name must be set with {@link updateProfile} after sign-in.
+   */
+  fullName?: AppleFullPersonName;
 }
 
 export interface AuthProvider {

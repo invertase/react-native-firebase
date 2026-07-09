@@ -94,6 +94,7 @@ export default class OAuthProvider {
       idToken: credential.idToken,
       accessToken: credential.accessToken,
       rawNonce: credential.rawNonce ?? credential.nonce,
+      fullName: credential.fullName,
     });
   }
 
@@ -112,6 +113,7 @@ export default class OAuthProvider {
       idToken: params.idToken,
       accessToken: params.accessToken,
       rawNonce: params.rawNonce,
+      fullName: params.fullName,
     });
   }
 
