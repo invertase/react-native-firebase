@@ -24,6 +24,12 @@ class FirebaseSpmTest < Minitest::Test
     if defined?(spm_dependency)
       Object.send(:remove_method, :spm_dependency)
     end
+    # Note: a Ruby global variable can't be "undefined" again once assigned in this
+    # process, so `defined?($RNFirebaseDisableSPM)` stays true for the rest of the
+    # suite after the first test that touches it. Resetting the value to nil (rather
+    # than relying on `defined?` alone) is exactly the behavior rnfirebase_spm_disabled?
+    # is meant to guard against, so tests below assert on it explicitly.
+    $RNFirebaseDisableSPM = nil
   end
 
   def load_firebase_spm
@@ -108,6 +114,55 @@ class FirebaseSpmTest < Minitest::Test
     # SPM called with only the SPM products (no FirebaseCoreExtension)
     assert_equal 1, spm_calls.length
     assert_equal ['FirebaseCrashlytics'], spm_calls[0][:products]
+  end
+
+  # ── $RNFirebaseDisableSPM semantics (must check truthiness, not defined?) ──
+
+  def test_disable_spm_true_forces_cocoapods
+    Object.define_method(:spm_dependency) { |*| raise 'spm_dependency should not be called' }
+
+    load_firebase_spm
+    $RNFirebaseDisableSPM = true
+
+    spec = MockSpec.new
+    firebase_dependency(spec, '12.10.0', ['FirebaseAuth'], 'Firebase/Auth')
+
+    assert_equal 1, spec.dependencies.length
+    assert_equal 'Firebase/Auth', spec.dependencies[0][:name]
+  end
+
+  def test_disable_spm_false_still_uses_spm
+    spm_calls = []
+    Object.define_method(:spm_dependency) do |spec, **kwargs|
+      spm_calls << { spec: spec, **kwargs }
+    end
+
+    load_firebase_spm
+    # Config generators / Expo plugins / env-templated Podfiles may emit `false`
+    # rather than omitting the assignment entirely. This must NOT disable SPM.
+    $RNFirebaseDisableSPM = false
+
+    spec = MockSpec.new
+    firebase_dependency(spec, '12.10.0', ['FirebaseAuth'], 'Firebase/Auth')
+
+    assert_equal 0, spec.dependencies.length
+    assert_equal 1, spm_calls.length
+    assert_equal ['FirebaseAuth'], spm_calls[0][:products]
+  end
+
+  def test_disable_spm_unset_uses_spm
+    spm_calls = []
+    Object.define_method(:spm_dependency) do |spec, **kwargs|
+      spm_calls << { spec: spec, **kwargs }
+    end
+
+    load_firebase_spm
+
+    spec = MockSpec.new
+    firebase_dependency(spec, '12.10.0', ['FirebaseAuth'], 'Firebase/Auth')
+
+    assert_equal 0, spec.dependencies.length
+    assert_equal 1, spm_calls.length
   end
 
   # ── URL from package.json ──

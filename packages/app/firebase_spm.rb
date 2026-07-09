@@ -46,13 +46,22 @@ end
 # https://github.com/firebase/firebase-ios-sdk/blob/main/Package.swift
 # (all products use .library(type: .dynamic))
 #
+# Returns true only when `$RNFirebaseDisableSPM` has been explicitly set to `true`.
+#
+# We deliberately check the value (not just `defined?`), so that config generators,
+# Expo plugins, or env-templated Podfiles that emit `$RNFirebaseDisableSPM = false`
+# don't silently switch to CocoaPods.
+def rnfirebase_spm_disabled?
+  defined?($RNFirebaseDisableSPM) && $RNFirebaseDisableSPM == true
+end
+
 # @param spec [Pod::Specification] The podspec object (the `s` in podspec DSL)
 # @param version [String] Firebase SDK version (e.g., '12.10.0')
 # @param spm_products [Array<String>] SPM product names (e.g., ['FirebaseAuth'])
 # @param pods [Array<String>, String] CocoaPods dependency names with optional version
 #   Can be a single string like 'Firebase/Auth' or an array like ['Firebase/Messaging', 'FirebaseCoreExtension']
 def firebase_dependency(spec, version, spm_products, pods)
-  if defined?(spm_dependency) && !defined?($RNFirebaseDisableSPM)
+  if defined?(spm_dependency) && !rnfirebase_spm_disabled?
     if defined?(Pod) && defined?(Pod::UI)
       Pod::UI.puts "[react-native-firebase] #{spec.name}: ".yellow +
         "Using SPM for Firebase dependency resolution (products: #{spm_products.join(', ')})"
@@ -64,7 +73,7 @@ def firebase_dependency(spec, version, spm_products, pods)
     )
   else
     if defined?(Pod) && defined?(Pod::UI)
-      if defined?($RNFirebaseDisableSPM)
+      if rnfirebase_spm_disabled?
         Pod::UI.puts "[react-native-firebase] #{spec.name}: ".yellow +
           "SPM disabled ($RNFirebaseDisableSPM = true), using CocoaPods for Firebase dependencies"
       elsif !defined?(spm_dependency)

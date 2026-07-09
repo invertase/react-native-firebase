@@ -55,7 +55,7 @@ Pod::Spec.new do |s|
   #      to avoid GoogleAppMeasurement APM symbols (APMETaskManager, APMMeasurement)
   #      that require FirebasePerformance at link time.
   # CocoaPods: IdentitySupport is a separate subspec controlled by $RNFirebaseAnalyticsWithoutAdIdSupport.
-  if defined?(spm_dependency) && !defined?($RNFirebaseDisableSPM) &&
+  if defined?(spm_dependency) && !rnfirebase_spm_disabled? &&
      defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && $RNFirebaseAnalyticsWithoutAdIdSupport
     # FirebaseAnalyticsCore uses GoogleAppMeasurementCore (no IDFA, no APM objects).
     # FirebaseAnalytics uses GoogleAppMeasurement which has APMETaskManager/APMMeasurement
@@ -66,7 +66,7 @@ Pod::Spec.new do |s|
     firebase_dependency(s, firebase_sdk_version, ['FirebaseAnalytics'], 'FirebaseAnalytics/Core')
   end
 
-  unless defined?(spm_dependency) && !defined?($RNFirebaseDisableSPM)
+  unless defined?(spm_dependency) && !rnfirebase_spm_disabled?
     # CocoaPods-only: conditional IdentitySupport subspec
     if defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && ($RNFirebaseAnalyticsWithoutAdIdSupport == true)
       Pod::UI.puts "#{s.name}: Not installing FirebaseAnalytics/IdentitySupport Pod, no IDFA will be collected."
@@ -93,7 +93,7 @@ Pod::Spec.new do |s|
   # on-device conversion measurement.
   # See: https://developers.google.com/google-ads/api/docs/conversions/upload-identifiers
   if defined?($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion) && ($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion == true)
-    if defined?(spm_dependency) && !defined?($RNFirebaseDisableSPM)
+    if defined?(spm_dependency) && !rnfirebase_spm_disabled?
       Pod::UI.warn "#{s.name}: GoogleAdsOnDeviceConversion is not available in SPM mode. " \
         "Set $RNFirebaseDisableSPM = true in your Podfile to use this feature."
     else
