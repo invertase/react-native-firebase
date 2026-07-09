@@ -20,6 +20,9 @@
 
 #if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebasePerformance/FirebasePerformance.h>)
+#import <FirebasePerformance/FirebasePerformance.h>
+#import <FirebaseCore/FirebaseCore.h>
 #else
 @import FirebaseCore;
 @import FirebasePerformance;

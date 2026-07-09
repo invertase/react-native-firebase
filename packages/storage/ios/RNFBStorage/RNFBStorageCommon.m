@@ -18,6 +18,9 @@
 
 #if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseStorage/FirebaseStorage.h>)
+#import <FirebaseStorage/FirebaseStorage.h>
+#import <FirebaseCore/FirebaseCore.h>
 #else
 @import FirebaseCore;
 @import FirebaseStorage;

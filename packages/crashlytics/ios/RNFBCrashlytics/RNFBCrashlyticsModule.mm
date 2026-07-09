@@ -24,6 +24,9 @@
 
 #if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseCrashlytics/FirebaseCrashlytics.h>)
+#import <FirebaseCrashlytics/FirebaseCrashlytics.h>
+#import <FirebaseCore/FirebaseCore.h>
 #else
 @import FirebaseCore;
 @import FirebaseCrashlytics;

@@ -17,6 +17,9 @@
 
 #if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseDatabaseInternal/FirebaseDatabaseInternal.h>)
+#import <FirebaseDatabaseInternal/FirebaseDatabaseInternal.h>
+#import <FirebaseCore/FirebaseCore.h>
 #else
 @import FirebaseCore;
 @import FirebaseDatabaseInternal;

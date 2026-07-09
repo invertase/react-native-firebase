@@ -17,6 +17,9 @@
 
 #if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseInAppMessagingInternal/FirebaseInAppMessagingInternal.h>)
+#import <FirebaseInAppMessagingInternal/FirebaseInAppMessagingInternal.h>
+#import <FirebaseCore/FirebaseCore.h>
 #else
 @import FirebaseCore;
 @import FirebaseInAppMessagingInternal;
