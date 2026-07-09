@@ -37,12 +37,15 @@ import { mergeRequestOptions } from '../requests/request-options';
  *
  * This class provides methods for generating images using the Imagen model.
  *
+ * @deprecated Imagen models are deprecated. Use {@link getGenerativeModel} with a Gemini image
+ * model such as `gemini-3.1-flash-lite-image` instead.
+ *
  * @example
  * ```javascript
  * const imagen = new ImagenModel(
  *   ai,
  *   {
- *     model: 'imagen-3.0-generate-002'
+ *     model: 'imagen-3.0-generate-002' // legacy; prefer gemini-3.1-flash-lite-image
  *   }
  * );
  *

@@ -6,7 +6,6 @@ import {
   getAI,
   getGenerativeModel,
   Schema,
-  getImagenModel,
   AI,
   GenerativeModel,
   GenerateContentResult,
@@ -107,7 +106,7 @@ export function AITestComponent() {
           try {
             const app = getApp();
             const ai: AI = getAI(app);
-            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-2.5-flash' });
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
 
             const result: GenerateContentResult = await model.generateContent('What is 2 + 2?');
 
@@ -123,7 +122,7 @@ export function AITestComponent() {
           try {
             const app = getApp();
             const ai: AI = getAI(app, { backend: new GoogleAIBackend() });
-            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-2.5-flash' });
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
 
             const result: GenerateContentStreamResult = await model.generateContentStream(
               'Write me a short, funny rap',
@@ -154,7 +153,7 @@ export function AITestComponent() {
           try {
             const app = getApp();
             const ai: AI = getAI(app);
-            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-2.5-flash' });
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
             const mediaDetails: MediaDetails | null = getMediaDetails(selectedOption);
             if (!mediaDetails) return;
 
@@ -199,7 +198,7 @@ export function AITestComponent() {
               },
             });
             const model: GenerativeModel = getGenerativeModel(ai, {
-              model: 'gemini-2.5-flash',
+              model: 'gemini-3.1-flash-lite',
               generationConfig: {
                 responseMimeType: 'application/json',
                 responseSchema: jsonSchema,
@@ -222,7 +221,7 @@ export function AITestComponent() {
           try {
             const app = getApp();
             const ai: AI = getAI(app);
-            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-2.5-flash' });
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
 
             const chat: ChatSession = model.startChat({
               history: [
@@ -261,7 +260,7 @@ export function AITestComponent() {
           try {
             const app = getApp();
             const ai: AI = getAI(app);
-            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-2.5-flash' });
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
 
             const result = await model.countTokens('What is 2 + 2?');
 
@@ -343,7 +342,7 @@ export function AITestComponent() {
             const app = getApp();
             const ai: AI = getAI(app);
             const model: GenerativeModel = getGenerativeModel(ai, {
-              model: 'gemini-2.5-flash',
+              model: 'gemini-3.1-flash-lite',
               // @ts-ignore
               tools: fetchWeatherTool,
             });
@@ -384,21 +383,25 @@ export function AITestComponent() {
         }}
       />
       <Button
-        title="Generate image using Imagen"
+        title="Generate image with Gemini"
         onPress={async (): Promise<void> => {
           try {
             const app = getApp();
             const ai: AI = getAI(app);
 
-            const model = getImagenModel(ai, {
-              model: 'imagen-3.0-generate-002',
+            const model: GenerativeModel = getGenerativeModel(ai, {
+              model: 'gemini-3.1-flash-lite-image',
+              generationConfig: {
+                responseModalities: [ResponseModality.IMAGE],
+              },
             });
 
             const prompt: string = 'Generate an image of London bridge with sharks in the water';
 
-            const result = await model.generateImages(prompt);
-            const images = result;
-            console.log('Generated images:', images);
+            const result = await model.generateContent(prompt);
+            const parts = result.response.candidates?.[0]?.content?.parts ?? [];
+            const imagePart = parts.find(part => part.inlineData?.mimeType?.startsWith('image/'));
+            console.log('Generated image mime type:', imagePart?.inlineData?.mimeType);
           } catch (e) {
             console.error(e);
           }
@@ -411,7 +414,7 @@ export function AITestComponent() {
             const app = getApp();
             const ai: AI = getAI(app, { backend: new VertexAIBackend('us-central1') });
             const model: LiveGenerativeModel = getLiveGenerativeModel(ai, {
-              model: 'gemini-2.0-flash-live-preview-04-09',
+              model: 'gemini-2.5-flash-native-audio-preview-12-2025',
               generationConfig: {
                 responseModalities: [ResponseModality.TEXT],
               },

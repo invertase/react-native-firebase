@@ -131,7 +131,7 @@ describe('LiveGenerativeModel', function () {
     const model = new LiveGenerativeModel(
       fakeAI,
       {
-        model: 'gemini-pro',
+        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         generationConfig: { temperature: 0.8 },
         systemInstruction: { role: 'system', parts: [{ text: 'Be a pirate' }] },
       },
@@ -153,7 +153,7 @@ describe('LiveGenerativeModel', function () {
     const model = new LiveGenerativeModel(
       fakeAI,
       {
-        model: 'gemini-pro',
+        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         generationConfig: {
           temperature: 0.8,
           inputAudioTranscription: {},
@@ -183,7 +183,7 @@ describe('LiveGenerativeModel', function () {
     const model = new LiveGenerativeModel(
       fakeAI,
       {
-        model: 'gemini-pro',
+        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         generationConfig: {
           temperature: 0.8,
           contextWindowCompression: { triggerTokens: 1000 },
