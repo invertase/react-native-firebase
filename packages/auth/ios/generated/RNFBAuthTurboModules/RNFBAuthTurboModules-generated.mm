@@ -147,7 +147,7 @@ namespace facebook::react {
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_signInWithCredential(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "signInWithCredential", @selector(signInWithCredential:provider:authToken:authSecret:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "signInWithCredential", @selector(signInWithCredential:provider:authToken:authSecret:fullName:resolve:reject:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_signInWithProvider(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -363,7 +363,7 @@ namespace facebook::react {
         methodMap_["getIdTokenResult"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboAuthSpecJSI_getIdTokenResult};
         
         
-        methodMap_["signInWithCredential"] = MethodMetadata {4, __hostFunction_NativeRNFBTurboAuthSpecJSI_signInWithCredential};
+        methodMap_["signInWithCredential"] = MethodMetadata {5, __hostFunction_NativeRNFBTurboAuthSpecJSI_signInWithCredential};
         
         
         methodMap_["signInWithProvider"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboAuthSpecJSI_signInWithProvider};

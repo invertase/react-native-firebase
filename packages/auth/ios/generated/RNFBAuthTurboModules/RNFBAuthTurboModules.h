@@ -173,6 +173,7 @@ namespace JS {
                     provider:(NSString *)provider
                    authToken:(NSString *)authToken
                   authSecret:(NSString *)authSecret
+                    fullName:(NSDictionary * _Nullable)fullName
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject;
 - (void)signInWithProvider:(NSString *)appName

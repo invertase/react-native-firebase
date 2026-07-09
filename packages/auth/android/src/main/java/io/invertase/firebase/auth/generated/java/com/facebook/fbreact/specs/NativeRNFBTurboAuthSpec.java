@@ -188,7 +188,7 @@ public abstract class NativeRNFBTurboAuthSpec extends ReactContextBaseJavaModule
 
   @ReactMethod
   @DoNotStrip
-  public abstract void signInWithCredential(String appName, String provider, String authToken, String authSecret, Promise promise);
+  public abstract void signInWithCredential(String appName, String provider, String authToken, String authSecret, @Nullable ReadableMap fullName, Promise promise);
 
   @ReactMethod
   @DoNotStrip

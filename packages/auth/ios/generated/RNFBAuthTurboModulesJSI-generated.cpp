@@ -236,7 +236,8 @@ static jsi::Value __hostFunction_NativeRNFBTurboAuthCxxSpecJSI_signInWithCredent
     count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
     count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
     count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
-    count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asString(rt)
+    count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asString(rt),
+    count <= 4 || args[4].isNull() || args[4].isUndefined() ? std::nullopt : std::make_optional(args[4].asObject(rt))
   );
 }
 static jsi::Value __hostFunction_NativeRNFBTurboAuthCxxSpecJSI_signInWithProvider(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
@@ -502,7 +503,7 @@ NativeRNFBTurboAuthCxxSpecJSI::NativeRNFBTurboAuthCxxSpecJSI(std::shared_ptr<Cal
   methodMap_["updateProfile"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboAuthCxxSpecJSI_updateProfile};
   methodMap_["getIdToken"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboAuthCxxSpecJSI_getIdToken};
   methodMap_["getIdTokenResult"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboAuthCxxSpecJSI_getIdTokenResult};
-  methodMap_["signInWithCredential"] = MethodMetadata {4, __hostFunction_NativeRNFBTurboAuthCxxSpecJSI_signInWithCredential};
+  methodMap_["signInWithCredential"] = MethodMetadata {5, __hostFunction_NativeRNFBTurboAuthCxxSpecJSI_signInWithCredential};
   methodMap_["signInWithProvider"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboAuthCxxSpecJSI_signInWithProvider};
   methodMap_["signInWithPhoneNumber"] = MethodMetadata {3, __hostFunction_NativeRNFBTurboAuthCxxSpecJSI_signInWithPhoneNumber};
   methodMap_["verifyPhoneNumberWithMultiFactorInfo"] = MethodMetadata {3, __hostFunction_NativeRNFBTurboAuthCxxSpecJSI_verifyPhoneNumberWithMultiFactorInfo};

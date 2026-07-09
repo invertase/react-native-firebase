@@ -641,6 +641,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                     provider:(NSString *)provider
                    authToken:(NSString *)authToken
                   authSecret:(NSString *)authSecret
+                    fullName:(NSDictionary *)fullName
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
@@ -649,6 +650,18 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                                                            token:authToken
                                                           secret:authSecret
                                                      firebaseApp:firebaseApp];
+
+  // Sign in with Apple: if the caller supplied fullName (only available on the user's first
+  // authorization), rebuild the credential via appleCredentialWithIDToken:rawNonce:fullName: so
+  // Firebase can store it as the account's displayName. See AppleFullPersonName in auth.ts.
+  NSPersonNameComponents *personNameComponents = [self personNameComponentsFromDictionary:fullName];
+  if (personNameComponents != nil && [provider compare:@"apple.com"
+                                               options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    credential = [FIROAuthProvider appleCredentialWithIDToken:authToken
+                                                     rawNonce:authSecret
+                                                     fullName:personNameComponents];
+  }
+
   if (credential == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                       userInfo:(NSMutableDictionary *)@{
@@ -1603,6 +1616,33 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
     [[FIRAuth authWithApp:firebaseApp] useEmulatorWithHost:host port:(NSInteger)port];
     emulatorConfigs[firebaseApp.name] = @YES;
   }
+}
+
+- (NSPersonNameComponents *)personNameComponentsFromDictionary:(NSDictionary *)dictionary {
+  if (dictionary == nil || (id)dictionary == [NSNull null]) {
+    return nil;
+  }
+
+  NSPersonNameComponents *components = [[NSPersonNameComponents alloc] init];
+  if ([dictionary[@"namePrefix"] isKindOfClass:[NSString class]]) {
+    components.namePrefix = dictionary[@"namePrefix"];
+  }
+  if ([dictionary[@"givenName"] isKindOfClass:[NSString class]]) {
+    components.givenName = dictionary[@"givenName"];
+  }
+  if ([dictionary[@"middleName"] isKindOfClass:[NSString class]]) {
+    components.middleName = dictionary[@"middleName"];
+  }
+  if ([dictionary[@"familyName"] isKindOfClass:[NSString class]]) {
+    components.familyName = dictionary[@"familyName"];
+  }
+  if ([dictionary[@"nameSuffix"] isKindOfClass:[NSString class]]) {
+    components.nameSuffix = dictionary[@"nameSuffix"];
+  }
+  if ([dictionary[@"nickname"] isKindOfClass:[NSString class]]) {
+    components.nickname = dictionary[@"nickname"];
+  }
+  return components;
 }
 
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider

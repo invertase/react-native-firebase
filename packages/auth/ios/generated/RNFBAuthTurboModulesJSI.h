@@ -51,7 +51,7 @@ public:
   virtual jsi::Value updateProfile(jsi::Runtime &rt, jsi::String appName, jsi::Object props) = 0;
   virtual jsi::Value getIdToken(jsi::Runtime &rt, jsi::String appName, bool forceRefresh) = 0;
   virtual jsi::Value getIdTokenResult(jsi::Runtime &rt, jsi::String appName, bool forceRefresh) = 0;
-  virtual jsi::Value signInWithCredential(jsi::Runtime &rt, jsi::String appName, jsi::String provider, jsi::String authToken, jsi::String authSecret) = 0;
+  virtual jsi::Value signInWithCredential(jsi::Runtime &rt, jsi::String appName, jsi::String provider, jsi::String authToken, jsi::String authSecret, std::optional<jsi::Object> fullName) = 0;
   virtual jsi::Value signInWithProvider(jsi::Runtime &rt, jsi::String appName, jsi::Object provider) = 0;
   virtual jsi::Value signInWithPhoneNumber(jsi::Runtime &rt, jsi::String appName, jsi::String phoneNumber, bool forceResend) = 0;
   virtual jsi::Value verifyPhoneNumberWithMultiFactorInfo(jsi::Runtime &rt, jsi::String appName, jsi::String hintUid, jsi::String sessionKey) = 0;
@@ -359,13 +359,13 @@ private:
       return bridging::callFromJs<jsi::Value>(
           rt, &T::getIdTokenResult, jsInvoker_, instance_, std::move(appName), std::move(forceRefresh));
     }
-    jsi::Value signInWithCredential(jsi::Runtime &rt, jsi::String appName, jsi::String provider, jsi::String authToken, jsi::String authSecret) override {
+    jsi::Value signInWithCredential(jsi::Runtime &rt, jsi::String appName, jsi::String provider, jsi::String authToken, jsi::String authSecret, std::optional<jsi::Object> fullName) override {
       static_assert(
-          bridging::getParameterCount(&T::signInWithCredential) == 5,
-          "Expected signInWithCredential(...) to have 5 parameters");
+          bridging::getParameterCount(&T::signInWithCredential) == 6,
+          "Expected signInWithCredential(...) to have 6 parameters");
 
       return bridging::callFromJs<jsi::Value>(
-          rt, &T::signInWithCredential, jsInvoker_, instance_, std::move(appName), std::move(provider), std::move(authToken), std::move(authSecret));
+          rt, &T::signInWithCredential, jsInvoker_, instance_, std::move(appName), std::move(provider), std::move(authToken), std::move(authSecret), std::move(fullName));
     }
     jsi::Value signInWithProvider(jsi::Runtime &rt, jsi::String appName, jsi::Object provider) override {
       static_assert(
