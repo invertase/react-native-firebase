@@ -139,15 +139,24 @@ struct {
     }
   }
 
-  if (_originalDelegate != nil && originalDelegateRespondsTo.willPresentNotification) {
-    [_originalDelegate userNotificationCenter:center
-                      willPresentNotification:notification
-                        withCompletionHandler:completionHandler];
+  // completionHandler must be invoked exactly once. If the original delegate
+  // implements willPresentNotification, defer to it entirely - it owns the
+  // completionHandler contract (and may call it asynchronously). Only fall
+  // back to our own presentationOptions when there is no original delegate
+  // to hand off to.
+  //
+  // _originalDelegate is weak, so it is captured into a strong local first -
+  // otherwise it could be deallocated between the nil-check and the message
+  // send (turning the send into a no-op) and completionHandler would never
+  // be called at all.
+  id<UNUserNotificationCenterDelegate> strongOriginalDelegate = _originalDelegate;
+  if (strongOriginalDelegate != nil && originalDelegateRespondsTo.willPresentNotification) {
+    [strongOriginalDelegate userNotificationCenter:center
+                           willPresentNotification:notification
+                             withCompletionHandler:completionHandler];
+  } else {
+    completionHandler(presentationOptions);
   }
-
-  // Don't consume completionHandler before the _originalDelegate has been
-  // processed
-  completionHandler(presentationOptions);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
