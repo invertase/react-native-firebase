@@ -716,6 +716,7 @@ If you see "SPM not available", your React Native version doesn't support SPM.
 | `multiple commands produce Firebase.framework` | Conflict between SPM and CocoaPods for Firebase | Make sure you DON'T have a manual `pod 'Firebase/Core'` in your Podfile if SPM is active |
 | `unable to resolve package` | Incorrect SPM URL | Check `firebaseSpmUrl` in `packages/app/package.json` |
 | Pod install loop / version conflict | Firebase version mismatch between SPM and CocoaPods | Make sure you use the same version in `package.json` and any manual pods |
+| App crashes at launch (<200ms) **only** after TestFlight install, not from Xcode or on simulator | tvOS/hybrid SPM+CocoaPods symbol stripping — see [§6.6](#66-tvos-testflight-launch-crash-symbol-stripping) | Disable symbol stripping for Firebase on the main app target's Release configuration |
 
 ### 6.5 Rollback to CocoaPods
 
@@ -732,6 +733,67 @@ use_frameworks! :linkage => :static
 ```bash
 cd ios && rm -rf Pods && pod install
 ```
+
+### 6.6 tvOS TestFlight launch crash (symbol stripping)
+
+> Reported against a hybrid tvOS project (`react-native-tvos`, Xcode 26, `use_frameworks! :linkage => :static`, RNFB compiled as dynamic frameworks with `-undefined dynamic_lookup`). The same failure mode can in principle affect any platform using the same hybrid linkage strategy, but it has only been confirmed on tvOS so far.
+
+**Symptom**
+
+- App launches fine on the simulator.
+- App launches fine when installed directly from Xcode onto a real device (WiFi or USB).
+- App crashes **immediately at launch** (under 200ms, before `main()` runs) only when the *same* archive is uploaded via Fastlane/Xcode Organizer and installed from **TestFlight**.
+- No crash log is generated (the process dies too early). The only signal is a generic `dyld` exit reason in the device console, e.g.:
+  ```
+  PineBoard  [app<com.example.myapp>:738] Now flagged as pending exit for reason: launch failed
+  PineBoard  [app<com.example.myapp>:738] Process exited:
+    <RBSProcessExitContext| specific, status:<RBSProcessExitStatus| domain:dyld(6) code:0>>.
+  ```
+
+**Root cause**
+
+This requires all of the following to be true at once:
+
+1. Firebase is resolved via SPM (source packages, statically linked into the main app binary).
+2. `@react-native-firebase/*` are compiled as **dynamic** frameworks using `-undefined dynamic_lookup` — a common hybrid-linkage technique to avoid duplicate Firebase class registrations when mixing SPM and CocoaPods.
+3. The Release configuration uses default App Store stripping settings (`DEAD_CODE_STRIPPING`, `STRIP_SWIFT_SYMBOLS`, `STRIP_INSTALLED_PRODUCT`, etc. all `YES`).
+
+App Store/TestFlight processing strips Firebase symbols from the main binary's dynamic symbol table, because static analysis sees no direct reference to them (RNFB's dynamic frameworks resolve them at *runtime* via flat-namespace lookup, not at link time). Local Xcode installs and Debug builds don't apply the same aggressive stripping, so the crash only shows up post-TestFlight-processing — which makes it slow to reproduce and diagnose.
+
+You can confirm this is the cause by comparing exported symbols in the archived binary:
+
+```bash
+nm -g <YourApp binary> | grep "FIR" | wc -l
+# 0 on a crashing binary, in the hundreds on a working one
+```
+
+**Workaround**
+
+Add a `post_install` hook in your app's `ios/Podfile` to disable stripping and export static symbols for the main app target's Release configuration only:
+
+```ruby
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    next unless target.name == 'YourAppTargetName' # main app target, not a Pod target
+
+    target.build_configurations.each do |cfg|
+      next unless cfg.name == 'Release'
+
+      cfg.build_settings['STRIP_SWIFT_SYMBOLS'] = 'NO'
+      cfg.build_settings['DEAD_CODE_STRIPPING'] = 'NO'
+      cfg.build_settings['STRIP_INSTALLED_PRODUCT'] = 'NO'
+      cfg.build_settings['COPY_PHASE_STRIP'] = 'NO'
+      cfg.build_settings['DEPLOYMENT_POSTPROCESSING'] = 'NO'
+
+      ldflags = Array(cfg.build_settings['OTHER_LDFLAGS'] || ['$(inherited)'])
+      ldflags << '-Wl,-export_dynamic' unless ldflags.include?('-Wl,-export_dynamic')
+      cfg.build_settings['OTHER_LDFLAGS'] = ldflags
+    end
+  end
+end
+```
+
+This is deliberately **not** applied by RNFB itself: it's specific to the hybrid dynamic-framework linkage strategy, it roughly doubles main binary size, and it disables Release optimizations that most SPM-only or CocoaPods-only projects don't need. Only add it if you hit this exact symptom.
 
 ---
 
