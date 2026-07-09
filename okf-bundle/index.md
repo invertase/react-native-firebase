@@ -31,3 +31,4 @@ okf_version: "0.1"
 
 * [Auth](/packages/auth/index.md) — modular API type parity, platform matrix, `compare:types`
 * [Firestore](/packages/firestore/index.md) — Pipelines architecture, parity, e2e coverage
+* [Messaging](/packages/messaging/index.md) — iOS `UNUserNotificationCenter` delegate forwarding, `completionHandler` contract

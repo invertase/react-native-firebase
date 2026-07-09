@@ -139,15 +139,18 @@ struct {
     }
   }
 
+  // completionHandler must be invoked exactly once. If the original delegate
+  // implements willPresentNotification, defer to it entirely - it owns the
+  // completionHandler contract (and may call it asynchronously). Only fall
+  // back to our own presentationOptions when there is no original delegate
+  // to hand off to.
   if (_originalDelegate != nil && originalDelegateRespondsTo.willPresentNotification) {
     [_originalDelegate userNotificationCenter:center
                       willPresentNotification:notification
                         withCompletionHandler:completionHandler];
+  } else {
+    completionHandler(presentationOptions);
   }
-
-  // Don't consume completionHandler before the _originalDelegate has been
-  // processed
-  completionHandler(presentationOptions);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
