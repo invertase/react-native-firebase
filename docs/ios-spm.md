@@ -1,6 +1,6 @@
 # iOS SPM (Swift Package Manager) Support for Firebase Dependencies
 
-> **Firebase SDK:** 12.10.0
+> **Firebase SDK:** 12.15.0
 > **Minimum React Native for SPM:** 0.75+
 
 ---
@@ -203,7 +203,7 @@ A `firebaseSpmUrl` field was added inside `sdkVersions.ios`:
 {
   "sdkVersions": {
     "ios": {
-      "firebase": "12.10.0",
+      "firebase": "12.15.0",
       "firebaseSpmUrl": "https://github.com/firebase/firebase-ios-sdk.git",
       "iosTarget": "15.0",
       "macosTarget": "10.15",
@@ -242,7 +242,7 @@ firebase_dependency(s, firebase_sdk_version, ['FirebaseAuth'], 'Firebase/Auth')
 
 | Package | Podspec | SPM Products | CocoaPods Pods | Notes |
 |---------|---------|--------------|----------------|-------|
-| **app** | `RNFBApp.podspec` | `['FirebaseCore']` | `'Firebase/CoreOnly'` | Base package, required by all |
+| **app** | `RNFBApp.podspec` | `['FirebaseCore', 'FirebaseInstallations']` | `'Firebase/CoreOnly'` | Base package, required by all. `FirebaseInstallations` avoids a dyld launch crash — see note below |
 | **auth** | `RNFBAuth.podspec` | `['FirebaseAuth']` | `'Firebase/Auth'` | Authentication |
 | **analytics** | `RNFBAnalytics.podspec` | `['FirebaseAnalytics']` | `'FirebaseAnalytics/Core'` | Has extra logic for IdentitySupport |
 | **messaging** | `RNFBMessaging.podspec` | `['FirebaseMessaging']` | `['Firebase/Messaging', 'FirebaseCoreExtension']` | Needs 2 pods in CocoaPods |
@@ -262,6 +262,10 @@ firebase_dependency(s, firebase_sdk_version, ['FirebaseAuth'], 'Firebase/Auth')
 **Why do Messaging and Crashlytics need 2 pods in CocoaPods but only 1 SPM product?**
 
 Because `FirebaseCoreExtension` is a **transitive** dependency in SPM — when you install `FirebaseMessaging` via SPM, SPM automatically includes `FirebaseCoreExtension`. But in CocoaPods, each dependency must be declared explicitly.
+
+**Why does `app` explicitly declare `FirebaseInstallations` instead of relying on it as a transitive dependency?**
+
+Unlike `FirebaseCoreExtension` above, `FirebaseInstallations` is not reliably pulled in transitively for every consumer in SPM mode. Omitting it caused a `dyld` crash at app launch (missing symbols resolved at load time rather than at compile time) for apps that don't otherwise depend on a module that pulls in `FirebaseInstallations`. Declaring it explicitly in `RNFBApp.podspec` ensures it is always linked, regardless of which other RNFB modules are installed.
 
 ### 3.5 The 43 Native iOS Files — Dual Imports
 
@@ -403,7 +407,7 @@ Firebase has internal modules that are not public. With `YES`, Xcode 26 can't fi
 | Parameter | Ruby Type | Required | Description | Example |
 |-----------|-----------|----------|-------------|---------|
 | `spec` | `Pod::Specification` | Yes | The podspec object (the `s` in podspec DSL). Represents the package being configured. | `s` (from podspec context) |
-| `version` | `String` | Yes | Firebase iOS SDK version to use. Must match the version in package.json. | `'12.10.0'` |
+| `version` | `String` | Yes | Firebase iOS SDK version to use. Must match the version in package.json. | `'12.15.0'` |
 | `spm_products` | `Array<String>` | Yes | List of Firebase SPM product names. These names are the ones in the firebase-ios-sdk `Package.swift`. | `['FirebaseAuth']` or `['FirebaseCrashlytics']` |
 | `pods` | `String` or `Array<String>` | Yes | CocoaPods dependency name(s). Can be a string (1 dependency) or array (multiple). These are the names from Firebase's Podspec. | `'Firebase/Auth'` or `['Firebase/Messaging', 'FirebaseCoreExtension']` |
 
@@ -422,7 +426,7 @@ Pod::Spec.new do |s|
 
   # Register FirebaseAuth as a dependency
   # - If SPM: calls spm_dependency(s, url: "...", products: ['FirebaseAuth'])
-  # - If CocoaPods: calls s.dependency('Firebase/Auth', '12.10.0')
+  # - If CocoaPods: calls s.dependency('Firebase/Auth', '12.15.0')
   firebase_dependency(s, firebase_sdk_version, ['FirebaseAuth'], 'Firebase/Auth')
 end
 ```
@@ -462,12 +466,12 @@ $firebase_spm_url = 'https://github.com/my-company/firebase-ios-sdk-fork.git'
 
 | Property | Value |
 |----------|-------|
-| **Type** | Any (checked with `defined?()`, not by value) |
+| **Type** | `Boolean` (checked by value, via `rnfirebase_spm_disabled?`) |
 | **Default value** | Not defined (SPM enabled) |
 | **How to activate** | `$RNFirebaseDisableSPM = true` in your Podfile |
 | **Effect** | `firebase_dependency()` will always use CocoaPods |
 
-**IMPORTANT:** The function checks `defined?($RNFirebaseDisableSPM)`, NOT the value. This means even `$RNFirebaseDisableSPM = false` DISABLES SPM, because the variable is "defined". To enable SPM, simply don't define this variable.
+**Note:** The helper checks `defined?($RNFirebaseDisableSPM) && $RNFirebaseDisableSPM == true`, i.e. the actual value, not just whether the variable is defined. Only `$RNFirebaseDisableSPM = true` disables SPM — leaving the variable unset, or explicitly setting it to `false`, keeps SPM enabled. This is important for config generators, Expo plugins, or env-templated Podfiles that may emit `$RNFirebaseDisableSPM = false` rather than omitting the assignment.
 
 ### 4.4 `spm_dependency` Function (provided by React Native)
 
@@ -477,7 +481,7 @@ $firebase_spm_url = 'https://github.com/my-company/firebase-ios-sdk-fork.git'
 |-----------|------|-------------|
 | `spec` | `Pod::Specification` | Podspec to add the dependency to |
 | `url:` | `String` | Git repository URL of the Swift package |
-| `requirement:` | `Hash` | Version constraint. Format: `{ kind: 'upToNextMajorVersion', minimumVersion: '12.10.0' }` |
+| `requirement:` | `Hash` | Version constraint. Format: `{ kind: 'upToNextMajorVersion', minimumVersion: '12.15.0' }` |
 | `products:` | `Array<String>` | List of SPM products to include |
 
 ---
@@ -633,7 +637,7 @@ cd ios && xcodebuild -workspace YourApp.xcworkspace -scheme YourApp -sdk iphones
 | `react-native` / `react-native-tvos` | 0.75.0 | First version that exposes `spm_dependency()` in the CocoaPods runtime |
 | `@react-native-firebase/app` | Version with SPM support (this PR) | Needs `firebase_spm.rb` |
 | Xcode | 15.0 (functional), 26+ (recommended) | SPM has been integrated since Xcode 11, but Xcode 26 changes the compiler |
-| Firebase iOS SDK | 12.10.0+ | Version tested with this system |
+| Firebase iOS SDK | 12.15.0+ | Version tested with this system |
 | CocoaPods | 1.14+ | For `spm_dependency()` to work correctly in the pod install context |
 
 ### 6.3 Step-by-step instructions
