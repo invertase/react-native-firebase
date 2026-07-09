@@ -17,6 +17,12 @@
 
 #if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseRemoteConfig/FirebaseRemoteConfig-Swift.h>)
+// SPM: the declared product is the thin Swift wrapper `FirebaseRemoteConfig`
+// (which depends on `FirebaseRemoteConfigInternal`, not exposed to us
+// directly). Its generated ObjC interface header is what's importable here.
+#import <FirebaseRemoteConfig/FirebaseRemoteConfig-Swift.h>
+#import <FirebaseCore/FirebaseCore.h>
 #else
 @import FirebaseCore;
 @import FirebaseRemoteConfigInternal;

@@ -17,8 +17,12 @@
 
 #if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseInAppMessagingInternal/FirebaseInAppMessagingInternal.h>)
-#import <FirebaseInAppMessagingInternal/FirebaseInAppMessagingInternal.h>
+#elif __has_include(<FirebaseInAppMessaging/FirebaseInAppMessaging-Swift.h>)
+// SPM: the declared product `FirebaseInAppMessaging-Beta` resolves to the
+// thin Swift wrapper target `FirebaseInAppMessaging` (which depends on
+// `FirebaseInAppMessagingInternal`, not exposed to us directly). Its
+// generated ObjC interface header is what's importable here.
+#import <FirebaseInAppMessaging/FirebaseInAppMessaging-Swift.h>
 #import <FirebaseCore/FirebaseCore.h>
 #else
 @import FirebaseCore;

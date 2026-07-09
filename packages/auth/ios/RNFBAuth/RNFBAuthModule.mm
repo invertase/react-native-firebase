@@ -17,6 +17,10 @@
 
 #if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseAuth/FirebaseAuth.h>)
+#import <FirebaseAuth/FirebaseAuth.h>
+#import <FirebaseAuthInternal/FirebaseAuthInternal.h>
+#import <FirebaseCore/FirebaseCore.h>
 #else
 @import FirebaseCore;
 @import FirebaseAuth;
