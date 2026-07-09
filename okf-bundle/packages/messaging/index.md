@@ -4,7 +4,7 @@ Knowledge for FCM messaging native behavior, primarily the iOS `UNUserNotificati
 
 ## Documents
 
-* [iOS UNUserNotificationCenter delegate forwarding](ios-notification-delegate-forwarding.md) — `completionHandler` exactly-once contract, delegate chaining design, regression history (#8754 → #8786 → #9049)
+* [iOS UNUserNotificationCenter delegate forwarding](ios-notification-delegate-forwarding.md) — `completionHandler` exactly-once contract, delegate chaining design, regression history (#8754 → #8786 → #9049 / #9050)
 
 ## Related repository files
 
