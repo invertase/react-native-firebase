@@ -863,6 +863,8 @@ export default {
     provider: string,
     authToken: string,
     authSecret?: string | null,
+    // Sign in with Apple full name: unsupported by firebase-js-sdk's OAuthCredential, ignored on web.
+    _fullName?: object | null,
   ) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);

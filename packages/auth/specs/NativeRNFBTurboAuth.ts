@@ -60,6 +60,8 @@ export interface Spec extends TurboModule {
     provider: string,
     authToken: string,
     authSecret: string,
+    // Sign in with Apple full name (iOS only; see AppleFullPersonName in lib/types/auth.ts).
+    fullName?: Object | null,
   ): Promise<Object>;
   signInWithProvider(appName: string, provider: Object): Promise<Object>;
   signInWithPhoneNumber(

@@ -88,6 +88,7 @@ import type {
   ActionCodeSettings,
   AdditionalUserInfo,
   AdditionalUserInfoNative,
+  AppleFullPersonName,
   ApplicationVerifier,
   Auth,
   AuthCredential,
@@ -601,8 +602,14 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   signInWithCredential(credential: AuthCredential): Promise<UserCredential> {
+    const fullName = (credential as { fullName?: AppleFullPersonName }).fullName;
     return this.native
-      .signInWithCredential(credential.providerId, credential.token, credential.secret)
+      .signInWithCredential(
+        credential.providerId,
+        credential.token,
+        credential.secret,
+        fullName ? { ...fullName } : null,
+      )
       .then((userCredential: NativeUserCredentialInternal) =>
         this._setUserCredential(userCredential),
       );
