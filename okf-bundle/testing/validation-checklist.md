@@ -82,6 +82,7 @@ Optional: `yarn tests:jest-coverage`.
 ```bash
 yarn lint:js                          # eslint packages/* — must exit 0
 yarn lint:js --fix                    # auto-fix; re-run yarn lint:js until clean
+yarn lint:deps                        # dependency-cruiser no-circular on packages/*/lib/** — blocking when packages/*/lib/** in diff (see [prepare-and-cache § dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting))
 yarn format:js                        # inspect diff after; prefer lint:js --fix first
 ```
 
@@ -95,8 +96,10 @@ yarn lint:spellcheck
 **CI Lint job equivalent** (required before `review` / publication when the diff touches JS, Java, or Objective-C/C++ sources):
 
 ```bash
-yarn lint                              # lint:js + lint:android + lint:ios:check — matches .github/workflows/linting.yml
+yarn lint                              # lint:js + lint:deps + lint:android + lint:ios:check — matches .github/workflows/linting.yml
 ```
+
+When `packages/*/lib/**` is in the diff, **`yarn lint:deps`** is a **blocking** gate (runs inside `yarn lint`, which matches the CI Lint job). Config and rule detail: [prepare-and-cache § dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting).
 
 `lint:android` runs `google-java-format` and fails if it would change committed files — commit formatter output. `lint:android` can flake; rerun once/twice if failure is not clearly in diff.
 
@@ -141,6 +144,7 @@ Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, 
 | e2e Android | yarn tests:android:test-cover | 0 | Z passing — /tmp/...log |
 | compare:types | yarn compare:types | 0 | <pkg> 0/0/0 |
 | lint (CI) | yarn lint | 0 | — |
+| lint:deps (lib diff) | yarn lint:deps | 0 | when packages/*/lib/** in diff — [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting) |
 | lint:markdown (CI docs) | yarn lint:markdown | 0 | when docs/** in diff |
 | lint:spellcheck (CI docs) | yarn lint:spellcheck | 0 | when docs/** in diff |
 | coverage | post-process + region table | — | see coverage-design § evidence package |
@@ -157,7 +161,7 @@ Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, 
 - [ ] `yarn tests:jest`
 - [ ] TurboModule wrapper contract ([NewArch-AD-17.1](../new-architecture/architecture-decisions.md#newarch-ad-171--jest-turbomodule-contract-test--accepted)) when `packages/app/lib/internal/registry/nativeModule.ts`, `nativeModuleAndroidIos.ts`, or TurboModule wrapper behavior changed: `yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts`
 - [ ] `yarn compare:types` (stale config entries removed)
-- [ ] `yarn lint` (CI Lint job); `yarn lint:markdown` + `yarn lint:spellcheck` when `docs/**` changed
+- [ ] `yarn lint` (CI Lint job); **`yarn lint:deps`** when `packages/*/lib/**` in diff ([dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)); `yarn lint:markdown` + `yarn lint:spellcheck` when `docs/**` changed
 - [ ] E2e green on **every required platform** for the changed module ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking); [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking); no `.only`; committed `RNFBDebug` remains `false`)
 - [ ] [Validation evidence package](validation-checklist.md#validation-evidence-package) recorded (exit codes, e2e counts, log paths)
 - [ ] [Coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native bridge touched — gaps investigated to fix, delete, or acceptable-exception bar
