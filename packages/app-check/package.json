@@ -67,7 +67,14 @@
       "types": "./dist/typescript/lib/index.d.ts",
       "default": "./dist/module/index.js"
     },
-    "./app.plugin.js": "./app.plugin.js",
+    "./app.plugin": {
+      "types": "./plugin/build/app.plugin.d.ts",
+      "default": "./app.plugin.js"
+    },
+    "./app.plugin.js": {
+      "types": "./plugin/build/app.plugin.d.ts",
+      "default": "./app.plugin.js"
+    },
     "./package.json": "./package.json"
   },
   "react-native-builder-bob": {
