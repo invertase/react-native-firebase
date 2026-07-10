@@ -33,6 +33,7 @@ yarn                                  # install + postinstallDev (includes lerna
 yarn lerna:prepare                    # after packages/*/lib/** edits — transpiles lib → dist/module via each package prepare target
 yarn tsc:compile
 yarn tsc:compile:consumer
+yarn attw:check                    # scoped attw + Expo plugin smoke — [Types-AD-1..4](architecture-decisions.md)
 ```
 
 `yarn lerna:prepare` runs each package **`prepare`** script (`build` then `compile`/bob). That is the canonical **`lib/**`→`dist/module/**`** path. Do **not** use `cd packages/<pkg> && yarn compile` as a substitute — `compile` is a step **inside** `prepare`, not a standalone agent entrypoint.
@@ -155,6 +156,7 @@ Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, 
 
 - [ ] `yarn lerna:prepare` (after any `packages/*/lib/**` edits)
 - [ ] `yarn tsc:compile`, `yarn tsc:compile:consumer`
+- [ ] `yarn attw:check` when `package.json` `exports`, `plugin/build`, or published types changed ([Types-AD](architecture-decisions.md))
 - [ ] `yarn reference:api`
 - [ ] Redirect audit when TypeDoc config changed ([documentation site maintenance § redirect audit](../documentation-site-maintenance.md#redirect-audit-required-when-typedoc-config-changes))
 - [ ] `yarn tests:jest`

@@ -1,0 +1,17 @@
+{
+  "name": "attw-check",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "check": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@arethetypeswrong/cli": "^0.18.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  },
+  "packageManager": "yarn@4.14.1"
+}
