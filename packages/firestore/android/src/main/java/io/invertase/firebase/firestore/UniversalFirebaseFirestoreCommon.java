@@ -50,7 +50,7 @@ public class UniversalFirebaseFirestoreCommon {
 
     setFirestoreSettings(instance, firestoreKey);
 
-    instanceCache.put(appName, new WeakReference<FirebaseFirestore>(instance));
+    instanceCache.put(firestoreKey, new WeakReference<FirebaseFirestore>(instance));
 
     return instance;
   }
