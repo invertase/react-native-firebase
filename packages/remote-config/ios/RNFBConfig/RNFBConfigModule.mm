@@ -205,42 +205,41 @@ RCT_EXPORT_MODULE(NativeRNFBTurboConfig)
   // in-use config values.
   FIRApp *firebaseApp = firebaseAppForName(appName);
   __weak RNFBConfigModule *weakSelf = self;
-  FIRRemoteConfigFetchCompletion fetchCompletion =
-      ^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
-        RNFBConfigModule *strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
+  FIRRemoteConfigFetchCompletion fetchCompletion = ^(FIRRemoteConfigFetchStatus status,
+                                                     NSError *__nullable error) {
+    RNFBConfigModule *strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
 
-        if (error) {
-          [RNFBSharedUtils
-              rejectPromiseWithUserInfo:reject
-                               userInfo:[@{
-                                 @"code" : convertFIRRemoteConfigFetchStatusToNSString(status),
-                                 @"message" :
-                                     convertFIRRemoteConfigFetchStatusToNSStringDescription(status)
-                               } mutableCopy]];
-          return;
-        }
+    if (error) {
+      [RNFBSharedUtils
+          rejectPromiseWithUserInfo:reject
+                           userInfo:[@{
+                             @"code" : convertFIRRemoteConfigFetchStatusToNSString(status),
+                             @"message" :
+                                 convertFIRRemoteConfigFetchStatusToNSStringDescription(status)
+                           } mutableCopy]];
+      return;
+    }
 
-        [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
-            activateWithCompletion:^(BOOL changed, NSError *_Nullable activateError) {
-              if (activateError) {
-                if (activateError.userInfo &&
-                    activateError.userInfo[@"ActivationFailureReason"] != nil &&
-                    [activateError.userInfo[@"ActivationFailureReason"]
-                        containsString:@"already activated"]) {
-                  resolve([strongSelf resultWithConstants:@([RCTConvert BOOL:@(NO)])
-                                              firebaseApp:firebaseApp]);
-                } else {
-                  [RNFBSharedUtils rejectPromiseWithNSError:reject error:activateError];
-                }
-              } else {
-                resolve([strongSelf resultWithConstants:@([RCTConvert BOOL:@(changed)])
-                                            firebaseApp:firebaseApp]);
-              }
-            }];
-      };
+    [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
+        activateWithCompletion:^(BOOL changed, NSError *_Nullable activateError) {
+          if (!activateError) {
+            resolve([strongSelf resultWithConstants:@([RCTConvert BOOL:@(changed)])
+                                        firebaseApp:firebaseApp]);
+            return;
+          }
+          if (activateError.userInfo && activateError.userInfo[@"ActivationFailureReason"] != nil &&
+              [activateError.userInfo[@"ActivationFailureReason"]
+                  containsString:@"already activated"]) {
+            resolve([strongSelf resultWithConstants:@([RCTConvert BOOL:@(NO)])
+                                        firebaseApp:firebaseApp]);
+            return;
+          }
+          [RNFBSharedUtils rejectPromiseWithNSError:reject error:activateError];
+        }];
+  };
 
   [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] fetchWithCompletionHandler:fetchCompletion];
 }
