@@ -60,8 +60,17 @@ NSString *const KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED =
 @protocol FIRCrashlyticsInstanceProvider <NSObject>
 @end
 
-/// Privately conform to the protocol for component registration.
+/// Privately conform to the protocol for component registration. `<FIRLibrary>` and
+/// `+componentsToRegister` live here rather than in RNFBCrashlyticsInitProvider.h because
+/// they're only invoked by Firebase's own component/DI runtime via reflection, never by RNFB
+/// code directly -- keeping them out of the public header keeps it Firebase-free (see header
+/// comment and okf-bundle/ios-spm-native-imports.md).
 @interface RNFBCrashlyticsInitProvider () <RNFBCrashlyticsInitProviderProtocol, FIRLibrary>
+
+/// Returns one or more FIRComponents that will be registered in
+/// FIRApp and participate in dependency resolution and injection.
++ (NSArray<FIRComponent *> *)componentsToRegister;
+
 @end
 
 @implementation RNFBCrashlyticsInitProvider

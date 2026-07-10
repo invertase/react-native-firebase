@@ -1,14 +1,14 @@
 ---
 type: Reference
 title: iOS SPM native dual-import pattern — ccache-masked latent bug
-description: Canonical owner of the SPM/CocoaPods dual-import ("3-path") pattern for native iOS files — the ccache-masked ObjC++ `@import` build failure found via CI, the fix, the follow-on discovery that pure-Swift SPM products can't use the 3-path pattern at all, and the Objective-C helper-class fix for those.
+description: Canonical owner of the SPM/CocoaPods dual-import ("3-path") pattern for native iOS files — the ccache-masked ObjC++ `@import` build failure found via CI, the fix, the follow-on discovery that pure-Swift-core SPM products (Storage, Remote Config, Database, In-App Messaging, and Auth's core `FIRAuth`/`FIRUser` classes) can't use the 3-path pattern at all, the Objective-C helper-class fix for those, and the separate transitive-SPM-product header-visibility bug found in Crashlytics.
 tags: [ios, spm, cocoapods, imports, ccache, firebase, ci, cxx-modules]
 timestamp: 2026-07-10T00:00:00Z
 ---
 
 # iOS SPM native dual-import pattern
 
-**Canonical owner** of the native-file side of iOS SPM support: why the "3-path" `__has_include` pattern exists, the ccache-masked build failure that revealed 30 files were missing it, why that pattern is structurally insufficient for pure-Swift SPM products (Storage, Remote Config, Database, In-App Messaging), and the current per-file audit. [`docs/ios-spm.md`](../docs/ios-spm.md) is the public/contributor-facing doc (architecture, integration guide, glossary) — this page is the durable OKF record of the bug investigation and fix; it does not restate the public doc.
+**Canonical owner** of the native-file side of iOS SPM support: why the "3-path" `__has_include` pattern exists, the ccache-masked build failure that revealed 30 files were missing it, why that pattern is structurally insufficient for pure-Swift-core SPM products (Storage, Remote Config, Database, In-App Messaging, and — less obviously — Auth), and the current per-file audit. [`docs/ios-spm.md`](../docs/ios-spm.md) is the public/contributor-facing doc (architecture, integration guide, glossary) — this page is the durable OKF record of the bug investigation and fix; it does not restate the public doc.
 
 **Policy:** [OKF documentation and commit policy](documentation-policy.md).
 
@@ -75,6 +75,20 @@ Add the missing SPM per-module `#elif __has_include(<Module/Module.h>)` branch (
 ### Why path 2 never resolves for these four packages
 
 `FirebaseStorage`, `FirebaseRemoteConfig`, `FirebaseDatabase`, and `FirebaseInAppMessaging` are **pure-Swift SPM products** -- there is no `Module/Module.h`. The only ObjC-visible surface is a **compiler-generated** interop header, `Module-Swift.h`, and Xcode's SPM build places it in a flat per-target intermediate directory (`GeneratedModuleMaps-PLATFORM/Module-Swift.h`), never under a `Module/` subdirectory. So the module-header `__has_include` check is **always false** -- path 2 can never be taken for these products, no matter how the `#elif` is worded, and every one of these files falls straight through to path 3 (`@import`).
+
+### How we confirmed this (primary-source evidence)
+
+The claim above is verifiable directly against Firebase's own `Package.swift` (checked out locally under `SourcePackages/checkouts/firebase-ios-sdk/Package.swift` by Xcode/SPM). The public target that RNFB depends on (via `firebase_dependency` in each podspec, matching the exact SPM product name) has a different `path:` for the four affected products versus a normal one:
+
+| SPM product (RNFB depends on this exact name) | Target `path:` | Contents |
+|---|---|---|
+| `FirebaseStorage` | `FirebaseStorage/Sources` | 24 `.swift` files, **0** `.m`/`.mm`, **0** `.h` |
+| `FirebaseRemoteConfig` | `FirebaseRemoteConfig/Swift` | Swift only; depends on a separate `FirebaseRemoteConfigInternal` ObjC target for the actual SDK logic |
+| `FirebaseInAppMessaging` | `FirebaseInAppMessaging/Swift/Source` | Swift only; depends on `FirebaseInAppMessagingInternal` |
+| `FirebaseDatabase` | `FirebaseDatabase/Swift/Sources` | Swift only; depends on `FirebaseDatabaseInternal` |
+| `FirebaseAuth` (contrast — unaffected) | `FirebaseAuth/Sources` (excludes `Swift`) | Depends on `FirebaseAuthInternal`, which sets `publicHeadersPath: "Public"` — and `Public/FirebaseAuth/FirebaseAuth.h` physically exists on disk, so `__has_include(<FirebaseAuth/FirebaseAuth.h>)` finds a real file there. |
+
+The pattern: for Auth (and every other unaffected package), the SPM product's dependency graph ends in an ObjC target that ships a real header rooted at a `Module/` subdirectory matching the product's own name. For Storage/RemoteConfig/Database/InAppMessaging, the equivalent ObjC internals (`*Internal` targets) exist and have real headers too, but RNFB doesn't — and shouldn't — depend on `FirebaseDatabaseInternal` etc. directly: those `*Internal` targets are explicitly Firebase's private implementation detail (undocumented, unversioned API surface), not a product we're meant to import. The only Firebase-sanctioned integration point for the public, pure-Swift product name is the Swift-generated interop header, which (per above) `__has_include` can never locate. That's the concrete, falsifiable reason these four — and *only* these four — needed the helper-class rewrite.
 
 Two follow-on attempts to fix this **without** restructuring the module also failed:
 
@@ -155,12 +169,23 @@ The `#elif __has_include(<Module/Module-Swift.h>)` branch already added to the f
 | `packages/app/ios/RNFBApp/RNFBSharedUtils.h` | `FirebaseCore/FirebaseCore.h` |
 | `packages/functions/ios/RNFBFunctions/RNFBFunctionsCallHandler.swift` | N/A — Swift `import`, not subject to this bug class |
 
+**Fixed — Crashlytics (header-slimming, not helper-class):**
+
+`RNFBCrashlyticsInitProvider.h`'s `__has_include(<FirebaseCoreExtension/FIRLibrary.h>)` was false in this repo's hybrid SPM+CocoaPods build, for a *different* reason than the pure-Swift packages above: `FirebaseCoreExtension` is a real ObjC target with real headers, but it's only reachable 2 levels deep in the SPM graph (`FirebaseCrashlytics` -> `FirebaseSessions` -> `FirebaseCoreExtension`) and can't be declared as its own explicit SPM product -- Firebase's `Package.swift` only exposes it as an internal `.target`, never as a `.library` product (confirmed: adding it to `spm_dependency(products: [...])` fails with "Missing package product `FirebaseCoreExtension`"). So the header search path never includes it for the RNFBCrashlytics pod target, and the file fell to `@import`, which fails to compile from the `.mm` module. Fix: rather than a helper class, the public header was slimmed to be Firebase-free. `RNFBCrashlyticsModule.mm` (the only external consumer) only ever calls three plain `BOOL` class methods; the `<FIRLibrary>` conformance and `+componentsToRegister` (the only members needing `FirebaseCoreExtension` types) are only invoked by Firebase's own component/DI runtime via reflection, never by RNFB code directly, so they were moved into a private class-extension declared solely in `RNFBCrashlyticsInitProvider.m` (which already partially did this for a different protocol). No Firebase types are left in the header at all now.
+
 **Outstanding — still unsafe, not yet fixed:**
 
 | File | Status |
 |------|--------|
-| `packages/auth/ios/RNFBAuth/RNFBAuthModule.mm` | Blocked — every edit attempt (`StrReplace`) on this specific ~2000-line file has been rejected by local write hooks (`doc-file-warning`, `governance-capture`, `config-protection`, `mcp-health-check`) returning "invalid JSON"; environmental, not content-related (ruled out secret-pattern false positives). Needs a maintainer or a different tool/session to apply the same `#elif __has_include(<FirebaseAuth/FirebaseAuth.h>)` branch used in `RNFBAuthModule.h`. |
-| `packages/crashlytics/ios/RNFBCrashlytics/RNFBCrashlyticsInitProvider.h` | Newly discovered during `yarn tests:ios:build` after the storage helper-class fix landed: `__has_include(<FirebaseCoreExtension/FIRLibrary.h>)` is false in this repo's hybrid SPM+CocoaPods build (RNFBApp takes `FirebaseCore`/`FirebaseInstallations` via SPM while Crashlytics still resolves `Firebase/Crashlytics` via CocoaPods, so the transitively-pulled CocoaPods `FirebaseCoreExtension` module map isn't reachable from this header's include context), so it falls to `@import FirebaseCore; @import FirebaseCoreExtension;`, which fails with "C++ modules disabled" when this header is pulled into `RNFBCrashlyticsModule.mm`. Previously mis-classified as "already safe" above — the 2-path assumption (module-specific header always resolves) does not hold for `FirebaseCoreExtension` in this hybrid setup. Not yet fixed; likely needs the same helper-class delegation pattern, scoped to the two `FIRLibrary`/`FIRComponent`-typed methods in `RNFBCrashlyticsInitProvider`. |
+| `packages/auth/ios/RNFBAuth/RNFBAuthModule.mm`, `RNFBAuthModule.h` | Root cause corrected -- an earlier version of this entry said Auth was only blocked by write-hook flakiness needing a simple `#elif` branch; that turned out to be wrong (or at best incomplete). See "`FirebaseAuth`'s hidden pure-Swift core" below. The bogus, never-actually-reachable `#import <FirebaseAuthInternal/FirebaseAuthInternal.h>` (a header that does not exist anywhere in the SDK, under any dependency manager -- `FirebaseAuthInternal` is an internal `.target`, not a `.library` product, same shape as the Crashlytics/`FirebaseCoreExtension` case above) has been removed from both files; nothing in either file actually uses internal-only Auth APIs (audited: every `FIR*` symbol used is public `FirebaseAuth` API). That unblocked the build far enough to reveal the *real* remaining problem, described next. |
+
+### `FirebaseAuth`'s hidden pure-Swift core
+
+**Discovered via:** re-running `yarn tests:ios:build` after removing the dead `FirebaseAuthInternal` import above; `RNFBAuthModule.mm` now fails with `receiver 'FIRAuth' for class message is a forward declaration` / `no known class method for selector 'authWithApp:'` on every `FIRAuth`-typed call, even though `#elif __has_include(<FirebaseAuth/FirebaseAuth.h>)` succeeds and `#import <FirebaseAuth/FirebaseAuth.h>` compiles without error.
+
+This package was previously assumed safe because a real `FirebaseAuth/FirebaseAuth.h` header does exist (contrast evidence in the table above). That's true, but incomplete: that header, and the entire `Public/FirebaseAuth/` directory it lives in, contains only forward declarations (`@class FIRAuth;`), typedefs, error codes, and provider/protocol headers -- **not** the actual `FIRAuth`/`FIRUser` class interfaces. Verified directly against the checked-out SDK: no header anywhere under `FirebaseAuth/` declares `@interface FIRAuth : NSObject`, while `FirebaseAuth/Sources/Swift/Auth/Auth.swift` does define the real `Auth` class (exposed to ObjC as `FIRAuth` via `@objc`/`NS_SWIFT_NAME`). In other words, `FirebaseAuth` has the *same* pure-Swift-core structure as Storage/RemoteConfig/Database/InAppMessaging for its main class -- it just also happens to ship a partial, legitimate ObjC header directory for auxiliary types, which is what let it slip through the `__has_include` check undetected until now.
+
+Net effect: `@import FirebaseAuth;` is the only way to get the real `FIRAuth` interface (same as the four confirmed pure-Swift products), which again fails to compile from a `.mm` file with C++ modules disabled. This needs the same helper-class delegation fix as the four packages above, likely the largest single instance of it given `RNFBAuthModule.mm` is ~2000 lines. Not yet started.
 
 ## Verifying no regressions
 
@@ -177,15 +202,15 @@ done
 
 A clean run should print nothing once `RNFBAuthModule.mm` above is fixed.
 
-**Check 2 — pure-Swift SPM products imported directly from a `.mm` file** (the deeper failure mode above — no `#elif` wording fixes this, only the helper-class delegation does):
+**Check 2 — pure-Swift-core SPM products imported directly from a `.mm` file** (the deeper failure mode above — no `#elif` wording fixes this, only the helper-class delegation does):
 
 ```bash
-for f in $(grep -rl "FirebaseStorage\|FirebaseRemoteConfig\|FirebaseDatabase\|FirebaseInAppMessaging" packages/*/ios/**/*.mm 2>/dev/null); do
+for f in $(grep -rl "FirebaseStorage\|FirebaseRemoteConfig\|FirebaseDatabase\|FirebaseInAppMessaging\|FirebaseAuth" packages/*/ios/**/*.mm 2>/dev/null); do
   echo "CHECK: $f — must delegate to a plain .m helper, not import Firebase directly"
 done
 ```
 
-A clean run should print nothing; every `.mm` file for these four packages should only import its package's `*Helper.h` (plus `RNFBDatabaseQueue.h`/`RNFBDatabaseConstants.h` for database), never Firebase headers.
+A clean run should print nothing; every `.mm` file for these five packages (the four above, plus Auth per [above](#firebaseauths-hidden-pure-swift-core)) should only import its package's `*Helper.h` (plus `RNFBDatabaseQueue.h`/`RNFBDatabaseConstants.h` for database), never Firebase headers. Auth is not yet fixed, so this check will currently flag `RNFBAuthModule.mm`.
 
 ## Related
 

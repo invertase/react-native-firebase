@@ -15,24 +15,28 @@
  *
  */
 
-#if __has_include(<FirebaseCoreExtension/FIRLibrary.h>)
-#import <FirebaseCoreExtension/FIRLibrary.h>
-#else
-@import FirebaseCore;
-@import FirebaseCoreExtension;
-#endif
 #import <Foundation/Foundation.h>
 
-@interface RNFBCrashlyticsInitProvider : NSObject <FIRLibrary>
+// This header is intentionally Firebase-free. It's imported by
+// RNFBCrashlyticsModule.mm (Objective-C++), which only ever calls the three
+// plain BOOL class methods below. The `<FIRLibrary>` conformance and
+// `+componentsToRegister` (which needs `FIRComponent`/`FIRLibrary` from
+// FirebaseCoreExtension) are declared privately in RNFBCrashlyticsInitProvider.m
+// instead -- they're only invoked by Firebase's own component/DI runtime via
+// reflection, never called directly by RNFB code, so they don't need to be
+// visible here. This avoids `FirebaseCoreExtension/FIRLibrary.h` (whose
+// `__has_include` check is unreliable under this repo's hybrid SPM+CocoaPods
+// setup, since FirebaseCoreExtension is only a transitive SPM dependency and
+// can't be declared as its own SPM product -- see
+// okf-bundle/ios-spm-native-imports.md) ever being parsed from a `.mm` file,
+// which is what previously failed with "use of '@import' when C++ modules are
+// disabled".
+@interface RNFBCrashlyticsInitProvider : NSObject
 
 + (BOOL)isCrashlyticsCollectionEnabled;
 
 + (BOOL)isErrorGenerationOnJSCrashEnabled;
 
 + (BOOL)isCrashlyticsJavascriptExceptionHandlerChainingEnabled;
-
-/// Returns one or more FIRComponents that will be registered in
-/// FIRApp and participate in dependency resolution and injection.
-+ (NSArray<FIRComponent *> *)componentsToRegister;
 
 @end
