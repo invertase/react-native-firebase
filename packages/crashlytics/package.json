@@ -54,6 +54,7 @@
     "stacktrace-js": "^2.0.2"
   },
   "devDependencies": {
+    "@react-native-firebase/app": "25.1.0",
     "expo": "^55.0.18",
     "react-native-builder-bob": "^0.41.0",
     "typescript": "^6.0.3"

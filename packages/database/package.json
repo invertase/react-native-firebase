@@ -50,6 +50,7 @@
     "@react-native-firebase/app": "25.1.0"
   },
   "devDependencies": {
+    "@react-native-firebase/app": "25.1.0",
     "react-native-builder-bob": "^0.41.0"
   },
   "publishConfig": {

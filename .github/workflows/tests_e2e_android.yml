@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       iterations:
-        description: "Number of iterations to run. Default 1. Max 256."
+        description: 'Number of iterations to run. Default 1. Max 256.'
         required: true
         default: 1
         type: number
@@ -106,6 +106,9 @@ jobs:
       matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      NX_NO_CLOUD: true
+      NX_CACHE_DIRECTORY: .nx/cache
+      NX_WORKSPACE_DATA_DIRECTORY: .nx/workspace-data
     steps:
       - name: Free Disk Space (Ubuntu)
         # https://github.com/AdityaGarg8/remove-unwanted-software/releases
@@ -115,7 +118,7 @@ jobs:
           remove-haskell: true
           remove-codeql: true
           remove-docker-images: true
-          remove-large-packages: true  # ths is slow, but recently we need that last ~2GB as of 20251120
+          remove-large-packages: true # ths is slow, but recently we need that last ~2GB as of 20251120
 
       - name: Post Free Disk Space (Ubuntu)
         run: df -h
@@ -172,6 +175,15 @@ jobs:
           key: ${{ runner.os }}-android-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-android-yarn-v1
 
+      # https://github.com/actions/cache/releases
+      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        name: Nx Cache Restore
+        id: nx-cache
+        continue-on-error: true
+        with:
+          path: .nx/cache
+          key: ${{ runner.os }}-nx-v1-${{ hashFiles('yarn.lock', 'nx.json', 'lerna.json') }}
+          restore-keys: ${{ runner.os }}-nx-v1
       - name: Yarn Install
         # https://github.com/nick-fields/retry/releases
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -319,6 +331,15 @@ jobs:
         with:
           path: .yarn/cache
           key: ${{ steps.yarn-cache.outputs.cache-primary-key }}
+
+      - name: Nx Cache Save
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        if: "${{ github.ref == 'refs/heads/main' }}"
+        continue-on-error: true
+        with:
+          path: .nx/cache
+          key: ${{ runner.os }}-nx-v1-${{ hashFiles('yarn.lock', 'nx.json', 'lerna.json') }}
 
       - name: Firestore Emulator Cache Save
         # https://github.com/actions/cache/releases

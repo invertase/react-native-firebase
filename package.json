@@ -5,7 +5,7 @@
     "version": "node ./scripts/version.js",
     "postinstallDev": "yarn prepare && yarn lerna:prepare",
     "prepare": "patch-package",
-    "lerna:prepare": "lerna run prepare",
+    "lerna:prepare": "cross-env NX_NO_CLOUD=true NX_CACHE_DIRECTORY=.nx/cache NX_WORKSPACE_DATA_DIRECTORY=.nx/workspace-data lerna run prepare",
     "lerna:clean": "lerna clean",
     "build:all:clean": "lerna run build:clean",
     "build:all:build": "lerna run build",

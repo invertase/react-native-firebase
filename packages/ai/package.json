@@ -9,7 +9,7 @@
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf dist",
     "compile": "bob build",
-    "prepare": "yarn tests:ai:mocks && yarn run build && yarn compile"
+    "prepare": "yarn run build && yarn compile"
   },
   "repository": {
     "type": "git",
@@ -33,6 +33,7 @@
     "provenance": true
   },
   "devDependencies": {
+    "@react-native-firebase/app": "25.1.0",
     "@react-native-firebase/app-check": "25.1.0",
     "@react-native-firebase/auth": "25.1.0",
     "@types/text-encoding": "^0.0.40",

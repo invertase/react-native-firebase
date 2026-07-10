@@ -55,6 +55,7 @@
     "web-streams-polyfill": "^4.2.0"
   },
   "devDependencies": {
+    "@react-native-firebase/app": "25.1.0",
     "@types/text-encoding": "^0.0.40",
     "react-native-builder-bob": "^0.41.0",
     "typescript": "^6.0.3"
