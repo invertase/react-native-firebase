@@ -8,7 +8,7 @@ timestamp: 2026-07-10T00:00:00Z
 
 # Monorepo tooling — rollout work queue
 
-> **IN PROGRESS (2026-07-10):** **MT0.0–MT2** committed. **Next pickup: MT4** (import boundaries). MTV pending; **MT-WATCH** deferred.
+> **IN PROGRESS (2026-07-10):** **MT0.0–MT4** committed. **Next pickup: MTV** (branch-wide validation). **MT-WATCH** deferred.
 > **Goal/order:** update Lerna → guardrails first (cycle lint, docs, benchmark) → deterministic cached prepare (graph + `nx.json` incl. complete outputs + scoped inputs + no-cloud + `ai` split) → declaration maps → dependency-rule hardening → full validation. Dev watch / e2e-rerun is **deferred** to a later gap-analysis pre-phase (not on the critical path).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md). Work types / tiers / gate field ids: [iteration vocabulary](../testing/iteration-vocabulary.md). **Loop, gates, host rule, harness:** [change authoring workflow](../testing/change-authoring-workflow.md) — not restated. **Agent commands:** [agent command policy](../testing/agent-command-policy.md) only — no `yarn workspace … prepare`, no Jet probes.
@@ -314,13 +314,42 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
 
 ### MT4 — dependency-cruiser rule hardening — **gated on MT1**
 
-- **next_work_type:** `implementation` · **validation_tier:** `unit-focused` · gates: impl `open`, review `open`, commit `open` · **commit_subject:** `build(deps): enforce package import boundaries`
+- **next_work_type:** `commit` · **validation_tier:** `area-focused` · gates: impl `closed`, review `closed`, commit `closed` · **commit_subject:** `build(deps): enforce package import boundaries`
 - **Do:** extend `.dependency-cruiser.cjs` ([MonoTool-AD-6](architecture-decisions.md#monotool-ad-6--dependency-cycle-linting-via-dependency-cruiser-as-lintdeps--accepted)): **`not-to-own-dist`** (forbid only *relative* `../dist/**`/`./dist/**` imports — **not** the mapped hub API `@react-native-firebase/app/dist/module/...`, which is legitimate); graph allowlist (satellites → `app` only; `ai` → `auth`/`app-check`; `vertexai` → `ai`).
 - **Acceptance:**
   - `yarn lint:deps` exits 0 on current tree with the stricter rules (the existing `@react-native-firebase/app/dist/module/...` imports in ~15 satellites must **not** be flagged).
   - A deliberate off-graph import (e.g. `firestore` importing `auth`) fails `lint:deps` (then revert).
   - A deliberate *relative* own-`../dist` import fails `lint:deps` (then revert).
   - `yarn lint` full still exits 0.
+- **Implementation evidence (unit-focused, 2026-07-10):**
+  - Change: extended `.dependency-cruiser.cjs` with `not-to-own-dist` (module scope, same-package capture), `hub-no-internal`, `satellites-only-hub`, `ai-graph`, `vertexai-graph`; dynamic tsconfig paths for all non-hub packages; `includeOnly` widened to retain own-dist edges; collapse removed so module-scope violations survive.
+  - Files changed: `.dependency-cruiser.cjs`.
+  - Probe evidence:
+    | Probe | Exit | Notes |
+    |-------|------|-------|
+    | Clean `yarn lint:deps` | 0 | 313 modules / 963 deps; `/tmp/mt4-lint-deps-clean.log` |
+    | Off-graph (firestore → auth) | 1 | `satellites-only-hub`; reverted; `/tmp/mt4-probe-off-graph.log` |
+    | Own-dist (analytics `../dist/module`) | 1 | `not-to-own-dist`; reverted; `/tmp/mt4-probe-own-dist.log` |
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `yarn lint:js` | 0 | `/tmp/mt4-lint-js.log` |
+    | `yarn lint` (full) | 0 | `/tmp/mt4-lint-full.log` |
+    | `yarn tsc:compile` | 0 | `/tmp/mt4-tsc-compile.log` |
+    | `yarn tests:jest` | 0 | 82 suites / 1172 tests; `/tmp/mt4-tests-jest.log` |
+  - Coverage evidence: n/a (config-only).
+- **Independent-review evidence (area-focused, 2026-07-10):**
+  - Findings: **minor** (non-blocking, out of MT4 acceptance scope): (1) type-only imports bypass graph allowlist — value imports enforced; matches existing ai/vertexai patterns; (2) relative cross-package `../../pkg/dist/` bypasses allowlist path matching — current tree uses alias imports only; own-dist rule catches same-package relative dist.
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `yarn lint:deps` (clean) | 0 | 313 modules / 963 deps; `/tmp/mt4-review-lint-deps-clean.log` |
+    | Off-graph probe (firestore → auth) | 1 | reverted; `/tmp/mt4-review-probe-off-graph.log` |
+    | Own-dist probe | 1 | reverted; `/tmp/mt4-review-probe-own-dist.log` |
+    | `yarn lint` (full) | 0 | `/tmp/mt4-review-lint-full.log` |
+    | `yarn tsc:compile` | 0 | `/tmp/mt4-review-tsc-compile.log` |
+    | `yarn tests:jest` | 0 | 82 suites / 1172 tests; `/tmp/mt4-review-tests-jest.log` |
+  - Coverage evidence: n/a.
 
 ### MT-WATCH — Dev watch + e2e rerun (gap-analysis pre-phase) — **Deferred**
 
@@ -351,6 +380,6 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
 | MT0.3 | closed | closed | closed | `commit` |
 | MT1 | closed | closed | closed | `commit` |
 | MT2 | closed | closed | closed | `commit` |
-| MT4 | open | open | open | `implementation` |
+| MT4 | closed | closed | closed | `commit` |
 | MT-WATCH | open | open | open | `gap-analysis` (deferred) |
 | MTV | open | open | open | `pre-merge-validation` |
