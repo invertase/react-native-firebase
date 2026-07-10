@@ -15,24 +15,16 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseDatabase/FirebaseDatabase-Swift.h>)
-// SPM: the declared product is the thin Swift wrapper `FirebaseDatabase`
-// (which depends on `FirebaseDatabaseInternal`, not exposed to us directly).
-// Its generated ObjC interface header is what's importable here.
-#import <FirebaseDatabase/FirebaseDatabase-Swift.h>
-#import <FirebaseCore/FirebaseCore.h>
-#else
-@import FirebaseCore;
-@import FirebaseDatabaseInternal;
-#endif
 #import <React/RCTUtils.h>
 
-#import "RNFBApp/RCTConvert+FIRApp.h"
-#import "RNFBDatabaseCommon.h"
+#import "RNFBDatabaseOnDisconnectHelper.h"
 #import "RNFBDatabaseOnDisconnectModule.h"
+#import "RNFBDatabaseQueue.h"
 #import "RNFBDatabaseTurboModules.h"
+
+// NOTE: This module deliberately never imports Firebase Database headers.
+// See RNFBDatabaseModule.mm for rationale. All Firebase Database calls are
+// delegated to the plain Objective-C `RNFBDatabaseOnDisconnectHelper`.
 
 @interface RNFBDatabaseOnDisconnectModule () <NativeRNFBTurboDatabaseOnDisconnectSpec,
                                               RCTBridgeModule>
@@ -54,7 +46,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseOnDisconnect);
 }
 
 - (dispatch_queue_t)methodQueue {
-  return [RNFBDatabaseCommon getDispatchQueue];
+  return [RNFBDatabaseQueue getDispatchQueue];
 }
 
 #pragma mark -
@@ -65,19 +57,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseOnDisconnect);
                       path:(NSString *)path
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
-  FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference =
-      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
-
-  [firDatabaseReference
-      cancelDisconnectOperationsWithCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
-        if (error != nil) {
-          [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
-        } else {
-          resolve([NSNull null]);
-        }
-      }];
+  [RNFBDatabaseOnDisconnectHelper onDisconnectCancel:app
+                                                dbURL:dbURL
+                                                 path:path
+                                              resolve:resolve
+                                               reject:reject];
 }
 
 - (void)onDisconnectRemove:(NSString *)app
@@ -85,19 +69,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseOnDisconnect);
                       path:(NSString *)path
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
-  FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference =
-      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
-
-  [firDatabaseReference
-      onDisconnectRemoveValueWithCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
-        if (error != nil) {
-          [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
-        } else {
-          resolve([NSNull null]);
-        }
-      }];
+  [RNFBDatabaseOnDisconnectHelper onDisconnectRemove:app
+                                                dbURL:dbURL
+                                                 path:path
+                                              resolve:resolve
+                                               reject:reject];
 }
 
 - (void)onDisconnectSet:(NSString *)app
@@ -106,19 +82,12 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseOnDisconnect);
                   props:(NSDictionary *)props
                 resolve:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
-  FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference =
-      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
-
-  [firDatabaseReference onDisconnectSetValue:[props valueForKey:@"value"]
-                         withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
-                           if (error != nil) {
-                             [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
-                           } else {
-                             resolve([NSNull null]);
-                           }
-                         }];
+  [RNFBDatabaseOnDisconnectHelper onDisconnectSet:app
+                                             dbURL:dbURL
+                                              path:path
+                                             props:props
+                                           resolve:resolve
+                                            reject:reject];
 }
 
 - (void)onDisconnectSetWithPriority:(NSString *)app
@@ -127,20 +96,12 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseOnDisconnect);
                               props:(NSDictionary *)props
                             resolve:(RCTPromiseResolveBlock)resolve
                              reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
-  FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference =
-      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
-
-  [firDatabaseReference onDisconnectSetValue:[props valueForKey:@"value"]
-                                 andPriority:[props valueForKey:@"priority"]
-                         withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
-                           if (error != nil) {
-                             [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
-                           } else {
-                             resolve([NSNull null]);
-                           }
-                         }];
+  [RNFBDatabaseOnDisconnectHelper onDisconnectSetWithPriority:app
+                                                         dbURL:dbURL
+                                                          path:path
+                                                         props:props
+                                                       resolve:resolve
+                                                        reject:reject];
 }
 
 - (void)onDisconnectUpdate:(NSString *)app
@@ -149,20 +110,12 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseOnDisconnect);
                      props:(NSDictionary *)props
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
-  FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference =
-      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
-
-  [firDatabaseReference onDisconnectUpdateChildValues:[props valueForKey:@"values"]
-                                  withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
-                                    if (error != nil) {
-                                      [RNFBDatabaseCommon promiseRejectDatabaseException:reject
-                                                                                   error:error];
-                                    } else {
-                                      resolve([NSNull null]);
-                                    }
-                                  }];
+  [RNFBDatabaseOnDisconnectHelper onDisconnectUpdate:app
+                                                dbURL:dbURL
+                                                 path:path
+                                                props:props
+                                              resolve:resolve
+                                               reject:reject];
 }
 
 @end

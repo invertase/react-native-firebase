@@ -15,20 +15,13 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseDatabase/FirebaseDatabase-Swift.h>)
-// SPM: the declared product is the thin Swift wrapper `FirebaseDatabase`
-// (which depends on `FirebaseDatabaseInternal`, not exposed to us directly).
-// Its generated ObjC interface header is what's importable here.
-#import <FirebaseDatabase/FirebaseDatabase-Swift.h>
-#import <FirebaseCore/FirebaseCore.h>
-#else
-@import FirebaseCore;
-@import FirebaseDatabaseInternal;
-#endif
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
+
+// NOTE: This header must stay Firebase-free. It is imported by
+// RNFBDatabaseQueryModule.mm, and `FirebaseDatabase` is a Swift-only SPM
+// product whose `@import` cannot be used from Objective-C++ (.mm) files
+// when C++ modules are disabled. See RNFBDatabaseModule.mm for details.
 
 @interface RNFBDatabaseQueryModule : NSObject <RCTBridgeModule>
 @end

@@ -101,6 +101,17 @@ target 'testing' do
           config.build_settings['EXCLUDED_ARCHS'] = 'i386'
           # LLVM coverage for e2e native export (see okf-bundle/testing/coverage-design.md)
           apply_ios_native_coverage.call(config.build_settings, link_profile: true)
+          # Explicit modules is a build-system-wide setting for Swift Package
+          # products resolved via this project/scheme (SPM packages don't have
+          # their own toggle for it). Leaving it enabled here — even though
+          # it's disabled on the Pods project below — causes an
+          # explicit-vs-implicit modules mismatch across the SPM/CocoaPods
+          # boundary: pure-Swift Firebase SPM products (Storage, RemoteConfig,
+          # Database, InAppMessaging) intermittently fail to have their
+          # generated ObjC interop header (*-Swift.h) available when the
+          # consuming RNFB Pods target starts compiling. See
+          # okf-bundle/ios-spm-native-imports.md.
+          config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
         end
       end
       aggregate_target.user_project.save

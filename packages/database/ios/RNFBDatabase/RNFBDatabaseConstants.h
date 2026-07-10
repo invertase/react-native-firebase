@@ -17,7 +17,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import <React/RCTBridgeModule.h>
-
-@interface RNFBDatabaseTransactionModule : NSObject <RCTBridgeModule>
-@end
+// Deliberately Firebase-free (see RNFBDatabaseQueue.h) so Objective-C++
+// (.mm) modules can reference these preference keys without importing
+// Firebase Database headers. Defined in RNFBDatabaseCommon.m.
+extern NSString *const DATABASE_PERSISTENCE_ENABLED;
+extern NSString *const DATABASE_LOGGING_ENABLED;
+extern NSString *const DATABASE_PERSISTENCE_CACHE_SIZE;

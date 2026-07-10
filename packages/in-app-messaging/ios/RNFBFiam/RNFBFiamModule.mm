@@ -15,22 +15,10 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseInAppMessaging/FirebaseInAppMessaging-Swift.h>)
-// SPM: the declared product `FirebaseInAppMessaging-Beta` resolves to the
-// thin Swift wrapper target `FirebaseInAppMessaging` (which depends on
-// `FirebaseInAppMessagingInternal`, not exposed to us directly). Its
-// generated ObjC interface header is what's importable here.
-#import <FirebaseInAppMessaging/FirebaseInAppMessaging-Swift.h>
-#import <FirebaseCore/FirebaseCore.h>
-#else
-@import FirebaseCore;
-@import FirebaseInAppMessagingInternal;
-#endif
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 
+#import "RNFBFiamHelper.h"
 #import "RNFBFiamModule.h"
 
 @implementation RNFBFiamModule
@@ -44,9 +32,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFiam)
 - (NSDictionary *)fiamConstantsDictionary {
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isMessagesDisplaySuppressed"] =
-      @([RCTConvert BOOL:@([FIRInAppMessaging inAppMessaging].messageDisplaySuppressed)]);
+      @([RCTConvert BOOL:@([RNFBFiamHelper isMessageDisplaySuppressed])]);
   constants[@"isAutomaticDataCollectionEnabled"] =
-      @([RCTConvert BOOL:@([FIRInAppMessaging inAppMessaging].automaticDataCollectionEnabled)]);
+      @([RCTConvert BOOL:@([RNFBFiamHelper isAutomaticDataCollectionEnabled])]);
   return constants;
 }
 
@@ -66,21 +54,21 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFiam)
 - (void)setAutomaticDataCollectionEnabled:(BOOL)enabled
                                   resolve:(RCTPromiseResolveBlock)resolve
                                    reject:(RCTPromiseRejectBlock)reject {
-  [FIRInAppMessaging inAppMessaging].automaticDataCollectionEnabled = (BOOL)enabled;
+  [RNFBFiamHelper setAutomaticDataCollectionEnabled:(BOOL)enabled];
   resolve([NSNull null]);
 }
 
 - (void)setMessagesDisplaySuppressed:(BOOL)enabled
                              resolve:(RCTPromiseResolveBlock)resolve
                               reject:(RCTPromiseRejectBlock)reject {
-  [FIRInAppMessaging inAppMessaging].messageDisplaySuppressed = (BOOL)enabled;
+  [RNFBFiamHelper setMessageDisplaySuppressed:(BOOL)enabled];
   resolve([NSNull null]);
 }
 
 - (void)triggerEvent:(NSString *)eventId
              resolve:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject {
-  [[FIRInAppMessaging inAppMessaging] triggerEvent:eventId];
+  [RNFBFiamHelper triggerEvent:eventId];
   resolve([NSNull null]);
 }
 

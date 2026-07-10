@@ -425,6 +425,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;
 				PRODUCT_NAME = testing;
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "testing/testing-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				WARNING_CFLAGS = "-Wno-nullability-completeness";
@@ -479,6 +480,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;
 				PRODUCT_NAME = testing;
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "testing/testing-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				WARNING_CFLAGS = "-Wno-nullability-completeness";

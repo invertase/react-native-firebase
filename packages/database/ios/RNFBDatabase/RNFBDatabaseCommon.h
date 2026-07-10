@@ -29,11 +29,11 @@
 #endif
 #import <React/RCTBridgeModule.h>
 
+#import "RNFBDatabaseConstants.h"
+
 @interface RNFBDatabaseCommon : NSObject
 
 + (FIRDatabase *)getDatabaseForApp:(FIRApp *)firebaseApp dbURL:(NSString *)dbURL;
-
-+ (dispatch_queue_t)getDispatchQueue;
 
 + (void)setDatabaseConfig:(FIRDatabase *)firDatabase dbURL:(NSString *)dbURL;
 
@@ -60,7 +60,3 @@
 + (NSMutableArray *)getSnapshotChildKeys:(FIRDataSnapshot *)dataSnapshot;
 
 @end
-
-extern NSString *const DATABASE_PERSISTENCE_ENABLED;
-extern NSString *const DATABASE_LOGGING_ENABLED;
-extern NSString *const DATABASE_PERSISTENCE_CACHE_SIZE;

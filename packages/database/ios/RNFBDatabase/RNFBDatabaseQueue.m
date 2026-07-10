@@ -15,9 +15,17 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import "RNFBDatabaseQueue.h"
 
-#import <React/RCTBridgeModule.h>
+@implementation RNFBDatabaseQueue
 
-@interface RNFBDatabaseTransactionModule : NSObject <RCTBridgeModule>
++ (dispatch_queue_t)getDispatchQueue {
+  static dispatch_once_t once;
+  static dispatch_queue_t sharedInstance;
+  dispatch_once(&once, ^{
+    sharedInstance = dispatch_queue_create("io.invertase.firebase.database", DISPATCH_QUEUE_SERIAL);
+  });
+  return sharedInstance;
+}
+
 @end

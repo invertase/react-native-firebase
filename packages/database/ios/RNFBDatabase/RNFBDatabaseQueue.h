@@ -17,7 +17,13 @@
 
 #import <Foundation/Foundation.h>
 
-#import <React/RCTBridgeModule.h>
+// Deliberately Firebase-free: this header is imported by Objective-C++ (.mm)
+// modules that must not pull in any Firebase Database headers directly (see
+// RNFBDatabaseCommon.h for why). Keeping it isolated means the shared serial
+// queue used as `methodQueue` can be obtained without ever importing
+// Firebase from a .mm translation unit.
+@interface RNFBDatabaseQueue : NSObject
 
-@interface RNFBDatabaseTransactionModule : NSObject <RCTBridgeModule>
++ (dispatch_queue_t)getDispatchQueue;
+
 @end
