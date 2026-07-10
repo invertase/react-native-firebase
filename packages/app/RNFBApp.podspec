@@ -38,6 +38,16 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE" => "YES",
   }
 
+  # RNFBUtilsModule.mm uses PHAsset (Photos.framework) to resolve local asset paths.
+  # Not declaring this explicitly used to work by luck (CocoaPods normally relies on
+  # this declaration -- not Clang autolinking -- to populate OTHER_LDFLAGS), but with
+  # use_frameworks! each pod is a standalone dynamic framework that must resolve its
+  # own symbols at its own link step, so the missing declaration now surfaces as
+  # "Undefined symbols ... _OBJC_CLASS_$_PHAsset". iOS/macOS only -- PhotoKit doesn't
+  # exist on tvOS.
+  s.ios.frameworks = 'Photos'
+  s.osx.frameworks = 'Photos'
+
   # React Native dependencies
   if defined?(install_modules_dependencies()) != nil
     install_modules_dependencies(s);

@@ -203,7 +203,7 @@ for f in $(grep -rl "@import Firebase" packages/*/ios 2>/dev/null); do
 done
 ```
 
-A clean run should print nothing once `RNFBAuthModule.mm` above is fixed.
+A clean run should print nothing.
 
 **Check 2 — pure-Swift-core SPM products imported directly from a `.mm` file** (the deeper failure mode above — no `#elif` wording fixes this, only the helper-class delegation does):
 
@@ -213,7 +213,22 @@ for f in $(grep -rl "FirebaseStorage\|FirebaseRemoteConfig\|FirebaseDatabase\|Fi
 done
 ```
 
-A clean run should print nothing; every `.mm` file for these five packages (the four above, plus Auth per [above](#firebaseauths-hidden-pure-swift-core)) should only import its package's `*Helper.h` (plus `RNFBDatabaseQueue.h`/`RNFBDatabaseConstants.h` for database), never Firebase headers. Auth is not yet fixed, so this check will currently flag `RNFBAuthModule.mm`.
+A clean run should print nothing; every `.mm` file for these five packages (the four above, plus Auth per [above](#firebaseauths-hidden-pure-swift-core)) should only import its package's `*Helper.h` (plus `RNFBDatabaseQueue.h`/`RNFBDatabaseConstants.h` for database), never Firebase headers.
+
+## Unrelated linker bug found along the way — missing `Photos.framework` declaration
+
+**Not part of the SPM dual-import bug class above** — recorded here because it was found while validating the Auth fix and blocked the same `yarn tests:ios:build` command. Once every native-import fix above was in place, the debug SPM build progressed past compilation into linking and failed with:
+
+```
+Undefined symbols for architecture arm64:
+  "_OBJC_CLASS_$_PHAsset", referenced from:
+       in RNFBUtilsModule.o
+ld: symbol(s) not found for architecture arm64
+```
+
+**Root cause:** `packages/app/ios/RNFBApp/RNFBUtilsModule.{h,mm}` and `packages/storage/ios/RNFBStorage/RNFBStorageCommon.{h,m}` both `#import <Photos/Photos.h>` and use `PHAsset`/`PHAssetResource`, but neither `RNFBApp.podspec` nor `RNFBStorage.podspec` ever declared `s.frameworks = 'Photos'` (confirmed absent on `main` too — this is not an SPM regression). That was never a problem for CocoaPods-only static-library builds, where the final app-level link resolves all pods' symbols together in one pass. But this repo's `Podfile` uses `use_frameworks!` with dynamic linkage, so each pod compiles to its own standalone dynamic framework (`clang++ -dynamiclib ...`) that must resolve **all** of its own undefined symbols at its own link step -- it can't defer to the app target. CocoaPods populates each pod's `OTHER_LDFLAGS` (`-framework X` per framework) directly from the podspec's declared `s.frameworks`/dependency graph, not from scanning source for `#import`/Clang-module autolink info, so an undeclared system framework silently has no `-framework` flag no matter how the header is imported.
+
+**Fix:** declared `s.ios.frameworks = 'Photos'` / `s.osx.frameworks = 'Photos'` (iOS + macOS only -- PhotoKit doesn't exist on tvOS, even though these files currently have no tvOS guard either; that's a pre-existing, separate gap left untouched here) in both podspecs, matching the existing `s.frameworks = 'AdSupport'` convention already used in `RNFBAnalytics.podspec`. Verified the regenerated `RNFBApp.debug.xcconfig`/`RNFBStorage.debug.xcconfig` `OTHER_LDFLAGS` now include `-framework "Photos"`, and `yarn tests:ios:build` succeeds end-to-end.
 
 ## Related
 
