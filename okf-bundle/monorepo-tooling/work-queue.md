@@ -8,7 +8,7 @@ timestamp: 2026-07-10T00:00:00Z
 
 # Monorepo tooling — rollout work queue
 
-> **IN PROGRESS (2026-07-10):** **MT0.0–MT0.3** committed; **MT1** ready to commit. **Next pickup: MT2** (declaration maps). Phases MT4 pending; **MT-WATCH** deferred; **MTV** gated on earlier phases.
+> **IN PROGRESS (2026-07-10):** **MT0.0–MT2** committed. **Next pickup: MT4** (import boundaries). MTV pending; **MT-WATCH** deferred.
 > **Goal/order:** update Lerna → guardrails first (cycle lint, docs, benchmark) → deterministic cached prepare (graph + `nx.json` incl. complete outputs + scoped inputs + no-cloud + `ai` split) → declaration maps → dependency-rule hardening → full validation. Dev watch / e2e-rerun is **deferred** to a later gap-analysis pre-phase (not on the critical path).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md). Work types / tiers / gate field ids: [iteration vocabulary](../testing/iteration-vocabulary.md). **Loop, gates, host rule, harness:** [change authoring workflow](../testing/change-authoring-workflow.md) — not restated. **Agent commands:** [agent command policy](../testing/agent-command-policy.md) only — no `yarn workspace … prepare`, no Jet probes.
@@ -276,7 +276,7 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
 
 ### MT2 — Declaration maps
 
-- **next_work_type:** `implementation` · **validation_tier:** `unit-focused` · gates: impl `open`, review `open`, commit `open` · **commit_subject:** `build(ts): emit declaration maps for package builds`
+- **next_work_type:** `commit` · **validation_tier:** `area-focused` · gates: impl `closed`, review `closed`, commit `closed` · **commit_subject:** `build(ts): emit declaration maps for package builds`
 - **Do:** add `declaration: true` + `declarationMap: true` to `tsconfig.packages.base.json`, `packages/ai/tsconfig.json`, `packages/vertexai/tsconfig.json` ([MonoTool-AD-5](architecture-decisions.md#monotool-ad-5--keep-react-native-builder-bob-emit-declaration-maps--accepted)).
 - **Acceptance:**
   - After `yarn lerna:prepare`, `packages/*/dist/typescript/**/*.d.ts.map` exist.
@@ -284,6 +284,33 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
   - Spot-check: IDE go-to-definition on a cross-package symbol lands on `lib/**` source (record the check in notes).
   - **Map resolves to shipped source:** open one emitted `.d.ts.map` and confirm its `sources` point at the published `lib/*.ts` (relative, no absolute path leak) — since `files` publishes `lib`, external consumers get go-to-definition too.
   - `.d.ts.map` do not leak into unintended published paths (bob `files`/`exclude` still correct).
+- **Implementation evidence (unit-focused, 2026-07-10):**
+  - Change: added `declaration: true` + `declarationMap: true` to `tsconfig.packages.base.json`, `packages/ai/tsconfig.json`, `packages/vertexai/tsconfig.json` ([MonoTool-AD-5](architecture-decisions.md#monotool-ad-5--keep-react-native-builder-bob-emit-declaration-maps--accepted)).
+  - Files changed: `tsconfig.packages.base.json`, `packages/ai/tsconfig.json`, `packages/vertexai/tsconfig.json`.
+  - Map spot-check: `FirebaseApp` (`analytics/lib/index.ts` → `@react-native-firebase/app` → `packages/app/dist/typescript/lib/index.d.ts`) go-to-def target `packages/app/lib/index.ts`; `index.d.ts.map` has `sourceRoot: ""`, `sources: ["../../../lib/index.ts"]`, 0 absolute-path leaks; 310 `.d.ts.map` emitted, all under `dist/typescript` (0 in `dist/module`).
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `yarn lerna:prepare` | 0 | 20 projects rebuilt (base tsconfig change busted cache); `/tmp/mt2-prepare.log` |
+    | `.d.ts.map` count/leak scan | 0 | 310 maps; 0 absolute leaks; 0 outside `dist/typescript`; `/tmp/mt2-dtsmap-count.log`, `/tmp/mt2-leak-scan.log` |
+    | `yarn tsc:compile` | 0 | `/tmp/mt2-tsc.log` |
+    | `yarn tsc:compile:consumer` | 0 | `/tmp/mt2-tsc-consumer.log` |
+    | `yarn lint` (full) | 0 | js + deps + android + ios; `/tmp/mt2-lint-2.log` (android formatter flaked once, clean on re-run) |
+    | `yarn lint:deps` | 0 | 19 modules / 23 deps; `/tmp/mt2-lint-deps.log` |
+    | `yarn tests:jest` | 0 | 82 suites / 1172 tests; `/tmp/mt2-jest.log` |
+  - Coverage evidence: n/a (tsconfig/build-config only; no `packages/*/lib/**` or native bridge edits).
+- **Independent-review evidence (area-focused, 2026-07-10):**
+  - Findings: none. Product diff is three tsconfig files only.
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `yarn lerna:prepare` | 0 | 20/20 cache hits; `/tmp/mt2-review-prepare.log` |
+    | `.d.ts.map` count/leak scan | 0 | 310 maps; 0 absolute leaks; 0 in `dist/module`; `/tmp/mt2-review-dtsmap-scan.log` |
+    | `npm pack --dry-run` (analytics) | 0 | 11 maps in tarball under `dist/typescript`; `/tmp/mt2-review-publish-check.log` |
+    | `yarn tsc:compile` + consumer | 0 | `/tmp/mt2-review-tsc.log`, `/tmp/mt2-review-tsc-consumer.log` |
+    | `yarn lint` (full) | 0 | js + deps + android + ios; `/tmp/mt2-review-lint-full.log` |
+    | `yarn tests:jest` | 0 | 82 suites / 1172 tests; `/tmp/mt2-review-jest.log` |
+  - Coverage evidence: n/a.
 
 ### MT4 — dependency-cruiser rule hardening — **gated on MT1**
 
@@ -323,7 +350,7 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
 | MT0.2 | closed | n/a | closed | `documentation` (landed) |
 | MT0.3 | closed | closed | closed | `commit` |
 | MT1 | closed | closed | closed | `commit` |
-| MT2 | open | open | open | `implementation` |
+| MT2 | closed | closed | closed | `commit` |
 | MT4 | open | open | open | `implementation` |
 | MT-WATCH | open | open | open | `gap-analysis` (deferred) |
 | MTV | open | open | open | `pre-merge-validation` |
