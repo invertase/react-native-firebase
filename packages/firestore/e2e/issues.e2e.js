@@ -124,6 +124,55 @@ describe('firestore()', function () {
       });
     });
 
+    describe('issue 8981 - android firestore instance cache key mismatch', function () {
+      it('does not throw when settings are reapplied on an already-started instance', async function () {
+        if (Platform.other) {
+          // Not supported on web lite sdk - no persistent native instance cache to break
+          return;
+        }
+
+        const { initializeApp, deleteApp } = modular;
+        const { getFirestore, doc, setDoc, getDoc } = firestoreModular;
+
+        // A dedicated, dynamically created app guarantees a Firestore instance that has
+        // never been started before this test runs, so the first `setDoc()` below is
+        // genuinely the first native operation performed against it.
+        const appName = `firestoreIssue8981${FirebaseHelpers.id}`;
+        const app = await initializeApp(FirebaseHelpers.app.config(), appName);
+
+        try {
+          const db = getFirestore(app);
+          const docRef1 = doc(db, `${COLLECTION}/issue8981/first`);
+          const docRef2 = doc(db, `${COLLECTION}/issue8981/second`);
+
+          // Queue an initial settings value, then perform a real operation - this starts
+          // the native Firestore instance for the very first time, applying the settings.
+          await db.settings({ cacheSizeBytes: 1048576 });
+          await setDoc(docRef1, { value: 1 });
+
+          // Queue a *different* settings value, then perform another operation on the
+          // same already-started instance.
+          //
+          // Regression test for https://github.com/invertase/react-native-firebase/issues/8981:
+          // on Android, `UniversalFirebaseFirestoreCommon.getFirestoreForApp()` read the
+          // instance cache keyed by `appName:databaseId` but wrote it keyed by `appName`
+          // alone, so the cache lookup could never hit. Every native call therefore
+          // re-derived and reapplied settings via `setFirestoreSettings()` against an
+          // instance that had already been started, throwing
+          // `IllegalStateException: FirebaseFirestore has already been started...`
+          // whenever the newly-derived settings differed from what was already active.
+          await db.settings({ cacheSizeBytes: 2097152 });
+          await setDoc(docRef2, { value: 2 });
+
+          const [snap1, snap2] = await Promise.all([getDoc(docRef1), getDoc(docRef2)]);
+          snap1.data().value.should.equal(1);
+          snap2.data().value.should.equal(2);
+        } finally {
+          await deleteApp(app);
+        }
+      });
+    });
+
     describe('number type consistency', function () {
       before(async function () {
         // FIXME:
