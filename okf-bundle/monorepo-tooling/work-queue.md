@@ -8,7 +8,7 @@ timestamp: 2026-07-10T00:00:00Z
 
 # Monorepo tooling — rollout work queue
 
-> **IN PROGRESS (2026-07-10):** **MT0.0** committed (`build(deps): pin nx for lerna runner`); **MT0.1** ready to commit. **Next pickup: MT0.3** (benchmark baseline). Phases MT1–MT4 pending; **MT-WATCH** deferred; **MTV** gated on earlier phases.
+> **IN PROGRESS (2026-07-10):** **MT0.0–MT0.3** committed. **Next pickup: MT1** (deterministic cached prepare). Phases MT2–MT4 pending; **MT-WATCH** deferred; **MTV** gated on earlier phases.
 > **Goal/order:** update Lerna → guardrails first (cycle lint, docs, benchmark) → deterministic cached prepare (graph + `nx.json` incl. complete outputs + scoped inputs + no-cloud + `ai` split) → declaration maps → dependency-rule hardening → full validation. Dev watch / e2e-rerun is **deferred** to a later gap-analysis pre-phase (not on the critical path).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md). Work types / tiers / gate field ids: [iteration vocabulary](../testing/iteration-vocabulary.md). **Loop, gates, host rule, harness:** [change authoring workflow](../testing/change-authoring-workflow.md) — not restated. **Agent commands:** [agent command policy](../testing/agent-command-policy.md) only — no `yarn workspace … prepare`, no Jet probes.
@@ -180,11 +180,28 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
 
 ### MT0.3 — Benchmark baseline
 
-- **next_work_type:** `implementation` · **validation_tier:** none · gates: impl `open`, review `open`, commit `open` · **commit_subject:** `build(scripts): add prepare benchmark script`
+- **next_work_type:** `commit` · **validation_tier:** none · gates: impl `closed`, review `closed`, commit `closed` · **commit_subject:** `build(scripts): add prepare benchmark script`
 - **Do:** `scripts/benchmark-prepare.sh` (macOS; scenarios A–D from [prepare-and-cache § benchmark](prepare-and-cache.md#benchmark-methodology)); capture **pre-Nx** B/C/D medians into a benchmarks note.
 - **Acceptance:**
   - Script runs A–D, prints median-of-3 per scenario, exits 0.
   - Pre-Nx baseline numbers recorded (used to prove MT1 gains).
+- **Implementation evidence (none tier, 2026-07-10):**
+  - Change: added `scripts/benchmark-prepare.sh` (macOS guard, scenarios A–D, median-of-3, reversible firestore edit with `EXIT` trap); ephemeral baseline note `prepare-benchmark-baseline.md`.
+  - Files changed: `scripts/benchmark-prepare.sh`, `okf-bundle/monorepo-tooling/prepare-benchmark-baseline.md`.
+  - Pre-Nx medians (s): A 125.583; B 23.686; C 23.694; D 23.758. Logs: `.tmp/prepare-benchmarks/20260710-122118/`.
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `bash ./scripts/benchmark-prepare.sh` | 0 | Full A–D run (~624s unsandboxed); sandboxed first attempt failed on partial `node_modules` removal |
+    | `bash -n scripts/benchmark-prepare.sh` | 0 | Syntax check |
+  - Coverage evidence: n/a (no `packages/*/lib/**` runtime or native bridge edits committed).
+- **Independent-review evidence (none tier, 2026-07-10):**
+  - Findings: none. Script aligns with `prepare-and-cache.md` benchmark methodology; baseline numbers live in ephemeral note only.
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `bash -n scripts/benchmark-prepare.sh` | 0 | Review smoke syntax check |
+  - Coverage evidence: n/a.
 
 ### MT1 — Deterministic cached prepare
 
@@ -255,7 +272,7 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
 | MT0.0 | closed | closed | closed | `commit` |
 | MT0.1 | closed | closed | closed | `commit` |
 | MT0.2 | closed | n/a | closed | `documentation` (landed) |
-| MT0.3 | open | open | open | `implementation` |
+| MT0.3 | closed | closed | closed | `commit` |
 | MT1 | open | open | open | `implementation` |
 | MT2 | open | open | open | `implementation` |
 | MT4 | open | open | open | `implementation` |
