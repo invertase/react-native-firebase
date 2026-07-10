@@ -125,7 +125,11 @@ describe('firestore()', function () {
     });
 
     describe('issue 8981 - android firestore instance cache key mismatch', function () {
-      it('does not throw when settings are reapplied on an already-started instance', async function () {
+      // A real, already-provisioned second database in the test project - see
+      // packages/firestore/e2e/SecondDatabase/*.e2e.js.
+      const SECOND_DATABASE_ID = 'second-rnfb';
+
+      it('does not throw when switching databases on the same app and reapplying settings', async function () {
         if (Platform.other) {
           // Not supported on web lite sdk - no persistent native instance cache to break
           return;
@@ -134,39 +138,57 @@ describe('firestore()', function () {
         const { initializeApp, deleteApp } = modular;
         const { getFirestore, doc, setDoc, getDoc } = firestoreModular;
 
-        // A dedicated, dynamically created app guarantees a Firestore instance that has
-        // never been started before this test runs, so the first `setDoc()` below is
-        // genuinely the first native operation performed against it.
+        // A dedicated, dynamically created app guarantees Firestore instances that have
+        // never been started before this test runs.
         const appName = `firestoreIssue8981${FirebaseHelpers.id}`;
         const app = await initializeApp(FirebaseHelpers.app.config(), appName);
 
         try {
-          const db = getFirestore(app);
-          const docRef1 = doc(db, `${COLLECTION}/issue8981/first`);
-          const docRef2 = doc(db, `${COLLECTION}/issue8981/second`);
-
-          // Queue an initial settings value, then perform a real operation - this starts
-          // the native Firestore instance for the very first time, applying the settings.
-          await db.settings({ cacheSizeBytes: 1048576 });
-          await setDoc(docRef1, { value: 1 });
-
-          // Queue a *different* settings value, then perform another operation on the
-          // same already-started instance.
+          // Same app, two different database IDs.
           //
           // Regression test for https://github.com/invertase/react-native-firebase/issues/8981:
           // on Android, `UniversalFirebaseFirestoreCommon.getFirestoreForApp()` read the
-          // instance cache keyed by `appName:databaseId` but wrote it keyed by `appName`
-          // alone, so the cache lookup could never hit. Every native call therefore
-          // re-derived and reapplied settings via `setFirestoreSettings()` against an
-          // instance that had already been started, throwing
-          // `IllegalStateException: FirebaseFirestore has already been started...`
-          // whenever the newly-derived settings differed from what was already active.
-          await db.settings({ cacheSizeBytes: 2097152 });
-          await setDoc(docRef2, { value: 2 });
+          // instance cache keyed by `appName:databaseId` but wrote it back keyed by
+          // `appName` alone. Both databases therefore collided on a single cache slot
+          // that could never actually be hit on lookup (which always includes the
+          // `:databaseId` suffix) - switching from one database to another and back
+          // never protects either instance's settings from being re-derived.
+          const defaultDb = getFirestore(app);
+          const secondDb = getFirestore(app, SECOND_DATABASE_ID);
 
-          const [snap1, snap2] = await Promise.all([getDoc(docRef1), getDoc(docRef2)]);
-          snap1.data().value.should.equal(1);
+          // Start the default database with an initial settings value.
+          await defaultDb.settings({ cacheSizeBytes: 1048576 });
+          await setDoc(doc(defaultDb, `${COLLECTION}/issue8981/default`), { value: 1 });
+
+          // Switch to the second database under the *same* app and start it too - this
+          // is the "different db ID hitting the same app" half of the bug: both native
+          // calls are keyed by the same broken, appName-only cache slot.
+          await secondDb.settings({ cacheSizeBytes: 2097152 });
+          await setDoc(doc(secondDb, `${COLLECTION}/issue8981/second`), { value: 2 });
+
+          // Switch back to the default database and reapply *different* settings to an
+          // already-started instance. Android's `FirebaseFirestore.setFirestoreSettings()`
+          // only throws when the newly-derived settings actually differ from what's
+          // already active (identical settings passed repeatedly are an explicit no-op
+          // in the native SDK) - so this value change is what deterministically triggers
+          // `IllegalStateException: FirebaseFirestore has already been started...` before
+          // the fix, once the cache-miss-on-every-call bug re-applies it natively.
+          await defaultDb.settings({ cacheSizeBytes: 5242880 });
+          await setDoc(doc(defaultDb, `${COLLECTION}/issue8981/default`), { value: 3 });
+
+          const [snap1, snap2] = await Promise.all([
+            getDoc(doc(defaultDb, `${COLLECTION}/issue8981/default`)),
+            getDoc(doc(secondDb, `${COLLECTION}/issue8981/second`)),
+          ]);
+          snap1.data().value.should.equal(3);
           snap2.data().value.should.equal(2);
+        } catch (e) {
+          // Fail explicitly with the regression context rather than letting the native
+          // `IllegalStateException` (surfaced here as a rejected promise) bubble up with a
+          // generic message - see https://github.com/invertase/react-native-firebase/issues/8981.
+          fail(
+            `Regression in issue 8981: switching database on the same app and reapplying settings should not throw, but got: ${e}`,
+          );
         } finally {
           await deleteApp(app);
         }
