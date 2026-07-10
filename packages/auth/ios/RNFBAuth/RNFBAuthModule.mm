@@ -654,12 +654,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
   // Sign in with Apple: if the caller supplied fullName (only available on the user's first
   // authorization), rebuild the credential via appleCredentialWithIDToken:rawNonce:fullName: so
   // Firebase can store it as the account's displayName. See AppleFullPersonName in auth.ts.
-  NSPersonNameComponents *personNameComponents = [self personNameComponentsFromDictionary:fullName];
-  if (personNameComponents != nil && [provider compare:@"apple.com"
-                                               options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-    credential = [FIROAuthProvider appleCredentialWithIDToken:authToken
-                                                     rawNonce:authSecret
-                                                     fullName:personNameComponents];
+  if ([provider compare:@"apple.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    NSPersonNameComponents *personNameComponents =
+        [self personNameComponentsFromDictionary:fullName];
+    if (personNameComponents != nil) {
+      credential = [FIROAuthProvider appleCredentialWithIDToken:authToken
+                                                       rawNonce:authSecret
+                                                       fullName:personNameComponents];
+    }
   }
 
   if (credential == nil) {
@@ -1624,25 +1626,32 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
   }
 
   NSPersonNameComponents *components = [[NSPersonNameComponents alloc] init];
+  BOOL hasAnyComponent = NO;
   if ([dictionary[@"namePrefix"] isKindOfClass:[NSString class]]) {
     components.namePrefix = dictionary[@"namePrefix"];
+    hasAnyComponent = YES;
   }
   if ([dictionary[@"givenName"] isKindOfClass:[NSString class]]) {
     components.givenName = dictionary[@"givenName"];
+    hasAnyComponent = YES;
   }
   if ([dictionary[@"middleName"] isKindOfClass:[NSString class]]) {
     components.middleName = dictionary[@"middleName"];
+    hasAnyComponent = YES;
   }
   if ([dictionary[@"familyName"] isKindOfClass:[NSString class]]) {
     components.familyName = dictionary[@"familyName"];
+    hasAnyComponent = YES;
   }
   if ([dictionary[@"nameSuffix"] isKindOfClass:[NSString class]]) {
     components.nameSuffix = dictionary[@"nameSuffix"];
+    hasAnyComponent = YES;
   }
   if ([dictionary[@"nickname"] isKindOfClass:[NSString class]]) {
     components.nickname = dictionary[@"nickname"];
+    hasAnyComponent = YES;
   }
-  return components;
+  return hasAnyComponent ? components : nil;
 }
 
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider
