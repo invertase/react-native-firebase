@@ -147,9 +147,9 @@ Shape: `RNFBFooHelper.m` (plain Objective-C) keeps the 3-path Firebase import bl
 | perf | `RNFBPerfModule.mm` |
 | remote-config | `RNFBConfigModule.mm` (superseded — see below) |
 | storage | `RNFBStorageCommon.m`, `RNFBStorageModule.mm` (`.mm` superseded — see below) |
-| auth | `RNFBAuthModule.h` |
+| auth | `RNFBAuthModule.h` (superseded — see below; also had a bogus `FirebaseAuthInternal` import removed, see [Auth](#firebaseauths-hidden-pure-swift-core) below) |
 
-**Superseded — `#elif` branch alone doesn't fix it; needed the helper-class delegation ([above](#fix----objective-c-helper-class-swift-shim-delegation)) because these four are pure-Swift SPM products:**
+**Superseded — `#elif` branch alone doesn't fix it; needed the helper-class delegation ([above](#fix----objective-c-helper-class-swift-shim-delegation)) because these are pure-Swift-core SPM products:**
 
 | Package | `.mm` file(s) | New helper(s) |
 |---------|---------------|----------------|
@@ -157,8 +157,9 @@ Shape: `RNFBFooHelper.m` (plain Objective-C) keeps the 3-path Firebase import bl
 | remote-config | `RNFBConfigModule.mm` | `RNFBConfigHelper` |
 | database | `RNFBDatabaseModule.mm`, `RNFBDatabaseReferenceModule.mm`, `RNFBDatabaseOnDisconnectModule.mm`, `RNFBDatabaseTransactionModule.mm`, `RNFBDatabaseQueryModule.mm` | `RNFBDatabaseModuleHelper`, `RNFBDatabaseReferenceHelper`, `RNFBDatabaseOnDisconnectHelper`, `RNFBDatabaseTransactionHelper`, `RNFBDatabaseQueryHelper` |
 | storage | `RNFBStorageModule.mm` | `RNFBStorageHelper` |
+| auth | `RNFBAuthModule.mm` | `RNFBAuthHelper` |
 
-The `#elif __has_include(<Module/Module-Swift.h>)` branch already added to the files above is harmless dead code for these four packages (the condition is always false per [the deeper failure mode](#deeper-failure-mode----pure-swift-spm-products-cant-satisfy-path-2-at-all) above) but is left in place — it's a correct guard in general and costs nothing.
+The `#elif __has_include(<Module/Module-Swift.h>)` branch already added to the files above (where present) is harmless dead code for these packages (the condition is always false per [the deeper failure mode](#deeper-failure-mode----pure-swift-spm-products-cant-satisfy-path-2-at-all) above) but is left in place — it's a correct guard in general and costs nothing.
 
 **Already safe — module-header-first 2-path variant, no change needed:**
 
@@ -173,11 +174,7 @@ The `#elif __has_include(<Module/Module-Swift.h>)` branch already added to the f
 
 `RNFBCrashlyticsInitProvider.h`'s `__has_include(<FirebaseCoreExtension/FIRLibrary.h>)` was false in this repo's hybrid SPM+CocoaPods build, for a *different* reason than the pure-Swift packages above: `FirebaseCoreExtension` is a real ObjC target with real headers, but it's only reachable 2 levels deep in the SPM graph (`FirebaseCrashlytics` -> `FirebaseSessions` -> `FirebaseCoreExtension`) and can't be declared as its own explicit SPM product -- Firebase's `Package.swift` only exposes it as an internal `.target`, never as a `.library` product (confirmed: adding it to `spm_dependency(products: [...])` fails with "Missing package product `FirebaseCoreExtension`"). So the header search path never includes it for the RNFBCrashlytics pod target, and the file fell to `@import`, which fails to compile from the `.mm` module. Fix: rather than a helper class, the public header was slimmed to be Firebase-free. `RNFBCrashlyticsModule.mm` (the only external consumer) only ever calls three plain `BOOL` class methods; the `<FIRLibrary>` conformance and `+componentsToRegister` (the only members needing `FirebaseCoreExtension` types) are only invoked by Firebase's own component/DI runtime via reflection, never by RNFB code directly, so they were moved into a private class-extension declared solely in `RNFBCrashlyticsInitProvider.m` (which already partially did this for a different protocol). No Firebase types are left in the header at all now.
 
-**Outstanding — still unsafe, not yet fixed:**
-
-| File | Status |
-|------|--------|
-| `packages/auth/ios/RNFBAuth/RNFBAuthModule.mm`, `RNFBAuthModule.h` | Root cause corrected -- an earlier version of this entry said Auth was only blocked by write-hook flakiness needing a simple `#elif` branch; that turned out to be wrong (or at best incomplete). See "`FirebaseAuth`'s hidden pure-Swift core" below. The bogus, never-actually-reachable `#import <FirebaseAuthInternal/FirebaseAuthInternal.h>` (a header that does not exist anywhere in the SDK, under any dependency manager -- `FirebaseAuthInternal` is an internal `.target`, not a `.library` product, same shape as the Crashlytics/`FirebaseCoreExtension` case above) has been removed from both files; nothing in either file actually uses internal-only Auth APIs (audited: every `FIR*` symbol used is public `FirebaseAuth` API). That unblocked the build far enough to reveal the *real* remaining problem, described next. |
+**Fixed — Auth (helper-class delegation, largest instance):** see "`FirebaseAuth`'s hidden pure-Swift core" below for the full writeup.
 
 ### `FirebaseAuth`'s hidden pure-Swift core
 
@@ -185,7 +182,13 @@ The `#elif __has_include(<Module/Module-Swift.h>)` branch already added to the f
 
 This package was previously assumed safe because a real `FirebaseAuth/FirebaseAuth.h` header does exist (contrast evidence in the table above). That's true, but incomplete: that header, and the entire `Public/FirebaseAuth/` directory it lives in, contains only forward declarations (`@class FIRAuth;`), typedefs, error codes, and provider/protocol headers -- **not** the actual `FIRAuth`/`FIRUser` class interfaces. Verified directly against the checked-out SDK: no header anywhere under `FirebaseAuth/` declares `@interface FIRAuth : NSObject`, while `FirebaseAuth/Sources/Swift/Auth/Auth.swift` does define the real `Auth` class (exposed to ObjC as `FIRAuth` via `@objc`/`NS_SWIFT_NAME`). In other words, `FirebaseAuth` has the *same* pure-Swift-core structure as Storage/RemoteConfig/Database/InAppMessaging for its main class -- it just also happens to ship a partial, legitimate ObjC header directory for auxiliary types, which is what let it slip through the `__has_include` check undetected until now.
 
-Net effect: `@import FirebaseAuth;` is the only way to get the real `FIRAuth` interface (same as the four confirmed pure-Swift products), which again fails to compile from a `.mm` file with C++ modules disabled. This needs the same helper-class delegation fix as the four packages above, likely the largest single instance of it given `RNFBAuthModule.mm` is ~2000 lines. Not yet started.
+Net effect: `@import FirebaseAuth;` is the only way to get the real `FIRAuth` interface (same as the four confirmed pure-Swift products), which again fails to compile from a `.mm` file with C++ modules disabled.
+
+**Fixed** with the same helper-class delegation pattern as the four packages above -- the largest instance of it, since `RNFBAuthModule.mm` was ~2050 lines. `RNFBAuthHelper.h`/`.m` now own every `FIRAuth`/`FIRUser`-typed call; `RNFBAuthModule.mm` is a pure delegation layer (plus the handful of TurboModule methods that never touched Firebase types at all: `constantsToExport`, `getConstants`, `getTurboModule`, `requiresMainQueueSetup`, `dealloc`, and two no-op stubs). The `AuthErrorCode_toJSErrorCode` array (indexed by `FIRAuthErrorCode`, Firebase-typed) moved out of `RNFBAuthModule.h` into `RNFBAuthHelper.m` -- it can't stay in a header that `RNFBAuthModule.mm` imports.
+
+One extra wrinkle beyond the other four packages: `@import FirebaseAuth;` alone was not enough. It exposes the Swift-generated interop header (the real `FIRAuth`/`FIRUser` classes), but not the hand-written ObjC compatibility headers under `Public/FirebaseAuth/` (typedefs like `FIRAuthStateDidChangeListenerHandle`, error `userInfo` key constants like `FIRAuthErrorUserInfoUpdatedCredentialKey`) -- those are vended by the separate `FirebaseAuthInternal` Clang module (confirmed via `Package.swift`: `FirebaseAuth` depends directly on `FirebaseAuthInternal`, which sets `publicHeadersPath: "Public"` at `FirebaseAuth/Sources/Public`). A Clang module's dependencies aren't automatically re-exported through `@import`, even for a direct (not transitive) SPM dependency, so `RNFBAuthHelper.m` explicitly does `@import FirebaseAuthInternal;` alongside `@import FirebaseAuth;` in its fallback branch. `FirebaseAuthInternal` did **not** need to be added to `RNFBAuth.podspec`'s `spm_products` list -- unlike Crashlytics/`FirebaseCoreExtension`, a direct `@import` (module-graph based) resolves it fine without an explicit product declaration; only `__has_include` (header-search based) needed that.
+
+Along the way, a second, unrelated bug was found and fixed in `RNFBAuthModule.mm`/`.h`: both files unconditionally `#import <FirebaseAuthInternal/FirebaseAuthInternal.h>` in their path-2 branch. That header does not exist anywhere in the SDK, under any dependency manager -- `FirebaseAuthInternal` is an internal `.target`, never a `.library` product, so there's no product-rooted umbrella header for it. This line had never actually been exercised (CocoaPods always short-circuits to path 1 via `Firebase/Firebase.h`; SPM was broken for unrelated reasons until this investigation), so it silently shipped broken. Removed; nothing in either file used internal-only Auth APIs.
 
 ## Verifying no regressions
 

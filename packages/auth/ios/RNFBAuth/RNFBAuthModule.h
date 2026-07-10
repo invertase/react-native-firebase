@@ -15,82 +15,15 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseAuth/FirebaseAuth.h>)
-#import <FirebaseAuth/FirebaseAuth.h>
-#import <FirebaseAuthInternal/FirebaseAuthInternal.h>
-#import <FirebaseCore/FirebaseCore.h>
-#else
-@import FirebaseCore;
-@import FirebaseAuth;
-@import FirebaseAuthInternal;
-#endif
+// This header is intentionally Firebase-free. See RNFBAuthHelper.h for why:
+// FirebaseAuth's core `FIRAuth`/`FIRUser` classes are implemented in Swift, so
+// `@import FirebaseAuth` (the only way to get their real interface) can't be
+// used from an Objective-C++ (.mm) TurboModule when C++ modules are disabled
+// (required by React Native's JSI headers). All Firebase Auth calls are routed
+// through RNFBAuthHelper instead. See docs/ios-spm.md and
+// okf-bundle/ios-spm-native-imports.md.
 #import <Foundation/Foundation.h>
 #import "RNFBAuthTurboModules.h"
 
 @interface RNFBAuthModule : NSObject <NativeRNFBTurboAuthSpec>
 @end
-
-extern NSString* const AuthErrorCode_toJSErrorCode[];
-NSString* const AuthErrorCode_toJSErrorCode[] = {
-    [FIRAuthErrorCodeInvalidCustomToken] = @"invalid-custom-token",
-    [FIRAuthErrorCodeCustomTokenMismatch] = @"custom-token-mismatch",
-    [FIRAuthErrorCodeInvalidCredential] = @"invalid-credential",
-    [FIRAuthErrorCodeUserDisabled] = @"user-disabled",
-    [FIRAuthErrorCodeOperationNotAllowed] = @"operation-not-allowed",
-    [FIRAuthErrorCodeEmailAlreadyInUse] = @"email-already-in-use",
-    [FIRAuthErrorCodeInvalidEmail] = @"invalid-email",
-    [FIRAuthErrorCodeWrongPassword] = @"wrong-password",
-    [FIRAuthErrorCodeTooManyRequests] = @"too-many-requests",
-    [FIRAuthErrorCodeUserNotFound] = @"user-not-found",
-    [FIRAuthErrorCodeAccountExistsWithDifferentCredential] =
-        @"account-exists-with-different-credential",
-    [FIRAuthErrorCodeRequiresRecentLogin] = @"requires-recent-login",
-    [FIRAuthErrorCodeProviderAlreadyLinked] = @"provider-already-linked",
-    [FIRAuthErrorCodeNoSuchProvider] = @"no-such-provider",
-    [FIRAuthErrorCodeInvalidUserToken] = @"invalid-user-token",
-    [FIRAuthErrorCodeNetworkError] = @"network-request-failed",
-    [FIRAuthErrorCodeUserTokenExpired] = @"user-token-expired",
-    [FIRAuthErrorCodeInvalidAPIKey] = @"invalid-api-key",
-    [FIRAuthErrorCodeUserMismatch] = @"user-mismatch",
-    [FIRAuthErrorCodeCredentialAlreadyInUse] = @"credential-already-in-use",
-    [FIRAuthErrorCodeWeakPassword] = @"weak-password",
-    [FIRAuthErrorCodeAppNotAuthorized] = @"app-not-authorized",
-    [FIRAuthErrorCodeExpiredActionCode] = @"expired-action-code",
-    [FIRAuthErrorCodeInvalidActionCode] = @"invalid-action-code",
-    [FIRAuthErrorCodeInvalidMessagePayload] = @"invalid-message-payload",
-    [FIRAuthErrorCodeInvalidSender] = @"invalid-sender",
-    [FIRAuthErrorCodeInvalidRecipientEmail] = @"invalid-recipient-email",
-    [FIRAuthErrorCodeMissingEmail] = @"invalid-email",
-    [FIRAuthErrorCodeMissingIosBundleID] = @"missing-ios-bundle-id",
-    [FIRAuthErrorCodeMissingAndroidPackageName] = @"missing-android-pkg-name",
-    [FIRAuthErrorCodeUnauthorizedDomain] = @"unauthorized-domain",
-    [FIRAuthErrorCodeInvalidContinueURI] = @"invalid-continue-uri",
-    [FIRAuthErrorCodeMissingContinueURI] = @"missing-continue-uri",
-    [FIRAuthErrorCodeMissingPhoneNumber] = @"missing-phone-number",
-    [FIRAuthErrorCodeInvalidPhoneNumber] = @"invalid-phone-number",
-    [FIRAuthErrorCodeMissingVerificationCode] = @"missing-verification-code",
-    [FIRAuthErrorCodeInvalidVerificationCode] = @"invalid-verification-code",
-    [FIRAuthErrorCodeMissingVerificationID] = @"missing-verification-id",
-    [FIRAuthErrorCodeInvalidVerificationID] = @"invalid-verification-id",
-    [FIRAuthErrorCodeMissingAppCredential] = @"missing-app-credential",
-    [FIRAuthErrorCodeInvalidAppCredential] = @"invalid-app-credential",
-    [FIRAuthErrorCodeSessionExpired] = @"code-expired",
-    [FIRAuthErrorCodeQuotaExceeded] = @"quota-exceeded",
-    [FIRAuthErrorCodeMissingAppToken] = @"missing-apns-token",
-    [FIRAuthErrorCodeNotificationNotForwarded] = @"notification-not-forwarded",
-    [FIRAuthErrorCodeAppNotVerified] = @"app-not-verified",
-    [FIRAuthErrorCodeCaptchaCheckFailed] = @"captcha-check-failed",
-    [FIRAuthErrorCodeWebContextAlreadyPresented] = @"cancelled-popup-request",
-    [FIRAuthErrorCodeWebContextCancelled] = @"popup-closed-by-user",
-    [FIRAuthErrorCodeAppVerificationUserInteractionFailure] =
-        @"app-verification-user-interaction-failure",
-    [FIRAuthErrorCodeInvalidClientID] = @"invalid-oauth-client-id",
-    [FIRAuthErrorCodeWebNetworkRequestFailed] = @"network-request-failed",
-    [FIRAuthErrorCodeWebInternalError] = @"internal-error",
-    [FIRAuthErrorCodeNullUser] = @"null-user",
-    [FIRAuthErrorCodeKeychainError] = @"keychain-error",
-    [FIRAuthErrorCodeInternalError] = @"internal-error",
-    [FIRAuthErrorCodeMalformedJWT] = @"malformed-jwt",
-    [FIRAuthErrorCodeSecondFactorRequired] = @"multi-factor-auth-required"};
