@@ -153,7 +153,6 @@ The `#elif __has_include(<Module/Module-Swift.h>)` branch already added to the f
 | `packages/app/ios/RNFBApp/RCTConvert+FIRApp.h` | `FirebaseCore/FirebaseCore.h` |
 | `packages/app/ios/RNFBApp/RCTConvert+FIROptions.h` | `FirebaseCore/FirebaseCore.h` |
 | `packages/app/ios/RNFBApp/RNFBSharedUtils.h` | `FirebaseCore/FirebaseCore.h` |
-| `packages/crashlytics/ios/RNFBCrashlytics/RNFBCrashlyticsInitProvider.h` | `FirebaseCoreExtension/FIRLibrary.h` |
 | `packages/functions/ios/RNFBFunctions/RNFBFunctionsCallHandler.swift` | N/A — Swift `import`, not subject to this bug class |
 
 **Outstanding — still unsafe, not yet fixed:**
@@ -161,6 +160,7 @@ The `#elif __has_include(<Module/Module-Swift.h>)` branch already added to the f
 | File | Status |
 |------|--------|
 | `packages/auth/ios/RNFBAuth/RNFBAuthModule.mm` | Blocked — every edit attempt (`StrReplace`) on this specific ~2000-line file has been rejected by local write hooks (`doc-file-warning`, `governance-capture`, `config-protection`, `mcp-health-check`) returning "invalid JSON"; environmental, not content-related (ruled out secret-pattern false positives). Needs a maintainer or a different tool/session to apply the same `#elif __has_include(<FirebaseAuth/FirebaseAuth.h>)` branch used in `RNFBAuthModule.h`. |
+| `packages/crashlytics/ios/RNFBCrashlytics/RNFBCrashlyticsInitProvider.h` | Newly discovered during `yarn tests:ios:build` after the storage helper-class fix landed: `__has_include(<FirebaseCoreExtension/FIRLibrary.h>)` is false in this repo's hybrid SPM+CocoaPods build (RNFBApp takes `FirebaseCore`/`FirebaseInstallations` via SPM while Crashlytics still resolves `Firebase/Crashlytics` via CocoaPods, so the transitively-pulled CocoaPods `FirebaseCoreExtension` module map isn't reachable from this header's include context), so it falls to `@import FirebaseCore; @import FirebaseCoreExtension;`, which fails with "C++ modules disabled" when this header is pulled into `RNFBCrashlyticsModule.mm`. Previously mis-classified as "already safe" above — the 2-path assumption (module-specific header always resolves) does not hold for `FirebaseCoreExtension` in this hybrid setup. Not yet fixed; likely needs the same helper-class delegation pattern, scoped to the two `FIRLibrary`/`FIRComponent`-typed methods in `RNFBCrashlyticsInitProvider`. |
 
 ## Verifying no regressions
 
