@@ -8,7 +8,7 @@ timestamp: 2026-07-10T00:00:00Z
 
 # Monorepo tooling — rollout work queue
 
-> **IN PROGRESS (2026-07-10):** Durable docs landed + adversarial-review revisions applied (**MT0.2**). **Next pickup: MT0.0** (update Lerna to current), then **MT0.1** (dependency-cruiser `lint:deps`). Phases MT1–MT4 pending; **MT-WATCH** deferred (gap-analysis pre-phase); **MTV** gated on earlier phases.
+> **IN PROGRESS (2026-07-10):** Durable docs landed + adversarial-review revisions applied (**MT0.2**); **MT0.0** ready to commit as `build(deps): pin nx for lerna runner`. **Next pickup: MT0.1** (dependency-cruiser `lint:deps`). Phases MT1–MT4 pending; **MT-WATCH** deferred (gap-analysis pre-phase); **MTV** gated on earlier phases.
 > **Goal/order:** update Lerna → guardrails first (cycle lint, docs, benchmark) → deterministic cached prepare (graph + `nx.json` incl. complete outputs + scoped inputs + no-cloud + `ai` split) → declaration maps → dependency-rule hardening → full validation. Dev watch / e2e-rerun is **deferred** to a later gap-analysis pre-phase (not on the critical path).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md). Work types / tiers / gate field ids: [iteration vocabulary](../testing/iteration-vocabulary.md). **Loop, gates, host rule, harness:** [change authoring workflow](../testing/change-authoring-workflow.md) — not restated. **Agent commands:** [agent command policy](../testing/agent-command-policy.md) only — no `yarn workspace … prepare`, no Jet probes.
@@ -66,7 +66,7 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
 
 ### MT0.0 — Update Lerna to current (prerequisite)
 
-- **next_work_type:** `implementation` · **validation_tier:** `unit-focused` · gates: impl `open`, review `open`, commit `open` · **commit_subject:** `build(deps): update lerna to current`
+- **next_work_type:** `commit` · **validation_tier:** `area-focused` · gates: impl `closed`, review `closed`, commit `closed` · **commit_subject:** `build(deps): refresh nx for lerna runner`
 - **Do:**
   - Bump `lerna` to the latest release in root `devDependencies`; refresh `yarn.lock`. This pulls a current bundled `nx` ([MonoTool-AD-1 prerequisite](architecture-decisions.md#monotool-ad-1--nx-local-cache-via-the-lerna-runner-no-turborepo-no-nx-cloud--accepted)).
   - Confirm the bundled `nx` version supports the `nx.json` keys used in MT1 (`neverConnectToCloud`, `namedInputs`, per-target `cache`/`inputs`/`outputs`) and includes the `nx watch --all --initialRun` fix (nx PR #32282) needed by the deferred MT-WATCH.
@@ -74,6 +74,47 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
   - `yarn` installs cleanly; `yarn lerna:prepare` still exits 0 (behavior unchanged pre-`nx.json`).
   - `yarn lint`, `yarn tsc:compile`, `yarn tests:jest` remain green.
   - Record the resulting `lerna` + bundled `nx` versions in a note (feeds MT1/MT-WATCH version checks).
+- **Implementation evidence (unit-focused, 2026-07-10):**
+  - Change: `lerna` was already current at `9.0.7`; refreshed transitive `nx` / `@nx/devkit` from `22.1.3` → `22.7.6` via **lockfile refresh** (no root `resolutions` pins; Lerna's `>=21.5.3 <23.0.0` range resolves to latest 22.x).
+  - Files changed: `yarn.lock` (Nx-family bump only; no `package.json` pin).
+  - Version evidence: `lerna` `9.0.7` → `9.0.7`; bundled `nx` `22.1.3` → `22.7.6`; `nx-schema.json` includes `neverConnectToCloud`, `namedInputs`, and per-target `cache`/`inputs`/`outputs`.
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `yarn` | 0 | Clean install; peer warnings only |
+    | `yarn lerna:prepare` | 0 | 20 projects prepared successfully |
+    | `yarn lint` | 0 | JS + Android + iOS lint/checks green |
+    | `yarn tsc:compile` | 0 | Root TS compile clean |
+    | `yarn tests:jest` | 0 | 82 suites / 1172 tests passed; log `/tmp/mt0-jest.log` |
+- **Independent-review findings (area-focused, 2026-07-10):**
+  - **Serious (initial):** first pass used `resolutions` for `nx` only; `@nx/devkit` skewed at `22.1.3`. Remediation replaced pins with lockfile refresh (no root resolutions); Nx-family aligns at `22.7.6`.
+  - **Minor:** commit subject updated to `build(deps): refresh nx for lerna runner`.
+  - Review validation reran green before finding: `yarn` 0 (`/tmp/mt0-review-yarn.log`), `yarn lerna:prepare` 0, `yarn lint` 0 (`/tmp/mt0-review-lint.log`), `yarn tsc:compile` 0 (`/tmp/mt0-review-tsc.log`), `yarn tsc:compile:consumer` 0 (`/tmp/mt0-review-tsc-consumer.log`), `yarn tests:jest` 0 (`/tmp/mt0-review-jest.log`, 82 suites / 1172 tests). Coverage evidence: n/a (no `packages/*/lib/**` or native bridge sources).
+- **Remediation evidence (unit-focused, 2026-07-10):**
+  - Change: removed `nx` / `@nx/devkit` `resolutions`; `yarn install` lockfile refresh aligns all Nx-family packages at `22.7.6` (no `22.1.3` entries remain).
+  - Version evidence: `lerna` `9.0.7` unchanged; `nx` `22.7.6`; `@nx/devkit` `22.7.6`; `@nx/nx-darwin-arm64` `22.7.6`; `nx-schema.json` keys present; `nx watch --all --initialRun` supported at `22.7.6` (>= 22.6.0 threshold).
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `yarn` | 0 | Clean install; peer warnings only; log `/tmp/mt0-remediation-yarn.log` |
+    | `yarn lerna:prepare` | 0 | 20 projects prepared successfully; log `/tmp/mt0-remediation-lerna-prepare.log` |
+    | `yarn lint` | 0 | JS + Android + iOS lint/checks green; log `/tmp/mt0-remediation-lint.log` |
+    | `yarn tsc:compile` | 0 | Root TS compile clean; log `/tmp/mt0-remediation-tsc.log` |
+    | `yarn tests:jest` | 0 | 82 suites / 1172 tests passed; log `/tmp/mt0-remediation-jest.log` |
+    | `yarn tsc:compile:consumer` | 0 | Consumer TS compile clean; log `/tmp/mt0-remediation-tsc-consumer.log` |
+- **Independent-review evidence after remediation (area-focused, 2026-07-10):**
+  - Findings: none. Serious `@nx/devkit` skew fixed; no `22.1.3` Nx-family entries remain in `yarn.lock`; `nx`, `@nx/devkit`, and all `@nx/nx-*` platform packages resolve to `22.7.6`.
+  - Diff scope verified: `package.json` unchanged by Nx pinning; `lerna` remains `^9.0.7` / CLI `9.0.7`; lockfile churn is Nx-family transitive updates, not unrelated scope.
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `yarn` | 0 | Clean install + postinstall prepare; log `/tmp/mt0-fresh-review-yarn.log` |
+    | `yarn lerna:prepare` | 0 | 20 projects prepared |
+    | `yarn lint` | 0 | JS + Android + iOS checks green; log `/tmp/mt0-fresh-review-lint.log` |
+    | `yarn tsc:compile` | 0 | Root TS compile; log `/tmp/mt0-fresh-review-tsc.log` |
+    | `yarn tests:jest` | 0 | 82 suites / 1172 tests; log `/tmp/mt0-fresh-review-jest.log` |
+    | `yarn tsc:compile:consumer` | 0 | Consumer TS compile; log `/tmp/mt0-fresh-review-tsc-consumer.log` |
+  - Coverage evidence: n/a (no `packages/*/lib/**` or native bridge sources).
 
 ### MT0.1 — dependency-cruiser `lint:deps`
 
@@ -171,7 +212,7 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
 
 | Item | impl | review | commit | next_work_type |
 |------|------|--------|--------|----------------|
-| MT0.0 | open | open | open | `implementation` |
+| MT0.0 | closed | closed | closed | `commit` |
 | MT0.1 | open | open | open | `implementation` |
 | MT0.2 | closed | n/a | `docs: add monorepo tooling OKF bundle` | `commit` |
 | MT0.3 | open | open | open | `implementation` |
