@@ -11,6 +11,7 @@
     "build:all:build": "lerna run build",
     "test:functions:build": "cd .github/workflows/scripts/functions && yarn build",
     "compare:types": "cd .github/scripts/compare-types && yarn install && yarn compare",
+    "attw:check": "cd .github/scripts/attw && yarn install && yarn check",
     "codegen:all": "lerna run codegen",
     "codegen:verify": "node ./scripts/codegen-verify.mjs && git diff --exit-code -- 'packages/*/android/**/generated/**' 'packages/*/ios/generated/**'",
     "lint": "yarn lint:js && yarn lint:deps && yarn lint:android && yarn lint:ios:check",
