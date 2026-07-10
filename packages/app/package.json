@@ -162,5 +162,18 @@
   "eslintIgnore": [
     "node_modules/",
     "dist/"
-  ]
+  ],
+  "nx": {
+    "targets": {
+      "prepare": {
+        "outputs": [
+          "{projectRoot}/dist/**",
+          "{projectRoot}/plugin/build/**",
+          "{projectRoot}/lib/version.ts",
+          "{projectRoot}/ios/RNFBApp/RNFBVersion.m",
+          "{projectRoot}/android/src/reactnative/java/io/invertase/firebase/app/ReactNativeFirebaseVersion.java"
+        ]
+      }
+    }
+  }
 }

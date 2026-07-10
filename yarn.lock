@@ -5773,6 +5773,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/ai@workspace:packages/ai"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     "@react-native-firebase/app-check": "npm:25.1.0"
     "@react-native-firebase/auth": "npm:25.1.0"
     "@types/text-encoding": "npm:^0.0.40"
@@ -5790,6 +5791,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/analytics@workspace:packages/analytics"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.41.0"
     superstruct: "npm:^2.0.2"
@@ -5807,6 +5809,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/app-check@workspace:packages/app-check"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.41.0"
     typescript: "npm:^6.0.3"
@@ -5823,6 +5826,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/app-distribution@workspace:packages/app-distribution"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.41.0"
   peerDependencies:
@@ -5863,6 +5867,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/auth@workspace:packages/auth"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     "@types/plist": "npm:^3.0.5"
     expo: "npm:^55.0.18"
     plist: "npm:^3.1.1"
@@ -5880,6 +5885,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/crashlytics@workspace:packages/crashlytics"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.41.0"
     stacktrace-js: "npm:^2.0.2"
@@ -5897,6 +5903,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/database@workspace:packages/database"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     react-native-builder-bob: "npm:^0.41.0"
   peerDependencies:
     "@react-native-firebase/app": 25.1.0
@@ -5907,6 +5914,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/firestore@workspace:packages/firestore"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     react-native-builder-bob: "npm:^0.41.0"
     react-native-url-polyfill: "npm:3.0.0"
   peerDependencies:
@@ -5918,6 +5926,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/functions@workspace:packages/functions"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     "@react-native-firebase/private-tests-firebase-functions": "npm:^0.0.1"
     react-native-builder-bob: "npm:^0.41.0"
     typescript: "npm:^6.0.3"
@@ -5930,6 +5939,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/in-app-messaging@workspace:packages/in-app-messaging"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     react-native-builder-bob: "npm:^0.41.0"
   peerDependencies:
     "@react-native-firebase/analytics": 25.1.0
@@ -5941,6 +5951,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/installations@workspace:packages/installations"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     react-native-builder-bob: "npm:^0.40.13"
   peerDependencies:
     "@react-native-firebase/app": 25.1.0
@@ -5951,6 +5962,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/messaging@workspace:packages/messaging"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.41.0"
     typescript: "npm:^6.0.3"
@@ -5967,6 +5979,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/ml@workspace:packages/ml"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     react-native-builder-bob: "npm:^0.41.0"
   peerDependencies:
     "@react-native-firebase/app": 25.1.0
@@ -5977,6 +5990,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/perf@workspace:packages/perf"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.40.13"
   peerDependencies:
@@ -5992,6 +6006,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/phone-number-verification@workspace:packages/phone-number-verification"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     react-native-builder-bob: "npm:^0.41.0"
     typescript: "npm:^6.0.3"
   peerDependencies:
@@ -6010,6 +6025,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/remote-config@workspace:packages/remote-config"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     "@types/text-encoding": "npm:^0.0.40"
     react-native-builder-bob: "npm:^0.41.0"
     react-native-fetch-api: "npm:^3.0.0"
@@ -6026,6 +6042,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/storage@workspace:packages/storage"
   dependencies:
+    "@react-native-firebase/app": "npm:25.1.0"
     react-native-builder-bob: "npm:^0.41.0"
   peerDependencies:
     "@react-native-firebase/app": 25.1.0

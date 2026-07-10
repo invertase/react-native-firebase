@@ -31,7 +31,6 @@ Repo root. **Agents:** [agent command policy](agent-command-policy.md) — only 
 ```bash
 yarn                                  # install + postinstallDev (includes lerna:prepare)
 yarn lerna:prepare                    # after packages/*/lib/** edits — transpiles lib → dist/module via each package prepare target
-yarn lerna run prepare --scope @react-native-firebase/<pkg>   # single package only when needed
 yarn tsc:compile
 yarn tsc:compile:consumer
 ```

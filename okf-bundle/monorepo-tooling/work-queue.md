@@ -8,7 +8,7 @@ timestamp: 2026-07-10T00:00:00Z
 
 # Monorepo tooling — rollout work queue
 
-> **IN PROGRESS (2026-07-10):** **MT0.0–MT0.3** committed. **Next pickup: MT1** (deterministic cached prepare). Phases MT2–MT4 pending; **MT-WATCH** deferred; **MTV** gated on earlier phases.
+> **IN PROGRESS (2026-07-10):** **MT0.0–MT0.3** committed; **MT1** ready to commit. **Next pickup: MT2** (declaration maps). Phases MT4 pending; **MT-WATCH** deferred; **MTV** gated on earlier phases.
 > **Goal/order:** update Lerna → guardrails first (cycle lint, docs, benchmark) → deterministic cached prepare (graph + `nx.json` incl. complete outputs + scoped inputs + no-cloud + `ai` split) → declaration maps → dependency-rule hardening → full validation. Dev watch / e2e-rerun is **deferred** to a later gap-analysis pre-phase (not on the critical path).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md). Work types / tiers / gate field ids: [iteration vocabulary](../testing/iteration-vocabulary.md). **Loop, gates, host rule, harness:** [change authoring workflow](../testing/change-authoring-workflow.md) — not restated. **Agent commands:** [agent command policy](../testing/agent-command-policy.md) only — no `yarn workspace … prepare`, no Jet probes.
@@ -205,7 +205,7 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
 
 ### MT1 — Deterministic cached prepare
 
-- **next_work_type:** `implementation` · **validation_tier:** `unit-focused` · gates: impl `open`, review `open`, commit `open` · **commit_subject:** `build(deps): enforce package build order and enable nx prepare cache`
+- **next_work_type:** `commit` · **validation_tier:** `area-focused` · gates: impl `closed`, review `closed`, commit `closed` · **commit_subject:** `build(deps): enforce package build order and enable nx prepare cache`
 - **Do:**
   - Add `"@react-native-firebase/app": "<version>"` to `devDependencies` of the **17 packages** = every package except `app` and `vertexai` (16 plain satellites + `ai`); `vertexai` orders transitively via its `ai` dependency ([MonoTool-AD-3](architecture-decisions.md#monotool-ad-3--build-order-via-devdependencies-not-manual-phase-scripts--accepted); counts owned by [prepare-and-cache § graph](prepare-and-cache.md#package-dependency-graph)).
   - Add `nx.json` — [design](prepare-and-cache.md#nx-local-cache): `neverConnectToCloud: true`; `namedInputs.jsSource`; `prepare` target `dependsOn: ["^prepare"]`, `inputs: ["jsSource"]` ([MonoTool-AD-11](architecture-decisions.md#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted)), `cache: true`, `outputs` = `dist/**` + `plugin/build/**` + **`lib/version.ts`** ([MonoTool-AD-10](architecture-decisions.md#monotool-ad-10--generated-version-files-are-declared-cache-outputs-not-committed--accepted)).
@@ -224,6 +224,55 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
   - **Publish-flow check ([MonoTool-AD-2](architecture-decisions.md#monotool-ad-2--keep-lerna-for-versioning-and-publish--accepted)):** a `lerna version` **dry run** rewrites the new internal `@react-native-firebase/app` devDep ranges to the bumped version and shows no other release-flow change (no side effects).
   - `git grep vertexai-sdk-test-data` shows fixtures still gitignored; `yarn` (fresh) does **not** clone test data.
   - Optional (review discretion): one platform e2e smoke to confirm `dist/module/**` output is unchanged by the ordering change.
+- **Implementation evidence (unit-focused, 2026-07-10):**
+  - Change: 17-package `@react-native-firebase/app` devDep graph; root `nx.json` (scoped inputs/outputs, no-cloud); app nx output override; `cross-env NX_NO_CLOUD=true lerna run prepare`; AI mocks out of `prepare` into gated Jest `globalSetup`; fetch script local-clone fast path; CI `.nx/cache` restore/save + `NX_NO_CLOUD` on jest/lint/e2e jobs; validation-checklist scoped-prepare line removed.
+  - Files changed: `nx.json`, `package.json`, `packages/{app,ai,16 satellites}/package.json`, `jest.config.js`, `scripts/jest-ai-mocks-global-setup.js`, `scripts/fetch_ai_mock_responses.ts`, `.github/workflows/{tests_jest,linting,tests_e2e_*}.yml`, `okf-bundle/testing/validation-checklist.md`, `yarn.lock`.
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `yarn` | 0 | Fresh install + postinstallDev prepare (20 projects); `/tmp/mt1-yarn-fresh.log` |
+    | `yarn lerna:prepare` ×3 | 0 | Warm cache ~1.38–1.40s each; `/tmp/mt1-lerna-prepare-repeat.log` |
+    | Determinism (clean dist ×3) | 0 | `packages/app/dist/module/index.js` present; `/tmp/mt1-determinism.log` |
+    | Cache-replay (AD-10) | 0 | 20/20 cache hits; version + native files restored; `/tmp/mt1-cache-replay-*.log` |
+    | `yarn tsc:compile` | 0 | `/tmp/mt1-tsc.log` |
+    | `yarn tsc:compile:consumer` | 0 | `/tmp/mt1-tsc-consumer.log` |
+    | `yarn tests:jest` | 0 | 82 suites / 1172 tests; `/tmp/mt1-jest.log` |
+    | Non-AI jest | 0 | 59 suites / 847 tests, no network; `/tmp/mt1-jest-non-ai.log` |
+    | `yarn lint:js` + `yarn lint:deps` | 0 | `/tmp/mt1-lint-{js,deps}.log` |
+    | Benchmark (post-Nx A–D) | 0 | See `prepare-benchmark-baseline.md` § Post-Nx; logs `.tmp/prepare-benchmarks/20260710-152608/`; C **1.410s** vs pre-Nx **23.694s** (~16.8×); B **1.880s** vs **23.686s** (~12.6×); D median **1.457s** vs **23.758s** |
+    | `lerna changed` + devDep spot-check | n/a | No `--dry-run` in Lerna 9; devDeps at `25.1.0` on analytics/ai/firestore; `/tmp/mt1-lerna-changed.log` |
+    | `git grep vertexai-sdk-test-data` | 0 | Fixtures gitignored; `/tmp/mt1-git-grep-fixtures.log` |
+  - Coverage evidence: n/a (no `packages/*/lib/**` or native bridge product edits).
+  - Deviations noted: full `yarn lint` (android/ios) not run; lib-edit cache bust not directly exercised; Nx intermittent flaky-task warning on cache-replay (all exit 0).
+- **Independent-review findings (area-focused, 2026-07-10):**
+  - **Serious:** `nx.json` + `scripts/jest-ai-mocks-global-setup.js` untracked — must stage before commit.
+  - **Serious:** `shouldFetchAiMocks()` ignores CLI `--testPathIgnorePatterns=packages/ai` (Jest passes pre-CLI config to globalSetup); non-AI runs can still fetch on fresh hosts. **Fix:** inspect `process.argv` for ignore patterns containing `packages/ai`.
+  - **Minor:** non-AI validation command misleading until #2 fixed.
+  - **Nit:** do not commit `.dependency-cruiser.min.cjs`; android format warning pre-existing.
+  - Review validation: all re-runs green; cache-replay AD-10 verified 20/20 hits. Logs `/tmp/mt1-review-*.log`.
+  - **Gate:** review_gate stays **open** — remediation required.
+- **Remediation evidence (unit-focused, 2026-07-10):**
+  - Change: `getArgvTestPathIgnorePatterns()` merges CLI `--testPathIgnorePatterns` (= and space forms) with `globalConfig.testPathIgnorePatterns`; AI ignored via argv skips fetch.
+  - Files changed: `scripts/jest-ai-mocks-global-setup.js`.
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `yarn tests:jest --testPathIgnorePatterns=packages/ai` | 0 | No fetch output; `/tmp/mt1-remediation-ignore-equals.log` |
+    | `yarn tests:jest --testPathIgnorePatterns packages/ai` | 0 | No fetch output; `/tmp/mt1-remediation-ignore-space.log` |
+    | `yarn tests:jest -- packages/firestore` | 0 | No fetch; `/tmp/mt1-remediation-firestore.log` |
+    | `yarn tests:jest -- packages/ai` | 0 | Fetch invoked; `/tmp/mt1-remediation-ai-fetch.log` |
+    | `node --check scripts/jest-ai-mocks-global-setup.js` | 0 | Syntax |
+- **Independent-review evidence after remediation (area-focused, 2026-07-10):**
+  - Findings: none. Prior serious (untracked deliverables — content OK; staged at commit; globalSetup argv gating) resolved.
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `yarn lerna:prepare` | 0 | 20/20 cache hits; `/tmp/mt1-delta-review-20260710-125221.log` |
+    | Non-AI jest (ignore patterns) | 0 | Zero fetch with clone moved aside |
+    | `yarn tests:jest -- packages/ai` | 0 | Fetch invoked when AI included |
+    | `yarn tests:jest` (full) | 0 | 82 suites / 1172 tests |
+    | `yarn tsc:compile` + consumer | 0 | |
+  - Coverage evidence: n/a.
 
 ### MT2 — Declaration maps
 
@@ -273,7 +322,7 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
 | MT0.1 | closed | closed | closed | `commit` |
 | MT0.2 | closed | n/a | closed | `documentation` (landed) |
 | MT0.3 | closed | closed | closed | `commit` |
-| MT1 | open | open | open | `implementation` |
+| MT1 | closed | closed | closed | `commit` |
 | MT2 | open | open | open | `implementation` |
 | MT4 | open | open | open | `implementation` |
 | MT-WATCH | open | open | open | `gap-analysis` (deferred) |
