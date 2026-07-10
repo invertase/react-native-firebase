@@ -8,7 +8,7 @@ timestamp: 2026-07-10T00:00:00Z
 
 # Monorepo tooling — rollout work queue
 
-> **IN PROGRESS (2026-07-10):** Durable docs landed + adversarial-review revisions applied (**MT0.2**); **MT0.0** ready to commit as `build(deps): pin nx for lerna runner`. **Next pickup: MT0.1** (dependency-cruiser `lint:deps`). Phases MT1–MT4 pending; **MT-WATCH** deferred (gap-analysis pre-phase); **MTV** gated on earlier phases.
+> **IN PROGRESS (2026-07-10):** **MT0.0** committed (`build(deps): pin nx for lerna runner`); **MT0.1** ready to commit. **Next pickup: MT0.3** (benchmark baseline). Phases MT1–MT4 pending; **MT-WATCH** deferred; **MTV** gated on earlier phases.
 > **Goal/order:** update Lerna → guardrails first (cycle lint, docs, benchmark) → deterministic cached prepare (graph + `nx.json` incl. complete outputs + scoped inputs + no-cloud + `ai` split) → declaration maps → dependency-rule hardening → full validation. Dev watch / e2e-rerun is **deferred** to a later gap-analysis pre-phase (not on the critical path).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md). Work types / tiers / gate field ids: [iteration vocabulary](../testing/iteration-vocabulary.md). **Loop, gates, host rule, harness:** [change authoring workflow](../testing/change-authoring-workflow.md) — not restated. **Agent commands:** [agent command policy](../testing/agent-command-policy.md) only — no `yarn workspace … prepare`, no Jet probes.
@@ -118,7 +118,7 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
 
 ### MT0.1 — dependency-cruiser `lint:deps`
 
-- **next_work_type:** `implementation` · **validation_tier:** `unit-focused` · gates: impl `open`, review `open`, commit `open` · **commit_subject:** `build(deps): add dependency-cruiser lint:deps for lib import graph`
+- **next_work_type:** `commit` · **validation_tier:** `area-focused` · gates: impl `closed`, review `closed`, commit `closed` · **commit_subject:** `build(deps): add dependency-cruiser lint:deps for lib import graph`
 - **Do:**
   - Add `dependency-cruiser` devDependency (root).
   - Add `.dependency-cruiser.cjs` with rule `no-circular` on `packages/*/lib/**` (allowlist + `not-to-own-dist` hardening deferred to MT4). **Scope the config now** ([design](prepare-and-cache.md#dependency-cycle-linting)): `doNotFollow`/`exclude` for `node_modules`, `packages/*/dist/**`, `packages/*/__tests__/**`, `packages/*/e2e/**`; set `options.tsConfig` + `enhancedResolveOptions` so the `@react-native-firebase/*` path aliases resolve.
@@ -131,8 +131,48 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
   - `yarn lint` (full) still exits 0.
   - Introducing a deliberate temporary cycle makes `yarn lint:deps` exit non-zero (then revert).
   - CI lint job runs the step.
+- **Implementation evidence (unit-focused, 2026-07-10):**
+  - Change: added `dependency-cruiser@17.4.3`; new `.dependency-cruiser.cjs` with scoped inter-package `no-circular` on `packages/*/lib/**`, excludes for `node_modules`/`dist`/`__tests__`/`e2e`, TS path-alias resolution via generated `tsconfig.depcruise.json`; root `lint:deps` wired into `yarn lint`; CI step in `.github/workflows/linting.yml`; OKF validation gates updated in `validation-checklist.md` + `change-authoring-workflow.md`.
+  - Files changed: `package.json`, `yarn.lock`, `.dependency-cruiser.cjs`, `.github/workflows/linting.yml`, `okf-bundle/testing/validation-checklist.md`, `okf-bundle/testing/change-authoring-workflow.md`.
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `yarn lint:deps` | 0 | 32 modules / 74 deps; log `/tmp/mt01-lint-deps.log` |
+    | `yarn lint` | 0 | JS + deps + Android + iOS; log `/tmp/mt01-lint.log` |
+    | temporary cycle → `yarn lint:deps` | 3 | app ↔ crashlytics cycle detected; log `/tmp/mt01-lint-deps-cycle.log` |
+    | post-revert `yarn lint:deps` | 0 | temp import reverted; clean tree restored |
+  - Resolution sanity: `packages/analytics/` → `packages/app/` edge resolved (`@react-native-firebase/app/dist/module/common`, types `aliased-tsconfig-paths`); 0 unresolved from analytics; log `/tmp/mt01-resolution-sanity.log`.
+  - Follow-ups flagged by implementer: generated `tsconfig.depcruise.json` each run (consider `.gitignore`); graph currently analyzes compiled `lib/**/*.js` (excludes `.ts`); CI runs `lint:deps` twice via dedicated step + `yarn lint`.
+- **Independent-review findings (area-focused, 2026-07-10):**
+  - **Serious:** config excludes authored `lib/**/*.ts` and effectively analyzes ephemeral/committed `.js` sidecars, not the real TS import graph; on a clean CI tree without local compile sidecars, MT0.1 acceptance is not proven. Remediation required: remove `.ts` exclude, cruise authored TS under `packages/*/lib/**`, and re-validate on a clean tree.
+  - **Minor:** gitignore generated `tsconfig.depcruise.json`; tighten cruise scope/excludes (`plugin/__tests__`, non-`lib/**` noise); deduplicate CI `lint:deps` invocation (dedicated step or `yarn lint`, not both).
+  - Review validation: `yarn lint:deps` 0 (`/tmp/mt01-review-lint-deps.log`); `yarn lint`/`yarn lint:js` failed on this host due to ephemeral untracked `packages/*/lib/**/*.js` sidecars (~19.5k eslint errors), outside MT0.1 frozen scope but relevant to clean-tree proof. Coverage evidence: n/a.
+- **Remediation evidence (unit-focused, 2026-07-10):**
+  - Change: TS-first depcruise config (`includeOnly` on `packages/*/lib/**/*.ts(x)`, `moduleResolution: 'node'`, `noEmit: true`); scoped excludes; gitignored `tsconfig.depcruise.json`; `lint:deps` scoped to `packages/*/lib`; CI deduped to single `yarn lint` step.
+  - Files changed: `.dependency-cruiser.cjs`, `.gitignore`, `package.json`, `.github/workflows/linting.yml`, `okf-bundle/testing/validation-checklist.md`.
+  - Validation evidence:
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `yarn lint:deps` (clean TS tree) | 0 | 19 modules / 23 deps; log `/tmp/mt01-remediation-lint-deps-clean.log` |
+    | resolution sanity (analytics → app) | 0 | `@react-native-firebase/app` → `packages/app/` via `aliased-tsconfig-paths`; log `/tmp/mt01-remediation-resolution-sanity.log` |
+    | temp cycle → `yarn lint:deps` | 3 | app ↔ crashlytics; log `/tmp/mt01-remediation-lint-deps-cycle.log`; reverted |
+    | post-revert `yarn lint:deps` | 0 | log `/tmp/mt01-remediation-lint-deps-post-revert.log` |
+    | `yarn lint:js` | 0 | ESLint green |
+    | `yarn lint` | 1 | `lint:deps` passes; `lint:android` failed (`google-java-format` exit 1) — implementer claims pre-existing Android formatter flake unrelated to MT0.1 |
+  - Clean-tree proof: validation used authored TS only (ephemeral untracked `lib/**/*.js` sidecars temporarily moved aside; tracked memidb `.js` retained).
+- **Independent-review evidence after remediation (area-focused, 2026-07-10):**
+  - Findings: no serious findings. One minor local-only caveat: with ephemeral untracked `lib/**/*.js` sidecars present, standalone `yarn lint:deps` can vacuously pass (0 deps cruised); mitigated because `yarn lint` runs `lint:js` first and CI uses clean checkout.
+  - Validation evidence (clean TS tree):
+    | Command | Exit | Notes |
+    |---------|------|-------|
+    | `yarn lint:deps` | 0 | 19 modules / 23 deps cruised; log `/tmp/mt01-fresh-review-lint-deps-clean.log` |
+    | resolution sanity (analytics → app) | 0 | `@react-native-firebase/app` → `packages/app/` |
+    | `yarn lint:js` | 0 | log `/tmp/mt01-fresh-review-lint-js` |
+    | `yarn lint` | 0 | js + deps + android + ios; log `/tmp/mt01-fresh-review-lint-clean.log` |
+    | `yarn lint:android` (isolated) | 0 | prior android flake not reproduced |
+  - Coverage evidence: n/a.
 
-### MT0.2 — Durable OKF docs — **ready to commit**
+### MT0.2 — Durable OKF docs — **landed**
 
 - **work type:** `documentation` · **validation_tier:** none · gates: n/a · **commit_subject:** `docs: add monorepo tooling OKF bundle`
 - **Do:** `okf-bundle/monorepo-tooling/{index.md,architecture-decisions.md,prepare-and-cache.md,work-queue.md}`; add a "Monorepo tooling" entry to [`okf-bundle/index.md`](../index.md).
@@ -213,8 +253,8 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
 | Item | impl | review | commit | next_work_type |
 |------|------|--------|--------|----------------|
 | MT0.0 | closed | closed | closed | `commit` |
-| MT0.1 | open | open | open | `implementation` |
-| MT0.2 | closed | n/a | `docs: add monorepo tooling OKF bundle` | `commit` |
+| MT0.1 | closed | closed | closed | `commit` |
+| MT0.2 | closed | n/a | closed | `documentation` (landed) |
 | MT0.3 | open | open | open | `implementation` |
 | MT1 | open | open | open | `implementation` |
 | MT2 | open | open | open | `implementation` |
