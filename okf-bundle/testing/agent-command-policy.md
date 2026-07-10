@@ -29,7 +29,7 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 | Install / refresh deps | `yarn` | `yarn workspace …`, `npm install` in a package, `yarn install` in `tests/` alone for root deps |
 | Transpile `lib/**` → `dist/module/**` (all packages) | `yarn lerna:prepare` | `yarn workspace @react-native-firebase/* prepare`, `cd packages/<pkg> && yarn prepare`, `cd packages/<pkg> && yarn run build` |
 | Transpile one package | `yarn lerna run prepare --scope @react-native-firebase/<pkg>` | `yarn workspace @react-native-firebase/<pkg> prepare` |
-| After `packages/*/lib/**` edits (Metro / native embed) | `yarn lerna:prepare` then platform `:build` when [running e2e § Rules #3](running-e2e.md#rules) requires | ad-hoc `bob`, `babel`, or package-scoped prepare |
+| After `packages/*/lib/**` edits (Metro serves `dist/module/**`) | `yarn lerna:prepare`; Metro restart when already running ([running e2e § prepare completion gate](running-e2e.md#prepare-completion-gate-blocking)) — platform `:build` only when [running e2e § Rules #3](running-e2e.md#rules) requires native/codegen/instrumentation, not for JS alone | ad-hoc `bob`, `babel`, or package-scoped prepare |
 | TS/JS validation sequence | [validation checklist](validation-checklist.md) | ad-hoc `tsc` in package dirs unless listed there |
 | JS lint (implementation / review gate) | `yarn lint:js`, `yarn lint:js --fix` | package-scoped `eslint`, `npx eslint` |
 | Docs lint (when docs in diff) | `yarn lint:markdown`, `yarn lint:spellcheck` | ad-hoc prettier/eslint on single files |
@@ -39,7 +39,7 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 
 ### Prepare / transpile (detail)
 
-`yarn lerna:prepare` runs each package's **`prepare`** script (`build` → `compile` via react-native-builder-bob). That is what produces **`dist/module/**`** consumed by Metro and native embed paths.
+`yarn lerna:prepare` runs each package's **`prepare`** script (`build` → `compile` via react-native-builder-bob). That is what produces **`dist/module/**`** consumed by Metro in debug e2e — only **release** builds pre-bundle/embed JS ([running e2e § Rules #3](running-e2e.md#rules)).
 
 - **`yarn compile`** (package script) is **not** a standalone agent entrypoint — it is invoked **inside** `prepare` via lerna. Do not run `cd packages/<pkg> && yarn compile` for handoff unless [validation checklist](validation-checklist.md) explicitly adds an exception (none today).
 - **`yarn`** at repo root runs `postinstallDev` → `yarn prepare && yarn lerna:prepare`; a fresh install already transpiles. Re-run **`yarn lerna:prepare`** after `lib/**` edits without reinstalling.
@@ -52,7 +52,7 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 
 | Do not start until prepare exits 0 | Why |
 |-----------------------------------|-----|
-| `yarn tests:*` (e2e, packager, build) | Metro and native embed read **`dist/module/**`**, not `lib/**` — partial prepare → missing modules, stale bundles |
+| `yarn tests:*` (e2e, packager, build) | Metro (debug JS) reads **`dist/module/**`**, not `lib/**` — partial prepare → missing modules, stale bundles |
 | `yarn tests:packager:jet-reset-cache` | Reset after prepare, not during it |
 | `yarn tsc:compile`, Jest, `compare:types` | May read transpiled output or assume `dist/` is current |
 | Another `yarn` / scoped prepare | Overlapping Nx/Lerna runs race on `dist/` |
