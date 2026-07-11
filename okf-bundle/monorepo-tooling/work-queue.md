@@ -8,7 +8,7 @@ timestamp: 2026-07-10T00:00:00Z
 
 # Monorepo tooling — rollout work queue
 
-> **IN PROGRESS (2026-07-10):** **MT0.0–MT4** committed. **Next pickup: MTV** (branch-wide validation). **MT-WATCH** deferred.
+> **COMPLETE (2026-07-11):** **MT0.0–MT4** + docs committed. **MTV** closed — validation + review **GREEN**; branch ready for PR. **Next pickup: MT-WATCH** (deferred) or PR.
 > **Goal/order:** update Lerna → guardrails first (cycle lint, docs, benchmark) → deterministic cached prepare (graph + `nx.json` incl. complete outputs + scoped inputs + no-cloud + `ai` split) → declaration maps → dependency-rule hardening → full validation. Dev watch / e2e-rerun is **deferred** to a later gap-analysis pre-phase (not on the critical path).
 
 Ephemeral tracker; see [OKF policy](../documentation-policy.md). Work types / tiers / gate field ids: [iteration vocabulary](../testing/iteration-vocabulary.md). **Loop, gates, host rule, harness:** [change authoring workflow](../testing/change-authoring-workflow.md) — not restated. **Agent commands:** [agent command policy](../testing/agent-command-policy.md) only — no `yarn workspace … prepare`, no Jet probes.
@@ -19,35 +19,35 @@ Durable decisions: **[architecture-decisions.md](architecture-decisions.md)**. D
 
 ## Locked decisions (index)
 
-| ADR | Decision |
-|-----|----------|
-| [MonoTool-AD-1](architecture-decisions.md#monotool-ad-1--nx-local-cache-via-the-lerna-runner-no-turborepo-no-nx-cloud--accepted) | Nx local cache via Lerna runner; no Turborepo; no Nx Cloud |
-| [MonoTool-AD-2](architecture-decisions.md#monotool-ad-2--keep-lerna-for-versioning-and-publish--accepted) | Keep Lerna for versioning + publish |
-| [MonoTool-AD-3](architecture-decisions.md#monotool-ad-3--build-order-via-devdependencies-not-manual-phase-scripts--accepted) | Build order via `devDependencies` |
-| [MonoTool-AD-4](architecture-decisions.md#monotool-ad-4--one-inlined-prepare-command-no-wrapper-script--accepted) | One inlined prepare command; no wrapper script |
-| [MonoTool-AD-5](architecture-decisions.md#monotool-ad-5--keep-react-native-builder-bob-emit-declaration-maps--accepted) | Keep bob; emit declaration maps |
-| [MonoTool-AD-6](architecture-decisions.md#monotool-ad-6--dependency-cycle-linting-via-dependency-cruiser-as-lintdeps--accepted) | dependency-cruiser as `lint:deps` |
-| [MonoTool-AD-7](architecture-decisions.md#monotool-ad-7--ai-test-fixtures-are-a-jest-prerequisite-not-a-build-step--accepted) | AI fixtures = Jest prerequisite, not build step |
-| [MonoTool-AD-8](architecture-decisions.md#monotool-ad-8--nxcache-shared-on-ci-not-on-publish--accepted) | `.nx/cache` on CI (with `NX_NO_CLOUD`), not on publish |
+| ADR                                                                                                                                    | Decision                                                                |
+| -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [MonoTool-AD-1](architecture-decisions.md#monotool-ad-1--nx-local-cache-via-the-lerna-runner-no-turborepo-no-nx-cloud--accepted)       | Nx local cache via Lerna runner; no Turborepo; no Nx Cloud              |
+| [MonoTool-AD-2](architecture-decisions.md#monotool-ad-2--keep-lerna-for-versioning-and-publish--accepted)                              | Keep Lerna for versioning + publish                                     |
+| [MonoTool-AD-3](architecture-decisions.md#monotool-ad-3--build-order-via-devdependencies-not-manual-phase-scripts--accepted)           | Build order via `devDependencies`                                       |
+| [MonoTool-AD-4](architecture-decisions.md#monotool-ad-4--one-inlined-prepare-command-no-wrapper-script--accepted)                      | One inlined prepare command; no wrapper script                          |
+| [MonoTool-AD-5](architecture-decisions.md#monotool-ad-5--keep-react-native-builder-bob-emit-declaration-maps--accepted)                | Keep bob; emit declaration maps                                         |
+| [MonoTool-AD-6](architecture-decisions.md#monotool-ad-6--dependency-cycle-linting-via-dependency-cruiser-as-lintdeps--accepted)        | dependency-cruiser as `lint:deps`                                       |
+| [MonoTool-AD-7](architecture-decisions.md#monotool-ad-7--ai-test-fixtures-are-a-jest-prerequisite-not-a-build-step--accepted)          | AI fixtures = Jest prerequisite, not build step                         |
+| [MonoTool-AD-8](architecture-decisions.md#monotool-ad-8--nxcache-shared-on-ci-not-on-publish--accepted)                                | `.nx/cache` on CI (with `NX_NO_CLOUD`), not on publish                  |
 | [MonoTool-AD-9](architecture-decisions.md#monotool-ad-9--dev-watch-rebuilds-prepare-e2e-tdd-rerun-is-event-driven-off-metro--deferred) | Dev watch + e2e rerun off Metro — **Deferred** (gap-analysis pre-phase) |
-| [MonoTool-AD-10](architecture-decisions.md#monotool-ad-10--generated-version-files-are-declared-cache-outputs-not-committed--accepted) | Generated version files are declared cache `outputs`, not committed |
-| [MonoTool-AD-11](architecture-decisions.md#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted) | Scope `prepare` cache inputs via a `jsSource` namedInput |
+| [MonoTool-AD-10](architecture-decisions.md#monotool-ad-10--generated-version-files-are-declared-cache-outputs-not-committed--accepted) | Generated version files are declared cache `outputs`, not committed     |
+| [MonoTool-AD-11](architecture-decisions.md#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted)            | Scope `prepare` cache inputs via a `jsSource` namedInput                |
 
 ---
 
 ## Phase ordering
 
-| Phase | Scope | Depends on | Why |
-|-------|-------|-----------|-----|
-| **MT0.0** | Update `lerna` to current (pulls current bundled `nx`) | — | Prereq: nx.json keys + `nx watch` fixes; cheap |
-| **MT0.1** | dependency-cruiser `lint:deps` (`no-circular`) + scoped config + CI + change-authoring gate | MT0.0 | Guardrail; cheap; catches cycles before graph edits |
-| **MT0.2** | Durable OKF docs (this bundle) | — | **Landed** (planning + adversarial-review revision) |
-| **MT0.3** | `scripts/benchmark-prepare.sh` + pre-Nx baseline numbers | MT0.0 | Baseline before cache claims |
-| **MT1** | devDependency graph (17 pkgs) + `nx.json` (scoped `inputs` + complete `outputs` + no-cloud) + inline prepare (name unchanged) + `ai` prepare split + gated AI fetch + CI `.nx/cache` (`NX_NO_CLOUD`) | MT0.3 | Deterministic, cached prepare |
-| **MT2** | `declarationMap` in base + `ai` + `vertexai` tsconfig | MT1 | IDE go-to-definition; cheap follow-on |
-| **MT4** | dependency-cruiser rule hardening (`not-to-own-dist` scoped + hub/chain allowlist) | MT1 | Enforce graph after devDeps land |
-| **MT-WATCH** | **Deferred** — gap-analysis pre-phase: dev watch + event-driven e2e rerun | MT1 | Not built today; needs detailed analysis before implementation; off critical path |
-| **MTV** | Branch-wide validation | MT1, MT2, MT4 | Merge gate (MT-WATCH not required) |
+| Phase        | Scope                                                                                                                                                                                                | Depends on    | Why                                                                               |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------------------------------------------- |
+| **MT0.0**    | Update `lerna` to current (pulls current bundled `nx`)                                                                                                                                               | —             | Prereq: nx.json keys + `nx watch` fixes; cheap                                    |
+| **MT0.1**    | dependency-cruiser `lint:deps` (`no-circular`) + scoped config + CI + change-authoring gate                                                                                                          | MT0.0         | Guardrail; cheap; catches cycles before graph edits                               |
+| **MT0.2**    | Durable OKF docs (this bundle)                                                                                                                                                                       | —             | **Landed** (planning + adversarial-review revision)                               |
+| **MT0.3**    | `scripts/benchmark-prepare.sh` + pre-Nx baseline numbers                                                                                                                                             | MT0.0         | Baseline before cache claims                                                      |
+| **MT1**      | devDependency graph (17 pkgs) + `nx.json` (scoped `inputs` + complete `outputs` + no-cloud) + inline prepare (name unchanged) + `ai` prepare split + gated AI fetch + CI `.nx/cache` (`NX_NO_CLOUD`) | MT0.3         | Deterministic, cached prepare                                                     |
+| **MT2**      | `declarationMap` in base + `ai` + `vertexai` tsconfig                                                                                                                                                | MT1           | IDE go-to-definition; cheap follow-on                                             |
+| **MT4**      | dependency-cruiser rule hardening (`not-to-own-dist` scoped + hub/chain allowlist)                                                                                                                   | MT1           | Enforce graph after devDeps land                                                  |
+| **MT-WATCH** | **Deferred** — gap-analysis pre-phase: dev watch + event-driven e2e rerun                                                                                                                            | MT1           | Not built today; needs detailed analysis before implementation; off critical path |
+| **MTV**      | Branch-wide validation                                                                                                                                                                               | MT1, MT2, MT4 | Merge gate (MT-WATCH not required)                                                |
 
 ---
 
@@ -315,11 +315,11 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
 ### MT4 — dependency-cruiser rule hardening — **gated on MT1**
 
 - **next_work_type:** `commit` · **validation_tier:** `area-focused` · gates: impl `closed`, review `closed`, commit `closed` · **commit_subject:** `build(deps): enforce package import boundaries`
-- **Do:** extend `.dependency-cruiser.cjs` ([MonoTool-AD-6](architecture-decisions.md#monotool-ad-6--dependency-cycle-linting-via-dependency-cruiser-as-lintdeps--accepted)): **`not-to-own-dist`** (forbid only *relative* `../dist/**`/`./dist/**` imports — **not** the mapped hub API `@react-native-firebase/app/dist/module/...`, which is legitimate); graph allowlist (satellites → `app` only; `ai` → `auth`/`app-check`; `vertexai` → `ai`).
+- **Do:** extend `.dependency-cruiser.cjs` ([MonoTool-AD-6](architecture-decisions.md#monotool-ad-6--dependency-cycle-linting-via-dependency-cruiser-as-lintdeps--accepted)): **`not-to-own-dist`** (forbid only _relative_ `../dist/**`/`./dist/**` imports — **not** the mapped hub API `@react-native-firebase/app/dist/module/...`, which is legitimate); graph allowlist (satellites → `app` only; `ai` → `auth`/`app-check`; `vertexai` → `ai`).
 - **Acceptance:**
   - `yarn lint:deps` exits 0 on current tree with the stricter rules (the existing `@react-native-firebase/app/dist/module/...` imports in ~15 satellites must **not** be flagged).
   - A deliberate off-graph import (e.g. `firestore` importing `auth`) fails `lint:deps` (then revert).
-  - A deliberate *relative* own-`../dist` import fails `lint:deps` (then revert).
+  - A deliberate _relative_ own-`../dist` import fails `lint:deps` (then revert).
   - `yarn lint` full still exits 0.
 - **Implementation evidence (unit-focused, 2026-07-10):**
   - Change: extended `.dependency-cruiser.cjs` with `not-to-own-dist` (module scope, same-package capture), `hub-no-internal`, `satellites-only-hub`, `ai-graph`, `vertexai-graph`; dynamic tsconfig paths for all non-hub packages; `includeOnly` widened to retain own-dist edges; collapse removed so module-scope violations survive.
@@ -363,23 +363,28 @@ Each item is one serial loop: `implementation` (unit-focused) → `independent-r
   - Written findings: viability, chosen command shapes, and a go/no-go for a follow-on implementation phase (with its own gates). If no-go, close as `documentation` (record findings) — do not force implementation.
   - `dev:watch`, if later implemented, is **human-only** — `agent-command-policy.md` keeps `yarn lerna:prepare` canonical.
 
-### MTV — Branch-wide validation — **gated on all**
+### MTV — Branch-wide validation — **closed**
 
-- **next_work_type:** `pre-merge-validation` · **validation_tier:** `full` · gates tracked at branch level · **commit_subject:** n/a (no product edit)
-- **Acceptance:** full validation per [running e2e § before merge](../testing/running-e2e.md#before-merge-pr-handoff) and [validation checklist](../testing/validation-checklist.md); clean-tree `yarn` + `yarn lerna:prepare` deterministic; `yarn lint` (incl `lint:deps`), `yarn tsc:compile`, `yarn tests:jest` green; e2e on required platforms green.
+- **next_work_type:** n/a · **validation_tier:** `full` · gates: impl `closed`, review `closed`, commit `closed` · **commit_subject:** n/a (no product edit)
+- **Status (2026-07-11):** **GREEN** — validation ([e821793c](e821793c-c586-4a43-ac25-0d7ae53c350a)) + independent review ([4361b403](4361b403-8cb6-4706-96e4-174bf77b59d2)); no critical/serious findings.
+- **Validation evidence:**
+  - Static: prepare ×3 (21 cache hits), AD-10 replay, tsc ×2, Jest 82/1172, lint/compare:types/reference:api exit 0 — `/tmp/mtv2-full-*.log`
+  - E2e: macOS **710/0/34**, iOS **848/0/85**, Android **878/0/54** — `/tmp/mtv2-full-e2e-*.log`
+  - Review: lint:deps, tsc, compare:types, prepare spot-check (20/20 hits) — `/tmp/mtv2-review-*.log`
+- **Review follow-ups (non-blocking, post-merge OK):** `app/scripts/**` in nx cache inputs; `lint:deps` in agent-command-policy registry; AD-4 scoped-prepare wording; CI cache key nit.
 
 ---
 
 ## Current gates
 
-| Item | impl | review | commit | next_work_type |
-|------|------|--------|--------|----------------|
-| MT0.0 | closed | closed | closed | `commit` |
-| MT0.1 | closed | closed | closed | `commit` |
-| MT0.2 | closed | n/a | closed | `documentation` (landed) |
-| MT0.3 | closed | closed | closed | `commit` |
-| MT1 | closed | closed | closed | `commit` |
-| MT2 | closed | closed | closed | `commit` |
-| MT4 | closed | closed | closed | `commit` |
-| MT-WATCH | open | open | open | `gap-analysis` (deferred) |
-| MTV | open | open | open | `pre-merge-validation` |
+| Item     | impl   | review | commit | next_work_type                                |
+| -------- | ------ | ------ | ------ | --------------------------------------------- |
+| MT0.0    | closed | closed | closed | `commit`                                      |
+| MT0.1    | closed | closed | closed | `commit`                                      |
+| MT0.2    | closed | n/a    | closed | `documentation` (landed)                      |
+| MT0.3    | closed | closed | closed | `commit`                                      |
+| MT1      | closed | closed | closed | `commit`                                      |
+| MT2      | closed | closed | closed | `commit`                                      |
+| MT4      | closed | closed | closed | `commit`                                      |
+| MT-WATCH | open   | open   | open   | `gap-analysis` (deferred)                     |
+| MTV      | closed | closed | closed | n/a (merge gate passed)                       |

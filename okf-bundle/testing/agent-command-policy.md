@@ -24,22 +24,22 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 
 ## Canonical registry
 
-| Intent | Command | Never use instead |
-|--------|---------|-----------------|
-| Install / refresh deps | `yarn` | `yarn workspace …`, `npm install` in a package, `yarn install` in `tests/` alone for root deps |
-| Transpile `lib/**` → `dist/module/**` (all packages) | `yarn lerna:prepare` | `yarn workspace @react-native-firebase/* prepare`, `cd packages/<pkg> && yarn prepare`, `cd packages/<pkg> && yarn run build` |
-| Transpile one package | `yarn lerna run prepare --scope @react-native-firebase/<pkg>` | `yarn workspace @react-native-firebase/<pkg> prepare` |
-| After `packages/*/lib/**` edits (Metro serves `dist/module/**`) | `yarn lerna:prepare`; Metro restart when already running ([running e2e § prepare completion gate](running-e2e.md#prepare-completion-gate-blocking)) — platform `:build` only when [running e2e § Rules #3](running-e2e.md#rules) requires native/codegen/instrumentation, not for JS alone | ad-hoc `bob`, `babel`, or package-scoped prepare |
-| TS/JS validation sequence | [validation checklist](validation-checklist.md) | ad-hoc `tsc` in package dirs unless listed there |
-| JS lint (implementation / review gate) | `yarn lint:js`, `yarn lint:js --fix` | package-scoped `eslint`, `npx eslint` |
-| Docs lint (when docs in diff) | `yarn lint:markdown`, `yarn lint:spellcheck` | ad-hoc prettier/eslint on single files |
-| E2e + coverage | [running e2e](running-e2e.md) — **only** `yarn tests:*` | `jet`, `npx jet`, `yarn jet`, `detox test`, `cd tests && …`, direct Metro/emulator starts |
-| iOS Detox framework cache rebuild | `yarn tests:ios:detox-framework-cache:rebuild` | `cd tests && yarn detox clean-framework-cache`, `cd tests && yarn detox build-framework-cache`, bare `detox …` |
-| Host pre-flight (before each `:test-cover`) | [running e2e § host-clear probes](running-e2e.md#host-clear-probes) | `pgrep`, polling `:8090`, spawn probes of Jet/Detox |
+| Intent                                                          | Command                                                                                                                                                                                                                                                                                    | Never use instead                                                                                                             |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| Install / refresh deps                                          | `yarn`                                                                                                                                                                                                                                                                                     | `yarn workspace …`, `npm install` in a package, `yarn install` in `tests/` alone for root deps                                |
+| Transpile `lib/**` → `dist/module/**` (all packages)            | `yarn lerna:prepare`                                                                                                                                                                                                                                                                       | `yarn workspace @react-native-firebase/* prepare`, `cd packages/<pkg> && yarn prepare`, `cd packages/<pkg> && yarn run build` |
+| Transpile one package                                           | `yarn lerna run prepare --scope @react-native-firebase/<pkg>`                                                                                                                                                                                                                              | `yarn workspace @react-native-firebase/<pkg> prepare`                                                                         |
+| After `packages/*/lib/**` edits (Metro serves `dist/module/**`) | `yarn lerna:prepare`; Metro restart when already running ([running e2e § prepare completion gate](running-e2e.md#prepare-completion-gate-blocking)) — platform `:build` only when [running e2e § Rules #3](running-e2e.md#rules) requires native/codegen/instrumentation, not for JS alone | ad-hoc `bob`, `babel`, or package-scoped prepare                                                                              |
+| TS/JS validation sequence                                       | [validation checklist](validation-checklist.md)                                                                                                                                                                                                                                            | ad-hoc `tsc` in package dirs unless listed there                                                                              |
+| JS lint (implementation / review gate)                          | `yarn lint:js`, `yarn lint:js --fix`                                                                                                                                                                                                                                                       | package-scoped `eslint`, `npx eslint`                                                                                         |
+| Docs lint (when docs in diff)                                   | `yarn lint:markdown`, `yarn lint:spellcheck`                                                                                                                                                                                                                                               | ad-hoc prettier/eslint on single files                                                                                        |
+| E2e + coverage                                                  | [running e2e](running-e2e.md) — **only** `yarn tests:*`                                                                                                                                                                                                                                    | `jet`, `npx jet`, `yarn jet`, `detox test`, `cd tests && …`, direct Metro/emulator starts                                     |
+| iOS Detox framework cache rebuild                               | `yarn tests:ios:detox-framework-cache:rebuild`                                                                                                                                                                                                                                             | `cd tests && yarn detox clean-framework-cache`, `cd tests && yarn detox build-framework-cache`, bare `detox …`                |
+| Host pre-flight (before each `:test-cover`)                     | [running e2e § host-clear probes](running-e2e.md#host-clear-probes)                                                                                                                                                                                                                        | `pgrep`, polling `:8090`, spawn probes of Jet/Detox                                                                           |
 
 ### Prepare / transpile (detail)
 
-`yarn lerna:prepare` runs each package's **`prepare`** script (`build` → `compile` via react-native-builder-bob). That is what produces **`dist/module/**`** consumed by Metro in debug e2e — only **release** builds pre-bundle/embed JS ([running e2e § Rules #3](running-e2e.md#rules)).
+`yarn lerna:prepare` runs each package's **`prepare`** script (`build` → `compile` via react-native-builder-bob). That is what produces **`dist/module/**`** consumed by Metro in debug e2e — only **release\*\* builds pre-bundle/embed JS ([running e2e § Rules #3](running-e2e.md#rules)).
 
 - **`yarn compile`** (package script) is **not** a standalone agent entrypoint — it is invoked **inside** `prepare` via lerna. Do not run `cd packages/<pkg> && yarn compile` for handoff unless [validation checklist](validation-checklist.md) explicitly adds an exception (none today).
 - **`yarn`** at repo root runs `postinstallDev` → `yarn prepare && yarn lerna:prepare`; a fresh install already transpiles. Re-run **`yarn lerna:prepare`** after `lib/**` edits without reinstalling.
@@ -50,12 +50,12 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 
 **`yarn`**, **`yarn lerna:prepare`**, and **`yarn lerna run prepare --scope …`** are **blocking foreground** commands. Wait for the shell to return **exit code 0** before starting **any** other command — including in the same agent turn via parallel tool calls.
 
-| Do not start until prepare exits 0 | Why |
-|-----------------------------------|-----|
-| `yarn tests:*` (e2e, packager, build) | Metro (debug JS) reads **`dist/module/**`**, not `lib/**` — partial prepare → missing modules, stale bundles |
-| `yarn tests:packager:jet-reset-cache` | Reset after prepare, not during it |
-| `yarn tsc:compile`, Jest, `compare:types` | May read transpiled output or assume `dist/` is current |
-| Another `yarn` / scoped prepare | Overlapping Nx/Lerna runs race on `dist/` |
+| Do not start until prepare exits 0        | Why                                                                                                            |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `yarn tests:*` (e2e, packager, build)     | Metro (debug JS) reads **`dist/module/**`**, not `lib/\*\*` — partial prepare → missing modules, stale bundles |
+| `yarn tests:packager:jet-reset-cache`     | Reset after prepare, not during it                                                                             |
+| `yarn tsc:compile`, Jest, `compare:types` | May read transpiled output or assume `dist/` is current                                                        |
+| Another `yarn` / scoped prepare           | Overlapping Nx/Lerna runs race on `dist/`                                                                      |
 
 **Agent rule:** one prepare invocation per message batch; wait for completion; then run the next step (Metro restart if needed → pre-flight → `:test-cover`). [Running e2e § prepare completion gate](running-e2e.md#prepare-completion-gate-blocking) is the e2e-side mirror of this rule.
 
@@ -71,14 +71,14 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 
 ## Forbidden (always)
 
-| Command | Why |
-|---------|-----|
-| `yarn workspace @react-native-firebase/* prepare` (and variants) | Not canonical; breaks root devDependency binary resolution |
-| `cd packages/<pkg> && yarn prepare` / `yarn run build` | Same trap; not the postinstall / lerna code path |
-| `yarn jet`, `npx jet`, `cd tests && yarn jet …` | [E2e agent rule](running-e2e.md#agent-rule-read-first) |
-| `detox test`, `cd tests && detox …` | E2e agent rule |
-| Ad-hoc Metro / emulator start | Use `yarn tests:packager:jet`, `yarn tests:emulator:start` |
-| Spawn / PATH probes to “test” Jet or genversion | Log triage only; fix product code and re-run canonical command |
+| Command                                                          | Why                                                            |
+| ---------------------------------------------------------------- | -------------------------------------------------------------- |
+| `yarn workspace @react-native-firebase/* prepare` (and variants) | Not canonical; breaks root devDependency binary resolution     |
+| `cd packages/<pkg> && yarn prepare` / `yarn run build`           | Same trap; not the postinstall / lerna code path               |
+| `yarn jet`, `npx jet`, `cd tests && yarn jet …`                  | [E2e agent rule](running-e2e.md#agent-rule-read-first)         |
+| `detox test`, `cd tests && detox …`                              | E2e agent rule                                                 |
+| Ad-hoc Metro / emulator start                                    | Use `yarn tests:packager:jet`, `yarn tests:emulator:start`     |
+| Spawn / PATH probes to “test” Jet or genversion                  | Log triage only; fix product code and re-run canonical command |
 
 ## Known traps
 
@@ -118,9 +118,9 @@ Gate close / push: return [validation evidence package](validation-checklist.md#
 
 ## Related docs
 
-| Topic | Owner |
-|-------|--------|
-| E2e commands, pre-flight, tiers | [running-e2e.md](running-e2e.md) |
-| Handoff validation sequence | [validation-checklist.md](validation-checklist.md) |
-| Work types and gates | [change-authoring-workflow.md](change-authoring-workflow.md) |
-| Doc / commit policy | [documentation-policy.md](../documentation-policy.md) |
+| Topic                           | Owner                                                        |
+| ------------------------------- | ------------------------------------------------------------ |
+| E2e commands, pre-flight, tiers | [running-e2e.md](running-e2e.md)                             |
+| Handoff validation sequence     | [validation-checklist.md](validation-checklist.md)           |
+| Work types and gates            | [change-authoring-workflow.md](change-authoring-workflow.md) |
+| Doc / commit policy             | [documentation-policy.md](../documentation-policy.md)        |
