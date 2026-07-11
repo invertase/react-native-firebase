@@ -26,12 +26,12 @@ Durable design for RNFB monorepo build tooling. Decisions (the "what + why") are
 
 ### Compile-time graph (what `bob`/`tsc` actually need)
 
-| Consumer | Needs built first | Evidence |
-|----------|-------------------|----------|
+| Consumer                                                  | Needs built first                                     | Evidence                                                                                                                                                          |
+| --------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 16 plain satellites + `ai` (all except `app`, `vertexai`) | `@react-native-firebase/app` → `packages/app/dist/**` | package `tsconfig.json` `paths` map `@react-native-firebase/app` → `../app/dist/typescript/lib`; `lib/**` imports of `@react-native-firebase/app/dist/module/...` |
-| `ai` | `app` + `auth` + `app-check` | `packages/ai/tsconfig.json` paths; `lib/service.ts` imports `app` + `auth` |
-| `vertexai` | `ai` (→ `app` transitively) | `dependencies["@react-native-firebase/ai"]`; re-exports it |
-| `in-app-messaging`, `remote-config` | peer `analytics` only — **no** `lib/**` import | runtime/peer constraint, not a build edge |
+| `ai`                                                      | `app` + `auth` + `app-check`                          | `packages/ai/tsconfig.json` paths; `lib/service.ts` imports `app` + `auth`                                                                                        |
+| `vertexai`                                                | `ai` (→ `app` transitively)                           | `dependencies["@react-native-firebase/ai"]`; re-exports it                                                                                                        |
+| `in-app-messaging`, `remote-config`                       | peer `analytics` only — **no** `lib/**` import        | runtime/peer constraint, not a build edge                                                                                                                         |
 
 Shape: a **star hub** (`app`) with one chain `(auth, app-check) → ai → vertexai`.
 
@@ -70,9 +70,12 @@ Add `nx.json`; keep the `yarn lerna:prepare` entrypoint name, with `NX_NO_CLOUD`
   "namedInputs": {
     "jsSource": [
       "{projectRoot}/lib/**/*",
+      "{projectRoot}/plugin/**/*",
       "{projectRoot}/tsconfig.json",
+      "{projectRoot}/plugin/tsconfig.json",
       "{projectRoot}/package.json",
-      "{workspaceRoot}/tsconfig.packages.base.json"
+      "{workspaceRoot}/tsconfig.packages.base.json",
+      "{workspaceRoot}/yarn.lock"
     ]
   },
   "targetDefaults": {
@@ -91,19 +94,19 @@ Add `nx.json`; keep the `yarn lerna:prepare` entrypoint name, with `NX_NO_CLOUD`
 ```
 
 - `dependsOn: ["^prepare"]` + the devDependency edges enforce hub-before-satellite ordering (Nx pulls in upstream `prepare` outputs and their hashes automatically).
-- **`inputs: ["jsSource"]`** scopes the cache key to what `prepare` actually consumes (JS source + the package/base tsconfig + `package.json`, which carries the bob config). Without this, Nx defaults inputs to the whole `{projectRoot}`, so unrelated edits to `__tests__/**`, `e2e/**`, `android/**`, `ios/**`, or docs would needlessly bust the `prepare` cache and — via `^prepare` — every dependent. See [MonoTool-AD-11](architecture-decisions.md#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted). (`lib/version.ts` is gitignored, so Nx's file hasher excludes it from inputs even though it matches the `lib/**` glob — no self-invalidation.)
-- **`outputs` must list every file `prepare` writes**, including the *generated, gitignored* ones, or a cache **hit** restores `dist/**` but leaves those files missing on a clean tree. `genversion` writes `lib/version.ts` in every package (imported by 18 packages' `lib` source), so it is a shared output. See [generated-file outputs](#generated-file-outputs-cache-correctness) and [MonoTool-AD-10](architecture-decisions.md#monotool-ad-10--generated-version-files-are-declared-cache-outputs-not-committed--accepted).
-- **No-cloud everywhere:** `neverConnectToCloud` blocks *connecting/setup* only — it does **not** disable cloud usage at command time. The runtime guard is `NX_NO_CLOUD=true` (or `--no-cloud`), so it is set on the local entrypoint **and** in every CI job that runs Nx ([MonoTool-AD-1](architecture-decisions.md#monotool-ad-1--nx-local-cache-via-the-lerna-runner-no-turborepo-no-nx-cloud--accepted), [MonoTool-AD-8](architecture-decisions.md#monotool-ad-8--nxcache-shared-on-ci-not-on-publish--accepted)).
+- **`inputs: ["jsSource"]`** scopes the cache key to what `prepare` actually consumes (JS source + plugin sources + the package/base tsconfig + `package.json`, which carries the bob config, plus workspace `yarn.lock` so lockfile-only toolchain bumps bust the cache). Without this, Nx defaults inputs to the whole `{projectRoot}`, so unrelated edits to `__tests__/**`, `e2e/**`, `android/**`, `ios/**`, or docs would needlessly bust the `prepare` cache and — via `^prepare` — every dependent. See [MonoTool-AD-11](architecture-decisions.md#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted). (`lib/version.ts` is gitignored, so Nx's file hasher excludes it from inputs even though it matches the `lib/**` glob — no self-invalidation.)
+- **`outputs` must list every file `prepare` writes**, including the _generated, gitignored_ ones, or a cache **hit** restores `dist/**` but leaves those files missing on a clean tree. `genversion` writes `lib/version.ts` in every package (imported by 18 packages' `lib` source), so it is a shared output. See [generated-file outputs](#generated-file-outputs-cache-correctness) and [MonoTool-AD-10](architecture-decisions.md#monotool-ad-10--generated-version-files-are-declared-cache-outputs-not-committed--accepted).
+- **No-cloud everywhere:** see [MonoTool-AD-1](architecture-decisions.md#monotool-ad-1--nx-local-cache-via-the-lerna-runner-no-turborepo-no-nx-cloud--accepted) + [MonoTool-AD-8](architecture-decisions.md#monotool-ad-8--nxcache-shared-on-ci-not-on-publish--accepted) — `NX_NO_CLOUD=true` on the local entrypoint and every CI job that runs Nx.
 
 ### Generated-file outputs (cache correctness)
 
 `prepare` emits gitignored generated files that downstream tools need; all must be declared `outputs` so a cache replay reproduces a complete tree:
 
-| Generated file | Produced by | Consumed by | Declared where |
-|----------------|-------------|-------------|----------------|
-| `{projectRoot}/lib/version.ts` (all 19 pkgs) | `build` → `genversion` | `lib` source in 18 pkgs (`import { version } from './version'`); Jest/eslint compile `lib/**` | shared `targetDefaults.prepare.outputs` |
-| `packages/app/ios/RNFBApp/RNFBVersion.m` | `app` `build:version` → `genversion-ios` | iOS native build | `app` per-project override (below) |
-| `packages/app/android/src/reactnative/java/io/invertase/firebase/app/ReactNativeFirebaseVersion.java` | `app` `build:version` → `genversion-android` | Android native build | `app` per-project override (below) |
+| Generated file                                                                                        | Produced by                                  | Consumed by                                                                                   | Declared where                          |
+| ----------------------------------------------------------------------------------------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `{projectRoot}/lib/version.ts` (all 19 pkgs)                                                          | `build` → `genversion`                       | `lib` source in 18 pkgs (`import { version } from './version'`); Jest/eslint compile `lib/**` | shared `targetDefaults.prepare.outputs` |
+| `packages/app/ios/RNFBApp/RNFBVersion.m`                                                              | `app` `build:version` → `genversion-ios`     | iOS native build                                                                              | `app` per-project override (below)      |
+| `packages/app/android/src/reactnative/java/io/invertase/firebase/app/ReactNativeFirebaseVersion.java` | `app` `build:version` → `genversion-android` | Android native build                                                                          | `app` per-project override (below)      |
 
 Only `app` produces the native version files, so they go in an `app`-scoped target override (project-level `outputs` **replace** `targetDefaults` outputs, so all four entries are re-listed) rather than in the shared defaults, keeping satellites free of app-only globs:
 
@@ -147,13 +150,13 @@ Fixtures (`vertexai-sdk-test-data*`, gitignored) download only when AI Jest test
 
 ### Where local cache helps
 
-| Workflow | Effect |
-|----------|--------|
-| `yarn` with no package changes | Large — postinstallDev prepare replays cache |
-| `yarn lerna:prepare` with no edits | Large — all packages cache-hit |
-| Edit one `lib/**` file | Moderate — rebuild that package (+ dependents); rest replay |
-| Branch switch, same input hashes | Moderate — cache hits across branches |
-| Fresh clone / cleaned `dist` | None on first run; fast on the second |
+| Workflow                           | Effect                                                      |
+| ---------------------------------- | ----------------------------------------------------------- |
+| `yarn` with no package changes     | Large — postinstallDev prepare replays cache                |
+| `yarn lerna:prepare` with no edits | Large — all packages cache-hit                              |
+| Edit one `lib/**` file             | Moderate — rebuild that package (+ dependents); rest replay |
+| Branch switch, same input hashes   | Moderate — cache hits across branches                       |
+| Fresh clone / cleaned `dist`       | None on first run; fast on the second                       |
 
 Cache lives in `.nx/cache` (gitignored); clear with `nx reset`. CI may share it via `actions/cache`; publish does not ([MonoTool-AD-8](architecture-decisions.md#monotool-ad-8--nxcache-shared-on-ci-not-on-publish--accepted)).
 
@@ -176,7 +179,7 @@ bob's `typescript` (tsc) target emits `.d.ts` + `.d.ts.map` beside `dist/typescr
 `dependency-cruiser` as `yarn lint:deps` ([MonoTool-AD-6](architecture-decisions.md#monotool-ad-6--dependency-cycle-linting-via-dependency-cruiser-as-lintdeps--accepted)). Validates `packages/*/lib/**`:
 
 - `no-circular` — no import cycles
-- `not-to-own-dist` — **scoped** rule: `lib/**` must not import its **own** package's built output via a *relative* `../dist/**` / `./dist/**` path. It must **not** forbid the intentional hub API `@react-native-firebase/app/dist/module/...`, which ~15 satellites import by design (mapped to type stubs via each package's tsconfig `paths`). A blanket `no lib → **/dist/**` rule would fail on the **current** tree — see [MonoTool-AD-6](architecture-decisions.md#monotool-ad-6--dependency-cycle-linting-via-dependency-cruiser-as-lintdeps--accepted).
+- `not-to-own-dist` — **scoped** rule: `lib/**` must not import its **own** package's built output via a _relative_ `../dist/**` / `./dist/**` path. It must **not** forbid the intentional hub API `@react-native-firebase/app/dist/module/...`, which ~15 satellites import by design (mapped to type stubs via each package's tsconfig `paths`). A blanket `no lib → **/dist/**` rule would fail on the **current** tree — see [MonoTool-AD-6](architecture-decisions.md#monotool-ad-6--dependency-cycle-linting-via-dependency-cruiser-as-lintdeps--accepted).
 - graph allowlist — satellites import only `@react-native-firebase/app` (its published subpaths); `ai` → `auth`/`app-check`; `vertexai` → `ai`
 
 **Config scoping** (`.dependency-cruiser.cjs`) — required for correct, fast, false-positive-free runs:
@@ -184,7 +187,7 @@ bob's `typescript` (tsc) target emits `.d.ts` + `.d.ts.map` beside `dist/typescr
 - `doNotFollow` / `exclude` for `node_modules`, `packages/*/dist/**`, `packages/*/__tests__/**`, `packages/*/e2e/**` so the built output and tests are not analysed as source.
 - `options.tsConfig` + `enhancedResolveOptions` so the `@react-native-firebase/*` path aliases resolve; otherwise cross-package edges are silently unresolved and the MT4 allowlist has nothing to enforce. Verify one real cross-package edge is actually detected (not skipped as unresolvable).
 
-Wiring: `package.json` `lint:deps`; added to the lint suite; a CI lint step; a change-authoring lint-gate requirement when `packages/*/lib/**` is in the diff. Optional non-CI `lint:deps-report` (HTML) for debugging.
+**Agent/CI wiring** (commands and gates): [validation checklist § lint](../testing/validation-checklist.md#lint-and-formatting), [change authoring § validation evidence](../testing/change-authoring-workflow.md#validation-evidence-blocking). Optional non-CI `lint:deps-report` (HTML) for debugging.
 
 ## Developer watch and the e2e TDD hook chain — **deferred (gap-analysis pre-phase)**
 
@@ -210,11 +213,11 @@ nx watch --all -- nx run-many -t prepare -p $NX_PROJECT_NAME
 
 The post-nx-rebuild point is **upstream** of Metro finishing its bundle, so do not chain a `sleep`. Trigger the rerun on a Metro **bundle-ready event**:
 
-| Signal | Source | Nature |
-|--------|--------|--------|
-| HMR `update-done` WebSocket message | Metro HMR protocol (`update-start` → `update-done`) | Client-observable "update applied in app" |
-| `onBundleBuilt` callback | Metro `createConnectMiddleware` | Server-side "bundle finished" |
-| App-side reload hook | RNFB owns Jet; the in-app client can emit "reloaded" | In-process, precise |
+| Signal                              | Source                                               | Nature                                    |
+| ----------------------------------- | ---------------------------------------------------- | ----------------------------------------- |
+| HMR `update-done` WebSocket message | Metro HMR protocol (`update-start` → `update-done`)  | Client-observable "update applied in app" |
+| `onBundleBuilt` callback            | Metro `createConnectMiddleware`                      | Server-side "bundle finished"             |
+| App-side reload hook                | RNFB owns Jet; the in-app client can emit "reloaded" | In-process, precise                       |
 
 Chain: `lib` edit → `nx watch` rebuilds `dist` → Metro re-bundles → **`update-done`** → host `POST`s a re-run action to the Jet control plane (HTTP on `JET_REMOTE_PORT + 1`, default **8091**; see [running e2e § test-runner orchestration](../testing/running-e2e.md#test-runner-host-orchestration-log-triage-only)) → Jet re-executes the loaded (narrowed) mocha suite in-app.
 
@@ -224,19 +227,19 @@ RNFB owns Jet, so a `POST /rerun` control action is feasible alongside the exist
 
 A macOS shell script (`scripts/benchmark-prepare.sh`) records median-of-3 timings to keep cache/graph claims honest. Scenarios:
 
-| # | Name | Setup | Command |
-|---|------|-------|---------|
-| A | Cold install | `rm -rf node_modules .nx/cache packages/*/dist packages/*/plugin/build` | `yarn` |
-| B | Full rebuild | after A; keep `node_modules`; `rm -rf packages/*/dist packages/*/plugin/build` | `yarn lerna:prepare` |
-| C | No-op rebuild | after B; no edits | `yarn lerna:prepare` |
-| D | Single-package edit | after B; touch one `packages/firestore/lib/*` file | `yarn lerna:prepare` |
+| #   | Name                | Setup                                                                          | Command              |
+| --- | ------------------- | ------------------------------------------------------------------------------ | -------------------- |
+| A   | Cold install        | `rm -rf node_modules .nx/cache packages/*/dist packages/*/plugin/build`        | `yarn`               |
+| B   | Full rebuild        | after A; keep `node_modules`; `rm -rf packages/*/dist packages/*/plugin/build` | `yarn lerna:prepare` |
+| C   | No-op rebuild       | after B; no edits                                                              | `yarn lerna:prepare` |
+| D   | Single-package edit | after B; touch one `packages/firestore/lib/*` file                             | `yarn lerna:prepare` |
 
 Record pre-Nx baselines (B/C/D before `nx.json`) and post-Nx numbers; C and D are where the local cache shows. A macOS-only script is representative for CI too: **most RNFB CI runs on macOS runners**, so a local macOS median is a valid proof of the CI gain (no separate Linux capture needed). Results live in the ephemeral [rollout work queue](work-queue.md) / a benchmarks note, not in this durable doc.
 
 ## Related docs
 
-| Topic | Document |
-|-------|----------|
-| Decisions + rejected alternatives | [architecture-decisions.md](architecture-decisions.md) |
-| Rollout phases, gates, acceptance | [work-queue.md](work-queue.md) |
-| Canonical prepare/e2e commands | [agent command policy](../testing/agent-command-policy.md), [running e2e](../testing/running-e2e.md) |
+| Topic                             | Document                                                                                             |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Decisions + rejected alternatives | [architecture-decisions.md](architecture-decisions.md)                                               |
+| Rollout phases, gates, acceptance | [work-queue.md](work-queue.md)                                                                       |
+| Canonical prepare/e2e commands    | [agent command policy](../testing/agent-command-policy.md), [running e2e](../testing/running-e2e.md) |

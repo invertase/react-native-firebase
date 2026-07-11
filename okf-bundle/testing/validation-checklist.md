@@ -16,13 +16,13 @@ Coverage acceptance: [expectations](coverage-design.md#coverage-expectations-pol
 
 Work types and tiers: [change authoring workflow](change-authoring-workflow.md). Term ids: [iteration vocabulary](iteration-vocabulary.md).
 
-| Work type | Scope | Shortcuts |
-|-----------|--------|-----------|
-| `gap-analysis` | `compare:types`, config read, SDK declarations | n/a |
-| `baseline-capture` | Full loaded spec(s) + e2e on [**every required platform**](running-e2e.md#platform-coverage-gate-blocking) | **area-focused** tier; [area narrowing required](running-e2e.md#harness-narrowing-gate-blocking); no `.only`, no `:test-cover-reuse`; **no platform shortcuts** |
-| `implementation` | Unit-focused Jest + e2e on **every required platform** when native bridge or macOS TS/runtime path changed — **Jest-only does not close `implementation_gate`**; `lib/**` edits need `yarn lerna:prepare` + Metro restart, not platform `:build` for JS alone ([running e2e § Rules #3](running-e2e.md#rules)) | **unit-focused** tier; [harness overrides + RNFBDebug](running-e2e.md#local-harness-overrides-harnessoverridesjs) before `:test-cover`; optional `.only` / sub-suite for diagnosis; [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) — no platform shortcuts |
-| `independent-review` | Full checklist; e2e on **every required platform** (macOS / iOS / Android per harness) | **area-focused** tier; [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) — **no shortcuts**; [frozen tree](change-authoring-workflow.md#frozen-tree); never commit overrides, sub-suite `.only`, or temporary `tests/app.js` edits ([fail-fast §](running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing)) |
-| `pre-merge-validation` | Full unfocused suite | **full** tier — [running-e2e § merge](running-e2e.md#before-merge-pr-handoff); entire PR branch, once |
+| Work type              | Scope                                                                                                                                                                                                                                                                                                          | Shortcuts                                                                                                                                                                                                                                                                                                                             |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gap-analysis`         | `compare:types`, config read, SDK declarations                                                                                                                                                                                                                                                                 | n/a                                                                                                                                                                                                                                                                                                                                   |
+| `baseline-capture`     | Full loaded spec(s) + e2e on [**every required platform**](running-e2e.md#platform-coverage-gate-blocking)                                                                                                                                                                                                     | **area-focused** tier; [area narrowing required](running-e2e.md#harness-narrowing-gate-blocking); no `.only`, no `:test-cover-reuse`; **no platform shortcuts**                                                                                                                                                                       |
+| `implementation`       | Unit-focused Jest + e2e on **every required platform** when native bridge or macOS TS/runtime path changed — **Jest-only does not close `implementation_gate`**; `lib/**` edits need `yarn lerna:prepare` + Metro restart, not platform `:build` for JS alone ([running e2e § Rules #3](running-e2e.md#rules)) | **unit-focused** tier; [harness overrides + RNFBDebug](running-e2e.md#local-harness-overrides-harnessoverridesjs) before `:test-cover`; optional `.only` / sub-suite for diagnosis; [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) — no platform shortcuts                                                  |
+| `independent-review`   | Full checklist; e2e on **every required platform** (macOS / iOS / Android per harness)                                                                                                                                                                                                                         | **area-focused** tier; [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) — **no shortcuts**; [frozen tree](change-authoring-workflow.md#frozen-tree); never commit overrides, sub-suite `.only`, or temporary `tests/app.js` edits ([fail-fast §](running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing)) |
+| `pre-merge-validation` | Full unfocused suite                                                                                                                                                                                                                                                                                           | **full** tier — [running-e2e § merge](running-e2e.md#before-merge-pr-handoff); entire PR branch, once                                                                                                                                                                                                                                 |
 
 ## Prepare and compile
 
@@ -35,7 +35,7 @@ yarn tsc:compile
 yarn tsc:compile:consumer
 ```
 
-`yarn lerna:prepare` runs each package **`prepare`** script (`build` then `compile`/bob). That is the canonical **`lib/**` → `dist/module/**`** path. Do **not** use `cd packages/<pkg> && yarn compile` as a substitute — `compile` is a step **inside** `prepare`, not a standalone agent entrypoint.
+`yarn lerna:prepare` runs each package **`prepare`** script (`build` then `compile`/bob). That is the canonical **`lib/**`→`dist/module/**`** path. Do **not** use `cd packages/<pkg> && yarn compile` as a substitute — `compile` is a step **inside** `prepare`, not a standalone agent entrypoint.
 
 **Blocking:** `yarn` and `yarn lerna:prepare` must **exit 0 before any other command** (Jest, tsc, e2e, Metro, builds) — never parallelize. [Agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first); e2e pre-flight: [running e2e § prepare completion gate](running-e2e.md#prepare-completion-gate-blocking).
 
@@ -134,19 +134,19 @@ Goal: each iteration improves OKF and removes conflicting guidance.
 Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, or publishing (`git push` / PR update), record evidence per [change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking). Minimum template:
 
 ```markdown
-| Step | Command | Exit | Evidence |
-|------|---------|------|----------|
-| prepare | yarn lerna:prepare | 0 | — |
-| jest | yarn tests:jest <paths> | 0 | N/N tests |
-| e2e macOS | yarn tests:macos:test-cover | 0 | X passing — /tmp/...log |
-| e2e iOS | yarn tests:ios:test-cover | 0 | Y passing — /tmp/...log |
-| e2e Android | yarn tests:android:test-cover | 0 | Z passing — /tmp/...log |
-| compare:types | yarn compare:types | 0 | <pkg> 0/0/0 |
-| lint (CI) | yarn lint | 0 | — |
-| lint:deps (lib diff) | yarn lint:deps | 0 | when packages/*/lib/** in diff — [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting) |
-| lint:markdown (CI docs) | yarn lint:markdown | 0 | when docs/** in diff |
-| lint:spellcheck (CI docs) | yarn lint:spellcheck | 0 | when docs/** in diff |
-| coverage | post-process + region table | — | see coverage-design § evidence package |
+| Step                      | Command                       | Exit | Evidence                                                                                                                          |
+| ------------------------- | ----------------------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------- |
+| prepare                   | yarn lerna:prepare            | 0    | —                                                                                                                                 |
+| jest                      | yarn tests:jest <paths>       | 0    | N/N tests                                                                                                                         |
+| e2e macOS                 | yarn tests:macos:test-cover   | 0    | X passing — /tmp/...log                                                                                                           |
+| e2e iOS                   | yarn tests:ios:test-cover     | 0    | Y passing — /tmp/...log                                                                                                           |
+| e2e Android               | yarn tests:android:test-cover | 0    | Z passing — /tmp/...log                                                                                                           |
+| compare:types             | yarn compare:types            | 0    | <pkg> 0/0/0                                                                                                                       |
+| lint (CI)                 | yarn lint                     | 0    | —                                                                                                                                 |
+| lint:deps (lib diff)      | yarn lint:deps                | 0    | when packages/\*/lib/\*\* in diff — [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting) |
+| lint:markdown (CI docs)   | yarn lint:markdown            | 0    | when docs/\*\* in diff                                                                                                            |
+| lint:spellcheck (CI docs) | yarn lint:spellcheck          | 0    | when docs/\*\* in diff                                                                                                            |
+| coverage                  | post-process + region table   | —    | see coverage-design § evidence package                                                                                            |
 ```
 
 **History rewrite invalidates** prior rows — re-run and replace the table after amend/rebase.

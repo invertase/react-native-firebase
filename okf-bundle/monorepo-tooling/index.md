@@ -14,9 +14,9 @@ Build-tooling decisions and design for the React Native Firebase monorepo: task 
 
 ## Documents
 
-* [Architecture decisions (ADR)](architecture-decisions.md) — **canonical owner** of durable tooling decisions (the "what + why"); other docs reference it
-* [Prepare, cache, and watch design](prepare-and-cache.md) — durable design: Nx local cache, deterministic prepare graph, declaration maps, dependency-cruiser, dev watch + TDD hook chain, benchmark methodology
-* [Rollout work queue](work-queue.md) — ephemeral phase tracker, per-item steps, gates, and acceptance criteria
+- [Architecture decisions (ADR)](architecture-decisions.md) — **canonical owner** of durable tooling decisions (the "what + why"); other docs reference it
+- [Prepare, cache, and watch design](prepare-and-cache.md) — durable design: Nx local cache, deterministic prepare graph, declaration maps, dependency-cruiser, dev watch + TDD hook chain, benchmark methodology
+- [Rollout work queue](work-queue.md) — ephemeral phase tracker, per-item steps, gates, and acceptance criteria
 
 ## Scope
 
@@ -26,7 +26,7 @@ Out of scope (explicitly rejected — see [ADR](architecture-decisions.md)): Tur
 
 ## Related repository files
 
-* [`lerna.json`](../../../lerna.json) — versioning + publish config (unchanged by this work)
-* [`package.json`](../../../package.json) — root scripts, workspaces, `lerna:prepare`
-* [`tsconfig.packages.base.json`](../../../tsconfig.packages.base.json) — shared package compiler options (17 of 19 packages extend it)
-* [`.github/workflows/linting.yml`](../../../.github/workflows/linting.yml) — CI lint job (target for `lint:deps` + `.nx/cache`)
+- [`lerna.json`](../../../lerna.json) — versioning + publish config (unchanged by this work)
+- [`package.json`](../../../package.json) — root scripts, workspaces, `lerna:prepare`
+- [`tsconfig.packages.base.json`](../../../tsconfig.packages.base.json) — shared package compiler options (17 of 19 packages extend it)
+- [`.github/workflows/linting.yml`](../../../.github/workflows/linting.yml) — CI lint job (target for `lint:deps` + `.nx/cache`)

@@ -18,11 +18,11 @@ All decisions use the **`MonoTool-AD-<n>`** prefix so monorepo-tooling ADRs are 
 
 ## Status legend
 
-| Status | Meaning |
-|--------|---------|
-| **Accepted** | Decided; implement to this. |
-| **Proposed** | Recommended, awaiting sign-off; safe to plan around. |
-| **Open** | Under analysis; do not lock in code until resolved. |
+| Status       | Meaning                                                                                                                                   |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Accepted** | Decided; implement to this.                                                                                                               |
+| **Proposed** | Recommended, awaiting sign-off; safe to plan around.                                                                                      |
+| **Open**     | Under analysis; do not lock in code until resolved.                                                                                       |
 | **Deferred** | Direction noted, but the mechanism needs a dedicated gap-analysis pre-phase before it is locked or implemented; not on the critical path. |
 
 ## Goals (unchanged from evaluation)
@@ -47,9 +47,10 @@ Adopt Nx **local computation cache** by adding an `nx.json`. Keep `lerna run` as
 
 **Prerequisite — update Lerna to current:** bump `lerna` to the latest release before this work; that pulls a current bundled `nx`, which (a) supports the `nx.json` keys used here (`neverConnectToCloud`, per-target `cache`/`inputs`/`outputs`, `namedInputs`) and (b) includes the `nx watch --all --initialRun` fix needed later. Tracked as [work-queue MT0.0](work-queue.md#mt00--update-lerna-to-current-prerequisite).
 
-**No-cloud everywhere:** `neverConnectToCloud: true` blocks *connecting/setup* only — per Nx docs it does **not** disable cloud usage at command time. The runtime guard is `NX_NO_CLOUD=true` (or `--no-cloud`), so it is applied in **both** places: on the local `lerna:prepare` entrypoint (via `cross-env`, see [MonoTool-AD-4](#monotool-ad-4--one-inlined-prepare-command-no-wrapper-script--accepted)) and in every CI job that runs Nx ([MonoTool-AD-8](#monotool-ad-8--nxcache-shared-on-ci-not-on-publish--accepted)).
+**No-cloud everywhere:** `neverConnectToCloud: true` blocks _connecting/setup_ only — per Nx docs it does **not** disable cloud usage at command time. The runtime guard is `NX_NO_CLOUD=true` (or `--no-cloud`), so it is applied in **both** places: on the local `lerna:prepare` entrypoint (via `cross-env`, see [MonoTool-AD-4](#monotool-ad-4--one-inlined-prepare-command-no-wrapper-script--accepted)) and in every CI job that runs Nx ([MonoTool-AD-8](#monotool-ad-8--nxcache-shared-on-ci-not-on-publish--accepted)).
 
 **Rejected:**
+
 - **Turborepo** — a third task runner stacked on Lerna→Nx; duplicates `nx.json` `targetDefaults`; no benefit over the runner already present.
 - **Nx Cloud / remote cache** — introduces a third-party runtime dependency and data egress. OSS terms are not publicly guaranteed; self-hosted remote cache is Enterprise-only. Local cache captures the day-to-day win without the dependency. CI may still share `.nx/cache` via `actions/cache` (see [MonoTool-AD-8](#monotool-ad-8--nxcache-shared-on-ci-not-on-publish--accepted)) without Nx Cloud.
 
@@ -76,6 +77,7 @@ Encode the compile-time build graph as workspace **`devDependencies`** so the Nx
 **Why:** Lerna/Nx topologically sort on `dependencies` + `devDependencies` only — **`peerDependencies` are ignored**. Today `app` and its dependents land in the same parallel wave, so a clean-tree build can start a satellite's `tsc`/`bob` before `packages/app/dist/**` exists. That currently "works" only by timing luck and pre-existing `dist/`. Declaring the edges as devDependencies makes the existing graph machinery enforce the real order (both Lerna's own topological `--sort` and Nx's `^prepare` task graph). `devDependencies` are stripped from published tarballs, so npm consumers are unaffected; `peerDependencies` remain the runtime contract.
 
 **Rejected:**
+
 - **Manual multi-phase prepare scripts** (`prepare:hub` → `prepare:satellites` → …) — exposes useless intermediate states; a developer wants "unknown tree → trusted tree" in one command. We have full control over the dependency graph declaration, so the runner should just know the order.
 - **Converting `peerDependencies` to `dependencies`** — changes publish/runtime semantics; wrong tool for a build-ordering problem.
 - **`dependsOn: ["^prepare"]` alone** — insufficient; without the devDependency edges the runner cannot see the `app` hub relationship.
@@ -101,6 +103,7 @@ Keep `react-native-builder-bob` as the package bundler. Enable `declaration` + `
 **Why:** bob is the RN-ecosystem-correct builder (RN field conventions, ESM `module` target, per-package layout). Declaration maps give IDE go-to-definition into source for external consumers without the old `bundler && tsc --emitDeclarationOnly` two-step. Reusing the shared base keeps the change to three files.
 
 **Rejected:**
+
 - **tsdown / rslib / tsup** — generic TS-service bundlers, not RN-aware; defer unless bob becomes a measured bottleneck.
 - **New `tsconfig.build.json` per package / `@codecompose/typescript-config`** — adds base-config surface; deferred. RNFB already has a shared base to extend.
 
@@ -110,11 +113,12 @@ Keep `react-native-builder-bob` as the package bundler. Enable `declaration` + `
 
 Add `dependency-cruiser` as a static-analysis lint, surfaced as `yarn lint:deps`, wired into the lint suite, CI lint job, and the change-authoring lint gate. It validates the `packages/*/lib/**` import graph (no cycles; no import of a package's **own** built output; cross-package imports restricted to the known graph). Rule/config detail: [prepare-and-cache § dependency-cycle linting](prepare-and-cache.md#dependency-cycle-linting).
 
-**Scoped `dist` rule (not a blanket ban):** the "no import of dist" rule is **`not-to-own-dist`** — it forbids only *relative* imports of a package's own `../dist/**`/`./dist/**`. It must **not** forbid the intentional hub API `@react-native-firebase/app/dist/module/...`, which ~15 satellites import by design (that specifier is mapped to type stubs via each package's tsconfig `paths`, and is how satellites consume the built hub). A blanket `no lib → **/dist/**` rule would fail on the **current, correct** tree and is rejected.
+**Scoped `dist` rule (not a blanket ban):** the "no import of dist" rule is **`not-to-own-dist`** — it forbids only _relative_ imports of a package's own `../dist/**`/`./dist/**`. It must **not** forbid the intentional hub API `@react-native-firebase/app/dist/module/...`, which ~15 satellites import by design (that specifier is mapped to type stubs via each package's tsconfig `paths`, and is how satellites consume the built hub). A blanket `no lib → **/dist/**` rule would fail on the **current, correct** tree and is rejected.
 
 **Why:** The current toolchain has **no** cycle detection (no `import/no-cycle`, no madge/depcruise). dependency-cruiser is an architecture **linter** — rule engine, TS/path awareness, ESLint-style CI output — versus madge which is visualization-first ([author's own framing](https://github.com/sverweij/dependency-cruiser/issues/203): dependency-cruiser's "main goal is to validate dependencies, given your own set of rules"; madge's "primary goal is visualisation"). Treating dependency validation as a lint fits it into existing `yarn lint` + CI with no new toolchain category. Correct resolution requires pointing dependency-cruiser at the tsconfig path aliases and excluding `dist`/`__tests__`/`e2e`/`node_modules` from traversal ([design](prepare-and-cache.md#dependency-cycle-linting)).
 
 **Rejected:**
+
 - **madge** — cycle listing + images, but weak rule DSL and CI integration.
 - **oxlint `import/no-cycle`** — would mean adopting a new linter; out of scope (lint/format toolchains are staying).
 - **Nx circular-dependency analytics** — Nx Cloud Enterprise feature; rejected with [MonoTool-AD-1](#monotool-ad-1--nx-local-cache-via-the-lerna-runner-no-turborepo-no-nx-cloud--accepted).
@@ -127,9 +131,10 @@ Remove the `vertexai-sdk-test-data` mock download (`yarn tests:ai:mocks`) from `
 
 **Why:** The mocks are consumed **only** by `packages/ai/__tests__/**` (verified: no `tests/e2e`, no `vertexai` e2e, no `tests/local-tests` usage). Coupling a network clone into `prepare` runs it on every `yarn` / `yarn lerna:prepare` and makes `ai:prepare` non-cacheable and non-deterministic. As a Jest prerequisite it runs only when AI unit tests run, and `ai:prepare` becomes fully cacheable.
 
-**Wiring constraint (single flat jest config):** the root `jest.config.js` has **no `projects`** and **no `globalSetup`** today, so a bare `globalSetup` would fetch mocks for *every* `yarn tests:jest` run — re-adding the non-determinism this removes. Therefore **gate the fetch on AI-test detection** (a `globalSetup` that no-ops unless the run includes `packages/ai/__tests__/**`); converting jest to `projects` with an `ai`-only project is an acceptable heavier alternative. The fetch itself must be **fast-exit/offline-idempotent**: it already skips the clone when present but still runs a network `git ls-remote` each call — add a local-clone short-circuit so repeat AI runs need no network. Detail: [prepare-and-cache § `ai` special case](prepare-and-cache.md#ai-special-case).
+**Wiring constraint (single flat jest config):** the root `jest.config.js` has **no `projects`** and **no `globalSetup`** today, so a bare `globalSetup` would fetch mocks for _every_ `yarn tests:jest` run — re-adding the non-determinism this removes. Therefore **gate the fetch on AI-test detection** (a `globalSetup` that no-ops unless the run includes `packages/ai/__tests__/**`); converting jest to `projects` with an `ai`-only project is an acceptable heavier alternative. The fetch itself must be **fast-exit/offline-idempotent**: it already skips the clone when present but still runs a network `git ls-remote` each call — add a local-clone short-circuit so repeat AI runs need no network. Detail: [prepare-and-cache § `ai` special case](prepare-and-cache.md#ai-special-case).
 
 **Rejected:**
+
 - **Commit the fixtures** — user decision: do not vendor the test-data repo.
 - **Bare (ungated) `globalSetup`** — fetches on every jest run, not just AI; defeats the determinism goal.
 - **Keep in `prepare`** — network dependency in the build path; breaks cache determinism ([MonoTool-AD-1](#monotool-ad-1--nx-local-cache-via-the-lerna-runner-no-turborepo-no-nx-cloud--accepted)).
@@ -161,6 +166,7 @@ CI PR/main jobs may restore/save `.nx/cache` via `actions/cache` (keyed on `yarn
 **Command caveats to resolve before locking** ([design](prepare-and-cache.md#tier-a--prepare-watch--unit-tdd-sketch-to-be-validated)): `nx watch --all --initialRun` was a no-op bug fixed only Aug-2025 (do the first pass with `nx run-many -t prepare`); `$NX_PROJECT_NAME` is comma-joined for multi-project batches (use `nx run-many -t prepare -p $NX_PROJECT_NAME`). These are inputs to the gap analysis, not accepted commands.
 
 **Rejected (direction-level):**
+
 - **`sleep N && <rerun>`** — races the Metro bundle; flaky.
 - **Appium instead of Jet for the rerun trigger** — Appium drives UI, not JS bundling; Metro still owns updates, and Jet's in-app mocha-remote + 8091 control plane is a better rerun mechanism than external WebDriver commands. Metro remains the shared bundle-ready source for either runner.
 
@@ -168,11 +174,12 @@ CI PR/main jobs may restore/save `.nx/cache` via `actions/cache` (keyed on `yarn
 
 ## MonoTool-AD-10 — Generated version files are declared cache outputs, not committed — **Accepted**
 
-Every file that `prepare` generates must be listed in the Nx target `outputs`, so a cache **hit** reproduces a complete tree. This covers the *gitignored, generated* files: `{projectRoot}/lib/version.ts` (all packages; shared `targetDefaults`) and `app`'s native version files `ios/RNFBApp/RNFBVersion.m` + `android/src/reactnative/java/io/invertase/firebase/app/ReactNativeFirebaseVersion.java` (an `app`-scoped target override in `packages/app/package.json`). Do **not** commit these files.
+Every file that `prepare` generates must be listed in the Nx target `outputs`, so a cache **hit** reproduces a complete tree. This covers the _gitignored, generated_ files: `{projectRoot}/lib/version.ts` (all packages; shared `targetDefaults`) and `app`'s native version files `ios/RNFBApp/RNFBVersion.m` + `android/src/reactnative/java/io/invertase/firebase/app/ReactNativeFirebaseVersion.java` (an `app`-scoped target override in `packages/app/package.json`). Do **not** commit these files.
 
 **Why:** `genversion` writes `lib/version.ts`, imported by 18 packages' `lib` source (`import { version } from './version'`); Jest/eslint/`tsc` compile that source. `app`'s `build:version` writes the native version constants used by the iOS/Android builds. All are gitignored. The original `outputs` list (`dist/**` + `plugin/build/**`) omitted them, so a cache hit on a **clean tree** (a fresh CI checkout with restored `.nx/cache`, per [MonoTool-AD-8](#monotool-ad-8--nxcache-shared-on-ci-not-on-publish--accepted); or a locally cleaned tree) would restore `dist/**` but leave these missing → `tests:jest`/`lint`/`tsc:compile` fail on unresolved `./version`, and native builds miss version constants. Declaring them as outputs makes them generated-on-miss / restored-on-hit. **Correctness:** being gitignored, they are excluded from Nx **input** hashing (no self-invalidation); they restore into `lib/`/`ios/`/`android/` (safe regenerated artifacts); `genversion-ios/-android` read `lib/version.ts`, which restores alongside them, so the set is internally consistent. Detail: [prepare-and-cache § generated-file outputs](prepare-and-cache.md#generated-file-outputs-cache-correctness).
 
 **Rejected:**
+
 - **Commit the generated files** — constant per-release churn (they change on every version bump) and contradicts their own `# do not modify or commit` banners; the cache-output approach avoids tracked-file churn entirely.
 - **Original `dist`-only `outputs`** — silently incomplete; breaks cache replay on clean trees (the failure mode above), especially under CI cache sharing.
 
@@ -180,7 +187,7 @@ Every file that `prepare` generates must be listed in the Nx target `outputs`, s
 
 ## MonoTool-AD-11 — Scope `prepare` cache inputs with a `jsSource` namedInput — **Accepted**
 
-Define a `jsSource` `namedInput` (`{projectRoot}/lib/**/*`, `{projectRoot}/tsconfig.json`, `{projectRoot}/package.json`, `{workspaceRoot}/tsconfig.packages.base.json`) and set `targetDefaults.prepare.inputs = ["jsSource"]`.
+Define a `jsSource` `namedInput` (`{projectRoot}/lib/**/*`, `{projectRoot}/plugin/**/*`, `{projectRoot}/tsconfig.json`, `{projectRoot}/plugin/tsconfig.json`, `{projectRoot}/package.json`, `{workspaceRoot}/tsconfig.packages.base.json`, `{workspaceRoot}/yarn.lock`) and set `targetDefaults.prepare.inputs = ["jsSource"]`.
 
 **Why:** without an explicit `inputs`, Nx hashes the entire `{projectRoot}` for `prepare`. Edits to `__tests__/**`, `e2e/**`, `android/**`, `ios/**`, or docs would then bust a package's `prepare` cache — and via `dependsOn: ["^prepare"]`, every dependent's too — even though `prepare` only consumes JS source + the tsconfig/bob config. Scoping inputs to what `prepare` actually reads is what makes the "edit one `lib` file → rebuild that package only; rest replay" claim true and keeps native/test/doc edits from invalidating the JS build graph. (`lib/version.ts` is gitignored, so it is excluded from hashing despite matching `lib/**` — no self-invalidation with [MonoTool-AD-10](#monotool-ad-10--generated-version-files-are-declared-cache-outputs-not-committed--accepted).) Detail: [prepare-and-cache § Nx local cache](prepare-and-cache.md#nx-local-cache).
 
@@ -192,10 +199,10 @@ Define a `jsSource` `namedInput` (`{projectRoot}/lib/**/*`, `{projectRoot}/tscon
 
 ## Related docs
 
-| Topic | Document |
-|-------|----------|
-| Design detail (cache, graph, watch, benchmark) | [prepare-and-cache.md](prepare-and-cache.md) |
-| Ephemeral rollout state | [work-queue.md](work-queue.md) |
-| Agent shell commands | [agent command policy](../testing/agent-command-policy.md) |
-| Change loop / gates | [change authoring workflow](../testing/change-authoring-workflow.md) |
-| Doc/commit policy | [documentation policy](../documentation-policy.md) |
+| Topic                                          | Document                                                             |
+| ---------------------------------------------- | -------------------------------------------------------------------- |
+| Design detail (cache, graph, watch, benchmark) | [prepare-and-cache.md](prepare-and-cache.md)                         |
+| Ephemeral rollout state                        | [work-queue.md](work-queue.md)                                       |
+| Agent shell commands                           | [agent command policy](../testing/agent-command-policy.md)           |
+| Change loop / gates                            | [change authoring workflow](../testing/change-authoring-workflow.md) |
+| Doc/commit policy                              | [documentation policy](../documentation-policy.md)                   |
