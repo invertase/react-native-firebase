@@ -204,7 +204,8 @@ function loadTests(_) {
     }
 
     if (platformSupportedModules.includes('firestore')) {
-      require('../packages/firestore/e2e/Pipeline.e2e.js');
+      const firestoreTests = require.context('../packages/firestore/e2e', true, /\.e2e\.js$/);
+      firestoreTests.keys().forEach(firestoreTests);
     }
     if (platformSupportedModules.includes('perf')) {
       const perfTests = require.context('../packages/perf/e2e', true, /\.e2e\.js$/);
