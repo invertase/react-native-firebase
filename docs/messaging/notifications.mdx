@@ -214,9 +214,15 @@ auto-registration with `messaging_ios_auto_register_for_remote_messages` in `fir
 [Auto Registration (iOS)](/messaging/usage#auto-registration-ios) for the manual registration example.
 
 ```jsx
-import { getMessaging, getToken } from '@react-native-firebase/messaging';
+import {
+  getMessaging,
+  registerDeviceForRemoteMessages,
+  getToken,
+} from '@react-native-firebase/messaging';
 
 const messaging = getMessaging();
+// Optional: not needed in most cases, and a no-op if already registered.
+await registerDeviceForRemoteMessages(messaging);
 const token = await getToken(messaging);
 // save the token to the db
 ```
