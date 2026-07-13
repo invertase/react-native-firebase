@@ -205,6 +205,9 @@ function loadTests(_) {
 
     if (platformSupportedModules.includes('firestore')) {
       require('../packages/firestore/e2e/Pipeline.e2e.js');
+      // Also load regression tests for issue-specific fixes even while the rest of the
+      // firestore e2e suite is temporarily narrowed to Pipeline specs above.
+      require('../packages/firestore/e2e/issues.e2e.js');
     }
     if (platformSupportedModules.includes('perf')) {
       const perfTests = require.context('../packages/perf/e2e', true, /\.e2e\.js$/);
