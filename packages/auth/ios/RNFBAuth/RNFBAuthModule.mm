@@ -651,9 +651,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                                                           secret:authSecret
                                                      firebaseApp:firebaseApp];
 
-  // Sign in with Apple: if the caller supplied fullName (only available on the user's first
-  // authorization), rebuild the credential via appleCredentialWithIDToken:rawNonce:fullName: so
-  // Firebase can store it as the account's displayName. See AppleFullPersonName in auth.ts.
+  // Sign in with Apple: if the caller supplied a non-empty fullName (only available on the
+  // user's first authorization), rebuild the credential so Firebase can store displayName.
+  // See AppleFullPersonName in auth.ts.
   if ([provider compare:@"apple.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     NSPersonNameComponents *personNameComponents =
         [self personNameComponentsFromDictionary:fullName];
@@ -1620,6 +1620,18 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
   }
 }
 
+- (NSString *)nonEmptyStringFromDictionary:(NSDictionary *)dictionary key:(NSString *)key {
+  id value = dictionary[key];
+  if (![value isKindOfClass:[NSString class]]) {
+    return nil;
+  }
+
+  NSString *stringValue = (NSString *)value;
+  NSString *trimmed = [stringValue
+      stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  return trimmed.length > 0 ? stringValue : nil;
+}
+
 - (NSPersonNameComponents *)personNameComponentsFromDictionary:(NSDictionary *)dictionary {
   if (dictionary == nil || (id)dictionary == [NSNull null]) {
     return nil;
@@ -1627,28 +1639,34 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
 
   NSPersonNameComponents *components = [[NSPersonNameComponents alloc] init];
   BOOL hasAnyComponent = NO;
-  if ([dictionary[@"namePrefix"] isKindOfClass:[NSString class]]) {
-    components.namePrefix = dictionary[@"namePrefix"];
+  NSString *namePrefix = [self nonEmptyStringFromDictionary:dictionary key:@"namePrefix"];
+  if (namePrefix != nil) {
+    components.namePrefix = namePrefix;
     hasAnyComponent = YES;
   }
-  if ([dictionary[@"givenName"] isKindOfClass:[NSString class]]) {
-    components.givenName = dictionary[@"givenName"];
+  NSString *givenName = [self nonEmptyStringFromDictionary:dictionary key:@"givenName"];
+  if (givenName != nil) {
+    components.givenName = givenName;
     hasAnyComponent = YES;
   }
-  if ([dictionary[@"middleName"] isKindOfClass:[NSString class]]) {
-    components.middleName = dictionary[@"middleName"];
+  NSString *middleName = [self nonEmptyStringFromDictionary:dictionary key:@"middleName"];
+  if (middleName != nil) {
+    components.middleName = middleName;
     hasAnyComponent = YES;
   }
-  if ([dictionary[@"familyName"] isKindOfClass:[NSString class]]) {
-    components.familyName = dictionary[@"familyName"];
+  NSString *familyName = [self nonEmptyStringFromDictionary:dictionary key:@"familyName"];
+  if (familyName != nil) {
+    components.familyName = familyName;
     hasAnyComponent = YES;
   }
-  if ([dictionary[@"nameSuffix"] isKindOfClass:[NSString class]]) {
-    components.nameSuffix = dictionary[@"nameSuffix"];
+  NSString *nameSuffix = [self nonEmptyStringFromDictionary:dictionary key:@"nameSuffix"];
+  if (nameSuffix != nil) {
+    components.nameSuffix = nameSuffix;
     hasAnyComponent = YES;
   }
-  if ([dictionary[@"nickname"] isKindOfClass:[NSString class]]) {
-    components.nickname = dictionary[@"nickname"];
+  NSString *nickname = [self nonEmptyStringFromDictionary:dictionary key:@"nickname"];
+  if (nickname != nil) {
+    components.nickname = nickname;
     hasAnyComponent = YES;
   }
   return hasAnyComponent ? components : nil;

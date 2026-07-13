@@ -431,7 +431,7 @@ describe('auth() -> Providers', function () {
           credential.accessToken.should.equal(accessToken);
         });
 
-        it('should reach iOS native signInWithCredential for apple.com credentials with fullName', async function () {
+        it('should pass apple.com fullName through the iOS native credential mapper', async function () {
           if (!Platform.ios) {
             this.skip();
           }
@@ -458,7 +458,7 @@ describe('auth() -> Providers', function () {
           }
         });
 
-        it('should reach iOS native signInWithCredential for apple.com credentials with an empty fullName', async function () {
+        it('should fall back to the regular iOS apple.com credential mapper for empty fullName', async function () {
           if (!Platform.ios) {
             this.skip();
           }
@@ -469,8 +469,8 @@ describe('auth() -> Providers', function () {
           const credential = provider.credential({
             idToken: 'apple-id-token-empty-fullname-e2e',
             rawNonce: 'apple-raw-nonce-empty-fullname-e2e',
-            // No recognized NSPersonNameComponents fields; native should fall back to the
-            // credential built without fullName rather than an empty name components object.
+            // No meaningful NSPersonNameComponents fields; JS should fall back to the credential
+            // built without fullName rather than passing an empty name components object.
             fullName: {},
           });
 

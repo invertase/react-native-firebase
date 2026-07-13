@@ -61,7 +61,6 @@ import {
   type AppleFullPersonName,
   type ApplicationVerifier,
   type Auth,
-  type AuthCredential,
   type AuthError,
   type AuthProvider,
   type AuthSettings,
@@ -162,7 +161,7 @@ const oauthCredentialOptions: OAuthCredentialOptions = {
 const oauthCredential: OAuthCredential = new OAuthProvider('apple.com').credential(
   oauthCredentialOptions,
 );
-const appleCredential: AuthCredential = AppleAuthProvider.credential(
+const appleCredential: OAuthCredential = AppleAuthProvider.credential(
   'apple-id-token',
   'apple-raw-nonce',
   appleFullPersonName,

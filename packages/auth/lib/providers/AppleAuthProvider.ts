@@ -16,7 +16,7 @@
  */
 
 import { OAuthCredential } from '../credentials';
-import type { AppleFullPersonName, AuthCredential as AuthCredentialType } from '../types/auth';
+import type { AppleFullPersonName } from '../types/auth';
 
 const providerId = 'apple.com' as const;
 
@@ -48,7 +48,7 @@ export default class AppleAuthProvider {
     token: string,
     secret?: string,
     fullName?: AppleFullPersonName,
-  ): AuthCredentialType {
+  ): OAuthCredential {
     return new OAuthCredential(providerId, {
       idToken: token,
       rawNonce: secret,

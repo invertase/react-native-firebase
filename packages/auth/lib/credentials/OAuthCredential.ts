@@ -42,6 +42,39 @@ type OAuthCredentialParams = {
   bridgeSecret?: string;
 };
 
+const appleProviderId = 'apple.com';
+const appleFullPersonNameKeys = [
+  'namePrefix',
+  'givenName',
+  'middleName',
+  'familyName',
+  'nameSuffix',
+  'nickname',
+] as const;
+
+export function hasAppleFullPersonName(
+  fullName?: AppleFullPersonName | null,
+): fullName is AppleFullPersonName {
+  return (
+    !!fullName &&
+    appleFullPersonNameKeys.some(key => {
+      const value = fullName[key];
+      return typeof value === 'string' && value.trim().length > 0;
+    })
+  );
+}
+
+function resolveAppleFullPersonName(
+  providerId: string,
+  fullName?: AppleFullPersonName,
+): AppleFullPersonName | undefined {
+  if (providerId.toLowerCase() !== appleProviderId || !hasAppleFullPersonName(fullName)) {
+    return undefined;
+  }
+
+  return fullName;
+}
+
 function resolveOAuthBridgeFields(params: OAuthCredentialParams): {
   token: string;
   secret: string;
@@ -88,7 +121,7 @@ export class OAuthCredential extends AuthCredential {
     this.idToken = params.idToken;
     this.accessToken = params.accessToken;
     this.rawNonce = params.rawNonce;
-    this.fullName = params.fullName;
+    this.fullName = resolveAppleFullPersonName(providerId, params.fullName);
   }
 
   toJSON(): object {

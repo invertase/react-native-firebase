@@ -192,11 +192,12 @@ export interface OAuthCredentialOptions {
   /**
    * The user's full name, as shared by Sign in with Apple on the user's first authorization.
    *
-   * @remarks Only forwarded to the native SDK for the `apple.com` provider on iOS, where it is
-   * passed to `FIROAuthProvider.appleCredentialWithIDToken:rawNonce:fullName:` so Firebase can
-   * store it as {@link User.displayName} while creating the account. The Firebase Android SDK
-   * has no equivalent credential-level API; on Android (and Web) this field is ignored and the
-   * display name must be set with {@link updateProfile} after sign-in.
+   * @remarks Only retained for `apple.com` credentials with at least one non-empty name field,
+   * and only forwarded to the native SDK on iOS, where it is passed to
+   * `FIROAuthProvider.appleCredentialWithIDToken:rawNonce:fullName:` so Firebase can store it as
+   * {@link User.displayName} while creating the account. The Firebase Android SDK has no
+   * equivalent credential-level API; on Android (and Web) this field is ignored and the display
+   * name must be set with {@link updateProfile} after sign-in.
    */
   fullName?: AppleFullPersonName;
 }

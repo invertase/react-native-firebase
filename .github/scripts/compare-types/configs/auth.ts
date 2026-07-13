@@ -189,7 +189,7 @@ const config: PackageConfig = {
     {
       name: 'AppleFullPersonName',
       reason:
-        'RN Firebase exported type for the fullName option on Sign in with Apple credentials. iOS: forwarded to FIROAuthProvider.appleCredentialWithIDToken:rawNonce:fullName: so Firebase stores it as the displayName on first sign-in. Android: Firebase Android SDK has no equivalent credential-level API (https://firebase.google.com/docs/auth/android/apple#handle-sign-in); ignored, use updateProfile() after sign-in instead. firebase-js-sdk OAuthCredentialOptions has no fullName field on any platform.',
+        'RN Firebase exported type for the fullName option on Sign in with Apple credentials. For apple.com credentials with at least one non-empty name field, iOS forwards it to FIROAuthProvider.appleCredentialWithIDToken:rawNonce:fullName: so Firebase stores it as the displayName on first sign-in. Android: Firebase Android SDK has no equivalent credential-level API (https://firebase.google.com/docs/auth/android/apple#handle-sign-in); ignored, use updateProfile() after sign-in instead. firebase-js-sdk OAuthCredentialOptions has no fullName field on any platform.',
     },
   ],
 
@@ -197,12 +197,12 @@ const config: PackageConfig = {
     {
       name: 'OAuthCredential',
       reason:
-        'RN Firebase OAuthCredential exposes rawNonce for Apple / limited-login flows, plus fullName for Sign in with Apple (iOS only; see AppleFullPersonName). OAuth 1.0 token secrets use the inherited AuthCredential.secret field (firebase-js-sdk optional secret on OAuthCredential).',
+        'RN Firebase OAuthCredential exposes rawNonce for Apple / limited-login flows, plus non-empty fullName for Sign in with Apple (iOS only; see AppleFullPersonName). OAuth 1.0 token secrets use the inherited AuthCredential.secret field (firebase-js-sdk optional secret on OAuthCredential).',
     },
     {
       name: 'OAuthCredentialOptions',
       reason:
-        'RN Firebase adds an optional fullName field (see AppleFullPersonName) so OAuthProvider("apple.com").credential({ idToken, rawNonce, fullName }) can forward Sign in with Apple full-name data on iOS. firebase-js-sdk OAuthCredentialOptions has no fullName field on any platform.',
+        'RN Firebase adds an optional fullName field (see AppleFullPersonName) so OAuthProvider("apple.com").credential({ idToken, rawNonce, fullName }) can retain non-empty Sign in with Apple full-name data and forward it on iOS. firebase-js-sdk OAuthCredentialOptions has no fullName field on any platform.',
     },
     {
       name: 'FacebookAuthProvider',
