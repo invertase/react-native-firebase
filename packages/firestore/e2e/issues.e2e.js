@@ -186,7 +186,7 @@ describe('firestore()', function () {
           // Fail explicitly with the regression context rather than letting the native
           // `IllegalStateException` (surfaced here as a rejected promise) bubble up with a
           // generic message - see https://github.com/invertase/react-native-firebase/issues/8981.
-          fail(
+          throw new Error(
             `Regression in issue 8981: switching database on the same app and reapplying settings should not throw, but got: ${e}`,
           );
         } finally {
