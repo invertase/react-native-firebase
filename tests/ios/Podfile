@@ -101,6 +101,20 @@ target 'testing' do
           config.build_settings['EXCLUDED_ARCHS'] = 'i386'
           # LLVM coverage for e2e native export (see okf-bundle/testing/coverage-design.md)
           apply_ios_native_coverage.call(config.build_settings, link_profile: true)
+          # Under SPM + dynamic linkage, Release's dead-code stripping can drop
+          # Objective-C classes/categories that are only ever discovered via runtime
+          # reflection rather than a direct static reference -- e.g. Firebase's
+          # FIRLibrary/FIRComponent registration used by RNFBCrashlyticsInitProvider.
+          # `-ObjC` forces the linker to keep any object file that defines an ObjC
+          # class/category, without disabling dead-code stripping or optimizations
+          # for anything else, so it doesn't meaningfully grow the binary or slow
+          # down Release builds. Candidate fix for the release+spm launch failure --
+          # see https://github.com/invertase/react-native-firebase/pull/8933#issuecomment-4308578826
+          current_ldflags = config.build_settings['OTHER_LDFLAGS']
+          current_ldflags = '$(inherited)' if current_ldflags.nil? || current_ldflags.empty?
+          unless current_ldflags.include?('-ObjC')
+            config.build_settings['OTHER_LDFLAGS'] = "#{current_ldflags} -ObjC"
+          end
           # Explicit modules is a build-system-wide setting for Swift Package
           # products resolved via this project/scheme (SPM packages don't have
           # their own toggle for it). Leaving it enabled here — even though
