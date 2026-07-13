@@ -131,8 +131,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
                                         @"message" : @"You must be registered for remote "
                                                      @"messages before calling "
                                                      @"getToken, see "
-                                                     @"messaging()."
-                                                     @"registerDeviceForRemoteMessages().",
+                                                     @"registerDeviceForRemoteMessages(getMessaging()).",
                                       }];
     return;
   }
@@ -199,8 +198,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
                                           @"message" : @"You must be registered for remote "
                                                        @"messages before "
                                                        @"calling getAPNSToken, see "
-                                                       @"messaging()."
-                                                       @"registerDeviceForRemoteMessages().",
+                                                       @"registerDeviceForRemoteMessages(getMessaging()).",
                                         }];
       return;
     }

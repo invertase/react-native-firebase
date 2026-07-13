@@ -207,15 +207,16 @@ function App() {
 
 To send messages to a device, you would need the FCM token for it, which you can get using the `getToken(messaging)` method. An example is available on '[Notifee pages](https://notifee.app/react-native/docs/integrations/fcm)'.
 
+On iOS, React Native Firebase Messaging automatically registers the device with APNs by default. You only need to
+manually call `registerDeviceForRemoteMessages(messaging)` before `getToken(messaging)` if you disabled
+auto-registration with `messaging_ios_auto_register_for_remote_messages` in `firebase.json`, or if you otherwise call
+`getToken(messaging)` before the app has registered for remote messages. See
+[Auto Registration (iOS)](/messaging/usage#auto-registration-ios) for the manual registration example.
+
 ```jsx
-import {
-  getMessaging,
-  registerDeviceForRemoteMessages,
-  getToken,
-} from '@react-native-firebase/messaging';
+import { getMessaging, getToken } from '@react-native-firebase/messaging';
 
 const messaging = getMessaging();
-await registerDeviceForRemoteMessages(messaging);
 const token = await getToken(messaging);
 // save the token to the db
 ```

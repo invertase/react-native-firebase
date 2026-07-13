@@ -112,7 +112,7 @@
           "type": "string"
         },
         "messaging_ios_auto_register_for_remote_messages": {
-          "description": "Whether RNFirebase Messaging automatically calls `[[UIApplication sharedApplication] registerForRemoteNotifications];`\nautomatically on app launch (recommended) - defaults to true.\n If set to false; make sure to call `firebase.messaging().registerDeviceForRemoteMessages()`\nearly on in your app startup - otherwise you will NOT receive remote messages/notifications\nin your app.\n",
+          "description": "Whether RNFirebase Messaging automatically calls `[[UIApplication sharedApplication] registerForRemoteNotifications];`\nautomatically on app launch (recommended) - defaults to true.\n If set to false; make sure to call `registerDeviceForRemoteMessages(getMessaging())`\nearly on in your app startup - otherwise you will NOT receive remote messages/notifications\nin your app.\n",
           "type": "boolean"
         },
         "messaging_ios_foreground_presentation_options": {
