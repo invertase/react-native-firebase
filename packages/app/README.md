@@ -44,11 +44,11 @@ Starting with React Native 0.75+, `@react-native-firebase` supports **Swift Pack
 
 Each RNFB module uses `firebase_dependency()` (defined in `firebase_spm.rb`) to declare its Firebase dependencies. This helper automatically chooses between:
 
-| Condition | Resolution | When to use |
-|-----------|-----------|-------------|
-| RN >= 0.75 and `$RNFirebaseDisableSPM` **not set** | **SPM** (default) | Dynamic linkage / pre-built RN core (`use_frameworks! :linkage => :dynamic`) |
-| `$RNFirebaseDisableSPM = true` in Podfile | **CocoaPods** | Static linkage / no pre-built RN core (`use_frameworks! :linkage => :static`) |
-| RN < 0.75 | **CocoaPods** (automatic fallback) | Older React Native versions without `spm_dependency` support |
+| Condition                                          | Resolution                         | When to use                                                                   |
+| -------------------------------------------------- | ---------------------------------- | ----------------------------------------------------------------------------- |
+| RN >= 0.75 and `$RNFirebaseDisableSPM` **not set** | **SPM** (default)                  | Dynamic linkage / pre-built RN core (`use_frameworks! :linkage => :dynamic`)  |
+| `$RNFirebaseDisableSPM = true` in Podfile          | **CocoaPods**                      | Static linkage / no pre-built RN core (`use_frameworks! :linkage => :static`) |
+| RN < 0.75                                          | **CocoaPods** (automatic fallback) | Older React Native versions without `spm_dependency` support                  |
 
 > **Note on linkage:** firebase-ios-sdk SPM products use dynamic linkage. When using `use_frameworks! :linkage => :static`, each pod embeds its own copy of Firebase SPM products, causing duplicate symbol errors. Use CocoaPods mode (`$RNFirebaseDisableSPM = true`) with static linkage.
 
@@ -65,9 +65,11 @@ use_frameworks! :linkage => :dynamic
 
 > **Xcode 26 note:** If you see build errors about `FirebaseCoreInternal` or `FirebaseSharedSwift`
 > module resolution, add this to your Podfile `post_install`:
+>
 > ```ruby
 > config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
 > ```
+>
 > This does NOT disable SPM — it only tells the Swift compiler to use implicit module discovery
 > (the Xcode 16 default) so transitive SPM targets are resolved automatically.
 
