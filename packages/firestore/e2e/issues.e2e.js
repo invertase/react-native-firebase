@@ -158,13 +158,13 @@ describe('firestore()', function () {
 
           // Start the default database with an initial settings value.
           await defaultDb.settings({ cacheSizeBytes: 1048576 });
-          await setDoc(doc(defaultDb, `${COLLECTION}/issue8981/default`), { value: 1 });
+          await setDoc(doc(defaultDb, `${COLLECTION}/issue8981Default`), { value: 1 });
 
           // Switch to the second database under the *same* app and start it too - this
           // is the "different db ID hitting the same app" half of the bug: both native
           // calls are keyed by the same broken, appName-only cache slot.
           await secondDb.settings({ cacheSizeBytes: 2097152 });
-          await setDoc(doc(secondDb, `${COLLECTION}/issue8981/second`), { value: 2 });
+          await setDoc(doc(secondDb, `${COLLECTION}/issue8981Second`), { value: 2 });
 
           // Switch back to the default database and reapply *different* settings to an
           // already-started instance. Android's `FirebaseFirestore.setFirestoreSettings()`
@@ -174,11 +174,11 @@ describe('firestore()', function () {
           // `IllegalStateException: FirebaseFirestore has already been started...` before
           // the fix, once the cache-miss-on-every-call bug re-applies it natively.
           await defaultDb.settings({ cacheSizeBytes: 5242880 });
-          await setDoc(doc(defaultDb, `${COLLECTION}/issue8981/default`), { value: 3 });
+          await setDoc(doc(defaultDb, `${COLLECTION}/issue8981Default`), { value: 3 });
 
           const [snap1, snap2] = await Promise.all([
-            getDoc(doc(defaultDb, `${COLLECTION}/issue8981/default`)),
-            getDoc(doc(secondDb, `${COLLECTION}/issue8981/second`)),
+            getDoc(doc(defaultDb, `${COLLECTION}/issue8981Default`)),
+            getDoc(doc(secondDb, `${COLLECTION}/issue8981Second`)),
           ]);
           snap1.data().value.should.equal(3);
           snap2.data().value.should.equal(2);
