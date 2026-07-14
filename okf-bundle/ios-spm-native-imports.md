@@ -230,6 +230,69 @@ ld: symbol(s) not found for architecture arm64
 
 **Fix:** declared `s.ios.frameworks = 'Photos'` / `s.osx.frameworks = 'Photos'` (iOS + macOS only -- PhotoKit doesn't exist on tvOS, even though these files currently have no tvOS guard either; that's a pre-existing, separate gap left untouched here) in both podspecs, matching the existing `s.frameworks = 'AdSupport'` convention already used in `RNFBAnalytics.podspec`. Verified the regenerated `RNFBApp.debug.xcconfig`/`RNFBStorage.debug.xcconfig` `OTHER_LDFLAGS` now include `-framework "Photos"`, and `yarn tests:ios:build` succeeds end-to-end.
 
+## Release launch dyld failure -- missing SPM package frameworks in app bundle
+
+**Discovered via:** local `yarn tests:ios:test:release` against PR #8933 after the Release+SPM CI leg terminated before running integration tests. The app died at launch, before Jet/Detox could report a test assertion.
+
+### Symptom
+
+```
+Termination Reason: Namespace DYLD, Code 1, Library missing
+Library not loaded: @rpath/FirebaseAppCheckInterop.framework/FirebaseAppCheckInterop
+Referenced from: testing.app/Frameworks/RNFBStorage.framework/RNFBStorage
+Reason: tried: testing.app/Frameworks/FirebaseAppCheckInterop.framework/FirebaseAppCheckInterop (no such file)
+```
+
+`RNFBStorage.framework` had runtime load commands for Firebase's SPM interop frameworks (`FirebaseAppCheckInterop`, and also `FirebaseAuthInterop`), but CocoaPods' generated `[CP] Embed Pods Frameworks` phase only copied CocoaPods-built frameworks into `testing.app/Frameworks`. Xcode did build the SPM dynamic frameworks under:
+
+```
+tests/ios/build/Build/Products/Release-iphonesimulator/PackageFrameworks/
+```
+
+but nothing copied the needed package frameworks from that directory into the app bundle.
+
+### Root cause
+
+React Native's `spm_dependency()` integration adds Swift package product dependencies to individual pod targets inside `Pods.xcodeproj`. That is enough for compile/link, but it does not teach the app target's CocoaPods embed script about dynamic frameworks produced by Xcode's Swift package build.
+
+FirebaseStorage's public SPM product depends on internal Firebase package targets:
+
+```
+FirebaseStorage -> FirebaseAppCheckInterop
+FirebaseStorage -> FirebaseAuthInterop
+```
+
+Those interop targets are not public Firebase products and must not be added to `firebase_dependency(... products: [...])` directly. Adding the public `FirebaseAppCheck` product to `RNFBStorage.podspec` was also rejected: it makes Storage appear to depend on the consumer-facing App Check package and still does not address the general CocoaPods/SPM app-embedding gap.
+
+### Fix
+
+`packages/app/firebase_spm.rb` now patches React Native's SPM post-install path. When RNFB has Firebase SPM dependencies active, it injects an app-target shell phase named:
+
+```
+[RNFB] Embed Firebase SPM Frameworks
+```
+
+The phase runs after `[CP] Embed Pods Frameworks`, scans `$(BUILT_PRODUCTS_DIR)/PackageFrameworks`, and copies any missing `.framework` bundles into `$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)`. It skips destinations that already exist, so CocoaPods-owned Firebase frameworks remain owned by CocoaPods and are not overwritten. It strips headers/modules in the same spirit as CocoaPods' framework embed script and code-signs copied frameworks when signing is enabled.
+
+This keeps each RNFB podspec declaring only the Firebase public product it actually consumes. For Storage, that remains:
+
+```ruby
+firebase_dependency(s, firebase_sdk_version, ['FirebaseStorage'], 'Firebase/Storage')
+```
+
+### Validation
+
+After `yarn tests:ios:pod:install`, the generated `tests/ios/testing.xcodeproj/project.pbxproj` contains the `[RNFB] Embed Firebase SPM Frameworks` phase on the `testing` app target.
+
+After `yarn tests:ios:build:release`, `testing.app/Frameworks` contains the SPM package frameworks needed by `RNFBStorage.framework`, including:
+
+```
+FirebaseAppCheckInterop.framework
+FirebaseAuthInterop.framework
+```
+
+`yarn tests:ios:test:release` then reaches Jet `launch-ok` and starts running RNFB integration tests. The next observed failure is a later FirestorePipeline product/test crash (`Unsupported type: FIRVectorValue`), not the SPM release launch failure.
+
 ## Related
 
 * [`docs/ios-spm.md`](../docs/ios-spm.md) — public architecture/integration doc; §3.5 dual-import pattern, §6.6 tvOS TestFlight symbol-stripping crash (separate issue, same SPM effort)
