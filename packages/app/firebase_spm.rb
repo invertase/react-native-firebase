@@ -18,6 +18,8 @@
 
 require 'json'
 
+RNFIREBASE_SPM_EMBED_PHASE_NAME = '[RNFB] Embed Firebase SPM Frameworks'
+
 # Read Firebase SPM URL from app package.json (single source of truth).
 # __dir__ resolves to the directory of this file (packages/app/).
 # In monorepos with hoisted dependencies or pnpm, the path from other packages
@@ -53,6 +55,79 @@ end
 # don't silently switch to CocoaPods.
 def rnfirebase_spm_disabled?
   defined?($RNFirebaseDisableSPM) && $RNFirebaseDisableSPM == true
+end
+
+def rnfirebase_spm_embed_script
+  <<~'SCRIPT'
+    set -euo pipefail
+
+    package_frameworks_dir="${BUILT_PRODUCTS_DIR}/PackageFrameworks"
+    app_frameworks_dir="${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+
+    if [ ! -d "${package_frameworks_dir}" ]; then
+      exit 0
+    fi
+
+    mkdir -p "${app_frameworks_dir}"
+
+    find "${package_frameworks_dir}" -maxdepth 1 -type d -name "*.framework" -print0 | while IFS= read -r -d '' framework; do
+      framework_name="$(basename "${framework}")"
+      destination="${app_frameworks_dir}/${framework_name}"
+
+      if [ -e "${destination}" ]; then
+        continue
+      fi
+
+      echo "Embedding Firebase SPM framework ${framework_name}"
+      rsync -av --delete \
+        --filter "- Headers" \
+        --filter "- PrivateHeaders" \
+        --filter "- Modules" \
+        "${framework}" \
+        "${app_frameworks_dir}"
+
+      if [ -n "${EXPANDED_CODE_SIGN_IDENTITY:-}" ] && [ "${CODE_SIGNING_REQUIRED:-}" != "NO" ] && [ "${CODE_SIGNING_ALLOWED:-}" != "NO" ]; then
+        /usr/bin/codesign --force --sign "${EXPANDED_CODE_SIGN_IDENTITY}" ${OTHER_CODE_SIGN_FLAGS:-} --preserve-metadata=identifier,entitlements "${destination}"
+      fi
+    done
+  SCRIPT
+end
+
+def rnfirebase_add_spm_embed_phase(installer)
+  return unless defined?(SPM)
+
+  dependencies_by_pod = SPM.instance_variable_get(:@dependencies_by_pod) || {}
+  firebase_spm_enabled = dependencies_by_pod.values.flatten.any? do |dependency|
+    dependency[:url] == $firebase_spm_url
+  end
+  return unless firebase_spm_enabled
+
+  installer.aggregate_targets.each do |aggregate_target|
+    aggregate_target.user_project.native_targets.each do |target|
+      next unless target.respond_to?(:shell_script_build_phases)
+      next unless target.shell_script_build_phases.any? { |phase| phase.name == '[CP] Embed Pods Frameworks' }
+
+      phase = target.shell_script_build_phases.find { |candidate| candidate.name == RNFIREBASE_SPM_EMBED_PHASE_NAME }
+      phase ||= target.new_shell_script_build_phase(RNFIREBASE_SPM_EMBED_PHASE_NAME)
+
+      phase.shell_script = rnfirebase_spm_embed_script
+      phase.shell_path = '/bin/bash'
+      phase.always_out_of_date = '1'
+      phase.input_paths = ['${BUILT_PRODUCTS_DIR}/PackageFrameworks']
+      phase.output_paths = ['${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}']
+    end
+
+    aggregate_target.user_project.save
+  end
+end
+
+if defined?(SPM) && SPM.respond_to?(:apply_on_post_install) && !SPM.singleton_class.method_defined?(:rnfirebase_original_apply_on_post_install)
+  SPM.singleton_class.alias_method :rnfirebase_original_apply_on_post_install, :apply_on_post_install
+
+  def SPM.apply_on_post_install(installer)
+    rnfirebase_original_apply_on_post_install(installer)
+    rnfirebase_add_spm_embed_phase(installer)
+  end
 end
 
 # @param spec [Pod::Specification] The podspec object (the `s` in podspec DSL)

@@ -180,6 +180,7 @@
 				DAB1A184ED1FB4A446CF5BBC /* [CP-User] [RNFB] Core Configuration */,
 				2603193C849419258196E68A /* [CP] Copy Pods Resources */,
 				64F0A53627116CEBA061920E /* [CP] Embed Pods Frameworks */,
+				95A261AA4C124B836340E9E2 /* [RNFB] Embed Firebase SPM Frameworks */,
 			);
 			buildRules = (
 			);
@@ -345,6 +346,27 @@
 			shellPath = /bin/bash;
 			shellScript = "if [ -n \"$DEPLOY_DETOX_FRAMEWORK\" ]; then\nmkdir -p \"${BUILT_PRODUCTS_DIR}\"/\"${FRAMEWORKS_FOLDER_PATH}\"\ncp -r \"${PROJECT_DIR}\"/../node_modules/detox/Detox.framework \"${BUILT_PRODUCTS_DIR}\"/\"${FRAMEWORKS_FOLDER_PATH}\"\nfi\n";
 		};
+		95A261AA4C124B836340E9E2 /* [RNFB] Embed Firebase SPM Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${BUILT_PRODUCTS_DIR}/PackageFrameworks",
+			);
+			name = "[RNFB] Embed Firebase SPM Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "set -euo pipefail\n\npackage_frameworks_dir=\"${BUILT_PRODUCTS_DIR}/PackageFrameworks\"\napp_frameworks_dir=\"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\n\nif [ ! -d \"${package_frameworks_dir}\" ]; then\n  exit 0\nfi\n\nmkdir -p \"${app_frameworks_dir}\"\n\nfind \"${package_frameworks_dir}\" -maxdepth 1 -type d -name \"*.framework\" -print0 | while IFS= read -r -d '' framework; do\n  framework_name=\"$(basename \"${framework}\")\"\n  destination=\"${app_frameworks_dir}/${framework_name}\"\n\n  if [ -e \"${destination}\" ]; then\n    continue\n  fi\n\n  echo \"Embedding Firebase SPM framework ${framework_name}\"\n  rsync -av --delete \\\n    --filter \"- Headers\" \\\n    --filter \"- PrivateHeaders\" \\\n    --filter \"- Modules\" \\\n    \"${framework}\" \\\n    \"${app_frameworks_dir}\"\n\n  if [ -n \"${EXPANDED_CODE_SIGN_IDENTITY:-}\" ] && [ \"${CODE_SIGNING_REQUIRED:-}\" != \"NO\" ] && [ \"${CODE_SIGNING_ALLOWED:-}\" != \"NO\" ]; then\n    /usr/bin/codesign --force --sign \"${EXPANDED_CODE_SIGN_IDENTITY}\" ${OTHER_CODE_SIGN_FLAGS:-} --preserve-metadata=identifier,entitlements \"${destination}\"\n  fi\ndone\n";
+		};
 		DAB1A184ED1FB4A446CF5BBC /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -420,6 +442,7 @@
 					"-L$(SDKROOT)/usr/lib/swift",
 					"-lswiftCompatibility56",
 					"-lswiftCompatibilityPacks",
+					"-ObjC",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -profile-generate -profile-coverage-mapping";
 				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;
@@ -475,6 +498,7 @@
 					"-L$(SDKROOT)/usr/lib/swift",
 					"-lswiftCompatibility56",
 					"-lswiftCompatibilityPacks",
+					"-ObjC",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -profile-generate -profile-coverage-mapping";
 				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;
