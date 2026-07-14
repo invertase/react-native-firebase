@@ -26,10 +26,14 @@ import com.google.firebase.firestore.remote.FirestoreChannel;
 import io.invertase.firebase.app.ReactNativeFirebaseVersion;
 import io.invertase.firebase.common.UniversalFirebasePreferences;
 import java.lang.ref.WeakReference;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class UniversalFirebaseFirestoreCommon {
-  static WeakHashMap<String, WeakReference<FirebaseFirestore>> instanceCache = new WeakHashMap<>();
+  // Values are already wrapped in WeakReference, so a WeakHashMap (weak keys) is not needed here
+  // and is actively harmful: firestoreKey is a freshly concatenated String with no other strong
+  // reference, so it would be eligible for GC almost immediately, evicting the cache entry.
+  static ConcurrentHashMap<String, WeakReference<FirebaseFirestore>> instanceCache =
+      new ConcurrentHashMap<>();
 
   static String createFirestoreKey(String appName, String databaseId) {
     return appName + ":" + databaseId;
@@ -50,7 +54,7 @@ public class UniversalFirebaseFirestoreCommon {
 
     setFirestoreSettings(instance, firestoreKey);
 
-    instanceCache.put(appName, new WeakReference<FirebaseFirestore>(instance));
+    instanceCache.put(firestoreKey, new WeakReference<FirebaseFirestore>(instance));
 
     return instance;
   }

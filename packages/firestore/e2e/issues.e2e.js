@@ -124,6 +124,39 @@ describe('firestore()', function () {
       });
     });
 
+    describe('issue 8981 - android firestore instance cache key mismatch', function () {
+      it('does not reapply settings to an already-started native instance', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { initializeApp, deleteApp } = modular;
+        const { doc, getFirestore, setDoc } = firestoreModular;
+
+        const appName = `firestoreIssue8981${FirebaseHelpers.id}`;
+        const app = await initializeApp(FirebaseHelpers.app.config(), appName);
+        const db = getFirestore(app);
+        const emulatorSettings = {
+          host: `${getE2eEmulatorHost()}:8080`,
+          ssl: false,
+        };
+
+        try {
+          await db.settings({ ...emulatorSettings, cacheSizeBytes: 1048576 });
+          await setDoc(doc(db, `${COLLECTION}/issue8981`), { value: 1 });
+
+          await db.settings({ ...emulatorSettings, cacheSizeBytes: 5242880 });
+          await setDoc(doc(db, `${COLLECTION}/issue8981`), { value: 2 });
+        } catch (e) {
+          throw new Error(
+            `Regression in issue 8981: Firestore re-applied settings to an already-started native instance: ${e}`,
+          );
+        } finally {
+          await deleteApp(app);
+        }
+      });
+    });
+
     describe('number type consistency', function () {
       before(async function () {
         // FIXME:
