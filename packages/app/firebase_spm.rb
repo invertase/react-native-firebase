@@ -93,16 +93,37 @@ def rnfirebase_spm_embed_script
   SCRIPT
 end
 
+# Adds a build phase that copies Firebase's SPM-built dynamic frameworks
+# into the app bundle. Runs automatically on every `pod install`/`pod update`
+# -- see `rnfirebase_hook_cocoapods_post_install!` below -- so you normally
+# never need to call this yourself.
+#
+# Only needed when Firebase is resolved via SPM (the RN >= 0.75 default) with
+# dynamic linkage. It's a no-op (returns immediately) when Firebase used
+# CocoaPods instead, so it's always safe to leave in your Podfile if you're
+# calling it manually as a fallback (see below).
+#
+# Why this needs to exist at all: React Native's SPM integration
+# (`spm_dependency` -> `SPM.apply_on_post_install`, in RN's own bundled
+# `react_native_pods.rb`) adds Swift package product dependencies to pod
+# targets, but never teaches the app target's CocoaPods embed script about
+# the dynamic frameworks Xcode's SPM build produces -- so without this, apps
+# crash at launch with a missing-library dyld error.
+#
+# If the automatic hook below ever fails to install (e.g. a future CocoaPods
+# release restructures `Pod::Installer`), it prints a `pod install`-time
+# warning telling you to call this explicitly instead:
+#
+#   post_install do |installer|
+#     react_native_post_install(installer, ...)
+#     rnfirebase_add_spm_embed_phase(installer)
+#   end
 def rnfirebase_add_spm_embed_phase(installer)
-  return unless defined?(SPM)
-
-  dependencies_by_pod = SPM.instance_variable_get(:@dependencies_by_pod) || {}
-  firebase_spm_enabled = dependencies_by_pod.values.flatten.any? do |dependency|
-    dependency[:url] == $firebase_spm_url
-  end
-  return unless firebase_spm_enabled
+  return unless $rnfirebase_spm_active
 
   installer.aggregate_targets.each do |aggregate_target|
+    project_modified = false
+
     aggregate_target.user_project.native_targets.each do |target|
       next unless target.respond_to?(:shell_script_build_phases)
       next unless target.shell_script_build_phases.any? { |phase| phase.name == '[CP] Embed Pods Frameworks' }
@@ -115,20 +136,84 @@ def rnfirebase_add_spm_embed_phase(installer)
       phase.always_out_of_date = '1'
       phase.input_paths = ['${BUILT_PRODUCTS_DIR}/PackageFrameworks']
       phase.output_paths = ['${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}']
+      project_modified = true
     end
 
-    aggregate_target.user_project.save
+    # Only rewrite the pbxproj when we actually touched a target in it --
+    # avoids an unconditional save on every aggregate target whenever any
+    # podspec uses SPM, even ones with no '[CP] Embed Pods Frameworks' phase.
+    aggregate_target.user_project.save if project_modified
   end
 end
 
-if defined?(SPM) && SPM.respond_to?(:apply_on_post_install) && !SPM.singleton_class.method_defined?(:rnfirebase_original_apply_on_post_install)
-  SPM.singleton_class.alias_method :rnfirebase_original_apply_on_post_install, :apply_on_post_install
+# Hooks CocoaPods itself (not React Native) so `rnfirebase_add_spm_embed_phase`
+# runs automatically on every `pod install`/`pod update`, without requiring
+# any Podfile change from consumers.
+#
+# We wrap `Pod::Installer#run_podfile_post_install_hooks` -- the method
+# CocoaPods calls, unconditionally, on every install (it's what runs the
+# Podfile's own `post_install do |installer| ... end` block, if any, but the
+# *wrapper* method itself always runs even when the Podfile defines no
+# `post_install` at all). This is the same point in the install lifecycle
+# where consumers previously called `rnfirebase_add_spm_embed_phase`
+# manually, so behavior is unchanged -- only *how* it gets invoked differs.
+#
+# This file is `require`d from each RNFB podspec, which CocoaPods evaluates
+# early, during dependency resolution (itself one of the first steps inside
+# `Installer#install!`). That's early enough for the patch installed here to
+# affect the *later*, fresh call to `run_podfile_post_install_hooks` made
+# further down in that same `install!` run.
+#
+# Why hook CocoaPods instead of React Native: `Pod::Installer` is a stable,
+# semantically-versioned public class that the wider CocoaPods plugin
+# ecosystem already depends on directly, and its shape hasn't materially
+# changed in years. That makes it a meaningfully safer patch target than
+# RN's private, unversioned `react-native/scripts/cocoapods/spm.rb` helper,
+# which isn't part of any documented RN contract. If CocoaPods ever
+# renames/removes this method, the guards below no-op instead of raising,
+# and print a `pod install`-time warning (a visible integration error,
+# rather than a silent runtime dyld crash) telling you to call
+# `rnfirebase_add_spm_embed_phase(installer)` from your own Podfile as a
+# fallback.
+#
+# `installer_class` is only ever overridden by tests -- there's no real
+# `Pod::Installer` outside of a full CocoaPods environment.
+def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if defined?(Pod::Installer)))
+  hook_method = :run_podfile_post_install_hooks
+  original_method = :rnfirebase_original_run_podfile_post_install_hooks
 
-  def SPM.apply_on_post_install(installer)
-    rnfirebase_original_apply_on_post_install(installer)
-    rnfirebase_add_spm_embed_phase(installer)
+  return unless installer_class
+  was_private = installer_class.private_method_defined?(hook_method)
+  return unless was_private || installer_class.method_defined?(hook_method)
+  return if installer_class.method_defined?(original_method) || installer_class.private_method_defined?(original_method)
+
+  installer_class.class_eval do
+    alias_method original_method, hook_method
+
+    define_method(hook_method) do
+      result = send(original_method)
+      begin
+        rnfirebase_add_spm_embed_phase(self)
+      rescue => e
+        if defined?(Pod::UI)
+          Pod::UI.warn "[react-native-firebase] Couldn't embed Firebase SPM frameworks " \
+            "automatically (#{e.class}: #{e.message}). Add `rnfirebase_add_spm_embed_phase(installer)` " \
+            'to your Podfile\'s post_install block as a fallback.'
+        end
+      end
+      result
+    end
+  end
+  installer_class.send(:private, hook_method) if was_private
+rescue => e
+  if defined?(Pod::UI)
+    Pod::UI.warn "[react-native-firebase] Couldn't hook CocoaPods to auto-embed Firebase SPM " \
+      "frameworks (#{e.class}: #{e.message}). Add `rnfirebase_add_spm_embed_phase(installer)` " \
+      'to your Podfile\'s post_install block as a fallback.'
   end
 end
+
+rnfirebase_hook_cocoapods_post_install!
 
 # @param spec [Pod::Specification] The podspec object (the `s` in podspec DSL)
 # @param version [String] Firebase SDK version (e.g., '12.10.0')
@@ -137,6 +222,10 @@ end
 #   Can be a single string like 'Firebase/Auth' or an array like ['Firebase/Messaging', 'FirebaseCoreExtension']
 def firebase_dependency(spec, version, spm_products, pods)
   if defined?(spm_dependency) && !rnfirebase_spm_disabled?
+    # Tracked ourselves (rather than inspecting RN's internal `SPM` object's
+    # dependency list) so `rnfirebase_add_spm_embed_phase` doesn't depend on
+    # any RN-internal state shape -- only on whether *we* ever took this path.
+    $rnfirebase_spm_active = true
     if defined?(Pod) && defined?(Pod::UI)
       Pod::UI.puts "[react-native-firebase] #{spec.name}: ".yellow +
         "Using SPM for Firebase dependency resolution (products: #{spm_products.join(', ')})"

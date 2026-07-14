@@ -75,6 +75,13 @@ target 'testing' do
       # :ccache_enabled => true
     )
 
+    # No explicit call needed here: when Firebase is resolved via SPM (see
+    # packages/app/firebase_spm.rb), requiring this Podfile's dependencies
+    # already hooked CocoaPods to embed Firebase's SPM-built dynamic
+    # frameworks into the app bundle automatically. Without it, apps using
+    # SPM+dynamic linkage would crash at launch with a missing-library dyld
+    # error.
+
     apply_ios_native_coverage = lambda do |build_settings, link_profile:|
       build_settings['CLANG_ENABLE_CODE_COVERAGE'] = 'YES'
       build_settings['OTHER_CFLAGS'] = '$(inherited) -fprofile-instr-generate -fcoverage-mapping'

@@ -56,12 +56,16 @@ Each RNFB module uses `firebase_dependency()` (defined in `firebase_spm.rb`) to 
 
 #### Option A — SPM (default, recommended for Xcode 26+)
 
-No changes needed. Just make sure your Podfile uses dynamic linkage:
+Make sure your Podfile uses dynamic linkage:
 
 ```ruby
 # Podfile
 use_frameworks! :linkage => :dynamic
 ```
+
+`pod install` automatically embeds Firebase's SPM-built frameworks into your app bundle
+(no Podfile changes needed for this) — without it, apps would crash at launch with a
+missing-library `dyld` error.
 
 > **Xcode 26 note:** If you see build errors about `FirebaseCoreInternal` or `FirebaseSharedSwift`
 > module resolution, add this to your Podfile `post_install`:
