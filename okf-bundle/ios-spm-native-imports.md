@@ -297,3 +297,4 @@ FirebaseAuthInterop.framework
 
 * [`docs/ios-spm.md`](../docs/ios-spm.md) — public architecture/integration doc; §3.5 dual-import pattern, §6.6 tvOS TestFlight symbol-stripping crash (separate issue, same SPM effort)
 * [CI workflows — iOS](ci-workflows/ios.md) — general iOS CI troubleshooting (simulator, Detox/Jet); this SPM build failure is a compile-time issue, not covered there
+* [CI workflows — iOS § `ios-release-archive` job](ci-workflows/ios.md#ios-release-archive-job--real-device-archive-validation-not-simulator) — automated real-device Archive-action check for exactly the framework-embedding regression class in [the section above](#release-launch-dyld-failure----missing-spm-package-frameworks-in-app-bundle), added because that fix was only ever validated against a `Release-iphonesimulator` build, not a real device Archive

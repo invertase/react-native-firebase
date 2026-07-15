@@ -490,6 +490,20 @@ See also [coverage design — e2e TypeScript coverage](../testing/coverage-desig
 
 **Cloud API quota (Installations / Remote Config)** — platform-agnostic; see [firebase testing project — CI triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure).
 
+### `ios-release-archive` job — real device Archive validation (not simulator)
+
+**Why it exists** — the `ios` job's `Build iOS App Release` step only ever runs `xcodebuild build -sdk iphonesimulator`. Xcode's **Archive** action is materially different from **build**: it forces `ONLY_ACTIVE_ARCH=NO` and `DEPLOYMENT_POSTPROCESSING=YES` (full install-style stripping) for a real device SDK, regardless of project/Podfile settings. That gap is exactly what let two real-world regressions through the existing matrix undetected: the tvOS TestFlight-only crash reported in [PR #8933](https://github.com/invertase/react-native-firebase/pull/8933#issuecomment-4308578826), and the release+SPM dyld launch failure fixed by `packages/app/firebase_spm.rb`'s embed phase — see [`ios-spm-native-imports.md` § Release launch dyld failure](../ios-spm-native-imports.md#release-launch-dyld-failure----missing-spm-package-frameworks-in-app-bundle), whose fix was itself only ever validated against a `Release-iphonesimulator` build, never a real Archive.
+
+**What it does** — a separate, lean job (matrix: `dep-resolution: ['spm', 'cocoapods']`; no Detox/emulator/simulator) that:
+
+1. `pod install` (same `Configure Dependency Resolution Mode` step as the `ios` job).
+2. Runs `xcodebuild archive -destination 'generic/platform=iOS' -configuration Release` with code signing disabled (`CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO`) — no Apple signing identity or provisioning profile needed; this produces an unsigned `.xcarchive` purely to exercise the real Archive build settings.
+3. `.github/workflows/scripts/verify-ios-release-archive.sh` walks every embedded binary's `otool -L` output and fails the job if any `@rpath/*.framework/*` dependency isn't actually present under `testing.app/Frameworks/` — an automated, regression-proof version of the manual check recorded in [`ios-spm-native-imports.md`](../ios-spm-native-imports.md).
+
+**What it is not** — not a substitute for an actual signed TestFlight/device install (it never runs the binary, only inspects it), and it does not catch runtime-only failures like the tvOS symbol-stripping crash's `-ObjC` fix attempt (that needs a real launch, not just static inspection). It catches the "framework built but never embedded/stripped at archive time" class of bug automatically, on every PR, without device hardware or signing credentials in CI.
+
+**Triage** — job name `iOS Release Archive (spm|cocoapods)`; on failure, `verify-ios-release-archive.sh`'s `[ios-release-archive] MISSING: ...` lines name the exact framework and the binary that needed it (same shape as the `ios-spm-native-imports.md` dyld error, but caught in CI instead of a later manual `yarn tests:ios:test:release` run).
+
 ### Operational notes
 
 - **macOS runner load / Spotlight** — GHA macOS hosts may run Spotlight indexing (or other disk-heavy work) at any time and saturate disk I/O. Disabling Spotlight is **not** an option for Xcode CI. Design for tolerance: longer grace windows, non-throwing `Server.send()`, Jet e2e retry on orchestration crashes, trimmed CI instrumentation ([CI baseload policy](#ci-baseload-policy-instrumentation)), `resource-monitor` + `disconnect_context` for triage. Do not treat high `loadavg` alone as a misconfiguration.
