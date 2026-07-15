@@ -31,7 +31,7 @@ When Apple released **Xcode 26** (2026), it introduced a significant change: the
 
 The problem is that **Firebase iOS SDK**, when installed via **CocoaPods** (the traditional iOS dependency manager), has internal modules (`FirebaseCoreInternal`, `FirebaseSharedSwift`) that **are not exposed as public products**. In Xcode 16, this was not a problem because the compiler found them automatically. In Xcode 26, the compiler no longer searches for them on its own and throws compilation errors.
 
-**The solution:** Use **Swift Package Manager (SPM)** as the primary method for resolving Firebase dependencies. SPM is Apple's native package manager and correctly handles internal module visibility. As an alternative, CocoaPods is maintained for projects that need it, with a workaround (`SWIFT_ENABLE_EXPLICIT_MODULES=NO`).
+**The solution:** The CocoaPods specs repository [is going read-only on December 2, 2026](https://blog.cocoapods.org/CocoaPods-Specs-Repo/). After that date there will be no way to get new versions of firebase-ios-sdk via CocoaPods — so we need to integrate firebase-ios-sdk using the new standard for iOS dependencies: the Swift Package Manager (SPM). As an alternative, CocoaPods is maintained for projects that need it, with a workaround (`SWIFT_ENABLE_EXPLICIT_MODULES=NO`).
 
 ### What was implemented
 
