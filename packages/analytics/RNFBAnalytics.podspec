@@ -85,17 +85,25 @@ Pod::Spec.new do |s|
     s.frameworks =       'AdSupport'
   end
 
-  # GoogleAdsOnDeviceConversion (CocoaPods only)
-  # This is a static xcframework distributed separately from firebase-ios-sdk.
-  # It is NOT available as an SPM product in the firebase-ios-sdk Package.swift.
-  # When using SPM (dynamic linkage), this static xcframework causes duplicate
-  # symbol errors. Use CocoaPods mode ($RNFirebaseDisableSPM = true) if you need
-  # on-device conversion measurement.
+  # GoogleAdsOnDeviceConversion
+  # Not part of firebase-ios-sdk's own Package.swift, but Google publishes it as
+  # its own standalone SPM package (googleads/google-ads-on-device-conversion-ios-sdk),
+  # independent of the Firebase package graph. Resolved via a second, independent
+  # spm_dependency() call -- RN's SPMManager keys dependencies by pod target and
+  # package URL, so multiple unrelated SPM packages on the same pod target are
+  # supported. If linker errors occur (some consumers have hit this when the
+  # dependency sits behind an indirect/wrapper package -- see
+  # https://github.com/firebase/firebase-ios-sdk/issues/15916), try adding
+  # `-ObjC` and `-lc++` to the app target's "Other Linker Settings".
   # See: https://developers.google.com/google-ads/api/docs/conversions/upload-identifiers
   if defined?($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion) && ($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion == true)
     if defined?(spm_dependency) && !rnfirebase_spm_disabled?
-      Pod::UI.warn "#{s.name}: GoogleAdsOnDeviceConversion is not available in SPM mode. " \
-        "Set $RNFirebaseDisableSPM = true in your Podfile to use this feature."
+      Pod::UI.puts "#{s.name}: Using GoogleAdsOnDeviceConversion SPM package."
+      spm_dependency(s,
+        url: 'https://github.com/googleads/google-ads-on-device-conversion-ios-sdk.git',
+        requirement: { kind: 'upToNextMajorVersion', minimumVersion: '3.6.1' },
+        products: ['GoogleAdsOnDeviceConversion']
+      )
     else
       Pod::UI.puts "#{s.name}: GoogleAdsOnDeviceConversion pod added"
       s.dependency          'GoogleAdsOnDeviceConversion'
