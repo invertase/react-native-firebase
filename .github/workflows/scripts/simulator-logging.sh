@@ -15,7 +15,7 @@ restart_simulator_logging() {
   # fix iOS perf issues" step -- so no .ips crash report is ever produced). Capture it here
   # instead so launch-time dyld failures (e.g. release+spm launch timeouts) are diagnosable
   # from sim-app.log without re-enabling the crash reporter daemon.
-  local log_predicate='process == "testing" OR (process == "SpringBoard" AND eventMessage CONTAINS "invertase") OR eventMessage CONTAINS[c] "RNFBStorage" OR eventMessage CONTAINS[c] "FIRStorage" OR eventMessage CONTAINS[c] "StorageTask" OR subsystem == "com.apple.dyld" OR eventMessage CONTAINS[c] "dyld"'
+  local log_predicate='process == "testing" OR (process == "SpringBoard" AND eventMessage CONTAINS "invertase") OR subsystem == "com.apple.dyld" OR eventMessage CONTAINS[c] "dyld"'
 
   if ! xcrun simctl list devices booted 2>/dev/null | grep -q Booted; then
     echo "[boot-status] phase=log_streams skipped=no_booted_simulator"
