@@ -18,7 +18,7 @@
 // This module intentionally has no Firebase imports. FirebaseStorage is a
 // pure-Swift SPM product with no importable ObjC header, so `@import
 // FirebaseStorage` cannot be used from an Objective-C++ (.mm) TurboModule
-// (see docs/ios-spm.md and okf-bundle/ios-spm-native-imports.md). Every
+// (see docs/ios-spm.mdx and okf-bundle/ios-spm-native-imports.md). Every
 // Firebase Storage SDK call is routed through the plain Objective-C
 // RNFBStorageHelper class instead, which can safely `@import
 // FirebaseStorage` because it compiles as ObjC, not ObjC++.

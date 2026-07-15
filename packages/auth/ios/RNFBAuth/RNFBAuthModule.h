@@ -20,7 +20,7 @@
 // `@import FirebaseAuth` (the only way to get their real interface) can't be
 // used from an Objective-C++ (.mm) TurboModule when C++ modules are disabled
 // (required by React Native's JSI headers). All Firebase Auth calls are routed
-// through RNFBAuthHelper instead. See docs/ios-spm.md and
+// through RNFBAuthHelper instead. See docs/ios-spm.mdx and
 // okf-bundle/ios-spm-native-imports.md.
 #import <Foundation/Foundation.h>
 #import "RNFBAuthTurboModules.h"

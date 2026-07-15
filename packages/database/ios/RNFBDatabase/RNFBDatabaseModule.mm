@@ -29,7 +29,7 @@
 // Swift-only products cannot be used from Objective-C++ (.mm) files when
 // C++ modules are disabled (required for compatibility with React Native's
 // JSI headers). All Firebase Database calls are delegated to the plain
-// Objective-C `RNFBDatabaseModuleHelper`. See docs/ios-spm.md and
+// Objective-C `RNFBDatabaseModuleHelper`. See docs/ios-spm.mdx and
 // okf-bundle/ios-spm-native-imports.md for details.
 
 @interface RNFBDatabaseModule () <NativeRNFBTurboDatabaseSpec, RCTBridgeModule>

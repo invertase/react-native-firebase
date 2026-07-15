@@ -17,7 +17,7 @@
 
 #import <Foundation/Foundation.h>
 
-// Plain Objective-C helper (see docs/ios-spm.md and
+// Plain Objective-C helper (see docs/ios-spm.mdx and
 // okf-bundle/ios-spm-native-imports.md) that owns every call touching
 // `FIRDatabase`/`FIRDatabaseReference` for the main database module. This
 // keeps `RNFBDatabaseModule.mm` free of Firebase Database imports, which is

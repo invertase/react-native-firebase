@@ -18,7 +18,7 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
 
-// Plain Objective-C helper (see docs/ios-spm.md and
+// Plain Objective-C helper (see docs/ios-spm.mdx and
 // okf-bundle/ios-spm-native-imports.md) that owns every call touching
 // `FIRStorage`/`FIRStorageReference` for RNFBStorageModule. This keeps
 // RNFBStorageModule.mm free of Firebase Storage imports, which is required

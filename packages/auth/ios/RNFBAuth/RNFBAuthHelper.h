@@ -18,7 +18,7 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
 
-// Plain Objective-C helper (see docs/ios-spm.md and
+// Plain Objective-C helper (see docs/ios-spm.mdx and
 // okf-bundle/ios-spm-native-imports.md) that owns every call touching
 // `FIRAuth`/`FIRUser` for RNFBAuthModule. This keeps RNFBAuthModule.mm free of
 // Firebase Auth imports, which is required because the real `FIRAuth`/`FIRUser`

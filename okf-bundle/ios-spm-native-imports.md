@@ -8,7 +8,7 @@ timestamp: 2026-07-10T00:00:00Z
 
 # iOS SPM native dual-import pattern
 
-**Canonical owner** of the native-file side of iOS SPM support: why the "3-path" `__has_include` pattern exists, the ccache-masked build failure that revealed 30 files were missing it, why that pattern is structurally insufficient for pure-Swift-core SPM products (Storage, Remote Config, Database, In-App Messaging, and — less obviously — Auth), and the current per-file audit. [`docs/ios-spm.md`](../docs/ios-spm.md) is the public/contributor-facing doc (architecture, integration guide, glossary) — this page is the durable OKF record of the bug investigation and fix; it does not restate the public doc.
+**Canonical owner** of the native-file side of iOS SPM support: why the "3-path" `__has_include` pattern exists, the ccache-masked build failure that revealed 30 files were missing it, why that pattern is structurally insufficient for pure-Swift-core SPM products (Storage, Remote Config, Database, In-App Messaging, and — less obviously — Auth), and the current per-file audit. [`docs/ios-spm.mdx`](../docs/ios-spm.mdx) is the public/contributor-facing doc (architecture, integration guide, glossary) — this page is the durable OKF record of the bug investigation and fix; it does not restate the public doc.
 
 **Policy:** [OKF documentation and commit policy](documentation-policy.md).
 
@@ -19,7 +19,7 @@ Every native iOS `.h`/`.m`/`.mm` file that imports Firebase must compile under *
 - **CocoaPods** exposes an umbrella header, `Firebase/Firebase.h`, that pulls in every subspec.
 - **SPM** does not generate that umbrella — each Firebase product only exposes its own module header (e.g. `FirebaseAuth/FirebaseAuth.h`).
 
-The canonical pattern ([`docs/ios-spm.md` §3.5](../docs/ios-spm.md#35-the-43-native-ios-files--dual-imports)) is:
+The canonical pattern ([`docs/ios-spm.mdx` §3.5](../docs/ios-spm.mdx#35-the-43-native-ios-files--dual-imports)) is:
 
 ```objc
 #if __has_include(<Firebase/Firebase.h>)
@@ -295,6 +295,6 @@ FirebaseAuthInterop.framework
 
 ## Related
 
-* [`docs/ios-spm.md`](../docs/ios-spm.md) — public architecture/integration doc; §3.5 dual-import pattern, §6.6 tvOS TestFlight symbol-stripping crash (separate issue, same SPM effort)
+* [`docs/ios-spm.mdx`](../docs/ios-spm.mdx) — public architecture/integration doc; §3.5 dual-import pattern, §6.6 tvOS TestFlight symbol-stripping crash (separate issue, same SPM effort)
 * [CI workflows — iOS](ci-workflows/ios.md) — general iOS CI troubleshooting (simulator, Detox/Jet); this SPM build failure is a compile-time issue, not covered there
 * [CI workflows — iOS § `ios-release-archive` job](ci-workflows/ios.md#ios-release-archive-job--real-device-archive-validation-not-simulator) — automated real-device Archive-action check for exactly the framework-embedding regression class in [the section above](#release-launch-dyld-failure----missing-spm-package-frameworks-in-app-bundle), added because that fix was only ever validated against a `Release-iphonesimulator` build, not a real device Archive
