@@ -17,8 +17,8 @@
 #if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
 #elif __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
-#import <FirebaseCore/FirebaseCore.h>
 #import <FirebaseMessaging/FirebaseMessaging.h>
+#import <FirebaseCore/FirebaseCore.h>
 #else
 @import FirebaseCore;
 @import FirebaseMessaging;

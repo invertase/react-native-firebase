@@ -64,12 +64,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseReference);
       props:(NSDictionary *)props
     resolve:(RCTPromiseResolveBlock)resolve
      reject:(RCTPromiseRejectBlock)reject {
-  [RNFBDatabaseReferenceHelper set:app
-                             dbURL:dbURL
-                              path:path
-                             props:props
-                           resolve:resolve
-                            reject:reject];
+  [RNFBDatabaseReferenceHelper set:app dbURL:dbURL path:path props:props resolve:resolve reject:reject];
 }
 
 - (void)update:(NSString *)app
@@ -93,11 +88,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseReference);
                 resolve:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject {
   [RNFBDatabaseReferenceHelper setWithPriority:app
-                                         dbURL:dbURL
-                                          path:path
-                                         props:props
-                                       resolve:resolve
-                                        reject:reject];
+                                          dbURL:dbURL
+                                           path:path
+                                          props:props
+                                        resolve:resolve
+                                         reject:reject];
 }
 
 - (void)remove:(NSString *)app
@@ -115,11 +110,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseReference);
             resolve:(RCTPromiseResolveBlock)resolve
              reject:(RCTPromiseRejectBlock)reject {
   [RNFBDatabaseReferenceHelper setPriority:app
-                                     dbURL:dbURL
-                                      path:path
-                                     props:props
-                                   resolve:resolve
-                                    reject:reject];
+                                      dbURL:dbURL
+                                       path:path
+                                      props:props
+                                    resolve:resolve
+                                     reject:reject];
 }
 
 @end

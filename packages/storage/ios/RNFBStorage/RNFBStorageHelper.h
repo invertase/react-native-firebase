@@ -30,14 +30,14 @@
 + (void)invalidate;
 
 + (void)deleteObject:(NSString *)appName
-                 url:(NSString *)url
-             resolve:(RCTPromiseResolveBlock)resolve
-              reject:(RCTPromiseRejectBlock)reject;
+                  url:(NSString *)url
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject;
 
 + (void)getDownloadURL:(NSString *)appName
-                   url:(NSString *)url
-               resolve:(RCTPromiseResolveBlock)resolve
-                reject:(RCTPromiseRejectBlock)reject;
+                    url:(NSString *)url
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject;
 
 + (void)getMetadata:(NSString *)appName
                 url:(NSString *)url
@@ -45,17 +45,17 @@
              reject:(RCTPromiseRejectBlock)reject;
 
 + (void)updateMetadata:(NSString *)appName
-                   url:(NSString *)url
-              metadata:(NSDictionary *_Nullable)metadata
-               resolve:(RCTPromiseResolveBlock)resolve
-                reject:(RCTPromiseRejectBlock)reject;
+                    url:(NSString *)url
+               metadata:(NSDictionary *_Nullable)metadata
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject;
 
 + (void)list:(NSString *)appName
-           url:(NSString *)url
-    maxResults:(long)maxResults
-     pageToken:(NSString *_Nullable)pageToken
-       resolve:(RCTPromiseResolveBlock)resolve
-        reject:(RCTPromiseRejectBlock)reject;
+          url:(NSString *)url
+   maxResults:(long)maxResults
+    pageToken:(NSString *_Nullable)pageToken
+      resolve:(RCTPromiseResolveBlock)resolve
+       reject:(RCTPromiseRejectBlock)reject;
 
 + (void)listAll:(NSString *)appName
             url:(NSString *)url
@@ -63,48 +63,48 @@
          reject:(RCTPromiseRejectBlock)reject;
 
 + (void)setMaxDownloadRetryTime:(NSString *)appName
-                   milliseconds:(double)milliseconds
-                        resolve:(RCTPromiseResolveBlock)resolve
-                         reject:(RCTPromiseRejectBlock)reject;
-
-+ (void)setMaxOperationRetryTime:(NSString *)appName
                     milliseconds:(double)milliseconds
                          resolve:(RCTPromiseResolveBlock)resolve
                           reject:(RCTPromiseRejectBlock)reject;
 
++ (void)setMaxOperationRetryTime:(NSString *)appName
+                     milliseconds:(double)milliseconds
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject;
+
 + (void)setMaxUploadRetryTime:(NSString *)appName
-                 milliseconds:(double)milliseconds
-                      resolve:(RCTPromiseResolveBlock)resolve
-                       reject:(RCTPromiseRejectBlock)reject;
+                  milliseconds:(double)milliseconds
+                       resolve:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject;
 
 + (void)writeToFile:(NSString *)appName
-                url:(NSString *)url
-      localFilePath:(NSString *)localFilePath
-             taskId:(double)taskId
-            resolve:(RCTPromiseResolveBlock)resolve
-             reject:(RCTPromiseRejectBlock)reject;
+                 url:(NSString *)url
+       localFilePath:(NSString *)localFilePath
+              taskId:(double)taskId
+             resolve:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject;
 
 + (void)putFile:(NSString *)appName
-              url:(NSString *)url
-    localFilePath:(NSString *)localFilePath
-         metadata:(NSDictionary *_Nullable)metadata
-           taskId:(double)taskId
-          resolve:(RCTPromiseResolveBlock)resolve
-           reject:(RCTPromiseRejectBlock)reject;
+             url:(NSString *)url
+   localFilePath:(NSString *)localFilePath
+        metadata:(NSDictionary *_Nullable)metadata
+          taskId:(double)taskId
+         resolve:(RCTPromiseResolveBlock)resolve
+          reject:(RCTPromiseRejectBlock)reject;
 
 + (void)putString:(NSString *)appName
-              url:(NSString *)url
-           string:(NSString *)string
-           format:(NSString *)format
-         metadata:(NSDictionary *_Nullable)metadata
-           taskId:(double)taskId
-          resolve:(RCTPromiseResolveBlock)resolve
-           reject:(RCTPromiseRejectBlock)reject;
+               url:(NSString *)url
+            string:(NSString *)string
+            format:(NSString *)format
+          metadata:(NSDictionary *_Nullable)metadata
+            taskId:(double)taskId
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
 
 + (void)useEmulator:(NSString *)appName
-               host:(NSString *)host
-               port:(double)port
-          bucketUrl:(NSString *)bucketUrl;
+                host:(NSString *)host
+                port:(double)port
+           bucketUrl:(NSString *)bucketUrl;
 
 + (NSNumber *)setTaskStatus:(NSString *)appName taskId:(double)taskId status:(double)status;
 

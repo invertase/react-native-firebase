@@ -24,36 +24,36 @@
 @interface RNFBDatabaseOnDisconnectHelper : NSObject
 
 + (void)onDisconnectCancel:(NSString *)app
-                     dbURL:(NSString *)dbURL
-                      path:(NSString *)path
-                   resolve:(RCTPromiseResolveBlock)resolve
-                    reject:(RCTPromiseRejectBlock)reject;
+                      dbURL:(NSString *)dbURL
+                       path:(NSString *)path
+                    resolve:(RCTPromiseResolveBlock)resolve
+                     reject:(RCTPromiseRejectBlock)reject;
 
 + (void)onDisconnectRemove:(NSString *)app
-                     dbURL:(NSString *)dbURL
-                      path:(NSString *)path
-                   resolve:(RCTPromiseResolveBlock)resolve
-                    reject:(RCTPromiseRejectBlock)reject;
+                      dbURL:(NSString *)dbURL
+                       path:(NSString *)path
+                    resolve:(RCTPromiseResolveBlock)resolve
+                     reject:(RCTPromiseRejectBlock)reject;
 
 + (void)onDisconnectSet:(NSString *)app
-                  dbURL:(NSString *)dbURL
-                   path:(NSString *)path
-                  props:(NSDictionary *)props
-                resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject;
+                   dbURL:(NSString *)dbURL
+                    path:(NSString *)path
+                   props:(NSDictionary *)props
+                 resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject;
 
 + (void)onDisconnectSetWithPriority:(NSString *)app
-                              dbURL:(NSString *)dbURL
-                               path:(NSString *)path
-                              props:(NSDictionary *)props
-                            resolve:(RCTPromiseResolveBlock)resolve
-                             reject:(RCTPromiseRejectBlock)reject;
+                               dbURL:(NSString *)dbURL
+                                path:(NSString *)path
+                               props:(NSDictionary *)props
+                             resolve:(RCTPromiseResolveBlock)resolve
+                              reject:(RCTPromiseRejectBlock)reject;
 
 + (void)onDisconnectUpdate:(NSString *)app
-                     dbURL:(NSString *)dbURL
-                      path:(NSString *)path
-                     props:(NSDictionary *)props
-                   resolve:(RCTPromiseResolveBlock)resolve
-                    reject:(RCTPromiseRejectBlock)reject;
+                      dbURL:(NSString *)dbURL
+                       path:(NSString *)path
+                      props:(NSDictionary *)props
+                    resolve:(RCTPromiseResolveBlock)resolve
+                     reject:(RCTPromiseRejectBlock)reject;
 
 @end

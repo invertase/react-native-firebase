@@ -73,9 +73,9 @@ static NSTimeInterval maxOperationRetryTime = 120;
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
  */
 + (void)deleteObject:(NSString *)appName
-                 url:(NSString *)url
-             resolve:(RCTPromiseResolveBlock)resolve
-              reject:(RCTPromiseRejectBlock)reject {
+                  url:(NSString *)url
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
@@ -92,9 +92,9 @@ static NSTimeInterval maxOperationRetryTime = 120;
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getDownloadURL
  */
 + (void)getDownloadURL:(NSString *)appName
-                   url:(NSString *)url
-               resolve:(RCTPromiseResolveBlock)resolve
-                reject:(RCTPromiseRejectBlock)reject {
+                    url:(NSString *)url
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
@@ -146,10 +146,10 @@ static NSTimeInterval maxOperationRetryTime = 120;
 }
 
 + (void)updateMetadata:(NSString *)appName
-                   url:(NSString *)url
-              metadata:(NSDictionary *_Nullable)metadata
-               resolve:(RCTPromiseResolveBlock)resolve
-                reject:(RCTPromiseRejectBlock)reject {
+                    url:(NSString *)url
+               metadata:(NSDictionary *_Nullable)metadata
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
   NSDictionary *metadataMap = [self decodedMetadataMap:metadata];
@@ -179,11 +179,11 @@ static NSTimeInterval maxOperationRetryTime = 120;
 
 // list
 + (void)list:(NSString *)appName
-           url:(NSString *)url
-    maxResults:(long)maxResults
-     pageToken:(NSString *_Nullable)pageToken
-       resolve:(RCTPromiseResolveBlock)resolve
-        reject:(RCTPromiseRejectBlock)reject {
+          url:(NSString *)url
+   maxResults:(long)maxResults
+    pageToken:(NSString *_Nullable)pageToken
+      resolve:(RCTPromiseResolveBlock)resolve
+       reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
@@ -234,9 +234,9 @@ static NSTimeInterval maxOperationRetryTime = 120;
 
 // setMaxDownloadRetryTime
 + (void)setMaxDownloadRetryTime:(NSString *)appName
-                   milliseconds:(double)milliseconds
-                        resolve:(RCTPromiseResolveBlock)resolve
-                         reject:(RCTPromiseRejectBlock)reject {
+                    milliseconds:(double)milliseconds
+                         resolve:(RCTPromiseResolveBlock)resolve
+                          reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   maxDownloadRetryTime = milliseconds / 1000;
   [[FIRStorage storageForApp:firebaseApp] setMaxDownloadRetryTime:milliseconds / 1000];
@@ -245,9 +245,9 @@ static NSTimeInterval maxOperationRetryTime = 120;
 
 // setMaxOperationRetryTime
 + (void)setMaxOperationRetryTime:(NSString *)appName
-                    milliseconds:(double)milliseconds
-                         resolve:(RCTPromiseResolveBlock)resolve
-                          reject:(RCTPromiseRejectBlock)reject {
+                     milliseconds:(double)milliseconds
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   maxOperationRetryTime = milliseconds / 1000;
   [[FIRStorage storageForApp:firebaseApp] setMaxOperationRetryTime:milliseconds / 1000];
@@ -256,9 +256,9 @@ static NSTimeInterval maxOperationRetryTime = 120;
 
 // setMaxUploadRetryTime
 + (void)setMaxUploadRetryTime:(NSString *)appName
-                 milliseconds:(double)milliseconds
-                      resolve:(RCTPromiseResolveBlock)resolve
-                       reject:(RCTPromiseRejectBlock)reject {
+                  milliseconds:(double)milliseconds
+                       resolve:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   maxUploadRetryTime = milliseconds / 1000;
   [[FIRStorage storageForApp:firebaseApp] setMaxUploadRetryTime:milliseconds / 1000];
@@ -267,11 +267,11 @@ static NSTimeInterval maxOperationRetryTime = 120;
 
 // writeToFile
 + (void)writeToFile:(NSString *)appName
-                url:(NSString *)url
-      localFilePath:(NSString *)localFilePath
-             taskId:(double)taskId
-            resolve:(RCTPromiseResolveBlock)resolve
-             reject:(RCTPromiseRejectBlock)reject {
+                 url:(NSString *)url
+       localFilePath:(NSString *)localFilePath
+              taskId:(double)taskId
+             resolve:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject {
   [self initializeSharedStateOnce];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   NSNumber *taskIdNumber = @(taskId);
@@ -378,12 +378,12 @@ static NSTimeInterval maxOperationRetryTime = 120;
 
 // putFile
 + (void)putFile:(NSString *)appName
-              url:(NSString *)url
-    localFilePath:(NSString *)localFilePath
-         metadata:(NSDictionary *_Nullable)metadata
-           taskId:(double)taskId
-          resolve:(RCTPromiseResolveBlock)resolve
-           reject:(RCTPromiseRejectBlock)reject {
+             url:(NSString *)url
+   localFilePath:(NSString *)localFilePath
+        metadata:(NSDictionary *_Nullable)metadata
+          taskId:(double)taskId
+         resolve:(RCTPromiseResolveBlock)resolve
+          reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   NSNumber *taskIdNumber = @(taskId);
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
@@ -449,13 +449,13 @@ static NSTimeInterval maxOperationRetryTime = 120;
 
 // putString
 + (void)putString:(NSString *)appName
-              url:(NSString *)url
-           string:(NSString *)string
-           format:(NSString *)format
-         metadata:(NSDictionary *_Nullable)metadata
-           taskId:(double)taskId
-          resolve:(RCTPromiseResolveBlock)resolve
-           reject:(RCTPromiseRejectBlock)reject {
+               url:(NSString *)url
+            string:(NSString *)string
+            format:(NSString *)format
+          metadata:(NSDictionary *_Nullable)metadata
+            taskId:(double)taskId
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   NSNumber *taskIdNumber = @(taskId);
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
@@ -481,9 +481,9 @@ static NSTimeInterval maxOperationRetryTime = 120;
 
 // useEmulator
 + (void)useEmulator:(NSString *)appName
-               host:(NSString *)host
-               port:(double)port
-          bucketUrl:(NSString *)bucketUrl {
+                host:(NSString *)host
+                port:(double)port
+           bucketUrl:(NSString *)bucketUrl {
   [self initializeSharedStateOnce];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   emulatorHost = host;

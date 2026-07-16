@@ -64,13 +64,8 @@ target 'testing' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  # Use pre-compiled Firestore frameworks to optimize CocoaPods-only builds.
-  # In SPM mode RNFBFirestore already resolves FirebaseFirestore through Swift
-  # Package Manager; adding the CocoaPod as well builds Firebase's transitive
-  # frameworks twice and makes device archives fail with duplicate outputs.
-  if defined?($RNFirebaseDisableSPM) && $RNFirebaseDisableSPM == true
-    pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
-  end
+  # Use pre-compiled firestore frameworks to optimize compile time.
+  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
 
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
@@ -126,16 +121,8 @@ target 'testing' do
           current_ldflags = config.build_settings['OTHER_LDFLAGS']
           current_ldflags = '$(inherited)' if current_ldflags.nil? || current_ldflags.empty?
           unless current_ldflags.include?('-ObjC')
-            current_ldflags = "#{current_ldflags} -ObjC"
+            config.build_settings['OTHER_LDFLAGS'] = "#{current_ldflags} -ObjC"
           end
-          # AppDelegate directly configures FIRApp/FIROptions. Those symbols
-          # used to link accidentally through the precompiled Firestore
-          # CocoaPod; in SPM mode, link the already-resolved FirebaseCore
-          # product explicitly without adding a second dependency graph.
-          unless defined?($RNFirebaseDisableSPM) && $RNFirebaseDisableSPM == true
-            current_ldflags = "#{current_ldflags} -framework FirebaseCore"
-          end
-          config.build_settings['OTHER_LDFLAGS'] = current_ldflags
           # Explicit modules is a build-system-wide setting for Swift Package
           # products resolved via this project/scheme (SPM packages don't have
           # their own toggle for it). Leaving it enabled here — even though

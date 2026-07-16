@@ -443,8 +443,6 @@
 					"-lswiftCompatibility56",
 					"-lswiftCompatibilityPacks",
 					"-ObjC",
-					"-framework",
-					FirebaseCore,
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -profile-generate -profile-coverage-mapping";
 				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;
@@ -501,8 +499,6 @@
 					"-lswiftCompatibility56",
 					"-lswiftCompatibilityPacks",
 					"-ObjC",
-					"-framework",
-					FirebaseCore,
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -profile-generate -profile-coverage-mapping";
 				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;

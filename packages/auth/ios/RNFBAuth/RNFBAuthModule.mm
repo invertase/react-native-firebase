@@ -19,8 +19,8 @@
 // RNFBAuthModule.h for why. Every Firebase Auth SDK call is routed through the
 // plain Objective-C RNFBAuthHelper class instead, which can safely `@import
 // FirebaseAuth` because it compiles as ObjC, not ObjC++.
-#import "RNFBAuthModule.h"
 #import "RNFBAuthHelper.h"
+#import "RNFBAuthModule.h"
 #import "RNFBAuthTurboModules.h"
 
 @implementation RNFBAuthModule
@@ -80,9 +80,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                                      resolve:(RCTPromiseResolveBlock)resolve
                                       reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper setAppVerificationDisabledForTesting:appName
-                                              disabled:disabled
-                                               resolve:resolve
-                                                reject:reject];
+                                               disabled:disabled
+                                                resolve:resolve
+                                                 reject:reject];
 }
 
 - (void)forceRecaptchaFlowForTesting:(NSString *)appName
@@ -156,10 +156,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                                resolve:(RCTPromiseResolveBlock)resolve
                                 reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper createUserWithEmailAndPassword:appName
-                                           email:email
-                                        password:password
-                                         resolve:resolve
-                                          reject:reject];
+                                            email:email
+                                         password:password
+                                          resolve:resolve
+                                           reject:reject];
 }
 
 - (void)deleteUser:(NSString *)appName
@@ -179,9 +179,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                       resolve:(RCTPromiseResolveBlock)resolve
                        reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper sendEmailVerification:appName
-                     actionCodeSettings:actionCodeSettings
-                                resolve:resolve
-                                 reject:reject];
+                      actionCodeSettings:actionCodeSettings
+                                 resolve:resolve
+                                  reject:reject];
 }
 
 - (void)verifyBeforeUpdateEmail:(NSString *)appName
@@ -190,10 +190,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                         resolve:(RCTPromiseResolveBlock)resolve
                          reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper verifyBeforeUpdateEmail:appName
-                                    email:email
-                       actionCodeSettings:actionCodeSettings
-                                  resolve:resolve
-                                   reject:reject];
+                                     email:email
+                        actionCodeSettings:actionCodeSettings
+                                   resolve:resolve
+                                    reject:reject];
 }
 
 - (void)updateEmail:(NSString *)appName
@@ -218,11 +218,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                   resolve:(RCTPromiseResolveBlock)resolve
                    reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper updatePhoneNumber:appName
-                           provider:provider
-                          authToken:authToken
-                         authSecret:authSecret
-                            resolve:resolve
-                             reject:reject];
+                            provider:provider
+                           authToken:authToken
+                          authSecret:authSecret
+                             resolve:resolve
+                              reject:reject];
 }
 #endif
 
@@ -244,7 +244,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
             forceRefresh:(BOOL)forceRefresh
                  resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject {
-  [RNFBAuthHelper getIdTokenResult:appName forceRefresh:forceRefresh resolve:resolve reject:reject];
+  [RNFBAuthHelper getIdTokenResult:appName
+                       forceRefresh:forceRefresh
+                            resolve:resolve
+                             reject:reject];
 }
 
 - (void)signInWithCredential:(NSString *)appName
@@ -274,10 +277,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper confirmPasswordReset:appName
-                                  code:code
-                           newPassword:newPassword
-                               resolve:resolve
-                                reject:reject];
+                                    code:code
+                             newPassword:newPassword
+                                 resolve:resolve
+                                  reject:reject];
 }
 
 - (void)applyActionCode:(NSString *)appName
@@ -299,9 +302,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper revokeToken:appName
-            authorizationCode:authorizationCode
-                      resolve:resolve
-                       reject:reject];
+             authorizationCode:authorizationCode
+                       resolve:resolve
+                        reject:reject];
 }
 
 - (void)sendPasswordResetEmail:(NSString *)appName
@@ -310,10 +313,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                        resolve:(RCTPromiseResolveBlock)resolve
                         reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper sendPasswordResetEmail:appName
-                                   email:email
-                      actionCodeSettings:actionCodeSettings
-                                 resolve:resolve
-                                  reject:reject];
+                                     email:email
+                        actionCodeSettings:actionCodeSettings
+                                   resolve:resolve
+                                    reject:reject];
 }
 
 - (void)sendSignInLinkToEmail:(NSString *)appName
@@ -322,10 +325,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                       resolve:(RCTPromiseResolveBlock)resolve
                        reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper sendSignInLinkToEmail:appName
-                                  email:email
-                     actionCodeSettings:actionCodeSettings
-                                resolve:resolve
-                                 reject:reject];
+                                    email:email
+                       actionCodeSettings:actionCodeSettings
+                                  resolve:resolve
+                                   reject:reject];
 }
 
 - (void)signInWithCustomToken:(NSString *)appName
@@ -333,9 +336,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                       resolve:(RCTPromiseResolveBlock)resolve
                        reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper signInWithCustomToken:appName
-                            customToken:customToken
-                                resolve:resolve
-                                 reject:reject];
+                             customToken:customToken
+                                 resolve:resolve
+                                  reject:reject];
 }
 
 #if TARGET_OS_IOS
@@ -345,10 +348,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                       resolve:(RCTPromiseResolveBlock)resolve
                        reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper signInWithPhoneNumber:appName
-                            phoneNumber:phoneNumber
-                            forceResend:forceResend
-                                resolve:resolve
-                                 reject:reject];
+                             phoneNumber:phoneNumber
+                             forceResend:forceResend
+                                 resolve:resolve
+                                  reject:reject];
 }
 
 - (void)verifyPhoneNumberWithMultiFactorInfo:(NSString *)appName
@@ -357,10 +360,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                                      resolve:(RCTPromiseResolveBlock)resolve
                                       reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper verifyPhoneNumberWithMultiFactorInfo:appName
-                                               hintUid:hintUid
-                                            sessionKey:sessionKey
-                                               resolve:resolve
-                                                reject:reject];
+                                                hintUid:hintUid
+                                             sessionKey:sessionKey
+                                                resolve:resolve
+                                                 reject:reject];
 }
 
 - (void)verifyPhoneNumberForMultiFactor:(NSString *)appName
@@ -369,10 +372,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                                 resolve:(RCTPromiseResolveBlock)resolve
                                  reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper verifyPhoneNumberForMultiFactor:appName
-                                      phoneNumber:phoneNumber
-                                       sessionKey:sessionKey
-                                          resolve:resolve
-                                           reject:reject];
+                                        phoneNumber:phoneNumber
+                                         sessionKey:sessionKey
+                                            resolve:resolve
+                                             reject:reject];
 }
 
 - (void)resolveMultiFactorSignIn:(NSString *)appName
@@ -382,11 +385,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                          resolve:(RCTPromiseResolveBlock)resolve
                           reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper resolveMultiFactorSignIn:appName
-                                   session:session
-                            verificationId:verificationId
-                          verificationCode:verificationCode
-                                   resolve:resolve
-                                    reject:reject];
+                                    session:session
+                             verificationId:verificationId
+                           verificationCode:verificationCode
+                                    resolve:resolve
+                                     reject:reject];
 }
 
 - (void)resolveTotpSignIn:(NSString *)appName
@@ -396,11 +399,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                   resolve:(RCTPromiseResolveBlock)resolve
                    reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper resolveTotpSignIn:appName
-                         sessionKey:sessionKey
-                                uid:uid
-                    oneTimePassword:oneTimePassword
-                            resolve:resolve
-                             reject:reject];
+                          sessionKey:sessionKey
+                                 uid:uid
+                     oneTimePassword:oneTimePassword
+                             resolve:resolve
+                              reject:reject];
 }
 
 - (void)generateTotpSecret:(NSString *)appName
@@ -415,9 +418,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                         account:(NSString *)account
                          issuer:(NSString *)issuer {
   return [RNFBAuthHelper generateQrCodeUrl:appName
-                                 secretKey:secretKey
-                                   account:account
-                                    issuer:issuer];
+                                  secretKey:secretKey
+                                    account:account
+                                     issuer:issuer];
 }
 
 - (void)openInOtpApp:(NSString *)appName
@@ -473,10 +476,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                   timeout:(double)timeout
               forceResend:(BOOL)forceResend {
   [RNFBAuthHelper verifyPhoneNumber:appName
-                        phoneNumber:phoneNumber
-                         requestKey:requestKey
-                            timeout:timeout
-                        forceResend:forceResend];
+                          phoneNumber:phoneNumber
+                           requestKey:requestKey
+                              timeout:timeout
+                          forceResend:forceResend];
 }
 
 - (void)confirmationResultConfirm:(NSString *)appName
@@ -484,9 +487,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                           resolve:(RCTPromiseResolveBlock)resolve
                            reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper confirmationResultConfirm:appName
-                           verificationCode:verificationCode
-                                    resolve:resolve
-                                     reject:reject];
+                            verificationCode:verificationCode
+                                     resolve:resolve
+                                      reject:reject];
 }
 #endif
 
@@ -497,11 +500,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper linkWithCredential:appName
-                            provider:provider
-                           authToken:authToken
-                          authSecret:authSecret
-                             resolve:resolve
-                              reject:reject];
+                             provider:provider
+                            authToken:authToken
+                           authSecret:authSecret
+                              resolve:resolve
+                               reject:reject];
 }
 
 - (void)linkWithProvider:(NSString *)appName
@@ -525,11 +528,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                              resolve:(RCTPromiseResolveBlock)resolve
                               reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper reauthenticateWithCredential:appName
-                                      provider:provider
-                                     authToken:authToken
-                                    authSecret:authSecret
-                                       resolve:resolve
-                                        reject:reject];
+                                       provider:provider
+                                      authToken:authToken
+                                     authSecret:authSecret
+                                        resolve:resolve
+                                         reject:reject];
 }
 
 - (void)reauthenticateWithProvider:(NSString *)appName
@@ -537,9 +540,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                            resolve:(RCTPromiseResolveBlock)resolve
                             reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper reauthenticateWithProvider:appName
-                                    provider:provider
-                                     resolve:resolve
-                                      reject:reject];
+                                     provider:provider
+                                      resolve:resolve
+                                       reject:reject];
 }
 
 - (void)fetchSignInMethodsForEmail:(NSString *)appName
@@ -579,8 +582,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
 #pragma mark Constants
 
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboAuth::Constants::Builder>)constantsToExport {
-  return
-      [_RCTTypedModuleConstants newWithUnsafeDictionary:[RNFBAuthHelper authConstantsDictionary]];
+  return [_RCTTypedModuleConstants
+      newWithUnsafeDictionary:[RNFBAuthHelper authConstantsDictionary]];
 }
 
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboAuth::Constants::Builder>)getConstants {

@@ -93,13 +93,13 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseQuery);
            resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject {
   [RNFBDatabaseQueryHelper keepSynced:app
-                                dbURL:dbURL
-                                  key:key
-                                 path:path
-                            modifiers:modifiers
-                              enabled:value
-                              resolve:resolve
-                               reject:reject];
+                                 dbURL:dbURL
+                                   key:key
+                                  path:path
+                             modifiers:modifiers
+                               enabled:value
+                               resolve:resolve
+                                reject:reject];
 }
 
 @end

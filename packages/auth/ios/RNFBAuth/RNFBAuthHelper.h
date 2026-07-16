@@ -48,14 +48,14 @@
                      reject:(RCTPromiseRejectBlock)reject;
 
 + (void)setAppVerificationDisabledForTesting:(NSString *)appName
-                                    disabled:(BOOL)disabled
-                                     resolve:(RCTPromiseResolveBlock)resolve
-                                      reject:(RCTPromiseRejectBlock)reject;
+                                     disabled:(BOOL)disabled
+                                      resolve:(RCTPromiseResolveBlock)resolve
+                                       reject:(RCTPromiseRejectBlock)reject;
 
 + (void)useUserAccessGroup:(NSString *)appName
-           userAccessGroup:(NSString *)userAccessGroup
-                   resolve:(RCTPromiseResolveBlock)resolve
-                    reject:(RCTPromiseRejectBlock)reject;
+            userAccessGroup:(NSString *)userAccessGroup
+                    resolve:(RCTPromiseResolveBlock)resolve
+                     reject:(RCTPromiseRejectBlock)reject;
 
 + (void)setLanguageCode:(NSString *)appName code:(NSString *)code;
 
@@ -79,41 +79,41 @@
                    reject:(RCTPromiseRejectBlock)reject;
 
 + (void)signInWithEmailAndPassword:(NSString *)appName
-                             email:(NSString *)email
-                          password:(NSString *)password
-                           resolve:(RCTPromiseResolveBlock)resolve
-                            reject:(RCTPromiseRejectBlock)reject;
+                              email:(NSString *)email
+                           password:(NSString *)password
+                            resolve:(RCTPromiseResolveBlock)resolve
+                             reject:(RCTPromiseRejectBlock)reject;
 
 + (NSNumber *)isSignInWithEmailLink:(NSString *)appName emailLink:(NSString *)emailLink;
 
 + (void)signInWithEmailLink:(NSString *)appName
-                      email:(NSString *)email
-                  emailLink:(NSString *)emailLink
-                    resolve:(RCTPromiseResolveBlock)resolve
-                     reject:(RCTPromiseRejectBlock)reject;
-
-+ (void)createUserWithEmailAndPassword:(NSString *)appName
-                                 email:(NSString *)email
-                              password:(NSString *)password
-                               resolve:(RCTPromiseResolveBlock)resolve
-                                reject:(RCTPromiseRejectBlock)reject;
-
-+ (void)signInWithCustomToken:(NSString *)appName
-                  customToken:(NSString *)customToken
-                      resolve:(RCTPromiseResolveBlock)resolve
-                       reject:(RCTPromiseRejectBlock)reject;
-
-+ (void)signInWithCredential:(NSString *)appName
-                    provider:(NSString *)provider
-                   authToken:(NSString *)authToken
-                  authSecret:(NSString *)authSecret
+                       email:(NSString *)email
+                   emailLink:(NSString *)emailLink
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject;
 
++ (void)createUserWithEmailAndPassword:(NSString *)appName
+                                  email:(NSString *)email
+                               password:(NSString *)password
+                                resolve:(RCTPromiseResolveBlock)resolve
+                                 reject:(RCTPromiseRejectBlock)reject;
+
++ (void)signInWithCustomToken:(NSString *)appName
+                   customToken:(NSString *)customToken
+                       resolve:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject;
+
++ (void)signInWithCredential:(NSString *)appName
+                     provider:(NSString *)provider
+                    authToken:(NSString *)authToken
+                   authSecret:(NSString *)authSecret
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject;
+
 + (void)signInWithProvider:(NSString *)appName
-                  provider:(NSDictionary *)provider
-                   resolve:(RCTPromiseResolveBlock)resolve
-                    reject:(RCTPromiseRejectBlock)reject;
+                   provider:(NSDictionary *)provider
+                    resolve:(RCTPromiseResolveBlock)resolve
+                     reject:(RCTPromiseRejectBlock)reject;
 
 #pragma mark - Current user
 
@@ -131,10 +131,10 @@
                        reject:(RCTPromiseRejectBlock)reject;
 
 + (void)verifyBeforeUpdateEmail:(NSString *)appName
-                          email:(NSString *)email
-             actionCodeSettings:(NSDictionary *)actionCodeSettings
-                        resolve:(RCTPromiseResolveBlock)resolve
-                         reject:(RCTPromiseRejectBlock)reject;
+                           email:(NSString *)email
+              actionCodeSettings:(NSDictionary *)actionCodeSettings
+                         resolve:(RCTPromiseResolveBlock)resolve
+                          reject:(RCTPromiseRejectBlock)reject;
 
 + (void)updateEmail:(NSString *)appName
               email:(NSString *)email
@@ -202,27 +202,27 @@
                             reject:(RCTPromiseRejectBlock)reject;
 
 + (void)fetchSignInMethodsForEmail:(NSString *)appName
-                             email:(NSString *)email
-                           resolve:(RCTPromiseResolveBlock)resolve
-                            reject:(RCTPromiseRejectBlock)reject;
+                              email:(NSString *)email
+                            resolve:(RCTPromiseResolveBlock)resolve
+                             reject:(RCTPromiseRejectBlock)reject;
 
 #pragma mark - Action codes
 
 + (void)confirmPasswordReset:(NSString *)appName
-                        code:(NSString *)code
-                 newPassword:(NSString *)newPassword
-                     resolve:(RCTPromiseResolveBlock)resolve
-                      reject:(RCTPromiseRejectBlock)reject;
+                         code:(NSString *)code
+                  newPassword:(NSString *)newPassword
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject;
 
 + (void)applyActionCode:(NSString *)appName
-                   code:(NSString *)code
-                resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject;
+                    code:(NSString *)code
+                 resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject;
 
 + (void)checkActionCode:(NSString *)appName
-                   code:(NSString *)code
-                resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject;
+                    code:(NSString *)code
+                 resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject;
 
 + (void)revokeToken:(NSString *)appName
     authorizationCode:(NSString *)authorizationCode
@@ -230,70 +230,68 @@
                reject:(RCTPromiseRejectBlock)reject;
 
 + (void)sendPasswordResetEmail:(NSString *)appName
+                          email:(NSString *)email
+             actionCodeSettings:(NSDictionary *)actionCodeSettings
+                        resolve:(RCTPromiseResolveBlock)resolve
+                         reject:(RCTPromiseRejectBlock)reject;
+
++ (void)sendSignInLinkToEmail:(NSString *)appName
                          email:(NSString *)email
             actionCodeSettings:(NSDictionary *)actionCodeSettings
                        resolve:(RCTPromiseResolveBlock)resolve
                         reject:(RCTPromiseRejectBlock)reject;
 
-+ (void)sendSignInLinkToEmail:(NSString *)appName
-                        email:(NSString *)email
-           actionCodeSettings:(NSDictionary *)actionCodeSettings
-                      resolve:(RCTPromiseResolveBlock)resolve
-                       reject:(RCTPromiseRejectBlock)reject;
-
 + (void)verifyPasswordResetCode:(NSString *)appName
-                           code:(NSString *)code
-                        resolve:(RCTPromiseResolveBlock)resolve
-                         reject:(RCTPromiseRejectBlock)reject;
+                            code:(NSString *)code
+                         resolve:(RCTPromiseResolveBlock)resolve
+                          reject:(RCTPromiseRejectBlock)reject;
 
 #pragma mark - Phone auth / multi-factor (iOS only)
 
 #if TARGET_OS_IOS
 + (void)signInWithPhoneNumber:(NSString *)appName
-                  phoneNumber:(NSString *)phoneNumber
-                  forceResend:(BOOL)forceResend
-                      resolve:(RCTPromiseResolveBlock)resolve
-                       reject:(RCTPromiseRejectBlock)reject;
+                   phoneNumber:(NSString *)phoneNumber
+                   forceResend:(BOOL)forceResend
+                       resolve:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject;
 
 + (void)verifyPhoneNumberWithMultiFactorInfo:(NSString *)appName
-                                     hintUid:(NSString *)hintUid
-                                  sessionKey:(NSString *)sessionKey
-                                     resolve:(RCTPromiseResolveBlock)resolve
-                                      reject:(RCTPromiseRejectBlock)reject;
+                                      hintUid:(NSString *)hintUid
+                                   sessionKey:(NSString *)sessionKey
+                                      resolve:(RCTPromiseResolveBlock)resolve
+                                       reject:(RCTPromiseRejectBlock)reject;
 
 + (void)verifyPhoneNumberForMultiFactor:(NSString *)appName
-                            phoneNumber:(NSString *)phoneNumber
-                             sessionKey:(NSString *)sessionKey
-                                resolve:(RCTPromiseResolveBlock)resolve
-                                 reject:(RCTPromiseRejectBlock)reject;
+                             phoneNumber:(NSString *)phoneNumber
+                              sessionKey:(NSString *)sessionKey
+                                 resolve:(RCTPromiseResolveBlock)resolve
+                                  reject:(RCTPromiseRejectBlock)reject;
 
 + (void)resolveMultiFactorSignIn:(NSString *)appName
-                         session:(NSString *)session
-                  verificationId:(NSString *)verificationId
-                verificationCode:(NSString *)verificationCode
-                         resolve:(RCTPromiseResolveBlock)resolve
-                          reject:(RCTPromiseRejectBlock)reject;
+                          session:(NSString *)session
+                   verificationId:(NSString *)verificationId
+                 verificationCode:(NSString *)verificationCode
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject;
 
 + (void)resolveTotpSignIn:(NSString *)appName
-               sessionKey:(NSString *)sessionKey
-                      uid:(NSString *)uid
-          oneTimePassword:(NSString *)oneTimePassword
-                  resolve:(RCTPromiseResolveBlock)resolve
-                   reject:(RCTPromiseRejectBlock)reject;
-
-+ (void)generateTotpSecret:(NSString *)appName
                 sessionKey:(NSString *)sessionKey
+                       uid:(NSString *)uid
+           oneTimePassword:(NSString *)oneTimePassword
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject;
 
-+ (NSString *)generateQrCodeUrl:(NSString *)appName
-                      secretKey:(NSString *)secretKey
-                        account:(NSString *)account
-                         issuer:(NSString *)issuer;
++ (void)generateTotpSecret:(NSString *)appName
+                 sessionKey:(NSString *)sessionKey
+                    resolve:(RCTPromiseResolveBlock)resolve
+                     reject:(RCTPromiseRejectBlock)reject;
 
-+ (void)openInOtpApp:(NSString *)appName
-           secretKey:(NSString *)secretKey
-           qrCodeUri:(NSString *)qrCodeUri;
++ (NSString *)generateQrCodeUrl:(NSString *)appName
+                       secretKey:(NSString *)secretKey
+                         account:(NSString *)account
+                          issuer:(NSString *)issuer;
+
++ (void)openInOtpApp:(NSString *)appName secretKey:(NSString *)secretKey qrCodeUri:(NSString *)qrCodeUri;
 
 + (void)getSession:(NSString *)appName
            resolve:(RCTPromiseResolveBlock)resolve
@@ -305,29 +303,29 @@
                      reject:(RCTPromiseRejectBlock)reject;
 
 + (void)finalizeMultiFactorEnrollment:(NSString *)appName
-                       verificationId:(NSString *)verificationId
-                     verificationCode:(NSString *)verificationCode
-                          displayName:(NSString *_Nullable)displayName
-                              resolve:(RCTPromiseResolveBlock)resolve
-                               reject:(RCTPromiseRejectBlock)reject;
+                        verificationId:(NSString *)verificationId
+                      verificationCode:(NSString *)verificationCode
+                           displayName:(NSString *_Nullable)displayName
+                               resolve:(RCTPromiseResolveBlock)resolve
+                                reject:(RCTPromiseRejectBlock)reject;
 
 + (void)finalizeTotpEnrollment:(NSString *)appName
-                    totpSecret:(NSString *)totpSecret
-              verificationCode:(NSString *)verificationCode
-                   displayName:(NSString *_Nullable)displayName
-                       resolve:(RCTPromiseResolveBlock)resolve
-                        reject:(RCTPromiseRejectBlock)reject;
+                     totpSecret:(NSString *)totpSecret
+               verificationCode:(NSString *)verificationCode
+                    displayName:(NSString *_Nullable)displayName
+                        resolve:(RCTPromiseResolveBlock)resolve
+                         reject:(RCTPromiseRejectBlock)reject;
 
 + (void)verifyPhoneNumber:(NSString *)appName
-              phoneNumber:(NSString *)phoneNumber
-               requestKey:(NSString *)requestKey
-                  timeout:(double)timeout
-              forceResend:(BOOL)forceResend;
+               phoneNumber:(NSString *)phoneNumber
+                requestKey:(NSString *)requestKey
+                   timeout:(double)timeout
+               forceResend:(BOOL)forceResend;
 
 + (void)confirmationResultConfirm:(NSString *)appName
-                 verificationCode:(NSString *)verificationCode
-                          resolve:(RCTPromiseResolveBlock)resolve
-                           reject:(RCTPromiseRejectBlock)reject;
+                  verificationCode:(NSString *)verificationCode
+                           resolve:(RCTPromiseResolveBlock)resolve
+                            reject:(RCTPromiseRejectBlock)reject;
 #endif
 
 #pragma mark - Constants
