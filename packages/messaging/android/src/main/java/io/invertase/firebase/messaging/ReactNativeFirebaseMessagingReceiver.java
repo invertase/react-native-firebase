@@ -26,6 +26,22 @@ public class ReactNativeFirebaseMessagingReceiver extends BroadcastReceiver {
       Log.e(TAG, "broadcast intent received with no extras");
       return;
     }
+    // Mirror the routing guards of the official FirebaseMessagingService: the
+    // c2dm RECEIVE action also carries control broadcasts (deleted_messages,
+    // send_event, send_error) and non-message intents such as the wrapped
+    // NOTIFICATION_DISMISS analytics intent that FCM attaches as deleteIntent
+    // to notifications it displays itself. The official SDK routes those to
+    // dedicated callbacks and never surfaces them through onMessageReceived;
+    // without these guards they are emitted to JS as empty remote messages.
+    String messageType = intent.getExtras().getString("message_type");
+    if (messageType != null && !"gcm".equals(messageType)) {
+      Log.d(TAG, "broadcast ignored, non-message type: " + messageType);
+      return;
+    }
+    if (intent.getExtras().getString("google.message_id") == null) {
+      Log.d(TAG, "broadcast ignored, no google.message_id (not an FCM message)");
+      return;
+    }
     RemoteMessage remoteMessage = new RemoteMessage(intent.getExtras());
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
