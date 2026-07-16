@@ -33,12 +33,12 @@ public class ReactNativeFirebaseMessagingReceiver extends BroadcastReceiver {
     // to notifications it displays itself. The official SDK routes those to
     // dedicated callbacks and never surfaces them through onMessageReceived;
     // without these guards they are emitted to JS as empty remote messages.
-    String messageType = intent.getExtras().getString("message_type");
+    String messageType = intent.getStringExtra("message_type");
     if (messageType != null && !"gcm".equals(messageType)) {
       Log.d(TAG, "broadcast ignored, non-message type: " + messageType);
       return;
     }
-    if (intent.getExtras().getString("google.message_id") == null) {
+    if (intent.getStringExtra("google.message_id") == null) {
       Log.d(TAG, "broadcast ignored, no google.message_id (not an FCM message)");
       return;
     }
