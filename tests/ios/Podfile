@@ -64,8 +64,13 @@ target 'testing' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  # Use pre-compiled firestore frameworks to optimize compile time.
-  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
+  # Use pre-compiled Firestore frameworks to optimize CocoaPods-only builds.
+  # In SPM mode RNFBFirestore already resolves FirebaseFirestore through Swift
+  # Package Manager; adding the CocoaPod as well builds Firebase's transitive
+  # frameworks twice and makes device archives fail with duplicate outputs.
+  if defined?($RNFirebaseDisableSPM) && $RNFirebaseDisableSPM == true
+    pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
+  end
 
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202

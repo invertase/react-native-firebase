@@ -22,8 +22,8 @@
 // SPM: FirebaseStorage is a pure-Swift module — there is no
 // FirebaseStorage/FirebaseStorage.h. The generated ObjC interface header is
 // the only way to get FIRStorageReference / FIRStorageMetadata etc.
-#import <FirebaseStorage/FirebaseStorage-Swift.h>
 #import <FirebaseCore/FirebaseCore.h>
+#import <FirebaseStorage/FirebaseStorage-Swift.h>
 #else
 @import FirebaseCore;
 @import FirebaseStorage;

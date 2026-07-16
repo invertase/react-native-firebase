@@ -22,8 +22,8 @@
 // Firebase Storage SDK call is routed through the plain Objective-C
 // RNFBStorageHelper class instead, which can safely `@import
 // FirebaseStorage` because it compiles as ObjC, not ObjC++.
-#import "RNFBStorageHelper.h"
 #import "RNFBStorageModule.h"
+#import "RNFBStorageHelper.h"
 #import "RNFBStorageTurboModules.h"
 
 @implementation RNFBStorageModule
@@ -86,7 +86,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboStorage);
               metadata:(NSDictionary *_Nullable)metadata
                resolve:(RCTPromiseResolveBlock)resolve
                 reject:(RCTPromiseRejectBlock)reject {
-  [RNFBStorageHelper updateMetadata:appName url:url metadata:metadata resolve:resolve reject:reject];
+  [RNFBStorageHelper updateMetadata:appName
+                                url:url
+                           metadata:metadata
+                            resolve:resolve
+                             reject:reject];
 }
 
 /**
@@ -100,11 +104,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboStorage);
   long maxResults = (long)listOptions.maxResults();
   NSString *pageToken = listOptions.pageToken();
   [RNFBStorageHelper list:appName
-                       url:url
-                maxResults:maxResults
-                 pageToken:pageToken
-                   resolve:resolve
-                    reject:reject];
+                      url:url
+               maxResults:maxResults
+                pageToken:pageToken
+                  resolve:resolve
+                   reject:reject];
 }
 
 /**
@@ -168,11 +172,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboStorage);
             resolve:(RCTPromiseResolveBlock)resolve
              reject:(RCTPromiseRejectBlock)reject {
   [RNFBStorageHelper writeToFile:appName
-                              url:url
-                    localFilePath:localFilePath
-                           taskId:taskId
-                          resolve:resolve
-                           reject:reject];
+                             url:url
+                   localFilePath:localFilePath
+                          taskId:taskId
+                         resolve:resolve
+                          reject:reject];
 }
 
 /**
@@ -186,12 +190,12 @@ RCT_EXPORT_MODULE(NativeRNFBTurboStorage);
           resolve:(RCTPromiseResolveBlock)resolve
            reject:(RCTPromiseRejectBlock)reject {
   [RNFBStorageHelper putFile:appName
-                          url:url
-                localFilePath:localFilePath
-                     metadata:metadata
-                       taskId:taskId
-                      resolve:resolve
-                       reject:reject];
+                         url:url
+               localFilePath:localFilePath
+                    metadata:metadata
+                      taskId:taskId
+                     resolve:resolve
+                      reject:reject];
 }
 
 /**
@@ -206,13 +210,13 @@ RCT_EXPORT_MODULE(NativeRNFBTurboStorage);
           resolve:(RCTPromiseResolveBlock)resolve
            reject:(RCTPromiseRejectBlock)reject {
   [RNFBStorageHelper putString:appName
-                            url:url
-                         string:string
-                         format:format
-                       metadata:metadata
-                         taskId:taskId
-                        resolve:resolve
-                         reject:reject];
+                           url:url
+                        string:string
+                        format:format
+                      metadata:metadata
+                        taskId:taskId
+                       resolve:resolve
+                        reject:reject];
 }
 
 /**

@@ -58,10 +58,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseOnDisconnect);
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject {
   [RNFBDatabaseOnDisconnectHelper onDisconnectCancel:app
-                                                dbURL:dbURL
-                                                 path:path
-                                              resolve:resolve
-                                               reject:reject];
+                                               dbURL:dbURL
+                                                path:path
+                                             resolve:resolve
+                                              reject:reject];
 }
 
 - (void)onDisconnectRemove:(NSString *)app
@@ -70,10 +70,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseOnDisconnect);
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject {
   [RNFBDatabaseOnDisconnectHelper onDisconnectRemove:app
-                                                dbURL:dbURL
-                                                 path:path
-                                              resolve:resolve
-                                               reject:reject];
+                                               dbURL:dbURL
+                                                path:path
+                                             resolve:resolve
+                                              reject:reject];
 }
 
 - (void)onDisconnectSet:(NSString *)app
@@ -83,11 +83,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseOnDisconnect);
                 resolve:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject {
   [RNFBDatabaseOnDisconnectHelper onDisconnectSet:app
-                                             dbURL:dbURL
-                                              path:path
-                                             props:props
-                                           resolve:resolve
-                                            reject:reject];
+                                            dbURL:dbURL
+                                             path:path
+                                            props:props
+                                          resolve:resolve
+                                           reject:reject];
 }
 
 - (void)onDisconnectSetWithPriority:(NSString *)app
@@ -97,11 +97,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseOnDisconnect);
                             resolve:(RCTPromiseResolveBlock)resolve
                              reject:(RCTPromiseRejectBlock)reject {
   [RNFBDatabaseOnDisconnectHelper onDisconnectSetWithPriority:app
-                                                         dbURL:dbURL
-                                                          path:path
-                                                         props:props
-                                                       resolve:resolve
-                                                        reject:reject];
+                                                        dbURL:dbURL
+                                                         path:path
+                                                        props:props
+                                                      resolve:resolve
+                                                       reject:reject];
 }
 
 - (void)onDisconnectUpdate:(NSString *)app
@@ -111,11 +111,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseOnDisconnect);
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject {
   [RNFBDatabaseOnDisconnectHelper onDisconnectUpdate:app
-                                                dbURL:dbURL
-                                                 path:path
-                                                props:props
-                                              resolve:resolve
-                                               reject:reject];
+                                               dbURL:dbURL
+                                                path:path
+                                               props:props
+                                             resolve:resolve
+                                              reject:reject];
 }
 
 @end

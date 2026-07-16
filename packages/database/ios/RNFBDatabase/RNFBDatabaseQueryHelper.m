@@ -52,13 +52,13 @@ static NSString *const RNFB_DATABASE_SYNC = @"database_sync_event";
 }
 
 + (RNFBDatabaseQuery *)getDatabaseQueryInstance:(FIRDatabaseReference *)reference
-                                       modifiers:(NSArray *)modifiers {
+                                      modifiers:(NSArray *)modifiers {
   return [[RNFBDatabaseQuery alloc] initWithReferenceAndModifiers:reference modifiers:modifiers];
 }
 
 + (RNFBDatabaseQuery *)getDatabaseQueryInstance:(NSString *)key
-                                       reference:(FIRDatabaseReference *)reference
-                                       modifiers:(NSArray *)modifiers {
+                                      reference:(FIRDatabaseReference *)reference
+                                      modifiers:(NSArray *)modifiers {
   NSMutableDictionary *queries = [self queryDictionary];
   RNFBDatabaseQuery *cachedQuery = queries[key];
 
