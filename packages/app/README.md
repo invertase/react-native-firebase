@@ -38,123 +38,24 @@ yarn add @react-native-firebase/app
 
 ## iOS Dependency Resolution: SPM vs CocoaPods
 
-Starting with React Native 0.75+, `@react-native-firebase` supports **Swift Package Manager (SPM)** for resolving Firebase iOS SDK dependencies. SPM is enabled by default when the `spm_dependency` macro is available (injected by React Native >= 0.75) — no configuration needed.
-
-### How it works
-
-Each RNFB module uses `firebase_dependency()` (defined in `firebase_spm.rb`) to declare its Firebase dependencies. This helper automatically chooses between:
-
-| Condition                                          | Resolution                         | When to use                                                                   |
-| -------------------------------------------------- | ---------------------------------- | ----------------------------------------------------------------------------- |
-| RN >= 0.75 and `$RNFirebaseDisableSPM` **not set** | **SPM** (default)                  | Dynamic linkage / pre-built RN core (`use_frameworks! :linkage => :dynamic`)  |
-| `$RNFirebaseDisableSPM = true` in Podfile          | **CocoaPods**                      | Static linkage / no pre-built RN core (`use_frameworks! :linkage => :static`) |
-| RN < 0.75                                          | **CocoaPods** (automatic fallback) | Older React Native versions without `spm_dependency` support                  |
-
-> **Note on linkage:** firebase-ios-sdk SPM products use dynamic linkage. When using `use_frameworks! :linkage => :static`, each pod embeds its own copy of Firebase SPM products, causing duplicate symbol errors. Use CocoaPods mode (`$RNFirebaseDisableSPM = true`) with static linkage.
-
-### Configuration
-
-#### Option A — SPM (default, recommended for Xcode 26+)
-
-Make sure your Podfile uses dynamic linkage:
+React Native 0.75 and newer use Swift Package Manager by default to resolve
+Firebase iOS SDK dependencies. SPM requires dynamic linkage:
 
 ```ruby
-# Podfile
 use_frameworks! :linkage => :dynamic
 ```
 
-`pod install` automatically embeds Firebase's SPM-built frameworks into your app bundle
-(no Podfile changes needed for this) — without it, apps would crash at launch with a
-missing-library `dyld` error.
-
-> **Xcode 26 note:** If you see build errors about `FirebaseCoreInternal` or `FirebaseSharedSwift`
-> module resolution, add this to your Podfile `post_install`:
->
-> ```ruby
-> config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
-> ```
->
-> This does NOT disable SPM — it only tells the Swift compiler to use implicit module discovery
-> (the Xcode 16 default) so transitive SPM targets are resolved automatically.
-
-#### Option B — CocoaPods only
-
-Add this line at the top of your Podfile (before any `target` block):
+To use CocoaPods instead, add this before any target block in your Podfile:
 
 ```ruby
-# Podfile
 $RNFirebaseDisableSPM = true
 ```
 
-This forces all RNFB modules to use traditional `s.dependency` CocoaPods declarations.
-You can use either static or dynamic linkage with this option.
+CocoaPods mode supports static or dynamic linkage. React Native versions older
+than 0.75 fall back to CocoaPods automatically.
 
-#### Expo
-
-For Expo managed projects, use `expo-build-properties` to configure linkage and Podfile directives:
-
-```json
-// app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-build-properties",
-        {
-          "ios": {
-            "useFrameworks": "dynamic"
-          }
-        }
-      ]
-    ]
-  }
-}
-```
-
-To disable SPM in Expo, add a Podfile directive via a config plugin or `app.json`:
-
-```json
-// app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-build-properties",
-        {
-          "ios": {
-            "useFrameworks": "static",
-            "extraPods": []
-          }
-        }
-      ]
-    ]
-  }
-}
-```
-
-Then create a small [config plugin](https://docs.expo.dev/config-plugins/introduction/) to prepend
-`$RNFirebaseDisableSPM = true` to the generated Podfile, or add it manually if you have ejected.
-
-### How to verify
-
-During `pod install`, you will see messages indicating which resolution mode is active:
-
-```
-# SPM mode:
-[react-native-firebase] RNFBApp: Using SPM for Firebase dependency resolution (products: FirebaseCore)
-[react-native-firebase] RNFBAuth: Using SPM for Firebase dependency resolution (products: FirebaseAuth)
-
-# CocoaPods mode:
-[react-native-firebase] RNFBApp: SPM disabled ($RNFirebaseDisableSPM = true), using CocoaPods for Firebase dependencies
-```
-
-### Monorepo / pnpm notes
-
-The `firebase_spm.rb` helper is loaded by each RNFB podspec via `require '../app/firebase_spm'`.
-This relative path assumes the standard `node_modules/@react-native-firebase/` layout. If your
-package manager hoists dependencies differently (e.g., pnpm strict mode), you may need to verify
-that the require path resolves correctly. The SPM URL is read from
-`@react-native-firebase/app/package.json` at the location of `firebase_spm.rb`.
+See the [iOS SPM guide](https://rnfirebase.io/ios-spm) for Xcode 26 setup,
+Expo configuration, framework-embedding fallback, and troubleshooting.
 
 ## License
 

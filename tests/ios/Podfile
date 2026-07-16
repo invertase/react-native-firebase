@@ -22,7 +22,8 @@ Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$Fireba
 #$RNFirebaseAnalyticsWithoutAdIdSupport = true # toggle this to true for the no-ad-tracking Analytics subspec
 
 # Toggle this to true if you want to include support for on device conversion measurement APIs
-# Disabled for SPM test: GoogleAdsOnDeviceConversion is a static xcframework incompatible with dynamic linkage
+# Supported in both modes; SPM resolves Google's standalone
+# google-ads-on-device-conversion-ios-sdk package.
 # $RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
 
 # Toggle this to true if you want to include optional support for extended analytics features
