@@ -319,9 +319,9 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)setAppVerificationDisabledForTesting:(NSString *)appName
-                                     disabled:(BOOL)disabled
-                                      resolve:(RCTPromiseResolveBlock)resolve
-                                       reject:(RCTPromiseRejectBlock)reject {
+                                    disabled:(BOOL)disabled
+                                     resolve:(RCTPromiseResolveBlock)resolve
+                                      reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   [FIRAuth authWithApp:firebaseApp].settings.appVerificationDisabledForTesting = disabled;
@@ -329,9 +329,9 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)useUserAccessGroup:(NSString *)appName
-            userAccessGroup:(NSString *)userAccessGroup
-                    resolve:(RCTPromiseResolveBlock)resolve
-                     reject:(RCTPromiseRejectBlock)reject {
+           userAccessGroup:(NSString *)userAccessGroup
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   NSError *error;
@@ -382,10 +382,10 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)signInWithEmailAndPassword:(NSString *)appName
-                              email:(NSString *)email
-                           password:(NSString *)password
-                            resolve:(RCTPromiseResolveBlock)resolve
-                             reject:(RCTPromiseRejectBlock)reject {
+                             email:(NSString *)email
+                          password:(NSString *)password
+                           resolve:(RCTPromiseResolveBlock)resolve
+                            reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   [[FIRAuth authWithApp:firebaseApp]
@@ -408,10 +408,10 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)signInWithEmailLink:(NSString *)appName
-                       email:(NSString *)email
-                   emailLink:(NSString *)emailLink
-                     resolve:(RCTPromiseResolveBlock)resolve
-                      reject:(RCTPromiseRejectBlock)reject {
+                      email:(NSString *)email
+                  emailLink:(NSString *)emailLink
+                    resolve:(RCTPromiseResolveBlock)resolve
+                     reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   [[FIRAuth authWithApp:firebaseApp]
@@ -427,10 +427,10 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)createUserWithEmailAndPassword:(NSString *)appName
-                                  email:(NSString *)email
-                               password:(NSString *)password
-                                resolve:(RCTPromiseResolveBlock)resolve
-                                 reject:(RCTPromiseRejectBlock)reject {
+                                 email:(NSString *)email
+                              password:(NSString *)password
+                               resolve:(RCTPromiseResolveBlock)resolve
+                                reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   [[FIRAuth authWithApp:firebaseApp]
@@ -734,11 +734,11 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)signInWithCredential:(NSString *)appName
-                     provider:(NSString *)provider
-                    authToken:(NSString *)authToken
-                   authSecret:(NSString *)authSecret
-                      resolve:(RCTPromiseResolveBlock)resolve
-                       reject:(RCTPromiseRejectBlock)reject {
+                    provider:(NSString *)provider
+                   authToken:(NSString *)authToken
+                  authSecret:(NSString *)authSecret
+                     resolve:(RCTPromiseResolveBlock)resolve
+                      reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   FIRAuthCredential *credential = [self getCredentialForProvider:provider
@@ -767,9 +767,9 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)signInWithProvider:(NSString *)appName
-                   provider:(NSDictionary *)provider
-                    resolve:(RCTPromiseResolveBlock)resolve
-                     reject:(RCTPromiseRejectBlock)reject {
+                  provider:(NSDictionary *)provider
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   NSString *providerId = provider[@"providerId"];
@@ -828,10 +828,10 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)confirmPasswordReset:(NSString *)appName
-                         code:(NSString *)code
-                  newPassword:(NSString *)newPassword
-                      resolve:(RCTPromiseResolveBlock)resolve
-                       reject:(RCTPromiseRejectBlock)reject {
+                        code:(NSString *)code
+                 newPassword:(NSString *)newPassword
+                     resolve:(RCTPromiseResolveBlock)resolve
+                      reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   [[FIRAuth authWithApp:firebaseApp]
@@ -847,9 +847,9 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)applyActionCode:(NSString *)appName
-                    code:(NSString *)code
-                 resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject {
+                   code:(NSString *)code
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   [[FIRAuth authWithApp:firebaseApp]
@@ -866,9 +866,9 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)checkActionCode:(NSString *)appName
-                    code:(NSString *)code
-                 resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject {
+                   code:(NSString *)code
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   [[FIRAuth authWithApp:firebaseApp]
@@ -940,10 +940,10 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)sendPasswordResetEmail:(NSString *)appName
-                          email:(NSString *)email
-             actionCodeSettings:(NSDictionary *)actionCodeSettings
-                        resolve:(RCTPromiseResolveBlock)resolve
-                         reject:(RCTPromiseRejectBlock)reject {
+                         email:(NSString *)email
+            actionCodeSettings:(NSDictionary *)actionCodeSettings
+                       resolve:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   id handler = ^(NSError *_Nullable error) {
@@ -965,10 +965,10 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)sendSignInLinkToEmail:(NSString *)appName
-                         email:(NSString *)email
-            actionCodeSettings:(NSDictionary *)actionCodeSettings
-                       resolve:(RCTPromiseResolveBlock)resolve
-                        reject:(RCTPromiseRejectBlock)reject {
+                        email:(NSString *)email
+           actionCodeSettings:(NSDictionary *)actionCodeSettings
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   id handler = ^(NSError *_Nullable error) {
@@ -986,9 +986,9 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)signInWithCustomToken:(NSString *)appName
-                   customToken:(NSString *)customToken
-                       resolve:(RCTPromiseResolveBlock)resolve
-                        reject:(RCTPromiseRejectBlock)reject {
+                  customToken:(NSString *)customToken
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   [[FIRAuth authWithApp:firebaseApp]
@@ -1004,10 +1004,10 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 
 #if TARGET_OS_IOS
 + (void)signInWithPhoneNumber:(NSString *)appName
-                   phoneNumber:(NSString *)phoneNumber
-                   forceResend:(BOOL)forceResend
-                       resolve:(RCTPromiseResolveBlock)resolve
-                        reject:(RCTPromiseRejectBlock)reject {
+                  phoneNumber:(NSString *)phoneNumber
+                  forceResend:(BOOL)forceResend
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   DLog(@"SignInWthPhoneNumber instance: %@", firebaseApp.name);
@@ -1029,10 +1029,10 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)verifyPhoneNumberWithMultiFactorInfo:(NSString *)appName
-                                      hintUid:(NSString *)hintUid
-                                   sessionKey:(NSString *)sessionKey
-                                      resolve:(RCTPromiseResolveBlock)resolve
-                                       reject:(RCTPromiseRejectBlock)reject {
+                                     hintUid:(NSString *)hintUid
+                                  sessionKey:(NSString *)sessionKey
+                                     resolve:(RCTPromiseResolveBlock)resolve
+                                      reject:(RCTPromiseRejectBlock)reject {
   [self initializeSharedStateOnce];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
@@ -1076,10 +1076,10 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)verifyPhoneNumberForMultiFactor:(NSString *)appName
-                             phoneNumber:(NSString *)phoneNumber
-                              sessionKey:(NSString *)sessionKey
-                                 resolve:(RCTPromiseResolveBlock)resolve
-                                  reject:(RCTPromiseRejectBlock)reject {
+                            phoneNumber:(NSString *)phoneNumber
+                             sessionKey:(NSString *)sessionKey
+                                resolve:(RCTPromiseResolveBlock)resolve
+                                 reject:(RCTPromiseRejectBlock)reject {
   [self initializeSharedStateOnce];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
@@ -1110,11 +1110,11 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)resolveMultiFactorSignIn:(NSString *)appName
-                          session:(NSString *)session
-                   verificationId:(NSString *)verificationId
-                 verificationCode:(NSString *)verificationCode
-                          resolve:(RCTPromiseResolveBlock)resolve
-                           reject:(RCTPromiseRejectBlock)reject {
+                         session:(NSString *)session
+                  verificationId:(NSString *)verificationId
+                verificationCode:(NSString *)verificationCode
+                         resolve:(RCTPromiseResolveBlock)resolve
+                          reject:(RCTPromiseRejectBlock)reject {
   [self initializeSharedStateOnce];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
@@ -1144,11 +1144,11 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)resolveTotpSignIn:(NSString *)appName
-                sessionKey:(NSString *)sessionKey
-                       uid:(NSString *)uid
-           oneTimePassword:(NSString *)oneTimePassword
-                   resolve:(RCTPromiseResolveBlock)resolve
-                    reject:(RCTPromiseRejectBlock)reject {
+               sessionKey:(NSString *)sessionKey
+                      uid:(NSString *)uid
+          oneTimePassword:(NSString *)oneTimePassword
+                  resolve:(RCTPromiseResolveBlock)resolve
+                   reject:(RCTPromiseRejectBlock)reject {
   [self initializeSharedStateOnce];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
@@ -1204,9 +1204,9 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (NSString *)generateQrCodeUrl:(NSString *)appName
-                       secretKey:(NSString *)secretKey
-                         account:(NSString *)account
-                          issuer:(NSString *)issuer {
+                      secretKey:(NSString *)secretKey
+                        account:(NSString *)account
+                         issuer:(NSString *)issuer {
   [self initializeSharedStateOnce];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
@@ -1275,11 +1275,11 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)finalizeMultiFactorEnrollment:(NSString *)appName
-                        verificationId:(NSString *)verificationId
-                      verificationCode:(NSString *)verificationCode
-                           displayName:(NSString *_Nullable)displayName
-                               resolve:(RCTPromiseResolveBlock)resolve
-                                reject:(RCTPromiseRejectBlock)reject {
+                       verificationId:(NSString *)verificationId
+                     verificationCode:(NSString *)verificationCode
+                          displayName:(NSString *_Nullable)displayName
+                              resolve:(RCTPromiseResolveBlock)resolve
+                               reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   DLog(@"using instance finalizeMultifactorEnrollment: %@", firebaseApp.name);
@@ -1305,11 +1305,11 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)finalizeTotpEnrollment:(NSString *)appName
-                     totpSecret:(NSString *)totpSecret
-               verificationCode:(NSString *)verificationCode
-                    displayName:(NSString *_Nullable)displayName
-                        resolve:(RCTPromiseResolveBlock)resolve
-                         reject:(RCTPromiseRejectBlock)reject {
+                    totpSecret:(NSString *)totpSecret
+              verificationCode:(NSString *)verificationCode
+                   displayName:(NSString *_Nullable)displayName
+                       resolve:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject {
   [self initializeSharedStateOnce];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
@@ -1338,10 +1338,10 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)verifyPhoneNumber:(NSString *)appName
-               phoneNumber:(NSString *)phoneNumber
-                requestKey:(NSString *)requestKey
-                   timeout:(double)timeout
-               forceResend:(BOOL)forceResend {
+              phoneNumber:(NSString *)phoneNumber
+               requestKey:(NSString *)requestKey
+                  timeout:(double)timeout
+              forceResend:(BOOL)forceResend {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   DLog(@"using instance verifyPhoneNumber: %@", firebaseApp.name);
@@ -1376,9 +1376,9 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)confirmationResultConfirm:(NSString *)appName
-                  verificationCode:(NSString *)verificationCode
-                           resolve:(RCTPromiseResolveBlock)resolve
-                            reject:(RCTPromiseRejectBlock)reject {
+                 verificationCode:(NSString *)verificationCode
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -1638,9 +1638,9 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)fetchSignInMethodsForEmail:(NSString *)appName
-                              email:(NSString *)email
-                            resolve:(RCTPromiseResolveBlock)resolve
-                             reject:(RCTPromiseRejectBlock)reject {
+                             email:(NSString *)email
+                           resolve:(RCTPromiseResolveBlock)resolve
+                            reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   [[FIRAuth authWithApp:firebaseApp]
@@ -1685,9 +1685,9 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 }
 
 + (void)verifyPasswordResetCode:(NSString *)appName
-                            code:(NSString *)code
-                         resolve:(RCTPromiseResolveBlock)resolve
-                          reject:(RCTPromiseRejectBlock)reject {
+                           code:(NSString *)code
+                        resolve:(RCTPromiseResolveBlock)resolve
+                         reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   [[FIRAuth authWithApp:firebaseApp]

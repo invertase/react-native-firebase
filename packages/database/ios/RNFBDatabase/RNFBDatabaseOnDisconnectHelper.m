@@ -29,10 +29,10 @@
 @implementation RNFBDatabaseOnDisconnectHelper
 
 + (void)onDisconnectCancel:(NSString *)app
-                      dbURL:(NSString *)dbURL
-                       path:(NSString *)path
-                    resolve:(RCTPromiseResolveBlock)resolve
-                     reject:(RCTPromiseRejectBlock)reject {
+                     dbURL:(NSString *)dbURL
+                      path:(NSString *)path
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
@@ -49,10 +49,10 @@
 }
 
 + (void)onDisconnectRemove:(NSString *)app
-                      dbURL:(NSString *)dbURL
-                       path:(NSString *)path
-                    resolve:(RCTPromiseResolveBlock)resolve
-                     reject:(RCTPromiseRejectBlock)reject {
+                     dbURL:(NSString *)dbURL
+                      path:(NSString *)path
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
@@ -69,11 +69,11 @@
 }
 
 + (void)onDisconnectSet:(NSString *)app
-                   dbURL:(NSString *)dbURL
-                    path:(NSString *)path
-                   props:(NSDictionary *)props
-                 resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject {
+                  dbURL:(NSString *)dbURL
+                   path:(NSString *)path
+                  props:(NSDictionary *)props
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
@@ -90,11 +90,11 @@
 }
 
 + (void)onDisconnectSetWithPriority:(NSString *)app
-                               dbURL:(NSString *)dbURL
-                                path:(NSString *)path
-                               props:(NSDictionary *)props
-                             resolve:(RCTPromiseResolveBlock)resolve
-                              reject:(RCTPromiseRejectBlock)reject {
+                              dbURL:(NSString *)dbURL
+                               path:(NSString *)path
+                              props:(NSDictionary *)props
+                            resolve:(RCTPromiseResolveBlock)resolve
+                             reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =
@@ -112,11 +112,11 @@
 }
 
 + (void)onDisconnectUpdate:(NSString *)app
-                      dbURL:(NSString *)dbURL
-                       path:(NSString *)path
-                      props:(NSDictionary *)props
-                    resolve:(RCTPromiseResolveBlock)resolve
-                     reject:(RCTPromiseRejectBlock)reject {
+                     dbURL:(NSString *)dbURL
+                      path:(NSString *)path
+                     props:(NSDictionary *)props
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
   FIRDatabaseReference *firDatabaseReference =

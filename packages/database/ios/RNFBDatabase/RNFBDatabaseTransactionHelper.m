@@ -60,10 +60,10 @@ static NSString *const RNFB_DATABASE_TRANSACTION_EVENT = @"database_transaction_
 }
 
 + (void)transactionStart:(NSString *)app
-                    dbURL:(NSString *)dbURL
-                     path:(NSString *)path
-            transactionId:(double)transactionId
-             applyLocally:(BOOL)applyLocally {
+                   dbURL:(NSString *)dbURL
+                    path:(NSString *)path
+           transactionId:(double)transactionId
+            applyLocally:(BOOL)applyLocally {
   dispatch_queue_t queue = [self transactionQueue];
   dispatch_async(queue, ^{
     NSMutableDictionary *transactionState = [NSMutableDictionary new];
@@ -143,9 +143,9 @@ static NSString *const RNFB_DATABASE_TRANSACTION_EVENT = @"database_transaction_
 }
 
 + (void)transactionTryCommit:(NSString *)app
-                        dbURL:(NSString *)dbURL
-                transactionId:(double)transactionId
-                      updates:(NSDictionary *)updates {
+                       dbURL:(NSString *)dbURL
+               transactionId:(double)transactionId
+                     updates:(NSDictionary *)updates {
   dispatch_queue_t queue = [self transactionQueue];
   __block NSMutableDictionary *transactionState;
 

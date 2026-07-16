@@ -21,8 +21,8 @@
 // SPM: the declared product is the thin Swift wrapper `FirebaseDatabase`
 // (which depends on `FirebaseDatabaseInternal`, not exposed to us directly).
 // Its generated ObjC interface header is what's importable here.
-#import <FirebaseDatabase/FirebaseDatabase-Swift.h>
 #import <FirebaseCore/FirebaseCore.h>
+#import <FirebaseDatabase/FirebaseDatabase-Swift.h>
 #else
 @import FirebaseCore;
 @import FirebaseDatabaseInternal;

@@ -67,10 +67,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseTransaction);
            transactionId:(double)transactionId
             applyLocally:(BOOL)applyLocally {
   [RNFBDatabaseTransactionHelper transactionStart:app
-                                             dbURL:dbURL
-                                              path:path
-                                     transactionId:transactionId
-                                      applyLocally:applyLocally];
+                                            dbURL:dbURL
+                                             path:path
+                                    transactionId:transactionId
+                                     applyLocally:applyLocally];
 }
 
 - (void)transactionTryCommit:(NSString *)app
@@ -78,9 +78,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseTransaction);
                transactionId:(double)transactionId
                      updates:(NSDictionary *)updates {
   [RNFBDatabaseTransactionHelper transactionTryCommit:app
-                                                 dbURL:dbURL
-                                         transactionId:transactionId
-                                               updates:updates];
+                                                dbURL:dbURL
+                                        transactionId:transactionId
+                                              updates:updates];
 }
 
 @end

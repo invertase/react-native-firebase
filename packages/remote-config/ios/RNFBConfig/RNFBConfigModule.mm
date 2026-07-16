@@ -15,9 +15,9 @@
  *
  */
 
+#import "RNFBConfigModule.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBConfigHelper.h"
-#import "RNFBConfigModule.h"
 
 @implementation RNFBConfigModule
 #pragma mark -
@@ -41,8 +41,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboConfig)
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants::Builder>)
     constantsToExport {
   return [_RCTTypedModuleConstants
-      newWithUnsafeDictionary:[RNFBConfigHelper
-                                   getConstantsForAppName:DEFAULT_APP_DISPLAY_NAME]];
+      newWithUnsafeDictionary:[RNFBConfigHelper getConstantsForAppName:DEFAULT_APP_DISPLAY_NAME]];
 }
 
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants::Builder>)getConstants {
@@ -64,8 +63,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboConfig)
                        reject:(RCTPromiseRejectBlock)reject {
   [RNFBConfigHelper fetch:appName
       expirationDurationSeconds:expirationDurationSeconds
-                         resolve:resolve
-                          reject:reject];
+                        resolve:resolve
+                         reject:reject];
 }
 
 - (void)fetchAndActivate:(NSString *)appName
@@ -85,10 +84,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboConfig)
                   resolve:(RCTPromiseResolveBlock)resolve
                    reject:(RCTPromiseRejectBlock)reject {
   [RNFBConfigHelper setConfigSettings:appName
-                  minimumFetchInterval:configSettings.minimumFetchInterval()
-                          fetchTimeout:configSettings.fetchTimeout()
-                               resolve:resolve
-                                reject:reject];
+                 minimumFetchInterval:configSettings.minimumFetchInterval()
+                         fetchTimeout:configSettings.fetchTimeout()
+                              resolve:resolve
+                               reject:reject];
 }
 
 - (void)setDefaults:(NSString *)appName
@@ -103,9 +102,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboConfig)
                         resolve:(RCTPromiseResolveBlock)resolve
                          reject:(RCTPromiseRejectBlock)reject {
   [RNFBConfigHelper setDefaultsFromResource:appName
-                                resourceName:resourceName
-                                     resolve:resolve
-                                      reject:reject];
+                               resourceName:resourceName
+                                    resolve:resolve
+                                     reject:reject];
 }
 
 - (void)reset:(NSString *)appName

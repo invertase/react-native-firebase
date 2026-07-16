@@ -23,15 +23,15 @@
 @interface RNFBDatabaseTransactionHelper : NSObject
 
 + (void)transactionStart:(NSString *)app
-                    dbURL:(NSString *)dbURL
-                     path:(NSString *)path
-            transactionId:(double)transactionId
-             applyLocally:(BOOL)applyLocally;
+                   dbURL:(NSString *)dbURL
+                    path:(NSString *)path
+           transactionId:(double)transactionId
+            applyLocally:(BOOL)applyLocally;
 
 + (void)transactionTryCommit:(NSString *)app
-                        dbURL:(NSString *)dbURL
-                transactionId:(double)transactionId
-                      updates:(NSDictionary *)updates;
+                       dbURL:(NSString *)dbURL
+               transactionId:(double)transactionId
+                     updates:(NSDictionary *)updates;
 
 + (void)invalidate;
 
