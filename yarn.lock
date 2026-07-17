@@ -13406,16 +13406,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-java-format@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "google-java-format@npm:2.2.0"
+"google-java-format@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "google-java-format@npm:2.3.0"
   dependencies:
     async: "npm:^3.2.6"
     glob: "npm:^13.0.0"
     resolve: "npm:^1.22.11"
   bin:
     google-java-format: index.js
-  checksum: 10/32bf7cffca834e79a32036baff49fd4e57bf5db19f050cebfa217c2edff1d9031dd65ae66986bb5ddc50b1e304fc380024fb5f0ef9675095ec0a6493e74227c5
+  checksum: 10/1f3af54590bb9422b051ef04281d505647a9beb6c63ce893d5126e57217149f349f8bfc1e74df83073a30e2b9c7db065dba3d79fd601ea2239a795f78ebf9dbb
   languageName: node
   linkType: hard
 
@@ -21393,7 +21393,7 @@ __metadata:
     firebase: "npm:^12.15.0"
     firebase-tools: "npm:^15.22.4"
     genversion: "npm:^3.2.0"
-    google-java-format: "npm:^2.2.0"
+    google-java-format: "npm:^2.3.0"
     jest: "npm:^30.3.0"
     lerna: "npm:^9.0.7"
     patch-package: "npm:^8.0.1"
