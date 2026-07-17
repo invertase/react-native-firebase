@@ -143,7 +143,7 @@ Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, 
 | lint (CI) | yarn lint | 0 | — |
 | lint:markdown (CI docs) | yarn lint:markdown | 0 | when docs/** in diff |
 | lint:spellcheck (CI docs) | yarn lint:spellcheck | 0 | when docs/** in diff |
-| coverage | post-process + region table | — | see coverage-design § evidence package |
+| coverage | post-process + region table | — | [coverage evidence package](coverage-design.md#coverage-evidence-package); closes `coverage_evidence_gate` when lib/native touched |
 ```
 
 **History rewrite invalidates** prior rows — re-run and replace the table after amend/rebase.
@@ -160,7 +160,7 @@ Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, 
 - [ ] `yarn lint` (CI Lint job); `yarn lint:markdown` + `yarn lint:spellcheck` when `docs/**` changed
 - [ ] E2e green on **every required platform** for the changed module ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking); [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking); no `.only`; committed `RNFBDebug` remains `false`)
 - [ ] [Validation evidence package](validation-checklist.md#validation-evidence-package) recorded (exit codes, e2e counts, log paths)
-- [ ] [Coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native bridge touched — gaps investigated to fix, delete, or acceptable-exception bar
+- [ ] [Coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native bridge touched — `coverage_evidence_gate` closed with verdict line; gaps investigated to fix, delete, or acceptable-exception bar
 - [ ] OKF bundle reviewed/updated per § above
 
 Package workflows may add items (e.g. pipeline before/after snapshots — [pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md)).

@@ -61,7 +61,39 @@ Produce after fresh e2e on every required platform, then post-process native art
 
 **Verdict line:** `100% on reachable touched lines` **or** `NOT 100%` with numbered gaps and disposition (fixed / intractable with evidence / user-accepted deferral).
 
-Reviewers treat missing or stale coverage evidence as a **blocking** finding — same bar as missing e2e counts ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)).
+Record in `.agents/reports/<item>/coverage-evidence.md` (preferred) or work-queue notes. Orchestrators **must not** close `coverage_evidence_gate` or `review_gate` without this file when lib/native bridge is touched.
+
+Reviewers treat missing, stale, or NYC-only summaries as a **serious** finding ([change authoring § independent-review](change-authoring-workflow.md#independent-review)).
+
+### Subagent return fields (native / lib bridge touched)
+
+Blocking YAML (or equivalent table) before `coverage_evidence_gate` closes:
+
+```yaml
+coverage_verdict: "100% on reachable touched lines" | "NOT 100%"
+coverage_artifacts:
+  jacoco_xml: path   # Android; use lcov path for iOS native
+  timestamp: ISO-8601
+touched_regions:
+  - file: packages/.../Foo.java
+    lines: "L10-L45"
+    line_pct: 100
+branch_map:
+  - branch: "onComplete when still registered"
+    test: "Functions.e2e.js — streaming cancel race"
+gaps: []  # or numbered: disposition fixed | intractable+evidence | user-accepted deferral
+```
+
+<a id="anti-patterns-not-coverage-evidence"></a>
+
+### Anti-patterns (not coverage evidence)
+
+| Looks like coverage | Why it is not |
+|---------------------|---------------|
+| Jet NYC `text-summary` after narrowed `:test-cover` | Remapped TS aggregate for loaded modules — does not report Jacoco/lcov on native bridge lines |
+| Whole-package or whole-harness statement % | Signal is **per changed file/region** in the frozen diff |
+| Stale Jacoco XML / lcov without matching e2e run | Post-process deletes raw artifacts; re-run e2e first ([§ stale coverage](#stale-coverage-data)) |
+| E2e pass counts alone | Proves behaviour, not line/branch coverage on touched native code |
 
 ## Platform parity (pipeline and bridge code)
 
