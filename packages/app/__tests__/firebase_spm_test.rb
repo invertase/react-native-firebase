@@ -28,10 +28,15 @@ class MockPhase
 end
 
 class MockTarget
-  attr_reader :shell_script_build_phases
+  attr_reader :shell_script_build_phases, :build_configurations
+  attr_accessor :package_product_dependencies, :name
 
-  def initialize(phase_names = [])
-    @shell_script_build_phases = phase_names.map { |name| MockPhase.new(name) }
+  def initialize(phase_names = [], package_product_dependencies: [], build_config_names: ['Debug', 'Release'], name: 'testing')
+    @shell_script_build_phases = phase_names.map { |phase_name| MockPhase.new(phase_name) }
+    @package_product_dependencies = package_product_dependencies
+    @build_configurations = build_config_names.map { |config_name| MockBuildConfig.new(config_name) }
+    @build_settings_by_config = Hash.new { |hash, key| hash[key] = {} }
+    @name = name
   end
 
   def new_shell_script_build_phase(name)
@@ -39,19 +44,96 @@ class MockTarget
     @shell_script_build_phases << phase
     phase
   end
+
+  def build_settings(config_name)
+    @build_settings_by_config[config_name]
+  end
 end
 
 class MockUserProject
-  attr_reader :native_targets
+  attr_reader :native_targets, :root_object
   attr_accessor :save_count
 
-  def initialize(native_targets)
+  def initialize(native_targets, package_references: [])
     @native_targets = native_targets
+    @root_object = MockRootObject.new(package_references)
     @save_count = 0
+  end
+
+  # Stands in for `Xcodeproj::Project#new(klass)`, which allocates a
+  # project-managed object of the given class.
+  def new(klass)
+    klass.new
   end
 
   def save
     @save_count += 1
+  end
+end
+
+class MockRootObject
+  attr_accessor :package_references
+
+  def initialize(package_references = [])
+    @package_references = package_references
+  end
+end
+
+# Mocks for rnfirebase_add_spm_core_to_app_target /
+# rnfirebase_remove_spm_core_from_app_target's use of
+# Xcodeproj::Project::Object::XCRemoteSwiftPackageReference /
+# XCSwiftPackageProductDependency. Defined under the real `Xcodeproj::Project::Object`
+# namespace so production code's direct class references resolve to these
+# lightweight stand-ins, instead of requiring the real (much heavier) `xcodeproj`
+# gem in this dependency-free Ruby unit-test job (no `gem install xcodeproj` step
+# runs before `ruby firebase_spm_test.rb` in CI -- see tests_jest.yml).
+module Xcodeproj
+  module Project
+    module Object
+      class XCRemoteSwiftPackageReference
+        attr_accessor :repositoryURL, :requirement
+        attr_reader :referrers
+
+        def initialize
+          @referrers = []
+        end
+
+        def add_referrer(referrer)
+          @referrers << referrer
+        end
+
+        def remove_referrer(referrer)
+          @referrers.delete(referrer)
+        end
+
+        def remove_from_project
+          @referrers.clear
+        end
+      end
+
+      class XCSwiftPackageProductDependency
+        attr_reader :package
+        attr_accessor :product_name
+
+        def package=(new_package)
+          @package&.remove_referrer(self)
+          @package = new_package
+          new_package&.add_referrer(self)
+        end
+
+        def remove_from_project
+          @package&.remove_referrer(self)
+        end
+      end
+    end
+  end
+end
+
+class MockBuildConfig
+  attr_reader :name
+
+  def initialize(name)
+    @name = name
   end
 end
 
@@ -320,6 +402,180 @@ class FirebaseSpmTest < Minitest::Test
     matching = target.shell_script_build_phases.select { |p| p.name == RNFIREBASE_SPM_EMBED_PHASE_NAME }
     assert_equal 1, matching.length
     assert_equal 2, user_project.save_count
+  end
+
+  # ── rnfirebase_add_spm_core_to_app_target ──
+
+  def test_add_core_noop_when_spm_not_active
+    load_firebase_spm
+    $rnfirebase_spm_active = false
+
+    installer = MockInstaller.new(nil) # would raise if ever touched
+    rnfirebase_add_spm_core_to_app_target(installer)
+    # No error raised => returned early without walking `installer.aggregate_targets`.
+  end
+
+  def test_add_core_noop_without_cp_embed_pods_frameworks_phase
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
+    $rnfirebase_spm_version = '12.10.0'
+
+    target = MockTarget.new(['[CP] Some Other Phase'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_add_spm_core_to_app_target(installer)
+
+    assert_empty target.package_product_dependencies
+    assert_equal 0, user_project.save_count
+  end
+
+  def test_add_core_links_firebase_core_when_active_and_cp_phase_present
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
+    $rnfirebase_spm_version = '12.10.0'
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_add_spm_core_to_app_target(installer)
+
+    assert_equal 1, target.package_product_dependencies.length
+    ref = target.package_product_dependencies[0]
+    assert_equal 'FirebaseCore', ref.product_name
+    assert_equal $firebase_spm_url, ref.package.repositoryURL
+
+    search_path = '${SYMROOT}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/'
+    target.build_configurations.each do |config|
+      assert_includes target.build_settings(config.name)['SWIFT_INCLUDE_PATHS'], search_path
+    end
+
+    assert_equal 1, user_project.save_count
+  end
+
+  def test_add_core_is_idempotent_across_repeated_pod_installs
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
+    $rnfirebase_spm_version = '12.10.0'
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_add_spm_core_to_app_target(installer)
+    rnfirebase_add_spm_core_to_app_target(installer)
+
+    assert_equal 1, target.package_product_dependencies.length
+  end
+
+  # ── rnfirebase_remove_spm_core_from_app_target (the fix for CP-149: undoes
+  #    rnfirebase_add_spm_core_to_app_target once SPM is disabled, so a stale
+  #    app-target FirebaseCore SPM link committed from a prior SPM-mode
+  #    `pod install` doesn't collide with a fresh CocoaPods-only resolve --
+  #    see "redefinition of module 'Firebase'" / duplicate App-Intents-metadata
+  #    build commands) ──
+
+  def test_remove_core_noop_when_spm_active
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+
+    installer = MockInstaller.new(nil) # would raise if ever touched
+    rnfirebase_remove_spm_core_from_app_target(installer)
+    # No error raised => returned early without walking `installer.aggregate_targets`.
+  end
+
+  def test_remove_core_noop_when_no_stale_dependency_present
+    load_firebase_spm
+    $rnfirebase_spm_active = false
+    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_remove_spm_core_from_app_target(installer)
+
+    assert_empty target.package_product_dependencies
+    assert_equal 0, user_project.save_count
+  end
+
+  def test_remove_core_removes_stale_dependency_and_orphaned_package_reference
+    load_firebase_spm
+    $rnfirebase_spm_active = false
+    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
+
+    # Simulate the state left behind by a prior SPM-mode `pod install`: the
+    # app target still has an explicit FirebaseCore product dependency, and
+    # the project still has the backing package reference.
+    pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
+    pkg.repositoryURL = $firebase_spm_url
+    ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
+    ref.product_name = 'FirebaseCore'
+    ref.package = pkg
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [ref])
+    user_project = MockUserProject.new([target], package_references: [pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_remove_spm_core_from_app_target(installer)
+
+    assert_empty target.package_product_dependencies
+    assert_empty user_project.root_object.package_references
+    assert_equal 1, user_project.save_count
+  end
+
+  def test_remove_core_leaves_package_reference_when_still_used_by_another_target
+    load_firebase_spm
+    $rnfirebase_spm_active = false
+    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
+
+    pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
+    pkg.repositoryURL = $firebase_spm_url
+
+    stale_ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
+    stale_ref.product_name = 'FirebaseCore'
+    stale_ref.package = pkg
+
+    other_ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
+    other_ref.product_name = 'FirebaseAuth'
+    other_ref.package = pkg
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [stale_ref])
+    other_target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [other_ref], name: 'other')
+    user_project = MockUserProject.new([target, other_target], package_references: [pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_remove_spm_core_from_app_target(installer)
+
+    assert_empty target.package_product_dependencies
+    assert_equal [other_ref], other_target.package_product_dependencies
+    # Still referenced by `other_target`'s product dependency, so it must stay.
+    assert_equal [pkg], user_project.root_object.package_references
+  end
+
+  def test_remove_core_ignores_dependencies_from_a_different_package_url
+    load_firebase_spm
+    $rnfirebase_spm_active = false
+    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
+
+    unrelated_pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
+    unrelated_pkg.repositoryURL = 'https://github.com/some/other-package.git'
+    unrelated_ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
+    unrelated_ref.product_name = 'FirebaseCore'
+    unrelated_ref.package = unrelated_pkg
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [unrelated_ref])
+    user_project = MockUserProject.new([target], package_references: [unrelated_pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_remove_spm_core_from_app_target(installer)
+
+    assert_equal [unrelated_ref], target.package_product_dependencies
+    assert_equal [unrelated_pkg], user_project.root_object.package_references
   end
 
   # ── rnfirebase_hook_cocoapods_post_install! (patches a stand-in for

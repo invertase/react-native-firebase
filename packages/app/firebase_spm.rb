@@ -223,6 +223,16 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
             'FIRApp/FIROptions APIs directly.'
         end
       end
+      begin
+        rnfirebase_remove_spm_core_from_app_target(self)
+      rescue => e
+        if defined?(Pod::UI)
+          Pod::UI.warn "[react-native-firebase] Couldn't remove a stale FirebaseCore SPM link from the " \
+            "app target automatically (#{e.class}: #{e.message}). If you previously used SPM and have " \
+            'since set `$RNFirebaseDisableSPM = true`, remove the "firebase-ios-sdk" Swift Package ' \
+            'dependency from your app target manually in Xcode.'
+        end
+      end
       result
     end
   end
@@ -302,6 +312,76 @@ def rnfirebase_add_spm_core_to_app_target(installer)
 
       project_modified = true
     end
+
+    project.save if project_modified
+  end
+end
+
+# Undoes `rnfirebase_add_spm_core_to_app_target` -- removes the direct SPM
+# `FirebaseCore` product dependency (and, once nothing else references it,
+# the "firebase-ios-sdk" package reference itself) from the app's own native
+# target(s). Runs automatically on every `pod install`/`pod update` alongside
+# `rnfirebase_add_spm_core_to_app_target` -- see
+# `rnfirebase_hook_cocoapods_post_install!` above -- so you normally never
+# need to call this yourself.
+#
+# Why this needs to exist: `rnfirebase_add_spm_core_to_app_target` writes into
+# the *app's own* Xcode project (`aggregate_target.user_project`, e.g.
+# `testing.xcodeproj`) -- a different project than the one React Native's own
+# SPM integration manages (`installer.pods_project`, i.e. `Pods.xcodeproj`).
+# RN's `SPMManager#clean_spm_dependencies_from_target` (in
+# `react-native/scripts/cocoapods/spm.rb`) only ever clears package
+# references from `pods_project` on every `pod install` -- it has no
+# knowledge of, and never touches, the app-project-level reference added
+# above. So once SPM has been active at least once and the resulting
+# `FirebaseCore` product dependency has been committed into the app's
+# `.pbxproj` (as it normally would be), switching to
+# `$RNFirebaseDisableSPM = true` and reinstalling left that stale SPM wiring
+# in place forever: the app target ended up simultaneously linked against
+# Xcode's SPM-resolved `firebase-ios-sdk` package graph *and* the freshly
+# CocoaPods-resolved `Firebase/CoreOnly` pod, and the two copies of
+# Firebase's module graph collided -- surfacing as `redefinition of module
+# 'Firebase'` at compile time, and as duplicate App-Intents-metadata build
+# commands at Archive time.
+def rnfirebase_remove_spm_core_from_app_target(installer)
+  return if $rnfirebase_spm_active
+
+  pkg_class = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference
+  ref_class = Xcodeproj::Project::Object::XCSwiftPackageProductDependency
+
+  installer.aggregate_targets.each do |aggregate_target|
+    project = aggregate_target.user_project
+    project_modified = false
+
+    project.native_targets.each do |target|
+      next unless target.respond_to?(:package_product_dependencies)
+
+      stale_refs = target.package_product_dependencies.select do |dep|
+        dep.class == ref_class && dep.product_name == 'FirebaseCore' && dep.package&.repositoryURL == $firebase_spm_url
+      end
+      next if stale_refs.empty?
+
+      if defined?(Pod) && defined?(Pod::UI)
+        Pod::UI.puts "[react-native-firebase] #{target.name}: ".yellow +
+          'SPM disabled -- removing the stale FirebaseCore Swift Package link left on the app target.'
+      end
+
+      stale_refs.each do |ref|
+        target.package_product_dependencies.delete(ref)
+        ref.remove_from_project
+      end
+      project_modified = true
+    end
+
+    project.root_object.package_references
+      .select { |pkg| pkg.class == pkg_class && pkg.repositoryURL == $firebase_spm_url }
+      .each do |pkg|
+        next if pkg.referrers.any? { |referrer| referrer.class == ref_class }
+
+        project.root_object.package_references.delete(pkg)
+        pkg.remove_from_project
+        project_modified = true
+      end
 
     project.save if project_modified
   end
