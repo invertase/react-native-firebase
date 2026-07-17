@@ -89,6 +89,11 @@ public class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
       if ("playIntegrity".equals(providerName)) {
         delegateProvider = PlayIntegrityAppCheckProviderFactory.getInstance().create(app);
       }
+
+      if (delegateProvider == null) {
+        Log.e(LOGTAG, "Unknown provider name \"" + providerName
+            + "\". Valid providers are: debug, playIntegrity.");
+      }
     } catch (Exception e) {
       // This will bubble up and result in a rejected promise with the underlying message
       throw new RuntimeException(e.getMessage());

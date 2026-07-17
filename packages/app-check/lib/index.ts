@@ -133,6 +133,12 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
           'Invalid configuration: no android provider configured while on android platform.',
         );
       }
+      const validAndroidProviders = ['debug', 'playIntegrity'];
+      if (!validAndroidProviders.includes(provider.providerOptions.android.provider)) {
+        throw new Error(
+          `Invalid App Check provider "${provider.providerOptions.android.provider}". Valid android providers are: ${validAndroidProviders.join(', ')}.`,
+        );
+      }
       return this.native.configureProvider(
         provider.providerOptions.android.provider,
         provider.providerOptions.android.debugToken,
@@ -142,6 +148,17 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
       if (!isString(provider.providerOptions?.apple?.provider)) {
         throw new Error(
           'Invalid configuration: no apple provider configured while on apple platform.',
+        );
+      }
+      const validAppleProviders = [
+        'debug',
+        'deviceCheck',
+        'appAttest',
+        'appAttestWithDeviceCheckFallback',
+      ];
+      if (!validAppleProviders.includes(provider.providerOptions.apple.provider)) {
+        throw new Error(
+          `Invalid App Check provider "${provider.providerOptions.apple.provider}". Valid apple providers are: ${validAppleProviders.join(', ')}.`,
         );
       }
       return this.native.configureProvider(

@@ -73,6 +73,12 @@
       self.delegateProvider = [[FIRDeviceCheckProvider alloc] initWithApp:app];
     }
   }
+
+  if (self.delegateProvider == nil) {
+    NSLog(@"RNFBAppCheck: Unknown provider name \"%@\". Valid providers are: debug, deviceCheck, "
+          @"appAttest, appAttestWithDeviceCheckFallback.",
+          providerName);
+  }
 }
 
 - (void)getTokenWithCompletion:(nonnull void (^)(FIRAppCheckToken *_Nullable,
