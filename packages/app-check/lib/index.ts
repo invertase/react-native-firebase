@@ -49,6 +49,9 @@ import { ReactNativeFirebaseAppCheckProvider } from './providers';
 
 const nativeModuleName = 'NativeRNFBTurboAppCheck';
 
+const VALID_APPLE_PROVIDERS = ['debug', 'deviceCheck', 'appAttest', 'appAttestWithDeviceCheckFallback'];
+const VALID_ANDROID_PROVIDERS = ['debug', 'playIntegrity'];
+
 /**
  * Type guard to check if a provider has providerOptions.
  * This provides proper type narrowing for providers that support platform-specific configuration.
@@ -61,6 +64,29 @@ function hasProviderOptions(
     'providerOptions' in provider &&
     provider.providerOptions !== undefined
   );
+}
+
+function validateProviderName(options: AppCheckOptions): void {
+  if (!hasProviderOptions(options.provider)) {
+    return;
+  }
+  const provider = options.provider;
+  if (Platform.OS === 'android') {
+    const name = provider.providerOptions?.android?.provider;
+    if (isString(name) && !VALID_ANDROID_PROVIDERS.includes(name)) {
+      throw new Error(
+        `Invalid App Check provider "${name}". Valid android providers are: ${VALID_ANDROID_PROVIDERS.join(', ')}.`,
+      );
+    }
+  }
+  if (Platform.OS === 'ios' || Platform.OS === 'macos') {
+    const name = provider.providerOptions?.apple?.provider;
+    if (isString(name) && !VALID_APPLE_PROVIDERS.includes(name)) {
+      throw new Error(
+        `Invalid App Check provider "${name}". Valid apple providers are: ${VALID_APPLE_PROVIDERS.join(', ')}.`,
+      );
+    }
+  }
 }
 
 class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
@@ -133,12 +159,6 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
           'Invalid configuration: no android provider configured while on android platform.',
         );
       }
-      const validAndroidProviders = ['debug', 'playIntegrity'];
-      if (!validAndroidProviders.includes(provider.providerOptions.android.provider)) {
-        throw new Error(
-          `Invalid App Check provider "${provider.providerOptions.android.provider}". Valid android providers are: ${validAndroidProviders.join(', ')}.`,
-        );
-      }
       return this.native.configureProvider(
         provider.providerOptions.android.provider,
         provider.providerOptions.android.debugToken,
@@ -148,17 +168,6 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
       if (!isString(provider.providerOptions?.apple?.provider)) {
         throw new Error(
           'Invalid configuration: no apple provider configured while on apple platform.',
-        );
-      }
-      const validAppleProviders = [
-        'debug',
-        'deviceCheck',
-        'appAttest',
-        'appAttestWithDeviceCheckFallback',
-      ];
-      if (!validAppleProviders.includes(provider.providerOptions.apple.provider)) {
-        throw new Error(
-          `Invalid App Check provider "${provider.providerOptions.apple.provider}". Valid apple providers are: ${validAppleProviders.join(', ')}.`,
         );
       }
       return this.native.configureProvider(
@@ -284,6 +293,7 @@ export function initializeAppCheck(app?: FirebaseApp, options?: AppCheckOptions)
   if (!isObject(options)) {
     throw new Error('Invalid configuration: no options defined.');
   }
+  validateProviderName(options);
   const appCheck = getModularAppCheck(app);
   void (appCheck as AppCheckInternal).initializeAppCheck(options);
   return appCheck;
