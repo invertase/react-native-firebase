@@ -188,36 +188,13 @@ RCT_EXPORT_MODULE(NativeRNFBTurboConfig)
   }
 }
 
-- (void)fetchAndActivate:(NSString *)appName
-                 resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = firebaseAppForName(appName);
-  FIRRemoteConfigFetchAndActivateCompletion completionHandler =
-      ^(FIRRemoteConfigFetchAndActivateStatus status, NSError *__nullable error) {
-        if (error) {
-          if (error.userInfo && error.userInfo[@"ActivationFailureReason"] != nil &&
-              [error.userInfo[@"ActivationFailureReason"] containsString:@"already activated"]) {
-            resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
-          } else {
-            [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-          }
-        } else {
-          if (status == FIRRemoteConfigFetchAndActivateStatusSuccessFetchedFromRemote) {
-            resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
-            return;
-          }
-          resolve([self resultWithConstants:@([RCTConvert BOOL:@(NO)]) firebaseApp:firebaseApp]);
-        }
-      };
-
-  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
-      fetchAndActivateWithCompletionHandler:completionHandler];
-}
-
-- (void)activate:(NSString *)appName
-         resolve:(RCTPromiseResolveBlock)resolve
-          reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = firebaseAppForName(appName);
+// Shared by `activate:` and `fetchAndActivate:` below - resolves with the `changed` BOOL from
+// `-[FIRRemoteConfig activateWithCompletion:]`, treating the SDK's "already activated" error as a
+// non-error `false` result rather than a rejection, since it just means there was nothing new to
+// activate.
+- (void)rnfb_activateRemoteConfig:(FIRApp *)firebaseApp
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject {
   [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] activateWithCompletion:^(
                                                          BOOL changed, NSError *_Nullable error) {
     if (error) {
@@ -231,6 +208,54 @@ RCT_EXPORT_MODULE(NativeRNFBTurboConfig)
       resolve([self resultWithConstants:@([RCTConvert BOOL:@(changed)]) firebaseApp:firebaseApp]);
     }
   }];
+}
+
+- (void)fetchAndActivate:(NSString *)appName
+                 resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject {
+  // NOTE: We deliberately do not use `-[FIRRemoteConfig fetchAndActivateWithCompletionHandler:]`
+  // here. Its `FIRRemoteConfigFetchAndActivateStatus` result only reflects whether the fetch
+  // succeeded (`SuccessFetchedFromRemote`) vs fell back to previously fetched data
+  // (`SuccessUsingPreFetchedData`) - it does NOT reflect whether activation actually changed any
+  // config values, so it reports `SuccessFetchedFromRemote` (=> we'd resolve `true`) even when the
+  // fetched values are identical to what's already active. See
+  // https://github.com/invertase/react-native-firebase/issues/7779
+  //
+  // Instead we perform the fetch ourselves and hand off to the same activation + resolution logic
+  // `activate()` uses, so `fetchAndActivate()` resolves `true` only when activation changed the
+  // in-use config values - matching `activate()`'s own semantics as well as the Android
+  // implementation.
+  FIRApp *firebaseApp = firebaseAppForName(appName);
+  __weak RNFBConfigModule *weakSelf = self;
+  FIRRemoteConfigFetchCompletion fetchCompletion =
+      ^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
+        RNFBConfigModule *strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+
+        if (error) {
+          [RNFBSharedUtils
+              rejectPromiseWithUserInfo:reject
+                               userInfo:[@{
+                                 @"code" : convertFIRRemoteConfigFetchStatusToNSString(status),
+                                 @"message" :
+                                     convertFIRRemoteConfigFetchStatusToNSStringDescription(status)
+                               } mutableCopy]];
+          return;
+        }
+
+        [strongSelf rnfb_activateRemoteConfig:firebaseApp resolve:resolve reject:reject];
+      };
+
+  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] fetchWithCompletionHandler:fetchCompletion];
+}
+
+- (void)activate:(NSString *)appName
+         resolve:(RCTPromiseResolveBlock)resolve
+          reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = firebaseAppForName(appName);
+  [self rnfb_activateRemoteConfig:firebaseApp resolve:resolve reject:reject];
 }
 
 - (void)setConfigSettings:(NSString *)appName

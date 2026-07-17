@@ -59,6 +59,82 @@ describe('remoteConfig()', function () {
         const { getRemoteConfig, fetchAndActivate } = remoteConfigModular;
         (await fetchAndActivate(getRemoteConfig())).should.be.a.Boolean();
       });
+
+      // Regression test for https://github.com/invertase/react-native-firebase/issues/7779
+      // On iOS, fetchAndActivate() used to always resolve `true` whenever the underlying fetch
+      // succeeded, even when the fetched values were identical to what was already active
+      // (i.e. nothing new was actually activated). This must be consistent with fetch() + activate(),
+      // and with the boolean returned by activate() itself, on both platforms.
+      it('returns false when there is nothing new to activate', async function () {
+        const { getRemoteConfig, fetchAndActivate } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig();
+        remoteConfig.settings = { minimumFetchIntervalMillis: 0 };
+
+        // Make sure the current remote values are fetched + activated first.
+        await fetchAndActivate(remoteConfig);
+
+        // Calling again immediately with no server-side template changes must not report
+        // that anything was activated, matching fetch() + activate() and matching Android.
+        const activatedAgain = await fetchAndActivate(remoteConfig);
+        activatedAgain.should.equal(false);
+      });
+
+      it('is consistent with fetch() followed by activate()', async function () {
+        const { getRemoteConfig, fetchConfig, fetchAndActivate, activate } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig();
+        remoteConfig.settings = { minimumFetchIntervalMillis: 0 };
+
+        // Get into a known "fully activated, no pending changes" state.
+        await fetchAndActivate(remoteConfig);
+
+        // With no new remote values, fetch() + activate() should report nothing changed...
+        await fetchConfig(remoteConfig);
+        const activatedViaSeparateCalls = await activate(remoteConfig);
+        activatedViaSeparateCalls.should.equal(false);
+
+        // ...and fetchAndActivate() must agree.
+        const activatedViaFetchAndActivate = await fetchAndActivate(remoteConfig);
+        activatedViaFetchAndActivate.should.equal(activatedViaSeparateCalls);
+      });
+
+      it('returns true only once new remote values have actually been fetched and activated', async function () {
+        const { getRemoteConfig, fetchAndActivate, getValue } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig();
+        remoteConfig.settings = { minimumFetchIntervalMillis: 0 };
+        const paramName = 'fetchAndActivateTest' + Date.now();
+        const paramValue = 'value' + Date.now();
+
+        // Get into a known "fully activated, no pending changes" state first.
+        await fetchAndActivate(remoteConfig);
+        (await fetchAndActivate(remoteConfig)).should.equal(false);
+
+        try {
+          const response = await FirebaseHelpers.updateRemoteConfigTemplate({
+            operations: { add: [{ name: paramName, value: paramValue }] },
+          });
+          should(response.result !== undefined).equal(true, 'response result not defined');
+
+          // A newly published template can take a little while to propagate to the fetch
+          // backend, so poll fetchAndActivate() until it reports the new value was activated,
+          // rather than asserting on the very next call.
+          let activated = false;
+          const deadline = Date.now() + 60000;
+          while (Date.now() < deadline) {
+            activated = await fetchAndActivate(remoteConfig);
+            if (activated && getValue(remoteConfig, paramName).asString() === paramValue) {
+              break;
+            }
+            await Utils.sleep(2000);
+          }
+
+          activated.should.equal(true);
+          getValue(remoteConfig, paramName).asString().should.equal(paramValue);
+        } finally {
+          await FirebaseHelpers.updateRemoteConfigTemplate({
+            operations: { delete: [paramName] },
+          });
+        }
+      });
     });
 
     describe('activate()', function () {
