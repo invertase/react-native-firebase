@@ -64,8 +64,17 @@ target 'testing' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  # Use pre-compiled firestore frameworks to optimize compile time.
-  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
+  # Use pre-compiled firestore frameworks to optimize compile time -- CocoaPods-only mode only.
+  # Under SPM (the default -- see packages/app/firebase_spm.rb), Firebase's own SPM package
+  # already ships precompiled binaries for the compile-time-heavy parts of Firestore
+  # (FirebaseFirestoreBinary, the GRPC/Abseil binaries, etc.), so this pod is unneeded there,
+  # and mixing it in would additionally pull in its own CocoaPods copies of
+  # FirebaseCore/FirebaseCoreExtension/FirebaseCoreInternal/FirebaseSharedSwift alongside the
+  # SPM-resolved copies of those same frameworks -- which made Xcode's Archive action fail with
+  # "Multiple commands produce '.../FirebaseCore.framework'".
+  if rnfirebase_spm_disabled?
+    pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
+  end
 
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202

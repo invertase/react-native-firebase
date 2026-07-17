@@ -61,35 +61,47 @@ def rnfirebase_spm_embed_script
   <<~'SCRIPT'
     set -euo pipefail
 
-    package_frameworks_dir="${BUILT_PRODUCTS_DIR}/PackageFrameworks"
     app_frameworks_dir="${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-
-    if [ ! -d "${package_frameworks_dir}" ]; then
-      exit 0
-    fi
-
     mkdir -p "${app_frameworks_dir}"
 
-    find "${package_frameworks_dir}" -maxdepth 1 -type d -name "*.framework" -print0 | while IFS= read -r -d '' framework; do
-      framework_name="$(basename "${framework}")"
-      destination="${app_frameworks_dir}/${framework_name}"
+    embed_frameworks_from() {
+      local source_dir="$1"
+      [ -d "${source_dir}" ] || return 0
 
-      if [ -e "${destination}" ]; then
-        continue
-      fi
+      find "${source_dir}" -maxdepth 1 -type d -name "*.framework" -print0 | while IFS= read -r -d '' framework; do
+        framework_name="$(basename "${framework}")"
+        destination="${app_frameworks_dir}/${framework_name}"
 
-      echo "Embedding Firebase SPM framework ${framework_name}"
-      rsync -av --delete \
-        --filter "- Headers" \
-        --filter "- PrivateHeaders" \
-        --filter "- Modules" \
-        "${framework}" \
-        "${app_frameworks_dir}"
+        if [ -e "${destination}" ]; then
+          continue
+        fi
 
-      if [ -n "${EXPANDED_CODE_SIGN_IDENTITY:-}" ] && [ "${CODE_SIGNING_REQUIRED:-}" != "NO" ] && [ "${CODE_SIGNING_ALLOWED:-}" != "NO" ]; then
-        /usr/bin/codesign --force --sign "${EXPANDED_CODE_SIGN_IDENTITY}" ${OTHER_CODE_SIGN_FLAGS:-} --preserve-metadata=identifier,entitlements "${destination}"
-      fi
-    done
+        echo "Embedding Firebase SPM framework ${framework_name} (from ${source_dir})"
+        rsync -av --delete \
+          --filter "- Headers" \
+          --filter "- PrivateHeaders" \
+          --filter "- Modules" \
+          "${framework}" \
+          "${app_frameworks_dir}"
+
+        if [ -n "${EXPANDED_CODE_SIGN_IDENTITY:-}" ] && [ "${CODE_SIGNING_REQUIRED:-}" != "NO" ] && [ "${CODE_SIGNING_ALLOWED:-}" != "NO" ]; then
+          /usr/bin/codesign --force --sign "${EXPANDED_CODE_SIGN_IDENTITY}" ${OTHER_CODE_SIGN_FLAGS:-} --preserve-metadata=identifier,entitlements "${destination}"
+        fi
+      done
+    }
+
+    # Regular (simulator/device) builds put every Swift Package product for
+    # the whole scheme's dependency graph into one shared folder.
+    embed_frameworks_from "${BUILT_PRODUCTS_DIR}/PackageFrameworks"
+
+    # Xcode's Archive action (ONLY_ACTIVE_ARCH=NO, DEPLOYMENT_POSTPROCESSING=YES)
+    # never populates any target's PackageFrameworks folder at all -- it builds
+    # Swift Package products into a separate shared "uninstalled products"
+    # folder instead. Without also checking here, a real `xcodebuild archive`
+    # (i.e. every TestFlight/App Store build) silently embeds zero Firebase SPM
+    # frameworks and the resulting app crashes at launch with a missing-library
+    # dyld error.
+    embed_frameworks_from "${OBJROOT}/UninstalledProducts/${PLATFORM_NAME}"
   SCRIPT
 end
 
@@ -201,6 +213,16 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
             'to your Podfile\'s post_install block as a fallback.'
         end
       end
+      begin
+        rnfirebase_add_spm_core_to_app_target(self)
+      rescue => e
+        if defined?(Pod::UI)
+          Pod::UI.warn "[react-native-firebase] Couldn't link FirebaseCore into the app target " \
+            "automatically (#{e.class}: #{e.message}). Add `rnfirebase_add_spm_core_to_app_target(installer)` " \
+            'to your Podfile\'s post_install block as a fallback if your own native code calls ' \
+            'FIRApp/FIROptions APIs directly.'
+        end
+      end
       result
     end
   end
@@ -210,6 +232,78 @@ rescue => e
     Pod::UI.warn "[react-native-firebase] Couldn't hook CocoaPods to auto-embed Firebase SPM " \
       "frameworks (#{e.class}: #{e.message}). Add `rnfirebase_add_spm_embed_phase(installer)` " \
       'to your Podfile\'s post_install block as a fallback.'
+  end
+end
+
+# Adds a direct SPM product dependency on `FirebaseCore` to the *app's own*
+# native target(s) -- not just RNFB's pod targets. Runs automatically on every
+# `pod install`/`pod update` alongside `rnfirebase_add_spm_embed_phase` -- see
+# `rnfirebase_hook_cocoapods_post_install!` below -- so you normally never
+# need to call this yourself.
+#
+# Why this needs to exist: with CocoaPods-only Firebase dependency resolution,
+# every RNFB pod declares a regular `s.dependency 'Firebase/CoreOnly'`, and
+# CocoaPods automatically propagates the resulting framework/header search
+# paths all the way up to the app's own target -- so apps whose own native
+# code calls `[FIRApp configure]` / `[FIROptions ...]` directly (e.g. to
+# configure a secondary Firebase app instance, a documented RNFB pattern)
+# have always been able to link against FirebaseCore for free, without
+# declaring anything themselves. Xcode's own SPM package product
+# dependencies don't propagate the same way: each target needs its own
+# *explicit* product dependency in order to link a package product. Without
+# this, apps using SPM+dynamic linkage whose own native code references
+# Firebase Core symbols directly fail at Archive time with "Undefined
+# symbols ... _OBJC_CLASS_$_FIRApp", even though the same code links fine
+# under CocoaPods-only resolution.
+def rnfirebase_add_spm_core_to_app_target(installer)
+  return unless $rnfirebase_spm_active
+
+  pkg_class = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference
+  ref_class = Xcodeproj::Project::Object::XCSwiftPackageProductDependency
+
+  installer.aggregate_targets.each do |aggregate_target|
+    project = aggregate_target.user_project
+    project_modified = false
+
+    project.native_targets.each do |target|
+      next unless target.respond_to?(:package_product_dependencies)
+      next unless target.respond_to?(:shell_script_build_phases)
+      next unless target.shell_script_build_phases.any? { |phase| phase.name == '[CP] Embed Pods Frameworks' }
+      next if target.package_product_dependencies.any? { |dep| dep.product_name == 'FirebaseCore' }
+
+      pkg = project.root_object.package_references.find do |candidate|
+        candidate.class == pkg_class && candidate.repositoryURL == $firebase_spm_url
+      end
+      if !pkg
+        pkg = project.new(pkg_class)
+        pkg.repositoryURL = $firebase_spm_url
+        pkg.requirement = { kind: 'upToNextMajorVersion', minimumVersion: $rnfirebase_spm_version }
+        project.root_object.package_references << pkg
+      end
+
+      if defined?(Pod) && defined?(Pod::UI)
+        Pod::UI.puts "[react-native-firebase] #{target.name}: ".yellow +
+          'Linking FirebaseCore directly into the app target (SPM) so native code that calls ' \
+          'FIRApp/FIROptions APIs directly can resolve those symbols.'
+      end
+
+      ref = project.new(ref_class)
+      ref.package = pkg
+      ref.product_name = 'FirebaseCore'
+      target.package_product_dependencies << ref
+
+      target.build_configurations.each do |config|
+        target.build_settings(config.name)['SWIFT_INCLUDE_PATHS'] ||= ['$(inherited)']
+        search_path = '${SYMROOT}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/'
+        unless target.build_settings(config.name)['SWIFT_INCLUDE_PATHS'].include?(search_path)
+          target.build_settings(config.name)['SWIFT_INCLUDE_PATHS'].push(search_path)
+        end
+      end
+
+      project_modified = true
+    end
+
+    project.save if project_modified
   end
 end
 
@@ -226,6 +320,9 @@ def firebase_dependency(spec, version, spm_products, pods)
     # dependency list) so `rnfirebase_add_spm_embed_phase` doesn't depend on
     # any RN-internal state shape -- only on whether *we* ever took this path.
     $rnfirebase_spm_active = true
+    # Tracked so `rnfirebase_add_spm_core_to_app_target` can declare the same
+    # minimum version requirement without needing its own copy of `version`.
+    $rnfirebase_spm_version = version
     if defined?(Pod) && defined?(Pod::UI)
       Pod::UI.puts "[react-native-firebase] #{spec.name}: ".yellow +
         "Using SPM for Firebase dependency resolution (products: #{spm_products.join(', ')})"
