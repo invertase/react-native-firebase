@@ -75,7 +75,12 @@ describe('appCheck()', function () {
         });
 
         it('does not throw validation error for valid apple provider names', function () {
-          for (const name of ['debug', 'deviceCheck', 'appAttest', 'appAttestWithDeviceCheckFallback']) {
+          for (const name of [
+            'debug',
+            'deviceCheck',
+            'appAttest',
+            'appAttestWithDeviceCheckFallback',
+          ]) {
             const provider = new ReactNativeFirebaseAppCheckProvider();
             provider.configure({
               apple: { provider: name as any },

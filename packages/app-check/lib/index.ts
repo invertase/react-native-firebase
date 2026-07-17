@@ -49,7 +49,12 @@ import { ReactNativeFirebaseAppCheckProvider } from './providers';
 
 const nativeModuleName = 'NativeRNFBTurboAppCheck';
 
-const VALID_APPLE_PROVIDERS = ['debug', 'deviceCheck', 'appAttest', 'appAttestWithDeviceCheckFallback'];
+const VALID_APPLE_PROVIDERS = [
+  'debug',
+  'deviceCheck',
+  'appAttest',
+  'appAttestWithDeviceCheckFallback',
+];
 const VALID_ANDROID_PROVIDERS = ['debug', 'playIntegrity'];
 
 /**
