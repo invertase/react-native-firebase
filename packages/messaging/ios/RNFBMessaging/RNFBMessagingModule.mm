@@ -125,15 +125,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
          resolve:(RCTPromiseResolveBlock)resolve
           reject:(RCTPromiseRejectBlock)reject {
   if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                      userInfo:(NSMutableDictionary *)@{
-                                        @"code" : @"unregistered",
-                                        @"message" : @"You must be registered for remote "
-                                                     @"messages before calling "
-                                                     @"getToken, see "
-                                                     @"messaging()."
-                                                     @"registerDeviceForRemoteMessages().",
-                                      }];
+    [RNFBSharedUtils
+        rejectPromiseWithUserInfo:reject
+                         userInfo:(NSMutableDictionary *)@{
+                           @"code" : @"unregistered",
+                           @"message" : @"You must be registered for remote "
+                                        @"messages before calling "
+                                        @"getToken, see "
+                                        @"registerDeviceForRemoteMessages(getMessaging()).",
+                         }];
     return;
   }
 
@@ -193,15 +193,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
          @"Use setAPNSToken in testing if needed.");
 #endif
     if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                        userInfo:(NSMutableDictionary *)@{
-                                          @"code" : @"unregistered",
-                                          @"message" : @"You must be registered for remote "
-                                                       @"messages before "
-                                                       @"calling getAPNSToken, see "
-                                                       @"messaging()."
-                                                       @"registerDeviceForRemoteMessages().",
-                                        }];
+      [RNFBSharedUtils
+          rejectPromiseWithUserInfo:reject
+                           userInfo:(NSMutableDictionary *)@{
+                             @"code" : @"unregistered",
+                             @"message" : @"You must be registered for remote "
+                                          @"messages before "
+                                          @"calling getAPNSToken, see "
+                                          @"registerDeviceForRemoteMessages(getMessaging()).",
+                           }];
       return;
     }
     resolve([NSNull null]);
