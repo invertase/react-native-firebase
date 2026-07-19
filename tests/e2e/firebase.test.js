@@ -516,11 +516,12 @@ function clearStaleMacOsTestingForSharedJetPort(label) {
     return;
   }
 
+  const macName = process.env.RNFB_MACOS_PRODUCT_NAME || 'io.invertase.testing';
   console.log(
-    `[rnfb-e2e] ${label}: killing stale macOS io.invertase.testing for shared :${jetRemotePort()}`,
+    `[rnfb-e2e] ${label}: killing stale macOS ${macName} for shared :${jetRemotePort()}`,
   );
   try {
-    execSync('killall "io.invertase.testing"', { stdio: 'inherit', timeout: 5000 });
+    execSync(`killall ${JSON.stringify(macName)}`, { stdio: 'inherit', timeout: 5000 });
   } catch (_) {
     // not running — expected
   }

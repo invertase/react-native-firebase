@@ -4,11 +4,38 @@ const execFile = promisify(require('child_process').execFile);
 
 let macOsRetries = 0;
 
-const MACOS_BUNDLE_QUERY =
-  'platform=macos&dev=true&lazy=true&minify=false&inlineSourceMap=true&modulesOnly=false&runModule=true&app=org.reactjs.native.io-invertase-testing';
-
 const SERIAL_JET_PORT = 8090;
 const SERIAL_METRO_PORT = 8081;
+const DEFAULT_MACOS_PRODUCT_NAME = 'io.invertase.testing';
+
+function macOsProductName() {
+  return process.env.RNFB_MACOS_PRODUCT_NAME || DEFAULT_MACOS_PRODUCT_NAME;
+}
+
+function macOsBundleIdentifier() {
+  if (process.env.RNFB_MACOS_BUNDLE_IDENTIFIER) {
+    return process.env.RNFB_MACOS_BUNDLE_IDENTIFIER;
+  }
+  // Match Xcode $(PRODUCT_NAME:rfc1034identifier) — dots → hyphens.
+  return `org.reactjs.native.${macOsProductName().replace(/\./g, '-')}`;
+}
+
+function macOsBundleQuery() {
+  // Bundle IDs are ascii; keep hyphens literal in the Metro query string.
+  return (
+    'platform=macos&dev=true&lazy=true&minify=false&inlineSourceMap=true&modulesOnly=false&runModule=true&app=' +
+    macOsBundleIdentifier()
+  );
+}
+
+function macOsBinaryPath() {
+  const name = macOsProductName();
+  return `./macos/build/Build/Products/Debug/${name}.app/Contents/MacOS/${name}`;
+}
+
+function shellSingleQuote(value) {
+  return `'${String(value).replace(/'/g, `'\\''`)}'`;
+}
 
 function parseEnvPort(value) {
   if (value === undefined || value === null || value === '') {
@@ -68,7 +95,7 @@ function readMetroPort(platformKey) {
 
 function isMacOsTestAppRunning() {
   try {
-    execSync('pgrep -x io.invertase.testing', { stdio: 'ignore' });
+    execSync(`pgrep -x ${shellSingleQuote(macOsProductName())}`, { stdio: 'ignore' });
     return true;
   } catch (_e) {
     return false;
@@ -80,18 +107,19 @@ function sleep(ms) {
 }
 
 async function killMacOsTestApp() {
+  const name = macOsProductName();
   if (!isMacOsTestAppRunning()) {
     return;
   }
   try {
-    execSync('killall "io.invertase.testing"', { stdio: 'ignore' });
+    execSync(`killall ${shellSingleQuote(name)}`, { stdio: 'ignore' });
   } catch (_e) {
     // already gone
   }
   await sleep(500);
   if (isMacOsTestAppRunning()) {
     try {
-      execSync('killall -9 "io.invertase.testing"', { stdio: 'ignore' });
+      execSync(`killall -9 ${shellSingleQuote(name)}`, { stdio: 'ignore' });
     } catch (_e) {
       // already gone
     }
@@ -104,7 +132,7 @@ async function killMacOsTestApp() {
   }
   if (isMacOsTestAppRunning()) {
     console.warn(
-      '[rnfb-e2e] io.invertase.testing still running after killall -9 — tee/pipe may not close',
+      `[rnfb-e2e] ${name} still running after killall -9 — tee/pipe may not close`,
     );
   }
 }
@@ -120,7 +148,7 @@ function registerMacOsExitHandlers() {
   macOsExitHandlersRegistered = true;
   const cleanup = () => {
     try {
-      execSync('killall -9 "io.invertase.testing"', { stdio: 'ignore' });
+      execSync(`killall -9 ${shellSingleQuote(macOsProductName())}`, { stdio: 'ignore' });
     } catch (_e) {
       // already gone
     }
@@ -139,7 +167,7 @@ function registerMacOsExitHandlers() {
 async function waitForMetroMacosBundle(metroPort = 8081, timeoutMs = 600000) {
   const host = '127.0.0.1';
   const statusUrl = `http://${host}:${metroPort}/status`;
-  const bundleUrl = `http://${host}:${metroPort}/index.bundle?${MACOS_BUNDLE_QUERY}`;
+  const bundleUrl = `http://${host}:${metroPort}/index.bundle?${macOsBundleQuery()}`;
   const started = Date.now();
 
   while (Date.now() - started < timeoutMs) {
@@ -199,8 +227,8 @@ module.exports = {
         config.metroPort = metroPort;
         config.port = jetPort;
         await waitForMetroMacosBundle(metroPort);
-        const macBinary =
-          './macos/build/Build/Products/Debug/io.invertase.testing.app/Contents/MacOS/io.invertase.testing';
+        const macBinary = macOsBinaryPath();
+        console.warn(`[rnfb-e2e] spawning macOS app ${macBinary} (${macOsBundleIdentifier()})`);
         const macApp = spawn(macBinary, [], {
           // 'ignore' (not 'inherit'): inherited stdio hands the app the
           // write end of the agent's stdout/stderr pipe (e.g. `| tee`), so
@@ -238,7 +266,9 @@ module.exports = {
       async after(_config) {
         await killMacOsTestApp();
         if (isMacOsTestAppRunning()) {
-          console.warn('[rnfb-e2e] macOS app teardown FAILED — io.invertase.testing still alive');
+          console.warn(
+            `[rnfb-e2e] macOS app teardown FAILED — ${macOsProductName()} still alive`,
+          );
         } else {
           console.warn('[rnfb-e2e] macOS app teardown complete');
         }

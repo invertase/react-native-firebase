@@ -30,7 +30,10 @@ E2E_DEFAULT_ANDROID_AVD=TestingAVD
 E2E_DEFAULT_IOS_SIMULATOR='iPhone 17'
 E2E_ANDROID_APP_ID=com.invertase.testing
 E2E_ANDROID_TEST_APP_ID=com.invertase.testing.test
-E2E_MACOS_APP_PROCESS=io.invertase.testing
+# Default macOS process / PRODUCT_NAME. Override with RNFB_MACOS_PRODUCT_NAME for
+# concurrent slotted macOS (e.g. io.invertase.testing.s1) — see running-e2e.md.
+E2E_DEFAULT_MACOS_APP_PROCESS=io.invertase.testing
+E2E_MACOS_APP_PROCESS="${RNFB_MACOS_PRODUCT_NAME:-$E2E_DEFAULT_MACOS_APP_PROCESS}"
 
 e2e_repo_root() {
   local here
@@ -261,6 +264,8 @@ e2e_collect_targets() {
   E2E_ANDROID_SERIAL=$(e2e_resolve_android_serial)
   E2E_ANDROID_AVD=$(e2e_resolve_android_avd)
   E2E_IOS_SIMULATOR=$(e2e_resolve_ios_simulator)
+  # Re-resolve after env/mellifera load so RNFB_MACOS_PRODUCT_NAME wins.
+  E2E_MACOS_APP_PROCESS="${RNFB_MACOS_PRODUCT_NAME:-$E2E_DEFAULT_MACOS_APP_PROCESS}"
 }
 
 e2e_port_listening() {
