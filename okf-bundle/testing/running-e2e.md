@@ -305,7 +305,7 @@ case "$metro_cwd" in "$REPO_ROOT"|"$REPO_ROOT"/*) ;; *) echo "Metro cwd not this
 case "$fs_cwd" in "$REPO_ROOT"|"$REPO_ROOT"/*) ;; *) echo "Firestore emulator cwd not this checkout: $fs_cwd"; false ;; esac
 ```
 
-Expected shapes when started via this checkout's `yarn tests:*`: Metro cwd ends with `/tests`; Firestore/Auth/Functions cwd ends with `/.github/workflows/scripts`. If ownership fails: stop the foreign listeners (or finish that worktree's run), then start `yarn tests:packager:jet` and `yarn tests:emulator:start` from **this** `$REPO_ROOT` and re-check curls **and** cwd. Do not proceed to `:test-cover` on a foreign-owned stack.
+Expected shapes when started via this checkout's `yarn tests:*`: Metro cwd ends with `/tests` (iOS/Android packager) or `/tests-macos` (macOS packager); Firestore/Auth/Functions cwd ends with `/.github/workflows/scripts`. A full parallel slot that runs android/ios **and** macos has **two** Metro listeners (distinct ports) — verify **each**. If ownership fails: stop the foreign listeners (or finish that worktree's run), then start `yarn tests:packager:jet` and/or `yarn tests:macos:packager:jet` plus `yarn tests:emulator:start` from **this** `$REPO_ROOT` and re-check curls **and** cwd. Do not proceed to `:test-cover` on a foreign-owned stack.
 
 #### 3. Harness matches validation tier
 

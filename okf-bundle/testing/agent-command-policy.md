@@ -39,9 +39,9 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 | Android JVM unit tests                                          | `yarn tests:android:unit`                                                                                                                                                                                                                                                                  | ad-hoc `./gradlew …` outside this yarn script; bare Robolectric/JUnit IDE-only as the agent gate                                                              |
 | iOS Ruby unit tests (SPM / CocoaPods helpers)                   | `yarn lint:ruby` / `yarn tests:ios:ruby` (after `bundle install --gemfile=packages/app/__tests__/Gemfile` when needed)                                                                                                                                                                     | ad-hoc `ruby packages/app/__tests__/…_test.rb`, bare `ruby …/run_with_coverage.rb` without the yarn script as the agent gate                                  |
 | Android merged Jacoco (unit + e2e)                              | `yarn tests:android:post-e2e-coverage` (after e2e); `yarn tests:android:test:jacoco-report` when regenerating the merge report                                                                                                                                                             | `./gradlew jacocoAndroidTestReport` as Codecov path; inventing other jacoco yarn scripts                                                                      |
-| E2e + coverage                                                  | [running e2e](running-e2e.md) — **only** `yarn tests:*`                                                                                                                                                                                                                                    | `jet`, `npx jet`, `yarn jet`, `detox test`, bare `detox`, `cd tests && …`, direct Metro/emulator starts                                                       |
+| E2e + coverage                                                  | [running e2e](running-e2e.md) — **only** `yarn tests:*`                                                                                                                                                                                                                                    | `jet`, `npx jet`, `yarn jet`, `detox test`, bare `detox`, `cd tests && …`, `cd tests-macos && …`, direct Metro/emulator starts                                |
 | iOS Detox framework cache rebuild                               | `yarn tests:ios:detox-framework-cache:rebuild`                                                                                                                                                                                                                                             | `cd tests && yarn detox clean-framework-cache`, `cd tests && yarn detox build-framework-cache`, bare `detox …`                                                |
-| Host pre-flight (before each `:test-cover`)                     | [running e2e § pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) — host-clear + services ready + **[checkout ownership](running-e2e.md#services-checkout-ownership-blocking)** + harness tier                                                                                                                                                                                                                        | Port/HTTP checks alone when Metro/emulators belong to another worktree; `pgrep`/spawn probes of Jet/Detox as completion signals                                                                                                           |
+| Host pre-flight (before each `:test-cover`)                     | [running e2e § pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) — host-clear + services ready + **[checkout ownership](running-e2e.md#services-checkout-ownership-blocking)** + harness tier. Env-aware scripts: `bash scripts/e2e/check-e2e-resources.sh` / `bash scripts/e2e/release-e2e-resources.sh` ([host-clear probes](running-e2e.md#host-clear-probes)) | Port/HTTP checks alone when Metro/emulators belong to another worktree; `pgrep`/spawn probes of Jet/Detox as completion signals; ad-hoc `pgrep` / hardcoded `:8090` only; improvised kill lists |
 | TurboModule codegen (all migrated / CI)                         | `yarn codegen:verify` (wipe + regen + diff); `yarn codegen:all` for local regen via package scripts                                                                                                                         | ad-hoc CLI without wipe; inventing alternate codegen yarn scripts — see [TurboModule codegen](#turbomodule-codegen)                                           |
 
 ### Prepare / transpile (detail)
@@ -60,7 +60,7 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 | Do not start until prepare exits 0        | Why                                                                                                            |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `yarn tests:*` (e2e, packager, build)     | Metro (debug JS) reads **`dist/module/**`**, not `lib/\*\*` — partial prepare → missing modules, stale bundles |
-| `yarn tests:packager:jet-reset-cache`     | Reset after prepare, not during it. Free `:8081` first — [running e2e § packager reset-cache](running-e2e.md#packager-reset-cache-eaddrinuse) |
+| `yarn tests:packager:jet-reset-cache` / `yarn tests:macos:packager:jet-reset-cache` | Reset after prepare, not during it. Free `:8081` first — [running e2e § packager reset-cache](running-e2e.md#packager-reset-cache-eaddrinuse). Mobile packager is `tests/`; macOS packager is `tests-macos/` |
 | `yarn tsc:compile`, Jest, `compare:types` | May read transpiled output or assume `dist/` is current                                                        |
 | Another `yarn` / scoped prepare           | Overlapping Nx/Lerna runs race on `dist/`                                                                      |
 
@@ -114,12 +114,20 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 | Ad-hoc `ruby packages/app/__tests__/…_test.rb` (or bare runner) as the validation gate                                                                                           | Misses SimpleCov / suite discovery — **only** `yarn tests:ios:ruby`                 |
 | `yarn jet`, `npx jet`, `cd tests && yarn jet …`                                                                                                                                  | [E2e agent rule](running-e2e.md#agent-rule-read-first)                              |
 | `detox test`, bare `detox`, `cd tests && detox …`                                                                                                                                | E2e agent rule                                                                      |
-| Ad-hoc Metro / emulator start                                                                                                                                                    | Use `yarn tests:packager:jet`, `yarn tests:emulator:start`                          |
+| Ad-hoc Metro / emulator start                                                                                                                                                    | Use `yarn tests:packager:jet` (iOS/Android) or `yarn tests:macos:packager:jet` (macOS), `yarn tests:emulator:start` |
 | Spawn / PATH probes to “test” Jet or genversion                                                                                                                                  | Log triage only; fix product code and re-run canonical command                      |
 
 ## Known traps
 
 <a id="known-traps"></a>
+
+<a id="shell-sandbox-permissions"></a>
+
+### Cursor Shell sandbox / permissions
+
+When a Shell command returns with **no exit status** (e.g. "execution backend unavailable") under default sandbox permissions, retry the **same** canonical command with `required_permissions: ["all"]` — do **not** invent an alternate command because the sandboxed attempt failed to start.
+
+Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native builds, and host pre-flight probes that need real devices/simulators typically need unrestricted permissions on this host. A "no exit status" result on those commands is a sandbox artifact, not evidence the run failed or is incomplete — see [running e2e § running one iteration](running-e2e.md#running-one-iteration) for checking the tee log footer before concluding anything from a missing exit code.
 
 ### genversion / prepare paths
 
@@ -131,7 +139,7 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 
 - **`yarn jet --help`** working or failing in `tests/` is **not** a valid e2e or install gate.
 - Jet is started **internally** by `yarn tests:<platform>:test-cover`. Stale `:8090` → [pre-flight recovery](running-e2e.md#pre-flight-recovery), then re-run the same `:test-cover` command.
-- Metro `EADDRINUSE` on `:8081` from `yarn tests:packager:jet-reset-cache` → [packager reset-cache](running-e2e.md#packager-reset-cache-eaddrinuse) (free `:8081`, then the same yarn target). Not the `:8090` pre-flight kill.
+- Metro `EADDRINUSE` on `:8081` from `yarn tests:packager:jet-reset-cache` or `yarn tests:macos:packager:jet-reset-cache` → [packager reset-cache](running-e2e.md#packager-reset-cache-eaddrinuse) (free `:8081`, then the same yarn target). Not the `:8090` pre-flight kill. Do **not** use the mobile packager for macOS Jet (or vice versa).
 
 ### Android Java format
 
