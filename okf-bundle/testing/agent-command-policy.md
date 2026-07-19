@@ -35,7 +35,7 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 | Docs lint (when docs in diff)                                   | `yarn lint:markdown`, `yarn lint:spellcheck`                                                                                                                                                                                                                                               | ad-hoc prettier/eslint on single files                                                                                        |
 | E2e + coverage                                                  | [running e2e](running-e2e.md) — **only** `yarn tests:*`                                                                                                                                                                                                                                    | `jet`, `npx jet`, `yarn jet`, `detox test`, `cd tests && …`, direct Metro/emulator starts                                     |
 | iOS Detox framework cache rebuild                               | `yarn tests:ios:detox-framework-cache:rebuild`                                                                                                                                                                                                                                             | `cd tests && yarn detox clean-framework-cache`, `cd tests && yarn detox build-framework-cache`, bare `detox …`                |
-| Host pre-flight (before each `:test-cover`)                     | [running e2e § host-clear probes](running-e2e.md#host-clear-probes)                                                                                                                                                                                                                        | `pgrep`, polling `:8090`, spawn probes of Jet/Detox                                                                           |
+| Host pre-flight (before each `:test-cover`)                     | [running e2e § host-clear probes](running-e2e.md#host-clear-probes) — `bash scripts/e2e/check-e2e-resources.sh` / `bash scripts/e2e/release-e2e-resources.sh`                                                                                                                              | ad-hoc `pgrep` / hardcoded `:8090` only; improvised kill lists                                                                |
 
 ### Prepare / transpile (detail)
 
@@ -83,6 +83,14 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 ## Known traps
 
 <a id="known-traps"></a>
+
+<a id="shell-sandbox-permissions"></a>
+
+### Cursor Shell sandbox / permissions
+
+When a Shell command returns with **no exit status** (e.g. "execution backend unavailable") under default sandbox permissions, retry the **same** canonical command with `required_permissions: ["all"]` — do **not** invent an alternate command because the sandboxed attempt failed to start.
+
+Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native builds, and host pre-flight probes that need real devices/simulators typically need unrestricted permissions on this host. A "no exit status" result on those commands is a sandbox artifact, not evidence the run failed or is incomplete — see [running e2e § running one iteration](running-e2e.md#running-one-iteration) for checking the tee log footer before concluding anything from a missing exit code.
 
 ### genversion / prepare paths
 
