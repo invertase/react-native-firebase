@@ -272,7 +272,7 @@
 					"-lswiftCompatibilityPacks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = io.invertase.testing;
+				PRODUCT_NAME = "io.invertase.testing$(RNFB_MACOS_PRODUCT_NAME_SUFFIX)";
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -300,7 +300,7 @@
 					"-lswiftCompatibilityPacks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = io.invertase.testing;
+				PRODUCT_NAME = "io.invertase.testing$(RNFB_MACOS_PRODUCT_NAME_SUFFIX)";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 			};

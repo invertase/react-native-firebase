@@ -612,7 +612,7 @@ In-app / e2e specs must call `getE2eEmulatorPort('firestore'|…)` (and siblings
 
 **Slotted Firebase emulator suites (full isolation):** each platform×slot suite needs its **own** Firebase Tools process with **non-overlapping** ports for every listener the suite actually binds. [`scripts/e2e/start-emulator-slotted.sh`](../../scripts/e2e/start-emulator-slotted.sh) assigns auth/database/firestore/functions/storage/hub/logging **and** Firestore `websocketPort`, Eventarc, and Cloud Tasks (derived as `firestore+8/+9/+12` inside the platform block). Defaults `9150` / `9299` / `9499` collide across suites: Firebase Tools still starts Eventarc+Tasks as Functions dependencies even when `--only` omits them; `EADDRINUSE` on those aux ports aborts the suite and leaves Functions dead while Firestore may still listen — e2e then hangs on callables. Parallel readiness must require the **Functions** port up (not only hub). Serialize `scripts/functions` `yarn`/`yarn build` across concurrent suite starts (shared source dir).
 
-**macOS concurrency today:** host-global. Orchestration (`pgrep -x` / `killall`, check/release, mellifera `platform:macos:global`) keys on process name **`io.invertase.testing`** (`PRODUCT_NAME`). That is the hard singleton — not Firebase cloud registration. macOS e2e uses the JS/Other path (no `GoogleService-Info` in the macOS target; JS config follows the android test app id in `tests/globals.js`). Per-worktree / multi-slot macOS would require slotting **`PRODUCT_NAME`** (and spawn/kill/Metro `app=` plumbing); see [macOS process identity](#macos-process-identity-concurrency).
+**macOS concurrency:** default process name `io.invertase.testing` is host-global (`pgrep`/`killall`). For per-worktree / multi-slot macOS, set **`RNFB_MACOS_PRODUCT_NAME`** (and optionally **`RNFB_MACOS_BUNDLE_IDENTIFIER`**) before `:build` and `:test-cover`. `yarn tests:macos:build` derives `RNFB_MACOS_PRODUCT_NAME_SUFFIX` (e.g. `.s1`) for the pbxproj `PRODUCT_NAME = "io.invertase.testing$(RNFB_MACOS_PRODUCT_NAME_SUFFIX)"` — do **not** pass global `PRODUCT_NAME=` on the `xcodebuild` CLI (that renames Pods and breaks linking). [`tests-macos/.jetrc.js`](../../tests-macos/.jetrc.js) spawn/kill/Metro `app=` follow the same env. Unset → serial defaults. No Firebase Console / GoogleService change is required (JS/Other path). See [macOS process identity](#macos-process-identity-concurrency).
 
 | Variable | Purpose |
 |----------|---------|
@@ -627,6 +627,8 @@ In-app / e2e specs must call `getE2eEmulatorPort('firestore'|…)` (and siblings
 | `RNFB_E2E_SLOT` | Slot index for orchestration / AVD / sim naming |
 | `RNFB_E2E_PLATFORM` | Optional orchestration label only — **not** used for port selection (prefer unset in slotted multi-platform launches) |
 | `RNFB_ANDROID_AVD`, `RNFB_IOS_SIMULATOR`, `RNFB_ANDROID_EMULATOR_BOOT_ARGS` | Device selection overrides |
+| `RNFB_MACOS_PRODUCT_NAME` | macOS `PRODUCT_NAME` / process name (default `io.invertase.testing`). Required distinct per concurrent macOS slot |
+| `RNFB_MACOS_BUNDLE_IDENTIFIER` | macOS `CFBundleIdentifier` (default derived from product name). Metro `app=` follows this |
 | `ORG_GRADLE_PROJECT_reactNativeDevServerPort` | Android Gradle Metro port baked into the APK's `react_native_dev_server_port` resource at build time. **Set automatically** by `yarn tests:android:build` (`RNFB_ANDROID_METRO_PORT` → `RCT_METRO_PORT` → `RNFB_METRO_PORT` → `JET_METRO_PORT` → `8081`) — only export it yourself when building Android outside that script (e.g. `detox build` invoked directly). Detox's `reversePorts` (`tests/.detoxrc.js`) already forwards the same slotted Metro port; this var makes the APK actually *ask* for that port. |
 | `SIMCTL_CHILD_RCT_METRO_PORT` | iOS simulator child Metro port |
 | `RNFB_E2E_DEBUG` | Verbose `[rnfb-e2e]` port resolution logging in app helpers |
@@ -647,15 +649,15 @@ Helper scripts (not canonical `:test-cover` entrypoints): `scripts/e2e/start-emu
 
 #### macOS process identity (concurrency)
 
-| Surface | Current value | Concurrent macOS? |
-|---------|---------------|-------------------|
-| **Process / `PRODUCT_NAME`** | `io.invertase.testing` | **Hard singleton** — `pgrep -x` / `killall`, check/release, mellifera `platform:macos:global` |
-| App path | `…/io.invertase.testing.app/Contents/MacOS/io.invertase.testing` | Follows `PRODUCT_NAME` |
-| `CFBundleIdentifier` | `org.reactjs.native.io-invertase-testing` (`org.reactjs.native.$(PRODUCT_NAME:rfc1034identifier)` in the macOS pbxproj) | OS sandbox/prefs; Metro `app=` should match if changed |
-| Metro `app=` query | `org.reactjs.native.io-invertase-testing` | Must track bundle ID if that changes |
-| Firebase / GoogleService | **None on macOS target** | iOS/Android use `com.invertase.testing` in `GoogleService-Info.plist` / `google-services.json`; macOS does not ship those and does not `[FIRApp configure]` in `AppDelegate` |
+| Surface | Default | Concurrent macOS |
+|---------|---------|------------------|
+| **Process / `PRODUCT_NAME`** | `io.invertase.testing` | Set `RNFB_MACOS_PRODUCT_NAME` (e.g. `io.invertase.testing.s1`) — required for isolation |
+| App path | `…/${PRODUCT_NAME}.app/Contents/MacOS/${PRODUCT_NAME}` | Follows product name |
+| `CFBundleIdentifier` | `org.reactjs.native.io-invertase-testing` | `RNFB_MACOS_BUNDLE_IDENTIFIER` or derived `org.reactjs.native.${PRODUCT_NAME with dots→hyphens}` |
+| Metro `app=` query | matches bundle ID | [`tests-macos/.jetrc.js`](../../tests-macos/.jetrc.js) reads the same env |
+| Firebase / GoogleService | **None on macOS target** | No cloud re-registration for JS/Other e2e |
 
-**Unlock for per-worktree / multi-slot macOS:** override `PRODUCT_NAME` at `xcodebuild` time (Info.plist already uses `$(PRODUCT_NAME)` / `$(PRODUCT_BUNDLE_IDENTIFIER)`), then make spawn/kill/preflight/Metro `app=` env-driven in `.jetrc.js` and `scripts/e2e/lib/e2e-resource-env.sh`. Slotting bundle ID alone does **not** help — kill scripts key on process name. No new Firebase macOS/iOS app registration is required for the current JS/Other e2e path. Mild residual: native RNFB preferences use a shared suite name `io.invertase.firebase` (not app-bundle-scoped).
+`yarn tests:macos:build` exports `RNFB_MACOS_PRODUCT_NAME_SUFFIX` into the xcodebuild environment (pbxproj expansion only). Check/release use `RNFB_MACOS_PRODUCT_NAME` for `pgrep`/`killall`. Same-platform parallel still needs **one worktree per macOS instance** ([parallel topology](#parallel-e2e-topology)). Mild residual: shared `io.invertase.firebase` preferences suite across apps.
 
 ### Android emulator gray screen / Quick Boot (blocking)
 
