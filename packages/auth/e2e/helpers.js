@@ -1,5 +1,9 @@
 /* eslint-disable no-console */
-const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers');
+const {
+  getE2eTestProject,
+  getE2eEmulatorHost,
+  getE2eEmulatorPort,
+} = require('../../app/e2e/helpers');
 // Shared Latin1 btoa — do not use Node Buffer / globalThis.btoa (Other/HermesVM).
 // Same import path as app-check & installations e2e.
 const { Base64 } = require('@react-native-firebase/app/dist/module/common');
@@ -64,7 +68,8 @@ exports.clearAllUsers = async function clearAllUsers() {
     const response = await fetch(
       'http://' +
         getE2eEmulatorHost() +
-        ':9099' +
+        ':' +
+        getE2eEmulatorPort('auth') +
         '/emulator/v1/projects/' +
         getE2eTestProject() +
         '/accounts',
@@ -88,7 +93,8 @@ exports.disableUser = async function disableUser(userId) {
     const response = await fetch(
       'http://' +
         getE2eEmulatorHost() +
-        ':9099' +
+        ':' +
+        getE2eEmulatorPort('auth') +
         '/identitytoolkit.googleapis.com/v1/projects/' +
         getE2eTestProject() +
         '/accounts:update',
@@ -114,7 +120,9 @@ async function getLastSmsCode(specificPhone) {
     const getSmsCodesUrl =
       'http://' +
       getE2eEmulatorHost() +
-      ':9099/emulator/v1/projects/' +
+      ':' +
+      getE2eEmulatorPort('auth') +
+      '/emulator/v1/projects/' +
       getE2eTestProject() +
       '/verificationCodes';
 
@@ -154,7 +162,9 @@ async function getLastOob(specificEmail) {
     const getOobCodesUrl =
       'http://' +
       getE2eEmulatorHost() +
-      ':9099/emulator/v1/projects/' +
+      ':' +
+      getE2eEmulatorPort('auth') +
+      '/emulator/v1/projects/' +
       getE2eTestProject() +
       '/oobCodes';
 
@@ -191,7 +201,9 @@ exports.resetPassword = async function resetPassword(oobCode, newPassword) {
   const resetPasswordUrl =
     'http://' +
     getE2eEmulatorHost() +
-    ':9099/emulator/action?mode=resetPassword&lang=en&oobCode=' +
+    ':' +
+    getE2eEmulatorPort('auth') +
+    '/emulator/action?mode=resetPassword&lang=en&oobCode=' +
     oobCode +
     '&apiKey=fake-api-key&newPassword=' +
     newPassword;
@@ -202,7 +214,9 @@ async function verifyEmail(oobCode) {
   const verifyEmailUrl =
     'http://' +
     getE2eEmulatorHost() +
-    ':9099/emulator/action?mode=verifyEmail&lang=en&oobCode=' +
+    ':' +
+    getE2eEmulatorPort('auth') +
+    '/emulator/action?mode=verifyEmail&lang=en&oobCode=' +
     oobCode +
     '&apiKey=fake-api-key';
   return await callRestApi(verifyEmailUrl);

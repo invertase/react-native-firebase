@@ -57,11 +57,25 @@ export class RequestUrl {
         'Running VertexAI in test environment, pointing to Firebase Functions emulator URL',
       );
       const isAndroid = Platform.OS === 'android';
+      const isMacos = (Platform.OS as string) === 'macos';
+      let fnHost = isAndroid ? '10.0.2.2' : '127.0.0.1';
+      // Static process.env.RNFB_* members — babel transform-inline-environment-variables
+      // does not rewrite computed keys (see okf-bundle/testing/running-e2e.md).
+      let envPort: string | undefined;
+      if (isAndroid) {
+        envPort = process.env.RNFB_ANDROID_EMULATOR_FUNCTIONS_PORT;
+      } else if (isMacos) {
+        envPort = process.env.RNFB_MACOS_EMULATOR_FUNCTIONS_PORT;
+      } else {
+        envPort = process.env.RNFB_IOS_EMULATOR_FUNCTIONS_PORT;
+      }
+      const parsed = envPort ? parseInt(envPort, 10) : NaN;
+      const fnPort = Number.isFinite(parsed) ? parsed : 5001;
 
       if (this.stream) {
-        emulatorUrl = `http://${isAndroid ? '10.0.2.2' : '127.0.0.1'}:5001/react-native-firebase-testing/us-central1/testFetchStream`;
+        emulatorUrl = `http://${fnHost}:${fnPort}/react-native-firebase-testing/us-central1/testFetchStream`;
       } else {
-        emulatorUrl = `http://${isAndroid ? '10.0.2.2' : '127.0.0.1'}:5001/react-native-firebase-testing/us-central1/testFetch`;
+        emulatorUrl = `http://${fnHost}:${fnPort}/react-native-firebase-testing/us-central1/testFetch`;
       }
       return emulatorUrl;
     }

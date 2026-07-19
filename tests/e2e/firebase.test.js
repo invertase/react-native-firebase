@@ -41,12 +41,100 @@ function logCloudPressureAnalysisPointer(context) {
   );
 }
 
-const JET_REMOTE_PORT = parseInt(process.env.JET_REMOTE_PORT || '8090', 10);
-const JET_CONTROL_PORT = parseInt(
-  process.env.RNFB_JET_CONTROL_PORT || String(JET_REMOTE_PORT + 1),
-  10,
-);
-const METRO_PORT = parseInt(process.env.JET_METRO_PORT || process.env.RCT_METRO_PORT || '8081', 10);
+function platformFromDetoxConfigurationName(name) {
+  if (!name || typeof name !== 'string') {
+    return null;
+  }
+  const lower = name.toLowerCase();
+  if (lower.includes('android')) {
+    return 'android';
+  }
+  if (lower.includes('ios')) {
+    return 'ios';
+  }
+  if (lower.includes('macos') || lower.includes('mac')) {
+    return 'macos';
+  }
+  return null;
+}
+
+// Host-side platform identity: Detox device / configuration only — never RNFB_E2E_PLATFORM.
+function detoxPlatformKey() {
+  try {
+    if (typeof detox !== 'undefined' && detox?.device?.getPlatform) {
+      return detox.device.getPlatform();
+    }
+    if (typeof device !== 'undefined' && device?.getPlatform) {
+      return device.getPlatform();
+    }
+  } catch (_e) {
+    // device not ready
+  }
+  return platformFromDetoxConfigurationName(resolveDetoxConfigurationName()) || 'android';
+}
+
+function parseEnvPort(value) {
+  if (value === undefined || value === null || value === '') {
+    return null;
+  }
+  const n = parseInt(value, 10);
+  return Number.isFinite(n) ? n : null;
+}
+
+// Static process.env.RNFB_{ANDROID,IOS,MACOS}_* so babel inline-env bakes every platform's
+// ports when launchers export the full slot block. Runtime picks via detoxPlatformKey().
+function staticPrefixedJetPort(pk) {
+  switch (pk) {
+    case 'android':
+      return parseEnvPort(process.env.RNFB_ANDROID_JET_PORT);
+    case 'macos':
+      return parseEnvPort(process.env.RNFB_MACOS_JET_PORT);
+    case 'ios':
+    default:
+      return parseEnvPort(process.env.RNFB_IOS_JET_PORT);
+  }
+}
+
+function staticPrefixedJetControlPort(pk) {
+  switch (pk) {
+    case 'android':
+      return parseEnvPort(process.env.RNFB_ANDROID_JET_CONTROL_PORT);
+    case 'macos':
+      return parseEnvPort(process.env.RNFB_MACOS_JET_CONTROL_PORT);
+    case 'ios':
+    default:
+      return parseEnvPort(process.env.RNFB_IOS_JET_CONTROL_PORT);
+  }
+}
+
+function staticPrefixedMetroPort(pk) {
+  switch (pk) {
+    case 'android':
+      return parseEnvPort(process.env.RNFB_ANDROID_METRO_PORT);
+    case 'macos':
+      return parseEnvPort(process.env.RNFB_MACOS_METRO_PORT);
+    case 'ios':
+    default:
+      return parseEnvPort(process.env.RNFB_IOS_METRO_PORT);
+  }
+}
+
+function jetRemotePort() {
+  return staticPrefixedJetPort(detoxPlatformKey()) || 8090;
+}
+
+function jetControlPort() {
+  const prefixed = staticPrefixedJetControlPort(detoxPlatformKey());
+  if (prefixed) {
+    return prefixed;
+  }
+  return jetRemotePort() + 1;
+}
+
+function metroPortForHost() {
+  return staticPrefixedMetroPort(detoxPlatformKey()) || 8081;
+}
+
 const LAUNCH_APP_TIMEOUT_MS = parseInt(process.env.RNFB_LAUNCH_APP_TIMEOUT_MS || '180000', 10);
 const LAUNCH_APP_RELEASE_TIMEOUT_MS = parseInt(
   process.env.RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS || '120000',
@@ -196,6 +284,8 @@ function logLaunchInstallState(label) {
   try {
     if (typeof detox !== 'undefined' && detox?.device?.getPlatform) {
       platform = detox.device.getPlatform();
+    } else if (typeof device !== 'undefined' && device?.getPlatform) {
+      platform = device.getPlatform();
     }
   } catch (_) {
     // Detox device may not be ready yet.
@@ -315,6 +405,8 @@ function adbDeviceState(serial) {
 }
 
 function resolveAndroidSerial() {
+  // Detox picks a dynamic emulator port (e.g. emulator-13226); prefer live device.id over
+  // a stale ANDROID_SERIAL from the environment when both are present.
   try {
     if (typeof device !== 'undefined' && device?.id) {
       return device.id;
@@ -322,7 +414,10 @@ function resolveAndroidSerial() {
   } catch (_) {
     // Detox device may not be ready yet.
   }
-  return process.env.ANDROID_SERIAL || 'emulator-5554';
+  if (process.env.ANDROID_SERIAL) {
+    return process.env.ANDROID_SERIAL;
+  }
+  return 'emulator-5554';
 }
 
 function adbShell(serial, command, timeoutMs = 15000) {
@@ -415,13 +510,24 @@ async function waitForAndroidInstrumentationStopped(label, timeoutMs = 30000) {
   throw new Error(`[rnfb-e2e] ${label}: instrumentation pid still present after ${timeoutMs}ms`);
 }
 
+function usesSlottedJetPorts() {
+  return Boolean(
+    process.env.RNFB_ANDROID_JET_PORT ||
+      process.env.RNFB_IOS_JET_PORT ||
+      process.env.RNFB_MACOS_JET_PORT,
+  );
+}
+
 function clearStaleMacOsTestingForSharedJetPort(label) {
+  if (usesSlottedJetPorts()) {
+    return;
+  }
   if (process.platform !== 'darwin') {
     return;
   }
 
   console.log(
-    `[rnfb-e2e] ${label}: killing stale macOS io.invertase.testing for shared :${JET_REMOTE_PORT}`,
+    `[rnfb-e2e] ${label}: killing stale macOS io.invertase.testing for shared :${jetRemotePort()}`,
   );
   try {
     execSync('killall "io.invertase.testing"', { stdio: 'inherit', timeout: 5000 });
@@ -444,7 +550,7 @@ async function ensureAndroidJetHostClear(label = 'android-jet-host-clear') {
   clearStaleMacOsTestingForSharedJetPort(label);
   forceStopAndroidTestingApps(label);
   await waitForAndroidInstrumentationStopped(label);
-  await ensureTcpPortClosed(JET_REMOTE_PORT, label);
+  await ensureTcpPortClosed(jetRemotePort(), label);
   console.log(`[rnfb-e2e] ${label}: host clear`);
 }
 
@@ -498,6 +604,7 @@ function coldBootAndroidEmulator() {
 
 async function waitForAndroidEmulatorReady() {
   const serial = resolveAndroidSerial();
+  console.log(`[rnfb-e2e] android-ready using serial=${serial} (device.id preferred over ANDROID_SERIAL)`);
   const deadline = Date.now() + REBOOT_ANDROID_EMULATOR_TIMEOUT_MS;
   let stableLoadPolls = 0;
   let packageHandlerDone = false;
@@ -647,7 +754,7 @@ async function drainJetAttempt(platform) {
   if (platform === 'android') {
     await ensureAndroidJetHostClear('drain');
   } else {
-    await waitForTcpPortClosed(JET_REMOTE_PORT);
+    await waitForTcpPortClosed(jetRemotePort());
   }
 
   console.log('[rnfb-e2e] Jet attempt drain complete');
@@ -831,7 +938,7 @@ function logRetryEligibility(err, attempt) {
   );
 }
 
-async function waitForMetro(port = METRO_PORT, timeoutMs = 120000) {
+async function waitForMetro(port = metroPortForHost(), timeoutMs = 120000) {
   const start = Date.now();
 
   while (Date.now() - start < timeoutMs) {
@@ -907,7 +1014,7 @@ async function launchAppWithTimeout(launchArgs, { deleteApp = true, timeoutMs } 
 }
 
 async function postJetControl(path, body) {
-  const url = `http://127.0.0.1:${JET_CONTROL_PORT}${path}`;
+  const url = `http://127.0.0.1:${jetControlPort()}${path}`;
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -946,7 +1053,7 @@ async function killJetForLaunchRetry(jetProcess) {
   }
 
   try {
-    await waitForTcpPortClosed(JET_REMOTE_PORT, '127.0.0.1', KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS);
+    await waitForTcpPortClosed(jetRemotePort(), '127.0.0.1', KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS);
   } catch (err) {
     console.warn(`[rnfb-e2e] launch-retry: Jet port still open after kill: ${err?.message || err}`);
   }
@@ -972,7 +1079,7 @@ async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {
           await rebootIosSimulator(testsDir);
         }
         if (liveMetro) {
-          await waitForMetro(METRO_PORT);
+          await waitForMetro(metroPortForHost());
         }
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
@@ -1043,6 +1150,9 @@ function createJetSession(jetArgs, testsDir) {
   };
 
   const spawnJet = () => {
+    const jp = jetRemotePort();
+    const mp = metroPortForHost();
+    const jcp = jetControlPort();
     const proc = spawn('yarn', jetArgs, {
       stdio: ['ignore', 'pipe', 'pipe'],
       shell: true,
@@ -1050,6 +1160,10 @@ function createJetSession(jetArgs, testsDir) {
       env: {
         ...process.env,
         RNFB_JET_DEFER_RUN: '1',
+        JET_REMOTE_PORT: String(jp),
+        JET_METRO_PORT: String(mp),
+        RCT_METRO_PORT: String(mp),
+        RNFB_JET_CONTROL_PORT: String(jcp),
       },
     });
     bindProcess(proc);
@@ -1072,7 +1186,7 @@ function createJetSession(jetArgs, testsDir) {
         await killJetForLaunchRetry(jetProcess);
         output += '\n[rnfb-e2e] --- jet respawn after launch retry ---\n';
         spawnJet();
-        await waitForTcpPort(JET_REMOTE_PORT);
+        await waitForTcpPort(jetRemotePort());
         logOrchestrateState('launch-retry-jet-respawned');
       } finally {
         ignoreExit = false;
@@ -1085,12 +1199,17 @@ async function runJetE2eAttempt(attempt) {
   cachedUsesLiveMetro = undefined;
   cacheUsesLiveMetro();
 
-  const platform = detox.device.getPlatform();
+  const platform = detoxPlatformKey();
   const testsDir = path.resolve(__dirname, '..');
+  const jp = jetRemotePort();
+  const mp = metroPortForHost();
+  console.log(
+    `[rnfb-e2e] runJetE2eAttempt platform=${platform} jet=${jp} metro=${mp} androidSerial=${resolveAndroidSerial()} detoxConfig=${resolveDetoxConfigurationName() || 'n/a'}`,
+  );
   const jetArgs =
     process.platform === 'win32'
-      ? ['jet', `--target=${platform}`]
-      : ['jet', `--target=${platform}`, '--coverage'];
+      ? ['jet', `--target=${platform}`, '-P', String(jp), '-M', String(mp)]
+      : ['jet', `--target=${platform}`, '--coverage', '-P', String(jp), '-M', String(mp)];
 
   if (platform === 'android') {
     await ensureAndroidJetHostClear(`jet-attempt-${attempt}`);
@@ -1100,12 +1219,12 @@ async function runJetE2eAttempt(attempt) {
 
   const orchestrate = async () => {
     logOrchestrateState('jet-spawned');
-    console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for port ${JET_REMOTE_PORT}`);
+    console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for port ${jetRemotePort()}`);
     logOrchestrateState('port-wait');
-    await waitForTcpPort(JET_REMOTE_PORT);
+    await waitForTcpPort(jetRemotePort());
     if (usesLiveMetro()) {
-      console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for Metro on port ${METRO_PORT}`);
-      await waitForMetro(METRO_PORT);
+      console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for Metro on port ${metroPortForHost()}`);
+      await waitForMetro(metroPortForHost());
     } else {
       console.log(
         `[rnfb-e2e] Jet attempt ${attempt}: skipping Metro wait (configuration=${resolveDetoxConfigurationName() || 'unknown'}, binary=${resolveAppBinaryPath() || 'unknown'})`,
@@ -1160,8 +1279,8 @@ describe('Jet Tests', function () {
   jest.retryTimes(0, { logErrorsBeforeRetry: true });
 
   it('runs all tests', async function () {
-    const platform = detox.device.getPlatform();
-    const deviceId = detox.device.id;
+    const platform = detoxPlatformKey();
+    const deviceId = detox.device?.id ?? device?.id;
     const testsDir = path.resolve(__dirname, '..');
 
     cacheUsesLiveMetro();

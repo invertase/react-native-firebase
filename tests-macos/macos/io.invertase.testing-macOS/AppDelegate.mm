@@ -5,9 +5,18 @@
 
 static NSString *const RNFBTestingMetroHost = @"127.0.0.1";
 
+static NSUInteger RNFBTestingMetroPortNumber(void)
+{
+  NSString *envPort = [[[NSProcessInfo processInfo] environment] objectForKey:@"RCT_METRO_PORT"];
+  if (envPort.length > 0) {
+    return (NSUInteger)[envPort integerValue];
+  }
+  return (NSUInteger)RCT_METRO_PORT;
+}
+
 static NSString *RNFBTestingMetroHostPort(void)
 {
-  return [NSString stringWithFormat:@"%@:%lu", RNFBTestingMetroHost, (unsigned long)RCT_METRO_PORT];
+  return [NSString stringWithFormat:@"%@:%lu", RNFBTestingMetroHost, RNFBTestingMetroPortNumber()];
 }
 
 #if DEBUG

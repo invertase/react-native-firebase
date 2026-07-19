@@ -47,8 +47,9 @@ describe('config', function () {
     // NOTE: "preferencesClearAll" clears Firestore settings. Set DB as emulator again.
     after(async function () {
       const { connectFirestoreEmulator, getFirestore } = firestoreModular;
+      const { getE2eEmulatorPort } = require('../../app/e2e/helpers');
       if (Platform.other) return;
-      connectFirestoreEmulator(getFirestore(), 'localhost', 8080);
+      connectFirestoreEmulator(getFirestore(), 'localhost', getE2eEmulatorPort('firestore'));
     });
 
     it('should set bool values', async function () {

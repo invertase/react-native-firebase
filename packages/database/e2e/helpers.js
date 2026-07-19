@@ -13,7 +13,11 @@ const testingUtils = require('@firebase/rules-unit-testing');
 // eslint-disable-next-line no-console
 console.warn = originalConsoleWarn;
 
-const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers');
+const {
+  getE2eTestProject,
+  getE2eEmulatorHost,
+  getE2eEmulatorPort,
+} = require('../../app/e2e/helpers');
 
 // TODO make more unique?
 const ID = Date.now();
@@ -78,7 +82,7 @@ exports.seed = function seed(path) {
         databaseName: DB_NAME,
         rules: JSON.stringify(DB_RULES),
         host: getE2eEmulatorHost(),
-        port: 9000,
+        port: getE2eEmulatorPort('database'),
       },
     }),
   ]);

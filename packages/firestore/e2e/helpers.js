@@ -1,5 +1,9 @@
 /* eslint-disable no-console */
-const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers');
+const {
+  getE2eTestProject,
+  getE2eEmulatorHost,
+  getE2eEmulatorPort,
+} = require('../../app/e2e/helpers');
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -20,8 +24,9 @@ const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers
 
 exports.wipe = async function wipe(debug = false, databaseId = '(default)', retries = 3) {
   const host = getE2eEmulatorHost();
+  const fsPort = getE2eEmulatorPort('firestore');
   const url =
-    `http://${host}:8080/emulator/v1/projects/` +
+    `http://${host}:${fsPort}/emulator/v1/projects/` +
     getE2eTestProject() +
     `/databases/${databaseId}/documents`;
 
@@ -105,7 +110,7 @@ exports.setDocumentOutOfBand = async function setDocumentOutOfBand(
   databaseId = '(default)',
 ) {
   const url =
-    `http://${getE2eEmulatorHost()}:8080/v1/projects/` +
+    `http://${getE2eEmulatorHost()}:${getE2eEmulatorPort('firestore')}/v1/projects/` +
     getE2eTestProject() +
     `/databases/${databaseId}/documents/${path}`;
 
