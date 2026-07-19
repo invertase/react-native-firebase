@@ -16,7 +16,7 @@
  */
 
 const COLLECTION = 'firestore';
-const { getE2eEmulatorHost } = require('../../app/e2e/helpers');
+const { getE2eEmulatorHost, getE2eEmulatorPort } = require('../../app/e2e/helpers');
 // const jsFirebase = require('firebase/compat/app');
 // require('firebase/compat/firestore');
 
@@ -137,7 +137,7 @@ describe('firestore()', function () {
         const app = await initializeApp(FirebaseHelpers.app.config(), appName);
         const db = getFirestore(app);
         const emulatorSettings = {
-          host: `${getE2eEmulatorHost()}:8080`,
+          host: `${getE2eEmulatorHost()}:${getE2eEmulatorPort('firestore')}`,
           ssl: false,
         };
 
@@ -170,7 +170,7 @@ describe('firestore()', function () {
           jsFirestoreModular.connectFirestoreEmulator(
             jsFirestoreModular.getFirestore(),
             getE2eEmulatorHost(),
-            8080,
+            getE2eEmulatorPort('firestore'),
           );
         } catch (_e) {}
 

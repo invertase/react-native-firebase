@@ -176,7 +176,7 @@ Keep **`implementation`** and **`independent-review`** in separate passes. E2e e
 
 On a shared dev host during change authoring:
 
-- One `:test-cover` at a time — never overlap **unit-focused**-tier and **area-focused**-tier runs.
+- One unslotted `:test-cover` at a time — never overlap **unit-focused**-tier and **area-focused**-tier runs. Slotted cross-platform concurrency (distinct worktrees/ports/devices): [running e2e § parallel topology](running-e2e.md#parallel-e2e-topology).
 - Every run starts from [running e2e § pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) (host-clear probes, services, harness tier).
 - Use only [canonical e2e commands](running-e2e.md#rules). Stalled runs → [stalled run detection](running-e2e.md#stalled-run-detection).
 

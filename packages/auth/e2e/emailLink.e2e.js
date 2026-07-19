@@ -1,4 +1,9 @@
 const { getLastOob, signInUser } = require('./helpers');
+const { getE2eEmulatorHost, getMetroPort } = require('../../app/e2e/helpers');
+
+function emailLinkContinueUrl(random) {
+  return `http://${getE2eEmulatorHost()}:${getMetroPort()}/authLinkFoo?bar=${random}`;
+}
 
 describe('auth() -> emailLink Provider', function () {
   beforeEach(async function () {
@@ -43,7 +48,7 @@ describe('auth() -> emailLink Provider', function () {
         const auth = getAuth();
         const random = Utils.randString(12, '#aa');
         const email = `${random}@${random}.com`;
-        const continueUrl = `http://${Platform.android ? '10.0.2.2' : '127.0.0.1'}:8081/authLinkFoo?bar=${random}`;
+        const continueUrl = emailLinkContinueUrl(random);
         const actionCodeSettings = {
           url: continueUrl,
           handleCodeInApp: true,
@@ -97,7 +102,7 @@ describe('auth() -> emailLink Provider', function () {
       const auth = getAuth();
       const random = Utils.randString(12, '#aa');
       const email = `${random}@${random}.com`;
-      const continueUrl = `http://${Platform.android ? '10.0.2.2' : '127.0.0.1'}:8081/authLinkFoo?bar=${random}`;
+      const continueUrl = emailLinkContinueUrl(random);
       const actionCodeSettings = {
         url: continueUrl,
         handleCodeInApp: true,
