@@ -171,7 +171,7 @@ No in-flight test run on the target platform:
 |----------|------------|
 | **Android** | [Android app reset](#android-app-reset-blocking) + `bash scripts/e2e/check-e2e-resources.sh --platform=android` pass |
 | **iOS** | `bash scripts/e2e/check-e2e-resources.sh --platform=ios` passes — **zero booted simulators** and no stray listener on `:8090`. Detox boots `iPhone 17` from `tests/.detoxrc.js`; do not pre-boot or leave simulators running. Plain [host-clear probes](#host-clear-probes) without `--platform=ios` intentionally do **not** fail on an unrelated booted simulator — see [global device scoping](#global-device-scoping). |
-| **macOS** | [Host-clear probes](#host-clear-probes) pass (no `io.invertase.testing` process) |
+| **macOS** | [Host-clear probes](#host-clear-probes) pass (no macOS test app process — default `io.invertase.testing`, or `RNFB_MACOS_PRODUCT_NAME` when set; unscoped check also treats `.sN` siblings as busy) |
 
 Also wait for any visible unfinished `yarn tests:*:test-cover`.
 
@@ -189,11 +189,13 @@ adb -s "$ANDROID_SERIAL" shell am force-stop com.invertase.testing.test
 
 The main app (`com.invertase.testing`) can sit on **“waiting for jet to start tests…”** while the [host-clear probe](#host-clear-probes) still passes (it only checks `com.invertase.testing.test`). A stale main app then connects as a **second Jet client** after Detox launches a fresh run → `Received a message from the client, but server wasn't running` and no Mocha summary. Force-stop **both** packages, then re-run the probe.
 
-On **darwin** hosts, also clear the macOS test app before Android `:test-cover` when they share a Jet port (serial default `:8090`, or the same `JET_REMOTE_PORT` / platform Jet in slotted runs). Alternating macOS and Android without killing `io.invertase.testing` leaves a stale macOS Jet client → duplicate clients and `server wasn't running`.
+On **darwin** hosts, also clear the macOS test app before Android `:test-cover` when they share a Jet port (serial default `:8090`, or the same `JET_REMOTE_PORT` / platform Jet in slotted runs). Alternating macOS and Android without killing the macOS app leaves a stale macOS Jet client → duplicate clients and `server wasn't running`.
 
 ```bash
-! pgrep -x io.invertase.testing >/dev/null 2>&1
+MACOS_APP="${RNFB_MACOS_PRODUCT_NAME:-io.invertase.testing}"
+! pgrep -x "$MACOS_APP" >/dev/null 2>&1
 # or: bash scripts/e2e/release-e2e-resources.sh --only macos-app,jet
+# Unscoped release also clears io.invertase.testing.s0..sN leftovers from parallel runs.
 ```
 
 (`firebase.test.js` runs this automatically via `ensureAndroidJetHostClear` before spawning Android Jet; use the probe manually when prepping from the runbook.)
@@ -228,7 +230,7 @@ JET_PORT="${JET_REMOTE_PORT:-${RNFB_ANDROID_JET_PORT:-${RNFB_IOS_JET_PORT:-${RNF
 test -z "$(lsof -nP -iTCP:${JET_PORT} -sTCP:LISTEN -t 2>/dev/null || true)"
 ANDROID_SERIAL="${ANDROID_SERIAL:-emulator-5554}"
 ! adb -s "$ANDROID_SERIAL" shell pidof com.invertase.testing.test >/dev/null 2>&1
-! pgrep -x io.invertase.testing >/dev/null 2>&1
+! pgrep -x "${RNFB_MACOS_PRODUCT_NAME:-io.invertase.testing}" >/dev/null 2>&1
 ```
 
 <a id="pre-flight-recovery"></a>
@@ -550,7 +552,18 @@ Serial e2e uses committed defaults (Metro `:8081`, Jet `:8090`, emulators `:8080
 
 <a id="parallel-e2e-topology"></a>
 
-**Parallel e2e topology (worktrees):** same-platform parallel needs **one git worktree per concurrent instance** of that platform. A single worktree may run **at most** `1× android ∥ 1× ios ∥ 1× macos` (distinct Metro/Jet/emulator blocks + distinct AVD/sim). Example: `3× android + 3× ios + 1× macos` ⇒ three worktrees (each: android+ios; one also runs macos). Do **not** launch two androids (or two ioses) from one worktree — native build products, Detox configs, and coverage paths are not multi-instance-safe inside one tree.
+**Parallel e2e topology (worktrees):** same-platform parallel needs **one git worktree per concurrent instance** of that platform. A single worktree may run **at most** `1× android ∥ 1× ios ∥ 1× macos` (distinct Metro/Jet/emulator blocks + distinct AVD/sim + distinct macOS `PRODUCT_NAME`). Example: `3× android + 3× ios + 3× macos` ⇒ three worktrees (each runs android+ios+macos for its slot). Do **not** launch two androids, two ioses, or two macOS apps from one worktree — native build products, Detox configs, coverage paths, and (for macOS) a single `macos/build` derived-data tree are not multi-instance-safe inside one tree.
+
+**Slotted launch helpers:** [`scripts/e2e/export-slot-env.sh`](../../scripts/e2e/export-slot-env.sh) prints the full `RNFB_{ANDROID,IOS,MACOS}_*` carry-in for a platform×slot (including `RNFB_MACOS_PRODUCT_NAME=io.invertase.testing.s<slot>`). Prefer:
+
+```bash
+eval "$(bash scripts/e2e/export-slot-env.sh macos 1)"
+yarn tests:macos:build
+bash scripts/e2e/start-emulator-slotted.sh macos
+bash scripts/e2e/run-slotted-packager.sh macos 1   # background OK
+bash scripts/e2e/run-slotted-test-cover.sh macos 1
+# yarn aliases: tests:e2e:export-slot-env / tests:e2e:slotted-packager / tests:e2e:slotted-test-cover
+```
 
 **Parallel / multi-platform carry-in (proven model):** when android + ios (+ macos) share a worktree, every Metro/Jest/Detox process for a slot must receive **the full set** of `RNFB_{ANDROID,IOS,MACOS}_*` port variables for that slot — not only the active platform’s block. Runtime selection uses platform self-detection (`Platform.*` in [`packages/app/e2e/helpers.js`](../../packages/app/e2e/helpers.js); Detox `device.getPlatform()` / configuration name on the host in [`tests/e2e/firebase.test.js`](../../tests/e2e/firebase.test.js)). Do **not** use `RNFB_E2E_PLATFORM` to choose ports: `tests/.babelrc` inlines static `process.env.NAME` via `transform-inline-environment-variables`, and concurrent transforms in one worktree must see every labeled port present so each `process.env.RNFB_ANDROID_*` / `RNFB_IOS_*` / `RNFB_MACOS_*` literal bakes correctly. Computed keys (`process.env[\`RNFB_${x}_…\`]`) are **not** inlined — in-app code must use static member expressions (or helpers that do). Process-local listen/bind vars (`RCT_METRO_PORT`, `JET_REMOTE_PORT`, Detox config) still identify which socket/config **this** process owns. Host Jet config ([`tests/.jetrc.js`](../../tests/.jetrc.js)) should prefer those process-local binds (and per-target `before()` hooks with an explicit platform key) — not `RNFB_E2E_PLATFORM`.
 
@@ -558,7 +571,7 @@ In-app / e2e specs must call `getE2eEmulatorPort('firestore'|…)` (and siblings
 
 **Slotted Firebase emulator suites (full isolation):** each platform×slot suite needs its **own** Firebase Tools process with **non-overlapping** ports for every listener the suite actually binds. [`scripts/e2e/start-emulator-slotted.sh`](../../scripts/e2e/start-emulator-slotted.sh) assigns auth/database/firestore/functions/storage/hub/logging **and** Firestore `websocketPort`, Eventarc, and Cloud Tasks (derived as `firestore+8/+9/+12` inside the platform block). Defaults `9150` / `9299` / `9499` collide across suites: Firebase Tools still starts Eventarc+Tasks as Functions dependencies even when `--only` omits them; `EADDRINUSE` on those aux ports aborts the suite and leaves Functions dead while Firestore may still listen — e2e then hangs on callables. Parallel readiness must require the **Functions** port up (not only hub). Serialize `scripts/functions` `yarn`/`yarn build` across concurrent suite starts (shared source dir).
 
-**macOS concurrency:** default process name `io.invertase.testing` is host-global (`pgrep`/`killall`). For per-worktree / multi-slot macOS, set **`RNFB_MACOS_PRODUCT_NAME`** (and optionally **`RNFB_MACOS_BUNDLE_IDENTIFIER`**) before `:build` and `:test-cover`. `yarn tests:macos:build` derives `RNFB_MACOS_PRODUCT_NAME_SUFFIX` (e.g. `.s1`) for the pbxproj `PRODUCT_NAME = "io.invertase.testing$(RNFB_MACOS_PRODUCT_NAME_SUFFIX)"` — do **not** pass global `PRODUCT_NAME=` on the `xcodebuild` CLI (that renames Pods and breaks linking). [`.jetrc.js`](../../tests/.jetrc.js) spawn/kill/Metro `app=` follow the same env. Unset → serial defaults. No Firebase Console / GoogleService change is required (JS/Other path). See [macOS process identity](#macos-process-identity-concurrency).
+**macOS concurrency:** default process name `io.invertase.testing` is host-global (`pgrep`/`killall`). For per-worktree / multi-slot macOS, set **`RNFB_MACOS_PRODUCT_NAME`** (and optionally **`RNFB_MACOS_BUNDLE_IDENTIFIER`**) before `:build` and `:test-cover` — `export-slot-env.sh` / `run-slotted-*` do this as `io.invertase.testing.s<slot>`. `yarn tests:macos:build` derives `RNFB_MACOS_PRODUCT_NAME_SUFFIX` (e.g. `.s1`) for the pbxproj `PRODUCT_NAME = "io.invertase.testing$(RNFB_MACOS_PRODUCT_NAME_SUFFIX)"` — do **not** pass global `PRODUCT_NAME=` on the `xcodebuild` CLI (that renames Pods and breaks linking). [`.jetrc.js`](../../tests/.jetrc.js) spawn/kill/Metro `app=` follow the same env. Unset → serial defaults. No Firebase Console / GoogleService change is required (JS/Other path). See [macOS process identity](#macos-process-identity-concurrency).
 
 | Variable | Purpose |
 |----------|---------|
@@ -573,8 +586,8 @@ In-app / e2e specs must call `getE2eEmulatorPort('firestore'|…)` (and siblings
 | `RNFB_E2E_SLOT` | Slot index for orchestration / AVD / sim naming |
 | `RNFB_E2E_PLATFORM` | Optional orchestration label only — **not** used for port selection (prefer unset in slotted multi-platform launches) |
 | `RNFB_ANDROID_AVD`, `RNFB_IOS_SIMULATOR`, `RNFB_ANDROID_EMULATOR_BOOT_ARGS` | Device selection overrides |
-| `RNFB_MACOS_PRODUCT_NAME` | macOS `PRODUCT_NAME` / process name (default `io.invertase.testing`). Required distinct per concurrent macOS slot |
-| `RNFB_MACOS_BUNDLE_IDENTIFIER` | macOS `CFBundleIdentifier` (default derived from product name). Metro `app=` follows this |
+| `RNFB_MACOS_PRODUCT_NAME` | macOS `PRODUCT_NAME` / process name (default `io.invertase.testing`). Required distinct per concurrent macOS slot. Slotted helpers set `io.invertase.testing.s<slot>`; override via `RNFB_MACOS_PRODUCT_NAME_OVERRIDE` |
+| `RNFB_MACOS_BUNDLE_IDENTIFIER` | macOS `CFBundleIdentifier` (default derived from product name). Metro `app=` follows this. Slotted override: `RNFB_MACOS_BUNDLE_IDENTIFIER_OVERRIDE` |
 | `ORG_GRADLE_PROJECT_reactNativeDevServerPort` | Android Gradle Metro port baked into the APK's `react_native_dev_server_port` resource at build time. **Set automatically** by `yarn tests:android:build` (`RNFB_ANDROID_METRO_PORT` → `RCT_METRO_PORT` → `RNFB_METRO_PORT` → `JET_METRO_PORT` → `8081`) — only export it yourself when building Android outside that script (e.g. `detox build` invoked directly). Detox's `reversePorts` (`tests/.detoxrc.js`) already forwards the same slotted Metro port; this var makes the APK actually *ask* for that port. |
 | `SIMCTL_CHILD_RCT_METRO_PORT` | iOS simulator child Metro port |
 | `RNFB_E2E_DEBUG` | Verbose `[rnfb-e2e]` port resolution logging in app helpers |
@@ -589,7 +602,7 @@ See [host-clear probes](#host-clear-probes) for the canonical `check-e2e-resourc
 
 With a mellifera reservation (`RNFB_MELLIFERA=1` or `--mellifera`), `mellifera-apply-reservation.js` writes `tests/mellifera.env.json` + platform env files; check/release then read that file (or exported `RNFB_*` vars) so slotted ports clear correctly. `mellifera-teardown.sh` / `mellifera-host-clean.sh` / `mellifera-release-resources.sh` call these generics, then handle mellifera lease APIs.
 
-Helper scripts (not canonical `:test-cover` entrypoints): `scripts/e2e/start-emulator-slotted.sh`, `yarn tests:e2e:setup-android-avds`, `yarn tests:e2e:setup-ios-sims`.
+Helper scripts (not canonical `:test-cover` entrypoints): `scripts/e2e/export-slot-env.sh`, `scripts/e2e/run-slotted-packager.sh`, `scripts/e2e/run-slotted-test-cover.sh`, `scripts/e2e/start-emulator-slotted.sh`, `yarn tests:e2e:setup-android-avds`, `yarn tests:e2e:setup-ios-sims`.
 
 <a id="macos-process-identity-concurrency"></a>
 
@@ -603,7 +616,7 @@ Helper scripts (not canonical `:test-cover` entrypoints): `scripts/e2e/start-emu
 | Metro `app=` query | matches bundle ID | [`.jetrc.js`](../../tests/.jetrc.js) reads the same env |
 | Firebase / GoogleService | **None on macOS target** | No cloud re-registration for JS/Other e2e |
 
-`yarn tests:macos:build` exports `RNFB_MACOS_PRODUCT_NAME_SUFFIX` into the xcodebuild environment (pbxproj expansion only). Check/release use `RNFB_MACOS_PRODUCT_NAME` for `pgrep`/`killall`. Same-platform parallel still needs **one worktree per macOS instance** ([parallel topology](#parallel-e2e-topology)). Mild residual: shared `io.invertase.firebase` preferences suite across apps.
+`yarn tests:macos:build` exports `RNFB_MACOS_PRODUCT_NAME_SUFFIX` into the xcodebuild environment (pbxproj expansion only). Check/release use `RNFB_MACOS_PRODUCT_NAME` for `pgrep`/`killall`; unscoped host wipe also clears `.s0`…`.sN`. Same-platform parallel still needs **one worktree per macOS instance** ([parallel topology](#parallel-e2e-topology)). Mild residual: shared `io.invertase.firebase` preferences suite across apps.
 
 ### Android emulator gray screen / Quick Boot (blocking)
 

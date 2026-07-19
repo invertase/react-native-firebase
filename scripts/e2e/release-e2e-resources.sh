@@ -204,19 +204,27 @@ clear_android_apps() {
 clear_macos_app() {
   want macos-app || return 0
   platform_active macos || return 0
-  if e2e_macos_app_running; then
-    echo "[release] killall ${E2E_MACOS_APP_PROCESS}"
-    killall "$E2E_MACOS_APP_PROCESS" 2>/dev/null || true
-  fi
+  local name
+  while IFS= read -r name; do
+    [[ -z "$name" ]] && continue
+    if pgrep -x "$name" >/dev/null 2>&1; then
+      echo "[release] killall ${name}"
+      killall "$name" 2>/dev/null || true
+    fi
+  done < <(e2e_macos_process_names_for_probe)
 }
 
 clear_macos_app_hard() {
   want macos-app || return 0
   platform_active macos || return 0
-  if e2e_macos_app_running; then
-    echo "[release] killall -9 ${E2E_MACOS_APP_PROCESS}"
-    killall -9 "$E2E_MACOS_APP_PROCESS" 2>/dev/null || true
-  fi
+  local name
+  while IFS= read -r name; do
+    [[ -z "$name" ]] && continue
+    if pgrep -x "$name" >/dev/null 2>&1; then
+      echo "[release] killall -9 ${name}"
+      killall -9 "$name" 2>/dev/null || true
+    fi
+  done < <(e2e_macos_process_names_for_probe)
 }
 
 clear_ios_sims() {

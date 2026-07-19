@@ -34,6 +34,9 @@ E2E_ANDROID_TEST_APP_ID=com.invertase.testing.test
 # concurrent slotted macOS (e.g. io.invertase.testing.s1) — see running-e2e.md.
 E2E_DEFAULT_MACOS_APP_PROCESS=io.invertase.testing
 E2E_MACOS_APP_PROCESS="${RNFB_MACOS_PRODUCT_NAME:-$E2E_DEFAULT_MACOS_APP_PROCESS}"
+# When RNFB_MACOS_PRODUCT_NAME is unset (serial / unscoped host wipe), also probe/kill
+# known slotted siblings so parallel leftovers fail host-clear and get released.
+E2E_MACOS_SLOTTED_MAX="${E2E_MACOS_SLOTTED_MAX:-7}"
 
 e2e_repo_root() {
   local here
@@ -283,8 +286,38 @@ e2e_android_app_running() {
   adb -s "$serial" shell pidof "$pkg" >/dev/null 2>&1
 }
 
+# Process names in scope for host-clear / release. Scoped runs (product name set)
+# only touch that name; unscoped serial/global also includes .s0..sN siblings.
+e2e_macos_process_names_for_probe() {
+  echo "$E2E_MACOS_APP_PROCESS"
+  if [[ -z "${RNFB_MACOS_PRODUCT_NAME:-}" ]]; then
+    local i
+    for ((i = 0; i <= E2E_MACOS_SLOTTED_MAX; i++)); do
+      echo "${E2E_DEFAULT_MACOS_APP_PROCESS}.s${i}"
+    done
+  fi
+}
+
+# Echo the first matching busy process name, or empty if none.
+e2e_macos_busy_process() {
+  local name
+  while IFS= read -r name; do
+    [[ -z "$name" ]] && continue
+    if pgrep -x "$name" >/dev/null 2>&1; then
+      echo "$name"
+      return 0
+    fi
+  done < <(e2e_macos_process_names_for_probe)
+  return 1
+}
+
 e2e_macos_app_running() {
-  pgrep -x "$E2E_MACOS_APP_PROCESS" >/dev/null 2>&1
+  e2e_macos_busy_process >/dev/null
+}
+
+e2e_macos_app_path() {
+  local name="${1:-$E2E_MACOS_APP_PROCESS}"
+  echo "$(e2e_repo_root)/tests/macos/build/Build/Products/Debug/${name}.app"
 }
 
 e2e_ios_sim_booted() {

@@ -16,8 +16,17 @@ function terminate_testing_processes() {
   ps -ef | grep node | grep firebase.js | grep emulators:start | awk '{print $2}' | xargs kill 2>/dev/null || true
   ps -ef | grep node | grep react-native | grep cli.js | awk '{print $2}' | xargs kill 2>/dev/null || true
 
-  # The macOS app stays running even after the run, clean it up as well
-  killall "io.invertase.testing" 2>/dev/null || true
+  # The macOS app stays running even after the run, clean it up as well.
+  # Prefer RNFB_MACOS_PRODUCT_NAME; also clear known slotted siblings (parallel e2e).
+  local mac_name
+  mac_name="${RNFB_MACOS_PRODUCT_NAME:-io.invertase.testing}"
+  killall "$mac_name" 2>/dev/null || true
+  if [[ -z "${RNFB_MACOS_PRODUCT_NAME:-}" ]]; then
+    local s
+    for s in 0 1 2 3 4 5 6 7; do
+      killall "io.invertase.testing.s${s}" 2>/dev/null || true
+    done
+  fi
 
   sleep 5
 }

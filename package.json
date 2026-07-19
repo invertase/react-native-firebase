@@ -74,6 +74,9 @@
     "tests:macos:test-cover": "cd tests && npx jet --target=macos --coverage",
     "tests:e2e:setup-android-avds": "bash ./scripts/e2e/create-android-avds.sh",
     "tests:e2e:setup-ios-sims": "bash ./scripts/e2e/create-ios-simulators.sh",
+    "tests:e2e:export-slot-env": "bash ./scripts/e2e/export-slot-env.sh",
+    "tests:e2e:slotted-packager": "bash ./scripts/e2e/run-slotted-packager.sh",
+    "tests:e2e:slotted-test-cover": "bash ./scripts/e2e/run-slotted-test-cover.sh",
     "format:js": "prettier --write \"packages/**/*.{js,ts,tsx}\"",
     "format:markdown": "prettier --write \"docs/**/*.md[x]\""
   },
