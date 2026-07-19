@@ -68,9 +68,10 @@ for platform in "${_preflight_platforms[@]}"; do
   [[ -n "$fn" ]] && wait_listen "$fn" "functions-${platform}" "$WAIT_SEC" || true
 done
 
-MACOS_APP="${REPO_ROOT}/tests-macos/macos/build/Build/Products/Debug/io.invertase.testing.app"
+MACOS_PRODUCT="${RNFB_MACOS_PRODUCT_NAME:-io.invertase.testing}"
+MACOS_APP="${REPO_ROOT}/tests-macos/macos/build/Build/Products/Debug/${MACOS_PRODUCT}.app"
 if [[ "$PREFLIGHT_PLATFORMS" == *macos* ]]; then
-  [[ -d "$MACOS_APP" ]] && log_ok "macOS app" || log_fail "macOS app missing"
+  [[ -d "$MACOS_APP" ]] && log_ok "macOS app ${MACOS_PRODUCT}" || log_fail "macOS app missing (${MACOS_APP})"
 fi
 
 # Finding #7: gate iOS/Android artifact existence checks on RNFB_PREFLIGHT_PLATFORMS,

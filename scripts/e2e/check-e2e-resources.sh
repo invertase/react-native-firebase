@@ -146,8 +146,9 @@ if platform_active android; then
 fi
 
 if platform_active macos; then
-  if e2e_macos_app_running; then
-    report BUSY "macos app process ${E2E_MACOS_APP_PROCESS}"
+  busy_macos="$(e2e_macos_busy_process || true)"
+  if [[ -n "${busy_macos}" ]]; then
+    report BUSY "macos app process ${busy_macos}"
   else
     report CLEAR "macos app process ${E2E_MACOS_APP_PROCESS}"
   fi
