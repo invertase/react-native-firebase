@@ -3,7 +3,7 @@ type: Reference
 title: iOS SPM native integration decisions
 description: Why RNFB uses dual imports, Objective-C helpers for Swift Firebase products, and an app framework-embedding phase.
 tags: [ios, spm, cocoapods, imports, firebase, cxx-modules]
-timestamp: 2026-07-16T00:00:00Z
+timestamp: 2026-07-20T10:23:54Z
 ---
 
 # iOS SPM native integration decisions
@@ -174,6 +174,61 @@ The hook is guarded and idempotent. If CocoaPods changes the integration point,
 silent launch failure. The fallback is documented for consumers in
 [`docs/ios-spm.mdx`](../docs/ios-spm.mdx#framework-embedding-fallback).
 
+## Archive signature-copy collision
+
+Real `xcodebuild archive` builds (not simulator builds) can fail with:
+
+```text
+"GoogleAppMeasurementIdentitySupport.xcframework-ios.signature" couldn't be
+copied to "Signatures" because an item with the same name already exists.
+```
+
+This is a long-standing Xcode Archive bug (present since Xcode 15, still
+reproducing on Xcode 26), not specific to react-native-firebase: a Swift
+Package binary target's `.signature` provenance file gets staged into more
+than one target's build directory when multiple targets in the workspace
+transitively depend on the same binary artifact, and Xcode's Archive action
+then collides copying every staged copy into the shared
+`<Archive>.xcarchive/Signatures/` directory. The same class of bug, with the
+same fix, has been reported for other CocoaPods+SPM binary xcframeworks
+(Mapbox: CocoaPods/CocoaPods#12022; MapLibre: maplibre-react-native#1489;
+Lottie).
+
+It can hit *any* binary xcframework in the resolved graph, not just the one
+named in the first error. Google's own `google/GoogleAppMeasurement.git` SPM
+package unconditionally links `GoogleAdsOnDeviceConversion` (from the
+*separate* `googleads/google-ads-on-device-conversion-ios-sdk` package) as a
+dependency of `GoogleAppMeasurementTarget`, completely independent of
+RNFBAnalytics's own *optional* `spm_dependency` call for it (gated behind
+`$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion`, which turns out
+to only matter for CocoaPods-only resolution). None of this shows up as a
+reference in our own podspecs or pbxprojs — it only turned up by inspecting
+the actual checked-out `Package.swift` manifests under
+`DerivedData/.../SourcePackages/checkouts`. Fixing one binary artifact just
+surfaces the collision on the next one on a subsequent archive run.
+
+### Chosen fix
+
+`packages/app/firebase_spm.rb` enumerates every known `.binaryTarget`
+xcframework name reachable in the resolved SPM package graph
+(`RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES`, sourced from
+`SourcePackages/workspace-state.json`'s `artifacts` list after a clean
+`-resolvePackageDependencies` run, not guessed) and adds
+`[RNFB] Remove duplicate Firebase/Google SPM binary xcframework signature
+files` to application targets that already have `[CP] Embed Pods Frameworks`.
+The phase deletes each named artifact's stale `.signature` file from
+`$(CONFIGURATION_BUILD_DIR)` before Xcode's Archive action tries to copy it,
+so only one copy is ever staged.
+
+Deliberately scoped to this known artifact-name list rather than a bare
+`*.signature` glob — broad enough to cover this whole binary family without
+also silently masking an unrelated, legitimate "file already exists" failure
+from some other SPM package in a consumer's own app.
+
+The hook is guarded the same way as the embed phase: a failure to add the
+build phase warns via `Pod::UI` with the manual fallback command instead of
+failing `pod install` outright.
+
 ## Review invariants
 
 When native Firebase imports or SPM products change, review the diff for these
@@ -186,6 +241,10 @@ invariants:
 - no private/transitive Firebase target added as if it were a public product;
 - SPM mode still adds exactly one app framework-embedding phase and CocoaPods
   mode does not require it;
+- if a Firebase/Google SPM package adds a new `.binaryTarget` xcframework to
+  the resolved graph (e.g. a firebase-ios-sdk version bump),
+  `RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES` is re-checked against a clean
+  `-resolvePackageDependencies` run rather than assumed still complete;
 - Debug and Release builds cover SPM and CocoaPods, and the real-device archive
   job verifies that every `@rpath` framework dependency is embedded.
 

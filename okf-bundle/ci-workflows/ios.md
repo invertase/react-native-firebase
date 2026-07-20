@@ -507,6 +507,9 @@ not launch the app and is not equivalent to a signed device or TestFlight test;
 runtime-only failures still require a real launch. The SPM embedding decision
 and its original failure mode are documented in
 [`ios-spm-native-imports.md`](../ios-spm-native-imports.md#runtime-framework-embedding).
+A `"...xcframework-ios.signature" couldn't be copied to "Signatures"` failure
+from this job is a known Xcode Archive bug, not a regression — see
+[archive signature-copy collision](../ios-spm-native-imports.md#archive-signature-copy-collision).
 
 ### Operational notes
 
