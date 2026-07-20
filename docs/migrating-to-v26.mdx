@@ -217,6 +217,20 @@ getUtils().FilePath.DOCUMENT_DIRECTORY;
 FilePath.DOCUMENT_DIRECTORY;
 ```
 
+## Breaking: Android Play Services availability Promise behavior
+
+On Android, `makePlayServicesAvailable()` now rejects when the Play Services availability task is canceled or fails. Previously, the call always resolved even when the update flow was not completed. Update callers to handle rejection:
+
+```js
+import { getUtils } from '@react-native-firebase/app';
+
+try {
+  await getUtils().makePlayServicesAvailable();
+} catch (error) {
+  // Handle canceled or failed Play Services update
+}
+```
+
 # Machine Learning (ML)
 
 The namespaced API for `@react-native-firebase/ml` has been **removed**. This package is **modular-only** — use `getML(app?)`.
