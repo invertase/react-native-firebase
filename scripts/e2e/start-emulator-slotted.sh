@@ -5,14 +5,27 @@
 # starts eventarc+tasks as Functions dependencies and defaults Firestore's UI websocket
 # to 9150 — those collide when multiple suites share a host (EADDRINUSE → suite dies;
 # only the winner keeps a working Functions emulator).
+#
+# Usage:
+#   bash scripts/e2e/start-emulator-slotted.sh <android|ios|macos> [slot]
+# With [slot], applies full carry-in via e2e_slot_env_apply (same as run-slotted-*).
+# Without [slot], requires RNFB_<PLATFORM>_EMULATOR_* already exported (e.g. after
+# eval "$(export-slot-env.sh …)").
 set -euo pipefail
 
 PLATFORM="${1:?platform required: android|ios|macos}"
+SLOT_ARG="${2:-}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 SCRIPTS="${REPO_ROOT}/.github/workflows/scripts"
-SLOT="${RNFB_E2E_HOST_SLOT:-${RNFB_E2E_SLOT:-0}}"
 
+if [[ -n "$SLOT_ARG" ]]; then
+  # shellcheck source=lib/e2e-slot-env.sh
+  source "${SCRIPT_DIR}/lib/e2e-slot-env.sh"
+  e2e_slot_env_apply "$PLATFORM" "$SLOT_ARG"
+fi
+
+SLOT="${RNFB_E2E_HOST_SLOT:-${RNFB_E2E_SLOT:-0}}"
 prefix="$(echo "${PLATFORM}" | tr '[:lower:]' '[:upper:]')"
 
 eval "FS_PORT=\$RNFB_${prefix}_EMULATOR_FIRESTORE_PORT"
@@ -25,7 +38,7 @@ eval "LOG_PORT=\$RNFB_${prefix}_EMULATOR_LOGGING_PORT"
 
 for v in FS_PORT AUTH_PORT DB_PORT FN_PORT ST_PORT HUB_PORT LOG_PORT; do
   if [[ -z "${!v:-}" ]]; then
-    echo "error: ${v} not set (export RNFB_${prefix}_EMULATOR_* ports first)" >&2
+    echo "error: ${v} not set (export RNFB_${prefix}_EMULATOR_* ports first, or pass slot: start-emulator-slotted.sh ${PLATFORM} <slot>)" >&2
     exit 1
   fi
 done

@@ -171,6 +171,7 @@ module.exports = {
         const jetPort = readJetPort();
         config.metroPort = metroPort;
         config.port = jetPort;
+        console.warn(`[rnfb-e2e] macos Jet port=${jetPort} metro=${metroPort}`);
         await waitForMetroMacosBundle(metroPort);
         const macBinary = macOsBinaryPath();
         console.warn(`[rnfb-e2e] spawning macOS app ${macBinary} (${macOsBundleIdentifier()})`);

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Create dedicated iOS simulators for e2e slots 1–4 (slot 0 uses default iPhone 17).
+# Create dedicated iOS simulators for e2e slots 0–4.
+# Serial unslotted runs keep using iPhone 17; slotted slot 0 uses RNFB E2E iOS slot-0.
 set -euo pipefail
 
 COUNT="${1:-4}"
@@ -21,7 +22,7 @@ RUNTIME=$(xcrun simctl list runtimes available -j | node -e "
   console.log(ios[0].identifier);
 ")
 
-for i in $(seq 1 "$COUNT"); do
+for i in $(seq 0 "$COUNT"); do
   name="RNFB E2E iOS slot-${i}"
   if xcrun simctl list devices available | grep -q "${name}"; then
     echo "[sim] ${name} exists"
@@ -31,4 +32,4 @@ for i in $(seq 1 "$COUNT"); do
   xcrun simctl create "$name" "$BASE_NAME" "$RUNTIME"
 done
 
-echo "[sim] done"
+echo "[sim] done — slotted slots 0..${COUNT} use RNFB E2E iOS slot-N; serial unslotted keeps ${BASE_NAME}"
