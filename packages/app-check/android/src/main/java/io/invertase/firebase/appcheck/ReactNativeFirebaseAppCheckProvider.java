@@ -91,11 +91,12 @@ public class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
       }
 
       if (delegateProvider == null) {
-        Log.e(
-            LOGTAG,
+        String message =
             "Unknown provider name \""
                 + providerName
-                + "\". Valid providers are: debug, playIntegrity.");
+                + "\". Valid providers are: debug, playIntegrity.";
+        Log.e(LOGTAG, message);
+        throw new IllegalArgumentException(message);
       }
     } catch (Exception e) {
       // This will bubble up and result in a rejected promise with the underlying message
