@@ -19,6 +19,29 @@
 require 'json'
 
 RNFIREBASE_SPM_EMBED_PHASE_NAME = '[RNFB] Embed Firebase SPM Frameworks'
+RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME = '[RNFB] Remove duplicate Firebase/Google SPM binary xcframework signature files'
+
+# Every `.binaryTarget` xcframework name reachable in the resolved SPM package
+# graph for the RNFB test app (firebase-ios-sdk 12.16.0, full module set --
+# Analytics with ad support, Firestore, etc). Enumerated from
+# `SourcePackages/workspace-state.json`'s `artifacts` list after a clean
+# `-resolvePackageDependencies` run rather than guessed, since none of these
+# show up as a reference in our own podspecs or pbxprojs (see comment on
+# `rnfirebase_fix_spm_archive_signature_collision` below for why). Any of
+# these can be staged into more than one target's build directory and hit the
+# Archive signature-copy collision below, not just the Analytics-related
+# ones we hit first.
+RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES = %w[
+  GoogleAppMeasurement
+  GoogleAppMeasurementIdentitySupport
+  GoogleAdsOnDeviceConversion
+  FirebaseAnalytics
+  FirebaseFirestoreInternal
+  absl
+  grpc
+  grpcpp
+  openssl_grpc
+].freeze
 
 # Read Firebase SPM URL from app package.json (single source of truth).
 # __dir__ resolves to the directory of this file (packages/app/).
@@ -233,6 +256,18 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
             'dependency from your app target manually in Xcode.'
         end
       end
+      begin
+        rnfirebase_fix_spm_archive_signature_collision(self)
+      rescue => e
+        if defined?(Pod::UI)
+          Pod::UI.warn '[react-native-firebase] Couldn\'t add the Firebase/Google SPM binary ' \
+            "xcframework signature workaround automatically (#{e.class}: #{e.message}). If your " \
+            'Release archive fails with `"...xcframework-ios.signature" couldn\'t be copied to ' \
+            '"Signatures" because an item with the same name already exists`, add a Run Script ' \
+            'build phase to your app target that runs `rm -f ' \
+            "\"\\${CONFIGURATION_BUILD_DIR}\"/<TheNameFromTheErrorMessage>.xcframework-ios.signature`."
+        end
+      end
       result
     end
   end
@@ -382,6 +417,70 @@ def rnfirebase_remove_spm_core_from_app_target(installer)
         pkg.remove_from_project
         project_modified = true
       end
+
+    project.save if project_modified
+  end
+end
+
+# Works around a long-standing Xcode Archive bug (present since Xcode 15,
+# still reproducing on Xcode 26) where a Swift Package binary target's
+# `.signature` provenance file gets staged into more than one target's build
+# directory when multiple targets in the workspace transitively depend on the
+# same binary artifact. Xcode's Archive action then tries to copy every
+# staged copy into the shared `<Archive>.xcarchive/Signatures/` directory,
+# and the second copy collides with the first:
+#
+#   "GoogleAppMeasurementIdentitySupport.xcframework-ios.signature" couldn't
+#   be copied to "Signatures" because an item with the same name already
+#   exists.
+#
+# This isn't specific to react-native-firebase -- the same class of bug, with
+# the same fix, has been reported for other CocoaPods+SPM binary xcframeworks
+# (Mapbox: CocoaPods/CocoaPods#12022; MapLibre: maplibre-react-native#1489;
+# Lottie).
+#
+# It can hit *any* binary xcframework in the resolved graph, not just
+# Analytics-related ones -- e.g. Google's own `google/GoogleAppMeasurement.git`
+# SPM package unconditionally links `GoogleAdsOnDeviceConversion` (from the
+# *separate* `googleads/google-ads-on-device-conversion-ios-sdk` package) as a
+# dependency of `GoogleAppMeasurementTarget`, completely independent of
+# RNFBAnalytics's own *optional* `spm_dependency` call for it (gated behind
+# `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion`, which turns
+# out to only matter for CocoaPods-only resolution) -- none of that showed up
+# as a reference in our own podspecs or pbxprojs; it only turned up by
+# inspecting the actual checked-out Package.swift manifests under
+# DerivedData/.../SourcePackages/checkouts. Confirmed locally: fixing one
+# binary artifact just surfaces the collision on the next one on a subsequent
+# archive run, so `RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES` above lists
+# every `.binaryTarget` xcframework in the resolved graph (enumerated from
+# `SourcePackages/workspace-state.json`, not guessed) so they're all covered
+# in one pass.
+#
+# Deliberately scoped to this known artifact-name list rather than a bare
+# `*.signature` glob -- broad enough to cover this whole binary family without
+# also silently masking an unrelated, legitimate "file already exists"
+# failure from some other SPM package in a consumer's own app.
+def rnfirebase_fix_spm_archive_signature_collision(installer)
+  return unless $rnfirebase_spm_active
+
+  installer.aggregate_targets.each do |aggregate_target|
+    project = aggregate_target.user_project
+    project_modified = false
+
+    project.native_targets.each do |target|
+      next unless target.respond_to?(:shell_script_build_phases)
+      next unless target.shell_script_build_phases.any? { |phase| phase.name == '[CP] Embed Pods Frameworks' }
+
+      phase = target.shell_script_build_phases.find { |candidate| candidate.name == RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME }
+      phase ||= target.new_shell_script_build_phase(RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME)
+
+      phase.shell_script = RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES.map { |name|
+        "rm -f \"${CONFIGURATION_BUILD_DIR}\"/#{name}.xcframework-ios.signature"
+      }.join("\n") + "\n"
+      phase.shell_path = '/bin/sh'
+      phase.always_out_of_date = '1'
+      project_modified = true
+    end
 
     project.save if project_modified
   end
