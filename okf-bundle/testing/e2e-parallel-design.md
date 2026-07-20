@@ -1,22 +1,54 @@
 ---
 type: Reference
 title: E2e parallel execution and host coordination
-description: Design for running Android, iOS, and macOS e2e in parallel within a worktree, and coordinating test resources across worktrees on a shared dev host.
+description: ELI14 architecture for parallel RNFB e2e — host resources, why they serialize, slot parameterization, and coordinator rollout. Commands live in running-e2e.md.
 tags: [testing, e2e, detox, jet, parallel, coordination, design]
 timestamp: 2026-07-19T00:00:00Z
 ---
 
 # E2e parallel execution and host coordination
 
-Design for **faster local verification** and **safe multi-worktree dev hosts**. Canonical e2e commands and the **proven** slotted model live in [running e2e](running-e2e.md) ([parallel topology](running-e2e.md#parallel-e2e-topology), [macOS process identity](running-e2e.md#macos-process-identity-concurrency)); this doc owns architecture, history, and coordinator rollout only.
+Architecture and lifecycle for running Android, iOS, and macOS e2e in parallel (within a worktree and across worktrees). **Commands and the slot recipe** live in [running e2e](running-e2e.md) ([slot lifecycle](running-e2e.md#slot-lifecycle), [parallel topology](running-e2e.md#parallel-e2e-topology)); this doc explains *why* the resources collide and *how* parameterization isolates them.
 
 **Policy:** [OKF documentation and commit policy](../documentation-policy.md). **Coverage:** [coverage design](coverage-design.md).
 
-## Problem
+## How parallel e2e works (ELI14)
 
-Unslotted `:test-cover` on a host is **serialized** because Android, iOS, and macOS share Metro (`:8081`), Jet (`:8090`), Firebase emulators (fixed ports), devices, and coverage output paths. OKF **serial default** still reflects that ([running e2e § Rules #6](running-e2e.md#rules)).
+RNFB’s local e2e stack is a small set of **named host resources**. If two runs share any of them, they fight. Parameterization gives each run its own copy.
 
-That is correct for gate closure but slow for iteration: a typical area-focused gate needs **three serial** platform runs (~15m macOS + ~45–60m iOS + ~45–60m Android wall time). Slotted ports + worktrees remove that wall-time tax when the host has capacity.
+### 1. Exact resources (serial defaults)
+
+| Resource | What it is | Serial default |
+|----------|------------|----------------|
+| **Metro** | JS bundler listen port | `:8081` |
+| **Jet WebSocket** | Mocha-remote test runner | `:8090` |
+| **Jet control HTTP** | Paired control plane | `:8091` (Jet+1) |
+| **Firebase emulator suite** | auth / database / firestore / functions / storage / hub / logging | `:9099` / `:9000` / `:8080` / `:5001` / `:9199` / `:4400` / `:4500` |
+| **Emulator aux ports** | Firestore websocket, Eventarc, Cloud Tasks (Firebase Tools still binds these) | `:9150` / `:9299` / `:9499` (collide if two suites share a host) |
+| **Android** | AVD + adb serial | Serial: `TestingAVD` / `emulator-5554`. Slotted: `TestingAVD-{n}` (incl. `-0`) |
+| **iOS** | Simulator device name | Serial: `iPhone 17`. Slotted: `RNFB E2E iOS slot-{n}` (incl. `slot-0`) |
+| **macOS** | Process / `PRODUCT_NAME` (+ derived bundle id) | `io.invertase.testing` |
+| **Coverage paths** | NYC / coverage under `tests/` | Fixed per worktree (same-platform parallel overwrites) |
+
+One worktree also has **one** `macos/build` (and iOS/Android build product tree) — not safe for two same-platform `:test-cover`s in that tree.
+
+### 2. Why that forces serialized testing (if not parameterized)
+
+- **One listener per port** — second Metro/Jet/emulator bind → `EADDRINUSE` or a stolen session.
+- **One macOS process name** — `killall` / Jet client collision; stale macOS on a shared Jet port breaks Android.
+- **Shared emulator DB** — Firestore `wipe()` and auth/storage state are global per emulator process.
+- **One derived-data / build tree per worktree** — two same-platform runs race native products and coverage files.
+- **OKF serial default** still assumes the table above ([running e2e § Rules #6](running-e2e.md#rules)): correct for gate closure, slow for iteration (~15m macOS + ~45–60m iOS + ~45–60m Android wall-clock if run one after another).
+
+### 3. How parameterization fixes it
+
+- **Per-platform env:** `RNFB_{ANDROID,IOS,MACOS}_METRO_PORT`, `_JET_PORT`, `_JET_CONTROL_PORT`, `_EMULATOR_*_PORT`, plus device overrides (`RNFB_ANDROID_AVD`, `RNFB_IOS_SIMULATOR`, **`RNFB_MACOS_PRODUCT_NAME`**).
+- **Slot formula:** `BASE = 12000 + slot×1000`; android offset `0`, ios `+100`, macos `+200`. Inside a platform block: firestore…logging = `BLK+0..6`, metro `+7`, jet `+10`, jet-control `+11`; aux ports `FS+8/+9/+12` in `start-emulator-slotted.sh`.
+- **Full babel carry-in:** every Metro/Jest process for a slot gets the **full** `RNFB_{ANDROID,IOS,MACOS}_*` set (static `process.env.RNFB_*` inlining). Process-local binds (`RCT_METRO_PORT`, `JET_REMOTE_PORT`) say which socket *this* process owns.
+- **Worktree topology:** at most **`1× android ∥ 1× ios ∥ 1× macos`** per worktree (same slot index, three port blocks). Same-platform scale-out = more worktrees (`macos-slot-N` + `io.invertase.testing.sN`, not a host-global `macos-global` lock).
+- **macOS build:** `yarn tests:macos:build` uses `RNFB_MACOS_PRODUCT_NAME_SUFFIX` in the pbxproj — never pass global `PRODUCT_NAME=` on the `xcodebuild` CLI.
+
+Commands for clear → start → build → test → free: [running e2e § slot lifecycle](running-e2e.md#slot-lifecycle).
 
 ## Goals
 
@@ -33,9 +65,9 @@ That is correct for gate closure but slow for iteration: a typical area-focused 
 |------------|--------|-----------|
 | Per-platform prefixed ports + full carry-in | **Shipped** | [running e2e § configurable env](running-e2e.md#configurable-e2e-environment) |
 | Worktree topology (`1× android ∥ 1× ios ∥ 1× macos` per tree) | **Shipped** | [parallel topology](running-e2e.md#parallel-e2e-topology) |
-| Slotted launch helpers | **Shipped** | `scripts/e2e/export-slot-env.sh`, `run-slotted-packager.sh`, `run-slotted-test-cover.sh`, `start-emulator-slotted.sh` |
+| Slotted launch helpers | **Shipped** | `export-slot-env.sh`, `start-emulator-slotted.sh`, `run-slotted-packager.sh`, `run-slotted-test-cover.sh` + [slot lifecycle](running-e2e.md#slot-lifecycle) |
 | Concurrent macOS via `PRODUCT_NAME` | **Shipped** (e.g. `io.invertase.testing.s0`…`sN`) | [macOS process identity](running-e2e.md#macos-process-identity-concurrency) |
-| Host check/release env-aware (+ `.sN` wipe) | **Shipped** | `check-e2e-resources.sh` / `release-e2e-resources.sh` |
+| Host check/release env-aware (slot-scoped when env loaded; unscoped `.sN` wipe) | **Shipped** | `check-e2e-resources.sh` / `release-e2e-resources.sh` |
 | Coordinator / lease queue (mellifera) | **WIP** (uncommitted experimental) | [`mellifera/`](../../mellifera/) when present |
 
 > **Coordinator note:** [`mellifera/`](../../mellifera/) remains the experimental lease service (opt-in `RNFB_MELLIFERA=1`). Serial `yarn tests:*` and slotted scripts above do **not** require it. Older drafts called macOS `macos-global`; that lease shape is **superseded** by `macos-slot-N` + `RNFB_MACOS_PRODUCT_NAME`.
@@ -54,20 +86,22 @@ That is correct for gate closure but slow for iteration: a typical area-focused 
 3. **Firebase emulators:** parallel platform runs **must not share one emulator process** — Firestore `wipe()` and auth/storage state are global per emulator instance ([`packages/firestore/e2e/helpers.js`](../../packages/firestore/e2e/helpers.js)). Full aux-port isolation (websocket / eventarc / tasks) required — see [running e2e](running-e2e.md#configurable-e2e-environment).
 4. **Backward compatibility:** unset slotted env preserves serial defaults (ports `:8081` / `:8090` / …, process `io.invertase.testing`).
 
-## Resource inventory (serial defaults vs slotted)
+## Resource inventory (detail)
 
-| Resource | Serial default | Conflict when parallel | Slotted support |
-|----------|----------------|------------------------|-----------------|
-| Jet WebSocket | `:8090` | One listener per port | `RNFB_{ANDROID,IOS,MACOS}_JET_PORT` + process-local `JET_REMOTE_PORT` |
-| Jet control HTTP | `:8091` | Tied to Jet port | `RNFB_{ANDROID,IOS,MACOS}_JET_CONTROL_PORT` |
-| Metro | `:8081` | One listener per port / worktree source tree | Per-platform `RNFB_*_METRO_PORT` (proven slotted model uses **distinct** Metro per platform×slot; see [§ Metro](#metro-per-worktree-and-per-slot)) |
-| Firebase emulators | `:8080`, `:9099`, … | Shared DB + wipe; aux ports collide | Full `RNFB_*_EMULATOR_*` blocks + `start-emulator-slotted.sh` |
-| Android device | `emulator-5554`, `TestingAVD` | Single emulator | `RNFB_ANDROID_AVD`, Detox slot configs |
-| iOS simulator | `iPhone 17` | Detox boots one | `RNFB_IOS_SIMULATOR`, Detox slot configs |
-| macOS app | `io.invertase.testing` | Same process name → `killall` / Jet collision | **`RNFB_MACOS_PRODUCT_NAME`** (e.g. `.s1`) + optional bundle id |
-| Coverage artifacts | Fixed paths under `tests/` | Overwrite across concurrent same-platform | One worktree per same-platform instance |
+Serial defaults and conflict modes are summarized in [§ How parallel e2e works](#how-parallel-e2e-works-eli14). Slotted support: per-platform `RNFB_*` ports + `start-emulator-slotted.sh`, Detox slot configs, and **`RNFB_MACOS_PRODUCT_NAME`**. Cross-platform Jet note: stale macOS on a **shared** Jet port still breaks Android ([running e2e § Android app reset](running-e2e.md#android-app-reset-blocking)) — slotted runs give each platform its own Jet; teardown must still kill the **named** macOS process.
 
-Cross-platform Jet note: stale macOS on a **shared** Jet port still breaks Android ([running e2e § Android app reset](running-e2e.md#android-app-reset-blocking)). Slotted runs give each platform its own Jet; teardown must still kill the **named** macOS process.
+### Slot lifecycle (mirror)
+
+For arbitrary slot `N` and platform `android|ios|macos`, the committed path is:
+
+1. First use of a slot (incl. `N=0`): `yarn tests:e2e:setup-android-avds` / `yarn tests:e2e:setup-ios-sims`. Then `eval "$(bash scripts/e2e/export-slot-env.sh <platform> N)"` — full carry-in + slot device identities (`TestingAVD-N` / `RNFB E2E iOS slot-N` / `io.invertase.testing.sN`).
+2. `bash scripts/e2e/check-e2e-resources.sh` / `release-e2e-resources.sh` — **slot-scoped** when that env is loaded; default release clears **ports+apps** for all three platform blocks (not AVD/sims). Mid-wave early free: `--platform=<done>` (devices may stay up). Unscoped wipe of `.s0..sN` only when slot env is unset.
+3. `bash scripts/e2e/start-emulator-slotted.sh <platform>` (+ optional slot) + `bash scripts/e2e/run-slotted-packager.sh <platform> N`.
+4. `yarn tests:<platform>:build` (macOS: suffix via `RNFB_MACOS_PRODUCT_NAME`). After worktree reset/sync for iOS, run `yarn tests:ios:pod:install` first if Pods/Manifest.lock may have drifted.
+5. `bash scripts/e2e/run-slotted-test-cover.sh <platform> N`.
+6. End-of-slot / final free: `release-e2e-resources.sh --devices` with the **same** env still loaded — default release alone leaves sims/AVDs up; slotted `check --platform=ios` then reports **BUSY**.
+
+Full recipe and caveats: [running e2e § slot lifecycle](running-e2e.md#slot-lifecycle).
 
 ## Resource model
 
@@ -124,8 +158,8 @@ Each **android-slot** / **ios-slot** / **macos-slot** is a fixed **port block** 
 | Metro | `:8081` | `BASE + platform_off + 7` |
 | Jet WS / control | `:8090` / `:8091` | `+10` / `+11` in platform block |
 | Emulator suite | fixed serial ports | full `RNFB_*_EMULATOR_*` + aux |
-| Android | `TestingAVD` / `emulator-5554` | `TestingAVD-{n}`, Detox `android.emu.debug.slot{n}` |
-| iOS | `iPhone 17` | `RNFB E2E iOS slot-{n}`, Detox `ios.sim.debug.slot{n}` |
+| Android | `TestingAVD` / `emulator-5554` | `TestingAVD-{n}` (incl. `-0`), Detox `android.emu.debug.slot{n}` |
+| iOS | `iPhone 17` | `RNFB E2E iOS slot-{n}` (incl. `slot-0`), Detox `ios.sim.debug.slot{n}` |
 | macOS | `io.invertase.testing` | **`io.invertase.testing.s{n}`** via `RNFB_MACOS_PRODUCT_NAME` |
 
 **macOS (proven):** no `macos-global` lock. Concurrent macOS = distinct `PRODUCT_NAME` (+ derived bundle id for Metro `app=`). Build uses `RNFB_MACOS_PRODUCT_NAME_SUFFIX` in pbxproj — **never** pass global `PRODUCT_NAME=` on the `xcodebuild` CLI (renames Pods / breaks linking). Details: [running e2e § macOS process identity](running-e2e.md#macos-process-identity-concurrency).
@@ -357,7 +391,7 @@ Deliverables:
 | Item | Notes |
 |------|-------|
 | dflockd (or resleased) + coordinator | Docker-compose or brew-style one-liner for dev hosts |
-| `run-worktree-parallel.sh` | **One Metro** + per-platform Jet/emulators; three `:test-cover` parallel |
+| `run-worktree-parallel.sh` | **Distinct Metro per platform×slot** (+ Jet/emulators); three `:test-cover` parallel |
 | `yarn tests:verify-parallel` | Client: reserve → run → release (EXIT trap) |
 | Pre-flight | Per-platform scoped probes |
 
@@ -503,8 +537,8 @@ Work-queue rows for implementation track **Phase 0–3** in the `e2e-parallel` b
 
 ## Open questions
 
-1. **AVD strategy:** clone `TestingAVD-0`, `TestingAVD-1` vs one AVD + different `-port` only? (slot helpers already use `TestingAVD-{n}`.)
-2. **iOS simulators:** clone device type per slot vs reuse `iPhone 17` with distinct UDIDs?
+1. **AVD strategy:** **decided** — clone `TestingAVD-0`…`TestingAVD-N` for slotted runs; serial keeps `TestingAVD` (`create-android-avds.sh`).
+2. **iOS simulators:** **decided** — dedicated `RNFB E2E iOS slot-0`…`slot-N` devices; serial keeps `iPhone 17` (`create-ios-simulators.sh`).
 3. **Shared build artifacts:** single `tests/ios/build` / `tests/macos/build` per worktree (serial build within tree) — confirmed OK; same-platform parallel ⇒ multiple worktrees.
 4. **Coordinator language:** Node (matches repo / mellifera) vs Go (matches dflockd) for the thin HTTP layer?
 5. **Tart integration:** Phase 3 optional — Tart VM counts as `ios-slot` consuming full VM; Phase 4 worker registration.

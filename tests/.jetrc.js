@@ -189,8 +189,9 @@ async function waitForMetroMacosBundle(metroPort = 8081, timeoutMs = 600000) {
 
 module.exports = {
   config: {
-    // Serial fallback only — each target.before() sets the real port.
-    port: SERIAL_JET_PORT,
+    // Prefer process-local JET_REMOTE_PORT when already exported (slotted launchers);
+    // each target.before() still re-applies the platform-prefixed port and logs it.
+    port: parseEnvPort(process.env.JET_REMOTE_PORT) ?? SERIAL_JET_PORT,
     slow: 3000,
     reporter: 'spec',
     timeout: 420000, // 7 minutes - fetchAndActivate takes 5+ sometimes
@@ -203,6 +204,7 @@ module.exports = {
     android: {
       async before(config) {
         config.port = readJetPort('android');
+        console.warn(`[rnfb-e2e] android Jet port=${config.port}`);
         return config;
       },
       async after(_config) {
@@ -212,6 +214,7 @@ module.exports = {
     ios: {
       async before(config) {
         config.port = readJetPort('ios');
+        console.warn(`[rnfb-e2e] ios Jet port=${config.port}`);
         return config;
       },
       async after(_config) {
@@ -226,6 +229,7 @@ module.exports = {
         const jetPort = readJetPort('macos');
         config.metroPort = metroPort;
         config.port = jetPort;
+        console.warn(`[rnfb-e2e] macos Jet port=${jetPort} metro=${metroPort}`);
         await waitForMetroMacosBundle(metroPort);
         const macBinary = macOsBinaryPath();
         console.warn(`[rnfb-e2e] spawning macOS app ${macBinary} (${macOsBundleIdentifier()})`);

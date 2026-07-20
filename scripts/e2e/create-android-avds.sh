@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Clone TestingAVD into TestingAVD-1 … TestingAVD-4 for parallel e2e slots.
+# Clone TestingAVD into TestingAVD-0 … TestingAVD-4 for parallel e2e slots.
 # Same AVD *definition* cannot run two read-write instances concurrently; clones are required.
+# Serial unslotted runs keep using TestingAVD; slotted slot 0 uses TestingAVD-0.
 set -euo pipefail
 
 COUNT="${1:-4}"
@@ -44,10 +45,10 @@ clone_avd() {
   " "$dst_ini" "${dst_avd}/config.ini" "$src" "$dst"
 }
 
-for i in $(seq 1 "$COUNT"); do
+for i in $(seq 0 "$COUNT"); do
   clone_avd "$BASE_AVD" "${BASE_AVD}-${i}"
 done
 
 echo "[avd] available AVDs:"
 "$EMU" -list-avds | grep -E "^${BASE_AVD}" || true
-echo "[avd] done — slot 0 uses ${BASE_AVD}, slots 1+ use ${BASE_AVD}-N"
+echo "[avd] done — slotted slots 0..${COUNT} use ${BASE_AVD}-N; serial unslotted keeps ${BASE_AVD}"

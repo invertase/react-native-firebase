@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 # Print slotted e2e env exports for eval into the current shell.
+# Full lifecycle: running-e2e.md § slot-lifecycle
 #
 # Usage:
 #   eval "$(bash scripts/e2e/export-slot-env.sh <android|ios|macos> <slot>)"
-#   yarn tests:macos:build
-#   bash scripts/e2e/start-emulator-slotted.sh macos
-#   yarn tests:packager:jet-reset-cache   # or: bash scripts/e2e/run-slotted-packager.sh macos <slot>
-#   yarn tests:macos:test-cover          # or: bash scripts/e2e/run-slotted-test-cover.sh macos <slot>
+#   bash scripts/e2e/check-e2e-resources.sh   # / release-e2e-resources.sh — slot-scoped
+#   bash scripts/e2e/start-emulator-slotted.sh <platform>   # or … <platform> <slot>
+#   bash scripts/e2e/run-slotted-packager.sh <platform> <slot>   # background OK
+#   yarn tests:<platform>:build
+#   bash scripts/e2e/run-slotted-test-cover.sh <platform> <slot>
+#   bash scripts/e2e/release-e2e-resources.sh
 #
-# For macOS, sets RNFB_MACOS_PRODUCT_NAME=io.invertase.testing.s<slot> (and matching
-# bundle id) so concurrent macOS apps do not share one process name.
+# Always sets full RNFB_{ANDROID,IOS,MACOS}_* ports plus slot device identities
+# (TestingAVD-N / RNFB E2E iOS slot-N / RNFB_MACOS_PRODUCT_NAME=io.invertase.testing.s<slot>).
+# Also emits unset for parent leftovers (ANDROID_SERIAL, AVD_NAME, …) that apply clears.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

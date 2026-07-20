@@ -8,8 +8,14 @@
 #   bash scripts/e2e/release-e2e-resources.sh
 #   bash scripts/e2e/release-e2e-resources.sh --only metro,jet,android-apps
 #   bash scripts/e2e/release-e2e-resources.sh --devices   # also stop AVD / shutdown sims
-#   bash scripts/e2e/release-e2e-resources.sh --platform=android
+#   bash scripts/e2e/release-e2e-resources.sh --platform=android  # mid-wave: one platform only
 #   bash scripts/e2e/release-e2e-resources.sh --mellifera
+#
+# After export-slot-env (full carry-in), default release clears all three platform port
+# blocks for that slot (ports+apps only — not AVD/sims). End-of-slot / final free so
+# check --platform=ios is CLEAR: pass --devices. Mid-wave early free of one platform
+# must pass --platform=<done> (devices may stay up). --platform= never selects a slot;
+# load export-slot-env first.
 #
 # Categories for --only (comma-separated):
 #   metro | jet | jet-control | emulators | android-apps | macos-app | ios-sims | android-emulator
@@ -51,7 +57,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     -h|--help)
-      sed -n '2,20p' "$0"
+      sed -n '2,24p' "$0"
       exit 0
       ;;
     *)
@@ -196,6 +202,9 @@ clear_android_apps() {
   want android-apps || return 0
   platform_active android || return 0
   command -v adb >/dev/null 2>&1 || return 0
+  # Empty serial = slotted AVD without known adb id — skip force-stop (pkill by AVD
+  # in clear_android_emulator covers the qemu; do not guess emulator-5554).
+  [[ -n "${E2E_ANDROID_SERIAL:-}" ]] || return 0
   echo "[release] adb force-stop on ${E2E_ANDROID_SERIAL}"
   adb -s "$E2E_ANDROID_SERIAL" shell am force-stop "$E2E_ANDROID_APP_ID" 2>/dev/null || true
   adb -s "$E2E_ANDROID_SERIAL" shell am force-stop "$E2E_ANDROID_TEST_APP_ID" 2>/dev/null || true
@@ -242,10 +251,15 @@ clear_ios_sims() {
 clear_android_emulator() {
   want android-emulator || return 0
   platform_active android || return 0
-  command -v adb >/dev/null 2>&1 || return 0
-  echo "[release] android emulator kill serial=${E2E_ANDROID_SERIAL} avd=${E2E_ANDROID_AVD}"
-  adb -s "$E2E_ANDROID_SERIAL" emu kill 2>/dev/null || true
-  pkill -f "qemu-system.*${E2E_ANDROID_AVD}" 2>/dev/null || true
+  echo "[release] android emulator kill serial=${E2E_ANDROID_SERIAL:-unset} avd=${E2E_ANDROID_AVD}"
+  if [[ -n "${E2E_ANDROID_SERIAL:-}" ]] && command -v adb >/dev/null 2>&1; then
+    adb -s "$E2E_ANDROID_SERIAL" emu kill 2>/dev/null || true
+  fi
+  # Prefer AVD-name match so slotted release never kills another slot's qemu via
+  # a guessed serial. Requires a non-empty AVD name (always set after collect).
+  if [[ -n "${E2E_ANDROID_AVD:-}" ]]; then
+    pkill -f "qemu-system.*${E2E_ANDROID_AVD}" 2>/dev/null || true
+  fi
 }
 
 clear_ports_matching soft

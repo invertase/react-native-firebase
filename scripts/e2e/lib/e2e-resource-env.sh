@@ -66,6 +66,22 @@ e2e_warn_stale_mellifera_json() {
   fi
 }
 
+# --platform= never selects a slot; it only narrows which platform's devices/ports
+# are probed among whatever env is already loaded. Warn when the flag is set without
+# slotted carry-in (no RNFB_E2E_SLOT and no RNFB_*_JET_PORT).
+e2e_warn_platform_without_slot() {
+  if [[ -z "${E2E_PLATFORM_OVERRIDE:-}" ]]; then
+    return 0
+  fi
+  if [[ -n "${RNFB_E2E_SLOT:-${RNFB_E2E_HOST_SLOT:-}}" ]]; then
+    return 0
+  fi
+  if [[ -n "${RNFB_ANDROID_JET_PORT:-}${RNFB_IOS_JET_PORT:-}${RNFB_MACOS_JET_PORT:-}" ]]; then
+    return 0
+  fi
+  echo "[e2e-resource-env] WARN: --platform=${E2E_PLATFORM_OVERRIDE} does not select a slot; load slotted env first via export-slot-env.sh (no RNFB_E2E_SLOT / RNFB_*_JET_PORT — using serial defaults for ports/devices)" >&2
+}
+
 # First non-empty among args.
 e2e_first_set() {
   local v
@@ -160,13 +176,26 @@ e2e_resolve_android_avd() {
 }
 
 e2e_resolve_android_serial() {
-  local json
+  local json avd
   json=$(e2e_mellifera_env_json)
   local from_json=""
   if [[ -f "$json" ]] && e2e_mellifera_enabled; then
     from_json=$(node -e "try{const j=require('$json');console.log((j.android&&j.android.device&&j.android.device.androidSerial)||'')}catch(e){}" 2>/dev/null || true)
   fi
-  e2e_first_set "$from_json" "${ANDROID_SERIAL:-}" "$E2E_DEFAULT_ANDROID_SERIAL"
+  # Explicit serial (env or mellifera) always wins. For non-default slotted AVDs
+  # (including TestingAVD-0), do NOT fall back to emulator-5554 — that is the
+  # serial TestingAVD default and would make slot-scoped release kill the wrong
+  # qemu. Release then uses AVD-name pkill.
+  if [[ -n "$from_json" || -n "${ANDROID_SERIAL:-}" ]]; then
+    e2e_first_set "$from_json" "${ANDROID_SERIAL:-}"
+    return 0
+  fi
+  avd=$(e2e_resolve_android_avd)
+  if [[ "$avd" == "$E2E_DEFAULT_ANDROID_AVD" ]]; then
+    echo "$E2E_DEFAULT_ANDROID_SERIAL"
+  else
+    echo ""
+  fi
 }
 
 e2e_resolve_ios_simulator() {
@@ -220,11 +249,12 @@ e2e_active_platforms() {
 # shellcheck disable=SC2034
 e2e_collect_targets() {
   e2e_warn_stale_mellifera_json
+  e2e_warn_platform_without_slot
   E2E_PORTS=()
   E2E_PORT_LABELS=()
   # Plain-string dedup (not an associative array) — bash 3.2 (macOS default /bin/bash) has no `local -A`.
   local seen=" "
-  local platform metro jet jc svc port label
+  local platform metro jet jc svc port label fs
 
   add_port() {
     local p=$1 lab=$2
@@ -252,6 +282,13 @@ e2e_collect_targets() {
         port=$(e2e_resolve_emulator_port "$platform" "$svc")
         add_port "$port" "emulator-${svc}:${platform}"
       done
+      # Aux listeners Firebase Tools still binds (same offsets as start-emulator-slotted.sh).
+      fs=$(e2e_resolve_emulator_port "$platform" firestore)
+      if [[ -n "$fs" ]]; then
+        add_port "$((fs + 8))" "emulator-firestore-websocket:${platform}"
+        add_port "$((fs + 9))" "emulator-eventarc:${platform}"
+        add_port "$((fs + 12))" "emulator-tasks:${platform}"
+      fi
     else
       # Serial defaults: one emulator suite (not per-platform prefixed).
       add_port "$E2E_DEFAULT_FIRESTORE_PORT" "emulator-firestore:global"
@@ -261,6 +298,10 @@ e2e_collect_targets() {
       add_port "$E2E_DEFAULT_STORAGE_PORT" "emulator-storage:global"
       add_port "$E2E_DEFAULT_HUB_PORT" "emulator-hub:global"
       add_port "$E2E_DEFAULT_LOGGING_PORT" "emulator-logging:global"
+      # Firebase Tools serial defaults when config omits aux ports.
+      add_port "9150" "emulator-firestore-websocket:global"
+      add_port "9299" "emulator-eventarc:global"
+      add_port "9499" "emulator-tasks:global"
     fi
   done < <(e2e_active_platforms)
 
@@ -286,16 +327,25 @@ e2e_android_app_running() {
   adb -s "$serial" shell pidof "$pkg" >/dev/null 2>&1
 }
 
-# Process names in scope for host-clear / release. Scoped runs (product name set)
-# only touch that name; unscoped serial/global also includes .s0..sN siblings.
+# Process names in scope for host-clear / release.
+# - RNFB_MACOS_PRODUCT_NAME set → only that name (slot-scoped).
+# - RNFB_E2E_SLOT / RNFB_E2E_HOST_SLOT set without product name → only .s${slot}.
+# - Neither set (serial / unscoped host wipe) → default + .s0..sN siblings.
 e2e_macos_process_names_for_probe() {
-  echo "$E2E_MACOS_APP_PROCESS"
-  if [[ -z "${RNFB_MACOS_PRODUCT_NAME:-}" ]]; then
-    local i
-    for ((i = 0; i <= E2E_MACOS_SLOTTED_MAX; i++)); do
-      echo "${E2E_DEFAULT_MACOS_APP_PROCESS}.s${i}"
-    done
+  if [[ -n "${RNFB_MACOS_PRODUCT_NAME:-}" ]]; then
+    echo "$RNFB_MACOS_PRODUCT_NAME"
+    return 0
   fi
+  local slot="${RNFB_E2E_SLOT:-${RNFB_E2E_HOST_SLOT:-}}"
+  if [[ -n "$slot" ]]; then
+    echo "${E2E_DEFAULT_MACOS_APP_PROCESS}.s${slot}"
+    return 0
+  fi
+  echo "$E2E_DEFAULT_MACOS_APP_PROCESS"
+  local i
+  for ((i = 0; i <= E2E_MACOS_SLOTTED_MAX; i++)); do
+    echo "${E2E_DEFAULT_MACOS_APP_PROCESS}.s${i}"
+  done
 }
 
 # Echo the first matching busy process name, or empty if none.

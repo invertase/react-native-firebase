@@ -204,7 +204,7 @@ MACOS_APP="${RNFB_MACOS_PRODUCT_NAME:-io.invertase.testing}"
 
 **Host-clear probes** — prefer the generic scripts (env-aware, mellifera-agnostic). They resolve [configurable e2e environment](#configurable-e2e-environment) vars first, then fall back to serial defaults (`8090`, `8081`, `emulator-5554`, …). **Exit 0 = clear.**
 
-`check-e2e-resources.sh` **default mode reports Jet WebSocket + apps + simulators only** — it does **not** fail solely on Metro `:8081` or the Firebase emulator ports being open, because those are expected to be up already ([step 2, services ready](#2-services-ready), the opposite check). Pass `--services` (alias `--strict`) to additionally treat Metro/emulator ports as BUSY. `--platform=android|ios|macos` scopes device probes to one platform (otherwise an ambiguous serial "global" fallback is used — it does not treat android+ios+macos as all simultaneously active; see [global device scoping](#global-device-scoping)). `tests/mellifera.env.json` is only consulted with `--mellifera` or `RNFB_MELLIFERA=1` — see [mellifera JSON scoping](#mellifera-json-scoping).
+`check-e2e-resources.sh` **default mode reports Jet WebSocket + apps + simulators only** — it does **not** fail solely on Metro `:8081` or the Firebase emulator ports being open, because those are expected to be up already ([step 2, services ready](#2-services-ready), the opposite check). Pass `--services` (alias `--strict`) to additionally treat Metro/emulator ports as BUSY. `--platform=android|ios|macos` scopes device probes to one platform (otherwise an ambiguous serial "global" fallback is used — it does not treat android+ios+macos as all simultaneously active; see [global device scoping](#global-device-scoping)). Unscoped check (no slot env) can report **CLEAR** while slotted leftovers (`.sN` apps, slot ports, booted `TestingAVD-N` / `RNFB E2E iOS slot-N`) remain — load `export-slot-env` (or `--mellifera`) before trusting CLEAR for a slot. `tests/mellifera.env.json` is only consulted with `--mellifera` or `RNFB_MELLIFERA=1` — see [mellifera JSON scoping](#mellifera-json-scoping).
 
 ```bash
 # Host-clear (default): Jet + apps + sims only — Metro/emulator ports are informational.
@@ -539,7 +539,7 @@ See also: [unit-focused-tier loop](#unit-focused-tier-iteration-loop), [dispatch
 
 ## Environment
 
-- **Devices** — Detox boots simulator/emulator (`iPhone 17` on iOS, `TestingAVD` on Android); iOS `:test-cover` should preflight with `check-e2e-resources.sh --platform=ios` (or a mellifera reservation) for the stricter zero-booted-simulators check — see [global device scoping](#global-device-scoping). macOS auto-starts app.
+- **Devices** — Detox boots simulator/emulator (`iPhone 17` on iOS, `TestingAVD` on Android); slotted runs use `TestingAVD-N` / `RNFB E2E iOS slot-N` — see [slot lifecycle](#slot-lifecycle). iOS `:test-cover` should preflight with `check-e2e-resources.sh --platform=ios` (or a mellifera reservation) for the stricter zero-booted-simulators check — see [global device scoping](#global-device-scoping). macOS auto-starts app.
 - **adb empty** — `adb kill-server && adb start-server && adb devices`
 - **Stale processes (serial default)** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, `:5001`, …). Stray listener on `:8090` after a run → [pre-flight recovery](#pre-flight-recovery), then restart background services with [Rules §1–2](#rules) (`yarn tests:packager:jet`, `yarn tests:emulator:start`). Slotted runs: [configurable e2e environment](#configurable-e2e-environment).
 - **Android Gradle home** — when Android `:build` or `:test-cover` fails with missing/wrong Gradle cache on a host that does not default to `~/.gradle`, export `GRADLE_USER_HOME=$HOME/.gradle` before the run.
@@ -551,19 +551,72 @@ See also: [unit-focused-tier loop](#unit-focused-tier-iteration-loop), [dispatch
 Serial e2e uses committed defaults (Metro `:8081`, Jet `:8090`, emulators `:8080` / `:9099` / …). Slotted parallel runs export **per-platform prefixed** ports (e.g. `RNFB_ANDROID_JET_PORT`, `RNFB_IOS_METRO_PORT`) **before** Metro/native build and `:test-cover`. Unset vars keep legacy serial behaviour.
 
 <a id="parallel-e2e-topology"></a>
+<a id="slot-lifecycle"></a>
 
-**Parallel e2e topology (worktrees):** same-platform parallel needs **one git worktree per concurrent instance** of that platform. A single worktree may run **at most** `1× android ∥ 1× ios ∥ 1× macos` (distinct Metro/Jet/emulator blocks + distinct AVD/sim + distinct macOS `PRODUCT_NAME`). Example: `3× android + 3× ios + 3× macos` ⇒ three worktrees (each runs android+ios+macos for its slot). Do **not** launch two androids, two ioses, or two macOS apps from one worktree — native build products, Detox configs, coverage paths, and (for macOS) a single `macos/build` derived-data tree are not multi-instance-safe inside one tree.
+**Parallel e2e topology (worktrees):** same-platform parallel needs **one git worktree per concurrent instance** of that platform. A single worktree may run **at most** `1× android ∥ 1× ios ∥ 1× macos` (distinct Metro/Jet/emulator blocks + distinct AVD/sim + distinct macOS `PRODUCT_NAME`). Example: `3× android + 3× ios + 3× macos` ⇒ three worktrees (each runs android+ios+macos for its slot). Do **not** launch two androids, two ioses, or two macOS apps from one worktree — native build products, Detox configs, coverage paths, and (for macOS) a single `macos/build` derived-data tree are not multi-instance-safe inside one tree. Architecture / why: [e2e parallel design](e2e-parallel-design.md).
 
-**Slotted launch helpers:** [`scripts/e2e/export-slot-env.sh`](../../scripts/e2e/export-slot-env.sh) prints the full `RNFB_{ANDROID,IOS,MACOS}_*` carry-in for a platform×slot (including `RNFB_MACOS_PRODUCT_NAME=io.invertase.testing.s<slot>`). Prefer:
+**Slot lifecycle (arbitrary slot `N`, platform `android|ios|macos`)** — keep the exported env in the **same shell** for every step.
+
+**First use of a slot (including `N=0`):** create devices once with `yarn tests:e2e:setup-android-avds` / `yarn tests:e2e:setup-ios-sims` so `TestingAVD-N` and `RNFB E2E iOS slot-N` exist before start/build.
+
+```bash
+# 1) Load slot env (full RNFB_{ANDROID,IOS,MACOS}_* carry-in + device identities)
+eval "$(bash scripts/e2e/export-slot-env.sh <platform> N)"
+# yarn tests:e2e:export-slot-env <platform> N
+# Emits unset for parent leftovers (ANDROID_SERIAL, AVD_NAME, …) that would poison check/release.
+
+# 2) Clear this slot (see release scope / --devices below)
+bash scripts/e2e/check-e2e-resources.sh          # expect CLEAR (or release then re-check)
+# Default release = ports+apps for all three platform blocks; does NOT stop AVD/sims
+bash scripts/e2e/release-e2e-resources.sh
+# For a CLEAR iOS check afterward, also shut down devices:
+# bash scripts/e2e/release-e2e-resources.sh --devices
+# Unscoped (no slot env): release also wipes io.invertase.testing.s0..sN leftovers.
+
+# 3) Start services for this platform×slot (packager before build)
+bash scripts/e2e/start-emulator-slotted.sh <platform>   # or … <platform> N to self-apply
+bash scripts/e2e/run-slotted-packager.sh <platform> N   # background OK; or yarn tests:packager:jet-reset-cache with env loaded
+
+# 4) Build for the slot (macOS uses RNFB_MACOS_PRODUCT_NAME → PRODUCT_NAME_SUFFIX)
+# After worktree reset/sync for iOS, if Pods/Manifest.lock may have drifted:
+# yarn tests:ios:pod:install
+yarn tests:<platform>:build
+
+# 5) Run e2e
+bash scripts/e2e/run-slotted-test-cover.sh <platform> N
+# yarn tests:e2e:slotted-test-cover <platform> N
+
+# 6) Free the same slot (env still loaded)
+# End-of-slot / final free so check --platform=ios is CLEAR: include --devices
+bash scripts/e2e/release-e2e-resources.sh --devices
+```
+
+Example for macOS slot 1:
 
 ```bash
 eval "$(bash scripts/e2e/export-slot-env.sh macos 1)"
-yarn tests:macos:build
+bash scripts/e2e/release-e2e-resources.sh --devices
 bash scripts/e2e/start-emulator-slotted.sh macos
 bash scripts/e2e/run-slotted-packager.sh macos 1   # background OK
+yarn tests:macos:build
 bash scripts/e2e/run-slotted-test-cover.sh macos 1
-# yarn aliases: tests:e2e:export-slot-env / tests:e2e:slotted-packager / tests:e2e:slotted-test-cover
+bash scripts/e2e/release-e2e-resources.sh --devices
 ```
+
+**Release scope after full carry-in:** `export-slot-env` always loads **all three** `RNFB_{ANDROID,IOS,MACOS}_*` port blocks for slot `N`. Default `release-e2e-resources.sh` (no `--platform`) clears **android + ios + macos** Metro/Jet/emulator **ports and apps** for that slot — it does **not** stop AVDs or shut down iOS sims unless **`--devices`** is passed. After slotted iOS, `check-e2e-resources.sh --platform=ios` treats a still-booted slot sim as **BUSY**, so end-of-slot / final free must use `release-e2e-resources.sh --devices` (env still loaded). Mid-wave early free of one finished platform may omit `--devices` (leave the AVD/sim up for a quick re-run) but must use **`--platform=<done>`** so the other platforms’ port blocks stay up:
+
+```bash
+# Wave still running ios+macos; android finished early (ports only; AVD may stay up):
+eval "$(bash scripts/e2e/export-slot-env.sh android N)"   # same slot env already loaded is fine
+bash scripts/e2e/release-e2e-resources.sh --platform=android
+# Final free for that platform (or whole slot) when check must be CLEAR for iOS:
+# bash scripts/e2e/release-e2e-resources.sh --platform=ios --devices
+# bash scripts/e2e/release-e2e-resources.sh --devices
+```
+
+**`--platform=` never selects a slot.** It only narrows which platform’s devices/ports are probed among whatever env is already loaded. For slotted clear/check, always `export-slot-env` (or `run-slotted-*`) first so `RNFB_E2E_SLOT` + `RNFB_*_JET_PORT` are set; otherwise check/release fall back to serial defaults (`TestingAVD` / `:8090` / …). The scripts warn on stderr when `--platform` is set without slotted carry-in.
+
+**Slotted device identities (including slot 0):** slotted runs use `TestingAVD-N`, `RNFB E2E iOS slot-N`, Detox `*.slotN`, and `io.invertase.testing.sN` — **including `N=0`**. Serial unslotted defaults remain `TestingAVD` / `iPhone 17` / `io.invertase.testing`. First use of any slot (including 0): `yarn tests:e2e:setup-android-avds` / `yarn tests:e2e:setup-ios-sims` (slots 0–4).
 
 **Parallel / multi-platform carry-in (proven model):** when android + ios (+ macos) share a worktree, every Metro/Jest/Detox process for a slot must receive **the full set** of `RNFB_{ANDROID,IOS,MACOS}_*` port variables for that slot — not only the active platform’s block. Runtime selection uses platform self-detection (`Platform.*` in [`packages/app/e2e/helpers.js`](../../packages/app/e2e/helpers.js); Detox `device.getPlatform()` / configuration name on the host in [`tests/e2e/firebase.test.js`](../../tests/e2e/firebase.test.js)). Do **not** use `RNFB_E2E_PLATFORM` to choose ports: `tests/.babelrc` inlines static `process.env.NAME` via `transform-inline-environment-variables`, and concurrent transforms in one worktree must see every labeled port present so each `process.env.RNFB_ANDROID_*` / `RNFB_IOS_*` / `RNFB_MACOS_*` literal bakes correctly. Computed keys (`process.env[\`RNFB_${x}_…\`]`) are **not** inlined — in-app code must use static member expressions (or helpers that do). Process-local listen/bind vars (`RCT_METRO_PORT`, `JET_REMOTE_PORT`, Detox config) still identify which socket/config **this** process owns. Host Jet config ([`tests/.jetrc.js`](../../tests/.jetrc.js)) should prefer those process-local binds (and per-target `before()` hooks with an explicit platform key) — not `RNFB_E2E_PLATFORM`.
 
@@ -582,10 +635,10 @@ In-app / e2e specs must call `getE2eEmulatorPort('firestore'|…)` (and siblings
 | `RNFB_{ANDROID,IOS,MACOS}_JET_CONTROL_PORT` | Per-platform Jet HTTP control (preferred); `RNFB_JET_CONTROL_PORT` remains a process-local fallback |
 | `RNFB_JET_CONTROL_PORT` | Process-local Jet HTTP control plane fallback (default `JET_REMOTE_PORT + 1`) |
 | `RNFB_{ANDROID,IOS,MACOS}_EMULATOR_{FIRESTORE,AUTH,DATABASE,FUNCTIONS,STORAGE,HUB,LOGGING}_PORT` | Per-platform Firebase emulator suite (in-app + host). Slotted launcher also derives Firestore `websocketPort` / Eventarc / Tasks from the firestore port — not separate env vars today |
-| `RNFB_DETOX_ANDROID_CONFIG`, `RNFB_DETOX_IOS_CONFIG` | Detox configuration name (e.g. `android.emu.debug.slot1`, `ios.sim.debug.slot1`) |
+| `RNFB_DETOX_ANDROID_CONFIG`, `RNFB_DETOX_IOS_CONFIG` | Detox configuration name (e.g. `android.emu.debug.slot0`, `ios.sim.debug.slot1`) |
 | `RNFB_E2E_SLOT` | Slot index for orchestration / AVD / sim naming |
 | `RNFB_E2E_PLATFORM` | Optional orchestration label only — **not** used for port selection (prefer unset in slotted multi-platform launches) |
-| `RNFB_ANDROID_AVD`, `RNFB_IOS_SIMULATOR`, `RNFB_ANDROID_EMULATOR_BOOT_ARGS` | Device selection overrides |
+| `RNFB_ANDROID_AVD`, `RNFB_IOS_SIMULATOR`, `RNFB_ANDROID_EMULATOR_BOOT_ARGS` | Device selection overrides. Slotted helpers set `TestingAVD-{n}` / `RNFB E2E iOS slot-{n}` (including `n=0`); serial defaults stay `TestingAVD` / `iPhone 17` |
 | `RNFB_MACOS_PRODUCT_NAME` | macOS `PRODUCT_NAME` / process name (default `io.invertase.testing`). Required distinct per concurrent macOS slot. Slotted helpers set `io.invertase.testing.s<slot>`; override via `RNFB_MACOS_PRODUCT_NAME_OVERRIDE` |
 | `RNFB_MACOS_BUNDLE_IDENTIFIER` | macOS `CFBundleIdentifier` (default derived from product name). Metro `app=` follows this. Slotted override: `RNFB_MACOS_BUNDLE_IDENTIFIER_OVERRIDE` |
 | `ORG_GRADLE_PROJECT_reactNativeDevServerPort` | Android Gradle Metro port baked into the APK's `react_native_dev_server_port` resource at build time. **Set automatically** by `yarn tests:android:build` (`RNFB_ANDROID_METRO_PORT` → `RCT_METRO_PORT` → `RNFB_METRO_PORT` → `JET_METRO_PORT` → `8081`) — only export it yourself when building Android outside that script (e.g. `detox build` invoked directly). Detox's `reversePorts` (`tests/.detoxrc.js`) already forwards the same slotted Metro port; this var makes the APK actually *ask* for that port. |
@@ -598,11 +651,11 @@ See [host-clear probes](#host-clear-probes) for the canonical `check-e2e-resourc
 <a id="global-device-scoping"></a>
 <a id="mellifera-json-scoping"></a>
 
-**Global device scoping** — with no `--platform`, no `RNFB_E2E_PLATFORM`, and no per-platform port env set, both scripts fall back to an ambiguous serial `global` mode. `global` probes android app state (specific package on the default serial) and the macOS app process (specific process name) unconditionally — those are precise, false-positive-safe checks — but it does **not** escalate "any booted iOS simulator" to BUSY in that ambiguous mode, since an unrelated simulator left open for other work would otherwise fail every host-clear check. Pass `--platform=ios` (or set `RNFB_E2E_PLATFORM=ios`) when iOS is actually the platform about to run, to get the stricter "zero booted simulators" behaviour documented under [host clear](#1-host-clear).
+**Global device scoping** — with no `--platform`, no `RNFB_E2E_PLATFORM`, and no per-platform port env set, both scripts fall back to an ambiguous serial `global` mode. `global` probes android app state (specific package on the default serial) and the macOS app process (specific process name) unconditionally — those are precise, false-positive-safe checks — but it does **not** escalate "any booted iOS simulator" to BUSY in that ambiguous mode, since an unrelated simulator left open for other work would otherwise fail every host-clear check. Pass `--platform=ios` (or set `RNFB_E2E_PLATFORM=ios`) when iOS is actually the platform about to run, to get the stricter "zero booted simulators" behaviour documented under [host clear](#1-host-clear). Reminder: `--platform=` alone does **not** load a slot — see [slot lifecycle](#slot-lifecycle).
 
 With a mellifera reservation (`RNFB_MELLIFERA=1` or `--mellifera`), `mellifera-apply-reservation.js` writes `tests/mellifera.env.json` + platform env files; check/release then read that file (or exported `RNFB_*` vars) so slotted ports clear correctly. `mellifera-teardown.sh` / `mellifera-host-clean.sh` / `mellifera-release-resources.sh` call these generics, then handle mellifera lease APIs.
 
-Helper scripts (not canonical `:test-cover` entrypoints): `scripts/e2e/export-slot-env.sh`, `scripts/e2e/run-slotted-packager.sh`, `scripts/e2e/run-slotted-test-cover.sh`, `scripts/e2e/start-emulator-slotted.sh`, `yarn tests:e2e:setup-android-avds`, `yarn tests:e2e:setup-ios-sims`.
+Helper scripts (not canonical `:test-cover` entrypoints): see [slot lifecycle](#slot-lifecycle); also `yarn tests:e2e:setup-android-avds`, `yarn tests:e2e:setup-ios-sims`.
 
 <a id="macos-process-identity-concurrency"></a>
 

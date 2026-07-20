@@ -155,7 +155,8 @@ const ANDROID_PACKAGE_HANDLER_TIMEOUT_MS = parseInt(
   10,
 );
 const ANDROID_BOOT_SETTLE_MS = parseInt(process.env.RNFB_ANDROID_BOOT_SETTLE_MS || '30000', 10);
-const ANDROID_AVD_NAME = process.env.RNFB_ANDROID_AVD_NAME || 'TestingAVD';
+const ANDROID_AVD_NAME =
+  process.env.RNFB_ANDROID_AVD || process.env.RNFB_ANDROID_AVD_NAME || 'TestingAVD';
 const ANDROID_EMULATOR_COLD_BOOT_ARGS = (
   process.env.RNFB_ANDROID_EMULATOR_BOOT_ARGS || '-no-snapshot-load -no-snapshot-save'
 ).trim();

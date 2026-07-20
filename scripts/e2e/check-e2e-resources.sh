@@ -129,7 +129,9 @@ for port in "${E2E_PORTS[@]}"; do
 done
 
 if platform_active android; then
-  if command -v adb >/dev/null 2>&1; then
+  if [[ -z "${E2E_ANDROID_SERIAL:-}" ]]; then
+    report CLEAR "android serial unset (slotted AVD ${E2E_ANDROID_AVD} — skip adb app probes)"
+  elif command -v adb >/dev/null 2>&1; then
     if e2e_android_app_running "$E2E_ANDROID_SERIAL" "$E2E_ANDROID_APP_ID"; then
       report BUSY "android app ${E2E_ANDROID_APP_ID} on ${E2E_ANDROID_SERIAL}"
     else

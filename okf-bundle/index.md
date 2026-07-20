@@ -16,7 +16,8 @@ okf_version: '0.1'
 - [Agent command policy](/testing/agent-command-policy.md) — allowlisted shell commands for agents (install, prepare, validation, e2e)
 - [Change authoring workflow](/testing/change-authoring-workflow.md) — verified product change loop (unit-focused → area-focused review → commit); [§ validation evidence (blocking)](testing/change-authoring-workflow.md#validation-evidence-blocking); [coverage evidence package](testing/coverage-design.md#coverage-evidence-package)
 - [Iteration vocabulary](/testing/iteration-vocabulary.md) — work type, tier, and queue field identifiers
-- [Running e2e tests](/testing/running-e2e.md) — canonical e2e commands, narrowing, environment, diagnosis
+- [Running e2e tests](/testing/running-e2e.md) — canonical e2e commands, narrowing, environment, diagnosis; [§ slot lifecycle](testing/running-e2e.md#slot-lifecycle)
+- [E2e parallel design](/testing/e2e-parallel-design.md) — resources, why serialization, parameterization, coordinator rollout
 - [Validation checklist](/testing/validation-checklist.md) — compile, Jest, lint, `compare:types`, e2e, coverage
 - [Coverage design](/testing/coverage-design.md) — unit/e2e coverage policy, native gates, Codecov
 - [Firebase testing project](/testing/firebase-testing-project.md) — cloud vs emulator, live FIS/RC, helper callables, rules/indexes, deploy

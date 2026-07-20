@@ -42,31 +42,11 @@ function iosXcodebuildPrefix() {
   return `RCT_METRO_PORT=${readNativeMetroPort()}`;
 }
 
-const IOS_SIM_NAMES = [
-  'iPhone 17',
-  'RNFB E2E iOS slot-1',
-  'RNFB E2E iOS slot-2',
-  'RNFB E2E iOS slot-3',
-  'RNFB E2E iOS slot-4',
-];
-
-const ANDROID_AVD_NAMES = [
-  'TestingAVD',
-  'TestingAVD-1',
-  'TestingAVD-2',
-  'TestingAVD-3',
-  'TestingAVD-4',
-];
-
+// Slotted devices (including slot 0) — distinct from serial iPhone 17 / TestingAVD
+// so a slotted wave can run beside an unslotted serial run.
 function iosSimulatorDevice(slot) {
   const deviceType = process.env.RNFB_IOS_BASE_SIMULATOR || 'iPhone 17';
-  if (slot === 0) {
-    return {
-      type: 'ios.simulator',
-      device: { type: deviceType, name: deviceType },
-    };
-  }
-  const slotName = IOS_SIM_NAMES[slot] || `RNFB E2E iOS slot-${slot}`;
+  const slotName = `RNFB E2E iOS slot-${slot}`;
   return {
     type: 'ios.simulator',
     device: { type: deviceType, name: slotName },
@@ -76,7 +56,7 @@ function iosSimulatorDevice(slot) {
 function androidEmulatorDevice(slot) {
   return {
     type: 'android.emulator',
-    device: { avdName: ANDROID_AVD_NAMES[slot] || `TestingAVD-${slot}` },
+    device: { avdName: `TestingAVD-${slot}` },
     bootArgs: process.env.RNFB_ANDROID_EMULATOR_BOOT_ARGS || '-no-snapshot-load -no-snapshot-save',
     readonly: true,
   };
@@ -102,16 +82,28 @@ function androidAppWindows(reversePorts) {
   };
 }
 
+const SERIAL_IOS_DEVICE_TYPE = process.env.RNFB_IOS_BASE_SIMULATOR || 'iPhone 17';
+const SERIAL_ANDROID_AVD = 'TestingAVD';
+
 const devices = {
-  simulator: iosSimulatorDevice(0),
+  // Serial unslotted defaults (yarn tests:ios / android without slot env).
+  simulator: {
+    type: 'ios.simulator',
+    device: { type: SERIAL_IOS_DEVICE_TYPE, name: SERIAL_IOS_DEVICE_TYPE },
+  },
   attached: {
     type: 'android.attached',
     device: { adbName: '.*' },
   },
-  emulator: androidEmulatorDevice(0),
+  emulator: {
+    type: 'android.emulator',
+    device: { avdName: SERIAL_ANDROID_AVD },
+    bootArgs: process.env.RNFB_ANDROID_EMULATOR_BOOT_ARGS || '-no-snapshot-load -no-snapshot-save',
+    readonly: true,
+  },
 };
 
-for (let slot = 1; slot < 5; slot += 1) {
+for (let slot = 0; slot < 5; slot += 1) {
   devices[`simulator-slot${slot}`] = iosSimulatorDevice(slot);
   devices[`emulator-slot${slot}`] = androidEmulatorDevice(slot);
 }
@@ -138,7 +130,7 @@ const apps = {
   },
 };
 
-for (let slot = 1; slot < 5; slot += 1) {
+for (let slot = 0; slot < 5; slot += 1) {
   apps[`android.debug.slot${slot}`] = androidApp(ANDROID_REVERSE_DEFAULT);
   apps[`android.debug.slot${slot}.windows`] = androidAppWindows(ANDROID_REVERSE_DEFAULT);
 }
@@ -153,7 +145,7 @@ const configurations = {
   'android.emu.release': { device: 'emulator', app: 'android.release' },
 };
 
-for (let slot = 1; slot < 5; slot += 1) {
+for (let slot = 0; slot < 5; slot += 1) {
   configurations[`ios.sim.debug.slot${slot}`] = {
     device: `simulator-slot${slot}`,
     app: 'ios.debug',

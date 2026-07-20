@@ -59,7 +59,9 @@ e2e_slot_export_platform_block() {
 }
 
 # Apply full multi-platform carry-in + process-local binds for the active platform/slot.
-# Always exports android+ios+macos port blocks (babel inline + shared worktree).
+# Always exports android+ios+macos port blocks (babel inline + shared worktree) AND
+# slot device identities for all three platforms so check/release stay slot-scoped
+# even when the active platform is only android or ios (not macos).
 e2e_slot_env_apply() {
   local platform=$1
   local slot=$2
@@ -76,43 +78,45 @@ e2e_slot_env_apply() {
   e2e_slot_export_platform_block ios 100 "$base"
   e2e_slot_export_platform_block macos 200 "$base"
 
-  # Orchestration labels only — port selection uses Platform.* / Detox, not this.
-  unset RNFB_E2E_PLATFORM RNFB_DETOX_ANDROID_CONFIG RNFB_DETOX_IOS_CONFIG
-  unset RNFB_ANDROID_AVD RNFB_IOS_SIMULATOR SIMCTL_CHILD_RCT_METRO_PORT
-  unset AVD_NAME ORG_GRADLE_PROJECT_reactNativeDevServerPort
+  # Orchestration label must stay unset (babel carry-in). Clear process-local device
+  # binds that belong only to the active platform process; slot identities below.
+  unset RNFB_E2E_PLATFORM
+  unset SIMCTL_CHILD_RCT_METRO_PORT AVD_NAME ORG_GRADLE_PROJECT_reactNativeDevServerPort
+  unset ANDROID_SERIAL
 
   export RNFB_E2E_SLOT="$slot" RNFB_E2E_HOST_SLOT="$slot" RNFB_E2E_DEBUG="${RNFB_E2E_DEBUG:-1}"
   export RCT_METRO_PORT="$metro" RNFB_METRO_PORT="$metro" JET_METRO_PORT="$metro"
   export JET_REMOTE_PORT="$jet" RNFB_JET_CONTROL_PORT="$jc"
 
+  # Slot-owned device / process identity for every platform in this worktree wave.
+  # Slotted slot 0 uses TestingAVD-0 / RNFB E2E iOS slot-0 (not serial TestingAVD /
+  # iPhone 17) so a slotted wave can run beside an unslotted serial run safely.
+  # check/release use these so a slot-N env never falls back to serial defaults
+  # that would hit other slots or wipe-all .s0..sN.
+  export RNFB_DETOX_ANDROID_CONFIG="android.emu.debug.slot${slot}"
+  export RNFB_ANDROID_AVD="TestingAVD-${slot}" RNFB_ANDROID_AVD_NAME="TestingAVD-${slot}"
+  export RNFB_DETOX_IOS_CONFIG="ios.sim.debug.slot${slot}"
+  export RNFB_IOS_SIMULATOR="RNFB E2E iOS slot-${slot}"
+  export RNFB_MACOS_PRODUCT_NAME="${RNFB_MACOS_PRODUCT_NAME_OVERRIDE:-io.invertase.testing.s${slot}}"
+  export RNFB_MACOS_BUNDLE_IDENTIFIER="${RNFB_MACOS_BUNDLE_IDENTIFIER_OVERRIDE:-org.reactjs.native.${RNFB_MACOS_PRODUCT_NAME//./-}}"
+
   case "$platform" in
     android)
-      if [[ "$slot" == "0" ]]; then
-        export RNFB_DETOX_ANDROID_CONFIG="android.emu.debug" RNFB_ANDROID_AVD="TestingAVD"
-      else
-        export RNFB_DETOX_ANDROID_CONFIG="android.emu.debug.slot${slot}" RNFB_ANDROID_AVD="TestingAVD-${slot}"
-      fi
       export AVD_NAME="$RNFB_ANDROID_AVD" ORG_GRADLE_PROJECT_reactNativeDevServerPort="$metro"
       ;;
     ios)
-      if [[ "$slot" == "0" ]]; then
-        export RNFB_DETOX_IOS_CONFIG="ios.sim.debug" RNFB_IOS_SIMULATOR="iPhone 17"
-      else
-        export RNFB_DETOX_IOS_CONFIG="ios.sim.debug.slot${slot}" RNFB_IOS_SIMULATOR="RNFB E2E iOS slot-${slot}"
-      fi
       export SIMCTL_CHILD_RCT_METRO_PORT="$metro"
       ;;
     macos)
-      # Always derive from slot for slotted launchers. Ambient RNFB_MACOS_PRODUCT_NAME
-      # from a prior shell must not stick to the wrong slot. Custom names: set
-      # RNFB_MACOS_PRODUCT_NAME_OVERRIDE / RNFB_MACOS_BUNDLE_IDENTIFIER_OVERRIDE.
-      export RNFB_MACOS_PRODUCT_NAME="${RNFB_MACOS_PRODUCT_NAME_OVERRIDE:-io.invertase.testing.s${slot}}"
-      export RNFB_MACOS_BUNDLE_IDENTIFIER="${RNFB_MACOS_BUNDLE_IDENTIFIER_OVERRIDE:-org.reactjs.native.${RNFB_MACOS_PRODUCT_NAME//./-}}"
       ;;
   esac
 }
 
-# Print `export KEY=value` lines suitable for: eval "$(bash …/export-slot-env.sh macos 1)"
+# Print `export KEY=value` / `unset KEY` lines suitable for:
+#   eval "$(bash …/export-slot-env.sh macos 1)"
+# Must emit unset for process-local leftovers that e2e_slot_env_apply clears —
+# otherwise a dirty parent shell (ANDROID_SERIAL=emulator-5554, stale AVD_NAME,
+# etc.) keeps poisoning check/release after eval.
 e2e_slot_env_print() {
   local platform=$1
   local slot=$2
@@ -136,8 +140,8 @@ e2e_slot_env_print() {
     RNFB_MACOS_EMULATOR_DATABASE_PORT RNFB_MACOS_EMULATOR_FUNCTIONS_PORT
     RNFB_MACOS_EMULATOR_STORAGE_PORT RNFB_MACOS_EMULATOR_HUB_PORT
     RNFB_MACOS_EMULATOR_LOGGING_PORT
-    RNFB_DETOX_ANDROID_CONFIG RNFB_ANDROID_AVD AVD_NAME ORG_GRADLE_PROJECT_reactNativeDevServerPort
-    RNFB_DETOX_IOS_CONFIG RNFB_IOS_SIMULATOR SIMCTL_CHILD_RCT_METRO_PORT
+    RNFB_DETOX_ANDROID_CONFIG RNFB_ANDROID_AVD RNFB_ANDROID_AVD_NAME
+    RNFB_DETOX_IOS_CONFIG RNFB_IOS_SIMULATOR
     RNFB_MACOS_PRODUCT_NAME RNFB_MACOS_BUNDLE_IDENTIFIER
   )
   local k
@@ -146,6 +150,20 @@ e2e_slot_env_print() {
       printf 'export %s=%q\n' "$k" "${!k}"
     fi
   done
-  # Ensure orchestration label stays unset for multi-platform babel carry-in.
-  printf 'unset RNFB_E2E_PLATFORM\n'
+  # Process-local / orchestration leftovers apply() clears — export if re-set for
+  # this active platform, otherwise unset so parent leftovers cannot stick.
+  local clear_keys=(
+    RNFB_E2E_PLATFORM
+    ANDROID_SERIAL
+    AVD_NAME
+    SIMCTL_CHILD_RCT_METRO_PORT
+    ORG_GRADLE_PROJECT_reactNativeDevServerPort
+  )
+  for k in "${clear_keys[@]}"; do
+    if [[ -n "${!k:-}" ]]; then
+      printf 'export %s=%q\n' "$k" "${!k}"
+    else
+      printf 'unset %s\n' "$k"
+    fi
+  done
 }
