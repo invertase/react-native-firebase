@@ -76,14 +76,12 @@
   }
 
   if (self.delegateProvider == nil) {
-    NSString *message = [NSString
-        stringWithFormat:@"Unknown provider name \"%@\". Valid providers are: debug, "
-                         @"deviceCheck, appAttest, appAttestWithDeviceCheckFallback.",
-                         providerName ?: @"(null)"];
+    NSString *message =
+        [NSString stringWithFormat:@"Unknown provider name \"%@\". Valid providers are: debug, "
+                                    "deviceCheck, appAttest, appAttestWithDeviceCheckFallback.",
+                                   providerName ?: @"(null)"];
     NSLog(@"RNFBAppCheck: %@", message);
-    @throw [NSException exceptionWithName:@"RNFBAppCheckException"
-                                   reason:message
-                                 userInfo:nil];
+    @throw [NSException exceptionWithName:@"RNFBAppCheckException" reason:message userInfo:nil];
   }
 }
 
