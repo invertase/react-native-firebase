@@ -26,7 +26,7 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
   private static final String S_KEY_ALL_NOTIFICATION_IDS = "all_notification_ids";
   private static final int DEFAULT_MAX_SIZE_NOTIFICATIONS = 100;
   private final String DELIMITER = ",";
-  private static final int maxNotificationSize = resolveMaxNotificationSize();
+  private static volatile int maxNotificationSize = -1;
 
   private static int resolveMaxNotificationSize() {
     int maxSize = DEFAULT_MAX_SIZE_NOTIFICATIONS;
@@ -47,6 +47,7 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
         source = "AndroidManifest";
       }
 
+      maxSize = Math.max(1, maxSize);
       Log.d(TAG, "messaging_max_stored_notifications: " + maxSize + " (from " + source + ")");
       return maxSize;
     } catch (Exception e) {
@@ -59,6 +60,13 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
     }
   }
 
+  private static int getMaxNotificationSize() {
+    if (maxNotificationSize == -1) {
+      maxNotificationSize = resolveMaxNotificationSize();
+    }
+    return maxNotificationSize;
+  }
+
   @Override
   public void storeFirebaseMessage(RemoteMessage remoteMessage) {
     try {
@@ -66,9 +74,10 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
           reactToJSON(remoteMessageToWritableMap(remoteMessage)).toString();
       UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
 
+      int limit = getMaxNotificationSize();
       String notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
       List<String> allNotificationList = convertToArray(notificationIds);
-      while (allNotificationList.size() > maxNotificationSize - 1) {
+      while (allNotificationList.size() > limit - 1) {
         clearFirebaseMessage(allNotificationList.get(0));
         allNotificationList.remove(0);
       }
