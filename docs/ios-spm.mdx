@@ -26,8 +26,10 @@ use_frameworks! :linkage => :dynamic
 ```
 
 Do not use RNFB's SPM mode with `use_frameworks! :linkage => :static`. Firebase's
-SPM products are dynamic, and static linkage can make multiple RNFB pods link
-duplicate copies of them.
+SPM products are dynamic, and static linkage makes multiple RNFB pods link
+duplicate copies of them. `pod install` fails fast with this error if it
+detects the combination, rather than letting it surface later as a confusing
+duplicate-symbol linker error.
 
 CocoaPods mode supports either static or dynamic linkage, subject to the
 requirements of the other dependencies in your app.
@@ -155,8 +157,9 @@ linkage your project requires.
 
 ## Troubleshooting
 
-- **Duplicate Firebase symbols while linking:** Do not combine RNFB SPM mode
-  with static linkage. Use dynamic linkage or set
+- **`pod install` fails with "SPM + static linkage is not supported":** Do not
+  combine RNFB SPM mode with static linkage. Use dynamic linkage
+  (`use_frameworks! :linkage => :dynamic`) or set
   `$RNFirebaseDisableSPM = true`.
 - **`FirebaseCoreInternal`/`FirebaseSharedSwift` cannot be resolved, or a
   Release/Archive build crashes at launch with a missing Firebase symbol:**

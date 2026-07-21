@@ -181,6 +181,43 @@ def rnfirebase_add_spm_embed_phase(installer)
   end
 end
 
+# Fails `pod install` fast, with a clear explanation, when RNFB's SPM mode is
+# combined with static linkage (`use_frameworks! :linkage => :static`) --
+# instead of letting consumers hit a confusing "duplicate symbols for
+# architecture ..." linker error later, at Xcode build time, with no obvious
+# link back to the Podfile setting that caused it.
+#
+# firebase-ios-sdk's SPM package only ships dynamic library products -- see
+# https://github.com/firebase/firebase-ios-sdk/blob/main/Package.swift (every
+# product uses `.library(type: .dynamic)`) -- so under static linkage, every
+# RNFB pod that resolves Firebase via SPM ends up statically embedding its
+# own private copy of the same Firebase SPM products, and the app target
+# links duplicate symbols for each one. There is no supported combination of
+# RNFB's SPM mode with static linkage to fall back to; the fix is always to
+# either switch to dynamic linkage or opt out of SPM entirely.
+#
+# Raises `Pod::Informative` -- CocoaPods' own user-facing error class, which
+# `pod install` prints as a plain, readable message with no Ruby backtrace --
+# rather than warning-and-continuing like the other checks in this file.
+def rnfirebase_fail_if_spm_static_linkage!(installer)
+  return unless $rnfirebase_spm_active
+
+  static_targets = installer.aggregate_targets.select(&:build_as_static?)
+  return if static_targets.empty?
+
+  target_names = static_targets.map(&:name).join(', ')
+
+  raise Pod::Informative, <<~MESSAGE
+    [react-native-firebase] SPM + static linkage is not supported (target(s): #{target_names}).
+
+    firebase-ios-sdk's Swift Package only ships dynamic library products, so `use_frameworks! :linkage => :static` causes every react-native-firebase pod that resolves Firebase via SPM to embed its own copy of the same Firebase frameworks -- this produces duplicate-symbol linker errors at build time instead of a clear error here.
+
+    Fix one of the following in your Podfile, then run `pod install` again:
+      - Use dynamic linkage: `use_frameworks! :linkage => :dynamic`
+      - Opt out of SPM: set `$RNFirebaseDisableSPM = true` before any target block, then use the static or dynamic linkage your project requires.
+  MESSAGE
+end
+
 # Hooks CocoaPods itself (not React Native) so `rnfirebase_add_spm_embed_phase`
 # runs automatically on every `pod install`/`pod update`, without requiring
 # any Podfile change from consumers.
@@ -226,6 +263,12 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
     alias_method original_method, hook_method
 
     define_method(hook_method) do
+      # Deliberately not wrapped in a rescue-and-warn like the checks below:
+      # there's no working fallback for this combination, so letting `pod
+      # install` continue would only delay the same failure to Xcode's
+      # build/link step, with a far more confusing error and no pointer back
+      # to the actual misconfiguration.
+      rnfirebase_fail_if_spm_static_linkage!(self)
       result = send(original_method)
       begin
         rnfirebase_add_spm_embed_phase(self)

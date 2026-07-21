@@ -138,10 +138,26 @@ class MockBuildConfig
 end
 
 class MockAggregateTarget
-  attr_reader :user_project
+  attr_reader :user_project, :name
 
-  def initialize(user_project)
+  def initialize(user_project, name: 'Pods-testing', build_as_static: false)
     @user_project = user_project
+    @name = name
+    @build_as_static = build_as_static
+  end
+
+  def build_as_static?
+    @build_as_static
+  end
+end
+
+# Stands in for `Pod::Informative` (CocoaPods' user-facing error class) so
+# `rnfirebase_fail_if_spm_static_linkage!` can be tested without the real
+# `cocoapods-core` gem installed in this dependency-free Ruby unit-test job.
+unless defined?(Pod::Informative)
+  module Pod
+    class Informative < StandardError
+    end
   end
 end
 
@@ -578,6 +594,62 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal [unrelated_pkg], user_project.root_object.package_references
   end
 
+  # ── rnfirebase_fail_if_spm_static_linkage! ──
+
+  def test_fail_fast_noop_when_spm_not_active
+    load_firebase_spm
+    $rnfirebase_spm_active = false
+
+    installer = MockInstaller.new(nil) # would raise if ever touched
+    rnfirebase_fail_if_spm_static_linkage!(installer)
+    # No error raised => returned early without walking `installer.aggregate_targets`.
+  end
+
+  def test_fail_fast_noop_when_spm_active_and_all_targets_dynamic
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+
+    installer = MockInstaller.new([
+      MockAggregateTarget.new(nil, name: 'Pods-testing', build_as_static: false)
+    ])
+
+    rnfirebase_fail_if_spm_static_linkage!(installer)
+    # No error raised.
+  end
+
+  def test_fail_fast_raises_pod_informative_when_spm_active_and_a_target_is_static
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+
+    installer = MockInstaller.new([
+      MockAggregateTarget.new(nil, name: 'Pods-testing', build_as_static: true)
+    ])
+
+    error = assert_raises(Pod::Informative) do
+      rnfirebase_fail_if_spm_static_linkage!(installer)
+    end
+    assert_includes error.message, 'SPM + static linkage is not supported'
+    assert_includes error.message, 'Pods-testing'
+    assert_includes error.message, '$RNFirebaseDisableSPM = true'
+  end
+
+  def test_fail_fast_lists_every_static_target_by_name
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+
+    installer = MockInstaller.new([
+      MockAggregateTarget.new(nil, name: 'Pods-testing', build_as_static: true),
+      MockAggregateTarget.new(nil, name: 'Pods-testingTests', build_as_static: true),
+      MockAggregateTarget.new(nil, name: 'Pods-dynamic-extension', build_as_static: false)
+    ])
+
+    error = assert_raises(Pod::Informative) do
+      rnfirebase_fail_if_spm_static_linkage!(installer)
+    end
+    assert_includes error.message, 'Pods-testing, Pods-testingTests'
+    refute_includes error.message, 'Pods-dynamic-extension'
+  end
+
   # ── rnfirebase_hook_cocoapods_post_install! (patches a stand-in for
   #    Pod::Installer -- there's no real Pod::Installer without a full
   #    CocoaPods environment, so we exercise the aliasing/guard logic
@@ -673,6 +745,25 @@ class FirebaseSpmTest < Minitest::Test
 
     refute klass.method_defined?(:rnfirebase_original_run_podfile_post_install_hooks)
     refute klass.private_method_defined?(:rnfirebase_original_run_podfile_post_install_hooks)
+  end
+
+  def test_hook_raises_and_skips_original_hook_when_spm_static_linkage_detected
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+
+    klass = new_fake_cocoapods_installer_class
+    klass.send(:attr_reader, :aggregate_targets)
+    klass.send(:define_method, :initialize) do
+      @original_hook_calls = 0
+      @aggregate_targets = [MockAggregateTarget.new(nil, name: 'Pods-testing', build_as_static: true)]
+    end
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    instance = klass.new
+
+    assert_raises(Pod::Informative) { instance.send(:run_podfile_post_install_hooks) }
+    # The known-broken combination must abort before CocoaPods' own
+    # post-install behavior (and the rest of our best-effort hooks) run.
+    assert_equal 0, instance.original_hook_calls
   end
 
   def test_hook_noop_when_installer_class_is_nil
