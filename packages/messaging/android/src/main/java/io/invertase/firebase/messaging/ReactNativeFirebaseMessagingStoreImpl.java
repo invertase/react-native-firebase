@@ -47,7 +47,6 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
         source = "AndroidManifest";
       }
 
-      maxSize = Math.max(1, maxSize);
       Log.d(TAG, "messaging_max_stored_notifications: " + maxSize + " (from " + source + ")");
       return maxSize;
     } catch (Exception e) {
