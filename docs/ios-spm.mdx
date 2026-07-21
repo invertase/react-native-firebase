@@ -56,32 +56,35 @@ RNFB also adds an `[RNFB] Embed Firebase SPM Frameworks` build phase to the app
 target. This phase embeds dynamic Firebase frameworks that React Native's
 pod-level SPM integration does not otherwise copy into the app bundle.
 
-### Xcode 26 module-resolution errors
+### Release build and module-resolution settings
 
-If Xcode reports that a Firebase module such as `FirebaseCoreInternal` or
-`FirebaseSharedSwift` cannot be resolved, disable explicit Swift modules for
-both the app project and the Pods project. Add the following inside your
-existing `post_install` block, after `react_native_post_install`:
+RNFB automatically applies two build settings needed for SPM + dynamic
+linkage, on every `pod install`/`pod update`:
+
+- `-ObjC` in the app target's linker flags, so Release's dead-code stripping
+  does not drop Firebase's FIRLibrary/FIRComponent registration.
+- `SWIFT_ENABLE_EXPLICIT_MODULES = 'NO'` on both the app project and the Pods
+  project, so Xcode 26's explicit Swift modules don't fail to resolve
+  Firebase's internal-only SPM targets (`FirebaseCoreInternal`,
+  `FirebaseSharedSwift`). This does not disable SPM -- it makes Swift use
+  implicit module discovery across the app, CocoaPods, and SPM build boundary.
+
+You do not need to configure either of these yourself. If `pod install` warns
+that they could not be applied automatically, or if Xcode still reports that a
+Firebase module cannot be resolved, add the fallback in your existing
+`post_install` block, after `react_native_post_install`:
 
 ```ruby
-installer.aggregate_targets.each do |aggregate_target|
-  aggregate_target.user_project.native_targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
-    end
-  end
-  aggregate_target.user_project.save
-end
+post_install do |installer|
+  react_native_post_install(
+    installer,
+    config[:reactNativePath],
+    # your existing options
+  )
 
-installer.pods_project.targets.each do |target|
-  target.build_configurations.each do |config|
-    config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
-  end
+  rnfirebase_apply_spm_build_settings(installer)
 end
 ```
-
-This setting does not disable SPM. It makes Swift use implicit module discovery
-across the app, CocoaPods, and SPM build boundary.
 
 ### Framework-embedding fallback
 
@@ -153,9 +156,11 @@ linkage your project requires.
 - **Duplicate Firebase symbols while linking:** Do not combine RNFB SPM mode
   with static linkage. Use dynamic linkage or set
   `$RNFirebaseDisableSPM = true`.
-- **`FirebaseCoreInternal` or `FirebaseSharedSwift` cannot be resolved:** Apply
-  `SWIFT_ENABLE_EXPLICIT_MODULES = 'NO'` to both the app and Pods projects as
-  shown above.
+- **`FirebaseCoreInternal` or `FirebaseSharedSwift` cannot be resolved, or a
+  Release/Archive build crashes at launch with a missing Firebase symbol:**
+  RNFB applies `-ObjC` and `SWIFT_ENABLE_EXPLICIT_MODULES = 'NO'`
+  automatically; call `rnfirebase_apply_spm_build_settings(installer)` as a
+  fallback only if `pod install` warns it could not do so.
 - **A Firebase framework is missing at app launch:** Re-run `pod install`, check
   for its automatic-embedding warning, and confirm the app target contains
   `[RNFB] Embed Firebase SPM Frameworks`. Use the fallback only when needed.

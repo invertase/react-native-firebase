@@ -268,6 +268,17 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
             "\"\\${CONFIGURATION_BUILD_DIR}\"/<TheNameFromTheErrorMessage>.xcframework-ios.signature`."
         end
       end
+      begin
+        rnfirebase_apply_spm_build_settings(self)
+      rescue => e
+        if defined?(Pod::UI)
+          Pod::UI.warn "[react-native-firebase] Couldn't apply Firebase SPM build settings " \
+            "automatically (#{e.class}: #{e.message}). Add `rnfirebase_apply_spm_build_settings(installer)` " \
+            'to your Podfile\'s post_install block as a fallback if Release builds crash at launch with ' \
+            'missing FIRComponent registrations, or Xcode reports that a Firebase module such as ' \
+            '`FirebaseCoreInternal`/`FirebaseSharedSwift` cannot be resolved.'
+        end
+      end
       result
     end
   end
@@ -286,20 +297,21 @@ end
 # `rnfirebase_hook_cocoapods_post_install!` below -- so you normally never
 # need to call this yourself.
 #
-# Why this needs to exist: with CocoaPods-only Firebase dependency resolution,
-# every RNFB pod declares a regular `s.dependency 'Firebase/CoreOnly'`, and
-# CocoaPods automatically propagates the resulting framework/header search
-# paths all the way up to the app's own target -- so apps whose own native
-# code calls `[FIRApp configure]` / `[FIROptions ...]` directly (e.g. to
-# configure a secondary Firebase app instance, a documented RNFB pattern)
-# have always been able to link against FirebaseCore for free, without
-# declaring anything themselves. Xcode's own SPM package product
-# dependencies don't propagate the same way: each target needs its own
-# *explicit* product dependency in order to link a package product. Without
-# this, apps using SPM+dynamic linkage whose own native code references
-# Firebase Core symbols directly fail at Archive time with "Undefined
-# symbols ... _OBJC_CLASS_$_FIRApp", even though the same code links fine
-# under CocoaPods-only resolution.
+# Why this needs to exist: every react-native-firebase app is required to
+# `import Firebase` and call `FirebaseApp.configure()` (Swift) /
+# `[FIRApp configure]` (Objective-C) itself -- this isn't an optional pattern
+# for a secondary app instance, it's a strict requirement for all RNFB apps.
+# With CocoaPods-only Firebase dependency resolution, every RNFB pod declares
+# a regular `s.dependency 'Firebase/CoreOnly'`, and CocoaPods automatically
+# propagates the resulting framework/header search paths all the way up to
+# the app's own target -- so that required `FIRApp configure` call has always
+# been able to link against FirebaseCore for free, without the app declaring
+# anything itself. Xcode's own SPM package product dependencies don't
+# propagate the same way: each target needs its own *explicit* product
+# dependency in order to link a package product. Without this, apps using
+# SPM+dynamic linkage fail at Archive time with "Undefined symbols ...
+# _OBJC_CLASS_$_FIRApp", even though the same code links fine under
+# CocoaPods-only resolution.
 def rnfirebase_add_spm_core_to_app_target(installer)
   return unless $rnfirebase_spm_active
 
@@ -483,6 +495,71 @@ def rnfirebase_fix_spm_archive_signature_collision(installer)
     end
 
     project.save if project_modified
+  end
+end
+
+# Applies two Release/Swift-build-system settings that Firebase SPM +
+# dynamic linkage requires on the app's own native target(s) and on the
+# Pods project. Runs automatically on every `pod install`/`pod update` --
+# see `rnfirebase_hook_cocoapods_post_install!` above -- so you normally
+# never need to call this yourself.
+#
+# 1. `-ObjC` in `OTHER_LDFLAGS` (app target, every configuration): under SPM
+#    + dynamic linkage, dead-code stripping can drop Objective-C
+#    classes/categories that are only ever discovered via runtime reflection
+#    rather than a direct static reference -- e.g. Firebase's
+#    FIRLibrary/FIRComponent registration used by RNFBCrashlyticsInitProvider
+#    -- which otherwise crashes the app at launch, but only in Release/
+#    Archive builds (a TestFlight-only failure that's hard to reproduce from
+#    a local Debug build). `-ObjC` forces the linker to keep any object file
+#    that defines an ObjC class/category, without disabling dead-code
+#    stripping or optimizations for anything else, so it doesn't meaningfully
+#    grow the binary or slow down Release builds.
+#
+# 2. `SWIFT_ENABLE_EXPLICIT_MODULES = 'NO'` (app target and Pods project,
+#    every configuration): Xcode 26 enables explicit Swift modules by
+#    default, but Firebase's SPM internal targets (`FirebaseCoreInternal`,
+#    `FirebaseSharedSwift`) aren't exposed as public products. Explicit
+#    modules is a build-system-wide setting for Swift Package products
+#    resolved via the app's own project/scheme (SPM packages don't have
+#    their own toggle for it), so it has to be disabled on the app project
+#    too, not just the Pods project -- otherwise pure-Swift Firebase SPM
+#    products (Storage, RemoteConfig, Database, InAppMessaging) intermittently
+#    fail to have their generated ObjC interop header (*-Swift.h) available
+#    when the consuming RNFB Pods target starts compiling. This does NOT
+#    disable SPM -- it only makes Swift use implicit module discovery (the
+#    Xcode 16 default) across the app, CocoaPods, and SPM build boundary. See
+#    okf-bundle/ios-spm-native-imports.md.
+def rnfirebase_apply_spm_build_settings(installer)
+  return unless $rnfirebase_spm_active
+
+  installer.aggregate_targets.each do |aggregate_target|
+    project = aggregate_target.user_project
+    project_modified = false
+
+    project.native_targets.each do |target|
+      target.build_configurations.each do |config|
+        current_ldflags = config.build_settings['OTHER_LDFLAGS']
+        current_ldflags = '$(inherited)' if current_ldflags.nil? || current_ldflags.empty?
+        unless current_ldflags.include?('-ObjC')
+          config.build_settings['OTHER_LDFLAGS'] = "#{current_ldflags} -ObjC"
+          project_modified = true
+        end
+
+        unless config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] == 'NO'
+          config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
+          project_modified = true
+        end
+      end
+    end
+
+    project.save if project_modified
+  end
+
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
+    end
   end
 end
 
