@@ -21,6 +21,7 @@
     "messaging_android_notification_color": "@color/hotpink",
     "messaging_ios_auto_register_for_remote_messages": false,
     "messaging_android_notification_delegation_enabled": true,
+    "messaging_max_stored_notifications": 100,
 
     "analytics_auto_collection_enabled": true,
     "analytics_collection_deactivated": false,
