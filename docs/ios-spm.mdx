@@ -98,7 +98,7 @@ linkage, on every `pod install`/`pod update`:
 - `-ObjC` in the app target's linker flags, so Release's dead-code stripping
   does not drop Firebase's FIRLibrary/FIRComponent registration.
 - `SWIFT_ENABLE_EXPLICIT_MODULES = 'NO'` and `CLANG_ENABLE_EXPLICIT_MODULES =
-  'NO'` on both the app project and the Pods project, so Xcode 26's explicit
+'NO'` on both the app project and the Pods project, so Xcode 26's explicit
   Swift and Clang modules don't fail to resolve Firebase's internal-only SPM
   targets (`FirebaseCoreInternal`, `FirebaseSharedSwift`) or `@import`s of
   Firebase modules in your own Objective-C/Objective-C++ files. This does not
