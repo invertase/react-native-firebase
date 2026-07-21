@@ -80,6 +80,24 @@ def rnfirebase_spm_disabled?
   defined?($RNFirebaseDisableSPM) && $RNFirebaseDisableSPM == true
 end
 
+# Normalizes a build setting value that Xcode/Xcodeproj may represent as
+# `nil`, a whitespace-separated `String`, or an `Array` into a plain `Array`
+# safe to call `include?`/`push`/`<<` on. Settings like `OTHER_LDFLAGS` or
+# `SWIFT_INCLUDE_PATHS` can legitimately arrive as any of the three depending
+# on how a consumer's project/build settings were authored -- treating them
+# as always-already-an-Array (e.g. a bare `||= []` default, which only
+# covers the `nil` case) raises `NoMethodError` the moment a consumer's
+# target already has one of these set as a `String`.
+def rnfirebase_build_setting_list(current)
+  if current.nil? || (current.is_a?(String) && current.strip.empty?) || (current.is_a?(Array) && current.empty?)
+    ['$(inherited)']
+  elsif current.is_a?(String)
+    current.split(' ')
+  else
+    current.dup
+  end
+end
+
 def rnfirebase_spm_embed_script
   <<~'SCRIPT'
     set -euo pipefail
@@ -128,6 +146,39 @@ def rnfirebase_spm_embed_script
   SCRIPT
 end
 
+# Creates (or updates in place) a shell-script build phase named `name` on
+# `target`, only reporting a change when something about it actually
+# differs from what's already there.
+#
+# Without this, callers that unconditionally assign every property and then
+# unconditionally set their own "did I touch anything" flag end up rewriting
+# -- and re-saving -- the consumer's `.pbxproj` on every single `pod install`,
+# even when the phase's script/paths are byte-for-byte identical to the last
+# install. That's needless diff churn on a file consumers commit to source
+# control.
+#
+# Returns `true` if the phase was newly created or any of its properties
+# changed; `false` if it already matched and nothing was touched.
+def rnfirebase_upsert_shell_script_phase!(target, name, shell_script:, shell_path:, input_paths: nil, output_paths: nil)
+  existing = target.shell_script_build_phases.find { |candidate| candidate.name == name }
+  phase = existing || target.new_shell_script_build_phase(name)
+
+  changed = existing.nil?
+  changed ||= phase.shell_script != shell_script
+  changed ||= phase.shell_path != shell_path
+  changed ||= phase.always_out_of_date != '1'
+  changed ||= (!input_paths.nil? && phase.input_paths != input_paths)
+  changed ||= (!output_paths.nil? && phase.output_paths != output_paths)
+
+  phase.shell_script = shell_script
+  phase.shell_path = shell_path
+  phase.always_out_of_date = '1'
+  phase.input_paths = input_paths if input_paths
+  phase.output_paths = output_paths if output_paths
+
+  changed
+end
+
 # Adds a build phase that copies Firebase's SPM-built dynamic frameworks
 # into the app bundle. Runs automatically on every `pod install`/`pod update`
 # -- see `rnfirebase_hook_cocoapods_post_install!` below -- so you normally
@@ -163,20 +214,21 @@ def rnfirebase_add_spm_embed_phase(installer)
       next unless target.respond_to?(:shell_script_build_phases)
       next unless target.shell_script_build_phases.any? { |phase| phase.name == '[CP] Embed Pods Frameworks' }
 
-      phase = target.shell_script_build_phases.find { |candidate| candidate.name == RNFIREBASE_SPM_EMBED_PHASE_NAME }
-      phase ||= target.new_shell_script_build_phase(RNFIREBASE_SPM_EMBED_PHASE_NAME)
-
-      phase.shell_script = rnfirebase_spm_embed_script
-      phase.shell_path = '/bin/bash'
-      phase.always_out_of_date = '1'
-      phase.input_paths = ['${BUILT_PRODUCTS_DIR}/PackageFrameworks']
-      phase.output_paths = ['${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}']
-      project_modified = true
+      changed = rnfirebase_upsert_shell_script_phase!(
+        target,
+        RNFIREBASE_SPM_EMBED_PHASE_NAME,
+        shell_script: rnfirebase_spm_embed_script,
+        shell_path: '/bin/bash',
+        input_paths: ['${BUILT_PRODUCTS_DIR}/PackageFrameworks'],
+        output_paths: ['${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}']
+      )
+      project_modified ||= changed
     end
 
-    # Only rewrite the pbxproj when we actually touched a target in it --
-    # avoids an unconditional save on every aggregate target whenever any
-    # podspec uses SPM, even ones with no '[CP] Embed Pods Frameworks' phase.
+    # Only rewrite the pbxproj when we actually created or changed a phase --
+    # avoids an unconditional save (and consumer-visible pbxproj diff) on
+    # every single `pod install`, even when nothing about the phase differs
+    # from the last install.
     aggregate_target.user_project.save if project_modified
   end
 end
@@ -202,7 +254,22 @@ end
 def rnfirebase_fail_if_spm_static_linkage!(installer)
   return unless $rnfirebase_spm_active
 
-  static_targets = installer.aggregate_targets.select(&:build_as_static?)
+  # `AggregateTarget#build_as_static?` (and `#build_type` it delegates to) is
+  # NOT what it sounds like: CocoaPods always constructs the aggregate
+  # "Pods-<target>" umbrella target itself as `static_framework`/
+  # `static_library` -- see `Installer::Analyzer#generate_aggregate_target`,
+  # which hardcodes `target_definition.uses_frameworks? ? BuildType.static_framework
+  # : BuildType.static_library` regardless of `use_frameworks!`'s `:linkage`.
+  # Checking it here made this fail unconditionally for every SPM install,
+  # dynamic linkage included, because it's true either way.
+  #
+  # The actual `:linkage => :dynamic` vs `:static` choice from the Podfile is
+  # recorded on each aggregate target's own `target_definition.build_type`
+  # instead (`TargetDefinition#build_type`, which individual `PodTarget`s
+  # also inherit from via `Analyzer#determine_build_type`) -- check that.
+  static_targets = installer.aggregate_targets.select do |target|
+    target.target_definition.build_type.static?
+  end
   return if static_targets.empty?
 
   target_names = static_targets.map(&:name).join(', ')
@@ -393,11 +460,17 @@ def rnfirebase_add_spm_core_to_app_target(installer)
       target.package_product_dependencies << ref
 
       target.build_configurations.each do |config|
-        target.build_settings(config.name)['SWIFT_INCLUDE_PATHS'] ||= ['$(inherited)']
+        build_settings = target.build_settings(config.name)
+        # Normalize first: Xcode/Xcodeproj may already represent
+        # SWIFT_INCLUDE_PATHS as a whitespace-separated String rather than an
+        # Array, depending on how the consumer's project was authored. A bare
+        # `||= ['$(inherited)']` only covers the nil case -- calling `.push`
+        # on an existing String value raises NoMethodError and crashes `pod
+        # install` for that target.
+        paths = rnfirebase_build_setting_list(build_settings['SWIFT_INCLUDE_PATHS'])
         search_path = '${SYMROOT}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/'
-        unless target.build_settings(config.name)['SWIFT_INCLUDE_PATHS'].include?(search_path)
-          target.build_settings(config.name)['SWIFT_INCLUDE_PATHS'].push(search_path)
-        end
+        paths << search_path unless paths.include?(search_path)
+        build_settings['SWIFT_INCLUDE_PATHS'] = paths
       end
 
       project_modified = true
@@ -526,15 +599,17 @@ def rnfirebase_fix_spm_archive_signature_collision(installer)
       next unless target.respond_to?(:shell_script_build_phases)
       next unless target.shell_script_build_phases.any? { |phase| phase.name == '[CP] Embed Pods Frameworks' }
 
-      phase = target.shell_script_build_phases.find { |candidate| candidate.name == RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME }
-      phase ||= target.new_shell_script_build_phase(RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME)
-
-      phase.shell_script = RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES.map { |name|
+      shell_script = RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES.map { |name|
         "rm -f \"${CONFIGURATION_BUILD_DIR}\"/#{name}.xcframework-ios.signature"
       }.join("\n") + "\n"
-      phase.shell_path = '/bin/sh'
-      phase.always_out_of_date = '1'
-      project_modified = true
+
+      changed = rnfirebase_upsert_shell_script_phase!(
+        target,
+        RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME,
+        shell_script: shell_script,
+        shell_path: '/bin/sh'
+      )
+      project_modified ||= changed
     end
 
     project.save if project_modified
@@ -605,14 +680,7 @@ def rnfirebase_apply_spm_build_settings(installer)
   explicit_modules_settings = %w[SWIFT_ENABLE_EXPLICIT_MODULES CLANG_ENABLE_EXPLICIT_MODULES]
 
   add_flag = lambda do |build_settings, key, flag|
-    current = build_settings[key]
-    current = if current.nil? || (current.is_a?(String) && current.strip.empty?) || (current.is_a?(Array) && current.empty?)
-                ['$(inherited)']
-              elsif current.is_a?(String)
-                current.split(' ')
-              else
-                current.dup
-              end
+    current = rnfirebase_build_setting_list(build_settings[key])
 
     next false if current.include?(flag)
 

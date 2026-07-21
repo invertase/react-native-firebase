@@ -137,17 +137,41 @@ class MockBuildConfig
   end
 end
 
-class MockAggregateTarget
-  attr_reader :user_project, :name
-
-  def initialize(user_project, name: 'Pods-testing', build_as_static: false)
-    @user_project = user_project
-    @name = name
-    @build_as_static = build_as_static
+# Stand-ins for `Pod::BuildType` and `Pod::Podfile::TargetDefinition`, just
+# deep enough for `rnfirebase_fail_if_spm_static_linkage!` to read
+# `target.target_definition.build_type.static?` -- the actual source of
+# truth for the Podfile's `use_frameworks!(:linkage => ...)` choice.
+#
+# Deliberately *not* `AggregateTarget#build_as_static?` itself: real
+# CocoaPods hardcodes every aggregate ("Pods-<target>") target's own
+# `build_type` to `static_framework`/`static_library` regardless of
+# `:linkage` (see `Installer::Analyzer#generate_aggregate_target`), so it's
+# always `true` and can't distinguish the case this check cares about.
+class MockBuildType
+  def initialize(static: false)
+    @static = static
   end
 
-  def build_as_static?
-    @build_as_static
+  def static?
+    @static
+  end
+end
+
+class MockTargetDefinition
+  attr_reader :build_type
+
+  def initialize(static: false)
+    @build_type = MockBuildType.new(static: static)
+  end
+end
+
+class MockAggregateTarget
+  attr_reader :user_project, :name, :target_definition
+
+  def initialize(user_project, name: 'Pods-testing', static_linkage: false)
+    @user_project = user_project
+    @name = name
+    @target_definition = MockTargetDefinition.new(static: static_linkage)
   end
 end
 
@@ -417,7 +441,10 @@ class FirebaseSpmTest < Minitest::Test
 
     matching = target.shell_script_build_phases.select { |p| p.name == RNFIREBASE_SPM_EMBED_PHASE_NAME }
     assert_equal 1, matching.length
-    assert_equal 2, user_project.save_count
+    # The second, redundant call must not re-save the pbxproj: nothing about
+    # the phase actually changed, so re-saving would be needless diff churn
+    # on a file consumers commit to source control.
+    assert_equal 1, user_project.save_count
   end
 
   # ── rnfirebase_add_spm_core_to_app_target ──
@@ -486,6 +513,36 @@ class FirebaseSpmTest < Minitest::Test
     rnfirebase_add_spm_core_to_app_target(installer)
 
     assert_equal 1, target.package_product_dependencies.length
+  end
+
+  def test_add_core_handles_swift_include_paths_already_set_as_a_string
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
+    $rnfirebase_spm_version = '12.10.0'
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    # Xcode/Xcodeproj may represent a list-type build setting as a
+    # whitespace-separated String instead of an Array, depending on how the
+    # consumer's project was authored -- a bare `||= [...]` default only
+    # covers the `nil` case, and calling `.push` on a String raises
+    # NoMethodError, crashing `pod install` for this target.
+    target.build_configurations.each do |config|
+      target.build_settings(config.name)['SWIFT_INCLUDE_PATHS'] = '$(inherited) $(SRCROOT)/SomeExistingPath'
+    end
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_add_spm_core_to_app_target(installer)
+
+    search_path = '${SYMROOT}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/'
+    target.build_configurations.each do |config|
+      paths = target.build_settings(config.name)['SWIFT_INCLUDE_PATHS']
+      assert_instance_of Array, paths
+      assert_includes paths, '$(inherited)'
+      assert_includes paths, '$(SRCROOT)/SomeExistingPath'
+      assert_includes paths, search_path
+    end
   end
 
   # ── rnfirebase_remove_spm_core_from_app_target (the fix for CP-149: undoes
@@ -594,6 +651,54 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal [unrelated_pkg], user_project.root_object.package_references
   end
 
+  # ── rnfirebase_fix_spm_archive_signature_collision ──
+
+  def test_signature_collision_fix_noop_when_spm_not_active
+    load_firebase_spm
+    $rnfirebase_spm_active = false
+
+    installer = MockInstaller.new(nil) # would raise if ever touched
+    rnfirebase_fix_spm_archive_signature_collision(installer)
+    # No error raised => returned early without walking `installer.aggregate_targets`.
+  end
+
+  def test_signature_collision_fix_adds_phase_removing_every_known_artifact
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_fix_spm_archive_signature_collision(installer)
+
+    phase = target.shell_script_build_phases.find { |p| p.name == RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME }
+    refute_nil phase
+    assert_equal '/bin/sh', phase.shell_path
+    RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES.each do |artifact_name|
+      assert_includes phase.shell_script, "#{artifact_name}.xcframework-ios.signature"
+    end
+    assert_equal 1, user_project.save_count
+  end
+
+  def test_signature_collision_fix_is_idempotent_across_repeated_pod_installs
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_fix_spm_archive_signature_collision(installer)
+    rnfirebase_fix_spm_archive_signature_collision(installer)
+
+    matching = target.shell_script_build_phases.select { |p| p.name == RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME }
+    assert_equal 1, matching.length
+    # The second, redundant call must not re-save the pbxproj: nothing about
+    # the phase actually changed.
+    assert_equal 1, user_project.save_count
+  end
+
   # ── rnfirebase_fail_if_spm_static_linkage! ──
 
   def test_fail_fast_noop_when_spm_not_active
@@ -610,7 +715,7 @@ class FirebaseSpmTest < Minitest::Test
     $rnfirebase_spm_active = true
 
     installer = MockInstaller.new([
-      MockAggregateTarget.new(nil, name: 'Pods-testing', build_as_static: false)
+      MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: false)
     ])
 
     rnfirebase_fail_if_spm_static_linkage!(installer)
@@ -622,7 +727,7 @@ class FirebaseSpmTest < Minitest::Test
     $rnfirebase_spm_active = true
 
     installer = MockInstaller.new([
-      MockAggregateTarget.new(nil, name: 'Pods-testing', build_as_static: true)
+      MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: true)
     ])
 
     error = assert_raises(Pod::Informative) do
@@ -633,14 +738,38 @@ class FirebaseSpmTest < Minitest::Test
     assert_includes error.message, '$RNFirebaseDisableSPM = true'
   end
 
+  def test_fail_fast_ignores_aggregate_targets_own_always_static_build_type
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+
+    # Regression test for the exact bug that broke every SPM CI job: real
+    # CocoaPods' `AggregateTarget#build_as_static?` is `true` unconditionally
+    # (it always builds the "Pods-<target>" umbrella target as
+    # static_framework/static_library -- see
+    # `Installer::Analyzer#generate_aggregate_target`), regardless of the
+    # Podfile's `use_frameworks!(:linkage => ...)` choice. A previous version
+    # of this check read that method directly and so failed on every single
+    # SPM `pod install`, dynamic linkage included. This target simulates
+    # dynamic linkage (`static_linkage: false`, i.e. what
+    # `target_definition.build_type.static?` reports) and must not raise.
+    target = MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: false)
+    def target.build_as_static?
+      true # what the real, always-static aggregate target would report
+    end
+    installer = MockInstaller.new([target])
+
+    rnfirebase_fail_if_spm_static_linkage!(installer)
+    # No error raised: the check must not be fooled by `build_as_static?`.
+  end
+
   def test_fail_fast_lists_every_static_target_by_name
     load_firebase_spm
     $rnfirebase_spm_active = true
 
     installer = MockInstaller.new([
-      MockAggregateTarget.new(nil, name: 'Pods-testing', build_as_static: true),
-      MockAggregateTarget.new(nil, name: 'Pods-testingTests', build_as_static: true),
-      MockAggregateTarget.new(nil, name: 'Pods-dynamic-extension', build_as_static: false)
+      MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: true),
+      MockAggregateTarget.new(nil, name: 'Pods-testingTests', static_linkage: true),
+      MockAggregateTarget.new(nil, name: 'Pods-dynamic-extension', static_linkage: false)
     ])
 
     error = assert_raises(Pod::Informative) do
@@ -755,7 +884,7 @@ class FirebaseSpmTest < Minitest::Test
     klass.send(:attr_reader, :aggregate_targets)
     klass.send(:define_method, :initialize) do
       @original_hook_calls = 0
-      @aggregate_targets = [MockAggregateTarget.new(nil, name: 'Pods-testing', build_as_static: true)]
+      @aggregate_targets = [MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: true)]
     end
     rnfirebase_hook_cocoapods_post_install!(klass)
     instance = klass.new
