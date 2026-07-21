@@ -158,8 +158,11 @@ Then use the static or dynamic linkage required by your project and run
 [react-native-firebase] RNFBApp: SPM disabled ($RNFirebaseDisableSPM = true), using CocoaPods for Firebase dependencies
 ```
 
-Setting `$RNFirebaseDisableSPM = false` does not disable SPM. This is useful for
-generated Podfiles that always emit the variable.
+`$RNFirebaseDisableSPM` must be set to exactly `true` to opt out of SPM. Any
+other value -- `false`, `nil`, or leaving it unset -- uses SPM (React Native
+0.75+ default). This matters for generated or templated Podfiles that always
+emit the variable, e.g. `$RNFirebaseDisableSPM = false`: that still uses SPM,
+it does not fall back to CocoaPods.
 
 ## Troubleshooting
 
