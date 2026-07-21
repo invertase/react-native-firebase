@@ -34,7 +34,39 @@ duplicate-symbol linker error.
 CocoaPods mode supports either static or dynamic linkage, subject to the
 requirements of the other dependencies in your app.
 
-## Use SPM
+## Expo projects
+
+Expo projects can select dynamic linkage with
+[`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/):
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "dynamic"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+To use CocoaPods mode in a generated project, a config plugin must add
+`$RNFirebaseDisableSPM = true` before the target blocks and configure the
+linkage your project requires.
+
+The sections below (**Use SPM (React Native CLI)**, **Use CocoaPods (React
+Native CLI)**) describe editing `ios/Podfile` directly. Do not follow them in
+an Expo project -- Expo regenerates `ios/Podfile` from your config plugins on
+every prebuild, so a direct edit does not persist. Use `expo-build-properties`
+(or your own config plugin) instead, as shown above.
+
+## Use SPM (React Native CLI)
 
 For React Native 0.75 or newer, SPM is selected automatically. Configure dynamic
 linkage in your `ios/Podfile`, then install pods normally:
@@ -111,7 +143,7 @@ end
 Do not add the fallback unless the warning appears or the generated app target
 does not contain `[RNFB] Embed Firebase SPM Frameworks`.
 
-## Use CocoaPods
+## Use CocoaPods (React Native CLI)
 
 To opt out of SPM, add this before any target block in your Podfile:
 
@@ -128,32 +160,6 @@ Then use the static or dynamic linkage required by your project and run
 
 Setting `$RNFirebaseDisableSPM = false` does not disable SPM. This is useful for
 generated Podfiles that always emit the variable.
-
-## Expo projects
-
-Expo projects can select dynamic linkage with
-[`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/):
-
-```json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-build-properties",
-        {
-          "ios": {
-            "useFrameworks": "dynamic"
-          }
-        }
-      ]
-    ]
-  }
-}
-```
-
-To use CocoaPods mode in a generated project, a config plugin must add
-`$RNFirebaseDisableSPM = true` before the target blocks and configure the
-linkage your project requires.
 
 ## Troubleshooting
 
