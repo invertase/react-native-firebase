@@ -76,10 +76,18 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAppCheck)
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   DLog(@"appName/providerName/debugToken: %@/%@/%@", firebaseApp.name, providerName,
        (debugToken == nil ? @"null" : @"(not shown)"));
-  [[RNFBAppCheckModule sharedInstance].providerFactory configure:firebaseApp
-                                                    providerName:providerName
-                                                      debugToken:debugToken];
-  resolve([NSNull null]);
+  @try {
+    [[RNFBAppCheckModule sharedInstance].providerFactory configure:firebaseApp
+                                                      providerName:providerName
+                                                        debugToken:debugToken];
+    resolve([NSNull null]);
+  } @catch (NSException *exception) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                      userInfo:(NSMutableDictionary *)@{
+                                        @"code" : @"unknown",
+                                        @"message" : exception.reason ?: @"internal-error",
+                                      }];
+  }
 }
 
 - (void)setTokenAutoRefreshEnabled:(NSString *)appName
