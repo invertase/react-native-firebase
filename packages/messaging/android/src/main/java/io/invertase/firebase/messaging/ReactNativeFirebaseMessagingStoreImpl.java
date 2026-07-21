@@ -52,8 +52,7 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
     } catch (Exception e) {
       Log.w(
           TAG,
-          "Error resolving max notification size, using default: "
-              + DEFAULT_MAX_SIZE_NOTIFICATIONS,
+          "Error resolving max notification size, using default: " + DEFAULT_MAX_SIZE_NOTIFICATIONS,
           e);
       return DEFAULT_MAX_SIZE_NOTIFICATIONS;
     }
