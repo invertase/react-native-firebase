@@ -43,16 +43,97 @@ RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES = %w[
   openssl_grpc
 ].freeze
 
-# Read Firebase SPM URL from app package.json (single source of truth).
-# __dir__ resolves to the directory of this file (packages/app/).
-# In monorepos with hoisted dependencies or pnpm, the path from other packages
-# (e.g., `require '../app/firebase_spm'`) must resolve correctly to this location.
-# If your package manager hoists differently, you may need to adjust the require
-# path in individual podspecs.
-$firebase_spm_url ||= begin
-  app_package_path = File.join(__dir__, 'package.json')
-  app_package = JSON.parse(File.read(app_package_path))
-  app_package['sdkVersions']['ios']['firebaseSpmUrl']
+# Encapsulates the SPM-related state that has to survive across CocoaPods'
+# per-podspec evaluation (where `firebase_dependency` runs -- see `activate!`
+# below) and the later, single `post_install` phase (where every
+# `rnfirebase_*` helper in this file reads it back via `active?`/`version`/
+# `url`). This works today because CocoaPods always finishes evaluating every
+# podspec before running `post_install`, so a single, process-wide place to
+# stash this is safe -- but wrapping the three pieces of state in a module
+# (rather than three bare globals) keeps every read/write site in this file
+# explicit about what it's touching, and gives `active?` a place to
+# self-check for a state that should never happen instead of every
+# downstream caller trusting a bare boolean blindly.
+module RNFirebaseSPM
+  class << self
+    # Firebase SPM package URL, read from the app's own package.json (single
+    # source of truth) the first time it's needed, then cached for the rest
+    # of this `pod install` process.
+    #
+    # __dir__ resolves to the directory of this file (packages/app/).
+    # In monorepos with hoisted dependencies or pnpm, the path from other
+    # packages (e.g., `require '../app/firebase_spm'`) must resolve correctly
+    # to this location. If your package manager hoists differently, you may
+    # need to adjust the require path in individual podspecs.
+    def url
+      @url ||= begin
+        app_package_path = File.join(__dir__, 'package.json')
+        app_package = JSON.parse(File.read(app_package_path))
+        app_package['sdkVersions']['ios']['firebaseSpmUrl']
+      end
+    end
+
+    # Records that `firebase_dependency` (below) took the SPM path for at
+    # least one podspec in this install, and which Firebase SDK `version` it
+    # resolved with. Called once, from `firebase_dependency` itself, the
+    # first time it successfully takes the SPM path. `version` is stored so
+    # `rnfirebase_add_spm_core_to_app_target` can declare the same minimum
+    # version requirement on the app target's own FirebaseCore product
+    # dependency, without needing its own separate copy of it.
+    def activate!(version)
+      @active = true
+      @version = version
+    end
+
+    # Whether SPM is active for this install -- read by every `rnfirebase_*`
+    # post-install helper in this file to decide whether to act at all.
+    #
+    # Self-checks internal consistency before returning: if `@active` is
+    # `true` but no real `version` was ever recorded, something set the flag
+    # without going through `activate!` above (e.g. a future refactor that
+    # assigns the flag directly instead of calling it), and every downstream
+    # helper that trusts this return value -- including one that links
+    # FirebaseCore into the app target at a specific minimum version -- would
+    # silently operate on incomplete state instead. Raising `Pod::Informative`
+    # here (this file's own user-facing `pod install`-time error class, same
+    # as `rnfirebase_fail_if_spm_static_linkage!` below) turns that into a
+    # loud, immediate failure instead of a confusing downstream symptom.
+    def active?
+      return false unless @active
+
+      if @version.nil? || @version.to_s.strip.empty?
+        raise Pod::Informative, <<~MESSAGE
+          [react-native-firebase] Internal error: Firebase SPM was marked active without a recorded version -- `RNFirebaseSPM.activate!` was either never called, or was called with a nil/empty version. This indicates a bug in react-native-firebase's own Podfile integration, not a problem with your project.
+
+          Please open an issue at https://github.com/invertase/react-native-firebase/issues, including your full `pod install` output.
+        MESSAGE
+      end
+
+      true
+    end
+
+    # The Firebase SDK version `firebase_dependency` resolved with, recorded
+    # by `activate!` above -- used by `rnfirebase_add_spm_core_to_app_target`
+    # to declare the same minimum version requirement on the app target's own
+    # FirebaseCore product dependency.
+    def version
+      @version
+    end
+
+    # Clears active/version/url back to their unset defaults. Not needed in
+    # production Podfile code paths -- each `pod install` process is
+    # short-lived, so there's nothing to reset between installs -- but the
+    # test suite `load`s this file fresh for every test and needs a
+    # deliberate way to reset this module's state in between, rather than
+    # relying on Ruby's one-way `defined?` (a global variable, once assigned,
+    # can't become "undefined" again) the way `$RNFirebaseDisableSPM` still
+    # does in the test suite's `setup`.
+    def reset!
+      @active = nil
+      @version = nil
+      @url = nil
+    end
+  end
 end
 
 # Helper to declare Firebase dependencies with SPM support and CocoaPods fallback.
@@ -205,7 +286,7 @@ end
 #     rnfirebase_add_spm_embed_phase(installer)
 #   end
 def rnfirebase_add_spm_embed_phase(installer)
-  return unless $rnfirebase_spm_active
+  return unless RNFirebaseSPM.active?
 
   installer.aggregate_targets.each do |aggregate_target|
     project_modified = false
@@ -252,7 +333,7 @@ end
 # fallback for "the app you're about to build will crash at launch," so
 # `pod install` itself must fail loudly here instead.
 def rnfirebase_verify_spm_embed_phase_applied!(installer)
-  return unless $rnfirebase_spm_active
+  return unless RNFirebaseSPM.active?
 
   missing_target_names = []
 
@@ -296,7 +377,7 @@ end
 # `pod install` prints as a plain, readable message with no Ruby backtrace --
 # rather than warning-and-continuing like the other checks in this file.
 def rnfirebase_fail_if_spm_static_linkage!(installer)
-  return unless $rnfirebase_spm_active
+  return unless RNFirebaseSPM.active?
 
   # `AggregateTarget#build_as_static?` (and `#build_type` it delegates to) is
   # NOT what it sounds like: CocoaPods always constructs the aggregate
@@ -501,7 +582,7 @@ end
 # _OBJC_CLASS_$_FIRApp", even though the same code links fine under
 # CocoaPods-only resolution.
 def rnfirebase_add_spm_core_to_app_target(installer)
-  return unless $rnfirebase_spm_active
+  return unless RNFirebaseSPM.active?
 
   pkg_class = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference
   ref_class = Xcodeproj::Project::Object::XCSwiftPackageProductDependency
@@ -517,12 +598,12 @@ def rnfirebase_add_spm_core_to_app_target(installer)
       next if target.package_product_dependencies.any? { |dep| dep.product_name == 'FirebaseCore' }
 
       pkg = project.root_object.package_references.find do |candidate|
-        candidate.class == pkg_class && candidate.repositoryURL == $firebase_spm_url
+        candidate.class == pkg_class && candidate.repositoryURL == RNFirebaseSPM.url
       end
       if !pkg
         pkg = project.new(pkg_class)
-        pkg.repositoryURL = $firebase_spm_url
-        pkg.requirement = { kind: 'upToNextMajorVersion', minimumVersion: $rnfirebase_spm_version }
+        pkg.repositoryURL = RNFirebaseSPM.url
+        pkg.requirement = { kind: 'upToNextMajorVersion', minimumVersion: RNFirebaseSPM.version }
         project.root_object.package_references << pkg
       end
 
@@ -585,7 +666,7 @@ end
 # 'Firebase'` at compile time, and as duplicate App-Intents-metadata build
 # commands at Archive time.
 def rnfirebase_remove_spm_core_from_app_target(installer)
-  return if $rnfirebase_spm_active
+  return if RNFirebaseSPM.active?
 
   pkg_class = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference
   ref_class = Xcodeproj::Project::Object::XCSwiftPackageProductDependency
@@ -598,7 +679,7 @@ def rnfirebase_remove_spm_core_from_app_target(installer)
       next unless target.respond_to?(:package_product_dependencies)
 
       stale_refs = target.package_product_dependencies.select do |dep|
-        dep.class == ref_class && dep.product_name == 'FirebaseCore' && dep.package&.repositoryURL == $firebase_spm_url
+        dep.class == ref_class && dep.product_name == 'FirebaseCore' && dep.package&.repositoryURL == RNFirebaseSPM.url
       end
       next if stale_refs.empty?
 
@@ -615,7 +696,7 @@ def rnfirebase_remove_spm_core_from_app_target(installer)
     end
 
     project.root_object.package_references
-      .select { |pkg| pkg.class == pkg_class && pkg.repositoryURL == $firebase_spm_url }
+      .select { |pkg| pkg.class == pkg_class && pkg.repositoryURL == RNFirebaseSPM.url }
       .each do |pkg|
         next if pkg.referrers.any? { |referrer| referrer.class == ref_class }
 
@@ -667,7 +748,7 @@ end
 # also silently masking an unrelated, legitimate "file already exists"
 # failure from some other SPM package in a consumer's own app.
 def rnfirebase_fix_spm_archive_signature_collision(installer)
-  return unless $rnfirebase_spm_active
+  return unless RNFirebaseSPM.active?
 
   installer.aggregate_targets.each do |aggregate_target|
     project = aggregate_target.user_project
@@ -753,7 +834,7 @@ end
 # archive`: with this flag, the build fails on React Native's own C++ pods;
 # without it, `@import` is never reached and the archive succeeds cleanly.
 def rnfirebase_apply_spm_build_settings(installer)
-  return unless $rnfirebase_spm_active
+  return unless RNFirebaseSPM.active?
 
   explicit_modules_settings = %w[SWIFT_ENABLE_EXPLICIT_MODULES CLANG_ENABLE_EXPLICIT_MODULES]
 
@@ -808,16 +889,13 @@ def firebase_dependency(spec, version, spm_products, pods)
     # Tracked ourselves (rather than inspecting RN's internal `SPM` object's
     # dependency list) so `rnfirebase_add_spm_embed_phase` doesn't depend on
     # any RN-internal state shape -- only on whether *we* ever took this path.
-    $rnfirebase_spm_active = true
-    # Tracked so `rnfirebase_add_spm_core_to_app_target` can declare the same
-    # minimum version requirement without needing its own copy of `version`.
-    $rnfirebase_spm_version = version
+    RNFirebaseSPM.activate!(version)
     if defined?(Pod) && defined?(Pod::UI)
       Pod::UI.puts "[react-native-firebase] #{spec.name}: ".yellow +
         "Using SPM for Firebase dependency resolution (products: #{spm_products.join(', ')})"
     end
     spm_dependency(spec,
-      url: $firebase_spm_url,
+      url: RNFirebaseSPM.url,
       requirement: { kind: 'upToNextMajorVersion', minimumVersion: version },
       products: spm_products
     )

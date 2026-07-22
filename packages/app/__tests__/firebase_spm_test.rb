@@ -232,8 +232,6 @@ end
 
 class FirebaseSpmTest < Minitest::Test
   def setup
-    # Reset global state before each test
-    $firebase_spm_url = nil
     # Remove spm_dependency if defined from a previous test
     if defined?(spm_dependency)
       Object.send(:remove_method, :spm_dependency)
@@ -244,8 +242,13 @@ class FirebaseSpmTest < Minitest::Test
     # than relying on `defined?` alone) is exactly the behavior rnfirebase_spm_disabled?
     # is meant to guard against, so tests below assert on it explicitly.
     $RNFirebaseDisableSPM = nil
-    # Same one-way-`defined?` caveat as $RNFirebaseDisableSPM above.
-    $rnfirebase_spm_active = nil
+    # `RNFirebaseSPM` gives us a real, deliberate reset primitive for the SPM
+    # active/version/url state instead of relying on that same one-way-`defined?`
+    # workaround -- unlike a bare global, `reset!` can put it back to a genuinely
+    # "never activated" state between tests, not just back to a falsy value.
+    # Guarded with `defined?` because the very first test's `setup` runs before
+    # any test has `load`ed firebase_spm.rb yet, so the constant doesn't exist.
+    RNFirebaseSPM.reset! if defined?(RNFirebaseSPM)
     # Reset the `Pod::UI` mock's captured output between tests.
     Pod::UI.warnings = []
     Pod::UI.messages = []
@@ -389,26 +392,26 @@ class FirebaseSpmTest < Minitest::Test
   def test_reads_spm_url_from_package_json
     load_firebase_spm
 
-    assert_equal 'https://github.com/firebase/firebase-ios-sdk.git', $firebase_spm_url
+    assert_equal 'https://github.com/firebase/firebase-ios-sdk.git', RNFirebaseSPM.url
   end
 
-  # ── $rnfirebase_spm_active tracking (replaces reflecting into RN's `SPM`
+  # ── RNFirebaseSPM.active? tracking (replaces reflecting into RN's `SPM`
   #    internal object, which rnfirebase_add_spm_embed_phase used to do) ──
 
   def test_spm_path_sets_active_flag
     Object.define_method(:spm_dependency) { |*| nil }
     load_firebase_spm
 
-    refute $rnfirebase_spm_active
+    refute RNFirebaseSPM.active?
     firebase_dependency(MockSpec.new, '12.10.0', ['FirebaseAuth'], 'Firebase/Auth')
-    assert $rnfirebase_spm_active
+    assert RNFirebaseSPM.active?
   end
 
   def test_cocoapods_path_does_not_set_active_flag
     load_firebase_spm
 
     firebase_dependency(MockSpec.new, '12.10.0', ['FirebaseAuth'], 'Firebase/Auth')
-    refute $rnfirebase_spm_active
+    refute RNFirebaseSPM.active?
   end
 
   def test_disabled_spm_does_not_set_active_flag_even_if_spm_dependency_defined
@@ -417,7 +420,7 @@ class FirebaseSpmTest < Minitest::Test
     $RNFirebaseDisableSPM = true
 
     firebase_dependency(MockSpec.new, '12.10.0', ['FirebaseAuth'], 'Firebase/Auth')
-    refute $rnfirebase_spm_active
+    refute RNFirebaseSPM.active?
   end
 
   # ── rnfirebase_add_spm_embed_phase (invoked automatically by
@@ -425,7 +428,6 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_embed_phase_noop_when_spm_not_active
     load_firebase_spm
-    $rnfirebase_spm_active = false
 
     installer = MockInstaller.new(nil) # would raise if ever touched
     rnfirebase_add_spm_embed_phase(installer)
@@ -434,7 +436,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_embed_phase_noop_without_cp_embed_pods_frameworks_phase
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     target = MockTarget.new(['[CP] Some Other Phase'])
     user_project = MockUserProject.new([target])
@@ -450,7 +452,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_embed_phase_adds_phase_when_active_and_cp_phase_present
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     target = MockTarget.new(['[CP] Embed Pods Frameworks'])
     user_project = MockUserProject.new([target])
@@ -470,7 +472,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_embed_phase_is_idempotent_across_repeated_pod_installs
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     target = MockTarget.new(['[CP] Embed Pods Frameworks'])
     user_project = MockUserProject.new([target])
@@ -491,7 +493,6 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_add_core_noop_when_spm_not_active
     load_firebase_spm
-    $rnfirebase_spm_active = false
 
     installer = MockInstaller.new(nil) # would raise if ever touched
     rnfirebase_add_spm_core_to_app_target(installer)
@@ -500,9 +501,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_add_core_noop_without_cp_embed_pods_frameworks_phase
     load_firebase_spm
-    $rnfirebase_spm_active = true
-    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
-    $rnfirebase_spm_version = '12.10.0'
+    RNFirebaseSPM.activate!('12.10.0')
 
     target = MockTarget.new(['[CP] Some Other Phase'])
     user_project = MockUserProject.new([target])
@@ -516,9 +515,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_add_core_links_firebase_core_when_active_and_cp_phase_present
     load_firebase_spm
-    $rnfirebase_spm_active = true
-    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
-    $rnfirebase_spm_version = '12.10.0'
+    RNFirebaseSPM.activate!('12.10.0')
 
     target = MockTarget.new(['[CP] Embed Pods Frameworks'])
     user_project = MockUserProject.new([target])
@@ -529,7 +526,7 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 1, target.package_product_dependencies.length
     ref = target.package_product_dependencies[0]
     assert_equal 'FirebaseCore', ref.product_name
-    assert_equal $firebase_spm_url, ref.package.repositoryURL
+    assert_equal RNFirebaseSPM.url, ref.package.repositoryURL
 
     search_path = '${SYMROOT}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/'
     target.build_configurations.each do |config|
@@ -541,9 +538,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_add_core_is_idempotent_across_repeated_pod_installs
     load_firebase_spm
-    $rnfirebase_spm_active = true
-    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
-    $rnfirebase_spm_version = '12.10.0'
+    RNFirebaseSPM.activate!('12.10.0')
 
     target = MockTarget.new(['[CP] Embed Pods Frameworks'])
     user_project = MockUserProject.new([target])
@@ -557,9 +552,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_add_core_handles_swift_include_paths_already_set_as_a_string
     load_firebase_spm
-    $rnfirebase_spm_active = true
-    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
-    $rnfirebase_spm_version = '12.10.0'
+    RNFirebaseSPM.activate!('12.10.0')
 
     target = MockTarget.new(['[CP] Embed Pods Frameworks'])
     # Xcode/Xcodeproj may represent a list-type build setting as a
@@ -594,7 +587,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_remove_core_noop_when_spm_active
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     installer = MockInstaller.new(nil) # would raise if ever touched
     rnfirebase_remove_spm_core_from_app_target(installer)
@@ -603,8 +596,6 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_remove_core_noop_when_no_stale_dependency_present
     load_firebase_spm
-    $rnfirebase_spm_active = false
-    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
 
     target = MockTarget.new(['[CP] Embed Pods Frameworks'])
     user_project = MockUserProject.new([target])
@@ -618,14 +609,12 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_remove_core_removes_stale_dependency_and_orphaned_package_reference
     load_firebase_spm
-    $rnfirebase_spm_active = false
-    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
 
     # Simulate the state left behind by a prior SPM-mode `pod install`: the
     # app target still has an explicit FirebaseCore product dependency, and
     # the project still has the backing package reference.
     pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
-    pkg.repositoryURL = $firebase_spm_url
+    pkg.repositoryURL = RNFirebaseSPM.url
     ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
     ref.product_name = 'FirebaseCore'
     ref.package = pkg
@@ -643,11 +632,9 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_remove_core_leaves_package_reference_when_still_used_by_another_target
     load_firebase_spm
-    $rnfirebase_spm_active = false
-    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
 
     pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
-    pkg.repositoryURL = $firebase_spm_url
+    pkg.repositoryURL = RNFirebaseSPM.url
 
     stale_ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
     stale_ref.product_name = 'FirebaseCore'
@@ -672,8 +659,6 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_remove_core_ignores_dependencies_from_a_different_package_url
     load_firebase_spm
-    $rnfirebase_spm_active = false
-    $firebase_spm_url = 'https://github.com/firebase/firebase-ios-sdk.git'
 
     unrelated_pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
     unrelated_pkg.repositoryURL = 'https://github.com/some/other-package.git'
@@ -695,7 +680,6 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_signature_collision_fix_noop_when_spm_not_active
     load_firebase_spm
-    $rnfirebase_spm_active = false
 
     installer = MockInstaller.new(nil) # would raise if ever touched
     rnfirebase_fix_spm_archive_signature_collision(installer)
@@ -704,7 +688,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_signature_collision_fix_adds_phase_removing_every_known_artifact
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     target = MockTarget.new(['[CP] Embed Pods Frameworks'])
     user_project = MockUserProject.new([target])
@@ -723,7 +707,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_signature_collision_fix_is_idempotent_across_repeated_pod_installs
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     target = MockTarget.new(['[CP] Embed Pods Frameworks'])
     user_project = MockUserProject.new([target])
@@ -743,7 +727,6 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_fail_fast_noop_when_spm_not_active
     load_firebase_spm
-    $rnfirebase_spm_active = false
 
     installer = MockInstaller.new(nil) # would raise if ever touched
     rnfirebase_fail_if_spm_static_linkage!(installer)
@@ -752,7 +735,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_fail_fast_noop_when_spm_active_and_all_targets_dynamic
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     installer = MockInstaller.new([
       MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: false)
@@ -764,7 +747,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_fail_fast_raises_pod_informative_when_spm_active_and_a_target_is_static
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     installer = MockInstaller.new([
       MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: true)
@@ -780,7 +763,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_fail_fast_ignores_aggregate_targets_own_always_static_build_type
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     # Regression test for the exact bug that broke every SPM CI job: real
     # CocoaPods' `AggregateTarget#build_as_static?` is `true` unconditionally
@@ -804,7 +787,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_fail_fast_lists_every_static_target_by_name
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     installer = MockInstaller.new([
       MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: true),
@@ -924,7 +907,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_hook_raises_and_skips_original_hook_when_spm_static_linkage_detected
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     klass = new_fake_cocoapods_installer_class
     klass.send(:attr_reader, :aggregate_targets)
@@ -983,7 +966,6 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_verify_embed_phase_noop_when_spm_not_active
     load_firebase_spm
-    $rnfirebase_spm_active = false
 
     installer = MockInstaller.new(nil) # would raise if ever touched
     rnfirebase_verify_spm_embed_phase_applied!(installer)
@@ -992,7 +974,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_verify_embed_phase_noop_without_cp_embed_pods_frameworks_phase
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     # No `'[CP] Embed Pods Frameworks'` phase => this target never needed
     # the RNFB embed phase in the first place, so its absence isn't a failure.
@@ -1006,7 +988,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_verify_embed_phase_noop_when_phase_present
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     target = MockTarget.new(['[CP] Embed Pods Frameworks'])
     user_project = MockUserProject.new([target])
@@ -1020,7 +1002,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_verify_embed_phase_raises_pod_informative_when_phase_missing_on_target_that_needs_it
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     # Simulates `rnfirebase_add_spm_embed_phase` having silently failed to
     # add its phase to a target that has `'[CP] Embed Pods Frameworks'` --
@@ -1039,7 +1021,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_verify_embed_phase_lists_every_missing_target_by_name
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     missing_target = MockTarget.new(['[CP] Embed Pods Frameworks'], name: 'missing-target')
     present_target = MockTarget.new(['[CP] Embed Pods Frameworks'], name: 'present-target')
@@ -1061,7 +1043,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_hook_raises_when_embed_phase_did_not_actually_apply
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
     # Stub out the real embed-phase logic so it does nothing, simulating the
     # silent-failure scenario `rnfirebase_verify_spm_embed_phase_applied!` guards
     # against (e.g. a future Xcodeproj/Xcode-project shape it doesn't handle).
@@ -1089,7 +1071,7 @@ class FirebaseSpmTest < Minitest::Test
 
   def test_hook_does_not_raise_when_embed_phase_applied_correctly
     load_firebase_spm
-    $rnfirebase_spm_active = true
+    RNFirebaseSPM.activate!('12.10.0')
 
     klass = new_fake_cocoapods_installer_class
     klass.send(:attr_reader, :aggregate_targets)
