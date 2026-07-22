@@ -72,6 +72,12 @@ class MockUserProject
   end
 end
 
+# Stands in for `Xcodeproj::Project::Object::PBXProject` (the real
+# `Xcodeproj::Project#root_object`) -- specifically its `package_references`
+# attribute (a `has_many :package_references, [XCRemoteSwiftPackageReference,
+# XCLocalSwiftPackageReference]` collection), the only part of it
+# rnfirebase_add_spm_core_to_app_target / rnfirebase_remove_spm_core_from_app_target
+# read and mutate directly.
 class MockRootObject
   attr_accessor :package_references
 
@@ -130,6 +136,12 @@ module Xcodeproj
   end
 end
 
+# Stands in for `Xcodeproj::Project::Object::XCBuildConfiguration`, the real
+# element type of `AbstractTarget#build_configurations`. Only `name` is
+# modeled here -- production code never reads `config.build_settings`
+# directly on this object, it always goes through
+# `target.build_settings(config.name)` instead (see `MockTarget#build_settings`
+# above), so `name` is the only real attribute this mock needs to expose.
 class MockBuildConfig
   attr_reader :name
 
@@ -166,6 +178,14 @@ class MockTargetDefinition
   end
 end
 
+# Stands in for `Pod::AggregateTarget` -- specifically its `user_project`
+# (`Xcodeproj::Project`) and `target_definition`
+# (`Pod::Podfile::TargetDefinition`) attributes, the two real properties
+# every `rnfirebase_*` post-install helper in firebase_spm.rb actually reads
+# off an `installer.aggregate_targets` entry. Deliberately does *not* model
+# `Pod::Target#build_as_static?`/`#build_type` (the real aggregate target's
+# own, always-static build type) -- see `MockBuildType`'s comment above for
+# why that would model the wrong signal entirely for this check.
 class MockAggregateTarget
   attr_reader :user_project, :name, :target_definition
 
@@ -222,6 +242,13 @@ unless String.method_defined?(:yellow)
   end
 end
 
+# Stands in for `Pod::Installer` -- specifically its `aggregate_targets`
+# attribute (a plain `attr_reader`), the only part of the real installer
+# every `rnfirebase_*` post-install helper in firebase_spm.rb actually reads.
+# `rnfirebase_hook_cocoapods_post_install!` itself is tested separately,
+# against a fake class shaped like `Pod::Installer` (see
+# `new_fake_cocoapods_installer_class` below), since there's no real
+# `Pod::Installer` to alias/wrap without a full CocoaPods environment.
 class MockInstaller
   attr_reader :aggregate_targets
 
