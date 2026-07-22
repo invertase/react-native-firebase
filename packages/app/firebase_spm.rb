@@ -61,10 +61,12 @@ module RNFirebaseSPM
     # of this `pod install` process.
     #
     # __dir__ resolves to the directory of this file (packages/app/).
-    # In monorepos with hoisted dependencies or pnpm, the path from other
-    # packages (e.g., `require '../app/firebase_spm'`) must resolve correctly
-    # to this location. If your package manager hoists differently, you may
-    # need to adjust the require path in individual podspecs.
+    # Every other podspec loads this file via `require_relative` (e.g.
+    # `require_relative '../app/firebase_spm'`), which resolves the path
+    # relative to the requiring file's own location rather than the
+    # process's current working directory -- so this always resolves
+    # correctly regardless of monorepo hoisting layout (hoisted
+    # dependencies, pnpm, etc.), with no adjustment needed.
     def url
       @url ||= begin
         app_package_path = File.join(__dir__, 'package.json')

@@ -1,6 +1,6 @@
 require 'json'
-require './firebase_json'
-require './firebase_spm'
+require_relative './firebase_json'
+require_relative './firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 firebase_sdk_version = package['sdkVersions']['ios']['firebase']
 firebase_ios_target = package['sdkVersions']['ios']['iosTarget']

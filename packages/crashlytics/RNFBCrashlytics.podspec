@@ -1,5 +1,5 @@
 require 'json'
-require '../app/firebase_spm'
+require_relative '../app/firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
