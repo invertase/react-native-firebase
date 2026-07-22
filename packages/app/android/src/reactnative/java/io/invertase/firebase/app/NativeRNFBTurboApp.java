@@ -19,6 +19,7 @@ package io.invertase.firebase.app;
 
 import android.util.Log;
 import com.facebook.fbreact.specs.NativeRNFBTurboAppSpec;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
@@ -35,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NativeRNFBTurboApp extends NativeRNFBTurboAppSpec {
+public class NativeRNFBTurboApp extends NativeRNFBTurboAppSpec implements LifecycleEventListener {
   private static final String TAG = "App";
 
   public static Map<String, String> authDomains = new HashMap<>();
@@ -47,8 +48,41 @@ public class NativeRNFBTurboApp extends NativeRNFBTurboAppSpec {
   @Override
   public void initialize() {
     super.initialize();
+    ReactApplicationContext reactContext = getReactApplicationContext();
+    // Register unconditionally: when the host is already resumed, addLifecycleEventListener
+    // immediately delivers onHostResume (even for a stale-but-resumed context on bridgeless),
+    // and every subsequent resume re-converges the emitter onto the live context. Any attach a
+    // stale generation triggers through this path is rejected by attachReactContext's
+    // current-context arbitration.
+    reactContext.addLifecycleEventListener(this);
+    ReactNativeFirebaseEventEmitter.getSharedInstance().attachReactContext(reactContext);
+  }
+
+  @Override
+  public void invalidate() {
+    ReactApplicationContext reactContext = getReactApplicationContext();
+    reactContext.removeLifecycleEventListener(this);
+    // Identity-guarded inside the emitter: only clears state belonging to this dying context,
+    // never state a replacement runtime has already installed.
+    ReactNativeFirebaseEventEmitter.getSharedInstance().detachReactContext(reactContext);
+    super.invalidate();
+  }
+
+  @Override
+  public void onHostResume() {
+    // Re-attaching also flushes any events queued while no runtime was able to receive them.
     ReactNativeFirebaseEventEmitter.getSharedInstance()
         .attachReactContext(getReactApplicationContext());
+  }
+
+  @Override
+  public void onHostPause() {
+    // no-op, required by LifecycleEventListener
+  }
+
+  @Override
+  public void onHostDestroy() {
+    // no-op, required by LifecycleEventListener
   }
 
   @Override
