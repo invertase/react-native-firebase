@@ -233,6 +233,50 @@ def rnfirebase_add_spm_embed_phase(installer)
   end
 end
 
+# Safety net for `rnfirebase_add_spm_embed_phase`: confirms its embed build
+# phase actually landed on every target that needs it, immediately after it
+# runs. "Needs it" uses the exact same target-selection criterion
+# `rnfirebase_add_spm_embed_phase` itself uses (SPM active, target has a
+# `'[CP] Embed Pods Frameworks'` phase) -- so this is only ever checking
+# targets that function was actually supposed to have touched.
+#
+# Without this, a future Xcodeproj/Xcode-project shape that
+# `rnfirebase_add_spm_embed_phase` doesn't anticipate could leave it
+# silently doing nothing for a target, with no `pod install`-time signal --
+# the first sign of trouble would be that app crashing at launch with a
+# missing-library dyld error, with nothing pointing back at this file.
+#
+# Raises `Pod::Informative` -- CocoaPods' own user-facing error class,
+# same as `rnfirebase_fail_if_spm_static_linkage!` -- rather than warning
+# and continuing like the softer checks in this file: there's no safe
+# fallback for "the app you're about to build will crash at launch," so
+# `pod install` itself must fail loudly here instead.
+def rnfirebase_verify_spm_embed_phase_applied!(installer)
+  return unless $rnfirebase_spm_active
+
+  missing_target_names = []
+
+  installer.aggregate_targets.each do |aggregate_target|
+    aggregate_target.user_project.native_targets.each do |target|
+      next unless target.respond_to?(:shell_script_build_phases)
+      next unless target.shell_script_build_phases.any? { |phase| phase.name == '[CP] Embed Pods Frameworks' }
+      next if target.shell_script_build_phases.any? { |phase| phase.name == RNFIREBASE_SPM_EMBED_PHASE_NAME }
+
+      missing_target_names << target.name
+    end
+  end
+
+  return if missing_target_names.empty?
+
+  raise Pod::Informative, <<~MESSAGE
+    [react-native-firebase] Failed to add the Firebase SPM embed build phase to target(s): #{missing_target_names.join(', ')}.
+
+    Without it, this app will crash at launch with a missing-library dyld error, because Firebase's Swift Package frameworks never get copied into the app bundle.
+
+    Add `rnfirebase_add_spm_embed_phase(installer)` to your Podfile's post_install block as a fallback, then run `pod install` again.
+  MESSAGE
+end
+
 # Fails `pod install` fast, with a clear explanation, when RNFB's SPM mode is
 # combined with static linkage (`use_frameworks! :linkage => :static`) --
 # instead of letting consumers hit a confusing "duplicate symbols for
@@ -321,9 +365,32 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
   hook_method = :run_podfile_post_install_hooks
   original_method = :rnfirebase_original_run_podfile_post_install_hooks
 
-  return unless installer_class
+  unless installer_class
+    if defined?(Pod::UI)
+      Pod::UI.warn '[react-native-firebase] `Pod::Installer` isn\'t defined -- automatic Firebase SPM setup ' \
+        '(dynamic framework embedding, etc.) was not hooked into `pod install`. Add ' \
+        '`rnfirebase_add_spm_embed_phase(installer)` to your Podfile\'s post_install block as a fallback.'
+    end
+    return
+  end
+
   was_private = installer_class.private_method_defined?(hook_method)
-  return unless was_private || installer_class.method_defined?(hook_method)
+  unless was_private || installer_class.method_defined?(hook_method)
+    if defined?(Pod::UI)
+      Pod::UI.warn "[react-native-firebase] `Pod::Installer##{hook_method}` doesn't exist (a CocoaPods " \
+        'release may have renamed or removed it) -- automatic Firebase SPM setup was not hooked into ' \
+        '`pod install`. Add `rnfirebase_add_spm_embed_phase(installer)` to your Podfile\'s post_install ' \
+        'block as a fallback.'
+    end
+    return
+  end
+
+  # Already hooked -- e.g. a second RNFB podspec also `require`d this same
+  # file within one `pod install` process (this file is required by path,
+  # and a hoisted/symlinked dependency layout can resolve to the "same"
+  # file more than once). This is expected and idempotent, not a failure --
+  # every multi-podspec RNFB install hits this exact path -- so it's
+  # deliberately silent rather than warning on every normal install.
   return if installer_class.method_defined?(original_method) || installer_class.private_method_defined?(original_method)
 
   installer_class.class_eval do
@@ -346,6 +413,17 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
             'to your Podfile\'s post_install block as a fallback.'
         end
       end
+      # Deliberately outside the `rescue` above, and not itself wrapped in a
+      # rescue-and-warn like the softer checks in this method: dynamic
+      # framework embedding is load-bearing (without it, the app crashes at
+      # launch with a missing-library dyld error), so if the phase still
+      # isn't actually on a target that needs it after the call above --
+      # whether that call raised, silently no-opped, or only partially
+      # applied -- this must abort `pod install` with a clear message
+      # rather than let a broken install continue, the same way
+      # `rnfirebase_fail_if_spm_static_linkage!` above is deliberately not
+      # rescued either.
+      rnfirebase_verify_spm_embed_phase_applied!(self)
       begin
         rnfirebase_add_spm_core_to_app_target(self)
       rescue => e

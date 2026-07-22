@@ -5,10 +5,11 @@ require 'json'
 
 # Mock Pod::Specification to capture dependency calls
 class MockSpec
-  attr_reader :dependencies
+  attr_reader :dependencies, :name
 
-  def initialize
+  def initialize(name: 'RNFBApp')
     @dependencies = []
+    @name = name
   end
 
   def dependency(name, version)
@@ -185,6 +186,42 @@ unless defined?(Pod::Informative)
   end
 end
 
+# Stands in for `Pod::UI` (CocoaPods' user-facing output helper) so tests can
+# assert on `Pod::UI.warn` calls -- e.g. from `rnfirebase_hook_cocoapods_post_install!`'s
+# guard clauses -- without the real `cocoapods-core` gem installed in this
+# dependency-free Ruby unit-test job. Collects everything printed so tests
+# can assert on it; cleared in `setup` below since (like `Pod::Informative`
+# above) it can't be "undefined" again once defined in this process.
+unless defined?(Pod::UI)
+  module Pod
+    module UI
+      class << self
+        attr_accessor :warnings, :messages
+      end
+
+      def self.warn(message)
+        (self.warnings ||= []) << message
+      end
+
+      def self.puts(message)
+        (self.messages ||= []) << message
+      end
+    end
+  end
+end
+
+# `colored2` (a real CocoaPods dependency) patches `String#yellow` etc.,
+# used by a couple of existing `Pod::UI.puts "...".yellow + ...` call sites
+# in firebase_spm.rb. Stubbed as a no-op here so those call sites don't
+# raise `NoMethodError` now that `defined?(Pod::UI)` is true above.
+unless String.method_defined?(:yellow)
+  class String
+    def yellow
+      self
+    end
+  end
+end
+
 class MockInstaller
   attr_reader :aggregate_targets
 
@@ -209,6 +246,9 @@ class FirebaseSpmTest < Minitest::Test
     $RNFirebaseDisableSPM = nil
     # Same one-way-`defined?` caveat as $RNFirebaseDisableSPM above.
     $rnfirebase_spm_active = nil
+    # Reset the `Pod::UI` mock's captured output between tests.
+    Pod::UI.warnings = []
+    Pod::UI.messages = []
   end
 
   def load_firebase_spm
@@ -864,16 +904,22 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 1, instance.original_hook_calls
   end
 
-  def test_hook_noop_when_hook_method_does_not_exist
+  def test_hook_warns_and_noops_when_hook_method_does_not_exist
     load_firebase_spm
     klass = Class.new # no run_podfile_post_install_hooks at all
+    Pod::UI.warnings.clear
 
     # Must not raise -- guards against a future CocoaPods release renaming
-    # or removing the method.
+    # or removing the method -- but must warn loudly instead of silently
+    # no-opping, since a consumer app would otherwise crash at launch with
+    # no diagnostic pointing back at this file.
     rnfirebase_hook_cocoapods_post_install!(klass)
 
     refute klass.method_defined?(:rnfirebase_original_run_podfile_post_install_hooks)
     refute klass.private_method_defined?(:rnfirebase_original_run_podfile_post_install_hooks)
+    assert_equal 1, Pod::UI.warnings.length
+    assert_includes Pod::UI.warnings[0], 'run_podfile_post_install_hooks'
+    assert_includes Pod::UI.warnings[0], 'rnfirebase_add_spm_embed_phase(installer)'
   end
 
   def test_hook_raises_and_skips_original_hook_when_spm_static_linkage_detected
@@ -895,11 +941,170 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 0, instance.original_hook_calls
   end
 
-  def test_hook_noop_when_installer_class_is_nil
+  def test_hook_warns_and_noops_when_installer_class_is_nil
+    load_firebase_spm
+    # Mirrors production when Pod::Installer isn't defined -- e.g. outside
+    # of a real CocoaPods environment, as in this test suite. Clear the
+    # warning `load_firebase_spm` itself just generated (it calls
+    # `rnfirebase_hook_cocoapods_post_install!` with no args at the bottom
+    # of the file, which resolves to this exact nil case in this process),
+    # so the assertions below only see the explicit call under test.
+    Pod::UI.warnings.clear
+
+    rnfirebase_hook_cocoapods_post_install!(nil)
+
+    assert_equal 1, Pod::UI.warnings.length
+    assert_includes Pod::UI.warnings[0], 'Pod::Installer'
+    assert_includes Pod::UI.warnings[0], 'rnfirebase_add_spm_embed_phase(installer)'
+  end
+
+  def test_hook_does_not_warn_when_already_hooked
+    # The "already hooked" guard is idempotency-only, not a failure signal:
+    # it's the expected, normal path whenever this file gets `require`d (or
+    # `load`ed, as in every test here) more than once against the same
+    # installer class within one `pod install` process -- see
+    # `test_hook_is_idempotent_across_repeated_podspec_requires` above. That
+    # happens on every real multi-podspec RNFB install, so warning here
+    # would spam `pod install` output for entirely normal behavior. No test
+    # asserts a warning for this guard; this test documents and locks in
+    # that silence instead.
     load_firebase_spm
 
-    # Mirrors production when Pod::Installer isn't defined -- e.g. outside
-    # of a real CocoaPods environment, as in this test suite.
-    rnfirebase_hook_cocoapods_post_install!(nil)
+    klass = new_fake_cocoapods_installer_class
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    Pod::UI.warnings.clear
+
+    rnfirebase_hook_cocoapods_post_install!(klass)
+
+    assert_empty Pod::UI.warnings
+  end
+
+  # ── rnfirebase_verify_spm_embed_phase_applied! ──
+
+  def test_verify_embed_phase_noop_when_spm_not_active
+    load_firebase_spm
+    $rnfirebase_spm_active = false
+
+    installer = MockInstaller.new(nil) # would raise if ever touched
+    rnfirebase_verify_spm_embed_phase_applied!(installer)
+    # No error raised => returned early without walking `installer.aggregate_targets`.
+  end
+
+  def test_verify_embed_phase_noop_without_cp_embed_pods_frameworks_phase
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+
+    # No `'[CP] Embed Pods Frameworks'` phase => this target never needed
+    # the RNFB embed phase in the first place, so its absence isn't a failure.
+    target = MockTarget.new(['[CP] Some Other Phase'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_verify_spm_embed_phase_applied!(installer)
+    # No error raised.
+  end
+
+  def test_verify_embed_phase_noop_when_phase_present
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+    rnfirebase_add_spm_embed_phase(installer)
+
+    rnfirebase_verify_spm_embed_phase_applied!(installer)
+    # No error raised: the phase rnfirebase_add_spm_embed_phase just added
+    # satisfies the check.
+  end
+
+  def test_verify_embed_phase_raises_pod_informative_when_phase_missing_on_target_that_needs_it
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+
+    # Simulates `rnfirebase_add_spm_embed_phase` having silently failed to
+    # add its phase to a target that has `'[CP] Embed Pods Frameworks'` --
+    # i.e. the exact load-bearing failure this function exists to catch.
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], name: 'testing')
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    error = assert_raises(Pod::Informative) do
+      rnfirebase_verify_spm_embed_phase_applied!(installer)
+    end
+    assert_includes error.message, 'Failed to add the Firebase SPM embed build phase'
+    assert_includes error.message, 'testing'
+    assert_includes error.message, 'rnfirebase_add_spm_embed_phase(installer)'
+  end
+
+  def test_verify_embed_phase_lists_every_missing_target_by_name
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+
+    missing_target = MockTarget.new(['[CP] Embed Pods Frameworks'], name: 'missing-target')
+    present_target = MockTarget.new(['[CP] Embed Pods Frameworks'], name: 'present-target')
+    present_target.new_shell_script_build_phase(RNFIREBASE_SPM_EMBED_PHASE_NAME)
+    unrelated_target = MockTarget.new(['[CP] Some Other Phase'], name: 'unrelated-target')
+    user_project = MockUserProject.new([missing_target, present_target, unrelated_target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    error = assert_raises(Pod::Informative) do
+      rnfirebase_verify_spm_embed_phase_applied!(installer)
+    end
+    assert_includes error.message, 'missing-target'
+    refute_includes error.message, 'present-target'
+    refute_includes error.message, 'unrelated-target'
+  end
+
+  # ── rnfirebase_hook_cocoapods_post_install! calling
+  #    rnfirebase_verify_spm_embed_phase_applied! ──
+
+  def test_hook_raises_when_embed_phase_did_not_actually_apply
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+    # Stub out the real embed-phase logic so it does nothing, simulating the
+    # silent-failure scenario `rnfirebase_verify_spm_embed_phase_applied!` guards
+    # against (e.g. a future Xcodeproj/Xcode-project shape it doesn't handle).
+    Object.define_method(:rnfirebase_add_spm_embed_phase) { |*| nil }
+
+    klass = new_fake_cocoapods_installer_class
+    klass.send(:attr_reader, :aggregate_targets)
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], name: 'testing')
+    user_project = MockUserProject.new([target])
+    klass.send(:define_method, :initialize) do
+      @original_hook_calls = 0
+      @aggregate_targets = [MockAggregateTarget.new(user_project)]
+    end
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    instance = klass.new
+
+    assert_raises(Pod::Informative) { instance.send(:run_podfile_post_install_hooks) }
+    # Unlike the softer, rescued checks further down the same hook, the
+    # original CocoaPods post-install behavior has already run by this
+    # point (this check is deliberately not skippable the way a static
+    # linkage failure aborts before it) -- but the failure must still
+    # surface as a hard `pod install` failure, not a warning.
+    assert_equal 1, instance.original_hook_calls
+  end
+
+  def test_hook_does_not_raise_when_embed_phase_applied_correctly
+    load_firebase_spm
+    $rnfirebase_spm_active = true
+
+    klass = new_fake_cocoapods_installer_class
+    klass.send(:attr_reader, :aggregate_targets)
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], name: 'testing')
+    user_project = MockUserProject.new([target])
+    klass.send(:define_method, :initialize) do
+      @original_hook_calls = 0
+      @aggregate_targets = [MockAggregateTarget.new(user_project)]
+    end
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    instance = klass.new
+
+    result = instance.send(:run_podfile_post_install_hooks)
+
+    assert_equal :original_result, result
+    refute_nil target.shell_script_build_phases.find { |p| p.name == RNFIREBASE_SPM_EMBED_PHASE_NAME }
   end
 end
