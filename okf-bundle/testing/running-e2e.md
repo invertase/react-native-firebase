@@ -57,7 +57,7 @@ yarn tests:macos:test-cover
 
 Clean `:build` + `:test-cover` each time — not reuse variants.
 
-5. **Report locations** — [Coverage design](coverage-design.md).
+5. **Report locations** — [Coverage design](coverage-design.md). Android CI also runs `yarn tests:android:unit` (JVM) before Detox; post-e2e produces merged **`jacocoTestReport`** (unit + e2e) — details there, not duplicated here.
 
 6. **One e2e at a time** — never overlap `:test-cover` runs on one host. All platforms share Metro `:8081` and the test-runner WebSocket port (default **8090**); parallel runs race on coverage/device/emulator state. Every run starts after [clean pre-flight](#pre-flight-is-the-host-clear-to-start). Log triage for port/orchestration markers: [test-runner host orchestration](#test-runner-host-orchestration-log-triage-only).
 

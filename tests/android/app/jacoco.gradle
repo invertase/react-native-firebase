@@ -109,15 +109,34 @@ def configureJacocoReportTask(JacocoReport reportTask) {
     configureRnfbJacocoSourcesAndClasses(reportTask)
 }
 
+// Library JVM .exec files come from :react-native-firebase_*:testDebugUnitTest
+// (Jacoco plugin → build/jacoco/*.exec). Do not dependOn :app:testDebugUnitTest —
+// that task is hollow and produces no RNFB coverage. See tests/android/build.gradle
+// (enableAndroidTestCoverage for e2e .ec; Jacoco plugin for unit .exec).
+def rnfbDebugUnitTestTaskPaths() {
+    return rootProject.subprojects
+        .findAll { it.name.contains('react-native-firebase') }
+        .collect { "${it.path}:testDebugUnitTest" }
+}
+
+// Allowlisted via yarn tests:android:unit — all RNFB module JVM unit tests.
+task rnfbDebugUnitTests {
+    group = 'verification'
+    description = 'Run debug JVM unit tests for all react-native-firebase Android library modules'
+    dependsOn { rnfbDebugUnitTestTaskPaths() }
+}
+
 // Unit + e2e (Detox) merged report. E2e coverage is pulled to build/output/coverage/*.ec
-// after Detox; unit tests produce *.exec under each module's build/ when added.
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+// after Detox; unit tests produce *.exec under each module's build/.
+task jacocoTestReport(type: JacocoReport) {
+    dependsOn { rnfbDebugUnitTestTaskPaths() }
     configureJacocoReportTask(it)
     executionData.from = rnfbJacocoExecutionData(['**/*.exec', '**/*.ec'])
 }
 
-// Unit-test only report (for when android unit tests are added to RNFB modules or the app).
-task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+// Unit-test only report (*.exec from RNFB library modules).
+task jacocoUnitTestReport(type: JacocoReport) {
+    dependsOn { rnfbDebugUnitTestTaskPaths() }
     configureJacocoReportTask(it)
     executionData.from = rnfbJacocoExecutionData(['**/*.exec'])
 }

@@ -26,16 +26,20 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 
 | Intent                                                          | Command                                                                                                                                                                                                                                                                                    | Never use instead                                                                                                             |
 | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| Install / refresh deps                                          | `yarn`                                                                                                                                                                                                                                                                                     | `yarn workspace …`, `npm install` in a package, `yarn install` in `tests/` alone for root deps                                |
+| Install / refresh deps                                          | `yarn` (repo root)                                                                                                                                                                                                                                                                         | `yarn workspace …`, `npm install`, `npm install` in a package, `yarn install` / `yarn` in `tests/` alone for root deps, skipping root `yarn` before e2e/build |
 | Transpile `lib/**` → `dist/module/**` (all packages)            | `yarn lerna:prepare`                                                                                                                                                                                                                                                                       | `yarn workspace @react-native-firebase/* prepare`, `cd packages/<pkg> && yarn prepare`, `cd packages/<pkg> && yarn run build` |
 | Transpile one package                                           | `yarn lerna run prepare --scope @react-native-firebase/<pkg>`                                                                                                                                                                                                                              | `yarn workspace @react-native-firebase/<pkg> prepare`                                                                         |
 | After `packages/*/lib/**` edits (Metro serves `dist/module/**`) | `yarn lerna:prepare`; Metro restart when already running ([running e2e § prepare completion gate](running-e2e.md#prepare-completion-gate-blocking)) — platform `:build` only when [running e2e § Rules #3](running-e2e.md#rules) requires native/codegen/instrumentation, not for JS alone | ad-hoc `bob`, `babel`, or package-scoped prepare                                                                              |
 | TS/JS validation sequence                                       | [validation checklist](validation-checklist.md)                                                                                                                                                                                                                                            | ad-hoc `tsc` in package dirs unless listed there                                                                              |
 | JS lint (implementation / review gate)                          | `yarn lint:js`, `yarn lint:js --fix`                                                                                                                                                                                                                                                       | package-scoped `eslint`, `npx eslint`                                                                                         |
+| Android Java format / lint                                      | `yarn lint:android`                                                                                                                                                                                                                                                                        | `yarn google-java-format`, bare `google-java-format`, `google-java-format -i`, `npx google-java-format`, any invented format script |
 | Docs lint (when docs in diff)                                   | `yarn lint:markdown`, `yarn lint:spellcheck`                                                                                                                                                                                                                                               | ad-hoc prettier/eslint on single files                                                                                        |
-| E2e + coverage                                                  | [running e2e](running-e2e.md) — **only** `yarn tests:*`                                                                                                                                                                                                                                    | `jet`, `npx jet`, `yarn jet`, `detox test`, `cd tests && …`, direct Metro/emulator starts                                     |
+| Android JVM unit tests                                          | `yarn tests:android:unit`                                                                                                                                                                                                                                                                  | ad-hoc `./gradlew …` outside this yarn script; bare Robolectric/JUnit IDE-only as the agent gate                              |
+| Android merged Jacoco (unit + e2e)                              | `yarn tests:android:post-e2e-coverage` (after e2e); `yarn tests:android:test:jacoco-report` when regenerating the merge report                                                                                            | `./gradlew jacocoAndroidTestReport` as Codecov path; inventing other jacoco yarn scripts                                      |
+| E2e + coverage                                                  | [running e2e](running-e2e.md) — **only** `yarn tests:*`                                                                                                                                                                                                                                    | `jet`, `npx jet`, `yarn jet`, `detox test`, bare `detox`, `cd tests && …`, direct Metro/emulator starts                       |
 | iOS Detox framework cache rebuild                               | `yarn tests:ios:detox-framework-cache:rebuild`                                                                                                                                                                                                                                             | `cd tests && yarn detox clean-framework-cache`, `cd tests && yarn detox build-framework-cache`, bare `detox …`                |
 | Host pre-flight (before each `:test-cover`)                     | [running e2e § host-clear probes](running-e2e.md#host-clear-probes)                                                                                                                                                                                                                        | `pgrep`, polling `:8090`, spawn probes of Jet/Detox                                                                           |
+
 
 ### Prepare / transpile (detail)
 
@@ -75,8 +79,11 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 | ---------------------------------------------------------------- | -------------------------------------------------------------- |
 | `yarn workspace @react-native-firebase/* prepare` (and variants) | Not canonical; breaks root devDependency binary resolution     |
 | `cd packages/<pkg> && yarn prepare` / `yarn run build`           | Same trap; not the postinstall / lerna code path               |
+| `yarn google-java-format`, bare `google-java-format`, `npx google-java-format`, `google-java-format -i` | Invented format entrypoints — **only** `yarn lint:android` |
+| `npm install` (any cwd) / `yarn` / `yarn install` only in `tests/` for monorepo deps | Root `yarn` applies patches and workspace links; tests-only install is insufficient |
+| Ad-hoc `./gradlew …` outside allowlisted yarn scripts (`tests:android:unit`, `tests:android:build`, `tests:android:post-e2e-coverage`, `tests:android:test:jacoco-report`, etc.) | Wrong task / cwd / report path; invents CI that does not match Codecov |
 | `yarn jet`, `npx jet`, `cd tests && yarn jet …`                  | [E2e agent rule](running-e2e.md#agent-rule-read-first)         |
-| `detox test`, `cd tests && detox …`                              | E2e agent rule                                                 |
+| `detox test`, bare `detox`, `cd tests && detox …`                | E2e agent rule                                                 |
 | Ad-hoc Metro / emulator start                                    | Use `yarn tests:packager:jet`, `yarn tests:emulator:start`     |
 | Spawn / PATH probes to “test” Jet or genversion                  | Log triage only; fix product code and re-run canonical command |
 
@@ -95,6 +102,18 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 - **`yarn jet --help`** working or failing in `tests/` is **not** a valid e2e or install gate.
 - Jet is started **internally** by `yarn tests:<platform>:test-cover`. Stale `:8090` → [pre-flight recovery](running-e2e.md#pre-flight-recovery), then re-run the same `:test-cover` command.
 
+### Android Java format
+
+- There is **no** `yarn google-java-format` script. Invented `google-java-format` / `npx google-java-format` invocations are forbidden.
+- **Canonical:** `yarn lint:android` (repo root) — wraps `google-java-format --set-exit-if-changed --replace` on `packages/*/android/src` and fails if the tree would change.
+
+### Android build / unit / Jacoco
+
+- **Do not** invent `cd tests && yarn install`, then bare `./gradlew` from an arbitrary cwd.
+- Unit: **`yarn tests:android:unit`** only ([AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1--robolectric--mockito-for-android-jvm-unit-tests--accepted)).
+- Merged coverage after e2e: **`yarn tests:android:post-e2e-coverage`** (Codecov path is `jacocoTestReport`, not e2e-only `jacocoAndroidTestReport`) — [coverage design](coverage-design.md).
+- Optional explicit merge: **`yarn tests:android:test:jacoco-report`**.
+
 ### TurboModule codegen
 
 - **`cd packages/<pkg> && yarn ios:codegen`** (or `yarn android:codegen`) often fails with **`unknown command 'codegen'`** after a clean `yarn` — `@react-native-community/cli` resolves from the **test app** workspace.
@@ -109,9 +128,12 @@ Paste into Task / explore / work-queue prompts:
 RNFB agent command policy: okf-bundle/testing/agent-command-policy.md ONLY.
 E2e: okf-bundle/testing/running-e2e.md yarn tests:* ONLY.
 Never: yarn workspace prepare, yarn jet, npx jet, cd packages/* && yarn prepare/build for diagnostics.
+Never invent format/install: yarn google-java-format, bare/npx google-java-format, npm install, yarn install in tests/ alone — use root yarn first; Java format = yarn lint:android ONLY.
+Never invent Android Gradle: ad-hoc ./gradlew outside yarn tests:android:unit / :build / :post-e2e-coverage / :test:jacoco-report; bare detox/jet/metro.
 Prepare/install: yarn or yarn lerna:prepare must exit 0 before ANY other command — never parallelize with e2e/Metro/build.
 Area harness: okf-bundle/testing/running-e2e.md#local-harness-overrides-harnessoverridesjs — copy harness.overrides.example.js to gitignored harness.overrides.js; set modules + RNFBDebug; delete overrides after run.
 TurboModule contract test (NewArch-AD-17.1): packages/app/__tests__/nativeModuleContract.test.ts — yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts
+Android JVM unit (AndroidTest-AD-1): yarn tests:android:unit — not a substitute for platform e2e.
 On failure: fix product code, re-run the same canonical command.
 Gate close / push: return [validation evidence package](validation-checklist.md#validation-evidence-package) and [coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native touched — required before commit or publication ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)).
 ```
@@ -122,5 +144,6 @@ Gate close / push: return [validation evidence package](validation-checklist.md#
 | ------------------------------- | ------------------------------------------------------------ |
 | E2e commands, pre-flight, tiers | [running-e2e.md](running-e2e.md)                             |
 | Handoff validation sequence     | [validation-checklist.md](validation-checklist.md)           |
+| Android JVM unit ADR            | [android-architecture-decisions.md](android-architecture-decisions.md) |
 | Work types and gates            | [change-authoring-workflow.md](change-authoring-workflow.md) |
 | Doc / commit policy             | [documentation-policy.md](../documentation-policy.md)        |

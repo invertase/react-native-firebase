@@ -286,3 +286,4 @@ Ephemeral coordination (gate rows, `next_work_type`, `commit_subject`): **work q
 | E2e commands                    | [running-e2e.md](running-e2e.md)                   |
 | Validation commands             | [validation-checklist.md](validation-checklist.md) |
 | Coverage policy                 | [coverage-design.md](coverage-design.md)           |
+| Android JVM unit ADR            | [android-architecture-decisions.md](android-architecture-decisions.md) |

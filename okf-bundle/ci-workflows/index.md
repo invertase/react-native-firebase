@@ -5,7 +5,7 @@ GitHub Actions job shape, platform reliability, and artifact triage.
 ## Platforms
 
 * [iOS](ios.md) — simulator boot, logging, troubleshooting, [CI baseload policy](ios.md#ci-baseload-policy-instrumentation)
-* [Android](android.md) — idling, adb teardown, native coverage
+* [Android](android.md) — JVM unit step, idling, adb teardown, merged Jacoco / native coverage
 * [Other](other.md) — macOS e2e, Windows/shared
 
 ## Shared E2E dependencies
