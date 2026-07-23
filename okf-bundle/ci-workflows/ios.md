@@ -525,6 +525,7 @@ from this job is a known Xcode Archive bug, not a regression — see
 | `.github/workflows/scripts/wait-for-load-settle.sh` | `RNFB_LOAD_SETTLE_MAX_LOAD` (default **20**), `RNFB_LOAD_SETTLE_MAX_WAIT_SEC`, `RNFB_LOAD_SETTLE_POLL_SEC` | Poll host load immediately before Detox |
 | `.github/workflows/scripts/resource-monitor.sh` | `RNFB_RESOURCE_MONITOR_INTERVAL_SEC` (default 10), `RNFB_RESOURCE_MONITOR_LOG` | Background `uptime` + `ps` snapshots during Detox |
 | `.github/workflows/scripts/flake-summary.sh` | `RNFB_DETOX_LOG`, `RNFB_FLAKE_SUMMARY_OUT` | Post-run `rg` digest → `flake-summary.txt` |
+| `.github/workflows/scripts/configure-ios-dep-resolution.sh <spm\|cocoapods> [podfile-dir]` | — | Grep-verified `tests/ios/Podfile` patch for the `dep-resolution` matrix leg; shared by the `ios` job and `ios-release-archive` job so they can't drift apart |
 
 Detox steps use `tee detox-step.log` and `exit ${PIPESTATUS[0]}` so the artifact preserves full output while the step still fails correctly.
 

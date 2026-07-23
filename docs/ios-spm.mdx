@@ -183,6 +183,29 @@ uses SPM, it does not fall back to CocoaPods.
   or continue with the automatic CocoaPods fallback.
 - **SPM and CocoaPods both produce the same Firebase framework:** Remove manually
   declared Firebase pods/packages so RNFB owns Firebase dependency resolution.
+- **Release archive fails with an `xcframework-ios.signature` "couldn't be
+  copied ... because an item with the same name already exists" error:** a
+  long-standing Xcode Archive bug with SPM binary xcframeworks, not an RNFB
+  regression. RNFB works around it automatically; if the warning says it could
+  not do so, add a Run Script build phase to your app target that removes the
+  named artifact:
+
+  ```bash
+  rm -f "${CONFIGURATION_BUILD_DIR}"/<NameFromTheErrorMessage>.xcframework-ios.signature
+  ```
+
+- **Archive fails with `Undefined symbols ... _OBJC_CLASS_$_FIRApp`:** RNFB
+  links `FirebaseCore` into your app target automatically so the required
+  `[FIRApp configure]`/`FirebaseApp.configure()` call links. This only
+  surfaces if that automatic step could not run; call
+  `rnfirebase_add_spm_core_to_app_target(installer)` in your `post_install`
+  block as a fallback if your own native code also calls Firebase APIs
+  directly.
+- **A stale "firebase-ios-sdk" Swift Package reference remains on the app
+  target after switching from SPM to `$RNFirebaseDisableSPM = true`:** RNFB
+  removes it automatically on the next `pod install`; if that could not run,
+  remove the "firebase-ios-sdk" Swift Package dependency from the app target
+  manually in Xcode.
 
 After changing dependency resolution, verify both a Debug build and a Release
 archive. A simulator build alone does not exercise all framework-embedding and

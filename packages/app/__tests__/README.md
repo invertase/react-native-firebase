@@ -8,6 +8,21 @@ Unit tests for `firebase_spm.rb` — the shared helper that declares Firebase de
 ruby __tests__/firebase_spm_test.rb
 ```
 
+### Shape-check suite (`firebase_spm_shape_test.rb`)
+
+A companion, opt-in Minitest suite — not a replacement for `firebase_spm_test.rb`. `firebase_spm_test.rb` mocks the `Xcodeproj`/`CocoaPods` classes `firebase_spm.rb` depends on (`MockAggregateTarget`, `MockInstaller`, `MockRootObject`, `MockBuildConfig`, `MockTarget`, `MockUserProject`, `MockBuildType`, etc.) so the helper's post-install logic can be unit-tested without those gems installed. A mock is only ever as accurate as the person who wrote it, and this exact PR shipped a bug of that class (`MockAggregateTarget#build_as_static?` modeled as a directly-settable flag, when the real `Pod::Target#build_as_static?` is unconditionally `true` — the actual per-install signal is `target_definition.build_type.static?`), which only surfaced via a real `pod install`.
+
+`firebase_spm_shape_test.rb` asserts, against the **real** `xcodeproj`/`cocoapods` gems, that every mocked class/method in `firebase_spm_test.rb` still has the shape those mocks assume — so a future CocoaPods/Xcodeproj release that changes that shape fails in seconds instead of ~20 minutes into a real `pod install` in the E2E jobs.
+
+It skips cleanly (no failure, no tests defined) when `xcodeproj`/`cocoapods` aren't installed, so it is always safe to run unconditionally:
+
+```bash
+ruby __tests__/firebase_spm_shape_test.rb
+```
+
+- **"Test Firebase SPM Helper" step** (`tests_jest.yml`) never installs these gems — the suite is expected to skip there.
+- **"Verify Firebase SPM Xcodeproj/CocoaPods API shape" step** (`tests_e2e_other.yml`, `other` job) does have them and runs the suite for real, right after that job's existing `gem update cocoapods xcodeproj` step — no new CI job, no new gem installs.
+
 ### What is `Pod::Specification` and why is it mocked?
 
 `Pod::Specification` is the core CocoaPods class — it's the `s` object used inside every `.podspec` file to declare things like `s.dependency`, `s.name`, `s.version`, etc. We mock it with a simple class that records `dependency` calls, so we can run the tests without installing CocoaPods.

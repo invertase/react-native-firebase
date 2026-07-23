@@ -576,7 +576,7 @@ jobs:
   # repo. This job produces a real, unsigned device archive (no signing
   # identity/provisioning profile needed) and verifies the resulting app
   # bundle is actually loadable. See .github/workflows/scripts/verify-ios-release-archive.sh
-  # and okf-bundle/ios-spm-native-imports.md "Release launch dyld failure".
+  # and okf-bundle/ios-spm-native-imports.md "Runtime framework embedding".
   ios-release-archive:
     name: iOS Release Archive (${{ matrix.dep-resolution }})
     runs-on: macos-26

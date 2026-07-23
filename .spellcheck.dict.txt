@@ -310,4 +310,6 @@ SPM
 SPM-only
 TestFlight
 tvOS
+xcframework
+xcframeworks
 YAML

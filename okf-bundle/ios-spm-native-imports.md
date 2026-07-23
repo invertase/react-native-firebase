@@ -135,6 +135,22 @@ Firebase's component runtime, so they were moved to a private class extension in
 `RNFBCrashlyticsInitProvider.m`. This keeps the header imported by `.mm` code
 Firebase-free without inventing a dependency on a private/transitive target.
 
+## Crashlytics dSYM upload under SPM
+
+`packages/crashlytics/ios_config.sh` (the dSYM/symbol-upload script consumers
+wire into an Xcode "Run Script" build phase) only knew two locations for
+Crashlytics' `upload-symbols`/`run` tool: `$PODS_ROOT/FirebaseCrashlytics/run`
+and a manually-vendored `FirebaseCrashlytics.framework/run`. Neither path
+exists under SPM, so symbol upload silently no-opped for SPM users.
+
+SPM checks out `upload-symbols` under
+`DerivedData/<Project>/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols`.
+`BUILD_DIR` is typically `.../DerivedData/<Project>/Build/Products`, so the
+script strips from `/Build` onward to reach the `SourcePackages` checkout
+root and calls that binary directly (`chmod +x` first if the checkout didn't
+preserve the executable bit). If none of the three paths resolve, the script
+warns and lists every path it checked rather than failing silently.
+
 ## Runtime framework embedding
 
 React Native's `spm_dependency` integration attaches SPM products to pod

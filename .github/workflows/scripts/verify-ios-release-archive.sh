@@ -14,7 +14,7 @@
 # https://github.com/invertase/react-native-firebase/pull/8933#issuecomment-4308578826
 # and the release+SPM dyld launch failure fixed by
 # packages/app/firebase_spm.rb's embed phase (see
-# okf-bundle/ios-spm-native-imports.md "Release launch dyld failure"), which
+# okf-bundle/ios-spm-native-imports.md "Runtime framework embedding"), which
 # was itself only ever validated against a Release-iphonesimulator build.
 #
 # This script does not require a signing identity or provisioning profile --
