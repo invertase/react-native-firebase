@@ -49,11 +49,11 @@ public class NativeRNFBTurboApp extends NativeRNFBTurboAppSpec implements Lifecy
   public void initialize() {
     super.initialize();
     ReactApplicationContext reactContext = getReactApplicationContext();
-    // Register unconditionally: when the host is already resumed, addLifecycleEventListener
-    // immediately delivers onHostResume (even for a stale-but-resumed context on bridgeless),
-    // and every subsequent resume re-converges the emitter onto the live context. Any attach a
-    // stale generation triggers through this path is rejected by attachReactContext's
-    // current-context arbitration.
+    // Register unconditionally. When the host is already RESUMED, addLifecycleEventListener
+    // posts onHostResume onto the UI queue asynchronously (it is not a synchronous call), so
+    // the explicit attach below is the primary path; resume remains best-effort convergence
+    // for later host flips. Stale-generation attaches are rejected or held pending by
+    // attachReactContext's fail-closed current-context arbitration.
     reactContext.addLifecycleEventListener(this);
     ReactNativeFirebaseEventEmitter.getSharedInstance().attachReactContext(reactContext);
   }
