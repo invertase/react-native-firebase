@@ -73,6 +73,24 @@ yarn tests:jest --watchman=false packages/firestore/__tests__/pipelines.test.ts
 
 Optional: `yarn tests:jest-coverage`.
 
+## Android JVM unit tests
+
+When `packages/*/android/**` Java bridge/state-machine logic changed (or added under `src/test/java`):
+
+```bash
+yarn tests:android:unit               # Robolectric + Mockito — [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1--robolectric--mockito-for-android-jvm-unit-tests--accepted)
+```
+
+Produces Jacoco `*.exec` that **counts** toward native touched-line coverage when merged. After Android e2e:
+
+```bash
+yarn tests:android:post-e2e-coverage  # pull .ec → jacocoTestReport (unit + e2e merge)
+# optional explicit merge:
+yarn tests:android:test:jacoco-report
+```
+
+Merged Codecov path: `jacocoTestReport.xml` — [coverage design](coverage-design.md). JVM unit does **not** replace [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) e2e.
+
 <a id="lint-and-formatting"></a>
 
 ## Lint and formatting
@@ -83,6 +101,7 @@ Optional: `yarn tests:jest-coverage`.
 yarn lint:js                          # eslint packages/* — must exit 0
 yarn lint:js --fix                    # auto-fix; re-run yarn lint:js until clean
 yarn lint:deps                        # dependency-cruiser no-circular on packages/*/lib/** — blocking when packages/*/lib/** in diff (see [prepare-and-cache § dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting))
+yarn lint:android                     # google-java-format on packages/*/android/src — ONLY entrypoint ([agent command policy](agent-command-policy.md)); never invent yarn google-java-format / npx google-java-format
 yarn format:js                        # inspect diff after; prefer lint:js --fix first
 ```
 
@@ -101,7 +120,7 @@ yarn lint                              # lint:js + lint:deps + lint:android + li
 
 When `packages/*/lib/**` is in the diff, **`yarn lint:deps`** is a **blocking** gate (runs inside `yarn lint`, which matches the CI Lint job). Config and rule detail: [prepare-and-cache § dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting).
 
-`lint:android` runs `google-java-format` and fails if it would change committed files — commit formatter output. `lint:android` can flake; rerun once/twice if failure is not clearly in diff.
+`yarn lint:android` runs `google-java-format` and fails if it would change committed files — commit formatter output. **Agents:** only `yarn lint:android` ([agent command policy](agent-command-policy.md)) — do not invent `yarn google-java-format` or bare/`npx` `google-java-format`. `lint:android` can flake; rerun once/twice if failure is not clearly in diff.
 
 **CI docs job equivalent** (required before `review` / publication when `docs/**` changed):
 
@@ -114,7 +133,7 @@ yarn lint:spellcheck
 
 [Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) (host-clear probes + services + harness tier) before every run — [agent command policy](agent-command-policy.md) and [e2e agent rule](running-e2e.md#agent-rule-read-first): use **only** `yarn tests:*` commands from [running e2e](running-e2e.md). Match harness to work type — **unit-focused**/**area-focused** never use full app load ([running e2e § harness](running-e2e.md#3-harness-matches-validation-tier)).
 
-Commands: [Running e2e tests](running-e2e.md). Post-process: [Coverage design](coverage-design.md) (iOS `tests:ios:test:process-coverage`, Android `tests:android:post-e2e-coverage`).
+Commands: [Running e2e tests](running-e2e.md). Post-process: [Coverage design](coverage-design.md) (iOS `tests:ios:test:process-coverage`, Android `tests:android:unit` + `tests:android:post-e2e-coverage` → merged `jacocoTestReport`).
 
 Some suites hit **cloud APIs**, e.g. Firestore Pipelines → `pipelines-e2e` Enterprise DB ([pipelines.md](../packages/firestore/pipelines.md#backend-cloud-enterprise-not-the-local-emulator)).
 
@@ -139,9 +158,11 @@ Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, 
 | ------------------------- | ----------------------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------- |
 | prepare                   | yarn lerna:prepare            | 0    | —                                                                                                                                 |
 | jest                      | yarn tests:jest <paths>       | 0    | N/N tests                                                                                                                         |
+| android JVM unit          | yarn tests:android:unit       | 0    | when packages/*/android/** Java changed — [AndroidTest-AD-1](android-architecture-decisions.md)                                  |
 | e2e macOS                 | yarn tests:macos:test-cover   | 0    | X passing — /tmp/...log                                                                                                           |
 | e2e iOS                   | yarn tests:ios:test-cover     | 0    | Y passing — /tmp/...log                                                                                                           |
 | e2e Android               | yarn tests:android:test-cover | 0    | Z passing — /tmp/...log                                                                                                           |
+| android merged Jacoco     | yarn tests:android:post-e2e-coverage | 0 | jacocoTestReport.xml (unit + e2e) — [coverage design](coverage-design.md)                                                         |
 | compare:types             | yarn compare:types            | 0    | <pkg> 0/0/0                                                                                                                       |
 | lint (CI)                 | yarn lint                     | 0    | —                                                                                                                                 |
 | lint:deps (lib diff)      | yarn lint:deps                | 0    | when packages/\*/lib/\*\* in diff — [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting) |
@@ -160,10 +181,12 @@ Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, 
 - [ ] `yarn reference:api`
 - [ ] Redirect audit when TypeDoc config changed ([documentation site maintenance § redirect audit](../documentation-site-maintenance.md#redirect-audit-required-when-typedoc-config-changes))
 - [ ] `yarn tests:jest`
+- [ ] `yarn tests:android:unit` when `packages/*/android/**` Java / `src/test/java` changed ([AndroidTest-AD-1](android-architecture-decisions.md))
 - [ ] TurboModule wrapper contract ([NewArch-AD-17.1](../new-architecture/architecture-decisions.md#newarch-ad-171--jest-turbomodule-contract-test--accepted)) when `packages/app/lib/internal/registry/nativeModule.ts`, `nativeModuleAndroidIos.ts`, or TurboModule wrapper behavior changed: `yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts`
 - [ ] `yarn compare:types` (stale config entries removed)
-- [ ] `yarn lint` (CI Lint job); **`yarn lint:deps`** when `packages/*/lib/**` in diff ([dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)); `yarn lint:markdown` + `yarn lint:spellcheck` when `docs/**` changed
+- [ ] `yarn lint` (CI Lint job) including **`yarn lint:android`** when Java changed ([agent command policy](agent-command-policy.md)); **`yarn lint:deps`** when `packages/*/lib/**` in diff ([dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)); `yarn lint:markdown` + `yarn lint:spellcheck` when `docs/**` changed
 - [ ] E2e green on **every required platform** for the changed module ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking); [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking); no `.only`; committed `RNFBDebug` remains `false`)
+- [ ] Android post-e2e merged Jacoco when Android native touched: `yarn tests:android:post-e2e-coverage` → `jacocoTestReport.xml` ([coverage design](coverage-design.md))
 - [ ] [Validation evidence package](validation-checklist.md#validation-evidence-package) recorded (exit codes, e2e counts, log paths)
 - [ ] [Coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native bridge touched — gaps investigated to fix, delete, or acceptable-exception bar
 - [ ] OKF bundle reviewed/updated per § above
