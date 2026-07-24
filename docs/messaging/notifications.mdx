@@ -107,6 +107,10 @@ could open a specific screen for example). The API provides two APIs for handlin
 - `getInitialNotification`: When the application is opened from a quit state.
 - `onNotificationOpenedApp`: When the application is running, but in the background.
 
+These fire for the **default notification open** (user taps the notification body). They do **not** fire for
+custom notification-category actions or dismiss; those interactions need a dedicated response API (tracked
+internally — do not route custom-action navigation through opened/initial).
+
 To handle both scenarios, the code can be executed during setup. For example, using [React Navigation](https://reactnavigation.org/)
 we can set an initial route when the app is opened from a quit state, and push to a new screen when the app is in a background state:
 

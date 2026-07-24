@@ -152,7 +152,8 @@ struct {
     didReceiveNotificationResponse:(UNNotificationResponse *)response
              withCompletionHandler:(void (^)(void))completionHandler {
   NSDictionary *remoteNotification = response.notification.request.content.userInfo;
-  if ([[response actionIdentifier] isEqualToString:UNNotificationDefaultActionIdentifier] && remoteNotification[@"gcm.message_id"]) {
+  if ([[response actionIdentifier] isEqualToString:UNNotificationDefaultActionIdentifier] &&
+      remoteNotification[@"gcm.message_id"]) {
     NSDictionary *notificationDict =
         [RNFBMessagingSerializer remoteMessageUserInfoToDict:remoteNotification];
     [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_notification_opened"
@@ -160,10 +161,13 @@ struct {
     _initialNotification = notificationDict;
   }
 
-  if (_originalDelegate != nil && originalDelegateRespondsTo.didReceiveNotificationResponse) {
-    [_originalDelegate userNotificationCenter:center
-               didReceiveNotificationResponse:response
-                        withCompletionHandler:completionHandler];
+  // _originalDelegate is weak — capture strong local before nil-check + message
+  // (same race as willPresent; otherwise completionHandler may never run).
+  id<UNUserNotificationCenterDelegate> strongOriginalDelegate = _originalDelegate;
+  if (strongOriginalDelegate != nil && originalDelegateRespondsTo.didReceiveNotificationResponse) {
+    [strongOriginalDelegate userNotificationCenter:center
+                    didReceiveNotificationResponse:response
+                             withCompletionHandler:completionHandler];
   } else {
     completionHandler();
   }
@@ -171,8 +175,9 @@ struct {
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     openSettingsForNotification:(nullable UNNotification *)notification {
-  if (_originalDelegate != nil && originalDelegateRespondsTo.openSettingsForNotification) {
-    [_originalDelegate userNotificationCenter:center openSettingsForNotification:notification];
+  id<UNUserNotificationCenterDelegate> strongOriginalDelegate = _originalDelegate;
+  if (strongOriginalDelegate != nil && originalDelegateRespondsTo.openSettingsForNotification) {
+    [strongOriginalDelegate userNotificationCenter:center openSettingsForNotification:notification];
   } else {
     NSDictionary *notificationDict = [RNFBMessagingSerializer notificationToDict:notification];
     [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_settings_for_notification_opened"
