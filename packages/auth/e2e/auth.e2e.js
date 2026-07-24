@@ -1187,15 +1187,19 @@ describe('auth() modular', function () {
     it('completes without throw', async function () {
       const { getApp } = modular;
       const { getAuth, initializeRecaptchaConfig } = authModular;
+
+      // Default Jet auth is Auth Emulator, which does not implement getRecaptchaConfig
+      // (Android: explicit "not implemented"; iOS: generic auth/internal-error). Prefer the
+      // natively initialized cloud app when available; emulator-only gaps skip.
+      const auth = !Platform.other ? getAuth(getApp('secondaryFromNative')) : getAuth(getApp());
+
       try {
-        await initializeRecaptchaConfig(getAuth(getApp()));
+        await initializeRecaptchaConfig(auth);
       } catch (e) {
-        // Default Jet auth stays on the Auth Emulator, which does not implement
-        // identitytoolkit.getRecaptchaConfig. Cloud coverage lives on secondaryFromNative
-        // (packages/auth/e2e/recaptchaPhoneCloud.e2e.js) once Enterprise is provisioned.
+        const message = typeof e.message === 'string' ? e.message : '';
         if (
-          typeof e.message === 'string' &&
-          e.message.includes('getRecaptchaConfig is not implemented in the Auth Emulator')
+          message.includes('getRecaptchaConfig is not implemented in the Auth Emulator') ||
+          (auth.app.name === '[DEFAULT]' && message.includes('auth/internal-error'))
         ) {
           this.skip();
         }
