@@ -199,7 +199,7 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
    * @param appName
    * @param promise
    */
-  @ReactMethod
+  @Override
   public void initializeRecaptchaConfig(final String appName, final Promise promise) {
     Log.d(TAG, "initializeRecaptchaConfig");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
