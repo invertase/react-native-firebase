@@ -1,5 +1,5 @@
 PODS:
-  - AppCheckCore (11.3.0):
+  - AppCheckCore (11.3.1):
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
@@ -1782,6 +1782,10 @@ PODS:
     - React-logger (= 0.78.3)
     - React-perflogger (= 0.78.3)
     - React-utils (= 0.78.3)
+  - RecaptchaEnterprise (18.9.1):
+    - RecaptchaEnterpriseSDK (= 18.9.1)
+    - RecaptchaInterop (~> 101.0.0)
+  - RecaptchaEnterpriseSDK (18.9.1)
   - RecaptchaInterop (101.0.0)
   - RNCAsyncStorage (2.2.0):
     - DoubleConversion
@@ -1874,6 +1878,7 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
+    - RecaptchaEnterprise (>= 18.7.0)
     - RNFBApp
     - Yoga
   - RNFBAppDistribution (25.1.0):
@@ -1920,6 +1925,7 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
+    - RecaptchaEnterprise (>= 18.7.0)
     - RNFBApp
     - Yoga
   - RNFBCrashlytics (25.1.0):
@@ -2310,6 +2316,8 @@ SPEC REPOS:
     - nanopb
     - PromisesObjC
     - PromisesSwift
+    - RecaptchaEnterprise
+    - RecaptchaEnterpriseSDK
     - RecaptchaInterop
     - SocketRocket
 
@@ -2493,7 +2501,7 @@ CHECKOUT OPTIONS:
     :tag: 12.15.0
 
 SPEC CHECKSUMS:
-  AppCheckCore: 214137f5c378d1dec88a68425c467fe65aaff637
+  AppCheckCore: e215d35177a9cf469927863e69c13e220df32a8b
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
@@ -2599,14 +2607,16 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 5df090fa3cbfc923c6bd0595b64d5ef6d89f7134
   ReactCodegen: 0c213020a601c6adda74f8826629bff9c6c408d3
   ReactCommon: c18c9308463e582898abcec12ffbd2df2b7e8fdd
+  RecaptchaEnterprise: a28429a5366cc0f687ac5e93a44c5caa2c685aa9
+  RecaptchaEnterpriseSDK: 72239ea30c486d9093918c7b31eb85629eff1a50
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   RNCAsyncStorage: 6a8127b6987dc9fbce778669b252b14c8355c7ce
   RNDeviceInfo: 4c852998208b60dc192ae3529e5867817719ad1e
   RNFBAnalytics: bd42ed19dd9145eece55dfaf254349cb7ce207da
   RNFBApp: 893629fc75425937059b0f64e58ec9d5a066aefc
-  RNFBAppCheck: 8ba8648a565a2c9c5f057906323475bba79c1a6a
+  RNFBAppCheck: 5f808cc0c20a352885c417cb3d1881424fa9e0f8
   RNFBAppDistribution: 5fa4b64e4e62ffca3af9851a293b64ac801d11c1
-  RNFBAuth: e24099af4c7db560ecdc07817f8fafaecbf2fa92
+  RNFBAuth: 2d22f20d72f7c302e1516ed2159c3453b839ea45
   RNFBCrashlytics: 14eea95d1f7669287597f1e27602abecc5699a91
   RNFBDatabase: a74a6e18a24749fcdfdfd9234e494da996a22511
   RNFBFirestore: 7b2480c59acae62bb9607cdf28c1e0e157641288
