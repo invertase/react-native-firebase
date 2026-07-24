@@ -17,6 +17,9 @@
 #import "RNFBAppCheckProvider.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 
+// RNFBSharedUtils keeps RNFBErrorDomain file-private; match the same domain string.
+static NSString *const RNFBAppCheckErrorDomain = @"RNFBErrorDomain";
+
 @implementation RNFBAppCheckProvider
 
 - (id)initWithApp:app {
@@ -82,7 +85,7 @@
     self.delegateProvider = [[FIRRecaptchaProvider alloc] initWithApp:app];
     if (self.delegateProvider == nil) {
       return [NSError
-          errorWithDomain:RNFBErrorDomain
+          errorWithDomain:RNFBAppCheckErrorDomain
                      code:666
                  userInfo:@{
                    NSLocalizedDescriptionKey :
@@ -92,7 +95,7 @@
     }
 #else
     return [NSError
-        errorWithDomain:RNFBErrorDomain
+        errorWithDomain:RNFBAppCheckErrorDomain
                    code:666
                userInfo:@{
                  NSLocalizedDescriptionKey :
@@ -108,7 +111,7 @@
                           "appAttest, appAttestWithDeviceCheckFallback, recaptcha.",
                          providerName ?: @"(null)"];
     NSLog(@"RNFBAppCheck: %@", message);
-    return [NSError errorWithDomain:RNFBErrorDomain
+    return [NSError errorWithDomain:RNFBAppCheckErrorDomain
                                code:666
                            userInfo:@{NSLocalizedDescriptionKey : message}];
   }
@@ -121,7 +124,7 @@
   DLog(@"proxying getTokenWithCompletion to delegateProvider...");
   if (self.delegateProvider == nil) {
     handler(nil,
-            [NSError errorWithDomain:RNFBErrorDomain
+            [NSError errorWithDomain:RNFBAppCheckErrorDomain
                                 code:666
                             userInfo:@{
                               NSLocalizedDescriptionKey : @"App Check provider is not configured."
@@ -136,7 +139,7 @@
   DLog(@"proxying getLimitedUseTokenWithCompletion to delegateProvider...");
   if (self.delegateProvider == nil) {
     handler(nil,
-            [NSError errorWithDomain:RNFBErrorDomain
+            [NSError errorWithDomain:RNFBAppCheckErrorDomain
                                 code:666
                             userInfo:@{
                               NSLocalizedDescriptionKey : @"App Check provider is not configured."
