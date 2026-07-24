@@ -36,12 +36,12 @@ describe('appCheck()', function () {
           android: { provider: 'invalidProvider' as any },
         });
         expect(() => initializeAppCheck(undefined, { provider })).toThrow(
-          'Invalid App Check provider "invalidProvider". Valid android providers are: debug, playIntegrity.',
+          'Invalid App Check provider "invalidProvider". Valid android providers are: debug, playIntegrity, recaptcha.',
         );
       });
 
       it('does not throw validation error for valid android provider names', function () {
-        for (const name of ['debug', 'playIntegrity']) {
+        for (const name of ['debug', 'playIntegrity', 'recaptcha']) {
           const provider = new ReactNativeFirebaseAppCheckProvider();
           provider.configure({
             android: { provider: name as any },
@@ -72,7 +72,7 @@ describe('appCheck()', function () {
             apple: { provider: 'appAttestWithDebugProviderFallback' as any },
           });
           expect(() => initializeAppCheck(undefined, { provider })).toThrow(
-            'Invalid App Check provider "appAttestWithDebugProviderFallback". Valid apple providers are: debug, deviceCheck, appAttest, appAttestWithDeviceCheckFallback.',
+            'Invalid App Check provider "appAttestWithDebugProviderFallback". Valid apple providers are: debug, deviceCheck, appAttest, appAttestWithDeviceCheckFallback, recaptcha.',
           );
         });
 
@@ -82,6 +82,7 @@ describe('appCheck()', function () {
             'deviceCheck',
             'appAttest',
             'appAttestWithDeviceCheckFallback',
+            'recaptcha',
           ]) {
             const provider = new ReactNativeFirebaseAppCheckProvider();
             provider.configure({

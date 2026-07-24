@@ -89,9 +89,10 @@ describe('initializeAppCheck routing', function () {
         android: { provider: 'playIntegrity' },
       });
 
-      expect(
-        resolveNativeInitializeAppCheckRoute({ provider }, nativeContext),
-      ).toEqual({ providerName: 'playIntegrity', debugToken: undefined });
+      expect(resolveNativeInitializeAppCheckRoute({ provider }, nativeContext)).toEqual({
+        providerName: 'playIntegrity',
+        debugToken: undefined,
+      });
     });
   });
 

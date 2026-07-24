@@ -129,7 +129,7 @@ await initializeAppCheck(getApp(), {
 
 ### Authentication
 
-MFA and TOTP flows are supported on **Other** platforms via the firebase-js-sdk auth bridge where documented — see [Multi-factor auth](/auth/multi-factor-auth).
+MFA and TOTP flows are supported on **Other** platforms via the firebase-js-sdk auth bridge where documented — see [Multi-factor authentication](/auth/multi-factor-auth).
 
 [`initializeRecaptchaConfig`](/auth/phone-auth#recaptcha-enterprise) is exported on all platforms: it delegates to firebase-js-sdk on **Web**, calls the native SDK on **iOS / Android**, and no-ops with a warning on **Other / Hermes** (Enterprise phone verification is unavailable there).
 

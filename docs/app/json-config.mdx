@@ -22,12 +22,12 @@ Add the [Config Schema](https://github.com/invertase/react-native-firebase/blob/
 
 `recaptchaSiteKey` is a Firebase app option used by [App Check reCAPTCHA Enterprise](/app-check/usage#recaptcha-enterprise-on-ios-and-android) and Auth Enterprise flows. It is **not** configured in `firebase.json`; pass it through [`initializeApp`](/app/usage#initializing-secondary-apps) options or read it from native config files.
 
-| App kind | Where `recaptchaSiteKey` comes from |
-| -------- | ----------------------------------- |
+| App kind                                       | Where `recaptchaSiteKey` comes from                                                                                                                                   |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Native default app** (iOS / Android startup) | `google-services.json` / `GoogleService-Info.plist` processed before JS runs — **redownload these files** after enabling reCAPTCHA Enterprise in the Firebase console |
-| **Native secondary app** (JS `initializeApp`) | JS options passed to `initializeApp({ recaptchaSiteKey, ... }, name)` — RNFB forwards the value to native `FirebaseOptions` / `FIROptions` |
-| **Other / Web** (`Platform.OS === 'web'`) | `initializeApp({ recaptchaSiteKey, ... })` — required for [provider-less App Check init](/app-check/usage#provider-less-initialization-web-only) on Web |
-| **Other / Hermes** (macOS, Windows, …) | Stored in JS app options; DOM reCAPTCHA providers still cannot run — use `CustomProvider` for App Check |
+| **Native secondary app** (JS `initializeApp`)  | JS options passed to `initializeApp({ recaptchaSiteKey, ... }, name)` — RNFB forwards the value to native `FirebaseOptions` / `FIROptions`                            |
+| **Other / Web** (`Platform.OS === 'web'`)      | `initializeApp({ recaptchaSiteKey, ... })` — required for [provider-less App Check init](/app-check/usage#provider-less-initialization-web-only) on Web               |
+| **Other / Hermes** (macOS, Windows, …)         | Stored in JS app options; DOM reCAPTCHA providers still cannot run — use `CustomProvider` for App Check                                                               |
 
 > **Native default-app caveat:** JavaScript cannot retroactively change `recaptchaSiteKey` on the default iOS/Android app after native startup. If App Check `'recaptcha'` or Auth Enterprise fails with a missing site key, redownload your native config files rather than setting the key only in JS.
 

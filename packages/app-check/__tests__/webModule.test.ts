@@ -35,8 +35,7 @@ import {
 } from '../lib/providers';
 
 const mockJsReCaptchaV3Provider = firebaseAppCheck.ReCaptchaV3Provider as jest.Mock;
-const mockJsReCaptchaEnterpriseProvider =
-  firebaseAppCheck.ReCaptchaEnterpriseProvider as jest.Mock;
+const mockJsReCaptchaEnterpriseProvider = firebaseAppCheck.ReCaptchaEnterpriseProvider as jest.Mock;
 const mockJsCustomProvider = firebaseAppCheck.CustomProvider as jest.Mock;
 
 describe('RNFBAppCheckModule web provider routing', function () {

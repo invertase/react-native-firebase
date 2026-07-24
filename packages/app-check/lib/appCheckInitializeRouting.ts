@@ -2,10 +2,7 @@ import { isString, isUndefined } from '@react-native-firebase/app/dist/module/co
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import type { AppCheckOptions } from './types/appcheck';
 import type { ProviderWithOptions } from './types/internal';
-import {
-  ReCaptchaEnterpriseProvider,
-  ReCaptchaV3Provider,
-} from './providers';
+import { ReCaptchaEnterpriseProvider, ReCaptchaV3Provider } from './providers';
 
 export type InitializeAppCheckPlatformContext = {
   isOtherHermes: boolean;

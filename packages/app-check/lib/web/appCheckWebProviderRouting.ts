@@ -25,9 +25,7 @@ export type WebInitializeAppCheckOptions = {
 
 function hasProviderOptions(
   provider: unknown,
-): provider is
-  | ReactNativeFirebaseAppCheckProvider
-  | ReactNativeFirebaseAppCheckProviderConfig {
+): provider is ReactNativeFirebaseAppCheckProvider | ReactNativeFirebaseAppCheckProviderConfig {
   return (
     provider !== undefined &&
     typeof provider === 'object' &&

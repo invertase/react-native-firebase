@@ -69,10 +69,12 @@ initializeAppCheck(getApp(), {
 initializeApp(
   { apiKey: 'a', appId: 'b', projectId: 'c', recaptchaSiteKey: '6Le-test-site-key' },
   'providerLessAppCheckApp',
-).then(recaptchaSiteKeyApp =>
-  initializeAppCheck(recaptchaSiteKeyApp, {
-    isTokenAutoRefreshEnabled: true,
-  }),
-).then((providerLessAppCheck: AppCheck) => {
-  console.log(providerLessAppCheck.app.options.recaptchaSiteKey);
-});
+)
+  .then(recaptchaSiteKeyApp =>
+    initializeAppCheck(recaptchaSiteKeyApp, {
+      isTokenAutoRefreshEnabled: true,
+    }),
+  )
+  .then((providerLessAppCheck: AppCheck) => {
+    console.log(providerLessAppCheck.app.options.recaptchaSiteKey);
+  });

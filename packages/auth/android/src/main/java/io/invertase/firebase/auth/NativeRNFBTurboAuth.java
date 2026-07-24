@@ -193,8 +193,8 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
   }
 
   /**
-   * Initializes the reCAPTCHA Enterprise client proactively to enhance reCAPTCHA signal
-   * collection and to complete reCAPTCHA-protected flows in a single attempt.
+   * Initializes the reCAPTCHA Enterprise client proactively to enhance reCAPTCHA signal collection
+   * and to complete reCAPTCHA-protected flows in a single attempt.
    *
    * @param appName
    * @param promise

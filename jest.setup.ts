@@ -80,6 +80,8 @@ jest.doMock('react-native', () => {
             },
           ],
           FIREBASE_RAW_JSON: '{}',
+          initializeApp: jest.fn(() => Promise.resolve()),
+          deleteApp: jest.fn(() => Promise.resolve()),
           addListener: jest.fn(),
           eventsAddListener: jest.fn(),
           eventsNotifyReady: jest.fn(),

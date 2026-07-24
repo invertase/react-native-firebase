@@ -208,8 +208,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
 }
 
 - (void)initializeRecaptchaConfig:(NSString *)appName
-                           resolve:(RCTPromiseResolveBlock)resolve
-                            reject:(RCTPromiseRejectBlock)reject {
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   [[FIRAuth authWithApp:firebaseApp]

@@ -432,11 +432,11 @@ For auth errors, use `NativeFirebaseAuthError` (or the modular `AuthError` inter
 
 `initializeRecaptchaConfig` is exported from `@react-native-firebase/auth` (matching firebase-js-sdk). Types are identical on every platform; runtime behaviour depends on context:
 
-| Context | `initializeRecaptchaConfig(auth)` |
-| ------- | --------------------------------- |
-| **iOS / Android** | Native Firebase Auth SDK pre-warm / force-fetch of Enterprise config |
-| **Web** (`Platform.OS === 'web'`) | firebase-js-sdk delegation — **required before Enterprise Web phone verification** |
-| **Other / Hermes** (macOS, Windows, …) | Resolves with `console.warn` (no-op) — Enterprise phone verification unavailable |
+| Context                                | `initializeRecaptchaConfig(auth)`                                                  |
+| -------------------------------------- | ---------------------------------------------------------------------------------- |
+| **iOS / Android**                      | Native Firebase Auth SDK pre-warm / force-fetch of Enterprise config               |
+| **Web** (`Platform.OS === 'web'`)      | firebase-js-sdk delegation — **required before Enterprise Web phone verification** |
+| **Other / Hermes** (macOS, Windows, …) | Resolves with `console.warn` (no-op) — Enterprise phone verification unavailable   |
 
 ```js
 import { getAuth, initializeRecaptchaConfig } from '@react-native-firebase/auth';

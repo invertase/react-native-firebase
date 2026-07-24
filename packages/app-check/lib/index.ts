@@ -128,7 +128,8 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   initializeAppCheck(options: AppCheckOptions): Promise<void> {
-    if (!isObject(options)) {
+    // Avoid isObject() here — it narrows to Record<string, unknown> and erases AppCheckOptions.
+    if (options == null || typeof options !== 'object' || Array.isArray(options)) {
       throw new Error('Invalid configuration: no options defined.');
     }
 

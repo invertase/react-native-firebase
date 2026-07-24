@@ -160,7 +160,12 @@ export interface ReactNativeFirebaseAppCheckProviderAppleOptions extends ReactNa
    * defaults to `DeviceCheck`. `appAttest` requires iOS 14+ or will fail, `appAttestWithDeviceCheckFallback`
    * will use `appAttest` for iOS14+ and fallback to `deviceCheck` on devices with ios13 and lower
    */
-  provider?: 'debug' | 'deviceCheck' | 'appAttest' | 'appAttestWithDeviceCheckFallback' | 'recaptcha';
+  provider?:
+    | 'debug'
+    | 'deviceCheck'
+    | 'appAttest'
+    | 'appAttestWithDeviceCheckFallback'
+    | 'recaptcha';
 }
 
 /**

@@ -50,10 +50,14 @@ describe('recaptchaSiteKey', function () {
 
   describe('JS initializeApp native bridge', function () {
     beforeEach(function () {
-      (NativeModules.RNFBAppModule as { initializeApp?: jest.Mock; deleteApp?: jest.Mock }).initializeApp =
-        jest.fn(() => Promise.resolve());
-      (NativeModules.RNFBAppModule as { initializeApp?: jest.Mock; deleteApp?: jest.Mock }).deleteApp =
-        jest.fn(() => Promise.resolve());
+      const turboApp = NativeModules.NativeRNFBTurboApp as {
+        initializeApp: jest.Mock;
+        deleteApp: jest.Mock;
+      };
+      turboApp.initializeApp.mockClear();
+      turboApp.initializeApp.mockImplementation(() => Promise.resolve());
+      turboApp.deleteApp.mockClear();
+      turboApp.deleteApp.mockImplementation(() => Promise.resolve());
     });
 
     it('passes recaptchaSiteKey to native initializeApp for secondary apps', async function () {
@@ -63,7 +67,7 @@ describe('recaptchaSiteKey', function () {
       const app = await initializeApp({ ...baseOptions, recaptchaSiteKey }, name);
 
       expect(
-        (NativeModules.RNFBAppModule as { initializeApp: jest.Mock }).initializeApp,
+        (NativeModules.NativeRNFBTurboApp as { initializeApp: jest.Mock }).initializeApp,
       ).toHaveBeenCalledWith(
         expect.objectContaining({ recaptchaSiteKey }),
         expect.objectContaining({ name }),
@@ -78,7 +82,7 @@ describe('recaptchaSiteKey', function () {
       // GoogleService-Info.plist before JS runs. recaptchaSiteKey on the default app
       // (when present) is exposed read-only via native FirebaseOptions — not via a
       // JS initializeApp() call on an existing default app.
-      expect(NativeModules.RNFBAppModule.NATIVE_FIREBASE_APPS.length).toBeGreaterThan(0);
+      expect(NativeModules.NativeRNFBTurboApp.NATIVE_FIREBASE_APPS.length).toBeGreaterThan(0);
     });
   });
 });

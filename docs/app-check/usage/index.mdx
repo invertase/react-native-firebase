@@ -205,13 +205,13 @@ Starting in v25, the modular App Check helpers and types are exported from `@rea
 
 React Native Firebase exports the same App Check types on every platform, but runtime behaviour depends on where your app runs. Use this table when copying firebase-js-sdk examples or choosing a provider:
 
-| `initializeAppCheck` provider | iOS / Android | Web (`Platform.OS === 'web'`) | Other / Hermes (macOS, Windows, …) |
-| ----------------------------- | ------------- | ----------------------------- | ------------------------------------ |
-| `ReCaptchaEnterpriseProvider` | Maps to native `'recaptcha'`; site key is read from `FirebaseApp` options / native config (`recaptchaSiteKey` in `google-services.json` / `GoogleService-Info.plist`), not the constructor | Delegates to firebase-js-sdk `ReCaptchaEnterpriseProvider` | **Throws** — reCAPTCHA Enterprise requires a DOM environment |
-| `ReCaptchaV3Provider` | **Throws** — native attestation uses the reCAPTCHA Enterprise factory, not v3 | Delegates to firebase-js-sdk `ReCaptchaV3Provider` | **Throws** — requires a DOM environment |
-| `ReactNativeFirebaseAppCheckProvider` | Existing native `configureProvider` path | Uses `providerOptions.web` (`reCaptchaEnterprise`, `reCaptchaV3`, …) | **No DOM** — Hermes cannot use `providerOptions.web` reCAPTCHA options; `CustomProvider` path only where applicable |
-| `CustomProvider` | **Throws** — not supported on native (Other-only); use `ReactNativeFirebaseAppCheckProvider` | firebase-js-sdk `CustomProvider` | firebase-js-sdk `CustomProvider` |
-| **Omitted** (`provider` undefined) | **Throws** — native platforms require an explicit provider | Provider-less init via `app.options.recaptchaSiteKey` (firebase-js-sdk 12.15+) | **Throws** — provider-less init requires the web Enterprise bootstrap |
+| `initializeAppCheck` provider         | iOS / Android                                                                                                                                                                              | Web (`Platform.OS === 'web'`)                                                  | Other / Hermes (macOS, Windows, …)                                                                                  |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `ReCaptchaEnterpriseProvider`         | Maps to native `'recaptcha'`; site key is read from `FirebaseApp` options / native config (`recaptchaSiteKey` in `google-services.json` / `GoogleService-Info.plist`), not the constructor | Delegates to firebase-js-sdk `ReCaptchaEnterpriseProvider`                     | **Throws** — reCAPTCHA Enterprise requires a DOM environment                                                        |
+| `ReCaptchaV3Provider`                 | **Throws** — native attestation uses the reCAPTCHA Enterprise factory, not v3                                                                                                              | Delegates to firebase-js-sdk `ReCaptchaV3Provider`                             | **Throws** — requires a DOM environment                                                                             |
+| `ReactNativeFirebaseAppCheckProvider` | Existing native `configureProvider` path                                                                                                                                                   | Uses `providerOptions.web` (`reCaptchaEnterprise`, `reCaptchaV3`, …)           | **No DOM** — Hermes cannot use `providerOptions.web` reCAPTCHA options; `CustomProvider` path only where applicable |
+| `CustomProvider`                      | **Throws** — not supported on native (Other-only); use `ReactNativeFirebaseAppCheckProvider`                                                                                               | firebase-js-sdk `CustomProvider`                                               | firebase-js-sdk `CustomProvider`                                                                                    |
+| **Omitted** (`provider` undefined)    | **Throws** — native platforms require an explicit provider                                                                                                                                 | Provider-less init via `app.options.recaptchaSiteKey` (firebase-js-sdk 12.15+) | **Throws** — provider-less init requires the web Enterprise bootstrap                                               |
 
 On iOS and Android, if you pass a constructor site key to `ReCaptchaEnterpriseProvider` and it differs from `app.options.recaptchaSiteKey`, React Native Firebase throws rather than silently using the wrong value.
 
@@ -221,10 +221,7 @@ Use the firebase-js-sdk-compatible `ReCaptchaEnterpriseProvider` class, or confi
 
 ```javascript
 import { getApp } from '@react-native-firebase/app';
-import {
-  initializeAppCheck,
-  ReCaptchaEnterpriseProvider,
-} from '@react-native-firebase/app-check';
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from '@react-native-firebase/app-check';
 
 const appCheck = await initializeAppCheck(getApp(), {
   provider: new ReCaptchaEnterpriseProvider('your-recaptcha-enterprise-site-key'),
@@ -265,10 +262,7 @@ Mobile App Check uses the native `'recaptcha'` attestation provider. The site ke
 
 ```javascript
 import { getApp } from '@react-native-firebase/app';
-import {
-  initializeAppCheck,
-  ReCaptchaEnterpriseProvider,
-} from '@react-native-firebase/app-check';
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from '@react-native-firebase/app-check';
 
 const appCheck = await initializeAppCheck(getApp(), {
   provider: new ReCaptchaEnterpriseProvider('ignored-on-native'),

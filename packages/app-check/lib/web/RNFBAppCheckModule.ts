@@ -6,6 +6,7 @@ import {
   setTokenAutoRefreshEnabled,
   onTokenChanged,
   makeIDBAvailable,
+  type AppCheck,
   type AppCheckTokenResult,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseAppCheck';
 import { guard, emitEvent } from '@react-native-firebase/app/dist/module/internal/web/utils';
@@ -14,10 +15,10 @@ import {
   type WebInitializeAppCheckOptions,
 } from './appCheckWebProviderRouting';
 
-let appCheckInstances: Record<string, unknown> = {};
+let appCheckInstances: Record<string, AppCheck> = {};
 let listenersForApp: Record<string, () => void> = {};
 
-function getAppCheckInstanceForApp(appName: string): unknown {
+function getAppCheckInstanceForApp(appName: string): AppCheck {
   if (!appCheckInstances[appName]) {
     throw new Error(
       `firebase AppCheck instance for app ${appName} has not been initialized, ensure you have called initializeAppCheck() first.`,
