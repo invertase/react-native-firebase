@@ -28,7 +28,19 @@ Pod::Spec.new do |s|
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
   s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
+  s.public_header_files = [
+    'ios/RNFBMessaging/RNFBMessagingModule.h',
+  ]
+  s.private_header_files = [
+    'ios/RNFBMessaging/RNFBMessaging+*.h',
+    'ios/RNFBMessaging/RNFBMessagingSerializer.h',
+    'ios/generated/**/*.h',
+  ]
   s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
+
+  s.pod_target_xcconfig = {
+    'HEADER_SEARCH_PATHS' => '"$(PODS_TARGET_SRCROOT)/ios/generated/RNFBMessagingTurboModules" "$(PODS_TARGET_SRCROOT)/ios/generated"',
+  }
 
   s.dependency          'RNFBApp'
 

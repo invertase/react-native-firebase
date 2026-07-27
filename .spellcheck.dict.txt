@@ -240,6 +240,7 @@ triaging
 TurboModule
 TurboModules
 Codegen
+codegen
 IndexedDB
 pre-v26
 typings
