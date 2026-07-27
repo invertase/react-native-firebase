@@ -205,7 +205,12 @@ function App() {
 }
 ```
 
-**Quick Tip:** On `Android` you can test receiving remote notifications on the emulator but on `iOS` you will need to use a real device as the iOS simulator does not support receiving remote notifications.
+**Quick Tip:** On `Android` you can test receiving remote notifications on the emulator. On `iOS`,
+use a **physical device** for real APNs tokens and delivery. On ARM64 Simulator,
+`registerDeviceForRemoteMessages` may reject with `messaging/registration-timeout` (UIKit register
+is skipped intentionally so the main thread cannot hang) — see
+[Auto Registration (iOS)](/messaging/usage#auto-registration-ios) and
+[Migrating to v26 — iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
 
 # Getting a Device Token
 

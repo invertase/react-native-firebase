@@ -9,9 +9,13 @@ Integrating the Cloud Messaging module on iOS devices requires additional setup 
 There are also a number of prerequisites which are required to enable messaging:
 
 - You must have an active [Apple Developer Account](https://developer.apple.com/membercenter/index.action).
-- You may use a physical iOS device to receive messages _or_ an iOS Simulator if you are on macOS 13+ on Apple Silicon using a Simulator running iOS 16+
-  - Firebase Cloud Messaging integrates with the [Apple Push Notification service (APNs)](https://developer.apple.com/notifications/),
-    however APNs only works with real devices or Apple Silicon macs running relatively new versions
+- A **physical iOS device** is preferred for end-to-end FCM/APNs registration and message delivery.
+  - Firebase Cloud Messaging integrates with the [Apple Push Notification service (APNs)](https://developer.apple.com/notifications/).
+  - On **ARM64 iOS Simulator**, React Native Firebase skips UIKit `registerForRemoteNotifications`
+    (calling it can wedge the main thread). `registerDeviceForRemoteMessages` may then reject with
+    `messaging/registration-timeout` and will not yield a real APNs token — see
+    [Auto Registration (iOS)](/messaging/usage#auto-registration-ios) and
+    [Migrating to v26 — iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
 
 ## Configuring your app
 

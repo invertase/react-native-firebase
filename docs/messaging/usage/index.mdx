@@ -467,6 +467,18 @@ async function registerAppWithFCM() {
 }
 ```
 
+> **ARM64 iOS Simulator:** React Native Firebase intentionally does **not** call UIKit
+> `registerForRemoteNotifications` on Apple Silicon Simulator builds (registration,
+> auto-registration, and `requestPermission`'s APNs side-effect). Calling that API can block the
+> main thread indefinitely. `registerDeviceForRemoteMessages` therefore stays pending until a
+> ~10 second **global-queue** timer rejects with `messaging/registration-timeout`.
+> `requestPermission` still resolves with `AuthorizationStatus` (it does **not** reject with that
+> code). You will not get a real APNs device token on that simulator — use a physical iOS device
+> when you need end-to-end push registration. If `registerDeviceForRemoteMessages` is called again
+> before a prior attempt settles, the earlier promise rejects with
+> `messaging/registration-superseded`. See
+> [Migrating to v26 — iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
+
 ## Foreground Presentation Options (iOS)
 
 React Native Firebase Messaging configures how to present a notification in a foreground app.
