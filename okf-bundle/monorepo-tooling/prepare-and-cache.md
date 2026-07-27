@@ -3,7 +3,7 @@ type: Reference
 title: Prepare, cache, and watch design
 description: Durable design for the React Native Firebase monorepo build — package dependency graph, Nx local cache, deterministic prepare ordering, declaration maps, dependency-cycle linting, developer watch, and the event-driven e2e TDD hook chain.
 tags: [monorepo, tooling, nx, prepare, cache, watch, bob, dependency-graph]
-timestamp: 2026-07-10T00:00:00Z
+timestamp: 2026-07-26T00:00:00Z
 ---
 
 # Prepare, cache, and watch design
@@ -97,6 +97,21 @@ Add `nx.json`; keep the `yarn lerna:prepare` entrypoint name, with `NX_NO_CLOUD`
 - **`inputs: ["jsSource"]`** scopes the cache key to what `prepare` actually consumes (JS source + plugin sources + the package/base tsconfig + `package.json`, which carries the bob config, plus workspace `yarn.lock` so lockfile-only toolchain bumps bust the cache). Without this, Nx defaults inputs to the whole `{projectRoot}`, so unrelated edits to `__tests__/**`, `e2e/**`, `android/**`, `ios/**`, or docs would needlessly bust the `prepare` cache and — via `^prepare` — every dependent. See [MonoTool-AD-11](architecture-decisions.md#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted). (`lib/version.ts` is gitignored, so Nx's file hasher excludes it from inputs even though it matches the `lib/**` glob — no self-invalidation.)
 - **`outputs` must list every file `prepare` writes**, including the _generated, gitignored_ ones, or a cache **hit** restores `dist/**` but leaves those files missing on a clean tree. `genversion` writes `lib/version.ts` in every package (imported by 18 packages' `lib` source), so it is a shared output. See [generated-file outputs](#generated-file-outputs-cache-correctness) and [MonoTool-AD-10](architecture-decisions.md#monotool-ad-10--generated-version-files-are-declared-cache-outputs-not-committed--accepted).
 - **No-cloud everywhere:** see [MonoTool-AD-1](architecture-decisions.md#monotool-ad-1--nx-local-cache-via-the-lerna-runner-no-turborepo-no-nx-cloud--accepted) + [MonoTool-AD-8](architecture-decisions.md#monotool-ad-8--nxcache-shared-on-ci-not-on-publish--accepted) — `NX_NO_CLOUD=true` on the local entrypoint and every CI job that runs Nx.
+- **`patch-package` prepare is not cacheable** — see [below](#patch-package-prepare-must-not-be-nx-cached) and [MonoTool-AD-12](architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted).
+
+<a id="patch-package-prepare-must-not-be-nx-cached"></a>
+
+### `patch-package` prepare must not be Nx-cached
+
+Most packages' `prepare` is bob transpile (`lib/**` → `dist/**`) and is correctly cached under [MonoTool-AD-11](architecture-decisions.md#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted). The **tests** workspace is different: its `prepare` script is **`patch-package`**, which mutates `tests/node_modules/**` (including React Native's `fmt.podspec` via `tests/patches/react-native+0.78.3.patch`).
+
+That target must set **`"cache": false`** on the project-level Nx `prepare` override. Reasons:
+
+1. **Inputs ≠ side effects.** For tests, the `jsSource` prepare hash **is** stable across yarn re-links (no `lib/**` to change), so re-link does not invalidate prepare and a warm Nx cache always reports a hit — that was the bug.
+2. **Yarn re-link resets the mutation.** Root `yarn` re-links packages to unpatched content, then `lerna:prepare` runs. If Nx skips `tests:prepare`, patches are never re-applied.
+3. **Adding `patches/**` to inputs is not enough.** After a re-link the patch files are unchanged → still a cache hit → still skipped.
+
+Root `prepare` is also `patch-package`, but it runs via Yarn (`postinstallDev` → `yarn prepare`) outside Nx, so only `tests` needs the override. Agent verification of fmt after install remains mandatory: [install / patch / fmt gate](../testing/agent-command-policy.md#install-patch-fmt-gate-blocking).
 
 ### Generated-file outputs (cache correctness)
 
