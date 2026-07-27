@@ -18,11 +18,20 @@
 #import <Firebase/Firebase.h>
 #import <FirebaseAppCheck/FIRAppCheck.h>
 
+#import <React/RCTInvalidating.h>
 #import <React/RCTUtils.h>
 
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBAppCheckModule.h"
+#import "RNFBAppCheckProviderFactory.h"
+#import "RNFBAppCheckTurboModules.h"
+
+@interface RNFBAppCheckModule () <NativeRNFBTurboAppCheckSpec, RCTInvalidating>
+
+@property RNFBAppCheckProviderFactory *_Nullable providerFactory;
+
+@end
 
 @implementation RNFBAppCheckModule
 

@@ -16,14 +16,10 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <React/RCTInvalidating.h>
-#import "RNFBAppCheckProviderFactory.h"
-#import "RNFBAppCheckTurboModules.h"
 
-@interface RNFBAppCheckModule : NSObject <NativeRNFBTurboAppCheckSpec, RCTInvalidating>
+// Bridging-header safe: no C++/codegen imports here. TurboModule conformance lives in .mm.
+@interface RNFBAppCheckModule : NSObject
 
-@property RNFBAppCheckProviderFactory* _Nullable providerFactory;
-
-+ (_Nonnull instancetype)sharedInstance;
++ (instancetype)sharedInstance;
 
 @end
