@@ -3,7 +3,7 @@ type: Reference
 title: Monorepo tooling decisions (ADR)
 description: Canonical owner of durable build-tooling decisions for the React Native Firebase monorepo — task orchestration, caching, prepare graph, declaration maps, dependency-cycle linting, and dev watch. The "what we decided and why", including rejected alternatives.
 tags: [monorepo, tooling, nx, lerna, bob, adr, decisions]
-timestamp: 2026-07-10T00:00:00Z
+timestamp: 2026-07-26T00:00:00Z
 ---
 
 # Monorepo tooling decisions (ADR)
@@ -194,6 +194,37 @@ Define a `jsSource` `namedInput` (`{projectRoot}/lib/**/*`, `{projectRoot}/plugi
 **Naming:** the input is named **`jsSource`** (not Nx's conventional `production`) because these are RN library packages, not deployed apps — "production" would misdescribe the set; `jsSource` names exactly what it globs.
 
 **Rejected:** Nx default inputs (whole `projectRoot`) — over-invalidates the cache and undercuts the stated rebuild-scope benefits.
+
+---
+
+## MonoTool-AD-12 — Never Nx-cache `prepare` when the script is `patch-package` — **Accepted**
+
+Disable Nx caching for any workspace `prepare` target whose script is `patch-package`. Today that is **`react-native-firebase-tests`** (`tests/package.json` → `"prepare": "patch-package"`), via a project-level override:
+
+```jsonc
+// tests/package.json
+"nx": {
+  "targets": {
+    "prepare": {
+      "cache": false
+    }
+  }
+}
+```
+
+Root `"prepare": "patch-package"` runs only via Yarn lifecycle (`postinstallDev` → `yarn prepare`), **not** through `lerna run` / Nx, so it needs no Nx override.
+
+**Why:** `patch-package` mutates `node_modules` after install/relink. [MonoTool-AD-11](#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted) correctly scopes bob `prepare` inputs to `jsSource`, but the tests package has **no** `lib/**`, so its prepare input hash is effectively stable. Yarn then re-links unpatched packages (e.g. React Native's fmt pin back to **11.0.2**), Nx reports a prepare **cache hit**, and `patch-package` never re-runs — leaving `tests/node_modules/react-native/third-party-podspecs/fmt.podspec` unpatched even though root `yarn` exited 0. That breaks the agent [install / patch / fmt gate](../testing/agent-command-policy.md#install-patch-fmt-gate-blocking).
+
+This aligns with AD-11's spirit: **inputs must match what prepare consumes**. For bob packages that is JS source → cache. For `patch-package`, the meaningful "input" is the freshly linked `node_modules` tree (not hashable as a stable cache key) → **do not cache**.
+
+**Rejected:**
+
+- **Add `tests/patches/**` to `prepare` inputs** — insufficient alone. After yarn re-links, patch file content is unchanged → still a cache hit → `patch-package` still skipped (proven).
+- **Hash `node_modules` as prepare inputs** — unstable, huge, and defeats the point of caching.
+- **Podfile / fmt native workarounds** — wrong layer; forbidden by the install/patch/fmt gate.
+
+Detail: [prepare-and-cache § patch-package prepare](prepare-and-cache.md#patch-package-prepare-must-not-be-nx-cached).
 
 ---
 

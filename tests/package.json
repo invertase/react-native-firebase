@@ -60,5 +60,12 @@
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
     "sinon": "21.1.2"
+  },
+  "nx": {
+    "targets": {
+      "prepare": {
+        "cache": false
+      }
+    }
   }
 }
