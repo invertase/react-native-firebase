@@ -3,7 +3,7 @@ type: Reference
 title: Running e2e tests
 description: The canonical, minimal command set for running React Native Firebase e2e tests on every platform.
 tags: [testing, e2e, detox, jet, ios, android, macos, coverage]
-timestamp: 2026-06-25T00:00:00Z
+timestamp: 2026-07-26T00:00:00Z
 ---
 
 # Running e2e tests
@@ -18,13 +18,15 @@ Canonical local e2e commands. Use **only** these commands. `-ci` variants are CI
 
 **Never invoke the test runner (Jet), Detox, Metro, or emulators directly.** Use **only** the repo-root `yarn tests:*` commands defined in this document (for example `yarn tests:packager:jet`, `yarn tests:emulator:start`, `yarn tests:<platform>:test-cover`). Do not run `jet`, `npx jet`, `yarn jet`, `detox test`, `cd tests && …`, or ad-hoc Metro/emulator start commands. When another doc mentions e2e, Jet, Detox, or pre-flight, follow the link to this runbook — do not infer commands from log output or implementation details.
 
-Install, prepare, and validation commands are **not** in this doc — they live in [agent command policy](agent-command-policy.md) (read before any non-e2e shell command).
+Install, prepare, and validation commands are **not** in this doc — they live in [agent command policy](agent-command-policy.md) (read before any non-e2e shell command). **Before any native `:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (root `yarn` exit 0 + fmt **≥ 12.1.0**).
 
 ## Prerequisites (once per checkout)
 
 ```bash
-yarn   # applies .yarn/patches (jet, mocha-remote-*, detox); installs tests devDeps incl. babel-plugin-istanbul
+yarn   # repo root — exit 0 required. Applies .yarn/patches (jet, mocha-remote-*, detox) and patch-package (incl. tests/patches/react-native+0.78.3.patch → fmt 12.1.0); installs tests devDeps incl. babel-plugin-istanbul
 ```
+
+**Before `yarn tests:ios:build` / `yarn tests:android:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (root `yarn` exit 0 + fmt **≥ 12.1.0**).
 
 ## Rules
 
@@ -41,6 +43,7 @@ yarn tests:emulator:start
 ```
 
 3. **Rebuild when needed**
+   - **Before any native `:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) — root `yarn` exit 0 + fmt podspec **≥ 12.1.0**. Missing this gate → Apple Clang 21 consteval failures on unpatched fmt **11.0.2**.
    - Native changed → `yarn tests:ios:build` / `yarn tests:android:build` before e2e. macOS uses firebase-js-sdk only — no native rebuild.
    - `packages/*/lib/**` changed → **`yarn lerna:prepare` must run to completion (exit 0) before anything else** — Metro serves `dist/module/**`, not `lib/**`. See [prepare completion gate](#prepare-completion-gate-blocking) and [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first). After prepare finishes, restart the packager with `yarn tests:packager:jet-reset-cache` when Metro was already running ([Rules §1](#rules)).
    - TurboModule **codegen / spec / podspec / native shell** changed → same as native changed, plus regen codegen ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)) when specs changed; if app loads with Metro redbox `Requiring unknown module "undefined"`, see [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
@@ -363,6 +366,7 @@ Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#ho
 
 - Do not invoke the test runner (Jet), Detox, Metro, or emulators except through repo-root `yarn tests:*` commands in this doc — see [agent rule](#agent-rule-read-first).
 - Do not run `:test-cover`, `:build`, Metro restart, or pre-flight while **`yarn` / `yarn lerna:prepare` is still in progress** — wait for exit 0 first ([prepare completion gate](#prepare-completion-gate-blocking)).
+- Do not run native `:build` until [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) is satisfied (fmt **≥ 12.1.0**).
 - Do not background `:test-cover` and poll `pgrep`, `detox`, or process names for completion.
 - Do not use `:test-cover-reuse`, `:test-cover-and-process`, or `:test-reuse` when measuring coverage or closing review gates.
 - Do not use `:8090` listening as “e2e still running” without the platform active signal above.
@@ -602,11 +606,12 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 
 1. [Pre-flight recovery](#pre-flight-recovery) — stop Metro, Jet, Detox; shutdown booted simulators.
 2. Remove **all** `node_modules` (repo root, `tests/`, and under `packages/*` if present).
-3. **`yarn`** at repo root (wait for exit 0 — includes `lerna:prepare`).
-4. Regenerate **all** touched packages' codegen from `tests/` ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)).
-5. **`yarn tests:ios:pod:install`** when iOS native/codegen changed.
-6. **`yarn tests:<platform>:build`**.
-7. **`yarn tests:packager:jet-reset-cache`** → pre-flight → `:test-cover`.
+3. **`yarn`** at repo root (wait for exit 0 — includes `lerna:prepare` and patches).
+4. Confirm [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (fmt **≥ 12.1.0**) before any native `:build`.
+5. Regenerate **all** touched packages' codegen from `tests/` ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)).
+6. **`yarn tests:ios:pod:install`** when iOS native/codegen changed.
+7. **`yarn tests:<platform>:build`**.
+8. **`yarn tests:packager:jet-reset-cache`** → pre-flight → `:test-cover`.
 
 Do **not** treat this redbox as a missing TurboModule registration until the refresh sequence has been run once on a clean tree.
 

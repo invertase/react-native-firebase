@@ -3,7 +3,7 @@ type: Reference
 title: Agent command policy
 description: Canonical allowlist for agent shell commands — install, prepare, validation, and e2e. Supersedes improvised diagnostics.
 tags: [testing, validation, agents, workflow, yarn]
-timestamp: 2026-06-27T00:00:00Z
+timestamp: 2026-07-26T00:00:00Z
 ---
 
 # Agent command policy
@@ -18,9 +18,10 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 
 1. Run **only** commands in the [registry](#canonical-registry) below (repo root unless noted).
 2. **`yarn` / `yarn lerna:prepare` must finish before anything else** — see [prepare must finish first](#prepare-must-finish-first). Do not parallelize install/prepare with e2e, Metro, builds, or other shell commands.
-3. When a canonical command fails: read the **full** output, fix **product code**, re-run the **same** command. Do **not** switch invocation style.
-4. Do **not** infer alternate commands from error strings (`command not found: genversion`, `Couldn't find a script named "jet"`, etc.) — see [known traps](#known-traps).
-5. Subagents (Task, explore, orchestrator): same rule — paste the [handoff block](#subagent-handoff) into every RNFB task prompt.
+3. **Before any native `:build`:** root `yarn` exit 0 **and** patched fmt **≥ 12.1.0** — [install / patch / fmt gate](#install-patch-fmt-gate-blocking). Do **not** invent Podfile/fmt workarounds.
+4. When a canonical command fails: read the **full** output, fix **product code** (or re-run root `yarn` for a patch miss), re-run the **same** command. Do **not** switch invocation style.
+5. Do **not** infer alternate commands from error strings (`command not found: genversion`, `Couldn't find a script named "jet"`, etc.) — see [known traps](#known-traps).
+6. Subagents (Task, explore, orchestrator): same rule — paste the [handoff block](#subagent-handoff) into every RNFB task prompt.
 
 ## Canonical registry
 
@@ -64,6 +65,28 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 **Agent rule:** one prepare invocation per message batch; wait for completion; then run the next step (Metro restart if needed → pre-flight → `:test-cover`). [Running e2e § prepare completion gate](running-e2e.md#prepare-completion-gate-blocking) is the e2e-side mirror of this rule.
 
 **Symptoms when violated:** `Cannot find module '…/dist/module/…'`, Metro 500 on bundle, e2e failures before tests run, or green Metro `/status` while the app loads a half-written `dist/`.
+
+<a id="install-patch-fmt-gate-blocking"></a>
+
+### Install / patch / fmt gate (blocking before native `:build`)
+
+**Canonical owner** for install + patch freshness before Detox native builds. E2e docs link here — do not restate this procedure elsewhere.
+
+**Before any** `yarn tests:ios:build`, `yarn tests:android:build`, or other Detox native build path:
+
+1. **Root `yarn` MUST have run and exited 0** in this checkout. Required on a fresh checkout, after deleting `node_modules`, after pulling patch changes, and whenever patches may be stale. Do **not** start native `:build` until that install finished successfully.
+2. Root `yarn` applies **`.yarn/patches`** (jet, detox, mocha-remote) and workspace **`patch-package`** patches, including **`tests/patches/react-native+0.78.3.patch`** (bumps React Native's fmt pin to **12.1.0**).
+3. **Verify** the patched React Native fmt podspec reports version **≥ 12.1.0** (Xcode 26 / Apple Clang 21-safe floor for this pin):
+
+```bash
+rg 'spec\.version|:tag' tests/node_modules/react-native/third-party-podspecs/fmt.podspec
+```
+
+Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
+
+4. If fmt is still **11.0.2** (or anything **< 12.1.0**): **STOP**. Re-run root `yarn` / fix patch application. Do **not** invent Podfile `post_install` fmt hacks, `FMT_USE_CONSTEVAL` / `base.h` patches, c++17-for-fmt-only, or web-search workarounds — the durable fix is the existing patch applied on install.
+
+**Symptoms when violated:** Apple Clang 21 consteval errors compiling unpatched fmt **11.0.2**; agents inventing Podfile/fmt workarounds instead of re-running root `yarn`.
 
 ## When install or prepare fails
 
@@ -120,6 +143,12 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 - **Canonical:** [turbomodule workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical) — `cd tests`, `npx @react-native-community/cli codegen --path ../packages/<pkg> …` with `--outputPath` copied from that package's `package.json` script.
 - After regen: commit `android/.../generated` + `ios/generated`, then `:build` + Metro reset-cache before `:test-cover`.
 
+### fmt / Apple Clang 21 (unpatched React Native)
+
+- Unpatched RN ships fmt **11.0.2**. On Xcode 26 / Apple Clang 21 that fails consteval builds.
+- **Canonical fix:** root `yarn` applying `tests/patches/react-native+0.78.3.patch` → fmt **12.1.0**. See [install / patch / fmt gate](#install-patch-fmt-gate-blocking).
+- **Never** invent Podfile `post_install` fmt hacks, `FMT_USE_CONSTEVAL`, `base.h` patches, or c++17-for-fmt-only as a substitute for a missed install/patch.
+
 ## Subagent handoff
 
 Paste into Task / explore / work-queue prompts:
@@ -131,10 +160,11 @@ Never: yarn workspace prepare, yarn jet, npx jet, cd packages/* && yarn prepare/
 Never invent format/install: yarn google-java-format, bare/npx google-java-format, npm install, yarn install in tests/ alone — use root yarn first; Java format = yarn lint:android ONLY.
 Never invent Android Gradle: ad-hoc ./gradlew outside yarn tests:android:unit / :build / :post-e2e-coverage / :test:jacoco-report; bare detox/jet/metro.
 Prepare/install: yarn or yarn lerna:prepare must exit 0 before ANY other command — never parallelize with e2e/Metro/build.
+Before native :build: root yarn exit 0 + verify tests/node_modules/react-native/third-party-podspecs/fmt.podspec ≥ 12.1.0 — okf-bundle/testing/agent-command-policy.md#install-patch-fmt-gate-blocking. If fmt < 12.1.0: STOP and re-run yarn; never invent Podfile/FMT_USE_CONSTEVAL/c++17 fmt hacks.
 Area harness: okf-bundle/testing/running-e2e.md#local-harness-overrides-harnessoverridesjs — copy harness.overrides.example.js to gitignored harness.overrides.js; set modules + RNFBDebug; delete overrides after run.
 TurboModule contract test (NewArch-AD-17.1): packages/app/__tests__/nativeModuleContract.test.ts — yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts
 Android JVM unit (AndroidTest-AD-1): yarn tests:android:unit — not a substitute for platform e2e.
-On failure: fix product code, re-run the same canonical command.
+On failure: fix product code (or re-run yarn for patch miss), re-run the same canonical command.
 Gate close / push: return [validation evidence package](validation-checklist.md#validation-evidence-package) and [coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native touched — required before commit or publication ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)).
 ```
 
@@ -143,6 +173,7 @@ Gate close / push: return [validation evidence package](validation-checklist.md#
 | Topic                           | Owner                                                        |
 | ------------------------------- | ------------------------------------------------------------ |
 | E2e commands, pre-flight, tiers | [running-e2e.md](running-e2e.md)                             |
+| Install / patch / fmt before `:build` | [§ install / patch / fmt gate](#install-patch-fmt-gate-blocking) |
 | Handoff validation sequence     | [validation-checklist.md](validation-checklist.md)           |
 | Android JVM unit ADR            | [android-architecture-decisions.md](android-architecture-decisions.md) |
 | Work types and gates            | [change-authoring-workflow.md](change-authoring-workflow.md) |
