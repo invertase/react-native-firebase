@@ -278,3 +278,5 @@ Xcode
 Xcode.
 XCS
 XMPP
+ARM64
+UIKit
