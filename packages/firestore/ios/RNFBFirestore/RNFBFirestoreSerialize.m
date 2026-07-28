@@ -231,22 +231,29 @@ enum TYPE_MAP {
     NSDictionary *data = [snapshot dataWithServerTimestampBehavior:serverTimestampBehavior];
     [self putSnapshotData:documentMap key:KEY_DATA data:data];
 
-    if (serverTimestampBehavior != FIRServerTimestampBehaviorEstimate) {
-      NSDictionary *estimateData =
-          [snapshot dataWithServerTimestampBehavior:FIRServerTimestampBehaviorEstimate];
-      [self putSnapshotData:documentMap key:KEY_DATA_ESTIMATE data:estimateData];
-    }
+    // The estimate/previous/none variants can only ever differ from `data` while the
+    // document has pending writes - once a write is committed, server timestamps are
+    // resolved and every behavior returns identical values. Skip the extra (expensive)
+    // computations for the common settled-document case; JS falls back to `data` when
+    // these keys are absent (see FirestoreDocumentSnapshot#_dataForOptions).
+    if (snapshot.metadata.hasPendingWrites) {
+      if (serverTimestampBehavior != FIRServerTimestampBehaviorEstimate) {
+        NSDictionary *estimateData =
+            [snapshot dataWithServerTimestampBehavior:FIRServerTimestampBehaviorEstimate];
+        [self putSnapshotData:documentMap key:KEY_DATA_ESTIMATE data:estimateData];
+      }
 
-    if (serverTimestampBehavior != FIRServerTimestampBehaviorPrevious) {
-      NSDictionary *previousData =
-          [snapshot dataWithServerTimestampBehavior:FIRServerTimestampBehaviorPrevious];
-      [self putSnapshotData:documentMap key:KEY_DATA_PREVIOUS data:previousData];
-    }
+      if (serverTimestampBehavior != FIRServerTimestampBehaviorPrevious) {
+        NSDictionary *previousData =
+            [snapshot dataWithServerTimestampBehavior:FIRServerTimestampBehaviorPrevious];
+        [self putSnapshotData:documentMap key:KEY_DATA_PREVIOUS data:previousData];
+      }
 
-    if (serverTimestampBehavior != FIRServerTimestampBehaviorNone) {
-      NSDictionary *noneData =
-          [snapshot dataWithServerTimestampBehavior:FIRServerTimestampBehaviorNone];
-      [self putSnapshotData:documentMap key:KEY_DATA_NONE data:noneData];
+      if (serverTimestampBehavior != FIRServerTimestampBehaviorNone) {
+        NSDictionary *noneData =
+            [snapshot dataWithServerTimestampBehavior:FIRServerTimestampBehaviorNone];
+        [self putSnapshotData:documentMap key:KEY_DATA_NONE data:noneData];
+      }
     }
   }
 

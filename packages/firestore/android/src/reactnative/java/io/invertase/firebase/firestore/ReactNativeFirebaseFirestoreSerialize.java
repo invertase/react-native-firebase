@@ -124,23 +124,30 @@ public class ReactNativeFirebaseFirestoreSerialize {
       Map<String, Object> data = documentSnapshot.getData(timestampBehavior);
       putSnapshotData(documentMap, KEY_DATA, data);
 
-      if (timestampBehavior != DocumentSnapshot.ServerTimestampBehavior.ESTIMATE) {
-        putSnapshotData(
-            documentMap,
-            KEY_DATA_ESTIMATE,
-            documentSnapshot.getData(DocumentSnapshot.ServerTimestampBehavior.ESTIMATE));
-      }
-      if (timestampBehavior != DocumentSnapshot.ServerTimestampBehavior.PREVIOUS) {
-        putSnapshotData(
-            documentMap,
-            KEY_DATA_PREVIOUS,
-            documentSnapshot.getData(DocumentSnapshot.ServerTimestampBehavior.PREVIOUS));
-      }
-      if (timestampBehavior != DocumentSnapshot.ServerTimestampBehavior.NONE) {
-        putSnapshotData(
-            documentMap,
-            KEY_DATA_NONE,
-            documentSnapshot.getData(DocumentSnapshot.ServerTimestampBehavior.NONE));
+      // The estimate/previous/none variants can only ever differ from `data` while the
+      // document has pending writes - once a write is committed, server timestamps are
+      // resolved and every behavior returns identical values. Skip the extra (expensive)
+      // computations for the common settled-document case; JS falls back to `data` when
+      // these keys are absent (see FirestoreDocumentSnapshot#_dataForOptions).
+      if (snapshotMetadata.hasPendingWrites()) {
+        if (timestampBehavior != DocumentSnapshot.ServerTimestampBehavior.ESTIMATE) {
+          putSnapshotData(
+              documentMap,
+              KEY_DATA_ESTIMATE,
+              documentSnapshot.getData(DocumentSnapshot.ServerTimestampBehavior.ESTIMATE));
+        }
+        if (timestampBehavior != DocumentSnapshot.ServerTimestampBehavior.PREVIOUS) {
+          putSnapshotData(
+              documentMap,
+              KEY_DATA_PREVIOUS,
+              documentSnapshot.getData(DocumentSnapshot.ServerTimestampBehavior.PREVIOUS));
+        }
+        if (timestampBehavior != DocumentSnapshot.ServerTimestampBehavior.NONE) {
+          putSnapshotData(
+              documentMap,
+              KEY_DATA_NONE,
+              documentSnapshot.getData(DocumentSnapshot.ServerTimestampBehavior.NONE));
+        }
       }
     }
 

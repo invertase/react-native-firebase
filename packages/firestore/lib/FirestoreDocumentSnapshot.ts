@@ -69,18 +69,22 @@ export default class DocumentSnapshot<
     this._nativeData = nativeData;
     this._converter = converter;
     this._data = parseNativeMap(firestore, nativeData.data as Record<string, unknown> | undefined);
-    this._dataEstimate = parseNativeMap(
-      firestore,
-      nativeData.dataEstimate as Record<string, unknown> | undefined,
-    );
-    this._dataPrevious = parseNativeMap(
-      firestore,
-      nativeData.dataPrevious as Record<string, unknown> | undefined,
-    );
-    this._dataNone = parseNativeMap(
-      firestore,
-      nativeData.dataNone as Record<string, unknown> | undefined,
-    );
+    // The native side only sends `dataEstimate`/`dataPrevious`/`dataNone` when the
+    // document has pending writes (these variants are otherwise identical to `data`).
+    // Avoid the extra parse work entirely for the common settled-document case rather
+    // than relying on `parseNativeMap`'s own `undefined` short-circuit.
+    this._dataEstimate =
+      nativeData.dataEstimate === undefined
+        ? undefined
+        : parseNativeMap(firestore, nativeData.dataEstimate as Record<string, unknown>);
+    this._dataPrevious =
+      nativeData.dataPrevious === undefined
+        ? undefined
+        : parseNativeMap(firestore, nativeData.dataPrevious as Record<string, unknown>);
+    this._dataNone =
+      nativeData.dataNone === undefined
+        ? undefined
+        : parseNativeMap(firestore, nativeData.dataNone as Record<string, unknown>);
     this._metadata = new SnapshotMetadata(nativeData.metadata ?? [false, false]);
     this._ref = new DocumentReference<AppModelType, DbModelType>(
       firestore,

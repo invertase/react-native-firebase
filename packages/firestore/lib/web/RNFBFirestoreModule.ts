@@ -65,6 +65,7 @@ function rejectWithCodeAndMessage(code: string, message: string): Promise<never>
 type DocumentSnapshotLike = {
   exists(): boolean;
   ref: { path: string };
+  metadata: { hasPendingWrites: boolean };
   data(options?: {
     serverTimestamps?: 'estimate' | 'previous' | 'none';
   }): Record<string, unknown> | undefined;
@@ -95,9 +96,16 @@ function documentSnapshotToObject(snapshot: DocumentSnapshotLike): {
   };
   if (exists) {
     out.data = objectToWriteable(snapshot.data() ?? {});
-    out.dataEstimate = objectToWriteable(snapshot.data({ serverTimestamps: 'estimate' }) ?? {});
-    out.dataPrevious = objectToWriteable(snapshot.data({ serverTimestamps: 'previous' }) ?? {});
-    out.dataNone = objectToWriteable(snapshot.data({ serverTimestamps: 'none' }) ?? {});
+    // The estimate/previous/none variants can only ever differ from `data` while the
+    // document has pending writes - once a write is committed, server timestamps are
+    // resolved and every behavior returns identical values. Skip the extra (expensive)
+    // computations for the common settled-document case; JS falls back to `data` when
+    // these keys are absent (see FirestoreDocumentSnapshot#_dataForOptions).
+    if (snapshot.metadata.hasPendingWrites) {
+      out.dataEstimate = objectToWriteable(snapshot.data({ serverTimestamps: 'estimate' }) ?? {});
+      out.dataPrevious = objectToWriteable(snapshot.data({ serverTimestamps: 'previous' }) ?? {});
+      out.dataNone = objectToWriteable(snapshot.data({ serverTimestamps: 'none' }) ?? {});
+    }
   }
   return out;
 }
