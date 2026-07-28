@@ -32,10 +32,26 @@
   }
 
   if (self.providers[app.name] == nil) {
-    DLog(@"provider initializing (with default to debug) for app %@", app.name);
+    // This pre-configure default must not be "debug" in release builds. The Expo config
+    // plugin emits `RNFBAppCheckModule.sharedInstance()` BEFORE `FirebaseApp.configure()`
+    // in AppDelegate, so FIRAppCheckInterop — registered with
+    // FIRInstantiationTimingAlwaysEager — instantiates a provider from inside configure(),
+    // while providers[app.name] is still nil. Defaulting to debug therefore installs
+    // FIRAppCheckDebugProvider on release builds, which exchanges an unregistered debug
+    // token against firebaseappcheck.googleapis.com: 403 "App attestation failed", and 429
+    // once the per-project debug-token quota saturates. See discussion #7518.
+    //
+    // DEBUG builds keep the debug default, which local development with debug tokens
+    // relies on.
+#if DEBUG
+    NSString *defaultProviderName = @"debug";
+#else
+    NSString *defaultProviderName = @"appAttestWithDeviceCheckFallback";
+#endif
+    DLog(@"provider initializing (with default to %@) for app %@", defaultProviderName, app.name);
     self.providers[app.name] = [RNFBAppCheckProvider new];
     RNFBAppCheckProvider *provider = self.providers[app.name];
-    [provider configure:app providerName:@"debug" debugToken:nil];
+    [provider configure:app providerName:defaultProviderName debugToken:nil];
   }
 
   return self.providers[app.name];
