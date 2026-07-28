@@ -84,7 +84,7 @@ jobs:
           max_attempts: 3
           command: yarn codegen:verify
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -92,7 +92,7 @@ jobs:
           path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -146,7 +146,7 @@ jobs:
       - name: Lint
         run: yarn tsc:compile
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -154,7 +154,7 @@ jobs:
           path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -195,7 +195,7 @@ jobs:
       - name: Are The Types Wrong
         run: yarn attw:check
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -250,7 +250,7 @@ jobs:
       - name: Consumer Type Test
         run: yarn tsc:compile:consumer
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -258,7 +258,7 @@ jobs:
           path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -312,7 +312,7 @@ jobs:
       - name: Generate TypeDoc
         run: yarn reference:api
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -320,7 +320,7 @@ jobs:
           path: .yarn/cache
           key: ${{ runner.os }}-yarn-with-website-v1-${{ hashFiles('yarn.lock') }}
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
