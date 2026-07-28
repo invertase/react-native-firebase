@@ -65,7 +65,6 @@ function rejectWithCodeAndMessage(code: string, message: string): Promise<never>
 type DocumentSnapshotLike = {
   exists(): boolean;
   ref: { path: string };
-  metadata: { hasPendingWrites: boolean };
   data(options?: {
     serverTimestamps?: 'estimate' | 'previous' | 'none';
   }): Record<string, unknown> | undefined;
@@ -96,16 +95,15 @@ function documentSnapshotToObject(snapshot: DocumentSnapshotLike): {
   };
   if (exists) {
     out.data = objectToWriteable(snapshot.data() ?? {});
-    // The estimate/previous/none variants can only ever differ from `data` while the
-    // document has pending writes - once a write is committed, server timestamps are
-    // resolved and every behavior returns identical values. Skip the extra (expensive)
-    // computations for the common settled-document case; JS falls back to `data` when
-    // these keys are absent (see FirestoreDocumentSnapshot#_dataForOptions).
-    if (snapshot.metadata.hasPendingWrites) {
-      out.dataEstimate = objectToWriteable(snapshot.data({ serverTimestamps: 'estimate' }) ?? {});
-      out.dataPrevious = objectToWriteable(snapshot.data({ serverTimestamps: 'previous' }) ?? {});
-      out.dataNone = objectToWriteable(snapshot.data({ serverTimestamps: 'none' }) ?? {});
-    }
+    // Unlike the full/lite-free SDKs, the Lite SDK has no concept of pending writes: it's a
+    // one-shot REST-based client with no local cache, no offline write queue, and no
+    // snapshot listeners. `data()` also doesn't accept a `serverTimestamps` option on this
+    // SDK - server timestamps are always already resolved by the time a Lite SDK snapshot
+    // is returned - so there is no settled-vs-pending distinction to gate on here; always
+    // compute all variants (they're always identical to `data` on this platform).
+    out.dataEstimate = objectToWriteable(snapshot.data({ serverTimestamps: 'estimate' }) ?? {});
+    out.dataPrevious = objectToWriteable(snapshot.data({ serverTimestamps: 'previous' }) ?? {});
+    out.dataNone = objectToWriteable(snapshot.data({ serverTimestamps: 'none' }) ?? {});
   }
   return out;
 }
