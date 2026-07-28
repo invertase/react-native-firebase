@@ -126,6 +126,12 @@ describe('Firestore', function () {
         throw new Error('Expected throwOnOtherPlatform to throw.');
       } catch (e) {
         expect((e as { code?: string }).code).toEqual('firestore/unsupported');
+      } finally {
+        // `jest.doMock` registers the factory in the module-mock registry, which
+        // `jest.isolateModules` does NOT undo (it only swaps the module-instance cache).
+        // Without this, the mock would leak into every subsequent test/file that imports
+        // '@react-native-firebase/app/dist/module/common', so explicitly unregister it here.
+        jest.dontMock('@react-native-firebase/app/dist/module/common');
       }
     });
   });
