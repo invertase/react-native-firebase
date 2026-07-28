@@ -10,10 +10,12 @@
 import { logger } from 'firebase-functions/v2';
 import { CallableRequest, onCall } from 'firebase-functions/v2/https';
 import { getMessaging, TokenMessage } from 'firebase-admin/messaging';
+import { E2E_TEST_FUNCTION_TIMEOUT_SECONDS } from './e2eCallOptions';
 import { getAdminApp } from '.';
 
 // Note: this will only work in a live environment, not locally via the Firebase emulator.
 export const sendFCM = onCall(
+  { timeoutSeconds: E2E_TEST_FUNCTION_TIMEOUT_SECONDS },
   async (req: CallableRequest<{ message: TokenMessage; delay?: number }>) => {
     const { message, delay } = req.data;
     return await new Promise(() => {

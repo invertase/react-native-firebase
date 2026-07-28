@@ -32,7 +32,7 @@ public class ReactNativeFirebasePerfPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebasePerfModule(reactContext));
+    modules.add(new NativeRNFBTurboPerf(reactContext));
     return modules;
   }
 

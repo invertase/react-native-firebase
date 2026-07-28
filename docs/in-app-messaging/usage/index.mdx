@@ -1,9 +1,8 @@
 ---
 title: In App Messaging
 description: Installation and getting started with In App Messaging.
-icon: //firebase.google.com/static/images/products/icons/run_in_app_messaging.svg
 next: /installations/usage
-previous: /functions/usage
+previous: /database/presence-detection
 ---
 
 # Installation
@@ -28,6 +27,15 @@ Note: in-app-messaging requires a minimum android gradle plugin version of 3.5.4
 
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/in-app-messaging/usage/installation/ios) and [Android](/in-app-messaging/usage/installation/android).
+
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+> **React Native only:** There is no firebase-js-sdk web equivalent for In-App Messaging.
 
 # What does it do
 
@@ -61,16 +69,18 @@ a use case for controlling the flow of messages:
 > The suppressed state is not persisted between restarts, so ensure it is called as early as possible.
 
 ```jsx
-import inAppMessaging from '@react-native-firebase/in-app-messaging';
+import {
+  getInAppMessaging,
+  setMessagesDisplaySuppressed,
+} from '@react-native-firebase/in-app-messaging';
 
 async function bootstrap() {
-  await inAppMessaging().setMessagesDisplaySuppressed(true);
+  await setMessagesDisplaySuppressed(getInAppMessaging(), true);
 }
 
 async function onSetup(user) {
   await setupUser(user);
-  // Allow user to receive messages now setup is complete
-  inAppMessaging().setMessagesDisplaySuppressed(false);
+  await setMessagesDisplaySuppressed(getInAppMessaging(), false);
 }
 ```
 

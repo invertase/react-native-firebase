@@ -19,7 +19,7 @@
   <a href="https://www.facebook.com/groups/rnfirebase"><img src="https://img.shields.io/badge/Follow%20on%20Facebook-4172B8?logo=facebook&style=flat-square&logoColor=fff" alt="Follow on Facebook"></a>
 </p>
 
-----
+---
 
 React Native Firebase provides native integration of Firebase Cloud Messaging (FCM) for both Android & iOS. FCM is a
 cost free service, allowing for server-device and device-device communication.
@@ -42,6 +42,7 @@ yarn add @react-native-firebase/messaging
 - [Reference](https://rnfirebase.io/reference/messaging)
 
 ### Additional Topics
+
 - [iOS Permissions](https://rnfirebase.io/messaging/ios-permissions)
 - [Notifications](https://rnfirebase.io/messaging/notifications)
 - [Server Integration](https://rnfirebase.io/messaging/server-integration)
@@ -50,7 +51,7 @@ yarn add @react-native-firebase/messaging
 
 - See [LICENSE](/LICENSE)
 
-----
+---
 
 <p>
   <img align="left" width="75px" src="https://static.invertase.io/assets/invertase/invertase-rounded.png">
@@ -59,4 +60,4 @@ yarn add @react-native-firebase/messaging
   </p>
 </p>
 
-----
+---

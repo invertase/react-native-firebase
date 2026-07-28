@@ -47,6 +47,9 @@ const appCheckWebModule: AppCheckModule = {
         return;
       }
       const { provider, isTokenAutoRefreshEnabled } = options;
+      if (!provider) {
+        throw new Error('AppCheck provider is required');
+      }
       const _provider = new CustomProvider({
         getToken() {
           if ('getToken' in provider && typeof provider.getToken === 'function') {

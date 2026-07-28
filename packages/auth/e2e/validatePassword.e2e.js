@@ -72,8 +72,7 @@ describe('auth() -> validatePassword()', function () {
     try {
       await validatePassword(undefined, 'Testing123$');
     } catch (e) {
-      e.message.should.containEql('app');
-      e.message.should.containEql('undefined');
+      e.message.should.containEql("'auth' must be a valid Auth instance");
     }
   });
 });

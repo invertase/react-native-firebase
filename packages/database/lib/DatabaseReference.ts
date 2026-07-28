@@ -16,7 +16,6 @@
  */
 
 import {
-  createDeprecationProxy,
   generateDatabaseId,
   isBoolean,
   isFunction,
@@ -26,7 +25,6 @@ import {
   isString,
   isUndefined,
   isValidPath,
-  MODULAR_DEPRECATION_ARG,
   pathChild,
   pathParent,
   promiseWithOptionalCallback,
@@ -40,35 +38,18 @@ import DatabaseQueryModifiers from './DatabaseQueryModifiers';
 import DatabaseThenableReference, {
   provideReferenceClass as provideReferenceClassForThenable,
 } from './DatabaseThenableReference';
-import type { DatabaseInternal } from './types/internal';
-import type { FirebaseDatabaseTypes } from './types/namespaced';
+import type { DatabaseInternal, DatabaseReferenceWithMethodsInternal } from './types/internal';
+import type {
+  DatabaseReference as DatabaseReferenceType,
+  DataSnapshot,
+  OnDisconnect,
+  ThenableReference,
+  TransactionResult,
+} from './types/database';
 
 const internalRefs = ['.info/connected', '.info/serverTimeOffset'] as const;
 
-type ReferenceWithChildInternal = FirebaseDatabaseTypes.Reference & {
-  child(path: string, deprecationArg?: string): FirebaseDatabaseTypes.Reference;
-};
-
-type ReferenceWithSetInternal = FirebaseDatabaseTypes.Reference & {
-  set(
-    value: unknown,
-    onComplete?: (error: Error | null) => void,
-    deprecationArg?: string,
-  ): Promise<void>;
-};
-
-function apChild(reference: FirebaseDatabaseTypes.Reference): ReferenceWithChildInternal {
-  return reference as ReferenceWithChildInternal;
-}
-
-function apSet(reference: FirebaseDatabaseTypes.Reference): ReferenceWithSetInternal {
-  return reference as ReferenceWithSetInternal;
-}
-
-export default class DatabaseReference
-  extends DatabaseQuery
-  implements FirebaseDatabaseTypes.Reference
-{
+export default class DatabaseReference extends DatabaseQuery implements DatabaseReferenceType {
   readonly _database: DatabaseInternal;
 
   constructor(database: DatabaseInternal, path: string) {
@@ -82,29 +63,23 @@ export default class DatabaseReference
     this._database = database;
   }
 
-  get parent(): FirebaseDatabaseTypes.Reference | null {
+  get parent(): DatabaseReferenceType | null {
     const parentPath = pathParent(this.path);
     if (parentPath === null) {
       return null;
     }
-    return createDeprecationProxy(
-      new DatabaseReference(this._database, parentPath),
-    ) as FirebaseDatabaseTypes.Reference;
+    return new DatabaseReference(this._database, parentPath);
   }
 
-  get root(): FirebaseDatabaseTypes.Reference {
-    return createDeprecationProxy(
-      new DatabaseReference(this._database, '/'),
-    ) as FirebaseDatabaseTypes.Reference;
+  get root(): DatabaseReferenceType {
+    return new DatabaseReference(this._database, '/');
   }
 
-  child(path: string): FirebaseDatabaseTypes.Reference {
+  child(path: string): DatabaseReferenceType {
     if (!isString(path)) {
       throw new Error("firebase.database().ref().child(*) 'path' must be a string value.");
     }
-    return createDeprecationProxy(
-      new DatabaseReference(this._database, pathChild(this.path, path)),
-    ) as FirebaseDatabaseTypes.Reference;
+    return new DatabaseReference(this._database, pathChild(this.path, path));
   }
 
   set(value: any, onComplete?: (error: Error | null) => void): Promise<void> {
@@ -195,10 +170,10 @@ export default class DatabaseReference
     onComplete?: (
       error: Error | null,
       committed: boolean,
-      finalResult: FirebaseDatabaseTypes.DataSnapshot | null,
+      finalResult: DataSnapshot | null,
     ) => void,
     applyLocally?: boolean,
-  ): Promise<FirebaseDatabaseTypes.TransactionResult> {
+  ): Promise<TransactionResult> {
     if (!isFunction(transactionUpdate)) {
       throw new Error(
         "firebase.database().ref().transaction(*) 'transactionUpdate' must be a function.",
@@ -230,12 +205,10 @@ export default class DatabaseReference
             onComplete(
               null,
               committed,
-              createDeprecationProxy(
-                new DatabaseDataSnapshot(
-                  this,
-                  snapshotData as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
-                ),
-              ) as FirebaseDatabaseTypes.DataSnapshot,
+              new DatabaseDataSnapshot(
+                this,
+                snapshotData as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
+              ),
             );
           }
         }
@@ -245,14 +218,17 @@ export default class DatabaseReference
           return;
         }
 
+        const snapshot = new DatabaseDataSnapshot(
+          this,
+          snapshotData as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
+        );
+
         resolve({
           committed,
-          snapshot: createDeprecationProxy(
-            new DatabaseDataSnapshot(
-              this,
-              snapshotData as ConstructorParameters<typeof DatabaseDataSnapshot>[1],
-            ),
-          ) as FirebaseDatabaseTypes.DataSnapshot,
+          snapshot,
+          toJSON() {
+            return { committed, snapshot: snapshot.toJSON() };
+          },
         });
       };
 
@@ -282,10 +258,7 @@ export default class DatabaseReference
     );
   }
 
-  push(
-    value?: any,
-    onComplete?: (error: Error | null) => void,
-  ): FirebaseDatabaseTypes.ThenableReference {
+  push(value?: any, onComplete?: (error: Error | null) => void): ThenableReference {
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
         "firebase.database().ref().push(_, *) 'onComplete' must be a function if provided.",
@@ -298,15 +271,13 @@ export default class DatabaseReference
       return new DatabaseThenableReference(
         this._database,
         pathChild(this.path, id),
-        Promise.resolve(apChild(this).child.call(this, id, MODULAR_DEPRECATION_ARG)),
-      ) as unknown as FirebaseDatabaseTypes.ThenableReference;
+        Promise.resolve(this.child(id)),
+      ) as unknown as ThenableReference;
     }
 
-    const pushRef = apChild(this).child.call(this, id, MODULAR_DEPRECATION_ARG);
+    const pushRef = this.child(id) as DatabaseReferenceWithMethodsInternal;
 
-    const promise = apSet(pushRef)
-      .set.call(pushRef, value, onComplete, MODULAR_DEPRECATION_ARG)
-      .then(() => pushRef);
+    const promise = pushRef.set(value, onComplete).then(() => pushRef);
 
     if (onComplete) {
       promise.catch(() => {});
@@ -316,10 +287,10 @@ export default class DatabaseReference
       this._database,
       pathChild(this.path, id),
       promise,
-    ) as unknown as FirebaseDatabaseTypes.ThenableReference;
+    ) as unknown as ThenableReference;
   }
 
-  onDisconnect(): FirebaseDatabaseTypes.OnDisconnect {
+  onDisconnect(): OnDisconnect {
     return new DatabaseOnDisconnect(this);
   }
 }

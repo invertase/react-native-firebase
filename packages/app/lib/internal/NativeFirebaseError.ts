@@ -22,7 +22,7 @@ export default class NativeFirebaseError extends Error {
   readonly code!: string;
   readonly jsStack!: string;
   readonly userInfo!: NativeErrorUserInfo;
-  readonly customData: any;
+  readonly customData!: Record<string, unknown> | null;
   readonly operationType!: string | null;
   readonly nativeErrorCode!: string | number | null;
   readonly nativeErrorMessage!: string | null;

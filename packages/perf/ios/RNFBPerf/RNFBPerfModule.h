@@ -16,8 +16,9 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <React/RCTInvalidating.h>
+#import "RNFBPerfTurboModules.h"
 
-#import <React/RCTBridgeModule.h>
+@interface RNFBPerfModule : NSObject <NativeRNFBTurboPerfSpec, RCTInvalidating>
 
-@interface RNFBPerfModule : NSObject <RCTBridgeModule>
 @end

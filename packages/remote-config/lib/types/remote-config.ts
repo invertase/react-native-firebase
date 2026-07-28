@@ -15,14 +15,39 @@
  *
  */
 
-import type { FirebaseApp } from '@firebase/app';
-import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseApp, FirebaseError } from '@firebase/app';
 
 export type LogLevel = 'debug' | 'error' | 'silent';
 
 export type FetchStatus = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
 
 export type ValueSource = 'static' | 'default' | 'remote';
+
+export interface FirebaseRemoteConfigObject {
+  [key: string]: string;
+}
+
+export interface FirebaseExperimentDescription {
+  experimentId: string;
+  variantId: string;
+  experimentStartTime: string;
+  triggerTimeoutMillis: string;
+  timeToLiveMillis: string;
+  affectedParameterKeys?: string[];
+}
+
+export interface FetchResponse {
+  status: number;
+  eTag?: string;
+  config?: FirebaseRemoteConfigObject;
+  templateVersion?: number;
+  experiments?: FirebaseExperimentDescription[];
+}
+
+export interface RemoteConfigOptions {
+  templateId?: string;
+  initialFetchResponse?: FetchResponse;
+}
 
 export interface Value {
   getSource(): ValueSource;
@@ -42,7 +67,7 @@ export interface ConfigUpdate {
 
 export interface ConfigUpdateObserver {
   next: (configUpdate: ConfigUpdate) => void;
-  error: (error: ReactNativeFirebase.NativeFirebaseError) => void;
+  error: (error: FirebaseError) => void;
   complete: () => void;
 }
 

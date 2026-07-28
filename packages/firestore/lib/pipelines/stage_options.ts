@@ -17,7 +17,7 @@
 
 import type { Pipeline } from './pipeline';
 import type { DocumentReference, Query } from '../types/firestore';
-import type VectorValue from '../FirestoreVectorValue';
+import type { VectorValue } from '../FirestoreVectorValue';
 import type { OneOf } from './types';
 import type {
   Ordering,
@@ -26,13 +26,14 @@ import type {
   BooleanExpression,
   Expression,
   AliasedAggregate,
+  AliasedExpression,
 } from './expressions';
 
 /**
  * @beta
  * Distance measure for vector search.
  */
-export type PipelineDistanceMeasure = 'COSINE' | 'EUCLIDEAN' | 'DOT_PRODUCT';
+export type PipelineDistanceMeasure = 'euclidean' | 'cosine' | 'dot_product';
 
 /**
  * @beta
@@ -49,6 +50,28 @@ export interface PipelineAggregateOptions {
  */
 export interface PipelineDistinctOptions {
   groups?: (Field | string)[];
+}
+
+/**
+ * @beta
+ * Options for pipeline define() stage.
+ */
+export interface PipelineDefineOptions {
+  variables?: AliasedExpression[];
+}
+
+/**
+ * @beta
+ * Options for pipeline search() stage (full-text and geo search).
+ */
+export interface PipelineSearchOptions {
+  query: BooleanExpression | string;
+  languageCode?: string;
+  retrievalDepth?: number;
+  sort?: Ordering | Ordering[];
+  offset?: number;
+  limit?: number;
+  addFields?: Selectable[];
 }
 
 /**
@@ -109,7 +132,7 @@ export interface PipelineRawStageOptions {
  * @beta
  * Options defining how a Stage is evaluated. Base type for stage option types.
  */
-export interface StageOptions {
+export type StageOptions = {
   /**
    * @beta
    * Escape hatch for options not known at build time (e.g. backend-specific snake_case options).
@@ -117,7 +140,7 @@ export interface StageOptions {
   rawOptions?: {
     [name: string]: unknown;
   };
-}
+};
 
 /**
  * @beta
@@ -163,6 +186,18 @@ export type CollectionGroupStageOptions = StageOptions & {
    * Specifies the name of an index to be used for a query, overriding the query optimizer's default choice. This can be useful for performance tuning in specific scenarios where the default index selection does not yield optimal performance. This property is optional. When provided, it should be the exact name of the index to force.
    */
   forceIndex?: string;
+};
+
+/**
+ * @beta
+ * Options for Subcollection stage.
+ */
+export type SubcollectionStageOptions = StageOptions & {
+  /**
+   * @beta
+   * The relative path to the subcollection.
+   */
+  path: string;
 };
 
 /**
@@ -361,6 +396,60 @@ export type UnnestStageOptions = StageOptions & {
    * If set, specifies the field on the output documents that will contain the offset (starting at zero) that the element is from the original array.
    */
   indexField?: string;
+};
+
+/**
+ * @beta
+ * Options defining how a Define stage is evaluated. See {@link Pipeline.define}.
+ */
+export type DefineStageOptions = StageOptions & {
+  /**
+   * @beta
+   * The variables to define.
+   */
+  variables: AliasedExpression[];
+};
+
+/**
+ * @beta
+ * Options defining how a Search stage is evaluated. See {@link Pipeline.search}.
+ */
+export type SearchStageOptions = StageOptions & {
+  /**
+   * @beta
+   * Specifies the search query that will be used to query and score documents by the search stage.
+   */
+  query: BooleanExpression | string;
+  /**
+   * @beta
+   * The BCP-47 language code of text in the search query, such as "en" or "sr".
+   */
+  languageCode?: string;
+  /**
+   * @beta
+   * The maximum number of documents to retrieve from the search index before scoring and sorting.
+   */
+  retrievalDepth?: number;
+  /**
+   * @beta
+   * Orderings specify how the returned documents are sorted. One or more orderings are required.
+   */
+  sort?: Ordering | Ordering[];
+  /**
+   * @beta
+   * The number of documents to skip from the beginning of the search result set.
+   */
+  offset?: number;
+  /**
+   * @beta
+   * The maximum number of documents to return from the search stage after scoring and sorting.
+   */
+  limit?: number;
+  /**
+   * @beta
+   * The fields to add to each document, specified as a Selectable.
+   */
+  addFields?: Selectable[];
 };
 
 /**

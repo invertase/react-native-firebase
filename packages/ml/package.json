@@ -1,14 +1,32 @@
 {
   "name": "@react-native-firebase/ml",
-  "version": "24.0.0",
+  "version": "25.1.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Firebase ML brings the power of machine learning vision to your React Native application, supporting both Android & iOS.",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./dist/module/index.js",
+  "types": "./dist/typescript/lib/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBMLTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "io.invertase.firebase.ml"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTurboML": "RNFBMLModule"
+      }
+    }
+  },
   "scripts": {
-    "build": "genversion --semi lib/version.js",
+    "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
-    "prepare": "yarn run build"
+    "compile": "bob build",
+    "prepare": "yarn run build && yarn compile",
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/reactnative/java/io/invertase/firebase/ml/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
   },
   "repository": {
     "type": "git",
@@ -26,10 +44,44 @@
     "image labeler"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "24.0.0"
+    "@react-native-firebase/app": "25.1.0"
   },
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "devDependencies": {
+    "@react-native-firebase/app": "25.1.0",
+    "react-native-builder-bob": "^0.41.0"
+  },
+  "exports": {
+    ".": {
+      "source": "./lib/index.ts",
+      "types": "./dist/typescript/lib/index.d.ts",
+      "default": "./dist/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "react-native-builder-bob": {
+    "source": "lib",
+    "output": "dist",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "tsc": "../../node_modules/.bin/tsc"
+        }
+      ]
+    ]
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "dist/"
+  ]
 }

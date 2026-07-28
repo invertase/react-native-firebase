@@ -35,7 +35,7 @@ globalThis.RNFB_VERTEXAI_EMULATOR_URL = true;
 describe('ai()', function () {
   describe('fetch requests', function () {
     it('should fetch', async function () {
-      const model = getGenerativeModel(fakeVertexAI, { model: 'gemini-1.5-flash' });
+      const model = getGenerativeModel(fakeVertexAI, { model: 'gemini-3.1-flash-lite' });
       const result = await model.generateContent("What is google's mission statement?");
       const text = result.response.text();
       // See vertexAI function emulator for response
@@ -45,7 +45,7 @@ describe('ai()', function () {
     });
 
     it('should fetch stream', async function () {
-      const model = getGenerativeModel(fakeVertexAI, { model: 'gemini-1.5-flash' });
+      const model = getGenerativeModel(fakeVertexAI, { model: 'gemini-3.1-flash-lite' });
       // See vertexAI function emulator for response
       const poem = [
         'The wind whispers secrets through the trees,',

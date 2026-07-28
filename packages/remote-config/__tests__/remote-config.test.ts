@@ -14,10 +14,10 @@
  * limitations under the License.
  *
  */
-import { afterAll, beforeAll, describe, expect, it, beforeEach, jest } from '@jest/globals';
+import { describe, expect, it } from '@jest/globals';
 
+import { getApp } from '@react-native-firebase/app';
 import {
-  firebase,
   getRemoteConfig,
   activate,
   ensureInitialized,
@@ -34,117 +34,14 @@ import {
   setDefaultsFromResource,
   onConfigUpdate,
   setCustomSignals,
+  LastFetchStatus,
+  ValueSource,
+  SDK_VERSION,
 } from '../lib';
 
-import {
-  createCheckV9Deprecation,
-  CheckV9DeprecationFunction,
-} from '../../app/lib/common/unitTestUtils';
-
-// @ts-ignore test
-import FirebaseModule from '../../app/lib/internal/FirebaseModule';
+import type { RemoteConfigInternal } from '../lib/types/internal';
 
 describe('remoteConfig()', function () {
-  describe('namespace', function () {
-    beforeAll(async function () {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterAll(async function () {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('accessible from firebase.app()', function () {
-      const app = firebase.app();
-      expect(app.remoteConfig()).toBeDefined();
-      expect(app.remoteConfig().app).toEqual(app);
-    });
-
-    it('supports multiple apps', async function () {
-      expect(firebase.remoteConfig().app.name).toEqual('[DEFAULT]');
-      expect(firebase.app('secondaryFromNative').remoteConfig().app.name).toEqual(
-        'secondaryFromNative',
-      );
-    });
-
-    describe('statics', function () {
-      it('LastFetchStatus', function () {
-        expect(firebase.remoteConfig.LastFetchStatus).toBeDefined();
-        expect(firebase.remoteConfig.LastFetchStatus.FAILURE).toEqual('failure');
-        expect(firebase.remoteConfig.LastFetchStatus.SUCCESS).toEqual('success');
-        expect(firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET).toEqual('no_fetch_yet');
-        expect(firebase.remoteConfig.LastFetchStatus.THROTTLED).toEqual('throttled');
-      });
-
-      it('ValueSource', function () {
-        expect(firebase.remoteConfig.ValueSource).toBeDefined();
-        expect(firebase.remoteConfig.ValueSource.REMOTE).toEqual('remote');
-        expect(firebase.remoteConfig.ValueSource.STATIC).toEqual('static');
-        expect(firebase.remoteConfig.ValueSource.DEFAULT).toEqual('default');
-      });
-    });
-
-    describe('fetch()', function () {
-      it('it throws if expiration is not a number', function () {
-        expect(() => {
-          // @ts-ignore - incorrect argument on purpose to check validation
-          firebase.remoteConfig().fetch('foo');
-        }).toThrow('must be a number value');
-      });
-    });
-
-    describe('setConfigSettings()', function () {
-      it('it throws if arg is not an object', async function () {
-        expect(() => {
-          // @ts-ignore - incorrect argument on purpose to check validation
-          firebase.remoteConfig().setConfigSettings('not an object');
-        }).toThrow('must set an object');
-      });
-
-      it('throws if minimumFetchIntervalMillis is not a number', async function () {
-        expect(() => {
-          // @ts-ignore - incorrect argument on purpose to check validation
-          firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 'potato' });
-        }).toThrow('must be a number type in milliseconds.');
-      });
-
-      it('throws if fetchTimeMillis is not a number', function () {
-        expect(() => {
-          // @ts-ignore - incorrect argument on purpose to check validation
-          firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 'potato' });
-        }).toThrow('must be a number type in milliseconds.');
-      });
-    });
-
-    describe('setDefaults()', function () {
-      it('it throws if defaults object not provided', function () {
-        expect(() => {
-          // @ts-ignore - incorrect argument on purpose to check validation
-          firebase.remoteConfig().setDefaults('not an object');
-        }).toThrow('must be an object.');
-      });
-    });
-
-    describe('setDefaultsFromResource()', function () {
-      it('throws if resourceName is not a string', function () {
-        expect(() => {
-          // @ts-ignore - incorrect argument on purpose to check validation
-          firebase.remoteConfig().setDefaultsFromResource(1337);
-        }).toThrow('must be a string value');
-      });
-    });
-
-    describe('getAll() should not crash', function () {
-      it('should return an empty object pre-fetch, pre-defaults', function () {
-        const config = firebase.remoteConfig().getAll();
-        expect(config).toBeDefined();
-        expect(config).toEqual({});
-      });
-    });
-  });
-
   describe('modular', function () {
     it('`getRemoteConfig` function is properly exposed to end user', function () {
       expect(getRemoteConfig).toBeDefined();
@@ -210,133 +107,85 @@ describe('remoteConfig()', function () {
       expect(setCustomSignals).toBeDefined();
     });
 
-    describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
-      let remoteConfigV9Deprecation: CheckV9DeprecationFunction;
+    it('exports statics and SDK_VERSION', function () {
+      expect(LastFetchStatus).toBeDefined();
+      expect(LastFetchStatus.FAILURE).toEqual('failure');
+      expect(LastFetchStatus.SUCCESS).toEqual('success');
+      expect(LastFetchStatus.NO_FETCH_YET).toEqual('no_fetch_yet');
+      expect(LastFetchStatus.THROTTLED).toEqual('throttled');
+      expect(ValueSource).toBeDefined();
+      expect(ValueSource.REMOTE).toEqual('remote');
+      expect(ValueSource.STATIC).toEqual('static');
+      expect(ValueSource.DEFAULT).toEqual('default');
+      expect(SDK_VERSION).toBeDefined();
+    });
 
-      beforeEach(function () {
-        remoteConfigV9Deprecation = createCheckV9Deprecation(['remoteConfig']);
+    it('supports multiple apps', function () {
+      expect(getRemoteConfig().app.name).toEqual('[DEFAULT]');
+      expect(getRemoteConfig(getApp('secondaryFromNative')).app.name).toEqual(
+        'secondaryFromNative',
+      );
+    });
 
-        // @ts-ignore test
-        jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
-          return new Proxy(
-            {},
-            {
-              get: () =>
-                jest.fn().mockResolvedValue({
-                  result: true,
-                  constants: {
-                    lastFetchTime: Date.now(),
-                    lastFetchStatus: 'success',
-                    fetchTimeout: 60,
-                    minimumFetchInterval: 12,
-                    values: {},
-                  },
-                } as never),
-            },
+    describe('fetch()', function () {
+      it('it throws if expiration is not a number', function () {
+        expect(() => {
+          (getRemoteConfig() as RemoteConfigInternal).fetch('foo' as unknown as number);
+        }).toThrow('must be a number value');
+      });
+    });
+
+    describe('setConfigSettings()', function () {
+      it('it throws if arg is not an object', function () {
+        expect(() => {
+          (getRemoteConfig() as RemoteConfigInternal).setConfigSettings(
+            'not an object' as unknown as { minimumFetchIntervalMillis: number },
           );
-        });
+        }).toThrow('must set an object');
       });
 
-      describe('remoteConfig functions', function () {
-        it('activate()', function () {
-          const remoteConfig = getRemoteConfig();
-          const legacyRemoteConfig = firebase.remoteConfig();
-          remoteConfigV9Deprecation(
-            () => activate(remoteConfig),
-            () => legacyRemoteConfig.activate(),
-            'activate',
-          );
-        });
+      it('throws if minimumFetchIntervalMillis is not a number', function () {
+        expect(() => {
+          (getRemoteConfig() as RemoteConfigInternal).setConfigSettings({
+            minimumFetchIntervalMillis: 'potato' as unknown as number,
+          });
+        }).toThrow('must be a number type in milliseconds.');
+      });
 
-        it('ensureInitialized()', function () {
-          const remoteConfig = getRemoteConfig();
-          const legacyRemoteConfig = firebase.remoteConfig();
-          remoteConfigV9Deprecation(
-            () => ensureInitialized(remoteConfig),
-            () => legacyRemoteConfig.ensureInitialized(),
-            'ensureInitialized',
-          );
-        });
+      it('throws if fetchTimeMillis is not a number', function () {
+        expect(() => {
+          (getRemoteConfig() as RemoteConfigInternal).setConfigSettings({
+            fetchTimeMillis: 'potato' as unknown as number,
+          });
+        }).toThrow('must be a number type in milliseconds.');
+      });
+    });
 
-        it('fetchAndActivate()', function () {
-          const remoteConfig = getRemoteConfig();
-          const legacyRemoteConfig = firebase.remoteConfig();
-          remoteConfigV9Deprecation(
-            () => fetchAndActivate(remoteConfig),
-            () => legacyRemoteConfig.fetchAndActivate(),
-            'fetchAndActivate',
+    describe('setDefaults()', function () {
+      it('it throws if defaults object not provided', function () {
+        expect(() => {
+          (getRemoteConfig() as RemoteConfigInternal).setDefaults(
+            'not an object' as unknown as Record<string, string>,
           );
-        });
+        }).toThrow('must be an object.');
+      });
+    });
 
-        it('getAll()', function () {
-          const remoteConfig = getRemoteConfig();
-          const legacyRemoteConfig = firebase.remoteConfig();
-          remoteConfigV9Deprecation(
-            () => getAll(remoteConfig),
-            () => legacyRemoteConfig.getAll(),
-            'getAll',
+    describe('setDefaultsFromResource()', function () {
+      it('throws if resourceName is not a string', function () {
+        expect(() => {
+          (getRemoteConfig() as RemoteConfigInternal).setDefaultsFromResource(
+            1337 as unknown as string,
           );
-        });
+        }).toThrow('must be a string value');
+      });
+    });
 
-        it('getBoolean()', function () {
-          const remoteConfig = getRemoteConfig();
-          const legacyRemoteConfig = firebase.remoteConfig();
-          remoteConfigV9Deprecation(
-            () => getBoolean(remoteConfig, 'foo'),
-            () => legacyRemoteConfig.getBoolean('foo'),
-            'getBoolean',
-          );
-        });
-
-        it('getNumber()', function () {
-          const remoteConfig = getRemoteConfig();
-          const legacyRemoteConfig = firebase.remoteConfig();
-          remoteConfigV9Deprecation(
-            () => getNumber(remoteConfig, 'foo'),
-            () => legacyRemoteConfig.getNumber('foo'),
-            'getNumber',
-          );
-        });
-
-        it('getString()', function () {
-          const remoteConfig = getRemoteConfig();
-          const legacyRemoteConfig = firebase.remoteConfig();
-          remoteConfigV9Deprecation(
-            () => getString(remoteConfig, 'foo'),
-            () => legacyRemoteConfig.getString('foo'),
-            'getString',
-          );
-        });
-
-        it('getValue()', function () {
-          const remoteConfig = getRemoteConfig();
-          const legacyRemoteConfig = firebase.remoteConfig();
-          remoteConfigV9Deprecation(
-            () => getValue(remoteConfig, 'foo'),
-            () => legacyRemoteConfig.getValue('foo'),
-            'getValue',
-          );
-        });
-
-        it('reset()', function () {
-          const remoteConfig = getRemoteConfig();
-          const legacyRemoteConfig = firebase.remoteConfig();
-          remoteConfigV9Deprecation(
-            () => reset(remoteConfig),
-            () => legacyRemoteConfig.reset(),
-            'reset',
-          );
-        });
-
-        it('setDefaultsFromResource()', function () {
-          const remoteConfig = getRemoteConfig();
-          const legacyRemoteConfig = firebase.remoteConfig();
-          remoteConfigV9Deprecation(
-            () => setDefaultsFromResource(remoteConfig, 'foo'),
-            () => legacyRemoteConfig.setDefaultsFromResource('foo'),
-            'setDefaultsFromResource',
-          );
-        });
+    describe('getAll() should not crash', function () {
+      it('should return an empty object pre-fetch, pre-defaults', function () {
+        const config = getAll(getRemoteConfig());
+        expect(config).toBeDefined();
+        expect(config).toEqual({});
       });
     });
   });

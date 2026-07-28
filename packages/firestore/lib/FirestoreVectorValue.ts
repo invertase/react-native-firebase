@@ -19,7 +19,7 @@ import { isArray, isNumber, isObject } from '@react-native-firebase/app/dist/mod
 
 type FirestoreVectorJson = { vectorValues: number[]; type?: string };
 
-export default class VectorValue {
+export class VectorValue {
   _values: number[];
 
   constructor(values?: number[]) {

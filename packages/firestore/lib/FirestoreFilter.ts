@@ -24,7 +24,7 @@ import {
 import { fromDotSeparatedString } from './FieldPath';
 import { OPERATORS } from './FirestoreQueryModifiers';
 import { generateNativeData } from './utils/serialize';
-import type FieldPath from './FieldPath';
+import type { FieldPath } from './FieldPath';
 import type { Primitive } from './types/firestore';
 
 const AND_QUERY = 'AND';
@@ -35,14 +35,6 @@ type FieldFilterOperator = keyof typeof OPERATORS;
 
 /** Value allowed in a filter (primitive, object, or array for in/array-contains-any). */
 type FilterValue = Primitive | Record<string, unknown> | unknown[];
-
-export function Filter(
-  fieldPath: string | FieldPath,
-  operator: FieldFilterOperator,
-  value: FilterValue | unknown,
-): _Filter {
-  return new _Filter(fieldPath, operator, value as FilterValue);
-}
 
 export class _Filter {
   fieldPath?: string | FieldPath;
@@ -83,6 +75,14 @@ export class _Filter {
       value: this.value,
     };
   }
+}
+
+export function Filter(
+  fieldPath: string | FieldPath,
+  operator: FieldFilterOperator,
+  value: FilterValue | unknown,
+): _Filter {
+  return new _Filter(fieldPath, operator, value as FilterValue);
 }
 
 Filter.and = function and(...queries: _Filter[]): _Filter {

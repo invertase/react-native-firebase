@@ -29,8 +29,8 @@ import { initApiSettings } from './utils';
  */
 export abstract class AIModel {
   /**
-   * The fully qualified model resource name to use for generating images
-   * (for example, `publishers/google/models/imagen-3.0-generate-002`).
+   * The fully qualified model resource name (for example, `gemini-3.1-flash-lite` for text or
+   * `publishers/google/models/gemini-3.1-flash-lite-image` for image models).
    */
   readonly model: string;
 

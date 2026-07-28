@@ -88,6 +88,7 @@ android {
   sourceSets {
     main {
       java.srcDirs = ['src/main/java', 'src/reactnative/java']
+      java.excludes = ['**/generated/jni/**']
     }
   }
 }
@@ -108,3 +109,21 @@ ReactNative.shared.applyPackageVersion()
 ReactNative.shared.applyDefaultExcludes()
 ReactNative.module.applyAndroidVersions()
 ReactNative.module.applyReactNativeDependency('api')
+
+def isNewArchitectureDisabled() {
+  return project.hasProperty("newArchEnabled") && project.newArchEnabled != "true"
+}
+
+if (isNewArchitectureDisabled()) {
+  def ANSI_RED = "\u001B[31m";
+  def ANSI_RESET = "\u001B[0m";
+
+  println("\n\n\n")
+  println(ANSI_RED + "**************************************************************************************************************")
+  println("\n\n\n")
+  println("New Architecture support is required for @react-native-firebase/app-check")
+  println("\n\n\n")
+  println("**************************************************************************************************************" + ANSI_RESET)
+  println("\n\n\n")
+  System.exit(1)
+}

@@ -20,14 +20,19 @@ import {
   FunctionResponse,
   LiveResponseType,
   LiveServerContent,
+  LiveServerGoingAwayNotice,
   LiveServerToolCall,
   LiveServerToolCallCancellation,
+  LiveSessionResumptionUpdate,
 } from '../lib/types';
 import { LiveSession } from '../lib/methods/live-session';
 import { WebSocketHandler } from '../lib/websocket';
 import { AIError } from '../lib/errors';
 import { logger } from '../lib/logger';
 import { ReadableStream } from 'web-streams-polyfill';
+import { ApiSettings } from '../lib/types/internal';
+import { GoogleAIBackend } from '../lib/backend';
+import { _LiveClientSetup } from '../lib/types/live-responses';
 
 class MockWebSocketHandler implements WebSocketHandler {
   connect = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
@@ -69,15 +74,35 @@ class MockWebSocketHandler implements WebSocketHandler {
   }
 }
 
+const fakeApiSettings: ApiSettings = {
+  apiKey: 'key',
+  appId: 'app',
+  project: 'project',
+  location: 'us-central1',
+  backend: new GoogleAIBackend(),
+};
+
+const testSetupMessage: _LiveClientSetup = {
+  setup: { model: 'projects/project/models/test' },
+};
+
+async function createConnectedSession(handler: MockWebSocketHandler): Promise<LiveSession> {
+  const session = new LiveSession(testSetupMessage, fakeApiSettings, undefined, handler);
+  handler.simulateServerMessage({ setupComplete: true });
+  await session.connectionPromise;
+  return session;
+}
+
 describe('LiveSession', function () {
   let mockHandler: MockWebSocketHandler;
   let session: LiveSession;
-  let serverMessagesGenerator: AsyncGenerator<unknown>;
 
-  beforeEach(function () {
+  beforeEach(async function () {
     mockHandler = new MockWebSocketHandler();
-    serverMessagesGenerator = mockHandler.listen();
-    session = new LiveSession(mockHandler, serverMessagesGenerator);
+    session = await createConnectedSession(mockHandler);
+    mockHandler.send.mockClear();
+    mockHandler.connect.mockClear();
+    mockHandler.close.mockClear();
   });
 
   describe('send()', function () {
@@ -233,13 +258,16 @@ describe('LiveSession', function () {
         toolCallCancellation: { functionIds: ['123'] },
       });
       mockHandler.simulateServerMessage({
+        goAway: { timeLeft: '10.500s' },
+      });
+      mockHandler.simulateServerMessage({
         serverContent: { turnComplete: true },
       });
       await new Promise<void>(r => setTimeout(() => r(), 10)); // Wait for the listener to process messages
       mockHandler.endStream();
 
       const responses = await receivePromise;
-      expect(responses).toHaveLength(4);
+      expect(responses).toHaveLength(5);
       expect(responses[0]).toEqual({
         type: LiveResponseType.SERVER_CONTENT,
         modelTurn: { parts: [{ text: 'response 1' }] },
@@ -252,6 +280,64 @@ describe('LiveSession', function () {
         type: LiveResponseType.TOOL_CALL_CANCELLATION,
         functionIds: ['123'],
       } as LiveServerToolCallCancellation);
+      expect(responses[3]).toEqual({
+        type: LiveResponseType.GOING_AWAY_NOTICE,
+        timeLeft: 10.5,
+      } as LiveServerGoingAwayNotice);
+    });
+
+    it('should parse session resumption updates', async function () {
+      const receivePromise = (async () => {
+        const responses = [];
+        for await (const response of session.receive()) {
+          responses.push(response);
+        }
+        return responses;
+      })();
+
+      mockHandler.simulateServerMessage({
+        sessionResumptionUpdate: {
+          newHandle: 'handle-123',
+          resumable: true,
+          lastConsumedClientMessageIndex: 2,
+        },
+      });
+      await new Promise<void>(r => setTimeout(() => r(), 10));
+      mockHandler.endStream();
+
+      const responses = await receivePromise;
+      expect(responses).toEqual([
+        {
+          type: LiveResponseType.SESSION_RESUMPTION_UPDATE,
+          newHandle: 'handle-123',
+          resumable: true,
+          lastConsumedClientMessageIndex: 2,
+        } as LiveSessionResumptionUpdate,
+      ]);
+    });
+
+    it('should default malformed goAway timeLeft values to zero', async function () {
+      const receivePromise = (async () => {
+        const responses = [];
+        for await (const response of session.receive()) {
+          responses.push(response);
+        }
+        return responses;
+      })();
+
+      mockHandler.simulateServerMessage({
+        goAway: { timeLeft: 'invalid' },
+      });
+      await new Promise<void>(r => setTimeout(() => r(), 10)); // Wait for the listener to process messages
+      mockHandler.endStream();
+
+      const responses = await receivePromise;
+      expect(responses).toEqual([
+        {
+          type: LiveResponseType.GOING_AWAY_NOTICE,
+          timeLeft: 0,
+        },
+      ]);
     });
 
     it('should log a warning and skip messages that are not objects', async function () {
@@ -301,6 +387,75 @@ describe('LiveSession', function () {
       );
 
       loggerSpy.mockRestore();
+    });
+  });
+
+  describe('_connectSession()', function () {
+    it('should not mutate the original setup message when resuming', async function () {
+      const setupMessage: _LiveClientSetup = {
+        setup: { model: 'projects/project/models/test' },
+      };
+      const handler = new MockWebSocketHandler();
+      const resumableSession = new LiveSession(setupMessage, fakeApiSettings, {}, handler);
+      handler.simulateServerMessage({ setupComplete: true });
+      await resumableSession.connectionPromise;
+
+      const resumePromise = resumableSession.resumeSession({ handle: 'restored-handle' });
+      handler.simulateServerMessage({ setupComplete: true });
+      await resumePromise;
+
+      expect(setupMessage.setup.sessionResumption).toBeUndefined();
+      await resumableSession.close();
+    });
+
+    it('should set isClosed when connect fails', async function () {
+      const handler = new MockWebSocketHandler();
+      handler.connect.mockRejectedValueOnce(new Error('Connection refused'));
+
+      const failedSession = new LiveSession(testSetupMessage, fakeApiSettings, undefined, handler);
+
+      await expect(failedSession.connectionPromise).rejects.toThrow('Connection refused');
+      expect(failedSession.isClosed).toBe(true);
+    });
+
+    it('should set isClosed when handshake fails', async function () {
+      const handler = new MockWebSocketHandler();
+      const failedSession = new LiveSession(testSetupMessage, fakeApiSettings, undefined, handler);
+      handler.simulateServerMessage({ serverContent: { turnComplete: true } });
+
+      await expect(failedSession.connectionPromise).rejects.toThrow(/handshake failed/i);
+      expect(failedSession.isClosed).toBe(true);
+    });
+  });
+
+  describe('resumeSession()', function () {
+    it('should reconnect with a new session resumption handle', async function () {
+      const resumeHandler = new MockWebSocketHandler();
+      const resumableSession = new LiveSession(
+        testSetupMessage,
+        fakeApiSettings,
+        {},
+        resumeHandler,
+      );
+      resumeHandler.simulateServerMessage({ setupComplete: true });
+      await resumableSession.connectionPromise;
+
+      const resumePromise = resumableSession.resumeSession({ handle: 'restored-handle' });
+      resumeHandler.simulateServerMessage({ setupComplete: true });
+      await resumePromise;
+
+      expect(resumeHandler.connect).toHaveBeenCalledTimes(2);
+      const lastSetup = JSON.parse(
+        (resumeHandler.send as jest.Mock).mock.calls.at(-1)![0] as string,
+      );
+      expect(lastSetup.setup.sessionResumption).toEqual({ handle: 'restored-handle' });
+      await resumableSession.close();
+    });
+
+    it('should throw when resuming without initial session resumption config', async function () {
+      await expect(session.resumeSession({ handle: 'restored-handle' })).rejects.toThrow(
+        /no sessionResumption config provided/,
+      );
     });
   });
 

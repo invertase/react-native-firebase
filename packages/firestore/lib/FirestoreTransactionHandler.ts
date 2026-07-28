@@ -23,6 +23,20 @@ let transactionId = 0;
 
 const generateTransactionId = (): number => transactionId++;
 
+function validateMaxAttempts(options?: { maxAttempts?: number }): number {
+  const maxAttempts = options?.maxAttempts;
+
+  if (maxAttempts === undefined) {
+    return 0;
+  }
+
+  if (maxAttempts < 1) {
+    throw new Error('Max attempts must be at least 1');
+  }
+
+  return maxAttempts;
+}
+
 export interface TransactionPendingEntry {
   meta: TransactionMeta;
   transaction: Transaction;
@@ -138,7 +152,11 @@ export default class FirestoreTransactionHandler {
     }
   }
 
-  _add(updateFunction: (transaction: Transaction) => Promise<unknown>): Promise<unknown> {
+  _add(
+    updateFunction: (transaction: Transaction) => Promise<unknown>,
+    options?: { maxAttempts?: number },
+  ): Promise<unknown> {
+    const maxAttempts = validateMaxAttempts(options);
     const id = generateTransactionId();
 
     const meta: TransactionMeta = {
@@ -153,7 +171,7 @@ export default class FirestoreTransactionHandler {
     };
 
     return new Promise((resolve, reject) => {
-      this._firestore.native.transactionBegin(id);
+      this._firestore.native.transactionBegin(id, maxAttempts);
 
       meta.resolve = (result: unknown) => {
         this._remove(id);

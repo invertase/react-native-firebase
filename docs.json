@@ -3,7 +3,6 @@
   "name": "React Native Firebase",
   "description": "A well-tested feature-rich modular Firebase implementation for React Native. Supports both iOS & Android platforms for all Firebase services.",
   "favicon": "/rnfb-logo.png",
-  "agent": "6e277cd7-0065-4ade-a14a-3ecfa3f369a4",
   "theme": {
     "primary": "#e88533"
   },
@@ -14,6 +13,14 @@
   "social": {
     "x": "@invertaseio",
     "github": "invertase/react-native-firebase"
+  },
+  "agent": {
+    "key": "6e277cd7-0065-4ade-a14a-3ecfa3f369a4",
+    "questions": [
+      "How do I install react-native-firebase with Expo?",
+      "Can I do silent push notifications on iOS and Android?",
+      "When does it make sense to use react-native-firebase instead of firebase-js-sdk?"
+    ]
   },
   "tabs": [
     {
@@ -27,6 +34,56 @@
       "href": "https://reference.rnfirebase.io/modules.html"
     }
   ],
+  "redirects": {
+    "reference/analytics": "https://reference.rnfirebase.io/_react-native-firebase/analytics.html",
+    "reference/analytics/purchaseeventparameters": "https://reference.rnfirebase.io/_react-native-firebase/analytics/types/analytics/PurchaseEventParameters.html",
+    "reference/analytics/purchaserefundeventparameters": "https://reference.rnfirebase.io/_react-native-firebase/analytics/types/analytics/RefundEventParameters.html",
+    "reference/app": "https://reference.rnfirebase.io/_react-native-firebase/app.html",
+    "reference/app-check/customprovider": "https://reference.rnfirebase.io/_react-native-firebase/app-check/types/appcheck/CustomProviderOptions.html",
+    "reference/auth": "https://reference.rnfirebase.io/_react-native-firebase/auth.html",
+    "reference/auth/actioncodeinfodata": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/ActionCodeInfoData.html",
+    "reference/auth/actioncodesettings": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/ActionCodeSettings.html",
+    "reference/auth/additionaluserinfo": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/AdditionalUserInfo.html",
+    "reference/auth/authlistenercallback": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/AuthListenerCallback.html",
+    "reference/auth/authsettings": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/AuthSettings.html",
+    "reference/auth/confirmationresult": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/ConfirmationResult.html",
+    "reference/auth/emailauthprovider": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/EmailAuthProvider.html",
+    "reference/auth/idtokenresult": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/IdTokenResult.html",
+    "reference/auth/multifactoruser": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/MultiFactorUser.html",
+    "reference/auth/oidcprovider": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/OAuthProvider.html",
+    "reference/auth/phoneauthlistener": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/PhoneAuthListener.html",
+    "reference/auth/totpmultifactorgenerator": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/TotpMultiFactorGenerator.html",
+    "reference/auth/totpsecret": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/TotpSecret.html",
+    "reference/auth/updateprofile": "https://reference.rnfirebase.io/_react-native-firebase/auth/updateProfile.html",
+    "reference/auth/user": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/User.html",
+    "reference/auth/userinfo": "https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/UserInfo.html",
+    "reference/crashlytics": "https://reference.rnfirebase.io/_react-native-firebase/crashlytics.html",
+    "reference/database": "https://reference.rnfirebase.io/_react-native-firebase/database.html",
+    "reference/database/reference": "https://reference.rnfirebase.io/_react-native-firebase/database/types/database/DatabaseReference.html",
+    "reference/dynamic-links/dynamiclinkiosparameters": "https://reference.rnfirebase.io/modules.html",
+    "reference/firestore/collectionreference": "https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/CollectionReference.html",
+    "reference/firestore/documentdata": "https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentData.html",
+    "reference/firestore/documentreference": "https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentReference.html",
+    "reference/firestore/fieldpath": "https://reference.rnfirebase.io/_react-native-firebase/firestore/modular/FieldPath.html",
+    "reference/firestore/geopoint": "https://reference.rnfirebase.io/_react-native-firebase/firestore/modular/GeoPoint.html",
+    "reference/firestore/query": "https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/Query.html",
+    "reference/firestore/querydocumentsnapshot": "https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/QueryDocumentSnapshot.html",
+    "reference/firestore/querysnapshot": "https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/QuerySnapshot.html",
+    "reference/firestore/settings": "https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/FirestoreSettings.html",
+    "reference/firestore/snapshotlistenoptions": "https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/SnapshotListenOptions.html",
+    "reference/firestore/timestamp": "https://reference.rnfirebase.io/_react-native-firebase/firestore/modular/Timestamp.html",
+    "reference/installations": "https://reference.rnfirebase.io/_react-native-firebase/installations.html",
+    "reference/messaging": "https://reference.rnfirebase.io/_react-native-firebase/messaging.html",
+    "reference/messaging/authorizationstatus": "https://reference.rnfirebase.io/_react-native-firebase/messaging/types/messaging/AuthorizationStatus.html",
+    "reference/messaging/iospermissions": "https://reference.rnfirebase.io/_react-native-firebase/messaging/types/messaging/IOSPermissions.html",
+    "reference/ml": "https://reference.rnfirebase.io/_react-native-firebase/ml.html",
+    "reference/ml/mltextblock": "https://reference.rnfirebase.io/_react-native-firebase/ml.html",
+    "reference/perf/module": "https://reference.rnfirebase.io/_react-native-firebase/perf.html",
+    "reference/remote-config": "https://reference.rnfirebase.io/_react-native-firebase/remote-config.html",
+    "reference/remote-config/configupdateobserver": "https://reference.rnfirebase.io/_react-native-firebase/remote-config/types/remote-config/ConfigUpdateObserver.html",
+    "reference/storage/fullmetadata": "https://reference.rnfirebase.io/_react-native-firebase/storage/FullMetadata.html",
+    "reference/storage/reference": "https://reference.rnfirebase.io/_react-native-firebase/storage/StorageReference.html"
+  },
   "sidebar": [
     {
       "group": "Getting Started",
@@ -37,13 +94,14 @@
         { "title": "Migration Guide to v23", "href": "/migrating-to-v23" },
         { "title": "Migration Guide to v24", "href": "/migrating-to-v24" },
         { "title": "Migration Guide to v25", "href": "/migrating-to-v25" },
+        { "title": "Migration Guide to v26", "href": "/migrating-to-v26" },
         { "title": "TypeScript", "href": "/typescript" },
         { "title": "Platforms", "href": "/platforms" },
+        { "title": "FAQs and Tips", "href": "/faqs-and-tips" },
         {
           "title": "Release Notes",
           "href": "https://github.com/invertase/react-native-firebase/blob/main/CHANGELOG.md"
         },
-        { "title": "FAQs and Tips", "href": "/faqs-and-tips" },
         { "title": "Feature Requests", "href": "https://invertase.canny.io/react-native-firebase" },
         {
           "title": "Contributing",
@@ -54,38 +112,34 @@
     {
       "group": "AI Logic",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/social/firebase-logo.png",
+      "icon": "//firebase.google.com/static/images/icons/firebase-ai-logic.svg",
       "pages": [{ "title": "Usage", "href": "/ai/usage" }]
     },
     {
       "group": "Analytics",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/firebase/analytics.svg",
+      "icon": "//firebase.google.com/static/images/products/icons/run_analytics.svg",
       "pages": [
         { "title": "Usage", "href": "/analytics/usage" },
-        { "title": "Screen Tracking", "href": "/analytics/screen-tracking" },
-        {
-          "title": "Building an Analytics Funnel",
-          "href": "https://blog.theodo.com/2018/01/building-google-analytics-funnel-firebase-react-native"
-        }
+        { "title": "Screen Tracking", "href": "/analytics/screen-tracking" }
       ]
     },
     {
       "group": "App Check",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/social/firebase-logo.png",
+      "icon": "//firebase.google.com/static/images/products/icons/build_app_check.svg",
       "pages": [{ "title": "Usage", "href": "/app-check/usage" }]
     },
     {
       "group": "App Distribution",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/firebase/app-distribution.svg",
+      "icon": "//firebase.google.com/static/images/products/icons/run_app_distribution.svg",
       "pages": [{ "title": "Usage", "href": "/app-distribution/usage" }]
     },
     {
       "group": "Authentication",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/firebase/authentication.svg",
+      "icon": "//firebase.google.com/static/images/products/icons/build_auth.svg",
       "pages": [
         { "title": "Usage", "href": "/auth/usage" },
         { "title": "Social Auth", "href": "/auth/social-auth" },
@@ -97,12 +151,23 @@
     {
       "group": "Cloud Firestore",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/firebase/cloud-firestore.svg",
+      "icon": "//firebase.google.com/static/images/products/icons/build_firestore.svg",
       "pages": [
         { "title": "Usage", "href": "/firestore/usage" },
         { "title": "Usage with Emulator", "href": "/firestore/emulator" },
         { "title": "Usage with FlatLists", "href": "/firestore/usage-with-flatlists" },
         { "title": "Implementing Pagination", "href": "/firestore/pagination" },
+        { "title": "Pipelines", "href": "/firestore/pipelines" },
+        { "title": "currentDocument", "href": "/firestore/pipelines/current-document" },
+        { "title": "ifNull", "href": "/firestore/pipelines/if-null" },
+        { "title": "switchOn", "href": "/firestore/pipelines/switch-on" },
+        { "title": "timestampDiff", "href": "/firestore/pipelines/timestamp-diff" },
+        { "title": "timestampExtract", "href": "/firestore/pipelines/timestamp-extract" },
+        { "title": "subcollection", "href": "/firestore/pipelines/subcollection" },
+        {
+          "title": "Pipeline SDK compatibility",
+          "href": "/firestore/pipelines/sdk-compatibility"
+        },
         {
           "title": "Building a \"TODO\" app",
           "href": "https://invertase.io/blog/getting-started-with-cloud-firestore-on-react-native"
@@ -112,7 +177,7 @@
     {
       "group": "Cloud Functions",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/firebase/cloud-functions.svg",
+      "icon": "//firebase.google.com/static/images/products/icons/build_functions.svg",
       "pages": [
         { "title": "Usage", "href": "/functions/usage" },
         {
@@ -124,7 +189,7 @@
     {
       "group": "Cloud Messaging",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/firebase/cloud-messaging.svg",
+      "icon": "//firebase.google.com/static/images/products/icons/run_cloud_messaging.svg",
       "pages": [
         { "title": "Usage", "href": "/messaging/usage" },
         { "title": "iOS Project Setup", "href": "/messaging/usage/ios-setup" },
@@ -137,7 +202,7 @@
     {
       "group": "Cloud Storage",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/firebase/cloud-storage.svg",
+      "icon": "//firebase.google.com/static/images/products/icons/build_storage.svg",
       "pages": [{ "title": "Usage", "href": "/storage/usage" }]
     },
     {
@@ -153,7 +218,7 @@
     {
       "group": "Crashlytics",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/firebase/crashlytics.svg",
+      "icon": "//firebase.google.com/static/images/products/icons/run_crashlytics.svg",
       "pages": [
         { "title": "Usage", "href": "/crashlytics/usage" },
         { "title": "Viewing crash reports", "href": "/crashlytics/crash-reports" }
@@ -162,7 +227,7 @@
     {
       "group": "Realtime Database",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/firebase/realtime-database.svg",
+      "icon": "//firebase.google.com/static/images/products/icons/build_realtime_database.svg",
       "pages": [
         { "title": "Usage", "href": "/database/usage" },
         { "title": "Offline Support", "href": "/database/offline-support" },
@@ -172,7 +237,7 @@
     {
       "group": "In-App Messaging",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/firebase/in-app-messaging.svg",
+      "icon": "//firebase.google.com/static/images/products/icons/run_in_app_messaging.svg",
       "pages": [{ "title": "Usage", "href": "/in-app-messaging/usage" }]
     },
     {
@@ -184,24 +249,30 @@
     {
       "group": "ML",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/firebase/ml-kit.svg",
+      "icon": "//firebase.google.com/static/images/products/icons/build_ml.svg",
       "pages": [{ "title": "Usage", "href": "/ml/usage" }]
     },
     {
       "group": "Remote Config",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/firebase/remote-config.svg",
+      "icon": "//firebase.google.com/static/images/products/icons/run_remote_config.svg",
       "pages": [{ "title": "Usage", "href": "/remote-config/usage" }]
     },
     {
       "group": "Performance Monitoring",
       "tab": "root",
-      "icon": "//static.invertase.io/assets/firebase/performance-monitoring.svg",
+      "icon": "//firebase.google.com/static/images/products/icons/run_performance.svg",
       "pages": [
         { "title": "Usage", "href": "/perf/usage" },
         { "title": "Axios Integration", "href": "/perf/axios-integration" },
         { "title": "KY Integration", "href": "/perf/ky-integration" }
       ]
+    },
+    {
+      "group": "Phone Number Verification",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/social/firebase-logo.png",
+      "pages": [{ "title": "Usage", "href": "/phone-number-verification/usage" }]
     },
     {
       "group": "VertexAi",

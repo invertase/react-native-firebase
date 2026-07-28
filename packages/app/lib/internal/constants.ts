@@ -15,30 +15,8 @@
  *
  */
 
-export const APP_NATIVE_MODULE = 'RNFBAppModule';
+export const APP_NATIVE_MODULE = 'NativeRNFBTurboApp';
+
+export const UTILS_NATIVE_MODULE = 'NativeRNFBTurboUtils';
 
 export const DEFAULT_APP_NAME = '[DEFAULT]';
-
-export const KNOWN_NAMESPACES = [
-  'appCheck',
-  'appDistribution',
-  'auth',
-  'analytics',
-  'remoteConfig',
-  'crashlytics',
-  'database',
-  'inAppMessaging',
-  'installations',
-  'firestore',
-  'functions',
-  'indexing',
-  'storage',
-  'messaging',
-  'naturalLanguage',
-  'ml',
-  'notifications',
-  'perf',
-  'utils',
-] as const;
-
-export type KnownNamespace = (typeof KNOWN_NAMESPACES)[number];

@@ -98,6 +98,12 @@ export interface AppCheckTokenResult {
 }
 
 /**
+ * Callback invoked when the App Check token changes.
+ * @public
+ */
+export type AppCheckTokenListener = (token: AppCheckTokenResult) => void;
+
+/**
  * An App Check provider. This can be either the built-in reCAPTCHA provider
  * or a custom provider. For more on custom providers, see
  * https://firebase.google.com/docs/app-check/web-custom-provider

@@ -1,0 +1,465 @@
+diff --git a/dist/browser.bundle.mjs b/dist/browser.bundle.mjs
+index eb7d0bd7a2f43daa9124a2171dc708db76e8882e..20bc994ae6f7f5897882ae2730bd9ea46a865543 100644
+--- a/dist/browser.bundle.mjs
++++ b/dist/browser.bundle.mjs
+@@ -11284,6 +11284,7 @@ class Client extends ClientEventEmitter {
+     _state = ClientState.DISCONNECTED;
+     ws;
+     reconnectTimeout;
++    _outboundQueue = [];
+     constructor(config = {}, debug = Client.nextDebug()) {
+         super(Client.EventEmitter, debug.extend("events"));
+         this.debug = debug;
+@@ -11324,6 +11325,8 @@ class Client extends ClientEventEmitter {
+                 // No need to handle connection error now that we're connected
+                 ws.removeEventListener("error", handleConnectionError);
+                 this.emit("connection", ws);
++                this.startKeepalive();
++                this.flushOutboundQueue();
+                 resolve();
+             });
+             if (!this.config.autoReconnect) {
+@@ -11517,6 +11520,7 @@ class Client extends ClientEventEmitter {
+         }
+     }
+     handleClose = ({ code, reason }) => {
++        this.stopKeepalive();
+         this.debug(`Connection closed: ${reason || "No reason"} (code=${code})`);
+         // Forget about the socket
+         delete this.ws;
+@@ -11563,6 +11567,20 @@ class Client extends ClientEventEmitter {
+                     }
+                 });
+             }
++
++            else if (msg.action === "pull-coverage") {
++                const g = typeof globalThis !== "undefined" ? globalThis : global;
++                const coverage = g.__coverage__ ?? {};
++                this.send({ action: "coverage-data", coverage });
++            }
++            else if (msg.action === "coverage-ack") {
++                if (this._coverageUploadResolve) {
++                    this._coverageUploadResolve(msg);
++                    this._coverageUploadResolve = null;
++                    this._coverageUploadReject = null;
++                    this._coverageUploadPromise = null;
++                }
++            }
+             else if (msg.action === "error") {
+                 if (typeof msg.message === "string") {
+                     this.emit("error", new Error(msg.message));
+@@ -11605,7 +11623,15 @@ class Client extends ClientEventEmitter {
+             const data = serialize(msg);
+             this.ws.send(data);
+         }
++        else if (this.config.autoReconnect && this._state !== ClientState.DISCONNECTED && throwOnClosed) {
++            const readyState = this.ws?.readyState ?? "no-socket";
++            const data = serialize(msg);
++            this._outboundQueue.push(data);
++            console.warn(`[mocha-remote-ws] send queued action=${msg.action} readyState=${readyState} queue=${this._outboundQueue.length}`);
++        }
+         else if (throwOnClosed) {
++            const readyState = this.ws?.readyState ?? "no-socket";
++            console.warn(`[mocha-remote-ws] send failed action=${msg.action} readyState=${readyState}`);
+             throw new SendMessageFailure(msg, "WebSocket is closed");
+         }
+     }
+@@ -11645,6 +11671,88 @@ class Client extends ClientEventEmitter {
+             },
+         };
+     }
++    uploadCoverage() {
++        const maxAttempts = 3;
++        const attemptUpload = (attempt) => {
++            if (this._coverageUploadPromise) {
++                return this._coverageUploadPromise;
++            }
++            const readyState = this.ws?.readyState ?? "no-socket";
++            console.warn(`[jet-coverage] client send coverage-ready attempt=${attempt}/${maxAttempts} readyState=${readyState}`);
++            this._coverageUploadPromise = new Promise((resolve, reject) => {
++                this._coverageUploadResolve = resolve;
++                this._coverageUploadReject = reject;
++                try {
++                    this.send({ action: "coverage-ready" });
++                }
++                catch (err) {
++                    this._coverageUploadPromise = null;
++                    this._coverageUploadResolve = null;
++                    this._coverageUploadReject = null;
++                    if (attempt < maxAttempts) {
++                        const delayMs = attempt * 1000;
++                        console.warn(`[jet-coverage] client coverage-ready send failed attempt=${attempt} err=${err?.message || err} retry_in_ms=${delayMs}`);
++                        setTimeout(() => {
++                            attemptUpload(attempt + 1).then(resolve, reject);
++                        }, delayMs);
++                        return;
++                    }
++                    reject(err);
++                    return;
++                }
++                setTimeout(() => {
++                    if (this._coverageUploadResolve) {
++                        const err = new Error("coverage upload timed out waiting for coverage-ack");
++                        this._coverageUploadReject(err);
++                        this._coverageUploadResolve = null;
++                        this._coverageUploadReject = null;
++                        this._coverageUploadPromise = null;
++                    }
++                }, 120000);
++            });
++            return this._coverageUploadPromise;
++        };
++        return attemptUpload(1);
++    }
++    startKeepalive() {
++        if (this._keepaliveTimer) {
++            clearInterval(this._keepaliveTimer);
++        }
++        this._keepaliveTimer = setInterval(() => {
++            const readyState = this.ws?.readyState ?? "no-socket";
++            if (this.ws && this.ws.readyState === Client.WebSocket.OPEN) {
++                if (typeof this.ws.ping === "function") {
++                    try {
++                        this.ws.ping();
++                    }
++                    catch (err) {
++                        console.warn(`[mocha-remote-ws] keepalive ping failed readyState=${readyState} err=${err?.message || err}`);
++                    }
++                }
++            }
++            else {
++                console.warn(`[mocha-remote-ws] keepalive skip readyState=${readyState}`);
++            }
++        }, 5000);
++    }
++    stopKeepalive() {
++        if (this._keepaliveTimer) {
++            clearInterval(this._keepaliveTimer);
++            this._keepaliveTimer = null;
++        }
++    }
++    flushOutboundQueue() {
++        if (!this._outboundQueue.length || !this.ws || this.ws.readyState !== Client.WebSocket.OPEN) {
++            return;
++        }
++        const queue = this._outboundQueue;
++        this._outboundQueue = [];
++        console.warn(`[mocha-remote-ws] flushing outbound queue count=${queue.length}`);
++        for (const data of queue) {
++            this.ws.send(data);
++        }
++    }
++
+ }
+ 
+ Client.WebSocket = WebSocket;
+diff --git a/dist/node.bundle.cjs b/dist/node.bundle.cjs
+index a692e25a30f24e8299661c190ec09c3be5e5e2da..4fff06db5f8d8c679337a689fe54157f169bec32 100644
+--- a/dist/node.bundle.cjs
++++ b/dist/node.bundle.cjs
+@@ -5621,6 +5621,7 @@ class Client extends ClientEventEmitter {
+     _state = exports.ClientState.DISCONNECTED;
+     ws;
+     reconnectTimeout;
++    _outboundQueue = [];
+     constructor(config = {}, debug = Client.nextDebug()) {
+         super(Client.EventEmitter, debug.extend("events"));
+         this.debug = debug;
+@@ -5661,6 +5662,8 @@ class Client extends ClientEventEmitter {
+                 // No need to handle connection error now that we're connected
+                 ws.removeEventListener("error", handleConnectionError);
+                 this.emit("connection", ws);
++                this.startKeepalive();
++                this.flushOutboundQueue();
+                 resolve();
+             });
+             if (!this.config.autoReconnect) {
+@@ -5854,6 +5857,7 @@ class Client extends ClientEventEmitter {
+         }
+     }
+     handleClose = ({ code, reason }) => {
++        this.stopKeepalive();
+         this.debug(`Connection closed: ${reason || "No reason"} (code=${code})`);
+         // Forget about the socket
+         delete this.ws;
+@@ -5900,6 +5904,20 @@ class Client extends ClientEventEmitter {
+                     }
+                 });
+             }
++
++            else if (msg.action === "pull-coverage") {
++                const g = typeof globalThis !== "undefined" ? globalThis : global;
++                const coverage = g.__coverage__ ?? {};
++                this.send({ action: "coverage-data", coverage });
++            }
++            else if (msg.action === "coverage-ack") {
++                if (this._coverageUploadResolve) {
++                    this._coverageUploadResolve(msg);
++                    this._coverageUploadResolve = null;
++                    this._coverageUploadReject = null;
++                    this._coverageUploadPromise = null;
++                }
++            }
+             else if (msg.action === "error") {
+                 if (typeof msg.message === "string") {
+                     this.emit("error", new Error(msg.message));
+@@ -5942,7 +5960,15 @@ class Client extends ClientEventEmitter {
+             const data = serialize(msg);
+             this.ws.send(data);
+         }
++        else if (this.config.autoReconnect && this._state !== ClientState.DISCONNECTED && throwOnClosed) {
++            const readyState = this.ws?.readyState ?? "no-socket";
++            const data = serialize(msg);
++            this._outboundQueue.push(data);
++            console.warn(`[mocha-remote-ws] send queued action=${msg.action} readyState=${readyState} queue=${this._outboundQueue.length}`);
++        }
+         else if (throwOnClosed) {
++            const readyState = this.ws?.readyState ?? "no-socket";
++            console.warn(`[mocha-remote-ws] send failed action=${msg.action} readyState=${readyState}`);
+             throw new SendMessageFailure(msg, "WebSocket is closed");
+         }
+     }
+@@ -5982,6 +6008,88 @@ class Client extends ClientEventEmitter {
+             },
+         };
+     }
++    uploadCoverage() {
++        const maxAttempts = 3;
++        const attemptUpload = (attempt) => {
++            if (this._coverageUploadPromise) {
++                return this._coverageUploadPromise;
++            }
++            const readyState = this.ws?.readyState ?? "no-socket";
++            console.warn(`[jet-coverage] client send coverage-ready attempt=${attempt}/${maxAttempts} readyState=${readyState}`);
++            this._coverageUploadPromise = new Promise((resolve, reject) => {
++                this._coverageUploadResolve = resolve;
++                this._coverageUploadReject = reject;
++                try {
++                    this.send({ action: "coverage-ready" });
++                }
++                catch (err) {
++                    this._coverageUploadPromise = null;
++                    this._coverageUploadResolve = null;
++                    this._coverageUploadReject = null;
++                    if (attempt < maxAttempts) {
++                        const delayMs = attempt * 1000;
++                        console.warn(`[jet-coverage] client coverage-ready send failed attempt=${attempt} err=${err?.message || err} retry_in_ms=${delayMs}`);
++                        setTimeout(() => {
++                            attemptUpload(attempt + 1).then(resolve, reject);
++                        }, delayMs);
++                        return;
++                    }
++                    reject(err);
++                    return;
++                }
++                setTimeout(() => {
++                    if (this._coverageUploadResolve) {
++                        const err = new Error("coverage upload timed out waiting for coverage-ack");
++                        this._coverageUploadReject(err);
++                        this._coverageUploadResolve = null;
++                        this._coverageUploadReject = null;
++                        this._coverageUploadPromise = null;
++                    }
++                }, 120000);
++            });
++            return this._coverageUploadPromise;
++        };
++        return attemptUpload(1);
++    }
++    startKeepalive() {
++        if (this._keepaliveTimer) {
++            clearInterval(this._keepaliveTimer);
++        }
++        this._keepaliveTimer = setInterval(() => {
++            const readyState = this.ws?.readyState ?? "no-socket";
++            if (this.ws && this.ws.readyState === Client.WebSocket.OPEN) {
++                if (typeof this.ws.ping === "function") {
++                    try {
++                        this.ws.ping();
++                    }
++                    catch (err) {
++                        console.warn(`[mocha-remote-ws] keepalive ping failed readyState=${readyState} err=${err?.message || err}`);
++                    }
++                }
++            }
++            else {
++                console.warn(`[mocha-remote-ws] keepalive skip readyState=${readyState}`);
++            }
++        }, 5000);
++    }
++    stopKeepalive() {
++        if (this._keepaliveTimer) {
++            clearInterval(this._keepaliveTimer);
++            this._keepaliveTimer = null;
++        }
++    }
++    flushOutboundQueue() {
++        if (!this._outboundQueue.length || !this.ws || this.ws.readyState !== Client.WebSocket.OPEN) {
++            return;
++        }
++        const queue = this._outboundQueue;
++        this._outboundQueue = [];
++        console.warn(`[mocha-remote-ws] flushing outbound queue count=${queue.length}`);
++        for (const data of queue) {
++            this.ws.send(data);
++        }
++    }
++
+ }
+ 
+ Client.WebSocket = WebSocket;
+diff --git a/dist/node.bundle.mjs b/dist/node.bundle.mjs
+index 77d3d8299505196a826971ba46e0ff14b75c3d0a..f0983009d144febeb4dfb2c5cb7c8cfa29789981 100644
+--- a/dist/node.bundle.mjs
++++ b/dist/node.bundle.mjs
+@@ -5600,6 +5600,7 @@ class Client extends ClientEventEmitter {
+     _state = ClientState.DISCONNECTED;
+     ws;
+     reconnectTimeout;
++    _outboundQueue = [];
+     constructor(config = {}, debug = Client.nextDebug()) {
+         super(Client.EventEmitter, debug.extend("events"));
+         this.debug = debug;
+@@ -5640,6 +5641,8 @@ class Client extends ClientEventEmitter {
+                 // No need to handle connection error now that we're connected
+                 ws.removeEventListener("error", handleConnectionError);
+                 this.emit("connection", ws);
++                this.startKeepalive();
++                this.flushOutboundQueue();
+                 resolve();
+             });
+             if (!this.config.autoReconnect) {
+@@ -5833,6 +5836,7 @@ class Client extends ClientEventEmitter {
+         }
+     }
+     handleClose = ({ code, reason }) => {
++        this.stopKeepalive();
+         this.debug(`Connection closed: ${reason || "No reason"} (code=${code})`);
+         // Forget about the socket
+         delete this.ws;
+@@ -5879,6 +5883,20 @@ class Client extends ClientEventEmitter {
+                     }
+                 });
+             }
++
++            else if (msg.action === "pull-coverage") {
++                const g = typeof globalThis !== "undefined" ? globalThis : global;
++                const coverage = g.__coverage__ ?? {};
++                this.send({ action: "coverage-data", coverage });
++            }
++            else if (msg.action === "coverage-ack") {
++                if (this._coverageUploadResolve) {
++                    this._coverageUploadResolve(msg);
++                    this._coverageUploadResolve = null;
++                    this._coverageUploadReject = null;
++                    this._coverageUploadPromise = null;
++                }
++            }
+             else if (msg.action === "error") {
+                 if (typeof msg.message === "string") {
+                     this.emit("error", new Error(msg.message));
+@@ -5921,7 +5939,15 @@ class Client extends ClientEventEmitter {
+             const data = serialize(msg);
+             this.ws.send(data);
+         }
++        else if (this.config.autoReconnect && this._state !== ClientState.DISCONNECTED && throwOnClosed) {
++            const readyState = this.ws?.readyState ?? "no-socket";
++            const data = serialize(msg);
++            this._outboundQueue.push(data);
++            console.warn(`[mocha-remote-ws] send queued action=${msg.action} readyState=${readyState} queue=${this._outboundQueue.length}`);
++        }
+         else if (throwOnClosed) {
++            const readyState = this.ws?.readyState ?? "no-socket";
++            console.warn(`[mocha-remote-ws] send failed action=${msg.action} readyState=${readyState}`);
+             throw new SendMessageFailure(msg, "WebSocket is closed");
+         }
+     }
+@@ -5961,6 +5987,88 @@ class Client extends ClientEventEmitter {
+             },
+         };
+     }
++    uploadCoverage() {
++        const maxAttempts = 3;
++        const attemptUpload = (attempt) => {
++            if (this._coverageUploadPromise) {
++                return this._coverageUploadPromise;
++            }
++            const readyState = this.ws?.readyState ?? "no-socket";
++            console.warn(`[jet-coverage] client send coverage-ready attempt=${attempt}/${maxAttempts} readyState=${readyState}`);
++            this._coverageUploadPromise = new Promise((resolve, reject) => {
++                this._coverageUploadResolve = resolve;
++                this._coverageUploadReject = reject;
++                try {
++                    this.send({ action: "coverage-ready" });
++                }
++                catch (err) {
++                    this._coverageUploadPromise = null;
++                    this._coverageUploadResolve = null;
++                    this._coverageUploadReject = null;
++                    if (attempt < maxAttempts) {
++                        const delayMs = attempt * 1000;
++                        console.warn(`[jet-coverage] client coverage-ready send failed attempt=${attempt} err=${err?.message || err} retry_in_ms=${delayMs}`);
++                        setTimeout(() => {
++                            attemptUpload(attempt + 1).then(resolve, reject);
++                        }, delayMs);
++                        return;
++                    }
++                    reject(err);
++                    return;
++                }
++                setTimeout(() => {
++                    if (this._coverageUploadResolve) {
++                        const err = new Error("coverage upload timed out waiting for coverage-ack");
++                        this._coverageUploadReject(err);
++                        this._coverageUploadResolve = null;
++                        this._coverageUploadReject = null;
++                        this._coverageUploadPromise = null;
++                    }
++                }, 120000);
++            });
++            return this._coverageUploadPromise;
++        };
++        return attemptUpload(1);
++    }
++    startKeepalive() {
++        if (this._keepaliveTimer) {
++            clearInterval(this._keepaliveTimer);
++        }
++        this._keepaliveTimer = setInterval(() => {
++            const readyState = this.ws?.readyState ?? "no-socket";
++            if (this.ws && this.ws.readyState === Client.WebSocket.OPEN) {
++                if (typeof this.ws.ping === "function") {
++                    try {
++                        this.ws.ping();
++                    }
++                    catch (err) {
++                        console.warn(`[mocha-remote-ws] keepalive ping failed readyState=${readyState} err=${err?.message || err}`);
++                    }
++                }
++            }
++            else {
++                console.warn(`[mocha-remote-ws] keepalive skip readyState=${readyState}`);
++            }
++        }, 5000);
++    }
++    stopKeepalive() {
++        if (this._keepaliveTimer) {
++            clearInterval(this._keepaliveTimer);
++            this._keepaliveTimer = null;
++        }
++    }
++    flushOutboundQueue() {
++        if (!this._outboundQueue.length || !this.ws || this.ws.readyState !== Client.WebSocket.OPEN) {
++            return;
++        }
++        const queue = this._outboundQueue;
++        this._outboundQueue = [];
++        console.warn(`[mocha-remote-ws] flushing outbound queue count=${queue.length}`);
++        for (const data of queue) {
++            this.ws.send(data);
++        }
++    }
++
+ }
+ 
+ Client.WebSocket = WebSocket;

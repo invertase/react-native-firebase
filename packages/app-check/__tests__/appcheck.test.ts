@@ -1,69 +1,98 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
-// @ts-ignore test
-import FirebaseModule from '../../app/lib/internal/FirebaseModule';
+import { describe, expect, it, beforeEach, afterEach } from '@jest/globals';
+import { Platform } from 'react-native';
 
 import {
-  createCheckV9Deprecation,
-  CheckV9DeprecationFunction,
-} from '../../app/lib/common/unitTestUtils';
-
-// @ts-ignore
-import { MODULAR_DEPRECATION_ARG } from '../../app/lib/common';
-
-import { getApp } from '../../app/lib';
-
-import {
-  firebase,
   initializeAppCheck,
   getToken,
   getLimitedUseToken,
   setTokenAutoRefreshEnabled,
   onTokenChanged,
   CustomProvider,
-  ReactNativeFirebaseAppCheckProviderOptions,
-  ReactNativeFirebaseAppCheckProviderAndroidOptions,
-  ReactNativeFirebaseAppCheckProviderAppleOptions,
-  ReactNativeFirebaseAppCheckProviderWebOptions,
+  ReactNativeFirebaseAppCheckProvider,
+  type ReactNativeFirebaseAppCheckProviderOptions,
+  type ReactNativeFirebaseAppCheckProviderAndroidOptions,
+  type ReactNativeFirebaseAppCheckProviderAppleOptions,
+  type ReactNativeFirebaseAppCheckProviderWebOptions,
 } from '../lib';
 
 describe('appCheck()', function () {
-  describe('namespace', function () {
-    beforeAll(async function () {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterAll(async function () {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('accessible from firebase.app()', function () {
-      const app = firebase.app();
-      expect(app.appCheck).toBeDefined();
-      expect(app.appCheck().app).toEqual(app);
-    });
-
-    it('supports multiple apps', async function () {
-      expect(firebase.appCheck().app.name).toEqual('[DEFAULT]');
-      expect(firebase.appCheck(firebase.app('secondaryFromNative')).app.name).toEqual(
-        'secondaryFromNative',
-      );
-      expect(firebase.app('secondaryFromNative').appCheck().app.name).toEqual(
-        'secondaryFromNative',
-      );
-    });
-
-    describe('react-native-firebase provider', function () {
-      it('correctly creates a provider instance', function () {
-        expect(firebase.appCheck().newReactNativeFirebaseAppCheckProvider()).toBeDefined();
-      });
-    });
-  });
-
   describe('modular', function () {
     it('`initializeAppCheck` function is properly exposed to end user', function () {
       expect(initializeAppCheck).toBeDefined();
+    });
+
+    it('`initializeAppCheck` throws when options are missing at runtime', function () {
+      expect(() => initializeAppCheck(undefined, undefined)).toThrow(
+        'Invalid configuration: no options defined.',
+      );
+    });
+
+    describe('provider name validation', function () {
+      it('throws on invalid android provider name', function () {
+        const provider = new ReactNativeFirebaseAppCheckProvider();
+        provider.configure({
+          android: { provider: 'invalidProvider' as any },
+        });
+        expect(() => initializeAppCheck(undefined, { provider })).toThrow(
+          'Invalid App Check provider "invalidProvider". Valid android providers are: debug, playIntegrity.',
+        );
+      });
+
+      it('does not throw validation error for valid android provider names', function () {
+        for (const name of ['debug', 'playIntegrity']) {
+          const provider = new ReactNativeFirebaseAppCheckProvider();
+          provider.configure({
+            android: { provider: name as any },
+          });
+          try {
+            initializeAppCheck(undefined, { provider });
+          } catch (e: any) {
+            expect(e.message).not.toContain('Invalid App Check provider');
+          }
+        }
+      });
+
+      describe('apple platform', function () {
+        let originalOS: string;
+
+        beforeEach(function () {
+          originalOS = Platform.OS;
+          Platform.OS = 'ios' as any;
+        });
+
+        afterEach(function () {
+          Platform.OS = originalOS as any;
+        });
+
+        it('throws on invalid apple provider name', function () {
+          const provider = new ReactNativeFirebaseAppCheckProvider();
+          provider.configure({
+            apple: { provider: 'appAttestWithDebugProviderFallback' as any },
+          });
+          expect(() => initializeAppCheck(undefined, { provider })).toThrow(
+            'Invalid App Check provider "appAttestWithDebugProviderFallback". Valid apple providers are: debug, deviceCheck, appAttest, appAttestWithDeviceCheckFallback.',
+          );
+        });
+
+        it('does not throw validation error for valid apple provider names', function () {
+          for (const name of [
+            'debug',
+            'deviceCheck',
+            'appAttest',
+            'appAttestWithDeviceCheckFallback',
+          ]) {
+            const provider = new ReactNativeFirebaseAppCheckProvider();
+            provider.configure({
+              apple: { provider: name as any },
+            });
+            try {
+              initializeAppCheck(undefined, { provider });
+            } catch (e: any) {
+              expect(e.message).not.toContain('Invalid App Check provider');
+            }
+          }
+        });
+      });
     });
 
     it('`getToken` function is properly exposed to end user', function () {
@@ -78,13 +107,16 @@ describe('appCheck()', function () {
       expect(setTokenAutoRefreshEnabled).toBeDefined();
     });
 
+    it('`onTokenChanged` function is properly exposed to end user', function () {
+      expect(onTokenChanged).toBeDefined();
+    });
+
     it('`CustomProvider` function is properly exposed to end user', function () {
       expect(CustomProvider).toBeDefined();
     });
 
-    it('`ReactNativeAppCheckProvider objects are properly exposed to end user', function () {
-      expect(firebase.appCheck().newReactNativeFirebaseAppCheckProvider).toBeDefined();
-      const provider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
+    it('ReactNativeAppCheckProvider objects are properly exposed to end user', function () {
+      const provider = new ReactNativeFirebaseAppCheckProvider();
       expect(provider.configure).toBeDefined();
       const options = { debugToken: 'foo' } as ReactNativeFirebaseAppCheckProviderOptions;
       const appleOptions = {
@@ -102,119 +134,7 @@ describe('appCheck()', function () {
         ...options,
       } as ReactNativeFirebaseAppCheckProviderWebOptions;
       expect(webOptions).toBeDefined();
-    });
-  });
-
-  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
-    let appCheckRefV9Deprecation: CheckV9DeprecationFunction;
-    let staticsRefV9Deprecation: CheckV9DeprecationFunction;
-
-    beforeEach(function () {
-      appCheckRefV9Deprecation = createCheckV9Deprecation(['appCheck']);
-      staticsRefV9Deprecation = createCheckV9Deprecation(['appCheck', 'statics']);
-
-      // @ts-ignore test
-      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
-        return new Proxy(
-          {},
-          {
-            get: () =>
-              jest.fn().mockResolvedValue({
-                source: 'cache',
-                changes: [],
-                documents: [],
-                metadata: {},
-                path: 'foo',
-              } as never),
-          },
-        );
-      });
-    });
-
-    describe('AppCheck', function () {
-      it('appCheck.activate()', function () {
-        // @ts-ignore
-        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
-        appCheckRefV9Deprecation(
-          () =>
-            initializeAppCheck(getApp(), {
-              provider: {
-                providerOptions: {
-                  android: {
-                    provider: 'playIntegrity',
-                  },
-                },
-              },
-              isTokenAutoRefreshEnabled: true,
-            }),
-          () => appCheck.activate('string'),
-          'activate',
-        );
-      });
-
-      it('appCheck.setTokenAutoRefreshEnabled()', function () {
-        // @ts-ignore
-        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
-        appCheckRefV9Deprecation(
-          () => setTokenAutoRefreshEnabled(appCheck, true),
-          () => appCheck.setTokenAutoRefreshEnabled(true),
-          'setTokenAutoRefreshEnabled',
-        );
-      });
-
-      it('appCheck.getToken()', function () {
-        // @ts-ignore
-        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
-        appCheckRefV9Deprecation(
-          () => getToken(appCheck, true),
-          () => appCheck.getToken(true),
-          'getToken',
-        );
-      });
-
-      it('appCheck.getLimitedUseToken()', function () {
-        // @ts-ignore
-        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
-        appCheckRefV9Deprecation(
-          () => getLimitedUseToken(appCheck),
-          () => appCheck.getLimitedUseToken(),
-          'getLimitedUseToken',
-        );
-      });
-
-      it('appCheck.onTokenChanged()', function () {
-        // @ts-ignore
-        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
-        appCheckRefV9Deprecation(
-          () =>
-            onTokenChanged(
-              appCheck,
-              () => {},
-              () => {},
-              () => {},
-            ),
-          () =>
-            appCheck.onTokenChanged(
-              () => {},
-              () => {},
-              () => {},
-            ),
-          'onTokenChanged',
-        );
-      });
-
-      it('CustomProvider', function () {
-        // @ts-ignore
-        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-        const appCheck = firebase.appCheck;
-        // @ts-ignore
-        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-        staticsRefV9Deprecation(
-          () => CustomProvider,
-          () => appCheck.CustomProvider,
-          'CustomProvider',
-        );
-      });
+      expect(ReactNativeFirebaseAppCheckProvider).toBeDefined();
     });
   });
 });

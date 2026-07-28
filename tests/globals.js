@@ -46,10 +46,14 @@ import shouldMatchers from 'should';
 //            [RNFB<--Event][📣] storage_event <- {...}
 //            [RNFB<-Native][🟢] RNFBStorageModule.putString <- {...}
 //            [TEST->Finish][✅] uploads a base64url string
-globalThis.RNFBDebug = false;
+let harnessOverrides = {};
+try {
+  harnessOverrides = require('./harness.overrides.js');
+} catch (e) {
+  // Optional local overrides — see harness.overrides.example.js
+}
 
-// this may be used to locate modular API errors quickly
-globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = true;
+globalThis.RNFBDebug = harnessOverrides.RNFBDebug ?? false;
 
 // Needed for Platform.Other session storage
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -58,7 +62,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import '@react-native-firebase/analytics';
 import '@react-native-firebase/app-check';
 import '@react-native-firebase/app-distribution';
-import '@react-native-firebase/app/lib/utils';
 import '@react-native-firebase/auth';
 import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/database';
@@ -70,7 +73,7 @@ import '@react-native-firebase/messaging';
 import '@react-native-firebase/ml';
 import '@react-native-firebase/remote-config';
 import '@react-native-firebase/storage';
-import firebase, * as modular from '@react-native-firebase/app';
+import * as modular from '@react-native-firebase/app';
 import * as analyticsModular from '@react-native-firebase/analytics';
 import * as appCheckModular from '@react-native-firebase/app-check';
 import * as appDistributionModular from '@react-native-firebase/app-distribution';
@@ -87,6 +90,7 @@ import * as inAppMessagingModular from '@react-native-firebase/in-app-messaging'
 import * as installationsModular from '@react-native-firebase/installations';
 import * as crashlyticsModular from '@react-native-firebase/crashlytics';
 import * as mlModular from '@react-native-firebase/ml';
+import * as pnvModular from '@react-native-firebase/phone-number-verification';
 
 import { Platform } from 'react-native';
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
@@ -225,6 +229,29 @@ global.FirebaseHelpers = {
   async updateRemoteConfigTemplate(operations) {
     return await this.callCloudHelperFunction('testFunctionRemoteConfigUpdateV2', operations);
   },
+  async recordE2eCloudMetric(payload) {
+    if (!payload || typeof payload !== 'object') {
+      return;
+    }
+
+    const metric = {
+      ...payload,
+      platform: global.Platform?.ios ? 'ios' : global.Platform?.android ? 'android' : 'other',
+    };
+
+    try {
+      await this.callCloudHelperFunction('e2eCloudMetricsV2', metric);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn('[rnfb-e2e-metrics] record failed', String(error?.message || error));
+    }
+  },
+  async fetchE2eCloudMetricsSummary(lookbackHours = 24) {
+    const response = await this.callCloudHelperFunction('e2eCloudMetricsSummaryV2', {
+      lookbackHours,
+    });
+    return response?.result ?? response;
+  },
 };
 
 global.android = {
@@ -331,19 +358,14 @@ Object.defineProperty(global, 'TestAdminApi', {
   },
 });
 
-Object.defineProperty(global, 'firebase', {
-  get() {
-    return firebase;
-  },
-});
-
 Object.defineProperty(global, 'NativeModules', {
   get() {
     return new Proxy(
       {},
       {
         get: (target, moduleName) => {
-          if (moduleName.startsWith('RNF')) {
+          // NewArch-AD-18 E4: e2e harness routes turbo/legacy names through the unified resolver.
+          if (moduleName.startsWith('RNF') || moduleName.startsWith('NativeRNFBTurbo')) {
             return getReactNativeModule(moduleName);
           }
           return target[moduleName] || (() => {});
@@ -478,6 +500,12 @@ Object.defineProperty(global, 'mlModular', {
   },
 });
 
+Object.defineProperty(global, 'pnvModular', {
+  get() {
+    return pnvModular;
+  },
+});
+
 global.jet = {
   // TODO refactor tests to not use this anymore
   contextify(input) {
@@ -485,7 +513,8 @@ global.jet = {
   },
 };
 
-// some tests flake in CI but we still run them locally
-global.isCI = process.env.CI === true;
 // Used to tell our internals that we are running tests.
 globalThis.RNFBTest = true;
+globalThis.recordE2eCloudMetric = payload => global.FirebaseHelpers.recordE2eCloudMetric(payload);
+// some tests flake in CI but we still run them locally
+global.isCI = process.env.CI === 'true' || process.env.CI === true;

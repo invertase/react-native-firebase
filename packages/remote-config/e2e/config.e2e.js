@@ -16,341 +16,6 @@
  */
 
 describe('remoteConfig()', function () {
-  describe('firebase v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    describe('fetch()', function () {
-      it('with expiration provided', async function () {
-        const date = Date.now() - 30000;
-        await firebase.remoteConfig().ensureInitialized();
-
-        if (Platform.android) {
-          // iOS persists last fetch status so this test will fail sometimes
-          firebase.remoteConfig().fetchTimeMillis.should.be.a.Number();
-        }
-
-        await firebase.remoteConfig().fetch(0);
-        firebase
-          .remoteConfig()
-          .lastFetchStatus.should.equal(firebase.remoteConfig.LastFetchStatus.SUCCESS);
-        should.equal(firebase.remoteConfig().fetchTimeMillis >= date, true);
-      });
-
-      it('without expiration provided', function () {
-        return firebase.remoteConfig().fetch();
-      });
-    });
-
-    describe('fetchAndActivate()', function () {
-      it('returns true/false if activated', async function () {
-        const activated = await firebase.remoteConfig().fetchAndActivate();
-        activated.should.be.a.Boolean();
-      });
-    });
-
-    describe('activate()', function () {
-      it('with expiration provided', async function () {
-        await firebase.remoteConfig().fetch(0);
-        const activated = await firebase.remoteConfig().activate();
-        activated.should.be.a.Boolean();
-      });
-
-      it('without expiration provided', async function () {
-        await firebase.remoteConfig().fetch();
-        const activated = await firebase.remoteConfig().activate();
-        activated.should.be.a.Boolean();
-      });
-    });
-
-    describe('config settings', function () {
-      it('should be immediately available', async function () {
-        firebase.remoteConfig().lastFetchStatus.should.be.a.String();
-        firebase.remoteConfig().lastFetchStatus.should.equal('success');
-        firebase.remoteConfig().fetchTimeMillis.should.be.a.Number();
-      });
-    });
-
-    describe('setConfigSettings()', function () {
-      xit('minimumFetchIntervalMillis sets correctly', async function () {
-        await firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 3000 });
-
-        firebase.remoteConfig().settings.minimumFetchIntervalMillis.should.be.equal(3000);
-      });
-
-      it('fetchTimeMillis sets correctly', async function () {
-        await firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 3000 });
-
-        firebase.remoteConfig().settings.fetchTimeMillis.should.be.equal(3000);
-      });
-    });
-
-    describe('ensureInitialized()', function () {
-      it('should ensure remote config has been initialized and values are accessible', async function () {
-        const ensure = await firebase.remoteConfig().ensureInitialized();
-        const number = firebase.remoteConfig().getValue('number');
-
-        should(ensure).equal(undefined);
-        number.getSource().should.equal('remote');
-        number.asNumber().should.equal(1337);
-      });
-    });
-
-    describe('getAll() with remote', function () {
-      it('should return an object of all available values', function () {
-        const config = firebase.remoteConfig().getAll();
-        config.number.asNumber().should.equal(1337);
-        config.number.getSource().should.equal('remote');
-        // firebase console stores as a string
-        config.float.asNumber().should.equal(123.456);
-        config.float.getSource().should.equal('remote');
-        config.prefix_1.asNumber().should.equal(1);
-        config.prefix_1.getSource().should.equal('remote');
-      });
-    });
-
-    describe('setDefaults()', function () {
-      it('sets default values from key values object', async function () {
-        await firebase.remoteConfig().setDefaults({
-          some_key: 'I do not exist',
-          some_key_1: 1337,
-          some_key_2: true,
-        });
-
-        const values = firebase.remoteConfig().getAll();
-        values.some_key.asString().should.equal('I do not exist');
-        values.some_key_1.asNumber().should.equal(1337);
-        should.equal(values.some_key_2.asBoolean(), true);
-
-        values.some_key.getSource().should.equal('default');
-        values.some_key_1.getSource().should.equal('default');
-        values.some_key_2.getSource().should.equal('default');
-      });
-    });
-
-    describe('getValue()', function () {
-      describe('getValue().asBoolean()', function () {
-        it("returns 'true' for the specified keys: '1', 'true', 't', 'yes', 'y', 'on'", async function () {
-          //Boolean truthy values as defined by web sdk
-          await firebase.remoteConfig().setDefaults({
-            test1: '1',
-            test2: 'true',
-            test3: 't',
-            test4: 'yes',
-            test5: 'y',
-            test6: 'on',
-          });
-
-          const test1 = firebase.remoteConfig().getValue('test1').asBoolean();
-
-          const test2 = firebase.remoteConfig().getValue('test2').asBoolean();
-          const test3 = firebase.remoteConfig().getValue('test3').asBoolean();
-          const test4 = firebase.remoteConfig().getValue('test4').asBoolean();
-          const test5 = firebase.remoteConfig().getValue('test5').asBoolean();
-          const test6 = firebase.remoteConfig().getValue('test6').asBoolean();
-
-          test1.should.equal(true);
-          test2.should.equal(true);
-          test3.should.equal(true);
-          test4.should.equal(true);
-          test5.should.equal(true);
-          test6.should.equal(true);
-        });
-
-        it("returns 'false' for values that resolve to a falsy", async function () {
-          await firebase.remoteConfig().setDefaults({
-            test1: '2',
-            test2: 'foo',
-          });
-
-          const test1 = firebase.remoteConfig().getValue('test1').asBoolean();
-
-          const test2 = firebase.remoteConfig().getValue('test2').asBoolean();
-
-          test1.should.equal(false);
-          test2.should.equal(false);
-        });
-
-        it("returns 'false' if the source is static", function () {
-          const unknownKey = firebase.remoteConfig().getValue('unknownKey').asBoolean();
-
-          unknownKey.should.equal(false);
-        });
-      });
-
-      describe('getValue().asString()', function () {
-        it('returns the value as a string', function () {
-          const config = firebase.remoteConfig().getAll();
-
-          config.number.asString().should.equal('1337');
-          config.float.asString().should.equal('123.456');
-          config.prefix_1.asString().should.equal('1');
-          config.bool.asString().should.equal('true');
-        });
-      });
-
-      describe('getValue().asNumber()', function () {
-        it('returns the value as a number if it can be evaluated as a number', function () {
-          const config = firebase.remoteConfig().getAll();
-
-          config.number.asNumber().should.equal(1337);
-          config.float.asNumber().should.equal(123.456);
-          config.prefix_1.asNumber().should.equal(1);
-        });
-
-        it('returns the value "0" if it cannot be evaluated as a number', function () {
-          const config = firebase.remoteConfig().getAll();
-
-          config.bool.asNumber().should.equal(0);
-          config.string.asNumber().should.equal(0);
-        });
-
-        it("returns '0' if the source is static", function () {
-          const unknownKey = firebase.remoteConfig().getValue('unknownKey').asNumber();
-
-          unknownKey.should.equal(0);
-        });
-      });
-
-      describe('getValue().getSource()', function () {
-        it('returns the correct source as default or remote', async function () {
-          await firebase.remoteConfig().setDefaults({
-            test1: '2',
-            test2: 'foo',
-          });
-
-          const config = firebase.remoteConfig().getAll();
-
-          config.number.getSource().should.equal('remote');
-          config.bool.getSource().should.equal('remote');
-          config.string.getSource().should.equal('remote');
-
-          config.test1.getSource().should.equal('default');
-          config.test2.getSource().should.equal('default');
-        });
-      });
-
-      it("returns an empty string for a static value for keys that doesn't exist", function () {
-        const configValue = firebase.remoteConfig().getValue('fourOhFour');
-        configValue.getSource().should.equal('static');
-        should.equal(configValue.asString(), '');
-      });
-
-      it('errors if no key provided', async function () {
-        try {
-          firebase.remoteConfig().getValue();
-          return Promise.reject(new Error('Did not throw'));
-        } catch (error) {
-          error.message.should.containEql('must be a string');
-          return Promise.resolve();
-        }
-      });
-
-      it('errors if key not a string', async function () {
-        try {
-          firebase.remoteConfig().getValue(1234);
-          return Promise.reject(new Error('Did not throw'));
-        } catch (error) {
-          error.message.should.containEql('must be a string');
-          return Promise.resolve();
-        }
-      });
-    });
-
-    describe('getAll()', function () {
-      it('gets all values', async function () {
-        const config = firebase.remoteConfig().getAll();
-
-        config.should.be.a.Object();
-        config.should.have.keys('bool', 'string', 'number');
-
-        const boolValue = config.bool.asBoolean();
-        const stringValue = config.string.asString();
-        const numberValue = config.number.asNumber();
-
-        boolValue.should.be.equal(true);
-        stringValue.should.be.equal('invertase');
-        numberValue.should.be.equal(1337);
-      });
-    });
-
-    describe('setDefaultsFromResource()', function () {
-      if (Platform.other) {
-        // Not supported on Web.
-        return;
-      }
-
-      it('sets defaults from remote_config_resource_test file', async function () {
-        await firebase.remoteConfig().setDefaultsFromResource('remote_config_resource_test');
-        const config = firebase.remoteConfig().getAll();
-        config.company.getSource().should.equal('default');
-        config.company.asString().should.equal('invertase');
-      });
-
-      it('rejects if resource not found', async function () {
-        let error;
-        try {
-          await firebase.remoteConfig().setDefaultsFromResource('i_do_not_exist');
-        } catch (e) {
-          error = e;
-        }
-        if (!error) {
-          throw new Error('Did not reject');
-        }
-        // TODO dasherize error namespace
-        error.code.should.equal('remoteConfig/resource_not_found');
-        error.message.should.containEql('was not found');
-      });
-    });
-
-    describe('defaultConfig', function () {
-      it('gets plain key/value object of defaults', async function () {
-        await firebase.remoteConfig().setDefaults({
-          test_key: 'foo',
-        });
-
-        should(firebase.remoteConfig().defaultConfig.test_key).equal('foo');
-      });
-    });
-
-    describe('reset()', function () {
-      it('resets all activated, fetched and default config', async function () {
-        if (Platform.android) {
-          await firebase.remoteConfig().setDefaults({
-            some_key: 'I do not exist',
-          });
-
-          const config = firebase.remoteConfig().getAll();
-
-          const remoteProps = ['some_key'];
-
-          config.should.have.keys(...remoteProps);
-
-          await firebase.remoteConfig().reset();
-
-          const configRetrieveAgain = firebase.remoteConfig().getAll();
-
-          should(configRetrieveAgain).not.have.properties(remoteProps);
-        } else {
-          this.skip();
-        }
-      });
-
-      it('returns "undefined" as reset() API is not supported on iOS', async function () {
-        if (Platform.ios) {
-          should(await firebase.remoteConfig().reset()).equal(undefined);
-        }
-      });
-    });
-  });
-
   describe('modular', function () {
     describe('getRemoteConfig', function () {
       it('pass app as argument', function () {
@@ -363,10 +28,9 @@ describe('remoteConfig()', function () {
       });
 
       it('no app as argument', function () {
-        const { getApp } = modular;
         const { getRemoteConfig } = remoteConfigModular;
 
-        const remoteConfig = getRemoteConfig(getApp());
+        const remoteConfig = getRemoteConfig();
 
         remoteConfig.constructor.name.should.be.equal('FirebaseConfigModule');
       });
@@ -394,6 +58,82 @@ describe('remoteConfig()', function () {
       it('returns true/false if activated', async function () {
         const { getRemoteConfig, fetchAndActivate } = remoteConfigModular;
         (await fetchAndActivate(getRemoteConfig())).should.be.a.Boolean();
+      });
+
+      // Regression test for https://github.com/invertase/react-native-firebase/issues/7779
+      // On iOS, fetchAndActivate() used to always resolve `true` whenever the underlying fetch
+      // succeeded, even when the fetched values were identical to what was already active
+      // (i.e. nothing new was actually activated). This must be consistent with fetch() + activate(),
+      // and with the boolean returned by activate() itself, on both platforms.
+      it('returns false when there is nothing new to activate', async function () {
+        const { getRemoteConfig, fetchAndActivate } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig();
+        remoteConfig.settings = { minimumFetchIntervalMillis: 0 };
+
+        // Make sure the current remote values are fetched + activated first.
+        await fetchAndActivate(remoteConfig);
+
+        // Calling again immediately with no server-side template changes must not report
+        // that anything was activated, matching fetch() + activate() and matching Android.
+        const activatedAgain = await fetchAndActivate(remoteConfig);
+        activatedAgain.should.equal(false);
+      });
+
+      it('is consistent with fetch() followed by activate()', async function () {
+        const { getRemoteConfig, fetchConfig, fetchAndActivate, activate } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig();
+        remoteConfig.settings = { minimumFetchIntervalMillis: 0 };
+
+        // Get into a known "fully activated, no pending changes" state.
+        await fetchAndActivate(remoteConfig);
+
+        // With no new remote values, fetch() + activate() should report nothing changed...
+        await fetchConfig(remoteConfig);
+        const activatedViaSeparateCalls = await activate(remoteConfig);
+        activatedViaSeparateCalls.should.equal(false);
+
+        // ...and fetchAndActivate() must agree.
+        const activatedViaFetchAndActivate = await fetchAndActivate(remoteConfig);
+        activatedViaFetchAndActivate.should.equal(activatedViaSeparateCalls);
+      });
+
+      it('returns true only once new remote values have actually been fetched and activated', async function () {
+        const { getRemoteConfig, fetchAndActivate, getValue } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig();
+        remoteConfig.settings = { minimumFetchIntervalMillis: 0 };
+        const paramName = 'fetchAndActivateTest' + Date.now();
+        const paramValue = 'value' + Date.now();
+
+        // Get into a known "fully activated, no pending changes" state first.
+        await fetchAndActivate(remoteConfig);
+        (await fetchAndActivate(remoteConfig)).should.equal(false);
+
+        try {
+          const response = await FirebaseHelpers.updateRemoteConfigTemplate({
+            operations: { add: [{ name: paramName, value: paramValue }] },
+          });
+          should(response.result !== undefined).equal(true, 'response result not defined');
+
+          // A newly published template can take a little while to propagate to the fetch
+          // backend, so poll fetchAndActivate() until it reports the new value was activated,
+          // rather than asserting on the very next call.
+          let activated = false;
+          const deadline = Date.now() + 60000;
+          while (Date.now() < deadline) {
+            activated = await fetchAndActivate(remoteConfig);
+            if (activated && getValue(remoteConfig, paramName).asString() === paramValue) {
+              break;
+            }
+            await Utils.sleep(2000);
+          }
+
+          activated.should.equal(true);
+          getValue(remoteConfig, paramName).asString().should.equal(paramValue);
+        } finally {
+          await FirebaseHelpers.updateRemoteConfigTemplate({
+            operations: { delete: [paramName] },
+          });
+        }
       });
     });
 

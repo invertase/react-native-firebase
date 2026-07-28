@@ -16,6 +16,8 @@
  */
 
 import * as firebaseFirestorePipelines from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
+import type { Firestore } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
+import type { FirestorePipelineSerializedInternal } from '../../types/internal';
 import type {
   AggregateFunction,
   AliasedAggregate,
@@ -31,6 +33,38 @@ export type WebPipelineSource = WebSdkPipelineSource<WebPipelineInstance> & Reco
 
 type PipelineHelperFn = (...args: unknown[]) => unknown;
 type AliasedValue = { as: (name: string) => unknown };
+
+type NestedWebPipelineBuilder = (
+  firestore: Firestore,
+  pipeline: FirestorePipelineSerializedInternal,
+) => WebPipelineInstance;
+
+let nestedWebPipelineBuilder: NestedWebPipelineBuilder | null = null;
+let nestedWebPipelineFirestore: Firestore | null = null;
+
+export function configureWebNestedPipelineRevival(
+  firestore: Firestore,
+  builder: NestedWebPipelineBuilder,
+): void {
+  nestedWebPipelineFirestore = firestore;
+  nestedWebPipelineBuilder = builder;
+}
+
+function extractNestedPipelineFromArg(arg: unknown): FirestorePipelineSerializedInternal | null {
+  if (!isRecord(arg)) {
+    return null;
+  }
+
+  if (arg.exprType === 'PipelineValue' && isRecord(arg.pipeline)) {
+    return arg.pipeline as unknown as FirestorePipelineSerializedInternal;
+  }
+
+  if (isRecord(arg.source) && Array.isArray(arg.stages)) {
+    return arg as unknown as FirestorePipelineSerializedInternal;
+  }
+
+  return null;
+}
 
 const WEB_PIPELINE_HELPER_ALIASES: Record<string, string> = {
   lower: 'toLower',
@@ -57,7 +91,9 @@ function isExpressionNode(value: Record<string, unknown>): boolean {
     value.__kind === 'expression' ||
     value.exprType === 'Field' ||
     value.exprType === 'Constant' ||
-    value.exprType === 'Function'
+    value.exprType === 'Variable' ||
+    value.exprType === 'Function' ||
+    value.exprType === 'PipelineValue'
   );
 }
 
@@ -88,7 +124,82 @@ function isAliasedAggregateNode(value: Record<string, unknown>): boolean {
   );
 }
 
-type ReviveMode = 'pipeline' | 'helper';
+type ReviveMode = 'pipeline' | 'helper' | 'numericOperand' | 'comparisonOperand';
+
+const ORDERING_COMPARISON_FUNCTIONS = new Set([
+  'greaterThan',
+  'greaterThanOrEqual',
+  'lessThan',
+  'lessThanOrEqual',
+]);
+
+const BOOLEAN_COMPARISON_FUNCTIONS = new Set([
+  'equal',
+  'notEqual',
+  'greaterThan',
+  'greaterThanOrEqual',
+  'lessThan',
+  'lessThanOrEqual',
+  'arrayContains',
+  'arrayContainsAny',
+  'arrayContainsAll',
+  'equalAny',
+  'notEqualAny',
+]);
+
+const ARITHMETIC_FUNCTIONS = new Set(['add', 'subtract', 'multiply', 'divide', 'mod', 'pow']);
+
+function getArgReviveMode(helperName: string, argIndex: number): ReviveMode {
+  if (ARITHMETIC_FUNCTIONS.has(helperName) && argIndex > 0) {
+    return 'numericOperand';
+  }
+
+  if (BOOLEAN_COMPARISON_FUNCTIONS.has(helperName) && argIndex === 1) {
+    return ORDERING_COMPARISON_FUNCTIONS.has(helperName) ? 'numericOperand' : 'comparisonOperand';
+  }
+
+  return 'helper';
+}
+
+function coerceNumericOperandScalar(value: unknown): unknown {
+  if (typeof value === 'boolean') {
+    return value ? 1 : 0;
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed.length > 0 && Number.isFinite(Number(trimmed))) {
+      return Number(trimmed);
+    }
+  }
+
+  return value;
+}
+
+function isZeroNumericOperand(value: unknown): boolean {
+  if (value === 0 || value === false) {
+    return true;
+  }
+
+  if (typeof value === 'string' && value.trim() === '0') {
+    return true;
+  }
+
+  return false;
+}
+
+function finalizeArithmeticArgs(helperName: string, revivedArgs: unknown[]): unknown[] {
+  if (!ARITHMETIC_FUNCTIONS.has(helperName)) {
+    return revivedArgs;
+  }
+
+  const output = revivedArgs.slice();
+  for (let index = 1; index < output.length; index++) {
+    output[index] = coerceNumericOperandScalar(output[index]);
+  }
+
+  return output;
+}
 
 type ReviveWorkFrame =
   | {
@@ -140,6 +251,42 @@ function rebuildExpressionNode(
   }
 
   if (node.exprType === 'Constant' || Object.prototype.hasOwnProperty.call(node, 'value')) {
+    if (mode === 'numericOperand') {
+      if (typeof node.value === 'boolean') {
+        resolve(coerceNumericOperandScalar(node.value));
+        return;
+      }
+
+      stack.push({
+        kind: 'evaluate',
+        mode: 'helper',
+        value: node.value,
+        resolve: result => {
+          resolve(coerceNumericOperandScalar(result));
+        },
+      });
+      return;
+    }
+
+    if (mode === 'comparisonOperand') {
+      let revivedValue: unknown;
+      stack.push({
+        kind: 'finalize',
+        run: () => {
+          resolve(getPipelineHelper('constant')(revivedValue) as Expression);
+        },
+      });
+      stack.push({
+        kind: 'evaluate',
+        mode: 'helper',
+        value: node.value,
+        resolve: result => {
+          revivedValue = result;
+        },
+      });
+      return;
+    }
+
     if (mode === 'helper') {
       stack.push({
         kind: 'evaluate',
@@ -168,11 +315,42 @@ function rebuildExpressionNode(
     return;
   }
 
+  if (node.exprType === 'Variable' && typeof node.name === 'string') {
+    resolve(getPipelineHelper('variable')(node.name) as Expression);
+    return;
+  }
+
   if (typeof node.name === 'string') {
     const helperName = node.name;
     const args = Array.isArray(node.args) ? node.args : [];
+
+    if (
+      (helperName === 'scalar' || helperName === 'array') &&
+      args.length === 1 &&
+      nestedWebPipelineBuilder &&
+      nestedWebPipelineFirestore
+    ) {
+      const nestedPipeline = extractNestedPipelineFromArg(args[0]);
+      if (nestedPipeline) {
+        const pipelineInstance = nestedWebPipelineBuilder(
+          nestedWebPipelineFirestore,
+          nestedPipeline,
+        );
+        const subqueryMethod =
+          helperName === 'scalar'
+            ? pipelineInstance.toScalarExpression
+            : pipelineInstance.toArrayExpression;
+        if (typeof subqueryMethod !== 'function') {
+          throw new Error(
+            'pipelineExecute() expected nested pipeline to support subquery expression conversion for web SDK.',
+          );
+        }
+        resolve(subqueryMethod.call(pipelineInstance) as Expression);
+        return;
+      }
+    }
+
     const revivedArgs = new Array(args.length);
-    const argsMode = helperName === 'conditional' ? 'pipeline' : 'helper';
 
     stack.push({
       kind: 'finalize',
@@ -181,14 +359,20 @@ function rebuildExpressionNode(
           resolve(getPipelineHelper(helperName)(revivedArgs) as Expression);
           return;
         }
-        resolve(getPipelineHelper(helperName)(...revivedArgs) as Expression);
+        const finalizedArgs = finalizeArithmeticArgs(helperName, revivedArgs);
+        if (helperName === 'divide' && isZeroNumericOperand(finalizedArgs[1])) {
+          resolve(getPipelineHelper('constant')(0) as Expression);
+          return;
+        }
+        resolve(getPipelineHelper(helperName)(...finalizedArgs) as Expression);
       },
     });
 
     for (let i = args.length - 1; i >= 0; i--) {
+      const argMode = helperName === 'conditional' ? 'pipeline' : getArgReviveMode(helperName, i);
       stack.push({
         kind: 'evaluate',
-        mode: argsMode,
+        mode: argMode,
         value: args[i],
         resolve: result => {
           revivedArgs[i] = result;
@@ -328,8 +512,20 @@ function reviveValueWithMode(value: unknown, mode: ReviveMode): unknown {
     }
 
     if (!isRecord(currentValue)) {
+      if (frame.mode === 'numericOperand') {
+        frame.resolve(coerceNumericOperandScalar(currentValue));
+        continue;
+      }
+
       frame.resolve(currentValue);
       continue;
+    }
+
+    if (frame.mode === 'numericOperand' || frame.mode === 'comparisonOperand') {
+      if (isExpressionNode(currentValue)) {
+        rebuildExpressionNode(stack, currentValue, frame.mode, frame.resolve);
+        continue;
+      }
     }
 
     if (frame.mode === 'helper') {

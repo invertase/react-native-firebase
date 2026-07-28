@@ -18,13 +18,30 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import { execSync } from 'child_process';
 import { join } from 'path';
-import { existsSync } from 'fs';
+import { existsSync, readdirSync } from 'fs';
 import { rimrafSync } from 'rimraf';
 
 // Our test data repository
 const REPO_NAME = 'vertexai-sdk-test-data';
 const REPO_LINK = `https://github.com/FirebaseExtended/${REPO_NAME}.git`;
 const TEST_DATA_ROOT = join(__dirname, '..', 'packages', 'ai', '__tests__', 'test-utils');
+
+function findExistingCloneDirName(): string | undefined {
+  if (!existsSync(TEST_DATA_ROOT)) {
+    return undefined;
+  }
+
+  return readdirSync(TEST_DATA_ROOT, { withFileTypes: true })
+    .filter(entry => entry.isDirectory() && entry.name.startsWith(`${REPO_NAME}_`))
+    .map(entry => entry.name)
+    .at(0);
+}
+
+const existingCloneDirName = findExistingCloneDirName();
+if (existingCloneDirName !== undefined) {
+  console.log('AI mock responses data exists locally already. Exiting fetch script.');
+  process.exit(0);
+}
 
 // Get tags from repository, sorted by tag name, and coerce result to a string, then trim it
 const repoTags = (

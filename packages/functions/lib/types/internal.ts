@@ -15,8 +15,20 @@
  *
  */
 
-import type { Functions } from 'firebase/functions';
-import type { HttpsCallableOptions, HttpsCallableStreamOptions } from './functions';
+import type { Functions as FirebaseFunctionsSdk } from 'firebase/functions';
+import type { Functions, HttpsCallableOptions, HttpsCallableStreamOptions } from './functions';
+
+export interface FunctionsInternal extends Functions {
+  httpsCallable<RequestData = unknown, ResponseData = unknown, StreamData = unknown>(
+    name: string,
+    options?: HttpsCallableOptions,
+  ): import('./functions').HttpsCallable<RequestData, ResponseData, StreamData>;
+  httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown, StreamData = unknown>(
+    url: string,
+    options?: HttpsCallableOptions,
+  ): import('./functions').HttpsCallable<RequestData, ResponseData, StreamData>;
+  useEmulator(host: string, port: number): void;
+}
 
 export interface FunctionsStreamingEventBody {
   data?: unknown;
@@ -36,12 +48,13 @@ export interface FunctionsStreamingEvent {
 
 /**
  * Internal type for web Functions instance with additional internal properties.
- * Extends the Firebase Functions type to include properties that may be set
- * internally but are not part of the public API.
+ * Intersects firebase-js-sdk Functions (not the RNFB modular instance) with RNFB web hacks.
  */
-export interface FunctionsWebInternal extends Functions {
+export type FunctionsWebInternal = FirebaseFunctionsSdk & {
+  region?: string;
+  customDomain?: string | null;
   emulatorOrigin?: string;
-}
+};
 
 /**
  * Internal type for custom https callable options.

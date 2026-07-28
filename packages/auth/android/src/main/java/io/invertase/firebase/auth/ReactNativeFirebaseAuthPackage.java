@@ -32,7 +32,7 @@ public class ReactNativeFirebaseAuthPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebaseAuthModule(reactContext));
+    modules.add(new NativeRNFBTurboAuth(reactContext));
     return modules;
   }
 

@@ -2,7 +2,7 @@
 title: Performance Monitoring with KY
 description: Monitor HTTP request performance with Firebase Performance Monitoring and KY.
 previous: /perf/axios-integration
-next: /vertexai/usage
+next: /phone-number-verification/usage
 ---
 
 # KY
@@ -17,7 +17,7 @@ Before HTTP requests are sent out of the React Native environment, a number of f
 We can use this `beforeRequest` hook to create our HTTP metric.
 
 ```js
-import perf from '@react-native-firebase/perf';
+import { getPerformance, httpMetric } from '@react-native-firebase/perf';
 import ky from 'ky';
 
 const getContentLength = headers => {
@@ -32,13 +32,13 @@ const api = ky.create({
     beforeRequest: [
       async (request, options) => {
         const { url, method } = request;
-        options.metric = await perf().newHttpMetric(url, method);
+        options.metric = httpMetric(getPerformance(), url, method);
 
         // add any extra metric attributes, if required
         // options.metric.putAttribute('userId', '12345678');
         // options.metric.setRequestPayloadSize(1234)
 
-        await options.metric.start();
+        options.metric.start();
       },
     ],
   },
@@ -73,7 +73,7 @@ const api = ky.create({
         metric.setHttpResponseCode(status);
         metric.setResponseContentType(getHeader('Content-Type', headers));
         metric.setResponsePayloadSize(getContentLength(headers));
-        await metric.stop();
+        metric.stop();
       },
     ],
   },
@@ -90,7 +90,7 @@ how long the request took, response codes & more. Such data can give you greater
 A working example is provided below. Please adjust and extend according to your use case.
 
 ```js
-import perf from '@react-native-firebase/perf';
+import { getPerformance, httpMetric } from '@react-native-firebase/perf';
 import ky from 'ky';
 
 const getContentLength = headers => {
@@ -107,13 +107,13 @@ const api = ky.create({
     beforeRequest: [
       async (request, options) => {
         const { url, method } = request;
-        options.metric = await perf().newHttpMetric(url, method);
+        options.metric = httpMetric(getPerformance(), url, method);
 
         // add any extra metric attributes, if required
         // options.metric.putAttribute('userId', '12345678');
         // options.metric.setRequestPayloadSize(1234)
 
-        await options.metric.start();
+        options.metric.start();
       },
     ],
 
@@ -124,7 +124,7 @@ const api = ky.create({
         metric.setHttpResponseCode(status);
         metric.setResponseContentType(getHeader('Content-Type', headers));
         metric.setResponsePayloadSize(getContentLength(headers));
-        await metric.stop();
+        metric.stop();
       },
     ],
   },

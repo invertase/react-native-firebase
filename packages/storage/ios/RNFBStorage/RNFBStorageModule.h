@@ -16,8 +16,8 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "RNFBStorageTurboModules.h"
 
-#import <React/RCTBridgeModule.h>
+@interface RNFBStorageModule : NSObject <NativeRNFBTurboStorageSpec>
 
-@interface RNFBStorageModule : NSObject <RCTBridgeModule>
 @end

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { CountTokensRequest, CountTokensResponse, RequestOptions } from '../types';
+import { CountTokensRequest, CountTokensResponse, SingleRequestOptions } from '../types';
 import { Task, makeRequest } from '../requests/request';
 import { ApiSettings } from '../types/internal';
 import { BackendType } from '../public-types';
@@ -27,14 +27,14 @@ import * as GoogleAIMapper from '../googleai-mappers';
  * @param apiSettings The {@link ApiSettings} to use for the request.
  * @param model The model to use for the request.
  * @param params The {@link CountTokensRequest} to send.
- * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @param requestOptions The {@link SingleRequestOptions} to use for the request.
  * @returns The {@link CountTokensResponse} from the request.
  */
 export async function countTokens(
   apiSettings: ApiSettings,
   model: string,
   params: CountTokensRequest,
-  requestOptions?: RequestOptions,
+  requestOptions?: SingleRequestOptions,
 ): Promise<CountTokensResponse> {
   let body: string = '';
   switch (apiSettings.backend.backendType) {

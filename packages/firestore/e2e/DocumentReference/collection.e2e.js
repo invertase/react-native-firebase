@@ -18,61 +18,6 @@
 const COLLECTION = 'firestore';
 
 describe('firestore.doc().collection()', function () {
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('throws if path is not a string', function () {
-      try {
-        firebase.firestore().doc('bar/baz').collection(123);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'collectionPath' must be a string value");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if path empty', function () {
-      try {
-        firebase.firestore().doc('bar/baz').collection('');
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'collectionPath' must be a non-empty string");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if path does not point to a collection', function () {
-      try {
-        firebase.firestore().doc('bar/baz').collection(`${COLLECTION}/bar`);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'collectionPath' must point to a collection");
-        return Promise.resolve();
-      }
-    });
-
-    it('returns a collection instance', function () {
-      const instance1 = firebase.firestore().doc(`${COLLECTION}/bar`).collection(COLLECTION);
-      const instance2 = firebase
-        .firestore()
-        .collection(COLLECTION)
-        .doc('bar')
-        .collection(COLLECTION);
-      should.equal(instance1.constructor.name, 'CollectionReference');
-      should.equal(instance2.constructor.name, 'CollectionReference');
-      instance1.id.should.equal(COLLECTION);
-      instance2.id.should.equal(COLLECTION);
-    });
-  });
-
   describe('modular', function () {
     it('throws if path is not a string', function () {
       const { getFirestore, doc, collection } = firestoreModular;

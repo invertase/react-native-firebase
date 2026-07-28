@@ -18,36 +18,35 @@
 describe('utils()', function () {
   if (Platform.other) return; // Not supported on non-native platforms.
 
-  describe('statics', function () {
-    it('provides native path strings', function () {
-      firebase.utils.FilePath.should.be.an.Object();
+  describe('modular', function () {
+    it('provides native path strings via FilePath export', function () {
+      const { FilePath } = modular;
+      FilePath.should.be.an.Object();
       if (Platform.ios) {
-        firebase.utils.FilePath.MAIN_BUNDLE.should.be.a.String();
+        FilePath.MAIN_BUNDLE.should.be.a.String();
       } else {
-        should.equal(firebase.utils.FilePath.MAIN_BUNDLE, null);
+        should.equal(FilePath.MAIN_BUNDLE, null);
       }
 
-      firebase.utils.FilePath.CACHES_DIRECTORY.should.be.a.String();
-      firebase.utils.FilePath.DOCUMENT_DIRECTORY.should.be.a.String();
+      FilePath.CACHES_DIRECTORY.should.be.a.String();
+      FilePath.DOCUMENT_DIRECTORY.should.be.a.String();
 
-      // Even on android it may be null, skip if so
-      if (Platform.android && firebase.utils.FilePath.EXTERNAL_DIRECTORY !== null) {
-        firebase.utils.FilePath.EXTERNAL_DIRECTORY.should.be.a.String();
+      if (Platform.android && FilePath.EXTERNAL_DIRECTORY !== null) {
+        FilePath.EXTERNAL_DIRECTORY.should.be.a.String();
       } else {
-        should.equal(firebase.utils.FilePath.EXTERNAL_DIRECTORY, null);
+        should.equal(FilePath.EXTERNAL_DIRECTORY, null);
       }
 
-      // Even on android it may be null, skip if so
-      if (Platform.android && firebase.utils.FilePath.EXTERNAL_STORAGE_DIRECTORY !== null) {
-        firebase.utils.FilePath.EXTERNAL_STORAGE_DIRECTORY.should.be.a.String();
+      if (Platform.android && FilePath.EXTERNAL_STORAGE_DIRECTORY !== null) {
+        FilePath.EXTERNAL_STORAGE_DIRECTORY.should.be.a.String();
       } else {
-        should.equal(firebase.utils.FilePath.EXTERNAL_STORAGE_DIRECTORY, null);
+        should.equal(FilePath.EXTERNAL_STORAGE_DIRECTORY, null);
       }
 
-      firebase.utils.FilePath.TEMP_DIRECTORY.should.be.a.String();
-      firebase.utils.FilePath.LIBRARY_DIRECTORY.should.be.a.String();
-      firebase.utils.FilePath.PICTURES_DIRECTORY.should.be.a.String();
-      firebase.utils.FilePath.MOVIES_DIRECTORY.should.be.a.String();
+      FilePath.TEMP_DIRECTORY.should.be.a.String();
+      FilePath.LIBRARY_DIRECTORY.should.be.a.String();
+      FilePath.PICTURES_DIRECTORY.should.be.a.String();
+      FilePath.MOVIES_DIRECTORY.should.be.a.String();
     });
   });
 });

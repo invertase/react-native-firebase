@@ -2,10 +2,325 @@
 title: Migrating to v25
 description: Migrate to React Native Firebase v25.
 previous: /migrating-to-v24
-next: /typescript
+next: /migrating-to-v26
 ---
 
+Version 25 completes the TypeScript alignment started in v24. Modular types across multiple packages now match the [firebase-js-sdk](https://firebase.google.com/docs/web/modular-upgrade) modular API as closely as possible. Runtime behavior is largely unchanged; **TypeScript consumers** and apps using the **modular API** are most affected.
+
+If you upgraded to v24 for Firestore only, see [Migrating to v24](/migrating-to-v24) first — Firestore breaking changes remain in v24.
+
+## Table of contents
+
+- [Why we made these changes](/migrating-to-v25#why-we-made-these-changes)
+- [Agent-assisted migration](/migrating-to-v25#agent-assisted-migration)
+- [Who is affected](/migrating-to-v25#who-is-affected)
+- [General pattern](/migrating-to-v25#general-pattern)
+- [Tooling & native SDKs](/migrating-to-v25#tooling--native-sdks)
+- [Cloud Storage](/migrating-to-v25#cloud-storage)
+- [Realtime Database](/migrating-to-v25#realtime-database)
+- [Remote Config](/migrating-to-v25#remote-config)
+- [Performance Monitoring](/migrating-to-v25#performance-monitoring)
+- [Installations](/migrating-to-v25#installations)
+- [App Check](/migrating-to-v25#app-check)
+- [Firebase Auth](/migrating-to-v25#firebase-auth)
+- [Cloud Messaging](/migrating-to-v25#cloud-messaging)
+- [Automated migration checklist](/migrating-to-v25#automated-migration-checklist)
+
+## Why we made these changes
+
+React Native Firebase aims to be a drop-in replacement for the [firebase-js-sdk](https://firebase.google.com/docs/web/setup) — with native extensions and performance where the platform allows. At the JavaScript level we have always tracked the modular API closely, but our TypeScript declarations had diverged: namespaces specific to React Native Firebase, instance-style typings, and helper names that did not match the SDK.
+
+v25 finishes aligning those types module by module. For you as a developer that means:
+
+- **Shared mental model** — code, examples, and AI assistance written for firebase-js-sdk modular APIs map directly to React Native Firebase.
+- **Safer refactors** — TypeScript catches incorrect imports and call shapes at compile time instead of at runtime.
+- **Easier cross-platform work** — the same typed modular surface works across web, React Native, and shared business logic.
+- **A clear path forward** — namespaced APIs remain for compatibility but modular root exports are the supported, typed source of truth.
+
+Most apps behave the same after updating package versions; the work is primarily import and type adjustments where TypeScript reports errors.
+
+## Agent-assisted migration
+
+This guide is written to be **complete enough for an automated first pass**. We recommend feeding this document to your coding agent, then asking it to analyze your codebase against each relevant section below and produce a concrete change list (or PR) for the packages you use. The [Automated migration checklist](/migrating-to-v25#automated-migration-checklist) at the end is structured for that workflow.
+
+## Who is affected
+
+| You use…                                                      | Likely impact                                                                        |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| TypeScript + modular imports (`getX()`, `ref()`, etc.)        | **High** — update imports and call patterns per package sections below               |
+| TypeScript + namespaced API only (`firebase.storage().ref()`) | **Low–medium** — namespaced APIs remain; some types are deprecated or stricter       |
+| JavaScript only, no type checking                             | **Low** — runtime is mostly compatible; deprecated APIs still work but emit warnings |
+
+## General pattern
+
+Across v25 package migrations:
+
+1. Import **modular types and functions from the package root**, not from `Firebase*Types` namespaces.
+2. Prefer **free functions** (`getToken(appCheck)`, `trace(perf, name)`) over instance methods on service objects.
+3. `Firebase*Types` namespaces remain for namespaced compatibility but are **deprecated** for new code.
+4. Namespaced APIs (`firebase.auth()`, `storage()`) still work; modular is the typed source of truth.
+
+# Tooling & native SDKs
+
+**Commit:** `c8c1fc105` (SDK bump)
+
+| Change                                                    | Who            | Action                                      |
+| --------------------------------------------------------- | -------------- | ------------------------------------------- |
+| `firebase-ios-sdk` 12.12.0+ requires **Xcode 26.2+**      | iOS developers | Upgrade Xcode before building v25           |
+| `firebase-android-sdk` 34.12.0, `firebase-js-sdk` 12.12.0 | All            | Update lockfiles / pods as usual on upgrade |
+
+# Cloud Storage
+
+**PR:** [#8824](https://github.com/invertase/react-native-firebase/pull/8824)
+
+Modular Storage types now match firebase-js-sdk. The namespaced API (`firebase.storage()`, `FirebaseStorageTypes`) is preserved separately and deprecated for new code.
+
+## Type & export changes
+
+| Before (v24 modular / types)                                          | Now (v25)                                                                    |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Instance methods on `Storage` / `StorageReference` in modular typings | Use root-level functions: `ref()`, `uploadBytes()`, `getDownloadURL()`, etc. |
+| `refFromURL(storage, url)`                                            | `ref(storage, url)` — `ref()` accepts `gs://` and `https://` URLs            |
+| `child(ref, path)`                                                    | `ref(ref, path)`                                                             |
+| Modular `toString(ref)` helper                                        | `ref.toString()` on the reference                                            |
+| `storage.statics.StringFormat`, `TaskEvent`, `TaskState`              | Import `StringFormat`, `TaskEvent`, `TaskState` from package root            |
+| `md5hash` in metadata                                                 | `md5Hash` (firebase-js-sdk spelling)                                         |
+| Generic `Error` in task callbacks                                     | `NativeFirebaseError`                                                        |
+| `ListOptions.pageToken` required `string`                             | `string \| null` (nullable, matching firebase-js-sdk)                        |
+
+## Example: modular references and uploads
+
+```js
+// Previously
+import { getStorage, refFromURL, child } from '@react-native-firebase/storage';
+
+const storage = getStorage();
+const fileRef = child(refFromURL(storage, 'gs://bucket/path/file.jpg'), 'thumb.jpg');
+await fileRef.putFile(localPath);
+```
+
+```js
+// Now
+import { getStorage, ref, putFile } from '@react-native-firebase/storage';
+
+const storage = getStorage();
+const fileRef = ref(ref(storage, 'gs://bucket/path/file.jpg'), 'thumb.jpg');
+await putFile(fileRef, localPath);
+```
+
+## Example: types and task constants
+
+```js
+// Previously
+import { getStorage, FirebaseStorageTypes } from '@react-native-firebase/storage';
+
+function onState(snapshot: FirebaseStorageTypes.TaskSnapshot) {
+  if (snapshot.state === getStorage().app.storage().constructor.TaskState.RUNNING) { /* … */ }
+}
+```
+
+```js
+// Now
+import { getStorage, ref, uploadBytesResumable, TaskState, type TaskSnapshot } from '@react-native-firebase/storage';
+
+function onState(snapshot: TaskSnapshot) {
+  if (snapshot.state === TaskState.RUNNING) { /* … */ }
+}
+```
+
+**RN-only helpers** (`putFile`, `writeToFile`) remain exported from the package root for native file paths.
+
+# Realtime Database
+
+**PR:** [#8977](https://github.com/invertase/react-native-firebase/pull/8977)
+
+Modular RTDB types (`DatabaseReference`, `Query`, `DataSnapshot`, `OnDisconnect`, `QueryConstraint`) no longer expose namespaced instance-style methods in public typings. Use function-based modular helpers.
+
+## Breaking changes
+
+| Before                                                          | Now                                            |
+| --------------------------------------------------------------- | ---------------------------------------------- |
+| `import { ServerValue } from '@react-native-firebase/database'` | Use `serverTimestamp()` and `increment(delta)` |
+| `await goOffline(db)` / `.then()` on `goOffline`                | `goOffline(db)` returns `void`                 |
+| `await goOnline(db)`                                            | `goOnline(db)` returns `void`                  |
+| `getServerTime(db)` treated as async                            | Returns synchronous `Date`                     |
+
+## Example: server timestamps
+
+```js
+// Previously
+import { getDatabase, ref, set, ServerValue } from '@react-native-firebase/database';
+
+await set(ref(getDatabase(), 'posts/1'), { createdAt: ServerValue.TIMESTAMP });
+```
+
+```js
+// Now
+import { getDatabase, ref, set, serverTimestamp } from '@react-native-firebase/database';
+
+await set(ref(getDatabase(), 'posts/1'), { createdAt: serverTimestamp() });
+```
+
+## Example: modular query helpers
+
+```js
+// Previously — instance methods typed on modular references
+import {
+  getDatabase,
+  ref,
+  query,
+  orderByChild,
+  equalTo,
+  onValue,
+} from '@react-native-firebase/database';
+
+const db = getDatabase();
+const scoresRef = ref(db, 'scores');
+const q = query(scoresRef, orderByChild('score'), equalTo(100));
+onValue(q, snapshot => {
+  /* … */
+});
+```
+
+Function-based helpers (`query`, `orderByChild`, `onValue`, etc.) are unchanged at runtime; **TypeScript** may now require you to stop calling deprecated instance methods (`.orderByChild()`, `.on()`) on modular-typed references and use the modular functions instead.
+
+Namespaced `firebase.database.ServerValue` remains available.
+
+# Remote Config
+
+**PR:** [#8972](https://github.com/invertase/react-native-firebase/pull/8972)
+
+Modular Remote Config now uses firebase-js-sdk type names and instance properties.
+
+## Removed / renamed modular API
+
+| Removed (v24)                                                                                                                                               | Replacement (v25)                                                             |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `fetch(remoteConfig, expirationDurationSeconds?)`                                                                                                           | `fetchConfig(remoteConfig)`                                                   |
+| `setConfigSettings(remoteConfig, settings)`                                                                                                                 | `remoteConfig.settings = { minimumFetchIntervalMillis, fetchTimeoutMillis }`  |
+| `setDefaults(remoteConfig, defaults)`                                                                                                                       | `remoteConfig.defaultConfig = { … }`                                          |
+| `onConfigUpdated(remoteConfig, cb)`                                                                                                                         | `onConfigUpdate(remoteConfig, observer)`                                      |
+| `fetchTimeMillis()`, `settings()`, `lastFetchStatus()` helpers                                                                                              | Read `remoteConfig.fetchTimeMillis`, `.settings`, `.lastFetchStatus`          |
+| `RemoteConfigValue.value` / `.source` getters                                                                                                               | `value.asString()` (etc.) and `value.getSource()`                             |
+| Exports: `LastFetchStatus`, `ValueSource`, `ConfigSettings`, `ConfigDefaults`, `ConfigValue`, `ConfigValues`, `LastFetchStatusType`, `RemoteConfigLogLevel` | Use `FetchStatus`, `ValueSource`, `Value`, `RemoteConfigSettings`, `LogLevel` |
+
+**Settings field rename:** modular `RemoteConfigSettings` uses `fetchTimeoutMillis` (firebase-js-sdk), not the older React Native Firebase style `fetchTimeMillis` on the modular surface.
+
+## Example: fetch and read values
+
+```js
+// Previously
+import {
+  getRemoteConfig,
+  fetch,
+  activate,
+  getValue,
+  FirebaseRemoteConfigTypes,
+} from '@react-native-firebase/remote-config';
+
+const rc = getRemoteConfig();
+await fetch(rc, 3600);
+await activate(rc);
+const flag = getValue(rc, 'feature_enabled');
+console.log(flag.value, flag.source);
+```
+
+```js
+// Now
+import {
+  getRemoteConfig,
+  fetchConfig,
+  activate,
+  getValue,
+  type Value,
+} from '@react-native-firebase/remote-config';
+
+const rc = getRemoteConfig();
+rc.settings = {
+  minimumFetchIntervalMillis: 3600000,
+  fetchTimeoutMillis: 60000,
+};
+await fetchConfig(rc);
+await activate(rc);
+const flag: Value = getValue(rc, 'feature_enabled');
+console.log(flag.asString(), flag.getSource());
+```
+
+# Performance Monitoring
+
+**PR:** `4aedfe883` (TypeScript migration)
+
+## Breaking changes
+
+| Before                                                 | Now                                                                     |
+| ------------------------------------------------------ | ----------------------------------------------------------------------- |
+| `await initializePerformance(app, settings)`           | Returns `FirebasePerformance` **synchronously**                         |
+| `perf.newTrace(name)`, `perf.startTrace(name)`         | `trace(perf, name)`                                                     |
+| `perf.newHttpMetric(url, method)`                      | `httpMetric(perf, url, method)`                                         |
+| `perf.newScreenTrace(name)` / `startScreenTrace(name)` | `newScreenTrace(perf, name)` / `startScreenTrace(perf, name)`           |
+| `perf.setPerformanceCollectionEnabled(bool)`           | `perf.dataCollectionEnabled = bool`                                     |
+| `PerformanceSettings` React Native Firebase shape      | `{ dataCollectionEnabled?, instrumentationEnabled? }` (firebase-js-sdk) |
+| `trace.getAttribute(key)` typed as `string \| null`    | `string \| undefined`                                                   |
+
+**RN-only exports retained:** `httpMetric`, `newScreenTrace`, `startScreenTrace`, `HttpMethod`, `HttpMetric`, `ScreenTrace`.
+
+## Example
+
+```js
+// Previously
+import { getPerformance } from '@react-native-firebase/perf';
+
+const perf = getPerformance();
+const t = perf.newTrace('load_screen');
+await t.start();
+```
+
+```js
+// Now
+import { getPerformance, trace } from '@react-native-firebase/perf';
+
+const perf = getPerformance();
+const t = trace(perf, 'load_screen');
+await t.start();
+```
+
+# Installations
+
+**PR:** `739a4ca36` (TypeScript migration)
+
+Modular `getInstallations()` returns a firebase-js-sdk-shaped `Installations` object exposing only `app`. Use modular helper functions instead of instance methods.
+
+## Breaking changes
+
+| Before                     | Now                                                             |
+| -------------------------- | --------------------------------------------------------------- |
+| `installations.getId()`    | `getId(installations)`                                          |
+| `installations.getToken()` | `getToken(installations)`                                       |
+| `installations.delete()`   | `deleteInstallations(installations)` — argument is **required** |
+
+## Example
+
+```js
+// Previously
+import { getInstallations } from '@react-native-firebase/installations';
+
+const installations = getInstallations();
+const id = await installations.getId();
+```
+
+```js
+// Now
+import { getInstallations, getId } from '@react-native-firebase/installations';
+
+const installations = getInstallations();
+const id = await getId(installations);
+```
+
+Namespaced `firebase.installations()` / `FirebaseInstallationsTypes` remain available (deprecated).
+
 # App Check
+
+**PR:** [#8889](https://github.com/invertase/react-native-firebase/pull/8889)
 
 Version 25 aligns App Check's modular exports more closely with the Firebase JS SDK. If your app uses the modular API, import App Check types and helpers directly from `@react-native-firebase/app-check` instead of routing modular code through `FirebaseAppCheckTypes`.
 
@@ -13,6 +328,10 @@ The most common updates are:
 
 - Import modular helpers such as `initializeAppCheck`, `getToken`, `getLimitedUseToken`, `setTokenAutoRefreshEnabled`, and `onTokenChanged` from the package root.
 - Import modular types such as `AppCheck` and `AppCheckTokenResult` from the package root.
+- `FirebaseApp` is no longer exported from `@react-native-firebase/app-check`; import it from `@react-native-firebase/app`.
+- `FirebaseAppCheckTypes` is **type-only** — use `import type { FirebaseAppCheckTypes }`.
+- Modular `AppCheck` has no instance methods (matching firebase-js-sdk); use free functions.
+- `onTokenChanged` callback receives `AppCheckTokenResult`, not `AppCheckListenerResult`.
 - Keep using `ReactNativeFirebaseAppCheckProvider` on React Native when you need native provider selection for Android / Apple / web.
 
 ```js
@@ -84,3 +403,231 @@ await initializeAppCheck(getApp(), {
   isTokenAutoRefreshEnabled: true,
 });
 ```
+
+# Firebase Auth
+
+**PR:** [#8991](https://github.com/invertase/react-native-firebase/pull/8991)
+
+Version 25 aligns `@react-native-firebase/auth` TypeScript types with the firebase-js-sdk modular API. Runtime behavior is largely unchanged, but TypeScript consumers should review the following breaking changes.
+
+For maintainers and coding agents: the living triage matrix is [`okf-bundle/packages/auth/compare-types-triage.md`](https://github.com/invertase/react-native-firebase/blob/main/okf-bundle/packages/auth/compare-types-triage.md). Run `yarn compare:types auth` after public API edits and update `.github/scripts/compare-types/configs/auth.ts` when differences are intentional.
+
+## Platform matrix (read before changing Auth)
+
+| Context          | `Platform.OS`          | Backend                                 | Notes                                                                                                                    |
+| ---------------- | ---------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **iOS/Android**  | `ios`, `android`       | Native Firebase Auth SDK                | Native bridge types (`verifyPhoneNumber` listener, Multi-Factor Authentication overloads, async `isSignInWithEmailLink`) |
+| **Other/Hermes** | e.g. macOS, Windows RN | firebase-js-sdk via the auth web bridge | No DOM; MFA/TOTP covered by `tests/local-tests`                                                                          |
+| **Other/Web**    | browser embedding      | firebase-js-sdk                         | DOM APIs (reCAPTCHA, redirect) possible but not all delegated yet                                                        |
+
+When a symbol is documented as **iOS/Android only**, do not assume it throws or is missing on Other without checking the web bridge. When compare:types signatures match but runtime differs, document in triage / this guide (not necessarily in `differentShape`).
+
+## Modular types
+
+Import modular types directly from `@react-native-firebase/auth` instead of `FirebaseAuthTypes` where possible. The namespaced `FirebaseAuthTypes` namespace remains available but is deprecated.
+
+For auth errors, use `NativeFirebaseAuthError` (or the modular `AuthError` interface) instead of expecting a firebase-js-sdk `AuthError` class export — React Native Firebase does not re-export the firebase-js-sdk error class.
+
+## Removed modular export
+
+- `initializeRecaptchaConfig` is not exported. React Native Firebase uses native SDK Phone Auth verification rather than the browser reCAPTCHA bootstrap flow.
+
+## Deprecated provider helpers
+
+The following RN Firebase-specific provider classes are **deprecated in v25**. Use `OAuthProvider` instead (matching firebase-js-sdk):
+
+| Deprecated          | Replacement                                    |
+| ------------------- | ---------------------------------------------- |
+| `AppleAuthProvider` | `new OAuthProvider('apple.com')`               |
+| `OIDCAuthProvider`  | `new OAuthProvider('oidc.<your-provider-id>')` |
+| `OIDCProvider`      | `OAuthProvider`                                |
+
+```js
+// Previously (deprecated)
+import { AppleAuthProvider } from '@react-native-firebase/auth';
+const credential = AppleAuthProvider.credential(idToken, rawNonce);
+
+// Now
+import { OAuthProvider } from '@react-native-firebase/auth';
+const provider = new OAuthProvider('apple.com');
+const credential = provider.credential({ idToken, rawNonce });
+```
+
+```js
+// Previously (deprecated)
+import { OIDCAuthProvider } from '@react-native-firebase/auth';
+const credential = OIDCAuthProvider.credential('sample-provider', idToken, accessToken);
+
+// Now
+import { OAuthProvider } from '@react-native-firebase/auth';
+const provider = new OAuthProvider('oidc.sample-provider');
+const credential = provider.credential({ idToken, accessToken });
+```
+
+`AppleAuthProvider` and `OIDCAuthProvider` remain exported for compatibility but will be removed in a future major release.
+
+## Action code URL parsing
+
+`ActionCodeURL.parseLink` and `parseActionCodeURL` are implemented as **synchronous** pure URL parsers (matching firebase-js-sdk). They work on all platforms without calling the native bridge.
+
+## Signature changes
+
+- `isSignInWithEmailLink(auth, emailLink)` — returns `Promise<boolean>` on iOS/Android (native bridge). The firebase-js-sdk returns a synchronous `boolean`. Port web code with `await isSignInWithEmailLink(auth, link)` (or `.then(...)`).
+- `sendSignInLinkToEmail(auth, email, actionCodeSettings)` — `actionCodeSettings` is **required** in the modular API (matching firebase-js-sdk).
+- **Namespaced email link (react-native-firebase convenience):** `firebase.auth().sendSignInLinkToEmail(email, settings?)` still accepts omitted settings. Internally `_resolveActionCodeSettings()` defaults `url` from `app.options.authDomain` and `handleCodeInApp: true`. This is **not** platform-specific — only namespaced vs modular. Do not “fix” modular to match namespaced defaults.
+- `signInWithEmailLink(auth, email, emailLink?)` — the third argument is optional, matching firebase-js-sdk.
+- `signInWithRedirect` / `linkWithRedirect` — return `Promise<UserCredential>` on native because provider flows resolve immediately with credentials instead of following the browser redirect contract.
+- `reauthenticateWithRedirect` — returns `Promise<void>` on native while still updating `currentUser` after the native provider flow completes.
+- `connectAuthEmulator(auth, url, options?)` — when `options` is provided, `disableWarnings` is required (matching firebase-js-sdk).
+
+## Web APIs with matching types but different native runtime (iOS/Android)
+
+These modular helpers are exported for firebase-js-sdk API parity. **On iOS/Android they throw synchronously** (or are not applicable) because native SDKs do not implement the browser persistence, redirect, or reCAPTCHA phone-link flows. Types match the firebase-js-sdk; behavior does not — see API reference `@remarks` on each symbol.
+
+| API                             | Native iOS/Android behavior                                                                           |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `getRedirectResult`             | Always throws — use immediate `UserCredential` from `signInWithRedirect` / `linkWithRedirect` instead |
+| `setPersistence`                | Always throws — native SDKs manage auth state                                                         |
+| `useDeviceLanguage`             | Always throws                                                                                         |
+| `revokeAccessToken`             | Always throws                                                                                         |
+| `linkWithPhoneNumber`           | Always throws                                                                                         |
+| `reauthenticateWithPhoneNumber` | Always throws                                                                                         |
+
+`initializeAuth(app, deps?)` accepts the firebase-js-sdk `Dependencies` type for API parity but **ignores** persistence, popup redirect resolver, and error-map dependencies on iOS/Android (see below).
+
+## Phone Auth (iOS/Android)
+
+- `verifyPhoneNumber(auth, phoneNumber, ...)` — **iOS/Android only** native listener flow (force-resend, auto-verification callbacks). On Other platforms use `signInWithPhoneNumber` / firebase-js-sdk `PhoneAuthProvider` instead.
+- `signInWithPhoneNumber(auth, phoneNumber, appVerifier?)` — modular API no longer accepts the former `forceResend` fourth argument from React Native Firebase; use `verifyPhoneNumber` when you need the native listener / force-resend behavior.
+
+## Sign in with Apple
+
+- `revokeToken(auth, authorizationCode)` — React Native Firebase-specific modular helper for Apple's account-deletion requirement. **Supported on iOS** (native `revokeTokenWithAuthorizationCode`). Android and Web bridges resolve without performing revocation.
+- Do not confuse with `revokeAccessToken` — that is firebase-js-sdk web-only OAuth token revocation and always throws on iOS/Android.
+- The namespaced `firebase.auth().revokeToken(authorizationCode)` API remains available but is deprecated.
+
+## Auth instance surface
+
+- `auth.tenantId = 'tenant-id'` is now supported (delegates to `setTenantId`).
+- `auth.authStateReady()`, `auth.beforeAuthStateChanged(...)`, `auth.emulatorConfig`, and `auth.updateCurrentUser(user)` are implemented on the Auth instance.
+- **`auth.config` runtime split (types unified):** Declarations match firebase-js-sdk `Config`, but runtime differs by platform:
+  - **iOS/Android:** always `{}` — native SDKs do not expose the web config object.
+  - **Other (Hermes/Web):** firebase-js-sdk can populate `auth.config`, but React Native Firebase does not delegate this yet. Do not read `auth.config` on native expecting `apiKey` / `authDomain`; use `getCustomAuthDomain(auth)` on iOS/Android or app options on Other until delegation lands.
+
+## Credential providers
+
+Provider credential factories return firebase-js-sdk-shaped credential **classes** (`OAuthCredential`, not internal type aliases) with `toJSON()` and `static fromJSON()` where applicable.
+
+- `OAuthCredential.rawNonce` — used for Sign in with Apple and Facebook limited-login flows (matches firebase-js-sdk credential options). OAuth 1.0 token secrets (e.g. Twitter) use the inherited `AuthCredential.secret` bridge field instead of `rawNonce`.
+- RN Firebase credentials retain internal `token` / `secret` bridge fields required by the native modules (implementation detail; omitted from generated API reference).
+
+- `OAuthProvider.credentialFromResult` / `credentialFromError` and sibling provider helpers (`GoogleAuthProvider`, `GithubAuthProvider`, `TwitterAuthProvider`, `FacebookAuthProvider`, `PhoneAuthProvider`) **always return `null` at runtime today**. Declared types match firebase-js-sdk.
+  - **iOS/Android:** no native extraction planned — credentials are not recoverable from native provider results.
+  - **Other/Hermes:** not delegated (firebase-js-sdk credential recovery is tied to popup/redirect flows).
+  - **Other/Web:** future implementation should delegate to firebase-js-sdk in the auth web bridge — do not invest in native iOS/Android bridge work for this.
+- `GoogleAuthProvider.credential()` throws when both `idToken` and `accessToken` are absent (matching firebase-js-sdk).
+- `FacebookAuthProvider.credential(token)` matches firebase-js-sdk. React Native Firebase also exports `credential(token, secret)` for Facebook limited-login nonce behavior — an intentional extension documented in compare:types.
+
+## Multi-factor
+
+- Modular `multiFactor(user)` now uses the user's auth instance instead of always calling `getAuth()`, fixing secondary Firebase app usage.
+- Namespaced `firebase.auth().multiFactor(user)` now correctly validates that `user` is the `currentUser`.
+- `TotpSecret.generateQrCodeUrl()` returns `Promise<string>` on iOS/Android (native bridge). firebase-js-sdk returns a synchronous string.
+- `TotpSecret.openInOtpApp(qrCodeUrl)` — RN-only helper that deep-links into a One-Time Password authenticator app; not part of firebase-js-sdk.
+- **Other platforms:** MFA and TOTP flows are exercised in `tests/local-tests` via the firebase-js-sdk bridge — not a gap to “port” from native overloads.
+
+## Normalized modular return values
+
+Modular helpers normalize several return shapes toward firebase-js-sdk:
+
+- `UserCredential` includes top-level `providerId` and `operationType`.
+- When the native bridge returns federated metadata, `additionalUserInfo` is attached as an **enumerable** property on modular `UserCredential` objects. Core fields match firebase-js-sdk (`isNewUser`, `profile`, `providerId`, `username`); extra native keys are copied onto the object for backwards compatibility.
+- Use `getAdditionalUserInfo(userCredential)` for the canonical read (returns `AdditionalUserInfo | null`, same shape as firebase-js-sdk). For TypeScript when you need provider-specific native extras, cast to `AdditionalUserInfoNative` (`AdditionalUserInfo & Record<string, unknown>`).
+- `checkActionCode` normalizes `fromEmail` to `previousEmail` and coerces multi-factor info shapes.
+- `signInWithPhoneNumber` wraps confirmation results and validates `verificationId` presence.
+
+## `initializeAuth`
+
+`initializeAuth(app, deps?)` accepts the firebase-js-sdk `Dependencies` type for API parity, but persistence, popup redirect resolver, and error-map dependencies are ignored because native SDKs manage auth state.
+
+## Namespaced type adjustments
+
+- `FirebaseAuthTypes.UserInfo` profile fields can be null.
+- `firebase.auth().config` is typed as `Record<string, never>` on the namespaced API (stricter than modular `auth.config`).
+
+# Cloud Messaging
+
+**PR:** [#9053](https://github.com/invertase/react-native-firebase/pull/9053)
+
+Notification **permission** APIs in `@react-native-firebase/messaging` are **deprecated** in v25. They are not Firebase-specific; dedicated libraries handle permissions more completely.
+
+| Deprecated API                                   | Use instead                                                                                                                                                                  |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `requestPermission(messaging, …)`                | [`react-native-permissions`](https://github.com/zoontek/react-native-permissions) or [`expo-notifications`](https://docs.expo.dev/versions/latest/sdk/notifications/) (Expo) |
+| `hasPermission(messaging)`                       | Same                                                                                                                                                                         |
+| `registerDeviceForRemoteMessages(messaging)`     | Same (platform setup)                                                                                                                                                        |
+| `isDeviceRegisteredForRemoteMessages(messaging)` | Same                                                                                                                                                                         |
+| `AuthorizationStatus` static on messaging        | Permission library equivalents                                                                                                                                               |
+
+These APIs still work at runtime but are marked `@deprecated` in TypeScript and documented for removal in a future major release. See [#6283](https://github.com/invertase/react-native-firebase/issues/6283).
+
+# Automated migration checklist
+
+Use this section when running scripted or agent-assisted upgrades from v24 → v25.
+
+## 1. Upgrade dependencies
+
+```bash
+# Bump all @react-native-firebase/* packages to v25 together (monorepo versions are aligned)
+yarn add @react-native-firebase/app@^25.0.0 …
+cd ios && pod install
+```
+
+Ensure **Xcode 26.2+** for iOS builds.
+
+## 2. Fix TypeScript by package
+
+For each `@react-native-firebase/<pkg>` in your imports:
+
+| Package         | Search for                                                        | Replace with                                                                |
+| --------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `storage`       | `refFromURL`, `child(`, `FirebaseStorageTypes`, `.statics.`       | `ref()`, root imports, modular functions                                    |
+| `database`      | `ServerValue`, `.orderByChild(`, `await goOffline`                | `serverTimestamp()`, `query`/`orderByChild` functions, sync `goOffline`     |
+| `remote-config` | `fetch(`, `setDefaults`, `setConfigSettings`, `.value`, `.source` | `fetchConfig`, `defaultConfig`/`settings` props, `asString()`/`getSource()` |
+| `perf`          | `.newTrace`, `.newHttpMetric`, `await initializePerformance`      | `trace()`, `httpMetric()`, sync `initializePerformance`                     |
+| `installations` | `.getId()`, `.getToken()`, `.delete()`                            | `getId()`, `getToken()`, `deleteInstallations()`                            |
+| `app-check`     | `appCheck().getToken()`, value import of `FirebaseAppCheckTypes`  | `initializeAppCheck` + `getToken()`, `import type`                          |
+| `auth`          | `FirebaseAuthTypes`, `AppleAuthProvider`, `OIDCAuthProvider`      | Root modular types, `OAuthProvider`                                         |
+| `messaging`     | `requestPermission`, `hasPermission`                              | `react-native-permissions` / `expo-notifications`                           |
+
+## 3. Validate
+
+```bash
+yarn compile          # root TypeScript compile
+yarn compare:types    # maintainers: per-package drift vs firebase-js-sdk
+yarn tests:jest packages/<pkg>/__tests__   # targeted tests for touched packages
+```
+
+## 4. Namespaced API users
+
+If you only use `firebase.storage()`, `firebase.auth()`, etc. and do not import modular types:
+
+- You may see **deprecation warnings** in IDE / `@deprecated` JSDoc.
+- Plan a gradual move to modular imports; namespaced removal is planned for a future major release.
+- Runtime behavior should remain compatible for most flows.
+
+## Related PRs (v25 breaking changes since v24.0.0)
+
+| Package                  | PR / commit                                                           |
+| ------------------------ | --------------------------------------------------------------------- |
+| Storage                  | [#8824](https://github.com/invertase/react-native-firebase/pull/8824) |
+| App Check                | [#8889](https://github.com/invertase/react-native-firebase/pull/8889) |
+| Remote Config            | [#8972](https://github.com/invertase/react-native-firebase/pull/8972) |
+| Realtime Database        | [#8977](https://github.com/invertase/react-native-firebase/pull/8977) |
+| Performance              | `4aedfe883`                                                           |
+| Installations            | `739a4ca36`                                                           |
+| Auth                     | [#8991](https://github.com/invertase/react-native-firebase/pull/8991) |
+| Messaging (deprecations) | [#9053](https://github.com/invertase/react-native-firebase/pull/9053) |
+| Native SDKs (Xcode)      | `c8c1fc105`                                                           |
+
+Packages migrated to TypeScript **without** public API breaks in v25: `@react-native-firebase/app-distribution` ([#8967](https://github.com/invertase/react-native-firebase/pull/8967)), `@react-native-firebase/ml` ([#9005](https://github.com/invertase/react-native-firebase/pull/9005)).

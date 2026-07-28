@@ -1,7 +1,6 @@
 ---
 title: App Check
 description: Installation and getting started with App Check.
-icon: //firebase.google.com/static/images/products/icons/build_app_check.svg
 next: /app-distribution/usage
 previous: /analytics/screen-tracking
 ---
@@ -39,6 +38,15 @@ You may find excluding the `i386` architecture via an addition to the `ios/Podfi
       aggregate_target.user_project.save
     end
 ```
+
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+**Platform notes:** Use `ReactNativeFirebaseAppCheckProvider` for native attestation (Device Check, App Attest, Play Integrity). firebase-js-sdk `ReCaptchaEnterpriseProvider` and `ReCaptchaV3Provider` are **web only**.
 
 # What does it do
 

@@ -106,24 +106,13 @@ struct {
   // if list or banner is true, ignore `alert` property
   if (banner || list) {
     if (banner) {
-      if (@available(iOS 14, *)) {
-        presentationOptions |= UNNotificationPresentationOptionBanner;
-      } else {
-        // for iOS 13 we need to set `alert`
-        presentationOptions |= UNNotificationPresentationOptionAlert;
-      }
+      presentationOptions |= UNNotificationPresentationOptionBanner;
     }
 
     if (list) {
-      if (@available(iOS 14, *)) {
-        presentationOptions |= UNNotificationPresentationOptionList;
-      } else {
-        // for iOS 13 we need to set `alert`
-        presentationOptions |= UNNotificationPresentationOptionAlert;
-      }
+      presentationOptions |= UNNotificationPresentationOptionList;
     }
   } else if (alert) {
-    // TODO: Remove `alert` once iOS 14 becomes the minimum deployment target
     presentationOptions |= UNNotificationPresentationOptionAlert;
   }
 
@@ -139,22 +128,32 @@ struct {
     }
   }
 
-  if (_originalDelegate != nil && originalDelegateRespondsTo.willPresentNotification) {
-    [_originalDelegate userNotificationCenter:center
-                      willPresentNotification:notification
-                        withCompletionHandler:completionHandler];
+  // completionHandler must be invoked exactly once. If the original delegate
+  // implements willPresentNotification, defer to it entirely - it owns the
+  // completionHandler contract (and may call it asynchronously). Only fall
+  // back to our own presentationOptions when there is no original delegate
+  // to hand off to.
+  //
+  // _originalDelegate is weak, so it is captured into a strong local first -
+  // otherwise it could be deallocated between the nil-check and the message
+  // send (turning the send into a no-op) and completionHandler would never
+  // be called at all.
+  id<UNUserNotificationCenterDelegate> strongOriginalDelegate = _originalDelegate;
+  if (strongOriginalDelegate != nil && originalDelegateRespondsTo.willPresentNotification) {
+    [strongOriginalDelegate userNotificationCenter:center
+                           willPresentNotification:notification
+                             withCompletionHandler:completionHandler];
+  } else {
+    completionHandler(presentationOptions);
   }
-
-  // Don't consume completionHandler before the _originalDelegate has been
-  // processed
-  completionHandler(presentationOptions);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     didReceiveNotificationResponse:(UNNotificationResponse *)response
              withCompletionHandler:(void (^)(void))completionHandler {
   NSDictionary *remoteNotification = response.notification.request.content.userInfo;
-  if (remoteNotification[@"gcm.message_id"]) {
+  if ([[response actionIdentifier] isEqualToString:UNNotificationDefaultActionIdentifier] &&
+      remoteNotification[@"gcm.message_id"]) {
     NSDictionary *notificationDict =
         [RNFBMessagingSerializer remoteMessageUserInfoToDict:remoteNotification];
     [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_notification_opened"
@@ -162,10 +161,13 @@ struct {
     _initialNotification = notificationDict;
   }
 
-  if (_originalDelegate != nil && originalDelegateRespondsTo.didReceiveNotificationResponse) {
-    [_originalDelegate userNotificationCenter:center
-               didReceiveNotificationResponse:response
-                        withCompletionHandler:completionHandler];
+  // _originalDelegate is weak — capture strong local before nil-check + message
+  // (same race as willPresent; otherwise completionHandler may never run).
+  id<UNUserNotificationCenterDelegate> strongOriginalDelegate = _originalDelegate;
+  if (strongOriginalDelegate != nil && originalDelegateRespondsTo.didReceiveNotificationResponse) {
+    [strongOriginalDelegate userNotificationCenter:center
+                    didReceiveNotificationResponse:response
+                             withCompletionHandler:completionHandler];
   } else {
     completionHandler();
   }
@@ -173,8 +175,9 @@ struct {
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     openSettingsForNotification:(nullable UNNotification *)notification {
-  if (_originalDelegate != nil && originalDelegateRespondsTo.openSettingsForNotification) {
-    [_originalDelegate userNotificationCenter:center openSettingsForNotification:notification];
+  id<UNUserNotificationCenterDelegate> strongOriginalDelegate = _originalDelegate;
+  if (strongOriginalDelegate != nil && originalDelegateRespondsTo.openSettingsForNotification) {
+    [strongOriginalDelegate userNotificationCenter:center openSettingsForNotification:notification];
   } else {
     NSDictionary *notificationDict = [RNFBMessagingSerializer notificationToDict:notification];
     [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_settings_for_notification_opened"

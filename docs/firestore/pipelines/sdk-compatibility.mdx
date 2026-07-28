@@ -1,0 +1,50 @@
+---
+title: Pipeline SDK compatibility
+description: How React Native Firebase Firestore pipelines compare to the firebase-js-sdk pipelines API.
+next: /functions/usage
+previous: /firestore/pipelines/subcollection
+---
+
+React Native Firebase aims to be a **drop-in replacement** for the [firebase-js-sdk Firestore pipelines module](https://firebase.google.com/docs/reference/js/firestore_pipelines) on React Native targets. Most expression helpers, stage builders, and types match the JS SDK. This page summarizes deliberate gaps so you can plan migrations from web samples.
+
+CI enforces parity through `yarn compare:types` and the `firestore-pipelines` allowlist in the repository. When a gap closes, the allowlist entry is removed and this page should be updated.
+
+# Summary
+
+| Category                                                                    | Status                                   |
+| --------------------------------------------------------------------------- | ---------------------------------------- |
+| Core pipeline builder (`pipeline()`, stages, `execute()`)                   | **Supported** on Android, iOS, and macOS |
+| Expression helpers (aggregates, strings, arrays, maps, timestamps, vectors) | **Supported** on Android, iOS, and macOS |
+| Current firebase-js-sdk pipeline exports                                    | **Supported** through compare-types      |
+
+# Not yet available in React Native Firebase
+
+All pipeline exports currently tracked in the compare-types allowlist are supported. Check release notes when upgrading for newly added firebase-js-sdk pipeline APIs.
+
+## Platform notes
+
+Compare-types parity does not guarantee identical runtime behavior on every target. The `parent()` expression helper may be unavailable on web and on macOS when pipelines execute through the firebase-js-sdk interop path (**P-036**). Pipelines that use the search stage with text matching need a deployed composite search index on the Enterprise `pipelines-e2e` database used in CI (**P-035**); native iOS and Android e2e cover search after that index is deployed. The `geoDistance` helper is covered for types and serialization; dedicated runtime e2e is deferred because native platforms lower it through the generic function path. Maintainer drift IDs and e2e expectations are tracked in [`okf-bundle/packages/firestore/pipeline-platform-parity.md`](https://github.com/invertase/react-native-firebase/blob/main/okf-bundle/packages/firestore/pipeline-platform-parity.md).
+
+If you depend on one of these, follow [Firebase pipeline release notes](https://firebase.google.com/support/release-notes/js) and React Native Firebase changelogs, or open a feature request with your use case.
+
+# Type-shape parity
+
+The current `firestore-pipelines` compare-types config has no `differentShape` entries. `StageOptions`, `TimeGranularity`, `isType`, and `timestampDiff` now match the firebase-js-sdk declarations, including the lowercase `isoweek` and `isoyear` time granularity literals.
+
+# Platform execution matrix
+
+| Platform | Execution backend               | Pipeline database  |
+| -------- | ------------------------------- | ------------------ |
+| Android  | Native Android Firestore SDK    | Enterprise (cloud) |
+| iOS      | Native iOS Firestore SDK        | Enterprise (cloud) |
+| macOS    | firebase-js-sdk via web interop | Enterprise (cloud) |
+
+All platforms require network access to your Firestore Enterprise database for pipeline `execute()`. The local Firestore emulator is not a supported target for pipeline development today.
+
+# Staying up to date
+
+- Upstream API reference: [firebase-js-sdk `firestore/pipelines`](https://firebase.google.com/docs/reference/js/firestore_pipelines)
+- RNFB import path: `@react-native-firebase/firestore/pipelines`
+- Repository parity config: `.github/scripts/compare-types/configs/firestore-pipelines.ts`
+
+When a row in the tables above is resolved in a release, it will be removed from the compare-types allowlist. Check release notes and this page after upgrading `@react-native-firebase/firestore`.

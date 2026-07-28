@@ -17,11 +17,15 @@
 #       for freezing a release-notes snapshot in CI artifacts).
 #   ./scripts/update-firebase-sdk-versions.sh --apply [same fetch options as above]
 #       Phase 1: extract versions (printed as sorted KEY=value lines).
-#       Phase 2: write them into packages/app/package.json, docs, Gradle files, and
-#       Jest plugin snapshots; run yarn; run yarn tests:ios:pod:install.
-#       If any native SDK / Android plugin / App Distribution API version changed,
-#       run yarn test:full (expects full Xcode/Android/macOS toolchains; exits 1 on failure).
-#       Set RNF_SDK_UPGRADE_SKIP_TEST_FULL=1 to skip the final yarn test:full (patches + yarn + pods only).
+#       Phase 2: write them into packages/app/package.json, root/tests
+#       package.json, .yarnrc.yml (firebase + @firebase/* age-gate preapprovals),
+#       docs (.mdx), Gradle files, and Jest plugin snapshots; run yarn; run
+#       yarn tests:ios:pod:install.
+#       If the JS or any native SDK / Android plugin / App Distribution API
+#       version changed, run yarn compare:types and yarn test:full (expects full
+#       Xcode/Android/macOS toolchains; exits 1 on failure).
+#       Set RNF_SDK_UPGRADE_SKIP_TEST_FULL=1 to skip compare:types and test:full
+#       (patches + yarn + pods only).
 
 set -euo pipefail
 
@@ -34,9 +38,21 @@ CURL=(curl -fsSL --retry 3 --connect-timeout 30)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+DOC_PATCH_TARGETS=(
+  docs/index.mdx
+  docs/app-distribution/usage/index.mdx
+  docs/perf/usage/index.mdx
+  docs/crashlytics/android-setup.mdx
+)
+
 die() {
   echo "update-firebase-sdk-versions: $*" >&2
   exit 1
+}
+
+require_file() {
+  local file="$1"
+  [[ -f "$file" ]] || die "expected file missing: $file"
 }
 
 fetch_or_read() {
@@ -97,7 +113,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     -h | --help)
-      sed -n '1,35p' "$0"
+      sed -n '1,40p' "$0"
       exit 0
       ;;
     *)
@@ -178,13 +194,14 @@ command -v perl >/dev/null || die "perl is required for --apply"
 
 cd "$REPO_ROOT"
 
-read_old_native_versions() {
+read_old_versions() {
   node <<'NODE'
 const fs = require('fs');
 const j = JSON.parse(fs.readFileSync('packages/app/package.json', 'utf8'));
 const a = j.sdkVersions.android;
 process.stdout.write(
   [
+    j.dependencies.firebase,
     j.sdkVersions.ios.firebase,
     a.firebase,
     a.firebaseCrashlyticsGradle,
@@ -196,17 +213,19 @@ process.stdout.write(
 NODE
 }
 
-OLD_TSV="$(read_old_native_versions)"
-[[ -n "$OLD_TSV" ]] || die "could not read current native versions from packages/app/package.json"
-IFS=$'\t' read -r OLD_IOS OLD_BOM OLD_CRASH OLD_PERF OLD_GMS OLD_APPDIST_G <<<"$OLD_TSV" ||
-  die "could not parse sdkVersions TSV from packages/app/package.json"
+OLD_TSV="$(read_old_versions)"
+[[ -n "$OLD_TSV" ]] || die "could not read current versions from packages/app/package.json"
+IFS=$'\t' read -r OLD_JS OLD_IOS OLD_BOM OLD_CRASH OLD_PERF OLD_GMS OLD_APPDIST_G <<<"$OLD_TSV" ||
+  die "could not parse version TSV from packages/app/package.json"
 
 OLD_APPDIST_API="$(
   perl -ne "print \$1 and exit if /firebase-appdistribution-api:([^']+)/" \
     packages/app-distribution/android/build.gradle
 )"
 
+js_changed=false
 native_changed=false
+[[ "$OLD_JS" != "$FIREBASE_JS_SDK" ]] && js_changed=true
 [[ "$OLD_IOS" != "$FIREBASE_IOS_SDK" ]] && native_changed=true
 [[ "$OLD_BOM" != "$FIREBASE_ANDROID_BOM" ]] && native_changed=true
 [[ "$OLD_CRASH" != "$FIREBASE_ANDROID_CRASHLYTICS_GRADLE" ]] && native_changed=true
@@ -224,17 +243,106 @@ echo "update-firebase-sdk-versions: applying versions under $REPO_ROOT" >&2
 
 node <<'NODE'
 const fs = require('fs');
-const path = 'packages/app/package.json';
-const j = JSON.parse(fs.readFileSync(path, 'utf8'));
 const e = process.env;
-j.dependencies.firebase = e.FIREBASE_JS_SDK;
-j.sdkVersions.ios.firebase = e.FIREBASE_IOS_SDK;
-j.sdkVersions.android.firebase = e.FIREBASE_ANDROID_BOM;
-j.sdkVersions.android.firebaseCrashlyticsGradle = e.FIREBASE_ANDROID_CRASHLYTICS_GRADLE;
-j.sdkVersions.android.firebasePerfGradle = e.FIREBASE_ANDROID_PERF_PLUGIN;
-j.sdkVersions.android.gmsGoogleServicesGradle = e.FIREBASE_ANDROID_GOOGLE_SERVICES;
-j.sdkVersions.android.firebaseAppDistributionGradle = e.FIREBASE_ANDROID_APPDISTRIBUTION_GRADLE;
-fs.writeFileSync(path, JSON.stringify(j, null, 2) + '\n');
+const jsRange = `^${e.FIREBASE_JS_SDK}`;
+
+function patchPackageJson(path, { exact = false } = {}) {
+  const j = JSON.parse(fs.readFileSync(path, 'utf8'));
+  if (j.dependencies?.firebase) {
+    j.dependencies.firebase = exact ? e.FIREBASE_JS_SDK : jsRange;
+  }
+  if (j.devDependencies?.firebase) {
+    j.devDependencies.firebase = exact ? e.FIREBASE_JS_SDK : jsRange;
+  }
+  fs.writeFileSync(path, JSON.stringify(j, null, 2) + '\n');
+}
+
+const app = JSON.parse(fs.readFileSync('packages/app/package.json', 'utf8'));
+app.dependencies.firebase = e.FIREBASE_JS_SDK;
+app.sdkVersions.ios.firebase = e.FIREBASE_IOS_SDK;
+app.sdkVersions.android.firebase = e.FIREBASE_ANDROID_BOM;
+app.sdkVersions.android.firebaseCrashlyticsGradle = e.FIREBASE_ANDROID_CRASHLYTICS_GRADLE;
+app.sdkVersions.android.firebasePerfGradle = e.FIREBASE_ANDROID_PERF_PLUGIN;
+app.sdkVersions.android.gmsGoogleServicesGradle = e.FIREBASE_ANDROID_GOOGLE_SERVICES;
+app.sdkVersions.android.firebaseAppDistributionGradle =
+  e.FIREBASE_ANDROID_APPDISTRIBUTION_GRADLE;
+fs.writeFileSync('packages/app/package.json', JSON.stringify(app, null, 2) + '\n');
+
+for (const path of ['package.json', 'tests/package.json']) {
+  patchPackageJson(path);
+}
+NODE
+
+echo "update-firebase-sdk-versions: refreshing .yarnrc.yml npmPreapprovedPackages for firebase ${FIREBASE_JS_SDK}" >&2
+FIREBASE_JS_SDK="$FIREBASE_JS_SDK" node <<'NODE'
+const fs = require('fs');
+const https = require('https');
+const version = process.env.FIREBASE_JS_SDK;
+
+function fetchJson(url) {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, res => {
+        if (res.statusCode !== 200) {
+          reject(new Error(`GET ${url} failed: HTTP ${res.statusCode}`));
+          res.resume();
+          return;
+        }
+        let body = '';
+        res.setEncoding('utf8');
+        res.on('data', chunk => {
+          body += chunk;
+        });
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(body));
+          } catch (err) {
+            reject(err);
+          }
+        });
+      })
+      .on('error', reject);
+  });
+}
+
+(async () => {
+  const meta = await fetchJson(`https://registry.npmjs.org/firebase/${version}`);
+  const deps = meta.dependencies ?? {};
+  const preapproved = [`firebase@${version}`];
+  for (const [name, depVersion] of Object.entries(deps)) {
+    if (!name.startsWith('@firebase/')) {
+      continue;
+    }
+    const cleaned = String(depVersion).replace(/^npm:/, '');
+    preapproved.push(`${name}@${cleaned}`);
+  }
+  preapproved.push('@react-native-firebase/*');
+  preapproved.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
+
+  const yarnrcPath = '.yarnrc.yml';
+  const lines = fs.readFileSync(yarnrcPath, 'utf8').split('\n');
+  const start = lines.findIndex(line => line === 'npmPreapprovedPackages:');
+  if (start === -1) {
+    throw new Error('npmPreapprovedPackages: not found in .yarnrc.yml');
+  }
+
+  let end = start + 1;
+  while (end < lines.length && /^  - /.test(lines[end])) {
+    end += 1;
+  }
+
+  const rendered = preapproved.map((entry, index) => {
+    const suffix =
+      entry.startsWith('firebase@') ? ' # If adopting recent firebase-js-sdk, specify directly here' : '';
+    return `  - '${entry}'${suffix}`;
+  });
+
+  const next = [...lines.slice(0, start + 1), ...rendered, ...lines.slice(end)];
+  fs.writeFileSync(yarnrcPath, next.join('\n'));
+})().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
 NODE
 
 patch_gradle_classpaths() {
@@ -262,6 +370,10 @@ perl -i -0777 -pe "do q{$tmp_ad}" packages/app-distribution/android/build.gradle
 rm -f "$tmp_ad"
 
 # Docs (user-facing snippets mirror tests/android/build.gradle and package.json overrides).
+for doc in "${DOC_PATCH_TARGETS[@]}"; do
+  require_file "$doc"
+done
+
 tmp_doc="$(mktemp "${TMPDIR:-/tmp}/rnfb-sdk-perl.XXXXXX")"
 cat >"$tmp_doc" <<'PERL_PATCH'
 s{(classpath 'com\.google\.gms:google-services:)([^']+)}{$1.$ENV{FIREBASE_ANDROID_GOOGLE_SERVICES}}ge;
@@ -269,28 +381,28 @@ s{(bom\s*:\s*")([^"]+)(")}{$1.$ENV{FIREBASE_ANDROID_BOM}.$3}ge;
 s{(\$FirebaseSDKVersion = ')([^']+)(')}{$1.$ENV{FIREBASE_IOS_SDK}.$3}ge;
 s{(FIREBASE_SDK_VERSION=)([0-9.]+)}{$1.$ENV{FIREBASE_IOS_SDK}}ge;
 PERL_PATCH
-perl -i -pe "do q{$tmp_doc}" docs/index.md
+perl -i -pe "do q{$tmp_doc}" docs/index.mdx
 rm -f "$tmp_doc"
 
 tmp_adoc="$(mktemp "${TMPDIR:-/tmp}/rnfb-sdk-perl.XXXXXX")"
 cat >"$tmp_adoc" <<'PERL_PATCH'
 s{(classpath 'com\.google\.firebase:firebase-appdistribution-gradle:)([^']+)}{$1.$ENV{FIREBASE_ANDROID_APPDISTRIBUTION_GRADLE}}ge;
 PERL_PATCH
-perl -i -pe "do q{$tmp_adoc}" docs/app-distribution/usage/index.md
+perl -i -pe "do q{$tmp_adoc}" docs/app-distribution/usage/index.mdx
 rm -f "$tmp_adoc"
 
 tmp_perf="$(mktemp "${TMPDIR:-/tmp}/rnfb-sdk-perl.XXXXXX")"
 cat >"$tmp_perf" <<'PERL_PATCH'
 s{(classpath 'com\.google\.firebase:perf-plugin:)([^']+)}{$1.$ENV{FIREBASE_ANDROID_PERF_PLUGIN}}ge;
 PERL_PATCH
-perl -i -pe "do q{$tmp_perf}" docs/perf/usage/index.md
+perl -i -pe "do q{$tmp_perf}" docs/perf/usage/index.mdx
 rm -f "$tmp_perf"
 
 tmp_crash="$(mktemp "${TMPDIR:-/tmp}/rnfb-sdk-perl.XXXXXX")"
 cat >"$tmp_crash" <<'PERL_PATCH'
 s{(classpath 'com\.google\.firebase:firebase-crashlytics-gradle:)([^']+)}{$1.$ENV{FIREBASE_ANDROID_CRASHLYTICS_GRADLE}}ge;
 PERL_PATCH
-perl -i -pe "do q{$tmp_crash}" docs/crashlytics/android-setup.md
+perl -i -pe "do q{$tmp_crash}" docs/crashlytics/android-setup.mdx
 rm -f "$tmp_crash"
 
 # Jest snapshots for Expo / config plugins (classpath lines must match sdkVersions).
@@ -328,13 +440,20 @@ yarn
 echo "update-firebase-sdk-versions: running yarn tests:ios:pod:install" >&2
 yarn tests:ios:pod:install
 
-if [[ "$native_changed" == true ]]; then
+sdk_changed=false
+[[ "$js_changed" == true || "$native_changed" == true ]] && sdk_changed=true
+
+if [[ "$sdk_changed" == true ]]; then
   if [[ -n "${RNF_SDK_UPGRADE_SKIP_TEST_FULL:-}" ]]; then
-    echo "update-firebase-sdk-versions: skipping yarn test:full (RNF_SDK_UPGRADE_SKIP_TEST_FULL is set)" >&2
+    echo "update-firebase-sdk-versions: skipping compare:types and yarn test:full (RNF_SDK_UPGRADE_SKIP_TEST_FULL is set)" >&2
   else
-    echo "update-firebase-sdk-versions: native SDK / Gradle / App Distribution API changed; running yarn test:full" >&2
+    if [[ "$js_changed" == true ]]; then
+      echo "update-firebase-sdk-versions: firebase-js-sdk changed; running yarn compare:types" >&2
+      yarn compare:types
+    fi
+    echo "update-firebase-sdk-versions: SDK versions changed; running yarn test:full" >&2
     yarn test:full
   fi
 else
-  echo "update-firebase-sdk-versions: no native version changes (JS-only or already current); skipping yarn test:full" >&2
+  echo "update-firebase-sdk-versions: versions already current; skipping compare:types and yarn test:full" >&2
 fi

@@ -24,23 +24,28 @@ import {
   ImagenGenerationConfig,
   ImagenInlineImage,
   RequestOptions,
+  SingleRequestOptions,
   ImagenModelParams,
   ImagenGenerationResponse,
   ImagenSafetySettings,
 } from '../types';
 import { AIModel } from './ai-model';
+import { mergeRequestOptions } from '../requests/request-options';
 
 /**
  * Class for Imagen model APIs.
  *
  * This class provides methods for generating images using the Imagen model.
  *
+ * @deprecated Imagen models are deprecated. Use {@link getGenerativeModel} with a Gemini image
+ * model such as `gemini-3.1-flash-lite-image` instead.
+ *
  * @example
  * ```javascript
  * const imagen = new ImagenModel(
  *   ai,
  *   {
- *     model: 'imagen-3.0-generate-002'
+ *     model: 'imagen-3.0-generate-002' // legacy; prefer gemini-3.1-flash-lite-image
  *   }
  * );
  *
@@ -101,7 +106,10 @@ export class ImagenModel extends AIModel {
    *
    * @beta
    */
-  async generateImages(prompt: string): Promise<ImagenGenerationResponse<ImagenInlineImage>> {
+  async generateImages(
+    prompt: string,
+    singleRequestOptions?: SingleRequestOptions,
+  ): Promise<ImagenGenerationResponse<ImagenInlineImage>> {
     const body = createPredictRequestBody(prompt, {
       ...this.generationConfig,
       ...this.safetySettings,
@@ -112,7 +120,7 @@ export class ImagenModel extends AIModel {
         task: Task.PREDICT,
         apiSettings: this._apiSettings,
         stream: false,
-        requestOptions: this.requestOptions,
+        requestOptions: mergeRequestOptions(this.requestOptions, singleRequestOptions),
       },
       JSON.stringify(body),
     );
@@ -141,6 +149,7 @@ export class ImagenModel extends AIModel {
   async generateImagesGCS(
     prompt: string,
     gcsURI: string,
+    singleRequestOptions?: SingleRequestOptions,
   ): Promise<ImagenGenerationResponse<ImagenGCSImage>> {
     const body = createPredictRequestBody(prompt, {
       gcsURI,
@@ -153,7 +162,7 @@ export class ImagenModel extends AIModel {
         task: Task.PREDICT,
         apiSettings: this._apiSettings,
         stream: false,
-        requestOptions: this.requestOptions,
+        requestOptions: mergeRequestOptions(this.requestOptions, singleRequestOptions),
       },
       JSON.stringify(body),
     );

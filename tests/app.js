@@ -23,6 +23,13 @@ import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
 
 import { TestComponents } from './local-tests';
 
+let harnessOverrides = {};
+try {
+  harnessOverrides = require('./harness.overrides.js');
+} catch (e) {
+  // Optional local overrides — see harness.overrides.example.js
+}
+
 const platformSupportedModules = [];
 
 if (Platform.other) {
@@ -56,7 +63,13 @@ if (!Platform.other) {
   platformSupportedModules.push('appCheck');
   platformSupportedModules.push('appDistribution');
   platformSupportedModules.push('ml');
+  platformSupportedModules.push('phoneNumberVerification');
   platformSupportedModules.push('ai');
+}
+if (Array.isArray(harnessOverrides.modules) && harnessOverrides.modules.length) {
+  const allowed = new Set(harnessOverrides.modules);
+  const filtered = platformSupportedModules.filter(module => allowed.has(module));
+  platformSupportedModules.splice(0, platformSupportedModules.length, ...filtered);
 }
 // Registering an error handler that always throw unhandled exceptions
 // This is to enable Jet to exit on uncaught errors
@@ -230,6 +243,14 @@ function loadTests(_) {
       );
       remoteConfigTests.keys().forEach(remoteConfigTests);
     }
+    if (platformSupportedModules.includes('phoneNumberVerification')) {
+      const pnvTests = require.context(
+        '../packages/phone-number-verification/e2e',
+        true,
+        /\.e2e\.js$/,
+      );
+      pnvTests.keys().forEach(pnvTests);
+    }
     if (platformSupportedModules.includes('ai')) {
       const aiTests = require.context('../packages/ai/e2e', true, /\.e2e\.js$/);
       aiTests.keys().forEach(aiTests);
@@ -238,6 +259,33 @@ function loadTests(_) {
       const storageTests = require.context('../packages/storage/e2e', true, /\.e2e\.js$/);
       storageTests.keys().forEach(storageTests);
     }
+
+    after(async function flushNativeCoverageProfile() {
+      if (Platform.OS !== 'ios' && Platform.OS !== 'android') {
+        return;
+      }
+
+      const { NativeModules } = require('react-native');
+      const coverageModule = NativeModules.RNFBTestingCoverage;
+      if (coverageModule?.flush) {
+        console.log(`[native-coverage] flushing ${Platform.OS} coverage from Jet after hook`);
+        try {
+          await coverageModule.flush();
+        } catch (error) {
+          if (error?.code === 'coverage_not_enabled') {
+            console.warn(
+              `[native-coverage] ${Platform.OS} coverage not enabled in this build; skipping flush`,
+            );
+          } else {
+            console.error(`[native-coverage] failed to flush ${Platform.OS} coverage:`, error);
+          }
+        }
+      } else {
+        console.warn(
+          '[native-coverage] RNFBTestingCoverage native module not available; skipping flush',
+        );
+      }
+    });
   });
 }
 

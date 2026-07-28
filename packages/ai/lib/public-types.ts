@@ -16,8 +16,8 @@
  */
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
+import type { Auth } from '@react-native-firebase/auth';
+import type { AppCheck } from '@react-native-firebase/app-check';
 import { Backend } from './backend';
 
 export * from './types';
@@ -40,8 +40,8 @@ export interface AIOptions {
    * Whether to use App Check limited use tokens. Defaults to false.
    */
   useLimitedUseAppCheckTokens?: boolean;
-  appCheck?: FirebaseAppCheckTypes.Module | null;
-  auth?: FirebaseAuthTypes.Module | null;
+  appCheck?: AppCheck | null;
+  auth?: Auth | null;
 }
 
 /**
@@ -90,8 +90,8 @@ export interface AI {
    * The {@link @firebase/app!FirebaseApp} this {@link AI} instance is associated with.
    */
   app: ReactNativeFirebase.FirebaseApp;
-  appCheck?: FirebaseAppCheckTypes.Module | null;
-  auth?: FirebaseAuthTypes.Module | null;
+  appCheck?: AppCheck | null;
+  auth?: Auth | null;
   /**
    * A {@link Backend} instance that specifies the configuration for the target backend,
    * either the Gemini Developer API (using {@link GoogleAIBackend}) or the

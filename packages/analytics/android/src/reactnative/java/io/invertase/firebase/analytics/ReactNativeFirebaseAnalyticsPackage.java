@@ -30,7 +30,7 @@ public class ReactNativeFirebaseAnalyticsPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebaseAnalyticsModule(reactContext));
+    modules.add(new NativeRNFBTurboAnalytics(reactContext));
     return modules;
   }
 

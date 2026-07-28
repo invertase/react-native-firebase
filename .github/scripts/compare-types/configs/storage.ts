@@ -26,13 +26,6 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   missingInRN: [
     {
-      name: 'StorageError',
-      reason:
-        'RN Firebase surfaces Storage failures as `NativeFirebaseError` instances from ' +
-        '`@react-native-firebase/app` rather than exporting the firebase-js-sdk web ' +
-        '`StorageError` subclass.',
-    },
-    {
       name: 'StorageErrorCode',
       reason:
         'RN Firebase does not export the firebase-js-sdk `StorageErrorCode` enum. ' +
@@ -45,18 +38,25 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   extraInRN: [
     {
+      name: 'SDK_VERSION',
+      reason:
+        'RN Firebase package version string exported from the modular entry point. The firebase-js-sdk does not export SDK_VERSION from @firebase/storage.',
+    },
+    {
       name: 'setMaxOperationRetryTime',
       reason:
         'RN Firebase-specific function for setting the maximum retry time for ' +
         'non-upload/download operations on Android and iOS. The firebase-js-sdk ' +
-        'exposes this as a writable property on the `FirebaseStorage` instance.',
+        'exposes this as a writable property on the `FirebaseStorage` instance. ' +
+        'Phase S hint: **Promise that could maybe sync-void+queue** (sync JS field + native setter; see PS-S2-gap).',
     },
     {
       name: 'setMaxUploadRetryTime',
       reason:
         'RN Firebase-specific function for setting the maximum upload retry time ' +
         'on Android and iOS. The firebase-js-sdk exposes this as a writable property ' +
-        'on the `FirebaseStorage` instance.',
+        'on the `FirebaseStorage` instance. ' +
+        'Phase S hint: **Promise that could maybe sync-void+queue** (see PS-S2-gap).',
     },
     {
       name: 'setMaxDownloadRetryTime',
@@ -129,21 +129,6 @@ const config: PackageConfig = {
         'firebase-js-sdk declares them as mutable properties.',
     },
     {
-      name: 'StorageObserver',
-      reason:
-        'The `error` callback parameter uses `NativeFirebaseError` instead of ' +
-        '`StorageError`. Both represent Firebase Storage errors but the RN type ' +
-        'extends the native bridge error structure.',
-    },
-    {
-      name: 'UploadTask',
-      reason:
-        'RN Firebase returns `Promise<boolean>` from `cancel()`, `pause()`, and ' +
-        '`resume()` to communicate asynchronously with the native iOS/Android modules, ' +
-        'whereas the firebase-js-sdk returns a synchronous `boolean`. Error callback ' +
-        'types also use `NativeFirebaseError` instead of `StorageError`.',
-    },
-    {
       name: 'EmulatorMockTokenOptions',
       reason:
         'The firebase-js-sdk `EmulatorMockTokenOptions` (from `@firebase/util`) is a ' +
@@ -165,20 +150,6 @@ const config: PackageConfig = {
         'Returns `NodeJS.ReadableStream` in RN Firebase instead of `ReadableStream` ' +
         '(the Web Streams API type). The Node.js stream type is used because the ' +
         'React Native environment does not have the Web Streams API.',
-    },
-    {
-      name: 'uploadBytes',
-      reason:
-        'Returns `Promise<TaskResult>` in RN Firebase instead of `Promise<UploadResult>`. ' +
-        '`TaskResult` is a type alias for `UploadResult`, so the runtime shape is identical; ' +
-        'the different name is for consistency with the native task system.',
-    },
-    {
-      name: 'uploadBytesResumable',
-      reason:
-        'Returns `Task` in RN Firebase instead of `UploadTask`. `Task` is a type alias ' +
-        'for `UploadTask`, so the runtime shape is identical; the different name is for ' +
-        'consistency with the native task system.',
     },
     {
       name: 'uploadString',
@@ -203,6 +174,22 @@ const config: PackageConfig = {
         'declares it as a const object and derives the type via ' +
         '`(typeof TaskState)[keyof typeof TaskState]`. The RN const additionally includes ' +
         "a `CANCELLED` alias (with double-L) for `'canceled'` for backwards compatibility.",
+    },
+    {
+      name: 'StorageObserver',
+      reason:
+        'RN Firebase types `error` as `((error: StorageError) => unknown) | null`, placing ' +
+        '`| null` on the optional callback property. The firebase-js-sdk `.d.ts` parses as ' +
+        '`(error: StorageError) => void | null`, binding `| null` to the return type; RN aligns ' +
+        'with other task callback signatures (`unknown` return) and correct optional-null placement.',
+    },
+    {
+      name: 'UploadTask',
+      reason:
+        'RN Firebase types the `on()` `complete` parameter as `CompleteFn | null`, matching ' +
+        'observer callback semantics and the `Subscribe` helper. The firebase-js-sdk public ' +
+        '`.d.ts` compare surface shows `Unsubscribe | null` for that parameter — an extraction ' +
+        'artifact, not the intended complete-handler type.',
     },
   ],
 };

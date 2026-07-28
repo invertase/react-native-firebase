@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-import { RequestOptions } from '../types';
+import { RequestOptions, SingleRequestOptions } from '../types';
 import { AI, ImagenGenerationResponse, ImagenInlineImage } from '../public-types';
 import { ApiSettings } from '../types/internal';
 import { makeRequest, ServerPromptTemplateTask } from '../requests/request';
+import { mergeRequestOptions } from '../requests/request-options';
 import { handlePredictResponse } from '../requests/response-helpers';
 import { initApiSettings } from './utils';
 
@@ -26,6 +27,9 @@ import { initApiSettings } from './utils';
  * Class for Imagen model APIs that execute on a server-side template.
  *
  * This class should only be instantiated with {@link getTemplateImagenModel}.
+ *
+ * @deprecated Imagen models are deprecated. Use {@link getGenerativeModel} with a Gemini image
+ * model such as `gemini-3.1-flash-lite-image` instead.
  *
  * @beta
  */
@@ -61,6 +65,7 @@ export class TemplateImagenModel {
   async generateImages(
     templateId: string,
     templateVariables: object,
+    singleRequestOptions?: SingleRequestOptions,
   ): Promise<ImagenGenerationResponse<ImagenInlineImage>> {
     const response = await makeRequest(
       {
@@ -68,7 +73,7 @@ export class TemplateImagenModel {
         templateId,
         apiSettings: this._apiSettings,
         stream: false,
-        requestOptions: this.requestOptions,
+        requestOptions: mergeRequestOptions(this.requestOptions, singleRequestOptions),
       },
       JSON.stringify({ inputs: templateVariables }),
     );

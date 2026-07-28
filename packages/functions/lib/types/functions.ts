@@ -80,7 +80,7 @@ export interface HttpsCallable<
 
 // ============ Error Code Types ============
 
-export type FunctionsErrorCode =
+export type FunctionsErrorCodeCore =
   | 'ok'
   | 'cancelled'
   | 'unknown'
@@ -97,7 +97,19 @@ export type FunctionsErrorCode =
   | 'internal'
   | 'unavailable'
   | 'data-loss'
-  | 'unauthenticated'
+  | 'unauthenticated';
+
+/**
+ * Standard Functions error code, including the `functions/` product prefix.
+ * @public
+ */
+export type FunctionsErrorCode = `functions/${FunctionsErrorCodeCore}`;
+
+/**
+ * Error codes returned by {@link HttpsError} at runtime (unprefixed, includes RN-specific codes).
+ */
+export type HttpsErrorCodeValue =
+  | FunctionsErrorCodeCore
   | 'unsupported-type'
   | 'failed-to-parse-wrapped-number';
 
@@ -124,7 +136,7 @@ export interface HttpsErrorCode {
 }
 
 export interface HttpsError extends Error {
-  readonly code: FunctionsErrorCode;
+  readonly code: HttpsErrorCodeValue;
   readonly details?: unknown;
 }
 
@@ -188,84 +200,5 @@ export interface FunctionsStatics {
 /**
  * FirebaseApp type with functions() method.
  * @deprecated Import FirebaseApp from '@react-native-firebase/app' instead.
- * The functions() method is added via module augmentation.
  */
 export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
-
-// ============ Module Augmentation ============
-
-/* eslint-disable @typescript-eslint/no-namespace */
-declare module '@react-native-firebase/app' {
-  namespace ReactNativeFirebase {
-    interface Module {
-      functions: FirebaseModuleWithStaticsAndApp<Functions, FunctionsStatics>;
-    }
-    interface FirebaseApp {
-      functions(regionOrCustomDomain?: string): Functions;
-    }
-  }
-}
-/* eslint-enable @typescript-eslint/no-namespace */
-
-// ============ Backwards Compatibility Namespace - to be removed with namespaced exports ============
-
-// Helper types to reference outer scope types within the namespace
-// These are needed because TypeScript can't directly alias types with the same name
-type _HttpsCallableResult<T> = HttpsCallableResult<T>;
-type _HttpsCallableStreamResult<ResponseData, StreamData> = HttpsCallableStreamResult<
-  ResponseData,
-  StreamData
->;
-type _HttpsCallable<RequestData, ResponseData, StreamData> = HttpsCallable<
-  RequestData,
-  ResponseData,
-  StreamData
->;
-type _HttpsCallableOptions = HttpsCallableOptions;
-type _HttpsCallableStreamOptions = HttpsCallableStreamOptions;
-type _HttpsError = HttpsError;
-type _HttpsErrorCode = HttpsErrorCode;
-
-/**
- * @deprecated Use the exported types directly instead.
- * FirebaseFunctionsTypes namespace is kept for backwards compatibility.
- */
-/* eslint-disable @typescript-eslint/no-namespace */
-export namespace FirebaseFunctionsTypes {
-  // Short name aliases referencing top-level types
-  export type ErrorCode = FunctionsErrorCode;
-  export type CallableResult<ResponseData = unknown> = HttpsCallableResult<ResponseData>;
-  export type CallableStreamResult<
-    ResponseData = unknown,
-    StreamData = unknown,
-  > = HttpsCallableStreamResult<ResponseData, StreamData>;
-  export type Callable<
-    RequestData = unknown,
-    ResponseData = unknown,
-    StreamData = unknown,
-  > = HttpsCallable<RequestData, ResponseData, StreamData>;
-  export type CallableOptions = HttpsCallableOptions;
-  export type CallableStreamOptions = HttpsCallableStreamOptions;
-  export type Error = HttpsError;
-  export type ErrorCodeMap = HttpsErrorCode;
-  export type Statics = FunctionsStatics;
-  export type Module = Functions;
-
-  // Https* aliases that reference the exported types above via helper types
-  // These provide backwards compatibility for code using FirebaseFunctionsTypes.HttpsCallableResult
-  export type HttpsCallableResult<T = unknown> = _HttpsCallableResult<T>;
-  export type HttpsCallableStreamResult<
-    ResponseData = unknown,
-    StreamData = unknown,
-  > = _HttpsCallableStreamResult<ResponseData, StreamData>;
-  export type HttpsCallable<
-    RequestData = unknown,
-    ResponseData = unknown,
-    StreamData = unknown,
-  > = _HttpsCallable<RequestData, ResponseData, StreamData>;
-  export type HttpsCallableOptions = _HttpsCallableOptions;
-  export type HttpsCallableStreamOptions = _HttpsCallableStreamOptions;
-  export type HttpsError = _HttpsError;
-  export type HttpsErrorCode = _HttpsErrorCode;
-}
-/* eslint-enable @typescript-eslint/no-namespace */

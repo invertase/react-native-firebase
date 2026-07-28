@@ -15,7 +15,7 @@
  *
  */
 
-import { isObject, createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
+import { isObject } from '@react-native-firebase/app/dist/module/common';
 import DocumentReference from './FirestoreDocumentReference';
 import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import type { DocumentSnapshotNativeData } from './FirestoreDocumentSnapshot';
@@ -89,13 +89,11 @@ export default class Transaction {
       .transactionGetDocument(this._meta.id, documentRef.path)
       .then(
         (data: unknown) =>
-          createDeprecationProxy(
-            new DocumentSnapshot(
-              this._firestore,
-              data as DocumentSnapshotNativeData,
-              documentRef.converter,
-            ),
-          ) as DocumentSnapshotType<AppModelType, DbModelType>,
+          new DocumentSnapshot(
+            this._firestore,
+            data as DocumentSnapshotNativeData,
+            documentRef.converter,
+          ) as unknown as DocumentSnapshotType<AppModelType, DbModelType>,
       );
   }
 

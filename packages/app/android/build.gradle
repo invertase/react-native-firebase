@@ -92,6 +92,17 @@ android {
   sourceSets {
     main {
       java.srcDirs = ['src/main/java', 'src/reactnative/java']
+      java.excludes = ['**/generated/jni/**']
+    }
+  }
+
+  testOptions {
+    unitTests {
+      includeAndroidResources = true
+      all {
+        // Robolectric needs resources / manifests from the library + RN deps.
+        systemProperty 'robolectric.logging.enabled', 'true'
+      }
     }
   }
 }
@@ -105,6 +116,10 @@ dependencies {
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-common"
   implementation "com.google.android.gms:play-services-auth:${ReactNative.ext.getVersion("play", "play-services-auth")}"
+
+  testImplementation "junit:junit:4.13.2"
+  testImplementation "org.robolectric:robolectric:4.14.1"
+  testImplementation "org.mockito:mockito-core:5.14.2"
 }
 
 def jvmVersion = Jvm.current().javaVersion?.majorVersion
@@ -132,12 +147,16 @@ def isNewArchitectureDisabled() {
   return project.hasProperty("newArchEnabled") && project.newArchEnabled != "true"
 }
 
-if (isNewArchitectureDisabled() && System.getenv('RNFB_SUPPRESS_NEW_ARCHITECTURE_WARNING') != 1) {
-  def ANSI_YELLOW = "\u001B[33m";
+if (isNewArchitectureDisabled()) {
+  def ANSI_RED = "\u001B[31m";
   def ANSI_RESET = "\u001B[0m";
 
-  println(ANSI_YELLOW + " [react-native-firebase] Legacy Architecture support is deprecated for all modules")
-  println(ANSI_YELLOW + " [react-native-firebase] New Architecture support is already required for some modules")
-  println(ANSI_YELLOW + " [react-native-firebase] all modules will require it in the future.")
-  println(ANSI_YELLOW + " [react-native-firebase] Suppress this with environment variable RNFB_SUPPRESS_NEW_ARCHITECTURE_WARNING=1" + ANSI_RESET)
+  println("\n\n\n")
+  println(ANSI_RED + "**************************************************************************************************************")
+  println("\n\n\n")
+  println("New Architecture support is required for @react-native-firebase/app")
+  println("\n\n\n")
+  println("**************************************************************************************************************" + ANSI_RESET)
+  println("\n\n\n")
+  System.exit(1)
 }

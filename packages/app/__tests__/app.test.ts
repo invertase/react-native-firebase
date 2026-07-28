@@ -1,6 +1,5 @@
 import { describe, expect, it, jest } from '@jest/globals';
-import { checkV9Deprecation } from '../lib/common/unitTestUtils';
-import firebase, {
+import {
   deleteApp,
   registerVersion,
   onLog,
@@ -20,6 +19,12 @@ describe('App', function () {
 
     it('`registerVersion` function is properly exposed to end user', function () {
       expect(registerVersion).toBeDefined();
+    });
+
+    it('`registerVersion` throws synchronously on react-native', function () {
+      expect(() => registerVersion('test-library', '1.0.0')).toThrow(
+        'registerVersion is only supported on Web',
+      );
     });
 
     it('`onLog` function is properly exposed to end user', function () {
@@ -67,59 +72,6 @@ describe('App', function () {
         // eslint-disable-next-line no-console
         console.info = origInfo;
       }
-    });
-  });
-
-  describe('`console.warn` only called for non-modular API', function () {
-    it('deleteApp', function () {
-      // this test has a slightly special setup
-      // @ts-ignore test
-      jest.spyOn(getApp(), '_deleteApp').mockImplementation(() => Promise.resolve(null));
-      checkV9Deprecation(
-        () => {}, // no modular replacement
-        () => getApp().delete(), // modular getApp(), then non-modular to check
-      );
-    });
-
-    it('getApps', function () {
-      checkV9Deprecation(
-        () => getApps(),
-        () => firebase.apps,
-      );
-    });
-
-    it('getApp', function () {
-      checkV9Deprecation(
-        () => getApp(),
-        () => firebase.app(),
-      );
-    });
-
-    it('setLogLevel', function () {
-      checkV9Deprecation(
-        () => setLogLevel('debug'),
-        () => firebase.setLogLevel('debug'),
-      );
-    });
-
-    it('FirebaseApp.toString()', function () {
-      checkV9Deprecation(
-        () => {}, // no modular replacement
-        () => getApp().toString(), // modular getApp(), then non-modular to check
-      );
-    });
-
-    it('FirebaseApp.extendApp()', function () {
-      checkV9Deprecation(
-        // no modular replacement for this one so no modular func to send in
-        () => {},
-        // modular getApp(), then non-modular to check
-        () => {
-          const app = getApp();
-          (app as any).extendApp({ some: 'property' });
-          return;
-        },
-      );
     });
   });
 

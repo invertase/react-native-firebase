@@ -15,8 +15,9 @@
  *
  */
 
-import { MODULAR_DEPRECATION_ARG } from './common';
-import type { ReactNativeFirebase, LogCallback, LogOptions } from './types/app';
+import type { ReactNativeFirebase, LogCallback, LogOptions, Utils } from './types/app';
+import { getUtils as getUtilsImpl } from './utils';
+import UtilsStatics from './utils/UtilsStatics';
 import {
   deleteApp as deleteAppCompat,
   getApp as getAppCompat,
@@ -27,36 +28,27 @@ import {
 } from './internal/registry/app';
 import { setUserLogHandler } from './internal/logger';
 import { version as sdkVersion } from './version';
-import { getReactNativeModule } from './internal/nativeModule';
-import { APP_NATIVE_MODULE } from './internal/constants';
-import type { RNFBAppModuleInterface } from './internal/NativeModules';
+import { getAppModule } from './internal/registry/nativeModule';
 /**
  * Renders this app unusable and frees the resources of all associated services.
  * @param app - The app to delete.
  * @returns Promise<void>
  */
 export function deleteApp(app: ReactNativeFirebase.FirebaseApp): Promise<void> {
-  return deleteAppCompat.call(
-    null,
-    app.name,
-    (app as any)._nativeInitialized,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return deleteAppCompat(app.name, (app as any)._nativeInitialized);
 }
 
 /**
  * Registers a library's name and version for platform logging purposes.
- * @param _libraryKeyOrName - library name or key.
- * @param _version - library version.
- * @param _variant - library variant. Optional.
- * @returns Promise<void>
+ *
+ * @remarks **Web only.** Always throws on React Native Firebase — native SDK version registration
+ * is handled by the Firebase iOS/Android SDKs.
  */
 export function registerVersion(
   _libraryKeyOrName: string,
   _version: string,
   _variant?: string,
-): Promise<void> {
+): void {
   throw new Error('registerVersion is only supported on Web');
 }
 
@@ -75,15 +67,16 @@ export function onLog(logCallback: LogCallback | null, options?: LogOptions): vo
  * @returns An array of all initialized Firebase apps.
  */
 export function getApps(): ReactNativeFirebase.FirebaseApp[] {
-  return getAppsCompat.call(
-    null,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return getAppsCompat();
 }
 
 /**
  * Initializes a Firebase app with the provided options and name.
+ *
+ * @remarks On React Native Firebase this is **async** (`Promise<FirebaseApp>`) because secondary
+ * app creation crosses the native bridge. The default app is still configured from native
+ * `GoogleService-Info.plist` / `google-services.json` at launch.
+ *
  * @param options - Options to configure the services used in the app.
  * @param configOrName - The optional name of the app, or config for the app to initialize (a name of '[DEFAULT]' will be used if omitted).
  * @returns The initialized Firebase app.
@@ -92,13 +85,7 @@ export function initializeApp(
   options: ReactNativeFirebase.FirebaseAppOptions,
   configOrName?: string | ReactNativeFirebase.FirebaseAppConfig,
 ): Promise<ReactNativeFirebase.FirebaseApp> {
-  return initializeAppCompat.call(
-    null,
-    options,
-    configOrName,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return initializeAppCompat(options, configOrName);
 }
 
 /**
@@ -107,12 +94,7 @@ export function initializeApp(
  * @returns The requested Firebase app instance.
  */
 export function getApp(name?: string): ReactNativeFirebase.FirebaseApp {
-  return getAppCompat.call(
-    null,
-    name,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return getAppCompat(name);
 }
 
 /**
@@ -121,12 +103,7 @@ export function getApp(name?: string): ReactNativeFirebase.FirebaseApp {
  * @returns void
  */
 export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void {
-  return setLogLevelCompat.call(
-    null,
-    logLevel,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return setLogLevelCompat(logLevel);
 }
 
 /**
@@ -138,12 +115,7 @@ export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void 
 export function setReactNativeAsyncStorage(
   asyncStorage: ReactNativeFirebase.ReactNativeAsyncStorage,
 ): void {
-  return setReactNativeAsyncStorageCompat.call(
-    null,
-    asyncStorage,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return setReactNativeAsyncStorageCompat(asyncStorage);
 }
 
 /**
@@ -151,10 +123,7 @@ export function setReactNativeAsyncStorage(
  * @returns map of key / value pairs containing native meta data
  */
 export function metaGetAll(): Promise<{ [key: string]: string | boolean }> {
-  const RNFBAppModule = getReactNativeModule(
-    APP_NATIVE_MODULE,
-  ) as unknown as RNFBAppModuleInterface;
-  return RNFBAppModule.metaGetAll();
+  return getAppModule().metaGetAll();
 }
 
 /**
@@ -162,10 +131,7 @@ export function metaGetAll(): Promise<{ [key: string]: string | boolean }> {
  * @returns map of key / value pairs containing native firebase.json constants
  */
 export function jsonGetAll(): Promise<{ [key: string]: string | boolean }> {
-  const RNFBAppModule = getReactNativeModule(
-    APP_NATIVE_MODULE,
-  ) as unknown as RNFBAppModuleInterface;
-  return RNFBAppModule.jsonGetAll();
+  return getAppModule().jsonGetAll();
 }
 
 /**
@@ -173,10 +139,7 @@ export function jsonGetAll(): Promise<{ [key: string]: string | boolean }> {
  * @returns Promise<void>
  */
 export function preferencesClearAll(): Promise<void> {
-  const RNFBAppModule = getReactNativeModule(
-    APP_NATIVE_MODULE,
-  ) as unknown as RNFBAppModuleInterface;
-  return RNFBAppModule.preferencesClearAll();
+  return getAppModule().preferencesClearAll();
 }
 
 /**
@@ -184,10 +147,7 @@ export function preferencesClearAll(): Promise<void> {
  * @returns map of key / value pairs containing native preferences data
  */
 export function preferencesGetAll(): Promise<{ [key: string]: string | boolean }> {
-  const RNFBAppModule = getReactNativeModule(
-    APP_NATIVE_MODULE,
-  ) as unknown as RNFBAppModuleInterface;
-  return RNFBAppModule.preferencesGetAll();
+  return getAppModule().preferencesGetAll();
 }
 
 /**
@@ -197,10 +157,7 @@ export function preferencesGetAll(): Promise<{ [key: string]: string | boolean }
  * @returns Promise<void>
  */
 export function preferencesSetBool(key: string, value: boolean): Promise<void> {
-  const RNFBAppModule = getReactNativeModule(
-    APP_NATIVE_MODULE,
-  ) as unknown as RNFBAppModuleInterface;
-  return RNFBAppModule.preferencesSetBool(key, value);
+  return getAppModule().preferencesSetBool(key, value);
 }
 
 /**
@@ -210,10 +167,28 @@ export function preferencesSetBool(key: string, value: boolean): Promise<void> {
  * @returns Promise<void>
  */
 export function preferencesSetString(key: string, value: string): Promise<void> {
-  const RNFBAppModule = getReactNativeModule(
-    APP_NATIVE_MODULE,
-  ) as unknown as RNFBAppModuleInterface;
-  return RNFBAppModule.preferencesSetString(key, value);
+  return getAppModule().preferencesSetString(key, value);
 }
 
-export const SDK_VERSION = sdkVersion;
+export const SDK_VERSION: string = sdkVersion;
+
+/**
+ * Returns the {@link Utils.Module} instance for the default or given {@link ReactNativeFirebase.FirebaseApp}.
+ *
+ * @param app - The Firebase app to use. When omitted, the default app is used.
+ */
+export function getUtils(app?: ReactNativeFirebase.FirebaseApp): Utils.Module {
+  return getUtilsImpl(app);
+}
+
+/**
+ * Native device file paths for use with file-based APIs such as Storage `putFile` or `writeToFile`.
+ */
+export const FilePath: Utils.FilePath = new Proxy({} as Utils.FilePath, {
+  get(_target, prop: string | symbol) {
+    if (typeof prop === 'string') {
+      return UtilsStatics.FilePath[prop as keyof Utils.FilePath];
+    }
+    return undefined;
+  },
+});

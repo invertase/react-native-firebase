@@ -13,11 +13,6 @@ const config: PackageConfig = {
   nameMapping: {},
   missingInRN: [
     {
-      name: 'AppCheckTokenListener',
-      reason:
-        'RN Firebase exposes token change listeners through the `onTokenChanged` overloads but does not export the standalone listener type alias from the firebase-js-sdk.',
-    },
-    {
       name: 'PartialObserver',
       reason:
         'RN Firebase re-exports this type from `@react-native-firebase/app` common types rather than mirroring the firebase-js-sdk utility export directly.',
@@ -39,6 +34,11 @@ const config: PackageConfig = {
     },
   ],
   extraInRN: [
+    {
+      name: 'SDK_VERSION',
+      reason:
+        'RN Firebase package version string exported from the modular entry point. The firebase-js-sdk does not export SDK_VERSION from @firebase/app-check.',
+    },
     {
       name: 'AppCheckProvider',
       reason:
@@ -81,11 +81,6 @@ const config: PackageConfig = {
     },
   ],
   differentShape: [
-    {
-      name: 'initializeAppCheck',
-      reason:
-        'RN Firebase returns `Promise<AppCheck>` because App Check initialization crosses the native bridge, whereas the firebase-js-sdk returns `AppCheck` synchronously.',
-    },
     {
       name: 'AppCheckOptions',
       reason:

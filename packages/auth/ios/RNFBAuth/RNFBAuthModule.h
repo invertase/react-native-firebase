@@ -17,9 +17,9 @@
 
 #import <Firebase/Firebase.h>
 #import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
+#import "RNFBAuthTurboModules.h"
 
-@interface RNFBAuthModule : NSObject <RCTBridgeModule>
+@interface RNFBAuthModule : NSObject <NativeRNFBTurboAuthSpec>
 @end
 
 extern NSString* const AuthErrorCode_toJSErrorCode[];

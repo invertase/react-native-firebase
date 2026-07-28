@@ -1,27 +1,22 @@
 # React Native Firebase AGENTS Guide
 
-## Project overview
+## Project
 
-- This repository is a Yarn workspaces monorepo for React Native Firebase packages.
-- Most library code lives in `packages/**/lib`.
-- The end-to-end test app lives in `tests/`.
-- Contributor expectations and review norms are documented in `CONTRIBUTING.md`.
+- Yarn workspaces monorepo for React Native Firebase.
+- Library code: `packages/**/lib`; e2e app: `tests/`.
+- Contributor/review norms: `CONTRIBUTING.md`.
 
-## Dev environment tips
+## Working
 
-- Install dependencies once at the repository root with `yarn`.
-- Prefer working from the repository root so package scripts and workspace resolution behave consistently.
-- Check the affected package's `type-test.ts`, `__tests__/`, and plugin directories before changing public APIs or platform-specific behavior.
-- Prefer consistency with existing patterns in the package you are editing instead of introducing new structure.
-
-## Testing instructions
-
-- Start with focused validation for the area you changed instead of running the entire suite.
-- For code changes, run the relevant linting scripts (e.g., yarn lint:js, yarn lint:android, or yarn lint:ios:check).
-- For package behavior changes, run targeted Jest coverage with `yarn tests:jest <path-to-test-file>`.
-- For public API changes, update and run the relevant `packages/<name>/type-test.ts` checks and nearby Jest tests in `packages/<name>/__tests__/`.
-- Run platform-specific e2e commands in `tests/` only when the change affects Android, iOS, or macOS behavior.
-- Before merging substantial code changes, run the relevant root scripts from `package.json` for the touched area.
+- Run from repo root; install once with `yarn`.
+- **Agent shell commands:** [agent-command-policy.md](okf-bundle/testing/agent-command-policy.md) only (allowlist). E2e additionally [running-e2e.md § agent rule](okf-bundle/testing/running-e2e.md#agent-rule-read-first).
+- Follow local package patterns; check `type-test.ts`, `__tests__/`, and plugin dirs before public API/platform changes.
+- Start with `okf-bundle/index.md` for repo-specific implementation/testing/maintenance knowledge.
+- **Change authoring:** [change-authoring-workflow.md](okf-bundle/testing/change-authoring-workflow.md) — baseline → unit-focused implementation → area-focused review → commit; [**validation evidence**](okf-bundle/testing/change-authoring-workflow.md#validation-evidence-blocking) and [**coverage evidence**](okf-bundle/testing/coverage-design.md#coverage-evidence-package) required before gates close or push.
+- Use package indexes under `okf-bundle/packages/` for package-specific workflows and active work queues.
+- Follow `okf-bundle/documentation-policy.md`: durable knowledge in reference docs; ephemeral state only in explicit work queues; commits are documentation; single-commit PR titles must match the commit subject exactly.
+- Testing entry points: `okf-bundle/testing/index.md`; validation requirements: `okf-bundle/testing/validation-checklist.md`.
+- Match validation to the **work type** and **validation tier** in OKF ([change authoring workflow](okf-bundle/testing/change-authoring-workflow.md); term ids in [iteration vocabulary](okf-bundle/testing/iteration-vocabulary.md)).
 
 ## PR instructions
 

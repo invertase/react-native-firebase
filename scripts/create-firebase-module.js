@@ -97,14 +97,9 @@ input(
     console.log('1) ADD IT TO `KNOWN_NAMESPACES` in packages/app/lib/internal/constants.js');
     console.log('');
     console.log('2) ADD IT TO THE docs:');
-    console.log('  - in docs/<modulename>/index.md and usage/index.md');
-    console.log(
-      '  - in docs/<modules>/... find the prev next links where you slice in and fix them',
-    );
-    console.log('  - in docs/app/usage.md list of apps that are multi-app, if it is multi-app');
-    console.log('  - in docs/sidebar.yaml');
-    console.log('  - in website/scripts/source-reference.js');
-    console.log('  - in website/src/templates/utils.ts');
+    console.log('  - in docs/<modulename>/index.mdx and usage/index.mdx');
+    console.log('  - in docs/app/usage.mdx list of apps that are multi-app, if it is multi-app');
+    console.log('  - in docs.json sidebar section');
     console.log('');
     console.log('3) If the name has hyphens, carefully check:');
     console.log('  - package namespaces in java and package.json and index.d.ts');

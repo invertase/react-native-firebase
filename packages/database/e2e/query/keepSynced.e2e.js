@@ -16,46 +16,6 @@
  */
 
 describe('database().ref().keepSynced()', function () {
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('throws if bool is not a valid type', async function () {
-      try {
-        await firebase.database().ref().keepSynced('foo');
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'bool' value must be a boolean value.");
-        return Promise.resolve();
-      }
-    });
-
-    it('toggles keepSynced on and off without throwing on supported platforms', async function () {
-      if (Platform.other) return;
-      const ref = firebase.database().ref('noop').orderByValue();
-      await ref.keepSynced(true);
-      await ref.keepSynced(false);
-    });
-
-    it('keepSynced throws on unsupported platforms', async function () {
-      if (!Platform.other) return;
-      try {
-        await firebase.database().ref('noop').orderByValue().keepSynced(true);
-        throw new Error('did not throw');
-      } catch (error) {
-        error.code.should.containEql('unsupported');
-        error.message.should.containEql('This operation is not supported on this environment.');
-      }
-    });
-  });
-
   describe('modular', function () {
     it('throws if bool is not a valid type', async function () {
       const { getDatabase, ref, keepSynced } = databaseModular;

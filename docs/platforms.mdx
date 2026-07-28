@@ -1,18 +1,18 @@
 ---
 title: Platforms
 description: Learn the platforms React Native Firebase SDK supports.
-next: /release-notes
+previous: /typescript
+next: /faqs-and-tips
 ---
 
 ## Status
 
 By default React Native Firebase supports multiple platforms using the native Firebase SDK for the specific platform:
 
-| Platform | Minimum Version                      |
-| -------- | ------------------------------------ |
-| Android  | 5.0 (Lollipop) without Firebase Auth |
-|          | 6.0 (Marshmallow) with Firebase Auth |
-| iOS      | 13.0                                 |
+| Platform | Minimum Version            |
+| -------- | -------------------------- |
+| Android  | 6.0 (API 23 / Marshmallow) |
+| iOS      | 15.0                       |
 
 **Important** - To compile your application for Android, you will need a minimum JDK (Java Development Kit) version of `>= 17`.
 
@@ -26,24 +26,26 @@ these 'Other' platforms, e.g.;
 
 Below is a table outlining which Firebase modules are supported on each platform in React Native Firebase:
 
-| Firebase Service | Android | iOS | Other |
-| ---------------- | :-----: | :-: | :---: |
-| analytics        |   ✅    | ✅  |  ✅   |
-| app-check        |   ⚠️    | ⚠️  |  ⚠️   |
-| app-distribution |   ✅    | ✅  |  ❌   |
-| app              |   ✅    | ✅  |  ✅   |
-| auth             |   ✅    | ✅  |  ⚠️   |
-| crashlytics      |   ✅    | ✅  |  ❌   |
-| database         |   ✅    | ✅  |  ✅   |
-| firestore        |   ✅    | ✅  |  ⚠️   |
-| functions        |   ✅    | ✅  |  ✅   |
-| in-app-messaging |   ✅    | ✅  |  ❌   |
-| installations    |   ✅    | ✅  |  ❌   |
-| messaging        |   ✅    | ✅  |  ❌   |
-| ml               |   ✅    | ✅  |  ❌   |
-| perf             |   ✅    | ✅  |  ❌   |
-| remote-config    |   ✅    | ✅  |  ✅   |
-| storage          |   ✅    | ✅  |  ⚠️   |
+| Firebase Service          | Android | iOS | Other |
+| ------------------------- | :-----: | :-: | :---: |
+| ai                        |   ✅    | ✅  |  ✅   |
+| analytics                 |   ✅    | ✅  |  ✅   |
+| app                       |   ✅    | ✅  |  ✅   |
+| app-check                 |   ⚠️    | ⚠️  |  ⚠️   |
+| app-distribution          |   ✅    | ✅  |  ❌   |
+| auth                      |   ✅    | ✅  |  ⚠️   |
+| crashlytics               |   ✅    | ✅  |  ❌   |
+| database                  |   ✅    | ✅  |  ✅   |
+| firestore                 |   ✅    | ✅  |  ⚠️   |
+| functions                 |   ✅    | ✅  |  ✅   |
+| in-app-messaging          |   ✅    | ✅  |  ❌   |
+| installations             |   ✅    | ✅  |  ❌   |
+| messaging                 |   ✅    | ✅  |  ❌   |
+| ml                        |   ✅    | ✅  |  ❌   |
+| perf                      |   ✅    | ✅  |  ❌   |
+| phone-number-verification |   ✅    | ❌  |  ❌   |
+| remote-config             |   ✅    | ✅  |  ✅   |
+| storage                   |   ✅    | ✅  |  ⚠️   |
 
 - ✅ (supported)
 - ⚠️ (partial support) - see notes below
@@ -75,15 +77,12 @@ implementation require a Async Storage implementation to be provided to
 enable persistence, React Native Firebase provides an API to set this implementation:
 
 ```js
-import firebase from '@react-native-firebase/app';
+import { initializeApp, setReactNativeAsyncStorage } from '@react-native-firebase/app';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Before initializing Firebase set the Async Storage implementation
-// that will be used to persist user sessions.
-firebase.setReactNativeAsyncStorage(AsyncStorage);
+setReactNativeAsyncStorage(AsyncStorage);
 
-// Then initialize Firebase as normal.
-await firebase.initializeApp({ ... });
+await initializeApp({ ... });
 ```
 
 > Note: we use `@react-native-async-storage/async-storage` as an example, you should use the Async Storage implementation that is appropriate for your platform that you are targeting.
@@ -106,13 +105,13 @@ App Check for other platforms only supports the `CustomProvider` provider. Here'
 - Create a custom provider in your app:
 
 ```js
-import firebase, { CustomProvider, initializeAppCheck } from '@react-native-firebase/app-check';
+import { getApp } from '@react-native-firebase/app';
+import { CustomProvider, initializeAppCheck } from '@react-native-firebase/app-check';
 
 const myCustomProvider = new CustomProvider({
   async getToken: () => {
-    // TODO: Get the token from your server, e.g. if using a cloud function call the function.
     const tokenFromServer = 'some-token-from-server';
-    const expirationFromServer = 1000 * 60 * 60; // 1 hour
+    const expirationFromServer = 1000 * 60 * 60;
     const appCheckToken = {
       token: tokenFromServer,
       expireTimeMillis: expirationFromServer * 1000
@@ -121,13 +120,9 @@ const myCustomProvider = new CustomProvider({
   }
 });
 
-// Configure the provider (modular API)
-initializeAppCheck(firebaseApp, {
+await initializeAppCheck(getApp(), {
   provider: myCustomProvider
 });
-
-// Or configure the provider (v8 API)
-firebase.appCheck().initializeAppCheck({ provider: myCustomProvider });
 ```
 
 ### Authentication

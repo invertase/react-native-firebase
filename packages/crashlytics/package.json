@@ -1,17 +1,34 @@
 {
   "name": "@react-native-firebase/crashlytics",
-  "version": "24.0.0",
+  "version": "25.1.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Firebase Crashlytics is a lightweight, realtime crash reporter that helps you track, prioritize, and fix stability issues that erode your app quality. React Native Firebase provides automatic crash reporting for both native and JavaScript errors, including unhandled promise rejections.",
   "main": "./dist/module/index.js",
   "types": "./dist/typescript/lib/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBCrashlyticsTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "io.invertase.firebase.crashlytics"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTurboCrashlytics": "RNFBCrashlyticsModule"
+      }
+    }
+  },
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "build:plugin": "rimraf plugin/build && tsc --build plugin",
     "lint:plugin": "eslint plugin/src/*",
     "compile": "bob build",
-    "prepare": "yarn run build && yarn run build:plugin && yarn compile"
+    "prepare": "yarn run build && yarn run build:plugin && yarn compile",
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/main/java/io/invertase/firebase/crashlytics/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
   },
   "repository": {
     "type": "git",
@@ -30,13 +47,14 @@
     "crashlytics"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "24.0.0",
+    "@react-native-firebase/app": "25.1.0",
     "expo": ">=47.0.0"
   },
   "dependencies": {
     "stacktrace-js": "^2.0.2"
   },
   "devDependencies": {
+    "@react-native-firebase/app": "25.1.0",
     "expo": "^55.0.18",
     "react-native-builder-bob": "^0.41.0",
     "typescript": "^6.0.3"
@@ -56,7 +74,14 @@
       "types": "./dist/typescript/lib/index.d.ts",
       "default": "./dist/module/index.js"
     },
-    "./app.plugin.js": "./app.plugin.js",
+    "./app.plugin": {
+      "types": "./plugin/build/app.plugin.d.ts",
+      "default": "./app.plugin.js"
+    },
+    "./app.plugin.js": {
+      "types": "./plugin/build/app.plugin.d.ts",
+      "default": "./app.plugin.js"
+    },
     "./package.json": "./package.json"
   },
   "react-native-builder-bob": {

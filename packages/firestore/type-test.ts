@@ -1,15 +1,9 @@
 /*
  * Consumer-facing API type tests for @react-native-firebase/firestore.
- * Part 1: Namespaced API (firebase.firestore(), default firestore()).
- * Part 2: Modular API (getFirestore, doc, collection, setDoc, etc. from lib/modular.ts).
+ * Modular API (getFirestore, doc, collection, setDoc, etc.).
  */
 
-// ---------------------------------------------------------------------------
-// PART 1 — NAMESPACED API
-// ---------------------------------------------------------------------------
-// Import namespaced API: default export and firebase, plus types used in Part 1.
-import firestore, {
-  firebase,
+import {
   getFirestore,
   connectFirestoreEmulator,
   setLogLevel,
@@ -30,6 +24,7 @@ import firestore, {
   runTransaction,
   getCountFromServer,
   getAggregateFromServer,
+  aggregateQuerySnapshotEqual,
   sum,
   average,
   count,
@@ -78,22 +73,20 @@ import firestore, {
   CACHE_SIZE_UNLIMITED,
   AggregateField,
   AggregateQuerySnapshot,
-  DocumentSnapshot,
   DocumentReference,
-  Query,
   QueryDocumentSnapshot,
-  Transaction,
-  WriteBatch,
 } from '.';
 import type {
-  FirebaseFirestoreTypes,
+  Query,
   Firestore,
   DocumentData,
   LoadBundleTaskProgress,
   FirestoreDataConverter,
   WithFieldValue,
   PartialWithFieldValue,
+  DocumentSnapshot as FirestoreDocumentSnapshot,
 } from '.';
+import { getApp } from '@react-native-firebase/app';
 import {
   execute,
   field,
@@ -109,7 +102,6 @@ import {
   average as pipelineAverage,
   maximum,
   constant,
-  // comparison / logical
   greaterThan,
   equal,
   notEqual,
@@ -128,14 +120,16 @@ import {
   isError,
   isType,
   ifAbsent,
+  ifNull,
+  switchOn,
+  coalesce,
+  currentDocument,
   ifError,
   conditional,
   logicalMaximum,
   logicalMinimum,
-  // ordering
   ascending,
   descending,
-  // arithmetic
   add,
   subtract,
   divide,
@@ -153,7 +147,6 @@ import {
   pow,
   trunc,
   rand,
-  // aggregates
   count as pipelineCount, // duplicate name from main module
   countDistinct,
   countIf,
@@ -162,18 +155,31 @@ import {
   arrayAgg,
   arrayAggDistinct,
   minimum,
-  // document / collection
   documentId as pipelineDocumentId, // duplicate name from main module
   collectionId,
   type as pipelineType,
   currentTimestamp,
-  // array
+  variable,
   array,
+  arrayFilter,
+  arrayFirst,
+  arrayFirstN,
+  arrayIndexOf,
+  arrayIndexOfAll,
+  arrayLast,
+  arrayLastIndexOf,
+  arrayLastN,
+  arrayMaximum,
+  arrayMaximumN,
+  arrayMinimum,
+  arrayMinimumN,
+  arraySlice,
+  arrayTransform,
+  arrayTransformWithIndex,
   arrayConcat,
   arrayGet,
   arrayLength,
   arraySum,
-  // map
   map,
   mapEntries,
   mapGet,
@@ -182,7 +188,6 @@ import {
   mapRemove,
   mapSet,
   mapValues,
-  // string
   concat,
   toUpper,
   trim,
@@ -206,8 +211,10 @@ import {
   regexFind,
   regexFindAll,
   regexMatch,
-  // timestamp
   timestampAdd,
+  timestampDiff,
+  timestampExtract,
+  subcollection,
   timestampSubtract,
   timestampToUnixMicros,
   timestampToUnixMillis,
@@ -216,12 +223,14 @@ import {
   unixMicrosToTimestamp,
   unixMillisToTimestamp,
   unixSecondsToTimestamp,
-  // vector
   cosineDistance,
   dotProduct,
   euclideanDistance,
+  documentMatches,
+  score,
+  geoDistance,
+  parent,
   vectorLength,
-  // result utility
   pipelineResultEqual,
 } from '@react-native-firebase/firestore/pipelines';
 import type {
@@ -236,8 +245,9 @@ import type {
   FunctionExpression,
   AggregateFunction,
   ExpressionType,
-  Type as PipelineValueType,
   TimeGranularity,
+  TimePart,
+  TimeUnit,
   AliasedAggregate,
   AliasedExpression,
   StageOptions,
@@ -249,6 +259,8 @@ import type {
   DistinctStageOptions,
   DocumentsStageOptions,
   FindNearestStageOptions,
+  SearchStageOptions,
+  DefineStageOptions,
   LimitStageOptions,
   OffsetStageOptions,
   RemoveFieldsStageOptions,
@@ -256,6 +268,7 @@ import type {
   SampleStageOptions,
   SelectStageOptions,
   SortStageOptions,
+  SubcollectionStageOptions,
   UnionStageOptions,
   UnnestStageOptions,
   WhereStageOptions,
@@ -263,244 +276,14 @@ import type {
   OneOf,
 } from '@react-native-firebase/firestore/pipelines';
 
-// ----- Default export and module access -----
-console.log(firestore().app);
-console.log(firestore.SDK_VERSION);
-console.log(firestore.firebase.SDK_VERSION);
-
-// ----- firebase.firestore at root -----
-console.log(firebase.firestore().app.name);
-console.log(firebase.firestore().collection('foo'));
-
-// ----- firebase.firestore at app level -----
-console.log(firebase.app().firestore().app.name);
-console.log(firebase.app().firestore().collection('foo'));
-
-// ----- Multi-app and database ID -----
-console.log(firebase.firestore(firebase.app()).app.name);
-console.log(firebase.firestore(firebase.app('foo')).app.name);
-// Database ID: firebase.app().firestore(databaseId)
-console.log(firebase.app().firestore('(default)').app.name);
-console.log(firebase.app().firestore('other-db').app.name);
-
-// ----- Default export with app arg -----
-console.log(firestore(firebase.app()).app.name);
-
-// ----- Statics (FirestoreStatics) -----
-console.log(firebase.firestore.Blob);
-console.log(firebase.firestore.FieldPath);
-console.log(firebase.firestore.FieldValue);
-console.log(firebase.firestore.GeoPoint);
-console.log(firebase.firestore.Timestamp);
-console.log(firebase.firestore.Filter);
-console.log(firebase.firestore.CACHE_SIZE_UNLIMITED);
-firebase.firestore.setLogLevel('debug');
-
-// ----- Firestore instance: references and batch -----
-const nsFirestore = firebase.firestore();
-console.log(nsFirestore.collection('users'));
-console.log(nsFirestore.collection('users').doc('alice'));
-console.log(nsFirestore.collection('users').doc('alice').collection('orders'));
-console.log(nsFirestore.collectionGroup('orders'));
-console.log(nsFirestore.batch());
-
-// ----- CollectionReference -----
-const nsColl = nsFirestore.collection('users');
-const nsDocRef = nsColl.doc('alice');
-const nsQuery = nsColl.where('name', '==', 'test');
-
-nsDocRef.set({ name: 'Alice', count: 1 }).then(() => {});
-nsDocRef.set({ name: 'Alice' }, { merge: true }).then(() => {});
-
-nsDocRef.update({ count: 2 }).then(() => {});
-nsDocRef.update('count', 3).then(() => {});
-
-nsDocRef.delete().then(() => {});
-
-nsColl.add({ name: 'Bob' }).then((ref: FirebaseFirestoreTypes.DocumentReference) => {
-  console.log(ref.id);
-});
-
-nsDocRef.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
-  console.log(snap.exists());
-  console.log(snap.data());
-  console.log(snap.id);
-  console.log(snap.ref);
-  console.log(snap.metadata);
-});
-nsDocRef.get({ source: 'cache' }).then(() => {});
-nsDocRef.get({ source: 'server' }).then(() => {});
-
-nsQuery.get().then((snap: FirebaseFirestoreTypes.QuerySnapshot) => {
-  console.log(snap.docs);
-  console.log(snap.empty);
-  console.log(snap.size);
-  console.log(snap.docChanges());
-});
-
-// ----- DocumentSnapshot -----
-nsDocRef.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
-  if (snap.exists()) {
-    const d = snap.data();
-    const estimate = snap.data({ serverTimestamps: 'estimate' });
-    console.log(d);
-    console.log(estimate);
-  }
-  console.log(snap.get('field'));
-  console.log(snap.get('field', { serverTimestamps: 'previous' }));
-  console.log(snap.metadata.isEqual(snap.metadata));
-});
-
-// ----- onSnapshot (document) -----
-const unsubDoc1 = nsDocRef.onSnapshot((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
-  console.log(snap.data());
-});
-const unsubDoc2 = nsDocRef.onSnapshot(
-  { includeMetadataChanges: true },
-  (_snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
-);
-const unsubDoc4 = nsDocRef.onSnapshot(
-  { source: 'cache' },
-  (_snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
-);
-const unsubDoc3 = nsDocRef.onSnapshot({
-  next: (_snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
-  error: (_e: Error) => {},
-});
-unsubDoc1();
-unsubDoc2();
-unsubDoc3();
-unsubDoc4();
-
-// ----- onSnapshot (query) -----
-const unsubQuery1 = nsQuery.onSnapshot((snap: FirebaseFirestoreTypes.QuerySnapshot) => {
-  console.log(snap.docs);
-});
-const unsubQuery2 = nsQuery.onSnapshot(
-  { includeMetadataChanges: true },
-  { next: (_snap: FirebaseFirestoreTypes.QuerySnapshot) => {}, error: (_e: Error) => {} },
-);
-const unsubQuery3 = nsQuery.onSnapshot(
-  { source: 'cache', includeMetadataChanges: true },
-  { next: (_snap: FirebaseFirestoreTypes.QuerySnapshot) => {}, error: (_e: Error) => {} },
-);
-unsubQuery1();
-unsubQuery2();
-unsubQuery3();
-
-// ----- Query: where, orderBy, limit, cursor -----
-const nsQuery2 = nsColl
-  .where('age', '>', 18)
-  .orderBy('age', 'desc')
-  .orderBy('name')
-  .limit(10)
-  .limitToLast(5)
-  .startAt(1)
-  .startAfter(2)
-  .endAt(10)
-  .endBefore(9);
-void nsQuery2;
-
-// ----- Firestore instance: loadBundle, namedQuery, runTransaction -----
-const nsLoadTask = nsFirestore.loadBundle('bundle-data');
-console.log(nsLoadTask.then(() => {}));
-
-const nsNamed = nsFirestore.namedQuery('my-query');
-console.log(nsNamed);
-
-nsFirestore
-  .runTransaction(async (tx: FirebaseFirestoreTypes.Transaction) => {
-    const snap = await tx.get(nsDocRef);
-    if (snap.exists()) {
-      tx.update(nsDocRef, { count: ((snap.data() as { count?: number })?.count ?? 0) + 1 });
-    }
-    return null;
-  })
-  .then(() => {});
-
-// ----- Firestore instance: persistence and network -----
-nsFirestore.clearPersistence().then(() => {});
-nsFirestore.waitForPendingWrites().then(() => {});
-nsFirestore.terminate().then(() => {});
-nsFirestore.useEmulator('localhost', 8080);
-nsFirestore.enableNetwork().then(() => {});
-nsFirestore.disableNetwork().then(() => {});
-
-// ----- Firestore instance: settings -----
-nsFirestore.settings({ persistence: true }).then(() => {});
-
-// ----- Persistent cache index manager (namespaced) -----
-const nsIndexManager = nsFirestore.persistentCacheIndexManager();
-if (nsIndexManager) {
-  nsIndexManager.enableIndexAutoCreation().then(() => {});
-  nsIndexManager.disableIndexAutoCreation().then(() => {});
-  nsIndexManager.deleteAllIndexes().then(() => {});
-}
-
-// ----- WriteBatch (namespaced) -----
-const nsBatch = nsFirestore.batch();
-nsBatch.set(nsDocRef, { name: 'Alice' });
-nsBatch.set(nsDocRef, { name: 'Alice' }, { merge: true });
-nsBatch.update(nsDocRef, { count: 1 });
-nsBatch.delete(nsDocRef);
-nsBatch.commit().then(() => {});
-
-// ----- Namespaced FieldValue (statics) -----
-const nsFieldPath = new firebase.firestore.FieldPath('user', 'name');
-void nsFieldPath;
-const nsBlob = firebase.firestore.Blob.fromBase64String('dGVzdA==');
-void nsBlob;
-const nsGeoPoint = new firebase.firestore.GeoPoint(0, 0);
-void nsGeoPoint;
-const nsTimestamp = firebase.firestore.Timestamp.now();
-void nsTimestamp;
-const nsDelete = firebase.firestore.FieldValue.delete();
-const nsServerTs = firebase.firestore.FieldValue.serverTimestamp();
-const nsArrayUnion = firebase.firestore.FieldValue.arrayUnion(1, 2);
-const nsArrayRemove = firebase.firestore.FieldValue.arrayRemove(1);
-void nsArrayRemove;
-const nsIncrement = firebase.firestore.FieldValue.increment(1);
-
-nsDocRef
-  .set({
-    name: 'x',
-    deleted: nsDelete,
-    ts: nsServerTs,
-    arr: nsArrayUnion,
-    cnt: nsIncrement,
-  })
-  .then(() => {});
-
-// ----- withConverter (namespaced) -----
-interface User {
-  name: string;
-  age: number;
-}
-const nsConverter: FirebaseFirestoreTypes.FirestoreDataConverter<User> = {
-  toFirestore(u: User) {
-    return u;
-  },
-  fromFirestore(snap: FirebaseFirestoreTypes.QueryDocumentSnapshot): User {
-    return snap.data() as User;
-  },
-};
-const nsCollWithConv = nsFirestore.collection('users').withConverter(nsConverter);
-const nsDocWithConv = nsCollWithConv.doc('alice');
-nsDocWithConv.set({ name: 'Alice', age: 30 }).then(() => {});
-nsDocWithConv.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot<User>) => {
-  const u = snap.data();
-  if (u) console.log(u.name, u.age);
-});
-
-
 // ----- getFirestore -----
 const modFirestore1 = getFirestore();
 console.log(modFirestore1.app.name);
 
-const modFirestore2 = getFirestore(firebase.app());
+const modFirestore2 = getFirestore(getApp());
 console.log(modFirestore2.app.name);
 
-const modFirestore3 = getFirestore(firebase.app(), 'other-db');
+const modFirestore3 = getFirestore(getApp(), 'other-db');
 console.log(modFirestore3.app.name);
 
 // ----- connectFirestoreEmulator -----
@@ -513,11 +296,10 @@ connectFirestoreEmulator(modFirestore1, 'localhost', 8080, {
 setLogLevel('debug');
 
 // ----- initializeFirestore -----
-initializeFirestore(firebase.app(), {
+const initializedFirestore = initializeFirestore(getApp(), {
   cacheSizeBytes: CACHE_SIZE_UNLIMITED,
-}).then((fs: Firestore) => {
-  console.log(fs.app.name);
 });
+console.log(initializedFirestore.app.name);
 
 // ----- doc, collection, collectionGroup, refEqual -----
 const modColl = collection(modFirestore1, 'users');
@@ -559,28 +341,32 @@ runTransaction(modFirestore1, async tx => {
   return 'done';
 }).then(() => {});
 
+runTransaction(
+  modFirestore1,
+  async tx => {
+    tx.set(modDoc, { attempts: 1 });
+    return 'configured';
+  },
+  { maxAttempts: 5 },
+).then(() => {});
+
 // Root runtime exports must also carry the generic modular type surface.
-function acceptRootDocumentSnapshot(_snap: DocumentSnapshot<DocumentData>) {}
-function acceptRootTransaction(tx: Transaction, tRef: DocumentReference<DocumentData>) {
-  tx.update(tRef, { active: true });
-}
+function acceptRootDocumentSnapshot(_snap: FirestoreDocumentSnapshot<DocumentData>) {}
 runTransaction(modFirestore1, async tx => {
-  const rootTx: Transaction = tx;
-  const rootSnap: DocumentSnapshot<DocumentData> = await rootTx.get(modDoc);
+  const rootSnap = await tx.get(modDoc);
   acceptRootDocumentSnapshot(rootSnap);
-  acceptRootTransaction(rootTx, modDoc);
+  tx.update(modDoc, { active: true });
   if (rootSnap.exists()) {
     const rootData: DocumentData = rootSnap.data();
     void rootData;
   }
   return rootSnap;
-}).then((rootSnap: DocumentSnapshot<DocumentData>) => {
+}).then(rootSnap => {
   acceptRootDocumentSnapshot(rootSnap);
 });
-const rootBatch: WriteBatch = writeBatch(modFirestore1);
+const rootBatch = writeBatch(modFirestore1);
 rootBatch.update(modDoc, { active: true });
 void acceptRootDocumentSnapshot;
-void acceptRootTransaction;
 void rootBatch;
 
 // ----- query, where, or, and, orderBy, startAt, startAfter, endAt, endBefore, limit, limitToLast -----
@@ -642,6 +428,13 @@ getAggregateFromServer(modQuery1, aggSpec).then(
     console.log(snap.data());
   },
 );
+
+// ----- aggregateQuerySnapshotEqual -----
+getCountFromServer(modQuery1).then(snap1 => {
+  getCountFromServer(modQuery1).then(snap2 => {
+    console.log(aggregateQuerySnapshotEqual(snap1, snap2));
+  });
+});
 
 // ----- getDoc, getDocFromCache, getDocFromServer -----
 getDoc(modDoc).then(snap => snap.data());
@@ -977,10 +770,7 @@ const pipelineUnion = pipelineDb
   .collection('cities/sf/restaurants')
   .where(field('type').equal('Chinese'))
   .union(
-    pipelineDb
-      .pipeline()
-      .collection('cities/ny/restaurants')
-      .where(field('type').equal('Italian')),
+    pipelineDb.pipeline().collection('cities/ny/restaurants').where(field('type').equal('Italian')),
   )
   .where(field('rating').greaterThanOrEqual(4.5))
   .sort(field('__name__').descending());
@@ -991,10 +781,7 @@ const pipelineWithTransforms = pipelineDb
   .collection('books')
   .where(
     pipelineOr(
-      pipelineAnd(
-        field('rating').greaterThan(4),
-        lessThan(field('price'), constant(10)),
-      ),
+      pipelineAnd(field('rating').greaterThan(4), lessThan(field('price'), constant(10))),
       field('genre').equal('Fantasy'),
     ),
   )
@@ -1003,9 +790,7 @@ const pipelineWithTransforms = pipelineDb
   .select(
     field('fullTitle'),
     field('rating').greaterThan(4).as('isTopRated'),
-    arrayContainsAny(field('genre'), ['Fantasy', constant('Sci-Fi')]).as(
-      'matchesGenre',
-    ),
+    arrayContainsAny(field('genre'), ['Fantasy', constant('Sci-Fi')]).as('matchesGenre'),
   )
   .sort(Ordering.of(field('rating')).descending(), field('__name__').ascending())
   .offset(1)
@@ -1022,23 +807,46 @@ const pipelineAggregateDistinct = pipelineDb
       pipelineAverage('population').as('populationAvg'),
       maximum('population').as('populationMax'),
     ],
-    groups: [
-      field('country').as('country'),
-      toLower(field('state')).as('normalizedState'),
-    ],
+    groups: [field('country').as('country'), toLower(field('state')).as('normalizedState')],
   })
   .where(field('populationTotal').greaterThan(1000))
   .distinct(field('normalizedState'), 'country');
 void pipelineAggregateDistinct;
 
-const pipelineFindNearest = pipelineDb.pipeline().collection('cities').findNearest({
-  field: 'embedding',
-  vectorValue: [1.5, 2.345],
-  distanceMeasure: 'COSINE',
-  distanceField: 'computedDistance',
-  limit: 10,
-});
+const pipelineFindNearest = pipelineDb
+  .pipeline()
+  .collection('cities')
+  .findNearest({
+    field: 'embedding',
+    vectorValue: [1.5, 2.345],
+    distanceMeasure: 'cosine',
+    distanceField: 'computedDistance',
+    limit: 10,
+  });
 void pipelineFindNearest;
+
+const pipelineSearch = pipelineDb
+  .pipeline()
+  .collection('restaurants')
+  .search({
+    query: documentMatches('waffles OR pancakes'),
+    sort: descending(score()),
+    addFields: [(score() as FunctionExpression).as('searchScore')],
+  });
+void pipelineSearch;
+
+const pipelineDefine = pipelineDb
+  .pipeline()
+  .collection('products')
+  .define(field('price').as('unitPrice'))
+  .where(lessThan(field('price'), constant(100)));
+void pipelineDefine;
+
+void documentMatches('breakfast');
+void score();
+void geoDistance('location', new GeoPoint(37.0, -122.0));
+void field('location').geoDistance(new GeoPoint(37.0, -122.0));
+void parent('users/alice');
 
 const pipelineSampleAndUnnest = pipelineDb
   .pipeline()
@@ -1084,8 +892,9 @@ type _AllPipelineTypes = [
   FunctionExpression,
   AggregateFunction,
   ExpressionType,
-  PipelineValueType,
   TimeGranularity,
+  TimePart,
+  TimeUnit,
   AliasedAggregate,
   AliasedExpression,
   StageOptions,
@@ -1097,6 +906,8 @@ type _AllPipelineTypes = [
   DistinctStageOptions,
   DocumentsStageOptions,
   FindNearestStageOptions,
+  SearchStageOptions,
+  DefineStageOptions,
   LimitStageOptions,
   OffsetStageOptions,
   RemoveFieldsStageOptions,
@@ -1116,11 +927,19 @@ const xDb = getFirestore();
 
 // ----- constant: all overloads -----
 const _cNum: Expression = constant(42);
+const _cNumPreferInt: Expression = constant(42, { preferIntegers: true });
+const _cNumNoPreferInt: Expression = constant(42, { preferIntegers: false });
 const _cStr: Expression = constant('hello');
 const _cBool: BooleanExpression = constant(true);
 const _cNull: Expression = constant(null);
 const _cUnknown: Expression = constant({ nested: true });
-void _cNum; void _cStr; void _cBool; void _cNull; void _cUnknown;
+void _cNum;
+void _cNumPreferInt;
+void _cNumNoPreferInt;
+void _cStr;
+void _cBool;
+void _cNull;
+void _cUnknown;
 
 // ----- Comparison: standalone overloads -----
 // greaterThan(Expression, Expression) | greaterThan(Expression, value)
@@ -1178,19 +997,41 @@ void isAbsent(field('optionalField'));
 void isAbsent('optionalField');
 // isError
 void isError(field('computedField'));
-// isType: (string, Type) | (Expression, Type)
+// isType: (string, string) | (Expression, string)
 void isType(field('value'), 'string');
 void isType('value', 'number');
 // ifAbsent: (Expression, Expression) | (Expression, unknown) | (string, Expression)
 void ifAbsent(field('optionalName'), field('defaultName'));
 void ifAbsent(field('optionalName'), 'Unknown');
 void ifAbsent('optionalName', field('defaultName'));
+// ifNull: (Expression, Expression) | (Expression, unknown) | (string, Expression) | (string, unknown)
+void ifNull(field('displayName'), field('fullName'));
+void ifNull(field('displayName'), 'Anonymous');
+void ifNull('displayName', field('fullName'));
+void ifNull('displayName', 'Anonymous');
+void field('displayName').ifNull(field('fullName'));
+void field('displayName').ifNull('Anonymous');
+// coalesce: (Expression, Expression | unknown, ...others) | (string, Expression | unknown, ...others)
+void coalesce(field('preferredName'), field('fullName'), constant('Anonymous'));
+void coalesce(field('preferredName'), 'Unknown');
+void coalesce('preferredName', field('fullName'), constant('Anonymous'));
+void field('preferredName').coalesce(field('fullName'), constant('Anonymous'));
+// currentDocument (no args)
+void currentDocument();
 // ifError: (BooleanExpression, BooleanExpression) | (Expression, Expression) | (Expression, unknown)
 void ifError(field('flag').equal(true), field('fallback').equal(false));
 void ifError(field('riskScore'), field('defaultScore'));
 void ifError(field('riskScore'), 0);
 // conditional
 void conditional(field('active').equal(true), field('price'), constant(0));
+// switchOn: (BooleanExpression, Expression, ...BooleanExpression | Expression)
+void switchOn(
+  equal(field('status'), constant(1)),
+  constant('Active'),
+  equal(field('status'), constant(2)),
+  constant('Pending'),
+  constant('Unknown'),
+);
 
 // ----- Ordering: standalone ascending / descending -----
 void ascending(field('createdAt'));
@@ -1317,6 +1158,68 @@ void currentTimestamp();
 // array
 void array([1, 2, 3]);
 void array([field('a'), constant(2)]);
+// variable: (string) => Expression
+void variable('score');
+// arrayFilter: (string, alias, BooleanExpression) | (Expression, alias, BooleanExpression)
+void arrayFilter('scores', 'score', greaterThan(variable('score'), constant(15)));
+void arrayFilter(field('scores'), 'score', greaterThan(variable('score'), constant(15)));
+void field('scores').arrayFilter('score', greaterThan(variable('score'), constant(15)));
+// newer array helpers
+void arrayTransform('scores', 'score', add(variable('score'), 1));
+void arrayTransform(field('scores'), 'score', add(variable('score'), 1));
+void field('scores').arrayTransform('score', add(variable('score'), 1));
+void arrayTransformWithIndex('scores', 'score', 'index', add(variable('score'), variable('index')));
+void arrayTransformWithIndex(
+  field('scores'),
+  'score',
+  'index',
+  add(variable('score'), variable('index')),
+);
+void field('scores').arrayTransformWithIndex(
+  'score',
+  'index',
+  add(variable('score'), variable('index')),
+);
+void arraySlice('scores', 1, 2);
+void arraySlice(field('scores'), field('offset'), field('length'));
+void field('scores').arraySlice(1, 2);
+void arrayFirst('scores');
+void arrayFirst(field('scores'));
+void field('scores').arrayFirst();
+void arrayFirstN('scores', 2);
+void arrayFirstN('scores', field('limit'));
+void arrayFirstN(field('scores'), field('limit'));
+void field('scores').arrayFirstN(field('limit'));
+void arrayLast('scores');
+void arrayLast(field('scores'));
+void field('scores').arrayLast();
+void arrayLastN('scores', 2);
+void arrayLastN('scores', field('limit'));
+void arrayLastN(field('scores'), field('limit'));
+void field('scores').arrayLastN(field('limit'));
+void arrayMaximum('scores');
+void arrayMaximum(field('scores'));
+void field('scores').arrayMaximum();
+void arrayMaximumN('scores', 2);
+void arrayMaximumN('scores', field('limit'));
+void arrayMaximumN(field('scores'), field('limit'));
+void field('scores').arrayMaximumN(field('limit'));
+void arrayMinimum('scores');
+void arrayMinimum(field('scores'));
+void field('scores').arrayMinimum();
+void arrayMinimumN('scores', 2);
+void arrayMinimumN('scores', field('limit'));
+void arrayMinimumN(field('scores'), field('limit'));
+void field('scores').arrayMinimumN(field('limit'));
+void arrayIndexOf('scores', 20);
+void arrayIndexOf(field('scores'), field('needle'));
+void field('scores').arrayIndexOf(20);
+void arrayLastIndexOf('scores', 20);
+void arrayLastIndexOf(field('scores'), field('needle'));
+void field('scores').arrayLastIndexOf(20);
+void arrayIndexOfAll('scores', 20);
+void arrayIndexOfAll(field('scores'), field('needle'));
+void field('scores').arrayIndexOfAll(20);
 // arrayConcat: (Expression, ...) | (string, ...)
 void arrayConcat(field('tags'), field('moreTags'));
 void arrayConcat(field('tags'), ['extra']);
@@ -1468,6 +1371,27 @@ void timestampAdd(field('createdAt'), field('unit'), field('amount'));
 void timestampSubtract(field('expiry'), 'hour', 1);
 void timestampSubtract('expiry', 'hour', 1);
 void timestampSubtract(field('expiry'), field('unit'), field('amount'));
+// timestampDiff: 4 overloads
+void timestampDiff(field('endTime'), 'startTime', 'day');
+void timestampDiff(field('endTime'), field('startTime'), 'hour');
+void timestampDiff('endTime', 'startTime', 'day');
+void timestampDiff('endTime', field('startTime'), field('unit'));
+// timestampExtract: 4 overloads + optional timezone
+void timestampExtract('eventTime', 'year');
+void timestampExtract(field('eventTime'), 'month');
+void timestampExtract('eventTime', field('partColumn'));
+void timestampExtract(field('eventTime'), field('partColumn'));
+void timestampExtract(field('eventTime'), 'day', 'UTC');
+void timestampExtract(field('eventTime'), 'year', field('timezone'));
+// subcollection: (path) | (SubcollectionStageOptions)
+void subcollection('reviews');
+void subcollection({ path: 'reviews' });
+void subcollection({ path: 'reviews', rawOptions: {} });
+const subcollectionOpts: SubcollectionStageOptions = { path: 'reviews' };
+void subcollectionOpts;
+// toScalarExpression / toArrayExpression on detached pipelines
+void subcollection('reviews').aggregate(countAll().as('total')).toScalarExpression();
+void subcollection('reviews').select('rating').toArrayExpression();
 // timestampToUnixMicros: (Expression) | (string)
 void timestampToUnixMicros(field('ts'));
 void timestampToUnixMicros('ts');
@@ -1543,11 +1467,9 @@ const pipelineComparisonOps = xDb
   )
   .select(
     field('sku'),
-    conditional(
-      field('stock').greaterThan(0),
-      constant('in-stock'),
-      constant('out-of-stock'),
-    ).as('availability'),
+    conditional(field('stock').greaterThan(0), constant('in-stock'), constant('out-of-stock')).as(
+      'availability',
+    ),
     isType(field('value'), 'string').as('isString'),
     logicalMaximum(field('bidA'), field('bidB')).as('topBid'),
     logicalMinimum(field('askA'), field('askB')).as('bottomAsk'),
@@ -1602,10 +1524,7 @@ const pipelineStringOps = xDb
       stringContains(field('bio'), 'developer'),
       like('role', 'eng%'),
       regexContains(field('phone'), '^\\+1'),
-      xor(
-        field('isPublic').equal(true),
-        field('isVerified').equal(true),
-      ),
+      xor(field('isPublic').equal(true), field('isVerified').equal(true)),
     ),
   )
   .addFields(
@@ -1691,11 +1610,41 @@ const pipelineArrayOps = xDb
     array([constant(1), constant(2), constant(3)]).as('fixedArr'),
     arrayLength(field('comments')).as('commentCount'),
     arrayLength('comments').as('commentCount2'),
+    arrayFirst(field('items')).as('firstItemByHelper'),
+    arrayFirst('items').as('firstItemByField'),
+    arrayFirstN(field('items'), 2).as('firstItems'),
+    arrayFirstN('items', field('limit')).as('dynamicFirstItems'),
     arrayGet(field('items'), 0).as('firstItem'),
     arrayGet(field('items'), field('idx')).as('dynamicItem'),
     arrayGet('items', 0).as('firstItem2'),
     arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
     arrayConcat('primaryTags', ['extra']).as('allTags2'),
+    arrayFilter('scores', 'score', greaterThan(variable('score'), constant(15))).as(
+      'passingScores',
+    ),
+    field('scores')
+      .arrayFilter('score', greaterThan(variable('score'), constant(20)))
+      .as('topScores'),
+    arrayFirst('scores').as('firstScore'),
+    arrayFirstN('scores', 2).as('firstTwoScores'),
+    field('scores').arrayLast().as('lastScore'),
+    field('scores').arrayLastN(2).as('lastTwoScores'),
+    arraySlice('scores', 1, 2).as('middleScores'),
+    arrayTransform('scores', 'score', add(variable('score'), 1)).as('incrementedScores'),
+    arrayTransformWithIndex(
+      'scores',
+      'score',
+      'index',
+      add(variable('score'), variable('index')),
+    ).as('indexedScores'),
+    arrayMaximum('scores').as('maxScore'),
+    arrayMaximumN('scores', 2).as('topTwoScores'),
+    arrayMinimum('scores').as('minScore'),
+    arrayMinimumN('scores', 2).as('bottomTwoScores'),
+    arrayIndexOf('scores', 20).as('firstTwentyIndex'),
+    field('scores').arrayIndexOf(20).as('fluentFirstTwentyIndex'),
+    arrayLastIndexOf('scores', 20).as('lastTwentyIndex'),
+    arrayIndexOfAll('scores', 20).as('allTwentyIndexes'),
     arraySum(field('scores')).as('totalScore'),
     arraySum('scores').as('totalScore2'),
   );
@@ -1729,10 +1678,7 @@ const pipelineAllAggregates = xDb
       arrayAggDistinct(field('category')).as('distinctCategories'),
       arrayAggDistinct('category').as('distinctCategories2'),
     ],
-    groups: [
-      field('country').as('country'),
-      toLower(field('state')).as('normalizedState'),
-    ],
+    groups: [field('country').as('country'), toLower(field('state')).as('normalizedState')],
   });
 void pipelineAllAggregates;
 
@@ -1748,6 +1694,14 @@ const pipelineTimestampOps = xDb
     timestampSubtract(field('expiry'), 'hour', 1).as('previousUpdate'),
     timestampSubtract('expiry', 'minute', 30).as('previousUpdate2'),
     timestampSubtract(field('ts'), field('unit'), field('amount')).as('dynamicSub'),
+    timestampDiff(field('endTime'), field('startTime'), 'day').as('daysApart'),
+    timestampDiff('endTime', 'startTime', 'hour').as('hoursApart'),
+    timestampExtract(field('eventTime'), 'year').as('eventYear'),
+    timestampExtract('eventTime', 'month').as('eventMonth'),
+    subcollection('reviews')
+      .aggregate(countAll().as('reviewCount'))
+      .toScalarExpression()
+      .as('reviewSummary'),
     timestampToUnixMillis(field('eventTime')).as('eventTimeMs'),
     timestampToUnixMillis('eventTime').as('eventTimeMs2'),
     timestampToUnixSeconds(field('eventTime')).as('eventTimeSec'),
@@ -1835,6 +1789,14 @@ const findNearestStageOpts: FindNearestStageOptions = {
   distanceField: 'dist',
   limit: 5,
 };
+const searchStageOpts: SearchStageOptions = {
+  query: documentMatches('breakfast'),
+  sort: [descending(score())],
+  addFields: [(score() as FunctionExpression).as('searchScore')],
+};
+const defineStageOpts: DefineStageOptions = {
+  variables: [field('price').as('unitPrice')],
+};
 const unionStageOpts: UnionStageOptions = {
   other: xDb.pipeline().collection('backup'),
 };
@@ -1862,6 +1824,8 @@ void collectionGroupStageOpts;
 void databaseStageOpts;
 void documentsStageOpts;
 void findNearestStageOpts;
+void searchStageOpts;
+void defineStageOpts;
 void unionStageOpts;
 void unnestStageOpts;
 void executeOpts;

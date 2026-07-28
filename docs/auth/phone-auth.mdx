@@ -23,13 +23,13 @@ Ensure that all parts of step 1 and 2 from [the official firebase iOS phone auth
 
 Phone auth requires app verification, and the automatic app verification process uses data-only firebase cloud messages to the app. Data-only cloud messaging only works on real devices where the app has background refresh enabled. If background refresh disabled, or if using the Simulator, app verification uses the fallback reCAPTCHA flow allowing you to check if it is configured correctly.
 
-For reliable automated testing, you may want to disable both automatic and fallback reCAPTCHA app verification for your app. To do this, [you may disable app verification in AuthSettings](https://rnfirebase.io/reference/auth/authsettings#appVerificationDisabledForTesting) prior to calling any phone auth methods.
+For reliable automated testing, you may want to disable both automatic and fallback reCAPTCHA app verification for your app. To do this, [you may disable app verification in AuthSettings](https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/AuthSettings.html#appVerificationDisabledForTesting) prior to calling any phone auth methods.
 
 # Android Setup
 
 Ensure that all parts of step 1 and 2 from [the official firebase Android phone auth docs](https://firebase.google.com/docs/auth/android/phone-auth#enable-phone-number-sign-in-for-your-firebase-project) have been followed.
 
-To bypass Play Integrity for manual testing, you may [force reCAPTCHA to be used](https://rnfirebase.io/reference/auth/authsettings#appVerificationDisabledForTesting) prior to calling [`verifyPhoneNumber`](https://rnfirebase.io/reference/auth#verifyPhoneNumber).
+To bypass Play Integrity for manual testing, you may [force reCAPTCHA to be used](https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/AuthSettings.html#appVerificationDisabledForTesting) prior to calling [`verifyPhoneNumber`](https://reference.rnfirebase.io/_react-native-firebase/auth/verifyPhoneNumber.html).
 
 # Expo Setup
 
@@ -45,7 +45,7 @@ To use phone auth in an expo app, add the `@react-native-firebase/auth` config p
 
 The `@react-native-firebase/auth` config plugin is not required for all auth providers, but it is required to use phone auth. The plugin [will set up reCAPTCHA](https://firebase.google.com/docs/auth/ios/phone-auth#set-up-recaptcha-verification) verification for you on iOS.
 
-The recommendation is to use a [custom development client](https://docs.expo.dev/clients/getting-started/). For more info on using Expo with React Native Firebase, see our [Expo docs](/#expo).
+The recommendation is to use a [custom development client](https://docs.expo.dev/develop/development-builds/introduction/#use-libraries-with-native-code-that-arent). For more info on using Expo with React Native Firebase, see our [Expo docs](/#installation-for-expo-projects).
 
 # Sign-in
 

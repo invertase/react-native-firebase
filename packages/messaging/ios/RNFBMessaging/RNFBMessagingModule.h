@@ -16,9 +16,9 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
+#import "RNFBMessagingTurboModules.h"
 
-@interface RNFBMessagingModule : NSObject <RCTBridgeModule>
+@interface RNFBMessagingModule : NSObject <NativeRNFBTurboMessagingSpec>
 + (NSDictionary *_Nonnull)addCustomPropsToUserProps:(NSDictionary *_Nullable)userProps
                                   withLaunchOptions:(NSDictionary *_Nullable)launchOptions;
 @property BOOL isDeliveryMetricsExportToBigQueryEnabled;

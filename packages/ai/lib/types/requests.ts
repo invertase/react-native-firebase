@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { TypedSchema } from '../requests/schema-builder';
+import { ObjectSchema, TypedSchema } from '../requests/schema-builder';
 import { Content, Part } from './content';
 import {
   FunctionCallingMode,
@@ -23,8 +23,9 @@ import {
   HarmBlockThreshold,
   HarmCategory,
   ResponseModality,
+  ThinkingLevel,
 } from './enums';
-import { ObjectSchemaInterface, SchemaRequest } from './schema';
+import { ObjectSchemaRequest, SchemaRequest } from './schema';
 
 /**
  * Base parameters for a number of methods.
@@ -116,6 +117,16 @@ export interface GenerationConfig {
    */
   responseSchema?: TypedSchema | SchemaRequest;
   /**
+   * Output schema of the generated response. This is an alternative to
+   * `responseSchema` that accepts [JSON Schema](https://json-schema.org/).
+   *
+   * If set, `responseSchema` must be omitted, but `responseMimeType`
+   * is required and must be set to `application/json`.
+   */
+  responseJsonSchema?: {
+    [key: string]: unknown;
+  };
+  /**
    * Generation modalities to be returned in generation responses.
    *
    * @remarks
@@ -129,6 +140,157 @@ export interface GenerationConfig {
    * Configuration for "thinking" behavior of compatible Gemini models.
    */
   thinkingConfig?: ThinkingConfig;
+  /**
+   * Configuration options for generating images with Gemini models.
+   */
+  imageConfig?: ImageConfig;
+}
+
+/**
+ * Configuration options for generating images with Gemini models.
+ * @public
+ */
+export interface ImageConfig {
+  /**
+   * The aspect ratio of generated images.
+   */
+  aspectRatio?: ImageConfigAspectRatio;
+  /**
+   * The size of the generated images.
+   */
+  imageSize?: ImageConfigImageSize;
+}
+
+/**
+ * Aspect ratios for generated images.
+ * @public
+ */
+export const ImageConfigAspectRatio = {
+  SQUARE_1x1: '1:1',
+  PORTRAIT_9x16: '9:16',
+  LANDSCAPE_16x9: '16:9',
+  PORTRAIT_3x4: '3:4',
+  LANDSCAPE_4x3: '4:3',
+  PORTRAIT_2x3: '2:3',
+  LANDSCAPE_3x2: '3:2',
+  PORTRAIT_4x5: '4:5',
+  LANDSCAPE_5x4: '5:4',
+  PORTRAIT_1x4: '1:4',
+  LANDSCAPE_4x1: '4:1',
+  PORTRAIT_1x8: '1:8',
+  LANDSCAPE_8x1: '8:1',
+  ULTRAWIDE_21x9: '21:9',
+} as const;
+
+/**
+ * Aspect ratios for generated images.
+ * @public
+ */
+export type ImageConfigAspectRatio =
+  (typeof ImageConfigAspectRatio)[keyof typeof ImageConfigAspectRatio];
+
+/**
+ * Sizes for generated images. For example, '1K' is 1024px, '2K' is 2048px, and '4K' is 4096px.
+ * @public
+ */
+export const ImageConfigImageSize = {
+  SIZE_512: '512',
+  SIZE_1K: '1K',
+  SIZE_2K: '2K',
+  SIZE_4K: '4K',
+} as const;
+
+/**
+ * Sizes for generated images.
+ * @public
+ */
+export type ImageConfigImageSize = (typeof ImageConfigImageSize)[keyof typeof ImageConfigImageSize];
+
+/**
+ * An object that represents a latitude/longitude pair.
+ * @public
+ */
+export interface LatLng {
+  /**
+   * The latitude in degrees. It must be in the range `[-90.0, +90.0]`.
+   */
+  latitude?: number;
+  /**
+   * The longitude in degrees. It must be in the range `[-180.0, +180.0]`.
+   */
+  longitude?: number;
+}
+
+/**
+ * Configuration options for data retrieval tools.
+ * @public
+ */
+export interface RetrievalConfig {
+  /**
+   * The location of the user.
+   */
+  latLng?: LatLng;
+  /**
+   * The language code of the user.
+   */
+  languageCode?: string;
+}
+
+/**
+ * Enables context window compression to manage the model's context window.
+ *
+ * @remarks
+ * This mechanism prevents the context from exceeding a given length.
+ *
+ * @beta
+ */
+export interface ContextWindowCompressionConfig {
+  /**
+   * The number of tokens (before running a turn) that triggers the context
+   * window compression.
+   */
+  triggerTokens?: number;
+  /**
+   * The sliding window compression mechanism.
+   */
+  slidingWindow?: SlidingWindow;
+}
+
+/**
+ * Configures the sliding window context compression mechanism.
+ *
+ * @remarks
+ * The sliding window discards content at the beginning of the
+ * context window. The resulting context will always begin at
+ * the start of a `user` role turn. System instructions
+ * will always remain at the start of the result.
+ *
+ * @beta
+ */
+export interface SlidingWindow {
+  /**
+   * The session reduction target, for example, how many tokens the model
+   * should keep.
+   */
+  targetTokens?: number;
+}
+
+/**
+ * Configuration for the session resumption mechanism.
+ *
+ * @remarks
+ * When included in the session setup, the server will send
+ * {@link LiveSessionResumptionUpdate} messages in the response stream.
+ *
+ * @beta
+ */
+export interface SessionResumptionConfig {
+  /**
+   * The session resumption handle of the previous session to restore.
+   *
+   * If not present, a new session will be started.
+   */
+  handle?: string;
 }
 
 /**
@@ -198,6 +360,12 @@ export interface LiveGenerationConfig {
    * "How are you today?", the model may transcribe that output across three messages, broken up as "How a", "re yo", "u today?".
    */
   outputAudioTranscription?: AudioTranscriptionConfig;
+  /**
+   * The context window compression configuration.
+   *
+   * @beta
+   */
+  contextWindowCompression?: ContextWindowCompressionConfig;
 }
 
 /**
@@ -209,6 +377,22 @@ export interface StartChatParams extends BaseParams {
   tools?: Tool[];
   toolConfig?: ToolConfig;
   systemInstruction?: string | Part | Content;
+}
+
+/**
+ * Params for {@link TemplateGenerativeModel.startChat}.
+ * @beta
+ */
+export interface StartTemplateChatParams extends Omit<StartChatParams, 'tools'> {
+  /**
+   * The ID of the server-side template to execute.
+   */
+  templateId: string;
+  /**
+   * A key-value map of variables to populate the template with.
+   */
+  templateVariables?: Record<string, unknown>;
+  tools?: TemplateTool[];
 }
 
 /**
@@ -244,13 +428,42 @@ export interface RequestOptions {
    * Base url for endpoint. Defaults to https://firebasevertexai.googleapis.com
    */
   baseUrl?: string;
+  /**
+   * Limits amount of sequential function calls the SDK can make during automatic
+   * function calling, in order to prevent infinite loops. If not specified,
+   * this value defaults to 10.
+   *
+   * When it reaches this limit, it will return the last response received
+   * from the model, whether it is a text response or further function calls.
+   */
+  maxSequentialFunctionCalls?: number;
+}
+
+/**
+ * Options that can be provided per-request.
+ *
+ * Options specified here will override any default {@link RequestOptions}
+ * configured on a model.
+ *
+ * @public
+ */
+export interface SingleRequestOptions extends RequestOptions {
+  /**
+   * An `AbortSignal` instance that allows cancelling ongoing requests.
+   */
+  signal?: AbortSignal;
 }
 
 /**
  * Defines a tool that model can call to access external knowledge.
  * @public
  */
-export type Tool = FunctionDeclarationsTool | GoogleSearchTool | CodeExecutionTool | URLContextTool;
+export type Tool =
+  | FunctionDeclarationsTool
+  | GoogleMapsTool
+  | GoogleSearchTool
+  | CodeExecutionTool
+  | URLContextTool;
 
 /**
  * Structured representation of a function declaration as defined by the
@@ -278,7 +491,13 @@ export interface FunctionDeclaration {
    * format. Reflects the Open API 3.03 Parameter Object. Parameter names are
    * case-sensitive. For a function with no parameters, this can be left unset.
    */
-  parameters?: ObjectSchemaInterface;
+  parameters?: ObjectSchema | ObjectSchemaRequest;
+  /**
+   * Reference to an actual function to call. Specifying this will cause the
+   * function to be called automatically when requested by the model.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- Matches firebase-js-sdk public API.
+  functionReference?: Function;
 }
 
 /**
@@ -314,6 +533,44 @@ export interface GoogleSearchTool {
  * @public
  */
 export interface GoogleSearch {}
+
+/**
+ * Specifies the Google Maps configuration.
+ *
+ * @public
+ */
+export interface GoogleMaps {
+  /**
+   * @deprecated The `enableWidget` feature has been deprecated by the Grounding for Google Maps
+   * service.
+   *
+   * If true, include the widget context token in the response.
+   */
+  enableWidget?: boolean;
+}
+
+/**
+ * A tool that allows a Gemini model to connect to Google Maps to access and incorporate
+ * location-based information into its responses.
+ *
+ * Important: If using Grounding with Google Maps, you are required to comply with the
+ * "Grounding with Google Maps" usage requirements for your chosen API provider: {@link https://ai.google.dev/gemini-api/terms#grounding-with-google-maps | Gemini Developer API}
+ * or Vertex AI Gemini API (see {@link https://cloud.google.com/terms/service-terms | Service Terms}
+ * section within the Service Specific Terms).
+ *
+ * @public
+ */
+export interface GoogleMapsTool {
+  /**
+   * Specifies the Google Maps configuration.
+   *
+   * When using this feature, you are required to comply with the "Grounding with Google Maps"
+   * usage requirements for your chosen API provider: {@link https://ai.google.dev/gemini-api/terms#grounding-with-google-maps | Gemini Developer API}
+   * or Vertex AI Gemini API (see {@link https://cloud.google.com/terms/service-terms | Service Terms}
+   * section within the Service Specific Terms).
+   */
+  googleMaps: GoogleMaps;
+}
 
 /**
  * A tool that enables the model to use code execution.
@@ -370,11 +627,68 @@ export interface FunctionDeclarationsTool {
 }
 
 /**
+ * Structured representation of a template function declaration.
+ * @beta
+ */
+export interface TemplateFunctionDeclaration {
+  /**
+   * The name of the function to call. Must start with a letter or an
+   * underscore. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with
+   * a max length of 64.
+   */
+  name: string;
+  /**
+   * Description is intentionally unsupported for template function declarations.
+   */
+  description?: never;
+  /**
+   * Optional. Describes the parameters to this function in JSON Schema Object
+   * format.
+   */
+  parameters?: ObjectSchema | ObjectSchemaRequest;
+  /**
+   * Reference to an actual function to call. Specifying this will cause the
+   * function to be called automatically when requested by the model.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- Matches firebase-js-sdk public API.
+  functionReference?: Function;
+}
+
+/**
+ * A piece of code that enables the system to interact with external systems.
+ * @beta
+ */
+export interface TemplateFunctionDeclarationsTool {
+  /**
+   * Optional. One or more function declarations
+   * to be passed to the server-side template execution.
+   */
+  functionDeclarations?: TemplateFunctionDeclaration[];
+}
+
+/**
+ * Defines a tool that a {@link TemplateGenerativeModel} can call
+ * to access external knowledge.
+ * @beta
+ */
+export type TemplateTool = TemplateFunctionDeclarationsTool;
+
+/**
+ * Tool configuration for `TemplateGenerativeModel`s.
+ * This config is shared for all tools provided in the server prompt template request.
+ * @public
+ */
+export interface TemplateToolConfig {
+  retrievalConfig?: RetrievalConfig;
+}
+
+/**
  * Tool config. This config is shared for all tools provided in the request.
  * @public
  */
 export interface ToolConfig {
   functionCallingConfig?: FunctionCallingConfig;
+  retrievalConfig?: RetrievalConfig;
 }
 
 /**
@@ -404,10 +718,25 @@ export interface ThinkingConfig {
    * If you don't specify a budget, the model will determine the appropriate amount
    * of thinking based on the complexity of the prompt.
    *
+   * The model will also error if `thinkingLevel` and `thinkingBudget` are
+   * both set.
+   *
    * An error will be thrown if you set a thinking budget for a model that does not support this
    * feature or if the specified budget is not within the model's supported range.
    */
   thinkingBudget?: number;
+
+  /**
+   * If not specified, Gemini will use the model's default dynamic thinking level.
+   *
+   * @remarks
+   * Note: The model will error if `thinkingLevel` and `thinkingBudget` are
+   * both set.
+   *
+   * Important: Gemini 2.5 series models do not support thinking levels; use
+   * `thinkingBudget` to set a thinking budget instead.
+   */
+  thinkingLevel?: ThinkingLevel;
 
   /**
    * Whether to include "thought summaries" in the model's response.

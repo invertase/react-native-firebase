@@ -17,7 +17,7 @@
 
 import type { PipelineSource } from './pipeline-source';
 import type { Pipeline } from './pipeline';
-import { installPipelineRuntime, registerPipelineRuntimeInstaller } from './pipeline_runtime';
+import { registerPipelineRuntimeInstaller } from './pipeline_runtime';
 
 /**
  * @beta
@@ -35,8 +35,9 @@ export type {
   FunctionExpression,
   AggregateFunction,
   ExpressionType,
-  Type,
   TimeGranularity,
+  TimePart,
+  TimeUnit,
   AliasedAggregate,
   AliasedExpression,
 } from './expressions';
@@ -57,16 +58,21 @@ export type {
   SampleStageOptions,
   SelectStageOptions,
   SortStageOptions,
+  SubcollectionStageOptions,
   UnionStageOptions,
   UnnestStageOptions,
+  DefineStageOptions,
+  SearchStageOptions,
   WhereStageOptions,
 } from './stage_options';
 export type { PipelineExecuteOptions } from './pipeline_options';
 export type { OneOf } from './types';
 
 export { execute } from './pipeline_impl';
+export { subcollection } from './subcollection';
 export {
   field,
+  variable,
   and,
   or,
   greaterThan,
@@ -79,6 +85,7 @@ export {
   arrayContains,
   arrayContainsAny,
   arrayContainsAll,
+  arrayFilter,
   startsWith,
   endsWith,
   OrderingHelper as Ordering,
@@ -93,6 +100,10 @@ export {
   divide,
   multiply,
   documentId,
+  parent,
+  documentMatches,
+  score,
+  geoDistance,
   sum,
   count,
   average,
@@ -102,21 +113,39 @@ export {
   mod,
   round,
   conditional,
+  switchOn,
   countDistinct,
   first,
   last,
   arrayAgg,
   concat,
+  coalesce,
   sqrt,
+  currentDocument,
   currentTimestamp,
   not,
   ifAbsent,
+  ifNull,
   ifError,
   toLower,
   toUpper,
   trim,
   substring,
   arrayAggDistinct,
+  arrayFirst,
+  arrayFirstN,
+  arrayIndexOf,
+  arrayIndexOfAll,
+  arrayLast,
+  arrayLastIndexOf,
+  arrayLastN,
+  arrayMaximum,
+  arrayMaximumN,
+  arrayMinimum,
+  arrayMinimumN,
+  arraySlice,
+  arrayTransform,
+  arrayTransformWithIndex,
   arrayConcat,
   arrayGet,
   arrayLength,
@@ -168,6 +197,8 @@ export {
   stringReplaceOne,
   stringReverse,
   timestampAdd,
+  timestampDiff,
+  timestampExtract,
   timestampSubtract,
   timestampToUnixMicros,
   timestampToUnixMillis,
@@ -180,12 +211,12 @@ export {
   unixSecondsToTimestamp,
   vectorLength,
   xor,
+  nor,
   length,
 } from './expressions';
 export { pipelineResultEqual } from './pipeline-result';
 
 registerPipelineRuntimeInstaller();
-installPipelineRuntime();
 
 declare module '../types/firestore' {
   /**

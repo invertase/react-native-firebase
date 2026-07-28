@@ -18,9 +18,21 @@ import appCheckConfig from '../configs/app-check';
 import firestoreConfig from '../configs/firestore';
 import firestorePipelinesConfig from '../configs/firestore-pipelines';
 import remoteConfigConfig from '../configs/remote-config';
+import authConfig from '../configs/auth';
+import installationsConfig from '../configs/installations';
+import perfConfig from '../configs/perf-config';
+import appConfig from '../configs/app';
+import analyticsConfig from '../configs/analytics';
+import crashlyticsConfig from '../configs/crashlytics';
+import inAppMessagingConfig from '../configs/in-app-messaging';
+import appDistributionConfig from '../configs/app-distribution';
+import mlConfig from '../configs/ml';
+import functionsConfig from '../configs/functions';
+import messagingConfig from '../configs/messaging';
+import phoneNumberVerificationConfig from '../configs/phone-number-verification';
 
-const SCRIPT_DIR = path.resolve(__dirname, '..');
-const REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
+const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
+const EMPTY_SDK_PATH = path.join(__dirname, '..', 'configs', 'empty-sdk.d.ts');
 
 export interface PackageEntry {
   /** Short name used in reports (e.g. "remote-config"). */
@@ -100,17 +112,71 @@ function optionalFirebasePackage(
   return typesPath ? [createEntry(typesPath)] : [];
 }
 
+function rnOnlyPackage(
+  entry: Omit<PackageEntry, 'firebaseSdkTypesPaths'>,
+): PackageEntry {
+  return {
+    ...entry,
+    firebaseSdkTypesPaths: [EMPTY_SDK_PATH],
+  };
+}
+
 export const packages: PackageEntry[] = [
+  {
+    name: 'app',
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('app')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('app'), 'modular.d.ts'),
+      path.join(rnDist('app'), 'index.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('app'), 'types', 'app.d.ts'),
+      path.join(rnDist('app'), 'types', 'internal.d.ts'),
+      path.join(rnDist('app'), 'FirebaseApp.d.ts'),
+    ],
+    config: appConfig,
+  },
+  {
+    name: 'auth',
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('auth')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('auth'), 'index.d.ts'),
+      path.join(rnDist('auth'), 'types', 'auth.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('auth'), 'constants.d.ts'),
+      path.join(rnDist('auth'), 'types', 'internal.d.ts'),
+      path.join(rnDist('auth'), 'ConfirmationResult.d.ts'),
+      path.join(rnDist('auth'), 'MultiFactorResolver.d.ts'),
+      path.join(rnDist('auth'), 'PhoneAuthListener.d.ts'),
+      path.join(rnDist('auth'), 'PhoneMultiFactorGenerator.d.ts'),
+      path.join(rnDist('auth'), 'Settings.d.ts'),
+      path.join(rnDist('auth'), 'TotpMultiFactorGenerator.d.ts'),
+      path.join(rnDist('auth'), 'TotpSecret.d.ts'),
+      path.join(rnDist('auth'), 'User.d.ts'),
+      path.join(rnDist('auth'), 'getMultiFactorResolver.d.ts'),
+      path.join(rnDist('auth'), 'multiFactor.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'AppleAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'EmailAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'FacebookAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'GithubAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'GoogleAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'OAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'OIDCAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'PhoneAuthProvider.d.ts'),
+      path.join(rnDist('auth'), 'providers', 'TwitterAuthProvider.d.ts'),
+    ],
+    config: authConfig,
+  },
   {
     name: 'storage',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('storage')],
     rnFirebaseModularFiles: [
+      path.join(rnDist('storage'), 'index.d.ts'),
       path.join(rnDist('storage'), 'types', 'storage.d.ts'),
-      path.join(rnDist('storage'), 'modular.d.ts'),
     ],
     rnFirebaseSupportFiles: [
       path.join(rnDist('storage'), 'StorageStatics.d.ts'),
-      path.join(rnDist('storage'), 'types', 'namespaced.d.ts'),
       path.join(rnDist('storage'), 'types', 'internal.d.ts'),
     ],
     config: storageConfig,
@@ -119,12 +185,12 @@ export const packages: PackageEntry[] = [
     name: 'remote-config',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('remote-config')],
     rnFirebaseModularFiles: [
+      path.join(rnDist('remote-config'), 'index.d.ts'),
       path.join(rnDist('remote-config'), 'types', 'remote-config.d.ts'),
-      path.join(rnDist('remote-config'), 'modular.d.ts'),
     ],
     rnFirebaseSupportFiles: [
       path.join(rnDist('remote-config'), 'statics.d.ts'),
-      path.join(rnDist('remote-config'), 'types', 'namespaced.d.ts'),
+      path.join(rnDist('remote-config'), 'types', 'internal.d.ts'),
     ],
     config: remoteConfigConfig,
   },
@@ -166,13 +232,12 @@ export const packages: PackageEntry[] = [
     name: 'database',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('database')],
     rnFirebaseModularFiles: [
+      path.join(rnDist('database'), 'index.d.ts'),
       path.join(rnDist('database'), 'types', 'database.d.ts'),
-      path.join(rnDist('database'), 'modular.d.ts'),
       path.join(rnDist('database'), 'modular', 'query.d.ts'),
       path.join(rnDist('database'), 'modular', 'transaction.d.ts'),
     ],
     rnFirebaseSupportFiles: [
-      path.join(rnDist('database'), 'types', 'namespaced.d.ts'),
       path.join(rnDist('database'), 'types', 'internal.d.ts'),
       path.join(rnDist('database'), 'DatabaseDataSnapshot.d.ts'),
       path.join(rnDist('database'), 'DatabaseOnDisconnect.d.ts'),
@@ -187,8 +252,8 @@ export const packages: PackageEntry[] = [
     name: 'app-check',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('app-check')],
     rnFirebaseModularFiles: [
+      path.join(rnDist('app-check'), 'index.d.ts'),
       path.join(rnDist('app-check'), 'types', 'appcheck.d.ts'),
-      path.join(rnDist('app-check'), 'modular.d.ts'),
     ],
     rnFirebaseSupportFiles: [
       path.join(rnDist('app-check'), 'providers.d.ts'),
@@ -197,23 +262,32 @@ export const packages: PackageEntry[] = [
     config: appCheckConfig,
   },
   {
+    name: 'installations',
+    firebaseSdkTypesPaths: [
+      requiredFirebaseTypes('installations'),
+    ],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('installations'), 'index.d.ts'),
+      path.join(rnDist('installations'), 'types', 'installations.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [path.join(rnDist('installations'), 'types', 'internal.d.ts')],
+    config: installationsConfig,
+  },
+  {
     name: 'firestore',
     firebaseSdkTypesPaths: [requiredFirebaseTypes('firestore')],
     rnFirebaseModularFiles: [
       path.join(rnDist('firestore'), 'types', 'firestore.d.ts'),
-      path.join(rnDist('firestore'), 'modular.d.ts'),
+      path.join(rnDist('firestore'), 'index.d.ts'),
       path.join(rnDist('firestore'), 'modular', 'query.d.ts'),
       path.join(rnDist('firestore'), 'modular', 'snapshot.d.ts'),
       path.join(rnDist('firestore'), 'modular', 'Bytes.d.ts'),
       path.join(rnDist('firestore'), 'modular', 'FieldPath.d.ts'),
       path.join(rnDist('firestore'), 'modular', 'FieldValue.d.ts'),
-      path.join(rnDist('firestore'), 'modular', 'GeoPoint.d.ts'),
-      path.join(rnDist('firestore'), 'modular', 'Timestamp.d.ts'),
       path.join(rnDist('firestore'), 'modular', 'VectorValue.d.ts'),
     ],
     rnFirebaseSupportFiles: [
-      path.join(rnDist('firestore'), 'types', 'namespaced.d.ts'),
-      path.join(rnDist('firestore'), 'types', 'internal.d.ts'),
+            path.join(rnDist('firestore'), 'types', 'internal.d.ts'),
       path.join(rnDist('firestore'), 'FirestoreAggregate.d.ts'),
       path.join(rnDist('firestore'), 'FirestoreFilter.d.ts'),
       path.join(rnDist('firestore'), 'FirestoreBlob.d.ts'),
@@ -247,6 +321,106 @@ export const packages: PackageEntry[] = [
     ],
     config: firestorePipelinesConfig,
   })),
+  {
+    name: 'perf',
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('performance')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('perf'), 'index.d.ts'),
+      path.join(rnDist('perf'), 'types', 'perf.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [],
+    config: perfConfig,
+  },
+  {
+    name: 'analytics',
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('analytics')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('analytics'), 'index.d.ts'),
+      path.join(rnDist('analytics'), 'types', 'analytics.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('analytics'), 'types', 'internal.d.ts'),
+      path.join(rnDist('analytics'), 'structs.d.ts'),
+      path.join(rnDist('analytics'), 'struct.d.ts'),
+    ],
+    config: analyticsConfig,
+  },
+  rnOnlyPackage({
+    name: 'crashlytics',
+    rnFirebaseModularFiles: [
+      path.join(rnDist('crashlytics'), 'index.d.ts'),
+      path.join(rnDist('crashlytics'), 'types', 'crashlytics.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('crashlytics'), 'handlers.d.ts'),
+      path.join(rnDist('crashlytics'), 'types', 'internal.d.ts'),
+    ],
+    config: crashlyticsConfig,
+  }),
+  rnOnlyPackage({
+    name: 'in-app-messaging',
+    rnFirebaseModularFiles: [
+      path.join(rnDist('in-app-messaging'), 'index.d.ts'),
+      path.join(rnDist('in-app-messaging'), 'types', 'in-app-messaging.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('in-app-messaging'), 'types', 'internal.d.ts'),
+    ],
+    config: inAppMessagingConfig,
+  }),
+  rnOnlyPackage({
+    name: 'app-distribution',
+    rnFirebaseModularFiles: [
+      path.join(rnDist('app-distribution'), 'index.d.ts'),
+      path.join(rnDist('app-distribution'), 'types', 'app-distribution.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('app-distribution'), 'types', 'internal.d.ts'),
+    ],
+    config: appDistributionConfig,
+  }),
+  rnOnlyPackage({
+    name: 'ml',
+    rnFirebaseModularFiles: [
+      path.join(rnDist('ml'), 'index.d.ts'),
+      path.join(rnDist('ml'), 'types', 'ml.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [path.join(rnDist('ml'), 'types', 'internal.d.ts')],
+    config: mlConfig,
+  }),
+  {
+    name: 'functions',
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('functions')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('functions'), 'index.d.ts'),
+      path.join(rnDist('functions'), 'types', 'functions.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('functions'), 'HttpsError.d.ts'),
+      path.join(rnDist('functions'), 'types', 'internal.d.ts'),
+    ],
+    config: functionsConfig,
+  },
+  {
+    name: 'messaging',
+    firebaseSdkTypesPaths: [requiredFirebaseTypes('messaging')],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('messaging'), 'index.d.ts'),
+      path.join(rnDist('messaging'), 'types', 'messaging.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('messaging'), 'statics.d.ts'),
+      path.join(rnDist('messaging'), 'remoteMessageOptions.d.ts'),
+      path.join(rnDist('messaging'), 'types', 'internal.d.ts'),
+    ],
+    config: messagingConfig,
+  },
+  rnOnlyPackage({
+    name: 'phone-number-verification',
+    rnFirebaseModularFiles: [path.join(rnDist('phone-number-verification'), 'index.d.ts')],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('phone-number-verification'), 'types', 'pnv.d.ts'),
+    ],
+    config: phoneNumberVerificationConfig,
+  }),
 ];
-
-

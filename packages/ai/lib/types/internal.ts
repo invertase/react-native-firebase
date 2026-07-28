@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
+import type { AppCheckTokenResult } from '@react-native-firebase/app-check';
 import { Backend } from '../public-types';
 
 export interface ApiSettings {
@@ -28,5 +28,5 @@ export interface ApiSettings {
   automaticDataCollectionEnabled?: boolean;
   backend: Backend;
   getAuthToken?: () => Promise<string>;
-  getAppCheckToken?: () => Promise<FirebaseAppCheckTypes.AppCheckTokenResult>;
+  getAppCheckToken?: () => Promise<AppCheckTokenResult>;
 }

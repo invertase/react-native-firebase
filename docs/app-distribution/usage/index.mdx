@@ -1,7 +1,6 @@
 ---
 title: App Distribution
 description: Installation and getting started with App Distribution.
-icon: //firebase.google.com/static/images/products/icons/run_app_distribution.svg
 next: /auth/usage
 previous: /app-check/usage
 ---
@@ -34,7 +33,7 @@ Add the plugin to your `/android/build.gradle` file as a dependency:
 buildscript {
     dependencies {
         // ...
-        classpath 'com.google.firebase:firebase-appdistribution-gradle:5.2.1'
+        classpath 'com.google.firebase:firebase-appdistribution-gradle:5.3.0'
     }
 ```
 
@@ -44,6 +43,15 @@ Apply the plugin via the `/android/app/build.gradle` file (at the top):
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.appdistribution'
 ```
+
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+> **React Native only:** There is no firebase-js-sdk web equivalent for App Distribution.
 
 # What does it do
 

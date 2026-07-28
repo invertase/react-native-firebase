@@ -64,20 +64,9 @@ describe('auth() -> emailLink Provider', function () {
         signInResponse.should.containEql(oobInfo.oobCode);
       }
     });
-
-    xit('should send email with defaults', async function () {
-      const { getAuth, sendSignInLinkToEmail } = authModular;
-
-      const auth = getAuth();
-      const random = Utils.randString(12, '#aA');
-      const email = `${random}@${random}.com`;
-
-      await sendSignInLinkToEmail(auth, email);
-    });
   });
-
   describe('isSignInWithEmailLink', function () {
-    it('should return true/false', async function () {
+    it('should return true/false', function () {
       const { getAuth, isSignInWithEmailLink } = authModular;
 
       const auth = getAuth();
@@ -90,14 +79,14 @@ describe('auth() -> emailLink Provider', function () {
 
       // ios does not require apiKey, but android and web/other do
       if (!Platform.ios) {
-        should.equal(false, await isSignInWithEmailLink(auth, emailLink1));
+        should.equal(false, isSignInWithEmailLink(auth, emailLink1));
       } else {
-        should.equal(true, await isSignInWithEmailLink(auth, emailLink1));
+        should.equal(true, isSignInWithEmailLink(auth, emailLink1));
       }
-      should.equal(false, await isSignInWithEmailLink(auth, emailLink2));
-      should.equal(false, await isSignInWithEmailLink(auth, emailLink3));
-      should.equal(true, await isSignInWithEmailLink(auth, emailLink4));
-      should.equal(true, await isSignInWithEmailLink(auth, emailLink5));
+      should.equal(false, isSignInWithEmailLink(auth, emailLink2));
+      should.equal(false, isSignInWithEmailLink(auth, emailLink3));
+      should.equal(true, isSignInWithEmailLink(auth, emailLink4));
+      should.equal(true, isSignInWithEmailLink(auth, emailLink5));
     });
   });
 

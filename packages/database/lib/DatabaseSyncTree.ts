@@ -15,7 +15,7 @@
  *
  */
 
-import { createDeprecationProxy, isString } from '@react-native-firebase/app/dist/module/common';
+import { isString } from '@react-native-firebase/app/dist/module/common';
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import SharedEventEmitter from '@react-native-firebase/app/dist/module/internal/SharedEventEmitter';
 import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
@@ -26,11 +26,11 @@ import type {
   DatabaseSnapshotInternal,
   RNFBDatabaseModule,
 } from './types/internal';
-import type { FirebaseDatabaseTypes } from './types/namespaced';
+import type { DatabaseReference, DataSnapshot } from './types/database';
 
 interface DatabaseSyncTreeRegistration {
   eventType: string;
-  ref: FirebaseDatabaseTypes.Reference;
+  ref: DatabaseReference;
   path: string;
   key: string;
   appName: string;
@@ -79,7 +79,8 @@ class DatabaseSyncTree {
   }
 
   private get native(): RNFBDatabaseModule {
-    return getReactNativeModule('RNFBDatabaseQueryModule') as unknown as RNFBDatabaseModule;
+    // NewArch-AD-18 E9: query host for sync tree off(); merged surface exposes off via composite.
+    return getReactNativeModule('NativeRNFBTurboDatabaseQuery') as unknown as RNFBDatabaseModule;
   }
 
   private _allocate(
@@ -145,7 +146,7 @@ class DatabaseSyncTree {
       return;
     }
 
-    let snapshot: FirebaseDatabaseTypes.DataSnapshot;
+    let snapshot: DataSnapshot;
     let previousChildName: string | null | undefined;
 
     if (!event.data) {
@@ -153,14 +154,10 @@ class DatabaseSyncTree {
     }
 
     if (event.eventType === 'value') {
-      snapshot = createDeprecationProxy(
-        new DatabaseDataSnapshot(registration.ref, event.data as DatabaseSnapshotInternal),
-      ) as FirebaseDatabaseTypes.DataSnapshot;
+      snapshot = new DatabaseDataSnapshot(registration.ref, event.data as DatabaseSnapshotInternal);
     } else {
       const childData = event.data as DatabaseChildSnapshotResultInternal;
-      snapshot = createDeprecationProxy(
-        new DatabaseDataSnapshot(registration.ref, childData.snapshot),
-      ) as FirebaseDatabaseTypes.DataSnapshot;
+      snapshot = new DatabaseDataSnapshot(registration.ref, childData.snapshot);
       previousChildName = childData.previousChildName;
     }
 

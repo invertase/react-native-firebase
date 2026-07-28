@@ -4,7 +4,10 @@ module.exports = {
   statements: 95,
   functions: 95,
   branches: 95,
-  include: ['packages/*/lib/**/*.js'],
+  include: [
+    'packages/*/lib/**/*.{js,ts,tsx}',
+    'packages/*/dist/**/*.js',
+  ],
   exclude: [
     '**/common/lib/**',
     '**/lib/handlers.js',
@@ -12,7 +15,8 @@ module.exports = {
     'packages/database/lib/DatabaseSyncTree.js',
   ],
   cwd: '..',
-  sourceMap: false,
+  sourceMap: true,
+  'exclude-after-remap': true,
   instrument: false,
   reporter: ['lcov', 'html', 'text-summary'],
 };

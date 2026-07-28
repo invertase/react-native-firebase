@@ -2,6 +2,7 @@ package io.invertase.firebase.firestore;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.pipeline.AggregateFunction;
 import com.google.firebase.firestore.pipeline.AliasedAggregate;
 import com.google.firebase.firestore.pipeline.BooleanExpression;
@@ -11,12 +12,47 @@ import com.google.firebase.firestore.pipeline.Selectable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
+  interface NestedPipelineBuilder {
+    com.google.firebase.firestore.Pipeline build(
+        ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest request)
+        throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException;
+  }
+
+  private NestedPipelineBuilder nestedPipelineBuilder;
+  private final FirebaseFirestore firestore;
+
+  ReactNativeFirebaseFirestorePipelineNodeBuilder(FirebaseFirestore firestore) {
+    this.firestore = firestore;
+  }
+
+  void setNestedPipelineBuilder(NestedPipelineBuilder nestedPipelineBuilder) {
+    this.nestedPipelineBuilder = nestedPipelineBuilder;
+  }
+
+  private enum ExpressionCoercionMode {
+    EXPRESSION_VALUE,
+    COMPARISON_OPERAND,
+    NUMERIC_OPERAND
+  }
+
+  private static final Set<String> ORDERING_COMPARISON_FUNCTIONS =
+      Collections.unmodifiableSet(
+          new HashSet<>(
+              Arrays.asList("greaterthan", "greaterthanorequal", "lessthan", "lessthanorequal")));
+
+  private static final Set<String> ARITHMETIC_FUNCTIONS =
+      Collections.unmodifiableSet(
+          new HashSet<>(Arrays.asList("add", "subtract", "multiply", "divide", "mod", "pow")));
+
   private static final class ResolvedValueBox {
     Object value;
   }
@@ -126,11 +162,18 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     final Object value;
     final String fieldName;
     final LoweredExpressionBox box;
+    final ExpressionCoercionMode mode;
 
     EnterObjectExpressionValueFrame(Object value, String fieldName, LoweredExpressionBox box) {
+      this(value, fieldName, box, ExpressionCoercionMode.EXPRESSION_VALUE);
+    }
+
+    EnterObjectExpressionValueFrame(
+        Object value, String fieldName, LoweredExpressionBox box, ExpressionCoercionMode mode) {
       this.value = value;
       this.fieldName = fieldName;
       this.box = box;
+      this.mode = mode;
     }
   }
 
@@ -301,6 +344,28 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     }
   }
 
+  private static final class ExitObjectDocumentMatchesExpressionFrame
+      implements ObjectLoweringFrame {
+    final LoweredExpressionBox box;
+    final LoweredExpressionBox queryBox;
+
+    ExitObjectDocumentMatchesExpressionFrame(
+        LoweredExpressionBox box, LoweredExpressionBox queryBox) {
+      this.box = box;
+      this.queryBox = queryBox;
+    }
+  }
+
+  private static final class ExitObjectParentExpressionFrame implements ObjectLoweringFrame {
+    final LoweredExpressionBox box;
+    final LoweredExpressionBox pathBox;
+
+    ExitObjectParentExpressionFrame(LoweredExpressionBox box, LoweredExpressionBox pathBox) {
+      this.box = box;
+      this.pathBox = pathBox;
+    }
+  }
+
   private static final class ContinueReceiverExpressionChainFrame implements ObjectLoweringFrame {
     final LoweredExpressionBox box;
     final LoweredExpressionBox baseBox;
@@ -406,6 +471,27 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       this.nextIndex = nextIndex;
       this.currentExpression = currentExpression;
       this.indexBox = indexBox;
+    }
+  }
+
+  private static final class ExitReceiverArrayFirstNFrame implements ObjectLoweringFrame {
+    final LoweredExpressionBox box;
+    final List<PendingReceiverOperation> pendingOperations;
+    final int nextIndex;
+    final Expression currentExpression;
+    final LoweredExpressionBox countBox;
+
+    ExitReceiverArrayFirstNFrame(
+        LoweredExpressionBox box,
+        List<PendingReceiverOperation> pendingOperations,
+        int nextIndex,
+        Expression currentExpression,
+        LoweredExpressionBox countBox) {
+      this.box = box;
+      this.pendingOperations = pendingOperations;
+      this.nextIndex = nextIndex;
+      this.currentExpression = currentExpression;
+      this.countBox = countBox;
     }
   }
 
@@ -728,9 +814,34 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     return coerceExpression(serializeExpressionNode(value), fieldName);
   }
 
+  String coerceStageOptionFieldName(
+      ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode value, String fieldName)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) {
+      return ((ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) value).path;
+    }
+    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) {
+      return coerceStringValueNode(
+          ((ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) value).value,
+          fieldName);
+    }
+    return coerceFieldPath(serializeExpressionNode(value), fieldName);
+  }
+
   Selectable coerceSelectable(
       ReactNativeFirebaseFirestorePipelineParser.ParsedSelectableNode value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    if (value.alias == null || value.alias.isEmpty()) {
+      if (value.expression
+          instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) {
+        String name =
+            ((ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode)
+                    value.expression)
+                .name;
+        return Expression.variable(name).alias(name);
+      }
+    }
+
     Expression expr = coerceExpression(value.expression, fieldName + ".expr");
     if (value.alias != null && !value.alias.isEmpty()) {
       return expr.alias(value.alias);
@@ -900,24 +1011,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     return rootBox.value;
   }
 
-  private Object lowerValueOrExpressionObject(Object value, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    LoweredObjectBox rootBox = new LoweredObjectBox();
-    ArrayDeque<ObjectLoweringFrame> stack = new ArrayDeque<>();
-    stack.push(new EnterObjectValueOrExpressionFrame(value, fieldName, rootBox));
-    processObjectLoweringStack(stack);
-    return rootBox.value;
-  }
-
-  private Expression lowerVectorExpressionValueObject(Object value, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    LoweredExpressionBox rootBox = new LoweredExpressionBox();
-    ArrayDeque<ObjectLoweringFrame> stack = new ArrayDeque<>();
-    stack.push(new EnterObjectVectorExpressionValueFrame(value, fieldName, rootBox));
-    processObjectLoweringStack(stack);
-    return rootBox.value;
-  }
-
   private void processObjectLoweringStack(ArrayDeque<ObjectLoweringFrame> stack)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     while (!stack.isEmpty()) {
@@ -930,36 +1023,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         List<String> pendingUnaryFunctions = new ArrayList<>();
 
         while (true) {
-          if (currentValue instanceof String) {
-            enterFrame.box.value =
-                applyPendingUnaryExpressionFunctions(
-                    Expression.field((String) currentValue), pendingUnaryFunctions);
-            break;
-          }
-
-          if (currentValue instanceof Expression) {
-            enterFrame.box.value =
-                applyPendingUnaryExpressionFunctions(
-                    (Expression) currentValue, pendingUnaryFunctions);
-            break;
-          }
-
-          if (currentValue == null
-              || currentValue instanceof Number
-              || currentValue instanceof Boolean
-              || currentValue instanceof java.util.Date
-              || currentValue instanceof Timestamp
-              || currentValue instanceof com.google.firebase.firestore.GeoPoint
-              || currentValue instanceof com.google.firebase.firestore.Blob
-              || currentValue instanceof DocumentReference
-              || currentValue instanceof com.google.firebase.firestore.VectorValue
-              || currentValue instanceof byte[]) {
-            enterFrame.box.value =
-                applyPendingUnaryExpressionFunctions(
-                    constantExpression(currentValue), pendingUnaryFunctions);
-            break;
-          }
-
           if (!(currentValue instanceof Map)) {
             throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
                 "pipelineExecute() could not convert "
@@ -984,13 +1047,19 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             continue;
           }
 
-          Object operatorName = map.get("operator");
-          if (operatorName instanceof String) {
-            LoweredBooleanBox booleanBox = new LoweredBooleanBox();
-            stack.push(
-                new ExitApplyPendingUnaryBooleanFrame(
-                    enterFrame.box, booleanBox, new ArrayList<>(pendingUnaryFunctions)));
-            stack.push(new EnterObjectBooleanFrame(currentValue, currentFieldName, booleanBox));
+          Object exprType = map.get("exprType");
+          if (exprType instanceof String
+              && "variable".equals(((String) exprType).toLowerCase(Locale.ROOT))) {
+            Object nameValue = map.get("name");
+            if (!(nameValue instanceof String) || ((String) nameValue).isEmpty()) {
+              throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                  "pipelineExecute() expected "
+                      + currentFieldName
+                      + ".name to be a non-empty string.");
+            }
+            enterFrame.box.value =
+                applyPendingUnaryExpressionFunctions(
+                    Expression.variable((String) nameValue), pendingUnaryFunctions);
             break;
           }
 
@@ -1022,7 +1091,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             break;
           }
 
-          Object exprType = map.get("exprType");
+          exprType = map.get("exprType");
           if (exprType instanceof String) {
             String normalizedType = ((String) exprType).toLowerCase(Locale.ROOT);
             if ("field".equals(normalizedType)) {
@@ -1042,10 +1111,11 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             }
           }
 
-          if (map.containsKey("fieldPath")
-              || map.containsKey("path")
-              || map.containsKey("segments")
-              || map.containsKey("_segments")) {
+          if (!isSerializedReferencePathConstantMap(map)
+              && (map.containsKey("fieldPath")
+                  || map.containsKey("path")
+                  || map.containsKey("segments")
+                  || map.containsKey("_segments"))) {
             enterFrame.box.value =
                 applyPendingUnaryExpressionFunctions(
                     Expression.field(coerceFieldPath(currentValue, currentFieldName)),
@@ -1066,74 +1136,9 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         Object currentValue = enterFrame.value;
         String currentFieldName = enterFrame.fieldName;
 
-        while (currentValue instanceof Map) {
-          Map<?, ?> map = (Map<?, ?>) currentValue;
-          Object nested = map.get("condition");
-          if (nested == null) {
-            break;
-          }
-          currentValue = nested;
-          currentFieldName = currentFieldName + ".condition";
-        }
-
         if (currentValue instanceof Map) {
           @SuppressWarnings("unchecked")
           Map<String, Object> map = (Map<String, Object>) currentValue;
-
-          Object operatorName = map.get("operator");
-          if (operatorName instanceof String) {
-            String normalizedOperator = ((String) operatorName).toUpperCase(Locale.ROOT);
-            if ("AND".equals(normalizedOperator) || "OR".equals(normalizedOperator)) {
-              Object queriesValue = map.get("queries");
-              if (!(queriesValue instanceof List) || ((List<?>) queriesValue).isEmpty()) {
-                throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-                    "pipelineExecute() expected "
-                        + currentFieldName
-                        + ".queries to contain boolean expressions.");
-              }
-
-              List<?> queries = (List<?>) queriesValue;
-              List<LoweredBooleanBox> childBoxes = new ArrayList<>(queries.size());
-              for (int i = 0; i < queries.size(); i++) {
-                childBoxes.add(new LoweredBooleanBox());
-              }
-              stack.push(
-                  new ExitBooleanLogicalFrame(
-                      enterFrame.box,
-                      "AND".equals(normalizedOperator),
-                      childBoxes,
-                      currentFieldName));
-              for (int i = queries.size() - 1; i >= 0; i--) {
-                stack.push(
-                    new EnterObjectBooleanFrame(
-                        queries.get(i),
-                        currentFieldName + ".queries[" + i + "]",
-                        childBoxes.get(i)));
-              }
-              continue;
-            }
-
-            Object fieldValue =
-                map.get("fieldPath") != null ? map.get("fieldPath") : map.get("field");
-            if (fieldValue == null) {
-              throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-                  "pipelineExecute() expected " + currentFieldName + ".fieldPath to be provided.");
-            }
-
-            List<Object> args = new ArrayList<>(2);
-            args.add(fieldValue);
-            args.add(
-                map.containsKey("value")
-                    ? map.get("value")
-                    : map.containsKey("right") ? map.get("right") : map.get("operand"));
-            scheduleBooleanFunctionLowering(
-                mapOperatorToFunctionName(normalizedOperator),
-                args,
-                currentFieldName,
-                enterFrame.box,
-                stack);
-            continue;
-          }
 
           Object name = map.get("name");
           if (name instanceof String) {
@@ -1180,6 +1185,28 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         if (enterFrame.value instanceof Expression) {
           enterFrame.box.value = (Expression) enterFrame.value;
           continue;
+        }
+        if (enterFrame.mode == ExpressionCoercionMode.NUMERIC_OPERAND
+            && tryEnterNumericOperandConstant(enterFrame, stack)) {
+          continue;
+        }
+        if (enterFrame.mode == ExpressionCoercionMode.COMPARISON_OPERAND
+            && tryEnterComparisonOperandConstant(enterFrame, stack)) {
+          continue;
+        }
+        if (enterFrame.value instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> map = (Map<String, Object>) enterFrame.value;
+          Object constantValue = unwrapConstantValue(map, enterFrame.fieldName);
+          Object resolvedValue = constantValue != null ? constantValue : map;
+          if (resolvedValue instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> resolvedMap = (Map<String, Object>) resolvedValue;
+            if (isSerializedReferencePathConstantMap(resolvedMap)) {
+              enterFrame.box.value = Expression.constant((String) resolvedMap.get("path"));
+              continue;
+            }
+          }
         }
         if (containsLowerableExpression(enterFrame.value)) {
           stack.push(
@@ -1385,6 +1412,21 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         continue;
       }
 
+      if (frame instanceof ExitObjectDocumentMatchesExpressionFrame) {
+        ExitObjectDocumentMatchesExpressionFrame exitFrame =
+            (ExitObjectDocumentMatchesExpressionFrame) frame;
+        exitFrame.box.value =
+            BooleanExpression.rawFunction(
+                "documentMatches", new Expression[] {exitFrame.queryBox.value});
+        continue;
+      }
+
+      if (frame instanceof ExitObjectParentExpressionFrame) {
+        ExitObjectParentExpressionFrame exitFrame = (ExitObjectParentExpressionFrame) frame;
+        exitFrame.box.value = Expression.parent(exitFrame.pathBox.value);
+        continue;
+      }
+
       if (frame instanceof ExitObjectRawBooleanFunctionFrame) {
         ExitObjectRawBooleanFunctionFrame exitFrame = (ExitObjectRawBooleanFunctionFrame) frame;
         Expression[] expressions = new Expression[exitFrame.childBoxes.size()];
@@ -1540,6 +1582,36 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
                       indexArg, operationFieldName + ".args[1]", indexBox));
               continue;
             }
+          case "arrayfirstn":
+            {
+              Object countArg = args.get(1);
+              if (!containsLowerableExpression(countArg)) {
+                Object countValue = resolveConstantValue(countArg, operationFieldName + ".args[1]");
+                if (countValue instanceof Number) {
+                  stack.push(
+                      new ContinueReceiverExpressionChainFrame(
+                          continueFrame.box,
+                          null,
+                          continueFrame.pendingOperations,
+                          nextIndex,
+                          currentExpression.arrayFirstN(((Number) countValue).intValue())));
+                  continue;
+                }
+              }
+
+              LoweredExpressionBox countBox = new LoweredExpressionBox();
+              stack.push(
+                  new ExitReceiverArrayFirstNFrame(
+                      continueFrame.box,
+                      continueFrame.pendingOperations,
+                      nextIndex,
+                      currentExpression,
+                      countBox));
+              stack.push(
+                  new EnterObjectExpressionValueFrame(
+                      countArg, operationFieldName + ".args[1]", countBox));
+              continue;
+            }
           case "arrayconcat":
             {
               if (args.size() < 2) {
@@ -1669,6 +1741,14 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
             }
           case "timestamptruncate":
             {
+              if (args.size() != 2) {
+                throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                    "pipelineExecute() expected "
+                        + operationFieldName
+                        + "."
+                        + operation.originalName
+                        + " to include exactly 2 arguments.");
+              }
               Object granularityArg = args.get(1);
               if (!containsLowerableExpression(granularityArg)) {
                 Object granularityValue =
@@ -1771,6 +1851,18 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         continue;
       }
 
+      if (frame instanceof ExitReceiverArrayFirstNFrame) {
+        ExitReceiverArrayFirstNFrame exitFrame = (ExitReceiverArrayFirstNFrame) frame;
+        stack.push(
+            new ContinueReceiverExpressionChainFrame(
+                exitFrame.box,
+                null,
+                exitFrame.pendingOperations,
+                exitFrame.nextIndex,
+                exitFrame.currentExpression.arrayFirstN(exitFrame.countBox.value)));
+        continue;
+      }
+
       if (frame instanceof ExitReceiverArrayConcatFrame) {
         ExitReceiverArrayConcatFrame exitFrame = (ExitReceiverArrayConcatFrame) frame;
         Object secondValue = exitFrame.childBoxes.get(0).value;
@@ -1844,6 +1936,9 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
 
         if (!containsLowerableExpression(rightArg)) {
           Object resolved = resolveConstantValue(rightArg, rightFieldName);
+          if (isOrderingComparisonFunction(exitFrame.normalizedName)) {
+            resolved = coerceNumericOperandConstant(resolved);
+          }
           BooleanExpression directResult =
               applyBooleanReceiverConstant(exitFrame.normalizedName, leftExpression, resolved);
           if (directResult != null) {
@@ -1853,6 +1948,10 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         }
 
         LoweredExpressionBox rightBox = new LoweredExpressionBox();
+        ExpressionCoercionMode rightOperandMode =
+            isOrderingComparisonFunction(exitFrame.normalizedName)
+                ? ExpressionCoercionMode.NUMERIC_OPERAND
+                : ExpressionCoercionMode.EXPRESSION_VALUE;
         stack.push(
             new ExitFinalizeBooleanReceiverFrame(
                 exitFrame.box,
@@ -1860,7 +1959,9 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
                 exitFrame.normalizedName,
                 rightBox,
                 exitFrame.fieldName));
-        stack.push(new EnterObjectExpressionValueFrame(rightArg, rightFieldName, rightBox));
+        stack.push(
+            new EnterObjectExpressionValueFrame(
+                rightArg, rightFieldName, rightBox, rightOperandMode));
         continue;
       }
 
@@ -1879,6 +1980,19 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       ArrayDeque<ObjectLoweringFrame> stack)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     String normalizedName = canonicalizeExpressionFunctionName(functionName);
+
+    // `scalar` / `array` may wrap an opaque PipelineValue (a nested-pipeline
+    // subquery) rather than a literal. Detect that here and build the nested
+    // pipeline directly; otherwise fall through to the normal literal handling.
+    if (("scalar".equals(normalizedName) || "array".equals(normalizedName)) && args.size() == 1) {
+      Map<String, Object> nestedPipelineMap = extractNestedPipelineMapFromRaw(args.get(0));
+      if (nestedPipelineMap != null) {
+        box.value =
+            buildRawNestedPipelineSubquery(
+                "scalar".equals(normalizedName), nestedPipelineMap, fieldName + ".args[0]");
+        return;
+      }
+    }
 
     switch (normalizedName) {
       case "array":
@@ -1987,6 +2101,43 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         requireArgumentCount(args, 0, functionName, fieldName);
         box.value = Expression.currentTimestamp();
         return;
+      case "score":
+        requireArgumentCount(args, 0, functionName, fieldName);
+        box.value = Expression.score();
+        return;
+      case "currentdocument":
+        requireArgumentCount(args, 0, functionName, fieldName);
+        box.value = Expression.currentDocument();
+        return;
+      case "parent":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        if (!containsLowerableExpression(args.get(0))) {
+          String documentPath = coerceDocumentPathValue(args.get(0), fieldName + ".args[0]");
+          DocumentReference reference = firestore.document(documentPath);
+          box.value = Expression.parent(reference);
+          return;
+        }
+        {
+          LoweredExpressionBox pathBox = new LoweredExpressionBox();
+          stack.push(new ExitObjectParentExpressionFrame(box, pathBox));
+          stack.push(
+              new EnterObjectExpressionValueFrame(args.get(0), fieldName + ".args[0]", pathBox));
+          return;
+        }
+      case "documentmatches":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        if (!containsLowerableExpression(args.get(0))) {
+          String query = coerceStringValue(args.get(0), fieldName + ".args[0]");
+          box.value = Expression.documentMatches(query);
+          return;
+        }
+        {
+          LoweredExpressionBox queryBox = new LoweredExpressionBox();
+          stack.push(new ExitObjectDocumentMatchesExpressionFrame(box, queryBox));
+          stack.push(
+              new EnterObjectExpressionValueFrame(args.get(0), fieldName + ".args[0]", queryBox));
+          return;
+        }
       case "istype":
         {
           requireArgumentCount(args, 2, functionName, fieldName);
@@ -2012,12 +2163,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         scheduleReceiverExpressionChain(normalizedName, functionName, args, fieldName, box, stack);
         return;
       case "timestamptruncate":
-        if (args.size() == 2) {
-          scheduleReceiverExpressionChain(
-              normalizedName, functionName, args, fieldName, box, stack);
-          return;
-        }
-        box.value = null;
+        requireArgumentCount(args, 2, functionName, fieldName);
+        scheduleReceiverExpressionChain(normalizedName, functionName, args, fieldName, box, stack);
         return;
       default:
         scheduleRawExpressionFunction(functionName, args, fieldName, box, stack);
@@ -2030,15 +2177,20 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       String fieldName,
       LoweredExpressionBox box,
       ArrayDeque<ObjectLoweringFrame> stack) {
+    String normalizedName = canonicalizeExpressionFunctionName(functionName);
     List<LoweredExpressionBox> childBoxes = new ArrayList<>(args.size());
     for (int i = 0; i < args.size(); i++) {
       childBoxes.add(new LoweredExpressionBox());
     }
     stack.push(new ExitObjectRawExpressionFunctionFrame(box, functionName, childBoxes));
     for (int i = args.size() - 1; i >= 0; i--) {
+      ExpressionCoercionMode argMode =
+          isArithmeticFunction(normalizedName)
+              ? ExpressionCoercionMode.NUMERIC_OPERAND
+              : ExpressionCoercionMode.EXPRESSION_VALUE;
       stack.push(
           new EnterObjectExpressionValueFrame(
-              args.get(i), fieldName + ".args[" + i + "]", childBoxes.get(i)));
+              args.get(i), fieldName + ".args[" + i + "]", childBoxes.get(i), argMode));
     }
   }
 
@@ -2295,14 +2447,28 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         "pipelineExecute() expected " + fieldName + " to resolve to a string.");
   }
 
-  private Object resolveValueOrExpression(Object value, String fieldName)
+  private String coerceDocumentPathValue(Object value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    return lowerValueOrExpressionObject(value, fieldName);
-  }
-
-  private Expression coerceVectorExpressionValue(Object value, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    return lowerVectorExpressionValueObject(value, fieldName);
+    Object resolved = value;
+    if (value instanceof Map) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> map = (Map<String, Object>) value;
+      Object constantValue = unwrapConstantValue(map, fieldName);
+      if (constantValue != null) {
+        resolved = constantValue;
+      }
+    }
+    if (resolved instanceof DocumentReference) {
+      return ((DocumentReference) resolved).getPath();
+    }
+    if (resolved instanceof Map) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> map = (Map<String, Object>) resolved;
+      if (isSerializedReferencePathConstantMap(map)) {
+        return (String) map.get("path");
+      }
+    }
+    return coerceStringValue(resolved, fieldName);
   }
 
   private Object resolveConstantValue(Object value, String fieldName)
@@ -2519,10 +2685,70 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
           "pipelineExecute() expected " + fieldName + ".value to be provided.");
     }
-    return map.get("value");
+
+    Object value = map.get("value");
+    if (Boolean.TRUE.equals(map.get("integerLiteral"))) {
+      return coerceIntegerLiteralConstantValue(value);
+    }
+    return value;
+  }
+
+  private static Object coerceIntegerLiteralConstantValue(Object value) {
+    if (value instanceof Boolean) {
+      return ((Boolean) value) ? 1 : 0;
+    }
+    if (value instanceof Number) {
+      Number number = (Number) value;
+      double doubleValue = number.doubleValue();
+      if (Double.isFinite(doubleValue)
+          && doubleValue == Math.rint(doubleValue)
+          && doubleValue >= Integer.MIN_VALUE
+          && doubleValue <= Integer.MAX_VALUE) {
+        return number.intValue();
+      }
+    }
+    return value;
+  }
+
+  private boolean isSerializedReferencePathConstantMap(Map<String, Object> map) {
+    Object pathValue = map.get("path");
+    if (!(pathValue instanceof String)) {
+      return false;
+    }
+
+    String path = (String) pathValue;
+    if (path.indexOf('/') < 0) {
+      return false;
+    }
+
+    for (Object key : map.keySet()) {
+      if (!(key instanceof String)) {
+        return false;
+      }
+      String keyString = (String) key;
+      if (!"path".equals(keyString)
+          && !"firestore".equals(keyString)
+          && !"alias".equals(keyString)
+          && !"as".equals(keyString)
+          && !"__kind".equals(keyString)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   private boolean isSerializedExpressionLike(Map<String, Object> map) {
+    Object exprType = map.get("exprType");
+    if (exprType instanceof String
+        && "constant".equals(((String) exprType).toLowerCase(Locale.ROOT))) {
+      return false;
+    }
+
+    if (isSerializedReferencePathConstantMap(map)) {
+      return false;
+    }
+
     return map.get("exprType") != null
         || map.get("operator") != null
         || map.get("name") != null
@@ -2555,6 +2781,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     return "type".equals(normalizedFunctionName)
         || "collectionid".equals(normalizedFunctionName)
         || "documentid".equals(normalizedFunctionName)
+        || "arrayfirst".equals(normalizedFunctionName)
         || "arraylength".equals(normalizedFunctionName)
         || "arraysum".equals(normalizedFunctionName)
         || "vectorlength".equals(normalizedFunctionName)
@@ -2572,6 +2799,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         || "mapget".equals(normalizedFunctionName)
         || "mapmerge".equals(normalizedFunctionName)
         || "arrayget".equals(normalizedFunctionName)
+        || "arrayfirstn".equals(normalizedFunctionName)
         || "arrayconcat".equals(normalizedFunctionName)
         || "cosinedistance".equals(normalizedFunctionName)
         || "dotproduct".equals(normalizedFunctionName)
@@ -2595,6 +2823,9 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           break;
         case "documentid":
           currentExpression = currentExpression.documentId();
+          break;
+        case "arrayfirst":
+          currentExpression = currentExpression.arrayFirst();
           break;
         case "arraylength":
           currentExpression = currentExpression.arrayLength();
@@ -2630,444 +2861,51 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     return currentExpression;
   }
 
-  private String mapOperatorToFunctionName(String operatorName) {
-    switch (operatorName) {
-      case "==":
-      case "=":
-      case "EQUAL":
-        return "equal";
-      case "!=":
-      case "<>":
-      case "NOT_EQUAL":
-        return "not_equal";
-      case ">":
-      case "GREATER_THAN":
-        return "greater_than";
-      case ">=":
-      case "GREATER_THAN_OR_EQUAL":
-        return "greater_than_or_equal";
-      case "<":
-      case "LESS_THAN":
-        return "less_than";
-      case "<=":
-      case "LESS_THAN_OR_EQUAL":
-        return "less_than_or_equal";
-      case "ARRAY_CONTAINS":
-      case "ARRAY-CONTAINS":
-        return "array_contains";
-      case "ARRAY_CONTAINS_ANY":
-      case "ARRAY-CONTAINS-ANY":
-        return "array_contains_any";
-      case "ARRAY_CONTAINS_ALL":
-      case "ARRAY-CONTAINS-ALL":
-        return "array_contains_all";
-      case "IN":
-      case "EQUAL_ANY":
-      case "EQUAL-ANY":
-        return "equal_any";
-      case "NOT_IN":
-      case "NOT_EQUAL_ANY":
-      case "NOT-EQUAL-ANY":
-        return "not_equal_any";
-      default:
-        return normalizeExpressionFunctionName(operatorName);
-    }
-  }
-
-  private Expression buildParsedFunctionExpression(
-      ReactNativeFirebaseFirestorePipelineParser.ParsedFunctionExpressionNode function,
-      String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    Expression specialized =
-        buildSpecialParsedExpressionFunction(function.name, function.args, fieldName);
-    if (specialized != null) {
-      return specialized;
-    }
-
-    Expression[] expressions = new Expression[function.args.size()];
-    for (int i = 0; i < function.args.size(); i++) {
-      expressions[i] =
-          coerceExpressionValueNode(function.args.get(i), fieldName + ".args[" + i + "]");
-    }
-    return Expression.rawFunction(normalizeExpressionFunctionName(function.name), expressions);
-  }
-
-  private Expression buildSpecialParsedExpressionFunction(
-      String functionName,
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args,
-      String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    String normalizedName = canonicalizeExpressionFunctionName(functionName);
-
-    switch (normalizedName) {
-      case "array":
-        return buildParsedArrayExpression(args, fieldName);
-      case "map":
-        return buildParsedMapExpression(args, fieldName);
-      case "conditional":
-        requireParsedArgumentCount(args, 3, functionName, fieldName);
-        return Expression.conditional(
-            coerceBooleanValueNode(args.get(0), fieldName + ".args[0]"),
-            coerceExpressionValueNode(args.get(1), fieldName + ".args[1]"),
-            coerceExpressionValueNode(args.get(2), fieldName + ".args[2]"));
-      case "currenttimestamp":
-        requireParsedArgumentCount(args, 0, functionName, fieldName);
-        return Expression.currentTimestamp();
-      case "type":
-        requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]").type();
-      case "collectionid":
-        requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]").collectionId();
-      case "documentid":
-        requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]").documentId();
-      case "istype":
-        requireParsedArgumentCount(args, 2, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]")
-            .type()
-            .equal(coerceStringValueNode(args.get(1), fieldName + ".args[1]"));
-      case "logicalmaximum":
-        return buildParsedLogicalExtremaExpression(true, args, functionName, fieldName);
-      case "logicalminimum":
-        return buildParsedLogicalExtremaExpression(false, args, functionName, fieldName);
-      case "mapget":
-        requireParsedArgumentCount(args, 2, functionName, fieldName);
-        return buildParsedMapGetExpression(args, fieldName);
-      case "mapmerge":
-        return buildParsedMapMergeExpression(args, functionName, fieldName);
-      case "arraylength":
-        requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]").arrayLength();
-      case "arrayget":
-        requireParsedArgumentCount(args, 2, functionName, fieldName);
-        return buildParsedArrayGetExpression(args, fieldName);
-      case "arrayconcat":
-        return buildParsedArrayConcatExpression(args, functionName, fieldName);
-      case "arraysum":
-        requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]").arraySum();
-      case "vectorlength":
-        requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]").vectorLength();
-      case "cosinedistance":
-        requireParsedArgumentCount(args, 2, functionName, fieldName);
-        return buildParsedVectorDistanceExpression("cosineDistance", args, fieldName);
-      case "dotproduct":
-        requireParsedArgumentCount(args, 2, functionName, fieldName);
-        return buildParsedVectorDistanceExpression("dotProduct", args, fieldName);
-      case "euclideandistance":
-        requireParsedArgumentCount(args, 2, functionName, fieldName);
-        return buildParsedVectorDistanceExpression("euclideanDistance", args, fieldName);
-      case "timestamptounixmicros":
-        requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]")
-            .timestampToUnixMicros();
-      case "timestamptounixmillis":
-        requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]")
-            .timestampToUnixMillis();
-      case "timestamptounixseconds":
-        requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]")
-            .timestampToUnixSeconds();
-      case "unixmicrostotimestamp":
-        requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]")
-            .unixMicrosToTimestamp();
-      case "unixmillistotimestamp":
-        requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]")
-            .unixMillisToTimestamp();
-      case "unixsecondstotimestamp":
-        requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]")
-            .unixSecondsToTimestamp();
-      case "timestampadd":
-        requireParsedArgumentCount(args, 3, functionName, fieldName);
-        return buildParsedTimestampMathExpression(true, args, fieldName);
-      case "timestampsubtract":
-        requireParsedArgumentCount(args, 3, functionName, fieldName);
-        return buildParsedTimestampMathExpression(false, args, fieldName);
-      case "timestamptruncate":
-        if (args.size() == 2) {
-          return buildParsedTimestampTruncateExpression(args, fieldName);
-        }
-        return null;
-      default:
-        return null;
-    }
-  }
-
-  private Expression buildParsedArrayExpression(
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> elements;
-    if (args.size() == 1
-        && args.get(0) instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) {
-      elements =
-          ((ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) args.get(0)).values;
-    } else {
-      elements = args;
-    }
-
-    boolean allConstant = true;
-    for (ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode element : elements) {
-      if (containsParsedExpression(element)) {
-        allConstant = false;
-        break;
-      }
-    }
-
-    if (allConstant) {
-      java.util.List<Object> resolved = new java.util.ArrayList<>(elements.size());
-      for (int i = 0; i < elements.size(); i++) {
-        resolved.add(resolveValueNode(elements.get(i), fieldName + ".args[" + i + "]"));
-      }
-      return constantExpression(resolved);
-    }
-
-    Expression[] expressions = new Expression[elements.size()];
-    for (int i = 0; i < elements.size(); i++) {
-      expressions[i] = coerceExpressionValueNode(elements.get(i), fieldName + ".args[" + i + "]");
-    }
-    return Expression.rawFunction("array", expressions);
-  }
-
-  private Expression buildParsedMapExpression(
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    requireParsedArgumentCount(args, 1, "map", fieldName);
-    ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode mapArg = args.get(0);
-    if (mapArg instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) {
-      ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode expression =
-          ((ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) mapArg)
-              .expression;
-      if (expression
-          instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) {
-        mapArg =
-            ((ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) expression)
-                .value;
-      }
-    }
-
-    if (!(mapArg instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode)) {
+  @SuppressWarnings("unchecked")
+  private Map<String, Object> extractNestedPipelineMapFromRaw(Object raw) {
+    if (!(raw instanceof Map)) {
       return null;
     }
 
-    Map<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> entries =
-        ((ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) mapArg).values;
-    boolean allConstant = true;
-    for (ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value : entries.values()) {
-      if (containsParsedExpression(value)) {
-        allConstant = false;
-        break;
-      }
+    Map<String, Object> rawMap = (Map<String, Object>) raw;
+
+    Object pipeline = rawMap.get("pipeline");
+    if (pipeline instanceof Map) {
+      return (Map<String, Object>) pipeline;
     }
 
-    if (allConstant) {
-      Map<String, Object> resolved = new java.util.LinkedHashMap<>();
-      for (Map.Entry<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> entry :
-          entries.entrySet()) {
-        resolved.put(
-            entry.getKey(),
-            resolveValueNode(entry.getValue(), fieldName + ".args[0]." + entry.getKey()));
-      }
-      return constantExpression(resolved);
+    if (rawMap.containsKey("source") && rawMap.containsKey("stages")) {
+      return rawMap;
     }
 
-    Expression[] expressions = new Expression[entries.size() * 2];
-    int index = 0;
-    for (Map.Entry<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> entry :
-        entries.entrySet()) {
-      expressions[index++] = constantExpression(entry.getKey());
-      expressions[index++] =
-          coerceExpressionValueNode(entry.getValue(), fieldName + ".args[0]." + entry.getKey());
-    }
-    return Expression.rawFunction("map", expressions);
+    return null;
   }
 
-  private Expression buildParsedLogicalExtremaExpression(
-      boolean maximum,
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args,
-      String functionName,
-      String fieldName)
+  /**
+   * Builds a scalar/array nested-pipeline subquery from a raw pipeline map (the form produced when
+   * a PipelineValue argument is preserved opaquely by the parser).
+   */
+  private Expression buildRawNestedPipelineSubquery(
+      boolean scalar, Map<String, Object> pipelineMap, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (args.size() < 2) {
+    if (pipelineMap == null) {
       throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-          "pipelineExecute() expected "
-              + fieldName
-              + "."
-              + functionName
-              + " to include at least 2 arguments.");
+          "pipelineExecute() expected " + fieldName + " to contain a nested pipeline.");
     }
-
-    Expression left = coerceExpressionValueNode(args.get(0), fieldName + ".args[0]");
-    Expression[] others = new Expression[args.size() - 1];
-    for (int i = 1; i < args.size(); i++) {
-      others[i - 1] = coerceExpressionValueNode(args.get(i), fieldName + ".args[" + i + "]");
-    }
-    return maximum ? left.logicalMaximum(others) : left.logicalMinimum(others);
+    return buildNestedPipelineFromMap(scalar, pipelineMap);
   }
 
-  private Expression buildParsedMapGetExpression(
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args, String fieldName)
+  private Expression buildNestedPipelineFromMap(boolean scalar, Map<String, Object> pipelineMap)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    Expression mapExpr = coerceExpressionValueNode(args.get(0), fieldName + ".args[0]");
-    if (!containsParsedExpression(args.get(1))) {
-      Object keyValue = resolveValueNode(args.get(1), fieldName + ".args[1]");
-      if (keyValue instanceof String) {
-        return mapExpr.mapGet((String) keyValue);
-      }
-    }
-    return mapExpr.mapGet(coerceExpressionValueNode(args.get(1), fieldName + ".args[1]"));
-  }
-
-  private Expression buildParsedMapMergeExpression(
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args,
-      String functionName,
-      String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (args.size() < 2) {
+    if (nestedPipelineBuilder == null) {
       throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-          "pipelineExecute() expected "
-              + fieldName
-              + "."
-              + functionName
-              + " to include at least 2 arguments.");
+          "pipelineExecute() failed to build nested pipeline subquery.");
     }
 
-    Expression left = coerceExpressionValueNode(args.get(0), fieldName + ".args[0]");
-    Expression right = coerceExpressionValueNode(args.get(1), fieldName + ".args[1]");
-    Expression[] others = new Expression[Math.max(0, args.size() - 2)];
-    for (int i = 2; i < args.size(); i++) {
-      others[i - 2] = coerceExpressionValueNode(args.get(i), fieldName + ".args[" + i + "]");
-    }
-    return left.mapMerge(right, others);
-  }
-
-  private Expression buildParsedArrayGetExpression(
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    Expression arrayExpr = coerceExpressionValueNode(args.get(0), fieldName + ".args[0]");
-    if (!containsParsedExpression(args.get(1))) {
-      Object indexValue = resolveValueNode(args.get(1), fieldName + ".args[1]");
-      if (indexValue instanceof Number) {
-        return arrayExpr.arrayGet(((Number) indexValue).intValue());
-      }
-    }
-    return arrayExpr.arrayGet(coerceExpressionValueNode(args.get(1), fieldName + ".args[1]"));
-  }
-
-  private Expression buildParsedArrayConcatExpression(
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args,
-      String functionName,
-      String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (args.size() < 2) {
-      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-          "pipelineExecute() expected "
-              + fieldName
-              + "."
-              + functionName
-              + " to include at least 2 arguments.");
-    }
-
-    Expression arrayExpr = coerceExpressionValueNode(args.get(0), fieldName + ".args[0]");
-    Object secondValue = resolveValueOrExpressionNode(args.get(1), fieldName + ".args[1]");
-    Object[] rest = new Object[Math.max(0, args.size() - 2)];
-    for (int i = 2; i < args.size(); i++) {
-      rest[i - 2] = resolveValueOrExpressionNode(args.get(i), fieldName + ".args[" + i + "]");
-    }
-    return arrayExpr.arrayConcat(secondValue, rest);
-  }
-
-  private Expression buildParsedVectorDistanceExpression(
-      String functionName,
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args,
-      String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    Expression left = coerceExpressionValueNode(args.get(0), fieldName + ".args[0]");
-    if (!containsParsedExpression(args.get(1))) {
-      Object rightValue = resolveValueNode(args.get(1), fieldName + ".args[1]");
-      if (rightValue instanceof List
-          || (rightValue instanceof Map && ((Map<?, ?>) rightValue).get("values") != null)) {
-        double[] vector = coerceVectorValue(rightValue);
-        switch (functionName) {
-          case "cosineDistance":
-            return left.cosineDistance(vector);
-          case "dotProduct":
-            return left.dotProduct(vector);
-          default:
-            return left.euclideanDistance(vector);
-        }
-      }
-    }
-
-    Expression right = coerceExpressionValueNode(args.get(1), fieldName + ".args[1]");
-    switch (functionName) {
-      case "cosineDistance":
-        return left.cosineDistance(right);
-      case "dotProduct":
-        return left.dotProduct(right);
-      default:
-        return left.euclideanDistance(right);
-    }
-  }
-
-  private Expression buildParsedTimestampMathExpression(
-      boolean addition,
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args,
-      String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    Expression base = coerceExpressionValueNode(args.get(0), fieldName + ".args[0]");
-    if (!containsParsedExpression(args.get(1)) && !containsParsedExpression(args.get(2))) {
-      Object unitValue = resolveValueNode(args.get(1), fieldName + ".args[1]");
-      Object amountValue = resolveValueNode(args.get(2), fieldName + ".args[2]");
-      if (unitValue instanceof String && amountValue instanceof Number) {
-        long amount = ((Number) amountValue).longValue();
-        return addition
-            ? base.timestampAdd((String) unitValue, amount)
-            : base.timestampSubtract((String) unitValue, amount);
-      }
-    }
-
-    Expression unitExpression = coerceExpressionValueNode(args.get(1), fieldName + ".args[1]");
-    Expression amountExpression = coerceExpressionValueNode(args.get(2), fieldName + ".args[2]");
-    return addition
-        ? base.timestampAdd(unitExpression, amountExpression)
-        : base.timestampSubtract(unitExpression, amountExpression);
-  }
-
-  private Expression buildParsedTimestampTruncateExpression(
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    Expression base = coerceExpressionValueNode(args.get(0), fieldName + ".args[0]");
-    if (!containsParsedExpression(args.get(1))) {
-      Object granularityValue = resolveValueNode(args.get(1), fieldName + ".args[1]");
-      if (granularityValue instanceof String) {
-        return base.timestampTruncate((String) granularityValue);
-      }
-    }
-    return base.timestampTruncate(coerceExpressionValueNode(args.get(1), fieldName + ".args[1]"));
-  }
-
-  private void requireParsedArgumentCount(
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args,
-      int expectedCount,
-      String functionName,
-      String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (args.size() != expectedCount) {
-      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-          "pipelineExecute() expected "
-              + fieldName
-              + "."
-              + functionName
-              + " to include exactly "
-              + expectedCount
-              + " arguments.");
-    }
+    ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest request =
+        ReactNativeFirebaseFirestorePipelineParser.parsePipelineMap(pipelineMap, null);
+    com.google.firebase.firestore.Pipeline nestedPipeline = nestedPipelineBuilder.build(request);
+    return scalar ? nestedPipeline.toScalarExpression() : nestedPipeline.toArrayExpression();
   }
 
   private Expression coerceExpressionValueNode(
@@ -3086,12 +2924,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     return coerceStringValue(serializeValueNode(value), fieldName);
-  }
-
-  private Object resolveValueOrExpressionNode(
-      ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    return resolveValueOrExpression(serializeValueNode(value), fieldName);
   }
 
   private Object resolveValueNode(
@@ -3284,6 +3116,19 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
                           expression)
                       .value,
                   valueBox));
+          continue;
+        }
+
+        if (expression
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) {
+          Map<String, Object> output = new LinkedHashMap<>();
+          output.put("__kind", "expression");
+          output.put("exprType", "Variable");
+          output.put(
+              "name",
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) expression)
+                  .name);
+          enterFrame.box.value = output;
           continue;
         }
 
@@ -3532,6 +3377,19 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           continue;
         }
 
+        if (expression
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) {
+          Map<String, Object> output = new LinkedHashMap<>();
+          output.put("__kind", "expression");
+          output.put("exprType", "Variable");
+          output.put(
+              "name",
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedVariableExpressionNode) expression)
+                  .name);
+          enterFrame.box.value = output;
+          continue;
+        }
+
         ReactNativeFirebaseFirestorePipelineParser.ParsedFunctionExpressionNode function =
             (ReactNativeFirebaseFirestorePipelineParser.ParsedFunctionExpressionNode) expression;
         List<SerializedValueBox> argBoxes = new ArrayList<>(function.args.size());
@@ -3595,6 +3453,18 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     switch (canonicalizeExpressionFunctionName(name)) {
       case "conditional":
         return "cond";
+      case "arraytransformwithindex":
+        return "array_transform";
+      case "arraylastindexof":
+        return "array_index_of";
+      case "arraymaximum":
+        return "maximum";
+      case "arraymaximumn":
+        return "maximum_n";
+      case "arrayminimum":
+        return "minimum";
+      case "arrayminimumn":
+        return "minimum_n";
       case "logicalmaximum":
         return "logical_max";
       case "logicalminimum":
@@ -3628,6 +3498,95 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       }
     }
     return result.toString();
+  }
+
+  private static boolean isOrderingComparisonFunction(String normalizedName) {
+    return ORDERING_COMPARISON_FUNCTIONS.contains(normalizedName);
+  }
+
+  private static boolean isArithmeticFunction(String normalizedName) {
+    return ARITHMETIC_FUNCTIONS.contains(normalizedName);
+  }
+
+  private static Object coerceNumericOperandConstant(Object value) {
+    if (value instanceof Boolean) {
+      return ((Boolean) value) ? 1 : 0;
+    }
+    return value;
+  }
+
+  private static boolean isImmediateExpressionConstant(Object value) {
+    return value instanceof Number
+        || value instanceof java.util.Date
+        || value instanceof Timestamp
+        || value instanceof com.google.firebase.firestore.GeoPoint
+        || value instanceof DocumentReference
+        || value instanceof com.google.firebase.firestore.VectorValue;
+  }
+
+  private boolean tryEnterNumericOperandConstant(
+      EnterObjectExpressionValueFrame enterFrame, ArrayDeque<ObjectLoweringFrame> stack)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    Object value = enterFrame.value;
+    String fieldName = enterFrame.fieldName;
+
+    if (value instanceof Map) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> map = (Map<String, Object>) value;
+      Object exprType = map.get("exprType");
+      if (exprType instanceof String && "constant".equalsIgnoreCase((String) exprType)) {
+        Object resolved = resolveConstantValue(map, fieldName);
+        if (resolved instanceof Boolean) {
+          resolved = ((Boolean) resolved) ? 1 : 0;
+        }
+        enterFrame.box.value = constantExpression(resolved);
+        return true;
+      }
+      return false;
+    }
+    if (value instanceof List) {
+      enterFrame.box.value = constantExpression(resolveConstantValue(value, fieldName));
+      return true;
+    }
+    if (value instanceof String) {
+      enterFrame.box.value = constantExpression((String) value);
+      return true;
+    }
+    if (value instanceof Boolean) {
+      enterFrame.box.value = constantExpression(((Boolean) value) ? 1 : 0);
+      return true;
+    }
+    if (isImmediateExpressionConstant(value)) {
+      enterFrame.box.value = constantExpression(value);
+      return true;
+    }
+    return false;
+  }
+
+  private boolean tryEnterComparisonOperandConstant(
+      EnterObjectExpressionValueFrame enterFrame, ArrayDeque<ObjectLoweringFrame> stack)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    Object value = enterFrame.value;
+    String fieldName = enterFrame.fieldName;
+
+    if (value instanceof Map) {
+      stack.push(
+          new EnterObjectExpressionFrame(enterFrame.value, enterFrame.fieldName, enterFrame.box));
+      return true;
+    }
+    if (value instanceof List) {
+      enterFrame.box.value = constantExpression(resolveConstantValue(value, fieldName));
+      return true;
+    }
+    if (value instanceof String) {
+      enterFrame.box.value = constantExpression((String) value);
+      return true;
+    }
+    if (isImmediateExpressionConstant(value)) {
+      enterFrame.box.value = constantExpression(value);
+      return true;
+    }
+    return false;
   }
 
   private Expression constantExpression(Object value)
@@ -3671,156 +3630,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     }
 
     return Expression.Companion.toExprOrConstant$com_google_firebase_firebase_firestore(value);
-  }
-
-  private BooleanExpression booleanExpressionFromParsedFunction(
-      String functionName,
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args,
-      String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    String normalizedName = functionName.toLowerCase(Locale.ROOT);
-
-    if ("and".equals(normalizedName) || "or".equals(normalizedName)) {
-      if (args == null || args.isEmpty()) {
-        throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-            "pipelineExecute() expected " + fieldName + ".args to contain boolean expressions.");
-      }
-
-      BooleanExpression[] expressions = new BooleanExpression[args.size()];
-      for (int i = 0; i < args.size(); i++) {
-        expressions[i] = coerceBooleanValueNode(args.get(i), fieldName + ".args[" + i + "]");
-      }
-
-      BooleanExpression first = expressions[0];
-      BooleanExpression[] rest = Arrays.copyOfRange(expressions, 1, expressions.length);
-      return "and".equals(normalizedName)
-          ? Expression.and(first, rest)
-          : Expression.or(first, rest);
-    }
-
-    if ("equal".equals(normalizedName)
-        || "notequal".equals(normalizedName)
-        || "greaterthan".equals(normalizedName)
-        || "greaterthanorequal".equals(normalizedName)
-        || "lessthan".equals(normalizedName)
-        || "lessthanorequal".equals(normalizedName)
-        || "arraycontains".equals(normalizedName)
-        || "arraycontainsany".equals(normalizedName)
-        || "arraycontainsall".equals(normalizedName)
-        || "equalany".equals(normalizedName)
-        || "notequalany".equals(normalizedName)) {
-      if (args == null || args.size() < 2) {
-        throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-            "pipelineExecute() expected "
-                + fieldName
-                + ".args to include left and right operands.");
-      }
-
-      Expression left = coerceExpressionValueNode(args.get(0), fieldName + ".args[0]");
-
-      if ("equal".equals(normalizedName)) {
-        return applyParsedComparison(left::equal, args.get(1), fieldName + ".args[1]");
-      }
-      if ("notequal".equals(normalizedName)) {
-        return applyParsedComparison(left::notEqual, args.get(1), fieldName + ".args[1]");
-      }
-      if ("greaterthan".equals(normalizedName)) {
-        return applyParsedComparison(left::greaterThan, args.get(1), fieldName + ".args[1]");
-      }
-      if ("greaterthanorequal".equals(normalizedName)) {
-        return applyParsedComparison(left::greaterThanOrEqual, args.get(1), fieldName + ".args[1]");
-      }
-      if ("lessthan".equals(normalizedName)) {
-        return applyParsedComparison(left::lessThan, args.get(1), fieldName + ".args[1]");
-      }
-      if ("lessthanorequal".equals(normalizedName)) {
-        return applyParsedComparison(left::lessThanOrEqual, args.get(1), fieldName + ".args[1]");
-      }
-      if ("arraycontains".equals(normalizedName)) {
-        return applyParsedArrayContains(left, args.get(1), fieldName + ".args[1]");
-      }
-      if ("arraycontainsany".equals(normalizedName)) {
-        return applyParsedArrayContainsAny(left, args.get(1), fieldName + ".args[1]");
-      }
-      if ("arraycontainsall".equals(normalizedName)) {
-        return applyParsedArrayContainsAll(left, args.get(1), fieldName + ".args[1]");
-      }
-      if ("equalany".equals(normalizedName)) {
-        if (!containsParsedExpression(args.get(1))) {
-          Object right = resolveValueNode(args.get(1), fieldName + ".args[1]");
-          if (right instanceof List) {
-            return left.equalAny((List<?>) right);
-          }
-        }
-        return left.equalAny(coerceExpressionValueNode(args.get(1), fieldName + ".args[1]"));
-      }
-      if ("notequalany".equals(normalizedName)) {
-        if (!containsParsedExpression(args.get(1))) {
-          Object right = resolveValueNode(args.get(1), fieldName + ".args[1]");
-          if (right instanceof List) {
-            return left.notEqualAny((List<?>) right);
-          }
-        }
-        return left.notEqualAny(coerceExpressionValueNode(args.get(1), fieldName + ".args[1]"));
-      }
-    }
-
-    Expression[] expressions = new Expression[args.size()];
-    for (int i = 0; i < args.size(); i++) {
-      expressions[i] = coerceExpressionValueNode(args.get(i), fieldName + ".args[" + i + "]");
-    }
-    return BooleanExpression.rawFunction(
-        normalizeExpressionFunctionName(functionName), expressions);
-  }
-
-  private BooleanExpression applyParsedComparison(
-      ComparisonFn fn,
-      ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value,
-      String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (containsParsedExpression(value)) {
-      return fn.apply(coerceExpressionValueNode(value, fieldName));
-    }
-    return fn.apply(resolveValueNode(value, fieldName));
-  }
-
-  private BooleanExpression applyParsedArrayContains(
-      Expression expression,
-      ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value,
-      String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (containsParsedExpression(value)) {
-      return expression.arrayContains(coerceExpressionValueNode(value, fieldName + ".value"));
-    }
-    return expression.arrayContains(resolveValueNode(value, fieldName));
-  }
-
-  private BooleanExpression applyParsedArrayContainsAny(
-      Expression expression,
-      ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value,
-      String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (!containsParsedExpression(value)) {
-      Object resolved = resolveValueNode(value, fieldName);
-      if (resolved instanceof List) {
-        return expression.arrayContainsAny((List<?>) resolved);
-      }
-    }
-    return expression.arrayContainsAny(coerceExpressionValueNode(value, fieldName + ".value"));
-  }
-
-  private BooleanExpression applyParsedArrayContainsAll(
-      Expression expression,
-      ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value,
-      String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (!containsParsedExpression(value)) {
-      Object resolved = resolveValueNode(value, fieldName);
-      if (resolved instanceof List) {
-        return expression.arrayContainsAll((List<?>) resolved);
-      }
-    }
-    return expression.arrayContainsAll(coerceExpressionValueNode(value, fieldName + ".value"));
   }
 
   private AggregateFunction buildAggregateFunction(
