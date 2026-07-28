@@ -232,6 +232,19 @@ reporter: ['lcov', 'html', 'text-summary'],
 
 ObjC + Swift share this. Raw export is mostly Pods/SDK; healthy full run includes ~50–60 `packages/*/ios/**` files among ~2000 entries.
 
+## reCAPTCHA Enterprise native sources (App Check + Auth)
+
+reCAPTCHA Enterprise support adds branches to **existing** native module files — no new source files and **no new Codecov upload paths** are required. Jacoco (Android) and LLVM (iOS) already include these paths via `firebaseModulePaths` / static app linking:
+
+| Package | File | What e2e exercises |
+|---------|------|-------------------|
+| **app-check** | `packages/app-check/android/src/main/java/io/invertase/firebase/appcheck/ReactNativeFirebaseAppCheckProvider.java` | `'recaptcha'` → `RecaptchaAppCheckProviderFactory` |
+| **app-check** | `packages/app-check/ios/RNFBAppCheck/RNFBAppCheckProvider.m` | `'recaptcha'` → `FIRRecaptchaProvider` (iOS only) |
+| **auth** | `packages/auth/android/src/main/java/io/invertase/firebase/auth/NativeRNFBTurboAuth.java` | `initializeRecaptchaConfig` bridge |
+| **auth** | `packages/auth/ios/RNFBAuth/RNFBAuthModule.mm` | `initializeRecaptchaConfigWithCompletion` bridge |
+
+App Check recaptcha and Auth `initializeRecaptchaConfig` e2e smokes exercise these branches so the new lines flush into native coverage on e2e runs.
+
 **CocoaPods → SPM:** move same flags to SPM targets; post-test script unchanged.
 
 # Codecov uploads (CI)

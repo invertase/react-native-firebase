@@ -5,6 +5,7 @@ Knowledge for Auth TypeScript alignment with the firebase-js-sdk modular API (v2
 ## Documents
 
 * [Compare:types triage](compare-types-triage.md) — living matrix of intentional differences between RN Firebase Auth and firebase-js-sdk
+* [reCAPTCHA Enterprise design](../../recaptcha-enterprise-design.md) — `initializeRecaptchaConfig` platform matrix and Auth/App Check Enterprise implementation
 
 ## Related repository files
 

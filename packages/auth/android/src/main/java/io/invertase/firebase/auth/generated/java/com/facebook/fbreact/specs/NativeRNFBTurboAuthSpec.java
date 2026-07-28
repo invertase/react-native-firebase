@@ -76,6 +76,10 @@ public abstract class NativeRNFBTurboAuthSpec extends ReactContextBaseJavaModule
 
   @ReactMethod
   @DoNotStrip
+  public abstract void initializeRecaptchaConfig(String appName, Promise promise);
+
+  @ReactMethod
+  @DoNotStrip
   public abstract void addAuthStateListener(String appName);
 
   @ReactMethod

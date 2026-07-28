@@ -125,7 +125,9 @@ export default {
     }
     const optionsCopy = Object.assign({}, options);
 
+    // iOS-only option — not part of firebase-js-sdk FirebaseOptions on Other/Web.
     delete (optionsCopy as any).clientId;
+    // recaptchaSiteKey and other FirebaseOptions fields pass through to firebase-js-sdk as-is.
     initializeApp(optionsCopy, newAppConfig);
     return {
       options,

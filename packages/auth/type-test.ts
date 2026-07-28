@@ -18,6 +18,7 @@ import {
   getAdditionalUserInfo,
   getAuth,
   getCustomAuthDomain,
+  initializeRecaptchaConfig,
   getIdTokenResult,
   GithubAuthProvider,
   GoogleAuthProvider,
@@ -248,6 +249,7 @@ connectAuthEmulator(modularAuth, 'http://localhost:9099', { disableWarnings: fal
 signOut(modularAuth);
 sendSignInLinkToEmail(modularAuth, 'test@example.com', actionCodeSettings);
 setLanguageCode(modularAuth, 'fr');
+initializeRecaptchaConfig(modularAuth).then(() => console.log('recaptcha initialized'));
 modularAuth.tenantId = 'tenant-id';
 console.log(modularAuth.emulatorConfig?.host);
 console.log(modularAuth.config);

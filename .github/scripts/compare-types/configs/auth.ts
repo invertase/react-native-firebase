@@ -19,11 +19,6 @@ const config: PackageConfig = {
 
   missingInRN: [
     {
-      name: 'initializeRecaptchaConfig',
-      reason:
-        'iOS/Android: native SDKs own phone verification. Other/Hermes: not applicable (no DOM). Other/Web: not implemented yet; firebase-js-sdk support is possible.',
-    },
-    {
       name: 'AuthErrorCodes',
       reason:
         'iOS/Android: native auth error code strings. Other/All: not exported yet; firebase-js-sdk re-export is possible.',

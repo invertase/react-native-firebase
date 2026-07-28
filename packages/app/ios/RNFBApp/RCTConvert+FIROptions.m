@@ -28,6 +28,10 @@
   firOptions.clientID = [rawOptions valueForKey:@"clientId"];
   firOptions.databaseURL = [rawOptions valueForKey:@"databaseURL"];
   firOptions.storageBucket = [rawOptions valueForKey:@"storageBucket"];
+  if ([rawOptions valueForKey:@"recaptchaSiteKey"] != nil &&
+      ![[rawOptions valueForKey:@"recaptchaSiteKey"] isEqual:[NSNull null]]) {
+    firOptions.recaptchaSiteKey = [rawOptions valueForKey:@"recaptchaSiteKey"];
+  }
   firOptions.bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
   return firOptions;
 }

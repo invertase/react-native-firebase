@@ -30,8 +30,14 @@ okf_version: '0.1'
 - [TurboModule migration](/new-architecture/index.md) — Codegen TurboModules, coordinated New Architecture break, phase queue
 - [Monorepo tooling](/monorepo-tooling/index.md) — Nx local cache, deterministic prepare graph, declaration maps, dependency-cycle linting, dev watch; decisions (ADR) + rollout queue
 
+# Features
+
+* [reCAPTCHA Enterprise design](/recaptcha-enterprise-design.md) — App Check + Auth Enterprise feature design, platform matrix, and implementation plan
+* [reCAPTCHA Enterprise test setup](/recaptcha-enterprise-test-setup.md) — tiered verification, agent runbook, adversarial review checklist
+
 # Packages
 
+- [App Check](/packages/app-check/index.md) — provider routing matrix and compare:types registry
 - [Auth](/packages/auth/index.md) — modular API type parity, platform matrix, `compare:types`
 - [Firestore](/packages/firestore/index.md) — Pipelines architecture, parity, e2e coverage
 - [Messaging](/packages/messaging/index.md) — iOS `UNUserNotificationCenter` delegate forwarding, `completionHandler` contract

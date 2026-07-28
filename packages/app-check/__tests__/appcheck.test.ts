@@ -9,6 +9,8 @@ import {
   onTokenChanged,
   CustomProvider,
   ReactNativeFirebaseAppCheckProvider,
+  ReCaptchaV3Provider,
+  ReCaptchaEnterpriseProvider,
   type ReactNativeFirebaseAppCheckProviderOptions,
   type ReactNativeFirebaseAppCheckProviderAndroidOptions,
   type ReactNativeFirebaseAppCheckProviderAppleOptions,
@@ -34,12 +36,12 @@ describe('appCheck()', function () {
           android: { provider: 'invalidProvider' as any },
         });
         expect(() => initializeAppCheck(undefined, { provider })).toThrow(
-          'Invalid App Check provider "invalidProvider". Valid android providers are: debug, playIntegrity.',
+          'Invalid App Check provider "invalidProvider". Valid android providers are: debug, playIntegrity, recaptcha.',
         );
       });
 
       it('does not throw validation error for valid android provider names', function () {
-        for (const name of ['debug', 'playIntegrity']) {
+        for (const name of ['debug', 'playIntegrity', 'recaptcha']) {
           const provider = new ReactNativeFirebaseAppCheckProvider();
           provider.configure({
             android: { provider: name as any },
@@ -70,7 +72,7 @@ describe('appCheck()', function () {
             apple: { provider: 'appAttestWithDebugProviderFallback' as any },
           });
           expect(() => initializeAppCheck(undefined, { provider })).toThrow(
-            'Invalid App Check provider "appAttestWithDebugProviderFallback". Valid apple providers are: debug, deviceCheck, appAttest, appAttestWithDeviceCheckFallback.',
+            'Invalid App Check provider "appAttestWithDebugProviderFallback". Valid apple providers are: debug, deviceCheck, appAttest, appAttestWithDeviceCheckFallback, recaptcha.',
           );
         });
 
@@ -80,6 +82,7 @@ describe('appCheck()', function () {
             'deviceCheck',
             'appAttest',
             'appAttestWithDeviceCheckFallback',
+            'recaptcha',
           ]) {
             const provider = new ReactNativeFirebaseAppCheckProvider();
             provider.configure({
@@ -115,6 +118,13 @@ describe('appCheck()', function () {
       expect(CustomProvider).toBeDefined();
     });
 
+    it('`ReCaptchaV3Provider` and `ReCaptchaEnterpriseProvider` are properly exposed to end user', function () {
+      expect(ReCaptchaV3Provider).toBeDefined();
+      expect(ReCaptchaEnterpriseProvider).toBeDefined();
+      expect(new ReCaptchaV3Provider('v3-site-key')).toBeDefined();
+      expect(new ReCaptchaEnterpriseProvider('enterprise-site-key')).toBeDefined();
+    });
+
     it('ReactNativeAppCheckProvider objects are properly exposed to end user', function () {
       const provider = new ReactNativeFirebaseAppCheckProvider();
       expect(provider.configure).toBeDefined();
@@ -125,10 +135,15 @@ describe('appCheck()', function () {
       } as ReactNativeFirebaseAppCheckProviderAppleOptions;
       expect(appleOptions).toBeDefined();
       const androidOptions = {
-        provider: 'debug',
+        provider: 'recaptcha',
         ...options,
       } as ReactNativeFirebaseAppCheckProviderAndroidOptions;
       expect(androidOptions).toBeDefined();
+      const appleRecaptchaOptions = {
+        provider: 'recaptcha',
+        ...options,
+      } as ReactNativeFirebaseAppCheckProviderAppleOptions;
+      expect(appleRecaptchaOptions).toBeDefined();
       const webOptions = {
         provider: 'debug',
         ...options,

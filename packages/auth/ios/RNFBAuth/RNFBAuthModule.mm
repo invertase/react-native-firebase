@@ -207,6 +207,21 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
   resolve([FIRAuth authWithApp:firebaseApp].customAuthDomain);
 }
 
+- (void)initializeRecaptchaConfig:(NSString *)appName
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
+  [[FIRAuth authWithApp:firebaseApp]
+      initializeRecaptchaConfigWithCompletion:^(NSError *_Nullable error) {
+        if (error) {
+          [self promiseRejectAuthException:reject error:error];
+        } else {
+          resolve([NSNull null]);
+        }
+      }];
+}
+
 - (void)setAppVerificationDisabledForTesting:(NSString *)appName
                                     disabled:(BOOL)disabled
                                      resolve:(RCTPromiseResolveBlock)resolve

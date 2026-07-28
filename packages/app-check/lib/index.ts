@@ -20,8 +20,8 @@ import {
   isIOS,
   isObject,
   isString,
-  isUndefined,
   isOther,
+  isOtherHermes,
   parseListenerOrObserver,
 } from '@react-native-firebase/app/dist/module/common';
 import type { FirebaseApp } from '@react-native-firebase/app';
@@ -46,6 +46,10 @@ import type {
 import type { AppCheckInternal, ProviderWithOptions } from './types/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { ReactNativeFirebaseAppCheckProvider } from './providers';
+import {
+  resolveNativeInitializeAppCheckRoute,
+  validateOtherHermesInitializeAppCheck,
+} from './appCheckInitializeRouting';
 
 const nativeModuleName = 'NativeRNFBTurboAppCheck';
 
@@ -54,8 +58,9 @@ const VALID_APPLE_PROVIDERS = [
   'deviceCheck',
   'appAttest',
   'appAttestWithDeviceCheckFallback',
+  'recaptcha',
 ];
-const VALID_ANDROID_PROVIDERS = ['debug', 'playIntegrity'];
+const VALID_ANDROID_PROVIDERS = ['debug', 'playIntegrity', 'recaptcha'];
 
 /**
  * Type guard to check if a provider has providerOptions.
@@ -123,15 +128,16 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   initializeAppCheck(options: AppCheckOptions): Promise<void> {
+    // Avoid isObject() here — it narrows to Record<string, unknown> and erases AppCheckOptions.
+    if (options == null || typeof options !== 'object' || Array.isArray(options)) {
+      throw new Error('Invalid configuration: no options defined.');
+    }
+
     if (isOther) {
-      if (!isObject(options)) {
-        throw new Error('Invalid configuration: no options defined.');
-      }
-      if (isUndefined(options.provider)) {
-        throw new Error('Invalid configuration: no provider defined.');
-      }
+      validateOtherHermesInitializeAppCheck(options, { isOtherHermes });
       return this.native.initializeAppCheck(options);
     }
+
     // determine token refresh setting, if not specified
     if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
       const tokenRefresh = this.firebaseJson.app_check_token_auto_refresh;
@@ -154,33 +160,13 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
     }
     this.native.setTokenAutoRefreshEnabled(options.isTokenAutoRefreshEnabled);
 
-    if (!hasProviderOptions(options.provider)) {
-      throw new Error('Invalid configuration: no provider or no provider options defined.');
-    }
-    const provider = options.provider;
-    if (Platform.OS === 'android') {
-      if (!isString(provider.providerOptions?.android?.provider)) {
-        throw new Error(
-          'Invalid configuration: no android provider configured while on android platform.',
-        );
-      }
-      return this.native.configureProvider(
-        provider.providerOptions.android.provider,
-        provider.providerOptions.android.debugToken,
-      );
-    }
-    if (Platform.OS === 'ios' || Platform.OS === 'macos') {
-      if (!isString(provider.providerOptions?.apple?.provider)) {
-        throw new Error(
-          'Invalid configuration: no apple provider configured while on apple platform.',
-        );
-      }
-      return this.native.configureProvider(
-        provider.providerOptions.apple.provider,
-        provider.providerOptions.apple.debugToken,
-      );
-    }
-    throw new Error('Unsupported platform: ' + Platform.OS);
+    const route = resolveNativeInitializeAppCheckRoute(options, {
+      isOtherHermes,
+      platformOS: Platform.OS,
+      appOptions: this.app.options,
+    });
+
+    return this.native.configureProvider(route.providerName, route.debugToken);
   }
 
   activate(
@@ -280,7 +266,12 @@ const config: ModuleConfig = {
 
 export const SDK_VERSION = version;
 
-export { CustomProvider, ReactNativeFirebaseAppCheckProvider } from './providers';
+export {
+  CustomProvider,
+  ReactNativeFirebaseAppCheckProvider,
+  ReCaptchaV3Provider,
+  ReCaptchaEnterpriseProvider,
+} from './providers';
 
 function getModularAppCheck(app?: FirebaseApp): AppCheck {
   return getOrCreateModularInstance(FirebaseAppCheckModule, config, app) as unknown as AppCheck;
@@ -290,9 +281,9 @@ function getModularAppCheck(app?: FirebaseApp): AppCheck {
  * Initializes App Check for the given Firebase app.
  *
  * @remarks Returns synchronously for firebase-js-sdk parity; native provider setup continues in
- * the background. On native platforms use {@link ReactNativeFirebaseAppCheckProvider} to configure
- * Device Check, App Attest, Play Integrity, or debug providers. firebase-js-sdk
- * `ReCaptchaEnterpriseProvider` / `ReCaptchaV3Provider` are **web only** and have no RN equivalent.
+ * the background. On native platforms use {@link ReactNativeFirebaseAppCheckProvider} (including
+ * the `recaptcha` provider) or configure Device Check, App Attest, Play Integrity, or debug
+ * providers. On Other/Web, use {@link ReCaptchaEnterpriseProvider} / {@link ReCaptchaV3Provider}.
  */
 export function initializeAppCheck(app?: FirebaseApp, options?: AppCheckOptions): AppCheck {
   if (!isObject(options)) {

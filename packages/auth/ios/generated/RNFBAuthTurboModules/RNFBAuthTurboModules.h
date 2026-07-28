@@ -66,6 +66,9 @@ namespace JS {
 - (void)getCustomAuthDomain:(NSString *)appName
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
+- (void)initializeRecaptchaConfig:(NSString *)appName
+                           resolve:(RCTPromiseResolveBlock)resolve
+                            reject:(RCTPromiseRejectBlock)reject;
 - (void)addAuthStateListener:(NSString *)appName;
 - (void)removeAuthStateListener:(NSString *)appName;
 - (void)addIdTokenListener:(NSString *)appName;

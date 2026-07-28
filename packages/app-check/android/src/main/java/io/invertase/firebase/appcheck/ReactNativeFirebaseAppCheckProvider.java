@@ -27,6 +27,7 @@ import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
 import com.google.firebase.appcheck.debug.InternalDebugSecretProvider;
 import com.google.firebase.appcheck.debug.internal.DebugAppCheckProvider;
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
+import com.google.firebase.appcheck.recaptcha.RecaptchaAppCheckProviderFactory;
 import com.google.firebase.inject.Provider;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -90,16 +91,21 @@ public class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
         delegateProvider = PlayIntegrityAppCheckProviderFactory.getInstance().create(app);
       }
 
+      if ("recaptcha".equals(providerName)) {
+        // Site key is read from FirebaseOptions.getRecaptchaSiteKey() by the native SDK.
+        delegateProvider = RecaptchaAppCheckProviderFactory.getInstance().create(app);
+      }
+
       if (delegateProvider == null) {
         String message =
             "Unknown provider name \""
                 + providerName
-                + "\". Valid providers are: debug, playIntegrity.";
+                + "\". Valid providers are: debug, playIntegrity, recaptcha.";
         Log.e(LOGTAG, message);
         throw new IllegalArgumentException(message);
       }
     } catch (Exception e) {
-      // This will bubble up and result in a rejected promise with the underlying message
+      // Preserve underlying SDK error messages (e.g. missing recaptchaSiteKey).
       throw new RuntimeException(e.getMessage());
     }
   }

@@ -47,6 +47,131 @@ The `@react-native-firebase/auth` config plugin is not required for all auth pro
 
 The recommendation is to use a [custom development client](https://docs.expo.dev/develop/development-builds/introduction/#use-libraries-with-native-code-that-arent). For more info on using Expo with React Native Firebase, see our [Expo docs](/#installation-for-expo-projects).
 
+# reCAPTCHA Enterprise
+
+Firebase Auth can use [reCAPTCHA Enterprise](https://cloud.google.com/identity-platform/docs/recaptcha-enterprise) for SMS defense and bot protection on phone and email/password flows. React Native Firebase exports [`initializeRecaptchaConfig`](https://firebase.google.com/docs/reference/js/auth#initializerecaptchaconfig) from `@react-native-firebase/auth` on all platforms (matching the firebase-js-sdk modular API).
+
+Call it during app startup — before starting phone verification — when your Firebase project enforces Enterprise reCAPTCHA. On **Web** (`Platform.OS === 'web'`), it is **required** before Enterprise phone verification; without it, upstream falls back to reCAPTCHA v2 or fails when Enterprise is enforced. On **iOS and Android**, native SDKs can lazily fetch config, but calling it early reduces latency for Enterprise-protected flows. For **email/password Enterprise protection**, it is a best-effort pre-warm (the SDK can restart the flow if omitted).
+
+## Platform behaviour
+
+| Context                                | `initializeRecaptchaConfig(auth)`                                                                                      |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **iOS / Android**                      | Calls the native Firebase Auth SDK (`initializeRecaptchaConfig` / `initializeRecaptchaConfigWithCompletion:`)          |
+| **Web** (`Platform.OS === 'web'`)      | Delegates to firebase-js-sdk — **call before Enterprise phone verification**                                           |
+| **Other / Hermes** (macOS, Windows, …) | Resolves immediately with a `console.warn` — Enterprise phone verification is unavailable (no DOM reCAPTCHA bootstrap) |
+
+## Enterprise SMS defense
+
+When reCAPTCHA Enterprise SMS defense is enabled in [Google Cloud Identity Platform](https://cloud.google.com/identity-platform/docs/recaptcha-enterprise), Firebase may require Enterprise verification before sending SMS codes.
+
+> **Console pitfall:** Enabling the reCAPTCHA Enterprise API can leave SMS defense active even after you disable it in the console. If phone auth fails unexpectedly after toggling Enterprise settings, follow [Identity Platform disable steps](https://cloud.google.com/identity-platform/docs/recaptcha-enterprise) and ensure your native config files are up to date. See [flutterfire#18171](https://github.com/firebase/flutterfire/issues/18171) and [firebase-ios-sdk#15345](https://github.com/firebase/firebase-ios-sdk/issues/15345).
+
+After enabling App Check or Auth reCAPTCHA features, redownload `google-services.json` and `GoogleService-Info.plist` so they include `recaptchaSiteKey`. See [Firebase app options](/app/json-config#recaptchasitekey-in-firebase-app-options).
+
+## AUDIT mode and fallback app verification (Android / iOS)
+
+When [SMS defense is in **AUDIT** mode](https://cloud.google.com/identity-platform/docs/recaptcha-enterprise), Identity Platform runs an Enterprise toll-fraud assessment before sending SMS. If that assessment fails or reCAPTCHA is misconfigured, the Firebase Auth client falls back to **platform app verification** — not straight to SMS.
+
+| Platform    | Fallback chain (AUDIT)                             | Setup docs                                                                                        |
+| ----------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Android** | Play Integrity → reCAPTCHA v2 web flow             | [Android phone auth — app verification](https://firebase.google.com/docs/auth/android/phone-auth) |
+| **iOS**     | Silent push (APNs) → reCAPTCHA v2 web flow         | [iOS phone auth — app verification](https://firebase.google.com/docs/auth/ios/phone-auth)         |
+| **Web**     | reCAPTCHA v2 via `RecaptchaVerifier` on phone APIs | [Web phone auth](https://firebase.google.com/docs/auth/web/phone-auth)                            |
+
+Ensure fallback methods are configured before enabling AUDIT in production. Simulators, sideloaded builds, and missing APNs often hit the reCAPTCHA v2 fallback — see the platform guides above.
+
+> **RNFB test app:** Jet Tier 2 uses **fictional Console test numbers** on **cloud** Auth without `appVerificationDisabledForTesting`. Enterprise + AUDIT still run; fallbacks may activate on emulators/simulators.
+
+## Project bootstrap (Identity Platform + reCAPTCHA Enterprise)
+
+Use **`tests/local-tests/auth/firebase-recaptcha-enterprise-doctor.sh`** — the single entry point for verify and fix.
+
+| Mode                          | Command                                                                        |
+| ----------------------------- | ------------------------------------------------------------------------------ |
+| Interactive (default on TTY)  | `tests/local-tests/auth/firebase-recaptcha-enterprise-doctor.sh --interactive` |
+| Verify only (CI / no prompts) | `tests/local-tests/auth/firebase-recaptcha-enterprise-doctor.sh --verify-only` |
+| Apply all automated fixes     | `tests/local-tests/auth/firebase-recaptcha-enterprise-doctor.sh --fix`         |
+| Documentation URL map         | `tests/local-tests/auth/firebase-recaptcha-enterprise-doctor.sh --docs`        |
+
+The doctor enables APIs and IAM (Phase B), sets SMS defense to **AUDIT** (Phase B2), downloads native configs via `firebase apps:sdkconfig` (Phase D), and verifies `recaptchaKeys` / `recaptchaSiteKey`. Console-only steps (register apps, fictional test phone) print links.
+
+Example (RNFB test app defaults):
+
+```bash
+tests/local-tests/auth/firebase-recaptcha-enterprise-doctor.sh --interactive
+# non-default project / paths:
+tests/local-tests/auth/firebase-recaptcha-enterprise-doctor.sh \
+  --project-id my-project \
+  --android-dir path/to/android/app \
+  --ios-dir path/to/ios \
+  --fix
+```
+
+Firebase CLI: `npx --yes firebase-tools login` works without a prior `yarn install`; inside this monorepo, `yarn` also provides `firebase` via `node_modules/.bin`.
+
+Print the full URL map:
+
+```bash
+tests/local-tests/auth/firebase-recaptcha-enterprise-doctor.sh --docs
+```
+
+### Documentation map
+
+| Phase               | What                           | Links                                                                                                                                                                                                                                                                                                                            |
+| ------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **B**               | Enable APIs + service identity | [Prepare environment](https://cloud.google.com/recaptcha/docs/prepare-environment), [Identity Platform service account](https://cloud.google.com/identity-platform/docs/recaptcha-enterprise#create_a_service_account)                                                                                                           |
+| **B2**              | AUDIT / SMS defense            | [reCAPTCHA Enterprise](https://cloud.google.com/identity-platform/docs/recaptcha-enterprise), [SMS defense](https://cloud.google.com/identity-platform/docs/recaptcha-tfp), [`phoneEnforcementState` enum](https://cloud.google.com/identity-platform/docs/reference/rest/v2/projects.tenants#recaptchaproviderenforcementstate) |
+| **C**               | Phone auth + fallbacks         | [Android](https://firebase.google.com/docs/auth/android/phone-auth), [iOS](https://firebase.google.com/docs/auth/ios/phone-auth), [fictional test numbers](https://firebase.google.com/docs/auth/web/phone-auth#test-with-fictional-phone-numbers)                                                                               |
+| **D**               | Native config download         | [Firebase CLI `apps:sdkconfig`](https://firebase.google.com/docs/cli); see `okf-bundle/recaptcha-enterprise-test-setup.md` § Console: Web vs mobile                                                                                                                                                                              |
+| **Client**          | `initializeRecaptchaConfig`    | [JS reference](https://firebase.google.com/docs/reference/js/auth#initializerecaptchaconfig)                                                                                                                                                                                                                                     |
+| **Troubleshooting** | SMS defense quirks             | [Cloud troubleshooting](https://cloud.google.com/identity-platform/docs/recaptcha-troubleshooting), [flutterfire#18171](https://github.com/firebase/flutterfire/issues/18171)                                                                                                                                                    |
+
+Detailed table: `okf-bundle/recaptcha-enterprise-test-setup.md` § Documentation map.
+
+## Example: startup pre-warm (iOS / Android / Web)
+
+```jsx
+import { useEffect } from 'react';
+import { getAuth, initializeRecaptchaConfig } from '@react-native-firebase/auth';
+
+useEffect(() => {
+  initializeRecaptchaConfig(getAuth()).catch(error => {
+    console.warn('initializeRecaptchaConfig failed:', error);
+  });
+}, []);
+```
+
+## Example: Web Enterprise phone sign-in
+
+On **Web**, you **must** call `initializeRecaptchaConfig(auth)` once before `signInWithPhoneNumber` or `PhoneAuthProvider.verifyPhoneNumber` when Enterprise verification is enforced:
+
+```jsx
+import {
+  getAuth,
+  initializeRecaptchaConfig,
+  signInWithPhoneNumber,
+} from '@react-native-firebase/auth';
+
+async function handleSignInWithPhoneNumber(phoneNumber) {
+  const auth = getAuth();
+  await initializeRecaptchaConfig(auth);
+  const confirmation = await signInWithPhoneNumber(auth, phoneNumber);
+  return confirmation;
+}
+```
+
+## Troubleshooting `ERROR_RECAPTCHA_SDK_NOT_LINKED`
+
+On **iOS**, App Check or Auth reCAPTCHA flows can fail with `ERROR_RECAPTCHA_SDK_NOT_LINKED` / `GACAppCheckErrorCodeUnsupported` when the reCAPTCHA Enterprise mobile SDK is not linked at runtime, or when native config is stale after console changes.
+
+1. Run `cd ios && pod install` after upgrading `@react-native-firebase/auth` or `@react-native-firebase/app-check` (the Enterprise SDK is linked by default in current releases).
+2. Redownload `GoogleService-Info.plist` from the Firebase console so `recaptchaSiteKey` is present.
+3. If SMS defense was toggled in Identity Platform, fully disable Enterprise SMS defense per [Cloud docs](https://cloud.google.com/identity-platform/docs/recaptcha-enterprise) and rebuild the app.
+4. Clean rebuild (`cd ios && xcodebuild clean` or delete `DerivedData`) if the error persists after pod install.
+
+On **Android**, ensure `google-services.json` includes `recaptchaSiteKey` and rebuild after upgrading Auth or App Check packages.
+
 # Sign-in
 
 The module provides a `signInWithPhoneNumber` method which accepts a phone number. Firebase sends an SMS message to the

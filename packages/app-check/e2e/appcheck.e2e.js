@@ -17,6 +17,8 @@
 
 import { Base64 } from '@react-native-firebase/app/dist/module/common';
 
+const { getRecaptchaSiteKey } = require('../../app/e2e/helpers');
+
 const tokenUUIDs = [
   'fd650953-e806-4293-b5df-edfe544d82a8',
   '91794ec5-0746-4017-abd3-f26d2be221b3',
@@ -91,6 +93,14 @@ function decodeJWT(token) {
   const payload = JSON.parse(base64UrlDecode(parts[1]));
 
   return payload;
+}
+
+function isWebPlatform() {
+  return Platform.OS === 'web';
+}
+
+function isOtherHermesPlatform() {
+  return Platform.other && Platform.OS !== 'web';
 }
 
 describe('appCheck()', function () {
@@ -298,6 +308,176 @@ describe('appCheck()', function () {
           }
         } catch (e) {
           skipIfAppCheckCloudQuotaError(e, this);
+        }
+      });
+    });
+  });
+
+  /*
+   * Combined App Check + Auth Enterprise (#9991 regression):
+   * firebase-js-sdk 12.15+ supports concurrent Auth initializeRecaptchaConfig() and App Check
+   * ReCaptchaEnterpriseProvider on Other/Web. Full dual-init e2e against live Enterprise tokens
+   * requires Firebase Console setup (reCAPTCHA Enterprise API, App Check recaptcha provider,
+   * updated native config with recaptchaSiteKey). Manual verification: call initializeRecaptchaConfig
+   * then initialize App Check with ReCaptchaEnterpriseProvider (or provider-less init) on Web, or
+   * native recaptcha + initializeRecaptchaConfig on iOS/Android — see
+   * okf-bundle/recaptcha-enterprise-design.md.
+   */
+  describe('reCAPTCHA Enterprise', function () {
+    describe('native recaptcha provider smoke', function () {
+      if (Platform.other) {
+        return;
+      }
+
+      it('ReactNativeFirebaseAppCheckProvider recaptcha configure and getToken smoke', async function () {
+        const recaptchaSiteKey = getRecaptchaSiteKey();
+        if (!recaptchaSiteKey) {
+          // CI default project has no recaptchaSiteKey until native config files are updated.
+          this.skip();
+        }
+
+        const { initializeAppCheck, getToken, ReactNativeFirebaseAppCheckProvider } =
+          appCheckModular;
+        const provider = new ReactNativeFirebaseAppCheckProvider();
+        provider.configure({
+          android: {
+            provider: 'recaptcha',
+          },
+          apple: {
+            provider: 'recaptcha',
+          },
+          web: {
+            provider: 'debug',
+            siteKey: 'none',
+          },
+        });
+
+        const instance = await initializeAppCheck(undefined, {
+          provider,
+          isTokenAutoRefreshEnabled: false,
+        });
+
+        try {
+          const { token } = await getToken(instance, true);
+          token.should.be.a.String();
+          token.should.not.equal('');
+        } catch (e) {
+          // App Check reCAPTCHA may not be registered in Firebase console yet.
+          if (
+            e.message.includes('appCheck/token-error') ||
+            e.message.includes('recaptcha') ||
+            e.message.includes('RECAPTCHA') ||
+            e.message.includes('Missing site key') ||
+            e.message.includes('Quota exceeded')
+          ) {
+            this.skip();
+          }
+          throw e;
+        }
+      });
+
+      it('ReCaptchaEnterpriseProvider recaptcha route smoke', async function () {
+        const recaptchaSiteKey = getRecaptchaSiteKey();
+        if (!recaptchaSiteKey) {
+          this.skip();
+        }
+
+        const { initializeAppCheck, getToken, ReCaptchaEnterpriseProvider } = appCheckModular;
+        const provider = new ReCaptchaEnterpriseProvider(recaptchaSiteKey);
+        const instance = await initializeAppCheck(undefined, {
+          provider,
+          isTokenAutoRefreshEnabled: false,
+        });
+
+        try {
+          const { token } = await getToken(instance, true);
+          token.should.be.a.String();
+          token.should.not.equal('');
+        } catch (e) {
+          if (
+            e.message.includes('appCheck/token-error') ||
+            e.message.includes('recaptcha') ||
+            e.message.includes('RECAPTCHA') ||
+            e.message.includes('Missing site key') ||
+            e.message.includes('Quota exceeded')
+          ) {
+            this.skip();
+          }
+          throw e;
+        }
+      });
+    });
+
+    describe('Other/Web Enterprise providers', function () {
+      if (!isWebPlatform()) {
+        return;
+      }
+
+      it('ReCaptchaEnterpriseProvider init smoke', async function () {
+        const recaptchaSiteKey = getRecaptchaSiteKey();
+        if (!recaptchaSiteKey) {
+          this.skip();
+        }
+
+        const { initializeAppCheck, ReCaptchaEnterpriseProvider } = appCheckModular;
+        const provider = new ReCaptchaEnterpriseProvider(recaptchaSiteKey);
+        const instance = await initializeAppCheck(undefined, {
+          provider,
+          isTokenAutoRefreshEnabled: false,
+        });
+        should.exist(instance);
+      });
+
+      it('provider-less initializeAppCheck smoke', async function () {
+        const recaptchaSiteKey = getRecaptchaSiteKey();
+        if (!recaptchaSiteKey) {
+          this.skip();
+        }
+
+        const { initializeApp, deleteApp } = modular;
+        const { initializeAppCheck } = appCheckModular;
+        const platformAppConfig = FirebaseHelpers.app.config();
+        const name = `recaptchaProviderLess${FirebaseHelpers.id}`;
+        const app = await initializeApp({ ...platformAppConfig, recaptchaSiteKey }, name);
+
+        try {
+          const instance = await initializeAppCheck(app, {
+            isTokenAutoRefreshEnabled: false,
+          });
+          should.exist(instance);
+        } finally {
+          await deleteApp(app);
+        }
+      });
+    });
+
+    describe('Other/Hermes rejection', function () {
+      if (!isOtherHermesPlatform()) {
+        return;
+      }
+
+      it('ReCaptchaEnterpriseProvider throws without DOM', async function () {
+        const { initializeAppCheck, ReCaptchaEnterpriseProvider } = appCheckModular;
+        const provider = new ReCaptchaEnterpriseProvider('test-site-key');
+
+        try {
+          await initializeAppCheck(undefined, { provider, isTokenAutoRefreshEnabled: false });
+          return Promise.reject(new Error('Did not throw an error.'));
+        } catch (e) {
+          e.message.should.containEql('ReCaptcha providers are not supported on this platform');
+          return Promise.resolve();
+        }
+      });
+
+      it('provider-less init throws on Other/Hermes', async function () {
+        const { initializeAppCheck } = appCheckModular;
+
+        try {
+          await initializeAppCheck(undefined, { isTokenAutoRefreshEnabled: false });
+          return Promise.reject(new Error('Did not throw an error.'));
+        } catch (e) {
+          e.message.should.containEql('Provider-less App Check initialization is not supported');
+          return Promise.resolve();
         }
       });
     });

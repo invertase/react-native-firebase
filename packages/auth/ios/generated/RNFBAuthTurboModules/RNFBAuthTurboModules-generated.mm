@@ -33,6 +33,9 @@ namespace facebook::react {
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_getCustomAuthDomain(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "getCustomAuthDomain", @selector(getCustomAuthDomain:resolve:reject:), args, count);
     }
+    static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_initializeRecaptchaConfig(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "initializeRecaptchaConfig", @selector(initializeRecaptchaConfig:resolve:reject:), args, count);
+    }
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_addAuthStateListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "addAuthStateListener", @selector(addAuthStateListener:), args, count);
@@ -277,6 +280,7 @@ namespace facebook::react {
         
         
         methodMap_["getCustomAuthDomain"] = MethodMetadata {1, __hostFunction_NativeRNFBTurboAuthSpecJSI_getCustomAuthDomain};
+        methodMap_["initializeRecaptchaConfig"] = MethodMetadata {1, __hostFunction_NativeRNFBTurboAuthSpecJSI_initializeRecaptchaConfig};
         
         
         methodMap_["addAuthStateListener"] = MethodMetadata {1, __hostFunction_NativeRNFBTurboAuthSpecJSI_addAuthStateListener};

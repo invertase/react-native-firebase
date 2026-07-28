@@ -27,6 +27,11 @@ static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_getCustomA
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getCustomAuthDomain", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
 }
 
+static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_initializeRecaptchaConfig(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "initializeRecaptchaConfig", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+}
+
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_addAuthStateListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "addAuthStateListener", "(Ljava/lang/String;)V", args, count, cachedMethodId);
@@ -322,6 +327,7 @@ NativeRNFBTurboAuthSpecJSI::NativeRNFBTurboAuthSpecJSI(const JavaTurboModule::In
   methodMap_["getConstants"] = MethodMetadata {0, __hostFunction_NativeRNFBTurboAuthSpecJSI_getConstants};
   methodMap_["configureAuthDomain"] = MethodMetadata {1, __hostFunction_NativeRNFBTurboAuthSpecJSI_configureAuthDomain};
   methodMap_["getCustomAuthDomain"] = MethodMetadata {1, __hostFunction_NativeRNFBTurboAuthSpecJSI_getCustomAuthDomain};
+  methodMap_["initializeRecaptchaConfig"] = MethodMetadata {1, __hostFunction_NativeRNFBTurboAuthSpecJSI_initializeRecaptchaConfig};
   methodMap_["addAuthStateListener"] = MethodMetadata {1, __hostFunction_NativeRNFBTurboAuthSpecJSI_addAuthStateListener};
   methodMap_["removeAuthStateListener"] = MethodMetadata {1, __hostFunction_NativeRNFBTurboAuthSpecJSI_removeAuthStateListener};
   methodMap_["addIdTokenListener"] = MethodMetadata {1, __hostFunction_NativeRNFBTurboAuthSpecJSI_addIdTokenListener};
