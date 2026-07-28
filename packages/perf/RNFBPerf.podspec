@@ -36,6 +36,22 @@ Pod::Spec.new do |s|
 
   install_modules_dependencies(s);
 
+  # RN 0.83+ (default on 0.84+) ships a prebuilt React-Core (RCT_USE_PREBUILT_RNCORE=1).
+  # Wire it up so the legacy <React/...> header imports resolve against the prebuilt
+  # framework. Guarded for older react-native versions where the helper is absent.
+  if defined?(add_rncore_dependency)
+    add_rncore_dependency(s)
+  end
+
+  # RNFB's Objective-C sources import <React/...> headers non-modularly. When a consumer
+  # builds with use_frameworks! (Expo's default, and required by the firebase-ios-sdk),
+  # RNFB is compiled as a framework module and Clang rejects those imports with
+  # -Wnon-modular-include-in-framework-module ("must be imported from module 'React'").
+  # Allow them so the framework module validates. Merge so any existing config is kept.
+  s.pod_target_xcconfig = (s.to_hash["pod_target_xcconfig"] || {}).merge({
+    "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
+  })
+
   if defined?(ENV["RCT_NEW_ARCH_ENABLED"]) != nil && (ENV["RCT_NEW_ARCH_ENABLED"] == '0')
      raise "#{s.name} requires New Architecture. Enable New Architecture to use this module"
   end
