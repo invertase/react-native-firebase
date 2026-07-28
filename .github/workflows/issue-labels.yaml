@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Check if the comment is from the issue author
         id: check-op
-        uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71 # v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const isOpComment =
@@ -24,7 +24,7 @@ jobs:
 
       - name: Update labels when the issue author responded on an open item
         if: steps.check-op.outputs.op_comment == 'true' && github.event.issue.state == 'open'
-        uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71 # v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const issueNumber = context.payload.issue.number;
@@ -49,7 +49,7 @@ jobs:
 
       - name: Comment when the issue author responded on a closed item
         if: steps.check-op.outputs.op_comment == 'true' && github.event.issue.state == 'closed'
-        uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71 # v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             await github.rest.issues.createComment({
