@@ -24,6 +24,7 @@ const {
   refEqual,
   addDoc,
   setDoc,
+  updateDoc,
   getDoc,
   onSnapshot,
   query,
@@ -401,6 +402,83 @@ describe('firestore.withConverter', function () {
           });
         });
       }
+    });
+
+    it("returns the prior settled value for serverTimestamps: 'previous' on an updated document", async function () {
+      if (Platform.other) {
+        // macOS uses the Firestore web lite path, which does not support snapshot listeners.
+        return;
+      }
+
+      return withTestCollection(async coll => {
+        const ref = doc(coll, 'previous-on-update');
+
+        // 1. Create the document and wait for the initial write to settle (hasPendingWrites
+        //    becomes false) so we have a real, resolved server Timestamp to compare against.
+        const settledTimestamp = await new Promise((resolve, reject) => {
+          const unsubscribe = onSnapshot(
+            ref,
+            { includeMetadataChanges: true },
+            snapshot => {
+              try {
+                if (!snapshot.exists() || snapshot.metadata.hasPendingWrites) {
+                  return;
+                }
+
+                const value = snapshot.data().timestampField;
+                unsubscribe();
+                resolve(value);
+              } catch (error) {
+                unsubscribe();
+                reject(error);
+              }
+            },
+            reject,
+          );
+
+          setDoc(ref, { timestampField: serverTimestamp() }).catch(error => {
+            unsubscribe();
+            reject(error);
+          });
+        });
+
+        settledTimestamp.should.be.an.instanceOf(Timestamp);
+
+        // 2. Update the same field with a brand new serverTimestamp() call, creating a new
+        //    pending write, and assert that serverTimestamps: 'previous' returns the original
+        //    settled value (real "previous value" semantics), not null and not the new pending
+        //    write's value, while the write is still pending.
+        await new Promise((resolve, reject) => {
+          const unsubscribe = onSnapshot(
+            ref,
+            { includeMetadataChanges: true },
+            snapshot => {
+              try {
+                if (!snapshot.exists() || !snapshot.metadata.hasPendingWrites) {
+                  return;
+                }
+
+                const previousValue = snapshot.data({
+                  serverTimestamps: 'previous',
+                }).timestampField;
+                previousValue.should.be.an.instanceOf(Timestamp);
+                previousValue.isEqual(settledTimestamp).should.equal(true);
+                unsubscribe();
+                resolve();
+              } catch (error) {
+                unsubscribe();
+                reject(error);
+              }
+            },
+            reject,
+          );
+
+          updateDoc(ref, { timestampField: serverTimestamp() }).catch(error => {
+            unsubscribe();
+            reject(error);
+          });
+        });
+      });
     });
 
     it('supports partials with merge', async function () {
