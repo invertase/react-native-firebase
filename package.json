@@ -89,7 +89,7 @@
     "@firebase/rules-unit-testing": "^5.0.0",
     "@inquirer/prompts": "^8.4.2",
     "@octokit/core": "^7.0.6",
-    "@react-native-community/cli": "15.1.3",
+    "@react-native-community/cli": "20.2.0",
     "@tsconfig/node-lts": "^24.0.0",
     "@types/react": "~19.2.14",
     "@types/react-native": "^0.73.0",
@@ -129,7 +129,7 @@
     "@types/react": "~19.0.0",
     "react-native": "0.78.3",
     "@react-native/codegen": "0.78.3",
-    "@react-native-community/cli": "15.1.3",
+    "@react-native-community/cli": "20.2.0",
     "mocha-remote-client@npm:^1.13.0": "patch:mocha-remote-client@npm%3A1.13.2#~/.yarn/patches/mocha-remote-client-npm-1.13.2-a2e7596aba.patch",
     "mocha-remote-server@npm:^1.13.0": "patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch"
   },
