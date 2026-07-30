@@ -412,6 +412,87 @@ def rnfirebase_fail_if_spm_static_linkage!(installer)
   MESSAGE
 end
 
+# CocoaPods `TargetUUIDGenerator` replaces `@generated_uuids` with leftover
+# `@available_uuids` before Podfile `post_install`. RN's SPM integration then
+# calls `project.new` for Firebase package product deps; with an empty/short
+# counter that restarts near index 0 and **overwrites** `rootObject`
+# (`PBXProject` at `PREFIX0000000`). Xcode 26 then refuses to open Pods
+# (`-[XCSwiftPackageProductDependency _setSavedArchiveVersion:]`) and the
+# workspace builds only SPM app targets — bridging headers can't see RNFB
+# frameworks (reproduced on RN 0.85.3 × prebuilt RNCore). Raise the sequential
+# UUID high-water mark to past every existing CocoaPods-format object before
+# any `post_install` body (including `react_native_post_install` → SPM) runs.
+def rnfirebase_ensure_pods_uuid_counter_safe!(installer)
+  project = installer.pods_project
+  return unless project
+
+  prefix = project.instance_variable_get(:@uuid_prefix)
+  return unless prefix.is_a?(String) && prefix.length >= 6
+
+  pfx = prefix[0, 6]
+  max_idx = -1
+  project.objects_by_uuid.each_key do |uuid|
+    next unless uuid.is_a?(String) && uuid.length == 14 && uuid.start_with?(pfx) && uuid.end_with?('0')
+
+    idx = uuid[6, 7].to_i(16)
+    max_idx = idx if idx > max_idx
+  end
+  return if max_idx < 0
+
+  generated = project.instance_variable_get(:@generated_uuids)
+  generated = [] unless generated.is_a?(Array)
+  already_high = generated.size > max_idx
+  while generated.size <= max_idx
+    generated << format('%.6s%07X0', prefix, generated.size)
+  end
+  project.instance_variable_set(:@generated_uuids, generated)
+  project.instance_variable_set(:@available_uuids, [])
+
+  # Only log when SPM is active and we actually padded -- non-SPM installs
+  # still get the counter raise (cheap insurance) but must not spam every
+  # `pod install` with a success line.
+  if !already_high && defined?(Pod::UI) && RNFirebaseSPM.active?
+    Pod::UI.puts '[react-native-firebase] Raised CocoaPods Pods UUID counter ' \
+      "past index #{max_idx} before RN SPM mutates Pods.xcodeproj."
+  end
+end
+
+# Hard integrity check for the UUID-collision failure class above -- mirrors
+# `rnfirebase_verify_spm_embed_phase_applied!` (soft attempt, then fail closed).
+# After RN's SPM `post_install` mutates Pods.xcodeproj, the Pods project's
+# `rootObject` UUID must still resolve to the same `PBXProject` instance. If a
+# later `project.new` reused `PREFIX0000000`, `objects_by_uuid` holds a
+# different object at that UUID while `@root_object` still points at the
+# original `PBXProject`; saving then writing that UUID as `rootObject` leaves
+# Xcode unable to open Pods.
+#
+# Raises `Pod::Informative` rather than warning-and-continuing: there is no
+# safe fallback once the project graph is corrupted.
+def rnfirebase_verify_pods_project_uuid_integrity!(installer)
+  return unless RNFirebaseSPM.active?
+  return unless installer.respond_to?(:pods_project)
+
+  project = installer.pods_project
+  return unless project
+  return unless project.respond_to?(:root_object) && project.respond_to?(:objects_by_uuid)
+
+  root = project.root_object
+  resolved = root && project.objects_by_uuid[root.uuid]
+  return if root &&
+            resolved &&
+            resolved.equal?(root) &&
+            resolved.respond_to?(:isa) &&
+            resolved.isa == 'PBXProject'
+
+  raise Pod::Informative, <<~MESSAGE
+    [react-native-firebase] Pods.xcodeproj rootObject / PBXProject UUID integrity check failed after post_install.
+
+    CocoaPods' sequential UUID counter was likely reset before React Native's SPM integration called `project.new`, overwriting the Pods `PBXProject` (`rootObject`). Xcode then refuses to open Pods (e.g. `-[XCSwiftPackageProductDependency _setSavedArchiveVersion:]`), and bridging headers cannot see React Native Firebase frameworks.
+
+    Delete `ios/Pods` and `ios/Podfile.lock`, upgrade `@react-native-firebase/app`, then run `pod install` again. If this persists, report it with your React Native and CocoaPods versions.
+  MESSAGE
+end
+
 # Hooks CocoaPods itself (not React Native) so `rnfirebase_add_spm_embed_phase`
 # runs automatically on every `pod install`/`pod update`, without requiring
 # any Podfile change from consumers.
@@ -486,7 +567,23 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
       # build/link step, with a far more confusing error and no pointer back
       # to the actual misconfiguration.
       rnfirebase_fail_if_spm_static_linkage!(self)
+      # Soft ensure (warn on unexpected errors) -- paired with the hard
+      # `rnfirebase_verify_pods_project_uuid_integrity!` after original
+      # post_install, same pattern as embed-phase add + verify below.
+      begin
+        rnfirebase_ensure_pods_uuid_counter_safe!(self)
+      rescue => e
+        if defined?(Pod::UI)
+          Pod::UI.warn '[react-native-firebase] Couldn\'t raise Pods UUID counter before ' \
+            "RN SPM (#{e.class}: #{e.message}). If `pod install` leaves Pods.xcodeproj " \
+            'damaged (missing PBXProject / Xcode `_setSavedArchiveVersion`), upgrade ' \
+            'react-native-firebase or patch CocoaPods UUID generation.'
+        end
+      end
       result = send(original_method)
+      # Deliberately not rescued: if RN SPM overwrote `rootObject`, continuing
+      # would only delay the failure to Xcode with a worse diagnostic.
+      rnfirebase_verify_pods_project_uuid_integrity!(self)
       begin
         rnfirebase_add_spm_embed_phase(self)
       rescue => e

@@ -245,15 +245,47 @@ end
 # Stands in for `Pod::Installer` -- specifically its `aggregate_targets`
 # attribute (a plain `attr_reader`), the only part of the real installer
 # every `rnfirebase_*` post-install helper in firebase_spm.rb actually reads.
+# Optional `pods_project` covers `rnfirebase_ensure_pods_uuid_counter_safe!`
+# / `rnfirebase_verify_pods_project_uuid_integrity!`.
 # `rnfirebase_hook_cocoapods_post_install!` itself is tested separately,
 # against a fake class shaped like `Pod::Installer` (see
 # `new_fake_cocoapods_installer_class` below), since there's no real
 # `Pod::Installer` to alias/wrap without a full CocoaPods environment.
 class MockInstaller
-  attr_reader :aggregate_targets
+  attr_reader :aggregate_targets, :pods_project
 
-  def initialize(aggregate_targets)
+  def initialize(aggregate_targets, pods_project: nil)
     @aggregate_targets = aggregate_targets
+    @pods_project = pods_project
+  end
+end
+
+# Stands in for `Pod::Project` (CocoaPods' Xcodeproj subclass) -- specifically
+# `@uuid_prefix`, `@generated_uuids`, `@available_uuids`, `objects_by_uuid`,
+# and `root_object`, the surfaces
+# `rnfirebase_ensure_pods_uuid_counter_safe!` /
+# `rnfirebase_verify_pods_project_uuid_integrity!` read and mutate.
+class MockPodsProject
+  attr_reader :objects_by_uuid
+  attr_accessor :root_object
+
+  def initialize(uuid_prefix:, objects_by_uuid: {}, generated_uuids: [], available_uuids: [], root_object: nil)
+    @uuid_prefix = uuid_prefix
+    @objects_by_uuid = objects_by_uuid
+    @generated_uuids = generated_uuids
+    @available_uuids = available_uuids
+    @root_object = root_object
+  end
+end
+
+# Stands in for an `Xcodeproj::Project::Object` entry in `objects_by_uuid` --
+# only `uuid` + `isa` are needed for the Pods UUID integrity check.
+class MockProjectObject
+  attr_reader :uuid, :isa
+
+  def initialize(uuid, isa:)
+    @uuid = uuid
+    @isa = isa
   end
 end
 
@@ -829,6 +861,174 @@ class FirebaseSpmTest < Minitest::Test
     refute_includes error.message, 'Pods-dynamic-extension'
   end
 
+  # ── rnfirebase_ensure_pods_uuid_counter_safe! ──
+
+  def cocoapods_uuid(prefix, index)
+    format('%.6s%07X0', prefix, index)
+  end
+
+  def test_ensure_pods_uuid_counter_pads_to_high_water_mark
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    prefix = 'ABCDEF'
+    root_uuid = cocoapods_uuid(prefix, 0)
+    high_uuid = cocoapods_uuid(prefix, 0x42)
+    md5_uuid = 'A' * 32
+    project = MockPodsProject.new(
+      uuid_prefix: prefix,
+      objects_by_uuid: {
+        root_uuid => :root,
+        high_uuid => :high,
+        md5_uuid => :stable_target
+      },
+      generated_uuids: [],
+      available_uuids: ['leftover-md5-style']
+    )
+    installer = MockInstaller.new([], pods_project: project)
+    Pod::UI.messages.clear
+
+    rnfirebase_ensure_pods_uuid_counter_safe!(installer)
+
+    generated = project.instance_variable_get(:@generated_uuids)
+    assert_equal 0x43, generated.size
+    assert_equal cocoapods_uuid(prefix, 0), generated[0]
+    assert_equal cocoapods_uuid(prefix, 0x42), generated[0x42]
+    assert_empty project.instance_variable_get(:@available_uuids)
+    assert_equal 1, Pod::UI.messages.length
+    assert_includes Pod::UI.messages[0], 'past index 66'
+  end
+
+  def test_ensure_pods_uuid_counter_noop_for_nil_project
+    load_firebase_spm
+
+    installer = MockInstaller.new([], pods_project: nil)
+    rnfirebase_ensure_pods_uuid_counter_safe!(installer)
+    # No error raised.
+  end
+
+  def test_ensure_pods_uuid_counter_ignores_md5_only_objects
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    project = MockPodsProject.new(
+      uuid_prefix: 'ABCDEF',
+      objects_by_uuid: { ('B' * 32) => :stable_target, ('C' * 32) => :other },
+      generated_uuids: ['preexisting'],
+      available_uuids: ['available']
+    )
+    installer = MockInstaller.new([], pods_project: project)
+    Pod::UI.messages.clear
+
+    rnfirebase_ensure_pods_uuid_counter_safe!(installer)
+
+    # No CocoaPods-format UUIDs => early return; counter untouched.
+    assert_equal ['preexisting'], project.instance_variable_get(:@generated_uuids)
+    assert_equal ['available'], project.instance_variable_get(:@available_uuids)
+    assert_empty Pod::UI.messages
+  end
+
+  def test_ensure_pods_uuid_counter_noop_when_already_high
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    prefix = 'ABCDEF'
+    high_uuid = cocoapods_uuid(prefix, 5)
+    preexisting = (0..10).map { |i| cocoapods_uuid(prefix, i) }
+    project = MockPodsProject.new(
+      uuid_prefix: prefix,
+      objects_by_uuid: { high_uuid => :obj },
+      generated_uuids: preexisting.dup,
+      available_uuids: ['stale']
+    )
+    installer = MockInstaller.new([], pods_project: project)
+    Pod::UI.messages.clear
+
+    rnfirebase_ensure_pods_uuid_counter_safe!(installer)
+
+    generated = project.instance_variable_get(:@generated_uuids)
+    assert_equal 11, generated.size
+    assert_equal preexisting, generated
+    assert_empty project.instance_variable_get(:@available_uuids)
+    assert_empty Pod::UI.messages
+  end
+
+  def test_ensure_pods_uuid_counter_is_silent_when_spm_inactive
+    load_firebase_spm
+    # SPM not activated -- padding still happens, but no pod-install spam.
+
+    prefix = 'ABCDEF'
+    project = MockPodsProject.new(
+      uuid_prefix: prefix,
+      objects_by_uuid: { cocoapods_uuid(prefix, 3) => :obj },
+      generated_uuids: [],
+      available_uuids: []
+    )
+    installer = MockInstaller.new([], pods_project: project)
+    Pod::UI.messages.clear
+
+    rnfirebase_ensure_pods_uuid_counter_safe!(installer)
+
+    assert_equal 4, project.instance_variable_get(:@generated_uuids).size
+    assert_empty Pod::UI.messages
+  end
+
+  # ── rnfirebase_verify_pods_project_uuid_integrity! ──
+
+  def test_verify_pods_uuid_integrity_noop_when_spm_not_active
+    load_firebase_spm
+
+    root = MockProjectObject.new(cocoapods_uuid('ABCDEF', 0), isa: 'XCSwiftPackageProductDependency')
+    project = MockPodsProject.new(
+      uuid_prefix: 'ABCDEF',
+      objects_by_uuid: { root.uuid => root },
+      root_object: root
+    )
+    # Would raise if the check ran against this corrupted graph.
+    rnfirebase_verify_pods_project_uuid_integrity!(MockInstaller.new([], pods_project: project))
+  end
+
+  def test_verify_pods_uuid_integrity_noop_without_pods_project
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    rnfirebase_verify_pods_project_uuid_integrity!(MockInstaller.new([]))
+  end
+
+  def test_verify_pods_uuid_integrity_passes_when_root_resolves
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    root = MockProjectObject.new(cocoapods_uuid('ABCDEF', 0), isa: 'PBXProject')
+    project = MockPodsProject.new(
+      uuid_prefix: 'ABCDEF',
+      objects_by_uuid: { root.uuid => root },
+      root_object: root
+    )
+
+    rnfirebase_verify_pods_project_uuid_integrity!(MockInstaller.new([], pods_project: project))
+  end
+
+  def test_verify_pods_uuid_integrity_raises_when_root_uuid_overwritten
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    root_uuid = cocoapods_uuid('ABCDEF', 0)
+    root = MockProjectObject.new(root_uuid, isa: 'PBXProject')
+    interloper = MockProjectObject.new(root_uuid, isa: 'XCSwiftPackageProductDependency')
+    project = MockPodsProject.new(
+      uuid_prefix: 'ABCDEF',
+      objects_by_uuid: { root_uuid => interloper },
+      root_object: root
+    )
+
+    error = assert_raises(Pod::Informative) do
+      rnfirebase_verify_pods_project_uuid_integrity!(MockInstaller.new([], pods_project: project))
+    end
+    assert_includes error.message, 'rootObject'
+    assert_includes error.message, 'PBXProject'
+  end
+
   # ── rnfirebase_hook_cocoapods_post_install! (patches a stand-in for
   #    Pod::Installer -- there's no real Pod::Installer without a full
   #    CocoaPods environment, so we exercise the aliasing/guard logic
@@ -1115,5 +1315,74 @@ class FirebaseSpmTest < Minitest::Test
 
     assert_equal :original_result, result
     refute_nil target.shell_script_build_phases.find { |p| p.name == RNFIREBASE_SPM_EMBED_PHASE_NAME }
+  end
+
+  def test_hook_calls_uuid_ensure_before_original_post_install
+    load_firebase_spm
+    order = []
+    Object.define_method(:rnfirebase_ensure_pods_uuid_counter_safe!) { |*| order << :ensure }
+    Object.define_method(:rnfirebase_verify_pods_project_uuid_integrity!) { |*| order << :verify }
+    Object.define_method(:rnfirebase_add_spm_embed_phase) { |*| nil }
+
+    klass = Class.new do
+      def initialize
+        @original_hook_calls = 0
+      end
+    end
+    klass.send(:define_method, :run_podfile_post_install_hooks) do
+      order << :original
+      :original_result
+    end
+    klass.send(:private, :run_podfile_post_install_hooks)
+
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    result = klass.new.send(:run_podfile_post_install_hooks)
+
+    assert_equal :original_result, result
+    assert_equal %i[ensure original verify], order
+  end
+
+  def test_hook_raises_when_pods_uuid_integrity_fails_after_post_install
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+    Object.define_method(:rnfirebase_add_spm_embed_phase) { |*| nil }
+
+    root_uuid = cocoapods_uuid('ABCDEF', 0)
+    root = MockProjectObject.new(root_uuid, isa: 'PBXProject')
+    interloper = MockProjectObject.new(root_uuid, isa: 'XCSwiftPackageProductDependency')
+    project = MockPodsProject.new(
+      uuid_prefix: 'ABCDEF',
+      objects_by_uuid: {
+        root_uuid => root,
+        cocoapods_uuid('ABCDEF', 1) => :other
+      },
+      generated_uuids: [root_uuid, cocoapods_uuid('ABCDEF', 1)],
+      available_uuids: [],
+      root_object: root
+    )
+
+    klass = Class.new do
+      attr_reader :original_hook_calls, :pods_project, :aggregate_targets
+
+      define_method(:initialize) do
+        @original_hook_calls = 0
+        @aggregate_targets = []
+        @pods_project = project
+      end
+
+      define_method(:run_podfile_post_install_hooks) do
+        @original_hook_calls += 1
+        # Simulate RN SPM overwriting rootObject during original post_install.
+        @pods_project.objects_by_uuid[root_uuid] = interloper
+        :original_result
+      end
+    end
+    klass.send(:private, :run_podfile_post_install_hooks)
+
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    instance = klass.new
+
+    assert_raises(Pod::Informative) { instance.send(:run_podfile_post_install_hooks) }
+    assert_equal 1, instance.original_hook_calls
   end
 end
