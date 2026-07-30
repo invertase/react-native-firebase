@@ -70,6 +70,12 @@ Adding the real per-product header branch fixes products that actually publish a
 usable Objective-C header. It does not fix Firebase products whose public
 Objective-C class interface is generated from Swift.
 
+When neither the CocoaPods umbrella nor the SPM product header is present — for
+example Firebase App Distribution on Mac Catalyst under SPM — a `.mm`
+TurboModule must compile a stub that rejects at runtime with a clear
+unsupported/unavailable error. Falling through to `@import` is never allowed;
+do not enable `-fcxx-modules` to make the module import work.
+
 ## Swift-product boundary
 
 `FirebaseStorage`, `FirebaseRemoteConfig`, `FirebaseDatabase`, and
@@ -251,6 +257,8 @@ When native Firebase imports or SPM products change, review the diff for these
 invariants:
 
 - no umbrella-header-to-`@import` fallback without a real product-header branch;
+- when product headers are absent on a platform (e.g. App Distribution on
+  Catalyst), stub/reject in `.mm` — never `@import` and never `-fcxx-modules`;
 - no direct Swift-product Firebase import, Firebase-typed declaration, or
   Firebase-bearing shared header in a `.mm` translation unit;
 - no `-fcxx-modules` build setting;
