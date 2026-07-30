@@ -465,6 +465,7 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-fprofile-instr-generate",
+					"-Wl,-u,___llvm_profile_set_filename",
 					"-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
 					"-L$(SDKROOT)/usr/lib/swift",
 					"-lswiftCompatibility56",
@@ -523,6 +524,7 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-fprofile-instr-generate",
+					"-Wl,-u,___llvm_profile_set_filename",
 					"-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
 					"-L$(SDKROOT)/usr/lib/swift",
 					"-lswiftCompatibility56",

@@ -99,9 +99,13 @@ target 'testing' do
       if link_profile
         # DT_TOOLCHAIN_DIR (not TOOLCHAIN_DIR) resolves in workspace OTHER_LDFLAGS on CI.
         # Explicit -l flags satisfy Firebase static Swift pod autolink when clang/ccache links.
+        # -Wl,-u forces __llvm_profile_set_filename out of clang_rt.profile so dynamic RNFB
+        # frameworks can be pointed at coverage-%m.profraw (otherwise it is dead-stripped and
+        # per-image flush returns -1 / Filename not set).
         build_settings['OTHER_LDFLAGS'] = [
           '$(inherited)',
           '-fprofile-instr-generate',
+          '-Wl,-u,___llvm_profile_set_filename',
           '-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)',
           '-L$(SDKROOT)/usr/lib/swift',
           '-lswiftCompatibility56',
@@ -138,14 +142,20 @@ target 'testing' do
     # Bumps minimum deploy target to ours (which is >12.4): https://github.com/facebook/react-native/issues/34106
     # `SWIFT_ENABLE_EXPLICIT_MODULES = 'NO'` is applied automatically for SPM builds
     # by `rnfirebase_apply_spm_build_settings` (see packages/app/firebase_spm.rb)
+    #
+    # Under static linkage, RNFB object code merges into the app binary — compile-only
+    # instrumentation is enough (app flush dumps packages/). Under dynamic linkage
+    # (SPM e2e default), each RNFB*.framework keeps its own counters/runtime and must
+    # link the profile runtime so flush can dlsym+write per image (%m profraw).
+    # Never add profile link flags to third-party / Firebase pods — that breaks
+    # swiftCompatibility56 on CI.
+    rnfb_link_profile = (linkage.to_s == 'dynamic')
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         config.build_settings["GCC_WARN_INHIBIT_ALL_WARNINGS"] = "YES"
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
-        # Instrument RNFB pods at compile time only. Do not add profile link flags to
-        # third-party / Firebase pods — that breaks Swift compatibility library linking on CI.
         if target.name.include?('RNFB')
-          apply_ios_native_coverage.call(config.build_settings, link_profile: false)
+          apply_ios_native_coverage.call(config.build_settings, link_profile: rnfb_link_profile)
         end
       end
     end
