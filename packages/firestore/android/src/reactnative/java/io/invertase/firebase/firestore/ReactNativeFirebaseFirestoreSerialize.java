@@ -78,6 +78,9 @@ public class ReactNativeFirebaseFirestoreSerialize {
   // Keys
   private static final String TYPE = "type";
   private static final String KEY_DATA = "data";
+  private static final String KEY_DATA_ESTIMATE = "dataEstimate";
+  private static final String KEY_DATA_PREVIOUS = "dataPrevious";
+  private static final String KEY_DATA_NONE = "dataNone";
   private static final String KEY_PATH = "path";
   private static final String KEY_EXISTS = "exists";
   private static final String KEY_META = "metadata";
@@ -118,13 +121,44 @@ public class ReactNativeFirebaseFirestoreSerialize {
         getServerTimestampBehavior(appName, databaseId);
 
     if (documentSnapshot.exists()) {
-      if (documentSnapshot.getData(timestampBehavior) != null) {
-        documentMap.putMap(
-            KEY_DATA, objectMapToWritable(documentSnapshot.getData(timestampBehavior)));
+      Map<String, Object> data = documentSnapshot.getData(timestampBehavior);
+      putSnapshotData(documentMap, KEY_DATA, data);
+
+      // The estimate/previous/none variants can only ever differ from `data` while the
+      // document has pending writes - once a write is committed, server timestamps are
+      // resolved and every behavior returns identical values. Skip the extra (expensive)
+      // computations for the common settled-document case; JS falls back to `data` when
+      // these keys are absent (see FirestoreDocumentSnapshot#_dataForOptions).
+      if (snapshotMetadata.hasPendingWrites()) {
+        if (timestampBehavior != DocumentSnapshot.ServerTimestampBehavior.ESTIMATE) {
+          putSnapshotData(
+              documentMap,
+              KEY_DATA_ESTIMATE,
+              documentSnapshot.getData(DocumentSnapshot.ServerTimestampBehavior.ESTIMATE));
+        }
+        if (timestampBehavior != DocumentSnapshot.ServerTimestampBehavior.PREVIOUS) {
+          putSnapshotData(
+              documentMap,
+              KEY_DATA_PREVIOUS,
+              documentSnapshot.getData(DocumentSnapshot.ServerTimestampBehavior.PREVIOUS));
+        }
+        if (timestampBehavior != DocumentSnapshot.ServerTimestampBehavior.NONE) {
+          putSnapshotData(
+              documentMap,
+              KEY_DATA_NONE,
+              documentSnapshot.getData(DocumentSnapshot.ServerTimestampBehavior.NONE));
+        }
       }
     }
 
     return documentMap;
+  }
+
+  private static void putSnapshotData(
+      WritableMap documentMap, String key, @Nullable Map<String, Object> data) {
+    if (data != null) {
+      documentMap.putMap(key, objectMapToWritable(data));
+    }
   }
 
   /**

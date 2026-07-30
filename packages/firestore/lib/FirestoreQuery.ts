@@ -29,7 +29,11 @@ import { FieldPath, fromDotSeparatedString } from './FieldPath';
 import { _Filter, generateFilters } from './FirestoreFilter';
 import QueryModifiers from './FirestoreQueryModifiers';
 import QuerySnapshot, { type QuerySnapshotNativeData } from './FirestoreQuerySnapshot';
-import { parseSnapshotArgs, validateWithConverter } from './utils';
+import {
+  parseSnapshotArgs,
+  throwIfLiteSdkSnapshotListenerUnsupported,
+  validateWithConverter,
+} from './utils';
 
 import type FirestorePath from './FirestorePath';
 import type {
@@ -355,6 +359,8 @@ export class Query<
   }
 
   onSnapshot(...args: unknown[]): () => void {
+    throwIfLiteSdkSnapshotListenerUnsupported();
+
     let snapshotListenOptions: { includeMetadataChanges?: boolean; source?: ListenSource };
     let callback: (
       snapshot: QuerySnapshot<AppModelType, DbModelType> | null,

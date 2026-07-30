@@ -36,6 +36,9 @@ describe('Second Database', function () {
     });
 
     it('throws if no arguments are provided', function () {
+      if (Platform.other) {
+        return;
+      }
       const { collection, onSnapshot } = firestoreModular;
       try {
         onSnapshot(collection(firestore, COLLECTION));
@@ -47,6 +50,9 @@ describe('Second Database', function () {
     });
 
     it('returns an unsubscribe function', function () {
+      if (Platform.other) {
+        return;
+      }
       const { collection, onSnapshot } = firestoreModular;
       const unsub = onSnapshot(collection(firestore, `${COLLECTION}/foo/bar1`), () => {});
 
@@ -284,6 +290,9 @@ describe('Second Database', function () {
     });
 
     it('throws if SnapshotListenerOptions is invalid', function () {
+      if (Platform.other) {
+        return;
+      }
       const { collection, onSnapshot } = firestoreModular;
       try {
         onSnapshot(collection(firestore, NO_RULE_COLLECTION), {
@@ -299,6 +308,9 @@ describe('Second Database', function () {
     });
 
     it('throws if next callback is invalid', function () {
+      if (Platform.other) {
+        return;
+      }
       const { collection, onSnapshot } = firestoreModular;
       try {
         onSnapshot(collection(firestore, NO_RULE_COLLECTION), {
@@ -312,6 +324,9 @@ describe('Second Database', function () {
     });
 
     it('throws if error callback is invalid', function () {
+      if (Platform.other) {
+        return;
+      }
       const { collection, onSnapshot } = firestoreModular;
       try {
         onSnapshot(collection(firestore, NO_RULE_COLLECTION), {

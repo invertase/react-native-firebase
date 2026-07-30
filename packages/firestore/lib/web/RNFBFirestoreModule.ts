@@ -65,13 +65,18 @@ function rejectWithCodeAndMessage(code: string, message: string): Promise<never>
 type DocumentSnapshotLike = {
   exists(): boolean;
   ref: { path: string };
-  data(): Record<string, unknown> | undefined;
+  data(options?: {
+    serverTimestamps?: 'estimate' | 'previous' | 'none';
+  }): Record<string, unknown> | undefined;
 };
 
 function documentSnapshotToObject(snapshot: DocumentSnapshotLike): {
   path: string;
   exists: boolean;
   data?: unknown;
+  dataEstimate?: unknown;
+  dataPrevious?: unknown;
+  dataNone?: unknown;
   metadata: [boolean, boolean];
 } {
   const exists = snapshot.exists();
@@ -79,6 +84,9 @@ function documentSnapshotToObject(snapshot: DocumentSnapshotLike): {
     path: string;
     exists: boolean;
     data?: unknown;
+    dataEstimate?: unknown;
+    dataPrevious?: unknown;
+    dataNone?: unknown;
     metadata: [boolean, boolean];
   } = {
     metadata: [false, false],
@@ -87,6 +95,12 @@ function documentSnapshotToObject(snapshot: DocumentSnapshotLike): {
   };
   if (exists) {
     out.data = objectToWriteable(snapshot.data() ?? {});
+    // Lite has no pending-write / offline queue, so server timestamps on returned snapshots are
+    // already resolved and estimate/previous/none are identical to `data`. Still emit the keys
+    // (via SnapshotOptions) so the JS DocumentSnapshot path stays the same as native.
+    out.dataEstimate = objectToWriteable(snapshot.data({ serverTimestamps: 'estimate' }) ?? {});
+    out.dataPrevious = objectToWriteable(snapshot.data({ serverTimestamps: 'previous' }) ?? {});
+    out.dataNone = objectToWriteable(snapshot.data({ serverTimestamps: 'none' }) ?? {});
   }
   return out;
 }
