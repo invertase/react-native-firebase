@@ -425,7 +425,7 @@
 					"-lswiftCompatibilityPacks",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -profile-generate -profile-coverage-mapping";
-				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.testing;
+				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;
 				PRODUCT_NAME = testing;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "testing/testing-Bridging-Header.h";
@@ -479,7 +479,7 @@
 					"-lswiftCompatibilityPacks",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -profile-generate -profile-coverage-mapping";
-				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.testing;
+				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;
 				PRODUCT_NAME = testing;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "testing/testing-Bridging-Header.h";
