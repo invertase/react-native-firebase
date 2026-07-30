@@ -32,6 +32,7 @@ const {
   getDocs,
   writeBatch,
   increment,
+  initializeFirestore,
   serverTimestamp,
   Timestamp,
 } = firestoreModular;
@@ -91,12 +92,13 @@ function withTestDb(fn) {
 
 async function withModifiedUndefinedPropertiesTestDb(fn) {
   const db = getFirestore();
+  // Capture/restore via public initializeFirestore → settings(); avoid mutating _settings.
   const previousValue = db._settings.ignoreUndefinedProperties;
-  db._settings.ignoreUndefinedProperties = false;
+  initializeFirestore(db.app, { ignoreUndefinedProperties: false });
   try {
     await fn(db);
   } finally {
-    db._settings.ignoreUndefinedProperties = previousValue;
+    initializeFirestore(db.app, { ignoreUndefinedProperties: previousValue });
   }
 }
 

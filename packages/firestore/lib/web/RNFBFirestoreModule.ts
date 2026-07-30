@@ -95,12 +95,9 @@ function documentSnapshotToObject(snapshot: DocumentSnapshotLike): {
   };
   if (exists) {
     out.data = objectToWriteable(snapshot.data() ?? {});
-    // Unlike the full/lite-free SDKs, the Lite SDK has no concept of pending writes: it's a
-    // one-shot REST-based client with no local cache, no offline write queue, and no
-    // snapshot listeners. `data()` also doesn't accept a `serverTimestamps` option on this
-    // SDK - server timestamps are always already resolved by the time a Lite SDK snapshot
-    // is returned - so there is no settled-vs-pending distinction to gate on here; always
-    // compute all variants (they're always identical to `data` on this platform).
+    // Lite has no pending-write / offline queue, so server timestamps on returned snapshots are
+    // already resolved and estimate/previous/none are identical to `data`. Still emit the keys
+    // (via SnapshotOptions) so the JS DocumentSnapshot path stays the same as native.
     out.dataEstimate = objectToWriteable(snapshot.data({ serverTimestamps: 'estimate' }) ?? {});
     out.dataPrevious = objectToWriteable(snapshot.data({ serverTimestamps: 'previous' }) ?? {});
     out.dataNone = objectToWriteable(snapshot.data({ serverTimestamps: 'none' }) ?? {});

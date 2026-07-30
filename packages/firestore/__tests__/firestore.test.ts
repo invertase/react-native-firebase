@@ -398,6 +398,11 @@ describe('Firestore', function () {
   });
 
   describe('FirestoreDocumentSnapshot (unit)', function () {
+    // These construct FirestoreDocumentSnapshot with a fabricated native bridge payload
+    // (data / dataEstimate / dataPrevious / dataNone). Jest has no native Firestore bridge, so
+    // pending-write timestamp variants cannot be produced through public setDoc/onSnapshot APIs
+    // here — that path is covered in e2e (withConverter.e2e.js). Direct construction isolates the
+    // JS _dataForOptions selection against the bridge shape Android/iOS/web emit.
     it('data() respects SnapshotOptions.serverTimestamps', function () {
       const firestore = getFirestore();
       const snapshot = new FirestoreDocumentSnapshot(
