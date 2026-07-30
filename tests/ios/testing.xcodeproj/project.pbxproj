@@ -476,7 +476,7 @@
 					"-ObjC",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -profile-generate -profile-coverage-mapping";
-				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.testing;
 				PRODUCT_NAME = testing;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
@@ -535,7 +535,7 @@
 					"-ObjC",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -profile-generate -profile-coverage-mapping";
-				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.testing;
 				PRODUCT_NAME = testing;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
