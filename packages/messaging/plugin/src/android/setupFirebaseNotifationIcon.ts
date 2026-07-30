@@ -33,7 +33,7 @@ export const withExpoPluginFirebaseNotification: ConfigPlugin<PluginConfigType |
 // Helper function to get notification icon and color from plugin props, expo-notifications, or config.notification
 const getNotificationConfig = (config: ExpoConfig, props?: PluginConfigType) => {
   // 1. Check props passed directly to @react-native-firebase/messaging plugin
-  if (props?.android?.notificationIcon || props?.android?.notificationColor) {
+  if (props?.android?.notificationIcon) {
     return {
       icon: props.android.notificationIcon,
       color: props.android.notificationColor,

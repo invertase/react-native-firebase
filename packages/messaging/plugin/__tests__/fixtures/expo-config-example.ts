@@ -59,6 +59,12 @@ const pluginPropsConfigWithoutColorExample: PluginConfigType = {
   },
 };
 
+const pluginPropsColorOnlyExample: PluginConfigType = {
+  android: {
+    notificationColor: '#1D172D',
+  },
+};
+
 export {
   expoConfigExample,
   expoNotificationsConfigExample,
@@ -66,4 +72,5 @@ export {
   expoNotificationsConfigWithoutPluginExample,
   pluginPropsConfigExample,
   pluginPropsConfigWithoutColorExample,
+  pluginPropsColorOnlyExample,
 };

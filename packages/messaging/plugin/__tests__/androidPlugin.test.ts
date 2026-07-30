@@ -8,6 +8,7 @@ import {
   expoNotificationsConfigWithoutPluginExample,
   pluginPropsConfigExample,
   pluginPropsConfigWithoutColorExample,
+  pluginPropsColorOnlyExample,
 } from './fixtures/expo-config-example';
 import manifestApplicationExample from './fixtures/application-example';
 import { ManifestApplication } from '@expo/config-plugins/build/android/Manifest';
@@ -203,6 +204,27 @@ describe('Config Plugin Android Tests', function () {
         $: {
           'android:name': 'com.google.firebase.messaging.default_notification_icon',
           'android:resource': '@drawable/notification_icon',
+        },
+      });
+    });
+
+    it('color-only props fall through to expo-notifications for icon', async function () {
+      const config: ExpoConfig = JSON.parse(JSON.stringify(expoNotificationsConfigExample));
+      const manifestApplication: ManifestApplication = JSON.parse(
+        JSON.stringify(manifestApplicationExample),
+      );
+      setFireBaseMessagingAndroidManifest(config, manifestApplication, pluginPropsColorOnlyExample);
+      expect(manifestApplication['meta-data']).toContainEqual({
+        $: {
+          'android:name': 'com.google.firebase.messaging.default_notification_icon',
+          'android:resource': '@drawable/notification_icon',
+        },
+      });
+      expect(manifestApplication['meta-data']).toContainEqual({
+        $: {
+          'android:name': 'com.google.firebase.messaging.default_notification_color',
+          'android:resource': '@color/notification_icon_color',
+          'tools:replace': 'android:resource',
         },
       });
     });
