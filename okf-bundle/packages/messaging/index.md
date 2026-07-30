@@ -5,6 +5,7 @@ Knowledge for FCM messaging native behavior, primarily the iOS `UNUserNotificati
 ## Documents
 
 * [iOS UNUserNotificationCenter delegate forwarding](ios-notification-delegate-forwarding.md) — `completionHandler` exactly-once contract, delegate chaining design, regression history (#8754 → #8786 → #9049 / #9050)
+* [iOS APNs registration on Simulator](ios-apns-simulator-registration.md) — intentional ARM64 Simulator skip of UIKit register + global-queue `registration-timeout`
 
 ## Related repository files
 

@@ -37,6 +37,9 @@ namespace JS {
     struct FirebaseAppConfig {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = FirebaseAppConfig;
+
         struct Input {
           RCTRequired<NSString *> name;
           std::optional<bool> automaticResourceManagement;
@@ -66,6 +69,9 @@ namespace JS {
     struct FirebaseAppOptions {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = FirebaseAppOptions;
+
         struct Input {
           RCTRequired<NSString *> apiKey;
           RCTRequired<NSString *> appId;
@@ -102,6 +108,9 @@ namespace JS {
     struct NativeFirebaseApp {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = NativeFirebaseApp;
+
         struct Input {
           RCTRequired<JS::NativeRNFBTurboApp::FirebaseAppConfig::Builder> appConfig;
           RCTRequired<JS::NativeRNFBTurboApp::FirebaseAppOptions::Builder> options;
@@ -130,6 +139,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           RCTRequired<std::vector<JS::NativeRNFBTurboApp::NativeFirebaseApp::Builder>> NATIVE_FIREBASE_APPS;
           RCTRequired<NSString *> FIREBASE_RAW_JSON;
@@ -221,6 +233,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           RCTRequired<bool> isRunningInTestLab;
           RCTRequired<NSString *> MAIN_BUNDLE;

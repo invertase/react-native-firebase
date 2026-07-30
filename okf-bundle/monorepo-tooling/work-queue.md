@@ -32,6 +32,7 @@ Durable decisions: **[architecture-decisions.md](architecture-decisions.md)**. D
 | [MonoTool-AD-9](architecture-decisions.md#monotool-ad-9--dev-watch-rebuilds-prepare-e2e-tdd-rerun-is-event-driven-off-metro--deferred) | Dev watch + e2e rerun off Metro — **Deferred** (gap-analysis pre-phase) |
 | [MonoTool-AD-10](architecture-decisions.md#monotool-ad-10--generated-version-files-are-declared-cache-outputs-not-committed--accepted) | Generated version files are declared cache `outputs`, not committed     |
 | [MonoTool-AD-11](architecture-decisions.md#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted)            | Scope `prepare` cache inputs via a `jsSource` namedInput                |
+| [MonoTool-AD-12](architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted)         | Never Nx-cache `prepare` when the script is `patch-package`             |
 
 ---
 

@@ -658,6 +658,12 @@ export function getIsHeadless(messaging: Messaging): Promise<boolean> {
 /**
  * On iOS, if your app wants to receive remote messages from FCM (via APNs), you must explicitly register
  * with APNs if auto-registration has been disabled.
+ *
+ * On ARM64 iOS Simulator, native registration skips UIKit `registerForRemoteNotifications`
+ * (main-thread wedge risk) and may reject with `messaging/registration-timeout` after ~10s.
+ * Use a physical device for real APNs tokens. A second overlapping call rejects the prior
+ * attempt with `messaging/registration-superseded`. See migrating-to-v26 Cloud Messaging —
+ * iOS APNs registration.
  */
 export function registerDeviceForRemoteMessages(messaging: Messaging): Promise<void> {
   return messaging.registerDeviceForRemoteMessages();

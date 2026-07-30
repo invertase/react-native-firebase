@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property _Nullable RCTPromiseRejectBlock registerPromiseRejecter;
 @property _Nullable RCTPromiseResolveBlock registerPromiseResolver;
+@property(nonatomic, assign) NSUInteger registerPromiseGeneration;
 @property(nonatomic, strong) NSCondition *conditionBackgroundMessageHandlerSet;
 @property(nonatomic) BOOL backgroundMessageHandlerSet;
 @property(nonatomic, copy) void (^completionHandler)(UIBackgroundFetchResult);
@@ -36,8 +37,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)signalBackgroundMessageHandlerSet;
 
-- (void)setPromiseResolve:(RCTPromiseResolveBlock)resolve
-         andPromiseReject:(RCTPromiseRejectBlock)reject;
+/**
+ * Atomically replace any pending register promise. If a prior promise was pending, it is
+ * rejected with `registration-superseded` (does not orphan). Returns the generation id for
+ * the newly stored promise — timeouts must claim with that generation so a superseded
+ * timeout cannot settle a newer call.
+ */
+- (NSUInteger)beginRegisterPromiseResolve:(RCTPromiseResolveBlock)resolve
+                         andPromiseReject:(RCTPromiseRejectBlock)reject;
+
+/**
+ * Atomically claim and clear the pending register promise only if `generation` still matches.
+ * Safe from any queue (including a background timeout queue while main is stalled).
+ */
+- (BOOL)claimPendingRegisterPromiseGeneration:(NSUInteger)generation
+                                      resolve:(RCTPromiseResolveBlock _Nullable *_Nonnull)outResolve
+                                       reject:(RCTPromiseRejectBlock _Nullable *_Nonnull)outReject;
+
+/**
+ * Atomically claim and clear whatever register promise is currently pending (success / fail
+ * AppDelegate callbacks). Returns YES if a pending promise was claimed.
+ */
+- (BOOL)claimPendingRegisterPromiseResolve:(RCTPromiseResolveBlock _Nullable *_Nonnull)outResolve
+                                    reject:(RCTPromiseRejectBlock _Nullable *_Nonnull)outReject;
 
 - (void)application:(UIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;

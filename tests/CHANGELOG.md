@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.0.0](https://github.com/invertase/react-native-firebase/compare/v25.1.0...v26.0.0) (2026-07-29)
+
+### ⚠ BREAKING CHANGES
+
+- **messaging, ios:** make APNs registration timeout independent of main queue
+- **database:** migrate database to TurboModules
+- **messaging:** messaging requires the React Native New Architecture.
+- **storage:** migrate storage to TurboModules
+- **analytics:** migrate analytics to TurboModules
+- **ml:** migrate ml to TurboModules
+- **firestore:** Firestore native bridge requires New Architecture.
+  Legacy NativeModules bridge removed; four Codegen TurboModule specs
+  (NativeRNFBTurboFirestore{,Collection,Document,Transaction}) with
+  committed generated artifacts, Android/iOS turbo shells, and JS wiring.
+- **app:** App/Core modules native bridge requires New Architecture.
+
+Migrate RNFBAppModule and RNFBUtilsModule to Codegen TurboModules with
+unified resolver, lazy Proxy wrapper, and committed generated artifacts.
+Includes functions codegenConfig rename (NewArch-AD-7), test harness
+overrides, architecture decisions, and validation workflow hardening.
+
+### Features
+
+- **analytics:** migrate analytics to TurboModules ([5cc1c9c](https://github.com/invertase/react-native-firebase/commit/5cc1c9ca6a320cda3e4b5ba8497d81b2587722a3))
+- **app:** migrate app modules to TurboModules incl general migration infra ([978168d](https://github.com/invertase/react-native-firebase/commit/978168dacecf4925d347d9757eff73ee43e1484f))
+- **database:** migrate database to TurboModules ([27ad35c](https://github.com/invertase/react-native-firebase/commit/27ad35cee5d8b13514c6432226b087266efc0012))
+- **firestore/pipelines:** expose search stage and pipeline expressions ([e6040a6](https://github.com/invertase/react-native-firebase/commit/e6040a6c27c4fb2b5ffa38aeb185610554d0c1a4))
+- **firestore:** migrate firestore to TurboModules ([d58b063](https://github.com/invertase/react-native-firebase/commit/d58b0637a7fd7707767d24cec3475648fa85a5c1))
+- **messaging:** migrate messaging to TurboModules ([e56c7f4](https://github.com/invertase/react-native-firebase/commit/e56c7f406920a21c07ccd1810b0315ec0953aeff))
+- **ml:** migrate ml to TurboModules ([c13259a](https://github.com/invertase/react-native-firebase/commit/c13259a91f177ef7b047ddf668491ad00b4e5bd3))
+- **storage:** migrate storage to TurboModules ([691dcc1](https://github.com/invertase/react-native-firebase/commit/691dcc1edd3264f4c3866c5e927f17864a603b00))
+
+### Bug Fixes
+
+- add codegen verify and spec-native parity tests ([49d9f1b](https://github.com/invertase/react-native-firebase/commit/49d9f1baba4fc83c1dd4983f582bbd7352d78809))
+- **firestore, android:** firestore instance cache key mismatch ([#9097](https://github.com/invertase/react-native-firebase/issues/9097)) ([a095bd0](https://github.com/invertase/react-native-firebase/commit/a095bd0d2e47ed54b7b9cde272cf01442067930c))
+- **firestore, ios:** enable switchOn pipeline on iOS SDK 12.15 ([c035740](https://github.com/invertase/react-native-firebase/commit/c035740a3a07c50984c6c1ffbc3deb1c1851de46))
+- **messaging, android:** make max stored notifications configurable ([#9111](https://github.com/invertase/react-native-firebase/issues/9111)) ([dc5771f](https://github.com/invertase/react-native-firebase/commit/dc5771f75e599db362c2c9916490284734746ec0)), closes [#8771](https://github.com/invertase/react-native-firebase/issues/8771)
+- **messaging, ios:** make APNs registration timeout independent of main queue ([4cbb19c](https://github.com/invertase/react-native-firebase/commit/4cbb19c68d082d2e632c8db134c79160d18aeb02))
+- **tooling:** never Nx-cache-skip patch-package prepare ([67f8adb](https://github.com/invertase/react-native-firebase/commit/67f8adbb695516b9f67feba667a6121aaa70d383))
+
 ## [25.1.0](https://github.com/invertase/react-native-firebase/compare/v25.0.1...v25.1.0) (2026-06-25)
 
 **Note:** Version bump only for package react-native-firebase-tests
