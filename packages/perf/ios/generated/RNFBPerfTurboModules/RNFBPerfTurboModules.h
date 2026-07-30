@@ -72,6 +72,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           RCTRequired<bool> isPerformanceCollectionEnabled;
           RCTRequired<bool> isInstrumentationEnabled;

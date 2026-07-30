@@ -19,6 +19,7 @@ package io.invertase.firebase.app;
 
 import android.util.Log;
 import com.facebook.fbreact.specs.NativeRNFBTurboAppSpec;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
@@ -35,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NativeRNFBTurboApp extends NativeRNFBTurboAppSpec {
+public class NativeRNFBTurboApp extends NativeRNFBTurboAppSpec implements LifecycleEventListener {
   private static final String TAG = "App";
 
   public static Map<String, String> authDomains = new HashMap<>();
@@ -47,8 +48,41 @@ public class NativeRNFBTurboApp extends NativeRNFBTurboAppSpec {
   @Override
   public void initialize() {
     super.initialize();
+    ReactApplicationContext reactContext = getReactApplicationContext();
+    // Register unconditionally. When the host is already RESUMED, addLifecycleEventListener
+    // posts onHostResume onto the UI queue asynchronously (it is not a synchronous call), so
+    // the explicit attach below is the primary path; resume remains best-effort convergence
+    // for later host flips. Stale-generation attaches are rejected or held pending by
+    // attachReactContext's fail-closed current-context arbitration.
+    reactContext.addLifecycleEventListener(this);
+    ReactNativeFirebaseEventEmitter.getSharedInstance().attachReactContext(reactContext);
+  }
+
+  @Override
+  public void invalidate() {
+    ReactApplicationContext reactContext = getReactApplicationContext();
+    reactContext.removeLifecycleEventListener(this);
+    // Identity-guarded inside the emitter: only clears state belonging to this dying context,
+    // never state a replacement runtime has already installed.
+    ReactNativeFirebaseEventEmitter.getSharedInstance().detachReactContext(reactContext);
+    super.invalidate();
+  }
+
+  @Override
+  public void onHostResume() {
+    // Re-attaching also flushes any events queued while no runtime was able to receive them.
     ReactNativeFirebaseEventEmitter.getSharedInstance()
         .attachReactContext(getReactApplicationContext());
+  }
+
+  @Override
+  public void onHostPause() {
+    // no-op, required by LifecycleEventListener
+  }
+
+  @Override
+  public void onHostDestroy() {
+    // no-op, required by LifecycleEventListener
   }
 
   @Override

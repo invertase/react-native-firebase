@@ -577,6 +577,13 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
    * On iOS, if your app wants to receive remote messages from FCM (via APNs), you must explicitly register
    * with APNs if auto-registration has been disabled.
    *
+   * On **ARM64 iOS Simulator**, UIKit registration is skipped intentionally so the main thread
+   * cannot wedge; the call may reject with `messaging/registration-timeout` after ~10s and will
+   * not produce a real APNs token. Use a physical device for end-to-end push. Overlapping calls
+   * reject the earlier attempt with `messaging/registration-superseded`.
+   * `requestPermission`'s APNs side-effect is also skipped on ARM64 Simulator but that Promise
+   * still resolves with `AuthorizationStatus` (it does not reject with these codes).
+   *
    * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `void`.
    */
   registerDeviceForRemoteMessages(): Promise<void>;

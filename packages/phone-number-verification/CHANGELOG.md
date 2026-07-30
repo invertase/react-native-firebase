@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.0.0](https://github.com/invertase/react-native-firebase/compare/v25.1.0...v26.0.0) (2026-07-29)
+
+### ⚠ BREAKING CHANGES
+
+- **phone-number-verification:** migrate phone-number-verification to TurboModules
+
+### Features
+
+- **phone-number-verification:** migrate phone-number-verification to TurboModules ([d7311c4](https://github.com/invertase/react-native-firebase/commit/d7311c482ef38b7ff1db24684e1ae9f3c5e47202))
+
 ## [25.1.0](https://github.com/invertase/react-native-firebase/compare/v25.0.1...v25.1.0) (2026-06-25)
 
 **Note:** Version bump only for package @react-native-firebase/phone-number-verification

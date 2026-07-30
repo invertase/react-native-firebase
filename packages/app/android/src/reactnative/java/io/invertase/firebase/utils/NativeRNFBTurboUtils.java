@@ -28,6 +28,7 @@ import com.facebook.fbreact.specs.NativeRNFBTurboUtilsSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -103,12 +104,35 @@ public class NativeRNFBTurboUtils extends NativeRNFBTurboUtilsSpec {
     int status = isGooglePlayServicesAvailable();
 
     if (status != ConnectionResult.SUCCESS) {
-      Activity activity = getCurrentActivity();
-      if (activity != null) {
-        GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(activity);
-      }
+      UiThreadUtil.runOnUiThread(
+          () -> {
+            Activity activity = getCurrentActivity();
+            if (activity != null) {
+              GoogleApiAvailability.getInstance()
+                  .makeGooglePlayServicesAvailable(activity)
+                  .addOnCompleteListener(
+                      task -> {
+                        if (task.isSuccessful()) {
+                          promise.resolve(null);
+                        } else if (task.isCanceled()) {
+                          promise.reject(
+                              "play-services-update-canceled",
+                              "Play Services update was canceled by the user");
+                        } else {
+                          Exception e = task.getException();
+                          promise.reject(
+                              "play-services-update-failed",
+                              e != null ? e.getMessage() : "Unknown error",
+                              e);
+                        }
+                      });
+            } else {
+              promise.resolve(null);
+            }
+          });
+    } else {
+      promise.resolve(null);
     }
-    promise.resolve(null);
   }
 
   private int isGooglePlayServicesAvailable() {

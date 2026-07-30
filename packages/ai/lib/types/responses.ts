@@ -562,7 +562,7 @@ export interface CountTokensResponse {
    */
   totalTokens: number;
   /**
-   * @deprecated Use `totalTokens` instead. This property is undefined when using models greater than `gemini-1.5-*`.
+   * @deprecated Use `totalTokens` instead. This property is undefined when using newer Gemini models.
    *
    * The total number of billable characters counted across all instances
    * from the request.

@@ -22,6 +22,12 @@ const PACKAGES_WITH_EXPO_CONFIG_PLUGIN = [
 ] as const;
 
 const APP_PLUGIN_EXPORT = './app.plugin.js';
+const APP_PLUGIN_EXPORT_NO_EXT = './app.plugin';
+
+const EXPECTED_APP_PLUGIN_EXPORT = {
+  types: './plugin/build/app.plugin.d.ts',
+  default: './app.plugin.js',
+};
 
 function discoverPackageNamesWithAppPlugin(): string[] {
   return readdirSync(PACKAGES_DIR, { withFileTypes: true })
@@ -45,10 +51,16 @@ describe('Expo config plugin package exports', function () {
   describe.each(PACKAGES_WITH_EXPO_CONFIG_PLUGIN)('%s', function (name) {
     const dir = join(PACKAGES_DIR, name);
 
-    it('exports ./app.plugin.js from package.json', function () {
+    it('exports ./app.plugin.js with types and default from package.json', function () {
       const pkg = readPackageJson(dir);
 
-      expect(pkg.exports?.[APP_PLUGIN_EXPORT]).toBe(APP_PLUGIN_EXPORT);
+      expect(pkg.exports?.[APP_PLUGIN_EXPORT]).toEqual(EXPECTED_APP_PLUGIN_EXPORT);
+    });
+
+    it('exports ./app.plugin (no extension) for strict Expo resolver', function () {
+      const pkg = readPackageJson(dir);
+
+      expect(pkg.exports?.[APP_PLUGIN_EXPORT_NO_EXT]).toEqual(EXPECTED_APP_PLUGIN_EXPORT);
     });
 
     it('has app.plugin.js at the package root', function () {

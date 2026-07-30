@@ -95,12 +95,12 @@ For instructions on how to generate required keys and register an app for the de
 
 > If you're using Expo Managed Workflow, you can load the `@react-native-firebase/app-check` config plugin to skip the Initialize setup step.
 
-You must call initialize the AppCheck module prior to calling any firebase back-end services for App Check to function.
+You must initialize the AppCheck module prior to calling any Firebase backend services for App Check to function.
 
 #### All react-native >= 0.77 with AppDelegate.swift
 
-The AppCheck pod does not define a module map for integration, so importing it in the Swift file does not work.
-You need to alter the bridging header file that should be in `<your project name>/ios/<your project-name>-Bridging-Header.h`
+The AppCheck pod does not expose a Swift-importable module surface (its C++ codegen headers stay private), so importing it directly in a Swift file does not work.
+Edit the bridging header at `<your project name>/ios/<your project-name>-Bridging-Header.h`
 
 You will need to add the line indicated in the example below:
 
@@ -147,7 +147,6 @@ And within your existing `didFinishLaunchingWithOptions` method, add the followi
 
 ```diff
 import UIKit
-+ import RNFBAppCheck  // <-- This is the import for AppCheck to work
 + import FirebaseCore  // <-- From App/Core integration, no other Firebase items needed
 import React
 import React_RCTAppDelegate
@@ -159,6 +158,8 @@ class AppDelegate: RCTAppDelegate {
 +   RNFBAppCheckModule.sharedInstance()  // <-- new for AppCheck to work
 +   FirebaseApp.configure()              // <-- From App/Core integration
 ```
+
+> **Note:** Do not add `import RNFBAppCheck` in Swift. The AppCheck pod is Obj-C only and does not produce a Swift module. Use the bridging header import above instead.
 
 #### Configure Firebase with iOS credentials (react-native < 0.77)
 

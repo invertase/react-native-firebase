@@ -107,6 +107,9 @@ jobs:
     timeout-minutes: 107
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      NX_NO_CLOUD: true
+      NX_CACHE_DIRECTORY: .nx/cache
+      NX_WORKSPACE_DATA_DIRECTORY: .nx/workspace-data
       RNFB_RECORD_SCREENS: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call') && inputs.record_screens && '1' || '0' }}
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
       CCACHE_FILECLONE: true
@@ -212,6 +215,15 @@ jobs:
           create-symlink: true
           max-size: 1500M
 
+      # https://github.com/actions/cache/releases
+      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        name: Nx Cache Restore
+        id: nx-cache
+        continue-on-error: true
+        with:
+          path: .nx/cache
+          key: ${{ runner.os }}-nx-v1-${{ hashFiles('yarn.lock', 'nx.json', 'lerna.json') }}
+          restore-keys: ${{ runner.os }}-nx-v1
       - name: Yarn Install
         # https://github.com/nick-fields/retry/releases
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -501,6 +513,15 @@ jobs:
         with:
           path: .yarn/cache
           key: ${{ steps.yarn-cache.outputs.cache-primary-key }}
+
+      - name: Nx Cache Save
+        # https://github.com/actions/cache/releases
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        if: "${{ github.ref == 'refs/heads/main' }}"
+        continue-on-error: true
+        with:
+          path: .nx/cache
+          key: ${{ runner.os }}-nx-v1-${{ hashFiles('yarn.lock', 'nx.json', 'lerna.json') }}
 
       - name: Detox Framework Cache Save
         # https://github.com/actions/cache/releases

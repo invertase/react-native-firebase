@@ -3,6 +3,7 @@
 Ad
 AdMob
 AirPods
+ai
 analytics
 Analytics
 args
@@ -239,6 +240,7 @@ triaging
 TurboModule
 TurboModules
 Codegen
+codegen
 IndexedDB
 pre-v26
 typings
@@ -276,3 +278,5 @@ Xcode
 Xcode.
 XCS
 XMPP
+ARM64
+UIKit

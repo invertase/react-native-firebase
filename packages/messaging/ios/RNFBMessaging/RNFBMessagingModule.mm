@@ -25,6 +25,10 @@
 #import "RNFBMessaging+UNUserNotificationCenter.h"
 #import "RNFBMessagingModule.h"
 #import "RNFBMessagingSerializer.h"
+#import "RNFBMessagingTurboModules.h"
+
+@interface RNFBMessagingModule () <NativeRNFBTurboMessagingSpec>
+@end
 
 @implementation RNFBMessagingModule
 #pragma mark -
@@ -125,15 +129,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
          resolve:(RCTPromiseResolveBlock)resolve
           reject:(RCTPromiseRejectBlock)reject {
   if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                      userInfo:(NSMutableDictionary *)@{
-                                        @"code" : @"unregistered",
-                                        @"message" : @"You must be registered for remote "
-                                                     @"messages before calling "
-                                                     @"getToken, see "
-                                                     @"messaging()."
-                                                     @"registerDeviceForRemoteMessages().",
-                                      }];
+    [RNFBSharedUtils
+        rejectPromiseWithUserInfo:reject
+                         userInfo:(NSMutableDictionary *)@{
+                           @"code" : @"unregistered",
+                           @"message" : @"You must be registered for remote "
+                                        @"messages before calling "
+                                        @"getToken, see "
+                                        @"registerDeviceForRemoteMessages(getMessaging()).",
+                         }];
     return;
   }
 
@@ -193,15 +197,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
          @"Use setAPNSToken in testing if needed.");
 #endif
     if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                        userInfo:(NSMutableDictionary *)@{
-                                          @"code" : @"unregistered",
-                                          @"message" : @"You must be registered for remote "
-                                                       @"messages before "
-                                                       @"calling getAPNSToken, see "
-                                                       @"messaging()."
-                                                       @"registerDeviceForRemoteMessages().",
-                                        }];
+      [RNFBSharedUtils
+          rejectPromiseWithUserInfo:reject
+                           userInfo:(NSMutableDictionary *)@{
+                             @"code" : @"unregistered",
+                             @"message" : @"You must be registered for remote "
+                                          @"messages before "
+                                          @"calling getAPNSToken, see "
+                                          @"registerDeviceForRemoteMessages(getMessaging()).",
+                           }];
       return;
     }
     resolve([NSNull null]);
@@ -299,9 +303,17 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
                           if (error) {
                             [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
                           } else {
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                              [[UIApplication sharedApplication] registerForRemoteNotifications];
-                            });
+#if TARGET_IPHONE_SIMULATOR && TARGET_CPU_ARM64
+                            // Intentional: do not call UIKit registerForRemoteNotifications on
+                            // ARM64 Simulator — it can wedge main indefinitely. See
+                            // registerForRemoteNotifications:reject: for the same policy.
+                            DLog(@"RNFBMessaging requestPermission - ARM64 Simulator detected, "
+                                 @"skipping UIKit registerForRemoteNotifications.");
+#else
+          dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] registerForRemoteNotifications];
+          });
+#endif
                             [self hasPermission:resolve reject:reject];
                           }
                         }];
@@ -309,48 +321,86 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
 
 - (void)registerForRemoteNotifications:(RCTPromiseResolveBlock)resolve
                                 reject:(RCTPromiseRejectBlock)reject {
-#if TARGET_IPHONE_SIMULATOR
-#if !TARGET_CPU_ARM64
-  [[UIApplication sharedApplication] registerForRemoteNotifications];
-  resolve(@([RCTConvert BOOL:@(YES)]));
-  return;
-#endif
-  DLog(@"RNFBMessaging registerForRemoteNotifications ARM64 Simulator "
-       @"detected, attempting real "
-       @"registration. macOS13+ / iOS16+ / M1 mac required or will timeout.")
-#endif
-      if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
-    DLog(@"RNFBMessaging registerForRemoteNotifications - already registered.");
-    resolve(@([RCTConvert BOOL:@(YES)]));
-    return;
-  }
-  else {
-    [[RNFBMessagingAppDelegate sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
-  }
+  // Schedule the timeout BEFORE any UIKit work. UIKit getters / registerForRemoteNotifications
+  // must run on main; if main is already stalled (ARM64 Simulator APNs), scheduling the timer
+  // first guarantees the JS promise cannot hang forever. Reject from a global queue so the
+  // timer itself does not depend on main. Overlapping calls supersede the prior promise
+  // (registration-superseded) and bump a generation so stale timeouts cannot settle a newer call.
+  NSUInteger generation =
+      [[RNFBMessagingAppDelegate sharedInstance] beginRegisterPromiseResolve:resolve
+                                                            andPromiseReject:reject];
+
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10.0 * NSEC_PER_SEC)),
+                 dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+                   RCTPromiseResolveBlock pendingResolve = nil;
+                   RCTPromiseRejectBlock pendingReject = nil;
+                   if (![[RNFBMessagingAppDelegate sharedInstance]
+                           claimPendingRegisterPromiseGeneration:generation
+                                                         resolve:&pendingResolve
+                                                          reject:&pendingReject]) {
+                     DLog(@"RNFBMessaging registerForRemoteNotifications timeout: already settled "
+                          @"(generation %lu).",
+                          (unsigned long)generation);
+                     return;
+                   }
+                   DLog(@"RNFBMessaging registerForRemoteNotifications timed out; rejecting.");
+                   if (pendingReject != nil) {
+                     [RNFBSharedUtils
+                         rejectPromiseWithUserInfo:pendingReject
+                                          userInfo:[@{
+                                            @"code" : @"registration-timeout",
+                                            @"message" : @"registerDeviceForRemoteMessages "
+                                                         @"timed out waiting for APNs "
+                                                         @"device registration. The system "
+                                                         @"did not respond — possibly "
+                                                         @"missing notification permission, "
+                                                         @"or the main thread is blocked "
+                                                         @"(common on ARM64 Simulator)."
+                                          } mutableCopy]];
+                   }
+                 });
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW, 10.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-          if ([RNFBMessagingAppDelegate sharedInstance].registerPromiseResolver != nil) {
-            DLog(@"RNFBMessaging dispatch_after block: we appear to have timed "
-                 @"out. Rejecting");
-            [[RNFBMessagingAppDelegate sharedInstance] setPromiseResolve:nil andPromiseReject:nil];
-
-            [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                              userInfo:[@{
-                                                @"code" : @"unknown-error",
-                                                @"message" : @"registerDeviceForRemoteMessag"
-                                                             @"es requested but "
-                                                             @"system did not respond. "
-                                                             @"Possibly missing permission."
-                                              } mutableCopy]];
-            return;
-          } else {
-            DLog(@"RNFBMessaging dispatch_after: "
-                 @"registerDeviceForRemoteMessages handled.");
-            return;
-          }
-        });
+#if TARGET_IPHONE_SIMULATOR
+#if !TARGET_CPU_ARM64
+    // Intel simulator: APNs unsupported — settle immediately after poking UIKit.
+    RCTPromiseResolveBlock pendingResolve = nil;
+    RCTPromiseRejectBlock pendingReject = nil;
+    if ([[RNFBMessagingAppDelegate sharedInstance]
+            claimPendingRegisterPromiseGeneration:generation
+                                          resolve:&pendingResolve
+                                           reject:&pendingReject] &&
+        pendingResolve != nil) {
+      [[UIApplication sharedApplication] registerForRemoteNotifications];
+      pendingResolve(@([RCTConvert BOOL:@(YES)]));
+    }
+    return;
+#else
+    // ARM64 Simulator (intentional product policy): do NOT call UIKit
+    // registerForRemoteNotifications. Calling it can wedge the main thread so
+    // the JS bridge cannot observe the global-queue registration-timeout reject
+    // even though the timer fires. Leave the promise pending; the 10s
+    // global-queue timeout rejects with registration-timeout. Use a physical
+    // device for real APNs tokens. Documented in docs/messaging and OKF.
+    DLog(@"RNFBMessaging registerForRemoteNotifications ARM64 Simulator "
+         @"detected — skipping UIKit registerForRemoteNotifications; "
+         @"global-queue timeout will reject with registration-timeout.");
+    return;
+#endif
+#endif
+    if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
+      DLog(@"RNFBMessaging registerForRemoteNotifications - already registered.");
+      RCTPromiseResolveBlock pendingResolve = nil;
+      RCTPromiseRejectBlock pendingReject = nil;
+      if ([[RNFBMessagingAppDelegate sharedInstance]
+              claimPendingRegisterPromiseGeneration:generation
+                                            resolve:&pendingResolve
+                                             reject:&pendingReject] &&
+          pendingResolve != nil) {
+        pendingResolve(@([RCTConvert BOOL:@(YES)]));
+      }
+      return;
+    }
 
     [[UIApplication sharedApplication] registerForRemoteNotifications];
   });

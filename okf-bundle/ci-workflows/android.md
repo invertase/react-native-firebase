@@ -2,11 +2,13 @@
 
 ## E2E job shape (CI — mirrors workflow YAML; local: [running e2e](../testing/running-e2e.md))
 
-1. `tests:android:test-cover --headless` — pass/fail gate
-2. `tests:android:post-e2e-coverage` — poll/pull `coverage.ec`, Jacoco report (best-effort, never fails the job)
-3. **Codecov upload** — two flagged uploads (`e2e-ts-android`, `android-native`); `continue-on-error: true` on the action steps. **`codecov/project/android-native`** fails if the native flag upload is missing (see [coverage design](../testing/coverage-design.md#native-gates)).
+1. `tests:android:build`
+2. `tests:android:unit` — JVM unit (no emulator); produces module Jacoco `*.exec` ([AndroidTest-AD-1](../testing/android-architecture-decisions.md))
+3. `tests:android:test-cover --headless` — pass/fail gate
+4. `tests:android:post-e2e-coverage` — poll/pull `coverage.ec`, merged **`jacocoTestReport`** (unit `*.exec` + e2e `*.ec`; best-effort, never fails the job)
+5. **Codecov upload** — two flagged uploads (`e2e-ts-android`, `android-native` → `jacocoTestReport.xml`); `continue-on-error: true` on the action steps. **`codecov/project/android-native`** fails if the native flag upload is missing (see [coverage design](../testing/coverage-design.md#native-gates)).
 
-Android native coverage is flushed in app process by `tests/app.js` Jet `after`; post-e2e pull runs after Detox exits.
+Android native coverage is flushed in app process by `tests/app.js` Jet `after`; post-e2e pull runs after Detox exits and merges with JVM unit execution data. Full Jacoco contract: [coverage design](../testing/coverage-design.md) — do not duplicate here.
 
 ## CI failure: Jet 1006 → adb `reverse --remove` mid-run
 
@@ -71,9 +73,10 @@ Under load, Jet may run only a small prefix before mocha-remote desync, often af
 | Symptom | Likely cause |
 |---------|----------------|
 | `[native-coverage] Android native coverage file not found after N attempts` | App-process flush did not run or failed; check Jet log for `[native-coverage] flushing android coverage` |
-| Empty Jacoco XML (~235 bytes) | No `.ec` pulled — check post-e2e logs |
+| Empty Jacoco XML (~235 bytes) | No `.ec` / `.exec` in merge — check post-e2e logs and that `yarn tests:android:unit` ran ([coverage design](../testing/coverage-design.md)) |
+
 | `adb reverse --remove` in Detox logs | Expected on 1006; should be warn-only after Detox patch |
 | Detox red, tests green in log | Pre-patch: teardown adb error; re-run or check patch applied |
 | Emulator offline / hung / duplicate instance | Warm quickboot snapshot restore; `tests/.detoxrc.js` sets `bootArgs: '-no-snapshot-load -no-snapshot-save'` for cold boot when Detox launches TestingAVD |
-| `codecov/project/android-native` fail | Jacoco XML not uploaded — check post-e2e logs and Codecov Uploads tab for `android-native` flag |
+| `codecov/project/android-native` fail | Jacoco XML not uploaded — check post-e2e logs and Codecov Uploads tab for `android-native` flag; path must be `jacocoTestReport.xml` (merged), not e2e-only `jacocoAndroidTestReport.xml` |
 | FIS 503 / `Too many server requests` / RC cascade | Live cloud quota (shared project) — not Android-specific; see [cloud API quota triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure) |

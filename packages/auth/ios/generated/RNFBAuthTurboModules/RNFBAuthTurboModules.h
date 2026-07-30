@@ -37,6 +37,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           RCTRequired<id<NSObject>> APP_LANGUAGE;
           RCTRequired<id<NSObject>> APP_USER;

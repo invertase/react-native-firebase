@@ -20,6 +20,7 @@ If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating
 - [In-App Messaging](/migrating-to-v26#in-app-messaging)
 - [Installations](/migrating-to-v26#installations)
 - [Cloud Messaging](/migrating-to-v26#cloud-messaging)
+  - [iOS APNs registration (ARM64 Simulator + new Promise rejections)](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections)
 - [App Distribution](/migrating-to-v26#app-distribution)
 - [Cloud Functions](/migrating-to-v26#cloud-functions)
 - [Performance Monitoring](/migrating-to-v26#performance-monitoring)
@@ -217,6 +218,20 @@ getUtils().FilePath.DOCUMENT_DIRECTORY;
 FilePath.DOCUMENT_DIRECTORY;
 ```
 
+## Breaking: Android Play Services availability Promise behavior
+
+On Android, `makePlayServicesAvailable()` now rejects when the Play Services availability task is canceled or fails. Previously, the call always resolved even when the update flow was not completed. Update callers to handle rejection:
+
+```js
+import { getUtils } from '@react-native-firebase/app';
+
+try {
+  await getUtils().makePlayServicesAvailable();
+} catch (error) {
+  // Handle canceled or failed Play Services update
+}
+```
+
 # Machine Learning (ML)
 
 The namespaced API for `@react-native-firebase/ml` has been **removed**. This package is **modular-only** — use `getML(app?)`.
@@ -393,6 +408,53 @@ await experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), tr
 ```
 
 See [Cloud Messaging usage](/messaging/usage) for additional examples.
+
+## iOS APNs registration (ARM64 Simulator + new Promise rejections)
+
+On **ARM64 iOS Simulator** (Apple Silicon), React Native Firebase **no longer calls** UIKit
+`registerForRemoteNotifications` from messaging **registration** and **auto-registration** paths
+(including the TurboModule `registerDeviceForRemoteMessages` path, `requestPermission`'s APNs
+side-effect, and native auto-register on app launch). Calling that UIKit API can block the main
+thread indefinitely. **Physical iOS devices are unchanged** — they still call UIKit
+`registerForRemoteNotifications` as before.
+
+This is intentional product policy so the main thread stays responsive on Simulator. You will
+**not** receive a real APNs device token on ARM64 Simulator; use a physical device for end-to-end
+push registration and delivery.
+
+### New possible Promise rejections
+
+Prior releases could hang forever waiting for APNs registration (especially when the main thread
+was wedged) and did **not** reject with the codes below in the same situations. Apps that assumed
+`registerDeviceForRemoteMessages` always resolved (or never rejected) must handle these errors.
+
+#### `messaging/registration-timeout`
+
+- **When:** After about **10 seconds**, a timer on a **global** queue (not the main queue) rejects
+  the in-flight registration Promise when APNs registration has not settled.
+- **APIs:** Surfaces on **`registerDeviceForRemoteMessages`** only.
+- **`requestPermission`:** On ARM64 Simulator, the APNs UIKit side-effect is **skipped**; the
+  permission Promise still resolves with `AuthorizationStatus` and does **not** reject with this
+  code.
+- **ARM64 Simulator:** Expected when you call `registerDeviceForRemoteMessages` — UIKit register is
+  skipped, the Promise stays pending, then the global-queue timer rejects.
+- **Physical device:** Possible if the system never delivers a registration success/failure
+  callback within about 10 seconds (for example missing notification permission, or a blocked main
+  thread).
+- **Code / message:** `messaging/registration-timeout` —
+  `registerDeviceForRemoteMessages timed out waiting for APNs device registration. The system did not respond — possibly missing notification permission, or the main thread is blocked (common on ARM64 Simulator).`
+
+#### `messaging/registration-superseded`
+
+- **When:** A newer `registerDeviceForRemoteMessages` call starts while a prior attempt is still in
+  flight; the earlier Promise is rejected so it is not orphaned.
+- **APIs:** Surfaces on **`registerDeviceForRemoteMessages`** only (overlapping calls).
+- **Code / message:** `messaging/registration-superseded` —
+  `registerDeviceForRemoteMessages was called again before the previous APNs registration attempt settled.`
+
+Further usage notes: [Auto Registration (iOS)](/messaging/usage#auto-registration-ios),
+[iOS Messaging Setup](/messaging/usage/ios-setup). Maintainer platform detail:
+[iOS APNs registration on Simulator](https://github.com/invertase/react-native-firebase/blob/main/okf-bundle/packages/messaging/ios-apns-simulator-registration.md).
 
 # App Distribution
 

@@ -49,15 +49,15 @@ flowchart TD
 
 ## Work types
 
-| Work type | When | Validation tier | Product edits | Commit |
-|-----------|------|-----------------|---------------|--------|
-| `gap-analysis` | Unclear feasibility, export shape, platform support | none | read-only | no |
-| `baseline-capture` | Need before metrics or area-focused e2e on the item | `area-focused` | harness narrow OK locally | no |
-| `implementation` | Author fix/feature + tests | `unit-focused` | yes | no |
-| `independent-review` | Verify frozen diff | `area-focused` | no — [frozen tree](#frozen-tree) | no |
-| `documentation` | User docs + durable OKF updates | none | docs only | no |
-| `commit` | Gates closed for the item | none | staging only | yes |
-| `pre-merge-validation` | Branch merge gate | `full` | revert narrowing first | no |
+| Work type              | When                                                | Validation tier | Product edits                    | Commit |
+| ---------------------- | --------------------------------------------------- | --------------- | -------------------------------- | ------ |
+| `gap-analysis`         | Unclear feasibility, export shape, platform support | none            | read-only                        | no     |
+| `baseline-capture`     | Need before metrics or area-focused e2e on the item | `area-focused`  | harness narrow OK locally        | no     |
+| `implementation`       | Author fix/feature + tests                          | `unit-focused`  | yes                              | no     |
+| `independent-review`   | Verify frozen diff                                  | `area-focused`  | no — [frozen tree](#frozen-tree) | no     |
+| `documentation`        | User docs + durable OKF updates                     | none            | docs only                        | no     |
+| `commit`               | Gates closed for the item                           | none            | staging only                     | yes    |
+| `pre-merge-validation` | Branch merge gate                                   | `full`          | revert narrowing first           | no     |
 
 **Commands per work type:** [validation checklist](validation-checklist.md) — link only; do not duplicate here.
 
@@ -95,11 +95,11 @@ E2e scope, pre-flight, and harness gate: [running e2e § agent rule](running-e2e
 
 ## Gates
 
-| Gate | Closes when |
-|------|-------------|
-| `implementation` | `implementation` work type complete — code plus **unit-focused**-tier checks green on **every required platform** when native bridge or embed path changed ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)); [static analysis](validation-checklist.md#lint-and-formatting) green on the diff |
-| `review` | `independent-review` complete — **area-focused**-tier checks green on frozen tree; applicable [validation checklist](validation-checklist.md) rows green (including static analysis); **every review finding resolved** ([§ quality standards](#quality-standards)) |
-| `commit` | Durable commit exists for the item **after** prior gates closed with [recorded evidence](#validation-evidence-blocking) |
+| Gate             | Closes when                                                                                                                                                                                                                                                                                                                        |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `implementation` | `implementation` work type complete — code plus **unit-focused**-tier checks green on **every required platform** when native bridge or macOS TS/runtime path changed ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)); [static analysis](validation-checklist.md#lint-and-formatting) green on the diff |
+| `review`         | `independent-review` complete — **area-focused**-tier checks green on frozen tree; applicable [validation checklist](validation-checklist.md) rows green (including static analysis); **every review finding resolved** ([§ quality standards](#quality-standards))                                                                |
+| `commit`         | Durable commit exists for the item **after** prior gates closed with [recorded evidence](#validation-evidence-blocking)                                                                                                                                                                                                            |
 
 **Trust rule:** Code on disk or in git with `review` still **open** is unverified until `independent-review` closes the gate.
 
@@ -111,12 +111,12 @@ Any unresolved review finding returns the item to **`implementation`** (`unit-fo
 
 Gates close **only** when **recorded evidence** shows the required validation tier ran and passed. Assumed green, implementer summaries without exit codes, or "tests passed earlier" without a log path **do not** close a gate.
 
-| Gate | Minimum evidence (record in work-queue notes or review handoff) |
-|------|------------------------------------------------------------------|
-| **`implementation`** | Prepare/tsc/jest **exit codes**; when native or macOS runtime touched: **e2e pass count per required platform** + log path (e.g. `/tmp/rnfb-e2e-*.log`); **`yarn lint` exit code 0**; when `docs/**` changed: **`yarn lint:markdown`** + **`yarn lint:spellcheck` exit code 0** |
-| **`review`** | Frozen-tree re-run of area-focused checklist; **`yarn lint` exit code 0**; when `docs/**` in frozen diff: **`yarn lint:markdown`** + **`yarn lint:spellcheck` exit code 0**; **coverage evidence package** when native or `packages/*/lib/**` bridge code touched ([coverage design § evidence package](coverage-design.md#coverage-evidence-package)); compare:types row for touched registered package |
-| **`commit`** | Prior gates closed **with evidence**; no `.only` / harness overrides staged |
-| **Publication** (`git push`, force-push, PR refresh) | **`review` gate closed on the exact commits being published**; evidence still valid (no product edits since last area-focused run) |
+| Gate                                                 | Minimum evidence (record in work-queue notes or review handoff)                                                                                                                                                                                                                                                                                                                                                                                     |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`implementation`**                                 | Prepare/tsc/jest **exit codes**; when native or macOS runtime touched: **e2e pass count per required platform** + log path (e.g. `/tmp/rnfb-e2e-*.log`); **`yarn lint` exit code 0**; when `packages/*/lib/**` in diff: **`yarn lint:deps` exit code 0** ([dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)); when `docs/**` changed: **`yarn lint:markdown`** + **`yarn lint:spellcheck` exit code 0** |
+| **`review`**                                         | Frozen-tree re-run of area-focused checklist; **`yarn lint` exit code 0**; when `docs/**` in frozen diff: **`yarn lint:markdown`** + **`yarn lint:spellcheck` exit code 0**; **coverage evidence package** when native or `packages/*/lib/**` bridge code touched ([coverage design § evidence package](coverage-design.md#coverage-evidence-package)); compare:types row for touched registered package                                            |
+| **`commit`**                                         | Prior gates closed **with evidence**; no `.only` / harness overrides staged                                                                                                                                                                                                                                                                                                                                                                         |
+| **Publication** (`git push`, force-push, PR refresh) | **`review` gate closed on the exact commits being published**; evidence still valid (no product edits since last area-focused run)                                                                                                                                                                                                                                                                                                                  |
 
 **Investigate before close:** Any coverage plateau, parity asymmetry, or review finding gets **root-cause analysis** — add tests, delete dead code, or record an [acceptable exception](#acceptable-exceptions) with evidence. Do not label gaps "informational" or "defensive" without wire/runtime proof.
 
@@ -200,7 +200,7 @@ flowchart TD
 
 **Host rule:** one `:test-cover` at a time; never overlap **unit-focused** and **area-focused** tiers on one host ([§ host rule](#host-rule)).
 
-**Static analysis before handoff:** Before closing the **`implementation`** gate, run the [validation checklist § lint and formatting](validation-checklist.md#lint-and-formatting) rows — **`yarn lint`** (CI Lint job: js + android + ios check) on every diff with package sources; **`yarn lint:markdown`** + **`yarn lint:spellcheck`** when `docs/**` changed (CI docs job). Fix violations in product code — do not hand off with lint failures. Command list lives only in the checklist; do not duplicate here.
+**Static analysis before handoff:** Before closing the **`implementation`** gate, run the [validation checklist § lint and formatting](validation-checklist.md#lint-and-formatting) rows — **`yarn lint`** (CI Lint job: js + deps + android + ios check) on every diff with package sources; when `packages/*/lib/**` is in the diff, confirm **`yarn lint:deps`** passes ([dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)); **`yarn lint:markdown`** + **`yarn lint:spellcheck`** when `docs/**` changed (CI docs job). Fix violations in product code — do not hand off with lint failures. Command list lives only in the checklist; do not duplicate here.
 
 Step detail: [running e2e § unit-focused iteration loop](running-e2e.md#unit-focused-tier-iteration-loop).
 
@@ -244,12 +244,12 @@ Keep **`implementation`** and **`independent-review`** in separate passes ([§ f
 
 **Before the first `:test-cover` at `unit-focused` or `area-focused` tier:** create local [`tests/harness.overrides.js`](../../tests/harness.overrides.example.js) even when the branch commit has full harness — [running e2e § local harness overrides](running-e2e.md#local-harness-overrides-harnessoverridesjs). Set `modules` to the package area and **`RNFBDebug: true`**. Full app load is **`full`** tier only (delete overrides file).
 
-| Kind | `implementation` (**unit-focused**) | `independent-review` (**area-focused**) | `pre-merge-validation` (**full**) | `commit` |
-|------|-------------------------------------|------------------------------------------|-----------------------------------|----------|
-| **Area narrowing** | Required before `:test-cover` (overrides file) | Required before `:test-cover` | Delete overrides — all modules | Never commit overrides |
-| **`RNFBDebug: true`** | Required in overrides before `:test-cover` | Required in overrides before `:test-cover` | Delete overrides / `false` | Never |
-| **Single-test** (`.only`) | Allowed (diagnosis) | Revert | Revert | Never |
-| **Single-suite** (`describe.only` / one spec file) | Allowed (diagnosis only — [escalation](#e2e-diagnosis-escalation)) | Revert | Revert | Never |
+| Kind                                               | `implementation` (**unit-focused**)                                | `independent-review` (**area-focused**)    | `pre-merge-validation` (**full**) | `commit`               |
+| -------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------ | --------------------------------- | ---------------------- |
+| **Area narrowing**                                 | Required before `:test-cover` (overrides file)                     | Required before `:test-cover`              | Delete overrides — all modules    | Never commit overrides |
+| **`RNFBDebug: true`**                              | Required in overrides before `:test-cover`                         | Required in overrides before `:test-cover` | Delete overrides / `false`        | Never                  |
+| **Single-test** (`.only`)                          | Allowed (diagnosis)                                                | Revert                                     | Revert                            | Never                  |
+| **Single-suite** (`describe.only` / one spec file) | Allowed (diagnosis only — [escalation](#e2e-diagnosis-escalation)) | Revert                                     | Revert                            | Never                  |
 
 Package workflows define **which module/spec** to load (e.g. Firestore → [pipeline implementation workflow § narrowing](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness)).
 
@@ -270,19 +270,20 @@ rg '\.only\(' packages/
 
 ## Package extensions
 
-| Package / area | Adds to this loop |
-|----------------|-------------------|
-| Firestore Pipelines | Compare-types gap pick, serialization matrix, `Pipeline.e2e.js` setup, coverage snapshots — [pipeline implementation workflow](../packages/firestore/pipeline-implementation-workflow.md) |
-| TurboModule migration | Spec inventory, codegen commit, New Architecture harness, multi-module spec split — [turbomodule implementation workflow](../new-architecture/turbomodule-implementation-workflow.md) |
-| Other packages | `okf-bundle/packages/<pkg>/` index when a workflow exists |
+| Package / area        | Adds to this loop                                                                                                                                                                         |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Firestore Pipelines   | Compare-types gap pick, serialization matrix, `Pipeline.e2e.js` setup, coverage snapshots — [pipeline implementation workflow](../packages/firestore/pipeline-implementation-workflow.md) |
+| TurboModule migration | Spec inventory, codegen commit, New Architecture harness, multi-module spec split — [turbomodule implementation workflow](../new-architecture/turbomodule-implementation-workflow.md)     |
+| Other packages        | `okf-bundle/packages/<pkg>/` index when a workflow exists                                                                                                                                 |
 
 Ephemeral coordination (gate rows, `next_work_type`, `commit_subject`): **work queues only** — not part of this workflow.
 
 ## Related docs
 
-| Topic | Document |
-|-------|----------|
+| Topic                           | Document                                           |
+| ------------------------------- | -------------------------------------------------- |
 | Term ids and queue field schema | [iteration-vocabulary.md](iteration-vocabulary.md) |
-| E2e commands | [running-e2e.md](running-e2e.md) |
-| Validation commands | [validation-checklist.md](validation-checklist.md) |
-| Coverage policy | [coverage-design.md](coverage-design.md) |
+| E2e commands                    | [running-e2e.md](running-e2e.md)                   |
+| Validation commands             | [validation-checklist.md](validation-checklist.md) |
+| Coverage policy                 | [coverage-design.md](coverage-design.md)           |
+| Android JVM unit ADR            | [android-architecture-decisions.md](android-architecture-decisions.md) |

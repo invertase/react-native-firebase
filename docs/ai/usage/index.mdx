@@ -35,7 +35,7 @@ If you need to call the Gemini API directly from your mobile or web app — rath
 
 ## Generate text from text-only input
 
-You can call the Gemini API with input that includes only text. For these calls, you need to use a model that supports text-only prompts (like Gemini 1.5 Pro).
+You can call the Gemini API with input that includes only text. For these calls, you need to use a model that supports text-only prompts (like Gemini 3.1 Flash-Lite).
 
 Use `generateContent()` which waits for the entire response before returning.
 
@@ -53,7 +53,7 @@ function App() {
         onPress={async () => {
           const app = getApp();
           const ai = getAI(app);
-          const model = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+          const model = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
 
           const result = await model.generateContent('What is 2 + 2?');
 
@@ -81,7 +81,7 @@ function App() {
         onPress={async () => {
           const app = getApp();
           const ai = getAI(app);
-          const model = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+          const model = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
 
           const result = await model.generateContentStream('Write a short poem');
 
@@ -123,7 +123,7 @@ function App() {
         onPress={async () => {
           const app = getApp();
           const ai = getAI(app);
-          const model = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+          const model = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
           const prompt = 'What can you see?';
           const base64Emoji =
             'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVEiJtZZPbBtFFMZ/M7ubXdtdb1xSFyeilBapySVU8h8OoFaooFSqiihIVIpQBKci6KEg9Q6H9kovIHoCIVQJJCKE1ENFjnAgcaSGC6rEnxBwA04Tx43t2FnvDAfjkNibxgHxnWb2e/u992bee7tCa00YFsffekFY+nUzFtjW0LrvjRXrCDIAaPLlW0nHL0SsZtVoaF98mLrx3pdhOqLtYPHChahZcYYO7KvPFxvRl5XPp1sN3adWiD1ZAqD6XYK1b/dvE5IWryTt2udLFedwc1+9kLp+vbbpoDh+6TklxBeAi9TL0taeWpdmZzQDry0AcO+jQ12RyohqqoYoo8RDwJrU+qXkjWtfi8Xxt58BdQuwQs9qC/afLwCw8tnQbqYAPsgxE1S6F3EAIXux2oQFKm0ihMsOF71dHYx+f3NND68ghCu1YIoePPQN1pGRABkJ6Bus96CutRZMydTl+TvuiRW1m3n0eDl0vRPcEysqdXn+jsQPsrHMquGeXEaY4Yk4wxWcY5V/9scqOMOVUFthatyTy8QyqwZ+kDURKoMWxNKr2EeqVKcTNOajqKoBgOE28U4tdQl5p5bwCw7BWquaZSzAPlwjlithJtp3pTImSqQRrb2Z8PHGigD4RZuNX6JYj6wj7O4TFLbCO/Mn/m8R+h6rYSUb3ekokRY6f/YukArN979jcW+V/S8g0eT/N3VN3kTqWbQ428m9/8k0P/1aIhF36PccEl6EhOcAUCrXKZXXWS3XKd2vc/TRBG9O5ELC17MmWubD2nKhUKZa26Ba2+D3P+4/MNCFwg59oWVeYhkzgN/JDR8deKBoD7Y+ljEjGZ0sosXVTvbc6RHirr2reNy1OXd6pJsQ+gqjk8VWFYmHrwBzW/n+uMPFiRwHB2I7ih8ciHFxIkd/3Omk5tCDV1t+2nNu5sxxpDFNx+huNhVT3/zMDz8usXC3ddaHBj1GHj/As08fwTS7Kt1HBTmyN29vdwAw+/wbwLVOJ3uAD1wi/dUH7Qei66PfyuRj4Ik9is+hglfbkbfR3cnZm7chlUWLdwmprtCohX4HUtlOcQjLYCu+fzGJH2QRKvP3UNz8bWk1qMxjGTOMThZ3kvgLI5AzFfo379UAAAAASUVORK5CYII=';
@@ -180,7 +180,7 @@ function App() {
             },
           });
           const model = getGenerativeModel(ai, {
-            model: 'gemini-1.5-flash',
+            model: 'gemini-3.1-flash-lite',
             generationConfig: {
               responseMimeType: 'application/json',
               responseSchema: jsonSchema,
@@ -216,7 +216,7 @@ function App() {
         onPress={async () => {
           const app = getApp();
           const ai = getAI(app);
-          const model = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+          const model = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
 
           const chat = model.startChat({
             history: [
@@ -319,7 +319,7 @@ function App() {
           const app = getApp();
           const ai = getAI(app);
           const model = getGenerativeModel(ai, {
-            model: 'gemini-1.5-flash',
+            model: 'gemini-3.1-flash-lite',
             tools: fetchWeatherTool,
           });
 
@@ -364,6 +364,8 @@ Generative AI models break down data into units called tokens for processing. Ea
 
 The below shows you how to get an estimate of token count and the number of billable characters for a request.
 
+On newer Gemini models (for example, `gemini-3.1-flash-lite`), `totalBillableCharacters` may be **undefined**. Check for its presence before logging or billing on that field.
+
 ```js
 import React from 'react';
 import { AppRegistry, Button, Text, View } from 'react-native';
@@ -378,14 +380,15 @@ function App() {
         onPress={async () => {
           const app = getApp();
           const ai = getAI(app);
-          const model = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+          const model = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
           // Count tokens & billable character for text input
           const { totalTokens, totalBillableCharacters } = await model.countTokens(
             'Write a story about a magic backpack.',
           );
-          console.log(
-            `Total tokens: ${totalTokens}, total billable characters: ${totalBillableCharacters}`,
-          );
+          console.log(`Total tokens: ${totalTokens}`);
+          if (totalBillableCharacters !== undefined) {
+            console.log(`Total billable characters: ${totalBillableCharacters}`);
+          }
 
           // Count tokens & billable character for multi-modal input
           const prompt = "What's in this picture?";
@@ -396,9 +399,10 @@ function App() {
             prompt,
             imagePart,
           ]);
-          console.log(
-            `Total tokens: ${totalTokens}, total billable characters: ${totalBillableCharacters}`,
-          );
+          console.log(`Total tokens: ${totalTokens}`);
+          if (totalBillableCharacters !== undefined) {
+            console.log(`Total billable characters: ${totalBillableCharacters}`);
+          }
         }}
       />
     </View>
@@ -406,39 +410,9 @@ function App() {
 }
 ```
 
-## Generating images from text
+## Generating images from text
 
-You can ask an Imagen model to generate a single image or multiple image by prompting with text:
-
-```js
-<Button
-  title="generate image using Imagen model"
-  onPress={async () => {
-    const app = getApp();
-    const ai = getAI(app);
-
-    const model = getImagenModel(ai, {
-      model: 'imagen-3.0-generate-002',
-      // Can also Configure the model to generate multiple images for each request
-      // See: https://firebase.google.com/docs/ai-logic/model-parameters
-      // generationConfig: {
-      //   numberOfImages: 4
-      // }
-    });
-
-    const prompt = 'Generate an image of London bridge with sharks in the water at sunset';
-
-    const result = await model.generateImages(prompt);
-    // creates a base64 encoded image you can render
-    const image = result.images[0].bytesBase64Encoded;
-
-    // If you wish to have an image generated and uploaded to your Firebase Storage bucket,
-    // you can do the following instead:
-    const gcsURI = 'gs://[PROJECT NAME].appspot.com/[DIRECTORY TO STORE IMAGE]';
-    const result = await model.generateImagesGCS(prompt, gcsURI);
-  }}
-/>
-```
+Imagen models are deprecated and scheduled for shutdown around June 2026. Use a Gemini image model such as `gemini-3.1-flash-lite-image` with `getGenerativeModel()` instead. See [Generate images with Gemini models](#generate-images-with-gemini-models) below.
 
 ## Generate images with Gemini models
 
@@ -467,7 +441,7 @@ function App() {
           const app = getApp();
           const ai = getAI(app);
           const model = getGenerativeModel(ai, {
-            model: 'gemini-2.0-flash-preview-image-generation',
+            model: 'gemini-3.1-flash-lite-image',
             generationConfig: {
               responseModalities: [ResponseModality.IMAGE],
               imageConfig: {
@@ -509,7 +483,7 @@ function App() {
           const app = getApp();
           const ai = getAI(app);
           const model = getGenerativeModel(ai, {
-            model: 'gemini-2.0-flash',
+            model: 'gemini-3.1-flash-lite',
             tools: [{ googleMaps: {} }],
             toolConfig: {
               retrievalConfig: {
@@ -550,7 +524,7 @@ function App() {
           const app = getApp();
           const ai = getAI(app);
           const model = getGenerativeModel(ai, {
-            model: 'gemini-2.0-flash',
+            model: 'gemini-3.1-flash-lite',
             tools: [{ googleSearch: {} }],
             toolConfig: {
               retrievalConfig: {
@@ -594,7 +568,7 @@ function App() {
           const app = getApp();
           const ai = getAI(app);
           const liveModel = getLiveGenerativeModel(ai, {
-            model: 'gemini-2.0-flash-live-preview-04-09',
+            model: 'gemini-2.5-flash-native-audio-preview-12-2025',
             generationConfig: { temperature: 0.8 },
           });
 
@@ -643,7 +617,7 @@ function App() {
           const app = getApp();
           const ai = getAI(app);
           const liveModel = getLiveGenerativeModel(ai, {
-            model: 'gemini-2.0-flash-live-preview-04-09',
+            model: 'gemini-2.5-flash-native-audio-preview-12-2025',
             generationConfig: {
               contextWindowCompression: {
                 triggerTokens: 100000,
@@ -683,7 +657,7 @@ function App() {
           const app = getApp();
           const ai = getAI(app);
           const liveModel = getLiveGenerativeModel(ai, {
-            model: 'gemini-2.0-flash-live-preview-04-09',
+            model: 'gemini-2.5-flash-native-audio-preview-12-2025',
           });
 
           let resumptionHandle;
@@ -793,7 +767,7 @@ function App() {
           };
 
           const ai = getAI(app, options);
-          const model = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+          const model = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
 
           const result = await model.generateContent('What is 2 + 2?');
 

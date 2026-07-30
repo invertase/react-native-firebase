@@ -18,11 +18,20 @@
 #import <Firebase/Firebase.h>
 #import <FirebaseAppCheck/FIRAppCheck.h>
 
+#import <React/RCTInvalidating.h>
 #import <React/RCTUtils.h>
 
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBAppCheckModule.h"
+#import "RNFBAppCheckProviderFactory.h"
+#import "RNFBAppCheckTurboModules.h"
+
+@interface RNFBAppCheckModule () <NativeRNFBTurboAppCheckSpec, RCTInvalidating>
+
+@property RNFBAppCheckProviderFactory *_Nullable providerFactory;
+
+@end
 
 @implementation RNFBAppCheckModule
 
@@ -76,10 +85,18 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAppCheck)
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   DLog(@"appName/providerName/debugToken: %@/%@/%@", firebaseApp.name, providerName,
        (debugToken == nil ? @"null" : @"(not shown)"));
-  [[RNFBAppCheckModule sharedInstance].providerFactory configure:firebaseApp
-                                                    providerName:providerName
-                                                      debugToken:debugToken];
-  resolve([NSNull null]);
+  @try {
+    [[RNFBAppCheckModule sharedInstance].providerFactory configure:firebaseApp
+                                                      providerName:providerName
+                                                        debugToken:debugToken];
+    resolve([NSNull null]);
+  } @catch (NSException *exception) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                      userInfo:(NSMutableDictionary *)@{
+                                        @"code" : @"unknown",
+                                        @"message" : exception.reason ?: @"internal-error",
+                                      }];
+  }
 }
 
 - (void)setTokenAutoRefreshEnabled:(NSString *)appName

@@ -72,9 +72,25 @@ subprojects {
     // Configure testing settings - if set in module build.gradle files they affect library consumers
     if (project.name.contains('react-native-firebase')
       && project.hasProperty('android')) {
+      // Jacoco plugin for JVM unit .exec (AGP enableUnitTestCoverage on libraries yields
+      // exec files without product-class probes — see jacoco#1265). Keep androidTest
+      // coverage for Detox on-device .ec instrumentation.
+      project.pluginManager.apply('jacoco')
+      project.jacoco {
+        toolVersion = '0.8.14'
+      }
+      project.tasks.withType(Test).configureEach { testTask ->
+        testTask.jacoco.includeNoLocationClasses = true
+        testTask.jacoco.excludes = ['jdk.internal.*']
+      }
+
       android {
-        // Instrument all our modules for coverage generation
-        buildTypes.debug.testCoverageEnabled = true
+        buildTypes.debug {
+          // Detox / on-device coverage.ec needs instrumented library classes in the app.
+          enableAndroidTestCoverage = true
+          // Do not use enableUnitTestCoverage here — empty product probes on library modules.
+          enableUnitTestCoverage = false
+        }
         jacoco.version = '0.8.14'
         testOptions.unitTests.includeAndroidResources = true
 

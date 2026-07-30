@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/app",
-  "version": "25.1.0",
+  "version": "26.0.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
   "main": "./dist/module/index.js",
@@ -96,7 +96,14 @@
       "types": "./dist/typescript/lib/common/*.d.ts",
       "default": "./dist/module/common/*.js"
     },
-    "./app.plugin.js": "./app.plugin.js",
+    "./app.plugin": {
+      "types": "./plugin/build/app.plugin.d.ts",
+      "default": "./app.plugin.js"
+    },
+    "./app.plugin.js": {
+      "types": "./plugin/build/app.plugin.d.ts",
+      "default": "./app.plugin.js"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {
@@ -162,5 +169,18 @@
   "eslintIgnore": [
     "node_modules/",
     "dist/"
-  ]
+  ],
+  "nx": {
+    "targets": {
+      "prepare": {
+        "outputs": [
+          "{projectRoot}/dist/**",
+          "{projectRoot}/plugin/build/**",
+          "{projectRoot}/lib/version.ts",
+          "{projectRoot}/ios/RNFBApp/RNFBVersion.m",
+          "{projectRoot}/android/src/reactnative/java/io/invertase/firebase/app/ReactNativeFirebaseVersion.java"
+        ]
+      }
+    }
+  }
 }

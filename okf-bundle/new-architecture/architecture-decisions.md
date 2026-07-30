@@ -348,6 +348,26 @@ Committed generated native artifacts ([NewArch-AD-5](#newarch-ad-5--commit-gener
 
 ---
 
+## NewArch-AD-21 — Interim iOS `ResultT` alias without full codegen regen — **Accepted**
+
+**Context:** Consumer apps on RN **0.84+** require `using ResultT = Constants;` inside each codegen `Constants::Builder` ([RN #54919](https://github.com/facebook/react-native/pull/54919)). Our committed iOS headers were produced with the pinned **0.78** codegen ([NewArch-AD-20](#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted)) and omit the alias → iOS compile failure for modules that export constants. Full `yarn codegen:all` against 0.84+ would also rewrite Android `generated/**` and other iOS templates (CMake macros, method serialization, …) — high risk while the monorepo test app remains on 0.78.
+
+**Decision (interim):**
+
+1. **Do not** bump the RN/codegen pin or fully regenerate artifacts solely to obtain `ResultT`.
+2. **Do** commit the additive ObjC++ alias `using ResultT = Constants;` (and the short codegen comment) on every iOS `Constants::Builder` that lacks it.
+3. **Do** run [`scripts/patch-ios-codegen-resultt.mjs`](../../../scripts/patch-ios-codegen-resultt.mjs) after every iOS codegen pass — wired into [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs) — so [NewArch-AD-17.3](#newarch-ad-173--codegen-verify-ci--accepted) does not wipe the alias when regenerating with 0.78 codegen.
+
+**Android:** No change required for this interim. `ResultT` is iOS/`RCTTypedModuleConstants` only; Android Java Specs use `getTypedExportedConstants()` with no analog. When the durable NewArch-AD-20 bump lands, regenerate **both** platforms in that single change ([CP-264](https://linear.app/invertase/issue/CP-264)).
+
+**Wipe risk if inject is skipped:** `yarn ios:codegen` / `yarn codegen:verify` rewrite `packages/*/ios/generated/**` from the 0.78 template → manual-only edits are lost and CI fails `git diff --exit-code`.
+
+**Exit criteria (durable):** Under NewArch-AD-20, bump toolchain to **0.84+** (or whatever line the test app moves to), regenerate all packages, remove the inject script once upstream codegen emits `ResultT` natively, keep `codegen:verify` green. Tracked in CP-264.
+
+**Why interim is safe for old RN:** On RN ≤0.83, `Builder::ResultT` is unused; the alias is inert. On RN ≥0.84 it is required.
+
+---
+
 ## Related docs
 
 | Topic | Document |

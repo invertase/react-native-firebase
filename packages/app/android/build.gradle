@@ -95,6 +95,16 @@ android {
       java.excludes = ['**/generated/jni/**']
     }
   }
+
+  testOptions {
+    unitTests {
+      includeAndroidResources = true
+      all {
+        // Robolectric needs resources / manifests from the library + RN deps.
+        systemProperty 'robolectric.logging.enabled', 'true'
+      }
+    }
+  }
 }
 
 repositories {
@@ -106,6 +116,10 @@ dependencies {
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-common"
   implementation "com.google.android.gms:play-services-auth:${ReactNative.ext.getVersion("play", "play-services-auth")}"
+
+  testImplementation "junit:junit:4.13.2"
+  testImplementation "org.robolectric:robolectric:4.14.1"
+  testImplementation "org.mockito:mockito-core:5.14.2"
 }
 
 def jvmVersion = Jvm.current().javaVersion?.majorVersion

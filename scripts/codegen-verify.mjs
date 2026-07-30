@@ -71,3 +71,11 @@ for (const packageName of MIGRATED_PACKAGES) {
     execSync(command, { stdio: 'inherit', cwd: CLI_CONTEXT_DIR });
   }
 }
+
+// NewArch-AD-21: 0.78 codegen omits ResultT; re-inject so RN 0.84+ consumers compile
+// and this verify pass does not fail git diff after a clean regen.
+console.log('[codegen:verify] patch-ios-codegen-resultt (NewArch-AD-21)');
+execSync('node ./scripts/patch-ios-codegen-resultt.mjs', {
+  stdio: 'inherit',
+  cwd: REPO_ROOT,
+});

@@ -49,6 +49,14 @@ import { ReactNativeFirebaseAppCheckProvider } from './providers';
 
 const nativeModuleName = 'NativeRNFBTurboAppCheck';
 
+const VALID_APPLE_PROVIDERS = [
+  'debug',
+  'deviceCheck',
+  'appAttest',
+  'appAttestWithDeviceCheckFallback',
+];
+const VALID_ANDROID_PROVIDERS = ['debug', 'playIntegrity'];
+
 /**
  * Type guard to check if a provider has providerOptions.
  * This provides proper type narrowing for providers that support platform-specific configuration.
@@ -61,6 +69,29 @@ function hasProviderOptions(
     'providerOptions' in provider &&
     provider.providerOptions !== undefined
   );
+}
+
+function validateProviderName(options: AppCheckOptions): void {
+  if (!hasProviderOptions(options.provider)) {
+    return;
+  }
+  const provider = options.provider;
+  if (Platform.OS === 'android') {
+    const name = provider.providerOptions?.android?.provider;
+    if (isString(name) && !VALID_ANDROID_PROVIDERS.includes(name)) {
+      throw new Error(
+        `Invalid App Check provider "${name}". Valid android providers are: ${VALID_ANDROID_PROVIDERS.join(', ')}.`,
+      );
+    }
+  }
+  if (Platform.OS === 'ios' || Platform.OS === 'macos') {
+    const name = provider.providerOptions?.apple?.provider;
+    if (isString(name) && !VALID_APPLE_PROVIDERS.includes(name)) {
+      throw new Error(
+        `Invalid App Check provider "${name}". Valid apple providers are: ${VALID_APPLE_PROVIDERS.join(', ')}.`,
+      );
+    }
+  }
 }
 
 class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
@@ -267,6 +298,7 @@ export function initializeAppCheck(app?: FirebaseApp, options?: AppCheckOptions)
   if (!isObject(options)) {
     throw new Error('Invalid configuration: no options defined.');
   }
+  validateProviderName(options);
   const appCheck = getModularAppCheck(app);
   void (appCheck as AppCheckInternal).initializeAppCheck(options);
   return appCheck;

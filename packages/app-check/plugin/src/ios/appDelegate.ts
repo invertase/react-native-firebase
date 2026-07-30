@@ -5,6 +5,23 @@ import fs from 'fs';
 import path from 'path';
 
 const methodInvocationBlock = `[RNFBAppCheckModule sharedInstance];`;
+// Match docs / AppDelegate examples: quoted local header import (not angle brackets).
+const appCheckModuleImportQuoted = '#import "RNFBAppCheckModule.h"';
+const appCheckModuleImportAngle = '#import <RNFBAppCheckModule.h>';
+
+function hasAppCheckModuleImport(contents: string): boolean {
+  return (
+    contents.includes(appCheckModuleImportQuoted) || contents.includes(appCheckModuleImportAngle)
+  );
+}
+
+function preferQuotedAppCheckModuleImport(contents: string): string {
+  if (contents.includes(appCheckModuleImportAngle)) {
+    return contents.split(appCheckModuleImportAngle).join(appCheckModuleImportQuoted);
+  }
+  return contents;
+}
+
 // https://regex101.com/r/mPgaq6/1
 const methodInvocationLineMatcher =
   /(?:self\.moduleName\s*=\s*@\"([^"]*)\";)|(?:(self\.|_)(\w+)\s?=\s?\[\[UMModuleRegistryAdapter alloc\])|(?:RCTBridge\s?\*\s?(\w+)\s?=\s?\[(\[RCTBridge alloc\]|self\.reactDelegate))/g;
@@ -15,12 +32,13 @@ const fallbackInvocationLineMatcher =
   /-\s*\(BOOL\)\s*application:\s*\(UIApplication\s*\*\s*\)\s*\w+\s+didFinishLaunchingWithOptions:/g;
 
 export function modifyObjcAppDelegate(contents: string): string {
+  contents = preferQuotedAppCheckModuleImport(contents);
   // Add import
-  if (!contents.includes('#import <RNFBAppCheckModule.h>')) {
+  if (!hasAppCheckModuleImport(contents)) {
     contents = contents.replace(
       /#import "AppDelegate.h"/g,
       `#import "AppDelegate.h"
-#import <RNFBAppCheckModule.h>`,
+${appCheckModuleImportQuoted}`,
     );
   }
 
@@ -91,8 +109,9 @@ export function modifySwiftBridgingHeader(projectRoot: string): void {
 }
 
 export function modifySwiftBridgingHeaderContents(contents: string): string {
-  if (!contents.includes('#import <RNFBAppCheckModule.h>')) {
-    contents += '\n#import <RNFBAppCheckModule.h>\n';
+  contents = preferQuotedAppCheckModuleImport(contents);
+  if (!hasAppCheckModuleImport(contents)) {
+    contents += `\n${appCheckModuleImportQuoted}\n`;
   }
   return contents;
 }

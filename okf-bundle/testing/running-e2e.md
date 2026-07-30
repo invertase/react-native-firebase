@@ -3,7 +3,7 @@ type: Reference
 title: Running e2e tests
 description: The canonical, minimal command set for running React Native Firebase e2e tests on every platform.
 tags: [testing, e2e, detox, jet, ios, android, macos, coverage]
-timestamp: 2026-06-25T00:00:00Z
+timestamp: 2026-07-26T00:00:00Z
 ---
 
 # Running e2e tests
@@ -18,13 +18,15 @@ Canonical local e2e commands. Use **only** these commands. `-ci` variants are CI
 
 **Never invoke the test runner (Jet), Detox, Metro, or emulators directly.** Use **only** the repo-root `yarn tests:*` commands defined in this document (for example `yarn tests:packager:jet`, `yarn tests:emulator:start`, `yarn tests:<platform>:test-cover`). Do not run `jet`, `npx jet`, `yarn jet`, `detox test`, `cd tests && …`, or ad-hoc Metro/emulator start commands. When another doc mentions e2e, Jet, Detox, or pre-flight, follow the link to this runbook — do not infer commands from log output or implementation details.
 
-Install, prepare, and validation commands are **not** in this doc — they live in [agent command policy](agent-command-policy.md) (read before any non-e2e shell command).
+Install, prepare, and validation commands are **not** in this doc — they live in [agent command policy](agent-command-policy.md) (read before any non-e2e shell command). **Before any native `:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (root `yarn` exit 0 + fmt **≥ 12.1.0**).
 
 ## Prerequisites (once per checkout)
 
 ```bash
-yarn   # applies .yarn/patches (jet, mocha-remote-*, detox); installs tests devDeps incl. babel-plugin-istanbul
+yarn   # repo root — exit 0 required. Applies .yarn/patches (jet, mocha-remote-*, detox) and patch-package (incl. tests/patches/react-native+0.78.3.patch → fmt 12.1.0); installs tests devDeps incl. babel-plugin-istanbul
 ```
+
+**Before `yarn tests:ios:build` / `yarn tests:android:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (root `yarn` exit 0 + fmt **≥ 12.1.0**).
 
 ## Rules
 
@@ -41,10 +43,12 @@ yarn tests:emulator:start
 ```
 
 3. **Rebuild when needed**
+   - **Before any native `:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) — root `yarn` exit 0 + fmt podspec **≥ 12.1.0**. Missing this gate → Apple Clang 21 consteval failures on unpatched fmt **11.0.2**.
    - Native changed → `yarn tests:ios:build` / `yarn tests:android:build` before e2e. macOS uses firebase-js-sdk only — no native rebuild.
    - `packages/*/lib/**` changed → **`yarn lerna:prepare` must run to completion (exit 0) before anything else** — Metro serves `dist/module/**`, not `lib/**`. See [prepare completion gate](#prepare-completion-gate-blocking) and [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first). After prepare finishes, restart the packager with `yarn tests:packager:jet-reset-cache` when Metro was already running ([Rules §1](#rules)).
    - TurboModule **codegen / spec / podspec / native shell** changed → same as native changed, plus regen codegen ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)) when specs changed; if app loads with Metro redbox `Requiring unknown module "undefined"`, see [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
-   - TS coverage: iOS/Android embed JS at **build** time; run `:build` before `:test-cover` so Istanbul + patched test-runner coverage upload is in app. macOS loads from Metro live; after test-runner patch changes, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)).
+   - **JS bundle (debug):** all platforms (iOS, Android, macOS) load JS from Metro; only **release** builds pre-bundle/embed JS. `lib/**` edits alone do not require `:build` — use the [prepare completion gate](#prepare-completion-gate-blocking) and Metro restart above.
+   - **TS coverage:** run `:build` before `:test-cover` on iOS/Android so Istanbul + patched test-runner coverage instrumentation is in the debug native app (bundle still from Metro). After test-runner patch changes, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)).
 
 4. **Always run with coverage:**
 
@@ -54,9 +58,9 @@ yarn tests:android:test-cover
 yarn tests:macos:test-cover
 ```
 
-   Clean `:build` + `:test-cover` each time — not reuse variants.
+Clean `:build` + `:test-cover` each time — not reuse variants.
 
-5. **Report locations** — [Coverage design](coverage-design.md).
+5. **Report locations** — [Coverage design](coverage-design.md). Android CI also runs `yarn tests:android:unit` (JVM) before Detox; post-e2e produces merged **`jacocoTestReport`** (unit + e2e) — details there, not duplicated here.
 
 6. **One e2e at a time** — never overlap `:test-cover` runs on one host. All platforms share Metro `:8081` and the test-runner WebSocket port (default **8090**); parallel runs race on coverage/device/emulator state. Every run starts after [clean pre-flight](#pre-flight-is-the-host-clear-to-start). Log triage for port/orchestration markers: [test-runner host orchestration](#test-runner-host-orchestration-log-triage-only).
 
@@ -88,10 +92,10 @@ macOS: `yarn tests:macos:test-cover` only — same `:8090` transport, no Detox.
 
 **No commands to run from this section** — for interpreting `:test-cover` logs and CI artifacts only. Patch workflow: [detox-patches.md](../ci-workflows/detox-patches.md#updating-the-jet-patch-headless). CI triage: [iOS orchestration](../ci-workflows/ios.md#e2e-test-app-orchestration-detox--jet).
 
-| Port | Protocol | Role |
-|------|----------|------|
-| **8090** (default `JET_REMOTE_PORT`) | WebSocket (`mocha-remote-*`) | App ↔ host test transport; drives Mocha in the app |
-| **8091** (default `JET_REMOTE_PORT + 1`, override `RNFB_JET_CONTROL_PORT`) | HTTP POST only | Host ↔ test-runner **control plane** — not used by the app |
+| Port                                                                       | Protocol                     | Role                                                       |
+| -------------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------- |
+| **8090** (default `JET_REMOTE_PORT`)                                       | WebSocket (`mocha-remote-*`) | App ↔ host test transport; drives Mocha in the app         |
+| **8091** (default `JET_REMOTE_PORT + 1`, override `RNFB_JET_CONTROL_PORT`) | HTTP POST only               | Host ↔ test-runner **control plane** — not used by the app |
 
 **Why two ports** — Port 8090 is a WebSocket server (`ws` library). Plain HTTP `POST` to that socket (e.g. `/launch-ready`) gets **426 Upgrade Required** and can crash the runner with `ERR_HTTP_HEADERS_SENT` if a control handler shares the same HTTP stack. Control endpoints therefore live on a **separate** small HTTP server (`startControlHttpServer` in the test-runner patch).
 
@@ -164,11 +168,11 @@ Owner for install/prepare serialization: [agent command policy § prepare must f
 
 No in-flight test run on the target platform:
 
-| Platform | Clear when |
-|----------|------------|
-| **Android** | [Android app reset](#android-app-reset-blocking) + [host-clear probes](#host-clear-probes) pass |
-| **iOS** | [Host-clear probes](#host-clear-probes) pass — **zero booted simulators** and no stray listener on `:8090`. Detox boots `iPhone 17` from `tests/.detoxrc.js`; do not pre-boot or leave simulators running. |
-| **macOS** | [Host-clear probes](#host-clear-probes) pass (no `io.invertase.testing` process) |
+| Platform    | Clear when                                                                                                                                                                                                 |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Android** | [Android app reset](#android-app-reset-blocking) + [host-clear probes](#host-clear-probes) pass                                                                                                            |
+| **iOS**     | [Host-clear probes](#host-clear-probes) pass — **zero booted simulators** and no stray listener on `:8090`. Detox boots `iPhone 17` from `tests/.detoxrc.js`; do not pre-boot or leave simulators running. |
+| **macOS**   | [Host-clear probes](#host-clear-probes) pass (no `io.invertase.testing` process)                                                                                                                           |
 
 Also wait for any visible unfinished `yarn tests:*:test-cover`.
 
@@ -235,21 +239,22 @@ Metro and emulators must be **running and responsive** — do not assume from a 
 ```bash
 curl -sf http://127.0.0.1:8081/status >/dev/null   # Metro (127.0.0.1 matches test app bundle URL)
 curl -sf http://127.0.0.1:8080 >/dev/null          # Firestore emulator
+test -n "$(lsof -nP -iTCP:5001 -sTCP:LISTEN -t 2>/dev/null || true)"   # Functions emulator — listener only
 ```
 
-If either fails: start `yarn tests:packager:jet` and `yarn tests:emulator:start` (background); re-check until both pass. After **`yarn lerna:prepare` has finished** (step [0](#prepare-completion-gate-blocking)) or test-runner patch edits, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)) — never restart Metro while prepare is still running.
+If Metro or Firestore checks fail: start `yarn tests:packager:jet` and `yarn tests:emulator:start` (background); re-check until both pass. After **`yarn lerna:prepare` has finished** (step [0](#prepare-completion-gate-blocking)) or test-runner patch edits, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)) — never restart Metro while prepare is still running.
 
-A listener on `:8081` or `:8080` is **not** sufficient — HTTP checks must succeed.
+A listener on `:8081`, `:8080`, or `:5001` alone is **not** sufficient for Metro/Firestore — their HTTP checks must succeed. **Functions (`:5001`):** verify the listener is up; `curl -sf http://127.0.0.1:5001/` exits non-zero because the root path returns **404** — that is expected and **not** a service failure (do not treat it like the Metro/Firestore gates).
 
 #### 3. Harness matches validation tier
 
 Confirm local harness overrides (or committed files for **full** tier only) match the item's **`validation_tier`** ([iteration vocabulary](iteration-vocabulary.md#work-queue-fields)), **not** the branch's committed harness alone.
 
-| Tier | Harness before `:test-cover` |
-|------|------------------------------|
-| **Unit-focused** (`implementation`) | **Area narrowing required** — [`tests/harness.overrides.js`](#local-harness-overrides-harnessoverridesjs) with `modules` + `RNFBDebug: true`; `.only` OK locally. |
-| **Area-focused** (`independent-review`, `baseline-capture`) | **Area narrowing required** — same overrides file; load **full** spec file(s) for the package area; **no** `.only`; `RNFBDebug: true`. |
-| **Full** (`pre-merge-validation`) | **No** `harness.overrides.js` (delete or `{}`); full app in committed `tests/app.js`; `RNFBDebug: false`. |
+| Tier                                                        | Harness before `:test-cover`                                                                                                                                      |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Unit-focused** (`implementation`)                         | **Area narrowing required** — [`tests/harness.overrides.js`](#local-harness-overrides-harnessoverridesjs) with `modules` + `RNFBDebug: true`; `.only` OK locally. |
+| **Area-focused** (`independent-review`, `baseline-capture`) | **Area narrowing required** — same overrides file; load **full** spec file(s) for the package area; **no** `.only`; `RNFBDebug: true`.                            |
+| **Full** (`pre-merge-validation`)                           | **No** `harness.overrides.js` (delete or `{}`); full app in committed `tests/app.js`; `RNFBDebug: false`.                                                         |
 
 Committed full harness on the branch does **not** override **unit-focused** or **area-focused** tier for local runs. Package workflows define **which module/spec** (e.g. [pipelines § area harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness)). **How:** [local harness overrides](#local-harness-overrides-harnessoverridesjs). Never commit `harness.overrides.js`.
 
@@ -259,17 +264,17 @@ See [Harness narrowing gate (blocking)](#harness-narrowing-gate-blocking) — a 
 
 Completion = shell exit code + log markers — not open-ended log tailing.
 
-| Platform | Early markers (≈2–3 min) | Done |
-|----------|--------------------------|------|
-| **macOS** | `Jet client connected` | `✨ Tests Complete ✨`, Jest `N passing` |
-| **iOS/Android** | Detox launch done, `Jet client connected` | Same |
+| Platform        | Early markers (≈2–3 min)                  | Done                                     |
+| --------------- | ----------------------------------------- | ---------------------------------------- |
+| **macOS**       | `Jet client connected`                    | `✨ Tests Complete ✨`, Jest `N passing` |
+| **iOS/Android** | Detox launch done, `Jet client connected` | Same                                     |
 
 **If stalled** — no new markers for **5 minutes**, or past tier budget (~15m macOS, ~45–60m iOS/Android) without `Tests Complete`: treat as [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090). Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) and [services ready](#2-services-ready), retry. Do not keep watching flat tee output.
 
 - macOS bundle/Metro hangs → [ci-workflows/other.md § bundle load hang](../ci-workflows/other.md#ci-failure-bundle-load-hang--could-not-connect-to-development-server)
 - iOS Metro at launch → [ci-workflows/ios.md § Metro unresponsive](../ci-workflows/ios.md)
 
-Do not poll `pgrep`, process names, or `:8090` for *completion* ([above](#how-a-platform-run-is-structured-androidios)). Stall detection uses **missing progress markers**, not exit polling.
+Do not poll `pgrep`, process names, or `:8090` for _completion_ ([above](#how-a-platform-run-is-structured-androidios)). Stall detection uses **missing progress markers**, not exit polling.
 
 ### Harness narrowing gate (blocking)
 
@@ -277,11 +282,11 @@ Do not poll `pgrep`, process names, or `:8090` for *completion* ([above](#how-a-
 
 **Primary mechanism:** create a local **`tests/harness.overrides.js`** (gitignored) from [`tests/harness.overrides.example.js`](../../tests/harness.overrides.example.js). Committed `tests/app.js` and `tests/globals.js` stay at full harness — do **not** edit them for module narrowing or `RNFBDebug`. See [local harness overrides](#local-harness-overrides-harnessoverridesjs).
 
-| Mistake | Symptom | Gate impact |
-|---------|---------|-------------|
-| Run `:test-cover` with no overrides (full harness) during `implementation` or `independent-review` | macOS/iOS/Android pass counts in the **hundreds or thousands** (all modules via `require.context`) | Run is **invalid** — does not close `implementation_gate` or `review_gate` |
-| Edit only one platform block in `tests/app.js` (legacy pattern) while the other still pushes full list | macOS ~700 firestore tests pass; iOS/Android logs show `database`, `crashlytics`, etc. | Run is **invalid** on iOS/Android — use [overrides file](#local-harness-overrides-harnessoverridesjs) instead |
-| Correct area harness via overrides | Pass counts match loaded module/spec scope ([sanity table](#sanity-check-by-platform)) | Expected |
+| Mistake                                                                                                | Symptom                                                                                            | Gate impact                                                                                                   |
+| ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Run `:test-cover` with no overrides (full harness) during `implementation` or `independent-review`     | macOS/iOS/Android pass counts in the **hundreds or thousands** (all modules via `require.context`) | Run is **invalid** — does not close `implementation_gate` or `review_gate`                                    |
+| Edit only one platform block in `tests/app.js` (legacy pattern) while the other still pushes full list | macOS ~700 firestore tests pass; iOS/Android logs show `database`, `crashlytics`, etc.             | Run is **invalid** on iOS/Android — use [overrides file](#local-harness-overrides-harnessoverridesjs) instead |
+| Correct area harness via overrides                                                                     | Pass counts match loaded module/spec scope ([sanity table](#sanity-check-by-platform))             | Expected                                                                                                      |
 
 **Apply locally before every `:test-cover` at unit-focused or area-focused tier** — even when git shows the full push harness. **Remove** `tests/harness.overrides.js` (or export `{}`) after the run when the branch keeps full harness (typical until phase **R**). Never commit `harness.overrides.js`.
 
@@ -295,17 +300,17 @@ Do not poll `pgrep`, process names, or `:8090` for *completion* ([above](#how-a-
 
 Determine required platforms from committed [`tests/app.js`](../../tests/app.js) platform blocks (use **committed** lists when deciding macOS vs native requirement, not a narrowed local harness):
 
-| Platform class | When required |
-|----------------|---------------|
-| **macOS** (`Platform.other`) | Module appears in the committed `if (Platform.other)` list (or overrides `modules` includes it) |
-| **iOS** and **Android** | Module appears in the committed `if (!Platform.other)` list (or overrides `modules` includes it) |
+| Platform class               | When required                                                                                    |
+| ---------------------------- | ------------------------------------------------------------------------------------------------ |
+| **macOS** (`Platform.other`) | Module appears in the committed `if (Platform.other)` list (or overrides `modules` includes it)  |
+| **iOS** and **Android**      | Module appears in the committed `if (!Platform.other)` list (or overrides `modules` includes it) |
 
 **Area-focused (`baseline-capture`, `independent-review`) — closes `review_gate` / baseline only when:**
 
 1. Full loaded package spec(s) with [area narrowing](#harness-narrowing-gate-blocking) (no `.only`).
 2. **Serial** `:test-cover` on **each required platform** above — pre-flight before **every** run.
-3. Native platforms: `yarn tests:<platform>:build` before first `:test-cover` when product/native JS changed ([Rules §4](#rules)).
-4. Subagent/orchestrator return includes a **platform matrix**: platform, exit code, pass/fail/pending counts, log path.
+3. Native platforms: `yarn tests:<platform>:build` before first `:test-cover` when native changed ([Rules §3](#rules)).
+4. Validation handoff includes a **platform matrix**: platform, exit code, pass/fail/pending counts, log path.
 
 **Invalid shortcuts (do not close gates):**
 
@@ -342,12 +347,12 @@ For `implementation` work type — validation tier **unit-focused** ([change aut
 
 Never overlap runs that use `:test-cover`. See [host rule](change-authoring-workflow.md#host-rule).
 
-| Rule | Requirement |
-|------|-------------|
-| **One e2e run at a time** | Wait for prior shell exit code + short log summary |
-| **No overlapping tiers** | Never run unit-focused-tier and area-focused-tier `:test-cover` concurrently on one host |
-| **Clean pre-flight every run** | [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes), services, harness tier |
-| **Phase J loop** | `implementation` (Jest + **unit-focused**) → `independent-review` (**area-focused**, frozen tree) → `commit` — [work queue protocol](../packages/firestore/pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict) |
+| Rule                           | Requirement                                                                                                                                                                                                                   |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **One e2e run at a time**      | Wait for prior shell exit code + short log summary                                                                                                                                                                            |
+| **No overlapping tiers**       | Never run unit-focused-tier and area-focused-tier `:test-cover` concurrently on one host                                                                                                                                      |
+| **Clean pre-flight every run** | [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes), services, harness tier                                                                                                        |
+| **Phase J loop**               | `implementation` (Jest + **unit-focused**) → `independent-review` (**area-focused**, frozen tree) → `commit` — [work queue protocol](../packages/firestore/pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict) |
 
 Tier scope table: [E2e validation tiers](#e2e-validation-tiers-unit-focused-area-focused-full).
 
@@ -361,6 +366,7 @@ Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#ho
 
 - Do not invoke the test runner (Jet), Detox, Metro, or emulators except through repo-root `yarn tests:*` commands in this doc — see [agent rule](#agent-rule-read-first).
 - Do not run `:test-cover`, `:build`, Metro restart, or pre-flight while **`yarn` / `yarn lerna:prepare` is still in progress** — wait for exit 0 first ([prepare completion gate](#prepare-completion-gate-blocking)).
+- Do not run native `:build` until [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) is satisfied (fmt **≥ 12.1.0**).
 - Do not background `:test-cover` and poll `pgrep`, `detox`, or process names for completion.
 - Do not use `:test-cover-reuse`, `:test-cover-and-process`, or `:test-reuse` when measuring coverage or closing review gates.
 - Do not use `:8090` listening as “e2e still running” without the platform active signal above.
@@ -387,12 +393,12 @@ yarn tests:macos:test-cover
 
 Full e2e loads every package. Narrow locally; **never commit** narrowing.
 
-| Kind | Mechanism | Scope |
-|------|-----------|--------|
-| **Area narrowing** | [`tests/harness.overrides.js`](#local-harness-overrides-harnessoverridesjs) | Which modules load (filter `platformSupportedModules` on all platforms) |
-| **Sub-suite narrowing** | Temporary edit to `tests/app.js` (`require` one spec instead of `require.context`) | Which spec files load within a module — **unit-focused diagnosis only** |
-| **Single-test narrowing** | `it.only(...)` | One case in a loaded file |
-| **Single-suite narrowing** | `describe.only(...)` | One block in a loaded file |
+| Kind                       | Mechanism                                                                          | Scope                                                                   |
+| -------------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Area narrowing**         | [`tests/harness.overrides.js`](#local-harness-overrides-harnessoverridesjs)        | Which modules load (filter `platformSupportedModules` on all platforms) |
+| **Sub-suite narrowing**    | Temporary edit to `tests/app.js` (`require` one spec instead of `require.context`) | Which spec files load within a module — **unit-focused diagnosis only** |
+| **Single-test narrowing**  | `it.only(...)`                                                                     | One case in a loaded file                                               |
+| **Single-suite narrowing** | `describe.only(...)`                                                               | One block in a loaded file                                              |
 
 **Area narrowing** = overrides file for modules + `RNFBDebug`; not test-runner `--grep` or packager `--target`.
 
@@ -410,10 +416,10 @@ cp tests/harness.overrides.example.js tests/harness.overrides.js
 
 Edit `tests/harness.overrides.js` (gitignored — never commit). Shape:
 
-| Field | Purpose |
-|-------|---------|
-| `modules?: string[]` | After each platform block builds its list, filter to only these module names (works on macOS **and** iOS/Android — no dual-block edits) |
-| `RNFBDebug?: boolean` | `true` = verbose RNFB logging + disabled test retries ([§ fail-fast](#fail-fast-rnfbdebug-and-sub-suite-narrowing)) |
+| Field                 | Purpose                                                                                                                                 |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `modules?: string[]`  | After each platform block builds its list, filter to only these module names (works on macOS **and** iOS/Android — no dual-block edits) |
+| `RNFBDebug?: boolean` | `true` = verbose RNFB logging + disabled test retries ([§ fail-fast](#fail-fast-rnfbdebug-and-sub-suite-narrowing))                     |
 
 **Example — app package only, debug on:**
 
@@ -434,10 +440,10 @@ Committed [`tests/app.js`](../../tests/app.js) still builds full `platformSuppor
 
 Module specs load in `loadTests()` via `platformSupportedModules.includes('<module>')` — usually `require.context('../packages/<module>/e2e', …)`.
 
-| Goal | Change |
-|------|--------|
-| Full package area | Overrides `modules` only — leave `require.context` as-is |
-| Single spec file | **Temporarily** replace `require.context` for that module with `require('../packages/<module>/e2e/<Spec>.e2e.js')` in `tests/app.js` — **never commit** ([sub-suite](#fail-fast-rnfbdebug-and-sub-suite-narrowing); unit-focused diagnosis only unless package workflow says otherwise) |
+| Goal              | Change                                                                                                                                                                                                                                                                                  |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Full package area | Overrides `modules` only — leave `require.context` as-is                                                                                                                                                                                                                                |
+| Single spec file  | **Temporarily** replace `require.context` for that module with `require('../packages/<module>/e2e/<Spec>.e2e.js')` in `tests/app.js` — **never commit** ([sub-suite](#fail-fast-rnfbdebug-and-sub-suite-narrowing); unit-focused diagnosis only unless package workflow says otherwise) |
 
 #### Revert before `full` tier or commit
 
@@ -449,10 +455,10 @@ Do **not** revert durable product wiring in committed `tests/globals.js` (e.g. `
 
 #### Sanity check by platform
 
-| Platform | Narrowed firestore-only (full `packages/firestore/e2e`) | Pipeline-only (`Pipeline.e2e.js`) |
-|----------|--------------------------------------------------------|----------------------------------|
-| macOS | ~**700** passing | ~**100** passing |
-| iOS / Android | Same order of magnitude as macOS for the same spec scope | ~**100** passing |
+| Platform      | Narrowed firestore-only (full `packages/firestore/e2e`)  | Pipeline-only (`Pipeline.e2e.js`) |
+| ------------- | -------------------------------------------------------- | --------------------------------- |
+| macOS         | ~**700** passing                                         | ~**100** passing                  |
+| iOS / Android | Same order of magnitude as macOS for the same spec scope | ~**100** passing                  |
 
 Pass counts in the **thousands** or unrelated suites (`database`, `crashlytics`, …) in the log → confirm overrides file exists with correct `modules` and re-run.
 
@@ -466,10 +472,10 @@ Package-specific spec names: [Firestore pipeline harness](../packages/firestore/
 
 **`RNFBDebug`:** for **`unit-focused`** and **`area-focused`** tiers, set **`RNFBDebug: true`** in `tests/harness.overrides.js` **before the first `:test-cover`** — not optional. It prints per-case start/finish and **disables Mocha retry/backoff**, so failures surface immediately instead of burning time on retries. Committed `tests/globals.js` default stays `false`. Remove overrides (or set `RNFBDebug: false`) before **`full`** tier or commit ([§ before merge](#before-merge-pr-handoff)).
 
-| Kind | Mechanism | When |
-|------|-----------|------|
-| **Sub-suite narrowing** | `describe.only` / `require` one e2e file (e.g. `Aggregate/count.e2e.js` only) | **Unit-focused diagnosis only** — after [pre-flight](#pre-flight-is-the-host-clear-to-start) is clean and the **same failure repeats** on back-to-back runs without assertion progress. Never for **`area-focused`** gate closure (no `.only`). Never commit. |
-| **Single-test narrowing** | `it.only(...)` | Same as sub-suite — unit-focused diagnosis only |
+| Kind                      | Mechanism                                                                     | When                                                                                                                                                                                                                                                          |
+| ------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Sub-suite narrowing**   | `describe.only` / `require` one e2e file (e.g. `Aggregate/count.e2e.js` only) | **Unit-focused diagnosis only** — after [pre-flight](#pre-flight-is-the-host-clear-to-start) is clean and the **same failure repeats** on back-to-back runs without assertion progress. Never for **`area-focused`** gate closure (no `.only`). Never commit. |
+| **Single-test narrowing** | `it.only(...)`                                                                | Same as sub-suite — unit-focused diagnosis only                                                                                                                                                                                                               |
 
 Package workflows may name default area specs (e.g. [Firestore pipeline harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness)); sub-suite narrowing is **tighter** than area narrowing for iteration speed.
 
@@ -481,11 +487,11 @@ Package workflows may further restrict narrowing per [validation tier](#e2e-vali
 
 All tiers use [canonical commands](#rules), [host rule](change-authoring-workflow.md#host-rule), and clean [pre-flight](#pre-flight-is-the-host-clear-to-start). Tier names describe **scope**, not who runs the commands — see [iteration vocabulary](iteration-vocabulary.md#validation-tier-identifiers).
 
-| Validation tier | E2e scope | Narrowing allowed | Typical work type |
-|-----------------|-----------|-------------------|-------------------|
-| **Unit-focused** | Fast loop while product code is changing | `harness.overrides.js` + optional `.only` / sub-suite `require` in `tests/app.js` — **never commit** | `implementation` |
-| **Area-focused** | Full loaded spec(s) for the package/area under change | **`harness.overrides.js`** required; **no** `.only` | `baseline-capture`, `independent-review` |
-| **Full** | Unfocused — all modules, all platforms | Delete overrides file — committed full harness only | `pre-merge-validation` |
+| Validation tier  | E2e scope                                             | Narrowing allowed                                                                                    | Typical work type                        |
+| ---------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| **Unit-focused** | Fast loop while product code is changing              | `harness.overrides.js` + optional `.only` / sub-suite `require` in `tests/app.js` — **never commit** | `implementation`                         |
+| **Area-focused** | Full loaded spec(s) for the package/area under change | **`harness.overrides.js`** required; **no** `.only`                                                  | `baseline-capture`, `independent-review` |
+| **Full**         | Unfocused — all modules, all platforms                | Delete overrides file — committed full harness only                                                  | `pre-merge-validation`                   |
 
 **Universal rules:**
 
@@ -500,7 +506,8 @@ See also: [unit-focused-tier loop](#unit-focused-tier-iteration-loop), [dispatch
 
 - **Devices** — Detox boots simulator/emulator (`iPhone 17` on iOS, `TestingAVD` on Android); [host-clear probes](#host-clear-probes) require zero booted iOS simulators before `:test-cover`. macOS auto-starts app.
 - **adb empty** — `adb kill-server && adb start-server && adb devices`
-- **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, …). Stray listener on `:8090` after a run → [pre-flight recovery](#pre-flight-recovery), then restart background services with [Rules §1–2](#rules) (`yarn tests:packager:jet`, `yarn tests:emulator:start`).
+- **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, `:5001`, …). Stray listener on `:8090` after a run → [pre-flight recovery](#pre-flight-recovery), then restart background services with [Rules §1–2](#rules) (`yarn tests:packager:jet`, `yarn tests:emulator:start`).
+- **Android Gradle home** — when Android `:build` or `:test-cover` fails with missing/wrong Gradle cache on a host that does not default to `~/.gradle`, export `GRADLE_USER_HOME=$HOME/.gradle` before the run.
 
 ### Android emulator gray screen / Quick Boot (blocking)
 
@@ -529,7 +536,6 @@ adb kill-server && adb start-server && adb devices   # must be empty
 ```
 
 Then rerun [pre-flight](#pre-flight-is-the-host-clear-to-start) and `yarn tests:android:test-cover`. Cold boot adds ~30–60s to the first Android launch vs Quick Boot — expected.
-
 
 Detox injects a prebuilt **`Detox.framework`** and XCUITest runner from a versioned cache under **`~/Library/Detox/ios/`** (hashed by Xcode version). iOS `:test-cover` / `:build` **fail before any test runs** if that cache is missing or stale (common after Xcode upgrade, first checkout, or a failed Detox postinstall).
 
@@ -568,7 +574,7 @@ ls ~/Library/Detox/ios/framework/*/Detox.framework
 ls ~/Library/Detox/ios/xcuitest-runner/*/
 ```
 
-Then resume the normal iOS loop: [pre-flight](#pre-flight-is-the-host-clear-to-start) → `yarn tests:ios:build` (if native/JS changed) → `yarn tests:ios:test-cover`.
+Then resume the normal iOS loop: [pre-flight](#pre-flight-is-the-host-clear-to-start) → `yarn tests:ios:build` (if native changed) → `yarn tests:ios:test-cover`.
 
 CI restores the same tree from `~/Library/Detox/ios` keyed by Xcode version ([iOS workflow § Detox Framework Cache Restore](../ci-workflows/ios.md)). Local developers must rebuild when the cache is missing — it is not committed to git.
 
@@ -578,11 +584,11 @@ CI restores the same tree from `~/Library/Detox/ios` keyed by Xcode version ([iO
 
 During TurboModule work, three different **`undefined`** / load failures are easy to confuse — only the third row below is fixed by the [native registration checklist](../new-architecture/turbomodule-implementation-workflow.md#turbomodule-native-registration-checklist-blocking):
 
-| Symptom | Likely cause | Fix (escalate in order) |
-|---------|----------------|-------------------------|
-| `this.native.isFoo` is **`undefined`** in JS | Spec/native **constants** chain incomplete (`getConstants`, `getTypedExportedConstants`, iOS typed constants) | [Workflow checklist rows 1, 6, 8](../new-architecture/turbomodule-implementation-workflow.md#turbomodule-native-registration-checklist-blocking) |
-| Android `Proxy target must be an Object` | JNI not linked / **stale autolinking cache** | Delete `tests/android/build/generated/autolinking/autolinking.json` + `*.sha`, `:build` |
-| Metro redbox **`Requiring unknown module "undefined"`** at app load | **Stale Metro and/or partial native refresh** after codegen / `lib/**` / podspec changes | Steps below; then [full refresh](#turbomodule-full-toolchain-refresh) if needed |
+| Symptom                                                             | Likely cause                                                                                                  | Fix (escalate in order)                                                                                                                          |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `this.native.isFoo` is **`undefined`** in JS                        | Spec/native **constants** chain incomplete (`getConstants`, `getTypedExportedConstants`, iOS typed constants) | [Workflow checklist rows 1, 6, 8](../new-architecture/turbomodule-implementation-workflow.md#turbomodule-native-registration-checklist-blocking) |
+| Android `Proxy target must be an Object`                            | JNI not linked / **stale autolinking cache**                                                                  | Delete `tests/android/build/generated/autolinking/autolinking.json` + `*.sha`, `:build`                                                          |
+| Metro redbox **`Requiring unknown module "undefined"`** at app load | **Stale Metro and/or partial native refresh** after codegen / `lib/**` / podspec changes                      | Steps below; then [full refresh](#turbomodule-full-toolchain-refresh) if needed                                                                  |
 
 **Detect:** app redbox before `Jet client connected`; `curl` of `index.bundle` may still return 200 — that does **not** rule out staleness.
 
@@ -600,11 +606,12 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 
 1. [Pre-flight recovery](#pre-flight-recovery) — stop Metro, Jet, Detox; shutdown booted simulators.
 2. Remove **all** `node_modules` (repo root, `tests/`, and under `packages/*` if present).
-3. **`yarn`** at repo root (wait for exit 0 — includes `lerna:prepare`).
-4. Regenerate **all** touched packages' codegen from `tests/` ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)).
-5. **`yarn tests:ios:pod:install`** when iOS native/codegen changed.
-6. **`yarn tests:<platform>:build`**.
-7. **`yarn tests:packager:jet-reset-cache`** → pre-flight → `:test-cover`.
+3. **`yarn`** at repo root (wait for exit 0 — includes `lerna:prepare` and patches).
+4. Confirm [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (fmt **≥ 12.1.0**) before any native `:build`.
+5. Regenerate **all** touched packages' codegen from `tests/` ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)).
+6. **`yarn tests:ios:pod:install`** when iOS native/codegen changed.
+7. **`yarn tests:<platform>:build`**.
+8. **`yarn tests:packager:jet-reset-cache`** → pre-flight → `:test-cover`.
 
 Do **not** treat this redbox as a missing TurboModule registration until the refresh sequence has been run once on a clean tree.
 

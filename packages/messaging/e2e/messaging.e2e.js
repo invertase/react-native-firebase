@@ -20,6 +20,16 @@ async function isSimulator() {
   return await DeviceInfo.isEmulator();
 }
 
+/**
+ * Whether this Simulator is expected to complete real APNs registration.
+ * Hard-coded `false` until the TODO below is validated on CI.
+ *
+ * IMPORTANT: Do NOT gate the APNs `registration-timeout` / supersede specs
+ * (`z-apns-registration-timeout.e2e.js`) on this helper. When the TODO flips to
+ * return true for ARM64 hosts, those tests must keep running unconditionally
+ * (aside from ios + simulator checks) so a capability flip cannot silently drop
+ * the timeout / supersede coverage.
+ */
 async function isAPNSCapableSimulator() {
   return false;
   // TODO need to fix this for M1 on CI
@@ -324,7 +334,7 @@ describe('messaging()', function () {
         }
       });
 
-      // Phase C: re-enable only after FCM harness / payload delivery audit (see migration-work-queue § Phase C).
+      // Disabled until FCM foreground payload delivery is re-audited in the e2e harness.
       xit('receives messages when the app is in the foreground', async function () {
         const { getMessaging, onMessage, registerDeviceForRemoteMessages, getToken } =
           messagingModular;

@@ -142,9 +142,11 @@ function pullIosCoverage(deviceId, options = {}) {
   return destPaths;
 }
 
-function runJacocoAndroidTestReport() {
+// Merged unit (*.exec) + e2e (*.ec) report — Codecov android-native uploads this XML.
+// See tests/android/app/jacoco.gradle (jacocoTestReport) and okf-bundle/testing/coverage-design.md.
+function runJacocoTestReport() {
   const androidDir = path.resolve(__dirname, '../android');
-  const result = spawnSync('./gradlew', ['jacocoAndroidTestReport'], {
+  const result = spawnSync('./gradlew', ['jacocoTestReport'], {
     cwd: androidDir,
     stdio: 'inherit',
     shell: true,
@@ -152,7 +154,7 @@ function runJacocoAndroidTestReport() {
 
   if (result.status !== 0) {
     console.warn(
-      `[native-coverage] jacocoAndroidTestReport exited with status ${result.status ?? 'unknown'}`,
+      `[native-coverage] jacocoTestReport exited with status ${result.status ?? 'unknown'}`,
     );
     return false;
   }
@@ -194,9 +196,11 @@ async function main() {
     } else {
       pulled = await pullAndroidCoverageWithRetry(deviceId, { softFail: true, testsDir });
     }
-    const reportOk = runJacocoAndroidTestReport();
+    const reportOk = runJacocoTestReport();
     if (!pulled) {
-      console.warn('[native-coverage] Jacoco report may be empty (no coverage.ec pulled)');
+      console.warn(
+        '[native-coverage] Merged Jacoco report may lack e2e data (no coverage.ec pulled)',
+      );
     } else if (reportOk) {
       deleteProcessedAndroidCoverageEc(pulled);
     }
@@ -221,5 +225,5 @@ module.exports = {
   pullAndroidCoverageWithRetry,
   pullIosCoverage,
   resolveAndroidDeviceId,
-  runJacocoAndroidTestReport,
+  runJacocoTestReport,
 };
