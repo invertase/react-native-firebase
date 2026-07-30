@@ -6,6 +6,8 @@ import {
   expoNotificationsConfigExample,
   expoNotificationsConfigWithoutColorExample,
   expoNotificationsConfigWithoutPluginExample,
+  pluginPropsConfigExample,
+  pluginPropsConfigWithoutColorExample,
 } from './fixtures/expo-config-example';
 import manifestApplicationExample from './fixtures/application-example';
 import { ManifestApplication } from '@expo/config-plugins/build/android/Manifest';
@@ -137,6 +139,72 @@ describe('Config Plugin Android Tests', function () {
       expect(called).toBeTruthy();
       // eslint-disable-next-line no-console
       console.warn = warnOrig;
+    });
+  });
+
+  describe('plugin props config', () => {
+    it('applies changes to app/src/main/AndroidManifest.xml with icon and color from plugin props', async function () {
+      const config: ExpoConfig = JSON.parse(
+        JSON.stringify(expoNotificationsConfigWithoutPluginExample),
+      );
+      const manifestApplication: ManifestApplication = JSON.parse(
+        JSON.stringify(manifestApplicationExample),
+      );
+      setFireBaseMessagingAndroidManifest(config, manifestApplication, pluginPropsConfigExample);
+      expect(manifestApplication['meta-data']).toContainEqual({
+        $: {
+          'android:name': 'com.google.firebase.messaging.default_notification_icon',
+          'android:resource': '@drawable/notification_icon',
+        },
+      });
+      expect(manifestApplication['meta-data']).toContainEqual({
+        $: {
+          'android:name': 'com.google.firebase.messaging.default_notification_color',
+          'android:resource': '@color/notification_icon_color',
+          'tools:replace': 'android:resource',
+        },
+      });
+    });
+
+    it('applies changes to app/src/main/AndroidManifest.xml with icon only from plugin props', async function () {
+      const config: ExpoConfig = JSON.parse(
+        JSON.stringify(expoNotificationsConfigWithoutPluginExample),
+      );
+      const manifestApplication: ManifestApplication = JSON.parse(
+        JSON.stringify(manifestApplicationExample),
+      );
+      setFireBaseMessagingAndroidManifest(
+        config,
+        manifestApplication,
+        pluginPropsConfigWithoutColorExample,
+      );
+      expect(manifestApplication['meta-data']).toContainEqual({
+        $: {
+          'android:name': 'com.google.firebase.messaging.default_notification_icon',
+          'android:resource': '@drawable/notification_icon',
+        },
+      });
+      expect(manifestApplication['meta-data']).not.toContainEqual(
+        expect.objectContaining({
+          $: expect.objectContaining({
+            'android:name': 'com.google.firebase.messaging.default_notification_color',
+          }),
+        }),
+      );
+    });
+
+    it('plugin props take priority over expo-notifications config', async function () {
+      const config: ExpoConfig = JSON.parse(JSON.stringify(expoNotificationsConfigExample));
+      const manifestApplication: ManifestApplication = JSON.parse(
+        JSON.stringify(manifestApplicationExample),
+      );
+      setFireBaseMessagingAndroidManifest(config, manifestApplication, pluginPropsConfigExample);
+      expect(manifestApplication['meta-data']).toContainEqual({
+        $: {
+          'android:name': 'com.google.firebase.messaging.default_notification_icon',
+          'android:resource': '@drawable/notification_icon',
+        },
+      });
     });
   });
 });
