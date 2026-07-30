@@ -70,11 +70,30 @@ Adding the real per-product header branch fixes products that actually publish a
 usable Objective-C header. It does not fix Firebase products whose public
 Objective-C class interface is generated from Swift.
 
-When neither the CocoaPods umbrella nor the SPM product header is present — for
-example Firebase App Distribution on Mac Catalyst under SPM — a `.mm`
-TurboModule must compile a stub that rejects at runtime with a clear
+When neither the CocoaPods umbrella nor the SPM product header is present, a
+`.mm` TurboModule must compile a stub that rejects at runtime with a clear
 unsupported/unavailable error. Falling through to `@import` is never allowed;
 do not enable `-fcxx-modules` to make the module import work.
+
+### Mac Catalyst stubs (mirroring upstream `Package.swift` gates)
+
+This is **not** an SPM integration bug in RNFB. Upstream
+`firebase-ios-sdk` `Package.swift` wrap targets omit `.macCatalyst` for some
+products, so Catalyst + SPM links only the empty `SwiftPM-PlatformExclude/*Wrap`
+dummies and never builds the real modules. CocoaPods-era Catalyst builds
+compiled through the `Firebase/Firebase.h` umbrella and therefore masked the
+same platform exclusion.
+
+| Product | Upstream SPM Catalyst gate | RNFB stub | Notes |
+| --- | --- | --- | --- |
+| App Distribution | `FirebaseAppDistributionTarget` is `.iOS` only | `RNFBAppDistributionModule.mm` (`RNFB_APP_DISTRIBUTION_SDK_AVAILABLE`) | Intentionally iOS-tester-only; not proposed for Catalyst |
+| Performance | `FirebasePerformanceTarget` omits `.macCatalyst` | `RNFBPerfModule.mm` (`RNFB_PERF_SDK_AVAILABLE`) | Speculative enablement: [firebase-ios-sdk#16468](https://github.com/firebase/firebase-ios-sdk/pull/16468) |
+| In-App Messaging | `FirebaseInAppMessagingTarget` omits `.macCatalyst` | `RNFBFiamHelper.m` (`RNFB_FIAM_SDK_AVAILABLE`; Catalyst skips `@import`) | Same speculative PR; helper stays plain `.m` so iOS/tvOS SPM can `@import` |
+
+Until/unless #16468 lands (or upstream declines and the stubs become permanent),
+RNFB must compile on Catalyst SPM without those product headers/modules. Do not
+stub Auth, Analytics, Crashlytics, Messaging, or other products that upstream
+already includes for Catalyst under SPM.
 
 ## Swift-product boundary
 
@@ -257,8 +276,10 @@ When native Firebase imports or SPM products change, review the diff for these
 invariants:
 
 - no umbrella-header-to-`@import` fallback without a real product-header branch;
-- when product headers are absent on a platform (e.g. App Distribution on
-  Catalyst), stub/reject in `.mm` — never `@import` and never `-fcxx-modules`;
+- when product headers/modules are absent on a platform because upstream SPM
+  wrap targets omit `.macCatalyst` (App Distribution, Performance, In-App
+  Messaging — see table above), stub/reject — never `@import` from `.mm` and
+  never `-fcxx-modules`;
 - no direct Swift-product Firebase import, Firebase-typed declaration, or
   Firebase-bearing shared header in a `.mm` translation unit;
 - no `-fcxx-modules` build setting;

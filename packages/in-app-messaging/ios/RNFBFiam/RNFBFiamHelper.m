@@ -17,9 +17,22 @@
 
 #if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
-#else
+#define RNFB_FIAM_SDK_AVAILABLE 1
+#elif !TARGET_OS_MACCATALYST
+// SPM on iOS/tvOS: FirebaseInAppMessaging is a Swift product — use @import in
+// this plain .m (needs -fmodules only). Do not move @import into the .mm
+// TurboModule (that would require -fcxx-modules).
 @import FirebaseCore;
 @import FirebaseInAppMessaging;
+#define RNFB_FIAM_SDK_AVAILABLE 1
+#else
+// Product module absent under Mac Catalyst + SPM. Upstream Package.swift omits
+// .macCatalyst from FirebaseInAppMessagingTarget; CocoaPods historically
+// masked this via the Firebase umbrella. Temporary stubs pending
+// https://github.com/firebase/firebase-ios-sdk/pull/16468 (or permanent if
+// upstream declines). When that PR lands, drop the TARGET_OS_MACCATALYST
+// gate and use the @import path on Catalyst too.
+#define RNFB_FIAM_SDK_AVAILABLE 0
 #endif
 
 #import "RNFBFiamHelper.h"
@@ -27,23 +40,43 @@
 @implementation RNFBFiamHelper
 
 + (BOOL)isMessageDisplaySuppressed {
+#if RNFB_FIAM_SDK_AVAILABLE
   return [FIRInAppMessaging inAppMessaging].messageDisplaySuppressed;
+#else
+  return NO;
+#endif
 }
 
 + (BOOL)isAutomaticDataCollectionEnabled {
+#if RNFB_FIAM_SDK_AVAILABLE
   return [FIRInAppMessaging inAppMessaging].automaticDataCollectionEnabled;
+#else
+  return NO;
+#endif
 }
 
 + (void)setAutomaticDataCollectionEnabled:(BOOL)enabled {
+#if RNFB_FIAM_SDK_AVAILABLE
   [FIRInAppMessaging inAppMessaging].automaticDataCollectionEnabled = enabled;
+#else
+  (void)enabled;
+#endif
 }
 
 + (void)setMessageDisplaySuppressed:(BOOL)enabled {
+#if RNFB_FIAM_SDK_AVAILABLE
   [FIRInAppMessaging inAppMessaging].messageDisplaySuppressed = enabled;
+#else
+  (void)enabled;
+#endif
 }
 
 + (void)triggerEvent:(NSString *)eventId {
+#if RNFB_FIAM_SDK_AVAILABLE
   [[FIRInAppMessaging inAppMessaging] triggerEvent:eventId];
+#else
+  (void)eventId;
+#endif
 }
 
 @end

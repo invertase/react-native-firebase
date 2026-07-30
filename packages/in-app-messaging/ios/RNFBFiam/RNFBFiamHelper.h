@@ -30,7 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// breaks React Native's own jsi/React modules. Isolating all
 /// FirebaseInAppMessaging usage in this plain Objective-C (.m) file avoids
 /// that requirement entirely, since `@import` only needs `-fmodules`
-/// (already enabled) for plain ObjC. See okf-bundle/ios-spm-native-imports.md.
+/// (already enabled) for plain ObjC. On Mac Catalyst + SPM the upstream
+/// wrap target omits the real module — see RNFBFiamHelper.m stubs and
+/// https://github.com/firebase/firebase-ios-sdk/pull/16468. See
+/// okf-bundle/ios-spm-native-imports.md.
 @interface RNFBFiamHelper : NSObject
 
 + (BOOL)isMessageDisplaySuppressed;
