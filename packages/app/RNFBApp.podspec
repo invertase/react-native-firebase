@@ -23,6 +23,9 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = firebase_tvos_target
   s.cocoapods_version   = '>= 1.12.0'
   s.source_files        = "ios/**/*.{h,m,mm,cpp}"
+  # Objective-C++ sources emit no clang autolink records, so PhotoKit must be
+  # linked explicitly: RNFBUtilsModule references PHAsset.
+  s.frameworks          = "Photos"
   s.private_header_files = "ios/**/*.h"
   s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
 
