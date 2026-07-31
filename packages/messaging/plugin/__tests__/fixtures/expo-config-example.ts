@@ -1,4 +1,5 @@
 import { ExpoConfig } from '@expo/config-types';
+import { PluginConfigType } from '../../src/pluginConfig';
 
 /**
  * @type {import('@expo/config-types').ExpoConfig}
@@ -45,9 +46,31 @@ const expoNotificationsConfigWithoutPluginExample: ExpoConfig = {
   slug: 'fire-base-messaging-test',
 };
 
+const pluginPropsConfigExample: PluginConfigType = {
+  android: {
+    notificationIcon: 'IconAsset',
+    notificationColor: '#1D172D',
+  },
+};
+
+const pluginPropsConfigWithoutColorExample: PluginConfigType = {
+  android: {
+    notificationIcon: 'IconAsset',
+  },
+};
+
+const pluginPropsColorOnlyExample: PluginConfigType = {
+  android: {
+    notificationColor: '#1D172D',
+  },
+};
+
 export {
   expoConfigExample,
   expoNotificationsConfigExample,
   expoNotificationsConfigWithoutColorExample,
   expoNotificationsConfigWithoutPluginExample,
+  pluginPropsConfigExample,
+  pluginPropsConfigWithoutColorExample,
+  pluginPropsColorOnlyExample,
 };

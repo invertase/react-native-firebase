@@ -464,6 +464,8 @@ getCountFromServer(modQuery1).then(snap1 => {
 
 // ----- getDoc, getDocFromCache, getDocFromServer -----
 getDoc(modDoc).then(snap => snap.data());
+getDoc(modDoc).then(snap => snap.data({ serverTimestamps: 'estimate' }));
+getDoc(modDoc).then(snap => snap.get('field', { serverTimestamps: 'previous' }));
 getDocFromCache(modDoc).then(snap => snap.data());
 getDocFromServer(modDoc).then(snap => snap.data());
 

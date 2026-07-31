@@ -16,10 +16,27 @@
 #
 set -e
 
-if [[ ${PODS_ROOT} ]]; then
+if [[ ${PODS_ROOT} && -f "${PODS_ROOT}/FirebaseCrashlytics/run" ]]; then
   echo "info: Exec FirebaseCrashlytics Run from Pods"
   "${PODS_ROOT}/FirebaseCrashlytics/run"
-else
+elif [[ -f "${PROJECT_DIR}/FirebaseCrashlytics.framework/run" ]]; then
   echo "info: Exec FirebaseCrashlytics Run from framework"
   "${PROJECT_DIR}/FirebaseCrashlytics.framework/run"
+else
+  # SPM: upload-symbols is at a known path in the SourcePackages checkout.
+  # BUILD_DIR is typically DerivedData/Project-hash/Build/Products — strip from /Build onward
+  # to get the DerivedData project root where SourcePackages lives.
+  SPM_CRASHLYTICS_DIR="${BUILD_DIR%Build/*}SourcePackages/checkouts/firebase-ios-sdk/Crashlytics"
+  SPM_UPLOAD_SYMBOLS="${SPM_CRASHLYTICS_DIR}/upload-symbols"
+  if [[ -x "${SPM_UPLOAD_SYMBOLS}" ]]; then
+    echo "info: Exec FirebaseCrashlytics upload-symbols from SPM"
+    "${SPM_UPLOAD_SYMBOLS}" -gsp "${PROJECT_DIR}/GoogleService-Info.plist" -p ios "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"
+  elif [[ -f "${SPM_UPLOAD_SYMBOLS}" ]]; then
+    echo "info: Exec FirebaseCrashlytics upload-symbols from SPM (chmod +x)"
+    chmod +x "${SPM_UPLOAD_SYMBOLS}"
+    "${SPM_UPLOAD_SYMBOLS}" -gsp "${PROJECT_DIR}/GoogleService-Info.plist" -p ios "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"
+  else
+    echo "warning: FirebaseCrashlytics run script not found at CocoaPods, framework, or SPM paths. Skipping dSYM upload."
+    echo "warning: Checked: \${PODS_ROOT}/FirebaseCrashlytics/run, \${PROJECT_DIR}/FirebaseCrashlytics.framework/run, ${SPM_UPLOAD_SYMBOLS}"
+  fi
 fi

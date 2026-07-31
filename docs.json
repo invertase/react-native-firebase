@@ -96,6 +96,7 @@
         { "title": "Migration Guide to v25", "href": "/migrating-to-v25" },
         { "title": "Migration Guide to v26", "href": "/migrating-to-v26" },
         { "title": "TypeScript", "href": "/typescript" },
+        { "title": "iOS SPM Support", "href": "/ios-spm" },
         { "title": "Platforms", "href": "/platforms" },
         { "title": "FAQs and Tips", "href": "/faqs-and-tips" },
         {

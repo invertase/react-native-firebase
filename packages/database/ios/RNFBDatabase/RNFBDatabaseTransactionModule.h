@@ -20,5 +20,4 @@
 #import <React/RCTBridgeModule.h>
 
 @interface RNFBDatabaseTransactionModule : NSObject <RCTBridgeModule>
-@property dispatch_queue_t transactionQueue;
 @end

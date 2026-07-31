@@ -53,5 +53,10 @@ export function getWebError(error: Error & { code?: string }): {
 }
 
 export function emitEvent(eventName: string, event: unknown): void {
-  setImmediate(() => DeviceEventEmitter.emit('rnfb_' + eventName, event));
+  const emit = () => DeviceEventEmitter.emit('rnfb_' + eventName, event);
+  if (typeof setImmediate === 'function') {
+    setImmediate(emit);
+  } else {
+    setTimeout(emit, 0);
+  }
 }

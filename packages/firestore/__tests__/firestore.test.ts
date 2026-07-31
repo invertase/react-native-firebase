@@ -1,5 +1,7 @@
-import { describe, expect, it } from '@jest/globals';
-import { parseSnapshotArgs } from '../lib/utils';
+import { describe, expect, it, jest } from '@jest/globals';
+// @ts-ignore test
+import FirestoreDocumentSnapshot from '../lib/FirestoreDocumentSnapshot';
+import { parseSnapshotArgs, throwIfLiteSdkSnapshotListenerUnsupported } from '../lib/utils';
 
 import {
   Filter,
@@ -93,6 +95,44 @@ describe('Firestore', function () {
       expect(() =>
         parseSnapshotArgs([{ source: 'server' as 'default' | 'cache' }, () => {}]),
       ).toThrow("'options' SnapshotOptions.source must be one of 'default' or 'cache'.");
+    });
+  });
+
+  describe('throwIfLiteSdkSnapshotListenerUnsupported()', function () {
+    it('does not throw on supported (ios/android) platforms', function () {
+      // jest.setup.ts mocks react-native's Platform.OS as 'android' for this whole suite,
+      // so `isOther` is false here - this exercises the normal, non-lite-SDK path.
+      expect(() => throwIfLiteSdkSnapshotListenerUnsupported()).not.toThrow();
+    });
+
+    it('throws "Not supported in the lite SDK." when running on the lite/"Other" platform', function () {
+      let throwOnOtherPlatform!: () => void;
+
+      // Force `isOther` to true (the same flag the guard checks) in an isolated module
+      // registry, so this mock can't leak into other tests in this file.
+      jest.isolateModules(() => {
+        jest.doMock('@react-native-firebase/app/dist/module/common', () => ({
+          ...(jest.requireActual('@react-native-firebase/app/dist/module/common') as object),
+          isOther: true,
+        }));
+        ({
+          throwIfLiteSdkSnapshotListenerUnsupported: throwOnOtherPlatform,
+        } = require('../lib/utils'));
+      });
+
+      expect(() => throwOnOtherPlatform()).toThrow('Not supported in the lite SDK.');
+      try {
+        throwOnOtherPlatform();
+        throw new Error('Expected throwOnOtherPlatform to throw.');
+      } catch (e) {
+        expect((e as { code?: string }).code).toEqual('firestore/unsupported');
+      } finally {
+        // `jest.doMock` registers the factory in the module-mock registry, which
+        // `jest.isolateModules` does NOT undo (it only swaps the module-instance cache).
+        // Without this, the mock would leak into every subsequent test/file that imports
+        // '@react-native-firebase/app/dist/module/common', so explicitly unregister it here.
+        jest.dontMock('@react-native-firebase/app/dist/module/common');
+      }
     });
   });
 
@@ -354,6 +394,97 @@ describe('Firestore', function () {
 
     it('`vector()` is properly exposed to end user', function () {
       expect(vector).toBeDefined();
+    });
+  });
+
+  describe('FirestoreDocumentSnapshot (unit)', function () {
+    // These construct FirestoreDocumentSnapshot with a fabricated native bridge payload
+    // (data / dataEstimate / dataPrevious / dataNone). Jest has no native Firestore bridge, so
+    // pending-write timestamp variants cannot be produced through public setDoc/onSnapshot APIs
+    // here — that path is covered in e2e (withConverter.e2e.js). Direct construction isolates the
+    // JS _dataForOptions selection against the bridge shape Android/iOS/web emit.
+    it('data() respects SnapshotOptions.serverTimestamps', function () {
+      const firestore = getFirestore();
+      const snapshot = new FirestoreDocumentSnapshot(
+        // @ts-expect-error calling a private constructor directly which expects FirestoreInternal type
+        firestore,
+        {
+          data: { createdAt: [3] },
+          dataEstimate: { createdAt: [13, [123, 456]] },
+          dataPrevious: { createdAt: [13, [42, 0]] },
+          dataNone: { createdAt: [3] },
+          metadata: [false, true],
+          path: 'foo/bar',
+          exists: true,
+        },
+        null,
+      );
+
+      expect(snapshot.data()).toEqual({ createdAt: null });
+      expect(snapshot.data({ serverTimestamps: 'estimate' })?.createdAt).toBeInstanceOf(Timestamp);
+      expect(snapshot.data({ serverTimestamps: 'estimate' })?.createdAt).toMatchObject({
+        seconds: 123,
+        nanoseconds: 456,
+      });
+      expect(snapshot.data({ serverTimestamps: 'previous' })?.createdAt).toMatchObject({
+        seconds: 42,
+        nanoseconds: 0,
+      });
+      expect(snapshot.data({ serverTimestamps: 'none' })).toEqual({ createdAt: null });
+    });
+
+    it('get() respects SnapshotOptions.serverTimestamps', function () {
+      const firestore = getFirestore();
+      const snapshot = new FirestoreDocumentSnapshot(
+        // @ts-expect-error calling a private constructor directly which expects FirestoreInternal type
+        firestore,
+        {
+          data: { nested: [16, { createdAt: [3] }] },
+          dataEstimate: { nested: [16, { createdAt: [13, [123, 456]] }] },
+          dataPrevious: { nested: [16, { createdAt: [13, [42, 0]] }] },
+          dataNone: { nested: [16, { createdAt: [3] }] },
+          metadata: [false, true],
+          path: 'foo/bar',
+          exists: true,
+        },
+        null,
+      );
+
+      expect(snapshot.get('nested.createdAt')).toBeNull();
+      expect(snapshot.get('nested.createdAt', { serverTimestamps: 'estimate' })).toMatchObject({
+        seconds: 123,
+        nanoseconds: 456,
+      });
+      expect(snapshot.get('nested.createdAt', { serverTimestamps: 'previous' })).toMatchObject({
+        seconds: 42,
+        nanoseconds: 0,
+      });
+      expect(snapshot.get('nested.createdAt', { serverTimestamps: 'none' })).toBeNull();
+    });
+
+    it('data() passes SnapshotOptions through converter snapshots', function () {
+      const firestore = getFirestore();
+      const snapshot = new FirestoreDocumentSnapshot(
+        // @ts-expect-error calling a private constructor directly which expects FirestoreInternal type
+        firestore,
+        {
+          data: { createdAt: [3] },
+          dataEstimate: { createdAt: [13, [123, 456]] },
+          metadata: [false, true],
+          path: 'foo/bar',
+          exists: true,
+        },
+        {
+          toFirestore: data => data,
+          fromFirestore: converterSnapshot =>
+            converterSnapshot.data({ serverTimestamps: 'estimate' }),
+        },
+      );
+
+      expect(snapshot.data()?.createdAt).toMatchObject({
+        seconds: 123,
+        nanoseconds: 456,
+      });
     });
   });
 

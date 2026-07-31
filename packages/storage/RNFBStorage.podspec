@@ -1,4 +1,5 @@
 require 'json'
+require_relative '../app/firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
@@ -55,7 +56,14 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/Storage', firebase_sdk_version
+  firebase_dependency(s, firebase_sdk_version, ['FirebaseStorage'], 'Firebase/Storage')
+
+  # RNFBStorageCommon.m uses PHAsset/PHAssetResource (Photos.framework) for local
+  # asset uploads. See RNFBApp.podspec for why this must be declared explicitly
+  # rather than relying on Clang autolinking. iOS/macOS only -- PhotoKit doesn't
+  # exist on tvOS.
+  s.ios.frameworks = 'Photos'
+  s.osx.frameworks = 'Photos'
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"

@@ -15,16 +15,22 @@
  *
  */
 
-#import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
-#import "RNFBApp/RCTConvert+FIRApp.h"
-#import "RNFBDatabaseCommon.h"
+#import "RNFBDatabaseConstants.h"
 #import "RNFBDatabaseModule.h"
+#import "RNFBDatabaseModuleHelper.h"
+#import "RNFBDatabaseQueue.h"
 #import "RNFBDatabaseTurboModules.h"
 #import "RNFBPreferences.h"
 
-static __strong NSMutableDictionary *emulatorSettings;
+// NOTE: This module deliberately never imports Firebase Database headers -
+// `FirebaseDatabase` is a Swift-only SPM product, and `@import` for
+// Swift-only products cannot be used from Objective-C++ (.mm) files when
+// C++ modules are disabled (required for compatibility with React Native's
+// JSI headers). All Firebase Database calls are delegated to the plain
+// Objective-C `RNFBDatabaseModuleHelper`. See docs/ios-spm.mdx and
+// okf-bundle/ios-spm-native-imports.md for details.
 
 @interface RNFBDatabaseModule () <NativeRNFBTurboDatabaseSpec, RCTBridgeModule>
 @end
@@ -45,41 +51,25 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabase);
 }
 
 - (dispatch_queue_t)methodQueue {
-  return [RNFBDatabaseCommon getDispatchQueue];
+  return [RNFBDatabaseQueue getDispatchQueue];
 }
 
 #pragma mark -
 #pragma mark Firebase Database
 
 - (void)goOnline:(NSString *)app dbURL:(NSString *)dbURL {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
-  [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] goOnline];
+  [RNFBDatabaseModuleHelper goOnline:app dbURL:dbURL];
 }
 
 - (void)goOffline:(NSString *)app dbURL:(NSString *)dbURL {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
-  [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] goOffline];
+  [RNFBDatabaseModuleHelper goOffline:app dbURL:dbURL];
 }
 
 - (void)useEmulator:(NSString *)app
               dbURL:(NSString *)dbURL
                host:(NSString *)host
                port:(double)port {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
-  if (emulatorSettings == nil) {
-    emulatorSettings = [NSMutableDictionary dictionary];
-  }
-
-  NSMutableString *configKey = [firebaseApp.name mutableCopy];
-  if (dbURL != nil && dbURL.length > 0) {
-    [configKey appendString:dbURL];
-  }
-
-  if (!emulatorSettings[configKey]) {
-    [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp
-                                     dbURL:dbURL] useEmulatorWithHost:host port:(NSInteger)port];
-    emulatorSettings[configKey] = @YES;
-  }
+  [RNFBDatabaseModuleHelper useEmulator:app dbURL:dbURL host:host port:(NSInteger)port];
 }
 
 - (void)setPersistenceEnabled:(NSString *)app dbURL:(NSString *)dbURL enabled:(BOOL)enabled {

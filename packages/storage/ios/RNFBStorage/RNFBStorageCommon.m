@@ -16,7 +16,18 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseStorage/FirebaseStorage-Swift.h>)
+// SPM: FirebaseStorage is a pure-Swift module — there is no
+// FirebaseStorage/FirebaseStorage.h. The generated ObjC interface header is
+// the only way to get FIRStorageReference / FIRStorageMetadata etc.
+#import <FirebaseCore/FirebaseCore.h>
+#import <FirebaseStorage/FirebaseStorage-Swift.h>
+#else
+@import FirebaseCore;
+@import FirebaseStorage;
+#endif
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import "RNFBSharedUtils.h"

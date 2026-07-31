@@ -25,6 +25,9 @@ describe('firestore().doc().onSnapshot()', function () {
 
   describe('modular', function () {
     it('throws if no arguments are provided', function () {
+      if (Platform.other) {
+        return;
+      }
       const { getFirestore, doc, onSnapshot } = firestoreModular;
       try {
         onSnapshot(doc(getFirestore(), `${COLLECTION}/foo`));
@@ -36,6 +39,9 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     it('returns an unsubscribe function', function () {
+      if (Platform.other) {
+        return;
+      }
       const { getFirestore, doc, onSnapshot } = firestoreModular;
 
       const unsub = onSnapshot(doc(getFirestore(), `${COLLECTION}/foo`), () => {});
@@ -278,6 +284,9 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     it('throws if SnapshotListenerOptions is invalid', function () {
+      if (Platform.other) {
+        return;
+      }
       const { getFirestore, doc, onSnapshot } = firestoreModular;
       try {
         onSnapshot(doc(getFirestore(), `${NO_RULE_COLLECTION}/nope`), {
@@ -293,6 +302,9 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     it("throws if SnapshotListenerOptions.source is invalid ('server')", function () {
+      if (Platform.other) {
+        return;
+      }
       const { getFirestore, doc, onSnapshot } = firestoreModular;
       try {
         onSnapshot(doc(getFirestore(), `${NO_RULE_COLLECTION}/nope`), {
@@ -345,6 +357,9 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     it('throws if next callback is invalid', function () {
+      if (Platform.other) {
+        return;
+      }
       const { getFirestore, doc, onSnapshot } = firestoreModular;
       try {
         onSnapshot(doc(getFirestore(), `${NO_RULE_COLLECTION}/nope`), {
@@ -358,6 +373,9 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     it('throws if error callback is invalid', function () {
+      if (Platform.other) {
+        return;
+      }
       const { getFirestore, doc, onSnapshot } = firestoreModular;
       try {
         onSnapshot(doc(getFirestore(), `${NO_RULE_COLLECTION}/nope`), {

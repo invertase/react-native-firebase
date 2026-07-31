@@ -35,9 +35,11 @@ import { HttpsCallableTestComponent } from './functions/https-callable';
 import { StorageTestComponent } from './storage/storage';
 import { StreamingCallableTestComponent } from './functions/streaming-callable';
 import { PnvTestComponent } from './pnv/pnv-test';
+import { SPMVerificationComponent } from './spm-verification';
 
 const testComponents = {
   // List your imported components here...
+  'SPM Dependency Verification': SPMVerificationComponent,
   'Crashlytics Test Crash': CrashTestComponent,
   'AI Generation Example': AITestComponent,
   'Database onChildMoved Test': DatabaseOnChildMovedTest,

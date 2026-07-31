@@ -1,6 +1,7 @@
 import { ConfigPlugin, withAndroidManifest } from '@expo/config-plugins';
 import { ManifestApplication } from '@expo/config-plugins/build/android/Manifest';
 import { ExpoConfig } from '@expo/config-types';
+import { PluginConfigType } from '../pluginConfig';
 
 /**
  * Determine whether a ManifestApplication has an attribute.
@@ -12,7 +13,10 @@ const hasMetaData = (application: ManifestApplication, metaData: string) => {
 /**
  * Create `com.google.firebase.messaging.default_notification_icon` and `com.google.firebase.messaging.default_notification_color`
  */
-export const withExpoPluginFirebaseNotification: ConfigPlugin = config => {
+export const withExpoPluginFirebaseNotification: ConfigPlugin<PluginConfigType | undefined> = (
+  config,
+  props,
+) => {
   return withAndroidManifest(config, async config => {
     // Add NS `xmlns:tools to handle boundary conditions.
     config.modResults.manifest.$ = {
@@ -21,14 +25,22 @@ export const withExpoPluginFirebaseNotification: ConfigPlugin = config => {
     };
 
     const application = config.modResults.manifest.application![0];
-    setFireBaseMessagingAndroidManifest(config, application);
+    setFireBaseMessagingAndroidManifest(config, application, props);
     return config;
   });
 };
 
-// Helper function to get notification icon and color from either config.notification or expo-notifications plugin
-const getNotificationConfig = (config: ExpoConfig) => {
-  // Check expo-notifications plugin
+// Helper function to get notification icon and color from plugin props, expo-notifications, or config.notification
+const getNotificationConfig = (config: ExpoConfig, props?: PluginConfigType) => {
+  // 1. Check props passed directly to @react-native-firebase/messaging plugin
+  if (props?.android?.notificationIcon) {
+    return {
+      icon: props.android.notificationIcon,
+      color: props.android.notificationColor,
+    };
+  }
+
+  // 2. Check expo-notifications plugin
   if (config.plugins) {
     const expoNotificationsPlugin = config.plugins.find(
       plugin => Array.isArray(plugin) && plugin[0] === 'expo-notifications',
@@ -66,8 +78,9 @@ const getNotificationConfig = (config: ExpoConfig) => {
 export function setFireBaseMessagingAndroidManifest(
   config: ExpoConfig,
   application: ManifestApplication,
+  props?: PluginConfigType,
 ) {
-  const { icon, color } = getNotificationConfig(config);
+  const { icon, color } = getNotificationConfig(config, props);
   if (!icon) {
     // This warning is important because the notification icon can only use pure white on Android. By default, the system uses the app icon as the notification icon, but the app icon is usually not pure white, so you need to set the notification icon
     // eslint-disable-next-line no-console

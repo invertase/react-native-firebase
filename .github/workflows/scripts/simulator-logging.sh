@@ -9,7 +9,13 @@ restart_simulator_logging() {
   local sim_app_log="${log_dir}/sim-app.log"
   local resource_log="${log_dir}/resource-monitor.log"
   local repo_root="${RNFB_REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}"
-  local log_predicate='process == "testing" OR (process == "SpringBoard" AND eventMessage CONTAINS "invertase") OR eventMessage CONTAINS[c] "RNFBStorage" OR eventMessage CONTAINS[c] "FIRStorage" OR eventMessage CONTAINS[c] "StorageTask"'
+  # dyld logs its own fatal-launch-failure reason (e.g. "Symbol not found" / "Library not
+  # loaded") directly to the unified log via subsystem com.apple.dyld, independently of
+  # ReportCrash (which this workflow disables for CI performance -- see "Install yeetd and
+  # fix iOS perf issues" step -- so no .ips crash report is ever produced). Capture it here
+  # instead so launch-time dyld failures (e.g. release+spm launch timeouts) are diagnosable
+  # from sim-app.log without re-enabling the crash reporter daemon.
+  local log_predicate='process == "testing" OR (process == "SpringBoard" AND eventMessage CONTAINS "invertase") OR subsystem == "com.apple.dyld" OR eventMessage CONTAINS[c] "dyld"'
 
   if ! xcrun simctl list devices booted 2>/dev/null | grep -q Booted; then
     echo "[boot-status] phase=log_streams skipped=no_booted_simulator"

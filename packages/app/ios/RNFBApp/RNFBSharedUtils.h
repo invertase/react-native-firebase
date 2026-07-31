@@ -18,7 +18,11 @@
 #ifndef RNFBSharedUtils_h
 #define RNFBSharedUtils_h
 
+#if __has_include(<FirebaseCore/FirebaseCore.h>)
 #import <FirebaseCore/FirebaseCore.h>
+#else
+@import FirebaseCore;
+#endif
 #import <React/RCTBridgeModule.h>
 
 #ifdef DEBUG

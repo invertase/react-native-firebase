@@ -14,7 +14,15 @@
  * limitations under the License.
  *
  */
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
+#import <FirebaseCore/FirebaseCore.h>
+#import <FirebaseMessaging/FirebaseMessaging.h>
+#else
+@import FirebaseCore;
+@import FirebaseMessaging;
+#endif
 #import <RNFBApp/RNFBJSON.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <RNFBApp/RNFBSharedUtils.h>

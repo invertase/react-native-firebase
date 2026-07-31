@@ -18,7 +18,23 @@
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#define RNFB_PERF_SDK_AVAILABLE 1
+#elif __has_include(<FirebasePerformance/FirebasePerformance.h>)
+#import <FirebaseCore/FirebaseCore.h>
+#import <FirebasePerformance/FirebasePerformance.h>
+#define RNFB_PERF_SDK_AVAILABLE 1
+#else
+// Product headers absent (typical Mac Catalyst + SPM). Upstream Package.swift
+// omits .macCatalyst from FirebasePerformanceTarget; CocoaPods historically
+// masked this via the Firebase umbrella. Temporary stubs pending
+// https://github.com/firebase/firebase-ios-sdk/pull/16468 (or permanent if
+// upstream declines). Never fall through to @import in this .mm — that
+// requires -fcxx-modules and breaks RN C++/JSI.
+#define RNFB_PERF_SDK_AVAILABLE 0
+#endif
+#import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBPerfModule.h"
 
 static __strong NSMutableDictionary *traces;
@@ -56,12 +72,28 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   }
 }
 
+#if !RNFB_PERF_SDK_AVAILABLE
+- (void)rejectUnavailable:(RCTPromiseRejectBlock)reject {
+  [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                    userInfo:(NSMutableDictionary *)@{
+                                      @"code" : @"unsupported",
+                                      @"message" : @"Firebase Performance is not available on "
+                                                   @"this platform or dependency configuration.",
+                                    }];
+}
+#endif
+
 - (NSDictionary *)perfConstantsDictionary {
   NSMutableDictionary *constants = [NSMutableDictionary new];
+#if RNFB_PERF_SDK_AVAILABLE
   constants[@"isPerformanceCollectionEnabled"] =
       @([RCTConvert BOOL:@([FIRPerformance sharedInstance].dataCollectionEnabled)]);
   constants[@"isInstrumentationEnabled"] =
       @([RCTConvert BOOL:@([FIRPerformance sharedInstance].instrumentationEnabled)]);
+#else
+  constants[@"isPerformanceCollectionEnabled"] = @(NO);
+  constants[@"isInstrumentationEnabled"] = @(NO);
+#endif
   return constants;
 }
 
@@ -81,27 +113,45 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
 - (void)setPerformanceCollectionEnabled:(BOOL)enabled
                                 resolve:(RCTPromiseResolveBlock)resolve
                                  reject:(RCTPromiseRejectBlock)reject {
+#if RNFB_PERF_SDK_AVAILABLE
   [FIRPerformance sharedInstance].dataCollectionEnabled = (BOOL)enabled;
   resolve([NSNull null]);
+#else
+  (void)enabled;
+  (void)resolve;
+  [self rejectUnavailable:reject];
+#endif
 }
 
 - (void)instrumentationEnabled:(BOOL)enabled
                        resolve:(RCTPromiseResolveBlock)resolve
                         reject:(RCTPromiseRejectBlock)reject {
+#if RNFB_PERF_SDK_AVAILABLE
   [FIRPerformance sharedInstance].instrumentationEnabled = (BOOL)enabled;
   resolve([NSNull null]);
+#else
+  (void)enabled;
+  (void)resolve;
+  [self rejectUnavailable:reject];
+#endif
 }
 
 - (void)startTrace:(double)id identifier:(NSString *)identifier {
+#if RNFB_PERF_SDK_AVAILABLE
   FIRTrace *trace = [[FIRPerformance sharedInstance] traceWithName:identifier];
   [trace start];
 
   @synchronized([self class]) {
     traces[@((int)id)] = trace;
   }
+#else
+  (void)id;
+  (void)identifier;
+#endif
 }
 
 - (void)stopTrace:(double)id traceData:(JS::NativeRNFBTurboPerf::TraceData &)traceData {
+#if RNFB_PERF_SDK_AVAILABLE
   FIRTrace *trace;
   @synchronized([self class]) {
     trace = traces[@((int)id)];
@@ -124,17 +174,25 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   @synchronized([self class]) {
     [traces removeObjectForKey:@((int)id)];
   }
+#else
+  (void)id;
+  (void)traceData;
+#endif
 }
 
 - (void)startScreenTrace:(double)id identifier:(NSString *)identifier {
   // Custom screen traces are not supported on iOS.
+  (void)id;
+  (void)identifier;
 }
 
 - (void)stopScreenTrace:(double)id {
   // Custom screen traces are not supported on iOS.
+  (void)id;
 }
 
 - (void)startHttpMetric:(double)id url:(NSString *)url httpMethod:(NSString *)httpMethod {
+#if RNFB_PERF_SDK_AVAILABLE
   FIRHTTPMethod method = FIRHTTPMethodGET;
   NSURL *toNSURL = [NSURL URLWithString:url];
   if ([httpMethod compare:@"put" options:NSCaseInsensitiveSearch] == NSOrderedSame)
@@ -160,9 +218,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   @synchronized([self class]) {
     httpMetrics[@((int)id)] = httpMetric;
   }
+#else
+  (void)id;
+  (void)url;
+  (void)httpMethod;
+#endif
 }
 
 - (void)stopHttpMetric:(double)id metricData:(JS::NativeRNFBTurboPerf::HttpMetricData &)metricData {
+#if RNFB_PERF_SDK_AVAILABLE
   FIRHTTPMetric *httpMetric;
   @synchronized([self class]) {
     httpMetric = httpMetrics[@((int)id)];
@@ -195,6 +259,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   @synchronized([self class]) {
     [httpMetrics removeObjectForKey:@((int)id)];
   }
+#else
+  (void)id;
+  (void)metricData;
+#endif
 }
 
 @end

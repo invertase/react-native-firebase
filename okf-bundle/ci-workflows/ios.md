@@ -490,6 +490,27 @@ See also [coverage design — e2e TypeScript coverage](../testing/coverage-desig
 
 **Cloud API quota (Installations / Remote Config)** — platform-agnostic; see [firebase testing project — CI triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure).
 
+### `ios-release-archive` job — real-device archive validation
+
+The simulator Release build does not exercise Xcode's real-device Archive
+action or its install-style post-processing. This job therefore runs an
+unsigned `generic/platform=iOS` Release archive for both SPM and CocoaPods. It
+requires no signing identity or simulator.
+
+After archiving, `.github/workflows/scripts/verify-ios-release-archive.sh`
+checks each embedded binary's `@rpath` framework dependencies against the
+frameworks present in the archived app. A failure names the missing framework
+and referencing binary with an `[ios-release-archive] MISSING:` line.
+
+This gate covers archive compilation and missing-framework embedding. It does
+not launch the app and is not equivalent to a signed device or TestFlight test;
+runtime-only failures still require a real launch. The SPM embedding decision
+and its original failure mode are documented in
+[`ios-spm-native-imports.md`](../ios-spm-native-imports.md#runtime-framework-embedding).
+A `"...xcframework-ios.signature" couldn't be copied to "Signatures"` failure
+from this job is a known Xcode Archive bug, not a regression — see
+[archive signature-copy collision](../ios-spm-native-imports.md#archive-signature-copy-collision).
+
 ### Operational notes
 
 - **macOS runner load / Spotlight** — GHA macOS hosts may run Spotlight indexing (or other disk-heavy work) at any time and saturate disk I/O. Disabling Spotlight is **not** an option for Xcode CI. Design for tolerance: longer grace windows, non-throwing `Server.send()`, Jet e2e retry on orchestration crashes, trimmed CI instrumentation ([CI baseload policy](#ci-baseload-policy-instrumentation)), `resource-monitor` + `disconnect_context` for triage. Do not treat high `loadavg` alone as a misconfiguration.
@@ -504,6 +525,7 @@ See also [coverage design — e2e TypeScript coverage](../testing/coverage-desig
 | `.github/workflows/scripts/wait-for-load-settle.sh` | `RNFB_LOAD_SETTLE_MAX_LOAD` (default **20**), `RNFB_LOAD_SETTLE_MAX_WAIT_SEC`, `RNFB_LOAD_SETTLE_POLL_SEC` | Poll host load immediately before Detox |
 | `.github/workflows/scripts/resource-monitor.sh` | `RNFB_RESOURCE_MONITOR_INTERVAL_SEC` (default 10), `RNFB_RESOURCE_MONITOR_LOG` | Background `uptime` + `ps` snapshots during Detox |
 | `.github/workflows/scripts/flake-summary.sh` | `RNFB_DETOX_LOG`, `RNFB_FLAKE_SUMMARY_OUT` | Post-run `rg` digest → `flake-summary.txt` |
+| `.github/workflows/scripts/configure-ios-dep-resolution.sh <spm\|cocoapods> [podfile-dir]` | — | Grep-verified `tests/ios/Podfile` patch for the `dep-resolution` matrix leg; shared by the `ios` job and `ios-release-archive` job so they can't drift apart |
 
 Detox steps use `tee detox-step.log` and `exit ${PIPESTATUS[0]}` so the artifact preserves full output while the step still fails correctly.
 

@@ -24,13 +24,17 @@ const {
   refEqual,
   addDoc,
   setDoc,
+  updateDoc,
   getDoc,
+  onSnapshot,
   query,
   where,
   getDocs,
   writeBatch,
   increment,
   initializeFirestore,
+  serverTimestamp,
+  Timestamp,
 } = firestoreModular;
 
 // Used for testing the FirestoreDataConverter.
@@ -88,10 +92,14 @@ function withTestDb(fn) {
 
 async function withModifiedUndefinedPropertiesTestDb(fn) {
   const db = getFirestore();
+  // Capture/restore via public initializeFirestore → settings(); avoid mutating _settings.
   const previousValue = db._settings.ignoreUndefinedProperties;
   initializeFirestore(db.app, { ignoreUndefinedProperties: false });
-  await fn(db);
-  initializeFirestore(db.app, { ignoreUndefinedProperties: previousValue });
+  try {
+    await fn(db);
+  } finally {
+    initializeFirestore(db.app, { ignoreUndefinedProperties: previousValue });
+  }
 }
 
 function withTestCollection(fn) {
@@ -331,6 +339,147 @@ describe('firestore.withConverter', function () {
         await setDoc(ref2, [1, 2, 3]);
         const result2 = await getDoc(ref2);
         result2.data().should.deepEqual([1, 2, 3]);
+      });
+    });
+
+    it('passes data() serverTimestamps options through converter snapshots', async function () {
+      if (Platform.other) {
+        // macOS uses the Firestore web lite path, which does not support snapshot listeners.
+        return;
+      }
+
+      const timestampCases = [
+        { serverTimestamps: 'estimate', expectTimestamp: true },
+        { serverTimestamps: 'previous', expectTimestamp: false },
+        { serverTimestamps: 'none', expectTimestamp: false },
+      ];
+
+      for (const { serverTimestamps, expectTimestamp } of timestampCases) {
+        const timestampConverter = {
+          toFirestore() {
+            return {
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp(),
+            };
+          },
+          fromFirestore(snapshot) {
+            return snapshot.data({ serverTimestamps });
+          },
+        };
+
+        await withTestCollection(async coll => {
+          const ref = doc(coll).withConverter(timestampConverter);
+          await new Promise((resolve, reject) => {
+            const unsubscribe = onSnapshot(
+              ref,
+              { includeMetadataChanges: true },
+              snapshot => {
+                try {
+                  if (!snapshot.exists() || !snapshot.metadata.hasPendingWrites) {
+                    return;
+                  }
+
+                  const data = snapshot.data();
+                  if (expectTimestamp) {
+                    data.createdAt.should.be.an.instanceOf(Timestamp);
+                    data.updatedAt.should.be.an.instanceOf(Timestamp);
+                  } else {
+                    should.equal(data.createdAt, null);
+                    should.equal(data.updatedAt, null);
+                  }
+                  unsubscribe();
+                  resolve();
+                } catch (error) {
+                  unsubscribe();
+                  reject(error);
+                }
+              },
+              reject,
+            );
+
+            setDoc(ref, {}).catch(error => {
+              unsubscribe();
+              reject(error);
+            });
+          });
+        });
+      }
+    });
+
+    it("returns the prior settled value for serverTimestamps: 'previous' on an updated document", async function () {
+      if (Platform.other) {
+        // macOS uses the Firestore web lite path, which does not support snapshot listeners.
+        return;
+      }
+
+      return withTestCollection(async coll => {
+        const ref = doc(coll, 'previous-on-update');
+
+        // 1. Create the document and wait for the initial write to settle (hasPendingWrites
+        //    becomes false) so we have a real, resolved server Timestamp to compare against.
+        const settledTimestamp = await new Promise((resolve, reject) => {
+          const unsubscribe = onSnapshot(
+            ref,
+            { includeMetadataChanges: true },
+            snapshot => {
+              try {
+                if (!snapshot.exists() || snapshot.metadata.hasPendingWrites) {
+                  return;
+                }
+
+                const value = snapshot.data().timestampField;
+                unsubscribe();
+                resolve(value);
+              } catch (error) {
+                unsubscribe();
+                reject(error);
+              }
+            },
+            reject,
+          );
+
+          setDoc(ref, { timestampField: serverTimestamp() }).catch(error => {
+            unsubscribe();
+            reject(error);
+          });
+        });
+
+        settledTimestamp.should.be.an.instanceOf(Timestamp);
+
+        // 2. Update the same field with a brand new serverTimestamp() call, creating a new
+        //    pending write, and assert that serverTimestamps: 'previous' returns the original
+        //    settled value (real "previous value" semantics), not null and not the new pending
+        //    write's value, while the write is still pending.
+        await new Promise((resolve, reject) => {
+          const unsubscribe = onSnapshot(
+            ref,
+            { includeMetadataChanges: true },
+            snapshot => {
+              try {
+                if (!snapshot.exists() || !snapshot.metadata.hasPendingWrites) {
+                  return;
+                }
+
+                const previousValue = snapshot.data({
+                  serverTimestamps: 'previous',
+                }).timestampField;
+                previousValue.should.be.an.instanceOf(Timestamp);
+                previousValue.isEqual(settledTimestamp).should.equal(true);
+                unsubscribe();
+                resolve();
+              } catch (error) {
+                unsubscribe();
+                reject(error);
+              }
+            },
+            reject,
+          );
+
+          updateDoc(ref, { timestampField: serverTimestamp() }).catch(error => {
+            unsubscribe();
+            reject(error);
+          });
+        });
       });
     });
 

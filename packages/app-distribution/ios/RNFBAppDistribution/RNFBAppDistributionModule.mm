@@ -15,7 +15,18 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#define RNFB_APP_DISTRIBUTION_SDK_AVAILABLE 1
+#elif __has_include(<FirebaseAppDistribution/FirebaseAppDistribution.h>)
+#import <FirebaseAppDistribution/FirebaseAppDistribution.h>
+#import <FirebaseCore/FirebaseCore.h>
+#define RNFB_APP_DISTRIBUTION_SDK_AVAILABLE 1
+#else
+// Product headers absent (typical Mac Catalyst + SPM). Never fall through to
+// @import in this .mm — that requires -fcxx-modules and breaks RN C++/JSI.
+#define RNFB_APP_DISTRIBUTION_SDK_AVAILABLE 0
+#endif
 #import <React/RCTUtils.h>
 
 #import "RNFBApp/RNFBSharedUtils.h"
@@ -34,13 +45,30 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAppDistribution)
   return std::make_shared<facebook::react::NativeRNFBTurboAppDistributionSpecJSI>(params);
 }
 
+#if !RNFB_APP_DISTRIBUTION_SDK_AVAILABLE
+- (void)rejectUnavailable:(RCTPromiseRejectBlock)reject {
+  [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                    userInfo:(NSMutableDictionary *)@{
+                                      @"code" : @"unsupported",
+                                      @"message" : @"Firebase App Distribution is not available on "
+                                                   @"this platform or dependency configuration.",
+                                    }];
+}
+#endif
+
 - (void)isTesterSignedIn:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+#if RNFB_APP_DISTRIBUTION_SDK_AVAILABLE
   FIRAppDistribution *appDistribution = [FIRAppDistribution appDistribution];
   BOOL isTesterSignedIn = appDistribution.isTesterSignedIn;
   resolve([NSNumber numberWithBool:isTesterSignedIn]);
+#else
+  (void)resolve;
+  [self rejectUnavailable:reject];
+#endif
 }
 
 - (void)signInTester:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+#if RNFB_APP_DISTRIBUTION_SDK_AVAILABLE
   FIRAppDistribution *appDistribution = [FIRAppDistribution appDistribution];
   [appDistribution signInTesterWithCompletion:^(NSError *_Nullable error) {
     if (error != nil) {
@@ -55,14 +83,24 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAppDistribution)
 
     resolve([NSNull null]);
   }];
+#else
+  (void)resolve;
+  [self rejectUnavailable:reject];
+#endif
 }
 
 - (void)signOutTester:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+#if RNFB_APP_DISTRIBUTION_SDK_AVAILABLE
   [[FIRAppDistribution appDistribution] signOutTester];
   resolve([NSNull null]);
+#else
+  (void)resolve;
+  [self rejectUnavailable:reject];
+#endif
 }
 
 - (void)checkForUpdate:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+#if RNFB_APP_DISTRIBUTION_SDK_AVAILABLE
   FIRAppDistribution *appDistribution = [FIRAppDistribution appDistribution];
   [appDistribution checkForUpdateWithCompletion:^(FIRAppDistributionRelease *_Nullable release,
                                                   NSError *_Nullable error) {
@@ -93,6 +131,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAppDistribution)
       @"downloadURL" : release.downloadURL.absoluteString
     });
   }];
+#else
+  (void)resolve;
+  [self rejectUnavailable:reject];
+#endif
 }
 
 @end

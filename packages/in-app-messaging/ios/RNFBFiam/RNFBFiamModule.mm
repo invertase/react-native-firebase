@@ -15,10 +15,10 @@
  *
  */
 
-#import <Firebase/Firebase.h>
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 
+#import "RNFBFiamHelper.h"
 #import "RNFBFiamModule.h"
 
 @implementation RNFBFiamModule
@@ -32,9 +32,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFiam)
 - (NSDictionary *)fiamConstantsDictionary {
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isMessagesDisplaySuppressed"] =
-      @([RCTConvert BOOL:@([FIRInAppMessaging inAppMessaging].messageDisplaySuppressed)]);
+      @([RCTConvert BOOL:@([RNFBFiamHelper isMessageDisplaySuppressed])]);
   constants[@"isAutomaticDataCollectionEnabled"] =
-      @([RCTConvert BOOL:@([FIRInAppMessaging inAppMessaging].automaticDataCollectionEnabled)]);
+      @([RCTConvert BOOL:@([RNFBFiamHelper isAutomaticDataCollectionEnabled])]);
   return constants;
 }
 
@@ -54,21 +54,21 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFiam)
 - (void)setAutomaticDataCollectionEnabled:(BOOL)enabled
                                   resolve:(RCTPromiseResolveBlock)resolve
                                    reject:(RCTPromiseRejectBlock)reject {
-  [FIRInAppMessaging inAppMessaging].automaticDataCollectionEnabled = (BOOL)enabled;
+  [RNFBFiamHelper setAutomaticDataCollectionEnabled:(BOOL)enabled];
   resolve([NSNull null]);
 }
 
 - (void)setMessagesDisplaySuppressed:(BOOL)enabled
                              resolve:(RCTPromiseResolveBlock)resolve
                               reject:(RCTPromiseRejectBlock)reject {
-  [FIRInAppMessaging inAppMessaging].messageDisplaySuppressed = (BOOL)enabled;
+  [RNFBFiamHelper setMessageDisplaySuppressed:(BOOL)enabled];
   resolve([NSNull null]);
 }
 
 - (void)triggerEvent:(NSString *)eventId
              resolve:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject {
-  [[FIRInAppMessaging inAppMessaging] triggerEvent:eventId];
+  [RNFBFiamHelper triggerEvent:eventId];
   resolve([NSNull null]);
 }
 

@@ -15,8 +15,15 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
-#import <FirebaseAppCheck/FIRAppCheck.h>
+#elif __has_include(<FirebaseAppCheck/FirebaseAppCheck.h>)
+#import <FirebaseAppCheck/FirebaseAppCheck.h>
+#import <FirebaseCore/FirebaseCore.h>
+#else
+@import FirebaseCore;
+@import FirebaseAppCheck;
+#endif
 
 @interface RNFBAppCheckProvider : NSObject <FIRAppCheckProvider>
 

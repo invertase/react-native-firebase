@@ -22,7 +22,15 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseCrashlytics/FirebaseCrashlytics.h>)
+#import <FirebaseCore/FirebaseCore.h>
+#import <FirebaseCrashlytics/FirebaseCrashlytics.h>
+#else
+@import FirebaseCore;
+@import FirebaseCrashlytics;
+#endif
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBCrashlyticsInitProvider.h"
 #import "RNFBCrashlyticsModule.h"

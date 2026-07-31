@@ -1,4 +1,5 @@
 require 'json'
+require_relative '../app/firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
@@ -50,8 +51,17 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/Crashlytics', firebase_sdk_version
-  s.dependency          'FirebaseCoreExtension'
+  # FirebaseCoreExtension is a transitive dependency of FirebaseCrashlytics in SPM,
+  # so it only needs to be declared explicitly for CocoaPods. Note: it cannot be listed
+  # as an explicit SPM product here even if we wanted to -- Firebase's Package.swift only
+  # exposes it as an internal `.target`, never as a `.library` product, so
+  # `spm_dependency(products: ['FirebaseCoreExtension'])` fails with "Missing package
+  # product" (verified). See okf-bundle/ios-spm-native-imports.md for the resulting
+  # `__has_include` failure and its fix.
+  firebase_dependency(s, firebase_sdk_version,
+    ['FirebaseCrashlytics'],
+    ['Firebase/Crashlytics', 'FirebaseCoreExtension']
+  )
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"

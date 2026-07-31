@@ -90,9 +90,13 @@ jobs:
             // we want to test debug and release - they generate different code
             let buildmode = ['debug', 'release'];
 
+            // Test both SPM and CocoaPods dependency resolution modes
+            let depResolution = ['spm', 'cocoapods'];
+
             return {
               "iteration": iterationArray,
-              "buildmode": buildmode
+              "buildmode": buildmode,
+              "dep-resolution": depResolution
             }
       - name: Debug Output
         run: echo "${{ steps.build-matrix.outputs.result }}"
@@ -100,7 +104,7 @@ jobs:
   # This uses the matrix generated from the matrix-prep stage
   # it will run unit tests on whatever OS combinations are desired
   ios:
-    name: iOS (${{ matrix.buildmode }}, ${{ matrix.iteration }})
+    name: iOS (${{ matrix.buildmode }}, ${{ matrix.dep-resolution }}, ${{ matrix.iteration }})
     runs-on: macos-26
     needs: matrix_prep
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
@@ -210,7 +214,7 @@ jobs:
       - uses: hendrikmuhs/ccache-action@d62db5f07c26379fc4b4e0916f098a92573c3b03 # v1.2.23
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-${{ matrix.buildmode }}-ios-v3 # makes a unique key w/related restore key internally
+          key: ${{ runner.os }}-${{ matrix.buildmode }}-${{ matrix.dep-resolution }}-ios-v3 # makes a unique key w/related restore key internally
           save: "${{ github.ref == 'refs/heads/main' }}"
           create-symlink: true
           max-size: 1500M
@@ -255,8 +259,11 @@ jobs:
         continue-on-error: true
         with:
           path: tests/ios/Pods
-          key: ${{ runner.os }}-ios-pods-v3-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-ios-pods-v3
+          key: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v3-${{ hashFiles('tests/ios/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v3
+
+      - name: Configure Dependency Resolution Mode
+        run: .github/workflows/scripts/configure-ios-dep-resolution.sh "${{ matrix.dep-resolution }}"
 
       - name: Pod Install
         # https://github.com/nick-fields/retry/releases
@@ -560,3 +567,140 @@ jobs:
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}
           key: ${{ steps.metro-bundler-cache.outputs.cache-primary-key }}
+
+  # Simulator/dev builds never exercise Xcode's "Archive" action, which forces
+  # ONLY_ACTIVE_ARCH=NO and DEPLOYMENT_POSTPROCESSING=YES (full install-style
+  # stripping) for a real device SDK regardless of project settings -- the
+  # exact difference between "works from Xcode/simulator" and "crashes only
+  # from a TestFlight/Fastlane archive" reported against SPM support in this
+  # repo. This job produces a real, unsigned device archive (no signing
+  # identity/provisioning profile needed) and verifies the resulting app
+  # bundle is actually loadable. See .github/workflows/scripts/verify-ios-release-archive.sh
+  # and okf-bundle/ios-spm-native-imports.md "Runtime framework embedding".
+  ios-release-archive:
+    name: iOS Release Archive (${{ matrix.dep-resolution }})
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
+      CCACHE_FILECLONE: true
+      CCACHE_DEPEND: true
+      CCACHE_INODECACHE: true
+      CCACHE_LIMIT_MULTIPLE: 0.95
+      XCODE_VERSION: latest-stable
+    strategy:
+      fail-fast: false
+      matrix:
+        dep-resolution: ['spm', 'cocoapods']
+    steps:
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22
+
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+        with:
+          fetch-depth: 50
+
+      - name: Yarn Cache Restore
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        id: yarn-cache
+        continue-on-error: true
+        with:
+          path: .yarn/cache
+          key: ${{ runner.os }}-ios-yarn-v1-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-ios-yarn-v1
+
+      - uses: hendrikmuhs/ccache-action@d62db5f07c26379fc4b4e0916f098a92573c3b03 # v1.2.23
+        name: Xcode Compile Cache
+        with:
+          key: ${{ runner.os }}-archive-${{ matrix.dep-resolution }}-ios-v1
+          save: "${{ github.ref == 'refs/heads/main' }}"
+          create-symlink: true
+          max-size: 1500M
+
+      - name: Yarn Install
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: 15
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # v1.313.0
+        with:
+          ruby-version: 3
+
+      - name: Update Ruby build tools
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: 2
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: gem update cocoapods xcodeproj
+
+      - name: Pods Cache Restore
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        id: pods-cache
+        continue-on-error: true
+        with:
+          path: tests/ios/Pods
+          key: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v3-${{ hashFiles('tests/ios/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v3
+
+      - name: Configure Dependency Resolution Mode
+        run: .github/workflows/scripts/configure-ios-dep-resolution.sh "${{ matrix.dep-resolution }}"
+
+      - name: Pod Install
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: 20
+          retry_wait_seconds: 30
+          max_attempts: 3
+          command: yarn tests:ios:pod:install
+
+      - name: Install brew utilities
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: 5
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: bash .github/workflows/scripts/install-homebrew-rnfb.sh xcbeautify
+
+      - name: Archive Release build for a real device (unsigned) and verify embedded frameworks
+        working-directory: tests/ios
+        run: |
+          ccache -s
+          chmod +x ../../.github/workflows/scripts/verify-ios-release-archive.sh
+          ../../.github/workflows/scripts/verify-ios-release-archive.sh
+          ccache -s
+        shell: bash
+
+      - name: Upload archive (on failure, for triage)
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        continue-on-error: true
+        if: failure()
+        with:
+          name: ios-release-archive-${{ matrix.dep-resolution }}
+          path: tests/ios/build/testing.xcarchive/Products/Applications/*/Info.plist
+          if-no-files-found: ignore
+
+      - name: Yarn Cache Save
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        if: "${{ github.ref == 'refs/heads/main' }}"
+        continue-on-error: true
+        with:
+          path: .yarn/cache
+          key: ${{ steps.yarn-cache.outputs.cache-primary-key }}
+
+      - name: Pods Cache Save
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        if: "${{ github.ref == 'refs/heads/main' }}"
+        continue-on-error: true
+        with:
+          path: tests/ios/Pods
+          key: ${{ steps.pods-cache.outputs.cache-primary-key }}

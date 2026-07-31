@@ -201,6 +201,9 @@ jobs:
           max_attempts: 3
           command: gem update cocoapods xcodeproj
 
+      - name: Verify Firebase SPM Xcodeproj/CocoaPods API shape
+        run: ruby packages/app/__tests__/firebase_spm_shape_test.rb
+
       - name: Pods Cache Restore
         # https://github.com/actions/cache/releases
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
