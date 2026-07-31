@@ -373,6 +373,8 @@ rg 'disconnect_context|resource-monitor' detox-step.log resource-monitor.log
 | `[rnfb-e2e] Retrying after transient Jet WS` | Second Jet attempt starting (simulator reboot) |
 | `disconnect_context` with high loadavg / RSS | Correlate with `resource-monitor-*_log` snapshot at same UTC timestamp |
 | Release passes, debug fails with 1006 | Points at Metro/debug+coverage load, not test logic |
+| `reconnect_recovered` alone then ordinary product assertion (single `Jet tests on `) | **Not** Jet-retryable — bare reconnect must not mask deterministic product bugs. Tradeoff: avoids false retries; D1 (Release `transformFailure` mask) + D4 (secondary app-name collision) cover related flakes separately |
+| `reconnect_recovered` **and** desync signal (`Jet tests on ` ≥2 / suite re-entry, or `Unknown% ( 0/0 )`, or `[🟥] Stopped the server`) | Mid-suite reconnect left polluted JS / Firebase registry or lost coverage; Jet attempt 2 should trigger (`jetReconnectDesync` in `retry-eligibility`) |
 | `reconnect_recovered` then `Error: No client connected` or `send skipped action=pull-coverage` | Reconnect send race (issue 6b); Jet attempt 2 should trigger |
 
 #### 6b. Reconnect send race under extreme host load
