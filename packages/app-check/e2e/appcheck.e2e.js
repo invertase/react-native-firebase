@@ -230,6 +230,7 @@ describe('appCheck()', function () {
           },
           apple: {
             provider: 'debug',
+            debugToken: getRandomToken(),
           },
           web: {
             provider: 'debug',
