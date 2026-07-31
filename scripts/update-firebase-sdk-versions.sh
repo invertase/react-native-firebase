@@ -18,7 +18,7 @@
 #   ./scripts/update-firebase-sdk-versions.sh --apply [same fetch options as above]
 #       Phase 1: extract versions (printed as sorted KEY=value lines).
 #       Phase 2: write them into packages/app/package.json, root/tests
-#       package.json, .yarnrc.yml (firebase + @firebase/* age-gate preapprovals),
+#       package.json, .yarnrc.yml (firebase + transitive @firebase/* age-gate preapprovals),
 #       docs (.mdx), Gradle files, and Jest plugin snapshots; run yarn; run
 #       yarn tests:ios:pod:install.
 #       If the JS or any native SDK / Android plugin / App Distribution API
@@ -306,16 +306,37 @@ function fetchJson(url) {
 }
 
 (async () => {
-  const meta = await fetchJson(`https://registry.npmjs.org/firebase/${version}`);
-  const deps = meta.dependencies ?? {};
-  const preapproved = [`firebase@${version}`];
-  for (const [name, depVersion] of Object.entries(deps)) {
-    if (!name.startsWith('@firebase/')) {
+  // Walk firebase + transitive @firebase/* deps (exact versions). Direct-only
+  // lists miss packages like @firebase/component that still hit npmMinimalAgeGate.
+  const seen = new Set();
+  const queue = [['firebase', version]];
+  while (queue.length) {
+    const [name, ver] = queue.shift();
+    const key = `${name}@${ver}`;
+    if (seen.has(key)) {
       continue;
     }
-    const cleaned = String(depVersion).replace(/^npm:/, '');
-    preapproved.push(`${name}@${cleaned}`);
+    seen.add(key);
+    const meta = await fetchJson(
+      `https://registry.npmjs.org/${encodeURIComponent(name)}/${encodeURIComponent(ver)}`,
+    );
+    for (const [depName, depVersion] of Object.entries(meta.dependencies ?? {})) {
+      if (!depName.startsWith('@firebase/')) {
+        continue;
+      }
+      const cleaned = String(depVersion).replace(/^npm:/, '');
+      if (!/^\d+\.\d+\.\d+(-[\w.]+)?$/.test(cleaned)) {
+        throw new Error(
+          `expected exact @firebase version for ${depName} from ${key}, got ${depVersion}`,
+        );
+      }
+      queue.push([depName, cleaned]);
+    }
   }
+
+  const preapproved = [...seen].filter(
+    entry => entry.startsWith('@firebase/') || entry.startsWith('firebase@'),
+  );
   preapproved.push('@react-native-firebase/*');
   preapproved.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
 
@@ -331,7 +352,7 @@ function fetchJson(url) {
     end += 1;
   }
 
-  const rendered = preapproved.map((entry, index) => {
+  const rendered = preapproved.map(entry => {
     const suffix =
       entry.startsWith('firebase@') ? ' # If adopting recent firebase-js-sdk, specify directly here' : '';
     return `  - '${entry}'${suffix}`;

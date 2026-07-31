@@ -112,7 +112,7 @@
     "react-native": "*"
   },
   "dependencies": {
-    "firebase": "12.15.0"
+    "firebase": "12.17.0"
   },
   "devDependencies": {
     "@react-native-async-storage/async-storage": "^2.0.2",
@@ -130,7 +130,7 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "12.15.0",
+      "firebase": "12.17.0",
       "firebaseSpmUrl": "https://github.com/firebase/firebase-ios-sdk.git",
       "iosTarget": "15.0",
       "macosTarget": "10.15",
@@ -140,7 +140,7 @@
       "minSdk": 23,
       "targetSdk": 34,
       "compileSdk": 34,
-      "firebase": "34.15.0",
+      "firebase": "34.16.0",
       "firebaseCrashlyticsGradle": "3.0.7",
       "firebasePerfGradle": "2.0.2",
       "gmsGoogleServicesGradle": "4.5.0",

@@ -23,6 +23,12 @@ const config: PackageConfig = {
         'Used by the firebase-js-sdk web fetch-response bootstrap path. RN Firebase ' +
         'does not expose that initialization surface.',
     },
+    {
+      name: 'FirebaseRolloutMetadata',
+      reason:
+        'firebase-js-sdk added rollout metadata typing for the web fetch-response path. ' +
+        'RN Firebase does not yet surface Remote Config rollouts on the modular fetch-response type.',
+    },
   ],
   // ---------------------------------------------------------------------------
   // Extra in RN Firebase
@@ -57,6 +63,12 @@ const config: PackageConfig = {
     },
   ],
   differentShape: [
+    {
+      name: 'FetchResponse',
+      reason:
+        'firebase-js-sdk FetchResponse now includes optional `rollouts` metadata. RN Firebase ' +
+        'has not yet added that field to its modular FetchResponse declaration.',
+    },
     {
       name: 'FetchStatus',
       reason:

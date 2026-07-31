@@ -49,7 +49,7 @@
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "cpy-cli": "^7.0.0",
     "detox": "patch:detox@npm%3A20.51.0#~/.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch",
-    "firebase": "^12.15.0",
+    "firebase": "^12.17.0",
     "firebase-tools": "^15.22.4",
     "jest-circus": "^30.3.0",
     "jest-environment-node": "^30.3.0",

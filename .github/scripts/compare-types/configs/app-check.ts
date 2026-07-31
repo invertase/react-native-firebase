@@ -82,6 +82,12 @@ const config: PackageConfig = {
   ],
   differentShape: [
     {
+      name: 'initializeAppCheck',
+      reason:
+        'firebase-js-sdk allows `app` to be `FirebaseApp | undefined` (default app fallback). ' +
+        'RN Firebase requires an explicit `FirebaseApp` argument at the modular entry point.',
+    },
+    {
       name: 'AppCheckOptions',
       reason:
         'RN Firebase accepts `CustomProvider`, `ReactNativeFirebaseAppCheckProvider`, or a RN-specific provider config object instead of the firebase-js-sdk reCAPTCHA provider classes.',
