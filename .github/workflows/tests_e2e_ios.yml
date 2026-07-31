@@ -514,7 +514,7 @@ jobs:
 
       - name: Yarn Cache Save
         # https://github.com/actions/cache/releases
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -523,7 +523,7 @@ jobs:
 
       - name: Nx Cache Save
         # https://github.com/actions/cache/releases
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -532,7 +532,7 @@ jobs:
 
       - name: Detox Framework Cache Save
         # https://github.com/actions/cache/releases
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -541,7 +541,7 @@ jobs:
 
       - name: Pods Cache Save
         # https://github.com/actions/cache/releases
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -550,7 +550,7 @@ jobs:
 
       - name: Firestore Emulator Cache Save
         # https://github.com/actions/cache/releases
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -561,7 +561,7 @@ jobs:
 
       - name: Metro Bundler Cache Save
         # https://github.com/actions/cache/releases
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ contains(matrix.buildmode, 'debug') && github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -690,7 +690,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Yarn Cache Save
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -698,7 +698,7 @@ jobs:
           key: ${{ steps.yarn-cache.outputs.cache-primary-key }}
 
       - name: Pods Cache Save
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
