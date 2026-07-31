@@ -15,7 +15,13 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseCore/FirebaseCore.h>)
+#import <FirebaseCore/FirebaseCore.h>
+#else
+@import FirebaseCore;
+#endif
 #import <React/RCTInvalidating.h>
 #import <React/RCTUtils.h>
 

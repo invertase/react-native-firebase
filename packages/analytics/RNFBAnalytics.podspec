@@ -1,4 +1,5 @@
 require 'json'
+require_relative '../app/firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
@@ -49,27 +50,64 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'FirebaseAnalytics/Core', firebase_sdk_version
-  if defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && ($RNFirebaseAnalyticsWithoutAdIdSupport == true)
-    Pod::UI.puts "#{s.name}: Not installing FirebaseAnalytics/IdentitySupport Pod, no IDFA will be collected."
+  # Analytics has conditional dependencies that vary between SPM and CocoaPods.
+  # SPM: use FirebaseAnalyticsCore when $RNFirebaseAnalyticsWithoutAdIdSupport = true
+  #      to avoid GoogleAppMeasurement APM symbols (APMETaskManager, APMMeasurement)
+  #      that require FirebasePerformance at link time.
+  # CocoaPods: IdentitySupport is a separate subspec controlled by $RNFirebaseAnalyticsWithoutAdIdSupport.
+  if defined?(spm_dependency) && !rnfirebase_spm_disabled? &&
+     defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && $RNFirebaseAnalyticsWithoutAdIdSupport
+    # FirebaseAnalyticsCore uses GoogleAppMeasurementCore (no IDFA, no APM objects).
+    # FirebaseAnalytics uses GoogleAppMeasurement which has APMETaskManager/APMMeasurement
+    # cross-references that cause linker errors when FirebasePerformance is not linked.
+    Pod::UI.puts "#{s.name}: Using FirebaseAnalyticsCore SPM product (no IDFA, uses GoogleAppMeasurementCore)."
+    firebase_dependency(s, firebase_sdk_version, ['FirebaseAnalyticsCore'], 'FirebaseAnalytics/Core')
   else
-    if !defined?($RNFirebaseAnalyticsWithoutAdIdSupport)
-      Pod::UI.puts "#{s.name}: Using FirebaseAnalytics/IdentitySupport with Ad Ids. May require App Tracking Transparency. Not allowed for Kids apps."
-      Pod::UI.puts "#{s.name}: You may set variable `$RNFirebaseAnalyticsWithoutAdIdSupport=true` in Podfile to use analytics without ad ids."
-    end
-    s.dependency          'FirebaseAnalytics/IdentitySupport', firebase_sdk_version
+    firebase_dependency(s, firebase_sdk_version, ['FirebaseAnalytics'], 'FirebaseAnalytics/Core')
+  end
 
-    # Special pod for on-device conversion
-    if defined?($RNFirebaseAnalyticsEnableAdSupport) && ($RNFirebaseAnalyticsEnableAdSupport == true)
-      Pod::UI.puts "#{s.name}: Adding Apple AdSupport.framework dependency for optional analytics features"
-      s.frameworks =       'AdSupport'
+  unless defined?(spm_dependency) && !rnfirebase_spm_disabled?
+    # CocoaPods-only: conditional IdentitySupport subspec
+    if defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && ($RNFirebaseAnalyticsWithoutAdIdSupport == true)
+      Pod::UI.puts "#{s.name}: Not installing FirebaseAnalytics/IdentitySupport Pod, no IDFA will be collected."
+    else
+      if !defined?($RNFirebaseAnalyticsWithoutAdIdSupport)
+        Pod::UI.puts "#{s.name}: Using FirebaseAnalytics/IdentitySupport with Ad Ids. May require App Tracking Transparency. Not allowed for Kids apps."
+        Pod::UI.puts "#{s.name}: You may set variable `$RNFirebaseAnalyticsWithoutAdIdSupport=true` in Podfile to use analytics without ad ids."
+      end
+      s.dependency          'FirebaseAnalytics/IdentitySupport', firebase_sdk_version
     end
   end
 
-  # Special pod for on-device conversion
+  # AdSupport framework (works with both SPM and CocoaPods)
+  if defined?($RNFirebaseAnalyticsEnableAdSupport) && ($RNFirebaseAnalyticsEnableAdSupport == true)
+    Pod::UI.puts "#{s.name}: Adding Apple AdSupport.framework dependency for optional analytics features"
+    s.frameworks =       'AdSupport'
+  end
+
+  # GoogleAdsOnDeviceConversion
+  # Not part of firebase-ios-sdk's own Package.swift, but Google publishes it as
+  # its own standalone SPM package (googleads/google-ads-on-device-conversion-ios-sdk),
+  # independent of the Firebase package graph. Resolved via a second, independent
+  # spm_dependency() call -- RN's SPMManager keys dependencies by pod target and
+  # package URL, so multiple unrelated SPM packages on the same pod target are
+  # supported. If linker errors occur (some consumers have hit this when the
+  # dependency sits behind an indirect/wrapper package -- see
+  # https://github.com/firebase/firebase-ios-sdk/issues/15916), try adding
+  # `-ObjC` and `-lc++` to the app target's "Other Linker Settings".
+  # See: https://developers.google.com/google-ads/api/docs/conversions/upload-identifiers
   if defined?($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion) && ($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion == true)
-    Pod::UI.puts "#{s.name}: GoogleAdsOnDeviceConversion pod added"
-    s.dependency          'GoogleAdsOnDeviceConversion'
+    if defined?(spm_dependency) && !rnfirebase_spm_disabled?
+      Pod::UI.puts "#{s.name}: Using GoogleAdsOnDeviceConversion SPM package."
+      spm_dependency(s,
+        url: 'https://github.com/googleads/google-ads-on-device-conversion-ios-sdk.git',
+        requirement: { kind: 'upToNextMajorVersion', minimumVersion: '3.6.1' },
+        products: ['GoogleAdsOnDeviceConversion']
+      )
+    else
+      Pod::UI.puts "#{s.name}: GoogleAdsOnDeviceConversion pod added"
+      s.dependency          'GoogleAdsOnDeviceConversion'
+    end
   end
 
   if defined?($RNFirebaseAsStaticFramework)

@@ -1,5 +1,6 @@
 require 'json'
-require './firebase_json'
+require_relative './firebase_json'
+require_relative './firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 firebase_sdk_version = package['sdkVersions']['ios']['firebase']
 firebase_ios_target = package['sdkVersions']['ios']['iosTarget']
@@ -37,6 +38,16 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE" => "YES",
   }
 
+  # RNFBUtilsModule.mm uses PHAsset (Photos.framework) to resolve local asset paths.
+  # Not declaring this explicitly used to work by luck (CocoaPods normally relies on
+  # this declaration -- not Clang autolinking -- to populate OTHER_LDFLAGS), but with
+  # use_frameworks! each pod is a standalone dynamic framework that must resolve its
+  # own symbols at its own link step, so the missing declaration now surfaces as
+  # "Undefined symbols ... _OBJC_CLASS_$_PHAsset". iOS/macOS only -- PhotoKit doesn't
+  # exist on tvOS.
+  s.ios.frameworks = 'Photos'
+  s.osx.frameworks = 'Photos'
+
   # React Native dependencies
   if defined?(install_modules_dependencies()) != nil
     install_modules_dependencies(s);
@@ -55,7 +66,7 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/CoreOnly', firebase_sdk_version
+  firebase_dependency(s, firebase_sdk_version, ['FirebaseCore', 'FirebaseInstallations'], 'Firebase/CoreOnly')
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"

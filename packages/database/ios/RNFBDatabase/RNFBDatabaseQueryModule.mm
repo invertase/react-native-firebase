@@ -17,15 +17,15 @@
 
 #import <React/RCTUtils.h>
 
-#import "RNFBApp/RCTConvert+FIRApp.h"
-#import "RNFBDatabaseCommon.h"
-#import "RNFBDatabaseQuery.h"
+#import "RNFBDatabaseQueryHelper.h"
 #import "RNFBDatabaseQueryModule.h"
+#import "RNFBDatabaseQueue.h"
 #import "RNFBDatabaseTurboModules.h"
-#import "RNFBRCTEventEmitter.h"
 
-static __strong NSMutableDictionary *queryDictionary;
-static NSString *const RNFB_DATABASE_SYNC = @"database_sync_event";
+// NOTE: This module deliberately never imports Firebase Database headers.
+// See RNFBDatabaseModule.mm for rationale. All Firebase Database calls and
+// query/listener bookkeeping live in the plain Objective-C
+// `RNFBDatabaseQueryHelper`.
 
 @interface RNFBDatabaseQueryModule () <NativeRNFBTurboDatabaseQuerySpec, RCTBridgeModule>
 @end
@@ -46,16 +46,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseQuery);
 }
 
 - (dispatch_queue_t)methodQueue {
-  return [RNFBDatabaseCommon getDispatchQueue];
-}
-
-- (id)init {
-  self = [super init];
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    queryDictionary = [[NSMutableDictionary alloc] init];
-  });
-  return self;
+  return [RNFBDatabaseQueue getDispatchQueue];
 }
 
 - (void)dealloc {
@@ -63,131 +54,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseQuery);
 }
 
 - (void)invalidate {
-  NSArray *queryKeys = [queryDictionary allKeys];
-  for (NSString *key in queryKeys) {
-    RNFBDatabaseQuery *query = queryDictionary[key];
-    [query removeAllEventListeners];
-    [queryDictionary removeObjectForKey:key];
-  }
-}
-
-- (RNFBDatabaseQuery *)getDatabaseQueryInstance:(FIRDatabaseReference *)reference
-                                      modifiers:(NSArray *)modifiers {
-  return [[RNFBDatabaseQuery alloc] initWithReferenceAndModifiers:reference modifiers:modifiers];
-}
-
-- (RNFBDatabaseQuery *)getDatabaseQueryInstance:(NSString *)key
-                                      reference:(FIRDatabaseReference *)reference
-                                      modifiers:(NSArray *)modifiers {
-  RNFBDatabaseQuery *cachedQuery = queryDictionary[key];
-
-  if (cachedQuery != nil) {
-    return cachedQuery;
-  }
-
-  RNFBDatabaseQuery *query = [[RNFBDatabaseQuery alloc] initWithReferenceAndModifiers:reference
-                                                                            modifiers:modifiers];
-
-  queryDictionary[key] = query;
-  return query;
-}
-
-- (void)addOnceEventListener:(RNFBDatabaseQuery *)databaseQuery
-                   eventType:(NSString *)eventType
-                     resolve:(RCTPromiseResolveBlock)resolve
-                      reject:(RCTPromiseRejectBlock)reject {
-  FIRDataEventType firDataEventType =
-      (FIRDataEventType)[RNFBDatabaseCommon getEventTypeFromName:eventType];
-
-  id andPreviousSiblingKeyWithBlock =
-      ^(FIRDataSnapshot *_Nonnull dataSnapshot, NSString *_Nullable previousChildName) {
-        NSDictionary *data;
-        if ([eventType isEqualToString:@"value"]) {
-          data = [RNFBDatabaseCommon snapshotToDictionary:dataSnapshot];
-        } else {
-          data = [RNFBDatabaseCommon snapshotWithPreviousChildToDictionary:dataSnapshot
-                                                         previousChildName:previousChildName];
-        }
-        resolve(data);
-      };
-
-  id errorBlock = ^(NSError *_Nonnull error) {
-    [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
-  };
-
-  [databaseQuery.query observeSingleEventOfType:firDataEventType
-                 andPreviousSiblingKeyWithBlock:andPreviousSiblingKeyWithBlock
-                                withCancelBlock:errorBlock];
-}
-
-- (void)addEventListener:(RNFBDatabaseQuery *)databaseQuery
-               eventType:(NSString *)eventType
-            registration:(NSDictionary *)registration {
-  NSString *eventRegistrationKey = registration[@"eventRegistrationKey"];
-
-  if (![databaseQuery hasEventListener:eventRegistrationKey]) {
-    id andPreviousSiblingKeyWithBlock =
-        ^(FIRDataSnapshot *_Nonnull dataSnapshot, NSString *_Nullable previousChildName) {
-          [self handleDatabaseEvent:eventRegistrationKey
-                          eventType:eventType
-                       registration:registration
-                           snapshot:dataSnapshot
-                  previousChildName:previousChildName];
-        };
-
-    id errorBlock = ^(NSError *_Nonnull error) {
-      [databaseQuery removeEventListener:eventRegistrationKey];
-      [self handleDatabaseEventError:eventRegistrationKey registration:registration error:error];
-    };
-
-    FIRDataEventType firDataEventType =
-        (FIRDataEventType)[RNFBDatabaseCommon getEventTypeFromName:eventType];
-    FIRDatabaseHandle handle = [databaseQuery.query observeEventType:firDataEventType
-                                      andPreviousSiblingKeyWithBlock:andPreviousSiblingKeyWithBlock
-                                                     withCancelBlock:errorBlock];
-    [databaseQuery addEventListener:eventRegistrationKey handle:handle];
-  }
-}
-
-- (void)handleDatabaseEvent:(NSString *)key
-                  eventType:(NSString *)eventType
-               registration:(NSDictionary *)registration
-                   snapshot:(FIRDataSnapshot *)dataSnapshot
-          previousChildName:(NSString *)previousChildName {
-  NSDictionary *data;
-  if ([eventType isEqualToString:@"value"]) {
-    data = [RNFBDatabaseCommon snapshotToDictionary:dataSnapshot];
-  } else {
-    data = [RNFBDatabaseCommon snapshotWithPreviousChildToDictionary:dataSnapshot
-                                                   previousChildName:previousChildName];
-  }
-
-  [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_DATABASE_SYNC
-                                             body:@{
-                                               @"body" : @{
-                                                 @"data" : data,
-                                                 @"key" : key,
-                                                 @"eventType" : eventType,
-                                                 @"registration" : registration,
-                                               }
-                                             }];
-}
-
-- (void)handleDatabaseEventError:(NSString *)key
-                    registration:(NSDictionary *)registration
-                           error:(NSError *)error {
-  NSArray *codeAndMessage = [RNFBDatabaseCommon getCodeAndMessage:error];
-  [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_DATABASE_SYNC
-                                             body:@{
-                                               @"body" : @{
-                                                 @"key" : key,
-                                                 @"error" : @{
-                                                   @"code" : codeAndMessage[0],
-                                                   @"message" : codeAndMessage[1],
-                                                 },
-                                                 @"registration" : registration,
-                                               }
-                                             }];
+  [RNFBDatabaseQueryHelper invalidate];
 }
 
 #pragma mark -
@@ -200,44 +67,21 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseQuery);
     eventType:(NSString *)eventType
       resolve:(RCTPromiseResolveBlock)resolve
        reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
-  FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference =
-      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
-  RNFBDatabaseQuery *databaseQuery = [self getDatabaseQueryInstance:firDatabaseReference
-                                                          modifiers:modifiers];
-
-  [self addOnceEventListener:databaseQuery eventType:eventType resolve:resolve reject:reject];
+  [RNFBDatabaseQueryHelper once:app
+                          dbURL:dbURL
+                           path:path
+                      modifiers:modifiers
+                      eventType:eventType
+                        resolve:resolve
+                         reject:reject];
 }
 
 - (void)on:(NSString *)app dbURL:(NSString *)dbURL props:(NSDictionary *)props {
-  NSString *key = [props valueForKey:@"key"];
-  NSString *path = [props valueForKey:@"path"];
-  NSString *eventType = [props valueForKey:@"eventType"];
-  NSArray *modifiers = [props valueForKey:@"modifiers"];
-  NSDictionary *registration = [props valueForKey:@"registration"];
-
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
-  FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference =
-      [RNFBDatabaseCommon getReferenceForDatabase:key firebaseDatabase:firDatabase path:path];
-  RNFBDatabaseQuery *databaseQuery = [self getDatabaseQueryInstance:key
-                                                          reference:firDatabaseReference
-                                                          modifiers:modifiers];
-  [self addEventListener:databaseQuery eventType:eventType registration:registration];
+  [RNFBDatabaseQueryHelper on:app dbURL:dbURL props:props];
 }
 
 - (void)off:(NSString *)queryKey eventRegistrationKey:(NSString *)eventRegistrationKey {
-  RNFBDatabaseQuery *databaseQuery = queryDictionary[queryKey];
-
-  if (databaseQuery != nil) {
-    [databaseQuery removeEventListener:eventRegistrationKey];
-
-    if (![databaseQuery hasListeners]) {
-      [queryDictionary removeObjectForKey:queryKey];
-      [RNFBDatabaseCommon removeReferenceByKey:queryKey];
-    }
-  }
+  [RNFBDatabaseQueryHelper off:queryKey eventRegistrationKey:eventRegistrationKey];
 }
 
 - (void)keepSynced:(NSString *)app
@@ -248,14 +92,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseQuery);
            enabled:(BOOL)value
            resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
-  FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference =
-      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
-  RNFBDatabaseQuery *databaseQuery = [self getDatabaseQueryInstance:firDatabaseReference
-                                                          modifiers:modifiers];
-  [databaseQuery.query keepSynced:value];
-  resolve([NSNull null]);
+  [RNFBDatabaseQueryHelper keepSynced:app
+                                dbURL:dbURL
+                                  key:key
+                                 path:path
+                            modifiers:modifiers
+                              enabled:value
+                              resolve:resolve
+                               reject:reject];
 }
 
 @end

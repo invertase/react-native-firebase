@@ -15,85 +15,11 @@
  *
  */
 
-#import <Firebase/Firebase.h>
-#import <React/RCTConvert.h>
-
-#import "RNFBApp/RCTConvert+FIRApp.h"
-#import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBConfigModule.h"
-
-static NSString *const ON_CONFIG_UPDATED_EVENT = @"on_config_updated";
-
-static __strong NSMutableDictionary *configUpdateHandlers;
+#import "RNFBApp/RNFBSharedUtils.h"
+#import "RNFBConfigHelper.h"
 
 @implementation RNFBConfigModule
-#pragma mark -
-#pragma mark Converters
-
-NSString *convertFIRRemoteConfigFetchStatusToNSString(FIRRemoteConfigFetchStatus value) {
-  switch (value) {
-    case FIRRemoteConfigFetchStatusNoFetchYet:
-      return @"no_fetch_yet";
-    case FIRRemoteConfigFetchStatusSuccess:
-      return @"success";
-    case FIRRemoteConfigFetchStatusThrottled:
-      return @"throttled";
-    case FIRRemoteConfigFetchStatusFailure:
-      return @"failure";
-    default:
-      return @"unknown";
-  }
-}
-
-NSString *convertFIRRemoteConfigFetchStatusToNSStringDescription(FIRRemoteConfigFetchStatus value) {
-  switch (value) {
-    case FIRRemoteConfigFetchStatusThrottled:
-      return @"fetch() operation cannot be completed successfully, due to throttling.";
-    case FIRRemoteConfigFetchStatusNoFetchYet:
-    default:
-      return @"fetch() operation cannot be completed successfully.";
-  }
-}
-
-NSString *convertFIRRemoteConfigSourceToNSString(FIRRemoteConfigSource value) {
-  switch (value) {
-    case FIRRemoteConfigSourceDefault:
-      return @"default";
-    case FIRRemoteConfigSourceRemote:
-      return @"remote";
-    case FIRRemoteConfigSourceStatic:
-      return @"static";
-    default:
-      return @"unknown";
-  }
-}
-
-NSString *convertFIRRemoteConfigUpdateErrorToNSString(FIRRemoteConfigUpdateError value) {
-  switch (value) {
-    case FIRRemoteConfigUpdateErrorStreamError:
-      return @"config_update_stream_error";
-    case FIRRemoteConfigUpdateErrorMessageInvalid:
-      return @"config_update_message_invalid";
-    case FIRRemoteConfigUpdateErrorNotFetched:
-      return @"config_update_not_fetched";
-    case FIRRemoteConfigUpdateErrorUnavailable:
-      return @"config_update_unavailable";
-    default:
-      return @"internal";
-  }
-}
-
-NSDictionary *convertFIRRemoteConfigValueToNSDictionary(FIRRemoteConfigValue *value) {
-  return @{
-    @"value" : (id)value.stringValue ?: [NSNull null],
-    @"source" : convertFIRRemoteConfigSourceToNSString(value.source)
-  };
-}
-
-static FIRApp *firebaseAppForName(NSString *appName) {
-  return [RCTConvert firAppFromString:appName];
-}
-
 #pragma mark -
 #pragma mark Module Setup
 
@@ -103,24 +29,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboConfig)
   return NO;
 }
 
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      configUpdateHandlers = [[NSMutableDictionary alloc] init];
-    });
-  }
-  return self;
-}
-
 - (void)invalidate {
-  for (NSString *key in [configUpdateHandlers allKeys]) {
-    FIRConfigUpdateListenerRegistration *registration = [configUpdateHandlers objectForKey:key];
-    [registration remove];
-  }
-
-  [configUpdateHandlers removeAllObjects];
+  [RNFBConfigHelper removeAllConfigUpdateRegistrations];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
@@ -131,8 +41,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboConfig)
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants::Builder>)
     constantsToExport {
   return [_RCTTypedModuleConstants
-      newWithUnsafeDictionary:[self
-                                  getConstantsForApp:firebaseAppForName(DEFAULT_APP_DISPLAY_NAME)]];
+      newWithUnsafeDictionary:[RNFBConfigHelper getConstantsForAppName:DEFAULT_APP_DISPLAY_NAME]];
 }
 
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants::Builder>)getConstants {
@@ -145,276 +54,81 @@ RCT_EXPORT_MODULE(NativeRNFBTurboConfig)
 - (void)ensureInitialized:(NSString *)appName
                   resolve:(RCTPromiseResolveBlock)resolve
                    reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = firebaseAppForName(appName);
-  FIRRemoteConfigInitializationCompletion completionHandler = ^(NSError *__nullable error) {
-    if (error) {
-      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-    } else {
-      resolve([self resultWithVoidConstantsForApp:firebaseApp]);
-    }
-  };
-
-  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
-      ensureInitializedWithCompletionHandler:completionHandler];
+  [RNFBConfigHelper ensureInitialized:appName resolve:resolve reject:reject];
 }
 
 - (void)fetch:(NSString *)appName
     expirationDurationSeconds:(double)expirationDurationSeconds
                       resolve:(RCTPromiseResolveBlock)resolve
                        reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = firebaseAppForName(appName);
-  FIRRemoteConfigFetchCompletion completionHandler =
-      ^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
-        if (error) {
-          [RNFBSharedUtils
-              rejectPromiseWithUserInfo:reject
-                               userInfo:[@{
-                                 @"code" : convertFIRRemoteConfigFetchStatusToNSString(status),
-                                 @"message" :
-                                     convertFIRRemoteConfigFetchStatusToNSStringDescription(status)
-                               } mutableCopy]];
-        } else {
-          resolve([self resultWithVoidConstantsForApp:firebaseApp]);
-        }
-      };
-
-  if (expirationDurationSeconds == -1) {
-    [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
-        fetchWithCompletionHandler:completionHandler];
-  } else {
-    [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
-        fetchWithExpirationDuration:expirationDurationSeconds
-                  completionHandler:completionHandler];
-  }
-}
-
-// Shared by `activate:` and `fetchAndActivate:` below - resolves with the `changed` BOOL from
-// `-[FIRRemoteConfig activateWithCompletion:]`, treating the SDK's "already activated" error as a
-// non-error `false` result rather than a rejection, since it just means there was nothing new to
-// activate.
-- (void)rnfb_activateRemoteConfig:(FIRApp *)firebaseApp
-                          resolve:(RCTPromiseResolveBlock)resolve
-                           reject:(RCTPromiseRejectBlock)reject {
-  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] activateWithCompletion:^(
-                                                         BOOL changed, NSError *_Nullable error) {
-    if (error) {
-      if (error.userInfo && error.userInfo[@"ActivationFailureReason"] != nil &&
-          [error.userInfo[@"ActivationFailureReason"] containsString:@"already activated"]) {
-        resolve([self resultWithConstants:@([RCTConvert BOOL:@(NO)]) firebaseApp:firebaseApp]);
-      } else {
-        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-      }
-    } else {
-      resolve([self resultWithConstants:@([RCTConvert BOOL:@(changed)]) firebaseApp:firebaseApp]);
-    }
-  }];
+  [RNFBConfigHelper fetch:appName
+      expirationDurationSeconds:expirationDurationSeconds
+                        resolve:resolve
+                         reject:reject];
 }
 
 - (void)fetchAndActivate:(NSString *)appName
                  resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject {
-  // NOTE: We deliberately do not use `-[FIRRemoteConfig fetchAndActivateWithCompletionHandler:]`
-  // here. Its `FIRRemoteConfigFetchAndActivateStatus` result only reflects whether the fetch
-  // succeeded (`SuccessFetchedFromRemote`) vs fell back to previously fetched data
-  // (`SuccessUsingPreFetchedData`) - it does NOT reflect whether activation actually changed any
-  // config values, so it reports `SuccessFetchedFromRemote` (=> we'd resolve `true`) even when the
-  // fetched values are identical to what's already active. See
-  // https://github.com/invertase/react-native-firebase/issues/7779
-  //
-  // Instead we perform the fetch ourselves and hand off to the same activation + resolution logic
-  // `activate()` uses, so `fetchAndActivate()` resolves `true` only when activation changed the
-  // in-use config values - matching `activate()`'s own semantics as well as the Android
-  // implementation.
-  FIRApp *firebaseApp = firebaseAppForName(appName);
-  __weak RNFBConfigModule *weakSelf = self;
-  FIRRemoteConfigFetchCompletion fetchCompletion =
-      ^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
-        RNFBConfigModule *strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-
-        if (error) {
-          [RNFBSharedUtils
-              rejectPromiseWithUserInfo:reject
-                               userInfo:[@{
-                                 @"code" : convertFIRRemoteConfigFetchStatusToNSString(status),
-                                 @"message" :
-                                     convertFIRRemoteConfigFetchStatusToNSStringDescription(status)
-                               } mutableCopy]];
-          return;
-        }
-
-        [strongSelf rnfb_activateRemoteConfig:firebaseApp resolve:resolve reject:reject];
-      };
-
-  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] fetchWithCompletionHandler:fetchCompletion];
+  [RNFBConfigHelper fetchAndActivate:appName resolve:resolve reject:reject];
 }
 
 - (void)activate:(NSString *)appName
          resolve:(RCTPromiseResolveBlock)resolve
           reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = firebaseAppForName(appName);
-  [self rnfb_activateRemoteConfig:firebaseApp resolve:resolve reject:reject];
+  [RNFBConfigHelper activate:appName resolve:resolve reject:reject];
 }
 
 - (void)setConfigSettings:(NSString *)appName
                  settings:(JS::NativeRNFBTurboConfig::ConfigSettings &)configSettings
                   resolve:(RCTPromiseResolveBlock)resolve
                    reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = firebaseAppForName(appName);
-  FIRRemoteConfigSettings *remoteConfigSettings = [[FIRRemoteConfigSettings alloc] init];
-  remoteConfigSettings.minimumFetchInterval = configSettings.minimumFetchInterval();
-  remoteConfigSettings.fetchTimeout = configSettings.fetchTimeout();
-
-  [FIRRemoteConfig remoteConfigWithApp:firebaseApp].configSettings = remoteConfigSettings;
-  resolve([self resultWithVoidConstantsForApp:firebaseApp]);
+  [RNFBConfigHelper setConfigSettings:appName
+                 minimumFetchInterval:configSettings.minimumFetchInterval()
+                         fetchTimeout:configSettings.fetchTimeout()
+                              resolve:resolve
+                               reject:reject];
 }
 
 - (void)setDefaults:(NSString *)appName
            defaults:(NSDictionary *)defaults
             resolve:(RCTPromiseResolveBlock)resolve
              reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = firebaseAppForName(appName);
-  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] setDefaults:defaults];
-  resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
+  [RNFBConfigHelper setDefaults:appName defaults:defaults resolve:resolve reject:reject];
 }
 
 - (void)setDefaultsFromResource:(NSString *)appName
                    resourceName:(NSString *)resourceName
                         resolve:(RCTPromiseResolveBlock)resolve
                          reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = firebaseAppForName(appName);
-  if ([[NSBundle mainBundle] pathForResource:resourceName ofType:@"plist"] != nil) {
-    [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] setDefaultsFromPlistFileName:resourceName];
-    resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
-  } else {
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                      userInfo:[@{
-                                        @"code" : @"resource_not_found",
-                                        @"message" : @"The specified resource name was not found."
-                                      } mutableCopy]];
-  }
+  [RNFBConfigHelper setDefaultsFromResource:appName
+                               resourceName:resourceName
+                                    resolve:resolve
+                                     reject:reject];
 }
 
 - (void)reset:(NSString *)appName
       resolve:(RCTPromiseResolveBlock)resolve
        reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = firebaseAppForName(appName);
-  resolve([self resultWithVoidConstantsForApp:firebaseApp]);
+  [RNFBConfigHelper reset:appName resolve:resolve reject:reject];
 }
 
 - (void)onConfigUpdated:(NSString *)appName {
-  FIRApp *firebaseApp = firebaseAppForName(appName);
-  if (![configUpdateHandlers valueForKey:firebaseApp.name]) {
-    FIRConfigUpdateListenerRegistration *newRegistration =
-        [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
-            addOnConfigUpdateListener:^(FIRRemoteConfigUpdate *_Nonnull configUpdate,
-                                        NSError *_Nullable error) {
-              if (error != nil) {
-                NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-
-                [userInfo setValue:@"error" forKey:@"resultType"];
-                [userInfo setValue:convertFIRRemoteConfigUpdateErrorToNSString(
-                                       (FIRRemoteConfigUpdateError)error.code)
-                            forKey:@"code"];
-                [userInfo setValue:error.localizedDescription forKey:@"message"];
-                [userInfo setValue:error.localizedDescription forKey:@"nativeErrorMessage"];
-                [RNFBSharedUtils sendJSEventForApp:firebaseApp
-                                              name:ON_CONFIG_UPDATED_EVENT
-                                              body:userInfo];
-                return;
-              }
-
-              NSMutableDictionary *results = [NSMutableDictionary dictionary];
-
-              [results setValue:@"success" forKey:@"resultType"];
-              [results setValue:[configUpdate.updatedKeys allObjects] forKey:@"updatedKeys"];
-
-              [RNFBSharedUtils sendJSEventForApp:firebaseApp
-                                            name:ON_CONFIG_UPDATED_EVENT
-                                            body:results];
-            }];
-
-    configUpdateHandlers[firebaseApp.name] = newRegistration;
-  }
+  [RNFBConfigHelper onConfigUpdated:appName];
 }
 
 - (void)removeConfigUpdateRegistration:(NSString *)appName {
-  FIRApp *firebaseApp = firebaseAppForName(appName);
-  if ([configUpdateHandlers valueForKey:firebaseApp.name]) {
-    [[configUpdateHandlers objectForKey:firebaseApp.name] remove];
-    [configUpdateHandlers removeObjectForKey:firebaseApp.name];
-  }
+  [RNFBConfigHelper removeConfigUpdateRegistration:appName];
 }
 
 - (void)setCustomSignals:(NSString *)appName
            customSignals:(NSDictionary *)customSignals
                  resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = firebaseAppForName(appName);
-  NSDictionary *decodedCustomSignals = [RNFBSharedUtils decodeNullSentinels:customSignals];
-  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
-      setCustomSignals:decodedCustomSignals
-        withCompletion:^(NSError *_Nullable error) {
-          if (error != nil) {
-            [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-          } else {
-            resolve([self resultWithVoidConstantsForApp:firebaseApp]);
-          }
-        }];
-}
-
-#pragma mark -
-#pragma mark Internal Helper Methods
-
-- (NSDictionary *)resultWithConstants:(id)result firebaseApp:(FIRApp *)firebaseApp {
-  NSMutableDictionary *responseDict = [NSMutableDictionary new];
-  responseDict[@"result"] = result;
-  responseDict[@"constants"] = [self getConstantsForApp:firebaseApp];
-  return responseDict;
-}
-
-- (NSDictionary *)resultWithVoidConstantsForApp:(FIRApp *)firebaseApp {
-  NSMutableDictionary *responseDict = [NSMutableDictionary new];
-  responseDict[@"constants"] = [self getConstantsForApp:firebaseApp];
-  return responseDict;
-}
-
-- (NSDictionary *)getConstantsForApp:(FIRApp *)firebaseApp {
-  FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfigWithApp:firebaseApp];
-
-  NSDate *lastFetchTime = remoteConfig.lastFetchTime;
-  NSString *lastFetchStatus =
-      convertFIRRemoteConfigFetchStatusToNSString(remoteConfig.lastFetchStatus);
-  double minimumFetchInterval =
-      [RCTConvert double:@([remoteConfig configSettings].minimumFetchInterval)];
-  double fetchTimeout = [RCTConvert double:@([remoteConfig configSettings].fetchTimeout)];
-
-  NSMutableDictionary *values = [NSMutableDictionary new];
-  NSSet *keys = [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] keysWithPrefix:nil];
-  for (NSString *key in keys) {
-    FIRRemoteConfigValue *value =
-        [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] configValueForKey:key];
-    values[key] = convertFIRRemoteConfigValueToNSDictionary(value);
-  }
-
-  NSArray *defaultKeys = [remoteConfig allKeysFromSource:FIRRemoteConfigSourceDefault];
-  for (NSString *key in defaultKeys) {
-    if ([values valueForKey:key] == nil) {
-      FIRRemoteConfigValue *value =
-          [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] configValueForKey:key];
-      values[key] = convertFIRRemoteConfigValueToNSDictionary(value);
-    }
-  }
-
-  return @{
-    @"values" : values,
-    @"lastFetchStatus" : lastFetchStatus,
-    @"lastFetchTime" : @(round([lastFetchTime timeIntervalSince1970] * 1000.0)),
-    @"minimumFetchInterval" : @(minimumFetchInterval),
-    @"fetchTimeout" : @(fetchTimeout)
-  };
+  [RNFBConfigHelper setCustomSignals:appName
+                       customSignals:customSignals
+                             resolve:resolve
+                              reject:reject];
 }
 
 @end

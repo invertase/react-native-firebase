@@ -16,13 +16,27 @@
  */
 
 #import "RNFBCrashlyticsInitProvider.h"
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseCore/FirebaseCore.h>)
+#import <FirebaseCore/FirebaseCore.h>
+#else
+@import FirebaseCore;
+#endif
+#if __has_include(<FirebaseCoreExtension/FIRAppInternal.h>)
 #import <FirebaseCoreExtension/FIRAppInternal.h>
 #import <FirebaseCoreExtension/FIRComponent.h>
 #import <FirebaseCoreExtension/FIRComponentContainer.h>
 #import <FirebaseCoreExtension/FIRComponentType.h>
 #import <FirebaseCoreExtension/FIRLibrary.h>
+#else
+@import FirebaseCoreExtension;
+#endif
+#if __has_include(<FirebaseCrashlytics/FIRCrashlytics.h>)
 #import <FirebaseCrashlytics/FIRCrashlytics.h>
+#else
+@import FirebaseCrashlytics;
+#endif
 #import "RNFBJSON.h"
 #import "RNFBMeta.h"
 #import "RNFBPreferences.h"
@@ -46,8 +60,17 @@ NSString *const KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED =
 @protocol FIRCrashlyticsInstanceProvider <NSObject>
 @end
 
-/// Privately conform to the protocol for component registration.
+/// Privately conform to the protocol for component registration. `<FIRLibrary>` and
+/// `+componentsToRegister` live here rather than in RNFBCrashlyticsInitProvider.h because
+/// they're only invoked by Firebase's own component/DI runtime via reflection, never by RNFB
+/// code directly -- keeping them out of the public header keeps it Firebase-free (see header
+/// comment and okf-bundle/ios-spm-native-imports.md).
 @interface RNFBCrashlyticsInitProvider () <RNFBCrashlyticsInitProviderProtocol, FIRLibrary>
+
+/// Returns one or more FIRComponents that will be registered in
+/// FIRApp and participate in dependency resolution and injection.
++ (NSArray<FIRComponent *> *)componentsToRegister;
+
 @end
 
 @implementation RNFBCrashlyticsInitProvider

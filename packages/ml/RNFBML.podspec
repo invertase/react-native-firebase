@@ -1,5 +1,6 @@
 require 'json'
-require '../app/firebase_json'
+require_relative '../app/firebase_json'
+require_relative '../app/firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
@@ -47,13 +48,15 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  # s.dependency          'Firebase/MLModelDownloader', firebase_sdk_version
+  # NOTE: Firebase/MLModelDownloader dependency is currently disabled.
+  # When re-enabled, use:
+  #   firebase_dependency(s, firebase_sdk_version,
+  #     ['FirebaseMLModelDownloader'], 'Firebase/MLModelDownloader')
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
     s.static_framework = $RNFirebaseAsStaticFramework
   else
-    # raise "#{s.name}: Underlying Firebase/MLModelDownloader requires $RNFirebaseAsStaticFrameworks = true and !use_frameworks in your Podfile"
     s.static_framework = false
   end
 end

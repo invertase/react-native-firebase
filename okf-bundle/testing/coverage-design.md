@@ -221,7 +221,7 @@ reporter: ['lcov', 'html', 'text-summary'],
 1. **Build:** LLVM flags in **`tests/ios/Podfile` `post_install`** (`pod install` after checkout):
    - **`testing` target:** compile + link profile flags + Swift toolchain search paths (Firebase static pods on CI)
    - **`RNFB*` pods:** compile-only flags — **no** `-fprofile-instr-generate` on pod `OTHER_LDFLAGS` (breaks `swiftCompatibility56` on CI)
-2. **Runtime:** `RNFBTestingConfigureCoverageProfilePath()` at launch → `Documents/coverage.profraw`. Jet `after` → `RNFBTestingCoverage.flush()`. **No custom URL scheme** (iOS "Open in 'testing'?" dialog blocks Detox).
+2. **Runtime:** `RNFBTestingConfigureCoverageProfilePath()` at launch → `Documents/coverage-%m.profraw` (+ `LLVM_PROFILE_FILE`). Jet `after` → `RNFBTestingCoverage.flush()` (tracked RNFB frameworks, then app). **No custom URL scheme** (iOS "Open in 'testing'?" dialog blocks Detox).
 3. **Pull:** Jet exit 0 → `pull-native-coverage.js` → `simulator_coverage.profraw`. **Fails if missing.** Pull on Jet `close`, not `afterAll` (before Detox teardown).
 4. **Export:** `yarn tests:ios:test:process-coverage` / `process-ios-native-coverage.js`:
    - exit **1** if no `.profraw`
@@ -232,7 +232,11 @@ reporter: ['lcov', 'html', 'text-summary'],
 
 ObjC + Swift share this. Raw export is mostly Pods/SDK; healthy full run includes ~50–60 `packages/*/ios/**` files among ~2000 entries.
 
-**CocoaPods → SPM:** move same flags to SPM targets; post-test script unchanged.
+### SPM + dynamic frameworks
+
+**Tests Podfile default (dynamic):** RNFB pods stay separate `RNFB*.framework` images. Compile-only instrumentation is not enough — those frameworks must **link** the profile runtime (`link_profile: true` for `RNFB*` when `linkage == dynamic`, including `-Wl,-u,___llvm_profile_set_filename` so set_filename is not dead-stripped), flush must dump **each** loaded RNFB image, and `process-ios-native-coverage.js` must pass every `RNFB*.framework` binary as an extra `llvm-cov -object`. App-only export → **`packagesHits=0`**.
+
+**Why per-image flush (not atexit alone):** each dynamic image links its own `clang_rt.profile` copy; `__llvm_profile_write_file` in the app only dumps the app image. `LLVM_PROFILE_FILE=…/coverage-%m.profraw` (set via `setenv` + `RNFBTestingConfigureCoverageProfilePath`) makes atexit dumps unique per image, but Jet pulls `Documents/*.profraw` on Jet **close** — before `terminateApp` — so atexit has not run yet. Detox SIGKILL can also skip atexit. `RNFBTestingCoverageProfile.mm` therefore discovers `RNFB*.framework` images at load via `_dyld_register_func_for_add_image`, resolves each image's local `___llvm_profile_write_file` through `__LINKEDIT`, flushes tracked images on Jet `after`, then writes the app image last (so flush-path counters land in the pulled app profraw). Static linkage still merges RNFB into the app binary (compile-only + app flush). Never put profile **link** flags on third-party/Firebase pods (`swiftCompatibility56`).
 
 # Codecov uploads (CI)
 
@@ -317,7 +321,7 @@ No `:test-cover-reuse` / `:test-reuse` — stale native risk ([runbook](running-
 | Stale profraw uploaded | Re-process without re-e2e | Process deletes profraw; exit 1 if missing next time |
 | Stale Android Jacoco / collapsed native % | Re-run `post-e2e-coverage` without fresh e2e (and/or without fresh unit `*.exec`) | Post-e2e deletes `.ec` after report; run `:build` → `tests:android:unit` → `:test-cover` → `:post-e2e-coverage` |
 | Coverage numbers suspect (any platform) | Leftover raw artifacts or reuse shortcuts | Full clean cycle per platform; see [Stale coverage data](#stale-coverage-data) |
-| No `packages/` hits in iOS export | Wrong binary / not instrumented | Re-run `tests:ios:build` per [running e2e § Rules](running-e2e.md#rules); check Podfile |
+| No `packages/` hits in iOS export | Dynamic/SPM multi-image path incomplete | [SPM + dynamic frameworks](#spm--dynamic-frameworks); rebuild `tests:ios:build` → `:test-cover`; syslog `tracked profile image` / `flush tracked image` |
 | Empty Jacoco XML (~235 B) | AGP 8 path, missing `src/reactnative/java`, no ec/exec | Check post-e2e logs; confirm `jacocoTestReport` not e2e-only task |
 | Uploaded e2e-only Jacoco | Wrong report task / path | Codecov must use `jacocoTestReport.xml`, not `jacocoAndroidTestReport.xml` |
 | Android ec missing after pass | SIGINT before flush | `[native-coverage] flushing android coverage` in log; `MainApplication` registration |

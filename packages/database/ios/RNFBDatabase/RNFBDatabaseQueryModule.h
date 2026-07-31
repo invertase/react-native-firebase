@@ -15,9 +15,13 @@
  *
  */
 
-#import <Firebase/Firebase.h>
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
+
+// NOTE: This header must stay Firebase-free. It is imported by
+// RNFBDatabaseQueryModule.mm, and `FirebaseDatabase` is a Swift-only SPM
+// product whose `@import` cannot be used from Objective-C++ (.mm) files
+// when C++ modules are disabled. See RNFBDatabaseModule.mm for details.
 
 @interface RNFBDatabaseQueryModule : NSObject <RCTBridgeModule>
 @end

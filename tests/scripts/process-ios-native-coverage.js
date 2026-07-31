@@ -98,9 +98,7 @@ function runOrThrow(command, args) {
   } catch (error) {
     const stderr = error.stderr ? error.stderr.toString() : '';
     const stdout = error.stdout ? error.stdout.toString() : '';
-    throw new Error(
-      `${command} ${args.join(' ')} failed:\n${stderr || stdout || error.message}`,
-    );
+    throw new Error(`${command} ${args.join(' ')} failed:\n${stderr || stdout || error.message}`);
   }
 }
 
@@ -112,10 +110,52 @@ function runToFileOrThrow(command, args, outputPath) {
     });
   } catch (error) {
     stderr = error.stderr ? error.stderr.toString() : '';
-    throw new Error(
-      `${command} ${args.join(' ')} failed:\n${stderr || error.message}`,
-    );
+    throw new Error(`${command} ${args.join(' ')} failed:\n${stderr || error.message}`);
   }
+}
+
+/**
+ * Under SPM + dynamic frameworks, RNFB native code lives in RNFB*.framework
+ * binaries — not the app executable. llvm-cov must receive those objects or
+ * packages/<pkg>/ios sources never appear in LCOV (packagesHits=0).
+ */
+function collectCoverageObjects(productsDir, appName) {
+  const objects = [];
+  const seen = new Set();
+
+  const addObject = candidate => {
+    if (!candidate || seen.has(candidate) || !fs.existsSync(candidate)) {
+      return;
+    }
+    seen.add(candidate);
+    objects.push(candidate);
+  };
+
+  addObject(path.join(productsDir, `${appName}.app`, appName));
+
+  const embeddedFrameworksDir = path.join(productsDir, `${appName}.app`, 'Frameworks');
+  if (fs.existsSync(embeddedFrameworksDir)) {
+    for (const entry of fs.readdirSync(embeddedFrameworksDir)) {
+      if (!entry.startsWith('RNFB') || !entry.endsWith('.framework')) {
+        continue;
+      }
+      const frameworkName = entry.slice(0, -'.framework'.length);
+      addObject(path.join(embeddedFrameworksDir, entry, frameworkName));
+    }
+  }
+
+  // Fallback when frameworks were not copied into the app bundle yet.
+  if (objects.length <= 1 && fs.existsSync(productsDir)) {
+    for (const entry of fs.readdirSync(productsDir, { withFileTypes: true })) {
+      if (!entry.isDirectory() || !entry.name.startsWith('RNFB')) {
+        continue;
+      }
+      const frameworkName = entry.name;
+      addObject(path.join(productsDir, frameworkName, `${frameworkName}.framework`, frameworkName));
+    }
+  }
+
+  return objects;
 }
 
 async function rewriteLcovFile(inputPath, outputPath) {
@@ -180,29 +220,29 @@ async function main() {
     throw new Error(`App binary not found at ${appBinary}`);
   }
 
+  const coverageObjects = collectCoverageObjects(productsDir, options.appName);
+  if (coverageObjects.length === 0) {
+    throw new Error(`No coverage objects found under ${productsDir}`);
+  }
+
+  // eslint-disable-next-line no-console
+  console.log(
+    `[ios-native-coverage] Using ${coverageObjects.length} object(s): ${coverageObjects.join(', ')}`,
+  );
+
   fs.mkdirSync(path.dirname(options.output), { recursive: true });
 
   const profdataPath = path.join(path.dirname(options.output), 'profdata');
-  runOrThrow('xcrun', [
-    'llvm-profdata',
-    'merge',
-    '-sparse',
-    ...profrawFiles,
-    '-o',
-    profdataPath,
-  ]);
+  runOrThrow('xcrun', ['llvm-profdata', 'merge', '-sparse', ...profrawFiles, '-o', profdataPath]);
 
   const rawLcovPath = path.join(path.dirname(options.output), 'lcov.raw');
   try {
-    runToFileOrThrow('xcrun', [
-      'llvm-cov',
-      'export',
-      '-instr-profile',
-      profdataPath,
-      '-object',
-      appBinary,
-      '-format=lcov',
-    ], rawLcovPath);
+    const exportArgs = ['llvm-cov', 'export', '-instr-profile', profdataPath];
+    coverageObjects.forEach(objectPath => {
+      exportArgs.push('-object', objectPath);
+    });
+    exportArgs.push('-format=lcov');
+    runToFileOrThrow('xcrun', exportArgs, rawLcovPath);
 
     const { sourceFileCount, packagesHits } = await rewriteLcovFile(rawLcovPath, options.output);
 

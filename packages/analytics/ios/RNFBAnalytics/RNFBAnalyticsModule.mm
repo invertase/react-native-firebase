@@ -15,7 +15,15 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseAnalytics/FirebaseAnalytics.h>)
+#import <FirebaseAnalytics/FirebaseAnalytics.h>
+#import <FirebaseCore/FirebaseCore.h>
+#else
+@import FirebaseCore;
+@import FirebaseAnalytics;
+#endif
 #import <React/RCTUtils.h>
 
 #if __has_include(<RNFBAnalytics/RNFBAnalytics-Swift.h>)
