@@ -231,10 +231,71 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..3ad2cea4c214e8c3c4f4698acacfff26
  //# sourceMappingURL=cli.js.map
 \ No newline at end of file
 diff --git a/lib/commonjs/index.js b/lib/commonjs/index.js
-index a72380ed2ace01b19b028bb8e6f9d29dc3affbcd..030475cff75349b2b7f820cf8a3556fb1d7bea45 100644
+index a72380ed2ace01b19b028bb8e6f9d29dc3affbcd..0f2065e94f1ad1b16951e072b2f1a1bb5e47f241 100644
 --- a/lib/commonjs/index.js
 +++ b/lib/commonjs/index.js
-@@ -63,15 +63,7 @@ function JetProvider(props) {
+@@ -52,9 +52,16 @@ function JetProvider(props) {
+       ...props,
+       title: props.title ?? `Jet tests on ${_reactNative.Platform.OS}`,
+       async transformFailure(_, err) {
+-        const stack = (0, _parseErrorStack.default)(err.stack);
+-        const symbolicated = await (0, _symbolicateStackTrace.default)(stack);
+-        err.stack = framesToStack(err, symbolicated.stack);
++        try {
++          const stack = (0, _parseErrorStack.default)(err.stack);
++          const symbolicated = await (0, _symbolicateStackTrace.default)(stack);
++          err.stack = framesToStack(err, symbolicated.stack);
++        } catch (cause) {
++          // Release / no Metro: symbolicateStackTrace throws ("Bundle was not loaded from Metro.").
++          // Returning a thrown transformFailure would mask the real test error in mocha-remote.
++          const msg = cause instanceof Error ? cause.message : String(cause);
++          console.warn(`[jet] symbolicateStackTrace unavailable; returning original error (${msg})`);
++        }
+         return err;
+       },
+       tests(_config) {
+@@ -63,15 +70,7 @@ function JetProvider(props) {
+         });
+         after(async () => {
+           if (_config.coverage) {
+-            const coverage = global.__coverage__ ?? {};
+-            const url = (props.url ?? 'ws://localhost:8090').replace('ws://', 'http://') + '/coverage';
+-            return fetch(url, {
+-              method: 'POST',
+-              headers: {
+-                'Content-Type': 'application/json'
+-              },
+-              body: JSON.stringify(coverage)
+-            });
++            return client.uploadCoverage();
+           }
+           return Promise.resolve();
+         });
+diff --git a/lib/module/index.js b/lib/module/index.js
+index 897b62288ae128e1ce071142fa3de136caa99239..ad8c11f4b1278f32ec5c5101b1d5b7d5fc3889b9 100644
+--- a/lib/module/index.js
++++ b/lib/module/index.js
+@@ -40,9 +40,16 @@ export function JetProvider(props) {
+       ...props,
+       title: props.title ?? `Jet tests on ${Platform.OS}`,
+       async transformFailure(_, err) {
+-        const stack = parseErrorStack(err.stack);
+-        const symbolicated = await symbolicateStackTrace(stack);
+-        err.stack = framesToStack(err, symbolicated.stack);
++        try {
++          const stack = parseErrorStack(err.stack);
++          const symbolicated = await symbolicateStackTrace(stack);
++          err.stack = framesToStack(err, symbolicated.stack);
++        } catch (cause) {
++          // Release / no Metro: symbolicateStackTrace throws ("Bundle was not loaded from Metro.").
++          // Returning a thrown transformFailure would mask the real test error in mocha-remote.
++          const msg = cause instanceof Error ? cause.message : String(cause);
++          console.warn(`[jet] symbolicateStackTrace unavailable; returning original error (${msg})`);
++        }
+         return err;
+       },
+       tests(_config) {
+@@ -51,15 +58,7 @@ export function JetProvider(props) {
          });
          after(async () => {
            if (_config.coverage) {
@@ -252,10 +313,32 @@ index a72380ed2ace01b19b028bb8e6f9d29dc3affbcd..030475cff75349b2b7f820cf8a3556fb
            return Promise.resolve();
          });
 diff --git a/src/index.tsx b/src/index.tsx
-index 1b28aca3fe817fee3e8701ac5096df6fc608bc39..17c631309f88a8017a9fd01e3420df2b4bab140e 100644
+index 1b28aca3fe817fee3e8701ac5096df6fc608bc39..10cf19c7dc1be39d07a3a9e7702ad67d2ef82508 100644
 --- a/src/index.tsx
 +++ b/src/index.tsx
-@@ -82,17 +82,7 @@ export function JetProvider(props: JetProviderProps): React.JSX.Element {
+@@ -71,9 +71,18 @@ export function JetProvider(props: JetProviderProps): React.JSX.Element {
+       ...props,
+       title: props.title ?? `Jet tests on ${Platform.OS}`,
+       async transformFailure(_, err) {
+-        const stack = parseErrorStack(err.stack as any);
+-        const symbolicated = (await symbolicateStackTrace(stack)) as any;
+-        err.stack = framesToStack(err, symbolicated.stack);
++        try {
++          const stack = parseErrorStack(err.stack as any);
++          const symbolicated = (await symbolicateStackTrace(stack)) as any;
++          err.stack = framesToStack(err, symbolicated.stack);
++        } catch (cause) {
++          // Release / no Metro: symbolicateStackTrace throws ("Bundle was not loaded from Metro.").
++          // Returning a thrown transformFailure would mask the real test error in mocha-remote.
++          const msg = cause instanceof Error ? cause.message : String(cause);
++          console.warn(
++            `[jet] symbolicateStackTrace unavailable; returning original error (${msg})`,
++          );
++        }
+         return err;
+       },
+       tests(_config) {
+@@ -82,17 +91,7 @@ export function JetProvider(props: JetProviderProps): React.JSX.Element {
          });
          after(async () => {
            if (_config.coverage) {

@@ -417,6 +417,29 @@ Correlate `disconnect_context loadavg=…` with `resource-monitor-*_log` — hig
 
 **Reference symptom** — grace can recover after a disconnect, then Jet may still crash on `No client connected`.
 
+#### 6c. Release `transformFailure` masks real errors (Metro symbolication)
+
+**Symptom** (Release builds, or Debug when Metro is not serving the app bundle — any failing assertion):
+
+```
+Failed to transform failure: Bundle was not loaded from Metro.
+```
+
+**Cause** — Jet `JetProvider.transformFailure` calls RN `symbolicateStackTrace`, which talks to Metro. Release embeds JS (no Metro); when symbolication throws, mocha-remote replaces the **original** test failure with `Failed to transform failure: …`, hiding the real assertion.
+
+**Mitigation in this repo**
+
+| Change | Location |
+|--------|----------|
+| Catch symbolication failure; `console.warn` one line; return original `err` | `.yarn/patches/jet-npm-0.9.0-dev.13-*.patch` → `src/index.tsx`, `lib/*/index.js` |
+
+**Sentinel patterns**
+
+| Pattern | Meaning |
+|---------|---------|
+| `[jet] symbolicateStackTrace unavailable; returning original error` | Soft-fail path hit; original test error preserved |
+| `Failed to transform failure: Bundle was not loaded from Metro.` | Pre-fix masking — patch missing or not applied after install |
+
 #### 7. FrontBoard / LaunchServices race after terminate+relaunch
 
 **Symptom** — Second `launchApp` attempt fails after a slow or failed first launch:
