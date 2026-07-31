@@ -76,7 +76,6 @@ jest.mock('@react-native-firebase/app/dist/module/internal/asyncStorage', () => 
 
 // Import the base .ts file directly — Jest's React Native preset resolves to
 // .ios.ts (empty stub) by default, so we must bypass platform resolution.
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const webModule = require('../lib/web/RNFBAuthModule.ts');
 const mod = (webModule.default ?? webModule) as Record<string, (...args: unknown[]) => unknown>;
 
@@ -101,7 +100,7 @@ describe('RNFBAuthModule (web)', () => {
       'reauthenticateWithProvider',
     ];
 
-    it.each(unsupportedMethods)('%s rejects with unsupported', async (method) => {
+    it.each(unsupportedMethods)('%s rejects with unsupported', async method => {
       expect(typeof mod[method]).toBe('function');
       await expect(mod[method]()).rejects.toEqual(
         expect.objectContaining({
@@ -176,7 +175,7 @@ describe('RNFBAuthModule (web)', () => {
       'useEmulator',
     ];
 
-    it.each(specMethods)('%s is defined as a function', (method) => {
+    it.each(specMethods)('%s is defined as a function', method => {
       expect(typeof mod[method]).toBe('function');
     });
   });

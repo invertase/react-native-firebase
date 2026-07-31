@@ -29,12 +29,10 @@ jest.mock('react-native', () => ({
   },
 }));
 
-const mockOnAuthStateChanged = jest.fn(
-  (_auth: unknown, callback: (user: null) => void) => {
-    setTimeout(() => callback(null), 0);
-    return jest.fn();
-  },
-);
+const mockOnAuthStateChanged = jest.fn((_auth: unknown, callback: (user: null) => void) => {
+  setTimeout(() => callback(null), 0);
+  return jest.fn();
+});
 
 jest.mock('@react-native-firebase/app/dist/module/internal/web/firebaseAuth', () => ({
   getApp: jest.fn(() => ({ name: '[DEFAULT]' })),
@@ -102,7 +100,6 @@ jest.mock('@react-native-firebase/app/dist/module/internal/asyncStorage', () => 
 }));
 
 // Import with explicit .ts extension to bypass Jest's iOS platform resolution
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const webModule = require('../lib/web/RNFBAuthModule.ts');
 const mod = webModule.default as Record<string, (...args: unknown[]) => unknown>;
 
