@@ -625,7 +625,7 @@ Do **not** treat this redbox as a missing TurboModule registration until the ref
 - **iOS** — `xcrun simctl spawn booted log stream --level debug --style compact --predicate 'process == "testing"'`; silent hangs: `sample <pid>` on `testing`. Metro redbox **`Requiring unknown module "undefined"`** → [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking), not registration checklist alone.
 - **Android** — `adb logcat` (filter your tags)
 
-**Benign noise:** iOS Detox `EXEC_FAIL "xcrun simctl terminate … com.invertase.testing" … found nothing to terminate` — app wasn't running; ignore.
+**Benign noise:** iOS Detox `EXEC_FAIL "xcrun simctl terminate … io.invertase.testing" … found nothing to terminate` — app wasn't running; ignore.
 
 **Cloud API pressure** — Installations / Remote Config failures with FIS 503 or “Too many server requests” are live-project quota on **any** platform, not emulator issues. See [Firebase testing project — CI triage](firebase-testing-project.md#ci-triage-cloud-api-quota-pressure).
 

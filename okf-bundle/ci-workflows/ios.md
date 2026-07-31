@@ -144,7 +144,7 @@ rg 'No script URL provided|com\.facebook\.react\.log' sim-app.log
 rg -i 'invertase|FrontBoard|unknown' sim-app.log
 ```
 
-Long `datamigrator` activity with no `com.invertase.testing` means migration/pre-boot install not done.
+Long `datamigrator` activity with no `io.invertase.testing` means migration/pre-boot install not done.
 
 ### Detox configuration
 
@@ -448,7 +448,7 @@ Failed to transform failure: Bundle was not loaded from Metro.
 
 ```
 FBSOpenApplicationServiceErrorDomain
-Application "com.invertase.testing" is unknown to FrontBoard
+Application "io.invertase.testing" is unknown to FrontBoard
 ```
 
 Often preceded by `[rnfb-e2e] terminateApp ... elapsed=60000ms` (or similar) in `detox-step-*_log`.
