@@ -327,33 +327,28 @@ const sessionMap = new Map<string, MultiFactorSession>();
 const totpSecretMap = new Map<string, WebTotpSecret>();
 let sessionId = 0;
 
-// Returns a cached Firestore instance.
 function getCachedAuthInstance(appName: string): Auth {
   if (!instances[appName]) {
-    if (isMemoryStorage()) {
-      // Warn auth persistence is is disabled unless Async Storage implementation is provided.
-      // eslint-disable-next-line no-console
-      console.warn(
-        'Firebase Auth persistence is disabled. To enable persistence, provide an Async Storage implementation.\n' +
-          '\n' +
-          'For example, to use React Native Async Storage:\n' +
-          '\n' +
-          "  import AsyncStorage from '@react-native-async-storage/async-storage';\n" +
-          '\n' +
-          '  // Before initializing Firebase set the Async Storage implementation\n' +
-          '  // that will be used to persist user sessions.\n' +
-          '  firebase.setReactNativeAsyncStorage(AsyncStorage);\n' +
-          '\n' +
-          '  // Then initialize Firebase as normal.\n' +
-          '  await firebase.initializeApp({ ... });\n',
-      );
-    }
-
     const authOptions: { persistence?: unknown } = {};
+
     if (Platform.OS !== 'web') {
-      // Non-web platforms pull the react-native export from package.json and
-      // get a bundle that defines `getReactNativePersistence` etc, but web platforms
-      // do *not* have that method defined. So we only call it for non-web platforms
+      if (isMemoryStorage()) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          'Firebase Auth persistence is disabled. To enable persistence, provide an Async Storage implementation.\n' +
+            '\n' +
+            'For example, to use React Native Async Storage:\n' +
+            '\n' +
+            "  import AsyncStorage from '@react-native-async-storage/async-storage';\n" +
+            '\n' +
+            '  // Before initializing Firebase set the Async Storage implementation\n' +
+            '  // that will be used to persist user sessions.\n' +
+            '  firebase.setReactNativeAsyncStorage(AsyncStorage);\n' +
+            '\n' +
+            '  // Then initialize Firebase as normal.\n' +
+            '  await firebase.initializeApp({ ... });\n',
+        );
+      }
       authOptions.persistence = getReactNativePersistence(getReactNativeAsyncStorageInternal());
     }
 
@@ -918,6 +913,13 @@ export default {
     });
   },
 
+  verifyPhoneNumberWithMultiFactorInfo() {
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
+  },
+
   verifyPhoneNumberForMultiFactor() {
     return rejectPromiseWithCodeAndMessage(
       'unsupported',
@@ -933,6 +935,13 @@ export default {
   },
 
   resolveMultiFactorSignIn() {
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
+  },
+
+  resolveTotpSignIn() {
     return rejectPromiseWithCodeAndMessage(
       'unsupported',
       'This operation is not supported in this environment.',
