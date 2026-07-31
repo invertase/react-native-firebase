@@ -331,10 +331,7 @@ function getCachedAuthInstance(appName: string): Auth {
   if (!instances[appName]) {
     const authOptions: { persistence?: unknown } = {};
 
-    if (Platform.OS === 'web') {
-      // Web uses the Firebase JS SDK's default persistence (IndexedDB).
-      // No AsyncStorage needed — skip the warning and persistence setup.
-    } else {
+    if (Platform.OS !== 'web') {
       if (isMemoryStorage()) {
         // eslint-disable-next-line no-console
         console.warn(
