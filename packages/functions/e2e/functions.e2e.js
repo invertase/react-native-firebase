@@ -112,19 +112,24 @@ describe('functions() modular', function () {
     });
 
     it('accepts passing in an FirebaseApp instance as first arg', async function () {
-      const { initializeApp } = modular;
+      const { initializeApp, deleteApp } = modular;
       const { getFunctions } = functionsModular;
-      const appName = `functionsApp${FirebaseHelpers.id}3`;
+      // Process-stable name `functionsApp${id}3` collided after Jet reconnect / suite re-entry.
+      const appName = `functionsApp${FirebaseHelpers.id}${Date.now()}`;
       const platformAppConfig = FirebaseHelpers.app.config();
       const app = await initializeApp(platformAppConfig, appName);
-      const functions = getFunctions(app);
+      try {
+        const functions = getFunctions(app);
 
-      functions.app.should.equal(app);
-      functions.app.name.should.equal(app.name);
+        functions.app.should.equal(app);
+        functions.app.name.should.equal(app.name);
 
-      // check from an app
-      getFunctions(app).app.should.equal(app);
-      getFunctions(app).app.name.should.equal(app.name);
+        // check from an app
+        getFunctions(app).app.should.equal(app);
+        getFunctions(app).app.name.should.equal(app.name);
+      } finally {
+        await deleteApp(app);
+      }
     });
 
     it('accepts passing in a region string as first arg to an app', async function () {
