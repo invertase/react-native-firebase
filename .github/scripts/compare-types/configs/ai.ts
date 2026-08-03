@@ -105,6 +105,36 @@ const config: PackageConfig = {
       reason:
         'Chrome Prompt API prompt options type used by browser-only on-device language model integration.',
     },
+    {
+      name: 'AgentPlatformBackend',
+      reason:
+        'firebase-js-sdk Agent Platform backend type is not yet wired in React Native Firebase AI.',
+    },
+    {
+      name: 'BaseSpeechConfig',
+      reason:
+        'Shared speech-config base type for multi/single-speaker TTS options newly exported by firebase-js-sdk. RN Firebase still uses the simpler VoiceConfig-based SpeechConfig shape.',
+    },
+    {
+      name: 'MultiSpeakerSpeechConfig',
+      reason:
+        'Multi-speaker speech config type added in firebase-js-sdk; not yet surfaced in React Native Firebase AI.',
+    },
+    {
+      name: 'MultiSpeakerVoiceConfig',
+      reason:
+        'Multi-speaker voice config type added in firebase-js-sdk; not yet surfaced in React Native Firebase AI.',
+    },
+    {
+      name: 'SingleSpeakerSpeechConfig',
+      reason:
+        'Single-speaker speech config type added in firebase-js-sdk; RN Firebase still uses the legacy VoiceConfig-based SpeechConfig object.',
+    },
+    {
+      name: 'SpeakerVoiceConfig',
+      reason:
+        'Per-speaker voice config type added in firebase-js-sdk for multi-speaker TTS; not yet surfaced in React Native Firebase AI.',
+    },
   ],
   extraInRN: [
     {
@@ -140,6 +170,11 @@ const config: PackageConfig = {
         'RN Firebase includes direct `auth` and `appCheck` modules in options because it does not use firebase-js-sdk providers.',
     },
     {
+      name: 'BackendType',
+      reason:
+        'firebase-js-sdk BackendType now includes `AGENT_PLATFORM`; React Native Firebase AI still exposes only `VERTEX_AI` and `GOOGLE_AI`.',
+    },
+    {
       name: 'EnhancedGenerateContentResponse',
       reason:
         'RN Firebase does not expose `inferenceSource` because hybrid on-device / in-cloud inference is a browser-only feature.',
@@ -150,9 +185,19 @@ const config: PackageConfig = {
         'RN Firebase inlines the protobuf date type as local `Date`, while the firebase-js-sdk declaration references a generated alias name. The public structure is equivalent.',
     },
     {
+      name: 'GenerationConfig',
+      reason:
+        'firebase-js-sdk GenerationConfig gained optional `speechConfig` for TTS. RN Firebase has not yet added that field to GenerationConfig.',
+    },
+    {
       name: 'InferenceMode',
       reason:
         'RN Firebase omits the browser-only in-cloud preference mode used by Chrome hybrid/on-device inference, so the enum-like object has fewer values.',
+    },
+    {
+      name: 'SpeechConfig',
+      reason:
+        'firebase-js-sdk SpeechConfig is now a single-/multi-speaker union. RN Firebase still uses the legacy `{ voiceConfig?: VoiceConfig }` object shape.',
     },
     {
       name: 'URLRetrievalStatus',
