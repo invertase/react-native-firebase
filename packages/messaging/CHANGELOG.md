@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.1.0](https://github.com/invertase/react-native-firebase/compare/v26.0.0...v26.1.0) (2026-08-03)
+
+### Features
+
+- **ios:** add SPM dependency resolution support alongside CocoaPods ([#8933](https://github.com/invertase/react-native-firebase/issues/8933)) ([44a7a9a](https://github.com/invertase/react-native-firebase/commit/44a7a9ae7b404f412e9766c0417f1df8fa971a0b))
+- **messaging:** make expo plugin configurable for notification icon and color ([#9132](https://github.com/invertase/react-native-firebase/issues/9132)) ([99af959](https://github.com/invertase/react-native-firebase/commit/99af9597b19bf22b78f82de2951e1b94004730cd)), closes [#8840](https://github.com/invertase/react-native-firebase/issues/8840)
+
 ## [26.0.0](https://github.com/invertase/react-native-firebase/compare/v25.1.0...v26.0.0) (2026-07-29)
 
 ### ⚠ BREAKING CHANGES
