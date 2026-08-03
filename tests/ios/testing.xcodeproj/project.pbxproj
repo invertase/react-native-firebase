@@ -219,6 +219,9 @@
 							com.apple.SafariKeychain = {
 								enabled = 1;
 							};
+							com.apple.SignInWithApple = {
+								enabled = 1;
+							};
 						};
 					};
 				};

@@ -35,6 +35,7 @@ export {
   OAuthCredential,
   PhoneAuthCredential,
 } from './credentials';
+import { hasAppleFullPersonName } from './credentials/OAuthCredential';
 
 import {
   isAndroid,
@@ -88,6 +89,7 @@ import type {
   ActionCodeSettings,
   AdditionalUserInfo,
   AdditionalUserInfoNative,
+  AppleFullPersonName,
   ApplicationVerifier,
   Auth,
   AuthCredential,
@@ -601,8 +603,18 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   signInWithCredential(credential: AuthCredential): Promise<UserCredential> {
+    const fullName = (credential as { fullName?: AppleFullPersonName }).fullName;
+    const appleFullName =
+      credential.providerId.toLowerCase() === 'apple.com' && hasAppleFullPersonName(fullName)
+        ? { ...fullName }
+        : null;
     return this.native
-      .signInWithCredential(credential.providerId, credential.token, credential.secret)
+      .signInWithCredential(
+        credential.providerId,
+        credential.token,
+        credential.secret,
+        appleFullName,
+      )
       .then((userCredential: NativeUserCredentialInternal) =>
         this._setUserCredential(userCredential),
       );

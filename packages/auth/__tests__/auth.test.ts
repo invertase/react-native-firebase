@@ -509,6 +509,142 @@ describe('Auth', function () {
         expect(credential?.token).toBe('vid');
         expect(credential?.secret).toBe('123456');
       });
+
+      it('AppleAuthProvider.credential maps fullName alongside the native bridge fields', function () {
+        const fullName = { givenName: 'Jonny', familyName: 'Appleseed' };
+        const credential = AppleAuthProvider.credential(
+          'apple-id-token',
+          'apple-raw-nonce',
+          fullName,
+        );
+        expect(credential.providerId).toBe('apple.com');
+        expect(credential.signInMethod).toBe('apple.com');
+        expect(credential.idToken).toBe('apple-id-token');
+        expect(credential.rawNonce).toBe('apple-raw-nonce');
+        expect(credential.fullName).toEqual(fullName);
+        // Native bridge slots are unaffected by fullName (backwards-compatible with pre-fullName behavior).
+        expect(credential.token).toBe('apple-id-token');
+        expect(credential.secret).toBe('apple-raw-nonce');
+      });
+
+      it('AppleAuthProvider.credential works without fullName', function () {
+        const credential = AppleAuthProvider.credential('apple-id-token', 'apple-raw-nonce');
+        expect(credential.fullName).toBeUndefined();
+        expect(credential.token).toBe('apple-id-token');
+        expect(credential.secret).toBe('apple-raw-nonce');
+      });
+
+      it('OAuthProvider(apple.com).credential carries fullName', function () {
+        const fullName = { givenName: 'Jonny', familyName: 'Appleseed' };
+        const credential = new OAuthProvider('apple.com').credential({
+          idToken: 'apple-id-token',
+          rawNonce: 'apple-raw-nonce',
+          fullName,
+        });
+        expect(credential.fullName).toEqual(fullName);
+      });
+
+      it('OAuthProvider(non-apple).credential ignores fullName', function () {
+        const credential = new OAuthProvider('google.com').credential({
+          idToken: 'google-id-token',
+          rawNonce: 'google-raw-nonce',
+          fullName: { givenName: 'Ignored' },
+        });
+        expect(credential.fullName).toBeUndefined();
+        expect(credential.toJSON()).not.toHaveProperty('fullName');
+      });
+
+      it('OAuthProvider(apple.com).credential ignores empty fullName values', function () {
+        const credential = new OAuthProvider('apple.com').credential({
+          idToken: 'apple-id-token',
+          rawNonce: 'apple-raw-nonce',
+          fullName: { givenName: ' ', familyName: '' },
+        });
+        expect(credential.fullName).toBeUndefined();
+        expect(credential.toJSON()).not.toHaveProperty('fullName');
+      });
+
+      it('OAuthCredential.fromJSON round-trips fullName', function () {
+        const fullName = { givenName: 'Jonny', familyName: 'Appleseed' };
+        const credential = AppleAuthProvider.credential(
+          'apple-id-token',
+          'apple-raw-nonce',
+          fullName,
+        );
+        const roundTripped = OAuthCredential.fromJSON(credential.toJSON());
+        expect(roundTripped?.fullName).toEqual(fullName);
+      });
+
+      it('OAuthCredential.fromJSON ignores fullName for non-apple providers', function () {
+        const credential = OAuthCredential.fromJSON({
+          providerId: 'google.com',
+          idToken: 'google-id-token',
+          fullName: { givenName: 'Ignored' },
+        });
+        expect(credential?.fullName).toBeUndefined();
+      });
+    });
+
+    describe('Sign in with Apple fullName', function () {
+      it('signInWithCredential forwards fullName to the native bridge', async function () {
+        const { TurboModuleRegistry } = require('react-native');
+        const nativeAuth = TurboModuleRegistry.getEnforcing('NativeRNFBTurboAuth');
+        nativeAuth.signInWithCredential.mockClear();
+
+        const fullName = { givenName: 'Jonny', familyName: 'Appleseed' };
+        const credential = AppleAuthProvider.credential(
+          'apple-id-token',
+          'apple-raw-nonce',
+          fullName,
+        );
+        await signInWithCredential(getAuth(), credential);
+
+        expect(nativeAuth.signInWithCredential).toHaveBeenCalledWith(
+          '[DEFAULT]',
+          'apple.com',
+          'apple-id-token',
+          'apple-raw-nonce',
+          fullName,
+        );
+      });
+
+      it('signInWithCredential forwards null when fullName is absent', async function () {
+        const { TurboModuleRegistry } = require('react-native');
+        const nativeAuth = TurboModuleRegistry.getEnforcing('NativeRNFBTurboAuth');
+        nativeAuth.signInWithCredential.mockClear();
+
+        const credential = GoogleAuthProvider.credential('google-id-token');
+        await signInWithCredential(getAuth(), credential);
+
+        expect(nativeAuth.signInWithCredential).toHaveBeenCalledWith(
+          '[DEFAULT]',
+          'google.com',
+          'google-id-token',
+          '',
+          null,
+        );
+      });
+
+      it('signInWithCredential forwards null when fullName is empty', async function () {
+        const { TurboModuleRegistry } = require('react-native');
+        const nativeAuth = TurboModuleRegistry.getEnforcing('NativeRNFBTurboAuth');
+        nativeAuth.signInWithCredential.mockClear();
+
+        const credential = new OAuthProvider('apple.com').credential({
+          idToken: 'apple-id-token',
+          rawNonce: 'apple-raw-nonce',
+          fullName: { givenName: ' ', familyName: '' },
+        });
+        await signInWithCredential(getAuth(), credential);
+
+        expect(nativeAuth.signInWithCredential).toHaveBeenCalledWith(
+          '[DEFAULT]',
+          'apple.com',
+          'apple-id-token',
+          'apple-raw-nonce',
+          null,
+        );
+      });
     });
 
     describe('User.reauthenticateWithRedirect', function () {

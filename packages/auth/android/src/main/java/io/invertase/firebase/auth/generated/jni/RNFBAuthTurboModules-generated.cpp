@@ -169,7 +169,7 @@ static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_getIdToken
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_signInWithCredential(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "signInWithCredential", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "signInWithCredential", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboAuthSpecJSI_signInWithProvider(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -350,7 +350,7 @@ NativeRNFBTurboAuthSpecJSI::NativeRNFBTurboAuthSpecJSI(const JavaTurboModule::In
   methodMap_["updateProfile"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboAuthSpecJSI_updateProfile};
   methodMap_["getIdToken"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboAuthSpecJSI_getIdToken};
   methodMap_["getIdTokenResult"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboAuthSpecJSI_getIdTokenResult};
-  methodMap_["signInWithCredential"] = MethodMetadata {4, __hostFunction_NativeRNFBTurboAuthSpecJSI_signInWithCredential};
+  methodMap_["signInWithCredential"] = MethodMetadata {5, __hostFunction_NativeRNFBTurboAuthSpecJSI_signInWithCredential};
   methodMap_["signInWithProvider"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboAuthSpecJSI_signInWithProvider};
   methodMap_["signInWithPhoneNumber"] = MethodMetadata {3, __hostFunction_NativeRNFBTurboAuthSpecJSI_signInWithPhoneNumber};
   methodMap_["verifyPhoneNumberWithMultiFactorInfo"] = MethodMetadata {3, __hostFunction_NativeRNFBTurboAuthSpecJSI_verifyPhoneNumberWithMultiFactorInfo};

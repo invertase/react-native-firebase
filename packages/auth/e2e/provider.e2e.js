@@ -430,6 +430,59 @@ describe('auth() -> Providers', function () {
           credential.secret.should.equal(accessToken);
           credential.accessToken.should.equal(accessToken);
         });
+
+        it('should pass apple.com fullName through the iOS native credential mapper', async function () {
+          if (!Platform.ios) {
+            this.skip();
+          }
+          const { getApp } = modular;
+          const { OAuthProvider, signInWithCredential, getAuth } = authModular;
+          const defaultAuth = getAuth(getApp());
+          const provider = new OAuthProvider('apple.com');
+          const credential = provider.credential({
+            idToken: 'apple-id-token-fullname-e2e',
+            rawNonce: 'apple-raw-nonce-fullname-e2e',
+            fullName: {
+              givenName: 'Ada',
+              familyName: 'Lovelace',
+            },
+          });
+
+          try {
+            await signInWithCredential(defaultAuth, credential);
+            throw new Error('Did not error.');
+          } catch (error) {
+            error.code.should.be.a.String();
+            error.code.should.not.equal('auth/unknown');
+            String(error.message).should.not.match(/fullName/i);
+          }
+        });
+
+        it('should fall back to the regular iOS apple.com credential mapper for empty fullName', async function () {
+          if (!Platform.ios) {
+            this.skip();
+          }
+          const { getApp } = modular;
+          const { OAuthProvider, signInWithCredential, getAuth } = authModular;
+          const defaultAuth = getAuth(getApp());
+          const provider = new OAuthProvider('apple.com');
+          const credential = provider.credential({
+            idToken: 'apple-id-token-empty-fullname-e2e',
+            rawNonce: 'apple-raw-nonce-empty-fullname-e2e',
+            // No meaningful NSPersonNameComponents fields; JS should fall back to the credential
+            // built without fullName rather than passing an empty name components object.
+            fullName: {},
+          });
+
+          try {
+            await signInWithCredential(defaultAuth, credential);
+            throw new Error('Did not error.');
+          } catch (error) {
+            error.code.should.be.a.String();
+            error.code.should.not.equal('auth/unknown');
+            String(error.message).should.not.match(/fullName/i);
+          }
+        });
       });
 
       describe('PROVIDER_ID', function () {

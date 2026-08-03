@@ -15,8 +15,8 @@
  *
  */
 
-import { AuthCredential } from '../credentials';
-import type { AuthCredential as AuthCredentialType } from '../types/auth';
+import { OAuthCredential } from '../credentials';
+import type { AppleFullPersonName } from '../types/auth';
 
 const providerId = 'apple.com' as const;
 
@@ -26,7 +26,7 @@ const providerId = 'apple.com' as const;
  * @example
  * ```js
  * const provider = new OAuthProvider('apple.com');
- * const credential = provider.credential({ idToken, rawNonce });
+ * const credential = provider.credential({ idToken, rawNonce, fullName });
  * ```
  */
 export default class AppleAuthProvider {
@@ -38,7 +38,23 @@ export default class AppleAuthProvider {
     return providerId;
   }
 
-  static credential(token: string, secret?: string): AuthCredentialType {
-    return new AuthCredential(providerId, providerId, token, secret ?? '');
+  /**
+   * @param token The Apple identity token.
+   * @param secret The raw nonce used to obtain the identity token.
+   * @param fullName The user's full name, as shared by Sign in with Apple on the user's first
+   * authorization. See {@link OAuthCredentialOptions.fullName} for platform support.
+   */
+  static credential(
+    token: string,
+    secret?: string,
+    fullName?: AppleFullPersonName,
+  ): OAuthCredential {
+    return new OAuthCredential(providerId, {
+      idToken: token,
+      rawNonce: secret,
+      fullName,
+      bridgeToken: token,
+      bridgeSecret: secret ?? '',
+    });
   }
 }

@@ -267,6 +267,8 @@ export interface RNFBAuthModule {
     providerId: string,
     token: string,
     secret?: string | null,
+    // Sign in with Apple full name (iOS only; see AppleFullPersonName in ./auth.ts).
+    fullName?: Record<string, unknown> | null,
   ): Promise<NativeUserCredentialInternal>;
   revokeToken(authorizationCode: string): Promise<void>;
   sendPasswordResetEmail(

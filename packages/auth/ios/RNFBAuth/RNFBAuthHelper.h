@@ -107,6 +107,7 @@
                     provider:(NSString *)provider
                    authToken:(NSString *)authToken
                   authSecret:(NSString *)authSecret
+                    fullName:(NSDictionary *)fullName
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject;
 

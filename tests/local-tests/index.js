@@ -30,6 +30,7 @@ import { PipelinesTestComponent } from './firestore/pipelines';
 import { PipelinesE2ETestComponent } from './firestore/pipelines-e2e';
 import { VertexAITestComponent } from './vertexai/vertexai';
 import { AuthMFADemonstrator } from './auth/auth-mfa-demonstrator';
+import { AppleFullNameTestComponent } from './auth/apple-full-name';
 import { HttpsCallableTestComponent } from './functions/https-callable';
 import { StorageTestComponent } from './storage/storage';
 import { StreamingCallableTestComponent } from './functions/streaming-callable';
@@ -48,6 +49,7 @@ const testComponents = {
   'Firestore Pipelines E2E Test': PipelinesE2ETestComponent,
   'VertexAI Generation Example': VertexAITestComponent,
   'Auth MFA Demonstrator': AuthMFADemonstrator,
+  'Auth Apple fullName Test': AppleFullNameTestComponent,
   'HttpsCallable Test': HttpsCallableTestComponent,
   'Storage Test': StorageTestComponent,
   'Streaming Callable Test': StreamingCallableTestComponent,

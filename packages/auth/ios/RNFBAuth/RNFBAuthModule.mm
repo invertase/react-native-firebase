@@ -251,12 +251,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
                     provider:(NSString *)provider
                    authToken:(NSString *)authToken
                   authSecret:(NSString *)authSecret
+                    fullName:(NSDictionary *)fullName
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject {
   [RNFBAuthHelper signInWithCredential:appName
                               provider:provider
                              authToken:authToken
                             authSecret:authSecret
+                              fullName:fullName
                                resolve:resolve
                                 reject:reject];
 }

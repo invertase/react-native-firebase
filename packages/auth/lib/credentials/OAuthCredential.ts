@@ -16,6 +16,7 @@
  */
 
 import { AuthCredential, parseCredentialJSON } from './AuthCredential';
+import type { AppleFullPersonName } from '../types/auth';
 
 type OAuthCredentialJSON = {
   providerId?: string;
@@ -25,6 +26,7 @@ type OAuthCredentialJSON = {
   rawNonce?: string;
   nonce?: string;
   secret?: string;
+  fullName?: AppleFullPersonName;
 };
 
 type OAuthCredentialParams = {
@@ -32,11 +34,46 @@ type OAuthCredentialParams = {
   accessToken?: string;
   rawNonce?: string;
   secret?: string;
+  /** @remarks Sign in with Apple only; see {@link OAuthCredentialOptions.fullName}. */
+  fullName?: AppleFullPersonName;
   /** @internal RNFB native bridge token slot override */
   bridgeToken?: string;
   /** @internal RNFB native bridge secret slot override */
   bridgeSecret?: string;
 };
+
+const appleProviderId = 'apple.com';
+const appleFullPersonNameKeys = [
+  'namePrefix',
+  'givenName',
+  'middleName',
+  'familyName',
+  'nameSuffix',
+  'nickname',
+] as const;
+
+export function hasAppleFullPersonName(
+  fullName?: AppleFullPersonName | null,
+): fullName is AppleFullPersonName {
+  return (
+    !!fullName &&
+    appleFullPersonNameKeys.some(key => {
+      const value = fullName[key];
+      return typeof value === 'string' && value.trim().length > 0;
+    })
+  );
+}
+
+function resolveAppleFullPersonName(
+  providerId: string,
+  fullName?: AppleFullPersonName,
+): AppleFullPersonName | undefined {
+  if (providerId.toLowerCase() !== appleProviderId || !hasAppleFullPersonName(fullName)) {
+    return undefined;
+  }
+
+  return fullName;
+}
 
 function resolveOAuthBridgeFields(params: OAuthCredentialParams): {
   token: string;
@@ -75,6 +112,8 @@ export class OAuthCredential extends AuthCredential {
   readonly accessToken?: string;
   /** @remarks Used for Sign in with Apple and Facebook limited-login flows. OAuth 1.0 token secrets (e.g. Twitter) use the inherited AuthCredential secret bridge field instead. */
   readonly rawNonce?: string;
+  /** @remarks Sign in with Apple only; see {@link OAuthCredentialOptions.fullName}. */
+  readonly fullName?: AppleFullPersonName;
 
   constructor(providerId: string, params: OAuthCredentialParams) {
     const bridge = resolveOAuthBridgeFields(params);
@@ -82,6 +121,7 @@ export class OAuthCredential extends AuthCredential {
     this.idToken = params.idToken;
     this.accessToken = params.accessToken;
     this.rawNonce = params.rawNonce;
+    this.fullName = resolveAppleFullPersonName(providerId, params.fullName);
   }
 
   toJSON(): object {
@@ -97,6 +137,9 @@ export class OAuthCredential extends AuthCredential {
     if (this.secret && !this.rawNonce) {
       json.secret = this.secret;
     }
+    if (this.fullName) {
+      json.fullName = this.fullName;
+    }
     return json;
   }
 
@@ -111,6 +154,7 @@ export class OAuthCredential extends AuthCredential {
       accessToken: parsed.accessToken,
       rawNonce: parsed.rawNonce ?? parsed.nonce,
       secret: parsed.secret,
+      fullName: parsed.fullName,
     });
   }
 }

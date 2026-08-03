@@ -146,6 +146,9 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 
 @interface RNFBAuthHelper ()
 
++ (NSString *)nonEmptyStringFromDictionary:(NSDictionary *)dictionary key:(NSString *)key;
++ (NSPersonNameComponents *)personNameComponentsFromDictionary:(NSDictionary *)dictionary;
+
 + (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider
                                           token:(NSString *)authToken
                                          secret:(NSString *)authTokenSecret
@@ -737,6 +740,7 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
                     provider:(NSString *)provider
                    authToken:(NSString *)authToken
                   authSecret:(NSString *)authSecret
+                    fullName:(NSDictionary *)fullName
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
@@ -745,6 +749,20 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
                                                            token:authToken
                                                           secret:authSecret
                                                      firebaseApp:firebaseApp];
+
+  // Sign in with Apple: if the caller supplied a non-empty fullName (only available on the
+  // user's first authorization), rebuild the credential so Firebase can store displayName.
+  // See AppleFullPersonName in auth.ts.
+  if ([provider compare:@"apple.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    NSPersonNameComponents *personNameComponents =
+        [self personNameComponentsFromDictionary:fullName];
+    if (personNameComponents != nil) {
+      credential = [FIROAuthProvider appleCredentialWithIDToken:authToken
+                                                       rawNonce:authSecret
+                                                       fullName:personNameComponents];
+    }
+  }
+
   if (credential == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                       userInfo:(NSMutableDictionary *)@{
@@ -1709,6 +1727,58 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
     [[FIRAuth authWithApp:firebaseApp] useEmulatorWithHost:host port:(NSInteger)port];
     emulatorConfigs[firebaseApp.name] = @YES;
   }
+}
+
++ (NSString *)nonEmptyStringFromDictionary:(NSDictionary *)dictionary key:(NSString *)key {
+  id value = dictionary[key];
+  if (![value isKindOfClass:[NSString class]]) {
+    return nil;
+  }
+
+  NSString *stringValue = (NSString *)value;
+  NSString *trimmed = [stringValue
+      stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  return trimmed.length > 0 ? stringValue : nil;
+}
+
++ (NSPersonNameComponents *)personNameComponentsFromDictionary:(NSDictionary *)dictionary {
+  if (dictionary == nil || (id)dictionary == [NSNull null]) {
+    return nil;
+  }
+
+  NSPersonNameComponents *components = [[NSPersonNameComponents alloc] init];
+  BOOL hasAnyComponent = NO;
+  NSString *namePrefix = [self nonEmptyStringFromDictionary:dictionary key:@"namePrefix"];
+  if (namePrefix != nil) {
+    components.namePrefix = namePrefix;
+    hasAnyComponent = YES;
+  }
+  NSString *givenName = [self nonEmptyStringFromDictionary:dictionary key:@"givenName"];
+  if (givenName != nil) {
+    components.givenName = givenName;
+    hasAnyComponent = YES;
+  }
+  NSString *middleName = [self nonEmptyStringFromDictionary:dictionary key:@"middleName"];
+  if (middleName != nil) {
+    components.middleName = middleName;
+    hasAnyComponent = YES;
+  }
+  NSString *familyName = [self nonEmptyStringFromDictionary:dictionary key:@"familyName"];
+  if (familyName != nil) {
+    components.familyName = familyName;
+    hasAnyComponent = YES;
+  }
+  NSString *nameSuffix = [self nonEmptyStringFromDictionary:dictionary key:@"nameSuffix"];
+  if (nameSuffix != nil) {
+    components.nameSuffix = nameSuffix;
+    hasAnyComponent = YES;
+  }
+  NSString *nickname = [self nonEmptyStringFromDictionary:dictionary key:@"nickname"];
+  if (nickname != nil) {
+    components.nickname = nickname;
+    hasAnyComponent = YES;
+  }
+  return hasAnyComponent ? components : nil;
 }
 
 + (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider

@@ -915,7 +915,15 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
 
   @Override
   public void signInWithCredential(
-      String appName, String provider, String authToken, String authSecret, final Promise promise) {
+      String appName,
+      String provider,
+      String authToken,
+      String authSecret,
+      @Nullable ReadableMap fullName,
+      final Promise promise) {
+    // Sign in with Apple fullName has no equivalent credential-level API on the Firebase Android
+    // SDK (see AppleFullPersonName in lib/types/auth.ts), so Android intentionally ignores it.
+    // Callers should use updateProfile() after sign-in on Android.
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
