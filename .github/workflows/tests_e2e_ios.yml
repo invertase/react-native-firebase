@@ -192,7 +192,7 @@ jobs:
 
       - name: Yarn Cache Restore
         # https://github.com/actions/cache/releases
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: yarn-cache
         continue-on-error: true
         with:
@@ -202,7 +202,7 @@ jobs:
 
       - name: Detox Framework Cache Restore
         # https://github.com/actions/cache/releases
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: detox-cache
         continue-on-error: true
         with:
@@ -220,7 +220,7 @@ jobs:
           max-size: 1500M
 
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Restore
         id: nx-cache
         continue-on-error: true
@@ -254,7 +254,7 @@ jobs:
 
       - name: Pods Cache Restore
         # https://github.com/actions/cache/releases
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: pods-cache
         continue-on-error: true
         with:
@@ -276,7 +276,7 @@ jobs:
 
       - name: Firestore Emulator Restore
         # https://github.com/actions/cache/releases
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: firestore-emulator-cache
         continue-on-error: true
         with:
@@ -337,7 +337,7 @@ jobs:
       - name: Metro Bundler Cache Restore
         if: contains(matrix.buildmode, 'debug')
         # https://github.com/actions/cache/releases
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: metro-bundler-cache
         continue-on-error: true
         with:
