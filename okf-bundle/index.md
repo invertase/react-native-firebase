@@ -17,6 +17,7 @@ okf_version: '0.1'
 - [Change authoring workflow](/testing/change-authoring-workflow.md) — verified product change loop (unit-focused → area-focused review → commit); [§ validation evidence (blocking)](testing/change-authoring-workflow.md#validation-evidence-blocking); [coverage evidence package](testing/coverage-design.md#coverage-evidence-package)
 - [Iteration vocabulary](/testing/iteration-vocabulary.md) — work type, tier, and queue field identifiers
 - [Running e2e tests](/testing/running-e2e.md) — canonical e2e commands, narrowing, environment, diagnosis
+- [Test app dependency pins](/testing/test-app-dependency-pins.md) — intentional RN / CLI locks (`react-native-macos`)
 - [Validation checklist](/testing/validation-checklist.md) — compile, Jest, lint, `compare:types`, e2e, coverage
 - [Published types ADR](/testing/architecture-decisions.md) — attw scope, Expo plugin checks, discarded resolutions
 - [Android unit testing ADR](/testing/android-architecture-decisions.md) — Robolectric + Mockito JVM unit tests (`AndroidTest-AD-*`)

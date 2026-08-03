@@ -175,6 +175,7 @@ Gate close / push: return [validation evidence package](validation-checklist.md#
 | ------------------------------- | ------------------------------------------------------------ |
 | E2e commands, pre-flight, tiers | [running-e2e.md](running-e2e.md)                             |
 | Install / patch / fmt before `:build` | [§ install / patch / fmt gate](#install-patch-fmt-gate-blocking) |
+| Test-app RN / CLI pins (`react-native-macos`) | [test-app-dependency-pins.md](test-app-dependency-pins.md) |
 | Handoff validation sequence     | [validation-checklist.md](validation-checklist.md)           |
 | Android JVM unit ADR            | [android-architecture-decisions.md](android-architecture-decisions.md) |
 | Work types and gates            | [change-authoring-workflow.md](change-authoring-workflow.md) |

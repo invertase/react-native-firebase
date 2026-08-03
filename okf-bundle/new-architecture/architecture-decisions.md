@@ -340,9 +340,9 @@ Committed generated native artifacts ([NewArch-AD-5](#newarch-ad-5--commit-gener
 
 **Decision:**
 
-- Pin the RN/Codegen toolchain to the app's RN line via root `resolutions` — `react-native`, `@react-native/codegen`, and `@react-native-community/cli` fixed to the app's line (currently `0.78.3` / `0.78.3` / `15.1.3`).
+- Pin the RN/Codegen toolchain to the app's RN line via root `resolutions` — `react-native`, `@react-native/codegen`, and `@react-native-community/cli` fixed to the same line (no floating `latest` / `*` / stray package `react-native` devDeps). Current pin values and the **`react-native-macos` reason the test-app RN line cannot move independently** live in [test app dependency pins](../testing/test-app-dependency-pins.md) — do not restate version numbers here.
 - **No floating specifiers** (`latest`, `*`, `^0.80`, …) for the RN toolchain in any workspace `package.json`. Individual packages must **not** declare their own `react-native` devDependency — rely on the hoisted, pinned version (as `app-check` / `storage` do).
-- Treat a React Native upgrade as **one coordinated breaking change**: bump the app RN **and** the pinned `resolutions` together, regenerate all `generated/**`, rebuild native on iOS + Android, and re-run `codegen:verify` — in a single change. See the **Updating React Native** checklist in [CONTRIBUTING.md](../../CONTRIBUTING.md).
+- Treat a React Native upgrade as **one coordinated breaking change**: bump the app RN **and** the pinned `resolutions` together (including `react-native-macos` when the test app moves), regenerate all `generated/**`, rebuild native on iOS + Android, and re-run `codegen:verify` — in a single change. See the **Updating React Native** checklist in [CONTRIBUTING.md](../../CONTRIBUTING.md) and [test app dependency pins § When pins may move](../testing/test-app-dependency-pins.md#when-pins-may-move).
 
 **Why:** makes generated output reproducible everywhere (local + CI), prevents silent native-build breaks, and makes the RN coupling explicit and auditable.
 
