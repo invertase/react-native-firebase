@@ -19,7 +19,10 @@ const { execSync, spawn } = require('child_process');
 const net = require('net');
 const path = require('path');
 
-const { pullIosCoverage, pullAndroidCoverageWithRetry } = require('../scripts/pull-native-coverage');
+const {
+  pullIosCoverage,
+  pullAndroidCoverageWithRetry,
+} = require('../scripts/pull-native-coverage');
 const { recordE2eCloudMetricFromHost } = require('../../packages/app/e2e/cloud-metrics');
 
 const E2E_TEST_PROJECT = 'react-native-firebase-testing';
@@ -83,6 +86,8 @@ const JET_RETRYABLE_WS_RE = /\[jet-ws\] RETRYABLE_DISCONNECT code=(1006|1001)\b/
 const JET_RECONNECT_RECOVERED_RE = /\[jet-ws\] reconnect_recovered code=(1006|1001)\b/;
 const JET_SERVER_NOT_RUNNING_RE = /server wasn't running/i;
 const JET_COVERAGE_LOST_RE = /Coverage summary:[\s\S]*?Unknown% \( 0\/0 \)/;
+const JET_SERVER_STOPPED_RE = /\[🟥\] Stopped the server/i;
+const JET_SUITE_TITLE_FRAGMENT = 'Jet tests on ';
 const JET_COVERAGE_TEARDOWN_RE =
   /Failed to send 'coverage-ready' message: WebSocket is closed|coverage upload timed out waiting for coverage-ack/i;
 const JET_PROTOCOL_ERROR_RE = /\[🟥\] Unexpected end of JSON input/i;
@@ -128,7 +133,10 @@ function resolveAppBinaryPath() {
   }
 
   const fs = require('node:fs');
-  const debugIosApp = path.resolve(__dirname, '../ios/build/Build/Products/Debug-iphonesimulator/testing.app');
+  const debugIosApp = path.resolve(
+    __dirname,
+    '../ios/build/Build/Products/Debug-iphonesimulator/testing.app',
+  );
   if (fs.existsSync(debugIosApp)) {
     return debugIosApp;
   }
@@ -219,9 +227,7 @@ function logLaunchInstallState(label) {
         timeout: 30000,
       });
       const invertaseLine =
-        apps
-          .split('\n')
-          .find(line => line.includes('com.invertase.testing')) || '(not listed)';
+        apps.split('\n').find(line => line.includes('com.invertase.testing')) || '(not listed)';
       console.log(`[rnfb-e2e] install-state label=${label} listapps=${invertaseLine.trim()}`);
     } catch (err) {
       console.warn(
@@ -284,7 +290,9 @@ function resolveAdbPath() {
 function resolveEmulatorPath() {
   const sdkRoot = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT;
   if (!sdkRoot) {
-    throw new Error('ANDROID_HOME or ANDROID_SDK_ROOT is required to cold boot the Android emulator');
+    throw new Error(
+      'ANDROID_HOME or ANDROID_SDK_ROOT is required to cold boot the Android emulator',
+    );
   }
   return path.join(sdkRoot, 'emulator', 'emulator');
 }
@@ -339,7 +347,9 @@ function killTcpPortListener(port, label) {
       timeout: 5000,
     }).trim();
   } catch (err) {
-    console.warn(`[rnfb-e2e] ${label}: unable to inspect :${port} listener: ${err?.message || err}`);
+    console.warn(
+      `[rnfb-e2e] ${label}: unable to inspect :${port} listener: ${err?.message || err}`,
+    );
     return;
   }
 
@@ -715,6 +725,35 @@ function isRetryableJetDisconnect(output) {
   return JET_RETRYABLE_WS_RE.test(output);
 }
 
+function countJetSuiteTitles(output) {
+  const text = String(output);
+  let count = 0;
+  let from = 0;
+  while (from < text.length) {
+    const idx = text.indexOf(JET_SUITE_TITLE_FRAGMENT, from);
+    if (idx === -1) {
+      break;
+    }
+    count += 1;
+    from = idx + JET_SUITE_TITLE_FRAGMENT.length;
+  }
+  return count;
+}
+
+function hasJetReconnectDesyncSignal(output) {
+  // Suite re-entry after reconnect (preserving_runner restarted the mocha tree),
+  // or prior reconnect gates: lost coverage / server stopped mid-session.
+  return (
+    countJetSuiteTitles(output) >= 2 ||
+    JET_COVERAGE_LOST_RE.test(output) ||
+    JET_SERVER_STOPPED_RE.test(output)
+  );
+}
+
+function isJetReconnectDesyncFailure(output) {
+  return JET_RECONNECT_RECOVERED_RE.test(output) && hasJetReconnectDesyncSignal(output);
+}
+
 function isRetryableJetSessionFailure(output) {
   if (JET_SERVER_NOT_RUNNING_RE.test(output)) {
     return true;
@@ -732,11 +771,15 @@ function isRetryableJetSessionFailure(output) {
     return true;
   }
 
-  if (!JET_RECONNECT_RECOVERED_RE.test(output)) {
-    return false;
+  // Bare reconnect_recovered is not enough — product assertion failures after a
+  // benign reconnect must fail the attempt. Retry only when reconnect coincides
+  // with a desync / polluted-session signal (suite re-entry, coverage 0/0, or
+  // server stopped).
+  if (isJetReconnectDesyncFailure(output)) {
+    return true;
   }
 
-  return JET_COVERAGE_LOST_RE.test(output) || /\[🟥\] Stopped the server/i.test(output);
+  return false;
 }
 
 function isRetryableCloudQuotaFailure(jetOutput) {
@@ -773,6 +816,9 @@ function logRetryEligibility(err, attempt) {
   const checks = {
     jetDisconnect: isRetryableJetDisconnect(jetOutput),
     jetSession: isRetryableJetSessionFailure(jetOutput),
+    jetReconnectRecovered: JET_RECONNECT_RECOVERED_RE.test(jetOutput),
+    jetReconnectDesync: isJetReconnectDesyncFailure(jetOutput),
+    jetReconnectSuiteRestart: countJetSuiteTitles(jetOutput) >= 2,
     jetProtocol: JET_PROTOCOL_ERROR_RE.test(jetOutput),
     jetNoClient: JET_NO_CLIENT_CONNECTED_RE.test(jetOutput),
     coverageTeardown: JET_COVERAGE_TEARDOWN_RE.test(jetOutput),
@@ -827,7 +873,8 @@ async function terminateAppWithTiming(label) {
 }
 
 async function launchAppWithTimeout(launchArgs, { deleteApp = true, timeoutMs } = {}) {
-  const effectiveTimeout = timeoutMs ?? (usesLiveMetro() ? LAUNCH_APP_TIMEOUT_MS : LAUNCH_APP_RELEASE_TIMEOUT_MS);
+  const effectiveTimeout =
+    timeoutMs ?? (usesLiveMetro() ? LAUNCH_APP_TIMEOUT_MS : LAUNCH_APP_RELEASE_TIMEOUT_MS);
   console.log(
     `[rnfb-e2e] launchApp starting timeout=${effectiveTimeout}ms delete=${deleteApp} liveMetro=${usesLiveMetro()}`,
   );
@@ -1136,10 +1183,16 @@ describe('Jet Tests', function () {
             if (JET_PROTOCOL_ERROR_RE.test(lastOutput)) {
               console.warn('[rnfb-e2e] Retrying after Jet protocol error (JSON/WS desync)');
             } else if (JET_NO_CLIENT_CONNECTED_RE.test(lastOutput)) {
-              console.warn('[rnfb-e2e] Retrying after Jet reconnect send race (No client connected)');
+              console.warn(
+                '[rnfb-e2e] Retrying after Jet reconnect send race (No client connected)',
+              );
+            } else if (isJetReconnectDesyncFailure(lastOutput)) {
+              console.warn(
+                '[rnfb-e2e] Retrying after Jet reconnect desync (suite re-entry / coverage lost / server stopped)',
+              );
             } else {
               console.warn(
-                '[rnfb-e2e] Retrying after Jet session desync (reconnect recovered / coverage teardown / server not running)',
+                '[rnfb-e2e] Retrying after Jet session desync (coverage teardown / server not running)',
               );
             }
           } else if (isRetryableLaunchFailure(lastFailure)) {
@@ -1207,9 +1260,7 @@ describe('Jet Tests', function () {
         intervalMs: 1000,
       });
       if (!pulled) {
-        console.warn(
-          '[native-coverage] Android .ec not pulled on Jet close; post-e2e will retry',
-        );
+        console.warn('[native-coverage] Android .ec not pulled on Jet close; post-e2e will retry');
       }
     }
   });
