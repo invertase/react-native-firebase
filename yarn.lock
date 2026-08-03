@@ -25631,9 +25631,9 @@ __metadata:
   linkType: hard
 
 "web-streams-polyfill@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "web-streams-polyfill@npm:4.2.0"
-  checksum: 10/137e79549d0b567d7af08711e91956379b168f2c66d8d08d25498f3bd0b63859b7305bc3ea9e82ed6587ed41fad9435eedd7f1d0a25647c9acf2b3922c0963b6
+  version: 4.3.0
+  resolution: "web-streams-polyfill@npm:4.3.0"
+  checksum: 10/70d1ac70d6c155dd5714b09902669954ecb7cc97e636793096daf6b3ba303241c91952ef74c84646e9fd15dcd00e2ec579e4bc3f303ecfc251bd77c6691f19e2
   languageName: node
   linkType: hard
 
