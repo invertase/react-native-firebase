@@ -176,6 +176,43 @@ root and calls that binary directly (`chmod +x` first if the checkout didn't
 preserve the executable bit). If none of the three paths resolve, the script
 warns and lists every path it checked rather than failing silently.
 
+## Automatic SPM products and multi-pod FirebaseCore sharing
+
+firebase-ios-sdk `Package.swift` declares products as plain `.library(...)`
+with no `type: .dynamic` (confirmed on current tags, including 12.17.0).
+Automatic SPM libraries are linked statically into each consumer.
+
+React Native's `spm_dependency` attaches those products to **each pod target**.
+With `use_frameworks! :linkage => :dynamic` (required for RNFB SPM mode):
+
+- each dynamic pod framework embeds a private FirebaseCore (and related)
+  copy;
+- the app target may also get a `PackageFrameworks/*_PackageProduct.framework`
+  via `rnfirebase_add_spm_core_to_app_target`;
+- runtime can log duplicate `FIRApp` / related classes;
+- `FirebaseApp.configure()` in the app does not configure another pod's copy.
+
+| RNFB | Other native dependency | Shared FirebaseCore? |
+| --- | --- | --- |
+| SPM | SPM (`spm_dependency`) | No |
+| SPM | CocoaPods Firebase pods | No (dual resolution) |
+| CocoaPods (`$RNFirebaseDisableSPM = true`) | CocoaPods Firebase pods | Yes |
+
+SPM + static pods is rejected by `rnfirebase_fail_if_spm_static_linkage!`:
+per-pod copies collide at link time (`duplicate symbol`). Static linkage is
+not a sharing path under SPM.
+
+This is a packaging limitation of automatic SPM libraries + per-pod
+attachment, not a Data Connect-specific bug. Consumer-facing guidance:
+[`docs/ios-spm.mdx`](../docs/ios-spm.mdx#sharing-firebasecore-with-other-native-pods).
+Tracked from GitHub
+[#9140](https://github.com/invertase/react-native-firebase/issues/9140) /
+Linear CPRN-292.
+
+Do **not** reintroduce comments or docs that claim firebase-ios-sdk products
+use `.library(type: .dynamic)`. That claim is false and misled debugging of
+the multi-pod sharing failure.
+
 ## Runtime framework embedding
 
 React Native's `spm_dependency` integration attaches SPM products to pod
@@ -286,6 +323,10 @@ invariants:
 - no private/transitive Firebase target added as if it were a public product;
 - SPM mode still adds exactly one app framework-embedding phase and CocoaPods
   mode does not require it;
+- docs/comments must not claim firebase-ios-sdk SPM products use
+  `.library(type: .dynamic)`; products are automatic libraries, and multi-pod
+  FirebaseCore sharing under SPM is unsupported (CocoaPods mode is the
+  supported path when another native pod must share `FirebaseApp`);
 - if a Firebase/Google SPM package adds a new `.binaryTarget` xcframework to
   the resolved graph (e.g. a firebase-ios-sdk version bump),
   `RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES` is re-checked against a clean

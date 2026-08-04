@@ -149,10 +149,15 @@ end
 # because static frameworks cause each pod to embed Firebase SPM products,
 # resulting in duplicate symbol linker errors.
 #
-# firebase-ios-sdk SPM requires dynamic linkage. There is no upstream statement
-# from Google that SPM+static is supported. See:
+# firebase-ios-sdk SPM products are plain `.library(...)` (automatic linkage),
+# not `.library(type: .dynamic)`. See:
 # https://github.com/firebase/firebase-ios-sdk/blob/main/Package.swift
-# (all products use .library(type: .dynamic))
+# Automatic products are linked statically into each consumer. RNFB SPM mode
+# therefore requires `use_frameworks! :linkage => :dynamic` so the app can
+# build and run; static pod linkage collides those per-pod copies at link time.
+# Dynamic pods avoid the link failure but still embed a private copy per pod,
+# so third-party pods cannot share one FirebaseCore/FirebaseApp with RNFB
+# under SPM (use `$RNFirebaseDisableSPM = true` + CocoaPods for that).
 #
 # Returns true only when `$RNFirebaseDisableSPM` has been explicitly set to `true`.
 #
@@ -366,14 +371,16 @@ end
 # architecture ..." linker error later, at Xcode build time, with no obvious
 # link back to the Podfile setting that caused it.
 #
-# firebase-ios-sdk's SPM package only ships dynamic library products -- see
-# https://github.com/firebase/firebase-ios-sdk/blob/main/Package.swift (every
-# product uses `.library(type: .dynamic)`) -- so under static linkage, every
-# RNFB pod that resolves Firebase via SPM ends up statically embedding its
-# own private copy of the same Firebase SPM products, and the app target
-# links duplicate symbols for each one. There is no supported combination of
-# RNFB's SPM mode with static linkage to fall back to; the fix is always to
-# either switch to dynamic linkage or opt out of SPM entirely.
+# firebase-ios-sdk's SPM products are automatic libraries (plain `.library(...)`,
+# not `type: .dynamic`) -- see
+# https://github.com/firebase/firebase-ios-sdk/blob/main/Package.swift -- so
+# each pod that resolves Firebase via SPM statically embeds its own copy.
+# Under static pod linkage those copies collide when the app links
+# (`duplicate symbol`). Under dynamic pod linkage the app builds, but each
+# dynamic framework still keeps a private copy (runtime class duplication /
+# split FirebaseApp registries). There is no supported combination of RNFB's
+# SPM mode with static linkage; the fix is always to switch to dynamic
+# linkage or opt out of SPM entirely.
 #
 # Raises `Pod::Informative` -- CocoaPods' own user-facing error class, which
 # `pod install` prints as a plain, readable message with no Ruby backtrace --
@@ -404,7 +411,7 @@ def rnfirebase_fail_if_spm_static_linkage!(installer)
   raise Pod::Informative, <<~MESSAGE
     [react-native-firebase] SPM + static linkage is not supported (target(s): #{target_names}).
 
-    firebase-ios-sdk's Swift Package only ships dynamic library products, so `use_frameworks! :linkage => :static` causes every react-native-firebase pod that resolves Firebase via SPM to embed its own copy of the same Firebase frameworks -- this produces duplicate-symbol linker errors at build time instead of a clear error here.
+    firebase-ios-sdk's Swift Package products are automatic libraries (not `type: .dynamic`), so each react-native-firebase pod that resolves Firebase via SPM embeds its own copy. With `use_frameworks! :linkage => :static` those copies collide at link time as duplicate-symbol errors.
 
     Fix one of the following in your Podfile, then run `pod install` again:
       - Use dynamic linkage: `use_frameworks! :linkage => :dynamic`

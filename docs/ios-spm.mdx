@@ -25,11 +25,14 @@ SPM requires dynamic framework linkage:
 use_frameworks! :linkage => :dynamic
 ```
 
-Do not use RNFB's SPM mode with `use_frameworks! :linkage => :static`. Firebase's
-SPM products are dynamic, and static linkage makes multiple RNFB pods link
-duplicate copies of them. `pod install` fails fast with this error if it
-detects the combination, rather than letting it surface later as a confusing
-duplicate-symbol linker error.
+Do not use RNFB's SPM mode with `use_frameworks! :linkage => :static`.
+firebase-ios-sdk SPM products are automatic libraries (plain `.library(...)`,
+not `type: .dynamic`), so each pod that depends on them embeds its own copy.
+With static pod linkage those copies collide at link time as duplicate-symbol
+errors. `pod install` fails fast for that combination instead of surfacing the
+linker failure later. Dynamic linkage is required for SPM mode to build and
+run; see [Sharing FirebaseCore with other native pods](#sharing-firebasecore-with-other-native-pods)
+for what dynamic linkage does and does not give you.
 
 CocoaPods mode supports either static or dynamic linkage, subject to the
 requirements of the other dependencies in your app.
@@ -87,7 +90,7 @@ The install output identifies the selected mode:
 ```
 
 RNFB also adds an `[RNFB] Embed Firebase SPM Frameworks` build phase to the app
-target. This phase embeds dynamic Firebase frameworks that React Native's
+target. This phase embeds SPM-built Firebase frameworks that React Native's
 pod-level SPM integration does not otherwise copy into the app bundle.
 
 ### Release build and module-resolution settings
@@ -164,12 +167,48 @@ other value -- `false`, `nil`, or leaving it unset -- uses SPM (React Native
 always emit the variable, e.g. `$RNFirebaseDisableSPM = false`: that still
 uses SPM, it does not fall back to CocoaPods.
 
+## Sharing FirebaseCore with other native pods
+
+React Native attaches SPM products to each pod target via `spm_dependency`.
+Because firebase-ios-sdk products are automatic libraries, each dynamic pod
+framework that depends on Firebase embeds its own copy of `FirebaseCore`.
+`FirebaseApp.configure()` in the app configures only the copy that target
+links. Another pod's copy stays unconfigured, so `FirebaseApp.app()` can
+return `nil` there (and Auth can silently look signed-out even when RNFB JS
+Auth has a user).
+
+| RNFB | Other native dependency | Shared FirebaseCore? |
+| --- | --- | --- |
+| SPM | SPM (`spm_dependency`) | No: each dynamic pod embeds its own copy |
+| SPM | CocoaPods Firebase pods | No: dual resolution (SPM + CocoaPods Firebase) |
+| CocoaPods (`$RNFirebaseDisableSPM = true`) | CocoaPods Firebase pods | Yes: one CocoaPods `FirebaseCore` |
+
+If a third-party native module must share the same configured `FirebaseApp`
+with RNFB, opt out of SPM and resolve Firebase through CocoaPods for every
+native consumer:
+
+```ruby
+$RNFirebaseDisableSPM = true
+```
+
+Do not mix RNFB SPM with a third-party pod that pulls Firebase via CocoaPods
+pods. That is dual resolution and does not produce one shared runtime.
+
+Static pod linkage is not a sharing workaround under SPM: it fails at link
+time with duplicate symbols (and `pod install` rejects the combination).
+
 ## Troubleshooting
 
 - **`pod install` fails with "SPM + static linkage is not supported":** Do not
   combine RNFB SPM mode with static linkage. Use dynamic linkage
   (`use_frameworks! :linkage => :dynamic`) or set
   `$RNFirebaseDisableSPM = true`.
+- **`FirebaseApp.app()` is `nil` / Auth looks signed-out inside another native
+  pod, or runtime logs duplicate `FIRApp` classes:** SPM mode cannot share one
+  `FirebaseCore` across dynamic pod frameworks. Set
+  `$RNFirebaseDisableSPM = true` and resolve Firebase via CocoaPods for RNFB
+  and that dependency. See
+  [Sharing FirebaseCore with other native pods](#sharing-firebasecore-with-other-native-pods).
 - **`FirebaseCoreInternal`/`FirebaseSharedSwift` cannot be resolved, or a
   Release/Archive build crashes at launch with a missing Firebase symbol:**
   RNFB applies `-ObjC`, `SWIFT_ENABLE_EXPLICIT_MODULES = 'NO'`, and
