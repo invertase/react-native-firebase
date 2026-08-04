@@ -27,14 +27,36 @@ exports.getRandomPhoneNumber = getRandomPhoneNumber;
  * The emulator does not validate JWT signature or expiry, so a hand-crafted
  * unsigned token is enough for e2e (no Admin SDK / api.rnfirebase.io).
  * @see https://firebase.google.com/docs/emulator-suite/connect_auth#custom_token_authentication
+ *
+ * Encoding must not use Node `Buffer` or rely on `globalThis.btoa`: Other/HermesVM
+ * has neither (RN web API shims are incomplete there). Same Latin1 encoder as
+ * `packages/app/lib/common/Base64.ts` / app-check & installations e2e.
  */
+function latin1Btoa(input) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+  let block = 0;
+  let i = 0;
+  let map = chars;
+  let output = '';
+
+  for (
+    block = 0, i = 0, map = chars;
+    input.charAt(i | 0) || ((map = '='), i % 1);
+    output += map.charAt(63 & (block >> (8 - (i % 1) * 8)))
+  ) {
+    const charCode = input.charCodeAt((i += 3 / 4));
+    if (charCode > 0xff) {
+      throw new Error('latin1Btoa: input contains characters outside Latin1');
+    }
+    block = (block << 8) | charCode;
+  }
+
+  return output;
+}
+
 function base64UrlEncodeJson(value) {
   const json = JSON.stringify(value);
-  const base64 =
-    typeof globalThis.btoa === 'function'
-      ? globalThis.btoa(json)
-      : Buffer.from(json, 'utf8').toString('base64');
-  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  return latin1Btoa(json).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
 
 exports.createEmulatorCustomToken = function createEmulatorCustomToken(uid, claims) {
