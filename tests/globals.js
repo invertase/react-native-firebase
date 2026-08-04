@@ -163,10 +163,10 @@ global.FirebaseHelpers = {
     config() {
       if (global.Platform.ios) {
         return {
-          clientId: '448618578101-28tsenal97nceuij1msj7iuqinv48t02.apps.googleusercontent.com',
+          clientId: '448618578101-4km55qmv55tguvnivgjdiegb3r0jquv5.apps.googleusercontent.com',
           androidClientId:
             '448618578101-pdjje2lkv3p941e03hkrhfa7459cr2v8.apps.googleusercontent.com',
-          appId: '1:448618578101:ios:cc6c1dc7a65cc83c',
+          appId: '1:448618578101:ios:3e76955ab6d49ecaac3efc',
           apiKey: 'AIzaSyAHAsf51D0A407EklG1bs-5wA7EbyfNFg0',
           authDomain: 'react-native-firebase-testing.firebaseapp.com',
           databaseURL: 'https://react-native-firebase-testing.firebaseio.com',

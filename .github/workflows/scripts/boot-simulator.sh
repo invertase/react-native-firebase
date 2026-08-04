@@ -82,7 +82,7 @@ kill_resolved_simulator() {
 
   log_boot_status "phase=kill_resolved udid=${udid} device=\"${device}\""
   killall Simulator 2>/dev/null || true
-  xcrun simctl terminate "$udid" com.invertase.testing 2>/dev/null || true
+  xcrun simctl terminate "$udid" io.invertase.testing 2>/dev/null || true
   xcrun simctl shutdown "$udid" 2>/dev/null || true
   xcrun simctl shutdown "$device" 2>/dev/null || true
 }

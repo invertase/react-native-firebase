@@ -210,7 +210,7 @@ function logLaunchInstallState(label) {
 
     try {
       const container = execSync(
-        `/usr/bin/xcrun simctl get_app_container ${udid} com.invertase.testing 2>&1`,
+        `/usr/bin/xcrun simctl get_app_container ${udid} io.invertase.testing 2>&1`,
         { encoding: 'utf8', timeout: 15000 },
       ).trim();
       console.log(`[rnfb-e2e] install-state label=${label} udid=${udid} container=${container}`);
@@ -227,7 +227,7 @@ function logLaunchInstallState(label) {
         timeout: 30000,
       });
       const invertaseLine =
-        apps.split('\n').find(line => line.includes('com.invertase.testing')) || '(not listed)';
+        apps.split('\n').find(line => line.includes('io.invertase.testing')) || '(not listed)';
       console.log(`[rnfb-e2e] install-state label=${label} listapps=${invertaseLine.trim()}`);
     } catch (err) {
       console.warn(

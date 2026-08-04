@@ -21,7 +21,7 @@ hand-typed fake one.
 
 ## One-time setup
 
-1. **Apple Developer account**: ensure the app's App ID (`com.invertase.testing`, team `YYX2P3XVJ7`
+1. **Apple Developer account**: ensure the app's App ID (`io.invertase.testing`, team `YYX2P3XVJ7`
    per the existing Xcode project) has the **Sign in with Apple** capability enabled at
    [developer.apple.com](https://developer.apple.com/account/resources/identifiers/list) →
    Identifiers → your App ID → capabilities. If you're using your own team/App ID for local
@@ -33,11 +33,6 @@ hand-typed fake one.
      build you still need it enabled on the App ID above so a matching provisioning profile can
      be issued (automatic signing will regenerate the profile once the capability is enabled).
      Simulator builds do not require a real provisioning profile.
-   - Note: at the time of writing, `com.invertase.testing` is not the App ID actually registered
-     on the Apple Developer Portal for this team (`io.invertase.testing` is) — a separate PR
-     tracks correcting `PRODUCT_BUNDLE_IDENTIFIER` and `GoogleService-Info.plist` to match. Until
-     that lands, real-device testing needs a locally-modified bundle id/provisioning profile;
-     Simulator builds are unaffected.
 
 2. **Firebase console**: enable the **Apple** sign-in provider for the test project
    (`react-native-firebase-testing`) under Authentication → Sign-in method.

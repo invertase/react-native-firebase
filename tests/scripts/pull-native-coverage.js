@@ -2,7 +2,9 @@ const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const TEST_APP_PACKAGE = 'com.invertase.testing';
+// Android applicationId stays com.invertase.testing; iOS PRODUCT_BUNDLE_IDENTIFIER is io.invertase.testing.
+const ANDROID_TEST_APP_PACKAGE = 'com.invertase.testing';
+const IOS_TEST_APP_BUNDLE_ID = 'io.invertase.testing';
 const ANDROID_COVERAGE_RELATIVE_PATH = 'files/coverage.ec';
 
 function getAdbBinary() {
@@ -41,7 +43,7 @@ function androidCoverageFileExists(deviceId) {
 
   try {
     execSync(
-      `${adb} ${serial} shell "run-as ${TEST_APP_PACKAGE} test -f ${ANDROID_COVERAGE_RELATIVE_PATH}"`,
+      `${adb} ${serial} shell "run-as ${ANDROID_TEST_APP_PACKAGE} test -f ${ANDROID_COVERAGE_RELATIVE_PATH}"`,
       { stdio: 'pipe' },
     );
     return true;
@@ -60,7 +62,7 @@ function pullAndroidCoverage(deviceId, options = {}) {
 
   try {
     execSync(
-      `${adb} ${serial} shell "run-as ${TEST_APP_PACKAGE} cat ${ANDROID_COVERAGE_RELATIVE_PATH} > ${emuDest}"`,
+      `${adb} ${serial} shell "run-as ${ANDROID_TEST_APP_PACKAGE} cat ${ANDROID_COVERAGE_RELATIVE_PATH} > ${emuDest}"`,
     );
     fs.mkdirSync(localDestDir, { recursive: true });
     execSync(`${adb} ${serial} pull ${emuDest} ${localDestFile}`);
@@ -112,9 +114,12 @@ async function pullAndroidCoverageWithRetry(deviceId, options = {}) {
 function pullIosCoverage(deviceId, options = {}) {
   const testsDir = options.testsDir || path.resolve(__dirname, '..');
   const localDestDir = path.join(testsDir, 'ios/build/output/coverage');
-  const container = execSync(`xcrun simctl get_app_container ${deviceId} ${TEST_APP_PACKAGE} data`, {
-    encoding: 'utf8',
-  }).trim();
+  const container = execSync(
+    `xcrun simctl get_app_container ${deviceId} ${IOS_TEST_APP_BUNDLE_ID} data`,
+    {
+      encoding: 'utf8',
+    },
+  ).trim();
   fs.mkdirSync(localDestDir, { recursive: true });
 
   const profrawList = execSync(

@@ -1100,7 +1100,7 @@ describe('auth() modular', function () {
 
           const successfulKeychain = await useUserAccessGroup(
             defaultAuth,
-            'YYX2P3XVJ7.com.invertase.testing',
+            'YYX2P3XVJ7.io.invertase.testing',
           ); // iOS signing team is YYX2P3XVJ7
 
           should.not.exist(successfulKeychain);
