@@ -48,7 +48,7 @@
     "firestore"
   ],
   "dependencies": {
-    "react-native-url-polyfill": "3.0.0"
+    "react-native-url-polyfill": "4.0.0"
   },
   "peerDependencies": {
     "@react-native-firebase/app": "26.1.0"

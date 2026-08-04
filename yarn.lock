@@ -5941,7 +5941,7 @@ __metadata:
   dependencies:
     "@react-native-firebase/app": "npm:26.1.0"
     react-native-builder-bob: "npm:^0.41.0"
-    react-native-url-polyfill: "npm:3.0.0"
+    react-native-url-polyfill: "npm:4.0.0"
   peerDependencies:
     "@react-native-firebase/app": 26.1.0
   languageName: unknown
@@ -8878,7 +8878,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer@npm:5.7.1, buffer@npm:^5.4.3, buffer@npm:^5.5.0":
+"buffer@npm:5.7.1, buffer@npm:^5.5.0":
   version: 5.7.1
   resolution: "buffer@npm:5.7.1"
   dependencies:
@@ -21321,7 +21321,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"punycode@npm:^2.1.0, punycode@npm:^2.1.1":
+"punycode@npm:^2.1.0":
   version: 2.3.1
   resolution: "punycode@npm:2.3.1"
   checksum: 10/febdc4362bead22f9e2608ff0171713230b57aff9dddc1c273aa2a651fbd366f94b7d6a71d78342a7c0819906750351ca7f2edd26ea41b626d87d6a13d1bd059
@@ -21784,14 +21784,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-url-polyfill@npm:3.0.0":
-  version: 3.0.0
-  resolution: "react-native-url-polyfill@npm:3.0.0"
-  dependencies:
-    whatwg-url-without-unicode: "npm:8.0.0-3"
+"react-native-url-polyfill@npm:4.0.0":
+  version: 4.0.0
+  resolution: "react-native-url-polyfill@npm:4.0.0"
   peerDependencies:
     react-native: "*"
-  checksum: 10/62457a360745bb65fda2349bb95d2a90ad70f87005aa464fa8dd4919fa34bf2007f64bf6bbb1a76b5cdb579e3df9da6a23040a0eddf64456cadf6e766069854f
+  checksum: 10/70975e247710b1b4d68b1e4b35273cc6f22b0d08948fca2d9f04d4d9719bc9b450c514efe1403421c1fb2c12af7636e9597a88d465814b00acbf20ab3d81728a
   languageName: node
   linkType: hard
 
@@ -25631,9 +25629,9 @@ __metadata:
   linkType: hard
 
 "web-streams-polyfill@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "web-streams-polyfill@npm:4.2.0"
-  checksum: 10/137e79549d0b567d7af08711e91956379b168f2c66d8d08d25498f3bd0b63859b7305bc3ea9e82ed6587ed41fad9435eedd7f1d0a25647c9acf2b3922c0963b6
+  version: 4.3.0
+  resolution: "web-streams-polyfill@npm:4.3.0"
+  checksum: 10/70d1ac70d6c155dd5714b09902669954ecb7cc97e636793096daf6b3ba303241c91952ef74c84646e9fd15dcd00e2ec579e4bc3f303ecfc251bd77c6691f19e2
   languageName: node
   linkType: hard
 
@@ -25648,13 +25646,6 @@ __metadata:
   version: 3.0.1
   resolution: "webidl-conversions@npm:3.0.1"
   checksum: 10/b65b9f8d6854572a84a5c69615152b63371395f0c5dcd6729c45789052296df54314db2bc3e977df41705eacb8bc79c247cee139a63fa695192f95816ed528ad
-  languageName: node
-  linkType: hard
-
-"webidl-conversions@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "webidl-conversions@npm:5.0.0"
-  checksum: 10/cea864dd9cf1f2133d82169a446fb94427ba089e4676f5895273ea085f165649afe587ae3f19f2f0370751a724bba2d96e9956d652b3e41ac1feaaa4376e2d70
   languageName: node
   linkType: hard
 
@@ -25687,17 +25678,6 @@ __metadata:
   version: 0.1.1
   resolution: "whatwg-url-minimum@npm:0.1.1"
   checksum: 10/96d06b1ad60bd8e0eb134a4741e244ee91030edb59fd0bcc01a808daeb0110d84eee92c8bc462a2675be82ecac33ec560a28429bb4fec3587846b58388351bf7
-  languageName: node
-  linkType: hard
-
-"whatwg-url-without-unicode@npm:8.0.0-3":
-  version: 8.0.0-3
-  resolution: "whatwg-url-without-unicode@npm:8.0.0-3"
-  dependencies:
-    buffer: "npm:^5.4.3"
-    punycode: "npm:^2.1.1"
-    webidl-conversions: "npm:^5.0.0"
-  checksum: 10/aa588b54b75304335c5e189f8572626f989364c2ac5be5a1643ac687c2501f044405e1eb5761d65a826f570befade5fe51a723d917e9ab7672bb65d14065e82f
   languageName: node
   linkType: hard
 

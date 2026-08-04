@@ -10,3 +10,4 @@
 * [Android unit testing ADR](android-architecture-decisions.md) — Robolectric + Mockito (`AndroidTest-AD-1`)
 * [Published types ADR](architecture-decisions.md) — attw / Expo plugin decisions (`Types-AD-*`)
 * [Firebase testing project](firebase-testing-project.md) — cloud vs emulator, live FIS/RC, helper callables, rules/indexes, deploy
+* [Test app dependency pins](test-app-dependency-pins.md) — intentional RN / CLI locks driven by `react-native-macos`

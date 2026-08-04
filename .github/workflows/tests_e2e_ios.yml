@@ -57,7 +57,7 @@ jobs:
     steps:
       - id: build-matrix
         # https://github.com/actions/github-script/releases
-        uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71 # v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             // by default, we will run one iteration
@@ -151,7 +151,7 @@ jobs:
 
       - name: Configure JDK
         # https://github.com/actions/setup-java/releases
-        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -179,7 +179,7 @@ jobs:
           xcrun simctl list
 
       # https://github.com/actions/checkout/releases
-      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 50
 
@@ -192,7 +192,7 @@ jobs:
 
       - name: Yarn Cache Restore
         # https://github.com/actions/cache/releases
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: yarn-cache
         continue-on-error: true
         with:
@@ -202,7 +202,7 @@ jobs:
 
       - name: Detox Framework Cache Restore
         # https://github.com/actions/cache/releases
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: detox-cache
         continue-on-error: true
         with:
@@ -220,7 +220,7 @@ jobs:
           max-size: 1500M
 
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Restore
         id: nx-cache
         continue-on-error: true
@@ -254,7 +254,7 @@ jobs:
 
       - name: Pods Cache Restore
         # https://github.com/actions/cache/releases
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: pods-cache
         continue-on-error: true
         with:
@@ -276,7 +276,7 @@ jobs:
 
       - name: Firestore Emulator Restore
         # https://github.com/actions/cache/releases
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: firestore-emulator-cache
         continue-on-error: true
         with:
@@ -337,7 +337,7 @@ jobs:
       - name: Metro Bundler Cache Restore
         if: contains(matrix.buildmode, 'debug')
         # https://github.com/actions/cache/releases
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: metro-bundler-cache
         continue-on-error: true
         with:
@@ -514,7 +514,7 @@ jobs:
 
       - name: Yarn Cache Save
         # https://github.com/actions/cache/releases
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -523,7 +523,7 @@ jobs:
 
       - name: Nx Cache Save
         # https://github.com/actions/cache/releases
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -532,7 +532,7 @@ jobs:
 
       - name: Detox Framework Cache Save
         # https://github.com/actions/cache/releases
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -541,7 +541,7 @@ jobs:
 
       - name: Pods Cache Save
         # https://github.com/actions/cache/releases
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -550,7 +550,7 @@ jobs:
 
       - name: Firestore Emulator Cache Save
         # https://github.com/actions/cache/releases
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -561,7 +561,7 @@ jobs:
 
       - name: Metro Bundler Cache Save
         # https://github.com/actions/cache/releases
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ contains(matrix.buildmode, 'debug') && github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -601,7 +601,7 @@ jobs:
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
 
-      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 50
 

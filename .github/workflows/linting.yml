@@ -28,7 +28,7 @@ jobs:
       NX_WORKSPACE_DATA_DIRECTORY: .nx/workspace-data
     steps:
       # https://github.com/actions/checkout/releases
-      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 1
       # https://github.com/actions/setup-node/releases
@@ -37,12 +37,12 @@ jobs:
           node-version: 22
       - name: Configure JDK
         # https://github.com/actions/setup-java/releases
-        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: 'temurin'
           java-version: '21'
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Restore
         id: yarn-cache
         continue-on-error: true
@@ -51,7 +51,7 @@ jobs:
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Restore
         id: nx-cache
         continue-on-error: true
@@ -84,7 +84,7 @@ jobs:
           max_attempts: 3
           command: yarn codegen:verify
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -92,7 +92,7 @@ jobs:
           path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -110,7 +110,7 @@ jobs:
       NX_WORKSPACE_DATA_DIRECTORY: .nx/workspace-data
     steps:
       # https://github.com/actions/checkout/releases
-      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 1
       # https://github.com/actions/setup-node/releases
@@ -118,7 +118,7 @@ jobs:
         with:
           node-version: 22
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Restore
         id: yarn-cache
         continue-on-error: true
@@ -127,7 +127,7 @@ jobs:
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Restore
         id: nx-cache
         continue-on-error: true
@@ -146,7 +146,7 @@ jobs:
       - name: Lint
         run: yarn tsc:compile
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -154,7 +154,7 @@ jobs:
           path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -168,7 +168,7 @@ jobs:
     timeout-minutes: 30
     steps:
       # https://github.com/actions/checkout/releases
-      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 1
       # https://github.com/actions/setup-node/releases
@@ -176,7 +176,7 @@ jobs:
         with:
           node-version: 22
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Restore
         id: yarn-cache
         continue-on-error: true
@@ -195,7 +195,7 @@ jobs:
       - name: Are The Types Wrong
         run: yarn attw:check
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -214,7 +214,7 @@ jobs:
       NX_WORKSPACE_DATA_DIRECTORY: .nx/workspace-data
     steps:
       # https://github.com/actions/checkout/releases
-      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 1
       # https://github.com/actions/setup-node/releases
@@ -222,7 +222,7 @@ jobs:
         with:
           node-version: 22
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Restore
         id: yarn-cache
         continue-on-error: true
@@ -231,7 +231,7 @@ jobs:
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Restore
         id: nx-cache
         continue-on-error: true
@@ -250,7 +250,7 @@ jobs:
       - name: Consumer Type Test
         run: yarn tsc:compile:consumer
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -258,7 +258,7 @@ jobs:
           path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -276,7 +276,7 @@ jobs:
       NX_WORKSPACE_DATA_DIRECTORY: .nx/workspace-data
     steps:
       # https://github.com/actions/checkout/releases
-      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 1
       # https://github.com/actions/setup-node/releases
@@ -284,7 +284,7 @@ jobs:
         with:
           node-version: 22
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Restore
         id: yarn-cache
         continue-on-error: true
@@ -293,7 +293,7 @@ jobs:
           key: ${{ runner.os }}-yarn-with-website-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-with-website-v1
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Restore
         id: nx-cache
         continue-on-error: true
@@ -312,7 +312,7 @@ jobs:
       - name: Generate TypeDoc
         run: yarn reference:api
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
@@ -320,7 +320,7 @@ jobs:
           path: .yarn/cache
           key: ${{ runner.os }}-yarn-with-website-v1-${{ hashFiles('yarn.lock') }}
       # https://github.com/actions/cache/releases
-      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Nx Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
