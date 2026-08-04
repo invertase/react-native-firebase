@@ -90,7 +90,7 @@ The install output identifies the selected mode:
 ```
 
 RNFB also adds an `[RNFB] Embed Firebase SPM Frameworks` build phase to the app
-target. This phase embeds SPM-built Firebase frameworks that React Native's
+target. This phase embeds Firebase frameworks built by SPM that React Native's
 pod-level SPM integration does not otherwise copy into the app bundle.
 
 ### Release build and module-resolution settings
@@ -173,7 +173,7 @@ React Native attaches SPM products to each pod target via `spm_dependency`.
 Because firebase-ios-sdk products are automatic libraries, each dynamic pod
 framework that depends on Firebase embeds its own copy of `FirebaseCore`.
 `FirebaseApp.configure()` in the app configures only the copy that target
-links. Another pod's copy stays unconfigured, so `FirebaseApp.app()` can
+links. Another pod's copy is never configured, so `FirebaseApp.app()` can
 return `nil` there (and Auth can silently look signed-out even when RNFB JS
 Auth has a user).
 
