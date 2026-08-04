@@ -161,6 +161,53 @@ export function extractIosTurboMethods(headerContent: string, moduleName: string
   return sortUnique(methods);
 }
 
+/**
+ * Full ObjC selectors from codegen `@selector(...)` invocations in *-generated.mm.
+ * Catches argument-label mismatches (e.g. token: vs customToken:) that method-name
+ * parity alone cannot detect — see #9145 / PR #9146.
+ */
+export function extractIosGeneratedSelectors(generatedMmContent: string): string[] {
+  const selectors: string[] = [];
+  const selectorRegex = /@selector\(([^)]+)\)/g;
+  let match = selectorRegex.exec(generatedMmContent);
+  while (match) {
+    const selector = match[1];
+    const methodName = selector.split(':')[0];
+    if (!EXCLUDED_METHODS.has(methodName)) {
+      selectors.push(selector);
+    }
+    match = selectorRegex.exec(generatedMmContent);
+  }
+  return sortUnique(selectors);
+}
+
+/**
+ * Full ObjC instance-method selectors from a TurboModule shell .mm implementation.
+ * Parses `- (ReturnType)name:…` declarations (including multi-line), not message sends.
+ */
+export function extractIosImplementedSelectors(implMmContent: string): string[] {
+  const withoutComments = implMmContent.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+
+  // RN / ObjC runtime hooks that are not TurboModule codegen selectors.
+  const NON_TURBO_METHODS = new Set(['dealloc', 'invalidate', 'getTurboModule']);
+
+  const selectors: string[] = [];
+  // Multi-line declarations: `- (ReturnType)name:… {` — stop at the method body's `{`.
+  const methodRegex = /^[ \t]*- \([^)]+\)([\s\S]*?)\{/gm;
+  let match = methodRegex.exec(withoutComments);
+  while (match) {
+    // Flatten whitespace then strip typed params: "foo:(NSString *)a bar:(id)b" → "foo:bar:"
+    const flattened = match[1].replace(/\s+/g, ' ').trim();
+    const selector = flattened.replace(/:\s*\([^)]*\)\s*\w+/g, ':').replace(/\s+/g, '');
+    const methodName = selector.split(':')[0];
+    if (selector && !EXCLUDED_METHODS.has(methodName) && !NON_TURBO_METHODS.has(methodName)) {
+      selectors.push(selector);
+    }
+    match = methodRegex.exec(withoutComments);
+  }
+  return sortUnique(selectors);
+}
+
 function sortUnique(values: string[]): string[] {
   return [...new Set(values)].sort();
 }

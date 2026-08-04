@@ -21,6 +21,42 @@ function getRandomPhoneNumber() {
 }
 exports.getRandomPhoneNumber = getRandomPhoneNumber;
 
+/**
+ * Mint a Firebase Auth custom token accepted by the Auth emulator.
+ *
+ * The emulator does not validate JWT signature or expiry, so a hand-crafted
+ * unsigned token is enough for e2e (no Admin SDK / api.rnfirebase.io).
+ * @see https://firebase.google.com/docs/emulator-suite/connect_auth#custom_token_authentication
+ */
+function base64UrlEncodeJson(value) {
+  const json = JSON.stringify(value);
+  const base64 =
+    typeof globalThis.btoa === 'function'
+      ? globalThis.btoa(json)
+      : Buffer.from(json, 'utf8').toString('base64');
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+exports.createEmulatorCustomToken = function createEmulatorCustomToken(uid, claims) {
+  if (!uid || typeof uid !== 'string') {
+    throw new Error('createEmulatorCustomToken: uid is required');
+  }
+  const now = Math.floor(Date.now() / 1000);
+  const serviceAccount = `firebase-adminsdk@${getE2eTestProject()}.iam.gserviceaccount.com`;
+  const payload = {
+    uid,
+    iat: now,
+    exp: now + 3600,
+    aud: 'https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit',
+    iss: serviceAccount,
+    sub: serviceAccount,
+  };
+  if (claims && typeof claims === 'object' && Object.keys(claims).length > 0) {
+    payload.claims = claims;
+  }
+  return `${base64UrlEncodeJson({ alg: 'none', typ: 'JWT' })}.${base64UrlEncodeJson(payload)}.`;
+};
+
 exports.clearAllUsers = async function clearAllUsers() {
   // console.error('auth::helpers::clearAllUsers');
   try {

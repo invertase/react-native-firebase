@@ -21,7 +21,13 @@ const TEST_PASS = 'test1234';
 const DISABLED_EMAIL = 'disabled@example.com';
 const DISABLED_PASS = 'test1234';
 
-const { clearAllUsers, disableUser, getLastOob, resetPassword } = require('./helpers');
+const {
+  clearAllUsers,
+  createEmulatorCustomToken,
+  disableUser,
+  getLastOob,
+  resetPassword,
+} = require('./helpers');
 
 describe('auth() modular', function () {
   describe('modular', function () {
@@ -154,8 +160,24 @@ describe('auth() modular', function () {
     });
 
     describe('signInWithCustomToken()', function () {
-      // Needs a different setup when running against the emulator
-      xit('signs in with an admin SDK created custom auth token', async function () {
+      // Regression for #9145: on iOS New Arch, a TurboModule selector mismatch
+      // (customToken: vs token:) crashes with unrecognized selector before Auth runs.
+      it('rejects an invalid custom token without crashing the TurboModule bridge', async function () {
+        const { getApp } = modular;
+        const { signInWithCustomToken, getAuth } = authModular;
+        const defaultAuth = getAuth(getApp());
+
+        let didError = false;
+        try {
+          await signInWithCustomToken(defaultAuth, 'not-a-valid-custom-token');
+        } catch (e) {
+          didError = true;
+          e.code.should.equal('auth/invalid-custom-token');
+        }
+        didError.should.equal(true);
+      });
+
+      it('signs in with an Auth-emulator custom token', async function () {
         const { getApp } = modular;
         const { signInWithEmailAndPassword, signOut, signInWithCustomToken, getAuth } = authModular;
         const defaultAuth = getAuth(getApp());
@@ -181,12 +203,11 @@ describe('auth() modular', function () {
           successCb,
         );
 
-        const IdToken = await defaultAuth.currentUser.getIdToken();
-
         await signOut(defaultAuth);
         await Utils.sleep(50);
 
-        const token = await new TestAdminApi(IdToken).auth().createCustomToken(user.uid, {});
+        // Emulator accepts unsigned hand-crafted JWTs (no Admin SDK / remote TestAdminApi).
+        const token = createEmulatorCustomToken(user.uid, {});
 
         await signInWithCustomToken(defaultAuth, token);
 
