@@ -331,13 +331,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
 }
 
 - (void)signInWithCustomToken:(NSString *)appName
-                  customToken:(NSString *)customToken
+                        token:(NSString *)token
                       resolve:(RCTPromiseResolveBlock)resolve
                        reject:(RCTPromiseRejectBlock)reject {
-  [RNFBAuthHelper signInWithCustomToken:appName
-                            customToken:customToken
-                                resolve:resolve
-                                 reject:reject];
+  [RNFBAuthHelper signInWithCustomToken:appName customToken:token resolve:resolve reject:reject];
 }
 
 #if TARGET_OS_IOS
