@@ -1,5 +1,8 @@
 /* eslint-disable no-console */
 const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers');
+// Shared Latin1 btoa — do not use Node Buffer / globalThis.btoa (Other/HermesVM).
+// Same import path as app-check & installations e2e.
+const { Base64 } = require('@react-native-firebase/app/dist/module/common');
 
 // Call HTTP REST API URL and return JSON response parsed into object
 const callRestApi = async function callRestAPI(url, returnRedirectUrl = false) {
@@ -27,36 +30,12 @@ exports.getRandomPhoneNumber = getRandomPhoneNumber;
  * The emulator does not validate JWT signature or expiry, so a hand-crafted
  * unsigned token is enough for e2e (no Admin SDK / api.rnfirebase.io).
  * @see https://firebase.google.com/docs/emulator-suite/connect_auth#custom_token_authentication
- *
- * Encoding must not use Node `Buffer` or rely on `globalThis.btoa`: Other/HermesVM
- * has neither (RN web API shims are incomplete there). Same Latin1 encoder as
- * `packages/app/lib/common/Base64.ts` / app-check & installations e2e.
  */
-function latin1Btoa(input) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-  let block = 0;
-  let i = 0;
-  let map = chars;
-  let output = '';
-
-  for (
-    block = 0, i = 0, map = chars;
-    input.charAt(i | 0) || ((map = '='), i % 1);
-    output += map.charAt(63 & (block >> (8 - (i % 1) * 8)))
-  ) {
-    const charCode = input.charCodeAt((i += 3 / 4));
-    if (charCode > 0xff) {
-      throw new Error('latin1Btoa: input contains characters outside Latin1');
-    }
-    block = (block << 8) | charCode;
-  }
-
-  return output;
-}
-
 function base64UrlEncodeJson(value) {
-  const json = JSON.stringify(value);
-  return latin1Btoa(json).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  return Base64.btoa(JSON.stringify(value))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/g, '');
 }
 
 exports.createEmulatorCustomToken = function createEmulatorCustomToken(uid, claims) {
