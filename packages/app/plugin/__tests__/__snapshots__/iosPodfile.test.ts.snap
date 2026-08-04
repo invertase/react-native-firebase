@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`App Config Plugin iOS Podfile Tests adds the Podfile flag when disableSPM is enabled 1`] = `
+"platform :ios, '15.0'
+
+prepare_react_native_project!
+# @generated begin @react-native-firebase/app-disableSPM - expo prebuild (DO NOT MODIFY) sync-09f7df9a837716fd4f96713144d8f77224017d89
+$RNFirebaseDisableSPM = true
+# @generated end @react-native-firebase/app-disableSPM
+
+target 'ReactNativeFirebaseDemo' do
+end
+"
+`;

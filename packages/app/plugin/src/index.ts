@@ -5,16 +5,18 @@ import {
   withBuildscriptDependency,
   withCopyAndroidGoogleServices,
 } from './android';
-import { withFirebaseAppDelegate, withIosGoogleServicesFile } from './ios';
+import { withFirebaseAppDelegate, withIosGoogleServicesFile, withIosDisableSPM } from './ios';
+import { PluginConfigType } from './pluginConfig';
 
 /**
  * A config plugin for configuring `@react-native-firebase/app`
  */
-const withRnFirebaseApp: ConfigPlugin = config => {
+const withRnFirebaseApp: ConfigPlugin<PluginConfigType> = (config, props) => {
   return withPlugins(config, [
     // iOS
     withFirebaseAppDelegate,
     withIosGoogleServicesFile,
+    [withIosDisableSPM, props],
 
     // Android
     withBuildscriptDependency,

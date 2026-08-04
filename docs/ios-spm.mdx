@@ -59,9 +59,27 @@ Expo projects can select dynamic linkage with
 }
 ```
 
-To use CocoaPods mode in a generated project, a config plugin must add
-`$RNFirebaseDisableSPM = true` before the target blocks and configure the
-linkage your project requires.
+To use CocoaPods mode in a generated project, pass `disableSPM` to the
+`@react-native-firebase/app` config plugin -- it adds
+`$RNFirebaseDisableSPM = true` before the target blocks during prebuild --
+and configure the linkage your project requires:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "@react-native-firebase/app",
+        {
+          "ios": {
+            "disableSPM": true
+          }
+        }
+      ]
+    ]
+  }
+}
+```
 
 The sections below (**Use SPM (React Native CLI)**, **Use CocoaPods (React
 Native CLI)**) describe editing `ios/Podfile` directly. Do not follow them in

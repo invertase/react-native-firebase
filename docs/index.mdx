@@ -111,6 +111,19 @@ If you use `@react-native-firebase/analytics` with Expo, including EAS Build, an
 
 The `withoutAdIdSupport` option adds `$RNFirebaseAnalyticsWithoutAdIdSupport = true` to opt out of iOS Ad ID support. The `googleAppMeasurementOnDeviceConversion` option adds `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true` to include Google Analytics on-device conversion measurement support. You may omit either option if it is not needed.
 
+If you want to opt out of Swift Package Manager for the Firebase iOS SDK and use CocoaPods instead, pass the `disableSPM` option to the `@react-native-firebase/app` config plugin. It adds `$RNFirebaseDisableSPM = true` to the generated Podfile during prebuild - see [iOS SPM Support](/ios-spm) for details:
+
+```json
+[
+  "@react-native-firebase/app",
+  {
+    "ios": {
+      "disableSPM": true
+    }
+  }
+]
+```
+
 ### Local app compilation
 
 If you are compiling your app locally, run [`npx expo prebuild --clean`](https://docs.expo.dev/workflow/continuous-native-generation/) to generate the native project directories. Then, follow the local app compilation steps described in [Local app development](https://docs.expo.dev/guides/local-app-development/) guide in Expo docs. If you prefer using a build service, refer to [EAS Build](https://docs.expo.dev/build/setup/).
