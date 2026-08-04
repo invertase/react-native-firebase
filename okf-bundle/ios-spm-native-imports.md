@@ -192,11 +192,11 @@ With `use_frameworks! :linkage => :dynamic` (required for RNFB SPM mode):
 - runtime can log duplicate `FIRApp` / related classes;
 - `FirebaseApp.configure()` in the app does not configure another pod's copy.
 
-| RNFB | Other native dependency | Shared FirebaseCore? |
-| --- | --- | --- |
-| SPM | SPM (`spm_dependency`) | No |
-| SPM | CocoaPods Firebase pods | No (dual resolution) |
-| CocoaPods (`$RNFirebaseDisableSPM = true`) | CocoaPods Firebase pods | Yes |
+| RNFB                                       | Other native dependency | Shared FirebaseCore? |
+| ------------------------------------------ | ----------------------- | -------------------- |
+| SPM                                        | SPM (`spm_dependency`)  | No                   |
+| SPM                                        | CocoaPods Firebase pods | No (dual resolution) |
+| CocoaPods (`$RNFirebaseDisableSPM = true`) | CocoaPods Firebase pods | Yes                  |
 
 SPM + static pods is rejected by `rnfirebase_fail_if_spm_static_linkage!`:
 per-pod copies collide at link time (`duplicate symbol`). Static linkage is

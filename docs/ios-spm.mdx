@@ -177,11 +177,11 @@ links. Another pod's copy stays unconfigured, so `FirebaseApp.app()` can
 return `nil` there (and Auth can silently look signed-out even when RNFB JS
 Auth has a user).
 
-| RNFB | Other native dependency | Shared FirebaseCore? |
-| --- | --- | --- |
-| SPM | SPM (`spm_dependency`) | No: each dynamic pod embeds its own copy |
-| SPM | CocoaPods Firebase pods | No: dual resolution (SPM + CocoaPods Firebase) |
-| CocoaPods (`$RNFirebaseDisableSPM = true`) | CocoaPods Firebase pods | Yes: one CocoaPods `FirebaseCore` |
+| RNFB                                       | Other native dependency | Shared FirebaseCore?                           |
+| ------------------------------------------ | ----------------------- | ---------------------------------------------- |
+| SPM                                        | SPM (`spm_dependency`)  | No: each dynamic pod embeds its own copy       |
+| SPM                                        | CocoaPods Firebase pods | No: dual resolution (SPM + CocoaPods Firebase) |
+| CocoaPods (`$RNFirebaseDisableSPM = true`) | CocoaPods Firebase pods | Yes: one CocoaPods `FirebaseCore`              |
 
 If a third-party native module must share the same configured `FirebaseApp`
 with RNFB, opt out of SPM and resolve Firebase through CocoaPods for every
