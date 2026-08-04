@@ -51,6 +51,20 @@ To use CocoaPods instead, add this before any target block in your Podfile:
 $RNFirebaseDisableSPM = true
 ```
 
+Expo projects can set the same flag through the config plugin, which adds it
+to the generated Podfile during prebuild:
+
+```json
+[
+  "@react-native-firebase/app",
+  {
+    "ios": {
+      "disableSPM": true
+    }
+  }
+]
+```
+
 CocoaPods mode supports static or dynamic linkage. React Native versions older
 than 0.75 fall back to CocoaPods automatically.
 
