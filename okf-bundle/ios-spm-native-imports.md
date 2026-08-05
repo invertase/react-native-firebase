@@ -3,7 +3,7 @@ type: Reference
 title: iOS SPM native integration decisions
 description: Why RNFB uses dual imports, Objective-C helpers for Swift Firebase products, and an app framework-embedding phase.
 tags: [ios, spm, cocoapods, imports, firebase, cxx-modules]
-timestamp: 2026-07-20T10:23:54Z
+timestamp: 2026-08-05T11:48:00Z
 ---
 
 # iOS SPM native integration decisions
@@ -252,6 +252,38 @@ The hook is guarded and idempotent. If CocoaPods changes the integration point,
 silent launch failure. The fallback is documented for consumers in
 [`docs/ios-spm.mdx`](../docs/ios-spm.mdx#framework-embedding-fallback).
 
+### Archive `UninstalledProducts` filter (dynamic Mach-O only)
+
+Regular (simulator/device) builds populate
+`$(BUILT_PRODUCTS_DIR)/PackageFrameworks` with Swift Package products. Xcode's
+Archive action does not; it stages products under
+`${OBJROOT}/UninstalledProducts/${PLATFORM_NAME}` instead. The embed script
+therefore has an Archive-only fallback that also calls
+`embed_frameworks_from` on that directory.
+
+That folder is not SPM-only. Archive stages every `SKIP_INSTALL=YES` product
+there, including CocoaPods frameworks built under `use_frameworks!` (required
+for SPM mode). Static frameworks (Expo modules, the always-static
+`Pods_<target>` umbrella, and similar) land alongside real dynamic SPM
+products. Copying a static framework into the app `Frameworks/` directory
+fails App Store validation with "Invalid bundle structure ... binary file is
+not permitted".
+
+`embed_frameworks_from` therefore filters before `rsync`:
+
+- derives the internal binary as `"${framework_name%.framework}"` (folder
+  name minus `.framework`), which holds for every CocoaPods/SPM-built
+  framework this script handles;
+- runs `file -b` on that binary and requires the prose substring
+  `dynamically linked` (intentional string match on Apple's `file` output,
+  not a Mach-O magic-byte parse);
+- skips missing or non-dynamic binaries with a logged line
+  (`Skipping … binary missing or not dynamically linked`).
+
+Tracked from GitHub
+[#9154](https://github.com/invertase/react-native-firebase/issues/9154) /
+Linear CPRN-295.
+
 ## Archive signature-copy collision
 
 Real `xcodebuild archive` builds (not simulator builds) can fail with:
@@ -323,6 +355,10 @@ invariants:
 - no private/transitive Firebase target added as if it were a public product;
 - SPM mode still adds exactly one app framework-embedding phase and CocoaPods
   mode does not require it;
+- `embed_frameworks_from`'s Archive `UninstalledProducts` path still skips
+  frameworks whose internal binary is missing or not `dynamically linked`
+  (`file -b`), so static CocoaPods products are never copied into the app
+  `Frameworks/` directory;
 - docs/comments must not claim firebase-ios-sdk SPM products use
   `.library(type: .dynamic)`; products are automatic libraries, and multi-pod
   FirebaseCore sharing under SPM is unsupported (CocoaPods mode is the
