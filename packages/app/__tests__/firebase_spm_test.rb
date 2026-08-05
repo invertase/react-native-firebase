@@ -36,7 +36,6 @@ class MockTarget
     @shell_script_build_phases = phase_names.map { |phase_name| MockPhase.new(phase_name) }
     @package_product_dependencies = package_product_dependencies
     @build_configurations = build_config_names.map { |config_name| MockBuildConfig.new(config_name) }
-    @build_settings_by_config = Hash.new { |hash, key| hash[key] = {} }
     @name = name
   end
 
@@ -46,8 +45,13 @@ class MockTarget
     phase
   end
 
+  # Mirrors `AbstractTarget#build_settings(name)` → the named configuration's
+  # `build_settings` hash. `rnfirebase_add_spm_core_to_app_target` uses this
+  # API; `rnfirebase_apply_spm_build_settings` reads `config.build_settings`
+  # directly — both must see the same mutable hash.
   def build_settings(config_name)
-    @build_settings_by_config[config_name]
+    config = @build_configurations.find { |c| c.name == config_name }
+    config.build_settings
   end
 end
 
@@ -137,16 +141,16 @@ module Xcodeproj
 end
 
 # Stands in for `Xcodeproj::Project::Object::XCBuildConfiguration`, the real
-# element type of `AbstractTarget#build_configurations`. Only `name` is
-# modeled here -- production code never reads `config.build_settings`
-# directly on this object, it always goes through
-# `target.build_settings(config.name)` instead (see `MockTarget#build_settings`
-# above), so `name` is the only real attribute this mock needs to expose.
+# element type of `AbstractTarget#build_configurations`. Exposes both `name`
+# (for `target.build_settings(config.name)`) and a mutable `build_settings`
+# hash (for `rnfirebase_apply_spm_build_settings`, which reads
+# `config.build_settings` directly).
 class MockBuildConfig
-  attr_reader :name
+  attr_reader :name, :build_settings
 
   def initialize(name)
     @name = name
+    @build_settings = {}
   end
 end
 
@@ -266,15 +270,16 @@ end
 # `rnfirebase_ensure_pods_uuid_counter_safe!` /
 # `rnfirebase_verify_pods_project_uuid_integrity!` read and mutate.
 class MockPodsProject
-  attr_reader :objects_by_uuid
+  attr_reader :objects_by_uuid, :targets
   attr_accessor :root_object
 
-  def initialize(uuid_prefix:, objects_by_uuid: {}, generated_uuids: [], available_uuids: [], root_object: nil)
+  def initialize(uuid_prefix:, objects_by_uuid: {}, generated_uuids: [], available_uuids: [], root_object: nil, targets: [])
     @uuid_prefix = uuid_prefix
     @objects_by_uuid = objects_by_uuid
     @generated_uuids = generated_uuids
     @available_uuids = available_uuids
     @root_object = root_object
+    @targets = targets
   end
 end
 
@@ -482,6 +487,50 @@ class FirebaseSpmTest < Minitest::Test
     refute RNFirebaseSPM.active?
   end
 
+  def test_active_raises_when_flag_set_without_version
+    load_firebase_spm
+    RNFirebaseSPM.instance_variable_set(:@active, true)
+    RNFirebaseSPM.instance_variable_set(:@version, nil)
+
+    error = assert_raises(Pod::Informative) { RNFirebaseSPM.active? }
+    assert_includes error.message, 'marked active without a recorded version'
+  end
+
+  def test_active_raises_when_flag_set_with_empty_version
+    load_firebase_spm
+    RNFirebaseSPM.instance_variable_set(:@active, true)
+    RNFirebaseSPM.instance_variable_set(:@version, '   ')
+
+    error = assert_raises(Pod::Informative) { RNFirebaseSPM.active? }
+    assert_includes error.message, 'marked active without a recorded version'
+  end
+
+  # ── rnfirebase_build_setting_list ──
+
+  def test_build_setting_list_dups_non_empty_array
+    load_firebase_spm
+
+    original = ['$(inherited)', '-ObjC']
+    result = rnfirebase_build_setting_list(original)
+
+    assert_equal original, result
+    refute_same original, result
+  end
+
+  def test_build_setting_list_defaults_nil_empty_string_and_empty_array
+    load_firebase_spm
+
+    assert_equal ['$(inherited)'], rnfirebase_build_setting_list(nil)
+    assert_equal ['$(inherited)'], rnfirebase_build_setting_list('')
+    assert_equal ['$(inherited)'], rnfirebase_build_setting_list([])
+  end
+
+  def test_build_setting_list_splits_whitespace_string
+    load_firebase_spm
+
+    assert_equal %w[$(inherited) -ObjC], rnfirebase_build_setting_list('$(inherited) -ObjC')
+  end
+
   # ── rnfirebase_add_spm_embed_phase (invoked automatically by
   #    rnfirebase_hook_cocoapods_post_install!, tested separately below) ──
 
@@ -642,6 +691,98 @@ class FirebaseSpmTest < Minitest::Test
       assert_includes paths, '$(inherited)'
       assert_includes paths, '$(SRCROOT)/SomeExistingPath'
       assert_includes paths, search_path
+    end
+  end
+
+  def test_add_core_reuses_existing_package_reference_matching_spm_url
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    existing_pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
+    existing_pkg.repositoryURL = RNFirebaseSPM.url
+    existing_pkg.requirement = { kind: 'upToNextMajorVersion', minimumVersion: '12.0.0' }
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target], package_references: [existing_pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_add_spm_core_to_app_target(installer)
+
+    assert_equal 1, user_project.root_object.package_references.length
+    assert_same existing_pkg, user_project.root_object.package_references[0]
+    assert_equal 1, target.package_product_dependencies.length
+    assert_same existing_pkg, target.package_product_dependencies[0].package
+    assert_equal 1, user_project.save_count
+  end
+
+  # ── rnfirebase_apply_spm_build_settings ──
+
+  def test_apply_spm_build_settings_noop_when_spm_not_active
+    load_firebase_spm
+
+    installer = MockInstaller.new(nil) # would raise if ever touched
+    rnfirebase_apply_spm_build_settings(installer)
+  end
+
+  def test_apply_spm_build_settings_sets_objc_flag_and_disables_explicit_modules
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    user_target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([user_target])
+    pods_target = MockTarget.new([])
+    pods_project = MockPodsProject.new(
+      uuid_prefix: 'ABCDEF',
+      targets: [pods_target],
+    )
+    installer = MockInstaller.new(
+      [MockAggregateTarget.new(user_project)],
+      pods_project: pods_project,
+    )
+
+    rnfirebase_apply_spm_build_settings(installer)
+
+    user_target.build_configurations.each do |config|
+      assert_includes config.build_settings['OTHER_LDFLAGS'], '-ObjC'
+      assert_equal 'NO', config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES']
+      assert_equal 'NO', config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES']
+    end
+    pods_target.build_configurations.each do |config|
+      assert_equal 'NO', config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES']
+      assert_equal 'NO', config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES']
+    end
+    assert_equal 1, user_project.save_count
+  end
+
+  def test_apply_spm_build_settings_is_idempotent_when_already_configured
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    user_target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_target.build_configurations.each do |config|
+      config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -ObjC'
+      config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
+      config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES'] = 'NO'
+    end
+    user_project = MockUserProject.new([user_target])
+    pods_target = MockTarget.new([])
+    pods_target.build_configurations.each do |config|
+      config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
+      config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES'] = 'NO'
+    end
+    pods_project = MockPodsProject.new(uuid_prefix: 'ABCDEF', targets: [pods_target])
+    installer = MockInstaller.new(
+      [MockAggregateTarget.new(user_project)],
+      pods_project: pods_project,
+    )
+
+    rnfirebase_apply_spm_build_settings(installer)
+
+    # OTHER_LDFLAGS already had -ObjC and explicit modules were already NO,
+    # so the user project must not be re-saved.
+    assert_equal 0, user_project.save_count
+    user_target.build_configurations.each do |config|
+      assert_equal '$(inherited) -ObjC', config.build_settings['OTHER_LDFLAGS']
     end
   end
 
@@ -1392,5 +1533,67 @@ class FirebaseSpmTest < Minitest::Test
 
     assert_raises(Pod::Informative) { instance.send(:run_podfile_post_install_hooks) }
     assert_equal 1, instance.original_hook_calls
+  end
+
+  # Soft-fail warn paths inside the hooked post-install method / outer install rescue.
+  def stub_hook_soft_helpers!
+    Object.define_method(:rnfirebase_fail_if_spm_static_linkage!) { |*| nil }
+    Object.define_method(:rnfirebase_ensure_pods_uuid_counter_safe!) { |*| nil }
+    Object.define_method(:rnfirebase_verify_pods_project_uuid_integrity!) { |*| nil }
+    Object.define_method(:rnfirebase_add_spm_embed_phase) { |*| nil }
+    Object.define_method(:rnfirebase_verify_spm_embed_phase_applied!) { |*| nil }
+    Object.define_method(:rnfirebase_add_spm_core_to_app_target) { |*| nil }
+    Object.define_method(:rnfirebase_remove_spm_core_from_app_target) { |*| nil }
+    Object.define_method(:rnfirebase_fix_spm_archive_signature_collision) { |*| nil }
+    Object.define_method(:rnfirebase_apply_spm_build_settings) { |*| nil }
+  end
+
+  def test_hook_warns_when_add_spm_core_raises
+    load_firebase_spm
+    stub_hook_soft_helpers!
+    Object.define_method(:rnfirebase_add_spm_core_to_app_target) { |*| raise 'core boom' }
+
+    klass = new_fake_cocoapods_installer_class
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    Pod::UI.warnings.clear
+
+    result = klass.new.send(:run_podfile_post_install_hooks)
+
+    assert_equal :original_result, result
+    assert_equal 1, Pod::UI.warnings.length
+    assert_includes Pod::UI.warnings[0], "Couldn't link FirebaseCore into the app target"
+    assert_includes Pod::UI.warnings[0], 'core boom'
+  end
+
+  def test_hook_warns_when_archive_signature_fix_raises
+    load_firebase_spm
+    stub_hook_soft_helpers!
+    Object.define_method(:rnfirebase_fix_spm_archive_signature_collision) { |*| raise 'sig boom' }
+
+    klass = new_fake_cocoapods_installer_class
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    Pod::UI.warnings.clear
+
+    result = klass.new.send(:run_podfile_post_install_hooks)
+
+    assert_equal :original_result, result
+    assert_equal 1, Pod::UI.warnings.length
+    assert_includes Pod::UI.warnings[0], 'Couldn\'t add the Firebase/Google SPM binary'
+    assert_includes Pod::UI.warnings[0], 'sig boom'
+  end
+
+  def test_hook_warns_when_outer_hook_install_raises
+    load_firebase_spm
+    klass = new_fake_cocoapods_installer_class
+    def klass.class_eval(*)
+      raise 'install boom'
+    end
+    Pod::UI.warnings.clear
+
+    rnfirebase_hook_cocoapods_post_install!(klass)
+
+    assert_equal 1, Pod::UI.warnings.length
+    assert_includes Pod::UI.warnings[0], "Couldn't hook CocoaPods to auto-embed Firebase SPM"
+    assert_includes Pod::UI.warnings[0], 'install boom'
   end
 end

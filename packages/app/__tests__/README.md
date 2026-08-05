@@ -1,6 +1,6 @@
-## Firebase SPM dependency tests
+## Firebase SPM / firebase.json Ruby tests
 
-Unit tests for CocoaPods/SPM Ruby helpers under `packages/app/**/*.rb` (primarily `firebase_spm.rb`).
+Unit tests for CocoaPods/SPM Ruby helpers under `packages/app/**/*.rb` (primarily `firebase_spm.rb`, plus `firebase_json.rb`).
 
 ### How to run (canonical)
 
