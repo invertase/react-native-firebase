@@ -295,6 +295,7 @@ jobs:
         with:
           files: coverage/lcov.info
           flags: e2e-ts-macos
+          disable_search: true
           verbose: true
 
       - name: Stop Screen Recording and System Logging

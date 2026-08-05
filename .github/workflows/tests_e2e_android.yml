@@ -292,6 +292,7 @@ jobs:
         with:
           files: coverage/lcov.info
           flags: e2e-ts-android
+          disable_search: true
           verbose: true
 
       # Merged unit (*.exec) + e2e (*.ec) from jacocoTestReport (post-e2e-coverage).

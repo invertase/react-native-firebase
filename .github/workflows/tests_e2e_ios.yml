@@ -518,6 +518,7 @@ jobs:
         with:
           files: coverage/lcov.info
           flags: e2e-ts-ios
+          disable_search: true
           verbose: true
 
       - name: Upload Codecov iOS native
@@ -527,6 +528,7 @@ jobs:
         with:
           files: coverage/ios-native/lcov.info
           flags: ios-native
+          disable_search: true
           verbose: true
 
       - name: Upload Codecov iOS Ruby
@@ -536,6 +538,7 @@ jobs:
         with:
           files: coverage/ios-ruby/lcov.info
           flags: ios-ruby
+          disable_search: true
           verbose: true
 
       - name: Yarn Cache Save
