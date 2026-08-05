@@ -252,16 +252,22 @@ jobs:
           max_attempts: 3
           command: gem update cocoapods xcodeproj
 
-      # SPM helper unit suites: run once on the debug+spm matrix cell (not the
-      # macos/web `other` job). Shape needs the cocoapods/xcodeproj gems from
-      # the step above; embed-script needs only clang/ar/file on macOS.
-      - name: Verify Firebase SPM Xcodeproj/CocoaPods API shape
+      # SPM/CocoaPods Ruby helpers: run once on debug+spm (not Jest / macos-other).
+      # Shape needs cocoapods/xcodeproj from the step above; embed-script needs
+      # clang/ar/file on macOS. Gemfile adds simplecov + simplecov-lcov only
+      # (minitest from env; BUNDLE_PATH via packages/app/__tests__/.bundle/config).
+      # yarn tests:ios:ruby globs all *_test.rb (unit + shape + embed).
+      - name: Bundle install (iOS Ruby coverage gems)
         if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
-        run: ruby packages/app/__tests__/firebase_spm_shape_test.rb
+        # BUNDLE_FROZEN (not deprecated --frozen flag) fails CI on Gemfile.lock drift;
+        # checksums committed via `bundle lock --add-checksums`. Avoids writing
+        # BUNDLE_FROZEN into packages/app/__tests__/.bundle/config.
+        run: BUNDLE_FROZEN=true bundle install --gemfile=packages/app/__tests__/Gemfile
 
-      - name: Verify Firebase SPM embed script framework filter
+      - name: Verify Firebase SPM Ruby helpers
         if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
-        run: ruby packages/app/__tests__/firebase_spm_embed_script_test.rb
+        # Canonical entrypoint — discovers all *_test.rb; shape/embed run for real here.
+        run: yarn tests:ios:ruby
 
       - name: Pods Cache Restore
         # https://github.com/actions/cache/releases
@@ -521,6 +527,15 @@ jobs:
         with:
           files: coverage/ios-native/lcov.info
           flags: ios-native
+          verbose: true
+
+      - name: Upload Codecov iOS Ruby
+        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
+        continue-on-error: true
+        with:
+          files: coverage/ios-ruby/lcov.info
+          flags: ios-ruby
           verbose: true
 
       - name: Yarn Cache Save

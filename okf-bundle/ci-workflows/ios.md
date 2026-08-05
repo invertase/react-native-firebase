@@ -154,7 +154,7 @@ Device type comes from `tests/.detoxrc.js`; boot script and Detox use it. No har
 
 ### Codecov (debug matrix only)
 
-Debug leg: `yarn tests:ios:test:process-coverage` + Codecov flags `e2e-ts-ios`, `ios-native`; `codecov/project/ios-native` blocks on missing native upload. Release skips coverage.
+Debug leg: `yarn tests:ios:test:process-coverage` + Codecov flags `e2e-ts-ios`, `ios-native`; `codecov/project/ios-native` blocks on missing native upload. **debug+spm** also runs `yarn tests:ios:ruby` and uploads Codecov flag `ios-ruby` (no `flag_management` hard gate — [coverage design § iOS Ruby](../testing/coverage-design.md#ios-ruby-simplecov)). Release skips coverage.
 
 ### E2E test app orchestration (Detox + Jet)
 

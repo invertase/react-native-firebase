@@ -69,6 +69,7 @@
     "tests:ios:test:process-coverage": "node tests/scripts/process-ios-native-coverage.js",
     "tests:ios:test-cover-and-process": "yarn tests:ios:test-cover && yarn tests:ios:test:process-coverage",
     "tests:ios:pod:install": "cd tests && rm -f ios/Podfile.lock && rm -rf ios/ReactNativeFirebaseDemo.xcworkspace && cd ios && pod install",
+    "tests:ios:ruby": "ruby packages/app/__tests__/run_with_coverage.rb",
     "tests:macos:build": "cd tests && yarn build:macos",
     "tests:macos:pod:install": "cd tests && rm -f macos/Podfile.lock && cd macos && pod install",
     "tests:macos:manual": "cd tests && yarn react-native run-macos",

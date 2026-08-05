@@ -36,6 +36,7 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 | Android Java format / lint                                      | `yarn lint:android`                                                                                                                                                                                                                                                                        | `yarn google-java-format`, bare `google-java-format`, `google-java-format -i`, `npx google-java-format`, any invented format script |
 | Docs lint (when docs in diff)                                   | `yarn lint:markdown`, `yarn lint:spellcheck`                                                                                                                                                                                                                                               | ad-hoc prettier/eslint on single files                                                                                        |
 | Android JVM unit tests                                          | `yarn tests:android:unit`                                                                                                                                                                                                                                                                  | ad-hoc `./gradlew …` outside this yarn script; bare Robolectric/JUnit IDE-only as the agent gate                              |
+| iOS Ruby unit tests (SPM / CocoaPods helpers)                   | `yarn tests:ios:ruby` (after `bundle install --gemfile=packages/app/__tests__/Gemfile` when needed)                                                                                                                          | ad-hoc `ruby packages/app/__tests__/…_test.rb`, bare `ruby …/run_with_coverage.rb` without the yarn script as the agent gate |
 | Android merged Jacoco (unit + e2e)                              | `yarn tests:android:post-e2e-coverage` (after e2e); `yarn tests:android:test:jacoco-report` when regenerating the merge report                                                                                            | `./gradlew jacocoAndroidTestReport` as Codecov path; inventing other jacoco yarn scripts                                      |
 | E2e + coverage                                                  | [running e2e](running-e2e.md) — **only** `yarn tests:*`                                                                                                                                                                                                                                    | `jet`, `npx jet`, `yarn jet`, `detox test`, bare `detox`, `cd tests && …`, direct Metro/emulator starts                       |
 | iOS Detox framework cache rebuild                               | `yarn tests:ios:detox-framework-cache:rebuild`                                                                                                                                                                                                                                             | `cd tests && yarn detox clean-framework-cache`, `cd tests && yarn detox build-framework-cache`, bare `detox …`                |
@@ -105,6 +106,7 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 | `yarn google-java-format`, bare `google-java-format`, `npx google-java-format`, `google-java-format -i` | Invented format entrypoints — **only** `yarn lint:android` |
 | `npm install` (any cwd) / `yarn` / `yarn install` only in `tests/` for monorepo deps | Root `yarn` applies patches and workspace links; tests-only install is insufficient |
 | Ad-hoc `./gradlew …` outside allowlisted yarn scripts (`tests:android:unit`, `tests:android:build`, `tests:android:post-e2e-coverage`, `tests:android:test:jacoco-report`, etc.) | Wrong task / cwd / report path; invents CI that does not match Codecov |
+| Ad-hoc `ruby packages/app/__tests__/…_test.rb` (or bare runner) as the validation gate | Misses SimpleCov / suite discovery — **only** `yarn tests:ios:ruby` |
 | `yarn jet`, `npx jet`, `cd tests && yarn jet …`                  | [E2e agent rule](running-e2e.md#agent-rule-read-first)         |
 | `detox test`, bare `detox`, `cd tests && detox …`                | E2e agent rule                                                 |
 | Ad-hoc Metro / emulator start                                    | Use `yarn tests:packager:jet`, `yarn tests:emulator:start`     |
@@ -137,6 +139,14 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 - Merged coverage after e2e: **`yarn tests:android:post-e2e-coverage`** (Codecov path is `jacocoTestReport`, not e2e-only `jacocoAndroidTestReport`) — [coverage design](coverage-design.md).
 - Optional explicit merge: **`yarn tests:android:test:jacoco-report`**.
 
+### iOS Ruby (SPM helpers)
+
+- **Canonical:** `yarn tests:ios:ruby` — discovers all `packages/app/__tests__/*_test.rb`, SimpleCov → `coverage/ios-ruby/lcov.info`, Codecov flag `ios-ruby`.
+- **CI home:** `tests_e2e_ios.yml` (debug + spm) only — not Jest / `tests_e2e_other.yml`.
+- **Forbidden as the agent gate:** `ruby packages/app/__tests__/firebase_spm_test.rb` (or any single-suite / bare-ruby invocation). One-off debugging may use bare ruby locally; gate close / handoff evidence must cite the yarn target.
+- First-time / Gemfile change: `bundle install --gemfile=packages/app/__tests__/Gemfile` (path via committed `packages/app/__tests__/.bundle/config`). CI uses `BUNDLE_FROZEN=true` against the committed lockfile (+ checksums).
+- Blocking when Ruby sources or `*_test.rb` touched: [validation checklist § iOS Ruby](validation-checklist.md#ios-ruby-unit-tests).
+
 ### TurboModule codegen
 
 - **`cd packages/<pkg> && yarn ios:codegen`** (or `yarn android:codegen`) often fails with **`unknown command 'codegen'`** after a clean `yarn` — `@react-native-community/cli` resolves from the **test app** workspace.
@@ -165,8 +175,9 @@ Before native :build: root yarn exit 0 + verify tests/node_modules/react-native/
 Area harness: okf-bundle/testing/running-e2e.md#local-harness-overrides-harnessoverridesjs — copy harness.overrides.example.js to gitignored harness.overrides.js; set modules + RNFBDebug; delete overrides after run.
 TurboModule contract test (NewArch-AD-17.1): packages/app/__tests__/nativeModuleContract.test.ts — yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts
 Android JVM unit (AndroidTest-AD-1): yarn tests:android:unit — not a substitute for platform e2e.
+iOS Ruby (SPM helpers): yarn tests:ios:ruby — never ad-hoc ruby packages/app/__tests__/…_test.rb as the gate.
 On failure: fix product code (or re-run yarn for patch miss), re-run the same canonical command.
-Gate close / push: return [validation evidence package](validation-checklist.md#validation-evidence-package) and [coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native touched — required before commit or publication ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)).
+Gate close / push: return [validation evidence package](validation-checklist.md#validation-evidence-package) and [coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native/Ruby helpers touched — required before commit or publication ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)).
 ```
 
 ## Related docs
@@ -178,5 +189,6 @@ Gate close / push: return [validation evidence package](validation-checklist.md#
 | Test-app RN / CLI pins (`react-native-macos`) | [test-app-dependency-pins.md](test-app-dependency-pins.md) |
 | Handoff validation sequence     | [validation-checklist.md](validation-checklist.md)           |
 | Android JVM unit ADR            | [android-architecture-decisions.md](android-architecture-decisions.md) |
+| iOS Ruby unit / SimpleCov       | [coverage design § iOS Ruby](coverage-design.md#ios-ruby-simplecov); [validation checklist § iOS Ruby](validation-checklist.md#ios-ruby-unit-tests) |
 | Work types and gates            | [change-authoring-workflow.md](change-authoring-workflow.md) |
 | Doc / commit policy             | [documentation-policy.md](../documentation-policy.md)        |

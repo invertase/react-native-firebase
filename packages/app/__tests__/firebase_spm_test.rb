@@ -92,8 +92,8 @@ end
 # XCSwiftPackageProductDependency. Defined under the real `Xcodeproj::Project::Object`
 # namespace so production code's direct class references resolve to these
 # lightweight stand-ins, instead of requiring the real (much heavier) `xcodeproj`
-# gem in this dependency-free Ruby unit-test job (no `gem install xcodeproj` step
-# runs before `ruby firebase_spm_test.rb` in CI -- see tests_jest.yml).
+# gem. Local/Linux `yarn tests:ios:ruby` runs without installing xcodeproj;
+# CI shape coverage lives on tests_e2e_ios.yml (debug + spm) after gem update.
 module Xcodeproj
   module Project
     module Object

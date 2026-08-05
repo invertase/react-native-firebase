@@ -27,12 +27,10 @@
 #
 # Deliberately opt-in: skips cleanly (does not fail, does not define any
 # tests) when `cocoapods`/`xcodeproj` aren't installed, so it's always safe to
-# run unconditionally in CI -- see the "Test Firebase SPM Helper" step in
-# tests_jest.yml, which deliberately never installs these gems (that job must
-# keep passing without them), and the "Verify Firebase SPM Xcodeproj/CocoaPods
-# API shape" step on the iOS E2E job in tests_e2e_ios.yml (debug+spm matrix
-# cell), which does have them (it reuses that job's own "Update Ruby build
-# tools" step -- no new gem install, no new CI job).
+# run unconditionally via `yarn tests:ios:ruby`. CI home is tests_e2e_ios.yml
+# (debug + spm): after `gem update cocoapods xcodeproj`, so the shape suite
+# runs for real there. Local / Linux runs without those gems still exit 0.
+
 begin
   require 'xcodeproj'
   require 'cocoapods'
@@ -41,8 +39,9 @@ rescue LoadError => e
   RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE = false
   puts "[firebase_spm_shape_test] Skipping: `xcodeproj`/`cocoapods` aren't " \
     "installed in this Ruby environment (#{e.class}: #{e.message}). This is " \
-    'expected outside of the tests_e2e_ios.yml CI job -- see the header ' \
-    'comment in this file.'
+    'expected outside of the tests_e2e_ios.yml debug+spm cell -- see the ' \
+    'header comment in this file.'
+
 end
 
 if RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE
