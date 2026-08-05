@@ -21,7 +21,7 @@ ruby __tests__/firebase_spm_shape_test.rb
 ```
 
 - **"Test Firebase SPM Helper" step** (`tests_jest.yml`) never installs these gems — the suite is expected to skip there.
-- **"Verify Firebase SPM Xcodeproj/CocoaPods API shape" step** (`tests_e2e_other.yml`, `other` job) does have them and runs the suite for real, right after that job's existing `gem update cocoapods xcodeproj` step — no new CI job, no new gem installs.
+- **"Verify Firebase SPM Xcodeproj/CocoaPods API shape" step** (`tests_e2e_ios.yml`, iOS job, debug+spm matrix cell) does have them and runs the suite for real, right after that job's existing `gem update cocoapods xcodeproj` step — no new CI job, no new gem installs.
 
 ### Embed-script suite (`firebase_spm_embed_script_test.rb`)
 
@@ -33,7 +33,7 @@ Skips cleanly off macOS or when `clang`/`ar`/`file` are missing:
 ruby __tests__/firebase_spm_embed_script_test.rb
 ```
 
-Wired as **"Verify Firebase SPM embed script framework filter"** in `tests_e2e_other.yml` (`other` job), next to the shape-check step and before Pod Install.
+Wired as **"Verify Firebase SPM embed script framework filter"** in `tests_e2e_ios.yml` (iOS job, debug+spm matrix cell), next to the shape-check step and before Pod Install.
 
 ### What is `Pod::Specification` and why is it mocked?
 

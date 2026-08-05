@@ -9,8 +9,9 @@
 #
 # Deliberately opt-in: skips cleanly (does not fail, does not define any
 # tests) off macOS or when `clang`/`ar`/`file` aren't on PATH, so it's always
-# safe to run unconditionally in CI. Wired into the `other` macOS job in
-# tests_e2e_other.yml (before Pod Install); no cocoapods/xcodeproj gems needed.
+# safe to run unconditionally in CI. Wired into the iOS E2E job in
+# tests_e2e_ios.yml (debug+spm matrix cell, before Pod Install); no
+# cocoapods/xcodeproj gems needed.
 
 RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE = begin
   require 'rbconfig'
@@ -24,7 +25,7 @@ end
 unless RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
   puts '[firebase_spm_embed_script_test] Skipping: macOS with clang/ar/file ' \
     'is required to build and classify Mach-O framework fixtures. This is ' \
-    'expected outside of the tests_e2e_other.yml CI job — see the header ' \
+    'expected outside of the tests_e2e_ios.yml CI job -- see the header ' \
     'comment in this file.'
 end
 
