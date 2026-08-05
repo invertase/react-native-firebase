@@ -23,6 +23,18 @@ ruby __tests__/firebase_spm_shape_test.rb
 - **"Test Firebase SPM Helper" step** (`tests_jest.yml`) never installs these gems — the suite is expected to skip there.
 - **"Verify Firebase SPM Xcodeproj/CocoaPods API shape" step** (`tests_e2e_other.yml`, `other` job) does have them and runs the suite for real, right after that job's existing `gem update cocoapods xcodeproj` step — no new CI job, no new gem installs.
 
+### Embed-script suite (`firebase_spm_embed_script_test.rb`)
+
+Exercises the bash body of `rnfirebase_spm_embed_script` (`embed_frameworks_from`) against real Mach-O frameworks built with `clang`/`ar`. This is what catches Archive-embed regressions like #9154 (static CocoaPods frameworks incorrectly copied into the app bundle). No `cocoapods`/`xcodeproj` gems needed.
+
+Skips cleanly off macOS or when `clang`/`ar`/`file` are missing:
+
+```bash
+ruby __tests__/firebase_spm_embed_script_test.rb
+```
+
+Wired as **"Verify Firebase SPM embed script framework filter"** in `tests_e2e_other.yml` (`other` job), next to the shape-check step and before Pod Install.
+
 ### What is `Pod::Specification` and why is it mocked?
 
 `Pod::Specification` is the core CocoaPods class — it's the `s` object used inside every `.podspec` file to declare things like `s.dependency`, `s.name`, `s.version`, etc. We mock it with a simple class that records `dependency` calls, so we can run the tests without installing CocoaPods.

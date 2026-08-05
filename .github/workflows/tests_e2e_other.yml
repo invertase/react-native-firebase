@@ -204,6 +204,9 @@ jobs:
       - name: Verify Firebase SPM Xcodeproj/CocoaPods API shape
         run: ruby packages/app/__tests__/firebase_spm_shape_test.rb
 
+      - name: Verify Firebase SPM embed script framework filter
+        run: ruby packages/app/__tests__/firebase_spm_embed_script_test.rb
+
       - name: Pods Cache Restore
         # https://github.com/actions/cache/releases
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0

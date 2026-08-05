@@ -524,6 +524,14 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal '/bin/bash', rnfb_phase.shell_path
     assert_equal '1', rnfb_phase.always_out_of_date
     assert_includes rnfb_phase.shell_script, 'PackageFrameworks'
+    # Regression net for #9154 / SAE-1: the embed script must filter out
+    # static (ar archive) frameworks before rsync, via `file -b` and
+    # "dynamically linked". Fast, dependency-free guard against a future
+    # refactor stripping the filter from the generated phase text.
+    assert_includes rnfb_phase.shell_script, 'dynamically linked'
+    assert_includes rnfb_phase.shell_script, 'file -b'
+    assert_includes rnfb_phase.shell_script,
+      'Skipping ${framework_name}: binary missing or not dynamically linked'
     assert_equal ['${BUILT_PRODUCTS_DIR}/PackageFrameworks'], rnfb_phase.input_paths
     assert_equal ['${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}'], rnfb_phase.output_paths
     assert_equal 1, user_project.save_count

@@ -205,6 +205,28 @@ def rnfirebase_spm_embed_script
           continue
         fi
 
+        # Xcode's Archive action writes EVERY SKIP_INSTALL=YES product into
+        # ${OBJROOT}/UninstalledProducts/${PLATFORM_NAME} -- not just Swift
+        # Package products. With CocoaPods + `use_frameworks!` (required for
+        # SPM mode), that folder also contains every pod's .framework,
+        # including STATIC ones (Expo modules, the Pods_<target> umbrella,
+        # ...). Embedding a static framework into the app bundle makes App
+        # Store validation fail with "Invalid bundle structure ... binary
+        # file is not permitted". Only ever embed real dynamic libraries.
+        #
+        # Internal binary name matches the .framework folder name minus the
+        # extension for every CocoaPods/SPM-built framework (all this script
+        # handles).
+        binary_name="${framework_name%.framework}"
+        # Deliberate tradeoff: match `file -b` prose for "dynamically linked"
+        # rather than inspecting Mach-O magic bytes. Locale-independent in
+        # practice on Apple's `file`, but still a CLI string match.
+        if [ ! -f "${framework}/${binary_name}" ] || \
+           ! file -b "${framework}/${binary_name}" | grep -q 'dynamically linked'; then
+          echo "Skipping ${framework_name}: binary missing or not dynamically linked"
+          continue
+        fi
+
         echo "Embedding Firebase SPM framework ${framework_name} (from ${source_dir})"
         rsync -av --delete \
           --filter "- Headers" \
@@ -224,12 +246,16 @@ def rnfirebase_spm_embed_script
     embed_frameworks_from "${BUILT_PRODUCTS_DIR}/PackageFrameworks"
 
     # Xcode's Archive action (ONLY_ACTIVE_ARCH=NO, DEPLOYMENT_POSTPROCESSING=YES)
-    # never populates any target's PackageFrameworks folder at all -- it builds
-    # Swift Package products into a separate shared "uninstalled products"
-    # folder instead. Without also checking here, a real `xcodebuild archive`
-    # (i.e. every TestFlight/App Store build) silently embeds zero Firebase SPM
-    # frameworks and the resulting app crashes at launch with a missing-library
-    # dyld error.
+    # never populates PackageFrameworks. It stages build products under
+    # ${OBJROOT}/UninstalledProducts/${PLATFORM_NAME} instead -- and that
+    # folder is NOT SPM-only: Archive writes every SKIP_INSTALL=YES product
+    # there, which under CocoaPods + use_frameworks! (required for SPM mode)
+    # includes every pod .framework (dynamic Firebase SPM products and static
+    # pods alike). Without this fallback, Archive embeds zero Firebase SPM
+    # frameworks and the app crashes at launch (missing-library dyld). The
+    # filter inside embed_frameworks_from keeps only dynamically linked
+    # binaries so static CocoaPods frameworks are not copied into the app
+    # bundle (App Store "Invalid bundle structure").
     embed_frameworks_from "${OBJROOT}/UninstalledProducts/${PLATFORM_NAME}"
   SCRIPT
 end
