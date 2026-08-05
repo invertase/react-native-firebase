@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics, Style/Documentation
 # Opt-in suite that exercises the bash body of `rnfirebase_spm_embed_script`
 # (`embed_frameworks_from`) against real Mach-O frameworks built with
 # `clang`/`ar`. Companion to firebase_spm_test.rb (which only asserts on the
@@ -24,9 +25,9 @@ end
 
 unless RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
   puts '[firebase_spm_embed_script_test] Skipping: macOS with clang/ar/file ' \
-    'is required to build and classify Mach-O framework fixtures. This is ' \
-    'expected outside of the tests_e2e_ios.yml CI job -- see the header ' \
-    'comment in this file.'
+       'is required to build and classify Mach-O framework fixtures. This is ' \
+       'expected outside of the tests_e2e_ios.yml CI job -- see the header ' \
+       'comment in this file.'
 end
 
 if RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
@@ -51,7 +52,7 @@ if RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
 
         dest_binary = File.join(dest_dir, 'DynamicSingle.framework', 'DynamicSingle')
         assert File.file?(dest_binary),
-          'single-arch dynamic framework must be embedded into Frameworks/'
+               'single-arch dynamic framework must be embedded into Frameworks/'
         assert_match(/dynamically linked/, `file -b "#{dest_binary}"`)
       end
     end
@@ -69,11 +70,11 @@ if RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
 
         dest_framework = File.join(dest_dir, 'StaticPod.framework')
         refute File.exist?(dest_framework),
-          'static ar-archive framework must NOT be embedded (GitHub #9154); ' \
-          'App Store rejects "Invalid bundle structure ... binary file is not permitted"'
+               'static ar-archive framework must NOT be embedded (GitHub #9154); ' \
+               'App Store rejects "Invalid bundle structure ... binary file is not permitted"'
         assert_includes stdout,
-          'Skipping StaticPod.framework: binary missing or not dynamically linked',
-          'Archive build logs must explain why a static framework was not embedded'
+                        'Skipping StaticPod.framework: binary missing or not dynamically linked',
+                        'Archive build logs must explain why a static framework was not embedded'
       end
     end
 
@@ -90,7 +91,7 @@ if RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
 
         dest_binary = File.join(dest_dir, 'FatDynamic.framework', 'FatDynamic')
         assert File.file?(dest_binary),
-          'fat/universal dynamic framework must still be embedded'
+               'fat/universal dynamic framework must still be embedded'
         file_out = `file -b "#{dest_binary}"`
         assert_match(/dynamically linked/, file_out)
         assert_match(/x86_64/, file_out)
@@ -115,8 +116,8 @@ if RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
         run_embed_frameworks_from!(source_dir, dest_dir)
 
         assert_equal marker_contents, File.read(marker_path),
-          'pre-existing destination framework must be left untouched ' \
-          '(locks in the [ -e destination ] dedupe guard)'
+                     'pre-existing destination framework must be left untouched ' \
+                     '(locks in the [ -e destination ] dedupe guard)'
       end
     end
 
@@ -125,7 +126,7 @@ if RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
     def extract_embed_frameworks_from(script)
       match = script.match(/^embed_frameworks_from\(\) \{\n.*?\n\}$/m)
       refute_nil match,
-        'could not extract embed_frameworks_from() from rnfirebase_spm_embed_script'
+                 'could not extract embed_frameworks_from() from rnfirebase_spm_embed_script'
       match[0]
     end
 
@@ -143,13 +144,13 @@ if RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
 
       stdout, stderr, status = Open3.capture3('/bin/bash', '-c', driver)
       assert status.success?,
-        "embed_frameworks_from failed (exit #{status.exitstatus})\n" \
-        "stdout:\n#{stdout}\nstderr:\n#{stderr}"
+             "embed_frameworks_from failed (exit #{status.exitstatus})\n" \
+             "stdout:\n#{stdout}\nstderr:\n#{stderr}"
       [stdout, stderr]
     end
 
     def shell_quote(path)
-      "'" + path.to_s.gsub("'", "'\\''") + "'"
+      "'#{path.to_s.gsub("'", "'\\''")}'"
     end
 
     def write_c_source(path)
@@ -203,3 +204,5 @@ if RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
     end
   end
 end
+
+# rubocop:enable Metrics, Style/Documentation

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics, Style/OptionalBooleanParameter
 # Coverage runner for `yarn tests:ios:ruby`.
 #
 # Starts SimpleCov before any production `packages/app/**/*.rb` or `*_test.rb`
@@ -14,6 +15,7 @@
 # Coverage module resets per-file counters on each `load`. The runner peeks
 # and accumulates those counters across reloads so LCOV reflects all tests.
 
+require 'English'
 tests_dir = __dir__
 repo_root = File.expand_path('../../..', tests_dir)
 gemfile = File.expand_path('Gemfile', tests_dir)
@@ -72,8 +74,8 @@ def configure_simplecov_formatters!(coverage_dir, lcov_path)
   SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(
     [
       SimpleCov::Formatter::HTMLFormatter,
-      SimpleCov::Formatter::LcovFormatter,
-    ],
+      SimpleCov::Formatter::LcovFormatter
+    ]
   )
 end
 
@@ -227,8 +229,9 @@ def start_simplecov!(repo_root, coverage_dir, command_name:)
 
     # SimpleCov 1.x verbs (`cover` / `skip`; legacy track_files/add_filter still work).
     # project_filename is relative (no leading `/`) — do not anchor on `/packages/...`.
-    cover 'packages/app/**/*.rb'
+    cover 'packages/app/*.rb'
     skip %r{packages/app/__tests__/}
+    skip %r{packages/app/node_modules/}
     skip do |source_file|
       !source_file.filename.start_with?(File.join(repo_root, 'packages', 'app'))
     end
@@ -241,7 +244,7 @@ require 'rbconfig'
 activate_coverage_gems!(tests_dir, gemfile)
 configure_simplecov_formatters!(coverage_dir, lcov_path)
 
-if (suite_path = ENV['RNFB_IOS_RUBY_SUITE'])
+if (suite_path = ENV.fetch('RNFB_IOS_RUBY_SUITE', nil))
   # ── Child: one suite (isolated — mocks vs real Xcodeproj cannot share a process)
   Dir.chdir(repo_root)
   start_simplecov!(repo_root, coverage_dir, command_name: "ios-ruby-#{File.basename(suite_path, '.rb')}")
@@ -251,7 +254,8 @@ if (suite_path = ENV['RNFB_IOS_RUBY_SUITE'])
   exit 0 unless defined?(Minitest)
 else
   # ── Parent: discover, spawn, collate
-  suite_files = Dir.glob(File.join(tests_dir, '*_test.rb')).sort
+  # Sort for stable suite order across hosts (RuboCop Lint/RedundantDirGlobSort is disabled).
+  suite_files = Dir.glob(File.join(tests_dir, '*_test.rb')).sort # rubocop:disable Lint/RedundantDirGlobSort -- stable order across hosts
   if suite_files.empty?
     warn '[tests:ios:ruby] No *_test.rb suites found under packages/app/__tests__/'
     exit 1
@@ -272,12 +276,12 @@ else
     ok = system(
       {
         'BUNDLE_GEMFILE' => gemfile,
-        'RNFB_IOS_RUBY_SUITE' => path,
+        'RNFB_IOS_RUBY_SUITE' => path
       },
       RbConfig.ruby,
       __FILE__,
       out: log,
-      err: log,
+      err: log
     )
     log.flush
     log.rewind
@@ -289,7 +293,7 @@ else
       summary = child_log.lines.grep(/^\d+ runs,/).last&.strip
       puts(summary ? "ok (#{summary})" : 'ok')
     else
-      puts "FAIL (exit #{$?.exitstatus})"
+      puts "FAIL (exit #{$CHILD_STATUS.exitstatus})"
       warn child_log
       failures += 1
     end
@@ -304,8 +308,9 @@ else
   SimpleCov.collate(resultsets) do
     root repo_root
     coverage_dir coverage_dir
-    cover 'packages/app/**/*.rb'
+    cover 'packages/app/*.rb'
     skip %r{packages/app/__tests__/}
+    skip %r{packages/app/node_modules/}
     skip do |source_file|
       !source_file.filename.start_with?(File.join(repo_root, 'packages', 'app'))
     end
@@ -314,3 +319,5 @@ else
   puts "[tests:ios:ruby] Coverage → #{lcov_path.delete_prefix("#{repo_root}/")}"
   exit(failures.zero? ? 0 : 1)
 end
+
+# rubocop:enable Metrics, Style/OptionalBooleanParameter

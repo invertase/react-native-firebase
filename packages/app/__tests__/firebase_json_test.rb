@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics, Style/Documentation, Style/GlobalVars
 require 'minitest/autorun'
 require 'json'
 
@@ -60,7 +61,7 @@ class FirebaseJsonTest < Minitest::Test
     assert $firebase_json_path
     assert_includes $firebase_json_path, File.join('tests', 'firebase.json')
     assert_kind_of Hash, $firebase_json_config
-    assert Pod::UI.messages.any? { |m| m.include?('Using firebase.json from') }
+    assert(Pod::UI.messages.any? { |m| m.include?('Using firebase.json from') })
   end
 
   def test_config_get_value_or_default_returns_present_key
@@ -121,9 +122,8 @@ class FirebaseJsonTest < Minitest::Test
       if result.end_with?('/packages/app') && !File.basename(result).end_with?('.json')
         next result.sub('/packages/app', '/node_modules/@react-native-firebase/app')
       end
-      if result.end_with?('/firebase.json') && !result.include?('/tests/')
-        seen_consumer_json_paths << result
-      end
+
+      seen_consumer_json_paths << result if result.end_with?('/firebase.json') && !result.include?('/tests/')
       result
     }) do
       with_stubbed_singleton(File, :exist?, ->(*) { false }) do
@@ -133,6 +133,8 @@ class FirebaseJsonTest < Minitest::Test
 
     assert_nil $firebase_json_path
     refute_empty seen_consumer_json_paths
-    assert seen_consumer_json_paths.all? { |p| File.basename(p) == 'firebase.json' && !p.include?('/tests/') }
+    assert(seen_consumer_json_paths.all? { |p| File.basename(p) == 'firebase.json' && !p.include?('/tests/') })
   end
 end
+
+# rubocop:enable Metrics, Style/Documentation, Style/GlobalVars

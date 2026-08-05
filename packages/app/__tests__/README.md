@@ -8,8 +8,10 @@ From the **repo root**:
 
 ```bash
 bundle install --gemfile=packages/app/__tests__/Gemfile
-yarn tests:ios:ruby
+yarn tests:ios:ruby   # RuboCop (yarn lint:ruby) then SimpleCov suites
 ```
+
+`yarn lint:ruby` is also available alone (same Gemfile / `BUNDLE_FROZEN` install). It is **not** part of root `yarn lint` — CI Lint has no Bundler step; Ruby lint runs with unit tests on `tests_e2e_ios.yml`.
 
 Gems install under `packages/app/__tests__/vendor/bundle` via the committed `.bundle/config` (`BUNDLE_PATH`); that directory is gitignored. Commit `Gemfile.lock` (including `CHECKSUMS`); CI installs with `BUNDLE_FROZEN=true bundle install` (Bundler 2.6 deprecates the `--frozen` CLI flag and would persist it into `.bundle/config`). Dependabot watches `package-ecosystem: bundler` at `/packages/app/__tests__` (with cooldown) — do not put Bundler-native `cooldown:` in the Gemfile (needs Bundler 4.0.13+; host/CI stay on 2.6.x).
 

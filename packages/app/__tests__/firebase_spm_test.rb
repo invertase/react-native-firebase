@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics, Style/Documentation, Style/OneClassPerFile, Style/GlobalVars, Naming/MethodName
 require 'minitest/autorun'
 require 'json'
 
@@ -32,7 +33,8 @@ class MockTarget
   attr_reader :shell_script_build_phases, :build_configurations
   attr_accessor :package_product_dependencies, :name
 
-  def initialize(phase_names = [], package_product_dependencies: [], build_config_names: ['Debug', 'Release'], name: 'testing')
+  def initialize(phase_names = [], package_product_dependencies: [], build_config_names: %w[Debug Release],
+                 name: 'testing')
     @shell_script_build_phases = phase_names.map { |phase_name| MockPhase.new(phase_name) }
     @package_product_dependencies = package_product_dependencies
     @build_configurations = build_config_names.map { |config_name| MockBuildConfig.new(config_name) }
@@ -273,7 +275,8 @@ class MockPodsProject
   attr_reader :objects_by_uuid, :targets
   attr_accessor :root_object
 
-  def initialize(uuid_prefix:, objects_by_uuid: {}, generated_uuids: [], available_uuids: [], root_object: nil, targets: [])
+  def initialize(uuid_prefix:, objects_by_uuid: {}, generated_uuids: [], available_uuids: [], root_object: nil,
+                 targets: [])
     @uuid_prefix = uuid_prefix
     @objects_by_uuid = objects_by_uuid
     @generated_uuids = generated_uuids
@@ -300,7 +303,7 @@ class FirebaseSpmTest < Minitest::Test
     if defined?(spm_dependency)
       Object.send(:remove_method, :spm_dependency)
     end
-    # Note: a Ruby global variable can't be "undefined" again once assigned in this
+    # NOTE: a Ruby global variable can't be "undefined" again once assigned in this
     # process, so `defined?($RNFirebaseDisableSPM)` stays true for the rest of the
     # suite after the first test that touches it. Resetting the value to nil (rather
     # than relying on `defined?` alone) is exactly the behavior rnfirebase_spm_disabled?
@@ -341,9 +344,8 @@ class FirebaseSpmTest < Minitest::Test
 
     spec = MockSpec.new
     firebase_dependency(spec, '12.10.0',
-      ['FirebaseCrashlytics'],
-      ['Firebase/Crashlytics', 'FirebaseCoreExtension']
-    )
+                        ['FirebaseCrashlytics'],
+                        ['Firebase/Crashlytics', 'FirebaseCoreExtension'])
 
     assert_equal 2, spec.dependencies.length
     assert_equal 'Firebase/Crashlytics', spec.dependencies[0][:name]
@@ -390,9 +392,8 @@ class FirebaseSpmTest < Minitest::Test
     spec = MockSpec.new
     # Crashlytics: SPM only needs FirebaseCrashlytics, CocoaPods needs 2 pods
     firebase_dependency(spec, '12.10.0',
-      ['FirebaseCrashlytics'],
-      ['Firebase/Crashlytics', 'FirebaseCoreExtension']
-    )
+                        ['FirebaseCrashlytics'],
+                        ['Firebase/Crashlytics', 'FirebaseCoreExtension'])
 
     # CocoaPods not called
     assert_equal 0, spec.dependencies.length
@@ -580,7 +581,7 @@ class FirebaseSpmTest < Minitest::Test
     assert_includes rnfb_phase.shell_script, 'dynamically linked'
     assert_includes rnfb_phase.shell_script, 'file -b'
     assert_includes rnfb_phase.shell_script,
-      'Skipping ${framework_name}: binary missing or not dynamically linked'
+                    'Skipping ${framework_name}: binary missing or not dynamically linked'
     assert_equal ['${BUILT_PRODUCTS_DIR}/PackageFrameworks'], rnfb_phase.input_paths
     assert_equal ['${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}'], rnfb_phase.output_paths
     assert_equal 1, user_project.save_count
@@ -733,11 +734,11 @@ class FirebaseSpmTest < Minitest::Test
     pods_target = MockTarget.new([])
     pods_project = MockPodsProject.new(
       uuid_prefix: 'ABCDEF',
-      targets: [pods_target],
+      targets: [pods_target]
     )
     installer = MockInstaller.new(
       [MockAggregateTarget.new(user_project)],
-      pods_project: pods_project,
+      pods_project: pods_project
     )
 
     rnfirebase_apply_spm_build_settings(installer)
@@ -773,7 +774,7 @@ class FirebaseSpmTest < Minitest::Test
     pods_project = MockPodsProject.new(uuid_prefix: 'ABCDEF', targets: [pods_target])
     installer = MockInstaller.new(
       [MockAggregateTarget.new(user_project)],
-      pods_project: pods_project,
+      pods_project: pods_project
     )
 
     rnfirebase_apply_spm_build_settings(installer)
@@ -853,7 +854,8 @@ class FirebaseSpmTest < Minitest::Test
     other_ref.package = pkg
 
     target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [stale_ref])
-    other_target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [other_ref], name: 'other')
+    other_target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [other_ref],
+                                                                  name: 'other')
     user_project = MockUserProject.new([target, other_target], package_references: [pkg])
     installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
 
@@ -946,8 +948,8 @@ class FirebaseSpmTest < Minitest::Test
     RNFirebaseSPM.activate!('12.10.0')
 
     installer = MockInstaller.new([
-      MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: false)
-    ])
+                                    MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: false)
+                                  ])
 
     rnfirebase_fail_if_spm_static_linkage!(installer)
     # No error raised.
@@ -958,8 +960,8 @@ class FirebaseSpmTest < Minitest::Test
     RNFirebaseSPM.activate!('12.10.0')
 
     installer = MockInstaller.new([
-      MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: true)
-    ])
+                                    MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: true)
+                                  ])
 
     error = assert_raises(Pod::Informative) do
       rnfirebase_fail_if_spm_static_linkage!(installer)
@@ -998,10 +1000,10 @@ class FirebaseSpmTest < Minitest::Test
     RNFirebaseSPM.activate!('12.10.0')
 
     installer = MockInstaller.new([
-      MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: true),
-      MockAggregateTarget.new(nil, name: 'Pods-testingTests', static_linkage: true),
-      MockAggregateTarget.new(nil, name: 'Pods-dynamic-extension', static_linkage: false)
-    ])
+                                    MockAggregateTarget.new(nil, name: 'Pods-testing', static_linkage: true),
+                                    MockAggregateTarget.new(nil, name: 'Pods-testingTests', static_linkage: true),
+                                    MockAggregateTarget.new(nil, name: 'Pods-dynamic-extension', static_linkage: false)
+                                  ])
 
     error = assert_raises(Pod::Informative) do
       rnfirebase_fail_if_spm_static_linkage!(installer)
@@ -1013,7 +1015,7 @@ class FirebaseSpmTest < Minitest::Test
   # ── rnfirebase_ensure_pods_uuid_counter_safe! ──
 
   def cocoapods_uuid(prefix, index)
-    format('%.6s%07X0', prefix, index)
+    format('%.6s%07X0', prefix, index) # rubocop:disable Style/FormatStringToken -- CocoaPods UUID layout
   end
 
   def test_ensure_pods_uuid_counter_pads_to_high_water_mark
@@ -1463,7 +1465,7 @@ class FirebaseSpmTest < Minitest::Test
     result = instance.send(:run_podfile_post_install_hooks)
 
     assert_equal :original_result, result
-    refute_nil target.shell_script_build_phases.find { |p| p.name == RNFIREBASE_SPM_EMBED_PHASE_NAME }
+    refute_nil(target.shell_script_build_phases.find { |p| p.name == RNFIREBASE_SPM_EMBED_PHASE_NAME })
   end
 
   def test_hook_calls_uuid_ensure_before_original_post_install
@@ -1597,3 +1599,5 @@ class FirebaseSpmTest < Minitest::Test
     assert_includes Pod::UI.warnings[0], 'install boom'
   end
 end
+
+# rubocop:enable Metrics, Style/Documentation, Style/OneClassPerFile, Style/GlobalVars, Naming/MethodName

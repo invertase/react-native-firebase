@@ -1,0 +1,9 @@
+# Single RuboCop config for packages/app Ruby helpers + tests.
+# Prefer default cops; use narrow `# rubocop:disable` in source for rare exceptions.
+# Invoked via `yarn lint:ruby` (also from `yarn tests:ios:ruby` after bundle install).
+AllCops:
+  TargetRubyVersion: 3.1
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - 'vendor/**/*'
