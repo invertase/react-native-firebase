@@ -55,6 +55,28 @@ class MockTarget
     config = @build_configurations.find { |c| c.name == config_name }
     config.build_settings
   end
+
+  # Mirrors `PBXNativeTarget#frameworks_build_phase` (singular) → finds or
+  # creates the target's one `PBXFrameworksBuildPhase`. Defaults to an empty
+  # phase so every pre-existing test that never calls this keeps passing
+  # unmodified -- this method, and the `files` collection it exposes, did not
+  # exist on this mock before the fix for the missing `PBXBuildFile` link.
+  def frameworks_build_phase
+    @frameworks_build_phase ||= MockFrameworksBuildPhase.new
+  end
+end
+
+# Mirrors `Xcodeproj::Project::Object::PBXFrameworksBuildPhase`'s
+# `has_many :files, PBXBuildFile` -- the real collection
+# `rnfirebase_add_spm_core_to_app_target` must append a `PBXBuildFile` to in
+# order for Xcode to actually link a package product dependency, not just
+# declare it (see `MockTarget#frameworks_build_phase` above).
+class MockFrameworksBuildPhase
+  attr_accessor :files
+
+  def initialize
+    @files = []
+  end
 end
 
 class MockUserProject
@@ -137,6 +159,18 @@ module Xcodeproj
         def remove_from_project
           @package&.remove_referrer(self)
         end
+      end
+
+      # Mirrors `Xcodeproj::Project::Object::PBXBuildFile` -- specifically its
+      # `has_one :product_ref, XCSwiftPackageProductDependency` attribute, the
+      # real one `rnfirebase_add_spm_core_to_app_target` must set (not
+      # `file_ref`, which is for plain file references) so a package product
+      # dependency actually gets linked into the target's Frameworks build
+      # phase, rather than merely declared on
+      # `target.package_product_dependencies`. `file_ref` is modeled too, for
+      # completeness, but unused by production code here.
+      class PBXBuildFile
+        attr_accessor :product_ref, :file_ref
       end
     end
   end
@@ -653,6 +687,30 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 1, user_project.save_count
   end
 
+  # Regression test for the missing-link bug (#9158): declaring a
+  # `package_product_dependencies` entry alone tells Xcode the target
+  # *depends* on the package product, but never actually links it -- that
+  # requires a matching `PBXBuildFile` (with its `product_ref` pointed at the
+  # same dependency) in the target's `PBXFrameworksBuildPhase`. Without it,
+  # native code calling FIRApp/FIROptions directly (as Expo's generated
+  # AppDelegate does) fails at the link step with "Undefined symbols ...
+  # _OBJC_CLASS_$_FIRApp", even though `pod install` appears to succeed.
+  def test_add_core_links_build_file_into_frameworks_build_phase
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_add_spm_core_to_app_target(installer)
+
+    ref = target.package_product_dependencies[0]
+    build_files = target.frameworks_build_phase.files
+    assert_equal 1, build_files.length
+    assert_same ref, build_files[0].product_ref
+  end
+
   def test_add_core_is_idempotent_across_repeated_pod_installs
     load_firebase_spm
     RNFirebaseSPM.activate!('12.10.0')
@@ -665,6 +723,13 @@ class FirebaseSpmTest < Minitest::Test
     rnfirebase_add_spm_core_to_app_target(installer)
 
     assert_equal 1, target.package_product_dependencies.length
+    # The early-exit guard (`target.package_product_dependencies.any? { ... }`)
+    # must also stop a second `pod install` from double-linking the build
+    # file it added on the first call.
+    assert_equal 1, target.frameworks_build_phase.files.length
+    # The second, redundant call must not re-save the pbxproj: nothing about
+    # the target actually changed on the second pass.
+    assert_equal 1, user_project.save_count
   end
 
   def test_add_core_handles_swift_include_paths_already_set_as_a_string
@@ -714,6 +779,63 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 1, target.package_product_dependencies.length
     assert_same existing_pkg, target.package_product_dependencies[0].package
     assert_equal 1, user_project.save_count
+
+    # No pre-existing product *dependency* on the target for this scenario --
+    # only a pre-existing package *reference* -- so the build-file-linking
+    # code path must still run and link the freshly-created dependency.
+    build_files = target.frameworks_build_phase.files
+    assert_equal 1, build_files.length
+    assert_same target.package_product_dependencies[0], build_files[0].product_ref
+  end
+
+  # Regression test for the "already-affected consumer" self-heal gap
+  # (#9158 follow-up): a project that already went through a *pre-fix*
+  # RNFB version has a `FirebaseCore` product dependency declared on the
+  # target, but no matching `PBXBuildFile` -- the exact broken state the
+  # fix above is meant to repair. The plain
+  # `target.package_product_dependencies.any? { dep.product_name == ... }`
+  # guard can't tell that state apart from the fully-healthy
+  # already-linked one, so it was bailing out before ever adding the
+  # missing build file -- meaning upgrading and running `pod install`
+  # alone could never self-heal an already-affected project.
+  def test_add_core_heals_existing_dependency_missing_build_file
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    existing_pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
+    existing_pkg.repositoryURL = RNFirebaseSPM.url
+    existing_pkg.requirement = { kind: 'upToNextMajorVersion', minimumVersion: '12.0.0' }
+
+    existing_ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
+    existing_ref.package = existing_pkg
+    existing_ref.product_name = 'FirebaseCore'
+
+    # Stale pre-fix state: dependency already declared on the target, but
+    # never linked -- `frameworks_build_phase.files` (via the default empty
+    # `MockFrameworksBuildPhase`) has no matching `PBXBuildFile` for it.
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [existing_ref])
+    user_project = MockUserProject.new([target], package_references: [existing_pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_add_spm_core_to_app_target(installer)
+
+    # Healed: exactly one build file added, linking the *same* pre-existing
+    # dependency object -- not a fresh/duplicate one.
+    build_files = target.frameworks_build_phase.files
+    assert_equal 1, build_files.length
+    assert_same existing_ref, build_files[0].product_ref
+
+    # No duplicate dependency or package reference created in the process.
+    assert_equal 1, target.package_product_dependencies.length
+    assert_same existing_ref, target.package_product_dependencies[0]
+    assert_equal 1, user_project.root_object.package_references.length
+    assert_same existing_pkg, user_project.root_object.package_references[0]
+    assert_equal 1, user_project.save_count
+
+    search_path = '${SYMROOT}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/'
+    target.build_configurations.each do |config|
+      assert_includes target.build_settings(config.name)['SWIFT_INCLUDE_PATHS'], search_path
+    end
   end
 
   # ── rnfirebase_apply_spm_build_settings ──
@@ -837,6 +959,33 @@ class FirebaseSpmTest < Minitest::Test
     assert_empty target.package_product_dependencies
     assert_empty user_project.root_object.package_references
     assert_equal 1, user_project.save_count
+  end
+
+  # Regression test for the dangling-PBXBuildFile bug found in review of #9158:
+  # `rnfirebase_add_spm_core_to_app_target` links FirebaseCore by appending both
+  # a package product dependency AND a matching PBXBuildFile to the target's
+  # Frameworks build phase. Undoing that (this function) must remove both --
+  # `ref.remove_from_project` alone only nils out the build file's product_ref,
+  # it doesn't delete the now-useless PBXBuildFile itself.
+  def test_remove_core_removes_orphaned_build_file_from_frameworks_build_phase
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    # First, SPM-enable: this is the real add path, and it's the only thing
+    # that creates the PBXBuildFile this test is checking gets cleaned up.
+    rnfirebase_add_spm_core_to_app_target(installer)
+    assert_equal 1, target.frameworks_build_phase.files.length
+
+    # Then, SPM-disable (e.g. `$RNFirebaseDisableSPM = true` on a later `pod install`).
+    RNFirebaseSPM.reset!
+    rnfirebase_remove_spm_core_from_app_target(installer)
+
+    assert_empty target.package_product_dependencies
+    assert_empty target.frameworks_build_phase.files
   end
 
   def test_remove_core_leaves_package_reference_when_still_used_by_another_target
