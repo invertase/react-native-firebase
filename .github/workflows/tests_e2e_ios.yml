@@ -252,6 +252,23 @@ jobs:
           max_attempts: 3
           command: gem update cocoapods xcodeproj
 
+      # SPM/CocoaPods Ruby helpers: run once on debug+spm (not Jest / macos-other).
+      # Shape needs cocoapods/xcodeproj from the step above; embed-script needs
+      # clang/ar/file on macOS. Gemfile adds simplecov + simplecov-lcov only
+      # (minitest from env; BUNDLE_PATH via packages/app/__tests__/.bundle/config).
+      # yarn tests:ios:ruby globs all *_test.rb (unit + shape + embed).
+      - name: Bundle install (iOS Ruby coverage gems)
+        if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
+        # BUNDLE_FROZEN (not deprecated --frozen flag) fails CI on Gemfile.lock drift;
+        # checksums committed via `bundle lock --add-checksums`. Avoids writing
+        # BUNDLE_FROZEN into packages/app/__tests__/.bundle/config.
+        run: BUNDLE_FROZEN=true bundle install --gemfile=packages/app/__tests__/Gemfile
+
+      - name: Verify Firebase SPM Ruby helpers
+        if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
+        # Canonical entrypoint — discovers all *_test.rb; shape/embed run for real here.
+        run: yarn tests:ios:ruby
+
       - name: Pods Cache Restore
         # https://github.com/actions/cache/releases
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -501,6 +518,7 @@ jobs:
         with:
           files: coverage/lcov.info
           flags: e2e-ts-ios
+          disable_search: true
           verbose: true
 
       - name: Upload Codecov iOS native
@@ -510,6 +528,17 @@ jobs:
         with:
           files: coverage/ios-native/lcov.info
           flags: ios-native
+          disable_search: true
+          verbose: true
+
+      - name: Upload Codecov iOS Ruby
+        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
+        continue-on-error: true
+        with:
+          files: coverage/ios-ruby/lcov.info
+          flags: ios-ruby
+          disable_search: true
           verbose: true
 
       - name: Yarn Cache Save

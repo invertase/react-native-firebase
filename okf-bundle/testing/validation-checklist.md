@@ -91,6 +91,23 @@ yarn tests:android:test:jacoco-report
 
 Merged Codecov path: `jacocoTestReport.xml` — [coverage design](coverage-design.md). JVM unit does **not** replace [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) e2e.
 
+<a id="ios-ruby-unit-tests"></a>
+
+## iOS Ruby unit tests (SPM / CocoaPods helpers)
+
+**Blocking for `implementation_gate` / `review_gate` / handoff** when the diff touches any of:
+
+- `packages/app/**/*.rb` (production helpers such as `firebase_spm.rb`, `firebase_json.rb`)
+- `packages/app/__tests__/*_test.rb`
+
+```bash
+bundle install --gemfile=packages/app/__tests__/Gemfile   # once per checkout / Gemfile change
+yarn tests:ios:ruby                                       # yarn lint:ruby (RuboCop) then all *_test.rb + SimpleCov → coverage/ios-ruby/lcov.info
+yarn lint:ruby                                          # RuboCop only (same Gemfile; not part of root yarn lint)
+```
+
+Opt-in shape/embed suites skip cleanly when cocoapods/xcodeproj are absent; exit **0** when only skips occur alongside a green unit suite. Coverage artifact and Codecov flag **`ios-ruby`**: [coverage design § iOS Ruby](coverage-design.md#ios-ruby-simplecov). Touched production Ruby lines need test support in the [coverage evidence package](coverage-design.md#coverage-evidence-package) before `review_gate` closes — same spirit as JS/native touched-line bar. Canonical command only ([agent command policy](agent-command-policy.md)); do **not** use ad-hoc `ruby packages/app/__tests__/…_test.rb` as the gate.
+
 <a id="lint-and-formatting"></a>
 
 ## Lint and formatting
@@ -154,21 +171,22 @@ Goal: each iteration improves OKF and removes conflicting guidance.
 Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, or publishing (`git push` / PR update), record evidence per [change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking). Minimum template:
 
 ```markdown
-| Step                      | Command                       | Exit | Evidence                                                                                                                          |
-| ------------------------- | ----------------------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------- |
-| prepare                   | yarn lerna:prepare            | 0    | —                                                                                                                                 |
-| jest                      | yarn tests:jest <paths>       | 0    | N/N tests                                                                                                                         |
-| android JVM unit          | yarn tests:android:unit       | 0    | when packages/*/android/** Java changed — [AndroidTest-AD-1](android-architecture-decisions.md)                                  |
-| e2e macOS                 | yarn tests:macos:test-cover   | 0    | X passing — /tmp/...log                                                                                                           |
-| e2e iOS                   | yarn tests:ios:test-cover     | 0    | Y passing — /tmp/...log                                                                                                           |
-| e2e Android               | yarn tests:android:test-cover | 0    | Z passing — /tmp/...log                                                                                                           |
-| android merged Jacoco     | yarn tests:android:post-e2e-coverage | 0 | jacocoTestReport.xml (unit + e2e) — [coverage design](coverage-design.md)                                                         |
-| compare:types             | yarn compare:types            | 0    | <pkg> 0/0/0                                                                                                                       |
-| lint (CI)                 | yarn lint                     | 0    | —                                                                                                                                 |
-| lint:deps (lib diff)      | yarn lint:deps                | 0    | when packages/\*/lib/\*\* in diff — [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting) |
-| lint:markdown (CI docs)   | yarn lint:markdown            | 0    | when docs/\*\* in diff                                                                                                            |
-| lint:spellcheck (CI docs) | yarn lint:spellcheck          | 0    | when docs/\*\* in diff                                                                                                            |
-| coverage                  | post-process + region table   | —    | see coverage-design § evidence package                                                                                            |
+| Step                      | Command                              | Exit | Evidence                                                                                                                                     |
+| ------------------------- | ------------------------------------ | ---- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| prepare                   | yarn lerna:prepare                   | 0    | —                                                                                                                                            |
+| jest                      | yarn tests:jest <paths>              | 0    | N/N tests                                                                                                                                    |
+| ios Ruby unit             | yarn tests:ios:ruby                  | 0    | when `packages/app/**/*.rb` or `packages/app/__tests__/*_test.rb` touched — coverage/ios-ruby/lcov.info ([§ iOS Ruby](#ios-ruby-unit-tests)) |
+| android JVM unit          | yarn tests:android:unit              | 0    | when `packages/*/android/**` Java changed — [AndroidTest-AD-1](android-architecture-decisions.md)                                            |
+| e2e macOS                 | yarn tests:macos:test-cover          | 0    | X passing — /tmp/...log                                                                                                                      |
+| e2e iOS                   | yarn tests:ios:test-cover            | 0    | Y passing — /tmp/...log                                                                                                                      |
+| e2e Android               | yarn tests:android:test-cover        | 0    | Z passing — /tmp/...log                                                                                                                      |
+| android merged Jacoco     | yarn tests:android:post-e2e-coverage | 0    | jacocoTestReport.xml (unit + e2e) — [coverage design](coverage-design.md)                                                                    |
+| compare:types             | yarn compare:types                   | 0    | <pkg> 0/0/0                                                                                                                                  |
+| lint (CI)                 | yarn lint                            | 0    | —                                                                                                                                            |
+| lint:deps (lib diff)      | yarn lint:deps                       | 0    | when `packages/*/lib/**` in diff — [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)             |
+| lint:markdown (CI docs)   | yarn lint:markdown                   | 0    | when `docs/**` in diff                                                                                                                       |
+| lint:spellcheck (CI docs) | yarn lint:spellcheck                 | 0    | when `docs/**` in diff                                                                                                                       |
+| coverage                  | post-process + region table          | —    | see coverage-design § evidence package                                                                                                       |
 ```
 
 **History rewrite invalidates** prior rows — re-run and replace the table after amend/rebase.
@@ -181,6 +199,7 @@ Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, 
 - [ ] `yarn reference:api`
 - [ ] Redirect audit when TypeDoc config changed ([documentation site maintenance § redirect audit](../documentation-site-maintenance.md#redirect-audit-required-when-typedoc-config-changes))
 - [ ] `yarn tests:jest`
+- [ ] `yarn tests:ios:ruby` when `packages/app/**/*.rb` or `packages/app/__tests__/*_test.rb` touched ([§ iOS Ruby](#ios-ruby-unit-tests); [coverage design](coverage-design.md#ios-ruby-simplecov))
 - [ ] `yarn tests:android:unit` when `packages/*/android/**` Java / `src/test/java` changed ([AndroidTest-AD-1](android-architecture-decisions.md))
 - [ ] TurboModule wrapper contract ([NewArch-AD-17.1](../new-architecture/architecture-decisions.md#newarch-ad-171--jest-turbomodule-contract-test--accepted)) when `packages/app/lib/internal/registry/nativeModule.ts`, `nativeModuleAndroidIos.ts`, or TurboModule wrapper behavior changed: `yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts`
 - [ ] `yarn compare:types` (stale config entries removed)
@@ -188,7 +207,7 @@ Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, 
 - [ ] E2e green on **every required platform** for the changed module ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking); [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking); no `.only`; committed `RNFBDebug` remains `false`)
 - [ ] Android post-e2e merged Jacoco when Android native touched: `yarn tests:android:post-e2e-coverage` → `jacocoTestReport.xml` ([coverage design](coverage-design.md))
 - [ ] [Validation evidence package](validation-checklist.md#validation-evidence-package) recorded (exit codes, e2e counts, log paths)
-- [ ] [Coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native bridge touched — gaps investigated to fix, delete, or acceptable-exception bar
+- [ ] [Coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native bridge **or** `packages/app/**/*.rb` touched — gaps investigated to fix, delete, or acceptable-exception bar
 - [ ] OKF bundle reviewed/updated per § above
 
 Package workflows may add items (e.g. pipeline before/after snapshots — [pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md)).

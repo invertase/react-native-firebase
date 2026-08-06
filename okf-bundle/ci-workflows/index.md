@@ -20,4 +20,4 @@ GitHub Actions job shape, platform reliability, and artifact triage.
 ## Related
 
 * [Running e2e tests](../testing/running-e2e.md) — local runbook; CI variants noted per platform
-* [Coverage design](../testing/coverage-design.md) — e2e coverage, Codecov flags/gates
+* [Coverage design](../testing/coverage-design.md) — e2e coverage, Codecov flags/gates; [iOS Ruby SimpleCov](../testing/coverage-design.md#ios-ruby-simplecov) (`yarn tests:ios:ruby`, flag `ios-ruby` on `tests_e2e_ios.yml` only)

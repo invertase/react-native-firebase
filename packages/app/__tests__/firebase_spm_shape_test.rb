@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics, Style/Documentation
 # Opt-in "shape-check" suite for firebase_spm.rb's Xcodeproj/CocoaPods API
 # assumptions -- a companion to firebase_spm_test.rb, not a replacement for it.
 #
@@ -27,12 +28,10 @@
 #
 # Deliberately opt-in: skips cleanly (does not fail, does not define any
 # tests) when `cocoapods`/`xcodeproj` aren't installed, so it's always safe to
-# run unconditionally in CI -- see the "Test Firebase SPM Helper" step in
-# tests_jest.yml, which deliberately never installs these gems (that job must
-# keep passing without them), and the "Verify Firebase SPM Xcodeproj/CocoaPods
-# API shape" step added to the `other` job in tests_e2e_other.yml, which does
-# have them (it reuses that job's own "Update Ruby build tools" step -- no new
-# gem install, no new CI job).
+# run unconditionally via `yarn tests:ios:ruby`. CI home is tests_e2e_ios.yml
+# (debug + spm): after `gem update cocoapods xcodeproj`, so the shape suite
+# runs for real there. Local / Linux runs without those gems still exit 0.
+
 begin
   require 'xcodeproj'
   require 'cocoapods'
@@ -40,9 +39,9 @@ begin
 rescue LoadError => e
   RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE = false
   puts "[firebase_spm_shape_test] Skipping: `xcodeproj`/`cocoapods` aren't " \
-    "installed in this Ruby environment (#{e.class}: #{e.message}). This is " \
-    'expected outside of the tests_e2e_other.yml CI job -- see the header ' \
-    'comment in this file.'
+       "installed in this Ruby environment (#{e.class}: #{e.message}). This is " \
+       'expected outside of the tests_e2e_ios.yml debug+spm cell -- see the ' \
+       'header comment in this file.'
 end
 
 if RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE
@@ -57,9 +56,9 @@ if RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE
 
     def test_installer_responds_to_aggregate_targets
       assert Pod::Installer.method_defined?(:aggregate_targets),
-        'Pod::Installer no longer exposes #aggregate_targets -- every ' \
-        'rnfirebase_* post-install helper in firebase_spm.rb reads ' \
-        'installer.aggregate_targets directly.'
+             'Pod::Installer no longer exposes #aggregate_targets -- every ' \
+             'rnfirebase_* post-install helper in firebase_spm.rb reads ' \
+             'installer.aggregate_targets directly.'
     end
 
     # We can't construct a real Pod::Installer without a full `pod install`
@@ -71,12 +70,12 @@ if RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE
     # install` in the E2E jobs continues to cover.
     def test_installer_defines_run_podfile_post_install_hooks
       hook_defined = Pod::Installer.method_defined?(:run_podfile_post_install_hooks) ||
-        Pod::Installer.private_method_defined?(:run_podfile_post_install_hooks)
+                     Pod::Installer.private_method_defined?(:run_podfile_post_install_hooks)
       assert hook_defined,
-        "Pod::Installer#run_podfile_post_install_hooks no longer exists (public or " \
-        'private) -- this is the exact method rnfirebase_hook_cocoapods_post_install! ' \
-        'aliases and wraps so our post-install logic runs automatically on every ' \
-        '`pod install`.'
+             'Pod::Installer#run_podfile_post_install_hooks no longer exists (public or ' \
+             'private) -- this is the exact method rnfirebase_hook_cocoapods_post_install! ' \
+             'aliases and wraps so our post-install logic runs automatically on every ' \
+             '`pod install`.'
     end
 
     # ── Pod::AggregateTarget / Pod::Podfile::TargetDefinition / Pod::BuildType
@@ -88,26 +87,26 @@ if RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE
 
     def test_aggregate_target_responds_to_target_definition_and_user_project
       assert Pod::AggregateTarget.method_defined?(:target_definition),
-        'Pod::AggregateTarget#target_definition no longer exists -- ' \
-        'rnfirebase_fail_if_spm_static_linkage! reads ' \
-        '`target.target_definition.build_type.static?` directly.'
+             'Pod::AggregateTarget#target_definition no longer exists -- ' \
+             'rnfirebase_fail_if_spm_static_linkage! reads ' \
+             '`target.target_definition.build_type.static?` directly.'
       assert Pod::AggregateTarget.method_defined?(:user_project),
-        'Pod::AggregateTarget#user_project no longer exists -- every other ' \
-        'rnfirebase_* post-install helper walks `aggregate_target.user_project` ' \
-        'to reach the consumer app\'s own Xcode project.'
+             'Pod::AggregateTarget#user_project no longer exists -- every other ' \
+             'rnfirebase_* post-install helper walks `aggregate_target.user_project` ' \
+             'to reach the consumer app\'s own Xcode project.'
     end
 
     def test_target_definition_responds_to_build_type
       assert Pod::Podfile::TargetDefinition.method_defined?(:build_type),
-        'Pod::Podfile::TargetDefinition#build_type no longer exists -- this is ' \
-        'the real object `target.target_definition` resolves to.'
+             'Pod::Podfile::TargetDefinition#build_type no longer exists -- this is ' \
+             'the real object `target.target_definition` resolves to.'
     end
 
     def test_build_type_responds_to_static
       assert Pod::BuildType.method_defined?(:static?),
-        'Pod::BuildType#static? no longer exists -- this is the exact real ' \
-        'signal rnfirebase_fail_if_spm_static_linkage! branches on (replacing ' \
-        'the old, always-true AggregateTarget#build_as_static? assumption).'
+             'Pod::BuildType#static? no longer exists -- this is the exact real ' \
+             'signal rnfirebase_fail_if_spm_static_linkage! branches on (replacing ' \
+             'the old, always-true AggregateTarget#build_as_static? assumption).'
     end
 
     # Not just a shape check: unlike Pod::Installer/Pod::AggregateTarget
@@ -221,3 +220,5 @@ if RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE
     end
   end
 end
+
+# rubocop:enable Metrics, Style/Documentation

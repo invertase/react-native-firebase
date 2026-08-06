@@ -1,12 +1,30 @@
-## Firebase SPM dependency tests
+## Firebase SPM / firebase.json Ruby tests
 
-Unit tests for `firebase_spm.rb` — the shared helper that declares Firebase dependencies with SPM support and CocoaPods fallback.
+Unit tests for CocoaPods/SPM Ruby helpers under `packages/app/**/*.rb` (primarily `firebase_spm.rb`, plus `firebase_json.rb`).
 
-### How to run
+### How to run (canonical)
+
+From the **repo root**:
 
 ```bash
-ruby __tests__/firebase_spm_test.rb
+bundle install --gemfile=packages/app/__tests__/Gemfile
+yarn tests:ios:ruby   # RuboCop (yarn lint:ruby) then SimpleCov suites
 ```
+
+`yarn lint:ruby` is also available alone (same Gemfile / `BUNDLE_FROZEN` install). It is **not** part of root `yarn lint` — CI Lint has no Bundler step; Ruby lint runs with unit tests on `tests_e2e_ios.yml`.
+
+Gems install under `packages/app/__tests__/vendor/bundle` via the committed `.bundle/config` (`BUNDLE_PATH`); that directory is gitignored. Commit `Gemfile.lock` (including `CHECKSUMS`); CI installs with `BUNDLE_FROZEN=true bundle install` (Bundler 2.6 deprecates the `--frozen` CLI flag and would persist it into `.bundle/config`). Dependabot watches `package-ecosystem: bundler` at `/packages/app/__tests__` (with cooldown) — do not put Bundler-native `cooldown:` in the Gemfile (needs Bundler 4.0.13+; host/CI stay on 2.6.x).
+
+That discovers every `packages/app/__tests__/*_test.rb` (including suites added later), runs each suite in an **isolated process** (so mock-based unit tests and real cocoapods/xcodeproj shape checks never conflict), collects **SimpleCov** coverage (with peek-merge across production `load` resets), and writes:
+
+| Artifact                     | Path                           |
+| ---------------------------- | ------------------------------ |
+| LCOV                         | `coverage/ios-ruby/lcov.info`  |
+| HTML (optional local browse) | `coverage/ios-ruby/index.html` |
+
+Coverage tracks production Ruby under `packages/app/**/*.rb` and excludes `__tests__`. Codecov flag: **`ios-ruby`** ([coverage design](../../../okf-bundle/testing/coverage-design.md#ios-ruby-simplecov)).
+
+Agents must use `yarn tests:ios:ruby` — not ad-hoc `ruby packages/app/__tests__/…_test.rb` ([agent command policy](../../../okf-bundle/testing/agent-command-policy.md)).
 
 ### Shape-check suite (`firebase_spm_shape_test.rb`)
 
@@ -14,14 +32,16 @@ A companion, opt-in Minitest suite — not a replacement for `firebase_spm_test.
 
 `firebase_spm_shape_test.rb` asserts, against the **real** `xcodeproj`/`cocoapods` gems, that every mocked class/method in `firebase_spm_test.rb` still has the shape those mocks assume — so a future CocoaPods/Xcodeproj release that changes that shape fails in seconds instead of ~20 minutes into a real `pod install` in the E2E jobs.
 
-It skips cleanly (no failure, no tests defined) when `xcodeproj`/`cocoapods` aren't installed, so it is always safe to run unconditionally:
+It skips cleanly (no failure, no tests defined) when `xcodeproj`/`cocoapods` aren't installed, so local runs without those gems still exit 0 via `yarn tests:ios:ruby`:
 
-```bash
-ruby __tests__/firebase_spm_shape_test.rb
-```
+- **CI home** is **`tests_e2e_ios.yml`** (iOS job, **debug + spm** matrix cell): after `gem update cocoapods xcodeproj`, runs `BUNDLE_FROZEN=true bundle install` for SimpleCov gems then `yarn tests:ios:ruby` so unit + shape + embed execute with the real toolchain, then uploads Codecov flag **`ios-ruby`**.
+- **Jest** (`tests_jest.yml`) and **macOS/other** (`tests_e2e_other.yml`) do **not** run Ruby helpers — use `yarn tests:ios:ruby` locally / as the OKF gate.
 
-- **"Test Firebase SPM Helper" step** (`tests_jest.yml`) never installs these gems — the suite is expected to skip there.
-- **"Verify Firebase SPM Xcodeproj/CocoaPods API shape" step** (`tests_e2e_other.yml`, `other` job) does have them and runs the suite for real, right after that job's existing `gem update cocoapods xcodeproj` step — no new CI job, no new gem installs.
+### Embed-script suite (`firebase_spm_embed_script_test.rb`)
+
+Exercises the bash body of `rnfirebase_spm_embed_script` (`embed_frameworks_from`) against real Mach-O frameworks built with `clang`/`ar`. This is what catches Archive-embed regressions like #9154 (static CocoaPods frameworks incorrectly copied into the app bundle). No `cocoapods`/`xcodeproj` gems needed.
+
+Skips cleanly off macOS or when `clang`/`ar`/`file` are missing. Discovered and run by `yarn tests:ios:ruby` with the other `*_test.rb` suites (same `tests_e2e_ios.yml` debug+spm cell — no separate raw `ruby …_test.rb` CI step).
 
 ### What is `Pod::Specification` and why is it mocked?
 

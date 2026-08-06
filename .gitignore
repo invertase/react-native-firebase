@@ -204,6 +204,9 @@ lib-cov
 # Coverage directory used by tools like istanbul
 coverage
 
+# iOS Ruby SimpleCov gems (packages/app/__tests__/Gemfile → vendor/bundle)
+packages/app/__tests__/vendor/
+
 # nyc test coverage
 .nyc_output
 

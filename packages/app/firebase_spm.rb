@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics, Style/GlobalVars
 #
 # Copyright (c) 2016-present Invertase Limited & Contributors
 #
@@ -19,7 +20,7 @@
 require 'json'
 
 RNFIREBASE_SPM_EMBED_PHASE_NAME = '[RNFB] Embed Firebase SPM Frameworks'
-RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME = '[RNFB] Remove duplicate Firebase/Google SPM binary xcframework signature files'
+RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME = '[RNFB] Remove duplicate Firebase/Google SPM binary xcframework signature files' # rubocop:disable Layout/LineLength
 
 # Every `.binaryTarget` xcframework name reachable in the resolved SPM package
 # graph for the RNFB test app (firebase-ios-sdk 12.16.0, full module set --
@@ -118,9 +119,7 @@ module RNFirebaseSPM
     # by `activate!` above -- used by `rnfirebase_add_spm_core_to_app_target`
     # to declare the same minimum version requirement on the app target's own
     # FirebaseCore product dependency.
-    def version
-      @version
-    end
+    attr_reader :version
 
     # Clears active/version/url back to their unset defaults. Not needed in
     # production Podfile code paths -- each `pod install` process is
@@ -180,7 +179,7 @@ def rnfirebase_build_setting_list(current)
   if current.nil? || (current.is_a?(String) && current.strip.empty?) || (current.is_a?(Array) && current.empty?)
     ['$(inherited)']
   elsif current.is_a?(String)
-    current.split(' ')
+    current.split
   else
     current.dup
   end
@@ -205,6 +204,28 @@ def rnfirebase_spm_embed_script
           continue
         fi
 
+        # Xcode's Archive action writes EVERY SKIP_INSTALL=YES product into
+        # ${OBJROOT}/UninstalledProducts/${PLATFORM_NAME} -- not just Swift
+        # Package products. With CocoaPods + `use_frameworks!` (required for
+        # SPM mode), that folder also contains every pod's .framework,
+        # including STATIC ones (Expo modules, the Pods_<target> umbrella,
+        # ...). Embedding a static framework into the app bundle makes App
+        # Store validation fail with "Invalid bundle structure ... binary
+        # file is not permitted". Only ever embed real dynamic libraries.
+        #
+        # Internal binary name matches the .framework folder name minus the
+        # extension for every CocoaPods/SPM-built framework (all this script
+        # handles).
+        binary_name="${framework_name%.framework}"
+        # Deliberate tradeoff: match `file -b` prose for "dynamically linked"
+        # rather than inspecting Mach-O magic bytes. Locale-independent in
+        # practice on Apple's `file`, but still a CLI string match.
+        if [ ! -f "${framework}/${binary_name}" ] || \
+           ! file -b "${framework}/${binary_name}" | grep -q 'dynamically linked'; then
+          echo "Skipping ${framework_name}: binary missing or not dynamically linked"
+          continue
+        fi
+
         echo "Embedding Firebase SPM framework ${framework_name} (from ${source_dir})"
         rsync -av --delete \
           --filter "- Headers" \
@@ -224,12 +245,16 @@ def rnfirebase_spm_embed_script
     embed_frameworks_from "${BUILT_PRODUCTS_DIR}/PackageFrameworks"
 
     # Xcode's Archive action (ONLY_ACTIVE_ARCH=NO, DEPLOYMENT_POSTPROCESSING=YES)
-    # never populates any target's PackageFrameworks folder at all -- it builds
-    # Swift Package products into a separate shared "uninstalled products"
-    # folder instead. Without also checking here, a real `xcodebuild archive`
-    # (i.e. every TestFlight/App Store build) silently embeds zero Firebase SPM
-    # frameworks and the resulting app crashes at launch with a missing-library
-    # dyld error.
+    # never populates PackageFrameworks. It stages build products under
+    # ${OBJROOT}/UninstalledProducts/${PLATFORM_NAME} instead -- and that
+    # folder is NOT SPM-only: Archive writes every SKIP_INSTALL=YES product
+    # there, which under CocoaPods + use_frameworks! (required for SPM mode)
+    # includes every pod .framework (dynamic Firebase SPM products and static
+    # pods alike). Without this fallback, Archive embeds zero Firebase SPM
+    # frameworks and the app crashes at launch (missing-library dyld). The
+    # filter inside embed_frameworks_from keeps only dynamically linked
+    # binaries so static CocoaPods frameworks are not copied into the app
+    # bundle (App Store "Invalid bundle structure").
     embed_frameworks_from "${OBJROOT}/UninstalledProducts/${PLATFORM_NAME}"
   SCRIPT
 end
@@ -255,8 +280,8 @@ def rnfirebase_upsert_shell_script_phase!(target, name, shell_script:, shell_pat
   changed ||= phase.shell_script != shell_script
   changed ||= phase.shell_path != shell_path
   changed ||= phase.always_out_of_date != '1'
-  changed ||= (!input_paths.nil? && phase.input_paths != input_paths)
-  changed ||= (!output_paths.nil? && phase.output_paths != output_paths)
+  changed ||= !input_paths.nil? && phase.input_paths != input_paths
+  changed ||= !output_paths.nil? && phase.output_paths != output_paths
 
   phase.shell_script = shell_script
   phase.shell_path = shell_path
@@ -361,7 +386,7 @@ def rnfirebase_verify_spm_embed_phase_applied!(installer)
 
     Without it, this app will crash at launch with a missing-library dyld error, because Firebase's Swift Package frameworks never get copied into the app bundle.
 
-    Add `rnfirebase_add_spm_embed_phase(installer)` to your Podfile's post_install block as a fallback, then run `pod install` again.
+    Add `rnfirebase_add_spm_embed_phase(installer)` to your Podfile's post_install block as a fallback, then run `pod install` again. # rubocop:disable Layout/LineLength
   MESSAGE
 end
 
@@ -444,24 +469,23 @@ def rnfirebase_ensure_pods_uuid_counter_safe!(installer)
     idx = uuid[6, 7].to_i(16)
     max_idx = idx if idx > max_idx
   end
-  return if max_idx < 0
+  return if max_idx.negative?
 
   generated = project.instance_variable_get(:@generated_uuids)
   generated = [] unless generated.is_a?(Array)
   already_high = generated.size > max_idx
-  while generated.size <= max_idx
-    generated << format('%.6s%07X0', prefix, generated.size)
-  end
+  # CocoaPods UUID layout (prefix + 7 hex digits + trailing 0) — positional tokens are intentional.
+  generated << format('%.6s%07X0', prefix, generated.size) while generated.size <= max_idx # rubocop:disable Style/FormatStringToken
   project.instance_variable_set(:@generated_uuids, generated)
   project.instance_variable_set(:@available_uuids, [])
 
   # Only log when SPM is active and we actually padded -- non-SPM installs
   # still get the counter raise (cheap insurance) but must not spam every
   # `pod install` with a success line.
-  if !already_high && defined?(Pod::UI) && RNFirebaseSPM.active?
-    Pod::UI.puts '[react-native-firebase] Raised CocoaPods Pods UUID counter ' \
-      "past index #{max_idx} before RN SPM mutates Pods.xcodeproj."
-  end
+  return unless !already_high && defined?(Pod::UI) && RNFirebaseSPM.active?
+
+  Pod::UI.puts '[react-native-firebase] Raised CocoaPods Pods UUID counter ' \
+               "past index #{max_idx} before RN SPM mutates Pods.xcodeproj."
 end
 
 # Hard integrity check for the UUID-collision failure class above -- mirrors
@@ -486,7 +510,6 @@ def rnfirebase_verify_pods_project_uuid_integrity!(installer)
   root = project.root_object
   resolved = root && project.objects_by_uuid[root.uuid]
   return if root &&
-            resolved &&
             resolved.equal?(root) &&
             resolved.respond_to?(:isa) &&
             resolved.isa == 'PBXProject'
@@ -539,8 +562,8 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
   unless installer_class
     if defined?(Pod::UI)
       Pod::UI.warn '[react-native-firebase] `Pod::Installer` isn\'t defined -- automatic Firebase SPM setup ' \
-        '(dynamic framework embedding, etc.) was not hooked into `pod install`. Add ' \
-        '`rnfirebase_add_spm_embed_phase(installer)` to your Podfile\'s post_install block as a fallback.'
+                   '(dynamic framework embedding, etc.) was not hooked into `pod install`. Add ' \
+                   '`rnfirebase_add_spm_embed_phase(installer)` to your Podfile\'s post_install block as a fallback.'
     end
     return
   end
@@ -549,9 +572,9 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
   unless was_private || installer_class.method_defined?(hook_method)
     if defined?(Pod::UI)
       Pod::UI.warn "[react-native-firebase] `Pod::Installer##{hook_method}` doesn't exist (a CocoaPods " \
-        'release may have renamed or removed it) -- automatic Firebase SPM setup was not hooked into ' \
-        '`pod install`. Add `rnfirebase_add_spm_embed_phase(installer)` to your Podfile\'s post_install ' \
-        'block as a fallback.'
+                   'release may have renamed or removed it) -- automatic Firebase SPM setup was not hooked into ' \
+                   '`pod install`. Add `rnfirebase_add_spm_embed_phase(installer)` to your Podfile\'s post_install ' \
+                   'block as a fallback.'
     end
     return
   end
@@ -579,12 +602,12 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
       # post_install, same pattern as embed-phase add + verify below.
       begin
         rnfirebase_ensure_pods_uuid_counter_safe!(self)
-      rescue => e
+      rescue StandardError => e
         if defined?(Pod::UI)
           Pod::UI.warn '[react-native-firebase] Couldn\'t raise Pods UUID counter before ' \
-            "RN SPM (#{e.class}: #{e.message}). If `pod install` leaves Pods.xcodeproj " \
-            'damaged (missing PBXProject / Xcode `_setSavedArchiveVersion`), upgrade ' \
-            'react-native-firebase or patch CocoaPods UUID generation.'
+                       "RN SPM (#{e.class}: #{e.message}). If `pod install` leaves Pods.xcodeproj " \
+                       'damaged (missing PBXProject / Xcode `_setSavedArchiveVersion`), upgrade ' \
+                       'react-native-firebase or patch CocoaPods UUID generation.'
         end
       end
       result = send(original_method)
@@ -593,11 +616,11 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
       rnfirebase_verify_pods_project_uuid_integrity!(self)
       begin
         rnfirebase_add_spm_embed_phase(self)
-      rescue => e
+      rescue StandardError => e
         if defined?(Pod::UI)
           Pod::UI.warn "[react-native-firebase] Couldn't embed Firebase SPM frameworks " \
-            "automatically (#{e.class}: #{e.message}). Add `rnfirebase_add_spm_embed_phase(installer)` " \
-            'to your Podfile\'s post_install block as a fallback.'
+                       "automatically (#{e.class}: #{e.message}). Add `rnfirebase_add_spm_embed_phase(installer)` " \
+                       'to your Podfile\'s post_install block as a fallback.'
         end
       end
       # Deliberately outside the `rescue` above, and not itself wrapped in a
@@ -613,56 +636,58 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
       rnfirebase_verify_spm_embed_phase_applied!(self)
       begin
         rnfirebase_add_spm_core_to_app_target(self)
-      rescue => e
+      rescue StandardError => e
         if defined?(Pod::UI)
           Pod::UI.warn "[react-native-firebase] Couldn't link FirebaseCore into the app target " \
-            "automatically (#{e.class}: #{e.message}). Add `rnfirebase_add_spm_core_to_app_target(installer)` " \
-            'to your Podfile\'s post_install block as a fallback if your own native code calls ' \
-            'FIRApp/FIROptions APIs directly.'
+                       "automatically (#{e.class}: #{e.message}). " \
+                       'Add `rnfirebase_add_spm_core_to_app_target(installer)` ' \
+                       'to your Podfile\'s post_install block as a fallback if your own native code calls ' \
+                       'FIRApp/FIROptions APIs directly.'
         end
       end
       begin
         rnfirebase_remove_spm_core_from_app_target(self)
-      rescue => e
+      rescue StandardError => e
         if defined?(Pod::UI)
           Pod::UI.warn "[react-native-firebase] Couldn't remove a stale FirebaseCore SPM link from the " \
-            "app target automatically (#{e.class}: #{e.message}). If you previously used SPM and have " \
-            'since set `$RNFirebaseDisableSPM = true`, remove the "firebase-ios-sdk" Swift Package ' \
-            'dependency from your app target manually in Xcode.'
+                       "app target automatically (#{e.class}: #{e.message}). If you previously used SPM and have " \
+                       'since set `$RNFirebaseDisableSPM = true`, remove the "firebase-ios-sdk" Swift Package ' \
+                       'dependency from your app target manually in Xcode.'
         end
       end
       begin
         rnfirebase_fix_spm_archive_signature_collision(self)
-      rescue => e
+      rescue StandardError => e
         if defined?(Pod::UI)
           Pod::UI.warn '[react-native-firebase] Couldn\'t add the Firebase/Google SPM binary ' \
-            "xcframework signature workaround automatically (#{e.class}: #{e.message}). If your " \
-            'Release archive fails with `"...xcframework-ios.signature" couldn\'t be copied to ' \
-            '"Signatures" because an item with the same name already exists`, add a Run Script ' \
-            'build phase to your app target that runs `rm -f ' \
-            "\"\\${CONFIGURATION_BUILD_DIR}\"/<TheNameFromTheErrorMessage>.xcframework-ios.signature`."
+                       "xcframework signature workaround automatically (#{e.class}: #{e.message}). If your " \
+                       'Release archive fails with `"...xcframework-ios.signature" couldn\'t be copied to ' \
+                       '"Signatures" because an item with the same name already exists`, add a Run Script ' \
+                       'build phase to your app target that runs `rm -f ' \
+                       '"\\${CONFIGURATION_BUILD_DIR}"/<TheNameFromTheErrorMessage>.xcframework-ios.signature`.'
         end
       end
       begin
         rnfirebase_apply_spm_build_settings(self)
-      rescue => e
+      rescue StandardError => e
         if defined?(Pod::UI)
           Pod::UI.warn "[react-native-firebase] Couldn't apply Firebase SPM build settings " \
-            "automatically (#{e.class}: #{e.message}). Add `rnfirebase_apply_spm_build_settings(installer)` " \
-            'to your Podfile\'s post_install block as a fallback if Release builds crash at launch with ' \
-            'missing FIRComponent registrations, or Xcode reports that a Firebase module such as ' \
-            '`FirebaseCoreInternal`/`FirebaseSharedSwift` cannot be resolved.'
+                       "automatically (#{e.class}: #{e.message}). " \
+                       'Add `rnfirebase_apply_spm_build_settings(installer)` ' \
+                       'to your Podfile\'s post_install block as a fallback if Release builds crash at launch with ' \
+                       'missing FIRComponent registrations, or Xcode reports that a Firebase module such as ' \
+                       '`FirebaseCoreInternal`/`FirebaseSharedSwift` cannot be resolved.'
         end
       end
       result
     end
   end
   installer_class.send(:private, hook_method) if was_private
-rescue => e
+rescue StandardError => e
   if defined?(Pod::UI)
     Pod::UI.warn "[react-native-firebase] Couldn't hook CocoaPods to auto-embed Firebase SPM " \
-      "frameworks (#{e.class}: #{e.message}). Add `rnfirebase_add_spm_embed_phase(installer)` " \
-      'to your Podfile\'s post_install block as a fallback.'
+                 "frameworks (#{e.class}: #{e.message}). Add `rnfirebase_add_spm_embed_phase(installer)` " \
+                 'to your Podfile\'s post_install block as a fallback.'
   end
 end
 
@@ -704,19 +729,19 @@ def rnfirebase_add_spm_core_to_app_target(installer)
       next if target.package_product_dependencies.any? { |dep| dep.product_name == 'FirebaseCore' }
 
       pkg = project.root_object.package_references.find do |candidate|
-        candidate.class == pkg_class && candidate.repositoryURL == RNFirebaseSPM.url
+        candidate.instance_of?(pkg_class) && candidate.repositoryURL == RNFirebaseSPM.url
       end
-      if !pkg
+      unless pkg
         pkg = project.new(pkg_class)
         pkg.repositoryURL = RNFirebaseSPM.url
         pkg.requirement = { kind: 'upToNextMajorVersion', minimumVersion: RNFirebaseSPM.version }
         project.root_object.package_references << pkg
       end
 
-      if defined?(Pod) && defined?(Pod::UI)
+      if defined?(Pod::UI)
         Pod::UI.puts "[react-native-firebase] #{target.name}: ".yellow +
-          'Linking FirebaseCore directly into the app target (SPM) so native code that calls ' \
-          'FIRApp/FIROptions APIs directly can resolve those symbols.'
+                     'Linking FirebaseCore directly into the app target (SPM) so native code that calls ' \
+                     'FIRApp/FIROptions APIs directly can resolve those symbols.'
       end
 
       ref = project.new(ref_class)
@@ -785,13 +810,12 @@ def rnfirebase_remove_spm_core_from_app_target(installer)
       next unless target.respond_to?(:package_product_dependencies)
 
       stale_refs = target.package_product_dependencies.select do |dep|
-        dep.class == ref_class && dep.product_name == 'FirebaseCore' && dep.package&.repositoryURL == RNFirebaseSPM.url
+        dep.instance_of?(ref_class) && dep.product_name == 'FirebaseCore' && dep.package&.repositoryURL == RNFirebaseSPM.url # rubocop:disable Layout/LineLength
       end
       next if stale_refs.empty?
 
-      if defined?(Pod) && defined?(Pod::UI)
-        Pod::UI.puts "[react-native-firebase] #{target.name}: ".yellow +
-          'SPM disabled -- removing the stale FirebaseCore Swift Package link left on the app target.'
+      if defined?(Pod::UI)
+        Pod::UI.puts "#{"[react-native-firebase] #{target.name}: ".yellow}SPM disabled -- removing the stale FirebaseCore Swift Package link left on the app target." # rubocop:disable Layout/LineLength
       end
 
       stale_refs.each do |ref|
@@ -802,14 +826,14 @@ def rnfirebase_remove_spm_core_from_app_target(installer)
     end
 
     project.root_object.package_references
-      .select { |pkg| pkg.class == pkg_class && pkg.repositoryURL == RNFirebaseSPM.url }
-      .each do |pkg|
-        next if pkg.referrers.any? { |referrer| referrer.class == ref_class }
+           .select { |pkg| pkg.instance_of?(pkg_class) && pkg.repositoryURL == RNFirebaseSPM.url }
+           .each do |pkg|
+             next if pkg.referrers.any?(ref_class)
 
-        project.root_object.package_references.delete(pkg)
-        pkg.remove_from_project
-        project_modified = true
-      end
+             project.root_object.package_references.delete(pkg)
+             pkg.remove_from_project
+             project_modified = true
+           end
 
     project.save if project_modified
   end
@@ -864,9 +888,11 @@ def rnfirebase_fix_spm_archive_signature_collision(installer)
       next unless target.respond_to?(:shell_script_build_phases)
       next unless target.shell_script_build_phases.any? { |phase| phase.name == '[CP] Embed Pods Frameworks' }
 
-      shell_script = RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES.map { |name|
+      rm_lines = RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES.map do |name|
         "rm -f \"${CONFIGURATION_BUILD_DIR}\"/#{name}.xcframework-ios.signature"
-      }.join("\n") + "\n"
+      end
+      # Trailing newline required for Xcode Run Script phase content.
+      shell_script = "#{rm_lines.join("\n")}\n"
 
       changed = rnfirebase_upsert_shell_script_phase!(
         target,
@@ -996,23 +1022,20 @@ def firebase_dependency(spec, version, spm_products, pods)
     # dependency list) so `rnfirebase_add_spm_embed_phase` doesn't depend on
     # any RN-internal state shape -- only on whether *we* ever took this path.
     RNFirebaseSPM.activate!(version)
-    if defined?(Pod) && defined?(Pod::UI)
+    if defined?(Pod::UI)
       Pod::UI.puts "[react-native-firebase] #{spec.name}: ".yellow +
-        "Using SPM for Firebase dependency resolution (products: #{spm_products.join(', ')})"
+                   "Using SPM for Firebase dependency resolution (products: #{spm_products.join(', ')})"
     end
     spm_dependency(spec,
-      url: RNFirebaseSPM.url,
-      requirement: { kind: 'upToNextMajorVersion', minimumVersion: version },
-      products: spm_products
-    )
+                   url: RNFirebaseSPM.url,
+                   requirement: { kind: 'upToNextMajorVersion', minimumVersion: version },
+                   products: spm_products)
   else
-    if defined?(Pod) && defined?(Pod::UI)
+    if defined?(Pod::UI)
       if rnfirebase_spm_disabled?
-        Pod::UI.puts "[react-native-firebase] #{spec.name}: ".yellow +
-          "SPM disabled ($RNFirebaseDisableSPM = true), using CocoaPods for Firebase dependencies"
+        Pod::UI.puts "#{"[react-native-firebase] #{spec.name}: ".yellow}SPM disabled ($RNFirebaseDisableSPM = true), using CocoaPods for Firebase dependencies" # rubocop:disable Layout/LineLength
       elsif !defined?(spm_dependency)
-        Pod::UI.puts "[react-native-firebase] #{spec.name}: ".yellow +
-          "SPM not available (React Native < 0.75), using CocoaPods for Firebase dependencies"
+        Pod::UI.puts "#{"[react-native-firebase] #{spec.name}: ".yellow}SPM not available (React Native < 0.75), using CocoaPods for Firebase dependencies" # rubocop:disable Layout/LineLength
       end
     end
     pods = [pods] unless pods.is_a?(Array)
@@ -1021,3 +1044,5 @@ def firebase_dependency(spec, version, spm_products, pods)
     end
   end
 end
+
+# rubocop:enable Metrics, Style/GlobalVars

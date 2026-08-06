@@ -8,11 +8,12 @@ timestamp: 2026-06-17T00:00:00Z
 
 # Goals
 
-Coverage shows exercised **TS library sources** (`packages/*/lib/**`) and **native sources** (`packages/*/{android,ios}/**`).
+Coverage shows exercised **TS library sources** (`packages/*/lib/**`), **native sources** (`packages/*/{android,ios}/**`), and **iOS Ruby helpers** (`packages/app/**/*.rb`, exclude `__tests__`).
 
 | Layer | Proves | Consumers |
 |-------|--------|-----------|
 | **Unit (Jest)** | Package logic with mocks | Fast feedback on `lib/**` |
+| **Unit (iOS Ruby)** | CocoaPods/SPM helper logic (`firebase_spm.rb`, etc.) via Minitest + SimpleCov | Fast feedback on `packages/app/**/*.rb`; LCOV `coverage/ios-ruby/lcov.info` |
 | **Unit (Android JVM)** | Java state-machine / bridge logic via Robolectric + Mockito ([AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1--robolectric--mockito-for-android-jvm-unit-tests--accepted)) | Fast feedback on `packages/*/android/**`; Jacoco `*.exec` |
 | **E2e (Jet / Detox)** | Real app behaviour against Firebase emulators and cloud APIs | TS + native bridge integration |
 
@@ -25,8 +26,9 @@ Codecov merges CI uploads. Project-level % can be noise; **file-level changed-so
 For **new code**:
 
 * **Coverage only goes up** on files the change touches.
-* **100% on touched TS/native sources is the requirement**, not an aspiration. "Mostly covered" does not close the gate.
+* **100% on touched TS/native/Ruby helper sources is the requirement**, not an aspiration. "Mostly covered" does not close the gate.
 * **Android JVM unit Jacoco (`*.exec`)** counts toward that bar when allowlisted tests under `packages/*/android/src/test/java` exercise the touched lines — scope and e2e non-substitution: [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1--robolectric--mockito-for-android-jvm-unit-tests--accepted); platforms where the module loads still need e2e ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)).
+* **iOS Ruby SimpleCov** counts toward that bar for touched `packages/app/**/*.rb` (exclude `__tests__`) when exercised by `yarn tests:ios:ruby` — [§ iOS Ruby SimpleCov](#ios-ruby-simplecov).
 * **The only acceptable uncovered line is covered by an [acceptable exception](change-authoring-workflow.md#acceptable-exceptions)** — an evidence-backed intractable limitation, quantified (e.g. "~NN% provably-unreachable Swift codegen"), or a user-accepted deferral with recorded rationale.
 * **Every other gap is testable or dead code** — add the test (negative paths, failure branches, every reachable branch) or delete the unreachable/duplicate/superseded code.
 
@@ -52,13 +54,13 @@ Do not hand off closable gaps. Package workflows may define snapshot tooling (e.
 
 ## Coverage evidence package (blocking)
 
-Required before **`review` gate** closes when the frozen diff touches `packages/*/lib/**` or native bridge sources (`packages/*/{android,ios}/**`). Jest green alone is insufficient.
+Required before **`review` gate** closes when the frozen diff touches `packages/*/lib/**`, native bridge sources (`packages/*/{android,ios}/**`), **or** iOS Ruby helpers (`packages/app/**/*.rb`). Jest green alone is insufficient.
 
-Produce after fresh e2e on every required platform, then post-process native artifacts ([§ stale coverage](#stale-coverage-data)):
+Produce after fresh e2e on every required platform (when native/lib touched), then post-process native artifacts ([§ stale coverage](#stale-coverage-data)); for Ruby-only diffs, fresh `yarn tests:ios:ruby` is enough:
 
 | Section | Contents |
 |---------|----------|
-| **Artifacts** | Timestamps for `coverage/ios-native/lcov.info`, Android merged `jacocoTestReport.xml` (unit `*.exec` + e2e `*.ec`), and any Jest coverage run |
+| **Artifacts** | Timestamps for `coverage/ios-native/lcov.info`, `coverage/ios-ruby/lcov.info` (when Ruby touched), Android merged `jacocoTestReport.xml` (unit `*.exec` + e2e `*.ec`), and any Jest coverage run |
 | **Touched regions** | Per-file or per-function line % for changed logic (not whole-package aggregates only) |
 | **Branch map** | Table: branch / input shape → test or e2e that exercises it |
 | **Gaps** | Every line or branch below 100%: **fix** (test or delete dead code), or **acceptable exception** with wire/runtime evidence in durable OKF (e.g. [pipeline platform parity](../packages/firestore/pipeline-platform-parity.md) probe row) |
@@ -79,9 +81,28 @@ For native-bridge features, **platform parity precedes coverage expansion**: iOS
 After `tests:<platform>:test-cover`:
 
 * **JS:** `npx jest <path> --coverage --collectCoverageFrom='packages/<pkg>/lib/**/*.ts' --coverageReporters=text`
+* **iOS Ruby:** `yarn tests:ios:ruby` → `coverage/ios-ruby/lcov.info` (`SF:` / `DA:` lines); HTML under `coverage/ios-ruby/` — [§ iOS Ruby SimpleCov](#ios-ruby-simplecov)
 * **iOS native:** `yarn tests:ios:test:process-coverage` → `coverage/ios-native/lcov.info` (`DA:` lines). **Deletes processed `.profraw`** — re-run e2e before re-processing.
 * **Android native:** `yarn tests:android:unit` (produces module `*.exec`) then e2e + `yarn tests:android:post-e2e-coverage` → merged **`jacocoTestReport`** XML per `sourcefile`. **Deletes processed `emulator_coverage.ec`** after a successful report — re-run e2e before re-processing. Unit-only: `yarn tests:android:test:jacoco-report` (same merged task; needs fresh `*.exec` and any available `*.ec`).
 * macOS e2e overwrites `coverage/lcov.info`; process iOS/Android native before a macOS run if you need both.
+
+<a id="ios-ruby-simplecov"></a>
+
+## iOS Ruby SimpleCov
+
+Minitest suites under `packages/app/__tests__/*_test.rb` cover production Ruby helpers (`packages/app/**/*.rb`, excluding `__tests__`).
+
+| Item | Value |
+|------|-------|
+| **Command** | `yarn tests:ios:ruby` (after `bundle install --gemfile=packages/app/__tests__/Gemfile`; CI uses `BUNDLE_FROZEN=true`) |
+| **Runner** | `packages/app/__tests__/run_with_coverage.rb` — SimpleCov starts before any production `.rb` / suite load; glob-discovers all `*_test.rb`; each suite runs in an **isolated subprocess** (mock unit vs real cocoapods/xcodeproj cannot share a process); Coverage counters are peek-merged across production `load` resets |
+| **LCOV** | `coverage/ios-ruby/lcov.info` (repo-relative `SF:…/packages/app/…`) |
+| **HTML** | `coverage/ios-ruby/index.html` (optional local browse) |
+| **Codecov flag** | `ios-ruby` — dedicated upload from `tests_e2e_ios.yml` debug+spm cell (same regime as `jest`: flag upload, **no** `flag_management` hard gate; local OKF review gate owns the touched-line bar) |
+| **CI** | `tests_e2e_ios.yml` (debug + spm): after `gem update cocoapods xcodeproj` → `BUNDLE_FROZEN=true bundle install --gemfile=packages/app/__tests__/Gemfile` → `yarn tests:ios:ruby` → Codecov `flags: ios-ruby`. Not run on Jest or `tests_e2e_other.yml` — iOS job guarantees cocoapods/xcodeproj and clang/ar/file for shape/embed suites |
+| **Gems** | Committed `Gemfile`/`Gemfile.lock` (+ `CHECKSUMS`); Dependabot `bundler` at `/packages/app/__tests__` (cooldown in dependabot.yml — not Gemfile `cooldown:`, which needs Bundler 4+) |
+
+**Review gate:** when the frozen diff touches `packages/app/**/*.rb` or `packages/app/__tests__/*_test.rb`, `review_gate` **cannot close** without `yarn tests:ios:ruby` exit 0 and coverage evidence that touched production Ruby lines have test support ([validation checklist § iOS Ruby](validation-checklist.md#ios-ruby-unit-tests)).
 
 ## Stale coverage data
 
@@ -249,6 +270,7 @@ Names must match in **`codecov.yml`** and workflow `flags:`.
 | Flag | Workflow | File | Blocks PR? |
 |------|----------|------|------------|
 | `jest` | `tests_jest.yml` | `coverage/lcov.info` | No |
+| `ios-ruby` | `tests_e2e_ios.yml` (debug + spm) | `coverage/ios-ruby/lcov.info` | No (upload like `jest`; OKF review gate owns touched Ruby lines) |
 | `e2e-ts-ios` | `tests_e2e_ios.yml` (debug) | `coverage/lcov.info` | No |
 | `ios-native` | `tests_e2e_ios.yml` (debug) | `coverage/ios-native/lcov.info` | **Yes** |
 | `e2e-ts-android` | `tests_e2e_android.yml` | `coverage/lcov.info` | No |
@@ -265,12 +287,12 @@ iOS release legs: no upload. macOS: TS only.
 
 | Workflow | Steps |
 |----------|-------|
-| `tests_jest.yml` | `yarn tests:jest-coverage` |
-| `tests_e2e_ios.yml` (debug) | Detox → `yarn tests:ios:test:process-coverage` (`continue-on-error: true` for now) |
+| `tests_jest.yml` | `yarn tests:jest-coverage` → Codecov `jest` |
+| `tests_e2e_ios.yml` (debug) | Detox → `yarn tests:ios:test:process-coverage` (`continue-on-error: true` for now); **debug+spm:** `yarn tests:ios:ruby` → Codecov `ios-ruby` |
 | `tests_e2e_android.yml` | `yarn tests:android:build` → `yarn tests:android:unit` → Detox → `yarn tests:android:post-e2e-coverage` (merged `jacocoTestReport`) |
 | `tests_e2e_other.yml` | macOS Jet e2e |
 
-**Paths:** JS `coverage/lcov.info`; iOS native `coverage/ios-native/lcov.info`; Android merged native `tests/android/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml`. Uploads tab: **Processed** = good; **Unusable** = fix format/paths.
+**Paths:** JS `coverage/lcov.info`; iOS Ruby `coverage/ios-ruby/lcov.info`; iOS native `coverage/ios-native/lcov.info`; Android merged native `tests/android/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml`. Uploads tab: **Processed** = good; **Unusable** = fix format/paths.
 
 # Local iteration
 

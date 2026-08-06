@@ -27,3 +27,16 @@ updates:
       default-days: 7
     labels:
       - 'dependencies'
+
+  # iOS Ruby SimpleCov gems (packages/app/__tests__/Gemfile + Gemfile.lock)
+  - package-ecosystem: 'bundler'
+    directory: '/packages/app/__tests__'
+    schedule:
+      interval: 'daily'
+    cooldown:
+      default-days: 7
+      semver-major-days: 7
+      semver-minor-days: 7
+      semver-patch-days: 7
+    labels:
+      - 'dependencies'
