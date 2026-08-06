@@ -17,14 +17,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import <React/RCTBridgeModule.h>
+// Bridging-header safe: no C++/codegen imports here. TurboModule conformance lives in .mm.
+@interface RNFBAppCheckModule : NSObject
 
-#import "RNFBAppCheckProviderFactory.h"
-
-@interface RNFBAppCheckModule : NSObject <RCTBridgeModule>
-
-@property RNFBAppCheckProviderFactory* _Nullable providerFactory;
-
-+ (_Nonnull instancetype)sharedInstance;
++ (instancetype)sharedInstance;
 
 @end

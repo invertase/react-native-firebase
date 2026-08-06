@@ -18,40 +18,6 @@
 const COLLECTION = 'firestore';
 
 describe('firestore.doc()', function () {
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('returns a Firestore instance', function () {
-      const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
-      should.equal(instance.firestore.constructor.name, 'FirebaseFirestoreModule');
-    });
-
-    it('returns the document id', function () {
-      const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
-      instance.id.should.equal('bar');
-    });
-
-    it('returns the parent collection reference', function () {
-      const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
-      instance.parent.id.should.equal(COLLECTION);
-    });
-
-    it('returns the path', function () {
-      const instance1 = firebase.firestore().doc(`${COLLECTION}/bar`);
-      const instance2 = firebase.firestore().collection(COLLECTION).doc('bar');
-      instance1.path.should.equal(`${COLLECTION}/bar`);
-      instance2.path.should.equal(`${COLLECTION}/bar`);
-    });
-  });
-
   describe('modular', function () {
     it('returns a Firestore instance', function () {
       const { getFirestore, doc } = firestoreModular;

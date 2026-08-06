@@ -125,35 +125,5 @@ export interface Statics {
 /**
  * FirebaseApp type with crashlytics() method.
  * @deprecated Import FirebaseApp from '@react-native-firebase/app' instead.
- * The crashlytics() method is added via module augmentation.
  */
 export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
-
-// ============ Module Augmentation ============
-
-/* eslint-disable @typescript-eslint/no-namespace */
-declare module '@react-native-firebase/app' {
-  namespace ReactNativeFirebase {
-    interface Module {
-      crashlytics: FirebaseModuleWithStaticsAndApp<Crashlytics, Statics>;
-    }
-    interface FirebaseApp {
-      crashlytics(): Crashlytics;
-    }
-  }
-}
-/* eslint-enable @typescript-eslint/no-namespace */
-// ============ Backwards Compatibility Namespace - to be removed with namespaced exports ============
-type _Statics = Statics;
-
-/**
- * @deprecated Use the exported types directly instead.
- * FirebaseCrashlyticsTypes namespace is kept for backwards compatibility.
- */
-/* eslint-disable @typescript-eslint/no-namespace */
-export namespace FirebaseCrashlyticsTypes {
-  // Short name aliases referencing top-level types
-  export type Module = Crashlytics;
-  export type Statics = _Statics;
-}
-/* eslint-enable @typescript-eslint/no-namespace */

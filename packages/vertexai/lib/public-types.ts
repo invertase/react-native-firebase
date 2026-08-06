@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 import { AI, AIErrorCode } from '@react-native-firebase/ai';
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
+import type { Auth } from '@react-native-firebase/auth';
+import type { AppCheck } from '@react-native-firebase/app-check';
 
 /**
  * @deprecated Use the new {@link AI | AI} instead. The Vertex AI in Firebase SDK has been
@@ -33,8 +33,8 @@ export type VertexAI = AI;
  */
 export interface VertexAIOptions {
   location?: string;
-  appCheck?: FirebaseAppCheckTypes.Module | null;
-  auth?: FirebaseAuthTypes.Module | null;
+  appCheck?: AppCheck | null;
+  auth?: Auth | null;
 }
 
 export type VertexAIErrorCode = AIErrorCode;

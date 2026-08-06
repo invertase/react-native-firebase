@@ -117,8 +117,28 @@ export interface UsageMetadata {
    */
   thoughtsTokenCount?: number;
   totalTokenCount: number;
+  /**
+   * The number of tokens used by tools.
+   */
+  toolUsePromptTokenCount?: number;
   promptTokensDetails?: ModalityTokenCount[];
   candidatesTokensDetails?: ModalityTokenCount[];
+  /**
+   * A list of tokens used by tools, broken down by modality.
+   */
+  toolUsePromptTokensDetails?: ModalityTokenCount[];
+  /**
+   * The number of tokens in the prompt that were served from the cache.
+   * If implicit caching is not active or no content was cached,
+   * this will be 0.
+   */
+  cachedContentTokenCount?: number;
+  /**
+   * Detailed breakdown of the cached tokens by modality (for example, text or
+   * image). This list provides granular insight into which parts of
+   * the content were cached.
+   */
+  cacheTokensDetails?: ModalityTokenCount[];
 }
 
 /**
@@ -308,6 +328,12 @@ export interface GroundingMetadata {
    * @deprecated Use {@link GroundingSupport} instead.
    */
   retrievalQueries?: string[];
+  /**
+   * Resource name of the Google Maps widget context token that can be used with the
+   * `PlacesContextElement` widget in order to render contextual data. Only populated in the case
+   * that grounding with Google Maps is enabled.
+   */
+  googleMapsWidgetContextToken?: string;
 }
 
 /**
@@ -345,6 +371,38 @@ export interface GroundingChunk {
    * Contains details if the grounding chunk is from a web source.
    */
   web?: WebGroundingChunk;
+  /**
+   * Contains details if the grounding chunk is from a Google Maps source.
+   */
+  maps?: GoogleMapsGroundingChunk;
+}
+
+/**
+ * A grounding chunk from Google Maps.
+ *
+ * Important: If using Grounding with Google Maps, you are required to comply with the
+ * {@link https://cloud.google.com/terms/service-terms | Service Specific Terms} for "Grounding with Google Maps".
+ *
+ * @public
+ */
+export interface GoogleMapsGroundingChunk {
+  /**
+   * The URI of the place.
+   */
+  uri?: string;
+  /**
+   * The title of the place.
+   */
+  title?: string;
+  /**
+   * The text of the place answer.
+   */
+  text?: string;
+  /**
+   * This Place's resource name, in `places/{place_id}` format. This can be used to look up the
+   * place in the Google Maps API.
+   */
+  placeId?: string;
 }
 
 /**
@@ -504,7 +562,7 @@ export interface CountTokensResponse {
    */
   totalTokens: number;
   /**
-   * @deprecated Use `totalTokens` instead. This property is undefined when using models greater than `gemini-1.5-*`.
+   * @deprecated Use `totalTokens` instead. This property is undefined when using newer Gemini models.
    *
    * The total number of billable characters counted across all instances
    * from the request.
@@ -592,6 +650,43 @@ export interface LiveServerToolCallCancellation {
 }
 
 /**
+ * Notification that the server will not be able to service the client soon.
+ *
+ * @beta
+ */
+export interface LiveServerGoingAwayNotice {
+  type: 'goingAwayNotice';
+  /**
+   * The remaining time (in seconds) before the connection will be terminated.
+   */
+  timeLeft: number;
+}
+
+/**
+ * An update of the session resumption state.
+ *
+ * This message is only sent if {@link SessionResumptionConfig} was set in the
+ * session setup.
+ *
+ * @beta
+ */
+export interface LiveSessionResumptionUpdate {
+  type: 'sessionResumptionUpdate';
+  /**
+   * The new handle that represents the state that can be resumed. Empty if `resumable` is false.
+   */
+  newHandle?: string;
+  /**
+   * Indicates if the session can be resumed at this point.
+   */
+  resumable?: boolean;
+  /**
+   * The index of the last client message that is included in the state represented by this update.
+   */
+  lastConsumedClientMessageIndex?: number;
+}
+
+/**
  * The types of responses that can be returned by {@link LiveSession.receive}.
  *
  * @beta
@@ -600,6 +695,8 @@ export const LiveResponseType = {
   SERVER_CONTENT: 'serverContent',
   TOOL_CALL: 'toolCall',
   TOOL_CALL_CANCELLATION: 'toolCallCancellation',
+  GOING_AWAY_NOTICE: 'goingAwayNotice',
+  SESSION_RESUMPTION_UPDATE: 'sessionResumptionUpdate',
 };
 
 /**

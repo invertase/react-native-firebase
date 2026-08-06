@@ -18,33 +18,23 @@
 describe('utils()', function () {
   if (Platform.other) return; // Not supported on non-native platforms.
 
-  describe('namespace', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('accessible from firebase.app()', function () {
-      const app = firebase.app();
-      should.exist(app.utils);
-      app.utils().app.should.equal(app);
+  describe('modular', function () {
+    it('getUtils returns instance for default app', function () {
+      const { getUtils, getApp } = modular;
+      getUtils().app.should.equal(getApp());
     });
 
     describe('isRunningInTestLab', function () {
       it('returns true or false', function () {
-        should.equal(firebase.utils().isRunningInTestLab, false);
+        const { getUtils } = modular;
+        should.equal(getUtils().isRunningInTestLab, false);
       });
     });
 
     describe('playServicesAvailability', function () {
       it('returns isAvailable and Play Service status', async function () {
-        const playService = await firebase.utils().playServicesAvailability;
-        //iOS always returns { isAvailable: true, status: 0}
+        const { getUtils } = modular;
+        const playService = await getUtils().playServicesAvailability;
         should(playService.isAvailable).equal(true);
         should(playService.status).equal(0);
       });
@@ -52,8 +42,8 @@ describe('utils()', function () {
 
     describe('getPlayServicesStatus', function () {
       it('returns isAvailable and Play Service status', async function () {
-        const status = await firebase.utils().getPlayServicesStatus();
-        //iOS always returns { isAvailable: true, status: 0}
+        const { getUtils } = modular;
+        const status = await getUtils().getPlayServicesStatus();
         should(status.isAvailable).equal(true);
         should(status.status).equal(0);
       });

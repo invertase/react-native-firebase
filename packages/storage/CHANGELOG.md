@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.1.0](https://github.com/invertase/react-native-firebase/compare/v26.0.0...v26.1.0) (2026-08-03)
+
+### Features
+
+- **ios:** add SPM dependency resolution support alongside CocoaPods ([#8933](https://github.com/invertase/react-native-firebase/issues/8933)) ([44a7a9a](https://github.com/invertase/react-native-firebase/commit/44a7a9ae7b404f412e9766c0417f1df8fa971a0b))
+
+## [26.0.0](https://github.com/invertase/react-native-firebase/compare/v25.1.0...v26.0.0) (2026-07-29)
+
+### ⚠ BREAKING CHANGES
+
+- **storage:** migrate storage to TurboModules
+
+### Features
+
+- **storage:** migrate storage to TurboModules ([691dcc1](https://github.com/invertase/react-native-firebase/commit/691dcc1edd3264f4c3866c5e927f17864a603b00))
+
+### Bug Fixes
+
+- add codegen verify and spec-native parity tests ([49d9f1b](https://github.com/invertase/react-native-firebase/commit/49d9f1baba4fc83c1dd4983f582bbd7352d78809))
+- add ResultT codegen type alias ([ff2d68f](https://github.com/invertase/react-native-firebase/commit/ff2d68ff8f73092f8ba3c75e007049dd31be822f))
+- **firestore:** deep testing/refactoring pass ([24b3b67](https://github.com/invertase/react-native-firebase/commit/24b3b679d21c8b21f603e8add5a544a978138436))
+- **firestore:** validate TransactionOptions maxAttempts ([316e7d0](https://github.com/invertase/react-native-firebase/commit/316e7d09c4ffd731af244ddb2d8b63f733cfceee))
+- **ios:** private codegen headers and bridging-safe AppCheck module ([266d7e1](https://github.com/invertase/react-native-firebase/commit/266d7e10020662bfd357d1795bc5f6cfde54f7b7))
+- **ios:** set IPHONEOS_DEPLOYMENT_TARGET to 15.0, update platform support docs/conditionals ([#9108](https://github.com/invertase/react-native-firebase/issues/9108)) ([99d0899](https://github.com/invertase/react-native-firebase/commit/99d089908e3eec6155d73ecf05ff7274ad33c46e)), closes [#8882](https://github.com/invertase/react-native-firebase/issues/8882)
+- **storage, ios:** preserve RN framework HEADER_SEARCH_PATHS in podspec ([122ae3d](https://github.com/invertase/react-native-firebase/commit/122ae3dfb2dec425e91ec9a742492ae6b3ec29fc))
+- **types:** align compare-types modular API with firebase-js-sdk ([5376e75](https://github.com/invertase/react-native-firebase/commit/5376e757f7dd7f7cffc9907c652d873d2403e23f))
+
+## [25.1.0](https://github.com/invertase/react-native-firebase/compare/v25.0.1...v25.1.0) (2026-06-25)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [25.0.1](https://github.com/invertase/react-native-firebase/compare/v25.0.0...v25.0.1) (2026-06-23)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **storage:** migrate to TypeScript and match firebase-js-sdk API (#8824)
+
+### Code Refactoring
+
+- **storage:** migrate to TypeScript and match firebase-js-sdk API ([#8824](https://github.com/invertase/react-native-firebase/issues/8824)) ([663b57c](https://github.com/invertase/react-native-firebase/commit/663b57c220ef733affc1055e674334f35c458861))
+
+## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
 ## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
 
 **Note:** Version bump only for package @react-native-firebase/storage

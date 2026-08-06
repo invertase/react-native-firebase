@@ -16,10 +16,11 @@
  */
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import type { FieldPath } from '../modular/FieldPath';
-import type { FieldValue } from '../modular/FieldValue';
+import type { FieldPath } from '../FieldPath';
+import type { FieldValue } from '../FieldValue';
 import type { AggregateField } from '../FirestoreAggregate';
-import type { sum, average, count } from '../modular';
+import type { Query as QueryClass } from '../FirestoreQuery';
+import type { sum, average, count } from '../index';
 
 // Canonical app/module aliases used by modular declarations.
 export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
@@ -201,8 +202,17 @@ export type QueryConstraintType =
   | 'endAt'
   | 'endBefore';
 
+/**
+ * Describe the source a query listens to.
+ *
+ * Set to `default` to listen to both cache and server changes. Set to `cache`
+ * to listen to changes in cache only.
+ */
+export type ListenSource = 'default' | 'cache';
+
 export interface SnapshotListenOptions {
   readonly includeMetadataChanges?: boolean;
+  readonly source?: ListenSource;
 }
 
 /**
@@ -330,7 +340,7 @@ export interface FirestoreDataConverter<
   ): AppModelType;
 }
 
-export declare class Query<
+export interface Query<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 > {
@@ -346,7 +356,7 @@ export declare class Query<
 export declare class CollectionReference<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
-> extends Query<AppModelType, DbModelType> {
+> extends QueryClass<AppModelType, DbModelType> {
   readonly type: 'collection';
   id: string;
   parent: DocumentReference<DocumentData, DocumentData> | null;
@@ -403,6 +413,10 @@ export declare class WriteBatch {
     documentRef: DocumentReference<AppModelType, DbModelType>,
   ): WriteBatch;
   commit(): Promise<void>;
+}
+
+export interface TransactionOptions {
+  readonly maxAttempts?: number;
 }
 
 export declare class LiteTransaction {}

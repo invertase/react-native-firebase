@@ -1,4 +1,5 @@
 require 'json'
+require_relative '../app/firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
@@ -28,15 +29,28 @@ Pod::Spec.new do |s|
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
   s.swift_version       = '5.10'
-  s.source_files        = 'ios/**/*.{h,m,mm,swift}'
+  s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
+  s.private_header_files = [
+    'ios/RNFBFirestore/RNFBFirestoreModule.h',
+    'ios/RNFBFirestore/RNFBFirestoreCollectionModule.h',
+    'ios/RNFBFirestore/RNFBFirestoreDocumentModule.h',
+    'ios/RNFBFirestore/RNFBFirestoreTransactionModule.h',
+    'ios/generated/**/*.h',
+  ]
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
+
+  s.pod_target_xcconfig = {
+    "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ios/generated/RNFBFirestoreTurboModules\" \"$(PODS_TARGET_SRCROOT)/ios/generated\"",
+  }
 
   s.dependency          'RNFBApp'
 
-  # React Native dependencies
-  if defined?(install_modules_dependencies()) != nil
-    install_modules_dependencies(s);
-  else
-    s.dependency "React-Core"
+  install_modules_dependencies(s);
+
+  # Fail fast for old architecture users, but safely in case the variable goes away
+  # completely in future react-native versions
+  if defined?(ENV["RCT_NEW_ARCH_ENABLED"]) != nil && (ENV["RCT_NEW_ARCH_ENABLED"] == '0')
+     raise "#{s.name} requires New Architecture. Enable New Architecture to use this module"
   end
 
   if defined?($FirebaseSDKVersion)
@@ -45,7 +59,7 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/Firestore', firebase_sdk_version
+  firebase_dependency(s, firebase_sdk_version, ['FirebaseFirestore'], 'Firebase/Firestore')
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"

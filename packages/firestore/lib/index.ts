@@ -15,12 +15,25 @@
  *
  */
 
-// Export modular API functions
+/**
+ * Modular Firestore API for React Native Firebase.
+ *
+ * @packageDocumentation
+ */
+
+import './types/internal';
+import './FieldValue';
+import './FirestoreModule';
+
+export { FieldPath } from './FieldPath';
+export { FieldValue } from './FieldValue';
+export { GeoPoint } from './FirestoreGeoPoint';
+export { Timestamp } from './FirestoreTimestamp';
+export { VectorValue } from './FirestoreVectorValue';
+export { Bytes } from './modular/Bytes';
+export { AggregateField, AggregateQuerySnapshot } from './FirestoreAggregate';
 export * from './modular';
 
-// Export modular/public type helpers.
-// DocumentSnapshot, LoadBundleTask, QuerySnapshot, SnapshotMetadata, Transaction, WriteBatch
-// are excluded here because they are already exported as values from './modular'.
 export type {
   FirebaseApp,
   Firestore,
@@ -58,14 +71,14 @@ export type {
   UpdateData,
   WithFieldValue,
   FirestoreDataConverter,
-  Query,
   CollectionReference,
   DocumentReference,
+  Query,
+  DocumentSnapshot,
   QueryDocumentSnapshot,
+  QuerySnapshot,
+  SnapshotMetadata,
+  Transaction,
+  TransactionOptions,
+  WriteBatch,
 } from './types/firestore';
-
-// Export namespaced API
-export type { FirebaseFirestoreTypes } from './types/namespaced';
-
-export * from './namespaced';
-export { default } from './namespaced';

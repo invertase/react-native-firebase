@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "build",
     "rootDir": "src",
-    "declaration": true
+    "declaration": true,
+    "types": ["react-native", "node"]
   },
   "include": ["./src"]
 }

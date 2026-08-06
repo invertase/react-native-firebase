@@ -27,7 +27,7 @@ module.exports = {
       binaryPath: 'android/app/build/outputs/apk/debug/app-debug.apk',
       // keep in sync with android.debug.windows below, except gradlew vs gradlew.bat
       build:
-        'cd android && ./gradlew assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug --warning-mode all && cd ..',
+        'cd android && ./gradlew-with-worker-cap.sh assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug --warning-mode all --stacktrace && cd ..',
       reversePorts: [8080, 8081, 8090, 9000, 9099, 9199],
     },
     'android.debug.windows': {
@@ -35,7 +35,7 @@ module.exports = {
       binaryPath: 'android/app/build/outputs/apk/debug/app-debug.apk',
       // android.debug.windows only exists to use .bat script vs shell here:
       build:
-        'cd android && .\\gradlew.bat assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug --warning-mode all && cd ..',
+        'cd android && .\\gradlew-with-worker-cap.bat assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug --warning-mode all --stacktrace && cd ..',
       reversePorts: [8080, 8081, 8090, 9000, 9099, 9199],
     },
     'android.release': {
@@ -48,7 +48,7 @@ module.exports = {
     simulator: {
       type: 'ios.simulator',
       device: {
-        type: 'iPhone 16',
+        type: 'iPhone 17',
       },
     },
     attached: {
@@ -62,6 +62,10 @@ module.exports = {
       device: {
         avdName: 'TestingAVD',
       },
+      // Cold boot: do not load/save AVD snapshots (warm quickboot is unreliable locally).
+      bootArgs:
+        process.env.RNFB_ANDROID_EMULATOR_BOOT_ARGS || '-no-snapshot-load -no-snapshot-save',
+      readonly: true,
     },
   },
   configurations: {

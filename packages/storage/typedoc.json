@@ -1,6 +1,5 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["lib/index.ts"],
-  "intentionallyNotExported": ["StorageNamespace"]
-
+  "entryPoints": ["lib/index.ts", "lib/types/storage.ts"],
+  "tsconfig": "tsconfig.json"
 }

@@ -18,6 +18,7 @@
 import { describe, expect, it } from '@jest/globals';
 import {
   // Runtime values (classes, functions, constants)
+  AnyOfSchema,
   BackendType,
   POSSIBLE_ROLES,
   AIError,
@@ -26,6 +27,9 @@ import {
   getAI,
   getGenerativeModel,
   ChatSession,
+  ChatSessionBase,
+  TemplateChatSession,
+  TemplateGenerativeModel,
   GoogleAIBackend,
   VertexAIBackend,
   // Types that exist - imported for type checking
@@ -64,9 +68,12 @@ import {
   GroundingAttribution,
   GroundingMetadata,
   InlineDataPart,
+  LiveServerGoingAwayNotice,
   ModalityTokenCount,
   ModelParams,
   ObjectSchemaInterface,
+  ObjectSchemaRequest,
+  ObjectSchema,
   PromptFeedback,
   RequestOptions,
   RetrievedContextAttribution,
@@ -76,10 +83,18 @@ import {
   SchemaParams,
   SchemaRequest,
   SchemaShared,
+  Schema,
   SearchEntrypoint,
   Segment,
+  SingleRequestOptions,
   StartChatParams,
+  StartTemplateChatParams,
+  TemplateFunctionDeclaration,
+  TemplateFunctionDeclarationsTool,
+  TemplateTool,
   TextPart,
+  ThinkingConfig,
+  ThinkingLevel,
   ToolConfig,
   URLContext,
   URLContextMetadata,
@@ -99,6 +114,7 @@ import {
   HarmCategory,
   HarmProbability,
   HarmSeverity,
+  LiveResponseType,
   Modality,
   SchemaType,
 } from '../lib';
@@ -114,6 +130,18 @@ describe('AI', function () {
 
     it('`POSSIBLE_ROLES` constant is properly exposed to end user', function () {
       expect(POSSIBLE_ROLES).toBeDefined();
+    });
+
+    it('`AnyOfSchema` class is properly exposed to end user', function () {
+      expect(AnyOfSchema).toBeDefined();
+    });
+
+    it('`ThinkingLevel` constant is properly exposed to end user', function () {
+      expect(ThinkingLevel).toBeDefined();
+      expect(ThinkingLevel.MINIMAL).toBe('MINIMAL');
+      expect(ThinkingLevel.LOW).toBe('LOW');
+      expect(ThinkingLevel.MEDIUM).toBe('MEDIUM');
+      expect(ThinkingLevel.HIGH).toBe('HIGH');
     });
 
     it('`AIError` class is properly exposed to end user', function () {
@@ -138,6 +166,18 @@ describe('AI', function () {
 
     it('`ChatSession` class is properly exposed to end user', function () {
       expect(ChatSession).toBeDefined();
+    });
+
+    it('`ChatSessionBase` class is properly exposed to end user', function () {
+      expect(ChatSessionBase).toBeDefined();
+    });
+
+    it('`TemplateChatSession` class is properly exposed to end user', function () {
+      expect(TemplateChatSession).toBeDefined();
+    });
+
+    it('`TemplateGenerativeModel` class is properly exposed to end user', function () {
+      expect(TemplateGenerativeModel).toBeDefined();
     });
 
     it('`GoogleAIBackend` class is properly exposed to end user', function () {
@@ -167,6 +207,11 @@ describe('AI', function () {
     it('`Tool` type is properly exposed to end user', function () {
       const _typeCheck: Tool = {} as Tool;
       expect(typeof _typeCheck).toBeDefined();
+    });
+
+    it('`ThinkingConfig` type is properly exposed to end user', function () {
+      const _typeCheck: ThinkingConfig = { thinkingLevel: ThinkingLevel.LOW };
+      expect(typeof _typeCheck).toBe('object');
     });
 
     it('`TypedSchema` type is properly exposed to end user', function () {
@@ -269,6 +314,15 @@ describe('AI', function () {
       expect(typeof _typeCheck).toBeDefined();
     });
 
+    it('`FunctionResponse.parts` type is properly exposed to end user', function () {
+      const _typeCheck: FunctionResponse = {
+        name: 'getWeather',
+        response: { temperature: 72 },
+        parts: [{ text: 'Weather lookup complete.' }],
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
     it('`FunctionResponsePart` type is properly exposed to end user', function () {
       const _typeCheck: FunctionResponsePart = {} as FunctionResponsePart;
       expect(typeof _typeCheck).toBeDefined();
@@ -300,8 +354,16 @@ describe('AI', function () {
     });
 
     it('`GenerationConfig` type is properly exposed to end user', function () {
-      const _typeCheck: GenerationConfig = {} as GenerationConfig;
-      expect(typeof _typeCheck).toBeDefined();
+      const _typeCheck: GenerationConfig = {
+        responseMimeType: 'application/json',
+        responseJsonSchema: {
+          type: 'object',
+          properties: {
+            answer: { type: 'string' },
+          },
+        },
+      };
+      expect(typeof _typeCheck).toBe('object');
     });
 
     it('`GenerativeContentBlob` type is properly exposed to end user', function () {
@@ -339,14 +401,68 @@ describe('AI', function () {
       expect(typeof _typeCheck).toBeDefined();
     });
 
+    it('`ObjectSchemaRequest` type is properly exposed to end user', function () {
+      const _typeCheck: ObjectSchemaRequest = {
+        type: 'object',
+        properties: {},
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
+    it('`FunctionDeclaration.parameters` accepts ObjectSchemaRequest', function () {
+      const _typeCheck: FunctionDeclaration = {
+        name: 'getWeather',
+        description: 'Gets weather for a city.',
+        parameters: {
+          type: 'object',
+          properties: {
+            city: {
+              type: SchemaType.STRING,
+            },
+          },
+          required: ['city'],
+        },
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
+    it('`FunctionDeclaration` accepts ObjectSchema and functionReference', function () {
+      const parameters: ObjectSchema = Schema.object({
+        properties: {
+          city: Schema.string(),
+        },
+      });
+      const _typeCheck: FunctionDeclaration = {
+        name: 'getWeather',
+        description: 'Gets weather for a city.',
+        parameters,
+        functionReference: () => ({ temperature: 72 }),
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
     it('`PromptFeedback` type is properly exposed to end user', function () {
       const _typeCheck: PromptFeedback = {} as PromptFeedback;
       expect(typeof _typeCheck).toBeDefined();
     });
 
     it('`RequestOptions` type is properly exposed to end user', function () {
-      const _typeCheck: RequestOptions = {} as RequestOptions;
-      expect(typeof _typeCheck).toBeDefined();
+      const _typeCheck: RequestOptions = {
+        timeout: 1000,
+        baseUrl: 'https://example.com',
+        maxSequentialFunctionCalls: 3,
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
+    it('`SingleRequestOptions` type is properly exposed to end user', function () {
+      const controller = new AbortController();
+      const _typeCheck: SingleRequestOptions = {
+        timeout: 1000,
+        baseUrl: 'https://example.com',
+        signal: controller.signal,
+      };
+      expect(typeof _typeCheck).toBe('object');
     });
 
     it('`RetrievedContextAttribution` type is properly exposed to end user', function () {
@@ -399,6 +515,44 @@ describe('AI', function () {
       expect(typeof _typeCheck).toBeDefined();
     });
 
+    it('`StartTemplateChatParams` type is properly exposed to end user', function () {
+      const _typeCheck: StartTemplateChatParams = {
+        templateId: 'my-template',
+        templateVariables: { city: 'London' },
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
+    it('`TemplateFunctionDeclaration` type is properly exposed to end user', function () {
+      const _typeCheck: TemplateFunctionDeclaration = {
+        name: 'getWeather',
+        parameters: {
+          type: 'object',
+          properties: {
+            city: {
+              type: SchemaType.STRING,
+            },
+          },
+        },
+        functionReference: () => ({ temperature: 72 }),
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
+    it('`TemplateFunctionDeclarationsTool` type is properly exposed to end user', function () {
+      const _typeCheck: TemplateFunctionDeclarationsTool = {
+        functionDeclarations: [{ name: 'getWeather' }],
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
+    it('`TemplateTool` type is properly exposed to end user', function () {
+      const _typeCheck: TemplateTool = {
+        functionDeclarations: [{ name: 'getWeather' }],
+      };
+      expect(typeof _typeCheck).toBe('object');
+    });
+
     it('`TextPart` type is properly exposed to end user', function () {
       const _typeCheck: TextPart = {} as TextPart;
       expect(typeof _typeCheck).toBeDefined();
@@ -430,8 +584,16 @@ describe('AI', function () {
     });
 
     it('`UsageMetadata` type is properly exposed to end user', function () {
-      const _typeCheck: UsageMetadata = {} as UsageMetadata;
-      expect(typeof _typeCheck).toBeDefined();
+      const _typeCheck: UsageMetadata = {
+        promptTokenCount: 5,
+        candidatesTokenCount: 7,
+        totalTokenCount: 12,
+        toolUsePromptTokenCount: 3,
+        toolUsePromptTokensDetails: [{ modality: Modality.TEXT, tokenCount: 3 }],
+        cachedContentTokenCount: 2,
+        cacheTokensDetails: [{ modality: Modality.TEXT, tokenCount: 2 }],
+      };
+      expect(typeof _typeCheck).toBe('object');
     });
 
     it('`VideoMetadata` type is properly exposed to end user', function () {
@@ -506,6 +668,18 @@ describe('AI', function () {
       expect(URLRetrievalStatus.URL_RETRIEVAL_STATUS_UNSPECIFIED).toBe(
         'URL_RETRIEVAL_STATUS_UNSPECIFIED',
       );
+    });
+
+    it('`LiveResponseType.GOING_AWAY_NOTICE` constant is properly exposed to end user', function () {
+      expect(LiveResponseType.GOING_AWAY_NOTICE).toBe('goingAwayNotice');
+    });
+
+    it('`LiveServerGoingAwayNotice` type is properly exposed to end user', function () {
+      const _typeCheck: LiveServerGoingAwayNotice = {
+        type: 'goingAwayNotice',
+        timeLeft: 10,
+      };
+      expect(typeof _typeCheck).toBe('object');
     });
   });
 });

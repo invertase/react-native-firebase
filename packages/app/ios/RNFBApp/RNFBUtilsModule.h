@@ -18,9 +18,7 @@
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
 
-#import <React/RCTBridgeModule.h>
-
-@interface RNFBUtilsModule : NSObject <RCTBridgeModule>
+@interface RNFBUtilsModule : NSObject
 
 + (BOOL)isRemoteAsset:(NSString *)localFilePath;
 + (BOOL)unused_isHeic:(NSString *)localFilePath;

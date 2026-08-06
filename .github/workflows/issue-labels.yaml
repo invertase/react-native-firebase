@@ -4,45 +4,62 @@ on:
   issue_comment:
     types: [created]
 
+permissions:
+  issues: write
+  pull-requests: write
+
 jobs:
   label-op-response:
     runs-on: ubuntu-latest
     steps:
-      - name: Check if the comment is from the OP
+      - name: Check if the comment is from the issue author
         id: check-op
-        run: |
-          OP=${{ github.event.issue.user.login }}
-          COMMENTER=${{ github.event.comment.user.login }}
-
-          if [ "$OP" = "$COMMENTER" ]; then
-            echo "op_comment=true" >> $GITHUB_ENV
-          else
-            echo "op_comment=false" >> $GITHUB_ENV
-          fi
-
-      - name: Add 'Needs Attention' label if OP responded and it was open
-        if: env.op_comment == 'true' && github.event.issue.state == 'open'
-        uses: actions-ecosystem/action-add-labels@v1
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
-          labels: 'Needs Attention'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          script: |
+            const isOpComment =
+              context.payload.comment.user.login ===
+              context.payload.issue.user.login;
+            core.setOutput('op_comment', isOpComment ? 'true' : 'false');
 
-      - name: Remove 'blocked customer-response' label if OP responded and it was open
-        if: env.op_comment == 'true' && github.event.issue.state == 'open'
-        uses: actions-ecosystem/action-remove-labels@v1
+      - name: Update labels when the issue author responded on an open item
+        if: steps.check-op.outputs.op_comment == 'true' && github.event.issue.state == 'open'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
-          labels: 'blocked: customer-response'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          script: |
+            const issueNumber = context.payload.issue.number;
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: ['Needs Attention'],
+            });
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                name: 'blocked: customer-response',
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+            }
 
-      - name: Add comment if OP responded but issue was closed
-        if: env.op_comment == 'true' && github.event.issue.state == 'closed'
-        uses: actions-ecosystem/action-create-comment@v1
+      - name: Comment when the issue author responded on a closed item
+        if: steps.check-op.outputs.op_comment == 'true' && github.event.issue.state == 'closed'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          body: |
-            In order to prioritize work in this repository, closed issues and pull requests do not regularly receive attention.
-
-            If the underlying issue or pull request still requires attention, opening a new issue with a reproduction
-            after testing with current versions, or reposting the pull request as a new PR may be the most effective way forward.
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: [
+                'In order to prioritize work in this repository, closed issues and pull requests do not regularly receive attention.',
+                '',
+                'If the underlying issue or pull request still requires attention, opening a new issue with a reproduction',
+                'after testing with current versions, or reposting the pull request as a new PR may be the most effective way forward.',
+              ].join('\n'),
+            });

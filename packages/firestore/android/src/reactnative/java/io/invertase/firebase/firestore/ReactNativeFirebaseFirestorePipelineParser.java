@@ -15,7 +15,8 @@ import java.util.Set;
 final class ReactNativeFirebaseFirestorePipelineParser {
   private static final Set<String> SOURCE_TYPES =
       new HashSet<>(
-          Arrays.asList("collection", "collectionGroup", "database", "documents", "query"));
+          Arrays.asList(
+              "collection", "collectionGroup", "database", "documents", "query", "subcollection"));
 
   private static final Set<String> KNOWN_STAGES =
       new HashSet<>(
@@ -30,6 +31,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
               "aggregate",
               "distinct",
               "findNearest",
+              "search",
+              "define",
               "replaceWith",
               "sample",
               "union",
@@ -271,7 +274,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
         readableMapToJava(pipeline), options == null ? null : readableMapToJava(options));
   }
 
-  private static ParsedPipelineRequest parsePipelineMap(
+  static ParsedPipelineRequest parsePipelineMap(
       Map<String, Object> pipeline, Map<String, Object> options)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     ParsedPipelineRequestBox rootBox = new ParsedPipelineRequestBox();
@@ -381,6 +384,10 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             requireArray(source, "filters", "pipeline.source.filters"),
             requireArray(source, "orders", "pipeline.source.orders"),
             requireMap(source, "options", "pipeline.source.options"));
+      case "subcollection":
+        return ParsedPipelineSource.subcollection(
+            requireNonEmptyString(source, "path", "pipeline.source.path"),
+            optionalMap(source, "rawOptions", "pipeline.source.rawOptions"));
       default:
         throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
             "pipelineExecute() received an unknown source type.");
@@ -460,7 +467,22 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             requireValue(stageOptions, "vectorValue", "stage.options.vectorValue"),
             requireString(stageOptions, "distanceMeasure", "stage.options.distanceMeasure"),
             stageOptions.get("limit"),
-            optionalString(stageOptions, "distanceField"));
+            optionalExpressionNode(stageOptions, "distanceField", "stage.options.distanceField"));
+      case "search":
+        return new ParsedSearchStage(
+            parseExpressionNode(
+                requireValue(stageOptions, "query", "stage.options.query"), "stage.options.query"),
+            optionalString(stageOptions, "languageCode"),
+            stageOptions.get("retrievalDepth"),
+            optionalOrderingNodes(stageOptions, "sort", "stage.options.sort"),
+            stageOptions.get("offset"),
+            stageOptions.get("limit"),
+            optionalSelectableNodes(stageOptions, "addFields", "stage.options.addFields"));
+      case "define":
+        return new ParsedDefineStage(
+            parseSelectableNodes(
+                requireArray(stageOptions, "variables", "stage.options.variables"),
+                "stage.options.variables"));
       case "replaceWith":
         return new ParsedReplaceWithStage(
             parseExpressionNode(
@@ -475,7 +497,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             parseSelectableNode(
                 requireValue(stageOptions, "selectable", "stage.options.selectable"),
                 "stage.options.selectable"),
-            optionalString(stageOptions, "indexField"));
+            optionalExpressionNode(stageOptions, "indexField", "stage.options.indexField"));
       case "rawStage":
         return new ParsedRawStage(
             requireNonEmptyString(stageOptions, "name", "stage.options.name"),
@@ -602,6 +624,15 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     return value instanceof String ? (String) value : null;
   }
 
+  private static ParsedExpressionNode optionalExpressionNode(
+      Map<String, Object> map, String key, String fieldName)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    if (map == null || !map.containsKey(key) || map.get(key) == null) {
+      return null;
+    }
+    return parseExpressionNode(map.get(key), fieldName);
+  }
+
   private static List<ParsedSelectableNode> parseSelectableNodes(
       List<Object> values, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
@@ -628,6 +659,13 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     return output;
   }
 
+  private static List<ParsedOrderingNode> optionalOrderingNodes(
+      Map<String, Object> map, String key, String fieldName)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    List<Object> values = optionalArray(map, key, fieldName);
+    return values == null ? null : parseOrderingNodes(values, fieldName);
+  }
+
   private static List<ParsedAggregateNode> parseAggregateNodes(
       List<Object> values, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
@@ -652,7 +690,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     Map<?, ?> map = (Map<?, ?>) value;
     String alias = firstString(map.get("alias"), map.get("as"), map.get("name"));
     if (alias != null && !alias.isEmpty()) {
-      if (map.containsKey("path") || map.containsKey("fieldPath") || map.containsKey("segments")) {
+      if ((map.containsKey("path") || map.containsKey("fieldPath") || map.containsKey("segments"))
+          && !isReferencePathConstantMap(map)) {
         return new ParsedSelectableNode(
             new ParsedFieldExpressionNode(coerceFieldPath(value, fieldName + ".path")),
             alias,
@@ -787,8 +826,74 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     return rootBox.value;
   }
 
+  private static Object constantValueFromSerializedConstantMap(Map<?, ?> map) {
+    Object value = map.get("value");
+    if (Boolean.TRUE.equals(map.get("integerLiteral"))) {
+      return coerceIntegerLiteralConstantValue(value);
+    }
+    return value;
+  }
+
+  private static Object coerceIntegerLiteralConstantValue(Object value) {
+    if (value instanceof Boolean) {
+      return ((Boolean) value) ? 1 : 0;
+    }
+    if (value instanceof Number) {
+      Number number = (Number) value;
+      double doubleValue = number.doubleValue();
+      if (Double.isFinite(doubleValue)
+          && doubleValue == Math.rint(doubleValue)
+          && doubleValue >= Integer.MIN_VALUE
+          && doubleValue <= Integer.MAX_VALUE) {
+        return number.intValue();
+      }
+    }
+    return value;
+  }
+
+  private static boolean isReferencePathConstantMap(Map<?, ?> map) {
+    Object pathValue = map.get("path");
+    if (!(pathValue instanceof String)) {
+      return false;
+    }
+
+    String path = (String) pathValue;
+    if (path.indexOf('/') < 0) {
+      return false;
+    }
+
+    for (Object key : map.keySet()) {
+      if (!(key instanceof String)) {
+        return false;
+      }
+      String keyString = (String) key;
+      if (!"path".equals(keyString)
+          && !"firestore".equals(keyString)
+          && !"alias".equals(keyString)
+          && !"as".equals(keyString)
+          && !"__kind".equals(keyString)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   private static boolean isExpressionLike(Map<?, ?> map) {
     Object exprType = map.get("exprType");
+    if (exprType instanceof String) {
+      String normalizedType = ((String) exprType).toLowerCase(java.util.Locale.ROOT);
+      if ("pipelinevalue".equals(normalizedType)) {
+        return false;
+      }
+      // A serialized constant envelope ({ exprType: "constant", value: … }) is
+      // expression-like in value contexts so it routes through the expression
+      // tree and re-emerges as a constant expression, matching iOS. Only
+      // PipelineValue is treated as an opaque non-expression here.
+    }
+    if (isReferencePathConstantMap(map)) {
+      return false;
+    }
     return exprType instanceof String
         || map.containsKey("operator")
         || map.containsKey("name")
@@ -940,7 +1045,18 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             if ("constant".equals(normalizedType)) {
               ParsedValueNodeBox valueBox = new ParsedValueNodeBox();
               stack.push(new ExpressionConstantExitFrame(enterFrame.box, valueBox, fieldName));
-              stack.push(new ValueEnterFrame(map.get("value"), valueBox, fieldName + ".value"));
+              stack.push(
+                  new ValueEnterFrame(
+                      constantValueFromSerializedConstantMap(map), valueBox, fieldName + ".value"));
+              continue;
+            }
+            if ("variable".equals(normalizedType)) {
+              Object nameValue = map.get("name");
+              if (!(nameValue instanceof String) || ((String) nameValue).isEmpty()) {
+                throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                    "pipelineExecute() expected " + fieldName + ".name to be a non-empty string.");
+              }
+              enterFrame.box.value = new ParsedVariableExpressionNode((String) nameValue);
               continue;
             }
           }
@@ -977,10 +1093,11 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             continue;
           }
 
-          if (map.containsKey("fieldPath")
-              || map.containsKey("path")
-              || map.containsKey("segments")
-              || map.containsKey("_segments")) {
+          if (!isReferencePathConstantMap(map)
+              && (map.containsKey("fieldPath")
+                  || map.containsKey("path")
+                  || map.containsKey("segments")
+                  || map.containsKey("_segments"))) {
             enterFrame.box.value = new ParsedFieldExpressionNode(coerceFieldPath(value, fieldName));
             continue;
           }
@@ -1078,6 +1195,20 @@ final class ReactNativeFirebaseFirestorePipelineParser {
 
         if (value instanceof Map) {
           Map<?, ?> map = (Map<?, ?>) value;
+          // A PipelineValue is an opaque nested-pipeline subquery (scalar/array).
+          // Preserve the raw map verbatim so the node builder can re-parse the
+          // nested pipeline via parsePipelineMap. Descending into it here would
+          // treat the nested pipeline's stages (e.g. AggregateFunction nodes)
+          // as outer expressions and loop forever.
+          Object exprTypeValue = map.get("exprType");
+          if (exprTypeValue instanceof String) {
+            String normalizedType = ((String) exprTypeValue).toLowerCase(java.util.Locale.ROOT);
+            if ("pipelinevalue".equals(normalizedType)) {
+              enterFrame.box.value = new ParsedPrimitiveValueNode(value);
+              continue;
+            }
+          }
+
           if (isExpressionLike(map)) {
             ParsedExpressionNodeBox expressionBox = new ParsedExpressionNodeBox();
             stack.push(new ExpressionValueExitFrame(enterFrame.box, expressionBox, fieldName));
@@ -1449,6 +1580,11 @@ final class ReactNativeFirebaseFirestorePipelineParser {
       return new ParsedPipelineSource(
           "query", path, null, null, queryType, filters, orders, options, null);
     }
+
+    static ParsedPipelineSource subcollection(String path, Map<String, Object> rawOptions) {
+      return new ParsedPipelineSource(
+          "subcollection", path, null, null, null, null, null, null, rawOptions);
+    }
   }
 
   static class ParsedPipelineStage {
@@ -1548,20 +1684,57 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     final Object vectorValue;
     final String distanceMeasure;
     final Object limit;
-    final String distanceField;
+    final ParsedExpressionNode distanceField;
 
     ParsedFindNearestStage(
         Object field,
         Object vectorValue,
         String distanceMeasure,
         Object limit,
-        String distanceField) {
+        ParsedExpressionNode distanceField) {
       super("findNearest");
       this.field = field;
       this.vectorValue = vectorValue;
       this.distanceMeasure = distanceMeasure;
       this.limit = limit;
       this.distanceField = distanceField;
+    }
+  }
+
+  static final class ParsedSearchStage extends ParsedPipelineStage {
+    final ParsedExpressionNode query;
+    final String languageCode;
+    final Object retrievalDepth;
+    final List<ParsedOrderingNode> sort;
+    final Object offset;
+    final Object limit;
+    final List<ParsedSelectableNode> addFields;
+
+    ParsedSearchStage(
+        ParsedExpressionNode query,
+        String languageCode,
+        Object retrievalDepth,
+        List<ParsedOrderingNode> sort,
+        Object offset,
+        Object limit,
+        List<ParsedSelectableNode> addFields) {
+      super("search");
+      this.query = query;
+      this.languageCode = languageCode;
+      this.retrievalDepth = retrievalDepth;
+      this.sort = sort;
+      this.offset = offset;
+      this.limit = limit;
+      this.addFields = addFields;
+    }
+  }
+
+  static final class ParsedDefineStage extends ParsedPipelineStage {
+    final List<ParsedSelectableNode> variables;
+
+    ParsedDefineStage(List<ParsedSelectableNode> variables) {
+      super("define");
+      this.variables = variables;
     }
   }
 
@@ -1596,9 +1769,9 @@ final class ReactNativeFirebaseFirestorePipelineParser {
 
   static final class ParsedUnnestStage extends ParsedPipelineStage {
     final ParsedSelectableNode selectable;
-    final String indexField;
+    final ParsedExpressionNode indexField;
 
-    ParsedUnnestStage(ParsedSelectableNode selectable, String indexField) {
+    ParsedUnnestStage(ParsedSelectableNode selectable, ParsedExpressionNode indexField) {
       super("unnest");
       this.selectable = selectable;
       this.indexField = indexField;
@@ -1633,6 +1806,14 @@ final class ReactNativeFirebaseFirestorePipelineParser {
 
     ParsedConstantExpressionNode(ParsedValueNode value) {
       this.value = value;
+    }
+  }
+
+  static final class ParsedVariableExpressionNode extends ParsedExpressionNode {
+    final String name;
+
+    ParsedVariableExpressionNode(String name) {
+      this.name = name;
     }
   }
 

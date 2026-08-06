@@ -17,50 +17,6 @@
 const COLLECTION = 'firestore';
 
 describe('firestore.doc().isEqual()', function () {
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('throws if other is not a DocumentReference', function () {
-      try {
-        firebase.firestore().doc('bar/baz').isEqual(123);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'other' expected a DocumentReference instance");
-        return Promise.resolve();
-      }
-    });
-
-    it('returns false when not equal', function () {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
-
-      const eql1 = docRef.isEqual(firebase.firestore().doc(`${COLLECTION}/foo`));
-      const eql2 = docRef.isEqual(
-        firebase.firestore(firebase.app('secondaryFromNative')).doc(`${COLLECTION}/baz`),
-      );
-
-      eql1.should.be.False();
-      eql2.should.be.False();
-    });
-
-    it('returns true when equal', function () {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
-
-      const eql1 = docRef.isEqual(docRef);
-      const eql2 = docRef.isEqual(firebase.firestore().doc(`${COLLECTION}/baz`));
-
-      eql1.should.be.True();
-      eql2.should.be.True();
-    });
-  });
-
   describe('modular', function () {
     it('throws if other is not a DocumentReference', function () {
       const { getFirestore, doc, refEqual } = firestoreModular;

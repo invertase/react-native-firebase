@@ -19,7 +19,7 @@
   <a href="https://www.facebook.com/groups/rnfirebase"><img src="https://img.shields.io/badge/Follow%20on%20Facebook-4172B8?logo=facebook&style=flat-square&logoColor=fff" alt="Follow on Facebook"></a>
 </p>
 
-----
+---
 
 Entry point for Firebase installations.
 
@@ -28,7 +28,6 @@ The Firebase installations service:
 - provides a unique identifier for a Firebase installation
 - provides an auth token for a Firebase installation
 - provides a API to perform GDPR-compliant deletion of a Firebase installation.
-
 
 [> Learn More](https://firebase.google.com/docs/projects/manage-installations)
 
@@ -42,14 +41,14 @@ yarn add @react-native-firebase/installations
 
 ## Documentation
 
- - [Guides](https://rnfirebase.io/installations/usage/)
- - [Reference](https://rnfirebase.io/reference/installations)
+- [Guides](https://rnfirebase.io/installations/usage/)
+- [Reference](https://rnfirebase.io/reference/installations)
 
 ## License
 
 - See [LICENSE](/LICENSE)
 
-----
+---
 
 <p>
   <img align="left" width="75px" src="https://static.invertase.io/assets/invertase/invertase-rounded.png">
@@ -58,4 +57,4 @@ yarn add @react-native-firebase/installations
   </p>
 </p>
 
-----
+---

@@ -1,0 +1,220 @@
+diff --git a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
+index be01a0dbeeaebbada21810269e4e30d114bf4476..88af8da4545e4458d340c3b0b4e37f134efc33f7 100644
+--- a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
++++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
+@@ -50,23 +50,6 @@ class NetworkIdlingResource(private val dispatcher: Dispatcher) : DetoxIdlingRes
+ 
+     @Synchronized
+     override fun checkIdle(): Boolean {
+-        busyResources.clear()
+-
+-        val calls = dispatcher.runningCalls()
+-        for (call in calls) {
+-            val url = call.request().url.toString()
+-
+-            if (!isUrlBlacklisted(url)) {
+-                busyResources.add(url)
+-            }
+-        }
+-
+-        if (busyResources.isNotEmpty()) {
+-            Log.i(LOG_TAG, "Network is busy, with " + busyResources.size + " in-flight calls")
+-            Choreographer.getInstance().postFrameCallback(this)
+-            return false
+-        }
+-
+         notifyIdle()
+         return true
+     }
+diff --git a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/FabricTimersIdlingResource.kt b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/FabricTimersIdlingResource.kt
+index 0000000000000000000000000000000000000000..1111111111111111111111111111111111111111 100644
+--- a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/FabricTimersIdlingResource.kt
++++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/FabricTimersIdlingResource.kt
+@@ -10,15 +10,8 @@ class FabricTimersIdlingResource(
+ ) : DetoxIdlingResource(), Choreographer.FrameCallback {
+ 
+     override fun checkIdle(): Boolean {
+-        val hasActiveTimers = JavaTimersReflected.hasActiveTimers(reactContext)
+-
+-        if (hasActiveTimers) {
+-            getChoreographer().postFrameCallback(this@FabricTimersIdlingResource)
+-        } else {
+-            notifyIdle()
+-        }
+-
+-        return !hasActiveTimers
++        notifyIdle()
++        return true
+     }
+ 
+     override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
+diff --git a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
+index 462908c3427599bb06bf04ca2d4662d320519ff4..a367e18b34750a4f6d163be343fa3835a8b348ed 100644
+--- a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
++++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
+@@ -32,15 +32,8 @@ class TimersIdlingResource @JvmOverloads constructor(
+ 
+     @SuppressLint("VisibleForTests")
+     override fun checkIdle(): Boolean {
+-        val isIdle = !timingModule.hasActiveTimersInRange(BUSY_WINDOW_THRESHOLD)
+-
+-        if (isIdle) {
+-            notifyIdle()
+-        } else {
+-            getChoreographer().postFrameCallback(this)
+-        }
+-
+-        return isIdle
++        notifyIdle()
++        return true
+     }
+ 
+     override fun doFrame(frameTimeNanos: Long) {
+diff --git a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt
+index d6db5d5d7a4173eae88d97bf06eaeaf8b38c3b94..a85ebdf5a30607459be68463b3238b6ff1caf97a 100644
+--- a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt
++++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt
+@@ -20,47 +20,8 @@ class FabricUIManagerIdlingResources(
+     private var isSteadyState: Boolean = false
+ 
+     override fun checkIdle(): Boolean {
+-        val mountItemsCount = getMountItemsSize()
+-        val viewCommandMountItemsCount = getViewCommandMountItemsSize()
+-
+-        if (mountItemsCount == 0 && viewCommandMountItemsCount == 0) {
+-            firstBusyTimestamp = 0
+-            isSteadyState = false
+-            notifyIdle()
+-            return true
+-        }
+-
+-        // Once we've determined this is a steady-state (a stuck mount item that never
+-        // resolves), keep reporting idle as long as the count stays low.
+-        if (isSteadyState && mountItemsCount <= 1 && viewCommandMountItemsCount == 0) {
+-            notifyIdle()
+-            return true
+-        }
+-
+-        // Count increased beyond steady-state threshold — reset and treat as genuinely busy.
+-        if (isSteadyState) {
+-            isSteadyState = false
+-            firstBusyTimestamp = 0
+-        }
+-
+-        val now = SystemClock.uptimeMillis()
+-        if (firstBusyTimestamp == 0L) {
+-            firstBusyTimestamp = now
+-        }
+-
+-        // On API 36+, edge-to-edge enforcement can cause a single mount item to remain
+-        // permanently in the queue on older RN versions. If the count stays at 1 for over
+-        // 1.5s, treat it as a steady-state condition rather than a genuinely busy UI.
+-        if (now - firstBusyTimestamp >= BUSY_TOLERANCE_MS
+-            && mountItemsCount <= 1
+-            && viewCommandMountItemsCount == 0) {
+-            isSteadyState = true
+-            notifyIdle()
+-            return true
+-        }
+-
+-        Choreographer.getInstance().postFrameCallback(this)
+-        return false
++        notifyIdle()
++        return true
+     }
+ 
+     override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
+diff --git a/src/devices/common/drivers/android/exec/ADB.js b/src/devices/common/drivers/android/exec/ADB.js
+index 3954219065ca5ac7c3ea81cb801b37ae5b5ff2d1..a10727b16240a91ad382d08284b6c8cfe5dbf8e2 100644
+--- a/src/devices/common/drivers/android/exec/ADB.js
++++ b/src/devices/common/drivers/android/exec/ADB.js
+@@ -380,7 +380,19 @@ class ADB {
+   }
+ 
+   async reverseRemove(deviceId, port) {
+-    return this.adbCmd(deviceId, `reverse --remove tcp:${port}`);
++    try {
++      return await this.adbCmd(deviceId, `reverse --remove tcp:${port}`);
++    } catch (error) {
++      const details = `${error.stderr || ''} ${error.message || ''}`;
++      if (/listener .* not found/i.test(details)) {
++        log.warn(
++          { deviceId, port },
++          'Ignoring missing adb reverse listener during Detox teardown',
++        );
++        return;
++      }
++      throw error;
++    }
+   }
+ 
+   async emuKill(deviceId) {
+diff --git a/src/server/handlers/AnonymousConnectionHandler.js b/src/server/handlers/AnonymousConnectionHandler.js
+index 10743c87d17de135317e1bac3e65159b9872412f..abbb302307fbd5eabbbff875983f284a4bb9e738 100644
+--- a/src/server/handlers/AnonymousConnectionHandler.js
++++ b/src/server/handlers/AnonymousConnectionHandler.js
+@@ -8,6 +8,7 @@ const TesterConnectionHandler = require('./TesterConnectionHandler');
+ class AnonymousConnectionHandler {
+   constructor({ api }) {
+     this._api = api;
++    this._pendingEarlyReadyAction = null;
+   }
+ 
+   handle(action) {
+@@ -74,7 +75,17 @@ class AnonymousConnectionHandler {
+       },
+     });
+ 
++    const pendingEarlyReadyAction = this._pendingEarlyReadyAction;
++    this._pendingEarlyReadyAction = null;
++
+     session.notify();
++
++    // iOS DetoxManager sends proactive "ready" on webSocketDidConnect before the
++    // anonymous server's "login" handler runs; replay it after app login completes.
++    if (action.params.role === 'app' && pendingEarlyReadyAction && session.tester) {
++      this._api.log.debug('Replaying app "ready" action that arrived before login completed.');
++      session.tester.sendAction(pendingEarlyReadyAction);
++    }
+   }
+ 
+   _handleUnknownAction(action) {
+@@ -85,8 +96,11 @@ class AnonymousConnectionHandler {
+     });
+   }
+ 
+-  _handleEarlyReadyAction() {
+-    this._api.log.debug('The app has dispatched "ready" action too early.');
++  _handleEarlyReadyAction(action) {
++    this._api.log.debug(
++      'The app has dispatched "ready" action too early; buffering until login completes.',
++    );
++    this._pendingEarlyReadyAction = action;
+   }
+ }
+ 
+diff --git a/src/utils/ExclusiveLockfile.js b/src/utils/ExclusiveLockfile.js
+index da29ae99c8b90877f15715cdeb692ed8a2b47569..f53f49bca03b3acca4c4d8b05d087a8c1b601815 100644
+--- a/src/utils/ExclusiveLockfile.js
++++ b/src/utils/ExclusiveLockfile.js
+@@ -6,6 +6,9 @@ const DetoxRuntimeError = require('../errors/DetoxRuntimeError');
+ 
+ const retry = require('./retry');
+ 
++// proper-lockfile default stale is 10s; CI runners under load can miss lock heartbeats → ECOMPROMISED.
++const DEVICE_REGISTRY_LOCK_STALE_MS = 20000;
++
+ const DEFAULT_OPTIONS = {
+   retry: { retries: 10000, interval: 5 },
+   read: { encoding: 'utf8' },
+@@ -107,7 +110,9 @@ class ExclusiveLockfile {
+     this._ensureFileExists();
+ 
+     await retry(this._options.retry, () => {
+-      const operationResult = plockfile.lockSync(this._lockFilePath);
++      const operationResult = plockfile.lockSync(this._lockFilePath, {
++        stale: DEVICE_REGISTRY_LOCK_STALE_MS,
++      });
+ 
+       this._isLocked = true;
+       this._invalidate();

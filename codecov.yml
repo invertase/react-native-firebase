@@ -1,4 +1,13 @@
 codecov:
+  # Coverage artifacts are generated in CI and never committed. The default
+  # 12h max_report_age guard (against checked-in stale reports) is therefore
+  # unnecessary. Keep it off so Codecov still accepts old-but-valid Gradle
+  # build-cache hits: when Android unit-test inputs are unchanged, Gradle
+  # restores Jacoco *.exec (and thus sessioninfo timestamps) from cache
+  # instead of re-running tests; content still matches current sources, and
+  # Gradle will re-run when those inputs change.
+  # https://docs.codecov.com/docs/codecov-yaml#section-expired-reports
+  max_report_age: off
   notify:
     require_ci_to_pass: true
 
@@ -14,7 +23,27 @@ coverage:
     changes: no
 
 comment:
-  layout: 'header, diff'
+  layout: 'header, diff, flags'
   behavior: default
   require_changes: false
   after_n_builds: 3
+
+# Native upload gates. Flag names must match codecov-action `flags:` in CI workflows
+# (see okf-bundle/testing/coverage-design.md).
+flag_management:
+  individual_flags:
+    - name: ios-native
+      carryforward: false
+      statuses:
+        - type: project
+          target: 1%
+          threshold: 0%
+          informational: false
+
+    - name: android-native
+      carryforward: false
+      statuses:
+        - type: project
+          target: 1%
+          threshold: 0%
+          informational: false

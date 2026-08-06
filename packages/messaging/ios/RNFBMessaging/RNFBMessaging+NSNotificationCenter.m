@@ -14,9 +14,18 @@
  * limitations under the License.
  *
  */
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
+#import <FirebaseCore/FirebaseCore.h>
+#import <FirebaseMessaging/FirebaseMessaging.h>
+#else
+@import FirebaseCore;
+@import FirebaseMessaging;
+#endif
 #import <RNFBApp/RNFBJSON.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTConvert.h>
 #import <React/RCTRootView.h>
 
@@ -87,12 +96,18 @@
         (RCTRootView *)[UIApplication sharedApplication].delegate.window.rootViewController.view;
   }
 
-  // #if !(TARGET_IPHONE_SIMULATOR)
   if ([[RNFBJSON shared] getBooleanValue:@"messaging_ios_auto_register_for_remote_messages"
                             defaultValue:YES]) {
+#if TARGET_IPHONE_SIMULATOR && TARGET_CPU_ARM64
+    // Intentional: do not call UIKit registerForRemoteNotifications on ARM64 Simulator —
+    // it can wedge the main thread indefinitely. Physical devices and Intel Simulator still
+    // poke UIKit. See okf-bundle/packages/messaging/ios-apns-simulator-registration.md.
+    DLog(@"RNFBMessaging auto-register - ARM64 Simulator detected, "
+         @"skipping UIKit registerForRemoteNotifications.");
+#else
     [[UIApplication sharedApplication] registerForRemoteNotifications];
+#endif
   }
-  // #endif
 
   if (notification.userInfo[UIApplicationLaunchOptionsRemoteNotificationKey]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
@@ -108,7 +123,6 @@
         }
       }
 
-      // #if !(TARGET_IPHONE_SIMULATOR)
       // When an app launches in the background (BG mode) and is launched with the notification
       // launch option the app delegate method
       // application:didReceiveRemoteNotification:fetchCompletionHandler: will not get called unless
@@ -117,8 +131,12 @@
       // resulting in the app being terminated. called irregardless of
       // `messaging_ios_auto_register_for_remote_messages` as this is most likely an app launching
       // as a result of a remote notification - so has been registered previously
+#if TARGET_IPHONE_SIMULATOR && TARGET_CPU_ARM64
+      DLog(@"RNFBMessaging background launch register - ARM64 Simulator detected, "
+           @"skipping UIKit registerForRemoteNotifications.");
+#else
       [[UIApplication sharedApplication] registerForRemoteNotifications];
-      // #endif
+#endif
     } else {
       isHeadless = NO;
       if (rctRootView != nil) {

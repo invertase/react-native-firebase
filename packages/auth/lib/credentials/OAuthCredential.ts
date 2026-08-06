@@ -1,0 +1,160 @@
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+import { AuthCredential, parseCredentialJSON } from './AuthCredential';
+import type { AppleFullPersonName } from '../types/auth';
+
+type OAuthCredentialJSON = {
+  providerId?: string;
+  signInMethod?: string;
+  idToken?: string;
+  accessToken?: string;
+  rawNonce?: string;
+  nonce?: string;
+  secret?: string;
+  fullName?: AppleFullPersonName;
+};
+
+type OAuthCredentialParams = {
+  idToken?: string;
+  accessToken?: string;
+  rawNonce?: string;
+  secret?: string;
+  /** @remarks Sign in with Apple only; see {@link OAuthCredentialOptions.fullName}. */
+  fullName?: AppleFullPersonName;
+  /** @internal RNFB native bridge token slot override */
+  bridgeToken?: string;
+  /** @internal RNFB native bridge secret slot override */
+  bridgeSecret?: string;
+};
+
+const appleProviderId = 'apple.com';
+const appleFullPersonNameKeys = [
+  'namePrefix',
+  'givenName',
+  'middleName',
+  'familyName',
+  'nameSuffix',
+  'nickname',
+] as const;
+
+export function hasAppleFullPersonName(
+  fullName?: AppleFullPersonName | null,
+): fullName is AppleFullPersonName {
+  return (
+    !!fullName &&
+    appleFullPersonNameKeys.some(key => {
+      const value = fullName[key];
+      return typeof value === 'string' && value.trim().length > 0;
+    })
+  );
+}
+
+function resolveAppleFullPersonName(
+  providerId: string,
+  fullName?: AppleFullPersonName,
+): AppleFullPersonName | undefined {
+  if (providerId.toLowerCase() !== appleProviderId || !hasAppleFullPersonName(fullName)) {
+    return undefined;
+  }
+
+  return fullName;
+}
+
+function resolveOAuthBridgeFields(params: OAuthCredentialParams): {
+  token: string;
+  secret: string;
+} {
+  if (params.bridgeToken !== undefined || params.bridgeSecret !== undefined) {
+    return {
+      token: params.bridgeToken ?? '',
+      secret: params.bridgeSecret ?? '',
+    };
+  }
+
+  if (params.idToken) {
+    return {
+      token: params.idToken,
+      secret: params.rawNonce ?? params.secret ?? params.accessToken ?? '',
+    };
+  }
+
+  if (params.accessToken) {
+    // OAuthProvider access-token-only credentials use the secret bridge slot.
+    return {
+      token: '',
+      secret: params.accessToken,
+    };
+  }
+
+  return {
+    token: params.secret ?? '',
+    secret: params.rawNonce ?? '',
+  };
+}
+
+export class OAuthCredential extends AuthCredential {
+  readonly idToken?: string;
+  readonly accessToken?: string;
+  /** @remarks Used for Sign in with Apple and Facebook limited-login flows. OAuth 1.0 token secrets (e.g. Twitter) use the inherited AuthCredential secret bridge field instead. */
+  readonly rawNonce?: string;
+  /** @remarks Sign in with Apple only; see {@link OAuthCredentialOptions.fullName}. */
+  readonly fullName?: AppleFullPersonName;
+
+  constructor(providerId: string, params: OAuthCredentialParams) {
+    const bridge = resolveOAuthBridgeFields(params);
+    super(providerId, providerId, bridge.token, bridge.secret);
+    this.idToken = params.idToken;
+    this.accessToken = params.accessToken;
+    this.rawNonce = params.rawNonce;
+    this.fullName = resolveAppleFullPersonName(providerId, params.fullName);
+  }
+
+  toJSON(): object {
+    const json: Record<string, unknown> = {
+      providerId: this.providerId,
+      signInMethod: this.signInMethod,
+      idToken: this.idToken,
+      accessToken: this.accessToken,
+      rawNonce: this.rawNonce,
+      nonce: this.rawNonce,
+    };
+    // Twitter (and similar) store the token secret in the native bridge secret slot, not rawNonce.
+    if (this.secret && !this.rawNonce) {
+      json.secret = this.secret;
+    }
+    if (this.fullName) {
+      json.fullName = this.fullName;
+    }
+    return json;
+  }
+
+  static fromJSON(json: object | string): OAuthCredential | null {
+    const parsed = parseCredentialJSON(json) as OAuthCredentialJSON | null;
+    if (!parsed || typeof parsed.providerId !== 'string') {
+      return null;
+    }
+
+    return new OAuthCredential(parsed.providerId, {
+      idToken: parsed.idToken,
+      accessToken: parsed.accessToken,
+      rawNonce: parsed.rawNonce ?? parsed.nonce,
+      secret: parsed.secret,
+      fullName: parsed.fullName,
+    });
+  }
+}

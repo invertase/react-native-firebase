@@ -14,12 +14,17 @@ Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$Fireba
 # Everything will be static with `use_frameworks!`, but you can set it manually for testing if desired
 # $RNFirebaseAsStaticFramework = true # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
 
+# SPM mode: SPM dependency resolution enabled (no $RNFirebaseDisableSPM flag)
+# Works with dynamic linkage. For static linkage, set $RNFirebaseDisableSPM = true
+
 # Toggle this to true for the no-ad-tracking Analytics subspec. Useful at minimum for Kids category apps.
 # See: https://firebase.google.com/support/release-notes/ios#analytics - requires firebase-ios-sdk 7.11.0+
 #$RNFirebaseAnalyticsWithoutAdIdSupport = true # toggle this to true for the no-ad-tracking Analytics subspec
 
 # Toggle this to true if you want to include support for on device conversion measurement APIs
-$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
+# Supported in both modes; SPM resolves Google's standalone
+# google-ads-on-device-conversion-ios-sdk package.
+# $RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
 
 # Toggle this to true if you want to include optional support for extended analytics features
 $RNFirebaseAnalyticsEnableAdSupport = true
@@ -41,7 +46,7 @@ platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
 # set this to static and toggle '$RNFirebaseAsStaticFramework' above to test static frameworks)
-linkage = 'static' # ENV['USE_FRAMEWORKS']
+linkage = 'dynamic' # SPM test: dynamic linkage avoids duplicate symbols
 if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
   use_frameworks! :linkage => linkage.to_sym
@@ -59,8 +64,17 @@ target 'testing' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  # Use pre-compiled firestore frameworks to optimize compile time.
-  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
+  # Use pre-compiled firestore frameworks to optimize compile time -- CocoaPods-only mode only.
+  # Under SPM (the default -- see packages/app/firebase_spm.rb), Firebase's own SPM package
+  # already ships precompiled binaries for the compile-time-heavy parts of Firestore
+  # (FirebaseFirestoreBinary, the GRPC/Abseil binaries, etc.), so this pod is unneeded there,
+  # and mixing it in would additionally pull in its own CocoaPods copies of
+  # FirebaseCore/FirebaseCoreExtension/FirebaseCoreInternal/FirebaseSharedSwift alongside the
+  # SPM-resolved copies of those same frameworks -- which made Xcode's Archive action fail with
+  # "Multiple commands produce '.../FirebaseCore.framework'".
+  if rnfirebase_spm_disabled?
+    pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
+  end
 
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
@@ -71,12 +85,45 @@ target 'testing' do
       # :ccache_enabled => true
     )
 
+    # No explicit call needed here: when Firebase is resolved via SPM (see
+    # packages/app/firebase_spm.rb), requiring this Podfile's dependencies
+    # already hooked CocoaPods to embed Firebase's SPM-built dynamic
+    # frameworks into the app bundle automatically. Without it, apps using
+    # SPM+dynamic linkage would crash at launch with a missing-library dyld
+    # error.
+
+    apply_ios_native_coverage = lambda do |build_settings, link_profile:|
+      build_settings['CLANG_ENABLE_CODE_COVERAGE'] = 'YES'
+      build_settings['OTHER_CFLAGS'] = '$(inherited) -fprofile-instr-generate -fcoverage-mapping'
+      build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -profile-generate -profile-coverage-mapping'
+      if link_profile
+        # DT_TOOLCHAIN_DIR (not TOOLCHAIN_DIR) resolves in workspace OTHER_LDFLAGS on CI.
+        # Explicit -l flags satisfy Firebase static Swift pod autolink when clang/ccache links.
+        # -Wl,-u forces __llvm_profile_set_filename out of clang_rt.profile so dynamic RNFB
+        # frameworks can be pointed at coverage-%m.profraw (otherwise it is dead-stripped and
+        # per-image flush returns -1 / Filename not set).
+        build_settings['OTHER_LDFLAGS'] = [
+          '$(inherited)',
+          '-fprofile-instr-generate',
+          '-Wl,-u,___llvm_profile_set_filename',
+          '-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)',
+          '-L$(SDKROOT)/usr/lib/swift',
+          '-lswiftCompatibility56',
+          '-lswiftCompatibilityPacks',
+        ].join(' ')
+      end
+    end
+
     installer.aggregate_targets.each do |aggregate_target|
       aggregate_target.user_project.native_targets.each do |target|
         target.build_configurations.each do |config|
           # Arch selection is needed to work across M1/Intel macs, became necessary when App Check was added
           config.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
           config.build_settings['EXCLUDED_ARCHS'] = 'i386'
+          # LLVM coverage for e2e native export (see okf-bundle/testing/coverage-design.md)
+          apply_ios_native_coverage.call(config.build_settings, link_profile: true)
+          # `-ObjC` and `SWIFT_ENABLE_EXPLICIT_MODULES = 'NO'` are applied automatically
+          # for SPM builds by `rnfirebase_apply_spm_build_settings` (see packages/app/firebase_spm.rb)
         end
       end
       aggregate_target.user_project.save
@@ -93,10 +140,23 @@ target 'testing' do
     end
 
     # Bumps minimum deploy target to ours (which is >12.4): https://github.com/facebook/react-native/issues/34106
+    # `SWIFT_ENABLE_EXPLICIT_MODULES = 'NO'` is applied automatically for SPM builds
+    # by `rnfirebase_apply_spm_build_settings` (see packages/app/firebase_spm.rb)
+    #
+    # Under static linkage, RNFB object code merges into the app binary — compile-only
+    # instrumentation is enough (app flush dumps packages/). Under dynamic linkage
+    # (SPM e2e default), each RNFB*.framework keeps its own counters/runtime and must
+    # link the profile runtime so flush can dlsym+write per image (%m profraw).
+    # Never add profile link flags to third-party / Firebase pods — that breaks
+    # swiftCompatibility56 on CI.
+    rnfb_link_profile = (linkage.to_s == 'dynamic')
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         config.build_settings["GCC_WARN_INHIBIT_ALL_WARNINGS"] = "YES"
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+        if target.name.include?('RNFB')
+          apply_ios_native_coverage.call(config.build_settings, link_profile: rnfb_link_profile)
+        end
       end
     end
   end

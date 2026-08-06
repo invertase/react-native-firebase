@@ -131,7 +131,7 @@ describe('LiveGenerativeModel', function () {
     const model = new LiveGenerativeModel(
       fakeAI,
       {
-        model: 'gemini-pro',
+        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         generationConfig: { temperature: 0.8 },
         systemInstruction: { role: 'system', parts: [{ text: 'Be a pirate' }] },
       },
@@ -153,7 +153,7 @@ describe('LiveGenerativeModel', function () {
     const model = new LiveGenerativeModel(
       fakeAI,
       {
-        model: 'gemini-pro',
+        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         generationConfig: {
           temperature: 0.8,
           inputAudioTranscription: {},
@@ -175,6 +175,30 @@ describe('LiveGenerativeModel', function () {
     expect(sentData.setup.inputAudioTranscription).toEqual({});
     expect(sentData.setup.outputAudioTranscription).toEqual({});
     expect(sentData.setup.systemInstruction.parts[0].text).toBe('Be a pirate');
+    mockHandler.simulateServerMessage({ setupComplete: true });
+    await connectPromise;
+  });
+
+  it('connect() should hoist contextWindowCompression and sessionResumption to setup', async function () {
+    const model = new LiveGenerativeModel(
+      fakeAI,
+      {
+        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
+        generationConfig: {
+          temperature: 0.8,
+          contextWindowCompression: { triggerTokens: 1000 },
+        },
+      },
+      mockHandler,
+    );
+    const connectPromise = model.connect({ handle: 'previous-handle' });
+
+    await jest.runAllTimersAsync();
+
+    const sentData = JSON.parse((mockHandler.send as jest.Mock).mock.calls[0]![0] as string);
+    expect(sentData.setup.generationConfig).toEqual({ temperature: 0.8 });
+    expect(sentData.setup.contextWindowCompression).toEqual({ triggerTokens: 1000 });
+    expect(sentData.setup.sessionResumption).toEqual({ handle: 'previous-handle' });
     mockHandler.simulateServerMessage({ setupComplete: true });
     await connectPromise;
   });

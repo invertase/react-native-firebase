@@ -1,0 +1,838 @@
+---
+title: Migrating to v26
+description: Migrate to React Native Firebase v26 — namespaced API removal.
+previous: /migrating-to-v25
+next: /typescript
+---
+
+Version 26 removes the deprecated **namespaced** JavaScript API from selected packages. Each migrated package is **modular-only**: use `getX(app?)` and root-level helper functions from the package entry point. Namespaced default exports, `firebase.<module>()`, and `Firebase*Types` namespaces are removed from those packages.
+
+If you are upgrading from v24 or earlier, complete [Migrating to v25](/migrating-to-v25) first — v25 TypeScript alignment changes still apply.
+
+## Table of contents
+
+- [New Architecture requirement](/migrating-to-v26#new-architecture-requirement)
+- [Platform behavior differences](/migrating-to-v26#platform-behavior-differences)
+- [firebase-js-sdk API parity improvements](/migrating-to-v26#firebase-js-sdk-api-parity-improvements)
+- [General pattern](/migrating-to-v26#general-pattern)
+- [App](/migrating-to-v26#app)
+- [Machine Learning (ML)](/migrating-to-v26#machine-learning-ml)
+- [In-App Messaging](/migrating-to-v26#in-app-messaging)
+- [Installations](/migrating-to-v26#installations)
+- [Cloud Messaging](/migrating-to-v26#cloud-messaging)
+  - [iOS APNs registration (ARM64 Simulator + new Promise rejections)](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections)
+- [App Distribution](/migrating-to-v26#app-distribution)
+- [Cloud Functions](/migrating-to-v26#cloud-functions)
+- [Performance Monitoring](/migrating-to-v26#performance-monitoring)
+- [App Check](/migrating-to-v26#app-check)
+- [Analytics](/migrating-to-v26#analytics)
+- [Remote Config](/migrating-to-v26#remote-config)
+- [Crashlytics](/migrating-to-v26#crashlytics)
+- [Realtime Database](/migrating-to-v26#realtime-database)
+- [Cloud Storage](/migrating-to-v26#cloud-storage)
+- [Authentication](/migrating-to-v26#authentication)
+- [Cloud Firestore](/migrating-to-v26#cloud-firestore)
+- [Automated migration checklist](/migrating-to-v26#automated-migration-checklist)
+
+## New Architecture requirement
+
+From v26 onward, **every React Native Firebase package with a native bridge** is implemented as a **Codegen TurboModule** and **requires React Native's New Architecture**. The legacy bridge modules were removed in the coordinated v26 break.
+
+If you cannot enable New Architecture yet, **stay on v25** (or v23 if you still depend on legacy-architecture Cloud Functions — see below).
+
+### Exceptions (no New Architecture requirement)
+
+| Package                           | Why                                                                                  |
+| --------------------------------- | ------------------------------------------------------------------------------------ |
+| `@react-native-firebase/ai`       | Pure JavaScript — uses the firebase-js-sdk web interop layer; no native TurboModule. |
+| `@react-native-firebase/vertexai` | Pure JavaScript — same as `ai`; deprecated in favor of `@react-native-firebase/ai`.  |
+
+### Cloud Functions (already required since v24)
+
+`@react-native-firebase/functions` has required New Architecture **since v24** ([Migrating to v24 — Cloud Functions](/migrating-to-v24#cloud-functions)). v26 extends the same requirement to all remaining native modules.
+
+### Enable New Architecture
+
+**React Native CLI (Android)** — set in `android/gradle.properties`:
+
+```properties
+newArchEnabled=true
+```
+
+**React Native CLI (iOS)** — New Architecture is enabled when `RCT_NEW_ARCH_ENABLED=1` during `pod install` (React Native sets this from `newArchEnabled` on recent templates). Follow the [React Native New Architecture guide](https://reactnative.dev/docs/the-new-architecture/landing-page) for your RN version.
+
+**Expo** — enable in your app config (Expo SDK 52+):
+
+```json
+{
+  "expo": {
+    "newArchEnabled": true
+  }
+}
+```
+
+Rebuild native projects after changing this (`pod install`, clean Android build).
+
+### If New Architecture is disabled
+
+Native builds fail early with explicit guards:
+
+- **Android:** Gradle scripts print `New Architecture support is required for @react-native-firebase/<package>` and fail the build.
+- **iOS:** `pod install` fails with `<PodName> requires New Architecture. Enable New Architecture to use this module`.
+
+### Platform behavior differences
+
+When migrating from firebase-js-sdk web examples, watch for these high-impact runtime divergences:
+
+{/* prettier-ignore */}
+| Area | firebase-js-sdk (web) | React Native Firebase |
+| --- | --- | --- |
+| **Auth** | Browser persistence, redirects, reCAPTCHA, `revokeAccessToken`, `useDeviceLanguage`, `linkWithPhoneNumber` / `reauthenticateWithPhoneNumber` | Native iOS/Android SDKs manage persistence. Several web-only helpers **throw synchronously** on React Native (`setPersistence`, `getRedirectResult`, `revokeAccessToken`, `useDeviceLanguage`, `linkWithPhoneNumber`, `reauthenticateWithPhoneNumber`). Use native provider flows instead. |
+| **Analytics** | Cross-platform modular API | On-device conversion measurement helpers (`initiateOnDeviceConversionMeasurement*`) are **iOS only**; on Android and web the JS layer resolves without calling native (no-op). `logTransaction` (verified iOS in-app purchase events) is **iOS only** and **rejects** on other platforms. |
+| **Realtime Database** | `goOnline` / `goOffline` are synchronous; web transport toggles | `goOnline` / `goOffline` are **synchronous** through TurboModules, matching firebase-js-sdk. `getServerTime`, `setPersistenceEnabled`, and `setPersistenceCacheSizeBytes` are RN-specific. `forceLongPolling` / `forceWebSockets` **throw** — transport is native-controlled. |
+| **Phone Number Verification** | N/A (Android SDK only) | **Android only** — all entry points throw on iOS and Web. |
+| **Cloud Storage** | `uploadBytes` / `uploadString` from JS blobs; upload task controls return sync `boolean` | `putFile` and `writeToFile` are **native-only** file-path APIs. `UploadTask.pause()` / `.resume()` / `.cancel()` also return sync `boolean` values through native TurboModules. |
+| **Cloud Messaging** | Web push / service-worker surface | FCM token lifecycle, permissions, background handlers, and **APNs token APIs are iOS only**. Event delivery still uses the legacy native event proxy during the TurboModule migration; behavior matches pre-v26 releases but will change when Codegen events land in a future release. |
+| **Remote Config** | `reset()` clears server and local state | `reset()` is **Android only** — iOS does not clear activated, fetched, or default Remote Config values. `setDefaultsFromResource` loads from native resource files (`.plist` / XML). |
+| **Performance** | `initializePerformance` returns synchronously; trace `start`/`stop` are sync | `initializePerformance` is **synchronous** on RN (applies settings to the native instance). Trace, HTTP metric, and screen trace `start`/`stop` are **synchronous** through TurboModules, matching firebase-js-sdk. |
+| **Firestore** | IndexedDB persistence, `memoryLocalCache`, `persistentLocalCache`, FieldValue `maximum()` / `minimum()` sentinels | Local cache factories and IndexedDB APIs are **web only**. Persistence is controlled by the native Firestore SDK. `initializeFirestore` returns **`Firestore` synchronously**. FieldValue `maximum()` / `minimum()` are not exported yet because iOS SDK 12.15.0 lacks matching native factories. |
+| **App Check** | reCAPTCHA version 3 / Enterprise web providers | Use `ReactNativeFirebaseAppCheckProvider` for Device Check, App Attest, Play Integrity, etc. Web reCAPTCHA provider classes have **no RN equivalent**. |
+| **RN-native-only modules** | No web SDK | `crashlytics`, `in-app-messaging`, `app-distribution`, and `ml` are **React Native only** — no firebase-js-sdk modular surface. |
+
+Per-package notes also appear in each module's [usage](/) page under **Platform support**.
+
+## firebase-js-sdk API parity improvements
+
+v26 aligns React Native Firebase modular types and several runtime signatures with **firebase-js-sdk** where TurboModules removed bridge-forced `Promise` wrappers. Use this section when porting web SDK examples or when scripted upgrades hit TypeScript or runtime errors.
+
+**Migration rule:** If a method below is **sync**, remove `await` and any `.then()` / `.catch()` chain on its return value — sync APIs return `void` or a value directly; calling `.then()` on `void` throws at runtime.
+
+### Synchronous APIs enabled by TurboModules
+
+{/* prettier-ignore */}
+| Method | Before (pre-v26 / legacy bridge) | After (v26) | Notes |
+| ------ | -------------------------------- | ----------- | ----- |
+| `registerVersion(library, version, variant?)` | `Promise<void>` (web) | `void` — throws on RN | Web-only on RN; remove `await` if copied from web samples |
+| `isSignInWithEmailLink(auth, emailLink)` | `Promise<boolean>` | `boolean` | Remove `await` |
+| `TotpSecret.generateQrCodeUrl(accountName?, issuer?)` | `Promise<string>` | `string` | Remove `await`; omitted args default from current user / app name |
+| `trace(…).start()` / `.stop()` | `Promise<null>` | `void` | Remove `await` on perf trace lifecycle |
+| `httpMetric(…).start()` / `.stop()` | `Promise<null>` | `void` | Same as traces |
+| `ScreenTrace.start()` / `.stop()` | `Promise<null>` | `void` | Same as traces |
+| `startScreenTrace(performance, screenName)` | `Promise<ScreenTrace>` | `ScreenTrace` | Remove `await` |
+| `goOnline(db)` / `goOffline(db)` | `Promise<void>` | `void` | Remove `await` |
+| `UploadTask.pause()` / `.resume()` / `.cancel()` | `Promise<boolean>` | `boolean` | Remove `await`; use the returned boolean directly |
+
+### Type parity improvements
+
+{/* prettier-ignore */}
+| Export / method | Before | After | Notes |
+| --------------- | ------ | ----- | ----- |
+| `onSnapshotsInSync(firestore, observer)` | `next?: () => void`; `error?: Error` | `next?: (value: void) => void`; `error?: FirestoreError` | Callback overload `onSnapshotsInSync(firestore, () => {})` unchanged |
+| `uploadBytes(ref, data, metadata?)` | Return type `TaskResult` | `UploadResult` | Alias rename only |
+| `uploadBytesResumable(ref, data, metadata?)` | Return type `Task` | `UploadTask` | Alias rename only |
+| Storage / Remote Config error callbacks | `NativeFirebaseError` | `FirebaseError` / `StorageError` | `NativeFirebaseError` remains assignable to `FirebaseError` |
+| `AppCheckTokenListener` | Not exported | Exported type alias | Matches firebase-js-sdk observer typing |
+| `FunctionsError`, `FunctionsErrorCodeCore` | Missing or misaligned | Exported / aligned | Registry + compare-types config |
+| `firestore/pipelines` (`StageOptions`, `TimeGranularity`, `isType`, …) | Declaration drift | Aligned to SDK `.d.ts` | Type-only; no call-shape change |
+
+### Synchronous modular return values
+
+{/* prettier-ignore */}
+| Method | Before | After | Notes |
+| ------ | ------ | ----- | ----- |
+| `logEvent(analytics, …)` | `Promise<void>` | `void` | Fire-and-forget; remove `await` / `.then()` |
+| `initializeAppCheck(app?, options?)` | `Promise<AppCheck>` | `AppCheck` | Returns handle immediately; provider setup continues natively |
+| `initializeFirestore(app, settings, databaseId?)` | `Promise<Firestore>` | `Firestore` | Returns instance immediately; `settings()` runs on native bridge |
+| `getRemoteConfig(app?, options?)` | `(app?)` only | `(app?, options?: RemoteConfigOptions)` | `options` accepted for parity; no-op on native |
+| `aggregateFieldEqual()` | Not exported | Exported | Aggregate query helper |
+| `LastFetchStatus` literals | — | — | **Unchanged** — native still uses `no_fetch_yet` / `throttled` (documented drift) |
+
+### Firestore parity additions
+
+{/* prettier-ignore */}
+| Export / method | Before | After | Notes |
+| --------------- | ------ | ----- | ----- |
+| `TransactionOptions` | Not exported | Exported | Type for transaction retry options |
+| `runTransaction(firestore, updateFunction, options?)` | No options argument | Accepts `options?: TransactionOptions` | `{ maxAttempts?: number }` on native iOS and Android; omitted options use the SDK default of **5** retries; explicit values **&lt; 1** throw `Max attempts must be at least 1` (firebase-js-sdk parity) |
+| `aggregateQuerySnapshotEqual()` | Not exported | Exported | Aggregate query snapshot equality helper, alongside `aggregateFieldEqual()` |
+| `maximum(n)` / `minimum(n)` FieldValue sentinels | Exported by firebase-js-sdk 12.15.0 | Not exported by RNFB yet | Android SDK 34.15.0 has native factories, but iOS Firebase Firestore SDK 12.15.0 does not; RNFB waits for cross-platform parity |
+
+### Observer and Promise pitfalls
+
+{/* prettier-ignore */}
+| Pitfall | Symptom | Fix |
+| ------- | ------- | --- |
+| `.then()` on sync API | `TypeError: … .then is not a function` | Use direct call: `logEvent(…)` not `logEvent(…).then(…)` |
+| `await` on sync API | Unnecessary microtask delay; misleading types in strict TS | Drop `await` where the table above marks the API sync |
+| `onConfigUpdate(remoteConfig, observer)` | Runtime throw: observer must include **both** `next` and `error` functions | Pass `{ next: (update) => {…}, error: (err) => {…} }` — do not omit `error` |
+| `onSnapshotsInSync` observer form | Type error on `error` callback | Type `error` as `(error: FirestoreError) => void`, or use the `() => void` callback overload |
+| `runTransaction(..., { maxAttempts: 0 })` or negative | Runtime throw: `Max attempts must be at least 1` | Omit `options` for the default **5** attempts, or pass `maxAttempts: 1` or higher |
+
+## General pattern
+
+For each package listed in this guide:
+
+1. Remove default export / `firebase.<module>()` usage — import modular helpers from the package root.
+2. Replace `Firebase*Types` namespace imports with root types (`InAppMessaging`, `Installations`, `FirebaseML`, etc.).
+3. Prefer free functions (`getId(installations)`, `setMessagesDisplaySuppressed(inAppMessaging, enabled)`) over instance methods on service objects.
+
+**Modular-only in v26:** `@react-native-firebase/app`, `@react-native-firebase/ml`, `@react-native-firebase/in-app-messaging`, `@react-native-firebase/installations`, `@react-native-firebase/messaging`, `@react-native-firebase/app-distribution`, `@react-native-firebase/functions`, `@react-native-firebase/perf`, `@react-native-firebase/app-check`, `@react-native-firebase/remote-config`, `@react-native-firebase/crashlytics`, `@react-native-firebase/database`, `@react-native-firebase/storage`, `@react-native-firebase/analytics`, `@react-native-firebase/auth`, and `@react-native-firebase/firestore`. Other packages may still expose the namespaced API with deprecation warnings; modular imports remain the supported path.
+
+# App
+
+The namespaced API for `@react-native-firebase/app` has been **removed**. This package is **modular-only** — use named exports such as `getApp()`, `initializeApp()`, and `getUtils()`.
+
+## Removed namespaced API
+
+| Removed                                               | Replacement (modular)                                               |
+| ----------------------------------------------------- | ------------------------------------------------------------------- |
+| Default export `firebase`                             | Named exports from `@react-native-firebase/app`                     |
+| `firebase.app(name?)`                                 | `getApp(name?)`                                                     |
+| `firebase.apps`                                       | `getApps()`                                                         |
+| `firebase.initializeApp(options, name?)`              | `initializeApp(options, name?)`                                     |
+| `firebase.utils(app?)`                                | `getUtils(app?)`                                                    |
+| `firebase.utils.FilePath`                             | `FilePath` (named export)                                           |
+| `firebase.SDK_VERSION`                                | `SDK_VERSION` (named export)                                        |
+| `firebase.setLogLevel(...)`                           | `setLogLevel(...)`                                                  |
+| `firebase.<module>()` accessors on the default export | Import modular helpers from each `@react-native-firebase/*` package |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+
+firebase.app().name;
+firebase.initializeApp(options, 'secondary');
+firebase.utils().FilePath.DOCUMENT_DIRECTORY;
+```
+
+```js
+// Now
+import { getApp, initializeApp, getUtils, FilePath } from '@react-native-firebase/app';
+
+getApp().name;
+initializeApp(options, 'secondary');
+getUtils().FilePath.DOCUMENT_DIRECTORY;
+// or
+FilePath.DOCUMENT_DIRECTORY;
+```
+
+## Breaking: Android Play Services availability Promise behavior
+
+On Android, `makePlayServicesAvailable()` now rejects when the Play Services availability task is canceled or fails. Previously, the call always resolved even when the update flow was not completed. Update callers to handle rejection:
+
+```js
+import { getUtils } from '@react-native-firebase/app';
+
+try {
+  await getUtils().makePlayServicesAvailable();
+} catch (error) {
+  // Handle canceled or failed Play Services update
+}
+```
+
+# Machine Learning (ML)
+
+The namespaced API for `@react-native-firebase/ml` has been **removed**. This package is **modular-only** — use `getML(app?)`.
+
+## Removed namespaced API
+
+| Removed                     | Replacement (modular)                 |
+| --------------------------- | ------------------------------------- |
+| `firebase.ml()`             | `getML()` or `getML(app)`             |
+| Default export `ml()`       | `getML()` or `getML(app)`             |
+| `FirebaseMLTypes` namespace | Import `FirebaseML` from package root |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import ml from '@react-native-firebase/ml';
+
+firebase.ml().app.name;
+ml().app.name;
+```
+
+```js
+// Now
+import { getApp } from '@react-native-firebase/app';
+import { getML } from '@react-native-firebase/ml';
+
+getML().app.name; // default app
+getML(getApp('secondaryFromNative')).app.name;
+```
+
+# In-App Messaging
+
+The namespaced API for `@react-native-firebase/in-app-messaging` has been **removed**. This package is **modular-only** — use `getInAppMessaging()` and the root-level helper functions.
+
+There is no `firebase/in-app-messaging` entry in the firebase-js-sdk modular surface; React Native Firebase follows the same modular service-instance pattern used for other native-only modules.
+
+## Removed namespaced API
+
+| Removed                                     | Replacement (modular)                                                                |
+| ------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `firebase.inAppMessaging()`                 | `getInAppMessaging()`                                                                |
+| Default export `inAppMessaging()`           | `getInAppMessaging()`                                                                |
+| `FirebaseInAppMessagingTypes`               | Import `InAppMessaging` and helpers (`setMessagesDisplaySuppressed`, etc.) from root |
+| Instance-only usage without modular helpers | Prefer free functions: `setMessagesDisplaySuppressed(inAppMessaging, enabled)`, etc. |
+
+## Example: suppressing messages during setup
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import inAppMessaging from '@react-native-firebase/in-app-messaging';
+
+await firebase.inAppMessaging().setMessagesDisplaySuppressed(true);
+// or
+await inAppMessaging().setMessagesDisplaySuppressed(true);
+```
+
+```js
+// Now
+import {
+  getInAppMessaging,
+  setMessagesDisplaySuppressed,
+} from '@react-native-firebase/in-app-messaging';
+
+await setMessagesDisplaySuppressed(getInAppMessaging(), true);
+```
+
+See [In-App Messaging usage](/in-app-messaging/usage) for additional examples.
+
+# Installations
+
+The namespaced API for `@react-native-firebase/installations` has been **removed**. This package is **modular-only** — use `getInstallations()` and the root-level helper functions.
+
+Modular `getInstallations()` returns a firebase-js-sdk-shaped `Installations` object exposing only `app`. Use modular helper functions instead of instance methods.
+
+## Removed namespaced API
+
+| Removed                                               | Replacement (modular)                                                                     |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `firebase.installations()`                            | `getInstallations()`                                                                      |
+| Default export `installations()`                      | `getInstallations()`                                                                      |
+| `FirebaseInstallationsTypes`                          | Import `Installations` and helpers (`getId`, `getToken`, `deleteInstallations`) from root |
+| `installations.getId()` / `.getToken()` / `.delete()` | `getId(installations)`, `getToken(installations)`, `deleteInstallations(installations)`   |
+
+## Breaking changes (modular call shape)
+
+| Before                     | Now                                                             |
+| -------------------------- | --------------------------------------------------------------- |
+| `installations.getId()`    | `getId(installations)`                                          |
+| `installations.getToken()` | `getToken(installations)`                                       |
+| `installations.delete()`   | `deleteInstallations(installations)` — argument is **required** |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import installations from '@react-native-firebase/installations';
+
+const id = await firebase.installations().getId();
+// or
+const id = await installations().getId();
+```
+
+```js
+// Now
+import { getInstallations, getId } from '@react-native-firebase/installations';
+
+const installations = getInstallations();
+const id = await getId(installations);
+```
+
+See [Installations usage](/installations/usage) for additional examples.
+
+# Cloud Messaging
+
+The namespaced API for `@react-native-firebase/messaging` has been **removed**. This package is **modular-only** — use `getMessaging()` and the root-level helper functions.
+
+Modular `getMessaging()` returns a firebase-js-sdk-shaped `Messaging` object. Prefer free functions (`getToken(messaging)`, `onMessage(messaging, listener)`, etc.) over calling methods on the service instance.
+
+## Removed namespaced API
+
+| Removed                                                    | Replacement (modular)                                                         |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `firebase.messaging()`                                     | `getMessaging()`                                                              |
+| Default export `messaging()`                               | `getMessaging()`                                                              |
+| `FirebaseMessagingTypes`                                   | Import `Messaging`, `RemoteMessage`, and helpers from package root            |
+| `messaging.getToken()` / `.onMessage()` / etc.             | `getToken(messaging)`, `onMessage(messaging, listener)`, etc.                 |
+| `messaging.setDeliveryMetricsExportToBigQuery()`           | `experimentalSetDeliveryMetricsExportedToBigQueryEnabled(messaging, enabled)` |
+| `firebase.messaging.SDK_VERSION` / `messaging.SDK_VERSION` | `SDK_VERSION` top-level export from package root                              |
+
+## Example: foreground messages
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import messaging from '@react-native-firebase/messaging';
+
+firebase.messaging().onMessage(message => {
+  console.log(message.data);
+});
+// or
+messaging().onMessage(message => {
+  console.log(message.data);
+});
+```
+
+```js
+// Now
+import { getMessaging, onMessage } from '@react-native-firebase/messaging';
+
+onMessage(getMessaging(), message => {
+  console.log(message.data);
+});
+```
+
+## Example: delivery metrics to BigQuery
+
+```js
+// Previously (removed)
+await firebase.messaging().setDeliveryMetricsExportToBigQuery(true);
+```
+
+```js
+// Now
+import {
+  getMessaging,
+  experimentalSetDeliveryMetricsExportedToBigQueryEnabled,
+} from '@react-native-firebase/messaging';
+
+await experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), true);
+```
+
+See [Cloud Messaging usage](/messaging/usage) for additional examples.
+
+## iOS APNs registration (ARM64 Simulator + new Promise rejections)
+
+On **ARM64 iOS Simulator** (Apple Silicon), React Native Firebase **no longer calls** UIKit
+`registerForRemoteNotifications` from messaging **registration** and **auto-registration** paths
+(including the TurboModule `registerDeviceForRemoteMessages` path, `requestPermission`'s APNs
+side-effect, and native auto-register on app launch). Calling that UIKit API can block the main
+thread indefinitely. **Physical iOS devices are unchanged** — they still call UIKit
+`registerForRemoteNotifications` as before.
+
+This is intentional product policy so the main thread stays responsive on Simulator. You will
+**not** receive a real APNs device token on ARM64 Simulator; use a physical device for end-to-end
+push registration and delivery.
+
+### New possible Promise rejections
+
+Prior releases could hang forever waiting for APNs registration (especially when the main thread
+was wedged) and did **not** reject with the codes below in the same situations. Apps that assumed
+`registerDeviceForRemoteMessages` always resolved (or never rejected) must handle these errors.
+
+#### `messaging/registration-timeout`
+
+- **When:** After about **10 seconds**, a timer on a **global** queue (not the main queue) rejects
+  the in-flight registration Promise when APNs registration has not settled.
+- **APIs:** Surfaces on **`registerDeviceForRemoteMessages`** only.
+- **`requestPermission`:** On ARM64 Simulator, the APNs UIKit side-effect is **skipped**; the
+  permission Promise still resolves with `AuthorizationStatus` and does **not** reject with this
+  code.
+- **ARM64 Simulator:** Expected when you call `registerDeviceForRemoteMessages` — UIKit register is
+  skipped, the Promise stays pending, then the global-queue timer rejects.
+- **Physical device:** Possible if the system never delivers a registration success/failure
+  callback within about 10 seconds (for example missing notification permission, or a blocked main
+  thread).
+- **Code / message:** `messaging/registration-timeout` —
+  `registerDeviceForRemoteMessages timed out waiting for APNs device registration. The system did not respond — possibly missing notification permission, or the main thread is blocked (common on ARM64 Simulator).`
+
+#### `messaging/registration-superseded`
+
+- **When:** A newer `registerDeviceForRemoteMessages` call starts while a prior attempt is still in
+  flight; the earlier Promise is rejected so it is not orphaned.
+- **APIs:** Surfaces on **`registerDeviceForRemoteMessages`** only (overlapping calls).
+- **Code / message:** `messaging/registration-superseded` —
+  `registerDeviceForRemoteMessages was called again before the previous APNs registration attempt settled.`
+
+Further usage notes: [Auto Registration (iOS)](/messaging/usage#auto-registration-ios),
+[iOS Messaging Setup](/messaging/usage/ios-setup). Maintainer platform detail:
+[iOS APNs registration on Simulator](https://github.com/invertase/react-native-firebase/blob/main/okf-bundle/packages/messaging/ios-apns-simulator-registration.md).
+
+# App Distribution
+
+The namespaced API for `@react-native-firebase/app-distribution` has been **removed**. This package is **modular-only** — use `getAppDistribution()` and the root-level helper functions.
+
+## Removed namespaced API
+
+| Removed                                     | Replacement (modular)                                                                                                                     |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `firebase.appDistribution()`                | `getAppDistribution()`                                                                                                                    |
+| Default export `appDistribution()`          | `getAppDistribution()`                                                                                                                    |
+| `FirebaseAppDistributionTypes`              | Import `AppDistribution`, `AppDistributionRelease` from package root                                                                      |
+| `appDistribution.isTesterSignedIn()` / etc. | `isTesterSignedIn(appDistribution)`, `signInTester(appDistribution)`, `checkForUpdate(appDistribution)`, `signOutTester(appDistribution)` |
+| `firebase.appDistribution.SDK_VERSION`      | `SDK_VERSION` top-level export from package root                                                                                          |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import appDistribution from '@react-native-firebase/app-distribution';
+
+await firebase.appDistribution().isTesterSignedIn();
+```
+
+```js
+// Now
+import { getAppDistribution, isTesterSignedIn } from '@react-native-firebase/app-distribution';
+
+const appDistribution = getAppDistribution();
+await isTesterSignedIn(appDistribution);
+```
+
+# Cloud Functions
+
+The namespaced API for `@react-native-firebase/functions` has been **removed**. This package is **modular-only** — use `getFunctions()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed                       | Replacement (modular)                                                         |
+| ----------------------------- | ----------------------------------------------------------------------------- |
+| `firebase.functions()`        | `getFunctions()` or `getFunctions(app, regionOrCustomDomain)`                 |
+| Default export `functions()`  | `getFunctions()`                                                              |
+| `FirebaseFunctionsTypes`      | Import `Functions`, `HttpsCallable`, `HttpsErrorCode`, etc. from package root |
+| `functions().httpsCallable()` | `httpsCallable(functions, name, options?)`                                    |
+| `functions().useEmulator()`   | `connectFunctionsEmulator(functions, host, port)`                             |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import functions from '@react-native-firebase/functions';
+
+await firebase.functions().httpsCallable('myFn')({ foo: 'bar' });
+```
+
+```js
+// Now
+import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
+
+const functions = getFunctions();
+await httpsCallable(functions, 'myFn')({ foo: 'bar' });
+```
+
+# Performance Monitoring
+
+The namespaced API for `@react-native-firebase/perf` has been **removed**. This package is **modular-only** — use `getPerformance()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed                    | Replacement (modular)                                                    |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `firebase.perf()`          | `getPerformance()`                                                       |
+| Default export `perf()`    | `getPerformance()`                                                       |
+| `FirebasePerformanceTypes` | Import `FirebasePerformance`, `PerformanceTrace`, etc. from package root |
+| `perf().newTrace()`        | `trace(performance, name)`                                               |
+| `perf().newHttpMetric()`   | `httpMetric(performance, url, httpMethod)`                               |
+
+## Signature changes
+
+- `Trace`, `HttpMetric`, and `ScreenTrace` `start()` / `stop()` now return `void` synchronously (previously `Promise<null>`), matching the firebase-js-sdk web `PerformanceTrace`. The underlying native calls are in-memory, so no `await` is required — remove any `await` on these calls.
+- `startScreenTrace(performance, screenName)` and the internal `startTrace(name)` helper now return the trace instance synchronously instead of a `Promise`.
+
+# App Check
+
+The namespaced API for `@react-native-firebase/app-check` has been **removed**. This package is **modular-only** — use `getAppCheck()` / `initializeAppCheck()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed                     | Replacement (modular)                                            |
+| --------------------------- | ---------------------------------------------------------------- |
+| `firebase.appCheck()`       | `getAppCheck()` or `initializeAppCheck(app, options)`            |
+| Default export `appCheck()` | `getAppCheck()`                                                  |
+| `FirebaseAppCheckTypes`     | Import `AppCheck`, `AppCheckTokenResult`, etc. from package root |
+| `appCheck().getToken()`     | `getToken(appCheck, forceRefresh?)`                              |
+
+## Signature changes
+
+- `initializeAppCheck(app?, options?)` returns `AppCheck` synchronously (previously `Promise<AppCheck>`). Native provider setup continues in the background — remove `await` and do not chain `.then()`.
+
+# Analytics
+
+The namespaced API for `@react-native-firebase/analytics` has been **removed**. This package is **modular-only** — use `getAnalytics()` and root-level helper functions.
+
+Analytics supports only the **default Firebase app** (same as before). Calling `getAnalytics(secondaryApp)` throws.
+
+## Removed namespaced API
+
+| Removed                                                      | Replacement (modular)                                                                  |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| `firebase.analytics()`                                       | `getAnalytics()`                                                                       |
+| Default export `analytics()`                                 | `getAnalytics()`                                                                       |
+| `FirebaseAnalyticsTypes`                                     | Import `Analytics`, event parameter types, etc. from package root                      |
+| `analytics().logEvent(...)`                                  | `logEvent(analytics, ...)`                                                             |
+| `analytics().setUserId(...)` etc.                            | `setUserId(analytics, ...)`, `setConsent(analytics, ...)`, etc.                        |
+| Deprecated helper events (`logScreenView`, `logPurchase`, …) | Still exported as modular helpers; prefer `logEvent(analytics, 'screen_view', params)` |
+
+## Signature changes
+
+- `logEvent(analytics, …)` returns `void` synchronously (previously `Promise<void>`). Remove `await` and `.then()` chains.
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import analytics from '@react-native-firebase/analytics';
+
+await firebase.analytics().logEvent('screen_view', { screen_name: 'Home' });
+await analytics().setUserId('user-123');
+```
+
+```js
+// Now
+import { getAnalytics, logEvent, setUserId } from '@react-native-firebase/analytics';
+
+const analytics = getAnalytics();
+logEvent(analytics, 'screen_view', { screen_name: 'Home' });
+await setUserId(analytics, 'user-123');
+```
+
+See [Analytics usage](/analytics/usage) for additional examples.
+
+# Remote Config
+
+The namespaced API for `@react-native-firebase/remote-config` has been **removed**. This package is **modular-only** — use `getRemoteConfig()` and root-level helper functions.
+
+Modular `getRemoteConfig()` returns a firebase-js-sdk-shaped `RemoteConfig` object with `app`, `settings`, `defaultConfig`, `fetchTimeMillis`, and `lastFetchStatus`. Use modular helper functions for fetch/activate/getters; assign `remoteConfig.settings` and `remoteConfig.defaultConfig` instead of removed modular `setConfigSettings()` / `setDefaults()` helpers.
+
+## Removed namespaced API
+
+| Removed                                                      | Replacement (modular)                                                                      |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `firebase.remoteConfig()`                                    | `getRemoteConfig()`                                                                        |
+| Default export `remoteConfig()`                              | `getRemoteConfig()`                                                                        |
+| `FirebaseRemoteConfigTypes`                                  | Import `RemoteConfig`, `Value`, etc. from package root                                     |
+| `remoteConfig().activate()` etc.                             | `activate(remoteConfig)`, `fetchConfig(remoteConfig)`, `getValue(remoteConfig, key)`, etc. |
+| `remoteConfig.LastFetchStatus` / `.ValueSource` on namespace | `LastFetchStatus`, `ValueSource` named exports                                             |
+
+## Breaking changes (modular call shape)
+
+| Before                                      | Now                                      |
+| ------------------------------------------- | ---------------------------------------- |
+| `remoteConfig().fetch()`                    | `fetchConfig(remoteConfig)`              |
+| `remoteConfig().setConfigSettings({ ... })` | `remoteConfig.settings = { ... }`        |
+| `remoteConfig().setDefaults({ ... })`       | `remoteConfig.defaultConfig = { ... }`   |
+| `remoteConfig().onConfigUpdated(listener)`  | `onConfigUpdate(remoteConfig, observer)` |
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import remoteConfig from '@react-native-firebase/remote-config';
+
+await firebase.remoteConfig().fetchAndActivate();
+const value = firebase.remoteConfig().getValue('key').asString();
+```
+
+```js
+// Now
+import { getRemoteConfig, fetchAndActivate, getValue } from '@react-native-firebase/remote-config';
+
+const remoteConfig = getRemoteConfig();
+await fetchAndActivate(remoteConfig);
+const value = getValue(remoteConfig, 'key').asString();
+```
+
+See [Remote Config usage](/remote-config/usage) for additional examples.
+
+# Crashlytics
+
+The namespaced API for `@react-native-firebase/crashlytics` has been **removed**. This package is **modular-only** — use `getCrashlytics()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed                        | Replacement (modular)                           |
+| ------------------------------ | ----------------------------------------------- |
+| `firebase.crashlytics()`       | `getCrashlytics()`                              |
+| Default export `crashlytics()` | `getCrashlytics()`                              |
+| `FirebaseCrashlyticsTypes`     | Import `Crashlytics` from package root          |
+| `crashlytics().log()`          | `log(crashlytics, message)`                     |
+| `crashlytics().recordError()`  | `recordError(crashlytics, error, jsErrorName?)` |
+
+# Realtime Database
+
+The namespaced API for `@react-native-firebase/database` has been **removed**. This package is **modular-only** — use `getDatabase()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed                     | Replacement (modular)                                          |
+| --------------------------- | -------------------------------------------------------------- |
+| `firebase.database()`       | `getDatabase()` or `getDatabase(app, url?)`                    |
+| Default export `database()` | `getDatabase()`                                                |
+| `FirebaseDatabaseTypes`     | Import `Database`, `DatabaseReference`, etc. from package root |
+| `database().ref()`          | `ref(database, path?)`                                         |
+| `database().refFromURL()`   | `refFromURL(database, url)`                                    |
+
+## Signature changes
+
+- `goOnline(db)` and `goOffline(db)` (and the database instance methods) now return `void` synchronously (previously `Promise<void>`), matching firebase-js-sdk. Remove any `await` on these calls.
+
+# Cloud Storage
+
+The namespaced API for `@react-native-firebase/storage` has been **removed**. This package is **modular-only** — use `getStorage()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed                    | Replacement (modular)                                                |
+| -------------------------- | -------------------------------------------------------------------- |
+| `firebase.storage()`       | `getStorage()` or `getStorage(app, bucketUrl?)`                      |
+| Default export `storage()` | `getStorage()`                                                       |
+| `FirebaseStorageTypes`     | Import `FirebaseStorage`, `StorageReference`, etc. from package root |
+| `storage().ref()`          | `ref(storage, path?)`                                                |
+| `storageRef.put()`         | `uploadBytesResumable(storageRef, data, metadata?)`                  |
+
+## Signature changes
+
+- `UploadTask.pause()`, `UploadTask.resume()`, and `UploadTask.cancel()` now return `boolean` synchronously (previously `Promise<boolean>`), matching firebase-js-sdk task semantics. Remove `await`, `.then()`, and `.catch()` from these control calls and use the returned boolean directly.
+- `cancel()` delegates to the native SDK. Android cancels active uploads; iOS active-upload cancel follows the current Firebase Storage iOS SDK 12.15.0 behavior tracked in [firebase-ios-sdk#16353](https://github.com/firebase/firebase-ios-sdk/issues/16353).
+
+# Authentication
+
+The namespaced API for `@react-native-firebase/auth` has been **removed**. This package is **modular-only** — use `getAuth()` / `initializeAuth()` and root-level helper functions.
+
+## Removed namespaced API
+
+| Removed                                  | Replacement (modular)                                           |
+| ---------------------------------------- | --------------------------------------------------------------- |
+| `firebase.auth()`                        | `getAuth()` or `getAuth(app)`                                   |
+| Default export `auth()`                  | `getAuth()`                                                     |
+| `FirebaseAuthTypes` namespace            | Import `Auth`, `User`, `UserCredential`, etc. from package root |
+| `auth().signInWithEmailAndPassword(...)` | `signInWithEmailAndPassword(getAuth(), ...)`                    |
+| `auth().useEmulator(url)`                | `connectAuthEmulator(getAuth(), url, options?)`                 |
+| `firebase.auth.EmailAuthProvider`        | `EmailAuthProvider` (named export)                              |
+
+## Signature changes
+
+- `isSignInWithEmailLink(auth, emailLink)` now returns `boolean` synchronously, matching firebase-js-sdk.
+- `TotpSecret.generateQrCodeUrl(accountName?, issuer?)` now returns `string` synchronously, matching firebase-js-sdk. When `accountName` or `issuer` is omitted, React Native Firebase fills the same defaults from the current user email and Firebase app name.
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import auth from '@react-native-firebase/auth';
+
+firebase.auth().signOut();
+auth().currentUser;
+```
+
+```js
+// Now
+import { getAuth, signOut } from '@react-native-firebase/auth';
+
+const auth = getAuth();
+await signOut(auth);
+auth.currentUser;
+```
+
+# Cloud Firestore
+
+The namespaced API for `@react-native-firebase/firestore` has been **removed**. This package is **modular-only** — use `getFirestore()` / `initializeFirestore()` and root-level helper functions. The `@react-native-firebase/firestore/pipelines` subpath export is unchanged.
+
+## Removed namespaced API
+
+| Removed                                        | Replacement (modular)                                                                 |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `firebase.firestore()`                         | `getFirestore()` or `getFirestore(app, databaseId?)`                                  |
+| Default export `firestore()`                   | `getFirestore()`                                                                      |
+| `FirebaseFirestoreTypes` namespace             | Import `Firestore`, `DocumentReference`, `Query`, etc. from package root              |
+| `firestore().collection(...)`                  | `collection(getFirestore(), ...)`                                                     |
+| `firestore().doc(...)`                         | `doc(getFirestore(), ...)`                                                            |
+| `firestore().batch()`                          | `writeBatch(getFirestore())`                                                          |
+| `firestore().runTransaction(...)`              | `runTransaction(getFirestore(), updateFunction, options?)`                            |
+| `firestore().useEmulator(...)`                 | `connectFirestoreEmulator(getFirestore(), ...)`                                       |
+| `firestore().settings(...)`                    | `initializeFirestore(app, settings, databaseId?)`                                     |
+| `firestore.FieldValue` / `firestore.Timestamp` | `FieldValue`, `Timestamp`, `FieldPath`, `Bytes`, `GeoPoint`, `Filter` (named exports) |
+| `firestore.Blob`                               | `Bytes`                                                                               |
+
+## Signature changes
+
+- `initializeFirestore(app, settings, databaseId?)` returns `Firestore` synchronously (previously `Promise<Firestore>`). Remove `await` and `.then()`; settings apply on the native bridge after return.
+- `TransactionOptions` is now exported. `runTransaction(firestore, updateFunction, options?)` accepts `{ maxAttempts?: number }` and passes the retry limit to the native iOS and Android Firestore SDKs. When `options` is omitted, the native default applies (**5** attempts, matching [firebase-js-sdk `runTransaction`](https://firebase.google.com/docs/reference/js/firestore_.md#runtransaction)). When `maxAttempts` is provided explicitly, values below **1** throw synchronously with `Max attempts must be at least 1` — the same validation as firebase-js-sdk.
+- `aggregateFieldEqual()` and `aggregateQuerySnapshotEqual()` are now exported for aggregate query equality checks (firebase-js-sdk parity).
+- FieldValue `maximum(n)` and `minimum(n)` sentinels from firebase-js-sdk 12.15.0 are not exported yet. Android Firebase Firestore SDK 34.15.0 supports them, but iOS Firebase Firestore SDK 12.15.0 does not expose matching `FIRFieldValue` factories, so React Native Firebase waits for cross-platform support.
+
+## Example
+
+```js
+// Previously (removed)
+import firebase from '@react-native-firebase/app';
+import firestore from '@react-native-firebase/firestore';
+
+firebase.firestore().collection('users').doc('alice').set({ name: 'Alice' });
+firestore.FieldValue.serverTimestamp();
+```
+
+```js
+// Now
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  serverTimestamp,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+await setDoc(doc(collection(db, 'users'), 'alice'), {
+  name: 'Alice',
+  createdAt: serverTimestamp(),
+});
+```
+
+See [Firestore usage](/firestore/usage) for additional examples.
+
+# Automated migration checklist
+
+Use this section when running scripted or agent-assisted upgrades to v26 for modular-only packages.
+
+## 1. Upgrade dependencies
+
+```bash
+# Bump all @react-native-firebase/* packages to v26 together (monorepo versions are aligned)
+yarn add @react-native-firebase/app@^26.0.0 …
+cd ios && pod install
+```
+
+## 2. Fix imports by package
+
+For each modular-only package you use:
+
+| Package            | Search for                                                                                                                           | Replace with                                                                                                                                                   |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app`              | default `firebase` import, `firebase.app()`, `firebase.apps`, `firebase.initializeApp()`, `firebase.utils()`, `firebase.SDK_VERSION` | `getApp()`, `getApps()`, `initializeApp()`, `getUtils()`, `FilePath`, `SDK_VERSION`, `setLogLevel`, etc.                                                       |
+| `ml`               | `firebase.ml()`, default `ml()`, `FirebaseMLTypes`                                                                                   | `getML()`, root `FirebaseML` type                                                                                                                              |
+| `in-app-messaging` | `firebase.inAppMessaging()`, default `inAppMessaging()`, `FirebaseInAppMessagingTypes`                                               | `getInAppMessaging()`, root modular helpers (`setMessagesDisplaySuppressed`, etc.)                                                                             |
+| `installations`    | `firebase.installations()`, default `installations()`, `.getId()`, `.getToken()`, `.delete()`, `FirebaseInstallationsTypes`          | `getInstallations()`, `getId()`, `getToken()`, `deleteInstallations()`                                                                                         |
+| `messaging`        | `firebase.messaging()`, default `messaging()`, `FirebaseMessagingTypes`, instance methods                                            | `getMessaging()`, root helpers (`getToken`, `onMessage`, etc.), `SDK_VERSION`, `experimentalSetDeliveryMetricsExportedToBigQueryEnabled`                       |
+| `app-distribution` | `firebase.appDistribution()`, default `appDistribution()`, `FirebaseAppDistributionTypes`, instance methods                          | `getAppDistribution()`, `isTesterSignedIn`, `signInTester`, `checkForUpdate`, `signOutTester`, `SDK_VERSION`                                                   |
+| `functions`        | `firebase.functions()`, default `functions()`, `FirebaseFunctionsTypes`, instance methods                                            | `getFunctions()`, `httpsCallable`, `httpsCallableFromUrl`, `connectFunctionsEmulator`, `HttpsErrorCode`                                                        |
+| `perf`             | `firebase.perf()`, default `perf()`, `FirebasePerformanceTypes`, instance methods                                                    | `getPerformance()`, `trace`, `httpMetric`, `newScreenTrace`, `startScreenTrace`, `initializePerformance`                                                       |
+| `app-check`        | `firebase.appCheck()`, default `appCheck()`, `FirebaseAppCheckTypes`, instance methods                                               | `getAppCheck()`, `initializeAppCheck`, `getToken`, `getLimitedUseToken`, `setTokenAutoRefreshEnabled`, `onTokenChanged`, `CustomProvider`                      |
+| `analytics`        | `firebase.analytics()`, default `analytics()`, `FirebaseAnalyticsTypes`, instance methods                                            | `getAnalytics()`, `logEvent`, `setUserId`, `setConsent`, `getAppInstanceId`, `getSessionId`, etc.                                                              |
+| `remote-config`    | `firebase.remoteConfig()`, default `remoteConfig()`, `FirebaseRemoteConfigTypes`, instance methods                                   | `getRemoteConfig()`, `activate`, `fetchConfig`, `fetchAndActivate`, `getValue`, `getAll`, `onConfigUpdate`, `LastFetchStatus`, `ValueSource`                   |
+| `crashlytics`      | `firebase.crashlytics()`, default `crashlytics()`, `FirebaseCrashlyticsTypes`, instance methods                                      | `getCrashlytics()`, `log`, `recordError`, `setUserId`, `setAttribute`, `setAttributes`, `setCrashlyticsCollectionEnabled`, etc.                                |
+| `database`         | `firebase.database()`, default `database()`, `FirebaseDatabaseTypes`, instance methods                                               | `getDatabase()`, `ref`, `refFromURL`, `onValue`, `runTransaction`, `connectDatabaseEmulator`, etc.                                                             |
+| `storage`          | `firebase.storage()`, default `storage()`, `FirebaseStorageTypes`, instance/reference methods                                        | `getStorage()`, `ref`, `uploadBytesResumable`, `getDownloadURL`, `connectStorageEmulator`, `StringFormat`, `TaskEvent`, `TaskState`                            |
+| `firestore`        | `firebase.firestore()`, default `firestore()`, `FirebaseFirestoreTypes`, instance methods                                            | `getFirestore()`, `doc`, `collection`, `setDoc`, `writeBatch`, `runTransaction`, `connectFirestoreEmulator`, `FieldValue`, `Timestamp`, `Bytes`, `SDK_VERSION` |
+
+Also remove `await`, `.then()`, and `.catch()` from `UploadTask.pause()`, `UploadTask.resume()`, and `UploadTask.cancel()`. For Firestore transactions, import `TransactionOptions` when you pass `{ maxAttempts }` (omit `options` for the default **5** retries; do not pass `0` or negative values). Import `aggregateFieldEqual()` / `aggregateQuerySnapshotEqual()` for aggregate equality checks.
+
+## 3. Validate
+
+```bash
+yarn compile
+yarn tests:jest packages/<pkg>/__tests__
+```

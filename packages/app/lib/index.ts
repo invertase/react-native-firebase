@@ -15,7 +15,6 @@
  *
  */
 
-export { firebase, utils, default } from './namespaced';
 export * from './modular';
 export type {
   ReactNativeFirebase,

@@ -1,17 +1,34 @@
 {
   "name": "@react-native-firebase/app-distribution",
-  "version": "24.0.0",
+  "version": "26.1.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - App Distribution",
   "main": "./dist/module/index.js",
   "types": "./dist/typescript/lib/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBAppDistributionTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "io.invertase.firebase.appdistribution"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTurboAppDistribution": "RNFBAppDistributionModule"
+      }
+    }
+  },
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "build:plugin": "rimraf plugin/build && tsc --build plugin",
     "compile": "bob build",
     "lint:plugin": "eslint plugin/src/*",
-    "prepare": "yarn run build && yarn compile && yarn run build:plugin"
+    "prepare": "yarn run build && yarn compile && yarn run build:plugin",
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/main/java/io/invertase/firebase/appdistribution/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
   },
   "repository": {
     "type": "git",
@@ -25,12 +42,13 @@
     "app-distribution"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "24.0.0",
+    "@react-native-firebase/app": "26.1.0",
     "expo": ">=47.0.0"
   },
   "devDependencies": {
-    "expo": "^55.0.5",
-    "react-native-builder-bob": "^0.40.13"
+    "@react-native-firebase/app": "26.1.0",
+    "expo": "^55.0.18",
+    "react-native-builder-bob": "^0.41.0"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -47,7 +65,14 @@
       "types": "./dist/typescript/lib/index.d.ts",
       "default": "./dist/module/index.js"
     },
-    "./app.plugin.js": "./app.plugin.js",
+    "./app.plugin": {
+      "types": "./plugin/build/app.plugin.d.ts",
+      "default": "./app.plugin.js"
+    },
+    "./app.plugin.js": {
+      "types": "./plugin/build/app.plugin.d.ts",
+      "default": "./app.plugin.js"
+    },
     "./package.json": "./package.json"
   },
   "react-native-builder-bob": {

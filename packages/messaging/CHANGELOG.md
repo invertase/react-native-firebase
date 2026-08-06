@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.1.0](https://github.com/invertase/react-native-firebase/compare/v26.0.0...v26.1.0) (2026-08-03)
+
+### Features
+
+- **ios:** add SPM dependency resolution support alongside CocoaPods ([#8933](https://github.com/invertase/react-native-firebase/issues/8933)) ([44a7a9a](https://github.com/invertase/react-native-firebase/commit/44a7a9ae7b404f412e9766c0417f1df8fa971a0b))
+- **messaging:** make expo plugin configurable for notification icon and color ([#9132](https://github.com/invertase/react-native-firebase/issues/9132)) ([99af959](https://github.com/invertase/react-native-firebase/commit/99af9597b19bf22b78f82de2951e1b94004730cd)), closes [#8840](https://github.com/invertase/react-native-firebase/issues/8840)
+
+## [26.0.0](https://github.com/invertase/react-native-firebase/compare/v25.1.0...v26.0.0) (2026-07-29)
+
+### ⚠ BREAKING CHANGES
+
+- **messaging, ios:** make APNs registration timeout independent of main queue
+- **messaging:** messaging requires the React Native New Architecture.
+- **app:** App/Core modules native bridge requires New Architecture.
+
+Migrate RNFBAppModule and RNFBUtilsModule to Codegen TurboModules with
+unified resolver, lazy Proxy wrapper, and committed generated artifacts.
+Includes functions codegenConfig rename (NewArch-AD-7), test harness
+overrides, architecture decisions, and validation workflow hardening.
+
+### Features
+
+- **app:** migrate app modules to TurboModules incl general migration infra ([978168d](https://github.com/invertase/react-native-firebase/commit/978168dacecf4925d347d9757eff73ee43e1484f))
+- **messaging:** migrate messaging to TurboModules ([e56c7f4](https://github.com/invertase/react-native-firebase/commit/e56c7f406920a21c07ccd1810b0315ec0953aeff))
+
+### Bug Fixes
+
+- add ResultT codegen type alias ([ff2d68f](https://github.com/invertase/react-native-firebase/commit/ff2d68ff8f73092f8ba3c75e007049dd31be822f))
+- emit messaging_notification_opened only for default notification action on iOS. ([#8945](https://github.com/invertase/react-native-firebase/issues/8945)) ([2aec61f](https://github.com/invertase/react-native-firebase/commit/2aec61fff6b888f18379b2ba12807fd9d163b8cc))
+- **ios:** private codegen headers and bridging-safe AppCheck module ([266d7e1](https://github.com/invertase/react-native-firebase/commit/266d7e10020662bfd357d1795bc5f6cfde54f7b7))
+- **ios:** set IPHONEOS_DEPLOYMENT_TARGET to 15.0, update platform support docs/conditionals ([#9108](https://github.com/invertase/react-native-firebase/issues/9108)) ([99d0899](https://github.com/invertase/react-native-firebase/commit/99d089908e3eec6155d73ecf05ff7274ad33c46e)), closes [#8882](https://github.com/invertase/react-native-firebase/issues/8882)
+- **messaging, android:** ignore non-message broadcasts in messaging receiver ([#9105](https://github.com/invertase/react-native-firebase/issues/9105)) ([da17208](https://github.com/invertase/react-native-firebase/commit/da1720836622625acdfe8a5f0f870db688348c08)), closes [firebase-android-sdk#5410](https://github.com/invertase/firebase-android-sdk/issues/5410) [#8040](https://github.com/invertase/react-native-firebase/issues/8040)
+- **messaging, android:** make max stored notifications configurable ([#9111](https://github.com/invertase/react-native-firebase/issues/9111)) ([dc5771f](https://github.com/invertase/react-native-firebase/commit/dc5771f75e599db362c2c9916490284734746ec0)), closes [#8771](https://github.com/invertase/react-native-firebase/issues/8771)
+- **messaging, ios:** make APNs registration timeout independent of main queue ([4cbb19c](https://github.com/invertase/react-native-firebase/commit/4cbb19c68d082d2e632c8db134c79160d18aeb02))
+- **messaging:** willPresentNotification custom notification to work alongside default notification ([#9094](https://github.com/invertase/react-native-firebase/issues/9094)) ([1bad118](https://github.com/invertase/react-native-firebase/commit/1bad118f85aadc600757255d1f9ed525b11d655b))
+
+## [25.1.0](https://github.com/invertase/react-native-firebase/compare/v25.0.1...v25.1.0) (2026-06-25)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [25.0.1](https://github.com/invertase/react-native-firebase/compare/v25.0.0...v25.0.1) (2026-06-23)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **messaging:** deprecate permissions APIs, use react-native-permissions or expo-notifications (#9053)
+
+### Miscellaneous Chores
+
+- **messaging:** deprecate permissions APIs, use react-native-permissions or expo-notifications ([#9053](https://github.com/invertase/react-native-firebase/issues/9053)) ([fc317fa](https://github.com/invertase/react-native-firebase/commit/fc317fa51f0060abe1b5b7e9f0748f000d9bc6f8))
+
+## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
 ## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
 
 ### Bug Fixes

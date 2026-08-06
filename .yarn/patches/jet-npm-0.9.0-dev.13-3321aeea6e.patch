@@ -1,0 +1,359 @@
+diff --git a/lib/commonjs/cli.js b/lib/commonjs/cli.js
+index 35c04da87c63a79bc26707aaffe3156fb98eca79..3ad2cea4c214e8c3c4f4698acacfff2610902863 100644
+--- a/lib/commonjs/cli.js
++++ b/lib/commonjs/cli.js
+@@ -71,23 +71,77 @@ function cleanup() {
+     console.log(`[🟥] Failed to run a cleanup task: ${err.message}`);
+   });
+ }
+-async function startServer(server, config, after) {
++async function startServer(server, config, after, runControl) {
++  let reconnectGraceTimer = null;
++  let pendingDisconnectCode = null;
++  let disconnectStartedAt = 0;
++  let orchestratePhase = 'jet-starting';
++  let lastTestTitle = '';
++  let lastSuiteTitle = '';
++  let coverageUploadInProgress = false;
+   server.on('started', s => {
+     const url = s.url;
+     console.log(`[🟩] Jet remote server listening at "${url}".`);
++    startControlHttpServer(config, {
++      setOrchestratePhase: phase => {
++        orchestratePhase = phase || orchestratePhase;
++      },
++      onLaunchReady: () => runControl?.beginRun?.(),
++    });
+   });
+   server.on('connection', (_, req) => {
+     console.log(`[🟩] Jet client connected from "${req.socket.remoteAddress + ':' + req.socket.remotePort}".`);
++    if (reconnectGraceTimer) {
++      const recoveredCode = pendingDisconnectCode;
++      const elapsedMs = Date.now() - disconnectStartedAt;
++      clearTimeout(reconnectGraceTimer);
++      reconnectGraceTimer = null;
++      pendingDisconnectCode = null;
++      console.warn(`[jet-ws] reconnect_recovered code=${recoveredCode} elapsed_ms=${elapsedMs}`);
++    }
+   });
+   server.on('disconnection', (_, code, reason) => {
+     const print = code === 1000 ? console.log : console.warn;
+     const msg = code === 1000 ? 'normal closure' : reason || 'for no particular reason';
+     print(`[🟨] Jet client disconnected - ${msg} (code = ${code}).`);
+-    if (code !== 1000 && config.exitOnError) {
+-      print(`[🟥] Exiting after an abnormal disconnect.`);
+-      process.exitCode = 1;
+-      cleanup();
++    try {
++      const os = require('os');
++      const suite = lastSuiteTitle.replace(/"/g, "'");
++      const test = lastTestTitle.replace(/"/g, "'");
++      console.warn(
++        `[jet-ws] disconnect_context code=${code} loadavg=${os.loadavg().join(',')} orchestratePhase=${orchestratePhase} currentTest="${test}" currentSuite="${suite}" coverageUpload=${coverageUploadInProgress} mem=${JSON.stringify(process.memoryUsage())}`,
++      );
++    } catch (_) {
++      // Best-effort diagnostics only.
++    }
++    if (code === 1000 || !config.exitOnError) {
++      return;
++    }
++    const graceMs = config.reconnectGraceMs ?? 30000;
++    const transientCodes = [1006, 1001];
++    if (transientCodes.includes(code)) {
++      if (reconnectGraceTimer) {
++        clearTimeout(reconnectGraceTimer);
++      }
++      pendingDisconnectCode = code;
++      disconnectStartedAt = Date.now();
++      console.warn(
++        `[jet-ws] transient_disconnect code=${code} reason="${reason || ''}" grace_ms=${graceMs} waiting_for_reconnect`,
++      );
++      reconnectGraceTimer = setTimeout(() => {
++        reconnectGraceTimer = null;
++        console.error(`[jet-ws] fatal_disconnect code=${code} grace_expired_ms=${graceMs}`);
++        console.error(`[jet-ws] RETRYABLE_DISCONNECT code=${code}`);
++        print(`[🟥] Exiting after an abnormal disconnect.`);
++        process.exitCode = 1;
++        cleanup();
++      }, graceMs);
++      return;
+     }
++    console.error(`[jet-ws] fatal_disconnect code=${code} reason="${reason || ''}" immediate=true`);
++    print(`[🟥] Exiting after an abnormal disconnect.`);
++    process.exitCode = 1;
++    cleanup();
+   });
+   server.on('error', error => {
+     if (error instanceof _mochaRemoteServer.ClientError) {
+@@ -100,6 +154,25 @@ async function startServer(server, config, after) {
+       cleanup();
+     }
+   });
++  server.on('coverage-upload-start', () => {
++    coverageUploadInProgress = true;
++  });
++  server.on('coverage-data', coverage => {
++    coverageUploadInProgress = false;
++    const incomingKeys = Object.keys(coverage).length;
++    console.log(`[jet-coverage] WS received ${incomingKeys} file(s)`);
++    coverageMap.merge(coverage);
++    global.__coverage__ = coverageMap.toJSON();
++    const totalKeys = Object.keys(global.__coverage__).length;
++    console.log(`[jet-coverage] WS merged total ${totalKeys} file(s)`);
++  });
++  server.on('running', runner => {
++    const constants = require('mocha').Runner.constants;
++    runner.on(constants.EVENT_TEST_BEGIN, test => {
++      lastTestTitle = test?.title || '';
++      lastSuiteTitle = test?.parent?.fullTitle?.() || test?.parent?.title || '';
++    });
++  });
+   cleanupTasks.add(async () => {
+     if (server.listening) {
+       await server.stop();
+@@ -115,39 +188,48 @@ async function startServer(server, config, after) {
+   process.on('SIGINT', cleanup);
+   process.on('exit', cleanup);
+ }
+-function attachHttpServer(wss) {
+-  const server = wss._server;
+-  if (!server) {
+-    console.error('No underlying server found in WebSocket server');
+-    return;
+-  }
+-  server.on('request', (req, res) => {
+-    if (req.url === '/coverage' && req.method === 'POST') {
++function startControlHttpServer(config, handlers) {
++  const http = require('http');
++  const controlPort = parseInt(process.env.RNFB_JET_CONTROL_PORT || String(config.port + 1), 10);
++  const server = http.createServer((req, res) => {
++    const url = req.url?.split('?')[0];
++    if (url === '/launch-ready' && req.method === 'POST') {
++      console.log('[jet-control] launch-ready received');
++      handlers.onLaunchReady?.();
++      res.writeHead(200, { 'Content-Type': 'text/plain' });
++      res.end('ok');
++      return;
++    }
++    if (url === '/orchestrate-state' && req.method === 'POST') {
+       let body = '';
+       req.on('data', chunk => {
+         body += chunk.toString();
+       });
+       req.on('end', () => {
+         try {
+-          coverageMap.merge(JSON.parse(body));
+-          global.__coverage__ = coverageMap.toJSON();
+-          res.end(JSON.stringify({
+-            message: 'OK'
+-          }));
+-        } catch (e) {
+-          res.end(JSON.stringify({
+-            error: 'Invalid JSON'
+-          }));
++          const parsed = JSON.parse(body || '{}');
++          if (parsed.phase) {
++            handlers.setOrchestratePhase?.(parsed.phase);
++            console.log(`[jet-control] orchestrate-state=${parsed.phase}`);
++          }
++        } catch (_) {
++          // Best-effort only.
+         }
++        res.writeHead(200, { 'Content-Type': 'text/plain' });
++        res.end('ok');
+       });
+-    } else {
+-      res.writeHead(404, {
+-        'Content-Type': 'application/json'
+-      });
+-      res.end(JSON.stringify({
+-        error: 'Not Found'
+-      }));
++      return;
+     }
++    res.writeHead(404, { 'Content-Type': 'application/json' });
++    res.end(JSON.stringify({ error: 'Not Found' }));
++  });
++  server.listen(controlPort, config.hostname, () => {
++    console.log(`[jet-control] listening on http://${config.hostname}:${controlPort}`);
++  });
++  cleanupTasks.add(async () => {
++    await new Promise(resolve => {
++      server.close(() => resolve());
++    });
+   });
+ }
+ (0, _yargs.default)((0, _helpers.hideBin)(process.argv)).scriptName('jet').version('version', 'Show version number & exit', jetPackageJson.version).alias('v', 'version').option('target', {
+@@ -301,17 +383,34 @@ function attachHttpServer(wss) {
+     timeout: finalConfig.timeout,
+     slow: finalConfig.slow
+   });
+-  return startServer(server, finalConfig, target.after).then(() => {
+-    if (finalConfig.coverage) {
+-      attachHttpServer(server.wss);
+-    }
+-    if (!finalConfig.watch) {
+-      server.run(async failures => {
+-        global.__coverage__ = coverageMap.toJSON();
+-        await cleanup();
+-        process.exit(failures > 0 ? 1 : 0);
+-      });
++  const deferRun =
++    process.env.RNFB_JET_DEFER_RUN === '1' || process.env.RNFB_JET_DEFER_RUN === 'true';
++  const runControl = {
++    beginRun: null,
++  };
++  return startServer(server, finalConfig, target.after, runControl).then(() => {
++    let runStarted = false;
++    const beginRun = () => {
++      if (runStarted) {
++        return;
++      }
++      runStarted = true;
++      if (!finalConfig.watch) {
++        server.run(async failures => {
++          global.__coverage__ = coverageMap.toJSON();
++          const mergedKeys = Object.keys(global.__coverage__).length;
++          console.log(`[jet-coverage] merged ${mergedKeys} file(s) before NYC shutdown`);
++          await cleanup();
++          process.exit(failures > 0 ? 1 : 0);
++        });
++      }
++    };
++    runControl.beginRun = beginRun;
++    if (deferRun) {
++      console.log('[jet-control] deferring server.run until POST /launch-ready');
++      return;
+     }
++    beginRun();
+   });
+ }).help(true).alias('h', 'help').argv;
+ //# sourceMappingURL=cli.js.map
+\ No newline at end of file
+diff --git a/lib/commonjs/index.js b/lib/commonjs/index.js
+index a72380ed2ace01b19b028bb8e6f9d29dc3affbcd..0f2065e94f1ad1b16951e072b2f1a1bb5e47f241 100644
+--- a/lib/commonjs/index.js
++++ b/lib/commonjs/index.js
+@@ -52,9 +52,16 @@ function JetProvider(props) {
+       ...props,
+       title: props.title ?? `Jet tests on ${_reactNative.Platform.OS}`,
+       async transformFailure(_, err) {
+-        const stack = (0, _parseErrorStack.default)(err.stack);
+-        const symbolicated = await (0, _symbolicateStackTrace.default)(stack);
+-        err.stack = framesToStack(err, symbolicated.stack);
++        try {
++          const stack = (0, _parseErrorStack.default)(err.stack);
++          const symbolicated = await (0, _symbolicateStackTrace.default)(stack);
++          err.stack = framesToStack(err, symbolicated.stack);
++        } catch (cause) {
++          // Release / no Metro: symbolicateStackTrace throws ("Bundle was not loaded from Metro.").
++          // Returning a thrown transformFailure would mask the real test error in mocha-remote.
++          const msg = cause instanceof Error ? cause.message : String(cause);
++          console.warn(`[jet] symbolicateStackTrace unavailable; returning original error (${msg})`);
++        }
+         return err;
+       },
+       tests(_config) {
+@@ -63,15 +70,7 @@ function JetProvider(props) {
+         });
+         after(async () => {
+           if (_config.coverage) {
+-            const coverage = global.__coverage__ ?? {};
+-            const url = (props.url ?? 'ws://localhost:8090').replace('ws://', 'http://') + '/coverage';
+-            return fetch(url, {
+-              method: 'POST',
+-              headers: {
+-                'Content-Type': 'application/json'
+-              },
+-              body: JSON.stringify(coverage)
+-            });
++            return client.uploadCoverage();
+           }
+           return Promise.resolve();
+         });
+diff --git a/lib/module/index.js b/lib/module/index.js
+index 897b62288ae128e1ce071142fa3de136caa99239..ad8c11f4b1278f32ec5c5101b1d5b7d5fc3889b9 100644
+--- a/lib/module/index.js
++++ b/lib/module/index.js
+@@ -40,9 +40,16 @@ export function JetProvider(props) {
+       ...props,
+       title: props.title ?? `Jet tests on ${Platform.OS}`,
+       async transformFailure(_, err) {
+-        const stack = parseErrorStack(err.stack);
+-        const symbolicated = await symbolicateStackTrace(stack);
+-        err.stack = framesToStack(err, symbolicated.stack);
++        try {
++          const stack = parseErrorStack(err.stack);
++          const symbolicated = await symbolicateStackTrace(stack);
++          err.stack = framesToStack(err, symbolicated.stack);
++        } catch (cause) {
++          // Release / no Metro: symbolicateStackTrace throws ("Bundle was not loaded from Metro.").
++          // Returning a thrown transformFailure would mask the real test error in mocha-remote.
++          const msg = cause instanceof Error ? cause.message : String(cause);
++          console.warn(`[jet] symbolicateStackTrace unavailable; returning original error (${msg})`);
++        }
+         return err;
+       },
+       tests(_config) {
+@@ -51,15 +58,7 @@ export function JetProvider(props) {
+         });
+         after(async () => {
+           if (_config.coverage) {
+-            const coverage = global.__coverage__ ?? {};
+-            const url = (props.url ?? 'ws://localhost:8090').replace('ws://', 'http://') + '/coverage';
+-            return fetch(url, {
+-              method: 'POST',
+-              headers: {
+-                'Content-Type': 'application/json'
+-              },
+-              body: JSON.stringify(coverage)
+-            });
++            return client.uploadCoverage();
+           }
+           return Promise.resolve();
+         });
+diff --git a/src/index.tsx b/src/index.tsx
+index 1b28aca3fe817fee3e8701ac5096df6fc608bc39..10cf19c7dc1be39d07a3a9e7702ad67d2ef82508 100644
+--- a/src/index.tsx
++++ b/src/index.tsx
+@@ -71,9 +71,18 @@ export function JetProvider(props: JetProviderProps): React.JSX.Element {
+       ...props,
+       title: props.title ?? `Jet tests on ${Platform.OS}`,
+       async transformFailure(_, err) {
+-        const stack = parseErrorStack(err.stack as any);
+-        const symbolicated = (await symbolicateStackTrace(stack)) as any;
+-        err.stack = framesToStack(err, symbolicated.stack);
++        try {
++          const stack = parseErrorStack(err.stack as any);
++          const symbolicated = (await symbolicateStackTrace(stack)) as any;
++          err.stack = framesToStack(err, symbolicated.stack);
++        } catch (cause) {
++          // Release / no Metro: symbolicateStackTrace throws ("Bundle was not loaded from Metro.").
++          // Returning a thrown transformFailure would mask the real test error in mocha-remote.
++          const msg = cause instanceof Error ? cause.message : String(cause);
++          console.warn(
++            `[jet] symbolicateStackTrace unavailable; returning original error (${msg})`,
++          );
++        }
+         return err;
+       },
+       tests(_config) {
+@@ -82,17 +91,7 @@ export function JetProvider(props: JetProviderProps): React.JSX.Element {
+         });
+         after(async () => {
+           if (_config.coverage) {
+-            const coverage = (global as any).__coverage__ ?? {};
+-            const url =
+-              (props.url ?? 'ws://localhost:8090').replace('ws://', 'http://') +
+-              '/coverage';
+-            return fetch(url, {
+-              method: 'POST',
+-              headers: {
+-                'Content-Type': 'application/json',
+-              },
+-              body: JSON.stringify(coverage),
+-            });
++            return client.uploadCoverage();
+           }
+           return Promise.resolve();
+         });

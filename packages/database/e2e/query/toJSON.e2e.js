@@ -16,24 +16,6 @@
  */
 
 describe('database().ref().toJSON()', function () {
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('returns a string version of the current query path', async function () {
-      const res = firebase.database().ref('foo/bar/baz').toJSON();
-      const expected = `${firebase.database()._customUrlOrRegion}/foo/bar/baz`;
-      should.equal(res, expected);
-    });
-  });
-
   describe('modular', function () {
     it('returns a string version of the current query path', async function () {
       const { getDatabase, ref } = databaseModular;

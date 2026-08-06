@@ -1,14 +1,32 @@
 {
   "name": "@react-native-firebase/installations",
-  "version": "24.0.0",
+  "version": "26.1.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Installations",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./dist/module/index.js",
+  "types": "./dist/typescript/lib/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBInstallationsTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "io.invertase.firebase.installations"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTurboInstallations": "RNFBInstallationsModule"
+      }
+    }
+  },
   "scripts": {
-    "build": "genversion --semi lib/version.js",
+    "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
-    "prepare": "yarn run build"
+    "compile": "bob build",
+    "prepare": "yarn run build && yarn compile",
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/main/java/io/invertase/firebase/installations/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
   },
   "repository": {
     "type": "git",
@@ -22,10 +40,40 @@
     "installations"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "24.0.0"
+    "@react-native-firebase/app": "26.1.0"
   },
   "publishConfig": {
     "access": "public",
     "provenance": true
+  },
+  "devDependencies": {
+    "@react-native-firebase/app": "26.1.0",
+    "react-native-builder-bob": "^0.40.13"
+  },
+  "exports": {
+    ".": {
+      "source": "./lib/index.ts",
+      "types": "./dist/typescript/lib/index.d.ts",
+      "default": "./dist/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "react-native-builder-bob": {
+    "source": "lib",
+    "output": "dist",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "tsc": "../../node_modules/.bin/tsc"
+        }
+      ]
+    ]
   }
 }

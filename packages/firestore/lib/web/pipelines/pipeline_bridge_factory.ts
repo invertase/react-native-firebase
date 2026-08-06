@@ -24,8 +24,10 @@ import type {
   Query,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 import type { FirestorePipelineSerializedInternal } from '../../types/internal';
+import * as firebaseFirestorePipelines from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
 import {
   revivePipelineValue,
+  configureWebNestedPipelineRevival,
   type WebPipelineInstance,
   type WebPipelineSource,
 } from './pipeline_node_builder';
@@ -99,6 +101,21 @@ function buildDocumentsSourcePipeline(
   }) as WebPipelineInstance;
 }
 
+function buildSubcollectionSourcePipeline(
+  source: Extract<FirestorePipelineSerializedInternal['source'], { source: 'subcollection' }>,
+): WebPipelineInstance | undefined {
+  const subcollectionFactory = (firebaseFirestorePipelines as Record<string, unknown>)
+    .subcollection;
+  if (typeof subcollectionFactory !== 'function') {
+    return undefined;
+  }
+
+  return subcollectionFactory({
+    path: source.path,
+    ...(isRecord(source.rawOptions) && source.rawOptions ? { rawOptions: source.rawOptions } : {}),
+  }) as WebPipelineInstance;
+}
+
 function buildQuerySourcePipeline(
   firestore: Firestore,
   pipelineSource: WebPipelineSource,
@@ -122,6 +139,44 @@ function buildQuerySourcePipeline(
   );
 
   return pipelineSource.createFrom(query as unknown as Query) as WebPipelineInstance;
+}
+
+type WebDistanceMeasure = 'euclidean' | 'cosine' | 'dot_product';
+
+function normalizeWebDistanceMeasure(value: unknown, fieldName: string): WebDistanceMeasure {
+  if (typeof value !== 'string') {
+    throw new Error(`pipelineExecute() expected ${fieldName} to be a string.`);
+  }
+
+  const normalized = value.trim().replace(/-/g, '_').replace(/ /g, '_').toUpperCase();
+
+  switch (normalized) {
+    case 'COSINE':
+      return 'cosine';
+    case 'EUCLIDEAN':
+      return 'euclidean';
+    case 'DOT_PRODUCT':
+    case 'DOTPRODUCT':
+      return 'dot_product';
+    default:
+      throw new Error(
+        `pipelineExecute() expected ${fieldName} to be one of euclidean, cosine, or dot_product.`,
+      );
+  }
+}
+
+function normalizeWebFindNearestOptions(options: Record<string, unknown>): Record<string, unknown> {
+  if (!Object.prototype.hasOwnProperty.call(options, 'distanceMeasure')) {
+    return options;
+  }
+
+  return {
+    ...options,
+    distanceMeasure: normalizeWebDistanceMeasure(
+      options.distanceMeasure,
+      'stage.options.distanceMeasure',
+    ),
+  };
 }
 
 function getPipelineStageMethod(
@@ -246,6 +301,16 @@ function applyPipelineStage(
             )
           : method.call(current, stageArgs)
       ) as WebPipelineInstance;
+    case 'findNearest':
+      return method.call(current, normalizeWebFindNearestOptions(stageArgs)) as WebPipelineInstance;
+    case 'search':
+      return method.call(current, stageArgs) as WebPipelineInstance;
+    case 'define':
+      return (
+        Array.isArray(stageArgs.variables) && stageArgs.variables.length > 0
+          ? method.call(current, ...stageArgs.variables)
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     default:
       return method.call(current, stageArgs) as WebPipelineInstance;
   }
@@ -272,6 +337,9 @@ function buildSourcePipeline(
       break;
     case 'documents':
       currentPipeline = buildDocumentsSourcePipeline(pipelineSource, source);
+      break;
+    case 'subcollection':
+      currentPipeline = buildSubcollectionSourcePipeline(source);
       break;
     case 'query':
       currentPipeline = buildQuerySourcePipeline(firestore, pipelineSource, source);
@@ -307,6 +375,10 @@ export function buildWebSdkPipeline(
   firestore: Firestore,
   request: Pick<WebParsedPipelineRequest, 'pipeline'>,
 ): WebPipelineInstance {
+  configureWebNestedPipelineRevival(firestore, (nestedFirestore, nestedPipeline) =>
+    buildWebSdkPipeline(nestedFirestore, { pipeline: nestedPipeline }),
+  );
+
   const pipelineFactory = (firestore as { pipeline?: () => unknown }).pipeline;
   if (typeof pipelineFactory !== 'function') {
     throw createPipelineRuntimeImportError(

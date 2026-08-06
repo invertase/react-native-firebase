@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.1.0](https://github.com/invertase/react-native-firebase/compare/v26.0.0...v26.1.0) (2026-08-03)
+
+### Features
+
+- **ios:** add SPM dependency resolution support alongside CocoaPods ([#8933](https://github.com/invertase/react-native-firebase/issues/8933)) ([44a7a9a](https://github.com/invertase/react-native-firebase/commit/44a7a9ae7b404f412e9766c0417f1df8fa971a0b))
+
+## [26.0.0](https://github.com/invertase/react-native-firebase/compare/v25.1.0...v26.0.0) (2026-07-29)
+
+### ⚠ BREAKING CHANGES
+
+- **crashlytics:** migrate crashlytics to TurboModules
+
+### Features
+
+- **crashlytics:** migrate crashlytics to TurboModules ([122295e](https://github.com/invertase/react-native-firebase/commit/122295e0afa6b70f55f4934c98f60d559190a908))
+
+### Bug Fixes
+
+- add codegen verify and spec-native parity tests ([49d9f1b](https://github.com/invertase/react-native-firebase/commit/49d9f1baba4fc83c1dd4983f582bbd7352d78809))
+- add ResultT codegen type alias ([ff2d68f](https://github.com/invertase/react-native-firebase/commit/ff2d68ff8f73092f8ba3c75e007049dd31be822f))
+- **ios:** set IPHONEOS_DEPLOYMENT_TARGET to 15.0, update platform support docs/conditionals ([#9108](https://github.com/invertase/react-native-firebase/issues/9108)) ([99d0899](https://github.com/invertase/react-native-firebase/commit/99d089908e3eec6155d73ecf05ff7274ad33c46e)), closes [#8882](https://github.com/invertase/react-native-firebase/issues/8882)
+
+## [25.1.0](https://github.com/invertase/react-native-firebase/compare/v25.0.1...v25.1.0) (2026-06-25)
+
+**Note:** Version bump only for package @react-native-firebase/crashlytics
+
+## [25.0.1](https://github.com/invertase/react-native-firebase/compare/v25.0.0...v25.0.1) (2026-06-23)
+
+**Note:** Version bump only for package @react-native-firebase/crashlytics
+
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **sdks:** firebase-ios-sdk 12.12.0+ requires Xcode 26.2+
+
+### Bug Fixes
+
+- **sdks:** firebase-ios-sdk (requires Xcode 26.2+), firebase-android-sdk 34.12.0, firebase-js-sdk 12.12.0 ([c8c1fc1](https://github.com/invertase/react-native-firebase/commit/c8c1fc105f8e67914eea2f40ef727bc5a463fa40))
+
+## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
+
+**Note:** Version bump only for package @react-native-firebase/crashlytics
+
+## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
+
+### Bug Fixes
+
+- firebase-android-sdk 34.14.0, firebase-ios-sdk 12.11.0, firebase-js-sdk 12.14.0 ([65bbe94](https://github.com/invertase/react-native-firebase/commit/65bbe9435fb78bbb2ee4cba25b44b0199a61f030))
+
 ## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
 
 ### Bug Fixes

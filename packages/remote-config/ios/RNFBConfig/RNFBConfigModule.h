@@ -17,8 +17,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import <React/RCTBridgeModule.h>
+#import <React/RCTInvalidating.h>
+#import "RNFBRemoteConfigTurboModules.h"
 
-@interface RNFBConfigModule : NSObject <RCTBridgeModule>
+@interface RNFBConfigModule : NSObject <NativeRNFBTurboConfigSpec, RCTInvalidating>
 
 @end

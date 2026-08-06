@@ -16,7 +16,7 @@
  */
 
 import { isNumber } from '@react-native-firebase/app/dist/module/common';
-import FieldPath, { DOCUMENT_ID } from './FieldPath';
+import { FieldPath, DOCUMENT_ID, fieldPathOrSegmentsToNative } from './FieldPath';
 import type {
   DocumentFieldValueInternal,
   FirestoreCursorFieldsInternal,
@@ -118,14 +118,14 @@ export default class QueryModifiers {
   get filters(): FirestoreFilterSpecInternal[] {
     return this._filters.map(f => ({
       ...f,
-      fieldPath: f.fieldPath instanceof FieldPath ? f.fieldPath._toArray() : f.fieldPath,
+      fieldPath: fieldPathOrSegmentsToNative(f.fieldPath!),
     }));
   }
 
   get orders(): FirestoreOrderSpecInternal[] {
     return this._orders.map(f => ({
       ...f,
-      fieldPath: f.fieldPath instanceof FieldPath ? f.fieldPath._toArray() : f.fieldPath,
+      fieldPath: fieldPathOrSegmentsToNative(f.fieldPath),
     }));
   }
 

@@ -13,10 +13,42 @@ const ANDROID_EXECUTOR_PATH = join(
   ROOT,
   'packages/firestore/android/src/reactnative/java/io/invertase/firebase/firestore/ReactNativeFirebaseFirestorePipelineParser.java',
 );
+const ANDROID_NODE_BUILDER_PATH = join(
+  ROOT,
+  'packages/firestore/android/src/reactnative/java/io/invertase/firebase/firestore/ReactNativeFirebaseFirestorePipelineNodeBuilder.java',
+);
 const IOS_EXECUTOR_PATH = join(
   ROOT,
   'packages/firestore/ios/RNFBFirestore/RNFBFirestorePipelineParser.swift',
 );
+const IOS_NODE_BUILDER_PATH = join(
+  ROOT,
+  'packages/firestore/ios/RNFBFirestore/RNFBFirestorePipelineNodeBuilder.swift',
+);
+
+function extractJavaMethod(source: string, signature: string, nextSignature: string): string {
+  const start = source.indexOf(signature);
+  if (start === -1) {
+    throw new Error(`Could not find Java method "${signature}".`);
+  }
+  const end = source.indexOf(nextSignature, start + signature.length);
+  if (end === -1) {
+    throw new Error(`Could not find end marker "${nextSignature}" for "${signature}".`);
+  }
+  return source.slice(start, end);
+}
+
+function extractSwiftFunction(source: string, signature: string, nextSignature: string): string {
+  const start = source.indexOf(signature);
+  if (start === -1) {
+    throw new Error(`Could not find Swift function "${signature}".`);
+  }
+  const end = source.indexOf(nextSignature, start + signature.length);
+  if (end === -1) {
+    throw new Error(`Could not find end marker "${nextSignature}" for "${signature}".`);
+  }
+  return source.slice(start, end);
+}
 
 function extractQuotedList(source: string, marker: string, endMarker: string): string[] {
   const markerIndex = source.indexOf(marker);
@@ -78,5 +110,58 @@ describe('Firestore pipeline native parity', function () {
     expect(iosSource).toContain('does not support options.indexMode on iOS');
     expect(iosSource).toContain('does not support options.rawOptions on iOS');
     expect(iosSource).toContain('does not support pipeline.source.rawOptions');
+  });
+
+  it('keeps arrayFirst, arrayFirstN, and arraySlice on native lowering paths', function () {
+    const androidSource = readFileSync(ANDROID_NODE_BUILDER_PATH, 'utf8');
+    const iosSource = readFileSync(IOS_NODE_BUILDER_PATH, 'utf8');
+
+    expect(androidSource).toContain('currentExpression.arrayFirst()');
+    expect(androidSource).toContain('currentExpression.arrayFirstN');
+    expect(iosSource).toContain('"array_first"');
+    expect(iosSource).toContain('"array_first_n"');
+    expect(iosSource).toContain('"array_slice"');
+    expect(iosSource).toContain('pushArraySliceExpressionFrame');
+  });
+
+  it('preserves boolean constants and boolean logical/aggregate lowering on iOS', function () {
+    const androidSource = readFileSync(ANDROID_NODE_BUILDER_PATH, 'utf8');
+    const iosSource = readFileSync(IOS_NODE_BUILDER_PATH, 'utf8');
+
+    expect(iosSource).toContain('CFBooleanGetTypeID');
+    expect(iosSource).toContain('"xor"');
+    expect(iosSource).toContain('"nor"');
+    expect(iosSource).toContain('normalizedKind == "count_if"');
+    expect(iosSource).toContain('coerceBooleanExpression');
+
+    expect(androidSource).toContain('count_if');
+    expect(androidSource).toContain('coerceBooleanValueNode');
+  });
+
+  it('coerceDocumentPathValue uses resolved string after constant unwrapping on native builders', function () {
+    const androidSource = readFileSync(ANDROID_NODE_BUILDER_PATH, 'utf8');
+    const iosSource = readFileSync(IOS_NODE_BUILDER_PATH, 'utf8');
+
+    const androidFn = extractJavaMethod(
+      androidSource,
+      'private String coerceDocumentPathValue(Object value, String fieldName)',
+      'private Object resolveConstantValue(Object value, String fieldName)',
+    );
+    const iosFn = extractSwiftFunction(
+      iosSource,
+      'private func coerceDocumentPathValue(_ value: Any, fieldName: String) throws -> String {',
+      'private func buildParentExprBridge(referenceArg: ExprBridge) -> ExprBridge {',
+    );
+
+    expect(androidFn).toContain('unwrapConstantValue(map, fieldName)');
+    expect(androidFn).toContain('isSerializedReferencePathConstantMap(map)');
+    expect(androidFn).toContain('instanceof DocumentReference');
+    expect(androidFn).toContain('return coerceStringValue(resolved, fieldName);');
+    expect(androidFn).not.toContain('return coerceStringValue(value, fieldName);');
+
+    expect(iosFn).toContain('resolved as? DocumentReference');
+    expect(iosFn).toContain('isSerializedReferencePathConstantMap(map)');
+    expect(iosFn).toContain('return try coerceStringValue(resolved, fieldName: fieldName)');
+    expect(iosFn).not.toContain('return try coerceStringValue(value, fieldName: fieldName)');
   });
 });

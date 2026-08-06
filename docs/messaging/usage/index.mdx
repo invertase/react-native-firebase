@@ -1,7 +1,6 @@
 ---
 title: Cloud Messaging
 description: Installation and getting started with Cloud Messaging.
-icon: //firebase.google.com/static/images/products/icons/run_cloud_messaging.svg
 next: /messaging/usage/ios-setup
 previous: /functions/writing-deploying-functions
 ---
@@ -74,6 +73,15 @@ You may re-enable notification delegation if your use case requires it and you c
 
 You may also use the new messaging APIs to get and set the notification delegation state for the app, as desired.
 
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+**Platform notes:** `getAPNSToken` / `setAPNSToken` are **iOS only**. FCM foreground/background listeners use the legacy native event proxy (same runtime behavior as pre-v26). See [Migrating to v26 — Platform behavior differences](/migrating-to-v26#platform-behavior-differences).
+
 # What does it do
 
 React Native Firebase provides native integration of Firebase Cloud Messaging (FCM) for both Android & iOS. FCM is a cost
@@ -88,6 +96,8 @@ The module also provides basic support for displaying local notifications, to le
 
 ## iOS - Requesting permissions
 
+> **Deprecated:** `requestPermission`, `hasPermission`, and `AuthorizationStatus` are deprecated. Use [react-native-permissions](https://github.com/zoontek/react-native-permissions) or [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/) instead. See [issue #6283](https://github.com/invertase/react-native-firebase/issues/6283).
+
 iOS prevents messages containing notification (or 'alert') payloads from being displayed unless you have received explicit permission from the user.
 
 > To learn more about local notifications, view the [Notifications](/messaging/notifications) documentation.
@@ -95,13 +105,17 @@ iOS prevents messages containing notification (or 'alert') payloads from being d
 This module provides a `requestPermission` method which triggers a native permission dialog requesting the user's permission:
 
 ```js
-import messaging from '@react-native-firebase/messaging';
+import {
+  getMessaging,
+  requestPermission,
+  AuthorizationStatus,
+} from '@react-native-firebase/messaging';
 
 async function requestUserPermission() {
-  const authStatus = await messaging().requestPermission();
+  const messaging = getMessaging();
+  const authStatus = await requestPermission(messaging);
   const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    authStatus === AuthorizationStatus.AUTHORIZED || authStatus === AuthorizationStatus.PROVISIONAL;
 
   if (enabled) {
     console.log('Authorization status:', authStatus);
@@ -114,7 +128,9 @@ application. To learn more, view the advanced [iOS Permissions](/messaging/ios-p
 
 ## Android - Requesting permissions
 
-On Android API level 32 and below, you do not need to request user permission. This method can still be called on Android devices; however, and will always resolve successfully. For API level 33+ you will need to request the permission manually using either the built-in react-native `PermissionsAndroid` APIs or a related module such as `react-native-permissions`
+> **Deprecated:** `requestPermission` and `hasPermission` are deprecated no-ops on Android API level 32 and below. Use [react-native-permissions](https://github.com/zoontek/react-native-permissions) or [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/) for notification permission requests on API level 33+. See [issue #6283](https://github.com/invertase/react-native-firebase/issues/6283).
+
+On Android API level 32 and below, you do not need to request user permission. This method can still be called on Android devices; however, and will always resolve successfully. For API level 33+ you will need to request the permission manually using either the built-in react-native `PermissionsAndroid` APIs or a related module such as `react-native-permissions` or `expo-notifications`
 
 ```
   import {PermissionsAndroid} from 'react-native';
@@ -166,7 +182,7 @@ The device state and message contents determines which handler will be called:
   until the background message handler is registered via setBackgroundMessageHandler, signaling the application's javascript
   is loaded and ready to run.
 
-To learn more about how to send these options in your message payload, view the Firebase documentation for your [FCM API implementation](https://firebase.google.com/docs/cloud-messaging/concept-options).
+To learn more about how to send these options in your message payload, view the Firebase documentation for your [FCM API implementation](https://firebase.google.com/docs/cloud-messaging/customize-messages/setting-message-priority).
 
 ### Notifications
 
@@ -189,11 +205,12 @@ each time a message is delivered'
 ```js
 import React, { useEffect } from 'react';
 import { Alert } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
+import { getMessaging, onMessage } from '@react-native-firebase/messaging';
 
 function App() {
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
+    const messaging = getMessaging();
+    const unsubscribe = onMessage(messaging, async remoteMessage => {
       Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
     });
 
@@ -222,11 +239,13 @@ To setup a background handler, call the `setBackgroundMessageHandler` outside of
 ```jsx
 // index.js
 import { AppRegistry } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
+import { getMessaging, setBackgroundMessageHandler } from '@react-native-firebase/messaging';
 import App from './App';
 
+const messaging = getMessaging();
+
 // Register background handler
-messaging().setBackgroundMessageHandler(async remoteMessage => {
+setBackgroundMessageHandler(messaging, async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
 });
 
@@ -312,10 +331,12 @@ you can configure your `AppDelegate.m` file (see instructions below) to inject a
 ```jsx
 // index.js
 import { AppRegistry } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
+import { getMessaging, setBackgroundMessageHandler } from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
 
 // Handle background messages using setBackgroundMessageHandler
-messaging().setBackgroundMessageHandler(async remoteMessage => {
+setBackgroundMessageHandler(messaging, async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
 });
 
@@ -356,11 +377,13 @@ self.initialProps = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunc
 - For projects that use react-native-navigation (or if you just don't want to mess with your launchProperties) you can use the `getIsHeadless` method (iOS only) from messaging like so:
 
 ```jsx
-messaging()
-  .getIsHeadless()
-  .then(isHeadless => {
-    // do sth with isHeadless
-  });
+import { getMessaging, getIsHeadless } from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
+
+getIsHeadless(messaging).then(isHeadless => {
+  // do sth with isHeadless
+});
 ```
 
 On Android, the `isHeadless` prop will not exist.
@@ -396,9 +419,11 @@ documentation.
 To subscribe a device, call the `subscribeToTopic` method with the topic name (must not include "/"):
 
 ```js
-messaging()
-  .subscribeToTopic('weather')
-  .then(() => console.log('Subscribed to topic!'));
+import { getMessaging, subscribeToTopic } from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
+
+subscribeToTopic(messaging, 'weather').then(() => console.log('Subscribed to topic!'));
 ```
 
 #### Unsubscribing to topics
@@ -406,9 +431,11 @@ messaging()
 To unsubscribe from a topic, call the `unsubscribeFromTopic` method with the topic name:
 
 ```js
-messaging()
-  .unsubscribeFromTopic('weather')
-  .then(() => console.log('Unsubscribed fom the topic!'));
+import { getMessaging, unsubscribeFromTopic } from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
+
+unsubscribeFromTopic(messaging, 'weather').then(() => console.log('Unsubscribed fom the topic!'));
 ```
 
 # firebase.json
@@ -433,12 +460,24 @@ Once auto-registration is disabled you must manually call `registerDeviceForRemo
 early as possible in your application startup;
 
 ```js
-import messaging from '@react-native-firebase/messaging';
+import { getMessaging, registerDeviceForRemoteMessages } from '@react-native-firebase/messaging';
 
 async function registerAppWithFCM() {
-  await messaging().registerDeviceForRemoteMessages();
+  await registerDeviceForRemoteMessages(getMessaging());
 }
 ```
+
+> **ARM64 iOS Simulator:** React Native Firebase intentionally does **not** call UIKit
+> `registerForRemoteNotifications` on Apple Silicon Simulator builds (registration,
+> auto-registration, and `requestPermission`'s APNs side-effect). Calling that API can block the
+> main thread indefinitely. `registerDeviceForRemoteMessages` therefore stays pending until a
+> ~10 second **global-queue** timer rejects with `messaging/registration-timeout`.
+> `requestPermission` still resolves with `AuthorizationStatus` (it does **not** reject with that
+> code). You will not get a real APNs device token on that simulator — use a physical iOS device
+> when you need end-to-end push registration. If `registerDeviceForRemoteMessages` is called again
+> before a prior attempt settles, the earlier promise rejects with
+> `messaging/registration-superseded`. See
+> [Migrating to v26 — iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
 
 ## Foreground Presentation Options (iOS)
 
@@ -472,7 +511,7 @@ If you prefer to prevent Instance ID auto-generation, disable auto initializatio
 }
 ```
 
-To re-enable initialization (e.g. once requested permission) call the `messaging().setAutoInitEnabled(true)` method.
+To re-enable initialization (e.g. once requested permission) call the `setAutoInitEnabled(messaging, true)` method.
 
 ## Background handler timeout (Android)
 

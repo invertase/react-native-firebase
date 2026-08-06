@@ -17,7 +17,7 @@ access to the current navigation state when a screen changes, allowing you to us
 method the Analytics library provides:
 
 ```jsx
-import analytics from '@react-native-firebase/analytics';
+import { getAnalytics, logScreenView } from '@react-native-firebase/analytics';
 import { NavigationContainer } from '@react-navigation/native';
 
 const App = () => {
@@ -34,7 +34,7 @@ const App = () => {
         const currentRouteName = navigationRef.current.getCurrentRoute().name;
 
         if (previousRouteName !== currentRouteName) {
-          await analytics().logScreenView({
+          await logScreenView(getAnalytics(), {
             screen_name: currentRouteName,
             screen_class: currentRouteName,
           });
@@ -60,12 +60,12 @@ for React Native apps. To manually track screens, you need to setup a `component
 [`logScreenView`](https://invertase.github.io/react-native-firebase/_react-native-firebase/analytics/modular/logScreenView.html) method the Analytics library provides:
 
 ```js
-import analytics from '@react-native-firebase/analytics';
+import { getAnalytics, logScreenView } from '@react-native-firebase/analytics';
 import { Navigation } from 'react-native-navigation';
 
 Navigation.events().registerComponentDidAppearListener(async ({ componentName, componentType }) => {
   if (componentType === 'Component') {
-    await analytics().logScreenView({
+    await logScreenView(getAnalytics(), {
       screen_name: componentName,
       screen_class: componentName,
     });

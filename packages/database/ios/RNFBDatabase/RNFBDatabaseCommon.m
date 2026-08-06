@@ -17,6 +17,7 @@
 
 #import "RNFBDatabaseCommon.h"
 #import "RNFBApp/RNFBSharedUtils.h"
+#import "RNFBDatabaseQueue.h"
 #import "RNFBPreferences.h"
 
 static __strong NSMutableDictionary *references;
@@ -34,15 +35,6 @@ NSString *const childKeysKey = @"childKeys";
 + (void)load {
   references = [NSMutableDictionary dictionary];
   configSettingsLock = [NSMutableDictionary dictionary];
-}
-
-+ (dispatch_queue_t)getDispatchQueue {
-  static dispatch_once_t once;
-  __strong static dispatch_queue_t sharedInstance;
-  dispatch_once(&once, ^{
-    sharedInstance = dispatch_queue_create("io.invertase.firebase.database", DISPATCH_QUEUE_SERIAL);
-  });
-  return sharedInstance;
 }
 
 + (FIRDatabase *)getDatabaseForApp:(FIRApp *)firebaseApp dbURL:(NSString *)dbURL {
@@ -75,7 +67,7 @@ NSString *const childKeysKey = @"childKeys";
   RNFBPreferences *preferences = [RNFBPreferences shared];
 
   @try {
-    firDatabase.callbackQueue = [RNFBDatabaseCommon getDispatchQueue];
+    firDatabase.callbackQueue = [RNFBDatabaseQueue getDispatchQueue];
     // Persistence enabled
     BOOL *persistenceEnabled = (BOOL *)[preferences getBooleanValue:DATABASE_PERSISTENCE_ENABLED
                                                        defaultValue:false];

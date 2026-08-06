@@ -18,30 +18,117 @@ const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers
  *
  */
 
-exports.wipe = async function wipe(debug = false, databaseId = '(default)') {
-  const deleteOptions = {
-    method: 'DELETE',
-    headers: {
-      // Undocumented, but necessary - from Emulator UI network requests
-      Authorization: 'Bearer owner',
-    },
-    port: 8080,
-    host: getE2eEmulatorHost(),
-    path: '/emulator/v1/projects/' + getE2eTestProject() + `/databases/${databaseId}/documents`,
-  };
+exports.wipe = async function wipe(debug = false, databaseId = '(default)', retries = 3) {
+  const host = getE2eEmulatorHost();
+  const url =
+    `http://${host}:8080/emulator/v1/projects/` +
+    getE2eTestProject() +
+    `/databases/${databaseId}/documents`;
 
-  try {
-    if (debug) {
-      console.time('wipe');
+  let lastError;
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      if (debug) {
+        console.time('wipe');
+      }
+
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          // Undocumented, but necessary - from Emulator UI network requests
+          Authorization: 'Bearer owner',
+        },
+      });
+
+      if (!response.ok) {
+        const body = await response.text();
+        throw new Error(`Firestore wipe failed: HTTP ${response.status} ${body.slice(0, 200)}`);
+      }
+
+      if (debug) {
+        console.timeEnd('wipe');
+      }
+
+      return;
+    } catch (e) {
+      lastError = e;
+      const message = e?.message || String(e);
+      console.error(`Unable to wipe firestore (attempt ${attempt}/${retries}): ${message}`);
+      if (attempt < retries) {
+        await new Promise(resolve => setTimeout(resolve, 250 * attempt));
+      }
     }
-    await fetch(
-      `http://${deleteOptions.host}:${deleteOptions.port}${deleteOptions.path}`,
-      deleteOptions,
-    );
-  } catch (e) {
-    console.error('Unable to wipe firestore:', e);
-    throw e;
   }
+
+  throw lastError;
+};
+
+function toFirestoreValue(value) {
+  if (value === null) {
+    return { nullValue: null };
+  }
+
+  if (Array.isArray(value)) {
+    return { arrayValue: { values: value.map(toFirestoreValue) } };
+  }
+
+  if (typeof value === 'boolean') {
+    return { booleanValue: value };
+  }
+
+  if (typeof value === 'number') {
+    if (Number.isInteger(value)) {
+      return { integerValue: String(value) };
+    }
+    return { doubleValue: value };
+  }
+
+  if (typeof value === 'string') {
+    return { stringValue: value };
+  }
+
+  if (typeof value === 'object') {
+    const fields = {};
+    for (const [key, nestedValue] of Object.entries(value)) {
+      fields[key] = toFirestoreValue(nestedValue);
+    }
+    return { mapValue: { fields } };
+  }
+
+  throw new Error(`Unsupported Firestore REST value type: ${typeof value}`);
+}
+
+exports.setDocumentOutOfBand = async function setDocumentOutOfBand(
+  path,
+  data,
+  databaseId = '(default)',
+) {
+  const url =
+    `http://${getE2eEmulatorHost()}:8080/v1/projects/` +
+    getE2eTestProject() +
+    `/databases/${databaseId}/documents/${path}`;
+
+  const fields = {};
+  for (const [key, value] of Object.entries(data)) {
+    fields[key] = toFirestoreValue(value);
+  }
+
+  const response = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Authorization: 'Bearer owner',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ fields }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Unable to set out-of-band firestore document: ${response.status} ${body}`);
+  }
+
+  return response.json();
 };
 
 exports.BUNDLE_QUERY_NAME = 'named-bundle-test';

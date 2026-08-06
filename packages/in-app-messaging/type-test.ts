@@ -1,73 +1,43 @@
-import inAppMessaging, {
-  firebase,
+import { getApp } from '@react-native-firebase/app';
+import {
   getInAppMessaging,
   isMessagesDisplaySuppressed,
   setMessagesDisplaySuppressed,
   isAutomaticDataCollectionEnabled,
   setAutomaticDataCollectionEnabled,
   triggerEvent,
+  SDK_VERSION,
+  type InAppMessaging,
 } from '.';
 
-console.log(inAppMessaging().app);
+// modular API functions
+const modularInAppMessaging1 = getInAppMessaging();
+console.log(modularInAppMessaging1.app.name);
 
-// checks module exists at root
-console.log(firebase.inAppMessaging().app.name);
-console.log(firebase.inAppMessaging().isMessagesDisplaySuppressed);
-console.log(firebase.inAppMessaging().isAutomaticDataCollectionEnabled);
+const modularInAppMessaging2 = getInAppMessaging(getApp());
+console.log(modularInAppMessaging2.app.name);
 
-// checks module exists at app level
-console.log(firebase.app().inAppMessaging().app.name);
-console.log(firebase.app().inAppMessaging().isMessagesDisplaySuppressed);
-console.log(firebase.app().inAppMessaging().isAutomaticDataCollectionEnabled);
+// modular public types
+const modularInstance: InAppMessaging = getInAppMessaging();
+const modularWithNamedApp: InAppMessaging = getInAppMessaging(getApp());
+console.log(modularInstance.app.name);
+console.log(modularWithNamedApp.app.name);
 
-// checks statics exist
-console.log(firebase.inAppMessaging.SDK_VERSION);
+console.log(isMessagesDisplaySuppressed(modularInstance));
+console.log(isAutomaticDataCollectionEnabled(modularInstance));
 
-// checks statics exist on defaultExport
-console.log(inAppMessaging.firebase.SDK_VERSION);
-
-// checks root exists
-console.log(firebase.SDK_VERSION);
-
-// checks multi-app support exists (note: in-app-messaging doesn't support multi-app, but test the pattern)
-console.log(firebase.inAppMessaging().app.name);
-
-// checks default export supports app arg
-console.log(inAppMessaging().app.name);
-
-// checks Module instance APIs
-const inAppMessagingInstance = firebase.inAppMessaging();
-console.log(inAppMessagingInstance.isMessagesDisplaySuppressed);
-console.log(inAppMessagingInstance.isAutomaticDataCollectionEnabled);
-
-inAppMessagingInstance.setMessagesDisplaySuppressed(true).then(() => {
-  console.log('Messages display suppressed');
-});
-
-inAppMessagingInstance.setAutomaticDataCollectionEnabled(false).then(() => {
-  console.log('Automatic data collection disabled');
-});
-
-inAppMessagingInstance.triggerEvent('test-event').then(() => {
-  console.log('Event triggered');
-});
-
-// checks modular API functions
-const modularInAppMessaging = getInAppMessaging();
-console.log(modularInAppMessaging.app.name);
-
-console.log(isMessagesDisplaySuppressed(modularInAppMessaging));
-
-setMessagesDisplaySuppressed(modularInAppMessaging, true).then(() => {
+setMessagesDisplaySuppressed(modularInstance, true).then(() => {
   console.log('Modular messages display suppressed');
 });
 
-console.log(isAutomaticDataCollectionEnabled(modularInAppMessaging));
-
-setAutomaticDataCollectionEnabled(modularInAppMessaging, false).then(() => {
+setAutomaticDataCollectionEnabled(modularInstance, false).then(() => {
   console.log('Modular automatic data collection disabled');
 });
 
-triggerEvent(modularInAppMessaging, 'modular-test-event').then(() => {
+triggerEvent(modularInstance, 'modular-test-event').then(() => {
   console.log('Modular event triggered');
 });
+
+// named SDK_VERSION export
+const sdkVersion: string = SDK_VERSION;
+console.log(sdkVersion);

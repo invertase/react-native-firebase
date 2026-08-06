@@ -15,7 +15,6 @@
  *
  */
 
-import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import type { FirestoreInternal } from './types/internal';
 import type { DocumentData, FirestoreDataConverter } from './types/firestore';
@@ -28,7 +27,15 @@ const TYPE_MAP: Record<string, 'added' | 'modified' | 'removed'> = {
 
 export interface DocumentChangeNativeData {
   type: string;
-  doc: { path: string; data?: unknown; metadata?: [boolean, boolean]; exists?: boolean };
+  doc: {
+    path: string;
+    data?: unknown;
+    dataEstimate?: unknown;
+    dataPrevious?: unknown;
+    dataNone?: unknown;
+    metadata?: [boolean, boolean];
+    exists?: boolean;
+  };
   ni: number;
   oi: number;
   isMetadataChange?: boolean;
@@ -52,8 +59,10 @@ export default class DocumentChange {
   }
 
   get doc(): DocumentSnapshot {
-    return createDeprecationProxy(
-      new DocumentSnapshot(this._firestore, this._nativeData.doc, this._converter),
+    return new DocumentSnapshot(
+      this._firestore,
+      this._nativeData.doc,
+      this._converter,
     ) as DocumentSnapshot;
   }
 

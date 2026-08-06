@@ -10,12 +10,14 @@
 import { getRemoteConfig } from 'firebase-admin/remote-config';
 import { logger } from 'firebase-functions/v2';
 import { CallableRequest, onCall } from 'firebase-functions/v2/https';
+import { E2E_TEST_FUNCTION_TIMEOUT_SECONDS } from './e2eCallOptions';
 import { getAdminApp } from '.';
 
 export const testFunctionRemoteConfigUpdateV2 = onCall(
   {
     maxInstances: 1,
     concurrency: 1,
+    timeoutSeconds: E2E_TEST_FUNCTION_TIMEOUT_SECONDS,
   },
   async (
     req: CallableRequest<{

@@ -133,8 +133,8 @@ class AppDelegate: ExpoAppDelegate {
   });
 
   it('does not add the firebase import multiple times', async function () {
-    const singleImport = '#import "AppDelegate.h"\n#import <RNFBAppCheckModule.h>';
-    const doubleImport = singleImport + '\n#import <RNFBAppCheckModule.h>';
+    const singleImport = '#import "AppDelegate.h"\n#import "RNFBAppCheckModule.h"';
+    const doubleImport = singleImport + '\n#import "RNFBAppCheckModule.h"';
 
     const appDelegate = await fs.readFile(path.join(__dirname, './fixtures/AppDelegate_sdk45.mm'), {
       encoding: 'utf8',
@@ -150,21 +150,34 @@ class AppDelegate: ExpoAppDelegate {
     expect(twiceModifiedAppDelegate).not.toContain(doubleImport);
   });
 
+  it('normalizes legacy angle-bracket AppCheck imports to quoted style', function () {
+    const objcWithAngle =
+      '#import "AppDelegate.h"\n#import <RNFBAppCheckModule.h>\n\n- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions\n{\n  self.moduleName = @"main";\n  return YES;\n}\n';
+    const objcNormalized = modifyObjcAppDelegate(objcWithAngle);
+    expect(objcNormalized).toContain('#import "RNFBAppCheckModule.h"');
+    expect(objcNormalized).not.toContain('#import <RNFBAppCheckModule.h>');
+
+    const bridgingWithAngle = '// header\n#import <RNFBAppCheckModule.h>\n';
+    const bridgingNormalized = modifySwiftBridgingHeaderContents(bridgingWithAngle);
+    expect(bridgingNormalized).toContain('#import "RNFBAppCheckModule.h"');
+    expect(bridgingNormalized).not.toContain('#import <RNFBAppCheckModule.h>');
+  });
+
   it('makes sure bridging header is added', async function () {
     const swiftBridgingHeader = `//
 // Use this file to import your target's public headers that you would like to expose to Swift.
 //
 `;
     const onceModifiedContents = modifySwiftBridgingHeaderContents(swiftBridgingHeader);
-    expect(onceModifiedContents).toContain('#import <RNFBAppCheckModule.h>');
+    expect(onceModifiedContents).toContain('#import "RNFBAppCheckModule.h"');
 
     // Count occurrences of the import
-    const importCount = (onceModifiedContents.match(/import <RNFBAppCheckModule.h>/g) || []).length;
+    const importCount = (onceModifiedContents.match(/import "RNFBAppCheckModule.h"/g) || []).length;
     expect(importCount).toBe(1);
 
     // Modify a second time and ensure imports aren't duplicated
     const twiceModifiedContents = modifySwiftBridgingHeaderContents(onceModifiedContents);
-    const secondImportCount = (twiceModifiedContents.match(/import <RNFBAppCheckModule.h>/g) || [])
+    const secondImportCount = (twiceModifiedContents.match(/import "RNFBAppCheckModule.h"/g) || [])
       .length;
     expect(secondImportCount).toBe(1);
   });

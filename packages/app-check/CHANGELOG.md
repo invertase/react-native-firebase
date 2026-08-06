@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.1.0](https://github.com/invertase/react-native-firebase/compare/v26.0.0...v26.1.0) (2026-08-03)
+
+### Features
+
+- **ios:** add SPM dependency resolution support alongside CocoaPods ([#8933](https://github.com/invertase/react-native-firebase/issues/8933)) ([44a7a9a](https://github.com/invertase/react-native-firebase/commit/44a7a9ae7b404f412e9766c0417f1df8fa971a0b))
+
+## [26.0.0](https://github.com/invertase/react-native-firebase/compare/v25.1.0...v26.0.0) (2026-07-29)
+
+### ⚠ BREAKING CHANGES
+
+- logEvent, initializeAppCheck, and initializeFirestore return
+  synchronously; remove await and .then() chains on these APIs.
+
+* Analytics: align logEvent return type with firebase-js-sdk sync void.
+* App Check: align initializeAppCheck with sync AppCheck return.
+* Firestore: align initializeFirestore with sync Firestore return.
+* Firestore: export aggregateFieldEqual for aggregate query parity.
+* Remote Config: accept RemoteConfigOptions in getRemoteConfig.
+* Remote Config: document native FetchStatus literals as intentional drift.
+* Docs: add firebase-js-sdk API parity improvements to v26 migration guide.
+
+- **app-check:** migrate app-check to TurboModules
+
+- refactor!(types): align modular APIs with firebase-js-sdk sync signatures ([b42d1f7](https://github.com/invertase/react-native-firebase/commit/b42d1f7dd2629184e26ab71936ab1d47878d0f64))
+
+### Features
+
+- **app-check:** migrate app-check to TurboModules ([b93a70a](https://github.com/invertase/react-native-firebase/commit/b93a70a7398538750528ce144cb8e367fd25a0da))
+
+### Bug Fixes
+
+- add codegen verify and spec-native parity tests ([49d9f1b](https://github.com/invertase/react-native-firebase/commit/49d9f1baba4fc83c1dd4983f582bbd7352d78809))
+- **app-check:** guard missing initializeAppCheck options at runtime ([a4b3407](https://github.com/invertase/react-native-firebase/commit/a4b34073b1e9471826bd60ceb75e580e9b471651))
+- **app-check:** validate provider name and error on unrecognized values ([#9106](https://github.com/invertase/react-native-firebase/issues/9106)) ([9be83d9](https://github.com/invertase/react-native-firebase/commit/9be83d993d47be1775db5fb66637bc3505fb2a52))
+- **ios:** private codegen headers and bridging-safe AppCheck module ([266d7e1](https://github.com/invertase/react-native-firebase/commit/266d7e10020662bfd357d1795bc5f6cfde54f7b7))
+- **ios:** set IPHONEOS_DEPLOYMENT_TARGET to 15.0, update platform support docs/conditionals ([#9108](https://github.com/invertase/react-native-firebase/issues/9108)) ([99d0899](https://github.com/invertase/react-native-firebase/commit/99d089908e3eec6155d73ecf05ff7274ad33c46e)), closes [#8882](https://github.com/invertase/react-native-firebase/issues/8882)
+- **types:** align compare-types modular API with firebase-js-sdk ([5376e75](https://github.com/invertase/react-native-firebase/commit/5376e757f7dd7f7cffc9907c652d873d2403e23f))
+
+## [25.1.0](https://github.com/invertase/react-native-firebase/compare/v25.0.1...v25.1.0) (2026-06-25)
+
+**Note:** Version bump only for package @react-native-firebase/app-check
+
+## [25.0.1](https://github.com/invertase/react-native-firebase/compare/v25.0.0...v25.0.1) (2026-06-23)
+
+**Note:** Version bump only for package @react-native-firebase/app-check
+
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **app-check:** AppCheck has had all types moved to conform to firebase-js-sdk typescript types
+
+Please see https://rnfirebase.io/migrating-to-v25 for help migrating if needed
+
+react-native-firebase has a goal to be a drop-in replacement for firebase-js-sdk, with native extensions and performance. It has always worked that way at the javascript level but the typescript types have been divergent
+
+We are fixing that as we refactor to typescript. Please bear with us as we get closer to our goal of react-native-firebase matching firebase-js-sdk both in functionality where possible, but also in exact typescript typing.
+
+Specifics for AppCheck:
+
+modular AppCheck now matches firebase-js-sdk (no instance methods); use modular functions like initializeAppCheck, getToken, getLimitedUseToken, setTokenAutoRefreshEnabled, onTokenChanged instead, matching firebase-js-sdk.
+modular onTokenChanged callback result type changed from AppCheckListenerResult to AppCheckTokenResult
+FirebaseApp is no longer exported from @react-native-firebase/app-check; import FirebaseApp from @react-native-firebase/app
+modular type exports no longer include the old statics-based surface (e.g. AppCheckStatics), aligning closer to firebase-js-sdk
+FirebaseAppCheckTypes is now a type-only export (no runtime export); update any value imports to import type
+chore React-Native-Specific provider classes were moved into lib/providers.ts (exports updated)
+
+### Code Refactoring
+
+- **app-check:** match AppCheck type with firebase-js-sdk ([#8889](https://github.com/invertase/react-native-firebase/issues/8889)) ([71e8eb5](https://github.com/invertase/react-native-firebase/commit/71e8eb5773851846be3abe97632f7b6f60f68a6c))
+
+## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
+
+**Note:** Version bump only for package @react-native-firebase/app-check
+
+## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
+
+**Note:** Version bump only for package @react-native-firebase/app-check
+
 ## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
 
 ### Bug Fixes

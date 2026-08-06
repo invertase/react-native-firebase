@@ -1,5 +1,8 @@
 /* eslint-disable no-console */
 const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers');
+// Shared Latin1 btoa — do not use Node Buffer / globalThis.btoa (Other/HermesVM).
+// Same import path as app-check & installations e2e.
+const { Base64 } = require('@react-native-firebase/app/dist/module/common');
 
 // Call HTTP REST API URL and return JSON response parsed into object
 const callRestApi = async function callRestAPI(url, returnRedirectUrl = false) {
@@ -20,6 +23,40 @@ function getRandomPhoneNumber() {
   return '+593' + Utils.randString(9, '#19');
 }
 exports.getRandomPhoneNumber = getRandomPhoneNumber;
+
+/**
+ * Mint a Firebase Auth custom token accepted by the Auth emulator.
+ *
+ * The emulator does not validate JWT signature or expiry, so a hand-crafted
+ * unsigned token is enough for e2e (no Admin SDK / api.rnfirebase.io).
+ * @see https://firebase.google.com/docs/emulator-suite/connect_auth#custom_token_authentication
+ */
+function base64UrlEncodeJson(value) {
+  return Base64.btoa(JSON.stringify(value))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/g, '');
+}
+
+exports.createEmulatorCustomToken = function createEmulatorCustomToken(uid, claims) {
+  if (!uid || typeof uid !== 'string') {
+    throw new Error('createEmulatorCustomToken: uid is required');
+  }
+  const now = Math.floor(Date.now() / 1000);
+  const serviceAccount = `firebase-adminsdk@${getE2eTestProject()}.iam.gserviceaccount.com`;
+  const payload = {
+    uid,
+    iat: now,
+    exp: now + 3600,
+    aud: 'https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit',
+    iss: serviceAccount,
+    sub: serviceAccount,
+  };
+  if (claims && typeof claims === 'object' && Object.keys(claims).length > 0) {
+    payload.claims = claims;
+  }
+  return `${base64UrlEncodeJson({ alg: 'none', typ: 'JWT' })}.${base64UrlEncodeJson(payload)}.`;
+};
 
 exports.clearAllUsers = async function clearAllUsers() {
   // console.error('auth::helpers::clearAllUsers');

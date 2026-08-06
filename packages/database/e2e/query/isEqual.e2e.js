@@ -16,43 +16,44 @@
  */
 
 describe('database().ref().isEqual()', function () {
-  beforeEach(async function beforeEachTest() {
-    // @ts-ignore
-    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-  });
+  describe('modular', function () {
+    it('throws if limit other param is not a query instance', async function () {
+      const { getDatabase, ref } = databaseModular;
 
-  afterEach(async function afterEachTest() {
-    // @ts-ignore
-    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-  });
+      try {
+        ref(getDatabase()).isEqual('foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'other' must be an instance of Query.");
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if limit other param is not a query instance', async function () {
-    try {
-      await firebase.database().ref().isEqual('foo');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'other' must be an instance of Query.");
-      return Promise.resolve();
-    }
-  });
+    it('returns true if the query is the same instance', async function () {
+      const { getDatabase, ref } = databaseModular;
 
-  it('returns true if the query is the same instance', async function () {
-    const query = await firebase.database().ref();
-    const same = query.isEqual(query);
-    same.should.eql(true);
-  });
+      const dbRef = ref(getDatabase());
+      const same = dbRef.isEqual(dbRef);
+      same.should.eql(true);
+    });
 
-  it('returns false if the query is different', async function () {
-    const query = await firebase.database().ref();
-    const other = await firebase.database().ref().limitToLast(2);
-    const same = query.isEqual(other);
-    same.should.eql(false);
-  });
+    it('returns false if the query is different', async function () {
+      const { getDatabase, ref, limitToLast, query } = databaseModular;
 
-  it('returns true if the query is created differently', async function () {
-    const query = await firebase.database().ref().limitToFirst(1).orderByChild('foo');
-    const other = await firebase.database().ref().orderByChild('foo').limitToFirst(1);
-    const same = query.isEqual(other);
-    same.should.eql(true);
+      const dbRef = ref(getDatabase());
+      const other = query(dbRef, limitToLast(2));
+      const same = dbRef.isEqual(other);
+      same.should.eql(false);
+    });
+
+    it('returns true if the query is created differently', async function () {
+      const { getDatabase, ref, limitToFirst, orderByChild, query } = databaseModular;
+
+      const dbRef = ref(getDatabase());
+      const dbQuery = query(dbRef, limitToFirst(1), orderByChild('foo'));
+      const other = query(dbRef, orderByChild('foo'), limitToFirst(1));
+      const same = dbQuery.isEqual(other);
+      same.should.eql(true);
+    });
   });
 });

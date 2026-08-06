@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import { describe, expect, it } from '@jest/globals';
-import { Schema } from '../lib/requests/schema-builder';
+import { AnyOfSchema, Schema } from '../lib/requests/schema-builder';
 import { AIErrorCode } from '../lib/types';
 
 describe('Schema builder', () => {
@@ -127,6 +127,80 @@ describe('Schema builder', () => {
       },
       required: ['someInput'],
     });
+  });
+
+  it('builds an anyOf schema', () => {
+    const schema = Schema.anyOf({
+      description: 'string or object',
+      anyOf: [
+        Schema.string(),
+        Schema.object({
+          properties: {
+            count: Schema.integer(),
+          },
+        }),
+      ],
+    });
+
+    expect(schema).toBeInstanceOf(AnyOfSchema);
+    expect(schema.toJSON()).toEqual({
+      type: undefined,
+      description: 'string or object',
+      anyOf: [
+        {
+          type: 'string',
+          nullable: false,
+        },
+        {
+          type: 'object',
+          nullable: false,
+          properties: {
+            count: {
+              type: 'integer',
+              nullable: false,
+            },
+          },
+          required: ['count'],
+        },
+      ],
+      nullable: false,
+    });
+  });
+
+  it('serializes anyOf schemas nested inside object schemas', () => {
+    const schema = Schema.object({
+      properties: {
+        value: Schema.anyOf({
+          anyOf: [Schema.string(), Schema.number()],
+        }),
+      },
+    });
+
+    expect(schema.toJSON()).toEqual({
+      type: 'object',
+      nullable: false,
+      properties: {
+        value: {
+          type: undefined,
+          anyOf: [
+            {
+              type: 'string',
+              nullable: false,
+            },
+            {
+              type: 'number',
+              nullable: false,
+            },
+          ],
+          nullable: false,
+        },
+      },
+      required: ['value'],
+    });
+  });
+
+  it('throws if anyOf is empty', () => {
+    expect(() => Schema.anyOf({ anyOf: [] })).toThrow(AIErrorCode.INVALID_SCHEMA);
   });
 
   it('builds layered schema - partially filled out', () => {

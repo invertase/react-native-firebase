@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig.packages.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "rootDir": ".",
     "paths": {
       "@react-native-firebase/app/dist/module/common": ["../app/dist/typescript/lib/common"],

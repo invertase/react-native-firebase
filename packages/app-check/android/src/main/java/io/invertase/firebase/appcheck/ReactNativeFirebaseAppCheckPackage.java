@@ -30,7 +30,7 @@ public class ReactNativeFirebaseAppCheckPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebaseAppCheckModule(reactContext));
+    modules.add(new NativeRNFBTurboAppCheck(reactContext));
     return modules;
   }
 

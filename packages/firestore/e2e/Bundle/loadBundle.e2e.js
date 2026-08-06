@@ -17,52 +17,13 @@
 const { wipe, getBundle, BUNDLE_COLLECTION } = require('../helpers');
 
 describe('firestore().loadBundle()', function () {
-  // Not supported on web.
+  // Not supported on web lite SDK.
   if (Platform.other) {
     return;
   }
 
   before(async function () {
     return await wipe();
-  });
-
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('loads the bundle contents', async function () {
-      const bundle = getBundle();
-      const task = firebase.firestore().loadBundle(bundle);
-      task.onProgress();
-      const progress = await task;
-      const query = firebase.firestore().collection(BUNDLE_COLLECTION);
-      const snapshot = await query.get({ source: 'cache' });
-
-      progress.taskState.should.eql('Success');
-      progress.documentsLoaded.should.eql(6);
-      snapshot.size.should.eql(6);
-    });
-
-    it('throws if invalid bundle', async function () {
-      try {
-        await firebase.firestore().loadBundle('not-a-bundle');
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (_) {
-        /*
-         * Due to inconsistent error throws between Android and iOS Firebase SDK,
-         * it is not able to test a specific error message.
-         * Android SDK throws 'invalid-arguments', while iOS SDK throws 'unknown'
-         */
-        return Promise.resolve();
-      }
-    });
   });
 
   describe('modular', function () {

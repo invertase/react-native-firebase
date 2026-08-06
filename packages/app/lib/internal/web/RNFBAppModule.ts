@@ -71,7 +71,12 @@ function eventsSendEvent(eventName: string, eventBody: any): void {
     queuedEvents.push(event);
     return;
   }
-  setImmediate(() => DeviceEventEmitter.emit('rnfb_' + eventName, eventBody));
+  const emit = () => DeviceEventEmitter.emit('rnfb_' + eventName, eventBody);
+  if (typeof setImmediate === 'function') {
+    setImmediate(emit);
+  } else {
+    setTimeout(emit, 0);
+  }
 }
 
 function eventsSendQueuedEvents(): void {
@@ -251,7 +256,11 @@ export default {
   eventsNotifyReady(ready: boolean): void {
     jsReady = ready;
     if (jsReady) {
-      setImmediate(() => eventsSendQueuedEvents());
+      if (typeof setImmediate === 'function') {
+        setImmediate(() => eventsSendQueuedEvents());
+      } else {
+        setTimeout(() => eventsSendQueuedEvents(), 0);
+      }
     }
   },
 
@@ -289,7 +298,11 @@ export default {
         jsListeners[eventName]++;
       }
     }
-    setImmediate(() => eventsSendQueuedEvents());
+    if (typeof setImmediate === 'function') {
+      setImmediate(() => eventsSendQueuedEvents());
+    } else {
+      setTimeout(() => eventsSendQueuedEvents(), 0);
+    }
   },
 
   /**

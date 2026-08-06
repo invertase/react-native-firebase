@@ -15,14 +15,21 @@
  *
  */
 
-import { isObject, createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
+import { isObject } from '@react-native-firebase/app/dist/module/common';
 import DocumentReference from './FirestoreDocumentReference';
 import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import type { DocumentSnapshotNativeData } from './FirestoreDocumentSnapshot';
 import { parseSetOptions, parseUpdateArgs, applyFirestoreDataConverter } from './utils';
 import { buildNativeMap } from './utils/serialize';
 import type { FirestoreInternal } from './types/internal';
-import type { SetOptions } from './types/firestore';
+import type {
+  DocumentData,
+  DocumentReference as DocumentReferenceType,
+  DocumentSnapshot as DocumentSnapshotType,
+  PartialWithFieldValue,
+  SetOptions,
+  WithFieldValue,
+} from './types/firestore';
 
 export interface TransactionMeta {
   id: number;
@@ -68,7 +75,9 @@ export default class Transaction {
   /**
    * Reads the document referenced by the provided DocumentReference.
    */
-  get(documentRef: DocumentReference): Promise<DocumentSnapshot> {
+  get<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    documentRef: DocumentReferenceType<AppModelType, DbModelType>,
+  ): Promise<DocumentSnapshotType<AppModelType, DbModelType>> {
     if (!(documentRef instanceof DocumentReference)) {
       throw new Error(
         "firebase.firestore().runTransaction() Transaction.get(*) 'documentRef' expected a DocumentReference.",
@@ -78,17 +87,33 @@ export default class Transaction {
     this._calledGetCount++;
     return this._firestore.native
       .transactionGetDocument(this._meta.id, documentRef.path)
-      .then((data: unknown) =>
-        createDeprecationProxy(
-          new DocumentSnapshot(this._firestore, data as DocumentSnapshotNativeData, null),
-        ),
+      .then(
+        (data: unknown) =>
+          new DocumentSnapshot(
+            this._firestore,
+            data as DocumentSnapshotNativeData,
+            documentRef.converter,
+          ) as unknown as DocumentSnapshotType<AppModelType, DbModelType>,
       );
   }
 
   /**
    * Writes to the document referred to by the provided DocumentReference.
    */
-  set(documentRef: DocumentReference, data: Record<string, unknown>, options?: SetOptions): this {
+  set<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    documentRef: DocumentReferenceType<AppModelType, DbModelType>,
+    data: WithFieldValue<AppModelType>,
+  ): this;
+  set<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    documentRef: DocumentReferenceType<AppModelType, DbModelType>,
+    data: PartialWithFieldValue<AppModelType>,
+    options: SetOptions,
+  ): this;
+  set<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    documentRef: DocumentReferenceType<AppModelType, DbModelType>,
+    data: Record<string, unknown>,
+    options?: SetOptions,
+  ): this {
     if (!(documentRef instanceof DocumentReference)) {
       throw new Error(
         "firebase.firestore().runTransaction() Transaction.set(*) 'documentRef' expected a DocumentReference.",
@@ -129,7 +154,10 @@ export default class Transaction {
     return this;
   }
 
-  update(documentRef: DocumentReference, ...args: unknown[]): this {
+  update<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    documentRef: DocumentReferenceType<AppModelType, DbModelType>,
+    ...args: unknown[]
+  ): this {
     if (!(documentRef instanceof DocumentReference)) {
       throw new Error(
         "firebase.firestore().runTransaction() Transaction.update(*) 'documentRef' expected a DocumentReference.",
@@ -154,7 +182,9 @@ export default class Transaction {
     return this;
   }
 
-  delete(documentRef: DocumentReference): this {
+  delete<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    documentRef: DocumentReferenceType<AppModelType, DbModelType>,
+  ): this {
     if (!(documentRef instanceof DocumentReference)) {
       throw new Error(
         "firebase.firestore().runTransaction() Transaction.delete(*) 'documentRef' expected a DocumentReference.",

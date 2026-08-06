@@ -3,6 +3,8 @@ module.exports = {
     platforms: {
       android: {
         packageImportPath: 'import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;',
+        cmakeListsPath:
+          './src/reactnative/java/io/invertase/firebase/app/generated/jni/CMakeLists.txt',
       },
       ios: {
         scriptPhases: [

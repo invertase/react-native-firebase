@@ -3,6 +3,123 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.1.0](https://github.com/invertase/react-native-firebase/compare/v26.0.0...v26.1.0) (2026-08-03)
+
+### Features
+
+- **ios:** add SPM dependency resolution support alongside CocoaPods ([#8933](https://github.com/invertase/react-native-firebase/issues/8933)) ([44a7a9a](https://github.com/invertase/react-native-firebase/commit/44a7a9ae7b404f412e9766c0417f1df8fa971a0b))
+
+### Bug Fixes
+
+- **app, sdks:** adopt native SDK ios 12.17.0, android 34.16.0, js 12.17.0 ([#9138](https://github.com/invertase/react-native-firebase/issues/9138)) ([64646f3](https://github.com/invertase/react-native-firebase/commit/64646f3f4ee3731ea5f4e4942a040c8c7efee612))
+- **auth, app:** fix web auth initialization crash and missing methods ([#9134](https://github.com/invertase/react-native-firebase/issues/9134)) ([d74b550](https://github.com/invertase/react-native-firebase/commit/d74b550f55ecb131a691d1ec3536ad485184f439))
+
+## [26.0.0](https://github.com/invertase/react-native-firebase/compare/v25.1.0...v26.0.0) (2026-07-29)
+
+### ⚠ BREAKING CHANGES
+
+- **app, android:** On Android, makePlayServicesAvailable previously resolved even when the Play Services availability task was canceled or failed. It may now reject, so callers should handle Promise rejections.
+- **phone-number-verification:** migrate phone-number-verification to TurboModules
+- **auth:** migrate auth to TurboModules
+- **database:** migrate database to TurboModules
+- **messaging:** messaging requires the React Native New Architecture.
+- **installations:** migrate installations to TurboModules
+- **app:** App/Core modules native bridge requires New Architecture.
+
+Migrate RNFBAppModule and RNFBUtilsModule to Codegen TurboModules with
+unified resolver, lazy Proxy wrapper, and committed generated artifacts.
+Includes functions codegenConfig rename (NewArch-AD-7), test harness
+overrides, architecture decisions, and validation workflow hardening.
+
+### Features
+
+- **app:** migrate app modules to TurboModules incl general migration infra ([978168d](https://github.com/invertase/react-native-firebase/commit/978168dacecf4925d347d9757eff73ee43e1484f))
+- **auth:** migrate auth to TurboModules ([5fe09ac](https://github.com/invertase/react-native-firebase/commit/5fe09ac77b8df94631dbcfaa533cdcba0bfff98c))
+- **database:** migrate database to TurboModules ([27ad35c](https://github.com/invertase/react-native-firebase/commit/27ad35cee5d8b13514c6432226b087266efc0012))
+- **installations:** migrate installations to TurboModules ([4097d25](https://github.com/invertase/react-native-firebase/commit/4097d25eaced7bb31bca886d74531714b057feb1))
+- **messaging:** migrate messaging to TurboModules ([e56c7f4](https://github.com/invertase/react-native-firebase/commit/e56c7f406920a21c07ccd1810b0315ec0953aeff))
+- **phone-number-verification:** migrate phone-number-verification to TurboModules ([d7311c4](https://github.com/invertase/react-native-firebase/commit/d7311c482ef38b7ff1db24684e1ae9f3c5e47202))
+
+### Bug Fixes
+
+- add codegen verify and spec-native parity tests ([49d9f1b](https://github.com/invertase/react-native-firebase/commit/49d9f1baba4fc83c1dd4983f582bbd7352d78809))
+- add ResultT codegen type alias ([ff2d68f](https://github.com/invertase/react-native-firebase/commit/ff2d68ff8f73092f8ba3c75e007049dd31be822f))
+- **app, android:** handle possible null external storage directory ([726493d](https://github.com/invertase/react-native-firebase/commit/726493d11d8ab23cb2ab7b9ab2103b40af52ff01))
+- **app, android:** harden emitter attach/emit across generation overlap ([5dfef91](https://github.com/invertase/react-native-firebase/commit/5dfef91e4011f229fdedc3a54f2596ff60412719))
+- **app, android:** run makeGooglePlayServicesAvailable on main thread ([9675467](https://github.com/invertase/react-native-firebase/commit/96754677c80109c92f0a53134e3fd845345d62f4))
+- **app, android:** stop event emitter losing events to a stale ReactContext ([01992f7](https://github.com/invertase/react-native-firebase/commit/01992f7ff12864156c110b82b7895c6a912fd4d8)), closes [#1127](https://github.com/invertase/react-native-firebase/issues/1127) [#8374](https://github.com/invertase/react-native-firebase/issues/8374)
+- **ios:** set IPHONEOS_DEPLOYMENT_TARGET to 15.0, update platform support docs/conditionals ([#9108](https://github.com/invertase/react-native-firebase/issues/9108)) ([99d0899](https://github.com/invertase/react-native-firebase/commit/99d089908e3eec6155d73ecf05ff7274ad33c46e)), closes [#8882](https://github.com/invertase/react-native-firebase/issues/8882)
+- **messaging, android:** make max stored notifications configurable ([#9111](https://github.com/invertase/react-native-firebase/issues/9111)) ([dc5771f](https://github.com/invertase/react-native-firebase/commit/dc5771f75e599db362c2c9916490284734746ec0)), closes [#8771](https://github.com/invertase/react-native-firebase/issues/8771)
+- resolve CI lint and spec-native parity failures ([6ff817e](https://github.com/invertase/react-native-firebase/commit/6ff817ed2154b2d4e77c5fd9709ec0eb95b408fa))
+- **types:** align compare-types modular API with firebase-js-sdk ([5376e75](https://github.com/invertase/react-native-firebase/commit/5376e757f7dd7f7cffc9907c652d873d2403e23f))
+
+### Performance Improvements
+
+- **app:** reduce TurboModule resolver overhead ([d5b5c9a](https://github.com/invertase/react-native-firebase/commit/d5b5c9a867575fa8ea8797ed5ebe410086e611d3))
+
+## [25.1.0](https://github.com/invertase/react-native-firebase/compare/v25.0.1...v25.1.0) (2026-06-25)
+
+### Bug Fixes
+
+- **auth, perf:** correctly export expo config plugin, add test for same ([dfb8126](https://github.com/invertase/react-native-firebase/commit/dfb8126be05e3c87c4d8ea228110aa8b8e7674cb))
+
+## [25.0.1](https://github.com/invertase/react-native-firebase/compare/v25.0.0...v25.0.1) (2026-06-23)
+
+**Note:** Version bump only for package @react-native-firebase/app
+
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **remote-config:** remote-config types now match firebase-js-sdk as closely as possible
+
+Please see https://rnfirebase.io/migrating-to-v25 for help migrating if needed
+
+react-native-firebase has a goal to be a drop-in replacement for firebase-js-sdk, with native extensions and performance. It has always worked that way at the javascript level but the typescript types have been divergent
+
+We are fixing that as we refactor to typescript. Please bear with us as we get closer to our goal of react-native-firebase matching firebase-js-sdk both in functionality where possible, but also in exact typescript typing.
+
+Specifics for Remote Config:
+
+the primary modular remote-config types now use Firebase JS SDK names: LogLevel, FetchStatus, Value, and RemoteConfigSettings
+RemoteConfig.settings is now typed as RemoteConfigSettings, which uses fetchTimeoutMillis rather than the older RNFB-style fetchTimeMillis on the modular surface
+modular getAll() and getValue() now return SDK-aligned types: Record<string, Value> and Value
+modular setLogLevel() now matches the Firebase JS SDK signature and returns void
+the legacy modular helper exports fetchTimeMillis(), settings(), and lastFetchStatus() have been removed from @react-native-firebase/remote-config. Modular callers should read remoteConfig.fetchTimeMillis, remoteConfig.settings, and remoteConfig.lastFetchStatus from the RemoteConfig instance instead
+modular fetch() has been removed. Modular callers should use fetchConfig(remoteConfig) instead; the RNFB-only modular expirationDurationSeconds helper is no longer part of the public modular API
+modular setConfigSettings() and setDefaults() have been removed. Modular callers should use remoteConfig.settings = ... and remoteConfig.defaultConfig = ... on the RemoteConfig instance instead
+modular onConfigUpdated() has been removed. Modular callers should use onConfigUpdate(remoteConfig, observer) instead
+deprecated RemoteConfigValue.value and .source getters have been removed. Callers should use asString() and getSource() instead
+Remove LastFetchStatus, ValueSource, ConfigSettings, ConfigDefaults, ConfigValue, ConfigValues, LastFetchStatusType, and RemoteConfigLogLevel from modular exports
+
+- **storage:** migrate to TypeScript and match firebase-js-sdk API (#8824)
+- **sdks:** firebase-ios-sdk 12.12.0+ requires Xcode 26.2+
+
+### Bug Fixes
+
+- adopt firebase-android-sdk 34.13.0 ([5fcaff1](https://github.com/invertase/react-native-firebase/commit/5fcaff18093d6a425e07e00f17add5ac2f2d7cf0))
+- adopt firebase-ios-sdk 12.13.0 ([d488470](https://github.com/invertase/react-native-firebase/commit/d488470d23bb81b303235807f856f71e76b0b4b0))
+- adopt firebase-js-sdk 12.12.1 ([bfbf562](https://github.com/invertase/react-native-firebase/commit/bfbf5620c526401bb01ec383436247379fbfcdb5))
+- adopt firebase-js-sdk 12.13.0 ([a536afc](https://github.com/invertase/react-native-firebase/commit/a536afc8a5978a4c4d6f258505a4350959877528))
+- **sdks:** firebase-ios-sdk (requires Xcode 26.2+), firebase-android-sdk 34.12.0, firebase-js-sdk 12.12.0 ([c8c1fc1](https://github.com/invertase/react-native-firebase/commit/c8c1fc105f8e67914eea2f40ef727bc5a463fa40))
+
+### Code Refactoring
+
+- **remote-config:** migrate to TypeScript ([#8972](https://github.com/invertase/react-native-firebase/issues/8972)) ([4625961](https://github.com/invertase/react-native-firebase/commit/4625961bef042558d5cdf113a7d14ab6cb230f1a))
+- **storage:** migrate to TypeScript and match firebase-js-sdk API ([#8824](https://github.com/invertase/react-native-firebase/issues/8824)) ([663b57c](https://github.com/invertase/react-native-firebase/commit/663b57c220ef733affc1055e674334f35c458861))
+
+## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
+
+### Bug Fixes
+
+- **ios:** revert to firebase-ios-sdk 12.10.0 to avoid startup crash ([b97bc26](https://github.com/invertase/react-native-firebase/commit/b97bc26af0a0d5314826d6cf42a0518e8dd37ada))
+
+## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
+
+### Bug Fixes
+
+- firebase-android-sdk 34.14.0, firebase-ios-sdk 12.11.0, firebase-js-sdk 12.14.0 ([65bbe94](https://github.com/invertase/react-native-firebase/commit/65bbe9435fb78bbb2ee4cba25b44b0199a61f030))
+
 ## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
 
 ### ⚠ BREAKING CHANGES

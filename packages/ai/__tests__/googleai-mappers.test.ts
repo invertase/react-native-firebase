@@ -37,6 +37,7 @@ import {
   HarmCategory,
   HarmProbability,
   HarmSeverity,
+  Modality,
   PromptFeedback,
   SafetyRating,
   URLRetrievalStatus,
@@ -44,7 +45,7 @@ import {
 import { BackendName, getMockResponse } from './test-utils/mock-response';
 import { SpiedFunction } from 'jest-mock';
 
-const fakeModel = 'models/gemini-pro';
+const fakeModel = 'models/gemini-3.1-flash-lite';
 
 const fakeContents: Content[] = [{ role: 'user', parts: [{ text: 'hello' }] }];
 
@@ -168,7 +169,11 @@ describe('Google AI Mappers', () => {
         usageMetadata: {
           promptTokenCount: 5,
           candidatesTokenCount: 0,
+          toolUsePromptTokenCount: 3,
           totalTokenCount: 5,
+          toolUsePromptTokensDetails: [{ modality: Modality.TEXT, tokenCount: 3 }],
+          cachedContentTokenCount: 2,
+          cacheTokensDetails: [{ modality: Modality.TEXT, tokenCount: 2 }],
         },
       };
       const mappedResponse = mapGenerateContentResponse(googleAIResponse);

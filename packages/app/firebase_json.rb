@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics, Style/Documentation, Style/GlobalVars
 #
 # Copyright (c) 2016-present Invertase Limited & Contributors
 #
@@ -28,19 +29,17 @@ unless $firebase_json_path
 
   is_test_project = false
 
-  if File.expand_path(current_search_directory).include? '/packages/app'
-    is_test_project = true
-  end
+  is_test_project = true if File.expand_path(current_search_directory).include? '/packages/app'
 
   i = 0
   while i < 5
     current_search_directory = File.join(current_search_directory, '..')
 
-    if is_test_project
-      firebase_json = File.expand_path(File.join(current_search_directory, 'tests', 'firebase.json'))
-    else
-      firebase_json = File.expand_path(File.join(current_search_directory, 'firebase.json'))
-    end
+    firebase_json = if is_test_project
+                      File.expand_path(File.join(current_search_directory, 'tests', 'firebase.json'))
+                    else
+                      File.expand_path(File.join(current_search_directory, 'firebase.json'))
+                    end
 
     if File.exist?(firebase_json)
       $firebase_json_path = firebase_json
@@ -48,9 +47,9 @@ unless $firebase_json_path
         $firebase_json_config = JSON.parse(File.read(firebase_json))['react-native']
         Pod::UI.puts "Using firebase.json from '#{firebase_json}'"
         # Pod::UI.puts $firebase_json_config
-      rescue => error
+      rescue StandardError => e
         Pod::UI.warn "An error occurred parsing the firebase.json located at '#{firebase_json}':"
-        Pod::UI.warn error
+        Pod::UI.warn e
       end
       break
     end
@@ -70,3 +69,5 @@ module FirebaseJSON
   end
   PATH = nil
 end
+
+# rubocop:enable Metrics, Style/Documentation, Style/GlobalVars

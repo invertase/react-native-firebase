@@ -1,14 +1,32 @@
 {
   "name": "@react-native-firebase/remote-config",
-  "version": "24.0.0",
+  "version": "26.1.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - React Native Firebase provides native integration with Remote Config, allowing you to change the appearance and/or functionality of your app without requiring an app update.",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./dist/module/index.js",
+  "types": "./dist/typescript/lib/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBRemoteConfigTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "io.invertase.firebase.config"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTurboConfig": "RNFBConfigModule"
+      }
+    }
+  },
   "scripts": {
-    "build": "genversion --semi lib/version.js",
+    "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
-    "prepare": "yarn run build"
+    "compile": "bob build",
+    "prepare": "yarn run build && yarn compile",
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/reactnative/java/io/invertase/firebase/config/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
   },
   "repository": {
     "type": "git",
@@ -24,8 +42,8 @@
     "remote-config"
   ],
   "peerDependencies": {
-    "@react-native-firebase/analytics": "24.0.0",
-    "@react-native-firebase/app": "24.0.0"
+    "@react-native-firebase/analytics": "26.1.0",
+    "@react-native-firebase/app": "26.1.0"
   },
   "publishConfig": {
     "access": "public",
@@ -37,6 +55,39 @@
     "web-streams-polyfill": "^4.2.0"
   },
   "devDependencies": {
-    "@types/text-encoding": "^0.0.40"
-  }
+    "@react-native-firebase/app": "26.1.0",
+    "@types/text-encoding": "^0.0.40",
+    "react-native-builder-bob": "^0.41.0",
+    "typescript": "^6.0.3"
+  },
+  "exports": {
+    ".": {
+      "source": "./lib/index.ts",
+      "types": "./dist/typescript/lib/index.d.ts",
+      "default": "./dist/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "react-native-builder-bob": {
+    "source": "lib",
+    "output": "dist",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "tsc": "../../node_modules/.bin/tsc"
+        }
+      ]
+    ]
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "dist/"
+  ]
 }

@@ -16,9 +16,10 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
 
-@interface RNFBMessagingModule : NSObject <RCTBridgeModule>
+// Public / AppDelegate-safe: no C++/codegen imports. TurboModule conformance lives in .mm.
+// Kept public for documented isHeadless integration via addCustomPropsToUserProps.
+@interface RNFBMessagingModule : NSObject
 + (NSDictionary *_Nonnull)addCustomPropsToUserProps:(NSDictionary *_Nullable)userProps
                                   withLaunchOptions:(NSDictionary *_Nullable)launchOptions;
 @property BOOL isDeliveryMetricsExportToBigQueryEnabled;

@@ -25,7 +25,12 @@ import { ImagenImageFormat } from '../../requests/imagen-image-format';
 export interface ImagenModelParams {
   /**
    * The Imagen model to use for generating images.
-   * For example: `imagen-3.0-generate-002`.
+   *
+   * @deprecated Imagen models are deprecated. Use {@link getGenerativeModel} with a Gemini
+   * image model such as `gemini-3.1-flash-lite-image` instead. See the
+   * {@link https://firebase.google.com/docs/ai-logic/generate-images-gemini | Gemini image generation guide}.
+   *
+   * For example: `imagen-3.0-generate-002` (legacy; prefer Gemini image models).
    *
    * Only Imagen 3 models (named `imagen-3.0-*`) are supported.
    *

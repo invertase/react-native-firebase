@@ -36,6 +36,41 @@ yarn add @react-native-firebase/app
 
 - [Utils](https://rnfirebase.io/app/utils)
 
+## iOS Dependency Resolution: SPM vs CocoaPods
+
+React Native 0.75 and newer use Swift Package Manager by default to resolve
+Firebase iOS SDK dependencies. SPM requires dynamic linkage:
+
+```ruby
+use_frameworks! :linkage => :dynamic
+```
+
+To use CocoaPods instead, add this before any target block in your Podfile:
+
+```ruby
+$RNFirebaseDisableSPM = true
+```
+
+Expo projects can set the same flag through the config plugin, which adds it
+to the generated Podfile during prebuild:
+
+```json
+[
+  "@react-native-firebase/app",
+  {
+    "ios": {
+      "disableSPM": true
+    }
+  }
+]
+```
+
+CocoaPods mode supports static or dynamic linkage. React Native versions older
+than 0.75 fall back to CocoaPods automatically.
+
+See the [iOS SPM guide](https://rnfirebase.io/ios-spm) for Xcode 26 setup,
+Expo configuration, framework-embedding fallback, and troubleshooting.
+
 ## License
 
 - See [LICENSE](/LICENSE)

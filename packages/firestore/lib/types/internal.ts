@@ -36,14 +36,15 @@ import type {
   WithFieldValue,
   AggregateType,
   PartialWithFieldValue,
+  ListenSource,
 } from './firestore';
 import type { PersistentCacheIndexManager } from '../FirestorePersistentCacheIndexManager';
 import type { QueryConstraint } from '../modular/query';
 import type { _Filter } from '../FirestoreFilter';
-import type FirestoreTimestamp from '../FirestoreTimestamp';
-import Blob from 'lib/FirestoreBlob';
+import type { Timestamp } from '../FirestoreTimestamp';
+import { Blob } from '../FirestoreBlob';
 
-/** Optional final argument passed by modular API wrappers (MODULAR_DEPRECATION_ARG). */
+/** Reserved optional trailing argument on legacy internal method signatures. */
 export type FirestoreModularDeprecationArg = string;
 
 /** Query type passed to native ('collection' or 'collectionGroup'). */
@@ -109,6 +110,13 @@ export interface FirestorePipelineConstantExpressionInternal {
   value: FirestorePipelineSerializedValueInternal;
 }
 
+/** Serialized variable expression node passed to native pipeline execute bridge. */
+export interface FirestorePipelineVariableExpressionInternal {
+  __kind?: 'expression';
+  exprType: 'Variable';
+  name: string;
+}
+
 /** Serialized function expression node passed to native pipeline execute bridge. */
 export interface FirestorePipelineFunctionExpressionInternal {
   __kind?: 'expression';
@@ -159,6 +167,7 @@ export interface FirestorePipelineAliasedAggregateInternal {
 export type FirestorePipelineExpressionInternal =
   | FirestorePipelineFieldExpressionInternal
   | FirestorePipelineConstantExpressionInternal
+  | FirestorePipelineVariableExpressionInternal
   | FirestorePipelineFunctionExpressionInternal;
 
 export type FirestorePipelineSelectableInternal =
@@ -213,6 +222,11 @@ export type FirestorePipelineSourceInternal =
       filters: FirestoreFilterSpecInternal[];
       orders: FirestoreOrderSpecInternal[];
       options: FirestoreQueryOptionsInternal;
+    }
+  | {
+      source: 'subcollection';
+      path: string;
+      rawOptions?: Record<string, unknown>;
     };
 
 export type FirestorePipelineStageInternal =
@@ -282,6 +296,24 @@ export type FirestorePipelineStageInternal =
       };
     }
   | {
+      stage: 'search';
+      options: {
+        query: FirestorePipelineExpressionInternal | string;
+        languageCode?: string;
+        retrievalDepth?: number;
+        sort?: FirestorePipelineOrderingInternal[];
+        offset?: number;
+        limit?: number;
+        addFields?: FirestorePipelineSelectableInternal[];
+      };
+    }
+  | {
+      stage: 'define';
+      options: {
+        variables: FirestorePipelineSelectableInternal[];
+      };
+    }
+  | {
       stage: 'replaceWith';
       options: {
         map:
@@ -337,7 +369,7 @@ export interface FirestorePipelineExecuteOptionsInternal {
 
 /** Timestamp shape received from native pipeline execution. */
 export type FirestorePipelineTimestampInternal =
-  | FirestoreTimestamp
+  | Timestamp
   | { seconds?: number; nanoseconds?: number }
   | [number, number]
   | number;
@@ -357,9 +389,10 @@ export interface FirestorePipelineSnapshotInternal {
   executionTime: FirestorePipelineTimestampInternal;
 }
 
-/** Options for snapshot listeners (includeMetadataChanges). */
+/** Options for snapshot listeners (includeMetadataChanges, source). */
 export interface FirestoreSnapshotListenOptionsInternal {
   includeMetadataChanges?: boolean;
+  source?: ListenSource;
 }
 
 /** Settings state on the Firestore module instance (ignoreUndefinedProperties, persistence). */
@@ -384,6 +417,9 @@ export interface FirestoreDocumentSnapshotDataInternal {
   path: string;
   exists: boolean;
   data?: Record<string, unknown>;
+  dataEstimate?: Record<string, unknown>;
+  dataPrevious?: Record<string, unknown>;
+  dataNone?: Record<string, unknown>;
   metadata: [boolean, boolean];
 }
 
@@ -407,14 +443,14 @@ export interface FirestoreEmitterInternal {
  *
  * Note: React Native Firebase internally wraps native methods and auto-prepends app name and
  * database ID when `hasMultiAppSupport` and `hasCustomUrlOrRegionSupport` are enabled.
- * Firestore uses multiple native modules (RNFBFirestoreModule, RNFBFirestoreCollectionModule,
- * RNFBFirestoreDocumentModule, RNFBFirestoreTransactionModule) which are merged into a single
+ * Firestore uses multiple native modules (NativeRNFBTurboFirestore, NativeRNFBTurboFirestoreCollection,
+ * NativeRNFBTurboFirestoreDocument, NativeRNFBTurboFirestoreTransaction) which are merged into a single
  * wrapped object. This interface represents that merged *wrapped* module shape exposed as
  * `this.native` within FirebaseFirestoreModule.
  */
 export interface RNFBFirestoreModule {
   setLogLevel(level: LogLevel): Promise<void>;
-  // --- Main Firestore module (RNFBFirestoreModule) ---
+  // --- Main Firestore module (NativeRNFBTurboFirestore) ---
   loadBundle(bundle: string): Promise<LoadBundleTaskProgress>;
   clearPersistence(): Promise<void>;
   waitForPendingWrites(): Promise<void>;
@@ -435,7 +471,7 @@ export interface RNFBFirestoreModule {
    */
   persistenceCacheIndexManager(mode: number): Promise<void>;
 
-  // --- Collection module (RNFBFirestoreCollectionModule) ---
+  // --- Collection module (NativeRNFBTurboFirestoreCollection) ---
   collectionOffSnapshot(listenerId: number): void;
   namedQueryOnSnapshot(
     queryName: string,
@@ -491,7 +527,7 @@ export interface RNFBFirestoreModule {
     options?: FirestorePipelineExecuteOptionsInternal,
   ): Promise<FirestorePipelineSnapshotInternal>;
 
-  // --- Document module (RNFBFirestoreDocumentModule) ---
+  // --- Document module (NativeRNFBTurboFirestoreDocument) ---
   documentDelete(path: string): Promise<void>;
   documentOffSnapshot(listenerId: number): void;
   documentOnSnapshot(
@@ -508,8 +544,8 @@ export interface RNFBFirestoreModule {
   documentUpdate(path: string, data: Record<string, unknown>): Promise<void>;
   documentBatch(writes: Array<Record<string, unknown>>): Promise<void>;
 
-  // --- Transaction module (RNFBFirestoreTransactionModule) ---
-  transactionBegin(transactionId: number): Promise<void>;
+  // --- Transaction module (NativeRNFBTurboFirestoreTransaction) ---
+  transactionBegin(transactionId: number, maxAttempts?: number): Promise<void>;
   transactionDispose(transactionId: number): void;
   transactionGetDocument(transactionId: number, path: string): Promise<unknown>;
   transactionApplyBuffer(transactionId: number, commandBuffer: unknown[]): void;
@@ -517,11 +553,14 @@ export interface RNFBFirestoreModule {
 
 declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
   interface ReactNativeFirebaseNativeModules {
-    RNFBFirestoreModule: RNFBFirestoreModule;
+    NativeRNFBTurboFirestore: RNFBFirestoreModule;
+    NativeRNFBTurboFirestoreCollection: RNFBFirestoreModule;
+    NativeRNFBTurboFirestoreDocument: RNFBFirestoreModule;
+    NativeRNFBTurboFirestoreTransaction: RNFBFirestoreModule;
   }
 }
 
-// Helper type for wrappers that forward MODULAR_DEPRECATION_ARG via .call(...).
+// Helper type for internal wrappers that accept an optional trailing sentinel argument.
 export type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
   ? (...args: [...P, FirestoreModularDeprecationArg?]) => R
   : never;
@@ -708,6 +747,7 @@ export interface FirestoreInternal extends ParentReferenceInternal, Firestore {
   ): void;
   runTransaction(
     updateFunction: (transaction: Transaction) => Promise<unknown>,
+    options?: { maxAttempts?: number },
     deprecationArg?: FirestoreModularDeprecationArg,
   ): Promise<unknown>;
   loadBundle(

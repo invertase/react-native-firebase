@@ -1,16 +1,34 @@
 {
   "name": "@react-native-firebase/perf",
-  "version": "24.0.0",
+  "version": "26.1.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - React Native Firebase provides native integration with Performance Monitoring to gain insight into key performance characteristics within your React Native application.",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./dist/module/index.js",
+  "types": "./dist/typescript/lib/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBPerfTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "io.invertase.firebase.perf"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTurboPerf": "RNFBPerfModule"
+      }
+    }
+  },
   "scripts": {
-    "build": "genversion --semi lib/version.js",
+    "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "build:plugin": "rimraf plugin/build && tsc --build plugin",
+    "compile": "bob build",
     "lint:plugin": "eslint plugin/src/*",
-    "prepare": "yarn run build && yarn run build:plugin"
+    "prepare": "yarn run build && yarn compile && yarn run build:plugin",
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/reactnative/java/io/invertase/firebase/perf/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
   },
   "repository": {
     "type": "git",
@@ -29,11 +47,13 @@
     "performance monitoring"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "24.0.0",
+    "@react-native-firebase/app": "26.1.0",
     "expo": ">=47.0.0"
   },
   "devDependencies": {
-    "expo": "^55.0.5"
+    "@react-native-firebase/app": "26.1.0",
+    "expo": "^55.0.18",
+    "react-native-builder-bob": "^0.40.13"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -43,5 +63,43 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "exports": {
+    ".": {
+      "source": "./lib/index.ts",
+      "types": "./dist/typescript/lib/index.d.ts",
+      "default": "./dist/module/index.js"
+    },
+    "./app.plugin": {
+      "types": "./plugin/build/app.plugin.d.ts",
+      "default": "./app.plugin.js"
+    },
+    "./app.plugin.js": {
+      "types": "./plugin/build/app.plugin.d.ts",
+      "default": "./app.plugin.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "react-native-builder-bob": {
+    "source": "lib",
+    "output": "dist",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "tsc": "../../node_modules/.bin/tsc"
+        }
+      ]
+    ]
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "dist/"
+  ]
 }

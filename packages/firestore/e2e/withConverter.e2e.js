@@ -24,13 +24,17 @@ const {
   refEqual,
   addDoc,
   setDoc,
+  updateDoc,
   getDoc,
+  onSnapshot,
   query,
   where,
   getDocs,
   writeBatch,
   increment,
   initializeFirestore,
+  serverTimestamp,
+  Timestamp,
 } = firestoreModular;
 
 // Used for testing the FirestoreDataConverter.
@@ -81,16 +85,6 @@ const postConverterMerge = {
   },
 };
 
-// v8 compatibility helper functions
-function modifyIgnoreUndefinedProperties(db, value) {
-  // JS SDK settings can only be called once
-  if (Platform.other) {
-    db._settings.ignoreUndefinedProperties = value;
-  } else {
-    db.settings({ ignoreUndefinedProperties: value });
-  }
-}
-
 // modular helper functions
 function withTestDb(fn) {
   return fn(getFirestore());
@@ -98,10 +92,14 @@ function withTestDb(fn) {
 
 async function withModifiedUndefinedPropertiesTestDb(fn) {
   const db = getFirestore();
+  // Capture/restore via public initializeFirestore → settings(); avoid mutating _settings.
   const previousValue = db._settings.ignoreUndefinedProperties;
   initializeFirestore(db.app, { ignoreUndefinedProperties: false });
-  await fn(db);
-  initializeFirestore(db.app, { ignoreUndefinedProperties: previousValue });
+  try {
+    await fn(db);
+  } finally {
+    initializeFirestore(db.app, { ignoreUndefinedProperties: previousValue });
+  }
 }
 
 function withTestCollection(fn) {
@@ -123,254 +121,8 @@ function withTestCollectionAndInitialData(data, fn) {
 }
 
 describe('firestore.withConverter', function () {
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    before(function () {
-      return wipe();
-    });
-
-    it('for collection references', function () {
-      const firestore = firebase.firestore();
-      const coll1a = firestore.collection('a');
-      const coll1b = firestore.doc('a/b').parent;
-      const coll2 = firestore.collection('c');
-
-      coll1a.isEqual(coll1b).should.be.true();
-      coll1a.isEqual(coll2).should.be.false();
-
-      const coll1c = firestore.collection('a').withConverter({
-        toFirestore: data => data,
-        fromFirestore: snap => snap.data(),
-      });
-      coll1a.isEqual(coll1c).should.be.false();
-
-      try {
-        coll1a.isEqual(firestore.doc('a/b'));
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql('expected a Query instance.');
-        return Promise.resolve();
-      }
-    });
-
-    it('for document references', function () {
-      const firestore = firebase.firestore();
-      const doc1a = firestore.doc('a/b');
-      const doc1b = firestore.collection('a').doc('b');
-      const doc2 = firestore.doc('a/c');
-
-      doc1a.isEqual(doc1b).should.be.true();
-      doc1a.isEqual(doc2).should.be.false();
-
-      try {
-        const doc1c = firestore.collection('a').withConverter({
-          toFirestore: data => data,
-          fromFirestore: snap => snap.data(),
-        });
-        doc1a.isEqual(doc1c);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql('expected a DocumentReference instance.');
-      }
-
-      try {
-        doc1a.isEqual(firestore.collection('a'));
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql('expected a DocumentReference instance.');
-      }
-      return Promise.resolve();
-    });
-
-    it('for DocumentReference.withConverter()', async function () {
-      const firestore = firebase.firestore();
-      let docRef = firestore.doc(`${COLLECTION}/doc`);
-      docRef = docRef.withConverter(postConverter);
-      await docRef.set(new Post('post', 'author'));
-      const postData = await docRef.get();
-      const post = postData.data();
-      post.should.not.be.undefined();
-      post.byline().should.equal('post, by author');
-    });
-
-    it('for DocumentReference.withConverter(null) applies default converter', function () {
-      const firestore = firebase.firestore();
-      const coll = firestore
-        .collection(COLLECTION)
-        .withConverter(postConverter)
-        .withConverter(null);
-      try {
-        return coll
-          .doc('post1')
-          .set(10)
-          .then(() => Promise.reject(new Error('Did not throw an Error.')));
-      } catch (error) {
-        error.message.should.containEql(
-          `firebase.firestore().doc().set(*) 'data' must be an object.`,
-        );
-        return Promise.resolve();
-      }
-    });
-
-    it('for CollectionReference.withConverter()', async function () {
-      const firestore = firebase.firestore();
-      let coll = firestore.collection(COLLECTION);
-      coll = coll.withConverter(postConverter);
-      const docRef = await coll.add(new Post('post', 'author'));
-      const postData = await docRef.get();
-      const post = postData.data();
-      post.should.not.be.undefined();
-      post.byline().should.equal('post, by author');
-    });
-
-    it('for CollectionReference.withConverter(null) applies default converter', function () {
-      const firestore = firebase.firestore();
-      let docRef = firestore.doc(`${COLLECTION}/doc`);
-      try {
-        docRef = docRef.withConverter(postConverter).withConverter(null);
-        return docRef.set(10).then(() => Promise.reject(new Error('Did not throw an Error.')));
-      } catch (error) {
-        error.message.should.containEql(
-          `firebase.firestore().doc().set(*) 'data' must be an object.`,
-        );
-        return Promise.resolve();
-      }
-    });
-
-    it('for Query.withConverter()', async function () {
-      const firestore = firebase.firestore();
-      const collRef = firestore.collection(COLLECTION);
-      await collRef.add({ title: 'post', author: 'author' });
-      let query1 = collRef.where('title', '==', 'post');
-      query1 = query1.withConverter(postConverter);
-      const result = await query1.get();
-      result.docs[0].data().should.be.an.instanceOf(Post);
-      result.docs[0].data().byline().should.equal('post, by author');
-    });
-
-    it('for Query.withConverter(null) applies default converter', async function () {
-      const firestore = firebase.firestore();
-      const collRef = firestore.collection(COLLECTION);
-      await collRef.add({ title: 'post', author: 'author' });
-      let query1 = collRef.where('title', '==', 'post');
-      query1 = query1.withConverter(postConverter).withConverter(null);
-      const result = await query1.get();
-      result.docs[0].should.not.be.an.instanceOf(Post);
-    });
-
-    it('keeps the converter when calling parent() with a DocumentReference', function () {
-      const db = firebase.firestore();
-      const coll = db.doc('root/doc').withConverter(postConverter);
-      const typedColl = coll.parent;
-      typedColl.isEqual(db.collection('root').withConverter(postConverter)).should.be.true();
-    });
-
-    it('drops the converter when calling parent() with a CollectionReference', function () {
-      const db = firebase.firestore();
-      const coll = db.collection('root/doc/parent').withConverter(postConverter);
-      const untypedDoc = coll.parent;
-      untypedDoc.isEqual(db.doc('root/doc')).should.be.true();
-    });
-
-    it('checks converter when comparing with isEqual()', function () {
-      const db = firebase.firestore();
-      const postConverter2 = { ...postConverter };
-
-      const postsCollection = db.collection('users/user1/posts').withConverter(postConverter);
-      const postsCollection2 = db.collection('users/user1/posts').withConverter(postConverter2);
-      postsCollection.isEqual(postsCollection2).should.be.false();
-
-      const docRef = db.doc('some/doc').withConverter(postConverter);
-      const docRef2 = db.doc('some/doc').withConverter(postConverter2);
-      docRef.isEqual(docRef2).should.be.false();
-    });
-
-    it('requires the correct converter for Partial usage', async function () {
-      const db = firebase.firestore();
-      const previousValue = db._settings.ignoreUndefinedProperties;
-      modifyIgnoreUndefinedProperties(db, false);
-
-      const coll = db.collection('posts');
-      const ref = coll.doc('post').withConverter(postConverter);
-      const batch = db.batch();
-
-      try {
-        batch.set(ref, { title: 'olive' }, { merge: true });
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql('Unsupported field value: undefined');
-      }
-      modifyIgnoreUndefinedProperties(db, previousValue);
-      return Promise.resolve();
-    });
-
-    it('supports primitive types with valid converter', async function () {
-      const firestore = firebase.firestore();
-      const primitiveConverter = {
-        toFirestore(value) {
-          return { value };
-        },
-        fromFirestore(snapshot) {
-          const data = snapshot.data();
-          return data.value;
-        },
-      };
-
-      const arrayConverter = {
-        toFirestore(value) {
-          return { values: value };
-        },
-        fromFirestore(snapshot) {
-          const data = snapshot.data();
-          return data.values;
-        },
-      };
-
-      const coll = firestore.collection(COLLECTION);
-      const ref = coll.doc('number').withConverter(primitiveConverter);
-      await ref.set(3);
-      const result = await ref.get();
-      result.data().should.equal(3);
-
-      const ref2 = coll.doc('array').withConverter(arrayConverter);
-      await ref2.set([1, 2, 3]);
-      const result2 = await ref2.get();
-      result2.data().should.deepEqual([1, 2, 3]);
-    });
-
-    it('supports partials with merge', async function () {
-      const firestore = firebase.firestore();
-      const coll = firestore.collection(COLLECTION);
-      const ref = coll.doc('post').withConverter(postConverterMerge);
-      await ref.set(new Post('walnut', 'author'));
-      await ref.set(
-        { title: 'olive', id: firebase.firestore.FieldValue.increment(2) },
-        { merge: true },
-      );
-      const postDoc = await ref.get();
-      postDoc.get('title').should.equal('olive');
-      postDoc.get('author').should.equal('author');
-    });
-
-    it('supports partials with mergeFields', async function () {
-      const firestore = firebase.firestore();
-      const coll = firestore.collection(COLLECTION);
-      const ref = coll.doc('post').withConverter(postConverterMerge);
-      await ref.set(new Post('walnut', 'author'));
-      await ref.set({ title: 'olive' }, { mergeFields: ['title'] });
-      const postDoc = await ref.get();
-      postDoc.get('title').should.equal('olive');
-      postDoc.get('author').should.equal('author');
-    });
+  before(function () {
+    return wipe();
   });
 
   describe('modular', function () {
@@ -587,6 +339,147 @@ describe('firestore.withConverter', function () {
         await setDoc(ref2, [1, 2, 3]);
         const result2 = await getDoc(ref2);
         result2.data().should.deepEqual([1, 2, 3]);
+      });
+    });
+
+    it('passes data() serverTimestamps options through converter snapshots', async function () {
+      if (Platform.other) {
+        // macOS uses the Firestore web lite path, which does not support snapshot listeners.
+        return;
+      }
+
+      const timestampCases = [
+        { serverTimestamps: 'estimate', expectTimestamp: true },
+        { serverTimestamps: 'previous', expectTimestamp: false },
+        { serverTimestamps: 'none', expectTimestamp: false },
+      ];
+
+      for (const { serverTimestamps, expectTimestamp } of timestampCases) {
+        const timestampConverter = {
+          toFirestore() {
+            return {
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp(),
+            };
+          },
+          fromFirestore(snapshot) {
+            return snapshot.data({ serverTimestamps });
+          },
+        };
+
+        await withTestCollection(async coll => {
+          const ref = doc(coll).withConverter(timestampConverter);
+          await new Promise((resolve, reject) => {
+            const unsubscribe = onSnapshot(
+              ref,
+              { includeMetadataChanges: true },
+              snapshot => {
+                try {
+                  if (!snapshot.exists() || !snapshot.metadata.hasPendingWrites) {
+                    return;
+                  }
+
+                  const data = snapshot.data();
+                  if (expectTimestamp) {
+                    data.createdAt.should.be.an.instanceOf(Timestamp);
+                    data.updatedAt.should.be.an.instanceOf(Timestamp);
+                  } else {
+                    should.equal(data.createdAt, null);
+                    should.equal(data.updatedAt, null);
+                  }
+                  unsubscribe();
+                  resolve();
+                } catch (error) {
+                  unsubscribe();
+                  reject(error);
+                }
+              },
+              reject,
+            );
+
+            setDoc(ref, {}).catch(error => {
+              unsubscribe();
+              reject(error);
+            });
+          });
+        });
+      }
+    });
+
+    it("returns the prior settled value for serverTimestamps: 'previous' on an updated document", async function () {
+      if (Platform.other) {
+        // macOS uses the Firestore web lite path, which does not support snapshot listeners.
+        return;
+      }
+
+      return withTestCollection(async coll => {
+        const ref = doc(coll, 'previous-on-update');
+
+        // 1. Create the document and wait for the initial write to settle (hasPendingWrites
+        //    becomes false) so we have a real, resolved server Timestamp to compare against.
+        const settledTimestamp = await new Promise((resolve, reject) => {
+          const unsubscribe = onSnapshot(
+            ref,
+            { includeMetadataChanges: true },
+            snapshot => {
+              try {
+                if (!snapshot.exists() || snapshot.metadata.hasPendingWrites) {
+                  return;
+                }
+
+                const value = snapshot.data().timestampField;
+                unsubscribe();
+                resolve(value);
+              } catch (error) {
+                unsubscribe();
+                reject(error);
+              }
+            },
+            reject,
+          );
+
+          setDoc(ref, { timestampField: serverTimestamp() }).catch(error => {
+            unsubscribe();
+            reject(error);
+          });
+        });
+
+        settledTimestamp.should.be.an.instanceOf(Timestamp);
+
+        // 2. Update the same field with a brand new serverTimestamp() call, creating a new
+        //    pending write, and assert that serverTimestamps: 'previous' returns the original
+        //    settled value (real "previous value" semantics), not null and not the new pending
+        //    write's value, while the write is still pending.
+        await new Promise((resolve, reject) => {
+          const unsubscribe = onSnapshot(
+            ref,
+            { includeMetadataChanges: true },
+            snapshot => {
+              try {
+                if (!snapshot.exists() || !snapshot.metadata.hasPendingWrites) {
+                  return;
+                }
+
+                const previousValue = snapshot.data({
+                  serverTimestamps: 'previous',
+                }).timestampField;
+                previousValue.should.be.an.instanceOf(Timestamp);
+                previousValue.isEqual(settledTimestamp).should.equal(true);
+                unsubscribe();
+                resolve();
+              } catch (error) {
+                unsubscribe();
+                reject(error);
+              }
+            },
+            reject,
+          );
+
+          updateDoc(ref, { timestampField: serverTimestamp() }).catch(error => {
+            unsubscribe();
+            reject(error);
+          });
+        });
       });
     });
 

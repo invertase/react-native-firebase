@@ -16,13 +16,22 @@
  */
 
 import { isIOS } from '../common';
-import { createModuleNamespace, FirebaseModule } from '../internal';
-import UtilsStatics from './UtilsStatics';
-import { Utils } from '../types/app';
+import { FirebaseModule, getOrCreateModularInstance } from '../internal';
+import type { ModuleConfig } from '../internal';
+import type { ReactNativeFirebase, Utils } from '../types/app';
+import { UTILS_NATIVE_MODULE } from '../internal/constants';
 
 const namespace = 'utils';
-const statics = UtilsStatics;
-const nativeModuleName = 'RNFBUtilsModule';
+const nativeModuleName = UTILS_NATIVE_MODULE;
+
+const config: ModuleConfig = {
+  namespace,
+  nativeModuleName,
+  nativeEvents: false,
+  hasMultiAppSupport: false,
+  hasCustomUrlOrRegionSupport: false,
+  turboModule: true,
+};
 
 class FirebaseUtilsModule extends FirebaseModule<'RNFBUtilsModule'> {
   get isRunningInTestLab(): boolean {
@@ -42,7 +51,8 @@ class FirebaseUtilsModule extends FirebaseModule<'RNFBUtilsModule'> {
         error: undefined,
       };
     }
-    return this.native.androidPlayServices;
+    // NewArch-AD-15: dynamic Play Services status — use getPlayServicesStatus() (async) on Android.
+    return this.getPlayServicesStatus() as unknown as Utils.PlayServicesAvailability;
   }
 
   getPlayServicesStatus(): Promise<Utils.PlayServicesAvailability> {
@@ -80,15 +90,11 @@ class FirebaseUtilsModule extends FirebaseModule<'RNFBUtilsModule'> {
   }
 }
 
-// import { utils } from '@react-native-firebase/app';
-// utils().X(...);
-export default createModuleNamespace({
-  statics,
-  version: UtilsStatics.SDK_VERSION,
-  namespace,
-  nativeModuleName,
-  nativeEvents: false,
-  hasMultiAppSupport: false,
-  hasCustomUrlOrRegionSupport: false,
-  ModuleClass: FirebaseUtilsModule,
-}) as unknown as Utils.Statics & (() => Utils.Module);
+/**
+ * Returns the {@link Utils.Module} instance for the default or given {@link ReactNativeFirebase.FirebaseApp}.
+ *
+ * @param app - The Firebase app to use. When omitted, the default app is used.
+ */
+export function getUtils(app?: ReactNativeFirebase.FirebaseApp): Utils.Module {
+  return getOrCreateModularInstance(FirebaseUtilsModule, config, app) as unknown as Utils.Module;
+}

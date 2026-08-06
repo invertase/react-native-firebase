@@ -1,12 +1,7 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
-import { FirebaseAuthTypes } from '../lib/index';
+import { describe, expect, it, jest } from '@jest/globals';
 // @ts-ignore
 import User from '../lib/User';
-// @ts-ignore test
-import FirebaseModule from '../../app/lib/internal/FirebaseModule';
-
-import auth, {
-  firebase,
+import {
   getAuth,
   initializeAuth,
   applyActionCode,
@@ -23,7 +18,6 @@ import auth, {
   onIdTokenChanged,
   sendPasswordResetEmail,
   sendSignInLinkToEmail,
-  setLanguageCode,
   setPersistence,
   signInAnonymously,
   signInWithCredential,
@@ -40,6 +34,7 @@ import auth, {
   useUserAccessGroup,
   verifyPasswordResetCode,
   parseActionCodeURL,
+  ActionCodeURL,
   deleteUser,
   getIdToken,
   getIdTokenResult,
@@ -75,191 +70,35 @@ import auth, {
   TotpSecret,
   TotpMultiFactorGenerator,
   TwitterAuthProvider,
-  PhoneAuthState,
+  EmailAuthCredential,
+  OAuthCredential,
+  PhoneAuthCredential,
 } from '../lib';
 
-const PasswordPolicyImpl = require('../lib/password-policy/PasswordPolicyImpl').default;
-
-// @ts-ignore test
-import FirebaseModule from '../../app/lib/internal/FirebaseModule';
-// @ts-ignore - We don't mind missing types here
-import { NativeFirebaseError } from '../../app/lib/internal';
-
-import {
-  createCheckV9Deprecation,
-  CheckV9DeprecationFunction,
-} from '../../app/lib/common/unitTestUtils';
-// @ts-ignore
-import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
+const { PasswordPolicyImpl } = require('../lib/password-policy/PasswordPolicyImpl');
 
 describe('Auth', function () {
-  describe('namespace', function () {
-    beforeAll(async function () {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterAll(async function () {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    it('accessible from firebase.app()', function () {
-      const app = firebase.app();
-      expect(app.auth).toBeDefined();
-      expect(app.auth().useEmulator).toBeDefined();
-    });
-
-    describe('useEmulator()', function () {
-      it('useEmulator requires a string url', function () {
-        // @ts-ignore because we pass an invalid argument...
-        expect(() => auth().useEmulator()).toThrow(
-          'firebase.auth().useEmulator() takes a non-empty string',
-        );
-        expect(() => auth().useEmulator('')).toThrow(
-          'firebase.auth().useEmulator() takes a non-empty string',
-        );
-        // @ts-ignore because we pass an invalid argument...
-        expect(() => auth().useEmulator(123)).toThrow(
-          'firebase.auth().useEmulator() takes a non-empty string',
-        );
-      });
-
-      it('useEmulator requires a well-formed url', function () {
-        // No http://
-        expect(() => auth().useEmulator('localhost:9099')).toThrow(
-          'firebase.auth().useEmulator() takes a non-empty string URL',
-        );
-        // No port
-        expect(() => auth().useEmulator('http://localhost')).toThrow(
-          'firebase.auth().useEmulator() unable to parse host and port from URL',
-        );
-      });
-
-      it('useEmulator -> remaps Android loopback to host', function () {
-        const foo = auth().useEmulator('http://localhost:9099');
-        expect(foo).toEqual(['10.0.2.2', 9099]);
-
-        const bar = auth().useEmulator('http://127.0.0.1:9099');
-        expect(bar).toEqual(['10.0.2.2', 9099]);
-      });
-
-      it('useEmulator allows hyphens in the hostname', function () {
-        const result = auth().useEmulator('http://my-host:9099');
-        expect(result).toEqual(['my-host', 9099]);
-      });
-
-      describe('tenantId', function () {
-        it('should be able to set tenantId ', function () {
-          const auth = firebase.app().auth();
-          auth.setTenantId('test-id').then(() => {
-            expect(auth.tenantId).toBe('test-id');
-          });
-        });
-      });
-
-      it('should throw error when tenantId is a non string object ', async function () {
-        try {
-          await firebase.app().auth().setTenantId(Object());
-          return Promise.reject('It should throw an error');
-        } catch (e: any) {
-          expect(e.message).toBe(
-            "firebase.auth().setTenantId(*) expected 'tenantId' to be a string",
-          );
-          return Promise.resolve('Error catched');
-        }
-      });
-    });
-
-    describe('getMultiFactorResolver', function () {
-      it('should return null if no resolver object is found', function () {
-        const unknownError = NativeFirebaseError.fromEvent(
-          {
-            code: 'unknown',
-          },
-          'auth',
-        );
-        const actual = auth.getMultiFactorResolver(auth(), unknownError);
-        expect(actual).toBe(null);
-      });
-
-      it('should return null if resolver object is null', function () {
-        const unknownError = NativeFirebaseError.fromEvent(
-          {
-            code: 'unknown',
-            resolver: null,
-          },
-          'auth',
-        );
-        const actual = auth.getMultiFactorResolver(firebase.app().auth(), unknownError);
-        expect(actual).toBe(null);
-      });
-
-      it('should return the resolver object if its found', function () {
-        const resolver = { session: '', hints: [] };
-        const errorWithResolver = NativeFirebaseError.fromEvent(
-          {
-            code: 'multi-factor-auth-required',
-            resolver,
-          },
-          'auth',
-        );
-        const actual = auth.getMultiFactorResolver(firebase.app().auth(), errorWithResolver);
-        // Using expect(actual).toEqual(resolver) causes unexpected errors:
-        //  You attempted to use "firebase.app('[DEFAULT]').appCheck" but this module could not be found.
-        expect(actual).not.toBeNull();
-        // @ts-ignore We know actual is not null
-        expect(actual.session).toEqual(resolver.session);
-        // @ts-ignore We know actual is not null
-        expect(actual.hints).toEqual(resolver.hints);
-        // @ts-ignore We know actual is not null
-        expect(actual._auth).not.toBeNull();
-      });
-    });
-
-    describe('ActionCodeSettings', function () {
-      beforeAll(function () {
-        // @ts-ignore test
-        jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
-          return new Proxy(
-            {},
-            {
-              get: () => jest.fn().mockResolvedValue({} as never),
-            },
-          );
-        });
-      });
-
-      it('should allow linkDomain as `ActionCodeSettings.linkDomain`', function () {
-        const auth = firebase.app().auth();
-        const actionCodeSettings: FirebaseAuthTypes.ActionCodeSettings = {
-          url: 'https://example.com',
-          handleCodeInApp: true,
-          linkDomain: 'example.com',
-        };
-        const email = 'fake@example.com';
-        auth.sendSignInLinkToEmail(email, actionCodeSettings);
-        auth.sendPasswordResetEmail(email, actionCodeSettings);
-        sendPasswordResetEmail(auth, email, actionCodeSettings);
-        sendSignInLinkToEmail(auth, email, actionCodeSettings);
-
-        const user: FirebaseAuthTypes.User = new User(auth, {});
-
-        user.sendEmailVerification(actionCodeSettings);
-        user.verifyBeforeUpdateEmail(email, actionCodeSettings);
-        sendEmailVerification(user, actionCodeSettings);
-        verifyBeforeUpdateEmail(user, email, actionCodeSettings);
-      });
-    });
-  });
-
   describe('modular', function () {
     it('`getAuth` function is properly exposed to end user', function () {
       expect(getAuth).toBeDefined();
     });
 
+    it('getAuth returns a modular auth instance', function () {
+      const auth = getAuth();
+      expect(auth).toBeDefined();
+      expect(auth.app).toBeDefined();
+      expect(getAuth()).toBe(auth);
+    });
+
     it('`initializeAuth` function is properly exposed to end user', function () {
       expect(initializeAuth).toBeDefined();
+    });
+
+    it('initializeAuth returns a modular auth instance', function () {
+      const { getApp } = require('@react-native-firebase/app');
+      const auth = initializeAuth(getApp());
+      expect(auth).toBeDefined();
+      expect(getAuth(getApp())).toBe(auth);
     });
 
     it('`applyActionCode` function is properly exposed to end user', function () {
@@ -300,6 +139,13 @@ describe('Auth', function () {
 
     it('`isSignInWithEmailLink` function is properly exposed to end user', function () {
       expect(isSignInWithEmailLink).toBeDefined();
+    });
+
+    it('`isSignInWithEmailLink` returns synchronously', function () {
+      const result = isSignInWithEmailLink(getAuth(), 'https://example.com/link');
+
+      expect(result).toBe(false);
+      expect(result).not.toBeInstanceOf(Promise);
     });
 
     it('`onAuthStateChanged` function is properly exposed to end user', function () {
@@ -380,6 +226,88 @@ describe('Auth', function () {
 
     it('`parseActionCodeURL` function is properly exposed to end user', function () {
       expect(parseActionCodeURL).toBeDefined();
+    });
+
+    it('`parseActionCodeURL` and `ActionCodeURL.parseLink` parse valid action links', function () {
+      const link =
+        'https://example.firebaseapp.com/__/auth/action?apiKey=test-api-key&mode=verifyEmail&oobCode=test-code&lang=en&continueUrl=https%3A%2F%2Fexample.com';
+
+      const parsedFromFunction = parseActionCodeURL(link);
+      const parsedFromClass = ActionCodeURL.parseLink(link);
+
+      expect(parsedFromFunction).not.toBeNull();
+      expect(parsedFromClass).toEqual(parsedFromFunction);
+      expect(parsedFromFunction?.apiKey).toBe('test-api-key');
+      expect(parsedFromFunction?.code).toBe('test-code');
+      expect(parsedFromFunction?.operation).toBe('VERIFY_EMAIL');
+      expect(parsedFromFunction?.languageCode).toBe('en');
+      expect(parsedFromFunction?.continueUrl).toBe('https://example.com');
+    });
+
+    it('`parseActionCodeURL` returns null for invalid action links', function () {
+      expect(parseActionCodeURL('https://example.com/not-an-action-link')).toBeNull();
+      expect(ActionCodeURL.parseLink('https://example.com/not-an-action-link')).toBeNull();
+    });
+
+    it('`TotpSecret.generateQrCodeUrl` returns synchronously with default account and issuer', function () {
+      const generateQrCodeUrl = jest.fn(
+        (_secretKey: string, _account: string, _issuer: string) => 'otpauth://totp/example',
+      );
+      const secret = new TotpSecret('secret-key', {
+        app: { name: '[DEFAULT]' },
+        currentUser: { email: 'user@example.com' },
+        native: { generateQrCodeUrl },
+      } as never);
+
+      const result = secret.generateQrCodeUrl();
+
+      expect(result).toBe('otpauth://totp/example');
+      expect(result).not.toBeInstanceOf(Promise);
+      expect(generateQrCodeUrl).toHaveBeenCalledWith('secret-key', 'user@example.com', '[DEFAULT]');
+    });
+
+    it('`TotpSecret.generateQrCodeUrl` throws auth/invalid-multi-factor-secret for a missing secret', function () {
+      const generateQrCodeUrl = jest.fn((_secretKey: string, _account: string, _issuer: string) => {
+        const error = new Error("can't find secret for provided key");
+        error.name = 'invalid-multi-factor-secret';
+        throw error;
+      });
+      const secret = new TotpSecret('missing-secret-key', {
+        app: { name: '[DEFAULT]' },
+        currentUser: { email: 'user@example.com' },
+        native: { generateQrCodeUrl },
+      } as never);
+
+      expect(() => secret.generateQrCodeUrl()).toThrow(
+        "[auth/invalid-multi-factor-secret] can't find secret for provided key",
+      );
+      expect(generateQrCodeUrl).toHaveBeenCalledWith(
+        'missing-secret-key',
+        'user@example.com',
+        '[DEFAULT]',
+      );
+    });
+
+    it('`TotpSecret.generateQrCodeUrl` forwards explicit account and issuer synchronously', function () {
+      const generateQrCodeUrl = jest.fn(
+        (_secretKey: string, _account: string, _issuer: string) =>
+          'otpauth://totp/Example%20App:account%40example.com',
+      );
+      const secret = new TotpSecret('secret-key', {
+        app: { name: '[DEFAULT]' },
+        currentUser: { email: 'user@example.com' },
+        native: { generateQrCodeUrl },
+      } as never);
+
+      const result = secret.generateQrCodeUrl('account@example.com', 'Example App');
+
+      expect(result).toBe('otpauth://totp/Example%20App:account%40example.com');
+      expect(result).not.toBeInstanceOf(Promise);
+      expect(generateQrCodeUrl).toHaveBeenCalledWith(
+        'secret-key',
+        'account@example.com',
+        'Example App',
+      );
     });
 
     it('`deleteUser` function is properly exposed to end user', function () {
@@ -522,615 +450,219 @@ describe('Auth', function () {
       expect(TwitterAuthProvider).toBeDefined();
     });
 
-    describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
-      let authV9Deprecation: CheckV9DeprecationFunction;
-      let userV9Deprecation: CheckV9DeprecationFunction;
-      let staticsV9Deprecation: CheckV9DeprecationFunction;
-
-      beforeEach(function () {
-        authV9Deprecation = createCheckV9Deprecation(['auth']);
-        userV9Deprecation = createCheckV9Deprecation(['auth', 'User']);
-        staticsV9Deprecation = createCheckV9Deprecation(['auth', 'statics']);
-
-        // @ts-ignore test
-        jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
-          return new Proxy(
-            {},
-            {
-              get: () =>
-                jest.fn().mockResolvedValue({
-                  result: true,
-                } as never),
-            },
-          );
+    describe('credential classes', function () {
+      it('EmailAuthCredential.fromJSON deserializes password credentials', function () {
+        const credential = EmailAuthCredential.fromJSON({
+          email: 'test@example.com',
+          password: 'secret',
+          signInMethod: 'password',
         });
+        expect(credential?.token).toBe('test@example.com');
+        expect(credential?.secret).toBe('secret');
       });
 
-      describe('Auth', function () {
-        it('applyActionCode', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => applyActionCode(auth, 'code'),
-            () => auth.applyActionCode('code'),
-            'applyActionCode',
-          );
-        });
-
-        it('checkActionCode', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => checkActionCode(auth, 'code'),
-            () => auth.checkActionCode('code'),
-            'checkActionCode',
-          );
-        });
-
-        it('confirmPasswordReset', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => confirmPasswordReset(auth, 'code', 'newPassword'),
-            () => auth.confirmPasswordReset('code', 'newPassword'),
-            'confirmPasswordReset',
-          );
-        });
-
-        it('createUserWithEmailAndPassword', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => createUserWithEmailAndPassword(auth, 'test@example.com', 'password'),
-            () => auth.createUserWithEmailAndPassword('test@example.com', 'password'),
-            'createUserWithEmailAndPassword',
-          );
-        });
-
-        it('fetchSignInMethodsForEmail', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => fetchSignInMethodsForEmail(auth, 'test@example.com'),
-            () => auth.fetchSignInMethodsForEmail('test@example.com'),
-            'fetchSignInMethodsForEmail',
-          );
-        });
-
-        it('getMultiFactorResolver', function () {
-          const auth = getAuth();
-          const error = new Error() as any;
-          authV9Deprecation(
-            () => getMultiFactorResolver(auth, error),
-            () => auth.getMultiFactorResolver(error),
-            'getMultiFactorResolver',
-          );
-        });
-
-        it('isSignInWithEmailLink', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => isSignInWithEmailLink(auth, 'emailLink'),
-            () => auth.isSignInWithEmailLink('emailLink'),
-            'isSignInWithEmailLink',
-          );
-        });
-
-        it('onAuthStateChanged', function () {
-          const auth = getAuth();
-          const callback = () => {};
-          authV9Deprecation(
-            () => onAuthStateChanged(auth, callback),
-            () => auth.onAuthStateChanged(callback),
-            'onAuthStateChanged',
-          );
-        });
-
-        it('onIdTokenChanged', function () {
-          const auth = getAuth();
-          const callback = () => {};
-          authV9Deprecation(
-            () => onIdTokenChanged(auth, callback),
-            () => auth.onIdTokenChanged(callback),
-            'onIdTokenChanged',
-          );
-        });
-
-        it('signInWithPopup', function () {
-          const auth = getAuth();
-          const provider = { toObject: () => ({}) } as any;
-          authV9Deprecation(
-            () => signInWithPopup(auth, provider),
-            () => auth.signInWithPopup(provider),
-            'signInWithPopup',
-          );
-        });
-
-        it('signInWithRedirect', function () {
-          const auth = getAuth();
-          const provider = { toObject: () => ({}) } as any;
-          authV9Deprecation(
-            () => signInWithRedirect(auth, provider),
-            () => auth.signInWithRedirect(provider),
-            'signInWithRedirect',
-          );
-        });
-
-        it('sendPasswordResetEmail', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => sendPasswordResetEmail(auth, 'test@example.com'),
-            () => auth.sendPasswordResetEmail('test@example.com'),
-            'sendPasswordResetEmail',
-          );
-        });
-
-        it('sendSignInLinkToEmail', function () {
-          const auth = getAuth();
-          const actionCodeSettings = { url: 'https://example.com' };
-          authV9Deprecation(
-            () => sendSignInLinkToEmail(auth, 'test@example.com', actionCodeSettings),
-            () => auth.sendSignInLinkToEmail('test@example.com', actionCodeSettings),
-            'sendSignInLinkToEmail',
-          );
-        });
-
-        it('signInAnonymously', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => signInAnonymously(auth),
-            () => auth.signInAnonymously(),
-            'signInAnonymously',
-          );
-        });
-
-        it('signInWithCredential', function () {
-          const auth = getAuth();
-          const credential = {} as any;
-          authV9Deprecation(
-            () => signInWithCredential(auth, credential),
-            () => auth.signInWithCredential(credential),
-            'signInWithCredential',
-          );
-        });
-
-        it('signInWithCustomToken', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => signInWithCustomToken(auth, 'customToken'),
-            () => auth.signInWithCustomToken('customToken'),
-            'signInWithCustomToken',
-          );
-        });
-
-        it('signInWithEmailAndPassword', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => signInWithEmailAndPassword(auth, 'test@example.com', 'password'),
-            () => auth.signInWithEmailAndPassword('test@example.com', 'password'),
-            'signInWithEmailAndPassword',
-          );
-        });
-
-        it('signInWithEmailLink', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => signInWithEmailLink(auth, 'test@example.com', 'emailLink'),
-            () => auth.signInWithEmailLink('test@example.com', 'emailLink'),
-            'signInWithEmailLink',
-          );
-        });
-
-        it('signInWithPhoneNumber', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => signInWithPhoneNumber(auth, '+1234567890', undefined),
-            () => auth.signInWithPhoneNumber('+1234567890', false),
-            'signInWithPhoneNumber',
-          );
-        });
-
-        it('signOut', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => signOut(auth),
-            () => auth.signOut(),
-            'signOut',
-          );
-        });
-
-        it('useUserAccessGroup', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => useUserAccessGroup(auth, 'group'),
-            () => auth.useUserAccessGroup('group'),
-            'useUserAccessGroup',
-          );
-        });
-
-        it('verifyPasswordResetCode', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => verifyPasswordResetCode(auth, 'code'),
-            () => auth.verifyPasswordResetCode('code'),
-            'verifyPasswordResetCode',
-          );
-        });
-
-        it('getCustomAuthDomain', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => getCustomAuthDomain(auth),
-            () => auth.getCustomAuthDomain(),
-            'getCustomAuthDomain',
-          );
-        });
-
-        it('useEmulator', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => connectAuthEmulator(auth, 'http://localhost:9099'),
-            () => auth.useEmulator('http://localhost:9099'),
-            'useEmulator',
-          );
-        });
-
-        it('setLanguageCode', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => setLanguageCode(auth, 'en'),
-            () => auth.setLanguageCode('en'),
-            'setLanguageCode',
-          );
-        });
-
-        it('multiFactor', function () {
-          const auth = getAuth();
-          const mockUser = {
-            userId: 'test-user-id',
-            multiFactor: {
-              enrolledFactors: [],
-            },
-          } as any;
-
-          // Mock the currentUser getter to have the same userId
-          Object.defineProperty(auth, 'currentUser', {
-            get: () => ({
-              userId: 'test-user-id',
-            }),
-            configurable: true,
-          });
-
-          authV9Deprecation(
-            () => multiFactor(mockUser),
-            () => auth.multiFactor(mockUser),
-            'multiFactor',
-          );
-        });
+      it('OAuthProvider credentialFromResult and credentialFromError return null', function () {
+        expect(OAuthProvider.credentialFromResult({} as any)).toBeNull();
+        expect(OAuthProvider.credentialFromError({} as any)).toBeNull();
       });
 
-      describe('User', function () {
-        let mockUser: User;
-
-        beforeEach(function () {
-          mockUser = new User(getAuth(), {
-            uid: 'test-user-id',
-            displayName: 'Test User',
-            email: 'test@example.com',
-            emailVerified: true,
-            isAnonymous: false,
-            metadata: {
-              lastSignInTime: '2023-01-01T00:00:00.000Z',
-              creationTime: '2023-01-01T00:00:00.000Z',
-            },
-            multiFactor: {
-              enrolledFactors: [],
-            },
-            phoneNumber: '+1234567890',
-            tenantId: null,
-            photoURL: 'https://example.com/photo.jpg',
-            providerData: [
-              {
-                uid: 'test-uid',
-                displayName: 'Test User',
-                email: 'test@example.com',
-                phoneNumber: '+1234567890',
-                photoURL: 'https://example.com/photo.jpg',
-                providerId: 'password',
-              },
-            ],
-            providerId: 'firebase',
-          });
-          mockUser = createDeprecationProxy(mockUser);
-        });
-
-        it('delete', function () {
-          userV9Deprecation(
-            () => deleteUser(mockUser),
-            () => mockUser.delete(),
-            'delete',
-          );
-        });
-
-        it('getIdToken', function () {
-          userV9Deprecation(
-            () => getIdToken(mockUser),
-            () => mockUser.getIdToken(),
-            'getIdToken',
-          );
-        });
-
-        it('getIdToken with forceRefresh', function () {
-          userV9Deprecation(
-            () => getIdToken(mockUser, true),
-            () => mockUser.getIdToken(true),
-            'getIdToken',
-          );
-        });
-
-        it('getIdTokenResult', function () {
-          userV9Deprecation(
-            () => getIdTokenResult(mockUser),
-            () => mockUser.getIdTokenResult(),
-            'getIdTokenResult',
-          );
-        });
-
-        it('getIdTokenResult with forceRefresh', function () {
-          userV9Deprecation(
-            () => getIdTokenResult(mockUser, true),
-            () => mockUser.getIdTokenResult(true),
-            'getIdTokenResult',
-          );
-        });
-
-        it('linkWithCredential', function () {
-          const credential = {} as any;
-          userV9Deprecation(
-            () => linkWithCredential(mockUser, credential),
-            () => mockUser.linkWithCredential(credential),
-            'linkWithCredential',
-          );
-        });
-
-        it('linkWithPopup', function () {
-          const provider = { toObject: () => ({}) } as any;
-          userV9Deprecation(
-            () => linkWithPopup(mockUser, provider),
-            () => mockUser.linkWithPopup(provider),
-            'linkWithPopup',
-          );
-        });
-
-        it('linkWithRedirect', function () {
-          const provider = { toObject: () => ({}) } as any;
-          userV9Deprecation(
-            () => linkWithRedirect(mockUser, provider),
-            () => mockUser.linkWithRedirect(provider),
-            'linkWithRedirect',
-          );
-        });
-
-        it('reauthenticateWithCredential', function () {
-          const credential = {} as any;
-          userV9Deprecation(
-            () => reauthenticateWithCredential(mockUser, credential),
-            () => mockUser.reauthenticateWithCredential(credential),
-            'reauthenticateWithCredential',
-          );
-        });
-
-        it('reauthenticateWithPopup', function () {
-          const provider = { toObject: () => ({}) } as any;
-          userV9Deprecation(
-            () => reauthenticateWithPopup(mockUser, provider),
-            () => mockUser.reauthenticateWithPopup(provider),
-            'reauthenticateWithPopup',
-          );
-        });
-
-        it('reauthenticateWithRedirect', function () {
-          const provider = { toObject: () => ({}) } as any;
-          userV9Deprecation(
-            () => reauthenticateWithRedirect(mockUser, provider),
-            () => mockUser.reauthenticateWithRedirect(provider),
-            'reauthenticateWithRedirect',
-          );
-        });
-
-        it('reload', function () {
-          userV9Deprecation(
-            () => reload(mockUser),
-            () => mockUser.reload(),
-            'reload',
-          );
-        });
-
-        it('sendEmailVerification', function () {
-          userV9Deprecation(
-            () => sendEmailVerification(mockUser),
-            () => mockUser.sendEmailVerification(),
-            'sendEmailVerification',
-          );
-        });
-
-        it('sendEmailVerification with actionCodeSettings', function () {
-          const actionCodeSettings = { url: 'https://example.com' };
-          userV9Deprecation(
-            () => sendEmailVerification(mockUser, actionCodeSettings),
-            () => mockUser.sendEmailVerification(actionCodeSettings),
-            'sendEmailVerification',
-          );
-        });
-
-        it('unlink', function () {
-          userV9Deprecation(
-            () => unlink(mockUser, 'google.com'),
-            () => mockUser.unlink('google.com'),
-            'unlink',
-          );
-        });
-
-        it('updateEmail', function () {
-          userV9Deprecation(
-            () => updateEmail(mockUser, 'newemail@example.com'),
-            () => mockUser.updateEmail('newemail@example.com'),
-            'updateEmail',
-          );
-        });
-
-        it('updatePassword', function () {
-          userV9Deprecation(
-            () => updatePassword(mockUser, 'newPassword123'),
-            () => mockUser.updatePassword('newPassword123'),
-            'updatePassword',
-          );
-        });
-
-        it('updatePhoneNumber', function () {
-          const credential = {} as any;
-          userV9Deprecation(
-            () => updatePhoneNumber(mockUser, credential),
-            () => mockUser.updatePhoneNumber(credential),
-            'updatePhoneNumber',
-          );
-        });
-
-        it('updateProfile', function () {
-          const profile = { displayName: 'John Doe', photoURL: 'https://example.com/photo.jpg' };
-          userV9Deprecation(
-            () => updateProfile(mockUser, profile),
-            () => mockUser.updateProfile(profile),
-            'updateProfile',
-          );
-        });
-
-        it('verifyBeforeUpdateEmail', function () {
-          userV9Deprecation(
-            () => verifyBeforeUpdateEmail(mockUser, 'newemail@example.com'),
-            () => mockUser.verifyBeforeUpdateEmail('newemail@example.com'),
-            'verifyBeforeUpdateEmail',
-          );
-        });
-
-        it('verifyBeforeUpdateEmail with actionCodeSettings', function () {
-          const actionCodeSettings = { url: 'https://example.com' };
-          userV9Deprecation(
-            () => verifyBeforeUpdateEmail(mockUser, 'newemail@example.com', actionCodeSettings),
-            () => mockUser.verifyBeforeUpdateEmail('newemail@example.com', actionCodeSettings),
-            'verifyBeforeUpdateEmail',
-          );
-        });
-
-        it('toJSON', function () {
-          userV9Deprecation(
-            // No modular equivalent
-            () => {},
-            () => mockUser.toJSON(),
-            'toJSON',
-          );
-        });
+      it('PhoneAuthProvider credentialFromResult and credentialFromError return null', function () {
+        expect(PhoneAuthProvider.credentialFromResult({} as any)).toBeNull();
+        expect(PhoneAuthProvider.credentialFromError({} as any)).toBeNull();
       });
 
-      describe('statics', function () {
-        it('AppleAuthProvider', function () {
-          staticsV9Deprecation(
-            () => AppleAuthProvider,
-            () => auth.AppleAuthProvider,
-            'AppleAuthProvider',
-          );
+      it('OAuthCredential.fromJSON deserializes provider credentials', function () {
+        const credential = OAuthCredential.fromJSON({
+          providerId: 'google.com',
+          idToken: 'id-token',
+          accessToken: 'access-token',
         });
+        expect(credential?.providerId).toBe('google.com');
+        expect(credential?.idToken).toBe('id-token');
+      });
 
-        it('EmailAuthProvider', function () {
-          staticsV9Deprecation(
-            () => EmailAuthProvider,
-            () => auth.EmailAuthProvider,
-            'EmailAuthProvider',
-          );
-        });
+      it('GoogleAuthProvider.credential maps id-token-only credentials for native bridge', function () {
+        const credential = GoogleAuthProvider.credential('google-id-token', null);
+        expect(credential.providerId).toBe('google.com');
+        expect(credential.signInMethod).toBe('google.com');
+        expect(credential.idToken).toBe('google-id-token');
+        expect(credential.accessToken).toBeUndefined();
+        expect(credential.token).toBe('google-id-token');
+        expect(credential.secret).toBe('');
+      });
 
-        it('PhoneAuthProvider', function () {
-          staticsV9Deprecation(
-            () => PhoneAuthProvider,
-            () => auth.PhoneAuthProvider,
-            'PhoneAuthProvider',
-          );
-        });
+      it('GoogleAuthProvider.credential maps access-token-only credentials for native bridge', function () {
+        const credential = GoogleAuthProvider.credential(null, 'google-access-token');
+        expect(credential.providerId).toBe('google.com');
+        expect(credential.signInMethod).toBe('google.com');
+        expect(credential.accessToken).toBe('google-access-token');
+        expect(credential.idToken).toBeUndefined();
+        expect(credential.token).toBe('');
+        expect(credential.secret).toBe('google-access-token');
+      });
 
-        it('GoogleAuthProvider', function () {
-          staticsV9Deprecation(
-            () => GoogleAuthProvider,
-            () => auth.GoogleAuthProvider,
-            'GoogleAuthProvider',
-          );
+      it('PhoneAuthCredential.fromJSON deserializes phone credentials', function () {
+        const credential = PhoneAuthCredential.fromJSON({
+          verificationId: 'vid',
+          verificationCode: '123456',
         });
+        expect(credential?.token).toBe('vid');
+        expect(credential?.secret).toBe('123456');
+      });
 
-        it('GithubAuthProvider', function () {
-          staticsV9Deprecation(
-            () => GithubAuthProvider,
-            () => auth.GithubAuthProvider,
-            'GithubAuthProvider',
-          );
-        });
+      it('AppleAuthProvider.credential maps fullName alongside the native bridge fields', function () {
+        const fullName = { givenName: 'Jonny', familyName: 'Appleseed' };
+        const credential = AppleAuthProvider.credential(
+          'apple-id-token',
+          'apple-raw-nonce',
+          fullName,
+        );
+        expect(credential.providerId).toBe('apple.com');
+        expect(credential.signInMethod).toBe('apple.com');
+        expect(credential.idToken).toBe('apple-id-token');
+        expect(credential.rawNonce).toBe('apple-raw-nonce');
+        expect(credential.fullName).toEqual(fullName);
+        // Native bridge slots are unaffected by fullName (backwards-compatible with pre-fullName behavior).
+        expect(credential.token).toBe('apple-id-token');
+        expect(credential.secret).toBe('apple-raw-nonce');
+      });
 
-        it('TwitterAuthProvider', function () {
-          staticsV9Deprecation(
-            () => TwitterAuthProvider,
-            () => auth.TwitterAuthProvider,
-            'TwitterAuthProvider',
-          );
-        });
+      it('AppleAuthProvider.credential works without fullName', function () {
+        const credential = AppleAuthProvider.credential('apple-id-token', 'apple-raw-nonce');
+        expect(credential.fullName).toBeUndefined();
+        expect(credential.token).toBe('apple-id-token');
+        expect(credential.secret).toBe('apple-raw-nonce');
+      });
 
-        it('FacebookAuthProvider', function () {
-          staticsV9Deprecation(
-            () => FacebookAuthProvider,
-            () => auth.FacebookAuthProvider,
-            'FacebookAuthProvider',
-          );
+      it('OAuthProvider(apple.com).credential carries fullName', function () {
+        const fullName = { givenName: 'Jonny', familyName: 'Appleseed' };
+        const credential = new OAuthProvider('apple.com').credential({
+          idToken: 'apple-id-token',
+          rawNonce: 'apple-raw-nonce',
+          fullName,
         });
+        expect(credential.fullName).toEqual(fullName);
+      });
 
-        it('PhoneMultiFactorGenerator', function () {
-          staticsV9Deprecation(
-            () => PhoneMultiFactorGenerator,
-            () => auth.PhoneMultiFactorGenerator,
-            'PhoneMultiFactorGenerator',
-          );
+      it('OAuthProvider(non-apple).credential ignores fullName', function () {
+        const credential = new OAuthProvider('google.com').credential({
+          idToken: 'google-id-token',
+          rawNonce: 'google-raw-nonce',
+          fullName: { givenName: 'Ignored' },
         });
+        expect(credential.fullName).toBeUndefined();
+        expect(credential.toJSON()).not.toHaveProperty('fullName');
+      });
 
-        it('OAuthProvider', function () {
-          staticsV9Deprecation(
-            () => OAuthProvider,
-            () => auth.OAuthProvider,
-            'OAuthProvider',
-          );
+      it('OAuthProvider(apple.com).credential ignores empty fullName values', function () {
+        const credential = new OAuthProvider('apple.com').credential({
+          idToken: 'apple-id-token',
+          rawNonce: 'apple-raw-nonce',
+          fullName: { givenName: ' ', familyName: '' },
         });
+        expect(credential.fullName).toBeUndefined();
+        expect(credential.toJSON()).not.toHaveProperty('fullName');
+      });
 
-        it('OIDCAuthProvider', function () {
-          staticsV9Deprecation(
-            () => OIDCAuthProvider,
-            () => auth.OIDCAuthProvider,
-            'OIDCAuthProvider',
-          );
-        });
+      it('OAuthCredential.fromJSON round-trips fullName', function () {
+        const fullName = { givenName: 'Jonny', familyName: 'Appleseed' };
+        const credential = AppleAuthProvider.credential(
+          'apple-id-token',
+          'apple-raw-nonce',
+          fullName,
+        );
+        const roundTripped = OAuthCredential.fromJSON(credential.toJSON());
+        expect(roundTripped?.fullName).toEqual(fullName);
+      });
 
-        it('PhoneAuthState', function () {
-          staticsV9Deprecation(
-            () => PhoneAuthState,
-            () => auth.PhoneAuthState,
-            'PhoneAuthState',
-          );
+      it('OAuthCredential.fromJSON ignores fullName for non-apple providers', function () {
+        const credential = OAuthCredential.fromJSON({
+          providerId: 'google.com',
+          idToken: 'google-id-token',
+          fullName: { givenName: 'Ignored' },
         });
+        expect(credential?.fullName).toBeUndefined();
+      });
+    });
 
-        it('getMultiFactorResolver', function () {
-          staticsV9Deprecation(
-            () => getMultiFactorResolver,
-            () => auth.getMultiFactorResolver,
-            'getMultiFactorResolver',
-          );
-        });
+    describe('Sign in with Apple fullName', function () {
+      it('signInWithCredential forwards fullName to the native bridge', async function () {
+        const { TurboModuleRegistry } = require('react-native');
+        const nativeAuth = TurboModuleRegistry.getEnforcing('NativeRNFBTurboAuth');
+        nativeAuth.signInWithCredential.mockClear();
 
-        it('multiFactor', function () {
-          staticsV9Deprecation(
-            () => multiFactor,
-            () => auth.multiFactor,
-            'multiFactor',
-          );
+        const fullName = { givenName: 'Jonny', familyName: 'Appleseed' };
+        const credential = AppleAuthProvider.credential(
+          'apple-id-token',
+          'apple-raw-nonce',
+          fullName,
+        );
+        await signInWithCredential(getAuth(), credential);
+
+        expect(nativeAuth.signInWithCredential).toHaveBeenCalledWith(
+          '[DEFAULT]',
+          'apple.com',
+          'apple-id-token',
+          'apple-raw-nonce',
+          fullName,
+        );
+      });
+
+      it('signInWithCredential forwards null when fullName is absent', async function () {
+        const { TurboModuleRegistry } = require('react-native');
+        const nativeAuth = TurboModuleRegistry.getEnforcing('NativeRNFBTurboAuth');
+        nativeAuth.signInWithCredential.mockClear();
+
+        const credential = GoogleAuthProvider.credential('google-id-token');
+        await signInWithCredential(getAuth(), credential);
+
+        expect(nativeAuth.signInWithCredential).toHaveBeenCalledWith(
+          '[DEFAULT]',
+          'google.com',
+          'google-id-token',
+          '',
+          null,
+        );
+      });
+
+      it('signInWithCredential forwards null when fullName is empty', async function () {
+        const { TurboModuleRegistry } = require('react-native');
+        const nativeAuth = TurboModuleRegistry.getEnforcing('NativeRNFBTurboAuth');
+        nativeAuth.signInWithCredential.mockClear();
+
+        const credential = new OAuthProvider('apple.com').credential({
+          idToken: 'apple-id-token',
+          rawNonce: 'apple-raw-nonce',
+          fullName: { givenName: ' ', familyName: '' },
         });
+        await signInWithCredential(getAuth(), credential);
+
+        expect(nativeAuth.signInWithCredential).toHaveBeenCalledWith(
+          '[DEFAULT]',
+          'apple.com',
+          'apple-id-token',
+          'apple-raw-nonce',
+          null,
+        );
+      });
+    });
+
+    describe('User.reauthenticateWithRedirect', function () {
+      it('updates current user via _setUserCredential', async function () {
+        const setUserCredential = jest.fn();
+        const authInternal = {
+          native: {
+            reauthenticateWithProvider: jest.fn(() =>
+              Promise.resolve({ user: { uid: 'test-uid' }, additionalUserInfo: null }),
+            ),
+          },
+          _setUserCredential: setUserCredential,
+        };
+        const user = new User(authInternal as any, { uid: 'test-uid' } as any);
+        await user.reauthenticateWithRedirect({
+          toObject: () => ({ providerId: 'google.com' }),
+        } as any);
+        expect(setUserCredential).toHaveBeenCalled();
       });
     });
 

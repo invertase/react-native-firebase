@@ -20,17 +20,20 @@ import {
   isArray,
   isBoolean,
   isFunction,
+  isOther,
   isObject,
   isString,
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
+import NativeFirebaseError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import type {
   ConverterWithOptionalMethodsInternal,
   ConverterWithOptionalToFirestoreInternal,
   ConverterWithToFirestoreInternal,
   PartialSnapshotObserverInternal,
 } from '../types/internal';
-import FieldPath, { fromDotSeparatedString } from '../FieldPath';
+import { fromDotSeparatedString, FieldPath } from '../FieldPath';
+import type { ListenSource } from '../types/firestore';
 
 export function extractFieldPathData(data: unknown, segments: string[]): unknown {
   if (!isObject(data)) {
@@ -151,7 +154,10 @@ function isPartialObserver(
 }
 
 export interface ParseSnapshotArgsResult {
-  snapshotListenOptions: { includeMetadataChanges?: boolean };
+  snapshotListenOptions: {
+    includeMetadataChanges?: boolean;
+    source?: ListenSource;
+  };
   callback: (snapshot: unknown, error: Error | null) => void;
   onNext: (snapshot: unknown) => void;
   onError: (error: Error) => void;
@@ -163,7 +169,10 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
   }
 
   const NOOP = (): void => {};
-  const snapshotListenOptions: { includeMetadataChanges?: boolean } = {};
+  const snapshotListenOptions: {
+    includeMetadataChanges?: boolean;
+    source?: ListenSource;
+  } = {};
   let callback: (snapshot: unknown, error: Error | null) => void = NOOP;
   let onError: (error: Error) => void = NOOP;
   let onNext: (snapshot: unknown) => void = NOOP;
@@ -189,9 +198,10 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
   }
 
   if (isObject(args[0]) && !isPartialObserver(args[0])) {
-    const opts = args[0] as { includeMetadataChanges?: boolean };
+    const opts = args[0] as { includeMetadataChanges?: boolean; source?: ListenSource };
     snapshotListenOptions.includeMetadataChanges =
       opts.includeMetadataChanges == null ? false : opts.includeMetadataChanges;
+    snapshotListenOptions.source = opts.source == null ? 'default' : opts.source;
     if (isFunction(args[1])) {
       if (isFunction(args[2])) {
         onNext = args[1] as (snapshot: unknown) => void;
@@ -217,6 +227,12 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
     }
   }
 
+  if (hasOwnProperty(snapshotListenOptions, 'source')) {
+    if (snapshotListenOptions.source !== 'default' && snapshotListenOptions.source !== 'cache') {
+      throw new Error("'options' SnapshotOptions.source must be one of 'default' or 'cache'.");
+    }
+  }
+
   if (!isFunction(onNext)) {
     throw new Error("'observer.next' or 'onNext' expected a function.");
   }
@@ -226,6 +242,20 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
   }
 
   return { snapshotListenOptions, callback, onNext, onError };
+}
+
+export function throwIfLiteSdkSnapshotListenerUnsupported(): void {
+  if (!isOther) {
+    return;
+  }
+
+  throw NativeFirebaseError.fromEvent(
+    {
+      code: 'unsupported',
+      message: 'Not supported in the lite SDK.',
+    },
+    'firestore',
+  );
 }
 
 export function validateWithConverter(converter: unknown): void {

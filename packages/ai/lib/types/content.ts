@@ -192,6 +192,7 @@ export interface FunctionResponse {
   id?: string;
   name: string;
   response: object;
+  parts?: Part[];
 }
 
 /**

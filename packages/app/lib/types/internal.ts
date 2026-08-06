@@ -15,8 +15,6 @@
  *
  */
 
-import type { ReactNativeFirebase, Utils } from './app';
-
 /**
  * Internal types for React Native Firebase
  * These types are used internally across multiple files and should not be exported to consumers
@@ -29,7 +27,7 @@ import type { ReactNativeFirebase, Utils } from './app';
 export type FirebaseJsonConfig = Record<string, unknown>;
 
 /**
- * Configuration for module namespace registration
+ * Configuration for a Firebase module instance.
  */
 export interface ModuleConfig {
   namespace: string;
@@ -39,49 +37,6 @@ export interface ModuleConfig {
   nativeEvents?: boolean | string[];
   disablePrependCustomUrlOrRegion?: boolean;
   turboModule?: boolean;
-}
-
-/**
- * Extended configuration for namespace registration including native module details
- */
-export interface NamespaceConfig extends ModuleConfig {
-  nativeModuleName: string | string[];
-  nativeEvents: boolean | string[];
-  // ModuleClass can be FirebaseModule or any subclass of it
-  // Uses FirebaseAppBase (the concrete class type) rather than FirebaseApp (the augmented interface)
-  ModuleClass: new (
-    app: ReactNativeFirebase.FirebaseAppBase,
-    config: ModuleConfig,
-    customUrlOrRegion?: string | null,
-  ) => ReactNativeFirebase.FirebaseModule;
-  statics?: object;
-  version?: string;
-}
-
-/**
- * Type for a Firebase module getter function that can optionally accept
- * a custom URL/region/databaseId parameter
- */
-export type ModuleGetter = {
-  (customUrlOrRegionOrDatabaseId?: string): ReactNativeFirebase.FirebaseModule;
-  [key: string]: unknown;
-};
-
-/**
- * Type for Firebase root object with module getters
- */
-export interface FirebaseRoot {
-  initializeApp: (
-    options: ReactNativeFirebase.FirebaseAppOptions,
-    configOrName?: string | ReactNativeFirebase.FirebaseAppConfig,
-  ) => Promise<ReactNativeFirebase.FirebaseApp>;
-  setReactNativeAsyncStorage: (asyncStorage: ReactNativeFirebase.ReactNativeAsyncStorage) => void;
-  app: (name?: string) => ReactNativeFirebase.FirebaseApp;
-  apps: ReactNativeFirebase.FirebaseApp[];
-  SDK_VERSION: string;
-  setLogLevel: (logLevel: ReactNativeFirebase.LogLevelString) => void;
-  utils: Utils.Statics & (() => Utils.Module);
-  [key: string]: unknown;
 }
 
 /**

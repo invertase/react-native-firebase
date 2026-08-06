@@ -1,7 +1,6 @@
 ---
 title: App Check
 description: Installation and getting started with App Check.
-icon: //firebase.google.com/static/images/products/icons/build_app_check.svg
 next: /app-distribution/usage
 previous: /analytics/screen-tracking
 ---
@@ -39,6 +38,15 @@ You may find excluding the `i386` architecture via an addition to the `ios/Podfi
       aggregate_target.user_project.save
     end
 ```
+
+# Platform support and New Architecture
+
+|                      |                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+| **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+**Platform notes:** Use `ReactNativeFirebaseAppCheckProvider` for native attestation (Device Check, App Attest, Play Integrity). firebase-js-sdk `ReCaptchaEnterpriseProvider` and `ReCaptchaV3Provider` are **web only**.
 
 # What does it do
 
@@ -87,12 +95,12 @@ For instructions on how to generate required keys and register an app for the de
 
 > If you're using Expo Managed Workflow, you can load the `@react-native-firebase/app-check` config plugin to skip the Initialize setup step.
 
-You must call initialize the AppCheck module prior to calling any firebase back-end services for App Check to function.
+You must initialize the AppCheck module prior to calling any Firebase backend services for App Check to function.
 
 #### All react-native >= 0.77 with AppDelegate.swift
 
-The AppCheck pod does not define a module map for integration, so importing it in the Swift file does not work.
-You need to alter the bridging header file that should be in `<your project name>/ios/<your project-name>-Bridging-Header.h`
+The AppCheck pod does not expose a Swift-importable module surface (its C++ codegen headers stay private), so importing it directly in a Swift file does not work.
+Edit the bridging header at `<your project name>/ios/<your project-name>-Bridging-Header.h`
 
 You will need to add the line indicated in the example below:
 
@@ -139,7 +147,6 @@ And within your existing `didFinishLaunchingWithOptions` method, add the followi
 
 ```diff
 import UIKit
-+ import RNFBAppCheck  // <-- This is the import for AppCheck to work
 + import FirebaseCore  // <-- From App/Core integration, no other Firebase items needed
 import React
 import React_RCTAppDelegate
@@ -151,6 +158,8 @@ class AppDelegate: RCTAppDelegate {
 +   RNFBAppCheckModule.sharedInstance()  // <-- new for AppCheck to work
 +   FirebaseApp.configure()              // <-- From App/Core integration
 ```
+
+> **Note:** Do not add `import RNFBAppCheck` in Swift. The AppCheck pod is Obj-C only and does not produce a Swift module. Use the bridging header import above instead.
 
 #### Configure Firebase with iOS credentials (react-native < 0.77)
 
@@ -184,6 +193,8 @@ How do we do this? We use the standard firebase-js-sdk v9 API `initializeAppChec
 It is through the use of a react-native-specific `ReactNativeFirebaseAppCheckProvider` that we can offer runtime configuration capability at the javascript level, including the ability to switch providers dynamically.
 
 So AppCheck module initialization is done in two steps in react-native-firebase - first you create and configure the custom provider, then you initialize AppCheck using that custom provider.
+
+Starting in v25, the modular App Check helpers and types are exported from `@react-native-firebase/app-check` at the package root to better match the Firebase JS SDK. For example, import `initializeAppCheck`, `AppCheck`, and `AppCheckTokenResult` directly from `@react-native-firebase/app-check` when using the modular API.
 
 ### Configure a Custom Provider
 
@@ -219,6 +230,35 @@ import { initializeAppCheck } from '@react-native-firebase/app-check';
 
 const appCheck = await initializeAppCheck(getApp(), {
   provider: rnfbProvider,
+  isTokenAutoRefreshEnabled: true,
+});
+```
+
+### Inline Provider Configuration
+
+If you do not need to keep a provider instance around, you can pass the React Native provider configuration inline using `providerOptions`:
+
+```javascript
+import { getApp } from '@react-native-firebase/app';
+import { initializeAppCheck } from '@react-native-firebase/app-check';
+
+const appCheck = await initializeAppCheck(getApp(), {
+  provider: {
+    providerOptions: {
+      android: {
+        provider: __DEV__ ? 'debug' : 'playIntegrity',
+        debugToken: 'some token you have configured for your project firebase web console',
+      },
+      apple: {
+        provider: __DEV__ ? 'debug' : 'appAttestWithDeviceCheckFallback',
+        debugToken: 'some token you have configured for your project firebase web console',
+      },
+      web: {
+        provider: 'reCaptchaV3',
+        siteKey: 'unknown',
+      },
+    },
+  },
   isTokenAutoRefreshEnabled: true,
 });
 ```

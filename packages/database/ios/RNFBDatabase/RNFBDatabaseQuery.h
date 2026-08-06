@@ -15,7 +15,18 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseDatabase/FirebaseDatabase-Swift.h>)
+// SPM: the declared product is the thin Swift wrapper `FirebaseDatabase`
+// (which depends on `FirebaseDatabaseInternal`, not exposed to us directly).
+// Its generated ObjC interface header is what's importable here.
+#import <FirebaseCore/FirebaseCore.h>
+#import <FirebaseDatabase/FirebaseDatabase-Swift.h>
+#else
+@import FirebaseCore;
+@import FirebaseDatabaseInternal;
+#endif
 #import <React/RCTBridgeModule.h>
 
 @interface RNFBDatabaseQuery : NSObject

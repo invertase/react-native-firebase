@@ -15,7 +15,15 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
+#import <FirebaseCore/FirebaseCore.h>
+#import <FirebaseMessaging/FirebaseMessaging.h>
+#else
+@import FirebaseCore;
+@import FirebaseMessaging;
+#endif
 #import <GoogleUtilities/GULAppDelegateSwizzler.h>
 #import <objc/runtime.h>
 
@@ -78,10 +86,80 @@
 }
 
 // used to temporarily store a promise instance to resolve calls to `registerForRemoteNotifications`
-- (void)setPromiseResolve:(RCTPromiseResolveBlock)resolve
-         andPromiseReject:(RCTPromiseRejectBlock)reject {
-  _registerPromiseResolver = resolve;
-  _registerPromiseRejecter = reject;
+- (NSUInteger)beginRegisterPromiseResolve:(RCTPromiseResolveBlock)resolve
+                         andPromiseReject:(RCTPromiseRejectBlock)reject {
+  RCTPromiseRejectBlock supersededReject = nil;
+  NSUInteger generation = 0;
+  @synchronized(self) {
+    supersededReject = _registerPromiseRejecter;
+    _registerPromiseResolver = resolve;
+    _registerPromiseRejecter = reject;
+    _registerPromiseGeneration += 1;
+    generation = _registerPromiseGeneration;
+  }
+  if (supersededReject != nil) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:supersededReject
+                                      userInfo:[@{
+                                        @"code" : @"registration-superseded",
+                                        @"message" : @"registerDeviceForRemoteMessages was "
+                                                     @"called again before the previous "
+                                                     @"APNs registration attempt settled."
+                                      } mutableCopy]];
+  }
+  return generation;
+}
+
+- (BOOL)claimPendingRegisterPromiseGeneration:(NSUInteger)generation
+                                      resolve:(RCTPromiseResolveBlock _Nullable *_Nonnull)outResolve
+                                       reject:(RCTPromiseRejectBlock _Nullable *_Nonnull)outReject {
+  @synchronized(self) {
+    if (generation == 0 || generation != _registerPromiseGeneration ||
+        (_registerPromiseResolver == nil && _registerPromiseRejecter == nil)) {
+      if (outResolve != NULL) {
+        *outResolve = nil;
+      }
+      if (outReject != NULL) {
+        *outReject = nil;
+      }
+      return NO;
+    }
+    if (outResolve != NULL) {
+      *outResolve = _registerPromiseResolver;
+    }
+    if (outReject != NULL) {
+      *outReject = _registerPromiseRejecter;
+    }
+    _registerPromiseResolver = nil;
+    _registerPromiseRejecter = nil;
+    // Bump generation so a late duplicate timeout/callback cannot reclaim.
+    _registerPromiseGeneration += 1;
+    return YES;
+  }
+}
+
+- (BOOL)claimPendingRegisterPromiseResolve:(RCTPromiseResolveBlock _Nullable *_Nonnull)outResolve
+                                    reject:(RCTPromiseRejectBlock _Nullable *_Nonnull)outReject {
+  @synchronized(self) {
+    if (_registerPromiseResolver == nil && _registerPromiseRejecter == nil) {
+      if (outResolve != NULL) {
+        *outResolve = nil;
+      }
+      if (outReject != NULL) {
+        *outReject = nil;
+      }
+      return NO;
+    }
+    if (outResolve != NULL) {
+      *outResolve = _registerPromiseResolver;
+    }
+    if (outReject != NULL) {
+      *outReject = _registerPromiseRejecter;
+    }
+    _registerPromiseResolver = nil;
+    _registerPromiseRejecter = nil;
+    _registerPromiseGeneration += 1;
+    return YES;
+  }
 }
 
 #pragma mark -
@@ -96,21 +174,21 @@
   [[FIRMessaging messaging] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeProd];
 #endif
 
-  if (_registerPromiseResolver != nil) {
-    _registerPromiseResolver(@(
+  RCTPromiseResolveBlock resolve = nil;
+  RCTPromiseRejectBlock reject = nil;
+  if ([self claimPendingRegisterPromiseResolve:&resolve reject:&reject] && resolve != nil) {
+    resolve(@(
         [RCTConvert BOOL:@([UIApplication sharedApplication].isRegisteredForRemoteNotifications)]));
-    _registerPromiseResolver = nil;
-    _registerPromiseRejecter = nil;
   }
 }
 
 // called when `registerForRemoteNotifications` fails to complete
 - (void)application:(UIApplication *)application
     didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-  if (_registerPromiseRejecter != nil) {
-    [RNFBSharedUtils rejectPromiseWithNSError:_registerPromiseRejecter error:error];
-    _registerPromiseResolver = nil;
-    _registerPromiseRejecter = nil;
+  RCTPromiseResolveBlock resolve = nil;
+  RCTPromiseRejectBlock reject = nil;
+  if ([self claimPendingRegisterPromiseResolve:&resolve reject:&reject] && reject != nil) {
+    [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
   }
 }
 

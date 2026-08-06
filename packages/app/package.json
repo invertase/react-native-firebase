@@ -1,11 +1,29 @@
 {
   "name": "@react-native-firebase/app",
-  "version": "24.0.0",
+  "version": "26.1.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
   "main": "./dist/module/index.js",
   "types": "./dist/typescript/lib/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBAppTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "io.invertase.firebase.app"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTurboApp": "RNFBAppModule",
+        "NativeRNFBTurboUtils": "RNFBUtilsModule"
+      }
+    }
+  },
   "scripts": {
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/reactnative/java/io/invertase/firebase/app/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated",
     "build": "genversion --esm --semi lib/version.ts && npm run build:version",
     "build:version": "node ./scripts/genversion-ios && node ./scripts/genversion-android",
     "build:clean": "rimraf android/build && rimraf ios/build",
@@ -78,7 +96,14 @@
       "types": "./dist/typescript/lib/common/*.d.ts",
       "default": "./dist/module/common/*.js"
     },
-    "./app.plugin.js": "./app.plugin.js",
+    "./app.plugin": {
+      "types": "./plugin/build/app.plugin.d.ts",
+      "default": "./app.plugin.js"
+    },
+    "./app.plugin.js": {
+      "types": "./plugin/build/app.plugin.d.ts",
+      "default": "./app.plugin.js"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {
@@ -87,12 +112,12 @@
     "react-native": "*"
   },
   "dependencies": {
-    "firebase": "12.12.0"
+    "firebase": "12.17.0"
   },
   "devDependencies": {
-    "@react-native-async-storage/async-storage": "^2.2.0",
-    "expo": "^55.0.5",
-    "react-native-builder-bob": "^0.40.17"
+    "@react-native-async-storage/async-storage": "^2.0.2",
+    "expo": "^55.0.18",
+    "react-native-builder-bob": "^0.41.0"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -105,7 +130,8 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "12.12.0",
+      "firebase": "12.17.0",
+      "firebaseSpmUrl": "https://github.com/firebase/firebase-ios-sdk.git",
       "iosTarget": "15.0",
       "macosTarget": "10.15",
       "tvosTarget": "15.0"
@@ -114,12 +140,12 @@
       "minSdk": 23,
       "targetSdk": 34,
       "compileSdk": 34,
-      "firebase": "34.12.0",
+      "firebase": "34.16.0",
       "firebaseCrashlyticsGradle": "3.0.7",
       "firebasePerfGradle": "2.0.2",
-      "gmsGoogleServicesGradle": "4.4.4",
+      "gmsGoogleServicesGradle": "4.5.0",
       "playServicesAuth": "21.5.0",
-      "firebaseAppDistributionGradle": "5.2.1"
+      "firebaseAppDistributionGradle": "5.3.0"
     }
   },
   "react-native-builder-bob": {
@@ -144,5 +170,18 @@
   "eslintIgnore": [
     "node_modules/",
     "dist/"
-  ]
+  ],
+  "nx": {
+    "targets": {
+      "prepare": {
+        "outputs": [
+          "{projectRoot}/dist/**",
+          "{projectRoot}/plugin/build/**",
+          "{projectRoot}/lib/version.ts",
+          "{projectRoot}/ios/RNFBApp/RNFBVersion.m",
+          "{projectRoot}/android/src/reactnative/java/io/invertase/firebase/app/ReactNativeFirebaseVersion.java"
+        ]
+      }
+    }
+  }
 }

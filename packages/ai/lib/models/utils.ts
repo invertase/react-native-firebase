@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import type { AppCheck } from '@react-native-firebase/app-check';
+import { getLimitedUseToken, getToken } from '@react-native-firebase/app-check';
 import { AIError } from '../errors';
 import { AI, AIErrorCode } from '../public-types';
 import { AIService } from '../service';
@@ -52,12 +53,10 @@ export function initApiSettings(ai: AI): ApiSettings {
     backend: ai.backend,
   };
 
-  if ((ai as AIService).appCheck) {
-    if (ai.options?.useLimitedUseAppCheckTokens) {
-      apiSettings.getAppCheckToken = () => (ai as AIService).appCheck!.getLimitedUseToken();
-    } else {
-      apiSettings.getAppCheckToken = () => (ai as AIService).appCheck!.getToken();
-    }
+  const appCheck = ai.appCheck as AppCheck;
+  if (appCheck) {
+    apiSettings.getAppCheckToken = () =>
+      ai.options?.useLimitedUseAppCheckTokens ? getLimitedUseToken(appCheck) : getToken(appCheck);
   }
 
   if ((ai as AIService).auth?.currentUser) {

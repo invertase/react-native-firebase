@@ -94,7 +94,7 @@ export function VertexAITestComponent() {
           try {
             const app = getApp();
             const vertexai = getVertexAI(app);
-            const model = getGenerativeModel(vertexai, { model: 'gemini-1.5-flash' });
+            const model = getGenerativeModel(vertexai, { model: 'gemini-3.1-flash-lite' });
 
             const result = await model.generateContent('What is 2 + 2?');
 
@@ -110,7 +110,7 @@ export function VertexAITestComponent() {
           try {
             const app = getApp();
             const vertexai = getVertexAI(app);
-            const model = getGenerativeModel(vertexai, { model: 'gemini-1.5-flash' });
+            const model = getGenerativeModel(vertexai, { model: 'gemini-3.1-flash-lite' });
 
             const result = await model.generateContentStream('Write me a short, funny rap');
 
@@ -136,7 +136,7 @@ export function VertexAITestComponent() {
           try {
             const app = getApp();
             const vertexai = getVertexAI(app);
-            const model = getGenerativeModel(vertexai, { model: 'gemini-1.5-flash' });
+            const model = getGenerativeModel(vertexai, { model: 'gemini-3.1-flash-lite' });
             const mediaDetails = getMediaDetails(selectedOption);
             if (!mediaDetails) return;
 
@@ -181,7 +181,7 @@ export function VertexAITestComponent() {
               },
             });
             const model = getGenerativeModel(vertexai, {
-              model: 'gemini-1.5-flash',
+              model: 'gemini-3.1-flash-lite',
               generationConfig: {
                 responseMimeType: 'application/json',
                 responseSchema: jsonSchema,
@@ -203,7 +203,7 @@ export function VertexAITestComponent() {
           try {
             const app = getApp();
             const vertexai = getVertexAI(app);
-            const model = getGenerativeModel(vertexai, { model: 'gemini-1.5-flash' });
+            const model = getGenerativeModel(vertexai, { model: 'gemini-3.1-flash-lite' });
 
             const chat = model.startChat({
               history: [
@@ -242,7 +242,7 @@ export function VertexAITestComponent() {
           try {
             const app = getApp();
             const vertexai = getVertexAI(app);
-            const model = getGenerativeModel(vertexai, { model: 'gemini-1.5-flash' });
+            const model = getGenerativeModel(vertexai, { model: 'gemini-3.1-flash-lite' });
 
             const result = await model.countTokens('What is 2 + 2?');
 
@@ -302,7 +302,7 @@ export function VertexAITestComponent() {
             const app = getApp();
             const vertexai = getVertexAI(app);
             const model = getGenerativeModel(vertexai, {
-              model: 'gemini-1.5-flash',
+              model: 'gemini-3.1-flash-lite',
               tools: fetchWeatherTool,
             });
 

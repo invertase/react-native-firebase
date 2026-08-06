@@ -36,7 +36,8 @@
 
   DLog(@"appName %@", app.name);
 
-  // - determine if debugToken is provided via nullable arg
+  self.delegateProvider = nil;
+
   if ([providerName isEqualToString:@"debug"]) {
     // The firebase-ios-sdk debug app check provider will take a token from environment if it
     // exists:
@@ -72,6 +73,15 @@
     } else {
       self.delegateProvider = [[FIRDeviceCheckProvider alloc] initWithApp:app];
     }
+  }
+
+  if (self.delegateProvider == nil) {
+    NSString *message =
+        [NSString stringWithFormat:@"Unknown provider name \"%@\". Valid providers are: debug, "
+                                    "deviceCheck, appAttest, appAttestWithDeviceCheckFallback.",
+                                   providerName ?: @"(null)"];
+    NSLog(@"RNFBAppCheck: %@", message);
+    @throw [NSException exceptionWithName:@"RNFBAppCheckException" reason:message userInfo:nil];
   }
 }
 

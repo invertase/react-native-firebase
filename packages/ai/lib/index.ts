@@ -32,7 +32,7 @@ import {
 import { WebSocketHandlerImpl } from './websocket';
 
 export * from './public-types';
-export { ChatSession } from './methods/chat-session';
+export { ChatSession, ChatSessionBase, TemplateChatSession } from './methods/chat-session';
 export { LiveSession } from './methods/live-session';
 export * from './requests/schema-builder';
 export { ImagenImageFormat } from './requests/imagen-image-format';
@@ -117,6 +117,10 @@ export function getGenerativeModel(
 /**
  * Returns an {@link ImagenModel} class with methods for using Imagen.
  *
+ * @deprecated Imagen models are deprecated. Use {@link getGenerativeModel} with a Gemini image
+ * model such as `gemini-3.1-flash-lite-image` instead. See the
+ * {@link https://firebase.google.com/docs/ai-logic/generate-images-gemini | Gemini image generation guide}.
+ *
  * Only Imagen 3 models (named `imagen-3.0-*`) are supported.
  *
  * @param ai - An {@link AI} instance.
@@ -182,6 +186,10 @@ export function getTemplateGenerativeModel(
 
 /**
  * Returns a {@link TemplateImagenModel} class for executing server-side Imagen templates.
+ *
+ * @deprecated Imagen models are deprecated. Use {@link getGenerativeModel} with a Gemini image
+ * model such as `gemini-3.1-flash-lite-image` instead. See the
+ * {@link https://firebase.google.com/docs/ai-logic/generate-images-gemini | Gemini image generation guide}.
  *
  * @param ai - An {@link AI} instance.
  * @param requestOptions - Additional options to use when making requests.

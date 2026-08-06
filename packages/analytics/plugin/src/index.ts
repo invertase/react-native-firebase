@@ -1,6 +1,6 @@
 import { ConfigPlugin, withPlugins, createRunOncePlugin } from '@expo/config-plugins';
 
-import { withIosWithoutAdIdSupport } from './ios';
+import { withIosWithoutAdIdSupport, withIosGoogleAppMeasurementOnDeviceConversion } from './ios';
 import { PluginConfigType } from './pluginConfig';
 
 /**
@@ -10,6 +10,7 @@ const withRnFirebaseAnalytics: ConfigPlugin<PluginConfigType> = (config, props) 
   return withPlugins(config, [
     // iOS
     [withIosWithoutAdIdSupport, props],
+    [withIosGoogleAppMeasurementOnDeviceConversion, props],
   ]);
 };
 

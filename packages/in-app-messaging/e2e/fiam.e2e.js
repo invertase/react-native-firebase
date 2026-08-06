@@ -16,38 +16,35 @@
  */
 
 describe('inAppMessaging()', function () {
-  // TODO Conflicts with Modular tests in Jet,
-  // Ignore for now since v8 compat going away eventually
-  xdescribe('v8 compatibility', function () {
-    describe('namespace', function () {
-      it('accessible from firebase.app()', function () {
-        const app = firebase.app();
-        should.exist(app.inAppMessaging);
-        app.inAppMessaging().app.should.equal(app);
-      });
+  describe('modular', function () {
+    it('getInAppMessaging() returns instance bound to default app', function () {
+      const { getInAppMessaging } = inAppMessagingModular;
+      const inAppMessaging = getInAppMessaging();
+
+      inAppMessaging.app.name.should.equal('[DEFAULT]');
     });
 
-    describe('setAutomaticDataCollectionEnabled()', function () {
-      // These depend on `tests/firebase.json` having `in_app_messaging_auto_collection_enabled` set to false the first time
-      // The setting is persisted across restarts, reset to false after for local runs where prefs are sticky
+    describe('setMessagesDisplaySuppressed()', function () {
       afterEach(async function () {
-        await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(false);
+        const { getInAppMessaging, setMessagesDisplaySuppressed } = inAppMessagingModular;
+        await setMessagesDisplaySuppressed(getInAppMessaging(), false);
       });
 
-      it('true', async function () {
-        should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, false);
-        await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(true);
-        should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, true);
-      });
+      it('updates isMessagesDisplaySuppressed', async function () {
+        const { getInAppMessaging, isMessagesDisplaySuppressed, setMessagesDisplaySuppressed } =
+          inAppMessagingModular;
+        const inAppMessaging = getInAppMessaging();
 
-      it('false', async function () {
-        await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(false);
-        should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, false);
+        should.equal(isMessagesDisplaySuppressed(inAppMessaging), false);
+        await setMessagesDisplaySuppressed(inAppMessaging, true);
+        should.equal(isMessagesDisplaySuppressed(inAppMessaging), true);
       });
 
       it('errors if not boolean', async function () {
+        const { getInAppMessaging, setMessagesDisplaySuppressed } = inAppMessagingModular;
+
         try {
-          firebase.inAppMessaging().setAutomaticDataCollectionEnabled();
+          await setMessagesDisplaySuppressed(getInAppMessaging());
           return Promise.reject(new Error('Did not throw'));
         } catch (e) {
           e.message.should.containEql('must be a boolean');
@@ -55,21 +52,30 @@ describe('inAppMessaging()', function () {
         }
       });
     });
-  });
 
-  describe('modular', function () {
+    describe('triggerEvent()', function () {
+      it('errors if not string', async function () {
+        const { getInAppMessaging, triggerEvent } = inAppMessagingModular;
+
+        try {
+          await triggerEvent(getInAppMessaging(), 123);
+          return Promise.reject(new Error('Did not throw'));
+        } catch (e) {
+          e.message.should.containEql('must be a string');
+          return Promise.resolve();
+        }
+      });
+    });
+
     // TODO flakey on Jet tests
     xdescribe('setAutomaticDataCollectionEnabled()', function () {
       // These depend on `tests/firebase.json` having `in_app_messaging_auto_collection_enabled` set to false the first time
       // The setting is persisted across restarts, reset to false after for local runs where prefs are sticky
       afterEach(async function () {
-        await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(false);
+        const { getInAppMessaging, setAutomaticDataCollectionEnabled } = inAppMessagingModular;
+        const inAppMessaging = getInAppMessaging();
+        await setAutomaticDataCollectionEnabled(inAppMessaging, false);
       });
-      // afterEach(async function () {
-      //   const { getInAppMessaging, setAutomaticDataCollectionEnabled } = inAppMessagingModular;
-      //   const inAppMessaging = getInAppMessaging();
-      //   await setAutomaticDataCollectionEnabled(inAppMessaging, false);
-      // });
 
       it('true', async function () {
         const {

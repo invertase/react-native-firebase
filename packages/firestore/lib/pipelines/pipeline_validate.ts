@@ -89,6 +89,11 @@ function validateSource(
         throw new Error(`pipelineExecute() expected ${fieldName}.options to be an object.`);
       }
       return;
+    case 'subcollection':
+      if (!isNonEmptyString(source.path)) {
+        throw new Error(`pipelineExecute() expected ${fieldName}.path to be a non-empty string.`);
+      }
+      return;
     default:
       throw new Error('pipelineExecute() received an unknown source type.');
   }
@@ -149,6 +154,15 @@ function validateStage(stage: unknown, stagePath: string, optionsPath: string): 
     case 'limit':
     case 'offset':
     case 'findNearest':
+      return undefined;
+    case 'search':
+      if (stage.options.query === undefined) {
+        throw new Error('pipelineExecute() expected search stage to include query.');
+      }
+      return undefined;
+    case 'define':
+      validateNonEmptyStageArray(stage.options.variables, `${optionsPath}.variables`);
+      return undefined;
     case 'replaceWith':
     case 'unnest':
     case 'rawStage':

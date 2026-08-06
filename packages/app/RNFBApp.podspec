@@ -1,5 +1,6 @@
 require 'json'
-require './firebase_json'
+require_relative './firebase_json'
+require_relative './firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 firebase_sdk_version = package['sdkVersions']['ios']['firebase']
 firebase_ios_target = package['sdkVersions']['ios']['iosTarget']
@@ -22,26 +23,30 @@ Pod::Spec.new do |s|
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
   s.cocoapods_version   = '>= 1.12.0'
-  s.source_files        = "ios/**/*.{h,m}"
+  s.source_files        = "ios/**/*.{h,m,mm,cpp}"
+  s.private_header_files = "ios/**/*.h"
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
 
-  # Deprecation message for old architecture users
-  # - safely in case the variable goes away completely in future react-native versions
-  # - suppressable in case people need to
-  if (
-    defined?(ENV["RCT_NEW_ARCH_ENABLED"]) != nil &&
-    ENV["RCT_NEW_ARCH_ENABLED"] == '0' &&
-    ENV["RNFB_SUPPRESS_NEW_ARCHITECTURE_WARNING"] != '1'
-  )
-    Pod::UI.puts '[react-native-firebase] '.yellow + "Legacy Architecture support is deprecated for all modules"
-    Pod::UI.puts '[react-native-firebase] '.yellow + "New Architecture support is already required for some modules"
-    Pod::UI.puts '[react-native-firebase] '.yellow + "all modules will require it in the future."
-    Pod::UI.puts '[react-native-firebase] '.yellow + "Suppress this with environment variable RNFB_SUPPRESS_NEW_ARCHITECTURE_WARNING=1"
+  # Fail fast for old architecture users, but safely in case the variable goes away
+  # completely in future react-native versions
+  if defined?(ENV["RCT_NEW_ARCH_ENABLED"]) != nil && (ENV["RCT_NEW_ARCH_ENABLED"] == '0')
+     raise "#{s.name} requires New Architecture. Enable New Architecture to use this module"
   end
 
   # App must define modules for static framework integration of other packages to work
   s.pod_target_xcconfig = {
     "DEFINES_MODULE" => "YES",
   }
+
+  # RNFBUtilsModule.mm uses PHAsset (Photos.framework) to resolve local asset paths.
+  # Not declaring this explicitly used to work by luck (CocoaPods normally relies on
+  # this declaration -- not Clang autolinking -- to populate OTHER_LDFLAGS), but with
+  # use_frameworks! each pod is a standalone dynamic framework that must resolve its
+  # own symbols at its own link step, so the missing declaration now surfaces as
+  # "Undefined symbols ... _OBJC_CLASS_$_PHAsset". iOS/macOS only -- PhotoKit doesn't
+  # exist on tvOS.
+  s.ios.frameworks = 'Photos'
+  s.osx.frameworks = 'Photos'
 
   # React Native dependencies
   if defined?(install_modules_dependencies()) != nil
@@ -61,7 +66,7 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/CoreOnly', firebase_sdk_version
+  firebase_dependency(s, firebase_sdk_version, ['FirebaseCore', 'FirebaseInstallations'], 'Firebase/CoreOnly')
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"

@@ -14,9 +14,8 @@
  * limitations under the License.
  *
  */
-import { warnIfNotModularCall } from './common';
 import { getAppModule } from './internal/registry/nativeModule';
-import type { ReactNativeFirebase, Utils } from './types/app';
+import type { ReactNativeFirebase } from './types/app';
 
 export default class FirebaseApp implements ReactNativeFirebase.FirebaseAppBase {
   private _name: string;
@@ -75,24 +74,16 @@ export default class FirebaseApp implements ReactNativeFirebase.FirebaseAppBase 
   }
 
   extendApp(extendedProps: Record<string, unknown>): void {
-    warnIfNotModularCall(arguments);
     this._checkDestroyed();
     Object.assign(this, extendedProps);
   }
 
   delete(): Promise<void> {
-    warnIfNotModularCall(arguments, 'deleteApp()');
     this._checkDestroyed();
     return this._deleteApp();
   }
 
   toString(): string {
-    warnIfNotModularCall(arguments, '.name property');
     return this.name;
-  }
-
-  // For backward compatibility - utils method added by registry
-  utils(): Utils.Module {
-    throw new Error('utils() should be added by registry');
   }
 }

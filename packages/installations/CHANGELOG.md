@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.1.0](https://github.com/invertase/react-native-firebase/compare/v26.0.0...v26.1.0) (2026-08-03)
+
+### Features
+
+- **ios:** add SPM dependency resolution support alongside CocoaPods ([#8933](https://github.com/invertase/react-native-firebase/issues/8933)) ([44a7a9a](https://github.com/invertase/react-native-firebase/commit/44a7a9ae7b404f412e9766c0417f1df8fa971a0b))
+
+## [26.0.0](https://github.com/invertase/react-native-firebase/compare/v25.1.0...v26.0.0) (2026-07-29)
+
+### ⚠ BREAKING CHANGES
+
+- **installations:** migrate installations to TurboModules
+
+### Features
+
+- **installations:** migrate installations to TurboModules ([4097d25](https://github.com/invertase/react-native-firebase/commit/4097d25eaced7bb31bca886d74531714b057feb1))
+
+### Bug Fixes
+
+- add codegen verify and spec-native parity tests ([49d9f1b](https://github.com/invertase/react-native-firebase/commit/49d9f1baba4fc83c1dd4983f582bbd7352d78809))
+- **ios:** set IPHONEOS_DEPLOYMENT_TARGET to 15.0, update platform support docs/conditionals ([#9108](https://github.com/invertase/react-native-firebase/issues/9108)) ([99d0899](https://github.com/invertase/react-native-firebase/commit/99d089908e3eec6155d73ecf05ff7274ad33c46e)), closes [#8882](https://github.com/invertase/react-native-firebase/issues/8882)
+
+## [25.1.0](https://github.com/invertase/react-native-firebase/compare/v25.0.1...v25.1.0) (2026-06-25)
+
+**Note:** Version bump only for package @react-native-firebase/installations
+
+## [25.0.1](https://github.com/invertase/react-native-firebase/compare/v25.0.0...v25.0.1) (2026-06-23)
+
+**Note:** Version bump only for package @react-native-firebase/installations
+
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **installations:** installations modular types now match firebase-js-sdk
+
+Please see https://rnfirebase.io/migrating-to-v25 for help migrating if needed.
+
+react-native-firebase has a goal to be a drop-in replacement for firebase-js-sdk, with native extensions and performance. It has always worked that way at the javascript level but the typescript types have been divergent.
+
+We are fixing that as we refactor to typescript. Please bear with us as we get closer to our goal of react-native-firebase matching firebase-js-sdk both in functionality where possible, but also in exact typescript typing.
+
+Specifics for Installations:
+
+changed modular getInstallations() to return the firebase-js-sdk-style Installations type, which only exposes app; TypeScript consumers should use the modular helpers getId(installations), getToken(installations), and deleteInstallations(installations) instead of calling .getId(), .getToken(), or .delete() on the returned instance.
+changed modular deleteInstallations(installations) so the installations argument is required in the TypeScript surface, matching firebase-js-sdk. Code that previously relied on the old optional typing should pass getInstallations() explicitly.
+preserved the namespaced API surface: installations(), firebase.installations(), firebase.app().installations(), and FirebaseInstallationsTypes.Module remain available for compatibility, with deprecation annotations added.
+added explicit modular public types including Installations, IdChangeCallbackFn, and IdChangeUnsubscribeFn.
+
+### Code Refactoring
+
+- **installations:** migrate to TypeScript ([739a4ca](https://github.com/invertase/react-native-firebase/commit/739a4ca36169a7e0d8cf20c9330747d1d154e0c9))
+
+## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
+
+**Note:** Version bump only for package @react-native-firebase/installations
+
+## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
+
+**Note:** Version bump only for package @react-native-firebase/installations
+
 ## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
 
 **Note:** Version bump only for package @react-native-firebase/installations

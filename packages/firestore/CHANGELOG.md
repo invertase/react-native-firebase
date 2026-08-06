@@ -3,6 +3,123 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.1.0](https://github.com/invertase/react-native-firebase/compare/v26.0.0...v26.1.0) (2026-08-03)
+
+### Features
+
+- **ios:** add SPM dependency resolution support alongside CocoaPods ([#8933](https://github.com/invertase/react-native-firebase/issues/8933)) ([44a7a9a](https://github.com/invertase/react-native-firebase/commit/44a7a9ae7b404f412e9766c0417f1df8fa971a0b))
+
+### Bug Fixes
+
+- **firestore:** serverTimestamps implement correct behavior for 'estimate' | 'previous' | 'none' ([#9018](https://github.com/invertase/react-native-firebase/issues/9018)) ([a1e9ffe](https://github.com/invertase/react-native-firebase/commit/a1e9ffe41eafce8a7667668ba10b3306c7a96d3e))
+
+## [26.0.0](https://github.com/invertase/react-native-firebase/compare/v25.1.0...v26.0.0) (2026-07-29)
+
+### ⚠ BREAKING CHANGES
+
+- logEvent, initializeAppCheck, and initializeFirestore return
+  synchronously; remove await and .then() chains on these APIs.
+
+* Analytics: align logEvent return type with firebase-js-sdk sync void.
+* App Check: align initializeAppCheck with sync AppCheck return.
+* Firestore: align initializeFirestore with sync Firestore return.
+* Firestore: export aggregateFieldEqual for aggregate query parity.
+* Remote Config: accept RemoteConfigOptions in getRemoteConfig.
+* Remote Config: document native FetchStatus literals as intentional drift.
+* Docs: add firebase-js-sdk API parity improvements to v26 migration guide.
+
+- **firestore:** Firestore native bridge requires New Architecture.
+  Legacy NativeModules bridge removed; four Codegen TurboModule specs
+  (NativeRNFBTurboFirestore{,Collection,Document,Transaction}) with
+  committed generated artifacts, Android/iOS turbo shells, and JS wiring.
+
+- refactor!(types): align modular APIs with firebase-js-sdk sync signatures ([b42d1f7](https://github.com/invertase/react-native-firebase/commit/b42d1f7dd2629184e26ab71936ab1d47878d0f64))
+
+### Features
+
+- **firestore, ios:** enable substring, timestampAdd, timestampSubtract, arrayGet pipeline support ([4e0b2ee](https://github.com/invertase/react-native-firebase/commit/4e0b2eece3e5eca426e5688f988507d1661454be))
+- **firestore/pipelines:** expose search stage and pipeline expressions ([e6040a6](https://github.com/invertase/react-native-firebase/commit/e6040a6c27c4fb2b5ffa38aeb185610554d0c1a4))
+- **firestore:** export aggregateQuerySnapshotEqual for SDK parity ([ea8138e](https://github.com/invertase/react-native-firebase/commit/ea8138e7d7e3de717999f21b83acabb16a5eaad8))
+- **firestore:** expose pipeline coalesce expression helper ([5781c87](https://github.com/invertase/react-native-firebase/commit/5781c875278ed5538a35ca7bedd4333cdbc53ff2))
+- **firestore:** expose pipeline currentDocument expression helper ([ec1c949](https://github.com/invertase/react-native-firebase/commit/ec1c949289b30ae7955189b35c76f489774e5d67))
+- **firestore:** expose pipeline ifNull expression helper ([75342fe](https://github.com/invertase/react-native-firebase/commit/75342fe3816932ef748a12c2f1d0af237366213d))
+- **firestore:** expose pipeline switchOn expression helper ([d02732d](https://github.com/invertase/react-native-firebase/commit/d02732d746d697d917d3f2f6744cbf1f878b0239))
+- **firestore:** expose pipeline timestampDiff and TimeUnit ([c29da5a](https://github.com/invertase/react-native-firebase/commit/c29da5a6f9052cdafaafc4a88fef4cb78815fbd7))
+- **firestore:** expose pipeline timestampExtract and TimePart ([6293748](https://github.com/invertase/react-native-firebase/commit/6293748880c3b13c1fe190fa1ec9d83d3e53b25b))
+- **firestore:** migrate firestore to TurboModules ([d58b063](https://github.com/invertase/react-native-firebase/commit/d58b0637a7fd7707767d24cec3475648fa85a5c1))
+- **firestore:** support TransactionOptions maxAttempts in runTransaction ([f692c70](https://github.com/invertase/react-native-firebase/commit/f692c70004091328ec2f3c877168817447277c99))
+
+### Bug Fixes
+
+- add codegen verify and spec-native parity tests ([49d9f1b](https://github.com/invertase/react-native-firebase/commit/49d9f1baba4fc83c1dd4983f582bbd7352d78809))
+- **firestore, android:** align pipeline constant envelope routing with iOS ([42f313d](https://github.com/invertase/react-native-firebase/commit/42f313d526488286155d6eb3ec87bbd56a9b96a4))
+- **firestore, android:** align pipeline integerLiteral constant lowering with iOS ([4c79daf](https://github.com/invertase/react-native-firebase/commit/4c79daf8f690a29aad67047b4efc7281d1ab5173))
+- **firestore, android:** align pipeline operand coercion with iOS ([55b3200](https://github.com/invertase/react-native-firebase/commit/55b32008f0c4a96e86c564286f597e84f606671e))
+- **firestore, android:** align pipeline stage option expression fields with iOS ([ce213a4](https://github.com/invertase/react-native-firebase/commit/ce213a4bdba3438322409d960d555a09846e126c))
+- **firestore, android:** align pipeline timestampTruncate arity validation with iOS ([b7e60e1](https://github.com/invertase/react-native-firebase/commit/b7e60e16796387735d630f38c978b0e9b138ed4d))
+- **firestore, android:** apply arithmetic operand coercion review fixes ([69f1b4a](https://github.com/invertase/react-native-firebase/commit/69f1b4a6c115152446c13e6d7b7ad3e8bde0d202))
+- **firestore, android:** firestore instance cache key mismatch ([#9097](https://github.com/invertase/react-native-firebase/issues/9097)) ([a095bd0](https://github.com/invertase/react-native-firebase/commit/a095bd0d2e47ed54b7b9cde272cf01442067930c))
+- **firestore, android:** remove dormant NodeBuilder lowering duplicates ([efa84b9](https://github.com/invertase/react-native-firebase/commit/efa84b95b2f579942eb105387459b3f70c1328ce))
+- **firestore, ios:** align pipeline stage coercion and operand tail lowering ([a343407](https://github.com/invertase/react-native-firebase/commit/a343407339cf2b962d409b1cb9641a243b976661))
+- **firestore, ios:** align pipeline stage option coercion with Android ([7e189ff](https://github.com/invertase/react-native-firebase/commit/7e189ff7bcb1bc8510dce142c720a5a01b77f64d))
+- **firestore, ios:** enable conditional pipeline on iOS SDK 12.15 ([f148f6e](https://github.com/invertase/react-native-firebase/commit/f148f6ee79c1dc9cffb857092884aa622a992690))
+- **firestore, ios:** enable round pipeline on iOS SDK 12.15 ([99c2d35](https://github.com/invertase/react-native-firebase/commit/99c2d350b1055671717d4267413975715a3381ab))
+- **firestore, ios:** enable stringRepeat pipeline on iOS SDK 12.15 ([0420f93](https://github.com/invertase/react-native-firebase/commit/0420f93d2249bbd72c1408ef6cd4478dc5828cac))
+- **firestore, ios:** enable switchOn pipeline on iOS SDK 12.15 ([c035740](https://github.com/invertase/react-native-firebase/commit/c035740a3a07c50984c6c1ffbc3deb1c1851de46))
+- **firestore, ios:** enable trunc pipeline on iOS SDK 12.15 ([79397f3](https://github.com/invertase/react-native-firebase/commit/79397f35e5542d004045fad599eefdd63278c645))
+- **firestore:** deep testing/refactoring pass ([24b3b67](https://github.com/invertase/react-native-firebase/commit/24b3b679d21c8b21f603e8add5a544a978138436))
+- **firestore:** validate TransactionOptions maxAttempts ([316e7d0](https://github.com/invertase/react-native-firebase/commit/316e7d09c4ffd731af244ddb2d8b63f733cfceee))
+- **ios:** set IPHONEOS_DEPLOYMENT_TARGET to 15.0, update platform support docs/conditionals ([#9108](https://github.com/invertase/react-native-firebase/issues/9108)) ([99d0899](https://github.com/invertase/react-native-firebase/commit/99d089908e3eec6155d73ecf05ff7274ad33c46e)), closes [#8882](https://github.com/invertase/react-native-firebase/issues/8882)
+- **types:** align compare-types modular API with firebase-js-sdk ([5376e75](https://github.com/invertase/react-native-firebase/commit/5376e757f7dd7f7cffc9907c652d873d2403e23f))
+
+## [25.1.0](https://github.com/invertase/react-native-firebase/compare/v25.0.1...v25.1.0) (2026-06-25)
+
+### Features
+
+- **firestore:** `variable()` and `arrayFilter()` API features for pipelines ([#9017](https://github.com/invertase/react-native-firebase/issues/9017)) ([cbe2593](https://github.com/invertase/react-native-firebase/commit/cbe2593fa0f7f670cb3744d08bb27840a2b6ddc3))
+
+## [25.0.1](https://github.com/invertase/react-native-firebase/compare/v25.0.0...v25.0.1) (2026-06-23)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **auth:** migrate to TypeScript and bring auth closer in alignment with firebase-js-sdk API (#8991)
+- **storage:** migrate to TypeScript and match firebase-js-sdk API (#8824)
+
+### Features
+
+- **firestore:** add 'source' option to enable local cache firestore listeners ([2ccd763](https://github.com/invertase/react-native-firebase/commit/2ccd7635d1964a49c841504627c42321aef6c70d))
+
+### Bug Fixes
+
+- **android:** catch RejectedExecutionException on executor-backed Tasks ([d70520d](https://github.com/invertase/react-native-firebase/commit/d70520d39c16c6a414affe4585de6f65ec9ab345))
+- **firestore, android:** catch RejectedExecutionException in sendOnSnapshotEvent ([d0c6513](https://github.com/invertase/react-native-firebase/commit/d0c6513f1b5898d56b086810affaffb44f6107af))
+- **firestore:** restore generic root type exports for `DocumentSnapshot`, `Transaction`, and `WriteBatch` ([#8997](https://github.com/invertase/react-native-firebase/issues/8997)) ([7cf9502](https://github.com/invertase/react-native-firebase/commit/7cf950291d438df6f07dc5f189223d4fbc24365b))
+
+### Code Refactoring
+
+- **auth:** migrate to TypeScript and bring auth closer in alignment with firebase-js-sdk API ([#8991](https://github.com/invertase/react-native-firebase/issues/8991)) ([7cf7c1a](https://github.com/invertase/react-native-firebase/commit/7cf7c1ac0d31d09ade581deb027d4ed8126bb7cf))
+- **storage:** migrate to TypeScript and match firebase-js-sdk API ([#8824](https://github.com/invertase/react-native-firebase/issues/8824)) ([663b57c](https://github.com/invertase/react-native-firebase/commit/663b57c220ef733affc1055e674334f35c458861))
+
+## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
+
+### Features
+
+- **firestore:** add 'source' option to enable local cache firestore listeners ([e3ce410](https://github.com/invertase/react-native-firebase/commit/e3ce410ef655796a488a1c79003ec2d7b783bae9))
+
+### Bug Fixes
+
+- **android:** catch RejectedExecutionException on executor-backed Tasks ([375ade9](https://github.com/invertase/react-native-firebase/commit/375ade9a043d2fd8180572ecc75c518e4428be84))
+- **firestore, android:** catch RejectedExecutionException in sendOnSnapshotEvent ([602d7ad](https://github.com/invertase/react-native-firebase/commit/602d7ad250635c31901290af6c5b0ce98f7448ad))
+- **firestore:** restore generic root type exports for `DocumentSnapshot`, `Transaction`, and `WriteBatch` ([#8997](https://github.com/invertase/react-native-firebase/issues/8997)) ([9809622](https://github.com/invertase/react-native-firebase/commit/9809622e0c6e2de21f17730bbf97dc5be33396bc))
+
 ## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
 
 ### ⚠ BREAKING CHANGES

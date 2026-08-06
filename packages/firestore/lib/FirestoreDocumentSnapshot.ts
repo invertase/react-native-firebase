@@ -17,7 +17,7 @@
 
 import { isString } from '@react-native-firebase/app/dist/module/common';
 import DocumentReference, { provideDocumentSnapshotClass } from './FirestoreDocumentReference';
-import FieldPath, { fromDotSeparatedString } from './FieldPath';
+import { FieldPath, fromDotSeparatedString } from './FieldPath';
 import FirestorePath from './FirestorePath';
 import SnapshotMetadata from './FirestoreSnapshotMetadata';
 import type { SnapshotOptions } from './types/firestore';
@@ -32,36 +32,80 @@ import type {
   DocumentData,
   DocumentSnapshot as DocumentSnapshotDeclare,
   FirestoreDataConverter,
+  QueryDocumentSnapshot,
 } from './types/firestore';
 
 export interface DocumentSnapshotNativeData {
   path: string;
   data?: unknown;
+  dataEstimate?: unknown;
+  dataPrevious?: unknown;
+  dataNone?: unknown;
   metadata?: [boolean, boolean];
   exists?: boolean;
 }
 
-export default class DocumentSnapshot {
+export default class DocumentSnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> {
   _firestore: FirestoreInternal;
   _nativeData: DocumentSnapshotNativeData;
   _data: Record<string, unknown> | undefined;
+  _dataEstimate: Record<string, unknown> | undefined;
+  _dataPrevious: Record<string, unknown> | undefined;
+  _dataNone: Record<string, unknown> | undefined;
   _metadata: SnapshotMetadata;
-  _ref: DocumentReference;
+  _ref: DocumentReference<AppModelType, DbModelType>;
   _exists: boolean;
-  _converter: FirestoreDataConverter<DocumentData, DocumentData> | null;
+  _converter: FirestoreDataConverter<AppModelType, DbModelType> | null;
 
   constructor(
     firestore: FirestoreInternal,
     nativeData: DocumentSnapshotNativeData,
-    converter: FirestoreDataConverter<DocumentData, DocumentData> | null,
+    converter: FirestoreDataConverter<AppModelType, DbModelType> | null,
   ) {
     this._firestore = firestore;
     this._nativeData = nativeData;
-    this._data = parseNativeMap(firestore, nativeData.data as Record<string, unknown> | undefined);
-    this._metadata = new SnapshotMetadata(nativeData.metadata ?? [false, false]);
-    this._ref = new DocumentReference(firestore, FirestorePath.fromName(nativeData.path));
-    this._exists = nativeData.exists ?? false;
     this._converter = converter;
+    this._data = parseNativeMap(firestore, nativeData.data as Record<string, unknown> | undefined);
+    // The native side only sends `dataEstimate`/`dataPrevious`/`dataNone` when the
+    // document has pending writes (these variants are otherwise identical to `data`).
+    // Avoid the extra parse work entirely for the common settled-document case rather
+    // than relying on `parseNativeMap`'s own `undefined` short-circuit.
+    this._dataEstimate =
+      nativeData.dataEstimate === undefined
+        ? undefined
+        : parseNativeMap(firestore, nativeData.dataEstimate as Record<string, unknown>);
+    this._dataPrevious =
+      nativeData.dataPrevious === undefined
+        ? undefined
+        : parseNativeMap(firestore, nativeData.dataPrevious as Record<string, unknown>);
+    this._dataNone =
+      nativeData.dataNone === undefined
+        ? undefined
+        : parseNativeMap(firestore, nativeData.dataNone as Record<string, unknown>);
+    this._metadata = new SnapshotMetadata(nativeData.metadata ?? [false, false]);
+    this._ref = new DocumentReference<AppModelType, DbModelType>(
+      firestore,
+      FirestorePath.fromName(nativeData.path),
+      this._converter,
+    );
+    this._exists = nativeData.exists ?? false;
+  }
+
+  _dataForOptions(options?: SnapshotOptions): Record<string, unknown> | undefined {
+    // Older native payloads only include `data`; fall back to it if an option-specific map is absent.
+    switch (options?.serverTimestamps) {
+      case 'estimate':
+        return this._dataEstimate ?? this._data;
+      case 'previous':
+        return this._dataPrevious ?? this._data;
+      case 'none':
+        return this._dataNone ?? this._data;
+      default:
+        return this._data;
+    }
   }
 
   get id(): string {
@@ -72,35 +116,35 @@ export default class DocumentSnapshot {
     return this._metadata;
   }
 
-  get ref(): DocumentReference {
+  get ref(): DocumentReference<AppModelType, DbModelType> {
     return this._ref;
   }
 
-  exists(): boolean {
+  exists(): this is QueryDocumentSnapshot<AppModelType, DbModelType> {
     return this._exists;
   }
 
-  data(options?: SnapshotOptions): DocumentData | undefined {
+  data(options?: SnapshotOptions): AppModelType | undefined {
     if (this._converter) {
       try {
         return (this._converter as ConverterWithFromFirestoreInternal).fromFirestore(
-          new DocumentSnapshot(
+          new DocumentSnapshot<DocumentData, DocumentData>(
             this._firestore,
             this._nativeData,
             null,
           ) as unknown as DocumentSnapshotDeclare<DocumentData, DocumentData>,
           options,
-        ) as DocumentData;
+        ) as AppModelType;
       } catch (e) {
         throw new Error(
           `firebase.firestore() DocumentSnapshot.data(*) 'withConverter.fromFirestore' threw an error: ${(e as Error).message}.`,
         );
       }
     }
-    return this._data;
+    return this._dataForOptions(options) as AppModelType | undefined;
   }
 
-  get(fieldPath: string | FieldPath, _options?: SnapshotOptions): DocumentFieldValueInternal {
+  get(fieldPath: string | FieldPath, options?: SnapshotOptions): DocumentFieldValueInternal {
     if (!isString(fieldPath) && !(fieldPath instanceof FieldPath)) {
       throw new Error(
         "firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' expected type string or FieldPath.",
@@ -121,10 +165,13 @@ export default class DocumentSnapshot {
       path = fieldPath;
     }
 
-    return extractFieldPathData(this._data, path._segments) as DocumentFieldValueInternal;
+    return extractFieldPathData(
+      this._dataForOptions(options),
+      path._segments,
+    ) as DocumentFieldValueInternal;
   }
 
-  isEqual(other: DocumentSnapshot): boolean {
+  isEqual(other: DocumentSnapshot<AppModelType, DbModelType>): boolean {
     if (!(other instanceof DocumentSnapshot)) {
       throw new Error(
         "firebase.firestore() DocumentSnapshot.isEqual(*) 'other' expected a DocumentSnapshot instance.",

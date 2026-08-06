@@ -3,6 +3,78 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.1.0](https://github.com/invertase/react-native-firebase/compare/v26.0.0...v26.1.0) (2026-08-03)
+
+### Features
+
+- **ios:** add SPM dependency resolution support alongside CocoaPods ([#8933](https://github.com/invertase/react-native-firebase/issues/8933)) ([44a7a9a](https://github.com/invertase/react-native-firebase/commit/44a7a9ae7b404f412e9766c0417f1df8fa971a0b))
+
+## [26.0.0](https://github.com/invertase/react-native-firebase/compare/v25.1.0...v26.0.0) (2026-07-29)
+
+### ⚠ BREAKING CHANGES
+
+- **database:** migrate database to TurboModules
+
+### Features
+
+- **database:** migrate database to TurboModules ([27ad35c](https://github.com/invertase/react-native-firebase/commit/27ad35cee5d8b13514c6432226b087266efc0012))
+
+### Bug Fixes
+
+- **database:** align public types with firebase-js-sdk declarations ([7bc2d90](https://github.com/invertase/react-native-firebase/commit/7bc2d9079a5628a0448262af5df10bfa2e5de60c))
+- **ios:** set IPHONEOS_DEPLOYMENT_TARGET to 15.0, update platform support docs/conditionals ([#9108](https://github.com/invertase/react-native-firebase/issues/9108)) ([99d0899](https://github.com/invertase/react-native-firebase/commit/99d089908e3eec6155d73ecf05ff7274ad33c46e)), closes [#8882](https://github.com/invertase/react-native-firebase/issues/8882)
+
+## [25.1.0](https://github.com/invertase/react-native-firebase/compare/v25.0.1...v25.1.0) (2026-06-25)
+
+**Note:** Version bump only for package @react-native-firebase/database
+
+## [25.0.1](https://github.com/invertase/react-native-firebase/compare/v25.0.0...v25.0.1) (2026-06-23)
+
+**Note:** Version bump only for package @react-native-firebase/database
+
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **auth:** migrate to TypeScript and bring auth closer in alignment with firebase-js-sdk API (#8991)
+- **database:** database types now match firebase-js-sdk as closely as possible
+
+Please see https://rnfirebase.io/migrating-to-v25 for help migrating if needed
+
+react-native-firebase has a goal to be a drop-in replacement for firebase-js-sdk, with native extensions and performance. It has always worked that way at the javascript level but the typescript types have been divergent
+
+We are fixing that as we refactor to typescript. Please bear with us as we get closer to our goal of react-native-firebase matching firebase-js-sdk both in functionality where possible, but also in exact typescript typing.
+
+Specifics for Database:
+
+- removed the modular ServerValue named export from @react-native-firebase/database; consumers must use serverTimestamp() / increment() instead.
+- changed modular goOffline(db) and goOnline(db) so they no longer return a chainable value, which breaks consumer code that awaits them or calls .then(...) on them.
+- aligned the modular TypeScript surface with the firebase-js-sdk, so modular types like DatabaseReference, Query, DataSnapshot, OnDisconnect, and QueryConstraint no longer expose the older namespaced instance-style API in their public typings; TypeScript consumers will need to switch to the function-based modular helpers.
+- corrected getServerTime(db) to a synchronous Date return in the modular type surface, so TypeScript consumers that previously treated it as promise-like will need to update their code.
+- **storage:** migrate to TypeScript and match firebase-js-sdk API (#8824)
+
+### Bug Fixes
+
+- **android:** catch RejectedExecutionException on executor-backed Tasks ([d70520d](https://github.com/invertase/react-native-firebase/commit/d70520d39c16c6a414affe4585de6f65ec9ab345))
+- **database, android:** remove RTDB listeners before shutting down executors ([f527153](https://github.com/invertase/react-native-firebase/commit/f527153548c8f6f97c553f7348f798bb1ce08b08))
+
+### Code Refactoring
+
+- **auth:** migrate to TypeScript and bring auth closer in alignment with firebase-js-sdk API ([#8991](https://github.com/invertase/react-native-firebase/issues/8991)) ([7cf7c1a](https://github.com/invertase/react-native-firebase/commit/7cf7c1ac0d31d09ade581deb027d4ed8126bb7cf))
+- **database:** migrate to TypeScript ([#8977](https://github.com/invertase/react-native-firebase/issues/8977)) ([fc8b839](https://github.com/invertase/react-native-firebase/commit/fc8b839b8e315a0cb8f74bc9b13720109315dd11))
+- **storage:** migrate to TypeScript and match firebase-js-sdk API ([#8824](https://github.com/invertase/react-native-firebase/issues/8824)) ([663b57c](https://github.com/invertase/react-native-firebase/commit/663b57c220ef733affc1055e674334f35c458861))
+
+## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
+
+**Note:** Version bump only for package @react-native-firebase/database
+
+## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
+
+### Bug Fixes
+
+- **android:** catch RejectedExecutionException on executor-backed Tasks ([375ade9](https://github.com/invertase/react-native-firebase/commit/375ade9a043d2fd8180572ecc75c518e4428be84))
+- **database, android:** remove RTDB listeners before shutting down executors ([25ed605](https://github.com/invertase/react-native-firebase/commit/25ed605cdb5b639f70ad7e96923d4a9acc2ff0d0))
+
 ## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
 
 **Note:** Version bump only for package @react-native-firebase/database

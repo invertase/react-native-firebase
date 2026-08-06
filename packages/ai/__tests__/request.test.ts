@@ -31,6 +31,15 @@ const fakeApiSettings: ApiSettings = {
   backend: new VertexAIBackend(),
 };
 
+function createAbortErrorForTest(reason?: unknown): Error {
+  if (typeof DOMException !== 'undefined') {
+    return new DOMException(reason == null ? 'Aborted' : String(reason), 'AbortError');
+  }
+  const error = new Error(reason == null ? 'Aborted' : String(reason));
+  error.name = 'AbortError';
+  return error;
+}
+
 describe('request methods', () => {
   afterEach(() => {
     jest.restoreAllMocks(); // Use Jest's restoreAllMocks
@@ -244,6 +253,62 @@ describe('request methods', () => {
   });
 
   describe('makeRequest', () => {
+    it('throws an AbortError without fetching if the external signal is already aborted', async () => {
+      const fetchMock = jest.spyOn(globalThis, 'fetch');
+      const controller = new AbortController();
+      (controller.abort as (reason?: unknown) => void)('user cancelled');
+
+      await expect(
+        makeRequest(
+          {
+            model: 'models/model-name',
+            task: Task.GENERATE_CONTENT,
+            apiSettings: fakeApiSettings,
+            stream: false,
+            requestOptions: {
+              signal: controller.signal,
+            },
+          },
+          '',
+        ),
+      ).rejects.toMatchObject({
+        name: 'AbortError',
+        message: 'user cancelled',
+      });
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('aborts the fetch signal when the external signal aborts', async () => {
+      const controller = new AbortController();
+      const fetchMock = jest.spyOn(globalThis, 'fetch').mockImplementation((_url, init) => {
+        return new Promise((_resolve, reject) => {
+          (init?.signal as AbortSignal).addEventListener('abort', () => {
+            reject(createAbortErrorForTest());
+          });
+          (controller.abort as (reason?: unknown) => void)('cancelled during fetch');
+        });
+      });
+
+      await expect(
+        makeRequest(
+          {
+            model: 'models/model-name',
+            task: Task.GENERATE_CONTENT,
+            apiSettings: fakeApiSettings,
+            stream: false,
+            requestOptions: {
+              signal: controller.signal,
+            },
+          },
+          '',
+        ),
+      ).rejects.toMatchObject({
+        name: 'AbortError',
+        message: expect.any(String),
+      });
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
     it('no error', async () => {
       const fetchMock = jest.spyOn(globalThis, 'fetch').mockResolvedValue({
         ok: true,

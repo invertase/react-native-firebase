@@ -1,4 +1,5 @@
 require 'json'
+require_relative '../app/firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
@@ -10,6 +11,7 @@ if coreVersionDetected != coreVersionRequired
 end
 firebase_ios_target = appPackage['sdkVersions']['ios']['iosTarget']
 firebase_macos_target = appPackage['sdkVersions']['ios']['macosTarget']
+firebase_tvos_target = appPackage['sdkVersions']['ios']['tvosTarget']
 
 Pod::Spec.new do |s|
   s.name                = "RNFBMessaging"
@@ -25,15 +27,28 @@ Pod::Spec.new do |s|
   s.social_media_url    = 'http://twitter.com/invertaseio'
   s.ios.deployment_target = firebase_ios_target
   s.macos.deployment_target = firebase_macos_target
-  s.source_files        = 'ios/**/*.{h,m}'
+  s.tvos.deployment_target = firebase_tvos_target
+  s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
+  s.public_header_files = [
+    'ios/RNFBMessaging/RNFBMessagingModule.h',
+  ]
+  s.private_header_files = [
+    'ios/RNFBMessaging/RNFBMessaging+*.h',
+    'ios/RNFBMessaging/RNFBMessagingSerializer.h',
+    'ios/generated/**/*.h',
+  ]
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
+
+  s.pod_target_xcconfig = {
+    'HEADER_SEARCH_PATHS' => '"$(PODS_TARGET_SRCROOT)/ios/generated/RNFBMessagingTurboModules" "$(PODS_TARGET_SRCROOT)/ios/generated"',
+  }
 
   s.dependency          'RNFBApp'
 
-  # React Native dependencies
-  if defined?(install_modules_dependencies()) != nil
-    install_modules_dependencies(s);
-  else
-    s.dependency "React-Core"
+  install_modules_dependencies(s);
+
+  if defined?(ENV["RCT_NEW_ARCH_ENABLED"]) != nil && (ENV["RCT_NEW_ARCH_ENABLED"] == '0')
+     raise "#{s.name} requires New Architecture. Enable New Architecture to use this module"
   end
 
   if defined?($FirebaseSDKVersion)
@@ -42,8 +57,12 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/Messaging', firebase_sdk_version
-  s.dependency          'FirebaseCoreExtension'
+  # FirebaseCoreExtension is a transitive dependency of FirebaseMessaging in SPM,
+  # so it only needs to be declared explicitly for CocoaPods.
+  firebase_dependency(s, firebase_sdk_version,
+    ['FirebaseMessaging'],
+    ['Firebase/Messaging', 'FirebaseCoreExtension']
+  )
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"

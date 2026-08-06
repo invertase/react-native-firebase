@@ -30,7 +30,7 @@ public class ReactNativeFirebaseInstallationsPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebaseInstallationsModule(reactContext));
+    modules.add(new NativeRNFBTurboInstallations(reactContext));
     return modules;
   }
 

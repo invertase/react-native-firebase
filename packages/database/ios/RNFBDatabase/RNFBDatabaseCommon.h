@@ -15,14 +15,25 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseDatabase/FirebaseDatabase-Swift.h>)
+// SPM: the declared product is the thin Swift wrapper `FirebaseDatabase`
+// (which depends on `FirebaseDatabaseInternal`, not exposed to us directly).
+// Its generated ObjC interface header is what's importable here.
+#import <FirebaseCore/FirebaseCore.h>
+#import <FirebaseDatabase/FirebaseDatabase-Swift.h>
+#else
+@import FirebaseCore;
+@import FirebaseDatabaseInternal;
+#endif
 #import <React/RCTBridgeModule.h>
+
+#import "RNFBDatabaseConstants.h"
 
 @interface RNFBDatabaseCommon : NSObject
 
 + (FIRDatabase *)getDatabaseForApp:(FIRApp *)firebaseApp dbURL:(NSString *)dbURL;
-
-+ (dispatch_queue_t)getDispatchQueue;
 
 + (void)setDatabaseConfig:(FIRDatabase *)firDatabase dbURL:(NSString *)dbURL;
 
@@ -49,7 +60,3 @@
 + (NSMutableArray *)getSnapshotChildKeys:(FIRDataSnapshot *)dataSnapshot;
 
 @end
-
-extern NSString *const DATABASE_PERSISTENCE_ENABLED;
-extern NSString *const DATABASE_LOGGING_ENABLED;
-extern NSString *const DATABASE_PERSISTENCE_CACHE_SIZE;

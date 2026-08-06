@@ -1,29 +1,51 @@
 import { describe, expect, it, jest } from '@jest/globals';
-import { firebase } from '../lib';
+import { getFirestore } from '../lib';
+import { getApp } from '@react-native-firebase/app';
+import { FieldPath } from '../lib/FieldPath';
+import { Timestamp } from '../lib/FirestoreTimestamp';
 import {
-  arrayGet,
+  arrayFilter,
+  arrayFirst,
+  arrayFirstN,
+  arrayIndexOf,
+  arrayLastIndexOf,
+  arrayMaximum,
+  arrayMaximumN,
+  arrayMinimumN,
+  arrayTransform,
   and,
-  conditional,
+  coalesce,
   constant,
+  currentDocument,
+  equal,
+  ifNull,
+  switchOn,
   descending,
   execute,
   field,
   greaterThan,
   Ordering,
-  round,
-  stringRepeat,
-  substring,
-  timestampAdd,
-  timestampSubtract,
-  trunc,
+  variable,
+  countAll,
+  average,
+  subcollection,
+  array,
+  map,
 } from '../lib/pipelines';
 import '../lib/pipelines';
-import { ConstantExpression } from '../lib/pipelines/expressions';
-import { getIOSUnsupportedPipelineFunctions } from '../lib/pipelines/pipeline_support';
+import {
+  avg,
+  ConstantExpression,
+  eq,
+  FunctionExpression,
+  gt,
+  gte,
+  lt,
+} from '../lib/pipelines/expressions';
 
 describe('Firestore pipelines runtime', function () {
   it('installs pipeline() and serializes source builders', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const docRef = db.doc('firestore/a');
     const query = db
       .collection('firestore')
@@ -61,7 +83,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('normalizes stage option keys and preserves stage order', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
 
     const pipeline = db
       .pipeline()
@@ -91,7 +113,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('treats unnest selectable overload as selectable, not options object', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const serialized = db
       .pipeline()
       .collection('firestore')
@@ -109,7 +131,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('serializes rawStage params as an object so native bridges preserve named params', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const serialized = db
       .pipeline()
       .collection('firestore')
@@ -141,9 +163,364 @@ describe('Firestore pipelines runtime', function () {
     });
   });
 
+  it('serializes arrayFilter as a function expression helper and fluent method', function () {
+    const db: any = getFirestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select(
+        arrayFilter('scores', 'score', greaterThan(variable('score'), constant(15))).as(
+          'passingScores',
+        ),
+        field('scores')
+          .arrayFilter('score', greaterThan(variable('score'), constant(20)))
+          .as('topScores'),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          {
+            alias: 'passingScores',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayFilter',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Constant', value: 'score' },
+                {
+                  exprType: 'Function',
+                  name: 'greaterThan',
+                  args: [
+                    { exprType: 'Variable', name: 'score' },
+                    { exprType: 'Constant', value: 15 },
+                  ],
+                },
+              ],
+            },
+          },
+          {
+            alias: 'topScores',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayFilter',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Constant', value: 'score' },
+                {
+                  exprType: 'Function',
+                  name: 'greaterThan',
+                  args: [
+                    { exprType: 'Variable', name: 'score' },
+                    { exprType: 'Constant', value: 20 },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('serializes currentDocument as a zero-argument function expression helper', function () {
+    const db: any = getFirestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select((currentDocument() as FunctionExpression).as('doc'))
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          {
+            alias: 'doc',
+            expr: {
+              exprType: 'Function',
+              name: 'currentDocument',
+              args: [],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('serializes ifNull as a function expression helper and fluent method', function () {
+    const db: any = getFirestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select(
+        ifNull(field('displayName'), constant('Anonymous')).as('displayName'),
+        ifNull('displayName', field('fullName')).as('stringFieldIfNull'),
+        field('displayName').ifNull(field('fullName')).as('fluentIfNull'),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          {
+            alias: 'displayName',
+            expr: {
+              exprType: 'Function',
+              name: 'ifNull',
+              args: [
+                { exprType: 'Field', path: 'displayName' },
+                { exprType: 'Constant', value: 'Anonymous' },
+              ],
+            },
+          },
+          {
+            alias: 'stringFieldIfNull',
+            expr: {
+              exprType: 'Function',
+              name: 'ifNull',
+              args: [
+                { exprType: 'Field', path: 'displayName' },
+                { exprType: 'Field', path: 'fullName' },
+              ],
+            },
+          },
+          {
+            alias: 'fluentIfNull',
+            expr: {
+              exprType: 'Function',
+              name: 'ifNull',
+              args: [
+                { exprType: 'Field', path: 'displayName' },
+                { exprType: 'Field', path: 'fullName' },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('serializes switchOn as a function expression helper', function () {
+    const db: any = getFirestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select(
+        switchOn(
+          equal(field('status'), constant(1)),
+          constant('Active'),
+          equal(field('status'), constant(2)),
+          constant('Pending'),
+          constant('Unknown'),
+        ).as('statusLabel'),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          {
+            alias: 'statusLabel',
+            expr: {
+              exprType: 'Function',
+              name: 'switchOn',
+              args: [
+                {
+                  exprType: 'Function',
+                  name: 'equal',
+                  args: [
+                    { exprType: 'Field', path: 'status' },
+                    { exprType: 'Constant', value: 1 },
+                  ],
+                },
+                { exprType: 'Constant', value: 'Active' },
+                {
+                  exprType: 'Function',
+                  name: 'equal',
+                  args: [
+                    { exprType: 'Field', path: 'status' },
+                    { exprType: 'Constant', value: 2 },
+                  ],
+                },
+                { exprType: 'Constant', value: 'Pending' },
+                { exprType: 'Constant', value: 'Unknown' },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('serializes coalesce as a function expression helper and fluent method', function () {
+    const db: any = getFirestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select(
+        coalesce(field('preferredName'), field('fullName'), constant('Anonymous')).as(
+          'displayName',
+        ),
+        coalesce('preferredName', field('fullName'), constant('Anonymous')).as(
+          'stringFieldCoalesce',
+        ),
+        field('preferredName')
+          .coalesce(field('fullName'), constant('Anonymous'))
+          .as('fluentDisplayName'),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          {
+            alias: 'displayName',
+            expr: {
+              exprType: 'Function',
+              name: 'coalesce',
+              args: [
+                { exprType: 'Field', path: 'preferredName' },
+                { exprType: 'Field', path: 'fullName' },
+                { exprType: 'Constant', value: 'Anonymous' },
+              ],
+            },
+          },
+          {
+            alias: 'stringFieldCoalesce',
+            expr: {
+              exprType: 'Function',
+              name: 'coalesce',
+              args: [
+                { exprType: 'Field', path: 'preferredName' },
+                { exprType: 'Field', path: 'fullName' },
+                { exprType: 'Constant', value: 'Anonymous' },
+              ],
+            },
+          },
+          {
+            alias: 'fluentDisplayName',
+            expr: {
+              exprType: 'Function',
+              name: 'coalesce',
+              args: [
+                { exprType: 'Field', path: 'preferredName' },
+                { exprType: 'Field', path: 'fullName' },
+                { exprType: 'Constant', value: 'Anonymous' },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('serializes newer array expression helpers with SDK-compatible arguments', function () {
+    const db: any = getFirestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .select(
+        arrayFirst('scores').as('firstScore'),
+        arrayFirstN('scores', 2).as('firstTwoScores'),
+        arrayFirstN('scores', field('limit')).as('dynamicFirstScores'),
+        field('scores').arrayLast().as('lastScore'),
+        field('scores').arrayLastN(2).as('lastTwoScores'),
+        field('scores').arraySlice(1, 3).as('middleScores'),
+        arrayTransform('scores', 'score', variable('score')).as('transformedScores'),
+        field('scores')
+          .arrayTransformWithIndex('score', 'index', variable('index'))
+          .as('indexedScores'),
+        arrayMaximum('scores').as('maxScore'),
+        arrayMaximumN(field('scores'), 3).as('topScores'),
+        field('scores').arrayMinimum().as('minScore'),
+        arrayMinimumN(field('scores'), 3).as('bottomScores'),
+        arrayIndexOf('scores', 10).as('firstIndex'),
+        field('scores').arrayIndexOf(10).as('fluentFirstIndex'),
+        arrayLastIndexOf(field('scores'), 10).as('lastIndex'),
+        field('scores').arrayIndexOfAll(10).as('allIndexes'),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          { alias: 'firstScore', expr: { exprType: 'Function', name: 'arrayFirst' } },
+          { alias: 'firstTwoScores', expr: { exprType: 'Function', name: 'arrayFirstN' } },
+          {
+            alias: 'dynamicFirstScores',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayFirstN',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Field', path: 'limit' },
+              ],
+            },
+          },
+          { alias: 'lastScore', expr: { exprType: 'Function', name: 'arrayLast' } },
+          { alias: 'lastTwoScores', expr: { exprType: 'Function', name: 'arrayLastN' } },
+          { alias: 'middleScores', expr: { exprType: 'Function', name: 'arraySlice' } },
+          { alias: 'transformedScores', expr: { exprType: 'Function', name: 'arrayTransform' } },
+          {
+            alias: 'indexedScores',
+            expr: { exprType: 'Function', name: 'arrayTransformWithIndex' },
+          },
+          { alias: 'maxScore', expr: { exprType: 'Function', name: 'arrayMaximum' } },
+          { alias: 'topScores', expr: { exprType: 'Function', name: 'arrayMaximumN' } },
+          { alias: 'minScore', expr: { exprType: 'Function', name: 'arrayMinimum' } },
+          { alias: 'bottomScores', expr: { exprType: 'Function', name: 'arrayMinimumN' } },
+          {
+            alias: 'firstIndex',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayIndexOf',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Constant', value: 10 },
+                { exprType: 'Constant', value: 'first' },
+              ],
+            },
+          },
+          {
+            alias: 'fluentFirstIndex',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayIndexOf',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Constant', value: 10 },
+                { exprType: 'Constant', value: 'first' },
+              ],
+            },
+          },
+          {
+            alias: 'lastIndex',
+            expr: {
+              exprType: 'Function',
+              name: 'arrayLastIndexOf',
+              args: [
+                { exprType: 'Field', path: 'scores' },
+                { exprType: 'Constant', value: 10 },
+                { exprType: 'Constant', value: 'last' },
+              ],
+            },
+          },
+          { alias: 'allIndexes', expr: { exprType: 'Function', name: 'arrayIndexOfAll' } },
+        ],
+      },
+    });
+  });
+
   it('enforces union guards and self-cycle serialization constraints', function () {
-    const db: any = firebase.firestore();
-    const secondaryDb: any = firebase.app('secondaryFromNative').firestore();
+    const db: any = getFirestore();
+    const secondaryDb: any = getFirestore(getApp('secondaryFromNative'));
     const base = db.pipeline().collection('firestore');
 
     expect(() => base.union({} as any)).toThrow(
@@ -162,8 +539,8 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('enforces createFrom cross-firestore and query-shape guards', function () {
-    const db: any = firebase.firestore();
-    const secondaryDb: any = firebase.app('secondaryFromNative').firestore();
+    const db: any = getFirestore();
+    const secondaryDb: any = getFirestore(getApp('secondaryFromNative'));
     const secondaryQuery = secondaryDb.collection('firestore').where('value', '==', 1);
 
     expect(() => db.pipeline().createFrom({} as any)).toThrow(
@@ -176,8 +553,8 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('enforces source reference affinity for collection() and documents()', function () {
-    const db: any = firebase.firestore();
-    const secondaryDb: any = firebase.app('secondaryFromNative').firestore();
+    const db: any = getFirestore();
+    const secondaryDb: any = getFirestore(getApp('secondaryFromNative'));
 
     expect(() => db.pipeline().collection(secondaryDb.collection('firestore'))).toThrow(
       'firebase.firestore().pipeline().collection(*) cannot use a reference from a different Firestore instance.',
@@ -201,7 +578,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('validates execute input and rejects unsupported execute options', async function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const nativeExecute = jest.fn(async () => ({
       executionTime: [1735689600, 123000000],
       results: [{ path: 'firestore/a', data: { value: 42 } }],
@@ -252,7 +629,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('throws when pipelineExecute omits executionTime', async function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
     const originalNativeModule = db._nativeModule;
     db._nativeModule = {
       pipelineExecute: jest.fn(async () => ({
@@ -281,8 +658,153 @@ describe('Firestore pipelines runtime', function () {
     });
   });
 
+  it('serializes comparison alias exports gt, eq, gte, and lt', function () {
+    expect(gt(field('rating'), constant(4))).toMatchObject({
+      exprType: 'Function',
+      name: 'greaterThan',
+    });
+    expect(eq(field('sku'), constant('SKU001'))).toMatchObject({
+      exprType: 'Function',
+      name: 'equal',
+    });
+    expect(gte(field('stock'), constant(50))).toMatchObject({
+      exprType: 'Function',
+      name: 'greaterThanOrEqual',
+    });
+    expect(lt(field('price'), constant(100))).toMatchObject({
+      exprType: 'Function',
+      name: 'lessThan',
+    });
+  });
+
+  it('serializes avg aggregate alias to average', function () {
+    expect(avg(field('score'))).toMatchObject({
+      exprType: 'AggregateFunction',
+      kind: 'average',
+    });
+  });
+
+  it('normalizes array and map helpers that embed runtime expression nodes', function () {
+    const arrayExpr: any = array([field('score'), constant('tail')]);
+    expect(arrayExpr).toMatchObject({
+      exprType: 'Function',
+      name: 'array',
+      args: [
+        { exprType: 'Field', path: 'score' },
+        { exprType: 'Constant', value: 'tail' },
+      ],
+    });
+
+    const mapExpr: any = map({ label: field('name'), version: constant(1) });
+    expect(mapExpr).toMatchObject({
+      exprType: 'Function',
+      name: 'map',
+    });
+    expect(mapExpr.args[0].exprType).toBe('Constant');
+    expect(mapExpr.args[0].value.label.exprType).toBe('Field');
+    expect(mapExpr.args[0].value.version.value).toBe(1);
+  });
+
+  it('preserves non-plain constant values without walking prototype objects', function () {
+    class Marker {
+      readonly tag = 'marker';
+    }
+    const marker = new Marker();
+    const expr: any = constant(marker);
+    expect(expr).toMatchObject({
+      exprType: 'Constant',
+      value: marker,
+    });
+  });
+
+  it('normalizes pipeline execute results across timestamp and field path shapes', async function () {
+    const db: any = getFirestore();
+    const existingExecutionTime = new Timestamp(1735689600, 123000000);
+    const nativeExecute = jest.fn(async () => ({
+      executionTime: existingExecutionTime,
+      results: [
+        {
+          path: 'books/alpha',
+          id: 'alpha',
+          data: { title: 'Alpha', nested: { score: 9 } },
+          createTime: 1700000000123,
+          updateTime: [1700000001, 456000000],
+        },
+        {
+          path: 'books/beta',
+          data: { plain: true },
+          createTime: { seconds: 2, nanoseconds: 3 },
+          updateTime: { seconds: 4, nanoseconds: 5 },
+        },
+      ],
+    }));
+
+    const originalNativeModule = db._nativeModule;
+    db._nativeModule = { pipelineExecute: nativeExecute };
+
+    try {
+      const snapshot = await execute(db.pipeline().documents(['books/alpha', 'books/beta']));
+
+      expect(snapshot.executionTime).toBe(existingExecutionTime);
+      expect(snapshot.results[0]?.createTime?.toMillis()).toBe(1700000000123);
+      expect(snapshot.results[0]?.updateTime?.seconds).toBe(1700000001);
+      expect(snapshot.results[0]?.updateTime?.nanoseconds).toBe(456000000);
+      expect(snapshot.results[0]?.get('nested.score')).toBe(9);
+      expect(snapshot.results[0]?.get(new FieldPath('nested', 'score'))).toBe(9);
+      expect(snapshot.results[0]?.get(field('nested.score'))).toBe(9);
+      expect(snapshot.results[1]?.data()).toEqual({ plain: true });
+      expect(snapshot.results[1]?.createTime?.seconds).toBe(2);
+      expect(snapshot.results[1]?.updateTime?.nanoseconds).toBe(5);
+    } finally {
+      db._nativeModule = originalNativeModule;
+    }
+  });
+
+  it('serializes FieldPath and Timestamp arguments in pipeline stages', function () {
+    const db: any = getFirestore();
+    const timestamp = new Timestamp(12, 34);
+    const fieldPath = new FieldPath('meta', 'createdAt');
+
+    const serialized = db
+      .pipeline()
+      .collection('books')
+      .where(greaterThan(field('rating'), timestamp as any))
+      .sort(Ordering.of(fieldPath as any).descending())
+      .distinct({ groups: [fieldPath] } as any)
+      .select(
+        field('title')
+          .add(timestamp as any)
+          .as('createdAt'),
+      )
+      .serialize();
+
+    expect(serialized.stages[0]?.options?.condition?.args?.[1]).toMatchObject({
+      exprType: 'Constant',
+      value: {
+        seconds: 12,
+        nanoseconds: 34,
+      },
+    });
+    expect(serialized.stages[1]?.options?.orderings?.[0]?.expr).toMatchObject({
+      exprType: 'Constant',
+      value: {
+        segments: ['meta', 'createdAt'],
+      },
+    });
+    expect(serialized.stages[2]?.options?.groups?.[0]).toEqual({
+      segments: ['meta', 'createdAt'],
+    });
+    expect(serialized.stages[3]?.options?.selections?.[0]?.expr?.args?.[1]).toMatchObject({
+      exprType: 'Constant',
+      value: {
+        seconds: 12,
+        nanoseconds: 34,
+      },
+    });
+  });
+
   it('supports method-style expression chaining and ordering helper serialization', function () {
-    const db: any = firebase.firestore();
+    const db: any = getFirestore();
 
     const pipeline = db
       .pipeline()
@@ -382,36 +904,159 @@ describe('Firestore pipelines runtime', function () {
     });
   });
 
-  it('detects unsupported iOS runtime functions from serialized pipelines', function () {
-    const db: any = firebase.firestore();
-    const serialized = db
+  it('serializes subcollection detached pipelines and scalar subqueries', function () {
+    const db: any = getFirestore();
+    const detached = subcollection('reviews');
+    expect(detached.serialize()).toEqual({
+      source: { source: 'subcollection', path: 'reviews' },
+      stages: [],
+    });
+
+    const embedded = db
       .pipeline()
-      .documents(['firestore/a'])
-      .select(
-        arrayGet(field('items'), 0).as('firstItem'),
-        conditional(
-          field('value').greaterThan(0),
-          constant('positive'),
-          constant('non-positive'),
-        ).as('bucket'),
-        round(field('score'), 2).as('roundedScore'),
-        stringRepeat(field('separator'), 3).as('divider'),
-        substring(field('label'), 0, 4).as('labelPrefix'),
-        timestampAdd(field('eventTime'), 'day', 1).as('nextDay'),
-        timestampSubtract(field('eventTime'), 'hour', 1).as('prevHour'),
-        trunc(field('score'), 2).as('truncatedScore'),
+      .collection('restaurants')
+      .addFields(
+        subcollection('reviews')
+          .aggregate(countAll().as('reviewCount'), average('rating').as('avgRating'))
+          .toScalarExpression()
+          .as('reviewSummary'),
       )
       .serialize();
 
-    expect(getIOSUnsupportedPipelineFunctions(serialized)).toEqual([
-      'arrayGet',
-      'conditional',
-      'round',
-      'stringRepeat',
-      'substring',
-      'timestampAdd',
-      'timestampSubtract',
-      'trunc',
-    ]);
+    expect(embedded.stages[0]).toMatchObject({
+      stage: 'addFields',
+      options: {
+        fields: [
+          {
+            alias: 'reviewSummary',
+            expr: {
+              exprType: 'Function',
+              name: 'scalar',
+              args: [
+                {
+                  exprType: 'PipelineValue',
+                  pipeline: {
+                    source: { source: 'subcollection', path: 'reviews' },
+                    stages: [
+                      {
+                        stage: 'aggregate',
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('rejects direct execute of detached subcollection pipelines', async function () {
+    await expect(execute(subcollection('reviews'))).rejects.toThrow(
+      'This pipeline was created without a database (e.g., as a subcollection pipeline) and cannot be executed directly. It can only be used as part of another pipeline.',
+    );
+  });
+
+  it('validates subcollection() arguments', function () {
+    expect(() => subcollection('')).toThrow(
+      'subcollection(*) expected path to be a non-empty string.',
+    );
+    expect(() => (subcollection as any)(123)).toThrow(
+      'subcollection(*) expected a path string or SubcollectionStageOptions object.',
+    );
+    expect(() => (subcollection as any)(null)).toThrow(
+      'subcollection(*) expected a path string or SubcollectionStageOptions object.',
+    );
+    expect(() => subcollection({ path: '' } as any)).toThrow(
+      'subcollection(*) expected path to be a non-empty string.',
+    );
+  });
+
+  it('accepts subcollection() options form with and without rawOptions', function () {
+    expect((subcollection({ path: 'reviews' } as any) as any).serialize()).toEqual({
+      source: { source: 'subcollection', path: 'reviews' },
+      stages: [],
+    });
+
+    expect(
+      (
+        subcollection({ path: 'reviews', rawOptions: { requestLabel: 'x' } } as any) as any
+      ).serialize(),
+    ).toEqual({
+      source: { source: 'subcollection', path: 'reviews', rawOptions: { requestLabel: 'x' } },
+      stages: [],
+    });
+  });
+
+  it('serializes search, define, and B2 expression helpers', function () {
+    const {
+      field,
+      documentMatches,
+      score,
+      geoDistance,
+      parent,
+      variable,
+    } = require('../lib/pipelines');
+    const { GeoPoint } = require('../lib/FirestoreGeoPoint');
+    const db: any = getFirestore();
+
+    const searchSerialized = db
+      .pipeline()
+      .collection('restaurants')
+      .search({
+        query: documentMatches('waffles'),
+        sort: [score().descending()],
+        addFields: [score().as('searchScore')],
+      })
+      .serialize();
+
+    expect(searchSerialized.stages[0]).toMatchObject({
+      stage: 'search',
+      options: {
+        query: {
+          exprType: 'Function',
+          name: 'documentMatches',
+          args: [{ exprType: 'Constant', value: 'waffles' }],
+        },
+        sort: [{ direction: 'descending' }],
+        addFields: [
+          {
+            alias: 'searchScore',
+            expr: { exprType: 'Function', name: 'score', args: [] },
+          },
+        ],
+      },
+    });
+
+    const defineSerialized = db
+      .pipeline()
+      .collection('products')
+      .define(field('price').as('unitPrice'))
+      .where(field('price').greaterThan(variable('unitPrice')))
+      .serialize();
+
+    expect(defineSerialized.stages[0]).toMatchObject({
+      stage: 'define',
+      options: {
+        variables: [{ path: 'price', alias: 'unitPrice', as: 'unitPrice' }],
+      },
+    });
+
+    const exprPipeline = db
+      .pipeline()
+      .collection('places')
+      .search({
+        query: field('location').geoDistance(new GeoPoint(0, 0)).lessThanOrEqual(1000),
+        sort: geoDistance('location', new GeoPoint(1, 2)).ascending(),
+        addFields: [parent('users/alice').as('parentRef')],
+      })
+      .serialize();
+
+    expect(exprPipeline.stages[0].options.query).toBeDefined();
+    expect(exprPipeline.stages[0].options.sort).toBeDefined();
+    expect(exprPipeline.stages[0].options.addFields).toHaveLength(1);
+    expect(field('x').geoDistance).toBeDefined();
+    expect(field('x').documentMatches).toBeUndefined();
   });
 });

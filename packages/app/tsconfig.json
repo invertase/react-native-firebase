@@ -1,9 +1,9 @@
 {
   "extends": "../../tsconfig.packages.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "rootDir": ".",
-    "lib": ["ESNext", "DOM"]
+    "lib": ["ESNext", "DOM"],
+    "types": ["react-native", "node"]
   },
   "include": ["lib/**/*"],
   "exclude": ["node_modules", "dist", "__tests__", "**/*.test.ts"]

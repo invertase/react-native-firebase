@@ -141,7 +141,8 @@ export interface ComparisonResult {
   undocumentedDifferentShape: string[];
   /**
    * Config entries that are no longer needed because the API now matches the
-   * firebase-js-sdk. These should be removed from config.ts (CI failures).
+   * firebase-js-sdk. These should be removed from configs/<package>.ts
+   * (CI failures).
    */
   staleConfigMissing: string[];
   staleConfigExtra: string[];

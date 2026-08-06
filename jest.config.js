@@ -21,6 +21,7 @@ module.exports = {
     '\\.(ts|tsx)$': ['ts-jest', { tsconfig: './tsconfig-jest.json' }],
   },
   setupFiles: ['./jest.setup.ts'],
+  globalSetup: './scripts/jest-ai-mocks-global-setup.js',
   testMatch: ['**/packages/**/__tests__/**/*.test.(ts|js)'],
   modulePaths: ['node_modules', './tests/node_modules'],
   testPathIgnorePatterns: ['./packages/template'],

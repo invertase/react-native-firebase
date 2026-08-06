@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-import { object, string, number, array, optional, define, type } from 'superstruct';
+import { object, string, number, boolean, array, optional, define, type } from 'superstruct';
 
 const ShortDate = define(
   'ShortDate',
@@ -36,6 +36,7 @@ const Item = type({
   item_variant: optional(string()),
   quantity: optional(number()),
   price: optional(number()),
+  index: optional(number()),
 });
 
 export const ScreenView = type({
@@ -104,7 +105,7 @@ export const JoinGroup = object({
 
 export const LevelEnd = object({
   level: number(),
-  success: optional(string()),
+  success: optional(boolean()),
 });
 
 export const LevelStart = object({

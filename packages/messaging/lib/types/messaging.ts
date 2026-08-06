@@ -16,11 +16,6 @@
  */
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import {
-  AuthorizationStatus as AuthorizationStatusConst,
-  NotificationAndroidPriority as NotificationAndroidPriorityConst,
-  NotificationAndroidVisibility as NotificationAndroidVisibilityConst,
-} from '../statics';
 
 // ============ Types ============
 
@@ -380,6 +375,11 @@ export type NotificationAndroidVisibility =
 /**
  * An interface representing all the available permissions that can be requested by your app via
  * the `requestPermission` API.
+ *
+ * @deprecated Use {@link https://github.com/zoontek/react-native-permissions react-native-permissions} or
+ * {@link https://docs.expo.dev/versions/latest/sdk/notifications/ expo-notifications} for notification permission
+ * requests instead. These APIs will be removed in a future major release.
+ * See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}.
  */
 export interface IOSPermissions {
   /**
@@ -444,6 +444,11 @@ export interface IOSPermissions {
  *
  * Value is truthy if authorized, compare against an exact status (e.g. iOS PROVISIONAL) for a more
  * granular status.
+ *
+ * @deprecated Use {@link https://github.com/zoontek/react-native-permissions react-native-permissions} or
+ * {@link https://docs.expo.dev/versions/latest/sdk/notifications/ expo-notifications} for notification permission
+ * requests instead. These APIs will be removed in a future major release.
+ * See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}.
  */
 export type AuthorizationStatus =
   | -1 // NOT_DETERMINED - The app user has not yet chosen whether to allow the application to create notifications. Usually this status is returned prior to the first call of `requestPermission`. @platform ios iOS
@@ -560,12 +565,24 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
    * be received or sent.
    *
    * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `AuthorizationStatus.AUTHORIZED`.
+   *
+   * @deprecated Use {@link https://github.com/zoontek/react-native-permissions react-native-permissions} or
+   * {@link https://docs.expo.dev/versions/latest/sdk/notifications/ expo-notifications} for notification permission
+   * requests instead. These APIs will be removed in a future major release.
+   * See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}.
    */
   requestPermission(permissions?: IOSPermissions): Promise<AuthorizationStatus>;
 
   /**
    * On iOS, if your app wants to receive remote messages from FCM (via APNs), you must explicitly register
    * with APNs if auto-registration has been disabled.
+   *
+   * On **ARM64 iOS Simulator**, UIKit registration is skipped intentionally so the main thread
+   * cannot wedge; the call may reject with `messaging/registration-timeout` after ~10s and will
+   * not produce a real APNs token. Use a physical device for end-to-end push. Overlapping calls
+   * reject the earlier attempt with `messaging/registration-superseded`.
+   * `requestPermission`'s APNs side-effect is also skipped on ARM64 Simulator but that Promise
+   * still resolves with `AuthorizationStatus` (it does not reject with these codes).
    *
    * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `void`.
    */
@@ -618,6 +635,11 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
 
   /**
    * Returns a `AuthorizationStatus` as to whether the user has messaging permission for this app.
+   *
+   * @deprecated Use {@link https://github.com/zoontek/react-native-permissions react-native-permissions} or
+   * {@link https://docs.expo.dev/versions/latest/sdk/notifications/ expo-notifications} for notification permission
+   * requests instead. These APIs will be removed in a future major release.
+   * See {@link https://github.com/invertase/react-native-firebase/issues/6283 #6283}.
    */
   hasPermission(): Promise<AuthorizationStatus>;
 
@@ -706,67 +728,3 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
    */
   isSupported(): Promise<boolean>;
 }
-
-// ============ Statics Interface ============
-
-/**
- * Static properties available on firebase.messaging
- */
-
-export interface Statics {
-  SDK_VERSION: string;
-  AuthorizationStatus: typeof AuthorizationStatusConst;
-  NotificationAndroidPriority: typeof NotificationAndroidPriorityConst;
-  NotificationAndroidVisibility: typeof NotificationAndroidVisibilityConst;
-}
-
-// ============ Module Augmentation ============
-/* eslint-disable @typescript-eslint/no-namespace */
-declare module '@react-native-firebase/app' {
-  namespace ReactNativeFirebase {
-    interface Module {
-      messaging: FirebaseModuleWithStaticsAndApp<Messaging, Statics>;
-    }
-    interface FirebaseApp {
-      messaging(): Messaging;
-    }
-  }
-}
-
-// ============ Backwards Compatibility Namespace ============
-
-/* eslint-disable @typescript-eslint/no-namespace */
-type _Messaging = Messaging;
-type _MessagingStatics = Statics;
-type _RemoteMessage = RemoteMessage;
-type _MessagePriority = MessagePriority;
-type _FcmOptions = FcmOptions;
-type _NativeTokenOptions = NativeTokenOptions;
-type _GetTokenOptions = GetTokenOptions;
-type _Notification = Notification;
-type _NotificationPayload = NotificationPayload;
-type _NotificationIOSCriticalSound = NotificationIOSCriticalSound;
-type _NotificationAndroidPriority = NotificationAndroidPriority;
-type _NotificationAndroidVisibility = NotificationAndroidVisibility;
-type _IOSPermissions = IOSPermissions;
-type _AuthorizationStatus = AuthorizationStatus;
-type _SendErrorEvent = SendErrorEvent;
-
-export namespace FirebaseMessagingTypes {
-  export type Module = _Messaging;
-  export type Statics = _MessagingStatics;
-  export type RemoteMessage = _RemoteMessage;
-  export type MessagePriority = _MessagePriority;
-  export type FcmOptions = _FcmOptions;
-  export type NativeTokenOptions = _NativeTokenOptions;
-  export type GetTokenOptions = _GetTokenOptions;
-  export type Notification = _Notification;
-  export type NotificationPayload = _NotificationPayload;
-  export type NotificationIOSCriticalSound = _NotificationIOSCriticalSound;
-  export type NotificationAndroidPriority = _NotificationAndroidPriority;
-  export type NotificationAndroidVisibility = _NotificationAndroidVisibility;
-  export type IOSPermissions = _IOSPermissions;
-  export type AuthorizationStatus = _AuthorizationStatus;
-  export type SendErrorEvent = _SendErrorEvent;
-}
-/* eslint-enable @typescript-eslint/no-namespace */

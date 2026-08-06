@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.1.0](https://github.com/invertase/react-native-firebase/compare/v26.0.0...v26.1.0) (2026-08-03)
+
+### Features
+
+- **auth, ios:** add fullName support for Sign in with Apple credentials ([#9096](https://github.com/invertase/react-native-firebase/issues/9096)) ([a33867e](https://github.com/invertase/react-native-firebase/commit/a33867e22c85bc5598faa79f24554c8b915e750d))
+- **ios:** add SPM dependency resolution support alongside CocoaPods ([#8933](https://github.com/invertase/react-native-firebase/issues/8933)) ([44a7a9a](https://github.com/invertase/react-native-firebase/commit/44a7a9ae7b404f412e9766c0417f1df8fa971a0b))
+
+### Bug Fixes
+
+- **auth, app:** fix web auth initialization crash and missing methods ([#9134](https://github.com/invertase/react-native-firebase/issues/9134)) ([d74b550](https://github.com/invertase/react-native-firebase/commit/d74b550f55ecb131a691d1ec3536ad485184f439))
+
+## [26.0.0](https://github.com/invertase/react-native-firebase/compare/v25.1.0...v26.0.0) (2026-07-29)
+
+### ⚠ BREAKING CHANGES
+
+- **auth:** migrate auth to TurboModules
+- **app:** App/Core modules native bridge requires New Architecture.
+
+Migrate RNFBAppModule and RNFBUtilsModule to Codegen TurboModules with
+unified resolver, lazy Proxy wrapper, and committed generated artifacts.
+Includes functions codegenConfig rename (NewArch-AD-7), test harness
+overrides, architecture decisions, and validation workflow hardening.
+
+### Features
+
+- **app:** migrate app modules to TurboModules incl general migration infra ([978168d](https://github.com/invertase/react-native-firebase/commit/978168dacecf4925d347d9757eff73ee43e1484f))
+- **auth:** migrate auth to TurboModules ([5fe09ac](https://github.com/invertase/react-native-firebase/commit/5fe09ac77b8df94631dbcfaa533cdcba0bfff98c))
+
+### Bug Fixes
+
+- add ResultT codegen type alias ([ff2d68f](https://github.com/invertase/react-native-firebase/commit/ff2d68ff8f73092f8ba3c75e007049dd31be822f))
+- **auth, android:** handle null id-tokens from google credential manager ([d800caf](https://github.com/invertase/react-native-firebase/commit/d800caf8b0ca8bf289d72fc84c0d74bda26c41bb))
+- **ios:** set IPHONEOS_DEPLOYMENT_TARGET to 15.0, update platform support docs/conditionals ([#9108](https://github.com/invertase/react-native-firebase/issues/9108)) ([99d0899](https://github.com/invertase/react-native-firebase/commit/99d089908e3eec6155d73ecf05ff7274ad33c46e)), closes [#8882](https://github.com/invertase/react-native-firebase/issues/8882)
+- resolve CI lint and spec-native parity failures ([6ff817e](https://github.com/invertase/react-native-firebase/commit/6ff817ed2154b2d4e77c5fd9709ec0eb95b408fa))
+
+## [25.1.0](https://github.com/invertase/react-native-firebase/compare/v25.0.1...v25.1.0) (2026-06-25)
+
+### Bug Fixes
+
+- **auth, perf:** correctly export expo config plugin, add test for same ([dfb8126](https://github.com/invertase/react-native-firebase/commit/dfb8126be05e3c87c4d8ea228110aa8b8e7674cb))
+
+## [25.0.1](https://github.com/invertase/react-native-firebase/compare/v25.0.0...v25.0.1) (2026-06-23)
+
+### Bug Fixes
+
+- **auth:** export revokeToken in modular API for Sign in with Apple ([a05fa66](https://github.com/invertase/react-native-firebase/commit/a05fa66c44d6043bad72c9d1b3374e305b51edcc)), closes [#9070](https://github.com/invertase/react-native-firebase/issues/9070)
+
+## [25.0.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v25.0.0) (2026-06-23)
+
+### ⚠ BREAKING CHANGES
+
+- **auth:** migrate to TypeScript and bring auth closer in alignment with firebase-js-sdk API (#8991)
+
+### Code Refactoring
+
+- **auth:** migrate to TypeScript and bring auth closer in alignment with firebase-js-sdk API ([#8991](https://github.com/invertase/react-native-firebase/issues/8991)) ([7cf7c1a](https://github.com/invertase/react-native-firebase/commit/7cf7c1ac0d31d09ade581deb027d4ed8126bb7cf))
+
+## [24.1.1](https://github.com/invertase/react-native-firebase/compare/v24.1.0...v24.1.1) (2026-06-10)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [24.1.0](https://github.com/invertase/react-native-firebase/compare/v24.0.0...v24.1.0) (2026-06-05)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
 ## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
 
 ### Features

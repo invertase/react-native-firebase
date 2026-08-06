@@ -9,7 +9,7 @@ import {
   prefix,
 } from '@react-native-firebase/app/dist/module/internal/asyncStorage';
 
-describe('firebase.setReactNativeAsyncStorage()', function () {
+describe('setReactNativeAsyncStorage()', function () {
   beforeEach(async function () {
     setReactNativeAsyncStorageInternal();
     await asyncStorage.clear();
