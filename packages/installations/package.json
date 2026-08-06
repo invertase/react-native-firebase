@@ -25,8 +25,8 @@
     "compile": "bob build",
     "prepare": "yarn run build && yarn compile",
     "codegen": "yarn android:codegen && yarn ios:codegen",
-    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/main/java/io/invertase/firebase/installations/generated",
-    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
+    "android:codegen": "rimraf android/src/main/java/io/invertase/firebase/installations/generated && npx @react-native-community/cli codegen --platform android --outputPath=./android/src/main/java/io/invertase/firebase/installations/generated",
+    "ios:codegen": "rimraf ios/generated && npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
   },
   "repository": {
     "type": "git",

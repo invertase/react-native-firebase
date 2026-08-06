@@ -595,7 +595,7 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 **Routine fix** (try first after codegen, podspec, or `packages/*/lib/**` edits):
 
 1. [Prepare completion gate](#prepare-completion-gate-blocking) — `yarn lerna:prepare` exit 0.
-2. Regenerate codegen if specs changed — [workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical) (`cd tests`, `npx @react-native-community/cli codegen …`).
+2. Regenerate codegen if specs changed — [workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical) (wipe configured `outputPath`, then CLI / package scripts).
 3. **`yarn tests:<platform>:build`** (includes `pod install` on iOS when needed).
 4. **`yarn tests:packager:jet-reset-cache`** (Metro was running during the edits).
 5. [Pre-flight](#pre-flight-is-the-host-clear-to-start) → **`yarn tests:<platform>:test-cover`**.

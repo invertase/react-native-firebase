@@ -128,18 +128,24 @@ Repeat for **every** package migration. Skipping any row is the usual cause of `
 
 ### Running codegen (canonical)
 
-Package `package.json` scripts (`yarn android:codegen` / `yarn ios:codegen`) are convenience wrappers; **`cd packages/<pkg> && yarn ios:codegen` often fails** after a clean install (`unknown command 'codegen'`) because `@react-native-community/cli` resolves from the **test app** workspace, not the library package cwd.
+Package `package.json` scripts (`yarn android:codegen` / `yarn ios:codegen`) are convenience wrappers that **wipe then regen** the configured `--outputPath` ([NewArch-AD-22](architecture-decisions.md#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted): `rimraf <outputPath> && …`). Prefer those yarn scripts when the CLI resolves; **`cd packages/<pkg> && yarn ios:codegen` often fails** after a clean install (`unknown command 'codegen'`) because `@react-native-community/cli` resolves from the **test app** workspace, not the library package cwd.
+
+**0. Wipe** — delete the package's configured `--outputPath` entirely before CLI codegen writes (same path as in `package.json`). Do **not** skip this step when invoking the CLI by hand.
 
 **Canonical** — from repo root, `cd tests`, one platform at a time; `--outputPath` must match the package's `android:codegen` / `ios:codegen` script (paths differ per package — copy from [`functions/package.json`](../../../packages/functions/package.json)):
 
 ```bash
 cd tests
+# Prefer: cd ../packages/<pkg> && yarn android:codegen / yarn ios:codegen (wipe baked in)
+# Manual CLI (must wipe first):
+rm -rf ../packages/<pkg>/<android:codegen outputPath from package.json>
 npx @react-native-community/cli codegen \
   --path ../packages/<pkg> \
   --platform android \
   --source library \
   --outputPath ../packages/<pkg>/<android:codegen outputPath from package.json>
 
+rm -rf ../packages/<pkg>/ios/generated
 npx @react-native-community/cli codegen \
   --path ../packages/<pkg> \
   --platform ios \
@@ -148,6 +154,8 @@ npx @react-native-community/cli codegen \
 ```
 
 Example (`perf` Android): `--outputPath ../packages/perf/android/src/reactnative/java/io/invertase/firebase/perf/generated`.
+
+After iOS regen: run `node ./scripts/patch-ios-codegen-resultt.mjs` from repo root ([NewArch-AD-21](architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted)) — already wired into `yarn codegen:verify`.
 
 After regen: commit generated dirs, then [checklist row **12**](#turbomodule-native-registration-checklist-blocking) (`:build` + Metro reset-cache before `:test-cover`).
 
@@ -251,13 +259,14 @@ Before `git commit`: [validation evidence package](../../testing/validation-chec
 * **iOS auth-domain naming** — iOS keeps historical **`customAuthDomains`** + `getCustomDomain:` on the turbo shell ([`RNFBAppModule.mm`](../../../packages/app/ios/RNFBApp/RNFBAppModule.mm)); Android uses **`authDomains`** on [`NativeRNFBTurboApp`](../../../packages/app/android/src/reactnative/java/io/invertase/firebase/app/NativeRNFBTurboApp.java). Same semantics; intentional cross-platform naming carry-over.
 * **Spec Promise typing (Android)** — Codegen Android methods take **`Promise` args** even when the legacy bridge was sync void. Example: Play Services helpers in [`NativeRNFBTurboUtils`](../../../packages/app/specs/NativeRNFBTurboUtils.ts) — declare `Promise<PlayServicesAvailability>` / `Promise<void>`; native resolves the promise.
 * **Android codegen output path families** — always copy `android:codegen` `outputPath` from the target `package.json` (do not assume one layout). **`src/reactnative/java/.../generated`**: `app`, `firestore`, `perf`, `in-app-messaging`, `ml`. **`src/main/java/.../generated`**: `functions`, `installations`, `app-distribution`. `react-native.config.js` `cmakeListsPath` must match the same tree.
-* **Duplicate generated trees** — a wrong initial `outputPath` or regen into a second folder leaves **two** `generated/` trees (e.g. `src/main/java` + `src/reactnative/java`, or `fiam/` + `in_app_messaging/`). Android then fails with `duplicate class: NativeRNFBTurbo*Spec`. Keep **one** canonical tree; delete stale dirs; align shell imports, `build.gradle` `sourceSets`, and `cmakeListsPath`.
+<a id="duplicate-generated-trees"></a>
+* **Duplicate generated trees** — a wrong initial `outputPath` or regen into a second folder leaves **two** `generated/` trees (e.g. `src/main/java` + `src/reactnative/java`, or `fiam/` + `in_app_messaging/`). Android then fails with `duplicate class: NativeRNFBTurbo*Spec`. [NewArch-AD-22](architecture-decisions.md#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted) wipe-then-regen prevents **same-path** orphans on the configured `outputPath`; **sibling** wrong trees (different path from a prior bad config) still need a one-time manual delete. Keep **one** canonical tree; align shell imports, `build.gradle` `sourceSets`, and `cmakeListsPath`.
 * **Dead legacy shells (removed)** — unregistered legacy Java bridge modules in `app`, `utils`, `in-app-messaging`, `installations`, `perf`, and `remote-config` were deleted after turbo-shell registration and turbo-path verification. Do not reintroduce duplicate shells alongside turbo registrars.
 * **CMake macro vs test-app RN version** — see [registration checklist § row 5](#turbomodule-native-registration-checklist-blocking). `yarn codegen` uses root `@react-native/codegen`; if it emits `target_compile_reactnative_options` but the test app is still RN 0.78, replace with `target_compile_options` (copy from [`functions` CMakeLists](../../../packages/functions/android/src/main/java/io/invertase/firebase/functions/generated/jni/CMakeLists.txt)) before first `:test-cover`.
 * **TurboModule constants (both platforms)** — legacy bridge exposed constants as enumerable keys on the module object. TurboModules require the full chain in [checklist rows 1, 6, 8](#turbomodule-native-registration-checklist-blocking): spec `getConstants()` → codegen → Android `getTypedExportedConstants` → iOS typed `ModuleConstants` + `_RCTTypedModuleConstants` → `withTurboConstants` in [`nativeModuleAndroidIos.ts`](../../../packages/app/lib/internal/nativeModuleAndroidIos.ts). Skipping the spec or leaving iOS on `NSDictionary *` produces **`undefined`** in constructors like `this._foo = this.native.isFoo` even when methods work. Packages without constants (`functions`, `installations`, …) skip the constants rows.
 * **Android autolinking cache** — see checklist row **12**. `npx react-native config` can show the correct `cmakeListsPath` while `tests/android/build/generated/autolinking/autolinking.json` is still stale.
 * **Metro `Requiring unknown module "undefined"`** — Metro runtime error when `require()` gets module id `undefined`. **Not** the same as native constant `undefined` or `Proxy target must be an Object`. Usually **stale Metro cache and/or partial refresh** after spec/codegen/`lib/**`/podspec changes while iOS/Android debug still loads a **live** bundle from `:8081` ([running e2e § stale toolchain](../testing/running-e2e.md#turbomodule-stale-toolchain-blocking)). A static `index.bundle` fetch can succeed while the simulator still shows the redbox — treat as toolchain staleness, not a missing `import`. Escalation: [full toolchain refresh](../testing/running-e2e.md#turbomodule-full-toolchain-refresh).
-* **Codegen CLI cwd** — see [§ Running codegen](#running-codegen-canonical). Do not debug `unknown command 'codegen'` by patching package scripts; run from `tests/`.
+* **Codegen CLI cwd** — see [§ Running codegen](#running-codegen-canonical). Do not debug `unknown command 'codegen'` by inventing alternate CLI entrypoints; run from `tests/` or use package yarn scripts when resolution works. Always wipe `outputPath` first ([NewArch-AD-22](architecture-decisions.md#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)).
 * **phone-number-verification** — bypasses `createModuleNamespace`; wire spec + resolver directly in `modular.ts`.
 
 Live phase status and arbiter gates: [migration work queue](migration-work-queue.md) (ephemeral).

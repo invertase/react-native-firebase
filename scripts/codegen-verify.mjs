@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+/**
+ * NewArch-AD-17.3 / NewArch-AD-22 — Regen every migrated package's codegen with
+ * wipe-then-regen on the configured --outputPath, then NewArch-AD-21 ResultT patch.
+ * Root `yarn codegen:verify` diffs generated trees afterward.
+ */
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
@@ -43,6 +48,11 @@ function toCliContextRelative(packageDir, outputPath) {
   return path.relative(CLI_CONTEXT_DIR, absoluteOutput);
 }
 
+function wipeOutputPath(absoluteOutput) {
+  // NewArch-AD-22: delete the configured outputPath entirely before CLI codegen writes.
+  fs.rmSync(absoluteOutput, { recursive: true, force: true });
+}
+
 for (const packageName of MIGRATED_PACKAGES) {
   const packageDir = path.join(REPO_ROOT, 'packages', packageName);
   const packageJson = JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), 'utf8'));
@@ -60,6 +70,10 @@ for (const packageName of MIGRATED_PACKAGES) {
       throw new Error(`${packageName} ${scriptName} is missing --outputPath`);
     }
 
+    const normalizedOutput = outputMatch[1].replace(/^\.\//, '');
+    const absoluteOutput = path.join(packageDir, normalizedOutput);
+    wipeOutputPath(absoluteOutput);
+
     const outputPathFromApp = toCliContextRelative(packageDir, outputMatch[1]);
     const rewrittenArgs = args.replace(
       /--outputPath=\S+/,
@@ -67,7 +81,7 @@ for (const packageName of MIGRATED_PACKAGES) {
     );
     const command = `${RN_CLI} codegen --path ${packagePathFromApp} ${rewrittenArgs}`;
 
-    console.log(`[codegen:verify] ${packageName} (${scriptName})`);
+    console.log(`[codegen:verify] ${packageName} (${scriptName}) wipe+regen → ${normalizedOutput}`);
     execSync(command, { stdio: 'inherit', cwd: CLI_CONTEXT_DIR });
   }
 }
