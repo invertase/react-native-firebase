@@ -32,6 +32,7 @@ import {
   TemplateGenerativeModel,
   GoogleAIBackend,
   VertexAIBackend,
+  AgentPlatformBackend,
   // Types that exist - imported for type checking
   Part,
   ResponseModality,
@@ -186,6 +187,14 @@ describe('AI', function () {
 
     it('`VertexAIBackend` class is properly exposed to end user', function () {
       expect(VertexAIBackend).toBeDefined();
+    });
+
+    it('`AgentPlatformBackend` class is properly exposed to end user', function () {
+      expect(AgentPlatformBackend).toBeDefined();
+    });
+
+    it('`BackendType.AGENT_PLATFORM` is properly exposed to end user', function () {
+      expect(BackendType.AGENT_PLATFORM).toBe('AGENT_PLATFORM');
     });
 
     // Type exports - test that they can be used as types

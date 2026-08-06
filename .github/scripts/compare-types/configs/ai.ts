@@ -106,11 +106,6 @@ const config: PackageConfig = {
         'Chrome Prompt API prompt options type used by browser-only on-device language model integration.',
     },
     {
-      name: 'AgentPlatformBackend',
-      reason:
-        'firebase-js-sdk Agent Platform backend type is not yet wired in React Native Firebase AI.',
-    },
-    {
       name: 'BaseSpeechConfig',
       reason:
         'Shared speech-config base type for multi/single-speaker TTS options newly exported by firebase-js-sdk. RN Firebase still uses the simpler VoiceConfig-based SpeechConfig shape.',
@@ -168,11 +163,6 @@ const config: PackageConfig = {
       name: 'AIOptions',
       reason:
         'RN Firebase includes direct `auth` and `appCheck` modules in options because it does not use firebase-js-sdk providers.',
-    },
-    {
-      name: 'BackendType',
-      reason:
-        'firebase-js-sdk BackendType now includes `AGENT_PLATFORM`; React Native Firebase AI still exposes only `VERTEX_AI` and `GOOGLE_AI`.',
     },
     {
       name: 'EnhancedGenerateContentResponse',

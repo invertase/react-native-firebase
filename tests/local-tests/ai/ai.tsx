@@ -11,7 +11,7 @@ import {
   GenerateContentResult,
   GenerateContentStreamResult,
   ChatSession,
-  VertexAIBackend,
+  AgentPlatformBackend,
   getLiveGenerativeModel,
   LiveGenerativeModel,
   LiveSession,
@@ -412,7 +412,7 @@ export function AITestComponent() {
         onPress={async (): Promise<void> => {
           try {
             const app = getApp();
-            const ai: AI = getAI(app, { backend: new VertexAIBackend('us-central1') });
+            const ai: AI = getAI(app, { backend: new AgentPlatformBackend('us-central1') });
             const model: LiveGenerativeModel = getLiveGenerativeModel(ai, {
               model: 'gemini-2.5-flash-native-audio-preview-12-2025',
               generationConfig: {

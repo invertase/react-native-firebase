@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 import { describe, it, expect } from '@jest/globals';
-import { GoogleAIBackend, VertexAIBackend } from '../lib/backend';
+import { AgentPlatformBackend, GoogleAIBackend, VertexAIBackend } from '../lib/backend';
 import { BackendType } from '../lib/public-types';
-import { DEFAULT_LOCATION } from '../lib/constants';
+import { DEFAULT_LOCATION, LEGACY_DEFAULT_LOCATION } from '../lib/constants';
 
 describe('Backend', () => {
   describe('GoogleAIBackend', () => {
@@ -25,13 +25,59 @@ describe('Backend', () => {
       const backend = new GoogleAIBackend();
       expect(backend.backendType).toBe(BackendType.GOOGLE_AI);
     });
+
+    it('builds model and template paths without location', () => {
+      const backend = new GoogleAIBackend();
+      expect(backend._getModelPath('my-project', 'models/gemini')).toBe(
+        '/v1beta/projects/my-project/models/gemini',
+      );
+      expect(backend._getTemplatePath('my-project', 'tmpl')).toBe(
+        '/v1beta/projects/my-project/templates/tmpl',
+      );
+    });
+  });
+
+  describe('AgentPlatformBackend', () => {
+    it('should set backendType to AGENT_PLATFORM', () => {
+      const backend = new AgentPlatformBackend();
+      expect(backend.backendType).toBe(BackendType.AGENT_PLATFORM);
+      expect(backend.location).toBe(DEFAULT_LOCATION);
+    });
+
+    it('should set a custom location', () => {
+      const backend = new AgentPlatformBackend('test-location');
+      expect(backend.backendType).toBe(BackendType.AGENT_PLATFORM);
+      expect(backend.location).toBe('test-location');
+    });
+
+    it('should use a default location if location is empty string', () => {
+      const backend = new AgentPlatformBackend('');
+      expect(backend.backendType).toBe(BackendType.AGENT_PLATFORM);
+      expect(backend.location).toBe(DEFAULT_LOCATION);
+    });
+
+    it('uses default location if location is null', () => {
+      const backend = new AgentPlatformBackend(null as any);
+      expect(backend.backendType).toBe(BackendType.AGENT_PLATFORM);
+      expect(backend.location).toBe(DEFAULT_LOCATION);
+    });
+
+    it('builds model and template paths with location', () => {
+      const backend = new AgentPlatformBackend('europe-west1');
+      expect(backend._getModelPath('my-project', 'models/gemini')).toBe(
+        '/v1beta/projects/my-project/locations/europe-west1/models/gemini',
+      );
+      expect(backend._getTemplatePath('my-project', 'tmpl')).toBe(
+        '/v1beta/projects/my-project/locations/europe-west1/templates/tmpl',
+      );
+    });
   });
 
   describe('VertexAIBackend', () => {
     it('should set backendType to VERTEX_AI', () => {
       const backend = new VertexAIBackend();
       expect(backend.backendType).toBe(BackendType.VERTEX_AI);
-      expect(backend.location).toBe(DEFAULT_LOCATION);
+      expect(backend.location).toBe(LEGACY_DEFAULT_LOCATION);
     });
 
     it('should set a custom location', () => {
@@ -43,13 +89,23 @@ describe('Backend', () => {
     it('should use a default location if location is empty string', () => {
       const backend = new VertexAIBackend('');
       expect(backend.backendType).toBe(BackendType.VERTEX_AI);
-      expect(backend.location).toBe(DEFAULT_LOCATION);
+      expect(backend.location).toBe(LEGACY_DEFAULT_LOCATION);
     });
 
     it('uses default location if location is null', () => {
       const backend = new VertexAIBackend(null as any);
       expect(backend.backendType).toBe(BackendType.VERTEX_AI);
-      expect(backend.location).toBe(DEFAULT_LOCATION);
+      expect(backend.location).toBe(LEGACY_DEFAULT_LOCATION);
+    });
+
+    it('builds model and template paths with location', () => {
+      const backend = new VertexAIBackend('europe-west1');
+      expect(backend._getModelPath('my-project', 'models/gemini')).toBe(
+        '/v1beta/projects/my-project/locations/europe-west1/models/gemini',
+      );
+      expect(backend._getTemplatePath('my-project', 'tmpl')).toBe(
+        '/v1beta/projects/my-project/locations/europe-west1/templates/tmpl',
+      );
     });
   });
 });

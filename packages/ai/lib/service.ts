@@ -19,7 +19,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { AI, Backend } from './public-types';
 import type { Auth } from '@react-native-firebase/auth';
 import type { AppCheck } from '@react-native-firebase/app-check';
-import { VertexAIBackend } from './backend';
+import { AgentPlatformBackend, VertexAIBackend } from './backend';
 
 export class AIService implements AI {
   auth: Auth | null;
@@ -34,7 +34,7 @@ export class AIService implements AI {
   ) {
     this.auth = auth || null;
     this.appCheck = appCheck || null;
-    if (backend instanceof VertexAIBackend) {
+    if (backend instanceof VertexAIBackend || backend instanceof AgentPlatformBackend) {
       this.location = backend.location;
     } else {
       this.location = '';

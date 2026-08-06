@@ -19,7 +19,9 @@ import { version } from './version';
 
 export const AI_TYPE = 'AI';
 
-export const DEFAULT_LOCATION = 'us-central1';
+export const LEGACY_DEFAULT_LOCATION = 'us-central1';
+
+export const DEFAULT_LOCATION = 'global';
 
 export const DEFAULT_DOMAIN = 'firebasevertexai.googleapis.com';
 
