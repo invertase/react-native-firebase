@@ -3,7 +3,7 @@ type: Reference
 title: iOS SPM native integration decisions
 description: Why RNFB uses dual imports, Objective-C helpers for Swift Firebase products, and an app framework-embedding phase.
 tags: [ios, spm, cocoapods, imports, firebase, cxx-modules]
-timestamp: 2026-08-06T16:00:00Z
+timestamp: 2026-08-05T11:48:00Z
 ---
 
 # iOS SPM native integration decisions
@@ -213,46 +213,6 @@ Do **not** reintroduce comments or docs that claim firebase-ios-sdk products
 use `.library(type: .dynamic)`. That claim is false and misled debugging of
 the multi-pod sharing failure.
 
-## App target FirebaseCore link: package dependency alone is not enough
-
-`rnfirebase_add_spm_core_to_app_target` exists for the case in the table above
-where the app's own native code (not just a pod) calls `FIRApp`/`FIROptions`
-APIs directly, most commonly Expo's config plugin injecting
-`[FIRApp configure];` into the generated `AppDelegate`. Declaring the
-`FirebaseCore` product on `target.package_product_dependencies` is necessary
-but not sufficient: Xcode only actually links a Swift package product into a
-target's binary if a matching `PBXBuildFile` (with `product_ref` pointing at
-that dependency) also exists on the target's `PBXFrameworksBuildPhase`. A
-dependency declared without that build file compiles (the app target can see
-the product's headers/module) but fails at the link step:
-
-```text
-Undefined symbols for architecture arm64: "_OBJC_CLASS_$_FIRApp"
-```
-
-This shipped for a period without the `PBXBuildFile` step, so every dynamic
-SPM app whose own target called Firebase APIs directly hit this at link time,
-while apps that only reached Firebase through a pod (no direct `FIRApp` call
-in app code) never noticed, since a pod target's `PBXFrameworksBuildPhase`
-already gets a matching build file via SPM's own attach path. Tracked from
-GitHub [#9158](https://github.com/invertase/react-native-firebase/issues/9158)
-/ Linear CPRN-301.
-
-### Idempotency guard must distinguish "declared" from "linked"
-
-`rnfirebase_add_spm_core_to_app_target` runs on every `pod install`, so its
-early-exit guard must be re-entrant. A guard that only checks
-"does `package_product_dependencies` already contain `FirebaseCore`" is not
-enough once the fix adds a second, independent artifact (the `PBXBuildFile`):
-a project built by a pre-fix RNFB version already has the dependency declared
-but never the build file, and a naive existence-only guard would treat that
-broken state as done and skip forever, silently never healing an existing
-consumer's checked-in `.pbxproj`. The guard must check both artifacts and,
-when the dependency exists but the build file doesn't, reuse the existing
-dependency object (do not create a second `package_product_dependencies`
-entry, and do not create a second `package_references` entry either) and add
-only the missing build file.
-
 ## Runtime framework embedding
 
 React Native's `spm_dependency` integration attaches SPM products to pod
@@ -395,12 +355,6 @@ invariants:
 - no private/transitive Firebase target added as if it were a public product;
 - SPM mode still adds exactly one app framework-embedding phase and CocoaPods
   mode does not require it;
-- `rnfirebase_add_spm_core_to_app_target`'s guard still checks for a matching
-  `PBXBuildFile`/`product_ref` on the Frameworks build phase, not just a
-  `package_product_dependencies` entry, so it self-heals a pre-fix
-  consumer's checked-in `.pbxproj` instead of treating a declared-but-unlinked
-  dependency as already done; and `rnfirebase_remove_spm_core_from_app_target`
-  removes both artifacts symmetrically;
 - `embed_frameworks_from`'s Archive `UninstalledProducts` path still skips
   frameworks whose internal binary is missing or not `dynamically linked`
   (`file -b`), so static CocoaPods products are never copied into the app

@@ -200,44 +200,6 @@ if RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE
       refute Xcodeproj::Project::Object::PBXLegacyTarget.method_defined?(:package_product_dependencies)
     end
 
-    # ── Xcodeproj::Project::Object::PBXBuildFile / PBXNativeTarget#frameworks_build_phase
-    #    (the exact API rnfirebase_add_spm_core_to_app_target relies on to
-    #    actually *link* a package product dependency, not just declare one --
-    #    see MockFrameworksBuildPhase/PBXBuildFile-under-Xcodeproj in
-    #    firebase_spm_test.rb, and this bug class's own regression test there) ──
-
-    def test_native_target_responds_to_frameworks_build_phase
-      assert Xcodeproj::Project::Object::PBXNativeTarget.method_defined?(:frameworks_build_phase),
-             'Xcodeproj::Project::Object::PBXNativeTarget#frameworks_build_phase no longer exists -- ' \
-             'rnfirebase_add_spm_core_to_app_target relies on this to find-or-create the target\'s ' \
-             'PBXFrameworksBuildPhase and actually link FirebaseCore, not just declare it as a dependency.'
-    end
-
-    def test_build_file_responds_to_product_ref
-      assert Xcodeproj::Project::Object::PBXBuildFile.method_defined?(:product_ref),
-             'Xcodeproj::Project::Object::PBXBuildFile#product_ref no longer exists -- ' \
-             'rnfirebase_add_spm_core_to_app_target sets this (not file_ref, which is for plain file ' \
-             'references) to link a Swift Package product dependency into the Frameworks build phase.'
-    end
-
-    def test_build_file_added_to_frameworks_build_phase_links_product_ref
-      project = new_scratch_project
-      target = project.new(Xcodeproj::Project::Object::PBXNativeTarget)
-      pkg = project.new(Xcodeproj::Project::Object::XCRemoteSwiftPackageReference)
-      pkg.repositoryURL = 'https://github.com/firebase/firebase-ios-sdk.git'
-      ref = project.new(Xcodeproj::Project::Object::XCSwiftPackageProductDependency)
-      ref.product_name = 'FirebaseCore'
-      ref.package = pkg
-      target.package_product_dependencies << ref
-
-      build_file = project.new(Xcodeproj::Project::Object::PBXBuildFile)
-      build_file.product_ref = ref
-      target.frameworks_build_phase.files << build_file
-
-      assert_includes target.frameworks_build_phase.files, build_file
-      assert_same ref, target.frameworks_build_phase.files.first.product_ref
-    end
-
     # ── Xcodeproj::Project::Object::XCBuildConfiguration (the element type of
     #    AbstractTarget#build_configurations -- MockBuildConfig's real
     #    counterpart in firebase_spm_test.rb) ──

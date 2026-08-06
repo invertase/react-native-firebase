@@ -726,67 +726,28 @@ def rnfirebase_add_spm_core_to_app_target(installer)
       next unless target.respond_to?(:package_product_dependencies)
       next unless target.respond_to?(:shell_script_build_phases)
       next unless target.shell_script_build_phases.any? { |phase| phase.name == '[CP] Embed Pods Frameworks' }
+      next if target.package_product_dependencies.any? { |dep| dep.product_name == 'FirebaseCore' }
 
-      # A `FirebaseCore` product dependency already being declared on the
-      # target does *not* by itself mean this target is a genuine no-op:
-      # a pre-fix RNFB version could have committed that dependency into
-      # the consumer's `.pbxproj` without ever linking it (see the
-      # PBXBuildFile comment below) -- that's the exact broken state #9158
-      # reports, and it's already sitting in every affected consumer's
-      # project today. So checking `package_product_dependencies` alone
-      # can't tell that already-affected state apart from a healthy,
-      # already-linked one -- it has to check the build phase itself.
-      existing_ref = target.package_product_dependencies.find { |dep| dep.product_name == 'FirebaseCore' }
-      if existing_ref
-        next if target.frameworks_build_phase.files.any? { |bf| bf.product_ref == existing_ref }
-
-        # Healing path: reuse the dependency (and its package reference)
-        # that's already declared -- only the link (PBXBuildFile) is
-        # missing, so don't create a duplicate dependency/package reference.
-        ref = existing_ref
-      else
-        pkg = project.root_object.package_references.find do |candidate|
-          candidate.instance_of?(pkg_class) && candidate.repositoryURL == RNFirebaseSPM.url
-        end
-        unless pkg
-          pkg = project.new(pkg_class)
-          pkg.repositoryURL = RNFirebaseSPM.url
-          pkg.requirement = { kind: 'upToNextMajorVersion', minimumVersion: RNFirebaseSPM.version }
-          project.root_object.package_references << pkg
-        end
-
-        ref = project.new(ref_class)
-        ref.package = pkg
-        ref.product_name = 'FirebaseCore'
-        target.package_product_dependencies << ref
+      pkg = project.root_object.package_references.find do |candidate|
+        candidate.instance_of?(pkg_class) && candidate.repositoryURL == RNFirebaseSPM.url
+      end
+      unless pkg
+        pkg = project.new(pkg_class)
+        pkg.repositoryURL = RNFirebaseSPM.url
+        pkg.requirement = { kind: 'upToNextMajorVersion', minimumVersion: RNFirebaseSPM.version }
+        project.root_object.package_references << pkg
       end
 
       if defined?(Pod::UI)
-        message = if existing_ref
-                    'Repairing FirebaseCore SPM link on the app target (dependency was already declared but ' \
-                      'never linked) so native code that calls FIRApp/FIROptions APIs directly can resolve ' \
-                      'those symbols.'
-                  else
-                    'Linking FirebaseCore directly into the app target (SPM) so native code that calls ' \
-                      'FIRApp/FIROptions APIs directly can resolve those symbols.'
-                  end
-        Pod::UI.puts "[react-native-firebase] #{target.name}: ".yellow + message
+        Pod::UI.puts "[react-native-firebase] #{target.name}: ".yellow +
+                     'Linking FirebaseCore directly into the app target (SPM) so native code that calls ' \
+                     'FIRApp/FIROptions APIs directly can resolve those symbols.'
       end
 
-      # Declaring the product dependency (above, or in a prior install for
-      # the healing path) only tells Xcode the target *depends* on it -- it
-      # doesn't actually link it. Linking a package product (same as
-      # CocoaPods pod dependencies, and the same as adding
-      # one via Xcode's own "Frameworks, Libraries, and Embedded Content" UI)
-      # requires a matching PBXBuildFile, with its product_ref pointed at
-      # this same dependency, in the target's Frameworks build phase. Without
-      # this, the app fails at the link step with "Undefined symbols ...
-      # _OBJC_CLASS_$_FIRApp" for any native code that calls FIRApp/FIROptions
-      # directly (e.g. Expo's generated AppDelegate) -- even though `pod
-      # install` itself appears to succeed.
-      build_file = project.new(Xcodeproj::Project::Object::PBXBuildFile)
-      build_file.product_ref = ref
-      target.frameworks_build_phase.files << build_file
+      ref = project.new(ref_class)
+      ref.package = pkg
+      ref.product_name = 'FirebaseCore'
+      target.package_product_dependencies << ref
 
       target.build_configurations.each do |config|
         build_settings = target.build_settings(config.name)
@@ -859,11 +820,6 @@ def rnfirebase_remove_spm_core_from_app_target(installer)
 
       stale_refs.each do |ref|
         target.package_product_dependencies.delete(ref)
-        # `ref.remove_from_project` below only nils out the matching PBXBuildFile's
-        # product_ref -- it doesn't remove the now-empty PBXBuildFile itself from the
-        # Frameworks build phase -- so look it up first, while product_ref is still set.
-        stale_build_file = target.frameworks_build_phase.files.find { |file| file.product_ref == ref }
-        target.frameworks_build_phase.files.delete(stale_build_file) if stale_build_file
         ref.remove_from_project
       end
       project_modified = true
