@@ -44,14 +44,11 @@ If you are instead manually adjusting your Android and iOS projects (this is not
 
 To enable Firebase on the native Android and iOS platforms, create and download Service Account files for each platform from your Firebase project. Then provide paths to the downloaded `google-services.json` and `GoogleService-Info.plist` files in the following `app.json` fields: [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile). See the example configuration below.
 
-For iOS only, since `firebase-ios-sdk` requires `use_frameworks` then you want to configure [`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) `app.json` by adding `"useFrameworks": "static"`. See the example configuration below.
+For iOS, React Native Firebase resolves the Firebase Apple SDK with [Swift Package Manager by default](/ios-spm) on React Native 0.75+. SPM requires dynamic frameworks — configure [`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) with `"useFrameworks": "dynamic"`. See the example configuration below.
 
 The following is an example `app.json` to enable the React Native Firebase modules App, Auth and Crashlytics, that specifies the Service Account files for both mobile platforms, and that sets the application ID to the example value of `com.mycorp.myapp` (change to match your own).
 
 You will need to add a plugin entry for each react-native-firebase module you use that defines an Expo config plugin - these are documented on the specific module install pages.
-
-You must add every single react-native-firebase module you use to the `forceStaticLinking` - this allows the iOS build to work with the new react-native
-"prebuilt core" system in react-native 0.84+ and Expo 54+.
 
 ```json
 {
@@ -72,19 +69,7 @@ You must add every single react-native-firebase module you use to the `forceStat
         "expo-build-properties",
         {
           "ios": {
-            "useFrameworks": "static",
-            "forceStaticLinking": [
-              "RNFBAnalytics",
-              "RNFBApp",
-              "RNFBAppCheck",
-              "RNFBAuth",
-              "RNFBCrashlytics",
-              "RNFBFirestore",
-              "RNFBMessaging",
-              "RNFBRemoteConfig",
-              "RNFBStorage",
-              "RNFBSomeOtherRNFBModuleYouAreUsing"
-            ]
+            "useFrameworks": "dynamic"
           }
         }
       ]
@@ -111,17 +96,41 @@ If you use `@react-native-firebase/analytics` with Expo, including EAS Build, an
 
 The `withoutAdIdSupport` option adds `$RNFirebaseAnalyticsWithoutAdIdSupport = true` to opt out of iOS Ad ID support. The `googleAppMeasurementOnDeviceConversion` option adds `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true` to include Google Analytics on-device conversion measurement support. You may omit either option if it is not needed.
 
-If you want to opt out of Swift Package Manager for the Firebase iOS SDK and use CocoaPods instead, pass the `disableSPM` option to the `@react-native-firebase/app` config plugin. It adds `$RNFirebaseDisableSPM = true` to the generated Podfile during prebuild - see [iOS SPM Support](/ios-spm) for details:
+#### CocoaPods / static frameworks (opt-out)
+
+Do **not** combine RNFB's default SPM mode with static frameworks. To use CocoaPods instead of SPM (for example when you need static linkage, or to share one `FirebaseCore` with another native pod), pass `disableSPM: true` to the `@react-native-firebase/app` config plugin and set `"useFrameworks": "static"`. With React Native 0.84+ / Expo 54+ prebuilt core, list every RNFB native module you use in `forceStaticLinking`. See [iOS SPM Support](/ios-spm) for details:
 
 ```json
-[
-  "@react-native-firebase/app",
-  {
-    "ios": {
-      "disableSPM": true
-    }
+{
+  "expo": {
+    "plugins": [
+      [
+        "@react-native-firebase/app",
+        {
+          "ios": {
+            "disableSPM": true
+          }
+        }
+      ],
+      "@react-native-firebase/auth",
+      "@react-native-firebase/crashlytics",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static",
+            "forceStaticLinking": [
+              "RNFBApp",
+              "RNFBAuth",
+              "RNFBCrashlytics",
+              "RNFBSomeOtherRNFBModuleYouAreUsing"
+            ]
+          }
+        }
+      ]
+    ]
   }
-]
+}
 ```
 
 ### Local app compilation
@@ -266,26 +275,30 @@ Within your existing `didFinishLaunchingWithOptions` method, add the following t
 
 #### Altering CocoaPods to use frameworks
 
-Beginning with firebase-ios-sdk v9+ (react-native-firebase v15+) you must tell CocoaPods to use frameworks.
+Beginning with firebase-ios-sdk v9+ (react-native-firebase v15+) you must tell CocoaPods to use frameworks. On React Native 0.75+, React Native Firebase resolves the Firebase Apple SDK with [Swift Package Manager by default](/ios-spm), which **requires dynamic linkage**.
 
 Open the file `./ios/Podfile` and add this line inside your targets (right before the `use_react_native` line in current react-native releases that calls the react native Podfile function to get the native modules config):
 
 ```ruby
-use_frameworks! :linkage => :static
+use_frameworks! :linkage => :dynamic
 ```
 
-To use Static Frameworks on iOS, you also need to manually enable this for the project with the following global to your `/ios/Podfile` file:
+Do **not** combine RNFB's default SPM mode with `use_frameworks! :linkage => :static` — `pod install` rejects that combination. Full requirements, Expo notes, and troubleshooting are in [iOS SPM Support](/ios-spm).
+
+##### CocoaPods / static frameworks (opt-out)
+
+To opt out of SPM and use CocoaPods for Firebase (for example when you need static linkage, or to share one `FirebaseCore` with another native pod), set `$RNFirebaseDisableSPM = true` **before** any target block, then configure static frameworks:
 
 ```ruby
-# right after `use_frameworks! :linkage => :static`
+# before any target block
+$RNFirebaseDisableSPM = true
+
+# inside your app target, before use_react_native!
+use_frameworks! :linkage => :static
 $RNFirebaseAsStaticFramework = true
 ```
 
-> Notes: React-Native-Firebase uses `use_frameworks`, which has compatibility issues with Flipper & Fabric.
->
-> **Flipper:** `use_frameworks` [is _not_ compatible with Flipper](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). You must disable Flipper by commenting out the `:flipper_configuration` line in your Podfile. Flipper is deprecated in the react-native community and this will not be fixed - Flipper and react-native-firebase will never work together on iOS.
->
-> **New Architecture:** Fabric is partially compatible with `use_frameworks!`. If you enable the bridged / compatibility mode, react-native-firebase will compile correctly and be usable.
+> **Note:** `use_frameworks` is [not compatible with Flipper](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). Flipper is deprecated in the React Native community; if your Podfile still references `:flipper_configuration`, remove or comment it out.
 
 ### 4. Autolinking & rebuilding
 
