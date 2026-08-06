@@ -19,14 +19,12 @@ import { AIErrorCode, ErrorDetails, SingleRequestOptions } from '../types';
 import { AIError } from '../errors';
 import { ApiSettings } from '../types/internal';
 import {
-  DEFAULT_API_VERSION,
   DEFAULT_DOMAIN,
   DEFAULT_FETCH_TIMEOUT_MS,
   LANGUAGE_TAG,
   PACKAGE_VERSION,
 } from '../constants';
 import { logger } from '../logger';
-import { GoogleAIBackend, VertexAIBackend } from '../backend';
 import { BackendType } from '../public-types';
 
 export enum Task {
@@ -75,7 +73,7 @@ export class RequestUrl {
       baseUrl = baseUrl.slice(0, -1);
     }
 
-    const pathname = `/${this.apiVersion}/${this.modelPath}:${this.task}`;
+    const pathname = `${this.apiSettings.backend._getModelPath(this.apiSettings.project, this.model)}:${this.task}`;
     const queryString = this.queryParams;
 
     return `${baseUrl}${pathname}${queryString ? `?${queryString}` : ''}`;
@@ -83,23 +81,6 @@ export class RequestUrl {
 
   private get baseUrl(): string {
     return this.requestOptions?.baseUrl || `https://${DEFAULT_DOMAIN}`;
-  }
-
-  private get apiVersion(): string {
-    return DEFAULT_API_VERSION;
-  }
-
-  private get modelPath(): string {
-    if (this.apiSettings.backend instanceof GoogleAIBackend) {
-      return `projects/${this.apiSettings.project}/${this.model}`;
-    } else if (this.apiSettings.backend instanceof VertexAIBackend) {
-      return `projects/${this.apiSettings.project}/locations/${this.apiSettings.backend.location}/${this.model}`;
-    } else {
-      throw new AIError(
-        AIErrorCode.ERROR,
-        `Invalid backend: ${JSON.stringify(this.apiSettings.backend)}`,
-      );
-    }
   }
 
   private get queryParams(): string {

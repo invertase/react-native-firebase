@@ -17,7 +17,7 @@
 
 import './polyfills';
 import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
-import { Backend, GoogleAIBackend, VertexAIBackend } from './backend';
+import { AgentPlatformBackend, Backend, GoogleAIBackend, VertexAIBackend } from './backend';
 import { AIErrorCode, LiveModelParams, ModelParams, RequestOptions } from './types';
 import { AI, AIOptions, ImagenModelParams } from './public-types';
 import { AIError } from './errors';
@@ -36,7 +36,7 @@ export { ChatSession, ChatSessionBase, TemplateChatSession } from './methods/cha
 export { LiveSession } from './methods/live-session';
 export * from './requests/schema-builder';
 export { ImagenImageFormat } from './requests/imagen-image-format';
-export { Backend, GoogleAIBackend, VertexAIBackend } from './backend';
+export { Backend, GoogleAIBackend, VertexAIBackend, AgentPlatformBackend } from './backend';
 export {
   GenerativeModel,
   AIError,
@@ -65,8 +65,8 @@ export {
  *
  * @example
  * ```javascript
- * // Get an AI instance configured to use the Vertex AI Gemini API.
- * const ai = getAI(app, { backend: new VertexAIBackend() });
+ * // Get an AI instance configured to use the Agent Platform Gemini API.
+ * const ai = getAI(app, { backend: new AgentPlatformBackend() });
  * ```
  *
  * @param app - The {@link @firebase/app!FirebaseApp} to use.
@@ -84,11 +84,16 @@ export function getAI(app: ReactNativeFirebase.FirebaseApp = getApp(), options?:
     auth: options?.auth || null,
   };
 
+  const location =
+    backend instanceof VertexAIBackend || backend instanceof AgentPlatformBackend
+      ? backend.location
+      : '';
+
   return {
     app,
     backend,
     options: finalOptions,
-    location: (backend as VertexAIBackend)?.location || '',
+    location,
     appCheck: options?.appCheck || null,
     auth: options?.auth || null,
   } as AI;

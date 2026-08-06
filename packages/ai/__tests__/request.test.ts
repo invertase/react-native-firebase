@@ -21,7 +21,7 @@ import { DEFAULT_API_VERSION } from '../lib/constants';
 import { AIErrorCode } from '../lib/types';
 import { AIError } from '../lib/errors';
 import { BackendName, getMockResponse } from './test-utils/mock-response';
-import { VertexAIBackend } from '../lib/backend';
+import { AgentPlatformBackend, VertexAIBackend } from '../lib/backend';
 
 const fakeApiSettings: ApiSettings = {
   apiKey: 'key',
@@ -29,6 +29,14 @@ const fakeApiSettings: ApiSettings = {
   appId: 'my-appid',
   location: 'us-central1',
   backend: new VertexAIBackend(),
+};
+
+const fakeAgentPlatformApiSettings: ApiSettings = {
+  apiKey: 'key',
+  project: 'my-project',
+  appId: 'my-appid',
+  location: 'global',
+  backend: new AgentPlatformBackend(),
 };
 
 function createAbortErrorForTest(reason?: unknown): Error {
@@ -85,6 +93,30 @@ describe('request methods', () => {
         {},
       );
       expect(url.toString()).toContain(DEFAULT_API_VERSION);
+    });
+
+    it('AgentPlatformBackend uses global location by default', async () => {
+      const url = new RequestUrl(
+        'models/model-name',
+        Task.GENERATE_CONTENT,
+        fakeAgentPlatformApiSettings,
+        false,
+        {},
+      );
+      const urlStr = url.toString();
+      expect(urlStr).toContain('locations/global');
+      expect(urlStr).toContain(fakeAgentPlatformApiSettings.project);
+      expect(urlStr).toContain('models/model-name:generateContent');
+    });
+
+    it('AgentPlatformBackend uses custom location', async () => {
+      const settings: ApiSettings = {
+        ...fakeAgentPlatformApiSettings,
+        location: 'europe-west1',
+        backend: new AgentPlatformBackend('europe-west1'),
+      };
+      const url = new RequestUrl('models/model-name', Task.GENERATE_CONTENT, settings, false, {});
+      expect(url.toString()).toContain('locations/europe-west1');
     });
 
     it('custom baseUrl', async () => {
