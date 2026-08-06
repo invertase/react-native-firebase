@@ -2,10 +2,6 @@
 
 Knowledge for the Firebase AI Logic modular package (`getAI`, backends, generative models).
 
-## Documents
-
-* [Agent Platform rename work queue](agent-platform-rename-work-queue.md) — ephemeral gates for CPRN-293 (`VertexAIBackend` → `AgentPlatformBackend`)
-
 ## Related repository files
 
 * [`packages/ai/lib/backend.ts`](../../../packages/ai/lib/backend.ts) — `GoogleAIBackend`, `VertexAIBackend` (deprecated), `AgentPlatformBackend`
