@@ -45,6 +45,7 @@ yarn tests:emulator:start
 3. **Rebuild when needed**
    - **Before any native `:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) — root `yarn` exit 0 + fmt podspec **≥ 12.1.0**. Missing this gate → Apple Clang 21 consteval failures on unpatched fmt **11.0.2**.
    - Native changed → `yarn tests:ios:build` / `yarn tests:android:build` before e2e. macOS uses firebase-js-sdk only — no native rebuild.
+   - **Committed codegen / generated native artifacts count as native** — any change under `packages/*/ios/generated/**` or `packages/*/android/**/generated/**` (including wipe-then-regen orphan deletions), or TurboModule **codegen / spec / podspec / native shell**, is a native change: rebuild + [platform coverage](#platform-coverage-gate-blocking) e2e on iOS and Android. **`yarn codegen:verify` is not a substitute** for `:test-cover` ([change authoring § forbidden shortcuts](change-authoring-workflow.md#forbidden-shortcuts)).
    - `packages/*/lib/**` changed → **`yarn lerna:prepare` must run to completion (exit 0) before anything else** — Metro serves `dist/module/**`, not `lib/**`. See [prepare completion gate](#prepare-completion-gate-blocking) and [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first). After prepare finishes, restart the packager with `yarn tests:packager:jet-reset-cache` when Metro was already running ([Rules §1](#rules)).
    - TurboModule **codegen / spec / podspec / native shell** changed → same as native changed, plus regen codegen ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)) when specs changed; if app loads with Metro redbox `Requiring unknown module "undefined"`, see [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
    - **JS bundle (debug):** all platforms (iOS, Android, macOS) load JS from Metro; only **release** builds pre-bundle/embed JS. `lib/**` edits alone do not require `:build` — use the [prepare completion gate](#prepare-completion-gate-blocking) and Metro restart above.
@@ -242,9 +243,31 @@ curl -sf http://127.0.0.1:8080 >/dev/null          # Firestore emulator
 test -n "$(lsof -nP -iTCP:5001 -sTCP:LISTEN -t 2>/dev/null || true)"   # Functions emulator — listener only
 ```
 
-If Metro or Firestore checks fail: start `yarn tests:packager:jet` and `yarn tests:emulator:start` (background); re-check until both pass. After **`yarn lerna:prepare` has finished** (step [0](#prepare-completion-gate-blocking)) or test-runner patch edits, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)) — never restart Metro while prepare is still running.
+If Metro or Firestore checks fail: start `yarn tests:packager:jet` and `yarn tests:emulator:start` (background) from **this checkout's repo root**; re-check until both pass. After **`yarn lerna:prepare` has finished** (step [0](#prepare-completion-gate-blocking)) or test-runner patch edits, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)) — never restart Metro while prepare is still running.
 
 A listener on `:8081`, `:8080`, or `:5001` alone is **not** sufficient for Metro/Firestore — their HTTP checks must succeed. **Functions (`:5001`):** verify the listener is up; `curl -sf http://127.0.0.1:5001/` exits non-zero because the root path returns **404** — that is expected and **not** a service failure (do not treat it like the Metro/Firestore gates).
+
+<a id="services-checkout-ownership-blocking"></a>
+
+**Checkout ownership (blocking on multi-worktree hosts)** — HTTP/port checks can pass while Metro or Firebase emulators belong to a **different** RNFB worktree (shared `:8081` / `:8080` / `:5001` / `:9099`). That is **not** services-ready for this checkout.
+
+After the curls above succeed, verify listener **cwd** paths are under **this** repo root (`$REPO_ROOT`):
+
+```bash
+# REPO_ROOT = absolute path to this worktree (pwd at monorepo root)
+listen_cwd() { # usage: listen_cwd <port>
+  local pid
+  pid="$(lsof -nP -iTCP:"$1" -sTCP:LISTEN -t 2>/dev/null | head -1)"
+  test -n "$pid" || return 1
+  lsof -a -p "$pid" -d cwd 2>/dev/null | awk '/cwd/ {print $NF; exit}'
+}
+metro_cwd="$(listen_cwd 8081)"
+fs_cwd="$(listen_cwd 8080)"
+case "$metro_cwd" in "$REPO_ROOT"|"$REPO_ROOT"/*) ;; *) echo "Metro cwd not this checkout: $metro_cwd"; false ;; esac
+case "$fs_cwd" in "$REPO_ROOT"|"$REPO_ROOT"/*) ;; *) echo "Firestore emulator cwd not this checkout: $fs_cwd"; false ;; esac
+```
+
+Expected shapes when started via this checkout's `yarn tests:*`: Metro cwd ends with `/tests`; Firestore/Auth/Functions cwd ends with `/.github/workflows/scripts`. If ownership fails: stop the foreign listeners (or finish that worktree's run), then start `yarn tests:packager:jet` and `yarn tests:emulator:start` from **this** `$REPO_ROOT` and re-check curls **and** cwd. Do not proceed to `:test-cover` on a foreign-owned stack.
 
 #### 3. Harness matches validation tier
 
@@ -317,6 +340,8 @@ Determine required platforms from committed [`tests/app.js`](../../tests/app.js)
 - “macOS + iOS minimum”; skipping **Android** when the module loads on Android.
 - “Skip Android if time tight” or “Android fallback only if iOS failures look env-related” without a fresh Android run.
 - Substituting a prior implementer log for `independent-review` on the frozen tree.
+- Treating **`yarn codegen:verify`** (or scripts/OKF-only Jest) as enough when `packages/*/ios/generated/**`, `packages/*/android/**/generated/**`, native shells, podspecs, or specs changed — those still need iOS + Android `:test-cover` ([Rules §3](#rules)).
+- Closing pre-flight on port/HTTP checks alone when Metro/emulators are owned by another worktree ([checkout ownership](#services-checkout-ownership-blocking)).
 
 **Module-specific skip:** only when the module is **absent** from that platform’s harness list (e.g. `messaging` is not on macOS). Record in the work-queue **Notes** — not an oral exception.
 
