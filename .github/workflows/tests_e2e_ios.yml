@@ -512,7 +512,7 @@ jobs:
 
       # https://github.com/codecov/codecov-action/releases
       - name: Upload Codecov e2e TS (iOS)
-        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         if: contains(matrix.buildmode, 'debug')
         continue-on-error: true
         with:
@@ -522,7 +522,7 @@ jobs:
           verbose: true
 
       - name: Upload Codecov iOS native
-        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         if: contains(matrix.buildmode, 'debug')
         continue-on-error: true
         with:
@@ -532,7 +532,7 @@ jobs:
           verbose: true
 
       - name: Upload Codecov iOS Ruby
-        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
         continue-on-error: true
         with:
