@@ -36,10 +36,16 @@ Durable architectural decisions are owned by **[architecture-decisions.md](archi
 | [NewArch-AD-13](architecture-decisions.md#newarch-ad-13--test-harness-committed-defaults--gitignored-local-overrides--accepted) | Harness: committed defaults + gitignored overrides |
 | [NewArch-AD-14](architecture-decisions.md#newarch-ad-14--native-module-wrapper-memoizing-lazy-proxy--accepted) | Memoizing lazy Proxy wrapper (+ NewArch-AD-14a composite) |
 | [NewArch-AD-15](architecture-decisions.md#newarch-ad-15--constant-memoization-scope-static-only--accepted) | Memoize static constants only; dynamic → method |
+| [NewArch-AD-17](architecture-decisions.md#newarch-ad-17--spec-contract--parity-tests--accepted) | Spec contract + parity tests (umbrella) |
+| [NewArch-AD-17.1](architecture-decisions.md#newarch-ad-171--jest-turbomodule-contract-test--accepted) | Jest TurboModule wrapper contract test |
+| [NewArch-AD-17.2](architecture-decisions.md#newarch-ad-172--spec-native-parity-test--accepted) | Spec↔native parity test |
+| [NewArch-AD-17.3](architecture-decisions.md#newarch-ad-173--codegen-verify-ci--accepted) | `yarn codegen:verify` CI (wipe-then-regen + diff) |
 | [NewArch-AD-18](architecture-decisions.md#newarch-ad-18--raw-vs-wrapped-resolver-policy--accepted) | Raw vs wrapped resolver policy |
 | [NewArch-AD-19](architecture-decisions.md#newarch-ad-19--turbomodule-methodqueue-policy--accepted) | No `methodQueue` override by default |
 | [NewArch-AD-13a](architecture-decisions.md#newarch-ad-13a--optional-overrides-need-a-resolver-stub-metro-dependency-map-integrity--accepted) | Harness overrides: Metro resolver stub when local file absent |
 | [NewArch-AD-20](architecture-decisions.md#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted) | Pin RN/Codegen toolchain to app RN; RN bump = coordinated break |
+| [NewArch-AD-21](architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted) | Interim iOS `ResultT` inject after 0.78 iOS codegen |
+| [NewArch-AD-22](architecture-decisions.md#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted) | Codegen wipe-then-regen on configured `outputPath` |
 
 Implementation steps, harness, and commit rules: [turbomodule implementation workflow](turbomodule-implementation-workflow.md) — do not restate here.
 

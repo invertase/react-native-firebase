@@ -88,9 +88,9 @@ The New Architecture commits generated native code (CMake files, podspecs, JSI/s
 
 1. **Bump the app RN and the pins together.** Update `tests/package.json` (`react-native`, `react-native-macos`) **and** the root `package.json` `resolutions` (`react-native`, `@react-native/codegen`, `@react-native-community/cli`) to the new line. Keep them equal — never let the root/codegen toolchain float ahead of the app (`latest`, `*`, `^x.y` are forbidden for the RN toolchain). Individual packages must not declare their own `react-native` devDependency.
 2. `yarn install` and verify no stray RN versions remain: `node -e "console.log(require('react-native/package.json').version)"` at the repo root and in `tests/` should both report the new version; `rg 'react-native@npm:' yarn.lock` should show only the pinned line(s) (plus `react-native-macos`).
-3. **Regenerate all native artifacts:** `yarn codegen:all`, then review the diff — macro/podspec/JSI churn is expected on an RN bump.
+3. **Regenerate all native artifacts:** `yarn codegen:all` (package scripts wipe each configured `--outputPath` then regen — [NewArch-AD-22](okf-bundle/new-architecture/architecture-decisions.md#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)), then review the diff — macro/podspec/JSI churn is expected on an RN bump. After iOS regen outside `codegen:verify`, run `node ./scripts/patch-ios-codegen-resultt.mjs` while on the 0.78 pin ([NewArch-AD-21](okf-bundle/new-architecture/architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted)).
 4. **Rebuild native on both platforms** (iOS + Android) and run the e2e suite; generated changes only take effect after a native rebuild.
-5. `yarn codegen:verify` must pass (it re-runs codegen and fails on any drift). If it flags drift on an unchanged RN, the toolchain is mis-pinned — fix the pins, do not commit the drift.
+5. `yarn codegen:verify` must pass (wipe + regen + ResultT patch, then fails on any drift). If it flags drift on an unchanged RN, the toolchain is mis-pinned — fix the pins, do not commit the drift.
 
 See [NewArch-AD-20](okf-bundle/new-architecture/architecture-decisions.md#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted) for the rationale.
 
