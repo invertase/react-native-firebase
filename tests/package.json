@@ -35,7 +35,7 @@
     "postinstall-postinstall": "2.1.0",
     "prop-types": "^15.8.1",
     "qrcode-generator": "^2.0.4",
-    "react": "19.0.0",
+    "react": "19.2.8",
     "react-native": "0.78.3",
     "react-native-device-info": "^15.0.2",
     "react-native-macos": "0.78.6",
