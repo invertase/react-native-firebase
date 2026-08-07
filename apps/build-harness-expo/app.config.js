@@ -65,32 +65,14 @@ module.exports = ({config}) => {
     plugins: [
       [
         'expo-build-properties',
-        // force static linking  to avoid expo build issues
-        // See: https://github.com/invertase/react-native-firebase/issues/8657
+        // RNFB default iOS install: SPM resolves the Firebase Apple SDK and
+        // requires dynamic frameworks. See: https://rnfirebase.io/ios-spm
         {
           ios: {
-          "forceStaticLinking": [
-            "RNFBApp",
-            "RNFBAnalytics",
-            "RNFBAppCheck",
-            "RNFBAppDistribution",
-            "RNFBAuth",
-            "RNFBCrashlytics",
-            "RNFBDatabase",
-            "RNFBFirestore",
-            "RNFBFunctions",
-            "RNFBInAppMessaging",
-            "RNFBInstallations",
-            "RNFBMessaging",
-            "RNFBML",
-            "RNFBPerf",
-            "RNFBRemoteConfig",
-            "RNFBStorage"
-          ],
-          "useFrameworks": "static",
-          "ccacheEnabled": true
-        }
-      },
+            useFrameworks: 'dynamic',
+            ccacheEnabled: true,
+          },
+        },
       ],
       '@react-native-firebase/app',
       '@react-native-firebase/analytics',
