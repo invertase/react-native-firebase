@@ -70,12 +70,15 @@ usage() {
 Usage: sync-build-harness-expo.sh <command> [options] [-- extra expo args]
 
 Commands:
-  doctor        Show effective defaults, local overrides, and prerequisite status.
-  clean         Remove generated native projects and local build artifacts for the Expo harness.
-  sync          Update harness dependencies, copy Firebase config, and validate Expo config.
-  start         Start the Expo bundler with the workspace plugin resolution path configured.
-  build-ios     Sync the harness, run expo prebuild for iOS, then build with expo run:ios.
-  build-android Sync the harness, run expo prebuild for Android, then build with expo run:android.
+  doctor            Show effective defaults, local overrides, and prerequisite status.
+  clean             Remove generated native projects and local build artifacts for the Expo harness.
+  sync              Update harness dependencies, copy Firebase config, and validate Expo config.
+  start             Start the Expo bundler with the workspace plugin resolution path configured.
+  build-ios         Sync the harness, run expo prebuild for iOS, then build with expo run:ios.
+  build-android     Sync the harness, run expo prebuild for Android, then build with expo run:android.
+  prebuild-ios      Run expo prebuild for iOS only (assumes sync already ran).
+  build-ios-debug   Build the already-prebuilt iOS project (Debug) with xcodebuild; no simulator install/launch.
+  build-ios-release Build the already-prebuilt iOS project (Release) with xcodebuild; no simulator install/launch.
 
 Options:
   --rnfb-source <workspace|published>
@@ -498,6 +501,26 @@ build_android() {
   )
 }
 
+# Builds the already-prebuilt native iOS project with xcodebuild directly
+# (as opposed to build_ios's `expo run:ios`, which also installs and launches
+# on a booted simulator). Used by CI, where only build success matters and
+# there is no simulator to install/launch on.
+build_ios_xcodebuild() {
+  local configuration="${1:?configuration (Debug or Release) is required}"
+  export_expo_cli_env
+  (
+    cd "${APP_DIR}/ios"
+    xcodebuild \
+      -workspace RNFBExpoHarness.xcworkspace \
+      -scheme RNFBExpoHarness \
+      -configuration "${configuration}" \
+      -sdk iphonesimulator \
+      -destination 'generic/platform=iOS Simulator' \
+      CODE_SIGNING_ALLOWED=NO \
+      build
+  )
+}
+
 case "${COMMAND}" in
   doctor)
     doctor
@@ -516,6 +539,15 @@ case "${COMMAND}" in
     ;;
   build-android)
     build_android
+    ;;
+  prebuild-ios)
+    prebuild_ios
+    ;;
+  build-ios-debug)
+    build_ios_xcodebuild Debug
+    ;;
+  build-ios-release)
+    build_ios_xcodebuild Release
     ;;
   *)
     usage

@@ -80,16 +80,16 @@ jobs:
         run: yarn
 
       - name: Enable latest RN for the Expo harness
-        run: yarn harness:expo:latest-rn:enable
+        run: yarn app:expo:latest-rn:enable
 
       - name: Sync Expo harness
-        run: yarn harness:expo:sync:ios
+        run: yarn app:expo:sync -- --ios-google-services "${IOS_GOOGLE_SERVICES_PATH}" --android-google-services "${ANDROID_GOOGLE_SERVICES_PATH}" --no-yarn-install
 
       - name: Prebuild Expo iOS harness
-        run: yarn harness:expo:prebuild:ios
+        run: yarn app:expo:prebuild:ios
 
       - name: Build Expo iOS harness (Debug)
-        run: yarn harness:expo:build:ios:debug
+        run: yarn app:expo:build:ios:debug
 
       - name: Build Expo iOS harness (Release)
-        run: yarn harness:expo:build:ios:release
+        run: yarn app:expo:build:ios:release
