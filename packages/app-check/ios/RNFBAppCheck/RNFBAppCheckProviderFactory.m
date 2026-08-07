@@ -23,19 +23,18 @@
 - (nullable id<FIRAppCheckProvider>)createProviderWithApp:(FIRApp *)app {
   DLog(@"appName %@", app.name);
 
-  // The SDK may try to call this before we have been configured,
-  // so we will configure ourselves and set the provider up as a default to start
-  // pre-configure
+  // Firebase may call this during FirebaseApp.configure() before JS runs
+  // configureProvider. Install a pending facade only (AppCheck-AD-1).
   if (self.providers == nil) {
     DLog(@"providers dictionary initializing for app %@", app.name);
     self.providers = [NSMutableDictionary new];
   }
 
   if (self.providers[app.name] == nil) {
-    DLog(@"provider initializing (with default to debug) for app %@", app.name);
+    // AppCheck-AD-1 / AD-2: facade only until configureProvider; no real provider
+    // (debug/App Attest/etc.) before JS/native configure. Same path DEBUG and release.
+    DLog(@"provider initializing (pending, no delegate) for app %@", app.name);
     self.providers[app.name] = [RNFBAppCheckProvider new];
-    RNFBAppCheckProvider *provider = self.providers[app.name];
-    [provider configure:app providerName:@"debug" debugToken:nil];
   }
 
   return self.providers[app.name];
@@ -56,6 +55,13 @@
 
   RNFBAppCheckProvider *provider = self.providers[app.name];
   [provider configure:app providerName:providerName debugToken:debugToken];
+}
+
+- (RNFBAppCheckProvider *)providerForApp:(FIRApp *)app {
+  if (app == nil || self.providers == nil) {
+    return nil;
+  }
+  return self.providers[app.name];
 }
 
 @end

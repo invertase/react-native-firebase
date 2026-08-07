@@ -25,6 +25,9 @@
 @import FirebaseAppCheck;
 #endif
 
+// AppCheck-AD-8 locked message (Provider pending error + Module early reject).
+FOUNDATION_EXPORT NSString *const kRNFBAppCheckProviderNotReadyMessage;
+
 @interface RNFBAppCheckProvider : NSObject <FIRAppCheckProvider>
 
 @property FIRApp *app;

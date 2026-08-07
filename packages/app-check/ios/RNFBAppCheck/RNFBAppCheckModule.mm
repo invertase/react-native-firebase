@@ -124,21 +124,62 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAppCheck)
   resolve([NSNumber numberWithBool:isTokenAutoRefreshEnabled]);
 }
 
+// AppCheck-AD-8: map pending fail-closed to provider-not-ready (not token-error).
+// Walk NSUnderlyingErrorKey because FIRAppCheck wraps non-SDK errors via
+// publicDomainErrorWithError: and drops top-level userInfo[@"code"].
+// Locked message: kRNFBAppCheckProviderNotReadyMessage (RNFBAppCheckProvider.h).
+static NSString *RNFBAppCheckRejectCodeForError(NSError *error) {
+  NSError *current = error;
+  while (current != nil) {
+    id code = current.userInfo[@"code"];
+    if ([code isKindOfClass:[NSString class]] && [code isEqualToString:@"provider-not-ready"]) {
+      return @"provider-not-ready";
+    }
+    current = current.userInfo[NSUnderlyingErrorKey];
+    if (![current isKindOfClass:[NSError class]]) {
+      break;
+    }
+  }
+  return @"token-error";
+}
+
+// AppCheck-AD-8 durable path: reject before FIRAppCheck token APIs when the
+// factory-held facade still has a nil delegateProvider (pending / not configured).
+static BOOL RNFBAppCheckRejectIfProviderNotReady(FIRApp *firebaseApp,
+                                                 RCTPromiseRejectBlock reject) {
+  RNFBAppCheckProviderFactory *factory = [RNFBAppCheckModule sharedInstance].providerFactory;
+  RNFBAppCheckProvider *provider = [factory providerForApp:firebaseApp];
+  if (provider != nil && provider.delegateProvider != nil) {
+    return NO;
+  }
+  DLog(@"RNFBAppCheck - provider not ready for app %@ (delegateProvider nil)", firebaseApp.name);
+  [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                    userInfo:(NSMutableDictionary *)@{
+                                      @"code" : @"provider-not-ready",
+                                      @"message" : kRNFBAppCheckProviderNotReadyMessage,
+                                    }];
+  return YES;
+}
+
 - (void)getToken:(NSString *)appName
     forceRefresh:(BOOL)forceRefresh
          resolve:(RCTPromiseResolveBlock)resolve
           reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
-  FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   DLog(@"appName %@", firebaseApp.name);
+  if (RNFBAppCheckRejectIfProviderNotReady(firebaseApp, reject)) {
+    return;
+  }
+  FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   [appCheck
       tokenForcingRefresh:forceRefresh
                completion:^(FIRAppCheckToken *_Nullable token, NSError *_Nullable error) {
                  if (error != nil) {
                    DLog(@"RNFBAppCheck - getToken - Unable to retrieve App Check token: %@", error);
+                   NSString *code = RNFBAppCheckRejectCodeForError(error);
                    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                                      userInfo:(NSMutableDictionary *)@{
-                                                       @"code" : @"token-error",
+                                                       @"code" : code,
                                                        @"message" : [error localizedDescription],
                                                      }];
                    return;
@@ -163,15 +204,19 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAppCheck)
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
-  FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   DLog(@"appName %@", firebaseApp.name);
+  if (RNFBAppCheckRejectIfProviderNotReady(firebaseApp, reject)) {
+    return;
+  }
+  FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   [appCheck limitedUseTokenWithCompletion:^(FIRAppCheckToken *_Nullable token,
                                             NSError *_Nullable error) {
     if (error != nil) {
       DLog(@"RNFBAppCheck - getLimitedUseToken - Unable to retrieve App Check token: %@", error);
+      NSString *code = RNFBAppCheckRejectCodeForError(error);
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                         userInfo:(NSMutableDictionary *)@{
-                                          @"code" : @"token-error",
+                                          @"code" : code,
                                           @"message" : [error localizedDescription],
                                         }];
       return;
