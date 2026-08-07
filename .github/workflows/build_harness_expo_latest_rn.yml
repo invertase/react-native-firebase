@@ -80,6 +80,12 @@ jobs:
         run: yarn
 
       - name: Enable latest RN for the Expo harness
+        # This step deliberately re-resolves react-native/@react-native/codegen/
+        # @types/react off their root pin, which needs to modify yarn.lock. Yarn
+        # auto-enables hardened mode (immutable installs) on public PR runs,
+        # which would otherwise block that: https://yarnpkg.com/features/security#hardened-mode
+        env:
+          YARN_ENABLE_HARDENED_MODE: '0'
         run: yarn app:expo:latest-rn:enable
 
       - name: Sync Expo harness
