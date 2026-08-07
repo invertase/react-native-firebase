@@ -66,16 +66,12 @@ jobs:
       - name: Create CI Firebase config files
         run: bash ./scripts/write-ci-firebase-configs.sh "${IOS_GOOGLE_SERVICES_PATH}" "${ANDROID_GOOGLE_SERVICES_PATH}"
 
-      - name: Cache CocoaPods and specs
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/Library/Caches/CocoaPods
-            ~/.cocoapods/repos
-          key: ${{ runner.os }}-harness-expo-latest-rn-pods-v1-${{ hashFiles('yarn.lock', 'apps/build-harness-expo/package.json', 'apps/build-harness-expo/app.config.js') }}
-          restore-keys: |
-            ${{ runner.os }}-harness-expo-latest-rn-pods-v1-
-
+      # No CocoaPods/yarn caching in this job, deliberately. The "Enable latest
+      # RN" step below disables Yarn's hardened mode and immutable installs,
+      # so packages resolved in this run haven't gone through the usual
+      # upgrade-focused/security-scanned bump process. Caching anything from a
+      # run like that risks a supply-chain-compromised package getting saved
+      # and later reused by another workflow. Don't add a cache step here.
       - name: Yarn install
         run: yarn
 
@@ -85,13 +81,19 @@ jobs:
         # separate Yarn defaults would otherwise block that on CI:
         # - hardened mode auto-enables on public PR runs (https://yarnpkg.com/features/security#hardened-mode)
         # - enableImmutableInstalls defaults to true whenever Yarn detects a CI env
+        # Because this bypasses Yarn's usual lockfile-integrity checks, this
+        # job must never cache anything (see the "No CocoaPods/yarn caching"
+        # note above) so a supply-chain-compromised package can't get cached
+        # here and reused by another workflow.
         env:
           YARN_ENABLE_HARDENED_MODE: '0'
           YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
         run: yarn app:expo:latest-rn:enable
 
       - name: Sync Expo harness
-        run: yarn app:expo:sync -- --ios-google-services "${IOS_GOOGLE_SERVICES_PATH}" --android-google-services "${ANDROID_GOOGLE_SERVICES_PATH}" --no-yarn-install
+        # No "--" here: yarn's own CLI parser swallows a literal "--" token
+        # instead of forwarding it, so args must be appended directly.
+        run: yarn app:expo:sync --ios-google-services "${IOS_GOOGLE_SERVICES_PATH}" --android-google-services "${ANDROID_GOOGLE_SERVICES_PATH}" --no-yarn-install
 
       - name: Prebuild Expo iOS harness
         run: yarn app:expo:prebuild:ios
