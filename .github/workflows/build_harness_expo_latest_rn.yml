@@ -1,0 +1,105 @@
+name: 'Build Harness Expo (Latest RN)'
+
+# Proof of concept: builds the Expo harness (Debug and Release) against
+# apps/build-harness-expo's own declared react-native version instead of the
+# root package.json's repo-wide resolutions pin (see scripts/check-root-rn-pin.mjs
+# and scripts/dev-harness-versions.sh for why that pin normally forces every
+# workspace, including this harness, onto one shared react-native version).
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - '**'
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    name: iOS (Expo, latest RN)
+    runs-on: macos-15
+    timeout-minutes: 80
+    env:
+      # Keep in sync with build_harnesses.yml, which tracks latest-stable
+      # because Firebase iOS SDK updates can require newer Xcode versions.
+      XCODE_VERSION: latest-stable
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      # `runner` is not valid in job-level `env`; set paths in a step so
+      # `${{ runner.temp }}` is evaluated in a context that supports it.
+      - name: Set CI Firebase config paths
+        run: |
+          echo "IOS_GOOGLE_SERVICES_PATH=${{ runner.temp }}/GoogleService-Info.plist" >> "$GITHUB_ENV"
+          echo "ANDROID_GOOGLE_SERVICES_PATH=${{ runner.temp }}/google-services.json" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Create CI Firebase config files
+        run: bash ./scripts/write-ci-firebase-configs.sh "${IOS_GOOGLE_SERVICES_PATH}" "${ANDROID_GOOGLE_SERVICES_PATH}"
+
+      # No CocoaPods/yarn caching in this job, deliberately. The "Enable latest
+      # RN" step below disables Yarn's hardened mode and immutable installs,
+      # so packages resolved in this run haven't gone through the usual
+      # upgrade-focused/security-scanned bump process. Caching anything from a
+      # run like that risks a supply-chain-compromised package getting saved
+      # and later reused by another workflow. Don't add a cache step here.
+      - name: Yarn install
+        run: yarn
+
+      - name: Enable latest RN for the Expo harness
+        # This step deliberately re-resolves react-native/@react-native/codegen/
+        # @types/react off their root pin, which needs to modify yarn.lock. Two
+        # separate Yarn defaults would otherwise block that on CI:
+        # - hardened mode auto-enables on public PR runs (https://yarnpkg.com/features/security#hardened-mode)
+        # - enableImmutableInstalls defaults to true whenever Yarn detects a CI env
+        # Because this bypasses Yarn's usual lockfile-integrity checks, this
+        # job must never cache anything (see the "No CocoaPods/yarn caching"
+        # note above) so a supply-chain-compromised package can't get cached
+        # here and reused by another workflow.
+        env:
+          YARN_ENABLE_HARDENED_MODE: '0'
+          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+        run: yarn app:expo:latest-rn:enable
+
+      - name: Sync Expo harness
+        # No "--" here: yarn's own CLI parser swallows a literal "--" token
+        # instead of forwarding it, so args must be appended directly.
+        run: yarn app:expo:sync --ios-google-services "${IOS_GOOGLE_SERVICES_PATH}" --android-google-services "${ANDROID_GOOGLE_SERVICES_PATH}" --no-yarn-install
+
+      - name: Prebuild Expo iOS harness
+        run: yarn app:expo:prebuild:ios
+
+      - name: Build Expo iOS harness (Debug)
+        run: yarn app:expo:build:ios:debug
+
+      - name: Build Expo iOS harness (Release)
+        run: yarn app:expo:build:ios:release

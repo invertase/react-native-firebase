@@ -14,7 +14,8 @@
     "attw:check": "cd .github/scripts/attw && yarn install && yarn check",
     "codegen:all": "lerna run codegen",
     "codegen:verify": "node ./scripts/codegen-verify.mjs && git diff --exit-code -- 'packages/*/android/**/generated/**' 'packages/*/ios/generated/**'",
-    "lint": "yarn lint:js && yarn lint:deps && yarn lint:android && yarn lint:ios:check",
+    "checks:root-rn-pin": "node ./scripts/check-root-rn-pin.mjs",
+    "lint": "yarn lint:js && yarn lint:deps && yarn lint:android && yarn lint:ios:check && yarn checks:root-rn-pin",
     "lint:js": "eslint packages/* --max-warnings=0",
     "lint:deps": "depcruise --config .dependency-cruiser.cjs packages",
     "lint:android": "(find packages/*/android/src -name '*.java' -not -path '*/generated/*' ! -name 'ReactNativeFirebaseVersion.java' -print0 | xargs -0 google-java-format --set-exit-if-changed --replace || (echo \"\n\nandroid formatting error - please re-run\n\n\" && exit 1)) && (git diff --exit-code packages/*/android/src || (echo \"\n\nandroid files changed from linting, please examine and commit result\n\n\" && exit 1))",
@@ -76,6 +77,23 @@
     "tests:macos:manual": "cd tests && yarn react-native run-macos",
     "tests:macos:test": "cd tests && npx jet --target=macos --coverage",
     "tests:macos:test-cover": "cd tests && npx jet --target=macos --coverage",
+    "app:doctor": "bash ./scripts/sync-build-harness.sh doctor",
+    "app:sync": "bash ./scripts/sync-build-harness.sh sync",
+    "app:clean": "bash ./scripts/sync-build-harness.sh clean",
+    "app:pod:install": "bash ./scripts/sync-build-harness.sh pod-install",
+    "app:start": "cd apps/build-harness && yarn react-native start --reset-cache",
+    "app:ios": "bash ./scripts/sync-build-harness.sh build-ios",
+    "app:android": "bash ./scripts/sync-build-harness.sh build-android",
+    "app:expo:doctor": "bash ./scripts/sync-build-harness-expo.sh doctor",
+    "app:expo:sync": "bash ./scripts/sync-build-harness-expo.sh sync",
+    "app:expo:clean": "bash ./scripts/sync-build-harness-expo.sh clean",
+    "app:expo:start": "bash ./scripts/sync-build-harness-expo.sh start",
+    "app:ios:expo": "bash ./scripts/sync-build-harness-expo.sh build-ios",
+    "app:android:expo": "bash ./scripts/sync-build-harness-expo.sh build-android",
+    "app:expo:latest-rn:enable": "bash ./scripts/dev-harness-versions.sh on",
+    "app:expo:prebuild:ios": "bash ./scripts/sync-build-harness-expo.sh prebuild-ios",
+    "app:expo:build:ios:debug": "bash ./scripts/sync-build-harness-expo.sh build-ios-debug",
+    "app:expo:build:ios:release": "bash ./scripts/sync-build-harness-expo.sh build-ios-release",
     "format:js": "prettier --write \"packages/**/*.{js,ts,tsx}\"",
     "format:markdown": "prettier --write \"docs/**/*.md[x]\""
   },
@@ -138,7 +156,8 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "tests"
+      "tests",
+      "apps/*"
     ]
   },
   "packageManager": "yarn@4.14.1",

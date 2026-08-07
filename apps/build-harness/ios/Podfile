@@ -1,0 +1,44 @@
+require 'json'
+
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+
+app_package_path = File.join('..', 'node_modules', '@react-native-firebase', 'app', 'package.json')
+app_package = JSON.parse(File.read(app_package_path))
+firebase_sdk_version = app_package['sdkVersions']['ios']['firebase']
+
+if ENV['RNFB_FIREBASE_IOS_SDK']
+  $FirebaseSDKVersion = ENV['RNFB_FIREBASE_IOS_SDK']
+elsif ENV['FIREBASE_SDK_VERSION']
+  $FirebaseSDKVersion = ENV['FIREBASE_SDK_VERSION']
+else
+  $FirebaseSDKVersion = firebase_sdk_version
+end
+
+$RNFirebaseAsStaticFramework = true
+Pod::UI.puts "build-harness: Using Firebase SDK version '#{$FirebaseSDKVersion}'"
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+use_frameworks! :linkage => :static
+
+target 'BuildHarness' do
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+    )
+  end
+end
