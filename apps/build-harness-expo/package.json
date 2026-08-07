@@ -31,9 +31,9 @@
     "expo": "~55.0.17",
     "expo-build-properties": "^55.0.13",
     "expo-status-bar": "~55.0.5",
-    "firebase": "12.12.0",
+    "firebase": "12.17.0",
     "react": "19.2.0",
-    "react-native": "0.83.6"
+    "react-native": "0.83.10"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",

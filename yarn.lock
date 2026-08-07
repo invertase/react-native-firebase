@@ -8914,9 +8914,9 @@ __metadata:
     expo: "npm:~55.0.17"
     expo-build-properties: "npm:^55.0.13"
     expo-status-bar: "npm:~55.0.5"
-    firebase: "npm:12.12.0"
+    firebase: "npm:12.17.0"
     react: "npm:19.2.0"
-    react-native: "npm:0.83.6"
+    react-native: "npm:0.83.10"
     typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
