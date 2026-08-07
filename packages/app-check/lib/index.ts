@@ -152,35 +152,43 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
     if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
       options.isTokenAutoRefreshEnabled = true;
     }
-    this.native.setTokenAutoRefreshEnabled(options.isTokenAutoRefreshEnabled);
+    const isTokenAutoRefreshEnabled = options.isTokenAutoRefreshEnabled as boolean;
 
     if (!hasProviderOptions(options.provider)) {
       throw new Error('Invalid configuration: no provider or no provider options defined.');
     }
     const provider = options.provider;
+
+    // AppCheck-AD-4: attach the real provider before enabling auto-refresh so early
+    // refresh does not run while the native facade is still pending.
+    let configurePromise: Promise<void>;
     if (Platform.OS === 'android') {
       if (!isString(provider.providerOptions?.android?.provider)) {
         throw new Error(
           'Invalid configuration: no android provider configured while on android platform.',
         );
       }
-      return this.native.configureProvider(
+      configurePromise = this.native.configureProvider(
         provider.providerOptions.android.provider,
         provider.providerOptions.android.debugToken,
       );
-    }
-    if (Platform.OS === 'ios' || Platform.OS === 'macos') {
+    } else if (Platform.OS === 'ios' || Platform.OS === 'macos') {
       if (!isString(provider.providerOptions?.apple?.provider)) {
         throw new Error(
           'Invalid configuration: no apple provider configured while on apple platform.',
         );
       }
-      return this.native.configureProvider(
+      configurePromise = this.native.configureProvider(
         provider.providerOptions.apple.provider,
         provider.providerOptions.apple.debugToken,
       );
+    } else {
+      throw new Error('Unsupported platform: ' + Platform.OS);
     }
-    throw new Error('Unsupported platform: ' + Platform.OS);
+
+    return Promise.resolve(configurePromise).then(() => {
+      this.native.setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled);
+    });
   }
 
   activate(

@@ -17,6 +17,9 @@
 #import "RNFBAppCheckProvider.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 
+NSString *const kRNFBAppCheckProviderNotReadyMessage =
+    @"App Check provider is not ready. Call initializeAppCheck before requesting tokens.";
+
 @implementation RNFBAppCheckProvider
 
 - (id)initWithApp:app {
@@ -85,14 +88,35 @@
   }
 }
 
+// AppCheck-AD-8: fail closed while pending — no network / no exchangeDebugToken.
+static NSError *RNFBAppCheckProviderNotReadyError(void) {
+  return [NSError errorWithDomain:@"RNFBErrorDomain"
+                             code:666
+                         userInfo:@{
+                           @"code" : @"provider-not-ready",
+                           @"message" : kRNFBAppCheckProviderNotReadyMessage,
+                           NSLocalizedDescriptionKey : kRNFBAppCheckProviderNotReadyMessage,
+                         }];
+}
+
 - (void)getTokenWithCompletion:(nonnull void (^)(FIRAppCheckToken *_Nullable,
                                                  NSError *_Nullable))handler {
+  if (self.delegateProvider == nil) {
+    DLog(@"getTokenWithCompletion: provider not ready (nil delegateProvider)");
+    handler(nil, RNFBAppCheckProviderNotReadyError());
+    return;
+  }
   DLog(@"proxying getTokenWithCompletion to delegateProvider...");
   [self.delegateProvider getTokenWithCompletion:handler];
 }
 
 - (void)getLimitedUseTokenWithCompletion:(nonnull void (^)(FIRAppCheckToken *_Nullable,
                                                            NSError *_Nullable))handler {
+  if (self.delegateProvider == nil) {
+    DLog(@"getLimitedUseTokenWithCompletion: provider not ready (nil delegateProvider)");
+    handler(nil, RNFBAppCheckProviderNotReadyError());
+    return;
+  }
   DLog(@"proxying getLimitedUseTokenWithCompletion to delegateProvider...");
   [self.delegateProvider getLimitedUseTokenWithCompletion:handler];
 }

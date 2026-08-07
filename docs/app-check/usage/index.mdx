@@ -93,9 +93,9 @@ For instructions on how to generate required keys and register an app for the de
 
 ## Initialize
 
-> If you're using Expo Managed Workflow, you can load the `@react-native-firebase/app-check` config plugin to skip the Initialize setup step.
+> If you're using Expo Managed Workflow, you can load the `@react-native-firebase/app-check` config plugin to skip the native setup step below. The plugin only registers the native module before `FirebaseApp.configure()` (Firebase requires this order regardless of which provider you use); you still need to call `initializeAppCheck` from JavaScript.
 
-You must initialize the AppCheck module prior to calling any Firebase backend services for App Check to function.
+You must call `initializeAppCheck` prior to calling any Firebase backend services for App Check to function. Until `initializeAppCheck` (or the deprecated `activate`) configures a provider, App Check is pending: any `getToken` / `getLimitedUseToken` call fails immediately with `appCheck/provider-not-ready` instead of fetching a real token.
 
 #### All react-native >= 0.77 with AppDelegate.swift
 
@@ -309,6 +309,14 @@ If unset, the "tokenAutoRefreshEnabled" setting will defer to the app's "automat
 ## Using App Check tokens for non-firebase services
 
 The [official documentation](https://firebase.google.com/docs/app-check/web/custom-resource) shows how to use `getToken` to access the current App Check token and then verify it in external services.
+
+## Troubleshooting
+
+### `appCheck/provider-not-ready`
+
+If `getToken` / `getLimitedUseToken` rejects with `appCheck/provider-not-ready`, App Check has not been configured yet for that app. Call `initializeAppCheck` (or the deprecated `activate`) before requesting tokens or calling any App Check-protected Firebase service.
+
+This error replaces an older iOS behavior where App Check could install the debug provider before `initializeAppCheck` ran, including in release builds. That could exchange a debug token with Firebase's backend outside of development, showing up as unexplained `exchangeDebugToken` 403/429 responses in your logs. If you saw those errors before upgrading, look for a code path that requests a token before `initializeAppCheck` completes and move it after.
 
 ## Manually Setting Up App Check Debug Token for Testing Environments / CI
 

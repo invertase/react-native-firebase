@@ -156,6 +156,23 @@ describe('appCheck()', function () {
     });
 
     describe('getToken()', function () {
+      // AppCheck-AD-8: pending facade must reject as provider-not-ready, not token-error.
+      // Uses secondaryFromNative (never initializeAppCheck'd) so delegateProvider stays nil.
+      // Direct TurboModule reject code is unprefixed; FirebaseModule wraps to appCheck/<code>.
+      it('pending provider rejects with provider-not-ready (AppCheck-AD-8)', async function () {
+        if (!Platform.ios) {
+          this.skip();
+        }
+        try {
+          await NativeModules.NativeRNFBTurboAppCheck.getToken('secondaryFromNative', false);
+          return Promise.reject(new Error('should have thrown provider-not-ready'));
+        } catch (e) {
+          (e.code || '').should.equal('provider-not-ready');
+          String(e.message || e).should.containEql('initializeAppCheck');
+          String(e.code || e.message || e).should.not.containEql('token-error');
+        }
+      });
+
       it('token fetch attempt with configured debug token should work', async function () {
         const { getToken } = appCheckModular;
 
@@ -259,6 +276,20 @@ describe('appCheck()', function () {
     });
 
     describe('getLimitedUseToken()', function () {
+      it('pending provider rejects limited-use with provider-not-ready (AppCheck-AD-8)', async function () {
+        if (!Platform.ios) {
+          this.skip();
+        }
+        try {
+          await NativeModules.NativeRNFBTurboAppCheck.getLimitedUseToken('secondaryFromNative');
+          return Promise.reject(new Error('should have thrown provider-not-ready'));
+        } catch (e) {
+          (e.code || '').should.equal('provider-not-ready');
+          String(e.message || e).should.containEql('initializeAppCheck');
+          String(e.code || e.message || e).should.not.containEql('token-error');
+        }
+      });
+
       it('limited use token fetch attempt with configured debug token should work', async function () {
         if (Platform.other) {
           this.skip();

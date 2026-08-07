@@ -141,8 +141,9 @@ export function modifySwiftAppDelegate(contents: string): string {
     );
   }
 
-  // If Firebase initialization block not found, add both Firebase and App Check initialization
-  // This is to make sure Firebase is initialized before App Check
+  // If Firebase initialization block not found, register the App Check provider factory
+  // then call FirebaseApp.configure(). Firebase requires the factory before configure
+  // (AppCheck-AD-3); do not reverse this order.
   const methodInvocationBlock = `RNFBAppCheckModule.sharedInstance()
     FirebaseApp.configure()`;
 
