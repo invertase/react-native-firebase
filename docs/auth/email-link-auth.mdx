@@ -1,0 +1,300 @@
+---
+title: Email Link Authentication
+description: Passwordless sign-in with email links using App Links and Universal Links.
+next: /auth/oidc-auth
+previous: /auth/phone-auth
+---
+
+Email link (passwordless) authentication sends the user a one-time sign-in link. Opening that link on a device completes
+sign-in and verifies ownership of the email address — no password required.
+
+Firebase Auth no longer relies on [Firebase Dynamic Links](https://firebase.google.com/support/dynamic-links-faq) for this
+flow. Mobile apps complete sign-in through **Android App Links** and **iOS Universal Links** on a domain you control
+(often a Firebase Hosting domain). Official platform guides:
+
+- [Android](https://firebase.google.com/docs/auth/android/email-link-auth)
+- [Apple platforms](https://firebase.google.com/docs/auth/ios/email-link-auth)
+- [Migration away from Dynamic Links](https://firebase.google.com/docs/auth/android/email-link-migration)
+
+This page focuses on wiring the flow in React Native Firebase, plus two community helpers that make hosting and association
+files easier.
+
+# How the pieces fit together
+
+| Piece                                       | Role                                                                                                                      |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Continue URL** (`ActionCodeSettings.url`) | HTTPS URL embedded in the email. Its **domain must be an Authorized domain** in the Firebase Console.                     |
+| **Hosting link domain**                     | Domain Firebase uses for the mobile Auth link (default `PROJECT_ID.firebaseapp.com`, or a custom Hosting / `linkDomain`). |
+| **Association files**                       | `/.well-known/assetlinks.json` (Android) and `/.well-known/apple-app-site-association` (iOS) so the OS opens your app.    |
+| **Native app config**                       | Android `intent-filter` + SHA certificates; iOS Associated Domains + `Linking` handlers.                                  |
+| **JS Auth APIs**                            | `sendSignInLinkToEmail` → store email → `isSignInWithEmailLink` → `signInWithEmailLink`.                                  |
+
+`handleCodeInApp` must be `true` for email-link sign-in. Do **not** set deprecated `dynamicLinkDomain`. Prefer omitting
+`linkDomain` unless you have configured a **custom** Hosting link domain for the project — Auth selects the project default
+Hosting domain when it is omitted. Setting `linkDomain` to a bare `*.web.app` / `*.firebaseapp.com` default is often rejected.
+
+# Choose a hosting path
+
+You need a domain that can serve association files and act as the continue / App Links host. Pick the path that matches your
+situation:
+
+| Situation                                                                                             | Use                                                                                                                                                               | Links                                                                                                  |
+| ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **No website yet** — need a branded continue page + association files                                 | Deploy **[email-link-host](https://github.com/rutvik24/email-link-host)** (Firebase Hosting Spark, Cloudflare Pages, Vercel, Netlify, Amplify, or Docker/Go)      | [Docs](https://rutvik24.github.io/email-link-host/) · [Live demo](https://fir-email-link-host.web.app) |
+| **Already have a website** — want that domain to open the app for email links (or general deep links) | Generate files with **[App Universal Links Helper](https://github.com/rutvik24/app-universal-links-helper)**, then host them under `/.well-known/` on your domain | [Live helper](https://rutvik24.github.io/app-universal-links-helper/)                                  |
+
+Both paths end the same way: Authorized domain in Firebase Auth, association files live on the domain, and the React Native
+app claims that domain via App Links / Universal Links.
+
+## Path A — no site: email-link-host
+
+[email-link-host](https://github.com/rutvik24/email-link-host) is a static (or tiny Go/Docker) host purpose-built for this
+flow: branded landing page, optional store buttons, and association JSON generated from environment variables /
+`config/site.json`.
+
+1. Clone the repo and copy `.env.example` → `.env` (or set the same vars in your host's CI / console).
+2. Set at least:
+   - `ANDROID_PACKAGE_NAME`
+   - `ANDROID_SHA256_CERT_FINGERPRINTS` (comma-separated)
+   - `IOS_TEAM_ID` / `IOS_BUNDLE_ID`
+   - Optional brand / theme / store URLs (`config/site.json` + `SITE_*` / `THEME_*` vars)
+
+3. Build and deploy (Firebase Hosting example):
+
+```bash
+# .firebaserc → your Firebase project id
+bun install
+bun run build
+npx -y firebase-tools@latest deploy --only hosting
+```
+
+Other platforms publish the same `out/` directory — see the [hosting overview](https://rutvik24.github.io/email-link-host/docs/hosting/overview).
+Docker uses a pure Go image instead of `out/`.
+
+4. Confirm these URLs **render JSON in the browser** (not a file download):
+   - `https://YOUR_DOMAIN/.well-known/assetlinks.json`
+   - `https://YOUR_DOMAIN/.well-known/apple-app-site-association`
+
+By default the host includes AASA coverage for Firebase Auth paths (`/__/auth/links*`). Full configuration reference:
+[email-link-host configuration](https://rutvik24.github.io/email-link-host/docs/email-link-host/configuration).
+
+## Path B — existing site: App Universal Links Helper
+
+If the continue URL should live on a domain you already operate:
+
+1. Open [App Universal Links Helper](https://rutvik24.github.io/app-universal-links-helper/) (or run it locally from
+   [the repo](https://github.com/rutvik24/app-universal-links-helper)).
+2. Enter hosts, package name, SHA-256 fingerprints, Apple Team ID + bundle ID, and path rules (include
+   `/__/auth/links` / `pathPrefix` as needed for Auth links).
+3. Copy or download:
+   - `assetlinks.json`
+   - `apple-app-site-association`
+   - AndroidManifest `<intent-filter>` snippet
+   - Optional `adb` / `xcrun` / `curl` / `swcutil` test commands
+
+4. Publish the JSON files on your site at `/.well-known/…` with `Content-Type: application/json` (and no attachment
+   disposition). Paste the intent-filter into your app (see below).
+
+The helper does **not** upload files for you — it only generates what you host.
+
+# Firebase Console setup
+
+1. Enable **Email/Password**, then enable **Email link (passwordless sign-in)** under
+   [Authentication → Sign-in method](https://console.firebase.google.com/project/_/authentication/providers).
+2. Add your continue-URL host under **Authentication → Settings → Authorized domains**.
+3. Android: in Project settings, register the app's package name plus **SHA-1 and SHA-256** certificate fingerprints
+   (required for App Links verification).
+4. iOS: ensure the bundle ID in the Firebase iOS app matches Xcode / Associated Domains.
+
+# Native app setup
+
+Use the same host(s) you configured above (example values below match the
+[firebase-email-link-host-demo](https://github.com/rutvik24/firebase-email-link-host-demo) sample).
+
+## Android
+
+Add an `autoVerify` intent-filter on the activity that should receive the link (`launchMode="singleTask"` is typical so a
+cold/warm start reuses one activity). Prefer **separate** `<data>` tags for scheme, host, and path — Android merges siblings.
+
+```xml
+<intent-filter android:autoVerify="true">
+  <action android:name="android.intent.action.VIEW" />
+  <category android:name="android.intent.category.DEFAULT" />
+  <category android:name="android.intent.category.BROWSABLE" />
+  <data android:scheme="https" />
+  <data android:host="YOUR_PROJECT.firebaseapp.com" />
+  <data android:host="YOUR_PROJECT.web.app" />
+  <!-- or your custom / email-link-host domain -->
+  <data android:pathPrefix="/__/auth/links" />
+</intent-filter>
+```
+
+If your branded continue URL is the site root (or other paths), add another filter (or additional path rules) for those
+hosts — see the [demo AndroidManifest](https://github.com/rutvik24/firebase-email-link-host-demo/blob/main/android/app/src/main/AndroidManifest.xml).
+
+After install, verify App Links with:
+
+```bash
+adb shell pm get-app-links YOUR.PACKAGE.NAME
+# optional force re-verify
+adb shell pm verify-app-links --re-verify YOUR.PACKAGE.NAME
+```
+
+## iOS
+
+1. Enable the **Associated Domains** capability and add:
+   - `applinks:YOUR_PROJECT.firebaseapp.com`
+   - `applinks:YOUR_PROJECT.web.app` (and/or your custom domain)
+
+2. Forward Universal Links and custom URLs to React Native `Linking` (React Native's `RCTLinkingManager`), for example in
+   `AppDelegate`:
+
+```swift
+func application(
+  _ application: UIApplication,
+  continue userActivity: NSUserActivity,
+  restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+) -> Bool {
+  return RCTLinkingManager.application(
+    application,
+    continue: userActivity,
+    restorationHandler: restorationHandler
+  )
+}
+
+func application(
+  _ app: UIApplication,
+  open url: URL,
+  options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+) -> Bool {
+  return RCTLinkingManager.application(app, open: url, options: options)
+}
+```
+
+On a Mac with Apple's Shared Web Credentials tooling you can sanity-check AASA matching:
+
+```bash
+sudo swcutil verify -d YOUR_DOMAIN -j ./apple-app-site-association -u https://YOUR_DOMAIN/__/auth/links
+```
+
+# JavaScript / React Native flow
+
+Ensure `@react-native-firebase/app` and `@react-native-firebase/auth` are installed (see [Authentication usage](/auth/usage)).
+
+## 1. Send the link
+
+Persist the email locally (for example AsyncStorage) **before or immediately after** sending — completing sign-in requires
+the same address, and you must not put it in the continue URL query string.
+
+```js
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAuth, sendSignInLinkToEmail } from '@react-native-firebase/auth';
+
+const CONTINUE_URL = 'https://YOUR_DOMAIN'; // Authorized domain
+const EMAIL_KEY = 'emailForSignIn';
+
+async function sendSignInLink(email) {
+  await sendSignInLinkToEmail(getAuth(), email, {
+    url: CONTINUE_URL,
+    handleCodeInApp: true,
+    // Omit linkDomain unless you configured a custom Hosting link domain.
+    iOS: {
+      bundleId: 'com.yourcompany.yourapp',
+    },
+    android: {
+      packageName: 'com.yourcompany.yourapp',
+      installApp: true,
+      minimumVersion: '1',
+    },
+  });
+
+  await AsyncStorage.setItem(EMAIL_KEY, email);
+}
+```
+
+Modular `sendSignInLinkToEmail` **requires** `actionCodeSettings` (unlike the legacy namespaced helper defaults). See
+[Migrating to v25](/migrating-to-v25) / [v26](/migrating-to-v26) for API notes.
+
+## 2. Listen for the incoming URL
+
+Use React Native `Linking` for both cold start (`getInitialURL`) and warm start (`url` events):
+
+```js
+import { useEffect } from 'react';
+import { Linking } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAuth, isSignInWithEmailLink, signInWithEmailLink } from '@react-native-firebase/auth';
+
+const EMAIL_KEY = 'emailForSignIn';
+
+async function completeFromUrl(url) {
+  if (!url || !isSignInWithEmailLink(getAuth(), url)) {
+    return;
+  }
+
+  const email = await AsyncStorage.getItem(EMAIL_KEY);
+  if (!email) {
+    // Prompt the user to re-enter email (different device / cleared storage).
+    throw new Error('Enter the email that requested the sign-in link.');
+  }
+
+  await signInWithEmailLink(getAuth(), email, url);
+  await AsyncStorage.removeItem(EMAIL_KEY);
+}
+
+useEffect(() => {
+  Linking.getInitialURL().then(completeFromUrl);
+  const sub = Linking.addEventListener('url', ({ url }) => {
+    completeFromUrl(url);
+  });
+  return () => sub.remove();
+}, []);
+```
+
+From React Native Firebase **v26**, `isSignInWithEmailLink` returns a synchronous `boolean` (matching firebase-js-sdk). Do
+not `await` it. On v25 it returned `Promise<boolean>` — see [Migrating to v26](/migrating-to-v26).
+
+After a successful `signInWithEmailLink`, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners
+receive the signed-in user.
+
+## 3. Different device / missing stored email
+
+If the user opens the link on another device, ask them to type the email again, then call `signInWithEmailLink` with that
+address and the incoming URL. Firebase requires the email to match the address the link was sent to.
+
+# Example app
+
+End-to-end sample (React Native + Auth modular API + Android App Links + iOS Associated Domains + AsyncStorage):
+
+- **Repository:** [rutvik24/firebase-email-link-host-demo](https://github.com/rutvik24/firebase-email-link-host-demo)
+- Pairs with the hosted continue domain from [email-link-host](https://github.com/rutvik24/email-link-host)
+  ([live demo](https://fir-email-link-host.web.app))
+
+Useful files in the sample:
+
+| Area                                             | Location                                   |
+| ------------------------------------------------ | ------------------------------------------ |
+| Continue URL / package IDs                       | `src/config/auth.ts`                       |
+| Auth wrapper (`send` / `complete` / `isSignIn…`) | `src/services/firebaseAuth.ts`             |
+| `Linking` + UI state                             | `src/hooks/useEmailLinkAuth.ts`            |
+| Android intent-filters                           | `android/app/src/main/AndroidManifest.xml` |
+| iOS Associated Domains                           | `ios/.../*.entitlements`                   |
+| Universal Links → RN                             | `ios/.../AppDelegate.swift`                |
+
+# Checklist
+
+1. Email/Password + Email link providers enabled.
+2. Continue URL domain is **Authorized**.
+3. Association files live at `/.well-known/` and return JSON inline.
+4. Android SHA fingerprints registered; intent-filter uses `autoVerify` and your host(s).
+5. iOS Associated Domains match the host(s); `RCTLinkingManager` receives Universal Links.
+6. App stores the email, sends the link with `handleCodeInApp: true`, then completes with `signInWithEmailLink`.
+7. Test on a **physical device** (App Links / Universal Links verification is unreliable or limited on many emulators/simulators).
+
+# Related
+
+- [Authentication usage](/auth/usage)
+- [email-link-host documentation](https://rutvik24.github.io/email-link-host/)
+- [App Universal Links Helper](https://rutvik24.github.io/app-universal-links-helper/)
+- Firebase: [Android email link](https://firebase.google.com/docs/auth/android/email-link-auth) ·
+  [iOS email link](https://firebase.google.com/docs/auth/ios/email-link-auth)
