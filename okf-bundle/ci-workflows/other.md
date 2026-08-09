@@ -12,6 +12,26 @@ Local macOS e2e: [running e2e § Rules](../testing/running-e2e.md#rules) only. C
 4. **Pre-fetch JS bundle**; URL must match app request
 5. `tests:macos:test-cover` — internal `before` hook prefetches, then `open` app
 
+### CI failure: `swiftCompatibility56` / SharedAsyncStorage undefined symbols
+
+**Symptom** — `yarn tests:macos:build` / `** BUILD FAILED **` with:
+
+```
+Undefined symbols for architecture arm64
+  "__swift_FORCE_LOAD_$_swiftCompatibility56_$_SharedAsyncStorage"
+  "__swift_FORCE_LOAD_$_swiftCompatibilityConcurrency_$_SharedAsyncStorage"
+```
+
+**Cause** — async-storage 3.x vendors `SharedAsyncStorage.xcframework` (Swift). On Xcode 26 GitHub runners, the MetalToolchain cryptex is preferred for linker search paths and does not ship Swift compatibility static libs ([actions/runner-images#13135](https://github.com/actions/runner-images/issues/13135)).
+
+**Mitigations in this repo**
+
+| Change | Location |
+|--------|----------|
+| `TOOLCHAINS=com.apple.dt.toolchain.XcodeDefault` job env | `.github/workflows/tests_e2e_other.yml` |
+| Same default in `build:macos` | `tests/package.json` |
+| App-target `OTHER_LDFLAGS` explicit `-lswiftCompatibility56` / `Concurrency` / `Packs` via `DT_TOOLCHAIN_DIR` | `tests/macos/Podfile` `post_install` |
+
 ### CI failure: bundle load hang / `Could not connect to development server`
 
 **Symptom** — `[💻] macOS app started` but no `[🟩] Jet client connected`; `syslog` shows:
