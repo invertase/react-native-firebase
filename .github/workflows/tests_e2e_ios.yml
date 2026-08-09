@@ -512,7 +512,7 @@ jobs:
 
       # https://github.com/codecov/codecov-action/releases
       - name: Upload Codecov e2e TS (iOS)
-        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         if: contains(matrix.buildmode, 'debug')
         continue-on-error: true
         with:
@@ -522,7 +522,7 @@ jobs:
           verbose: true
 
       - name: Upload Codecov iOS native
-        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         if: contains(matrix.buildmode, 'debug')
         continue-on-error: true
         with:
@@ -532,7 +532,7 @@ jobs:
           verbose: true
 
       - name: Upload Codecov iOS Ruby
-        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
         continue-on-error: true
         with:
@@ -635,7 +635,7 @@ jobs:
           fetch-depth: 50
 
       - name: Yarn Cache Restore
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: yarn-cache
         continue-on-error: true
         with:
@@ -673,7 +673,7 @@ jobs:
           command: gem update cocoapods xcodeproj
 
       - name: Pods Cache Restore
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: pods-cache
         continue-on-error: true
         with:
@@ -719,7 +719,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Yarn Cache Save
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -727,7 +727,7 @@ jobs:
           key: ${{ steps.yarn-cache.outputs.cache-primary-key }}
 
       - name: Pods Cache Save
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:

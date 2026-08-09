@@ -1,4 +1,25 @@
 PODS:
+  - AsyncStorage (3.1.1):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
   - fast_float (6.1.4)
@@ -1480,12 +1501,11 @@ PODS:
     - React-logger (= 0.78.6)
     - React-perflogger (= 0.78.6)
     - React-utils (= 0.78.6)
-  - RNCAsyncStorage (2.2.0):
-    - React-Core
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
+  - "AsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - boost (from `../node_modules/react-native-macos/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../node_modules/react-native-macos/third-party-podspecs/DoubleConversion.podspec`)
   - fast_float (from `../node_modules/react-native-macos/third-party-podspecs/fast_float.podspec`)
@@ -1551,11 +1571,12 @@ DEPENDENCIES:
   - ReactAppDependencyProvider (from `build/generated/ios`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native-macos/ReactCommon`)
-  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - SocketRocket (from `../node_modules/react-native-macos/third-party-podspecs/SocketRocket.podspec`)
   - Yoga (from `../node_modules/react-native-macos/ReactCommon/yoga`)
 
 EXTERNAL SOURCES:
+  AsyncStorage:
+    :path: "../node_modules/@react-native-async-storage/async-storage"
   boost:
     :podspec: "../node_modules/react-native-macos/third-party-podspecs/boost.podspec"
   DoubleConversion:
@@ -1682,14 +1703,13 @@ EXTERNAL SOURCES:
     :path: build/generated/ios
   ReactCommon:
     :path: "../node_modules/react-native-macos/ReactCommon"
-  RNCAsyncStorage:
-    :path: "../node_modules/@react-native-async-storage/async-storage"
   SocketRocket:
     :podspec: "../node_modules/react-native-macos/third-party-podspecs/SocketRocket.podspec"
   Yoga:
     :path: "../node_modules/react-native-macos/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  AsyncStorage: edfca36e0bfbccdac3710ce7a6d084dd568848f9
   boost: 7d49a506d1ac47358fea28558d184dd6431170ca
   DoubleConversion: 10f51d3e1238973c033faac2d84c0ea114942f53
   fast_float: 44983b3bddb2d2ed3021a98be86f60ec8abc9ffd
@@ -1753,10 +1773,9 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 78d1aa823d2f280f83372f9abb50502cee4d0424
   ReactCodegen: cfbf6d5eabb2335c65a821c9fd8e1883e87c1ef7
   ReactCommon: 6bb5e1ee21c4b0e6e203cece50d86cc3f7a5af1b
-  RNCAsyncStorage: b44e8a4e798c3e1f56bffccd0f591f674fb9198f
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: 187db0b2a37012c01dac36afb886a29b92bfd943
 
-PODFILE CHECKSUM: 787ee60864ef7264ea1a666923a1119b7db1a281
+PODFILE CHECKSUM: c98b3e7eb87c56935afe83066024eb35ad189f3b
 
 COCOAPODS: 1.16.2

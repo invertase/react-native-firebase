@@ -95,6 +95,10 @@ jobs:
       NX_NO_CLOUD: true
       NX_CACHE_DIRECTORY: .nx/cache
       NX_WORKSPACE_DATA_DIRECTORY: .nx/workspace-data
+      # Xcode 26+ MetalToolchain cryptex omits swiftCompatibility* libs; pin default
+      # toolchain so SharedAsyncStorage (async-storage 3.x) links on Other CI.
+      # https://github.com/actions/runner-images/issues/13135
+      TOOLCHAINS: com.apple.dt.toolchain.XcodeDefault
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
       CCACHE_FILECLONE: true
       CCACHE_DEPEND: true
@@ -290,7 +294,7 @@ jobs:
         run: yarn tests:macos:test-cover
 
       # https://github.com/codecov/codecov-action/releases
-      - uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         continue-on-error: true
         with:
           files: coverage/lcov.info

@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build && rimraf macos/build",
-    "build:macos": "bash -c 'set -o pipefail && xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace macos/io.invertase.testing.xcworkspace -scheme io.invertase.testing-macOS -configuration Debug -derivedDataPath macos/build | xcbeautify'",
+    "build:macos": "bash -c 'set -o pipefail && export TOOLCHAINS=\"${TOOLCHAINS:-com.apple.dt.toolchain.XcodeDefault}\" && xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace macos/io.invertase.testing.xcworkspace -scheme io.invertase.testing-macOS -configuration Debug -derivedDataPath macos/build | xcbeautify'",
     "prepare": "patch-package"
   },
   "dependencies": {
     "@invertase/react-native-apple-authentication": "^2.5.1",
-    "@react-native-async-storage/async-storage": "^2.0.2",
+    "@react-native-async-storage/async-storage": "^3.1.1",
     "@react-native-community/cli": "15.1.3",
     "@react-native-community/cli-platform-android": "15.1.3",
     "@react-native-community/cli-platform-ios": "15.1.3",

@@ -10,7 +10,8 @@ prepare_react_native_project!
 ENV['RCT_NEW_ARCH_ENABLED'] = '0'
 
 target 'io.invertase.testing-macOS' do
-  platform :macos, '11.0'
+  # async-storage 3.x AsyncStorage.podspec requires :osx => "12.0"
+  platform :macos, '12.0'
   # use_native_modules!
 
   # Flags change depending on the env values.
@@ -24,9 +25,37 @@ target 'io.invertase.testing-macOS' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
+  # async-storage 3.x renamed the CocoaPods target RNCAsyncStorage → AsyncStorage
+  pod 'AsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
 
   post_install do |installer|
     react_native_post_install(installer)
+
+    # async-storage 3.x vendors SharedAsyncStorage.xcframework (Swift). On Xcode 26 CI
+    # (MetalToolchain cryptex), auto-link misses swiftCompatibility56/Concurrency —
+    # same class of failure as iOS Firebase Swift pods. Explicit app-target ldflags
+    # via DT_TOOLCHAIN_DIR (not TOOLCHAIN_DIR) resolve on CI workspaces.
+    # See: actions/runner-images#13135, tests/ios/Podfile coverage ldflags.
+    installer.aggregate_targets.each do |aggregate_target|
+      aggregate_target.user_project.native_targets.each do |target|
+        next unless target.name == 'io.invertase.testing-macOS'
+
+        target.build_configurations.each do |config|
+          ldflags = Array(config.build_settings['OTHER_LDFLAGS']).flatten
+          ldflags = ['$(inherited)'] if ldflags.empty?
+          extras = [
+            '-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)',
+            '-L$(SDKROOT)/usr/lib/swift',
+            '-lswiftCompatibility56',
+            '-lswiftCompatibilityConcurrency',
+            '-lswiftCompatibilityPacks',
+          ]
+          extras.each { |flag| ldflags << flag unless ldflags.include?(flag) }
+          config.build_settings['OTHER_LDFLAGS'] = ldflags
+          # ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES already YES via Pods xcconfig
+        end
+      end
+      aggregate_target.user_project.save
+    end
   end
 end
