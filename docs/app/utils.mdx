@@ -45,6 +45,24 @@ async function bootstrap() {
 }
 ```
 
+# App Version
+
+`appVersion` returns the host app's marketing version string: Android `versionName` or iOS
+`CFBundleShortVersionString`. Use it when you need the installed app version without pulling in a
+separate package.
+
+> Be aware, `appVersion` is available on Android and iOS only. On web and other non-native platforms
+> it is `undefined` (including when the native value is empty).
+
+```js
+import { utils } from '@react-native-firebase/app';
+
+const version = utils().appVersion;
+if (version) {
+  console.log('App version:', version);
+}
+```
+
 # Android - Checking Play Services
 
 It is useful to know if the Android device has play services available, and what to do in response to certain use cases:

@@ -49,7 +49,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboUtils)
 }
 
 - (NSDictionary *)utilsConstantsDictionary {
-  return @{
+  NSMutableDictionary *constants = [@{
     @"isRunningInTestLab" : @NO,
     @"MAIN_BUNDLE" : [[NSBundle mainBundle] bundlePath],
     @"CACHES_DIRECTORY" : [self getPathForDirectory:NSCachesDirectory],
@@ -58,7 +58,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboUtils)
     @"MOVIES_DIRECTORY" : [self getPathForDirectory:NSMoviesDirectory],
     @"TEMP_DIRECTORY" : NSTemporaryDirectory(),
     @"LIBRARY_DIRECTORY" : [self getPathForDirectory:NSLibraryDirectory],
-  };
+  } mutableCopy];
+
+  NSString *appVersion =
+      [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+  if ([appVersion isKindOfClass:[NSString class]] && appVersion.length > 0) {
+    constants[@"appVersion"] = appVersion;
+  }
+
+  return [constants copy];
 }
 
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants::Builder>)

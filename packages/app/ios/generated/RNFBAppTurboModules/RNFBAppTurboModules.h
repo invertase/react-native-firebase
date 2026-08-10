@@ -37,9 +37,6 @@ namespace JS {
     struct FirebaseAppConfig {
 
       struct Builder {
-        // Backwards compat for RCTTypedModuleConstants
-        using ResultT = FirebaseAppConfig;
-
         struct Input {
           RCTRequired<NSString *> name;
           std::optional<bool> automaticResourceManagement;
@@ -69,9 +66,6 @@ namespace JS {
     struct FirebaseAppOptions {
 
       struct Builder {
-        // Backwards compat for RCTTypedModuleConstants
-        using ResultT = FirebaseAppOptions;
-
         struct Input {
           RCTRequired<NSString *> apiKey;
           RCTRequired<NSString *> appId;
@@ -108,9 +102,6 @@ namespace JS {
     struct NativeFirebaseApp {
 
       struct Builder {
-        // Backwards compat for RCTTypedModuleConstants
-        using ResultT = NativeFirebaseApp;
-
         struct Input {
           RCTRequired<JS::NativeRNFBTurboApp::FirebaseAppConfig::Builder> appConfig;
           RCTRequired<JS::NativeRNFBTurboApp::FirebaseAppOptions::Builder> options;
@@ -139,9 +130,6 @@ namespace JS {
     struct Constants {
 
       struct Builder {
-        // Backwards compat for RCTTypedModuleConstants
-        using ResultT = Constants;
-
         struct Input {
           RCTRequired<std::vector<JS::NativeRNFBTurboApp::NativeFirebaseApp::Builder>> NATIVE_FIREBASE_APPS;
           RCTRequired<NSString *> FIREBASE_RAW_JSON;
@@ -233,11 +221,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
-        // Backwards compat for RCTTypedModuleConstants
-        using ResultT = Constants;
-
         struct Input {
           RCTRequired<bool> isRunningInTestLab;
+          NSString *appVersion;
           RCTRequired<NSString *> MAIN_BUNDLE;
           RCTRequired<NSString *> CACHES_DIRECTORY;
           RCTRequired<NSString *> DOCUMENT_DIRECTORY;
@@ -368,6 +354,8 @@ inline JS::NativeRNFBTurboUtils::Constants::Builder::Builder(const Input i) : _f
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto isRunningInTestLab = i.isRunningInTestLab.get();
   d[@"isRunningInTestLab"] = @(isRunningInTestLab);
+  auto appVersion = i.appVersion;
+  d[@"appVersion"] = appVersion;
   auto MAIN_BUNDLE = i.MAIN_BUNDLE.get();
   d[@"MAIN_BUNDLE"] = MAIN_BUNDLE;
   auto CACHES_DIRECTORY = i.CACHES_DIRECTORY.get();

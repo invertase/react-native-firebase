@@ -31,6 +31,16 @@ describe('utils()', function () {
       });
     });
 
+    describe('appVersion', function () {
+      it('returns a non-empty marketing version string', function () {
+        const { getUtils } = modular;
+        const appVersion = getUtils().appVersion;
+        should.exist(appVersion);
+        should(appVersion).be.a.String();
+        should(appVersion.length).be.above(0);
+      });
+    });
+
     describe('playServicesAvailability', function () {
       it('returns isAvailable and Play Service status', async function () {
         const { getUtils } = modular;

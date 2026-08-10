@@ -15,7 +15,7 @@
  *
  */
 
-import { isIOS } from '../common';
+import { isIOS, isOther } from '../common';
 import { FirebaseModule, getOrCreateModularInstance } from '../internal';
 import type { ModuleConfig } from '../internal';
 import type { ReactNativeFirebase, Utils } from '../types/app';
@@ -39,6 +39,18 @@ class FirebaseUtilsModule extends FirebaseModule<'RNFBUtilsModule'> {
       return false;
     }
     return this.native.isRunningInTestLab;
+  }
+
+  /**
+   * Host app marketing version (Android `versionName` / iOS `CFBundleShortVersionString`).
+   * Empty or unavailable on web / non-native platforms.
+   */
+  get appVersion(): string | undefined {
+    if (isOther) {
+      return undefined;
+    }
+    const version = this.native.appVersion;
+    return typeof version === 'string' && version.length > 0 ? version : undefined;
   }
 
   get playServicesAvailability(): Utils.PlayServicesAvailability {

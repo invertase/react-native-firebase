@@ -20,6 +20,7 @@ package io.invertase.firebase.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
@@ -135,6 +136,15 @@ public class NativeRNFBTurboUtils extends NativeRNFBTurboUtilsSpec {
     }
   }
 
+  private static String getAppVersionName(Context context) {
+    try {
+      return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+    } catch (PackageManager.NameNotFoundException error) {
+      Log.d(TAG, "getAppVersionName", error);
+      return null;
+    }
+  }
+
   private int isGooglePlayServicesAvailable() {
     GoogleApiAvailability gapi = GoogleApiAvailability.getInstance();
     return gapi.isGooglePlayServicesAvailable(getReactApplicationContext());
@@ -166,6 +176,11 @@ public class NativeRNFBTurboUtils extends NativeRNFBTurboUtilsSpec {
     constants.put("isRunningInTestLab", isRunningInTestLab());
 
     Context context = getReactApplicationContext();
+    String appVersion = getAppVersionName(context);
+    if (appVersion != null && !appVersion.isEmpty()) {
+      constants.put("appVersion", appVersion);
+    }
+
     constants.put(KEY_MAIN_BUNDLE, "");
     constants.put(KEY_LIBRARY_DIRECTORY, context.getFilesDir().getAbsolutePath());
     constants.put(KEY_TEMP_DIRECTORY, context.getCacheDir().getAbsolutePath());

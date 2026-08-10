@@ -88,6 +88,7 @@ jest.doMock('react-native', () => {
         NativeRNFBTurboUtils: {
           getConstants: () => ({
             isRunningInTestLab: false,
+            appVersion: '1.0.0',
             MAIN_BUNDLE: '/',
             CACHES_DIRECTORY: '/cache',
             DOCUMENT_DIRECTORY: '/documents',
@@ -97,6 +98,7 @@ jest.doMock('react-native', () => {
             MOVIES_DIRECTORY: '/movies',
           }),
           isRunningInTestLab: false,
+          appVersion: '1.0.0',
           MAIN_BUNDLE: '/',
           CACHES_DIRECTORY: '/cache',
           DOCUMENT_DIRECTORY: '/documents',
