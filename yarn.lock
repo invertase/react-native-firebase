@@ -7411,6 +7411,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@xmldom/xmldom@npm:^0.9.10":
+  version: 0.9.10
+  resolution: "@xmldom/xmldom@npm:0.9.10"
+  checksum: 10/8d39ed498baf33dc8bbc82ec575e7448ddf08a0d6874bcc30a70c001b7519e6df6564f98d13c03836fa8be099c6d74cbc4078cfcfcbcf005681d4e67f1363412
+  languageName: node
+  linkType: hard
+
 "@yarnpkg/lockfile@npm:1.1.0, @yarnpkg/lockfile@npm:^1.1.0":
   version: 1.1.0
   resolution: "@yarnpkg/lockfile@npm:1.1.0"
@@ -20855,13 +20862,13 @@ __metadata:
   linkType: hard
 
 "plist@npm:^3.0.5":
-  version: 3.1.0
-  resolution: "plist@npm:3.1.0"
+  version: 3.1.1
+  resolution: "plist@npm:3.1.1"
   dependencies:
-    "@xmldom/xmldom": "npm:^0.8.8"
+    "@xmldom/xmldom": "npm:^0.9.10"
     base64-js: "npm:^1.5.1"
     xmlbuilder: "npm:^15.1.1"
-  checksum: 10/f513beecc01a021b4913d4e5816894580b284335ae437e7ed2d5e78f8b6f0d2e0f874ec57bab9c9d424cc49e77b8347efa75abcfa8ac138dbfb63a045e1ce559
+  checksum: 10/dffa39e82c42292de4985312584e5963e60413cf6ed5f32193a8b2d3b55afadcec824da740bf437c99f8db3195c359181d17e1f41eb01afa4793da6c369f2087
   languageName: node
   linkType: hard
 
