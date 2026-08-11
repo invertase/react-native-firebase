@@ -110,7 +110,7 @@ jobs:
     steps:
       - name: Setup Environment for Screen Recording
         # https://github.com/guidepup/setup-action/releases
-        uses: guidepup/setup-action@5ab89fbb6641406f6f6c91057225f3fb397c2eea # v0.20.0
+        uses: guidepup/setup-action@5d19b1151e972898cae0f0cc44e239127953bd90 # v0.21.0
         continue-on-error: true
         with:
           record: true
