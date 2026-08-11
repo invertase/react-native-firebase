@@ -1,0 +1,21 @@
+{
+  "presets": ["module:@react-native/babel-preset"],
+  "plugins": [
+    [
+      "transform-inline-environment-variables",
+      {
+        "include": ["CI"]
+      }
+    ],
+    [
+      "istanbul",
+      {
+        "cwd": "..",
+        "instrument": true,
+        "relativePath": true,
+        "include": ["**/packages/**"],
+        "useInlineSourceMaps": true
+      }
+    ]
+  ]
+}

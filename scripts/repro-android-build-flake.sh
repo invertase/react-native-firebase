@@ -38,7 +38,7 @@ clean_workspace_artifacts() {
     tests/android/.gradle \
     tests/android/app/.cxx \
     tests/ios/build \
-    tests/macos/build \
+    tests-macos/macos/build \
     tests/dist
 
   log "  removing all node_modules..."

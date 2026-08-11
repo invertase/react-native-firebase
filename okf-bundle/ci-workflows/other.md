@@ -6,9 +6,9 @@ Local macOS e2e: [running e2e § Rules](../testing/running-e2e.md#rules) only. C
 
 ### Pipeline (CI — mirrors `tests_e2e_other.yml`; local operators use [running e2e](../testing/running-e2e.md) only)
 
-1. Build macOS app (`tests:macos:build`, `SKIP_BUNDLING=1`)
+1. Build macOS app (`tests:macos:build` from `tests-macos/`, `SKIP_BUNDLING=1`)
 2. Start Firestore emulator
-3. Start Metro (`tests:packager:jet-ci` — CI variant; local: [running e2e § Rules #1](../testing/running-e2e.md#rules))
+3. Start Metro (`tests:macos:packager:jet-ci` — CI variant; local: `yarn tests:macos:packager:jet`)
 4. **Pre-fetch JS bundle**; URL must match app request
 5. `tests:macos:test-cover` — internal `before` hook prefetches, then `open` app
 
@@ -32,9 +32,10 @@ URL: http://localhost:8081/index.bundle?platform=macos&...&inlineSourceMap=false
 
 | Change | Location |
 |--------|----------|
-| `127.0.0.1` + explicit `inlineSourceMap:YES` bundle URL (mirrors iOS) | `tests/macos/io.invertase.testing-macOS/AppDelegate.mm` |
-| `waitForMetroMacosBundle()` before `open` app | `tests/.jetrc.js` → `macos.before` |
+| `127.0.0.1` + explicit `inlineSourceMap:YES` bundle URL (mirrors iOS) | `tests-macos/macos/io.invertase.testing-macOS/AppDelegate.mm` |
+| `waitForMetroMacosBundle()` before `open` app | `tests-macos/.jetrc.js` → `macos.before` |
 | CI prefetch uses **exact** bundle query string (127.0.0.1, `lazy`, `inlineSourceMap=true`, `app=`) | `.github/workflows/tests_e2e_other.yml` |
+| Shared JS harness from `../tests` (no suite copies) | `tests-macos/index.js` + Metro `watchFolders` |
 
 **Diagnosing**
 

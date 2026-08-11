@@ -33,8 +33,14 @@ yarn   # repo root — exit 0 required. Applies .yarn/patches (jet, mocha-remote
 1. **Packager** (background):
 
 ```bash
+# iOS / Android
 yarn tests:packager:jet
+
+# macOS (Metro from tests-macos/, shared JS harness under tests/)
+yarn tests:macos:packager:jet
 ```
+
+Do **not** use the mobile packager for macOS Jet (or vice versa): each app has its own Metro project root after the `tests-macos/` split.
 
 2. **Emulators** (background, always):
 
@@ -242,7 +248,7 @@ curl -sf http://127.0.0.1:8080 >/dev/null          # Firestore emulator
 test -n "$(lsof -nP -iTCP:5001 -sTCP:LISTEN -t 2>/dev/null || true)"   # Functions emulator — listener only
 ```
 
-If Metro or Firestore checks fail: start `yarn tests:packager:jet` and `yarn tests:emulator:start` (background); re-check until both pass. After **`yarn lerna:prepare` has finished** (step [0](#prepare-completion-gate-blocking)) or test-runner patch edits, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)) — never restart Metro while prepare is still running.
+If Metro or Firestore checks fail: start `yarn tests:packager:jet` (iOS/Android) or `yarn tests:macos:packager:jet` (macOS) and `yarn tests:emulator:start` (background); re-check until both pass. After **`yarn lerna:prepare` has finished** (step [0](#prepare-completion-gate-blocking)) or test-runner patch edits, restart the packager with `yarn tests:packager:jet-reset-cache` or `yarn tests:macos:packager:jet-reset-cache` ([Rules §1](#rules)) — never restart Metro while prepare is still running.
 
 A listener on `:8081`, `:8080`, or `:5001` alone is **not** sufficient for Metro/Firestore — their HTTP checks must succeed. **Functions (`:5001`):** verify the listener is up; `curl -sf http://127.0.0.1:5001/` exits non-zero because the root path returns **404** — that is expected and **not** a service failure (do not treat it like the Metro/Firestore gates).
 
@@ -381,12 +387,13 @@ Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#ho
 ```bash
 # Background (once):
 yarn tests:emulator:start
-yarn tests:packager:jet
+yarn tests:packager:jet            # iOS/Android
+# yarn tests:macos:packager:jet    # when running macOS Jet instead
 
 # Per platform (rebuild when native changed):
 yarn tests:ios:build && yarn tests:ios:test-cover
 yarn tests:android:build && yarn tests:android:test-cover
-yarn tests:macos:test-cover
+yarn tests:macos:build && yarn tests:macos:test-cover
 ```
 
 ## Fast iteration: test narrowing

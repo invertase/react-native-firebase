@@ -71,11 +71,14 @@
     "tests:ios:pod:install": "cd tests && rm -f ios/Podfile.lock && rm -rf ios/ReactNativeFirebaseDemo.xcworkspace && cd ios && pod install",
     "lint:ruby": "bundle exec --gemfile=packages/app/__tests__/Gemfile rubocop --config packages/app/__tests__/.rubocop.yml packages/app/firebase_spm.rb packages/app/firebase_json.rb packages/app/__tests__",
     "tests:ios:ruby": "yarn lint:ruby && ruby packages/app/__tests__/run_with_coverage.rb",
-    "tests:macos:build": "cd tests && yarn build:macos",
-    "tests:macos:pod:install": "cd tests && rm -f macos/Podfile.lock && cd macos && pod install",
-    "tests:macos:manual": "cd tests && yarn react-native run-macos",
-    "tests:macos:test": "cd tests && npx jet --target=macos --coverage",
-    "tests:macos:test-cover": "cd tests && npx jet --target=macos --coverage",
+    "tests:macos:build": "cd tests-macos && yarn build:macos",
+    "tests:macos:pod:install": "cd tests-macos && rm -f macos/Podfile.lock && cd macos && pod install",
+    "tests:macos:manual": "cd tests-macos && yarn react-native run-macos",
+    "tests:macos:packager:jet": "cd tests-macos && yarn react-native start --client-logs",
+    "tests:macos:packager:jet-ci": "cd tests-macos && (mkdir $HOME/.metro || true) && cross-env TMPDIR=$HOME/.metro yarn react-native start",
+    "tests:macos:packager:jet-reset-cache": "cd tests-macos && yarn react-native start --reset-cache",
+    "tests:macos:test": "cd tests-macos && npx jet --target=macos --coverage",
+    "tests:macos:test-cover": "cd tests-macos && npx jet --target=macos --coverage",
     "format:js": "prettier --write \"packages/**/*.{js,ts,tsx}\"",
     "format:markdown": "prettier --write \"docs/**/*.md[x]\""
   },
@@ -129,16 +132,14 @@
   },
   "resolutions": {
     "@types/react": "~19.0.0",
-    "react-native": "0.78.3",
-    "@react-native/codegen": "0.78.3",
-    "@react-native-community/cli": "15.1.3",
     "mocha-remote-client@npm:^1.13.0": "patch:mocha-remote-client@npm%3A1.13.2#~/.yarn/patches/mocha-remote-client-npm-1.13.2-a2e7596aba.patch",
     "mocha-remote-server@npm:^1.13.0": "patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch"
   },
   "workspaces": {
     "packages": [
       "packages/*",
-      "tests"
+      "tests",
+      "tests-macos"
     ]
   },
   "packageManager": "yarn@4.14.1",

@@ -76,11 +76,15 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 **Before any** `yarn tests:ios:build`, `yarn tests:android:build`, or other Detox native build path:
 
 1. **Root `yarn` MUST have run and exited 0** in this checkout. Required on a fresh checkout, after deleting `node_modules`, after pulling patch changes, and whenever patches may be stale. Do **not** start native `:build` until that install finished successfully.
-2. Root `yarn` applies **`.yarn/patches`** (jet, detox, mocha-remote) and workspace **`patch-package`** patches, including **`tests/patches/react-native+0.78.3.patch`** (bumps React Native's fmt pin to **12.1.0**). `tests` `prepare` is `patch-package` and must **not** be Nx-cache-skipped ([MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted)).
+2. Root `yarn` applies **`.yarn/patches`** (jet, detox, mocha-remote) and workspace **`patch-package`** patches, including **`tests/patches/react-native+0.78.3.patch`** and **`tests-macos/patches/react-native+0.78.3.patch`** (bump React Native's fmt pin to **12.1.0**). `tests` / `tests-macos` `prepare` is `patch-package` and must **not** be Nx-cache-skipped ([MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted)).
 3. **Verify** the patched React Native fmt podspec reports version **≥ 12.1.0** (Xcode 26 / Apple Clang 21-safe floor for this pin). **Yarn exit 0 alone is not sufficient** — always run the check below before native `:build` (a prepare cache-skip historically left fmt at **11.0.2** despite a green install):
 
 ```bash
+# Mobile toolchain (tests/) — required before ios/android :build
 rg 'spec\.version|:tag' tests/node_modules/react-native/third-party-podspecs/fmt.podspec
+# macOS app (tests-macos/) — required before macos :build (path may be workspace-local or hoisted)
+rg 'spec\.version|:tag' tests-macos/node_modules/react-native/third-party-podspecs/fmt.podspec \
+  || rg 'spec\.version|:tag' node_modules/react-native/third-party-podspecs/fmt.podspec
 ```
 
 Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
@@ -156,7 +160,7 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 ### fmt / Apple Clang 21 (unpatched React Native)
 
 - Unpatched RN ships fmt **11.0.2**. On Xcode 26 / Apple Clang 21 that fails consteval builds.
-- **Canonical fix:** root `yarn` applying `tests/patches/react-native+0.78.3.patch` → fmt **12.1.0**. See [install / patch / fmt gate](#install-patch-fmt-gate-blocking).
+- **Canonical fix:** root `yarn` applying `tests/patches/react-native+0.78.3.patch` (and `tests-macos/patches/react-native+0.78.3.patch`) → fmt **12.1.0**. See [install / patch / fmt gate](#install-patch-fmt-gate-blocking).
 - **Trap:** yarn exit **0** does **not** prove the patch landed. If Nx cache-skips `react-native-firebase-tests:prepare` (`patch-package`), fmt stays at **11.0.2**. Durable policy: [MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted) (`tests` prepare `cache: false`). **Always** run the fmt `rg` verification before native `:build`.
 - **Never** invent Podfile `post_install` fmt hacks, `FMT_USE_CONSTEVAL`, `base.h` patches, or c++17-for-fmt-only as a substitute for a missed install/patch.
 
@@ -171,7 +175,7 @@ Never: yarn workspace prepare, yarn jet, npx jet, cd packages/* && yarn prepare/
 Never invent format/install: yarn google-java-format, bare/npx google-java-format, npm install, yarn install in tests/ alone — use root yarn first; Java format = yarn lint:android ONLY.
 Never invent Android Gradle: ad-hoc ./gradlew outside yarn tests:android:unit / :build / :post-e2e-coverage / :test:jacoco-report; bare detox/jet/metro.
 Prepare/install: yarn or yarn lerna:prepare must exit 0 before ANY other command — never parallelize with e2e/Metro/build.
-Before native :build: root yarn exit 0 + verify tests/node_modules/react-native/third-party-podspecs/fmt.podspec ≥ 12.1.0 — okf-bundle/testing/agent-command-policy.md#install-patch-fmt-gate-blocking. If fmt < 12.1.0: STOP and re-run yarn; never invent Podfile/FMT_USE_CONSTEVAL/c++17 fmt hacks.
+Before native :build: root yarn exit 0 + verify tests/node_modules/react-native/third-party-podspecs/fmt.podspec (and tests-macos copy when building macOS) ≥ 12.1.0 — okf-bundle/testing/agent-command-policy.md#install-patch-fmt-gate-blocking. If fmt < 12.1.0: STOP and re-run yarn; never invent Podfile/FMT_USE_CONSTEVAL/c++17 fmt hacks.
 Area harness: okf-bundle/testing/running-e2e.md#local-harness-overrides-harnessoverridesjs — copy harness.overrides.example.js to gitignored harness.overrides.js; set modules + RNFBDebug; delete overrides after run.
 TurboModule contract test (NewArch-AD-17.1): packages/app/__tests__/nativeModuleContract.test.ts — yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts
 Android JVM unit (AndroidTest-AD-1): yarn tests:android:unit — not a substitute for platform e2e.

@@ -6,8 +6,5 @@ module.exports = {
       // Required for using test app with turbo-modules
       // automaticPodsInstallation: false,
     },
-    macos: {
-      sourceDir: './macos',
-    },
   },
 };
