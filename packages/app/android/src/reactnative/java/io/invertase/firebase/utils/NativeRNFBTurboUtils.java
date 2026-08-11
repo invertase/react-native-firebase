@@ -20,7 +20,6 @@ package io.invertase.firebase.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
@@ -139,7 +138,8 @@ public class NativeRNFBTurboUtils extends NativeRNFBTurboUtilsSpec {
   private static String getAppVersionName(Context context) {
     try {
       return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
-    } catch (PackageManager.NameNotFoundException error) {
+    } catch (Exception error) {
+      // Optional metadata: prefer omit over crashing on null context / unexpected PM failures.
       Log.d(TAG, "getAppVersionName", error);
       return null;
     }

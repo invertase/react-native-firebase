@@ -40,7 +40,7 @@ import org.robolectric.annotation.Config;
 
 /**
  * JVM coverage for {@link NativeRNFBTurboUtils} appVersion constant export branches (null, empty,
- * NameNotFoundException).
+ * package-manager failure).
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 34)
