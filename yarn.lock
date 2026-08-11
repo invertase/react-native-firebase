@@ -2792,6 +2792,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo/plist@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "@expo/plist@npm:0.8.1"
+  dependencies:
+    "@xmldom/xmldom": "npm:^0.8.8"
+    base64-js: "npm:^1.5.1"
+    xmlbuilder: "npm:^15.1.1"
+  checksum: 10/0ce22d2f132d85b89b655b2b54596ba1bf9feac9ae3c0f84af171478002a9b9ba5609e11f958f31fda66547444720cfb6da1ef15197e5dcc22a2a84c4b4ecd48
+  languageName: node
+  linkType: hard
+
 "@expo/prebuild-config@npm:^55.0.16":
   version: 55.0.16
   resolution: "@expo/prebuild-config@npm:55.0.16"
@@ -5893,7 +5904,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/auth@workspace:packages/auth"
   dependencies:
-    "@expo/plist": "npm:^0.5.2"
+    "@expo/plist": "npm:^0.8.1"
     "@react-native-firebase/app": "npm:26.2.0"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.40.13"
