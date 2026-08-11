@@ -272,7 +272,7 @@ jobs:
 
       - name: Detox Tests
         # https://github.com/reactivecircus/android-emulator-runner/releases
-        uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2.37.0
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         timeout-minutes: 45
         env:
           ANDROID_AVD_HOME: /mnt/avd
