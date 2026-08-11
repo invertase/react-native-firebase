@@ -238,6 +238,7 @@ namespace JS {
 
         struct Input {
           RCTRequired<bool> isRunningInTestLab;
+          NSString *appVersion;
           RCTRequired<NSString *> MAIN_BUNDLE;
           RCTRequired<NSString *> CACHES_DIRECTORY;
           RCTRequired<NSString *> DOCUMENT_DIRECTORY;
@@ -368,6 +369,8 @@ inline JS::NativeRNFBTurboUtils::Constants::Builder::Builder(const Input i) : _f
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto isRunningInTestLab = i.isRunningInTestLab.get();
   d[@"isRunningInTestLab"] = @(isRunningInTestLab);
+  auto appVersion = i.appVersion;
+  d[@"appVersion"] = appVersion;
   auto MAIN_BUNDLE = i.MAIN_BUNDLE.get();
   d[@"MAIN_BUNDLE"] = MAIN_BUNDLE;
   auto CACHES_DIRECTORY = i.CACHES_DIRECTORY.get();

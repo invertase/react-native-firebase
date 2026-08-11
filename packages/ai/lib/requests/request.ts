@@ -163,6 +163,9 @@ export async function getHeaders(url: RequestUrl): Promise<Headers> {
   headers.append('x-goog-api-key', url.apiSettings.apiKey);
   if (url.apiSettings.automaticDataCollectionEnabled) {
     headers.append('X-Firebase-Appid', url.apiSettings.appId);
+    if (url.apiSettings.appVersion) {
+      headers.append('X-Firebase-AppVersion', url.apiSettings.appVersion);
+    }
   }
   if (url.apiSettings.getAppCheckToken) {
     let appCheckToken;
@@ -194,6 +197,9 @@ export async function getTemplateHeaders(url: TemplateRequestUrl): Promise<Heade
   headers.append('x-goog-api-key', url.apiSettings.apiKey);
   if (url.apiSettings.automaticDataCollectionEnabled) {
     headers.append('X-Firebase-Appid', url.apiSettings.appId);
+    if (url.apiSettings.appVersion) {
+      headers.append('X-Firebase-AppVersion', url.apiSettings.appVersion);
+    }
   }
   if (url.apiSettings.getAppCheckToken) {
     let appCheckToken;

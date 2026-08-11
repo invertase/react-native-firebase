@@ -16,6 +16,7 @@
  */
 import type { AppCheck } from '@react-native-firebase/app-check';
 import { getLimitedUseToken, getToken } from '@react-native-firebase/app-check';
+import { getUtils } from '@react-native-firebase/app';
 import { AIError } from '../errors';
 import { AI, AIErrorCode } from '../public-types';
 import { AIService } from '../service';
@@ -52,6 +53,16 @@ export function initApiSettings(ai: AI): ApiSettings {
     location: ai.location,
     backend: ai.backend,
   };
+
+  try {
+    // Utils is single-app (hasMultiAppSupport: false); do not pass ai.app.
+    const appVersion = getUtils().appVersion;
+    if (appVersion) {
+      apiSettings.appVersion = appVersion;
+    }
+  } catch {
+    // Native utils unavailable (web / non-native) — omit appVersion.
+  }
 
   const appCheck = ai.appCheck as AppCheck;
   if (appCheck) {

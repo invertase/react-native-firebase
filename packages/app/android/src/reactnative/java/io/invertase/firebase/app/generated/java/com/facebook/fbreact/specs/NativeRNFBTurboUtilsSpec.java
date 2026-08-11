@@ -59,7 +59,8 @@ public abstract class NativeRNFBTurboUtilsSpec extends ReactContextBaseJavaModul
           "EXTERNAL_DIRECTORY",
           "EXTERNAL_STORAGE_DIRECTORY",
           "FILE_TYPE_DIRECTORY",
-          "FILE_TYPE_REGULAR"
+          "FILE_TYPE_REGULAR",
+          "appVersion"
       ));
       Set<String> undeclaredConstants = new HashSet<>(constants.keySet());
       undeclaredConstants.removeAll(obligatoryFlowConstants);

@@ -34,6 +34,7 @@ initializeApp({ apiKey: 'a', appId: 'b', projectId: 'c' }, 'foo');
 // utils instance API
 const modularUtils = getUtils();
 console.log(modularUtils.isRunningInTestLab);
+console.log(modularUtils.appVersion);
 console.log(modularUtils.playServicesAvailability);
 modularUtils.getPlayServicesStatus();
 modularUtils.promptForPlayServices();

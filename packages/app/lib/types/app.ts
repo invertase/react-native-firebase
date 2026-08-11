@@ -557,6 +557,11 @@ export namespace Utils {
      */
     abstract isRunningInTestLab: boolean;
     /**
+     * Host app marketing version string when available from native
+     * (Android `versionName` / iOS `CFBundleShortVersionString`), otherwise `undefined`.
+     */
+    abstract appVersion: string | undefined;
+    /**
      * Returns PlayServicesAvailability properties, always `{ isAvailable: true, status: 0 }` on iOS
      *
      * #### Example
