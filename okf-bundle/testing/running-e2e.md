@@ -23,7 +23,7 @@ Install, prepare, and validation commands are **not** in this doc — they live 
 ## Prerequisites (once per checkout)
 
 ```bash
-yarn   # repo root — exit 0 required. Applies .yarn/patches (jet, mocha-remote-*, detox) and patch-package (incl. tests/patches/react-native+0.78.3.patch → fmt 12.1.0); installs tests devDeps incl. babel-plugin-istanbul
+yarn   # repo root — exit 0 required. Applies .yarn/patches (jet, mocha-remote-*, detox) and patch-package (tests-macos fmt patch on 0.78; mobile 0.86 ships fmt 12.1.0); installs tests devDeps incl. babel-plugin-istanbul
 ```
 
 **Before `yarn tests:ios:build` / `yarn tests:android:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (root `yarn` exit 0 + fmt **≥ 12.1.0**).

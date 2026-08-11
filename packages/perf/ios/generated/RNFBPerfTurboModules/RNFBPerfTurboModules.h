@@ -118,8 +118,8 @@ namespace JS {
              httpMethod:(NSString *)httpMethod;
 - (void)stopHttpMetric:(double)id
             metricData:(JS::NativeRNFBTurboPerf::HttpMetricData &)metricData;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboPerf::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboPerf::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboPerf::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboPerf::Constants>)getConstants;
 
 @end
 

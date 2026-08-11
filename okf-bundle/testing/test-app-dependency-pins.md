@@ -21,19 +21,26 @@ Codegen determinism: [NewArch-AD-20](../new-architecture/architecture-decisions.
 
 **macOS no longer forces the mobile RN line.** `react-native-macos` only constrains `tests-macos/`. Mobile may advance independently once that workspace is bumped (see [When pins may move](#when-pins-may-move)).
 
-Root `package.json` must **not** use blanket `resolutions` for `react-native`, `@react-native/codegen`, or `@react-native-community/cli` — each app pins its own line. Codegen scripts resolve the mobile toolchain from **`tests/`**.
+Root `package.json` must **not** use blanket `resolutions` for `react-native`, `@react-native/codegen`, or `@react-native-community/cli` — each app pins its own line. Codegen scripts resolve the mobile toolchain from **`tests/`** via [`scripts/codegen-package.mjs`](../../scripts/codegen-package.mjs).
 
-## Current pins (both apps on 0.78 until mobile bump)
+## Current pins
 
 | Package | Pin | Where |
 |---------|-----|--------|
-| `react-native` (mobile) | **`0.78.3`** | `tests/package.json` |
-| `@react-native-community/cli` (+ platform packages) | **`15.1.3`** | `tests/package.json` (and root `devDependencies` for tooling convenience) |
-| `@react-native/codegen` | **`0.78.3`** | Resolved with mobile `react-native` from `tests/` (no root resolution) |
+| `react-native` (mobile) | **`0.86.2`** | `tests/package.json` |
+| `react` (mobile) | **`19.2.3`** | `tests/package.json` |
+| `@react-native-community/cli` (+ platform packages) | **`20.1.0`** | `tests/package.json` (and root `devDependencies` for tooling convenience) |
+| `@react-native/babel-preset` / `@react-native/metro-config` | **`0.86.2`** | `tests/package.json` |
+| `@react-native/codegen` | **`0.86.2`** | Resolved with mobile `react-native` from `tests/` (no root resolution) |
 | `react-native` (macOS shell) | **`0.78.3`** | `tests-macos/package.json` |
 | `react-native-macos` | **`0.78.6`** | `tests-macos/package.json` |
+| macOS CLI band | **`15.1.3`** | `tests-macos/package.json` |
 
-**CLI rationale:** **`15.1.3`** matches the React Native **0.78** tooling band for the current mobile pin. When `tests/` moves to a newer RN line, bump CLI / `cli-platform-*` / codegen with that app — not via a global resolution that would pull `tests-macos` off its macOS-compatible line.
+**CLI rationale:** mobile CLI **`20.1.0`** matches the React Native **0.86** community template. macOS keeps the **0.78** CLI band with `react-native-macos@0.78.6`. Never add a global resolution that would pull `tests-macos` onto the mobile line.
+
+**fmt / Apple Clang:** RN **0.86.2** ships fmt **12.1.0** upstream (no mobile `patch-package` fmt bump). macOS **0.78.3** still applies [`tests-macos/patches/react-native+0.78.3.patch`](../../tests-macos/patches/react-native+0.78.3.patch). Always verify via [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking).
+
+**iOS pods (mobile):** RN 0.86 defaults `RCT_USE_PREBUILT_RNCORE` / `RCT_USE_RN_DEP` to **1** inside `use_react_native!`. The test app sets both to **`0`** in [`tests/ios/Podfile`](../../tests/ios/Podfile) before requiring `react_native_pods` so dynamic frameworks (e.g. `react-native-device-info`) link against source RNCore (`RCTEventEmitter`). Do not re-enable prebuilt RNCore for this app without re-validating third-party pods.
 
 **Agent / Dependabot rule:** leave these pins alone unless the change is an intentional dual-app or mobile-only upgrade. Reject RN / codegen / CLI bumps that only “look green” for one app while breaking the other or codegen verify.
 
@@ -42,7 +49,7 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 **Mobile (`tests/`) only** (macOS stays on its pair):
 
 1. Bump `tests/` `react-native` and matching `@react-native/*` / CLI band
-2. Regenerate codegen / rebuild native per [NewArch-AD-20](../new-architecture/architecture-decisions.md#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted)
+2. Regenerate codegen / rebuild native per [NewArch-AD-20](../new-architecture/architecture-decisions.md#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted) (`yarn codegen:all` → `scripts/codegen-package.mjs`)
 3. Keep `tests-macos/` on the `react-native-macos`-compatible pair until that stack can move
 
 **macOS (`tests-macos/`)**:
@@ -56,6 +63,7 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 ## Related
 
 - [NewArch-AD-20](../new-architecture/architecture-decisions.md#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted) — codegen reproducibility / no floating toolchain
+- [NewArch-AD-21](../new-architecture/architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted) — ResultT inject **retired** on mobile 0.86 (upstream emits `ResultT`)
 - [Other CI — macOS e2e](../ci-workflows/other.md) — macOS pipeline (`tests-macos/`)
 - [Agent command policy](agent-command-policy.md) — install / patch / fmt gate
 - [`tests/package.json`](../../tests/package.json) / [`tests-macos/package.json`](../../tests-macos/package.json) — declared pins

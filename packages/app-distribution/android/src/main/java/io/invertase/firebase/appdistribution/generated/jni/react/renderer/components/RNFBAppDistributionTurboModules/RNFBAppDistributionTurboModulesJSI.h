@@ -15,15 +15,14 @@
 namespace facebook::react {
 
 
-  
 #pragma mark - NativeRNFBTurboAppDistributionAppDistributionRelease
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct NativeRNFBTurboAppDistributionAppDistributionRelease {
-  P0 displayVersion;
-  P1 buildVersion;
-  P2 releaseNotes;
-  P3 isExpired;
+  P0 displayVersion{};
+  P1 buildVersion{};
+  P2 releaseNotes{};
+  P3 isExpired{};
   P4 downloadURL;
   bool operator==(const NativeRNFBTurboAppDistributionAppDistributionRelease &other) const {
     return displayVersion == other.displayVersion && buildVersion == other.buildVersion && releaseNotes == other.releaseNotes && isExpired == other.isExpired && downloadURL == other.downloadURL;
@@ -51,19 +50,15 @@ struct NativeRNFBTurboAppDistributionAppDistributionReleaseBridging {
   static jsi::String displayVersionToJs(jsi::Runtime &rt, decltype(types.displayVersion) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::String buildVersionToJs(jsi::Runtime &rt, decltype(types.buildVersion) value) {
     return bridging::toJs(rt, value);
   }
-
   static std::optional<jsi::String> releaseNotesToJs(jsi::Runtime &rt, decltype(types.releaseNotes) value) {
     return bridging::toJs(rt, value);
   }
-
   static bool isExpiredToJs(jsi::Runtime &rt, decltype(types.isExpired) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::String downloadURLToJs(jsi::Runtime &rt, decltype(types.downloadURL) value) {
     return bridging::toJs(rt, value);
   }
@@ -83,84 +78,48 @@ struct NativeRNFBTurboAppDistributionAppDistributionReleaseBridging {
   }
 };
 
-class JSI_EXPORT NativeRNFBTurboAppDistributionCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboAppDistributionCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Value isTesterSignedIn(jsi::Runtime &rt) = 0;
-  virtual jsi::Value signInTester(jsi::Runtime &rt) = 0;
-  virtual jsi::Value signOutTester(jsi::Runtime &rt) = 0;
-  virtual jsi::Value checkForUpdate(jsi::Runtime &rt) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboAppDistributionCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboAppDistribution";
 
 protected:
-  NativeRNFBTurboAppDistributionCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboAppDistributionCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboAppDistributionCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboAppDistributionCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["isTesterSignedIn"] = MethodMetadata {.argCount = 0, .invoker = __isTesterSignedIn};
+    methodMap_["signInTester"] = MethodMetadata {.argCount = 0, .invoker = __signInTester};
+    methodMap_["signOutTester"] = MethodMetadata {.argCount = 0, .invoker = __signOutTester};
+    methodMap_["checkForUpdate"] = MethodMetadata {.argCount = 0, .invoker = __checkForUpdate};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboAppDistributionCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboAppDistributionCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __isTesterSignedIn(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::isTesterSignedIn) == 1,
+      "Expected isTesterSignedIn(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::isTesterSignedIn,  static_cast<NativeRNFBTurboAppDistributionCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-    }
+  static jsi::Value __signInTester(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::signInTester) == 1,
+      "Expected signInTester(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::signInTester,  static_cast<NativeRNFBTurboAppDistributionCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-    jsi::Value isTesterSignedIn(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::isTesterSignedIn) == 1,
-          "Expected isTesterSignedIn(...) to have 1 parameters");
+  static jsi::Value __signOutTester(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::signOutTester) == 1,
+      "Expected signOutTester(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::signOutTester,  static_cast<NativeRNFBTurboAppDistributionCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::isTesterSignedIn, jsInvoker_, instance_);
-    }
-    jsi::Value signInTester(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::signInTester) == 1,
-          "Expected signInTester(...) to have 1 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::signInTester, jsInvoker_, instance_);
-    }
-    jsi::Value signOutTester(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::signOutTester) == 1,
-          "Expected signOutTester(...) to have 1 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::signOutTester, jsInvoker_, instance_);
-    }
-    jsi::Value checkForUpdate(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::checkForUpdate) == 1,
-          "Expected checkForUpdate(...) to have 1 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::checkForUpdate, jsInvoker_, instance_);
-    }
-
-  private:
-    friend class NativeRNFBTurboAppDistributionCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __checkForUpdate(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::checkForUpdate) == 1,
+      "Expected checkForUpdate(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::checkForUpdate,  static_cast<NativeRNFBTurboAppDistributionCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 };
 
 } // namespace facebook::react

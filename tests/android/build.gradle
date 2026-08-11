@@ -2,7 +2,7 @@ buildscript {
   ext.buildToolsVersion = "36.1.0"
   ext.minSdkVersion = 24
   ext.compileSdkVersion = 36
-  ext.targetSdkVersion = 35
+  ext.targetSdkVersion = 36
 
  ext.ndkVersion = "27.1.12297006"
 
@@ -94,17 +94,19 @@ subprojects {
         jacoco.version = '0.8.14'
         testOptions.unitTests.includeAndroidResources = true
 
-        // Make sure our project are run through basic lint checks
-        lintOptions {
+        // Make sure our projects are run through basic lint checks.
+        // AGP 8 `lint {}` DSL: `lintOptions {}` left lintConfig unused for some library
+        // modules under AGP 8.13+ (InvalidPackage / RestrictedApi still aborted).
+        lint {
           abortOnError = true
           warningsAsErrors = false
-          lintConfig = file('./lint.xml')
-          ignore 'UnknownNullness', 'SyntheticAccessor', 'LogConditional'
+          lintConfig = file("${rootProject.projectDir}/lint.xml")
+          disable 'InvalidPackage', 'GradleCompatible', 'RestrictedApi',
+            'UnknownNullness', 'SyntheticAccessor', 'LogConditional'
           checkReleaseBuilds = true
           checkAllWarnings = true
           showAll = true
           textReport = true
-          textOutput 'stdout'
           htmlReport = true
         }
       }

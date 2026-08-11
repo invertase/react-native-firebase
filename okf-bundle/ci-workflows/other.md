@@ -4,6 +4,8 @@
 
 Local macOS e2e: [running e2e § Rules](../testing/running-e2e.md#rules) only. CI pipeline below mirrors `tests_e2e_other.yml` (uses `-ci` packager variants).
 
+**Dual-app pins:** CI macOS stays on **`tests-macos/`** RN **0.78.3** + `react-native-macos@0.78.6`. Mobile Detox (`tests/`) is on RN **0.86.2** and owns codegen. See [test app dependency pins](../testing/test-app-dependency-pins.md).
+
 ### Pipeline (CI — mirrors `tests_e2e_other.yml`; local operators use [running e2e](../testing/running-e2e.md) only)
 
 1. Build macOS app (`tests:macos:build` from `tests-macos/`, `SKIP_BUNDLING=1`)

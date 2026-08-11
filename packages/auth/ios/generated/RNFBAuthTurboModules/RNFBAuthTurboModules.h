@@ -304,8 +304,8 @@ namespace JS {
 - (void)useEmulator:(NSString *)appName
                host:(NSString *)host
                port:(double)port;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboAuth::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboAuth::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboAuth::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboAuth::Constants>)getConstants;
 
 @end
 

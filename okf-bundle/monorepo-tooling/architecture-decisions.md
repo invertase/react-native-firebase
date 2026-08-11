@@ -199,10 +199,10 @@ Define a `jsSource` `namedInput` (`{projectRoot}/lib/**/*`, `{projectRoot}/plugi
 
 ## MonoTool-AD-12 — Never Nx-cache `prepare` when the script is `patch-package` — **Accepted**
 
-Disable Nx caching for any workspace `prepare` target whose script is `patch-package`. Today that is **`react-native-firebase-tests`** (`tests/package.json` → `"prepare": "patch-package"`), via a project-level override:
+Disable Nx caching for any workspace `prepare` target whose script is `patch-package`. Today that is **`react-native-firebase-tests`** and **`react-native-firebase-tests-macos`** (`"prepare": "patch-package"`), via project-level overrides:
 
 ```jsonc
-// tests/package.json
+// tests/package.json and tests-macos/package.json
 "nx": {
   "targets": {
     "prepare": {
@@ -214,13 +214,13 @@ Disable Nx caching for any workspace `prepare` target whose script is `patch-pac
 
 Root `"prepare": "patch-package"` runs only via Yarn lifecycle (`postinstallDev` → `yarn prepare`), **not** through `lerna run` / Nx, so it needs no Nx override.
 
-**Why:** `patch-package` mutates `node_modules` after install/relink. [MonoTool-AD-11](#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted) correctly scopes bob `prepare` inputs to `jsSource`, but the tests package has **no** `lib/**`, so its prepare input hash is effectively stable. Yarn then re-links unpatched packages (e.g. React Native's fmt pin back to **11.0.2**), Nx reports a prepare **cache hit**, and `patch-package` never re-runs — leaving `tests/node_modules/react-native/third-party-podspecs/fmt.podspec` unpatched even though root `yarn` exited 0. That breaks the agent [install / patch / fmt gate](../testing/agent-command-policy.md#install-patch-fmt-gate-blocking).
+**Why:** `patch-package` mutates `node_modules` after install/relink. [MonoTool-AD-11](#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted) correctly scopes bob `prepare` inputs to `jsSource`, but the e2e apps have **no** `lib/**`, so their prepare input hash is effectively stable. Yarn then re-links unpatched packages, Nx reports a prepare **cache hit**, and `patch-package` never re-runs. On **macOS 0.78** that left `fmt.podspec` at **11.0.2** despite green root `yarn`. Mobile **0.86.2** ships fmt **12.1.0** upstream, but `tests/` still needs the same no-cache rule for its remaining patches. That breaks the agent [install / patch / fmt gate](../testing/agent-command-policy.md#install-patch-fmt-gate-blocking) when macOS patches are skipped.
 
 This aligns with AD-11's spirit: **inputs must match what prepare consumes**. For bob packages that is JS source → cache. For `patch-package`, the meaningful "input" is the freshly linked `node_modules` tree (not hashable as a stable cache key) → **do not cache**.
 
 **Rejected:**
 
-- **Add `tests/patches/**` to `prepare` inputs** — insufficient alone. After yarn re-links, patch file content is unchanged → still a cache hit → `patch-package` still skipped (proven).
+- **Add `patches/**` to `prepare` inputs** — insufficient alone. After yarn re-links, patch file content is unchanged → still a cache hit → `patch-package` still skipped (proven).
 - **Hash `node_modules` as prepare inputs** — unstable, huge, and defeats the point of caching.
 - **Podfile / fmt native workarounds** — wrong layer; forbidden by the install/patch/fmt gate.
 

@@ -20,7 +20,8 @@ const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 const { resolve, join, dirname } = require('path');
 const { readdirSync, statSync, existsSync } = require('fs');
 
-const exclusionList = require('metro-config/src/defaults/exclusionList');
+// metro-config ≥0.82 only exports `./private/*` (not `./src/defaults/...`).
+const exclusionList = require('metro-config/private/defaults/exclusionList').default;
 
 const rootDir = resolve(__dirname, '..');
 const packagesDir = resolve(rootDir, 'packages');

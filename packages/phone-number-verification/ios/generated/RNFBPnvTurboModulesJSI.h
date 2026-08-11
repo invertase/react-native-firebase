@@ -15,14 +15,13 @@
 namespace facebook::react {
 
 
-  
 #pragma mark - NativeRNFBTurboPnvVerificationSupportResult
 
 template <typename P0, typename P1, typename P2, typename P3>
 struct NativeRNFBTurboPnvVerificationSupportResult {
-  P0 isSupported;
-  P1 simSlot;
-  P2 carrierId;
+  P0 isSupported{};
+  P1 simSlot{};
+  P2 carrierId{};
   P3 reason;
   bool operator==(const NativeRNFBTurboPnvVerificationSupportResult &other) const {
     return isSupported == other.isSupported && simSlot == other.simSlot && carrierId == other.carrierId && reason == other.reason;
@@ -49,15 +48,12 @@ struct NativeRNFBTurboPnvVerificationSupportResultBridging {
   static bool isSupportedToJs(jsi::Runtime &rt, decltype(types.isSupported) value) {
     return bridging::toJs(rt, value);
   }
-
   static double simSlotToJs(jsi::Runtime &rt, decltype(types.simSlot) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::String carrierIdToJs(jsi::Runtime &rt, decltype(types.carrierId) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::String reasonToJs(jsi::Runtime &rt, decltype(types.reason) value) {
     return bridging::toJs(rt, value);
   }
@@ -82,11 +78,11 @@ struct NativeRNFBTurboPnvVerificationSupportResultBridging {
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5>
 struct NativeRNFBTurboPnvVerifiedPhoneNumberTokenResult {
-  P0 phoneNumber;
-  P1 token;
-  P2 expirationTimestamp;
-  P3 issuedAtTimestamp;
-  P4 nonce;
+  P0 phoneNumber{};
+  P1 token{};
+  P2 expirationTimestamp{};
+  P3 issuedAtTimestamp{};
+  P4 nonce{};
   P5 claims;
   bool operator==(const NativeRNFBTurboPnvVerifiedPhoneNumberTokenResult &other) const {
     return phoneNumber == other.phoneNumber && token == other.token && expirationTimestamp == other.expirationTimestamp && issuedAtTimestamp == other.issuedAtTimestamp && nonce == other.nonce && claims == other.claims;
@@ -115,23 +111,18 @@ struct NativeRNFBTurboPnvVerifiedPhoneNumberTokenResultBridging {
   static jsi::String phoneNumberToJs(jsi::Runtime &rt, decltype(types.phoneNumber) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::String tokenToJs(jsi::Runtime &rt, decltype(types.token) value) {
     return bridging::toJs(rt, value);
   }
-
   static double expirationTimestampToJs(jsi::Runtime &rt, decltype(types.expirationTimestamp) value) {
     return bridging::toJs(rt, value);
   }
-
   static double issuedAtTimestampToJs(jsi::Runtime &rt, decltype(types.issuedAtTimestamp) value) {
     return bridging::toJs(rt, value);
   }
-
   static std::optional<jsi::String> nonceToJs(jsi::Runtime &rt, decltype(types.nonce) value) {
     return bridging::toJs(rt, value);
   }
-
   static std::optional<jsi::Object> claimsToJs(jsi::Runtime &rt, decltype(types.claims) value) {
     return bridging::toJs(rt, value);
   }
@@ -152,102 +143,68 @@ struct NativeRNFBTurboPnvVerifiedPhoneNumberTokenResultBridging {
   }
 };
 
-class JSI_EXPORT NativeRNFBTurboPnvCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboPnvCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Value enableTestSession(jsi::Runtime &rt, jsi::String token) = 0;
-  virtual jsi::Value getVerificationSupportInfo(jsi::Runtime &rt) = 0;
-  virtual jsi::Value getVerificationSupportInfoForSimSlot(jsi::Runtime &rt, double simSlot) = 0;
-  virtual jsi::Value getVerifiedPhoneNumber(jsi::Runtime &rt) = 0;
-  virtual jsi::Value getDigitalCredentialPayload(jsi::Runtime &rt, jsi::String nonce) = 0;
-  virtual jsi::Value exchangeCredentialResponseForPhoneNumber(jsi::Runtime &rt, jsi::String dcApiResponse) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboPnvCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboPnv";
 
 protected:
-  NativeRNFBTurboPnvCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboPnvCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboPnvCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboPnvCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["enableTestSession"] = MethodMetadata {.argCount = 1, .invoker = __enableTestSession};
+    methodMap_["getVerificationSupportInfo"] = MethodMetadata {.argCount = 0, .invoker = __getVerificationSupportInfo};
+    methodMap_["getVerificationSupportInfoForSimSlot"] = MethodMetadata {.argCount = 1, .invoker = __getVerificationSupportInfoForSimSlot};
+    methodMap_["getVerifiedPhoneNumber"] = MethodMetadata {.argCount = 0, .invoker = __getVerifiedPhoneNumber};
+    methodMap_["getDigitalCredentialPayload"] = MethodMetadata {.argCount = 1, .invoker = __getDigitalCredentialPayload};
+    methodMap_["exchangeCredentialResponseForPhoneNumber"] = MethodMetadata {.argCount = 1, .invoker = __exchangeCredentialResponseForPhoneNumber};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboPnvCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboPnvCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __enableTestSession(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::enableTestSession) == 2,
+      "Expected enableTestSession(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::enableTestSession,  static_cast<NativeRNFBTurboPnvCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
 
-    }
+  static jsi::Value __getVerificationSupportInfo(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getVerificationSupportInfo) == 1,
+      "Expected getVerificationSupportInfo(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getVerificationSupportInfo,  static_cast<NativeRNFBTurboPnvCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-    jsi::Value enableTestSession(jsi::Runtime &rt, jsi::String token) override {
-      static_assert(
-          bridging::getParameterCount(&T::enableTestSession) == 2,
-          "Expected enableTestSession(...) to have 2 parameters");
+  static jsi::Value __getVerificationSupportInfoForSimSlot(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getVerificationSupportInfoForSimSlot) == 2,
+      "Expected getVerificationSupportInfoForSimSlot(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getVerificationSupportInfoForSimSlot,  static_cast<NativeRNFBTurboPnvCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber());
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::enableTestSession, jsInvoker_, instance_, std::move(token));
-    }
-    jsi::Value getVerificationSupportInfo(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getVerificationSupportInfo) == 1,
-          "Expected getVerificationSupportInfo(...) to have 1 parameters");
+  static jsi::Value __getVerifiedPhoneNumber(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getVerifiedPhoneNumber) == 1,
+      "Expected getVerifiedPhoneNumber(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getVerifiedPhoneNumber,  static_cast<NativeRNFBTurboPnvCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getVerificationSupportInfo, jsInvoker_, instance_);
-    }
-    jsi::Value getVerificationSupportInfoForSimSlot(jsi::Runtime &rt, double simSlot) override {
-      static_assert(
-          bridging::getParameterCount(&T::getVerificationSupportInfoForSimSlot) == 2,
-          "Expected getVerificationSupportInfoForSimSlot(...) to have 2 parameters");
+  static jsi::Value __getDigitalCredentialPayload(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getDigitalCredentialPayload) == 2,
+      "Expected getDigitalCredentialPayload(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getDigitalCredentialPayload,  static_cast<NativeRNFBTurboPnvCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getVerificationSupportInfoForSimSlot, jsInvoker_, instance_, std::move(simSlot));
-    }
-    jsi::Value getVerifiedPhoneNumber(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getVerifiedPhoneNumber) == 1,
-          "Expected getVerifiedPhoneNumber(...) to have 1 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getVerifiedPhoneNumber, jsInvoker_, instance_);
-    }
-    jsi::Value getDigitalCredentialPayload(jsi::Runtime &rt, jsi::String nonce) override {
-      static_assert(
-          bridging::getParameterCount(&T::getDigitalCredentialPayload) == 2,
-          "Expected getDigitalCredentialPayload(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getDigitalCredentialPayload, jsInvoker_, instance_, std::move(nonce));
-    }
-    jsi::Value exchangeCredentialResponseForPhoneNumber(jsi::Runtime &rt, jsi::String dcApiResponse) override {
-      static_assert(
-          bridging::getParameterCount(&T::exchangeCredentialResponseForPhoneNumber) == 2,
-          "Expected exchangeCredentialResponseForPhoneNumber(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::exchangeCredentialResponseForPhoneNumber, jsInvoker_, instance_, std::move(dcApiResponse));
-    }
-
-  private:
-    friend class NativeRNFBTurboPnvCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __exchangeCredentialResponseForPhoneNumber(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::exchangeCredentialResponseForPhoneNumber) == 2,
+      "Expected exchangeCredentialResponseForPhoneNumber(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::exchangeCredentialResponseForPhoneNumber,  static_cast<NativeRNFBTurboPnvCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
 };
 
 } // namespace facebook::react

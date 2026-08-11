@@ -74,8 +74,8 @@ namespace JS {
 - (void)triggerEvent:(NSString *)eventId
              resolve:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboFiam::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboFiam::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboFiam::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboFiam::Constants>)getConstants;
 
 @end
 

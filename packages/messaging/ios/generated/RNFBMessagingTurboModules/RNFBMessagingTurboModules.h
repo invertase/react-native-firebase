@@ -140,8 +140,8 @@ namespace JS {
                                   reject:(RCTPromiseRejectBlock)reject;
 - (void)isNotificationDelegationEnabled:(RCTPromiseResolveBlock)resolve
                                  reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboMessaging::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboMessaging::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboMessaging::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboMessaging::Constants>)getConstants;
 
 @end
 

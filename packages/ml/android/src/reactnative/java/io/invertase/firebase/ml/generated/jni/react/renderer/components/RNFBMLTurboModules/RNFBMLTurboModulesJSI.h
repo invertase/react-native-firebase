@@ -15,50 +15,18 @@
 namespace facebook::react {
 
 
-  class JSI_EXPORT NativeRNFBTurboMLCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboMLCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  
-
-};
-
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboMLCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboML";
 
 protected:
-  NativeRNFBTurboMLCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboMLCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
+  NativeRNFBTurboMLCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboMLCxxSpec::kModuleName}, jsInvoker) {
 
-
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboMLCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboMLCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
 
-    }
-
-    
-
-  private:
-    friend class NativeRNFBTurboMLCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
 };
 
 } // namespace facebook::react

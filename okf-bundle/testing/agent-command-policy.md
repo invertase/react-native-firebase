@@ -76,8 +76,8 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 **Before any** `yarn tests:ios:build`, `yarn tests:android:build`, or other Detox native build path:
 
 1. **Root `yarn` MUST have run and exited 0** in this checkout. Required on a fresh checkout, after deleting `node_modules`, after pulling patch changes, and whenever patches may be stale. Do **not** start native `:build` until that install finished successfully.
-2. Root `yarn` applies **`.yarn/patches`** (jet, detox, mocha-remote) and workspace **`patch-package`** patches, including **`tests/patches/react-native+0.78.3.patch`** and **`tests-macos/patches/react-native+0.78.3.patch`** (bump React Native's fmt pin to **12.1.0**). `tests` / `tests-macos` `prepare` is `patch-package` and must **not** be Nx-cache-skipped ([MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted)).
-3. **Verify** the patched React Native fmt podspec reports version **≥ 12.1.0** (Xcode 26 / Apple Clang 21-safe floor for this pin). **Yarn exit 0 alone is not sufficient** — always run the check below before native `:build` (a prepare cache-skip historically left fmt at **11.0.2** despite a green install):
+2. Root `yarn` applies **`.yarn/patches`** (jet, detox, mocha-remote) and workspace **`patch-package`** patches. **macOS** still applies **`tests-macos/patches/react-native+0.78.3.patch`** (fmt **12.1.0**). **Mobile RN 0.86.2** ships fmt **12.1.0** upstream (no `tests/patches/react-native+*.patch` fmt bump). `tests` / `tests-macos` `prepare` is `patch-package` and must **not** be Nx-cache-skipped ([MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted)).
+3. **Verify** the React Native fmt podspec reports version **≥ 12.1.0** (Xcode 26 / Apple Clang 21-safe floor for this pin). **Yarn exit 0 alone is not sufficient** — always run the check below before native `:build` (a prepare cache-skip historically left fmt at **11.0.2** despite a green install):
 
 ```bash
 # Mobile toolchain (tests/) — required before ios/android :build
@@ -89,7 +89,7 @@ rg 'spec\.version|:tag' tests-macos/node_modules/react-native/third-party-podspe
 
 Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 
-4. If fmt is still **11.0.2** (or anything **< 12.1.0**): **STOP**. Re-run root `yarn` / fix patch application (including Nx `tests:prepare` cache policy — [MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted)). Do **not** invent Podfile `post_install` fmt hacks, `FMT_USE_CONSTEVAL` / `base.h` patches, c++17-for-fmt-only, or web-search workarounds — the durable fix is the existing patch applied on install.
+4. If fmt is still **11.0.2** (or anything **< 12.1.0**): **STOP**. Re-run root `yarn` / fix patch application for **macOS** (including Nx `tests-macos:prepare` cache policy — [MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted)). On mobile 0.86+, fmt should already be ≥12.1.0 without a patch; if not, investigate the resolved `react-native` version. Do **not** invent Podfile `post_install` fmt hacks, `FMT_USE_CONSTEVAL` / `base.h` patches, c++17-for-fmt-only, or web-search workarounds.
 
 **Symptoms when violated:** Apple Clang 21 consteval errors compiling unpatched fmt **11.0.2**; agents inventing Podfile/fmt workarounds instead of re-running root `yarn` / fixing prepare cache policy.
 
@@ -159,9 +159,9 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 
 ### fmt / Apple Clang 21 (unpatched React Native)
 
-- Unpatched RN ships fmt **11.0.2**. On Xcode 26 / Apple Clang 21 that fails consteval builds.
-- **Canonical fix:** root `yarn` applying `tests/patches/react-native+0.78.3.patch` (and `tests-macos/patches/react-native+0.78.3.patch`) → fmt **12.1.0**. See [install / patch / fmt gate](#install-patch-fmt-gate-blocking).
-- **Trap:** yarn exit **0** does **not** prove the patch landed. If Nx cache-skips `react-native-firebase-tests:prepare` (`patch-package`), fmt stays at **11.0.2**. Durable policy: [MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted) (`tests` prepare `cache: false`). **Always** run the fmt `rg` verification before native `:build`.
+- Unpatched RN **0.78** ships fmt **11.0.2**. On Xcode 26 / Apple Clang 21 that fails consteval builds.
+- **Canonical fix (macOS 0.78):** root `yarn` applying `tests-macos/patches/react-native+0.78.3.patch` → fmt **12.1.0**. Mobile **0.86.2** already ships fmt **12.1.0**. See [install / patch / fmt gate](#install-patch-fmt-gate-blocking).
+- **Trap:** yarn exit **0** does **not** prove a macOS patch landed. If Nx cache-skips `react-native-firebase-tests-macos:prepare` (`patch-package`), fmt stays at **11.0.2**. Durable policy: [MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted). **Always** run the fmt `rg` verification before native `:build`.
 - **Never** invent Podfile `post_install` fmt hacks, `FMT_USE_CONSTEVAL`, `base.h` patches, or c++17-for-fmt-only as a substitute for a missed install/patch.
 
 ## Subagent handoff

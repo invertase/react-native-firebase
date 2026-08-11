@@ -118,8 +118,8 @@ expirationDurationSeconds:(double)expirationDurationSeconds
            customSignals:(NSDictionary *)customSignals
                  resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants>)getConstants;
 
 @end
 

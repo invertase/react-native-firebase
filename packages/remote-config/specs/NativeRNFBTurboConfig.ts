@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/no-wrapper-object-types */
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
 export type LastFetchStatus = 'success' | 'failure' | 'no_fetch_yet' | 'throttled' | 'unknown';
 
 export interface StoredConfigValue {
-  value: string | number | boolean;
+  // Codegen (RN 0.86+) rejects heterogeneous unions (string|number|boolean).
+  // Native already treats this as Object / id; JS narrows via RemoteConfigValue helpers.
+  value: Object;
   source: 'default' | 'remote' | 'static' | 'unknown';
 }
 
@@ -45,16 +48,14 @@ export interface Spec extends TurboModule {
   ensureInitialized(appName: string): Promise<VoidRemoteConfigResult>;
   setDefaults(
     appName: string,
-    defaults: { [key: string]: string | number | boolean },
+    // Codegen rejects heterogeneous value unions; ReadableMap on native.
+    defaults: Object,
   ): Promise<NullRemoteConfigResult>;
   setDefaultsFromResource(appName: string, resourceName: string): Promise<NullRemoteConfigResult>;
   reset(appName: string): Promise<VoidRemoteConfigResult>;
   onConfigUpdated(appName: string): void;
   removeConfigUpdateRegistration(appName: string): void;
-  setCustomSignals(
-    appName: string,
-    customSignals: { [key: string]: string | number | null },
-  ): Promise<VoidRemoteConfigResult>;
+  setCustomSignals(appName: string, customSignals: Object): Promise<VoidRemoteConfigResult>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('NativeRNFBTurboConfig');
