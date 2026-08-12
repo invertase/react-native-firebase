@@ -17,6 +17,7 @@
 - Follow `okf-bundle/documentation-policy.md`: durable knowledge in reference docs; ephemeral state only in explicit work queues; commits are documentation; single-commit PR titles must match the commit subject exactly.
 - Testing entry points: `okf-bundle/testing/index.md`; validation requirements: `okf-bundle/testing/validation-checklist.md`.
 - Match validation to the **work type** and **validation tier** in OKF ([change authoring workflow](okf-bundle/testing/change-authoring-workflow.md); term ids in [iteration vocabulary](okf-bundle/testing/iteration-vocabulary.md)).
+- **Agent hooks (Cursor + Claude):** [scripts/agent-hooks/README.md](scripts/agent-hooks/README.md) — commit gate + validation evidence + compaction handoff.
 
 ## PR instructions
 

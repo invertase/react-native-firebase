@@ -607,6 +607,9 @@ vertexai-sdk-test-data*
 mocks-lookup.ts
 
 .nx/
-.claude/
+# Share project Claude hooks; keep local overrides private.
+.claude/*
+!.claude/settings.json
+.claude/settings.local.json
 .codex/
 Package.Resolved

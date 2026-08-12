@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "node scripts/agent-hooks/gate-commit.js"
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": "node scripts/agent-hooks/record-validation.js"
+      }
+    ],
+    "preCompact": [
+      {
+        "command": "node scripts/agent-hooks/handoff-nudge.js"
+      }
+    ]
+  }
+}
