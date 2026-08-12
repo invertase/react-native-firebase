@@ -31,6 +31,7 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 | `react` (mobile) | **`19.2.3`** | `tests/package.json` |
 | `@react-native-community/cli` (+ platform packages) | **`20.1.0`** | `tests/package.json` (and root `devDependencies` for tooling convenience) |
 | `@react-native/babel-preset` / `@react-native/metro-config` | **`0.86.2`** | `tests/package.json` |
+| `@react-native/jest-preset` | **`0.86.2`** | `tests/package.json` (and root `devDependencies` for Jest / toolchain lockstep with mobile RN) |
 | `@react-native/codegen` | **`0.86.2`** | Resolved with mobile `react-native` from `tests/` (no root resolution) |
 | `react-native` (macOS shell) | **`0.78.3`** | `tests-macos/package.json` |
 | `react-native-macos` | **`0.78.6`** | `tests-macos/package.json` |

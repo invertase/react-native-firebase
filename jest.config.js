@@ -1,6 +1,6 @@
 module.exports = {
   maxConcurrency: 10,
-  preset: './tests/node_modules/react-native/jest-preset.js',
+  preset: '@react-native/jest-preset',
 
   // This is a large departure from most react-native jest testing
   // they use a variant of 'jsdom' (tailored for react-native) so they

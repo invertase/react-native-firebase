@@ -95,6 +95,7 @@
     "@inquirer/prompts": "^8.4.2",
     "@octokit/core": "^7.0.6",
     "@react-native-community/cli": "20.1.0",
+    "@react-native/jest-preset": "0.86.2",
     "@tsconfig/node-lts": "^24.0.0",
     "@types/react": "~19.2.14",
     "@types/react-native": "^0.73.0",

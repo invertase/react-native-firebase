@@ -42,6 +42,7 @@
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.0",
     "@react-native/babel-preset": "0.86.2",
+    "@react-native/jest-preset": "0.86.2",
     "@react-native/metro-config": "0.86.2",
     "assert": "^2.1.0",
     "axios": "^1.15.2",

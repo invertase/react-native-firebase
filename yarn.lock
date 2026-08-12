@@ -4320,7 +4320,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/create-cache-key-function@npm:^29.6.3":
+"@jest/create-cache-key-function@npm:^29.6.3, @jest/create-cache-key-function@npm:^29.7.0":
   version: 29.7.0
   resolution: "@jest/create-cache-key-function@npm:29.7.0"
   dependencies:
@@ -6919,6 +6919,21 @@ __metadata:
   version: 0.86.2
   resolution: "@react-native/gradle-plugin@npm:0.86.2"
   checksum: 10/48569f53908b2b3cf6075f298d19e2a1c171240c6b46ff3ffd21014af872bfda716c7df98dbb927b7a5c7849d16f2d3349a7bc3959f86e81c3057ac5c9c90e8d
+  languageName: node
+  linkType: hard
+
+"@react-native/jest-preset@npm:0.86.2":
+  version: 0.86.2
+  resolution: "@react-native/jest-preset@npm:0.86.2"
+  dependencies:
+    "@jest/create-cache-key-function": "npm:^29.7.0"
+    "@react-native/js-polyfills": "npm:0.86.2"
+    babel-jest: "npm:^29.7.0"
+    jest-environment-node: "npm:^29.7.0"
+    regenerator-runtime: "npm:^0.13.2"
+  peerDependencies:
+    react: ^19.2.3
+  checksum: 10/5b8b434fedee7982ae891145dad6b8a0f34b5d0fa0e6398196ea7df6f98b805a392da13253dde701a751534ecd20ea9a56b9b58d51641acc25d3fcc1ebca7429
   languageName: node
   linkType: hard
 
@@ -16324,7 +16339,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-environment-node@npm:^29.6.3":
+"jest-environment-node@npm:^29.6.3, jest-environment-node@npm:^29.7.0":
   version: 29.7.0
   resolution: "jest-environment-node@npm:29.7.0"
   dependencies:
@@ -22629,6 +22644,7 @@ __metadata:
     "@react-native-firebase/remote-config": "npm:26.2.0"
     "@react-native-firebase/storage": "npm:26.2.0"
     "@react-native/babel-preset": "npm:0.86.2"
+    "@react-native/jest-preset": "npm:0.86.2"
     "@react-native/metro-config": "npm:0.86.2"
     assert: "npm:^2.1.0"
     axios: "npm:^1.15.2"
@@ -22673,6 +22689,7 @@ __metadata:
     "@inquirer/prompts": "npm:^8.4.2"
     "@octokit/core": "npm:^7.0.6"
     "@react-native-community/cli": "npm:20.1.0"
+    "@react-native/jest-preset": "npm:0.86.2"
     "@tsconfig/node-lts": "npm:^24.0.0"
     "@types/react": "npm:~19.2.14"
     "@types/react-native": "npm:^0.73.0"
