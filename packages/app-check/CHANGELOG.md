@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.2.0](https://github.com/invertase/react-native-firebase/compare/v26.1.0...v26.2.0) (2026-08-10)
+
+### Bug Fixes
+
+- **app-check, ios:** do not install debug provider before configure ([#9166](https://github.com/invertase/react-native-firebase/issues/9166)) ([b7879cd](https://github.com/invertase/react-native-firebase/commit/b7879cdde1c78e80e364ecd8966a9f0f45cd5220))
+- codegen should be wipe-then-regen ([04bc4e4](https://github.com/invertase/react-native-firebase/commit/04bc4e4cdab9870cb366fd212b2ccb331b0289d6))
+
 ## [26.1.0](https://github.com/invertase/react-native-firebase/compare/v26.0.0...v26.1.0) (2026-08-03)
 
 ### Features

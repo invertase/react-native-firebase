@@ -75,6 +75,8 @@ export interface RNFBAppModuleInterface {
 export interface RNFBUtilsModuleInterface {
   // Android-only properties and methods
   isRunningInTestLab: boolean;
+  /** Host app marketing version when available from native utils constants. */
+  appVersion?: string;
   androidPlayServices: {
     isAvailable: boolean;
     status: number;

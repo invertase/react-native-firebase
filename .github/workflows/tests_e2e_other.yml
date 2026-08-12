@@ -95,6 +95,10 @@ jobs:
       NX_NO_CLOUD: true
       NX_CACHE_DIRECTORY: .nx/cache
       NX_WORKSPACE_DATA_DIRECTORY: .nx/workspace-data
+      # Xcode 26+ MetalToolchain cryptex omits swiftCompatibility* libs; pin default
+      # toolchain so SharedAsyncStorage (async-storage 3.x) links on Other CI.
+      # https://github.com/actions/runner-images/issues/13135
+      TOOLCHAINS: com.apple.dt.toolchain.XcodeDefault
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
       CCACHE_FILECLONE: true
       CCACHE_DEPEND: true
@@ -106,7 +110,7 @@ jobs:
     steps:
       - name: Setup Environment for Screen Recording
         # https://github.com/guidepup/setup-action/releases
-        uses: guidepup/setup-action@5ab89fbb6641406f6f6c91057225f3fb397c2eea # v0.20.0
+        uses: guidepup/setup-action@5d19b1151e972898cae0f0cc44e239127953bd90 # v0.21.0
         continue-on-error: true
         with:
           record: true
@@ -121,13 +125,13 @@ jobs:
           path: ./recordings/
 
       # https://github.com/actions/setup-node/releases
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
 
       - name: Configure JDK
         # https://github.com/actions/setup-java/releases
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -188,7 +192,7 @@ jobs:
 
       - name: Setup Ruby
         # https://github.com/ruby/setup-ruby/releases
-        uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # v1.313.0
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
         with:
           ruby-version: 3
 
@@ -290,7 +294,7 @@ jobs:
         run: yarn tests:macos:test-cover
 
       # https://github.com/codecov/codecov-action/releases
-      - uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         continue-on-error: true
         with:
           files: coverage/lcov.info

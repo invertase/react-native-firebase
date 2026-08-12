@@ -25,4 +25,7 @@
      providerName:(NSString *_Nonnull)providerName
        debugToken:(NSString *_Nullable)debugToken;
 
+/** Returns the factory-held facade for `app`, or nil if none exists yet. */
+- (RNFBAppCheckProvider *_Nullable)providerForApp:(FIRApp *_Nonnull)app;
+
 @end

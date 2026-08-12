@@ -5,6 +5,7 @@
  *
  * NewArch-AD-20: do not resolve CLI/codegen from library package cwd.
  * NewArch-AD-21: ResultT inject retired once mobile pin is 0.84+ (0.86 emits ResultT).
+ * NewArch-AD-22: wipe-then-regen lives in scripts/codegen-package.mjs.
  */
 import { execSync } from 'child_process';
 import path from 'path';

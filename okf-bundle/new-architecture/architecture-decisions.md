@@ -78,7 +78,7 @@ The deferral discriminator is **not** satisfied by structure alone: nothing in t
 
 `includesGeneratedCode: true`; commit Codegen output under `android/.../generated` and `ios/generated`, mirroring `packages/functions`.
 
-**Guard (NewArch-AD-17.3):** CI runs `yarn codegen:verify` — re-running `yarn codegen` for every migrated package then `git diff --exit-code` on `**/generated/**` — so committed artifacts can't go stale.
+**Guard (NewArch-AD-17.3):** CI runs `yarn codegen:verify` — wipe-then-regen ([NewArch-AD-22](#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)) for every migrated package then `git diff --exit-code` on `**/generated/**` — so committed artifacts can't go stale.
 
 ---
 
@@ -98,7 +98,7 @@ Each package has **one** `codegenConfig` whose `name` is an **aggregate library 
 
 **Why:** Multi-module packages (database ×5, firestore ×4) cannot name the library after one module, so the aggregate-library shape is mandatory for them; applying it everywhere gives a single rule reviewers can apply without thinking about spec count. The aggregate-library shape is the one RN documents and the one that generalizes.
 
-**`functions` correction (one-time):** `functions` shipped with `codegenConfig.name: "NativeRNFBTurboFunctions"` (the *module* name). Rename to `RNFBFunctionsTurboModules` for consistency. **Downside: effectively none.** `codegenConfig.name` is the *generated-library* identifier (drives generated file/JNI/CMake target names) — it is **internal**, not a public/consumer symbol, and is **distinct from the module name** `NativeRNFBTurboFunctions` (the `RCT_EXPORT_MODULE` / `TurboModuleRegistry.get('NativeRNFBTurboFunctions')` key), which **stays unchanged**. The rename is mechanical: change `name`, re-run `yarn codegen`, delete the old generated files, update `react-native.config.js` `cmakeListsPath` if it embeds the old name, commit. Only risk is a build-wiring reference to the old library name; a clean codegen + build catches it. Track as a small standalone follow-up (low risk, no consumer impact).
+**`functions` correction (one-time):** `functions` shipped with `codegenConfig.name: "NativeRNFBTurboFunctions"` (the *module* name). Rename to `RNFBFunctionsTurboModules` for consistency. **Downside: effectively none.** `codegenConfig.name` is the *generated-library* identifier (drives generated file/JNI/CMake target names) — it is **internal**, not a public/consumer symbol, and is **distinct from the module name** `NativeRNFBTurboFunctions` (the `RCT_EXPORT_MODULE` / `TurboModuleRegistry.get('NativeRNFBTurboFunctions')` key), which **stays unchanged**. The rename is mechanical: change `name`, re-run `yarn codegen` ([NewArch-AD-22](#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted) wipe-then-regen removes the old library tree under the configured `outputPath`), and update `react-native.config.js` `cmakeListsPath` / shell imports **only if** those paths embed the old library name, then commit. Only risk is a build-wiring reference to the old library name outside the wiped tree; a clean codegen + build catches it. Track as a small standalone follow-up (low risk, no consumer impact).
 
 **Gate:** every spec name appears as a `modulesProvider` key (iOS) and is registered in the package class (Android); `codegenConfig.name` matches `RNFB<Package>TurboModules`.
 
@@ -278,7 +278,7 @@ yarn tests:jest -- packages/app/__tests__/turboModuleSpecNativeParity.test.ts
 
 **Helper:** [`specNativeParityHelper.ts`](../../../packages/app/__tests__/specNativeParityHelper.ts) — parses TS spec interfaces, Android generated `*Spec.java` `@ReactMethod` names, and iOS generated `@protocol NativeRNFBTurbo*Spec` method names.
 
-3. **Codegen-up-to-date CI** — **Accepted.** Root `yarn codegen:verify` runs [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs) (codegen for all 13 migrated packages via the `@react-native-firebase/app` React Native CLI context) then `git diff --exit-code` on `packages/*/android/**/generated/**` and `packages/*/ios/generated/**` (NewArch-AD-5 guard). Wired in the CI lint job ([`.github/workflows/linting.yml`](../../../.github/workflows/linting.yml)).
+3. **Codegen-up-to-date CI** — **Accepted.** Root `yarn codegen:verify` runs [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs) (codegen for every migrated package listed in that script’s `MIGRATED_PACKAGES` — currently 17 — via the `@react-native-firebase/app` React Native CLI context) then `git diff --exit-code` on `packages/*/android/**/generated/**` and `packages/*/ios/generated/**` (NewArch-AD-5 guard). Wired in the CI lint job ([`.github/workflows/linting.yml`](../../../.github/workflows/linting.yml)).
 
 <a id="newarch-ad-173--codegen-verify-ci--accepted"></a>
 
@@ -287,6 +287,8 @@ yarn tests:jest -- packages/app/__tests__/turboModuleSpecNativeParity.test.ts
 **Command:** `yarn codegen:verify`
 
 **When required:** any change to `packages/*/specs/**` or Codegen/RN version bumps that could regenerate native artifacts — run before closing `implementation_gate` or `review_gate`.
+
+**Wipe-then-regen:** [`scripts/codegen-package.mjs`](../../../scripts/codegen-package.mjs) (invoked by package `android:codegen` / `ios:codegen` and by [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs)) must **delete each package's configured `--outputPath`** before CLI codegen writes ([NewArch-AD-22](#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)). ResultT inject is retired on the current mobile pin ([NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted) superseded).
 
 **Why:** The current Jest mocks are plain enumerable objects and structurally cannot reproduce the enumeration bug that already cost an iteration; these tests close that blind spot and make iterations faster and higher quality.
 
@@ -355,6 +357,26 @@ Committed generated native artifacts ([NewArch-AD-5](#newarch-ad-5--commit-gener
 **Exit (CPRN-236 / NewArch-AD-20 mobile bump):** The mobile app is on **RN 0.86.2**. Upstream `@react-native/codegen@0.86.2` emits `using ResultT = …` natively. The inject script (`scripts/patch-ios-codegen-resultt.mjs`) and its `codegen:verify` hook are **removed**. Regenerate with `yarn codegen:all` ([`scripts/codegen-package.mjs`](../../../scripts/codegen-package.mjs) from `tests/`).
 
 **Do not reintroduce** the inject on the current mobile pin. macOS remains on 0.78 for the shell only and does not own codegen artifacts.
+
+---
+
+## NewArch-AD-22 — Codegen is wipe-then-regen on the configured outputPath — **Accepted**
+
+**Decision:** Before every Codegen write to a package's configured `--outputPath`, **delete that directory entirely**, then run CLI codegen. Applies to:
+
+- [`scripts/codegen-package.mjs`](../../../scripts/codegen-package.mjs) (mobile toolchain from `tests/`; used by each package's `android:codegen` / `ios:codegen` and by [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs))
+
+ResultT inject ([NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted)) is **retired** on the current mobile pin (0.86 emits `ResultT` natively). Do not reintroduce `patch-ios-codegen-resultt.mjs` after wipe+regen.
+
+**Why:** React Native Codegen does not reliably remove obsolete generated files when specs, `codegenConfig.name`, or templates change. Incremental overwrite leaves orphan classes / wrong library trees under the same `outputPath`, which break Android (`duplicate class`) or leave stale committed artifacts that [NewArch-AD-17.3](#newarch-ad-173--codegen-verify-ci--accepted) would not catch without a wipe. Wipe-then-regen makes the committed tree match a clean emit ([NewArch-AD-5](#newarch-ad-5--commit-generated-code--accepted)).
+
+**Scope / limits:**
+
+- Wipe targets **only** the configured `--outputPath` (e.g. `android/.../generated`, `ios/generated`). Hand-written sources outside that path (e.g. `RCTConvert+FIROptions`) are untouched.
+- Wipe removes orphans **on the same path**. A **sibling** wrong tree from a prior bad `outputPath` (e.g. `src/main/java/.../generated` vs `src/reactnative/java/.../generated`) still needs a one-time manual delete — see [workflow § Duplicate generated trees](turbomodule-implementation-workflow.md#duplicate-generated-trees).
+- After a `codegenConfig.name` rename ([NewArch-AD-7](#newarch-ad-7--codegenconfigname--aggregate-library-name-one-codegenconfig-per-package--accepted)), wipe clears the old library under `outputPath`; update `cmakeListsPath` / imports only when those paths embed the old name.
+
+**Related:** [NewArch-AD-5](#newarch-ad-5--commit-generated-code--accepted), [NewArch-AD-7](#newarch-ad-7--codegenconfigname--aggregate-library-name-one-codegenconfig-per-package--accepted), [NewArch-AD-17.3](#newarch-ad-173--codegen-verify-ci--accepted), [NewArch-AD-20](#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted), [NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted).
 
 ---
 

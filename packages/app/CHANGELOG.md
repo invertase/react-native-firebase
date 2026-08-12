@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.2.0](https://github.com/invertase/react-native-firebase/compare/v26.1.0...v26.2.0) (2026-08-10)
+
+### Features
+
+- **app, ios:** support disabling SPM via Expo config plugin ([9fbf0a0](https://github.com/invertase/react-native-firebase/commit/9fbf0a0f3f9cbdcc8a8f750aef9100775a7fd7e6))
+
+### Bug Fixes
+
+- **auth, ios:** match signInWithCustomToken selector to generated TurboModule spec ([#9146](https://github.com/invertase/react-native-firebase/issues/9146)) ([b674be7](https://github.com/invertase/react-native-firebase/commit/b674be7126f3e5a24cfdc1b0f70ab53cafcc8998))
+- codegen should be wipe-then-regen ([04bc4e4](https://github.com/invertase/react-native-firebase/commit/04bc4e4cdab9870cb366fd212b2ccb331b0289d6))
+- **ios:** link FirebaseCore into app target under SPM ([8d937c6](https://github.com/invertase/react-native-firebase/commit/8d937c61235cc51d0646885cb7da704365090ce8)), closes [#9158](https://github.com/invertase/react-native-firebase/issues/9158)
+- **ios:** skip static frameworks in SPM archive embed phase ([#9155](https://github.com/invertase/react-native-firebase/issues/9155)) ([442f9d5](https://github.com/invertase/react-native-firebase/commit/442f9d563d07250a5c7b6e7ac5f305509210a8c7))
+- results of running wipe-then-regen codegen ([1e008d1](https://github.com/invertase/react-native-firebase/commit/1e008d10b84ff2c1c1f1798c79b0bcc135bf620b))
+
 ## [26.1.0](https://github.com/invertase/react-native-firebase/compare/v26.0.0...v26.1.0) (2026-08-03)
 
 ### Features

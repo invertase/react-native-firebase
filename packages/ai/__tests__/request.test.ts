@@ -15,7 +15,15 @@
  * limitations under the License.
  */
 import { describe, expect, it, jest, afterEach } from '@jest/globals';
-import { RequestUrl, Task, getHeaders, makeRequest } from '../lib/requests/request';
+import {
+  RequestUrl,
+  Task,
+  TemplateRequestUrl,
+  ServerPromptTemplateTask,
+  getHeaders,
+  getTemplateHeaders,
+  makeRequest,
+} from '../lib/requests/request';
 import { ApiSettings } from '../lib/types/internal';
 import { DEFAULT_API_VERSION } from '../lib/constants';
 import { AIErrorCode } from '../lib/types';
@@ -281,6 +289,174 @@ describe('request methods', () => {
       );
       const headers = await getHeaders(fakeUrl);
       expect(headers.has('Authorization')).toBe(false);
+    });
+
+    it('adds X-Firebase-Appid and X-Firebase-AppVersion when collection enabled', async () => {
+      const fakeUrl = new RequestUrl(
+        'models/model-name',
+        Task.GENERATE_CONTENT,
+        {
+          apiKey: 'key',
+          project: 'myproject',
+          appId: 'my-appid',
+          location: 'moon',
+          backend: new VertexAIBackend(),
+          automaticDataCollectionEnabled: true,
+          appVersion: '2.3.4',
+        },
+        true,
+        {},
+      );
+      const headers = await getHeaders(fakeUrl);
+      expect(headers.get('X-Firebase-Appid')).toBe('my-appid');
+      expect(headers.get('X-Firebase-AppVersion')).toBe('2.3.4');
+    });
+
+    it('omits AppId and AppVersion when collection disabled', async () => {
+      const fakeUrl = new RequestUrl(
+        'models/model-name',
+        Task.GENERATE_CONTENT,
+        {
+          apiKey: 'key',
+          project: 'myproject',
+          appId: 'my-appid',
+          location: 'moon',
+          backend: new VertexAIBackend(),
+          automaticDataCollectionEnabled: false,
+          appVersion: '2.3.4',
+        },
+        true,
+        {},
+      );
+      const headers = await getHeaders(fakeUrl);
+      expect(headers.has('X-Firebase-Appid')).toBe(false);
+      expect(headers.has('X-Firebase-AppVersion')).toBe(false);
+    });
+
+    it('adds AppId but omits AppVersion when version missing', async () => {
+      const fakeUrl = new RequestUrl(
+        'models/model-name',
+        Task.GENERATE_CONTENT,
+        {
+          apiKey: 'key',
+          project: 'myproject',
+          appId: 'my-appid',
+          location: 'moon',
+          backend: new VertexAIBackend(),
+          automaticDataCollectionEnabled: true,
+        },
+        true,
+        {},
+      );
+      const headers = await getHeaders(fakeUrl);
+      expect(headers.get('X-Firebase-Appid')).toBe('my-appid');
+      expect(headers.has('X-Firebase-AppVersion')).toBe(false);
+    });
+
+    it('omits AppVersion when version is empty string', async () => {
+      const fakeUrl = new RequestUrl(
+        'models/model-name',
+        Task.GENERATE_CONTENT,
+        {
+          apiKey: 'key',
+          project: 'myproject',
+          appId: 'my-appid',
+          location: 'moon',
+          backend: new VertexAIBackend(),
+          automaticDataCollectionEnabled: true,
+          appVersion: '',
+        },
+        true,
+        {},
+      );
+      const headers = await getHeaders(fakeUrl);
+      expect(headers.get('X-Firebase-Appid')).toBe('my-appid');
+      expect(headers.has('X-Firebase-AppVersion')).toBe(false);
+    });
+  });
+
+  describe('getTemplateHeaders', () => {
+    it('adds X-Firebase-Appid and X-Firebase-AppVersion when collection enabled', async () => {
+      const fakeUrl = new TemplateRequestUrl(
+        'template-id',
+        ServerPromptTemplateTask.TEMPLATE_GENERATE_CONTENT,
+        {
+          apiKey: 'key',
+          project: 'myproject',
+          appId: 'my-appid',
+          location: 'moon',
+          backend: new VertexAIBackend(),
+          automaticDataCollectionEnabled: true,
+          appVersion: '9.9.9',
+        },
+        false,
+        {},
+      );
+      const headers = await getTemplateHeaders(fakeUrl);
+      expect(headers.get('X-Firebase-Appid')).toBe('my-appid');
+      expect(headers.get('X-Firebase-AppVersion')).toBe('9.9.9');
+    });
+
+    it('omits AppId and AppVersion when collection disabled', async () => {
+      const fakeUrl = new TemplateRequestUrl(
+        'template-id',
+        ServerPromptTemplateTask.TEMPLATE_GENERATE_CONTENT,
+        {
+          apiKey: 'key',
+          project: 'myproject',
+          appId: 'my-appid',
+          location: 'moon',
+          backend: new VertexAIBackend(),
+          automaticDataCollectionEnabled: false,
+          appVersion: '9.9.9',
+        },
+        false,
+        {},
+      );
+      const headers = await getTemplateHeaders(fakeUrl);
+      expect(headers.has('X-Firebase-Appid')).toBe(false);
+      expect(headers.has('X-Firebase-AppVersion')).toBe(false);
+    });
+
+    it('adds AppId but omits AppVersion when version missing', async () => {
+      const fakeUrl = new TemplateRequestUrl(
+        'template-id',
+        ServerPromptTemplateTask.TEMPLATE_GENERATE_CONTENT,
+        {
+          apiKey: 'key',
+          project: 'myproject',
+          appId: 'my-appid',
+          location: 'moon',
+          backend: new VertexAIBackend(),
+          automaticDataCollectionEnabled: true,
+        },
+        false,
+        {},
+      );
+      const headers = await getTemplateHeaders(fakeUrl);
+      expect(headers.get('X-Firebase-Appid')).toBe('my-appid');
+      expect(headers.has('X-Firebase-AppVersion')).toBe(false);
+    });
+
+    it('omits AppVersion when version is empty string', async () => {
+      const fakeUrl = new TemplateRequestUrl(
+        'template-id',
+        ServerPromptTemplateTask.TEMPLATE_GENERATE_CONTENT,
+        {
+          apiKey: 'key',
+          project: 'myproject',
+          appId: 'my-appid',
+          location: 'moon',
+          backend: new VertexAIBackend(),
+          automaticDataCollectionEnabled: true,
+          appVersion: '',
+        },
+        false,
+        {},
+      );
+      const headers = await getTemplateHeaders(fakeUrl);
+      expect(headers.get('X-Firebase-Appid')).toBe('my-appid');
+      expect(headers.has('X-Firebase-AppVersion')).toBe(false);
     });
   });
 

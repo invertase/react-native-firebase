@@ -128,7 +128,7 @@ jobs:
     steps:
       - name: Setup Environment for Screen Recording
         # https://github.com/guidepup/setup-action/releases
-        uses: guidepup/setup-action@5ab89fbb6641406f6f6c91057225f3fb397c2eea # v0.20.0
+        uses: guidepup/setup-action@5d19b1151e972898cae0f0cc44e239127953bd90 # v0.21.0
         continue-on-error: true
         if: env.RNFB_RECORD_SCREENS == '1'
         with:
@@ -145,13 +145,13 @@ jobs:
 
       # Set up tool versions
       # https://github.com/actions/setup-node/releases
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
 
       - name: Configure JDK
         # https://github.com/actions/setup-java/releases
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -239,7 +239,7 @@ jobs:
 
       - name: Setup Ruby
         # https://github.com/ruby/setup-ruby/releases
-        uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # v1.313.0
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
         with:
           ruby-version: 3
 
@@ -512,7 +512,7 @@ jobs:
 
       # https://github.com/codecov/codecov-action/releases
       - name: Upload Codecov e2e TS (iOS)
-        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         if: contains(matrix.buildmode, 'debug')
         continue-on-error: true
         with:
@@ -522,7 +522,7 @@ jobs:
           verbose: true
 
       - name: Upload Codecov iOS native
-        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         if: contains(matrix.buildmode, 'debug')
         continue-on-error: true
         with:
@@ -532,7 +532,7 @@ jobs:
           verbose: true
 
       - name: Upload Codecov iOS Ruby
-        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
         continue-on-error: true
         with:
@@ -622,7 +622,7 @@ jobs:
       matrix:
         dep-resolution: ['spm', 'cocoapods']
     steps:
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
 
@@ -635,7 +635,7 @@ jobs:
           fetch-depth: 50
 
       - name: Yarn Cache Restore
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: yarn-cache
         continue-on-error: true
         with:
@@ -660,7 +660,7 @@ jobs:
           command: yarn
 
       - name: Setup Ruby
-        uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # v1.313.0
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
         with:
           ruby-version: 3
 
@@ -673,7 +673,7 @@ jobs:
           command: gem update cocoapods xcodeproj
 
       - name: Pods Cache Restore
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: pods-cache
         continue-on-error: true
         with:
@@ -719,7 +719,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Yarn Cache Save
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
@@ -727,7 +727,7 @@ jobs:
           key: ${{ steps.yarn-cache.outputs.cache-primary-key }}
 
       - name: Pods Cache Save
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:

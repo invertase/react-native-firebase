@@ -12,6 +12,8 @@ export type PlayServicesAvailability = {
 export interface Spec extends TurboModule {
   getConstants(): {
     isRunningInTestLab: boolean;
+    /** Host app marketing version (Android versionName / iOS CFBundleShortVersionString). */
+    appVersion?: string;
     MAIN_BUNDLE: string;
     CACHES_DIRECTORY: string;
     DOCUMENT_DIRECTORY: string;

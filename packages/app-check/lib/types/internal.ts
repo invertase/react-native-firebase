@@ -33,8 +33,10 @@ export type AppCheckInternal = AppCheck & {
 
   /**
    * Activate App Check
-   * On iOS App Check is activated with DeviceCheck provider simply by including the module, using the token auto refresh default or
-   * the specific value (if configured) in firebase.json, but calling this does no harm.
+   * On iOS calling this activates App Check with the DeviceCheck provider, using the token auto refresh default or
+   * the specific value (if configured) in firebase.json. Before `activate` or `initializeAppCheck` is called, the
+   * native App Check provider is pending and `getToken` / `getLimitedUseToken` fail closed with
+   * `appCheck/provider-not-ready`.
    * On Android if you call this it will install the PlayIntegrity provider in release builds, the Debug provider if debuggable.
    * On both platforms you may use this method to alter the token refresh setting after startup.
    * On iOS if you want to set a specific AppCheckProviderFactory (for instance to FIRAppCheckDebugProviderFactory or

@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 import { describe, expect, it, jest } from '@jest/globals';
-import { type ReactNativeFirebase } from '@react-native-firebase/app';
+import { getUtils, type ReactNativeFirebase } from '@react-native-firebase/app';
 import { AI, AIErrorCode } from '../lib/public-types';
 import { AIError } from '../lib/errors';
 import { VertexAIBackend } from '../lib/backend';
 import { AIService } from '../lib/service';
 import { initApiSettings } from '../lib/models/utils';
+
+jest.mock('@react-native-firebase/app', () => {
+  const actual = jest.requireActual<typeof import('@react-native-firebase/app')>(
+    '@react-native-firebase/app',
+  );
+  return {
+    ...actual,
+    getUtils: jest.fn((...args: Parameters<typeof actual.getUtils>) => actual.getUtils(...args)),
+  };
+});
 
 const fakeAI: AI = {
   app: {
@@ -158,5 +168,25 @@ describe('initApiSettings', function () {
     } catch (e) {
       expect((e as AIError).code).toBe(AIErrorCode.NO_APP_ID);
     }
+  });
+
+  it('populates appVersion from app utils when available', function () {
+    const apiSettings = initApiSettings(fakeAI);
+    expect(apiSettings.appVersion).toBe('1.0.0');
+  });
+
+  it('omits appVersion when getUtils throws', function () {
+    jest.mocked(getUtils).mockImplementationOnce(() => {
+      throw new Error('native utils unavailable');
+    });
+
+    const apiSettings = initApiSettings(fakeAI);
+    expect(apiSettings.appVersion).toBeUndefined();
+    expect(apiSettings.apiKey).toBe('key');
+    expect(apiSettings.project).toBe('my-project');
+    expect(apiSettings.appId).toBe('my-appid');
+    expect(apiSettings.location).toBe('us-central1');
+    expect(apiSettings.automaticDataCollectionEnabled).toBe(true);
+    expect(apiSettings.backend).toBe(fakeAI.backend);
   });
 });

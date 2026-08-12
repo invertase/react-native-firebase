@@ -147,13 +147,13 @@ jobs:
 
       # Set up tool versions
       # https://github.com/actions/setup-node/releases
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
 
       - name: Configure JDK
         # https://github.com/actions/setup-java/releases
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -272,7 +272,7 @@ jobs:
 
       - name: Detox Tests
         # https://github.com/reactivecircus/android-emulator-runner/releases
-        uses: reactivecircus/android-emulator-runner@0a638108440efd5c7f980e6ba145dbcdd8f32009 # v2.37.0
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         timeout-minutes: 45
         env:
           ANDROID_AVD_HOME: /mnt/avd
@@ -287,7 +287,7 @@ jobs:
 
       # https://github.com/codecov/codecov-action/releases
       - name: Upload Codecov e2e TS (Android)
-        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         continue-on-error: true
         with:
           files: coverage/lcov.info
@@ -297,7 +297,7 @@ jobs:
 
       # Merged unit (*.exec) + e2e (*.ec) from jacocoTestReport (post-e2e-coverage).
       - name: Upload Codecov Android native
-        uses: codecov/codecov-action@e53489f4d376d79066609109e7a95a29eb3740b1 # v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         continue-on-error: true
         with:
           files: tests/android/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml

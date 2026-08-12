@@ -26,6 +26,10 @@ export interface ApiSettings {
    */
   location: string;
   automaticDataCollectionEnabled?: boolean;
+  /**
+   * Host app marketing version when available (Android versionName / iOS CFBundleShortVersionString).
+   */
+  appVersion?: string;
   backend: Backend;
   getAuthToken?: () => Promise<string>;
   getAppCheckToken?: () => Promise<AppCheckTokenResult>;

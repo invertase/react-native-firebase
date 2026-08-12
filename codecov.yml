@@ -22,6 +22,18 @@ coverage:
     patch: true
     changes: no
 
+# Intractable RN codegen dead path: GenerateModuleCpp emits *JSI-generated.cpp /
+# *JSI.h (CxxSpecJSI + __hostFunction_*) beside the ObjC++ SpecJSI *-generated.mm
+# that e2e actually exercises. Podspecs compile ios/**/*.cpp so the C++ file is
+# instrumented and reported in LCOV at 0% forever — nothing constructs *CxxSpecJSI.
+# Same files exist under android/**/generated/**; ignore both. Do not chase tests
+# unless modules move to pure C++ TurboModules. Matching *JSI.h is header-only
+# companion noise. OKF: coverage-design.md acceptable exceptions / codegen gaps.
+# https://docs.codecov.com/docs/ignoring-paths
+ignore:
+  - '**/*JSI-generated.cpp'
+  - '**/*JSI.h'
+
 comment:
   layout: 'header, diff, flags'
   behavior: default

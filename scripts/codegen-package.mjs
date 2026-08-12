@@ -167,6 +167,8 @@ function runPackagePlatform(packageName, platform) {
   const outputFromTests = path.relative(TESTS_DIR, outputAbs);
   const packageFromTests = path.relative(TESTS_DIR, packageDir);
 
+  // NewArch-AD-22: wipe configured outputPath before CLI codegen writes.
+  rmrf(outputAbs);
   fs.mkdirSync(outputAbs, { recursive: true });
 
   const command = [

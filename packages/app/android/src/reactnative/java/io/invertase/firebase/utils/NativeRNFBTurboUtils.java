@@ -135,6 +135,16 @@ public class NativeRNFBTurboUtils extends NativeRNFBTurboUtilsSpec {
     }
   }
 
+  private static String getAppVersionName(Context context) {
+    try {
+      return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+    } catch (Exception error) {
+      // Optional metadata: prefer omit over crashing on null context / unexpected PM failures.
+      Log.d(TAG, "getAppVersionName", error);
+      return null;
+    }
+  }
+
   private int isGooglePlayServicesAvailable() {
     GoogleApiAvailability gapi = GoogleApiAvailability.getInstance();
     return gapi.isGooglePlayServicesAvailable(getReactApplicationContext());
@@ -166,6 +176,11 @@ public class NativeRNFBTurboUtils extends NativeRNFBTurboUtilsSpec {
     constants.put("isRunningInTestLab", isRunningInTestLab());
 
     Context context = getReactApplicationContext();
+    String appVersion = getAppVersionName(context);
+    if (appVersion != null && !appVersion.isEmpty()) {
+      constants.put("appVersion", appVersion);
+    }
+
     constants.put(KEY_MAIN_BUNDLE, "");
     constants.put(KEY_LIBRARY_DIRECTORY, context.getFilesDir().getAbsolutePath());
     constants.put(KEY_TEMP_DIRECTORY, context.getCacheDir().getAbsolutePath());
