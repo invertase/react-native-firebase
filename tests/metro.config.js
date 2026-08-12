@@ -46,6 +46,13 @@ const config = {
       new RegExp(`^${escape(resolve(rootDir, 'tests/e2e'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/android'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/functions'))}\\/.*$`),
+      // packages/app keeps async-storage ^2 as a devDependency for the macOS-era pin;
+      // mobile tests/ is on 3.x + AsyncStorage TurboModule. Block nested 2.x copies so
+      // package e2e imports (e.g. packages/app/e2e) cannot load RNCAsyncStorage JS
+      // against the 3.x native module (NativeModule: AsyncStorage is null).
+      new RegExp(
+        `^${escape(resolve(rootDir, 'packages'))}\\/.*\\/node_modules\\/@react-native-async-storage\\/.*$`,
+      ),
     ]),
     extraNodeModules: new Proxy(
       {},
@@ -71,12 +78,25 @@ const config = {
       // `Requiring unknown module "undefined"`. Resolve to a committed empty stub
       // when the local file does not exist so the dependency map stays intact.
       if (moduleName === './harness.overrides.js') {
-        const originDir = context.originModulePath
-          ? dirname(context.originModulePath)
-          : __dirname;
+        const originDir = context.originModulePath ? dirname(context.originModulePath) : __dirname;
         if (!existsSync(resolve(originDir, 'harness.overrides.js'))) {
           return { type: 'sourceFile', filePath: resolve(__dirname, 'harness.overrides.stub.js') };
         }
+      }
+      // Force mobile app singleton: always the tests/ 3.x package (matches CocoaPods
+      // AsyncStorage / Android autolink). Do not let hierarchical lookup pick
+      // packages/app/node_modules/...@2.x when resolving from packages/*/e2e.
+      if (
+        moduleName === '@react-native-async-storage/async-storage' ||
+        moduleName.startsWith('@react-native-async-storage/async-storage/')
+      ) {
+        const subpath = moduleName.slice('@react-native-async-storage/async-storage'.length);
+        return {
+          type: 'sourceFile',
+          filePath: require.resolve(`@react-native-async-storage/async-storage${subpath}`, {
+            paths: [__dirname],
+          }),
+        };
       }
       if (moduleName === '@react-native-firebase/firestore/pipelines') {
         const filePath = join(rootDir, 'packages', 'firestore', 'lib', 'pipelines', 'index.ts');

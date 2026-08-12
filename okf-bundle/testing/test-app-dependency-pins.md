@@ -3,7 +3,7 @@ type: Reference
 title: Test app dependency pins
 description: Intentional version locks for the mobile (tests/) and macOS (tests-macos/) e2e apps; codegen resolves from tests/.
 tags: [testing, dependencies, react-native-macos, cli, pins]
-timestamp: 2026-08-11T00:00:00Z
+timestamp: 2026-08-12T00:00:00Z
 ---
 
 # Test app dependency pins
@@ -36,6 +36,9 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 | `react-native` (macOS shell) | **`0.78.3`** | `tests-macos/package.json` |
 | `react-native-macos` | **`0.78.6`** | `tests-macos/package.json` |
 | macOS CLI band | **`15.1.3`** | `tests-macos/package.json` |
+| `@react-native-async-storage/async-storage` (mobile) | **`^3.1.1`** | `tests/package.json` (iOS pod `AsyncStorage` 3.x; Android autolink) |
+| `@react-native-async-storage/async-storage` (macOS) | **`^2.0.2`** | `tests-macos/package.json` |
+| `@react-native-async-storage/async-storage` (package devDep) | **`^2.0.2`** | `packages/app/package.json` (macOS-era pin; Yarn may nest **2.x** under `packages/app/node_modules/`) |
 
 **CLI rationale:** mobile CLI **`20.1.0`** matches the React Native **0.86** community template. macOS keeps the **0.78** CLI band with `react-native-macos@0.78.6`. Never add a global resolution that would pull `tests-macos` onto the mobile line.
 
@@ -44,6 +47,14 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 **iOS pods (mobile):** RN 0.86 defaults `RCT_USE_PREBUILT_RNCORE` / `RCT_USE_RN_DEP` to **1** inside `use_react_native!`. The test app sets both to **`0`** in [`tests/ios/Podfile`](../../tests/ios/Podfile) before requiring `react_native_pods` so dynamic frameworks (e.g. `react-native-device-info`) link against source RNCore (`RCTEventEmitter`). Do not re-enable prebuilt RNCore for this app without re-validating third-party pods.
 
 **Agent / Dependabot rule:** leave these pins alone unless the change is an intentional dual-app or mobile-only upgrade. Reject RN / codegen / CLI bumps that only “look green” for one app while breaking the other or codegen verify.
+
+## AsyncStorage (dual pin + Metro singleton)
+
+Mobile `tests/` is on async-storage **3.x** (TurboModule `RNAsyncStorage`). macOS `tests-macos/` stays on **2.x** (`RNCAsyncStorage`). `packages/app` still **devDepends** `^2.0.2` for the macOS harness line, so a nested **2.x** copy can exist on disk even while mobile native is **3.x**.
+
+**Risk on mobile:** Metro hierarchical lookup can resolve `@react-native-async-storage/async-storage` from `packages/app/node_modules/` when bundling `packages/*/e2e`, loading **2.x** JS against **3.x** native. Runtime symptom: `[@RNC/AsyncStorage]: NativeModule: AsyncStorage is null`. Pod / lockfile bumps in `tests/` alone do not fix this.
+
+**Mitigation:** [`tests/metro.config.js`](../../tests/metro.config.js) force-resolves async-storage to the `tests/` **3.x** install and blocklists `packages/*/node_modules/@react-native-async-storage/**`. Do not remove without re-validating mobile e2e from package e2e entrypoints. Do not bump `packages/app` to **3.x** while macOS stays on **2.x** without coordinating both apps.
 
 ## When pins may move
 
@@ -68,3 +79,4 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 - [Other CI — macOS e2e](../ci-workflows/other.md) — macOS pipeline (`tests-macos/`)
 - [Agent command policy](agent-command-policy.md) — install / patch / fmt gate
 - [`tests/package.json`](../../tests/package.json) / [`tests-macos/package.json`](../../tests-macos/package.json) — declared pins
+- [`tests/metro.config.js`](../../tests/metro.config.js) — mobile async-storage singleton + nested blocklist
