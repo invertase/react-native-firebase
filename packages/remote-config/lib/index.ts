@@ -317,7 +317,9 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
    * @returns {Promise<boolean>}
    */
   activate(): Promise<boolean> {
-    return this._promiseWithConstants(this.native.activate());
+    return this._afterPendingNativeMutations(() =>
+      this._promiseWithConstants(this.native.activate()),
+    );
   }
 
   /**
@@ -333,17 +335,23 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
       );
     }
 
-    return this._promiseWithConstants(
-      this.native.fetch(expirationDurationSeconds !== undefined ? expirationDurationSeconds : -1),
+    return this._afterPendingNativeMutations(() =>
+      this._promiseWithConstants(
+        this.native.fetch(expirationDurationSeconds !== undefined ? expirationDurationSeconds : -1),
+      ),
     );
   }
 
   fetchAndActivate(): Promise<boolean> {
-    return this._promiseWithConstants(this.native.fetchAndActivate());
+    return this._afterPendingNativeMutations(() =>
+      this._promiseWithConstants(this.native.fetchAndActivate()),
+    );
   }
 
   ensureInitialized(): Promise<void> {
-    return this._promiseWithConstants(this.native.ensureInitialized());
+    return this._afterPendingNativeMutations(() =>
+      this._promiseWithConstants(this.native.ensureInitialized()),
+    );
   }
 
   /**
@@ -518,6 +526,21 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
       () => undefined,
     );
     return next;
+  }
+
+  private _afterPendingNativeMutations<T>(task: () => Promise<T>): Promise<T> {
+    // The `settings` and `defaultConfig` setters cannot be awaited, so they hand their native write
+    // to `_enqueueNativeMutation`, which only reaches native on a later microtask. Reads have to
+    // wait for that write, otherwise native sees the read first and the write lands mid-flight — on
+    // iOS `setConfigSettings:` then recreates the SDK's URL session and cancels the running fetch
+    // with NSURLErrorCancelled (-999). See #9194.
+    //
+    // `_enqueueNativeMutation` reassigns `_nativeMutationQueue` synchronously, so by the time a read
+    // runs the queue already covers every write issued before it — no timing assumption needed.
+    //
+    // Reads wait for the queue rather than joining it: a fetch can run for `fetchTimeoutMillis`, and
+    // must not hold up property writes made while it is still in flight.
+    return this._nativeMutationQueue.then(task, task);
   }
 }
 
