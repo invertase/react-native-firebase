@@ -3,7 +3,7 @@ type: Reference
 title: Test app dependency pins
 description: Intentional version locks for the mobile (tests/) and macOS (tests-macos/) e2e apps; codegen resolves from tests/.
 tags: [testing, dependencies, react-native-macos, cli, pins]
-timestamp: 2026-08-12T00:00:00Z
+timestamp: 2026-08-13T00:00:00Z
 ---
 
 # Test app dependency pins
@@ -39,6 +39,8 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 | `@react-native-async-storage/async-storage` (mobile) | **`^3.1.1`** | `tests/package.json` (iOS pod `AsyncStorage` 3.x; Android autolink) |
 | `@react-native-async-storage/async-storage` (macOS) | **`^2.0.2`** | `tests-macos/package.json` |
 | `@react-native-async-storage/async-storage` (package devDep) | **`^2.0.2`** | `packages/app/package.json` (macOS-era pin; Yarn may nest **2.x** under `packages/app/node_modules/`) |
+| `@react-native-firebase/*` (both e2e apps) | **`26.2.0`** (must match current lerna / package version) | `tests/package.json` and `tests-macos/package.json` — see [RNFB workspace pins](#rnfb-workspace-pins-both-e2e-apps) |
+| `@react-native-firebase/app-types` | **`6.7.2`** | both apps (legacy types package; not a workspace) |
 
 **CLI rationale:** mobile CLI **`20.1.0`** matches the React Native **0.86** community template. macOS keeps the **0.78** CLI band with `react-native-macos@0.78.6`. Never add a global resolution that would pull `tests-macos` onto the mobile line.
 
@@ -47,6 +49,14 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 **iOS pods (mobile):** RN 0.86 defaults `RCT_USE_PREBUILT_RNCORE` / `RCT_USE_RN_DEP` to **1** inside `use_react_native!`. The test app sets both to **`0`** in [`tests/ios/Podfile`](../../tests/ios/Podfile) before requiring `react_native_pods` so dynamic frameworks (e.g. `react-native-device-info`) link against source RNCore (`RCTEventEmitter`). Do not re-enable prebuilt RNCore for this app without re-validating third-party pods.
 
 **Agent / Dependabot rule:** leave these pins alone unless the change is an intentional dual-app or mobile-only upgrade. Reject RN / codegen / CLI bumps that only “look green” for one app while breaking the other or codegen verify.
+
+## RNFB workspace pins (both e2e apps)
+
+Both e2e apps must declare every `@react-native-firebase/*` dependency (except `app-types`) at the **current lerna / package version** so Yarn **workspace-links** them (`workspace:packages/<pkg>`) instead of fetching published npm tarballs.
+
+Today that version is **`26.2.0`**, matching `packages/*/package.json`. A stale pin (for example `26.1.0` while packages are `26.2.0`) resolves as `npm:26.1.0` and a fresh `yarn` downloads ~19 published tarballs. Metro may still remap JS to `packages/*`, so CI can look green while the lockfile is wrong.
+
+When lerna bumps the packages, bump **both** `tests/package.json` and `tests-macos/package.json` (including each app's private `"version"`) in the same change. Leave `@react-native-firebase/app-types` at `6.7.2`.
 
 ## AsyncStorage (dual pin + Metro singleton)
 
