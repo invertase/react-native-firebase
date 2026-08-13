@@ -109,9 +109,6 @@ static FIRApp *firebaseAppForName(NSString *appName) {
   NSDate *lastFetchTime = remoteConfig.lastFetchTime;
   NSString *lastFetchStatus =
       convertFIRRemoteConfigFetchStatusToNSString(remoteConfig.lastFetchStatus);
-  double minimumFetchInterval =
-      [RCTConvert double:@([remoteConfig configSettings].minimumFetchInterval)];
-  double fetchTimeout = [RCTConvert double:@([remoteConfig configSettings].fetchTimeout)];
 
   NSMutableDictionary *values = [NSMutableDictionary new];
   NSSet *keys = [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] keysWithPrefix:nil];
@@ -130,12 +127,12 @@ static FIRApp *firebaseAppForName(NSString *appName) {
     }
   }
 
+  // Never read `[remoteConfig configSettings]` (firebase-ios-sdk getter/setter both
+  // `recreateNetworkSession` / `invalidateAndCancel`). JS no-ops missing settings keys.
   return @{
     @"values" : values,
     @"lastFetchStatus" : lastFetchStatus,
     @"lastFetchTime" : @(round([lastFetchTime timeIntervalSince1970] * 1000.0)),
-    @"minimumFetchInterval" : @(minimumFetchInterval),
-    @"fetchTimeout" : @(fetchTimeout)
   };
 }
 
@@ -181,7 +178,9 @@ static FIRApp *firebaseAppForName(NSString *appName) {
                                userInfo:[@{
                                  @"code" : convertFIRRemoteConfigFetchStatusToNSString(status),
                                  @"message" :
-                                     convertFIRRemoteConfigFetchStatusToNSStringDescription(status)
+                                     convertFIRRemoteConfigFetchStatusToNSStringDescription(status),
+                                 @"nativeErrorCode" : @(error.code),
+                                 @"nativeErrorMessage" : error.localizedDescription ?: @""
                                } mutableCopy]];
         } else {
           resolve([self resultWithVoidConstantsForApp:firebaseApp]);
@@ -244,7 +243,9 @@ static FIRApp *firebaseAppForName(NSString *appName) {
                                userInfo:[@{
                                  @"code" : convertFIRRemoteConfigFetchStatusToNSString(status),
                                  @"message" :
-                                     convertFIRRemoteConfigFetchStatusToNSStringDescription(status)
+                                     convertFIRRemoteConfigFetchStatusToNSStringDescription(status),
+                                 @"nativeErrorCode" : @(error.code),
+                                 @"nativeErrorMessage" : error.localizedDescription ?: @""
                                } mutableCopy]];
           return;
         }
