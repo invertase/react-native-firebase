@@ -3,7 +3,7 @@ type: Reference
 title: Running e2e tests
 description: The canonical, minimal command set for running React Native Firebase e2e tests on every platform.
 tags: [testing, e2e, detox, jet, ios, android, macos, coverage]
-timestamp: 2026-07-26T00:00:00Z
+timestamp: 2026-08-14T00:00:00Z
 ---
 
 # Running e2e tests
@@ -52,10 +52,10 @@ yarn tests:emulator:start
    - **Before any native `:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) — root `yarn` exit 0 + fmt podspec **≥ 12.1.0**. Missing this gate → Apple Clang 21 consteval failures on unpatched fmt **11.0.2**.
    - Native changed → `yarn tests:ios:build` / `yarn tests:android:build` before e2e. macOS uses firebase-js-sdk only — no native rebuild.
    - **Committed codegen / generated native artifacts count as native** — any change under `packages/*/ios/generated/**` or `packages/*/android/**/generated/**` (including wipe-then-regen orphan deletions), or TurboModule **codegen / spec / podspec / native shell**, is a native change: rebuild + [platform coverage](#platform-coverage-gate-blocking) e2e on iOS and Android. **`yarn codegen:verify` is not a substitute** for `:test-cover` ([change authoring § forbidden shortcuts](change-authoring-workflow.md#forbidden-shortcuts)).
-   - `packages/*/lib/**` changed → **`yarn lerna:prepare` must run to completion (exit 0) before anything else** — Metro serves `dist/module/**`, not `lib/**`. See [prepare completion gate](#prepare-completion-gate-blocking) and [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first). After prepare finishes, restart the packager with `yarn tests:packager:jet-reset-cache` when Metro was already running ([Rules §1](#rules)).
+   - `packages/*/lib/**` changed → **`yarn lerna:prepare` must run to completion (exit 0) before anything else** — Metro serves `dist/module/**`, not `lib/**`. See [prepare completion gate](#prepare-completion-gate-blocking) and [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first). After prepare finishes, restart the packager with `yarn tests:packager:jet-reset-cache` when Metro was already running ([packager reset-cache](#packager-reset-cache-eaddrinuse)).
    - TurboModule **codegen / spec / podspec / native shell** changed → same as native changed, plus regen codegen ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)) when specs changed; if app loads with Metro redbox `Requiring unknown module "undefined"`, see [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
    - **JS bundle (debug):** all platforms (iOS, Android, macOS) load JS from Metro; only **release** builds pre-bundle/embed JS. `lib/**` edits alone do not require `:build` — use the [prepare completion gate](#prepare-completion-gate-blocking) and Metro restart above.
-   - **TS coverage:** run `:build` before `:test-cover` on iOS/Android so Istanbul + patched test-runner coverage instrumentation is in the debug native app (bundle still from Metro). After test-runner patch changes, restart the packager with `yarn tests:packager:jet-reset-cache` ([Rules §1](#rules)).
+   - **TS coverage:** run `:build` before `:test-cover` on iOS/Android so Istanbul + patched test-runner coverage instrumentation is in the debug native app (bundle still from Metro). After test-runner patch changes, restart the packager with `yarn tests:packager:jet-reset-cache` ([packager reset-cache](#packager-reset-cache-eaddrinuse)).
 
 4. **Always run with coverage:**
 
@@ -164,7 +164,7 @@ Run **all four** steps before every `:test-cover`. After an [interrupted run](#i
 If product code under `packages/*/lib/**` was edited in this session, **`yarn lerna:prepare`** (or scoped `yarn lerna run prepare --scope …`) must have **fully finished with exit code 0** before pre-flight steps 1–3 or any `:test-cover` / `:build`.
 
 - **Wait** for the prepare shell to return — do not batch prepare in parallel with Metro restart, pre-flight probes, or e2e in the same agent turn.
-- **Then** restart Metro when it was already running: `yarn tests:packager:jet-reset-cache` ([Rules §3](#rules)).
+- **Then** restart Metro when it was already running: [packager reset-cache](#packager-reset-cache-eaddrinuse) (`yarn tests:packager:jet-reset-cache`).
 - **Then** continue with host-clear probes and service checks below.
 
 Skipping this gate causes missing or half-written `dist/module/**` while Metro `/status` still returns 200 — a common source of bundle-load and module-not-found failures that look like product bugs.
@@ -220,7 +220,7 @@ test -z "$(lsof -nP -iTCP:8090 -sTCP:LISTEN -t 2>/dev/null || true)"
 
 <a id="pre-flight-recovery"></a>
 
-**Pre-flight recovery** — when probes fail **after** [Android app reset](#android-app-reset-blocking), abort, kill, or `EADDRINUSE` on `:8090`. Before any new `:test-cover`, kill the stray **8090** listener, re-run force-stop (Android) or the iOS/macOS steps below, then [host-clear probes](#host-clear-probes).
+**Pre-flight recovery** — when probes fail **after** [Android app reset](#android-app-reset-blocking), abort, kill, or `EADDRINUSE` on `:8090`. Before any new `:test-cover`, kill the stray **8090** listener, re-run force-stop (Android) or the iOS/macOS steps below, then [host-clear probes](#host-clear-probes). `EADDRINUSE` on **`:8081`** during packager restart is a different path — [packager reset-cache](#packager-reset-cache-eaddrinuse) (this block does **not** free Metro).
 
 ```bash
 # Android — force-stop both apps, then clear the Jet WS listener
@@ -239,6 +239,19 @@ After Android recovery, verify `pidof com.invertase.testing.test` is empty and `
 
 Do **not** use `boot-simulator.sh` or `simctl shutdown all` as routine prep ([what not to do](#what-not-to-do)).
 
+<a id="packager-reset-cache-eaddrinuse"></a>
+
+**Packager restart (`jet-reset-cache`)** — `yarn tests:packager:jet-reset-cache` and `yarn tests:macos:packager:jet-reset-cache` bind Metro on **`:8081`**. If Metro is already listening, reset fails with `listen EADDRINUSE: address already in use :::8081`. [Pre-flight recovery](#pre-flight-recovery) clears **`:8090` only**.
+
+Before either reset-cache command, free the existing Metro listener (same `lsof | xargs kill` as `:8090`; do **not** `kill -9`):
+
+```bash
+lsof -nP -iTCP:8081 -sTCP:LISTEN -t | xargs kill 2>/dev/null || true
+yarn tests:packager:jet-reset-cache   # or tests:macos:packager:jet-reset-cache
+```
+
+Then re-check Metro HTTP and [checkout ownership](#services-checkout-ownership-blocking). Do not invent a yarn target for this kill.
+
 #### 2. Services ready
 
 Metro and emulators must be **running and responsive** — do not assume from a prior session or background start.
@@ -249,7 +262,7 @@ curl -sf http://127.0.0.1:8080 >/dev/null          # Firestore emulator
 test -n "$(lsof -nP -iTCP:5001 -sTCP:LISTEN -t 2>/dev/null || true)"   # Functions emulator — listener only
 ```
 
-If Metro or Firestore checks fail: start `yarn tests:packager:jet` (iOS/Android) or `yarn tests:macos:packager:jet` (macOS) and `yarn tests:emulator:start` (background) from **this checkout's repo root**; re-check until both pass. After **`yarn lerna:prepare` has finished** (step [0](#prepare-completion-gate-blocking)) or test-runner patch edits, restart the packager with `yarn tests:packager:jet-reset-cache` or `yarn tests:macos:packager:jet-reset-cache` ([Rules §1](#rules)) — never restart Metro while prepare is still running.
+If Metro or Firestore checks fail: start `yarn tests:packager:jet` (iOS/Android) or `yarn tests:macos:packager:jet` (macOS) and `yarn tests:emulator:start` (background) from **this checkout's repo root**; re-check until both pass. After **`yarn lerna:prepare` has finished** (step [0](#prepare-completion-gate-blocking)) or test-runner patch edits, restart the packager via [packager reset-cache](#packager-reset-cache-eaddrinuse) — never restart Metro while prepare is still running.
 
 A listener on `:8081`, `:8080`, or `:5001` alone is **not** sufficient for Metro/Firestore — their HTTP checks must succeed. **Functions (`:5001`):** verify the listener is up; `curl -sf http://127.0.0.1:5001/` exits non-zero because the root path returns **404** — that is expected and **not** a service failure (do not treat it like the Metro/Firestore gates).
 
@@ -299,6 +312,8 @@ Completion = shell exit code + log markers — not open-ended log tailing.
 | **iOS/Android** | Detox launch done, `Jet client connected` | Same                                     |
 
 **If stalled** — no new markers for **5 minutes**, or past tier budget (~15m macOS, ~45–60m iOS/Android) without `Tests Complete`: treat as [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090). Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) and [services ready](#2-services-ready), retry. Do not keep watching flat tee output.
+
+Android `:test-cover` that **FAIL**s then Jest `did not exit` is a hang, not a stall to wait out — kill hung yarn/jest/detox PIDs, then [Android Detox launch ANR](#android-detox-launch-anr-abi-mismatch) if logcat showed ANR / ABI mismatch, otherwise [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090).
 
 - macOS bundle/Metro hangs → [ci-workflows/other.md § bundle load hang](../ci-workflows/other.md#ci-failure-bundle-load-hang--could-not-connect-to-development-server)
 - iOS Metro at launch → [ci-workflows/ios.md § Metro unresponsive](../ci-workflows/ios.md)
@@ -393,6 +408,8 @@ Each run owns its blocking `:test-cover` and returns summaries only.
 
 Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) pass, then rerun from repo root: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover` (foreground; tee if logging). Keep one `:test-cover` active at a time on a host.
 
+`:test-cover` FAIL followed by Jest `did not exit` will **not** self-exit — kill the hung yarn/jest/detox PIDs, then recover. If Android logcat showed ANR / `Package uses different ABI(s) than its instrumentation`, use [Android Detox launch ANR](#android-detox-launch-anr-abi-mismatch) (not gray-screen snapshot wipe alone). Packager `EADDRINUSE` on `:8081` is [packager reset-cache](#packager-reset-cache-eaddrinuse), not this `:8090` block.
+
 ### What not to do
 
 - Do not invoke the test runner (Jet), Detox, Metro, or emulators except through repo-root `yarn tests:*` commands in this doc — see [agent rule](#agent-rule-read-first).
@@ -405,7 +422,8 @@ Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#ho
 - Do not edit source while a tee'd run is still in progress.
 - Do not passively tail tee output when progress markers stop — follow [stalled run detection](#stalled-run-detection).
 - Do not run **full** harness (`require.context`, all modules) for **unit-focused**/**area-focused** tier — match [harness to tier](#3-harness-matches-validation-tier).
-- Do not run `.github/workflows/scripts/boot-simulator.sh`, `simctl shutdown all`, or `kill -9` on `:8090` as prep. `boot-simulator.sh` is CI-only or internal to iOS test-runner retry.
+- Do not run `.github/workflows/scripts/boot-simulator.sh`, `simctl shutdown all`, or `kill -9` on `:8090` or Metro `:8081` as prep. `boot-simulator.sh` is CI-only or internal to iOS test-runner retry.
+- Do not wait out Android `:test-cover` FAIL + Jest `did not exit` — kill hung PIDs ([Android Detox launch ANR](#android-detox-launch-anr-abi-mismatch)). Do not treat that ANR/ABI log as an AsyncStorage product failure.
 
 ## Typical loop
 
@@ -538,7 +556,7 @@ See also: [unit-focused-tier loop](#unit-focused-tier-iteration-loop), [dispatch
 
 - **Devices** — Detox boots simulator/emulator (`iPhone 17` on iOS, `TestingAVD` on Android); [host-clear probes](#host-clear-probes) require zero booted iOS simulators before `:test-cover`. macOS auto-starts app.
 - **adb empty** — `adb kill-server && adb start-server && adb devices`
-- **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, `:5001`, …). Stray listener on `:8090` after a run → [pre-flight recovery](#pre-flight-recovery), then restart background services with [Rules §1–2](#rules) (`yarn tests:packager:jet`, `yarn tests:emulator:start`).
+- **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, `:5001`, …). Stray listener on `:8090` after a run → [pre-flight recovery](#pre-flight-recovery), then restart background services with [Rules §1–2](#rules) (`yarn tests:packager:jet`, `yarn tests:emulator:start`). Reset-cache `EADDRINUSE` on `:8081` → [packager reset-cache](#packager-reset-cache-eaddrinuse).
 - **Android Gradle home** — when Android `:build` or `:test-cover` fails with missing/wrong Gradle cache on a host that does not default to `~/.gradle`, export `GRADLE_USER_HOME=$HOME/.gradle` before the run.
 
 ### Android emulator gray screen / Quick Boot (blocking)
@@ -568,6 +586,37 @@ adb kill-server && adb start-server && adb devices   # must be empty
 ```
 
 Then rerun [pre-flight](#pre-flight-is-the-host-clear-to-start) and `yarn tests:android:test-cover`. Cold boot adds ~30–60s to the first Android launch vs Quick Boot — expected.
+
+If Detox launches then ANRs (~6s) with logcat ABI mismatch, that is **not** this path — [Android Detox launch ANR](#android-detox-launch-anr-abi-mismatch).
+
+<a id="android-detox-launch-anr-abi-mismatch"></a>
+
+### Android Detox launch ANR / ABI mismatch
+
+Sibling of [gray screen / Quick Boot](#android-emulator-gray-screen--quick-boot-blocking) — different failure. Offline-emulator / Quick Boot snapshot recovery does **not** cover this path. Do **not** treat this as an AsyncStorage product failure (`NativeModule: AsyncStorage is null` is a Metro singleton issue — [pins § AsyncStorage](test-app-dependency-pins.md#asyncstorage-dual-pin--metro-singleton)).
+
+**Detect:** `yarn tests:android:test-cover` Detox `am instrument` starts `com.invertase.testing`; ActivityManager **ANR ~6s**; instrumentation crashes. Logcat: `Package uses different ABI(s) than its instrumentation` (app `arm64-v8a`, test apk `null`). After FAIL, Jest prints `did not exit` and `:test-cover` **hangs until killed**. Metro Android bundle may still be HTTP 200.
+
+**Recovery:**
+
+1. Kill hung yarn/jest/detox `:test-cover` PIDs — the run will **not** self-exit:
+
+```bash
+pkill -f 'tests:android:test-cover' 2>/dev/null || true
+pkill -f 'detox test --configuration android' 2>/dev/null || true
+```
+
+2. Then the same TestingAVD teardown as gray-screen (emulator kill only — **not** snapshot wipe):
+
+```bash
+adb emu kill 2>/dev/null || true
+pkill -f 'qemu-system.*TestingAVD' 2>/dev/null || true
+adb kill-server && adb start-server && adb devices   # must be empty
+```
+
+3. Re-run [pre-flight](#pre-flight-is-the-host-clear-to-start) and `yarn tests:android:test-cover`.
+
+### iOS Detox framework cache
 
 Detox injects a prebuilt **`Detox.framework`** and XCUITest runner from a versioned cache under **`~/Library/Detox/ios/`** (hashed by Xcode version). iOS `:test-cover` / `:build` **fail before any test runs** if that cache is missing or stale (common after Xcode upgrade, first checkout, or a failed Detox postinstall).
 
@@ -629,7 +678,7 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 1. [Prepare completion gate](#prepare-completion-gate-blocking) — `yarn lerna:prepare` exit 0.
 2. Regenerate codegen if specs changed — [workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical) (wipe configured `outputPath`, then CLI / package scripts).
 3. **`yarn tests:<platform>:build`** (includes `pod install` on iOS when needed).
-4. **`yarn tests:packager:jet-reset-cache`** (Metro was running during the edits).
+4. **`yarn tests:packager:jet-reset-cache`** (Metro was running during the edits) — [packager reset-cache](#packager-reset-cache-eaddrinuse).
 5. [Pre-flight](#pre-flight-is-the-host-clear-to-start) → **`yarn tests:<platform>:test-cover`**.
 
 <a id="turbomodule-full-toolchain-refresh"></a>
@@ -643,7 +692,7 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 5. Regenerate **all** touched packages' codegen from `tests/` ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)).
 6. **`yarn tests:ios:pod:install`** when iOS native/codegen changed.
 7. **`yarn tests:<platform>:build`**.
-8. **`yarn tests:packager:jet-reset-cache`** → pre-flight → `:test-cover`.
+8. **`yarn tests:packager:jet-reset-cache`** ([packager reset-cache](#packager-reset-cache-eaddrinuse)) → pre-flight → `:test-cover`.
 
 Do **not** treat this redbox as a missing TurboModule registration until the refresh sequence has been run once on a clean tree.
 

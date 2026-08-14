@@ -46,10 +46,9 @@ const config = {
       new RegExp(`^${escape(resolve(rootDir, 'tests/e2e'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/android'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/functions'))}\\/.*$`),
-      // packages/app keeps async-storage ^2 as a devDependency for the macOS-era pin;
-      // mobile tests/ is on 3.x + AsyncStorage TurboModule. Block nested 2.x copies so
-      // package e2e imports (e.g. packages/app/e2e) cannot load RNCAsyncStorage JS
-      // against the 3.x native module (NativeModule: AsyncStorage is null).
+      // Belt-and-suspenders: block nested @react-native-async-storage under packages/*
+      // so package e2e imports cannot load a stray 2.x RNCAsyncStorage JS copy against
+      // the mobile 3.x native module (NativeModule: AsyncStorage is null).
       new RegExp(
         `^${escape(resolve(rootDir, 'packages'))}\\/.*\\/node_modules\\/@react-native-async-storage\\/.*$`,
       ),
@@ -84,8 +83,8 @@ const config = {
         }
       }
       // Force mobile app singleton: always the tests/ 3.x package (matches CocoaPods
-      // AsyncStorage / Android autolink). Do not let hierarchical lookup pick
-      // packages/app/node_modules/...@2.x when resolving from packages/*/e2e.
+      // AsyncStorage / Android autolink). Do not let hierarchical lookup pick a nested
+      // packages/*/node_modules copy when resolving from packages/*/e2e.
       if (
         moduleName === '@react-native-async-storage/async-storage' ||
         moduleName.startsWith('@react-native-async-storage/async-storage/')

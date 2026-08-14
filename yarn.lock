@@ -6064,7 +6064,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/app@workspace:packages/app"
   dependencies:
-    "@react-native-async-storage/async-storage": "npm:^2.0.2"
     expo: "npm:^55.0.18"
     firebase: "npm:12.17.0"
     react-native-builder-bob: "npm:^0.41.0"

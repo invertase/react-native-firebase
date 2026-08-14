@@ -38,7 +38,6 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 | macOS CLI band | **`15.1.3`** | `tests-macos/package.json` |
 | `@react-native-async-storage/async-storage` (mobile) | **`^3.1.1`** | `tests/package.json` (iOS pod `AsyncStorage` 3.x; Android autolink) |
 | `@react-native-async-storage/async-storage` (macOS) | **`^2.0.2`** | `tests-macos/package.json` |
-| `@react-native-async-storage/async-storage` (package devDep) | **`^2.0.2`** | `packages/app/package.json` (macOS-era pin; Yarn may nest **2.x** under `packages/app/node_modules/`) |
 | `@react-native-firebase/*` (both e2e apps) | **`26.2.0`** (must match current lerna / package version) | `tests/package.json` and `tests-macos/package.json` — see [RNFB workspace pins](#rnfb-workspace-pins-both-e2e-apps) |
 | `@react-native-firebase/app-types` | **`6.7.2`** | both apps (legacy types package; not a workspace) |
 
@@ -60,11 +59,11 @@ When lerna bumps the packages, bump **both** `tests/package.json` and `tests-mac
 
 ## AsyncStorage (dual pin + Metro singleton)
 
-Mobile `tests/` is on async-storage **3.x** (TurboModule `RNAsyncStorage`). macOS `tests-macos/` stays on **2.x** (`RNCAsyncStorage`). `packages/app` still **devDepends** `^2.0.2` for the macOS harness line, so a nested **2.x** copy can exist on disk even while mobile native is **3.x**.
+Mobile `tests/` is on async-storage **3.x** (TurboModule `RNAsyncStorage`). macOS `tests-macos/` stays on **2.x** (`RNCAsyncStorage`). Dual pin is **app-level only**: `packages/app` does not declare async-storage. Package e2e (`packages/app/e2e/asyncStorage.e2e.js`) imports it; each test app Metro `extraNodeModules` supplies that app's pin.
 
-**Risk on mobile:** Metro hierarchical lookup can resolve `@react-native-async-storage/async-storage` from `packages/app/node_modules/` when bundling `packages/*/e2e`, loading **2.x** JS against **3.x** native. Runtime symptom: `[@RNC/AsyncStorage]: NativeModule: AsyncStorage is null`. Pod / lockfile bumps in `tests/` alone do not fix this.
+**Risk on mobile:** a nested **2.x** copy under `packages/*/node_modules/` would let Metro hierarchical lookup load **2.x** JS against **3.x** native when bundling `packages/*/e2e`. Runtime symptom: `[@RNC/AsyncStorage]: NativeModule: AsyncStorage is null`. Pod / lockfile bumps in `tests/` alone do not fix that.
 
-**Mitigation:** [`tests/metro.config.js`](../../tests/metro.config.js) force-resolves async-storage to the `tests/` **3.x** install and blocklists `packages/*/node_modules/@react-native-async-storage/**`. Do not remove without re-validating mobile e2e from package e2e entrypoints. Do not bump `packages/app` to **3.x** while macOS stays on **2.x** without coordinating both apps.
+**Mitigation:** [`tests/metro.config.js`](../../tests/metro.config.js) force-resolves async-storage to the `tests/` **3.x** install and blocklists `packages/*/node_modules/@react-native-async-storage/**`. Keep that singleton even though `packages/app` no longer nests 2.x. Do not remove without re-validating mobile e2e from package e2e entrypoints.
 
 ## When pins may move
 

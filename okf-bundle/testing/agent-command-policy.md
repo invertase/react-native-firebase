@@ -60,7 +60,7 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 | Do not start until prepare exits 0        | Why                                                                                                            |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `yarn tests:*` (e2e, packager, build)     | Metro (debug JS) reads **`dist/module/**`**, not `lib/\*\*` — partial prepare → missing modules, stale bundles |
-| `yarn tests:packager:jet-reset-cache`     | Reset after prepare, not during it                                                                             |
+| `yarn tests:packager:jet-reset-cache`     | Reset after prepare, not during it. Free `:8081` first — [running e2e § packager reset-cache](running-e2e.md#packager-reset-cache-eaddrinuse) |
 | `yarn tsc:compile`, Jest, `compare:types` | May read transpiled output or assume `dist/` is current                                                        |
 | Another `yarn` / scoped prepare           | Overlapping Nx/Lerna runs race on `dist/`                                                                      |
 
@@ -131,6 +131,7 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 
 - **`yarn jet --help`** working or failing in `tests/` is **not** a valid e2e or install gate.
 - Jet is started **internally** by `yarn tests:<platform>:test-cover`. Stale `:8090` → [pre-flight recovery](running-e2e.md#pre-flight-recovery), then re-run the same `:test-cover` command.
+- Metro `EADDRINUSE` on `:8081` from `yarn tests:packager:jet-reset-cache` → [packager reset-cache](running-e2e.md#packager-reset-cache-eaddrinuse) (free `:8081`, then the same yarn target). Not the `:8090` pre-flight kill.
 
 ### Android Java format
 
