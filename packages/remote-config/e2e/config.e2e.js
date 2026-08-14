@@ -78,6 +78,47 @@ describe('remoteConfig()', function () {
         should.equal(remoteConfig.fetchTimeMillis > fetchTimeBefore, true);
       });
 
+      // Coverage for iOS fetch reject userInfo: nativeErrorCode / nativeErrorMessage
+      // (https://github.com/invertase/react-native-firebase/pull/9196). Interval 0
+      // forces a real fetch; 1ms timeout makes firebase-ios-sdk fail so both
+      // fetch: and fetchAndActivate: reject paths run. Public code/message stay
+      // the canned failure strings; native* carry the NSError.
+      it('attaches nativeErrorCode and nativeErrorMessage when iOS fetch rejects', async function () {
+        if (!Platform.ios) {
+          return;
+        }
+
+        const { getRemoteConfig, fetchConfig, fetchAndActivate } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig();
+        const previousSettings = { ...remoteConfig.settings };
+
+        const assertNativeFetchError = async promise => {
+          try {
+            await promise;
+            throw new Error('Did not reject');
+          } catch (error) {
+            if (error.message === 'Did not reject') {
+              throw error;
+            }
+            error.code.should.equal('remoteConfig/failure');
+            should(error.nativeErrorCode).be.a.Number();
+            should(error.nativeErrorMessage).be.a.String();
+            error.nativeErrorMessage.length.should.be.greaterThan(0);
+          }
+        };
+
+        try {
+          remoteConfig.settings = {
+            minimumFetchIntervalMillis: 0,
+            fetchTimeoutMillis: 1,
+          };
+          await assertNativeFetchError(fetchConfig(remoteConfig));
+          await assertNativeFetchError(fetchAndActivate(remoteConfig));
+        } finally {
+          remoteConfig.settings = previousSettings;
+        }
+      });
+
       // Regression test for https://github.com/invertase/react-native-firebase/issues/7779
       // On iOS, fetchAndActivate() used to always resolve `true` whenever the underlying fetch
       // succeeded, even when the fetched values were identical to what was already active
