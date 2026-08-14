@@ -31,8 +31,9 @@ const firebaseModules = readdirSync(packagesDir)
   .map(name => join(packagesDir, name))
   .filter(isDirectory);
 
-// Singleton React for the macOS shell. Shared harness under ../tests would otherwise
-// resolve a second copy from tests/node_modules → Invalid hook call.
+// Force React/scheduler from this app. Shared harness under ../tests would otherwise
+// resolve a second copy from tests/node_modules (Invalid hook call). extraNodeModules
+// may fall back into that tree for harness-only deps; do not blocklist all of it.
 const SINGLETON_FROM_APP = new Set([
   'react',
   'react/jsx-runtime',
@@ -56,9 +57,6 @@ const config = {
       new RegExp(`^${escape(resolve(rootDir, 'tests/e2e'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/android'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/functions'))}\\/.*$`),
-      // Keep package deps resolvable via hierarchical lookup; only block the mobile
-      // app's node_modules so shared ../tests sources do not pick up a second React.
-      new RegExp(`^${escape(resolve(rootDir, 'tests/node_modules'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests-macos/macos'))}\\/.*$`),
     ]),
     extraNodeModules: new Proxy(
@@ -76,7 +74,8 @@ const config = {
           if (existsSync(local)) {
             return local;
           }
-          // Fall back to mobile tests workspace for harness-only transitive deps.
+          // Harness-only transitive deps live under tests/. Local-first above;
+          // this path is not blocklisted (React/scheduler still SINGLETON_FROM_APP).
           return join(sharedTestsDir, `node_modules/${name}`);
         },
       },
