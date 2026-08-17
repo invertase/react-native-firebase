@@ -155,7 +155,7 @@ npx @react-native-community/cli codegen \
 
 Example (`perf` Android): `--outputPath ../packages/perf/android/src/reactnative/java/io/invertase/firebase/perf/generated`.
 
-After iOS regen: run `node ./scripts/patch-ios-codegen-resultt.mjs` from repo root ([NewArch-AD-21](architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted)) — already wired into `yarn codegen:verify`.
+RN 0.86 emits `ResultT` natively, so no post-generation inject is needed; the former patch script is retired ([NewArch-AD-21](architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted)).
 
 After regen: commit generated dirs, then [checklist row **12**](#turbomodule-native-registration-checklist-blocking) (`:build` + Metro reset-cache before `:test-cover`).
 

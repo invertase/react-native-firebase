@@ -157,8 +157,8 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 
 - **`cd packages/<pkg> && yarn ios:codegen`** (or `yarn android:codegen`) often fails with **`unknown command 'codegen'`** after a clean `yarn` — `@react-native-community/cli` resolves from the **test app** workspace.
 - Package scripts **wipe then regen** the configured `--outputPath` ([NewArch-AD-22](../new-architecture/architecture-decisions.md#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)). Prefer those yarn scripts when CLI resolution works.
-- **Canonical (CLI from tests/):** [turbomodule workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical) — wipe the package `outputPath` first, then `cd tests`, `npx @react-native-community/cli codegen --path ../packages/<pkg> …` with `--outputPath` copied from that package's `package.json` script. After iOS regen: `node ./scripts/patch-ios-codegen-resultt.mjs` ([NewArch-AD-21](../new-architecture/architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted)).
-- **CI / all packages:** `yarn codegen:verify` (wipe + regen + ResultT patch + `git diff --exit-code` on generated trees).
+- **Canonical (mobile toolchain from `tests/`):** use each package's `yarn android:codegen` / `yarn ios:codegen` script, which delegates to [`scripts/codegen-package.mjs`](../../scripts/codegen-package.mjs). The shared runner wipes the configured output path and invokes the pinned mobile CLI from `tests/`; do not run the CLI manually. RN 0.86 emits `ResultT` natively, so the former inject script is retired ([NewArch-AD-21](../new-architecture/architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted)).
+- **CI / all packages:** `yarn codegen:verify` (wipe + regen + `git diff --exit-code` on generated trees).
 - After regen: commit `android/.../generated` + `ios/generated`, then `:build` + Metro reset-cache before `:test-cover`.
 
 ### fmt / Apple Clang 21 (unpatched React Native)

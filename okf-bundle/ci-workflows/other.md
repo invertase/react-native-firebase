@@ -31,8 +31,8 @@ Undefined symbols for architecture arm64
 | Change | Location |
 |--------|----------|
 | `TOOLCHAINS=com.apple.dt.toolchain.XcodeDefault` job env | `.github/workflows/tests_e2e_other.yml` |
-| Same default in `build:macos` | `tests/package.json` |
-| App-target `OTHER_LDFLAGS` explicit `-lswiftCompatibility56` / `Concurrency` / `Packs` via `DT_TOOLCHAIN_DIR` | `tests/macos/Podfile` `post_install` |
+| Same default in `build:macos` | `tests-macos/package.json` |
+| App-target `OTHER_LDFLAGS` explicit `-lswiftCompatibility56` / `Concurrency` / `Packs` via `DT_TOOLCHAIN_DIR` | `tests-macos/macos/Podfile` `post_install` |
 
 ### CI failure: bundle load hang / `Could not connect to development server`
 

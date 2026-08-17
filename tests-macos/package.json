@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build:clean": "rimraf macos/build",
-    "build:macos": "bash -c 'set -o pipefail && xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace macos/io.invertase.testing.xcworkspace -scheme io.invertase.testing-macOS -configuration Debug -derivedDataPath macos/build | xcbeautify'",
+    "build:macos": "bash -c 'set -o pipefail && export TOOLCHAINS=\"${TOOLCHAINS:-com.apple.dt.toolchain.XcodeDefault}\" && xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace macos/io.invertase.testing.xcworkspace -scheme io.invertase.testing-macOS -configuration Debug -derivedDataPath macos/build | xcbeautify'",
     "prepare": "patch-package"
   },
   "dependencies": {

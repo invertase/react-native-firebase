@@ -55,7 +55,7 @@ Both e2e apps must declare every `@react-native-firebase/*` dependency (except `
 
 Today that version is **`26.2.0`**, matching `packages/*/package.json`. A stale pin (for example `26.1.0` while packages are `26.2.0`) resolves as `npm:26.1.0` and a fresh `yarn` downloads ~19 published tarballs. Metro may still remap JS to `packages/*`, so CI can look green while the lockfile is wrong.
 
-When lerna bumps the packages, bump **both** `tests/package.json` and `tests-macos/package.json` (including each app's private `"version"`) in the same change. Leave `@react-native-firebase/app-types` at `6.7.2`.
+The root `version` lifecycle runs [`scripts/version.js`](../../scripts/version.js) during `lerna version`. It deterministically updates **both** `tests/package.json` and `tests-macos/package.json`, including each app's private `"version"` and every `@react-native-firebase/*` dependency except `app-types`. Keep that automation intact; `@react-native-firebase/app-types` remains independently pinned at `6.7.2`.
 
 ## AsyncStorage (dual pin + Metro singleton)
 
