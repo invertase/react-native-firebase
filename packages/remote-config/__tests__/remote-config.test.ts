@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { describe, expect, it } from '@jest/globals';
+import { afterEach, describe, expect, it, jest } from '@jest/globals';
 
 import { getApp } from '@react-native-firebase/app';
 import {
@@ -178,6 +178,81 @@ describe('remoteConfig()', function () {
             1337 as unknown as string,
           );
         }).toThrow('must be a string value');
+      });
+    });
+
+    describe('queued native mutations before fetch', function () {
+      const emptyConstants = {
+        lastFetchTime: Date.now(),
+        lastFetchStatus: 'success' as const,
+        values: {},
+      };
+
+      function mockNative() {
+        const resolved = { result: undefined, constants: emptyConstants };
+        return {
+          setConfigSettings: jest.fn(() => Promise.resolve(resolved)),
+          setDefaults: jest.fn(() => Promise.resolve({ result: null, constants: emptyConstants })),
+          fetch: jest.fn(() => Promise.resolve(resolved)),
+          fetchAndActivate: jest.fn(() =>
+            Promise.resolve({ result: true, constants: emptyConstants }),
+          ),
+          activate: jest.fn(() => Promise.resolve({ result: true, constants: emptyConstants })),
+          ensureInitialized: jest.fn(() => Promise.resolve(resolved)),
+        };
+      }
+
+      afterEach(function () {
+        jest.restoreAllMocks();
+      });
+
+      it('calls setConfigSettings before fetchAndActivate after settings assignment', async function () {
+        const native = mockNative();
+        const remoteConfig = getRemoteConfig() as RemoteConfigInternal & {
+          _nativeModule: typeof native;
+        };
+        remoteConfig._nativeModule = native;
+
+        remoteConfig.settings = { minimumFetchIntervalMillis: 0 } as typeof remoteConfig.settings;
+        const pending = fetchAndActivate(remoteConfig);
+
+        // Fetch must not start on this turn; the settings write is still queued.
+        expect(native.fetchAndActivate.mock.calls.length).toBe(0);
+
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+        await pending;
+
+        expect(native.setConfigSettings.mock.calls.length).toBeGreaterThan(0);
+        expect(native.fetchAndActivate.mock.calls.length).toBeGreaterThan(0);
+        expect(native.setConfigSettings.mock.invocationCallOrder[0]).toBeLessThan(
+          native.fetchAndActivate.mock.invocationCallOrder[0] as number,
+        );
+      });
+
+      it('calls setDefaults before fetch after defaultConfig assignment', async function () {
+        const native = mockNative();
+        const remoteConfig = getRemoteConfig() as RemoteConfigInternal & {
+          _nativeModule: typeof native;
+        };
+        remoteConfig._nativeModule = native;
+
+        remoteConfig.defaultConfig = { queued_default: 'value' };
+        const pending = remoteConfig.fetch();
+
+        expect(native.fetch.mock.calls.length).toBe(0);
+
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+        await pending;
+
+        expect(native.setDefaults.mock.calls.length).toBeGreaterThan(0);
+        expect(native.fetch.mock.calls.length).toBeGreaterThan(0);
+        expect(native.setDefaults.mock.invocationCallOrder[0]).toBeLessThan(
+          native.fetch.mock.invocationCallOrder[0] as number,
+        );
       });
     });
 

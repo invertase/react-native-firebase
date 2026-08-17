@@ -123,9 +123,11 @@ verification code to the user:
 
 ```js
 const hint = resolver.hints[0];
-const sessionId = resolver.session;
 
-const verificationId = await getAuth().verifyPhoneNumberWithMultiFactorInfo(hint, resolver.session); // Triggers message to user
+const verificationId = await new PhoneAuthProvider(getAuth()).verifyPhoneNumber({
+  multiFactorHint: hint,
+  session: resolver.session,
+}); // Triggers message to user
 ```
 
 Once the user has entered the verification code you can create a multi-factor
@@ -164,7 +166,7 @@ signInWithEmailAndPassword(getAuth(), email, password)
     const { code } = error;
     // Make sure to check if multi factor authentication is required
     if (code === 'auth/multi-factor-auth-required') {
-      const resolver = getMultiFactorResolver(error);
+      const resolver = getMultiFactorResolver(getAuth(), error);
 
       if (resolver.hints.length > 1) {
         // Use resolver.hints to display a list of second factors to the user

@@ -317,7 +317,9 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
    * @returns {Promise<boolean>}
    */
   activate(): Promise<boolean> {
-    return this._promiseWithConstants(this.native.activate());
+    // Wait for queued setters (settings / defaults) but do not serialize fetch-length
+    // work onto `_nativeMutationQueue`. A fetch can run up to fetchTimeoutMillis.
+    return this._nativeMutationQueue.then(() => this._promiseWithConstants(this.native.activate()));
   }
 
   /**
@@ -333,17 +335,23 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
       );
     }
 
-    return this._promiseWithConstants(
-      this.native.fetch(expirationDurationSeconds !== undefined ? expirationDurationSeconds : -1),
+    return this._nativeMutationQueue.then(() =>
+      this._promiseWithConstants(
+        this.native.fetch(expirationDurationSeconds !== undefined ? expirationDurationSeconds : -1),
+      ),
     );
   }
 
   fetchAndActivate(): Promise<boolean> {
-    return this._promiseWithConstants(this.native.fetchAndActivate());
+    return this._nativeMutationQueue.then(() =>
+      this._promiseWithConstants(this.native.fetchAndActivate()),
+    );
   }
 
   ensureInitialized(): Promise<void> {
-    return this._promiseWithConstants(this.native.ensureInitialized());
+    return this._nativeMutationQueue.then(() =>
+      this._promiseWithConstants(this.native.ensureInitialized()),
+    );
   }
 
   /**

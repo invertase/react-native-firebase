@@ -60,6 +60,65 @@ describe('remoteConfig()', function () {
         (await fetchAndActivate(getRemoteConfig())).should.be.a.Boolean();
       });
 
+      // Regression for https://github.com/invertase/react-native-firebase/issues/9194
+      // Assigning settings then calling fetchAndActivate in the next statement used to
+      // start the fetch before native setConfigSettings, so iOS cancelled the request
+      // (NSURLErrorCancelled / -999). A 12h cache hit with stale native settings must
+      // not satisfy this: interval 0 forces a real fetch.
+      it('applies settings assigned in the previous statement before fetchAndActivate', async function () {
+        const { getRemoteConfig, fetchAndActivate } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig();
+        // Snapshot before the settings write. A 12h cache hit (stale native interval)
+        // leaves fetchTimeMillis unchanged; interval 0 must force a real fetch.
+        const fetchTimeBefore = remoteConfig.fetchTimeMillis;
+        remoteConfig.settings = { minimumFetchIntervalMillis: 0 };
+        const activated = await fetchAndActivate(remoteConfig);
+        activated.should.be.a.Boolean();
+        remoteConfig.lastFetchStatus.should.not.equal('failure');
+        should.equal(remoteConfig.fetchTimeMillis > fetchTimeBefore, true);
+      });
+
+      // Coverage for iOS fetch reject userInfo: nativeErrorCode / nativeErrorMessage
+      // (https://github.com/invertase/react-native-firebase/pull/9196). Interval 0
+      // forces a real fetch; 1ms timeout makes firebase-ios-sdk fail so both
+      // fetch: and fetchAndActivate: reject paths run. Public code/message stay
+      // the canned failure strings; native* carry the NSError.
+      it('attaches nativeErrorCode and nativeErrorMessage when iOS fetch rejects', async function () {
+        if (!Platform.ios) {
+          return;
+        }
+
+        const { getRemoteConfig, fetchConfig, fetchAndActivate } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig();
+        const previousSettings = { ...remoteConfig.settings };
+
+        const assertNativeFetchError = async promise => {
+          try {
+            await promise;
+            throw new Error('Did not reject');
+          } catch (error) {
+            if (error.message === 'Did not reject') {
+              throw error;
+            }
+            error.code.should.equal('remoteConfig/failure');
+            should(error.nativeErrorCode).be.a.Number();
+            should(error.nativeErrorMessage).be.a.String();
+            error.nativeErrorMessage.length.should.be.greaterThan(0);
+          }
+        };
+
+        try {
+          remoteConfig.settings = {
+            minimumFetchIntervalMillis: 0,
+            fetchTimeoutMillis: 1,
+          };
+          await assertNativeFetchError(fetchConfig(remoteConfig));
+          await assertNativeFetchError(fetchAndActivate(remoteConfig));
+        } finally {
+          remoteConfig.settings = previousSettings;
+        }
+      });
+
       // Regression test for https://github.com/invertase/react-native-firebase/issues/7779
       // On iOS, fetchAndActivate() used to always resolve `true` whenever the underlying fetch
       // succeeded, even when the fetched values were identical to what was already active
