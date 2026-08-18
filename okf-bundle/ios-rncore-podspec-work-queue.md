@@ -42,11 +42,9 @@ Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers
 
 **Stack mechanics:**
 
-- Trunk: `main`. Bottom of stack: #9192 (`split-tests-e2e-app-decouple-macos`, already open). Top of stack: this queue's new branch, based on `split-tests-e2e-app-decouple-macos`.
-- Branch name (proposed, confirm before creating): `ios-podspec-rncore-prebuilt`.
-- Create via `gh stack` CLI extension (`gh stack init --base split-tests-e2e-app-decouple-macos`) if installed, or manually: branch from `origin/split-tests-e2e-app-decouple-macos`, push, open a PR with base = `split-tests-e2e-app-decouple-macos`, select "Create stack" on GitHub.
-- Every commit in the stack is still evaluated against the stack's trunk (`main`) for branch protection/CI, per GitHub's stacked-PR docs — no CI config changes needed.
-- Open the PR as **draft** (per repo GitHub-voice convention). Russell messages #9024 once it's in draft (decision 9) — not a queue action item.
+- Trunk: `main`. #9192 merged 2026-08-18 (`test(e2e): split macOS app; bump tests RN to 0.86 (#9192)`). This branch is **no longer stacked**; it was rebased `--onto origin/main` (R1+R2 only).
+- Branch: `ios-podspec-rncore-prebuilt`, 2 commits ahead of `origin/main`, not pushed.
+- Open the PR as **draft** targeting `main` after a fresh independent-review (rebase invalidated prior `xcodebuild` evidence). Russell messages #9024 once it's in draft (decision 9) — not a queue action item.
 
 ---
 
@@ -58,15 +56,15 @@ Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers
 | **R2** | Remaining ~14 podspecs | Roll the proven pattern out, mirroring #9024's file list |
 | **R3** | Phase 2 — bare RN CLI workaround-removal proof | Once #9192's RN 0.86.2 bump is available on the branch; producer-side proof only (see [context](#required-maintainer-context)) |
 | **R4** | Durable ADR write-up | Fold the proven pattern into [ios-spm-native-imports.md](ios-spm-native-imports.md) once R2 closes |
-| **R5** | PR handoff | Mark stacked PR ready; fresh-eyes review ([Cross Platform guide § Step 7](https://linear.app/invertase/document/cross-platform-issue-authoring-and-agent-workflow-guide-2b429e4aace0#step-7--fresh-eyes-review-before-merge)) |
+| **R5** | PR handoff | Draft PR off `main`; fresh-eyes review ([Cross Platform guide § Step 7](https://linear.app/invertase/document/cross-platform-issue-authoring-and-agent-workflow-guide-2b429e4aace0#step-7--fresh-eyes-review-before-merge)) |
 
 ---
 
 ## Resume checklist
 
-1. Confirm `origin/split-tests-e2e-app-decouple-macos` is fetchable and current before branching (#9192 may have moved since 2026-08-17).
-2. Create/checkout the stacked branch (see [stack mechanics](#required-maintainer-context)) before any product edit.
-3. [Pre-flight](testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) still applies for any `tests:*` command run during R3, even though R1/R2 use direct `xcodebuild` rather than `yarn tests:ios:test-cover`.
+1. Branch is based on `origin/main` after #9192 merge (2026-08-18). Do not look for `split-tests-e2e-app-decouple-macos` (remote ref deleted).
+2. History rewrite: rebase onto `main` **invalidated** prior R1/R2 area-focused evidence. Re-run independent-review before `git push` / draft PR.
+3. [Pre-flight](testing/running-e2e.md#pre-flight-is-the-host-clear-to-start) still applies for any `tests:*` command, even though R1/R2 use direct `xcodebuild` rather than `yarn tests:ios:test-cover`.
 4. **R1/R2 evidence shape (non-standard — read before running):** the platform-coverage e2e-evidence rule in [change authoring § validation evidence](testing/change-authoring-workflow.md#validation-evidence-blocking) is overridden for this queue only, per [decision 5](#locked-decisions-2026-08-17-grill-session). Record the `xcodebuild` command, target, and exit code — not an e2e pass count — as the implementation/review evidence for R1 and R2.
 5. Never commit `tests/ios/Podfile.lock` changes made only to locally force `RCT_USE_PREBUILT_RNCORE=1` for validation.
 
@@ -78,11 +76,11 @@ Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers
 | ---- | ----- | ---------------- | ---------------------- | ------------- | ------------- | ----------------- | ------------------- | ---------- | ----- |
 | **R1** | `packages/app` podspec + `.m` changes, pilot | `fix(app, ios): wire add_rncore_dependency for prebuilt RNCore` | closed | closed | closed | `commit` | `area-focused` (evidence: `xcodebuild` compile, not e2e — see resume checklist #4) | `ios` | All gates closed. Docs scan ready (decision 10 now links change authoring; no durable ADR). Product: `packages/app/RNFBApp.podspec` only. Coverage n/a. See [R1 implementation evidence](#r1-implementation-evidence) and [R1 review evidence](#r1-review-evidence). |
 | **R2** | Remaining ~14 podspecs + `.m` files, mirroring #9024's file list | `fix(ios): wire add_rncore_dependency across remaining podspecs for prebuilt RNCore` | closed | closed | closed | `commit` | `area-focused` (same evidence shape as R1) | `ios` | All gates closed. Re-review green, no findings. xcconfig before helpers on all remaining specs. Native-import skip accepted. Coverage n/a. See [R2 re-review evidence](#r2-re-review-evidence). |
-| **R3** | Phase 2 producer-side workaround-removal proof, bare RN CLI, doc note | TBD — set once scope of any doc change is known | open | open | open | `gap-analysis` | `unit-focused` | `ios` | Unblocked. R2 committed. Stack still based on #9192; local branch may be behind `origin/split-tests-e2e-app-decouple-macos` (do not rebase without re-review). |
-| **R4** | Durable ADR addition to `ios-spm-native-imports.md` | TBD — may fold into R2's or R3's commit if small | open | open | open | — | `none` | — | Unblocked on R2 `review_gate`. Not folded into R2 (keep ADR as its own commit). Pickup after R3 unless R3 is docs-only. |
-| **R5** | Mark stacked PR ready; fresh-eyes review | — (no commit, PR-state change only) | open | open | — | — | `none` | — | Blocked on R1-R4. Fresh-eyes review per [Cross Platform guide § Step 7](https://linear.app/invertase/document/cross-platform-issue-authoring-and-agent-workflow-guide-2b429e4aace0#step-7--fresh-eyes-review-before-merge) — propose, don't assume. |
+| **R3** | Phase 2 producer-side workaround-removal proof, bare RN CLI, doc note | — (no commit; absorbed into R4) | closed | closed | closed | `documentation` | `none` | `ios` | Gap-analysis complete. Producer-side proof **already shipped** as R1/R2 `xcodebuild` (prebuilt on, dynamic `use_frameworks!`, no `$RNFirebaseAsStaticFramework`). Cannot prove full `tests/` link/e2e (Issue 2) or Expo `forceStaticLinking` (CPRN-153). No R3 product/docs commit. See [R3 gap analysis](#r3-gap-analysis). |
+| **R4** | Durable ADR addition to `ios-spm-native-imports.md` | `docs: record add_rncore_dependency for prebuilt RNCore` | closed | closed | closed | `commit` | `none` | — | All gates closed. Documentation pass ready. Canonical ADR + index blurb + pins cross-link. Expo `docs/index.mdx` / `docs/ios-spm.mdx` untouched (CPRN-153). See [R4 documentation evidence](#r4-documentation-evidence). |
+| **R5** | Mark PR ready; fresh-eyes review | — (no commit, PR-state change only) | open | open | — | `independent-review` | `area-focused` (evidence: `xcodebuild` compile, not e2e — see resume checklist #4) | `ios` | Pickup now. Blocked on post-rebase independent-review of R1/R2 product commits, then draft PR targeting `main`. Fresh-eyes review per [Cross Platform guide § Step 7](https://linear.app/invertase/document/cross-platform-issue-authoring-and-agent-workflow-guide-2b429e4aace0#step-7--fresh-eyes-review-before-merge) — propose, don't assume. |
 
-**Current gates:** R1 and R2 all closed. **Next pickup:** R3 (`gap-analysis` for Phase 2 workaround-removal proof). **Current snapshot:** R2 memorialized on `ios-podspec-rncore-prebuilt`.
+**Current gates:** R1–R4 closed. **Next pickup:** R5 (post-rebase independent-review, then draft PR off `main`). **Current snapshot:** 3 commits ahead of `origin/main`, not pushed. Prior R1/R2 `xcodebuild` evidence is **invalid** until a fresh independent-review. Linear CPRN-237 last updated 2026-08-18 (pre-R4).
 
 ### R1 implementation evidence
 
@@ -171,6 +169,28 @@ Full frozen re-review after xcconfig-order fix. `harness narrowed: no`. Verdict:
 | lint (CI) | `yarn lint` | 0 | — |
 | coverage | n/a | — | podspec-only |
 
+### R3 gap analysis
+
+Read-only. `harness narrowed: n/a`. No product edits. **No R3 commit.**
+
+**Can show (already R1/R2):** every live RNFB pod scheme compiles Debug+Release under locally forced `RCT_USE_PREBUILT_RNCORE=1` / `RCT_USE_RN_DEP=1`, with `tests/ios` still `use_frameworks! :linkage => :dynamic` and `$RNFirebaseAsStaticFramework` unset. RNFB pods do not need static linkage or prebuilt-off to compile against prebuilt RNCore.
+
+**Cannot show:** full `testing` app link/e2e with prebuilt on (Issue 2: `RNDeviceInfo` / `RNAppleAuthentication`); Expo `forceStaticLinking` drop (CPRN-153); flipping committed `tests/ios` ENV back to `1`.
+
+**Docs:** `docs/ios-spm.mdx`, `CONTRIBUTING.md`, package READMEs, `tests/ios/Podfile` comments: keep. Expo sentence in `docs/index.mdx` (~101) deferred to CPRN-153 / not R3. ADR → R4.
+
+### R4 documentation evidence
+
+`harness narrowed: n/a`. Validation tier `none`. DRY scan of entire `okf-bundle/` by the documentation pass. **Ready for commit: yes.**
+
+| File | Change |
+| ---- | ------ |
+| `okf-bundle/ios-spm-native-imports.md` | Decision 6, Prebuilt React-Core section, xcconfig-before-helpers review invariant |
+| `okf-bundle/index.md` | Entry-point blurb now names prebuilt RNCore podspec wiring |
+| `okf-bundle/testing/test-app-dependency-pins.md` | Names both third-party pods; links to the ADR for RNFB podspec opt-in |
+
+Canonical: ADR owns RNFB podspec RNCore wiring; pins own `tests/ios` `RCT_USE_PREBUILT_RNCORE=0`; queue stays ephemeral evidence. Consumer `docs/index.mdx` / `docs/ios-spm.mdx` not edited.
+
 ---
 
 ## R1 — pilot acceptance checklist (draft)
@@ -191,13 +211,13 @@ Full frozen re-review after xcconfig-order fix. `harness narrowed: no`. Verdict:
 
 ## R3 — Phase 2 proof (draft, scope TBD until R2 closes)
 
-- [ ] Confirm what "prove workaround removal" can concretely show given the [Issue 2 constraint](#required-maintainer-context): likely limited to "producer-side compiles clean without `$RNFirebaseAsStaticFramework`/`RCT_USE_PREBUILT_RNCORE=0`", not a full `tests/` e2e run
-- [ ] Update any doc/comment that still describes the workaround as required, if the diff shows otherwise (e.g. `docs/ios-spm.mdx`, CONTRIBUTING.md, if applicable)
-- [ ] Record findings back on CPRN-237 (Discovery/Work Completed ledger)
+- [x] Confirm what "prove workaround removal" can concretely show given the [Issue 2 constraint](#required-maintainer-context): producer-side pod-target compile under prebuilt RNCore without `$RNFirebaseAsStaticFramework`; not a full `tests/` e2e run
+- [x] No R3 doc rewrite: `docs/ios-spm.mdx` / CONTRIBUTING.md do not claim the static workaround is required for prebuilt; Expo `forceStaticLinking` sentence stays for CPRN-153
+- [x] Record findings back on CPRN-237 (Discovery/Work Completed ledger)
 
 ## R4 — durable ADR write-up (draft)
 
-- [ ] Add a decision entry to [ios-spm-native-imports.md](ios-spm-native-imports.md) documenting `add_rncore_dependency` + `CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES` as the chosen fix for prebuilt-RNCore compile visibility, cross-referencing the Issue 2 link-time gap as a known, separately-tracked limitation
+- [x] Add a decision entry to [ios-spm-native-imports.md](ios-spm-native-imports.md) documenting `add_rncore_dependency` + `CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES` as the chosen fix for prebuilt-RNCore compile visibility, cross-referencing the Issue 2 link-time gap as a known, separately-tracked limitation
 
 ---
 
