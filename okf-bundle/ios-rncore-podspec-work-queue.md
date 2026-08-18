@@ -77,12 +77,12 @@ Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers
 | Item | Scope | `commit_subject` | `implementation_gate` | `review_gate` | `commit_gate` | `next_work_type` | `validation_tier` | `platform` | Notes |
 | ---- | ----- | ---------------- | ---------------------- | ------------- | ------------- | ----------------- | ------------------- | ---------- | ----- |
 | **R1** | `packages/app` podspec + `.m` changes, pilot | `fix(app, ios): wire add_rncore_dependency for prebuilt RNCore` | closed | closed | closed | `commit` | `area-focused` (evidence: `xcodebuild` compile, not e2e — see resume checklist #4) | `ios` | All gates closed. Docs scan ready (decision 10 now links change authoring; no durable ADR). Product: `packages/app/RNFBApp.podspec` only. Coverage n/a. See [R1 implementation evidence](#r1-implementation-evidence) and [R1 review evidence](#r1-review-evidence). |
-| **R2** | Remaining ~14 podspecs + `.m` files, mirroring #9024's file list | `fix(ios): wire add_rncore_dependency across remaining podspecs for prebuilt RNCore` | open | open | open | `implementation` | `unit-focused` (same evidence shape as R1) | `ios` | R1 committed. Pickup now. Use workspace + scheme `xcodebuild` (not `-project Pods/Pods.xcodeproj`). |
-| **R3** | Phase 2 producer-side workaround-removal proof, bare RN CLI, doc note | TBD — set once scope of any doc change is known | open | open | open | — | `unit-focused` | `ios` | Blocked on R2 `review_gate` and #9192 availability on the stack. |
-| **R4** | Durable ADR addition to `ios-spm-native-imports.md` | TBD — may fold into R2's or R3's commit if small | open | open | open | — | `none` | — | Blocked on R2 `review_gate`. |
+| **R2** | Remaining ~14 podspecs + `.m` files, mirroring #9024's file list | `fix(ios): wire add_rncore_dependency across remaining podspecs for prebuilt RNCore` | closed | closed | closed | `commit` | `area-focused` (same evidence shape as R1) | `ios` | All gates closed. Re-review green, no findings. xcconfig before helpers on all remaining specs. Native-import skip accepted. Coverage n/a. See [R2 re-review evidence](#r2-re-review-evidence). |
+| **R3** | Phase 2 producer-side workaround-removal proof, bare RN CLI, doc note | TBD — set once scope of any doc change is known | open | open | open | `gap-analysis` | `unit-focused` | `ios` | Unblocked. R2 committed. Stack still based on #9192; local branch may be behind `origin/split-tests-e2e-app-decouple-macos` (do not rebase without re-review). |
+| **R4** | Durable ADR addition to `ios-spm-native-imports.md` | TBD — may fold into R2's or R3's commit if small | open | open | open | — | `none` | — | Unblocked on R2 `review_gate`. Not folded into R2 (keep ADR as its own commit). Pickup after R3 unless R3 is docs-only. |
 | **R5** | Mark stacked PR ready; fresh-eyes review | — (no commit, PR-state change only) | open | open | — | — | `none` | — | Blocked on R1-R4. Fresh-eyes review per [Cross Platform guide § Step 7](https://linear.app/invertase/document/cross-platform-issue-authoring-and-agent-workflow-guide-2b429e4aace0#step-7--fresh-eyes-review-before-merge) — propose, don't assume. |
 
-**Current gates:** R1 all closed. **Next pickup:** R2 (remaining podspecs). **Current snapshot:** R1 memorialized; stacked branch `ios-podspec-rncore-prebuilt`.
+**Current gates:** R1 and R2 all closed. **Next pickup:** R3 (`gap-analysis` for Phase 2 workaround-removal proof). **Current snapshot:** R2 memorialized on `ios-podspec-rncore-prebuilt`.
 
 ### R1 implementation evidence
 
@@ -113,6 +113,64 @@ Frozen-tree re-run. `harness narrowed: no` (xcodebuild pod-target compile; no e2
 | lint (CI) | `yarn lint` | 0 | — |
 | coverage | n/a | — | podspec-only; no lib/native/.rb |
 
+### R2 implementation evidence
+
+`harness narrowed: no` (xcodebuild pod-target compile; no e2e). Native `.m`/`.mm` imports skipped: TurboModule umbrellas already include `RCTBridgeModule.h`. Template has no live target.
+
+| Step | Command | Exit | Evidence |
+| ---- | ------- | ---- | -------- |
+| fmt | `rg 'spec\.version\|:tag' tests/node_modules/react-native/third-party-podspecs/fmt.podspec` | — | `12.1.0` |
+| yarn | skipped re-yarn | — | `node_modules` present |
+| pod install (local force) | Podfile ENV both `'1'`, `pod install` from `tests/ios` | 0 | `React-Core-prebuilt (0.86.2)`; all 15 RNFB xcconfigs got `CLANG_ALLOW…=YES` |
+| xcodebuild (15 schemes × Debug+Release) | workspace + scheme + `-derivedDataPath /tmp/rnfb-r2-derived` | 0 all | logs `/tmp/rnfb-e2e-r2-<Scheme>-{debug,release}.log`; `** BUILD SUCCEEDED **`; zero non-modular-include diagnostics. Schemes: RNFBAnalytics, RNFBAppCheck, RNFBAppDistribution, RNFBAuth, RNFBCrashlytics, RNFBDatabase, RNFBFirestore, RNFBFunctions, RNFBInAppMessaging, RNFBInstallations, RNFBMessaging, RNFBML, RNFBPerf, RNFBRemoteConfig, RNFBStorage |
+| Podfile revert | checkout + `pod install` ENV `'0'` | 0 | `Removing React-Core-prebuilt`; `tests/ios` clean |
+| lint (CI) | `yarn lint` | 0 | — |
+| jest / tsc / e2e | n/a | — | podspec only |
+
+### R2 review evidence
+
+Frozen-tree re-run. `harness narrowed: no`. **Not green.** Native-import skip accepted. Coverage n/a.
+
+**serious:** `pod_target_xcconfig` assigned after `install_modules_dependencies` / `add_rncore_dependency` on `app-distribution`, `functions`, `in-app-messaging`, `installations`, `ml`, `perf`, `remote-config`, and `scripts/_TEMPLATE_`. Overwrites helper-injected `HEADER_SEARCH_PATHS` and `CLANG_CXX_LANGUAGE_STANDARD=c++20`. Prebuilt compile still passed because RN `post_install` restored VFS overlay; from-source (`RCT_USE_PREBUILT_RNCORE=0`, the `tests/ios` default) is the path storage already warns about. **Fix:** set `CLANG_ALLOW…=YES` in `pod_target_xcconfig` **before** the helpers, matching analytics/storage/R1.
+
+**nit:** those after-assign pods copy a "public headers re-export" comment; they already use `private_header_files`.
+
+| Step | Command | Exit | Evidence |
+| ---- | ------- | ---- | -------- |
+| frozen diff | `git diff -- packages/ scripts/` | — | 15 live podspecs + template; no `packages/app`; no native sources |
+| fmt | `rg` fmt.podspec | — | `12.1.0` |
+| pod install (local force) | ENV both `'1'`, `pod install` from `tests/ios` | 0 | `React-Core-prebuilt (0.86.2)` |
+| xcodebuild 15 schemes × Debug+Release | workspace + scheme + `-derivedDataPath /tmp/rnfb-r2-review-derived` | 0 all | `/tmp/rnfb-e2e-r2-review-<Scheme>-{debug,release}.log`; zero non-modular diagnostics |
+| Podfile revert | checkout + `pod install` ENV `'0'` | 0 | `Removing React-Core-prebuilt`; `tests/ios` clean |
+| lint (CI) | `yarn lint` | 0 | — |
+| coverage | n/a | — | podspec-only |
+
+### R2 fix evidence
+
+Serious xcconfig-order finding and nit comments addressed. `harness narrowed: no`. Seven live pods + template now set `pod_target_xcconfig` **before** RN helpers. Generated xcconfigs retain `c++20` and extra `HEADER_SEARCH_PATHS` (Yoga/React-debug).
+
+| Step | Command | Exit | Evidence |
+| ---- | ------- | ---- | -------- |
+| fmt | `rg` fmt.podspec | — | `12.1.0` |
+| pod install (local force) | ENV both `'1'` | 0 | 7 live pods: `CLANG_ALLOW…=YES`, `c++20`, extra HEADER_SEARCH_PATHS |
+| xcodebuild 7 schemes × Debug+Release | workspace + scheme + `-derivedDataPath /tmp/rnfb-r2-fix-derived` | 0 all | `/tmp/rnfb-e2e-r2-fix-<Scheme>-{debug,release}.log`; zero non-modular diagnostics. Schemes: RNFBAppDistribution, RNFBFunctions, RNFBInAppMessaging, RNFBInstallations, RNFBML, RNFBPerf, RNFBRemoteConfig |
+| Podfile revert | checkout + `pod install` ENV `'0'` | 0 | `tests/ios` git-clean |
+| lint (CI) | `yarn lint` | 0 | — |
+
+### R2 re-review evidence
+
+Full frozen re-review after xcconfig-order fix. `harness narrowed: no`. Verdict: **green**, no findings. Coverage n/a. All 15 live specs + template set `pod_target_xcconfig` before RN helpers. Generated xcconfigs kept `CLANG_ALLOW…`, `c++20`, extra `HEADER_SEARCH_PATHS`.
+
+| Step | Command | Exit | Evidence |
+| ---- | ------- | ---- | -------- |
+| frozen diff | `git diff --name-only -- packages/ scripts/` | — | 15 live podspecs + template; no `packages/app`; no native sources |
+| fmt | `rg` fmt.podspec | — | `12.1.0` |
+| pod install (local force) | ENV both `'1'` | 0 | `React-Core-prebuilt (0.86.2)`; all 15 debug xcconfigs: CLANG_ALLOW=YES, c++20, extra HEADER_SEARCH_PATHS |
+| xcodebuild 15 schemes × Debug+Release | workspace + scheme + `-derivedDataPath /tmp/rnfb-r2-rereview-derived` | 0 all | `/tmp/rnfb-e2e-r2-rereview-<Scheme>-{debug,release}.log`; zero non-modular diagnostics |
+| Podfile revert | checkout + `pod install` ENV `'0'` | 0 | `Removing React-Core-prebuilt`; `tests/ios` git-clean |
+| lint (CI) | `yarn lint` | 0 | — |
+| coverage | n/a | — | podspec-only |
+
 ---
 
 ## R1 — pilot acceptance checklist (draft)
@@ -127,9 +185,9 @@ Frozen-tree re-run. `harness narrowed: no` (xcodebuild pod-target compile; no e2
 
 ## R2 — rollout acceptance checklist (draft)
 
-- [ ] Same two podspec additions applied to the remaining files from #9024's file list (analytics, app-check, app-distribution, auth, crashlytics, database, firestore, functions, in-app-messaging, installations, messaging, ml, perf, remote-config, storage, `scripts/_TEMPLATE_`)
-- [ ] Same producer-side `xcodebuild` validation approach as R1, scoped to the affected pod targets
-- [ ] `yarn lint` green on the full diff
+- [x] Same two podspec additions applied to the remaining files from #9024's file list (analytics, app-check, app-distribution, auth, crashlytics, database, firestore, functions, in-app-messaging, installations, messaging, ml, perf, remote-config, storage, `scripts/_TEMPLATE_`)
+- [x] Same producer-side `xcodebuild` validation approach as R1, scoped to the affected pod targets
+- [x] `yarn lint` green on the full diff
 
 ## R3 — Phase 2 proof (draft, scope TBD until R2 closes)
 

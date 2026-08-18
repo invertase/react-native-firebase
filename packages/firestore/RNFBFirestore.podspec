@@ -41,11 +41,18 @@ Pod::Spec.new do |s|
 
   s.pod_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ios/generated/RNFBFirestoreTurboModules\" \"$(PODS_TARGET_SRCROOT)/ios/generated\"",
+    "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
   }
 
   s.dependency          'RNFBApp'
 
   install_modules_dependencies(s);
+
+  # Wire up prebuilt React-Core (RN 0.83+, default on 0.84+) so the legacy
+  # <React/...> header imports resolve when RCT_USE_PREBUILT_RNCORE=1.
+  if defined?(add_rncore_dependency)
+    add_rncore_dependency(s)
+  end
 
   # Fail fast for old architecture users, but safely in case the variable goes away
   # completely in future react-native versions

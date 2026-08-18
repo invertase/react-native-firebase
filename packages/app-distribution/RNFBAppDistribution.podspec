@@ -30,9 +30,24 @@ Pod::Spec.new do |s|
   s.private_header_files = "ios/**/*.h"
   s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
 
+  # Must be set before install_modules_dependencies so RN can append use_frameworks
+  # HEADER_SEARCH_PATHS (React-debug etc.). Assigning after overwrites those paths
+  # and breaks from-source builds: react/timing/primitives.h → react/debug/flags.h.
+  # CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES is required so the
+  # framework module validates when consumers build with use_frameworks!.
+  s.pod_target_xcconfig = {
+    "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
+  }
+
   s.dependency          'RNFBApp'
 
   install_modules_dependencies(s);
+
+  # Wire up prebuilt React-Core (RN 0.83+, default on 0.84+) so the legacy
+  # <React/...> header imports resolve when RCT_USE_PREBUILT_RNCORE=1.
+  if defined?(add_rncore_dependency)
+    add_rncore_dependency(s)
+  end
 
   if defined?(ENV["RCT_NEW_ARCH_ENABLED"]) != nil && (ENV["RCT_NEW_ARCH_ENABLED"] == '0')
      raise "#{s.name} requires New Architecture. Enable New Architecture to use this module"

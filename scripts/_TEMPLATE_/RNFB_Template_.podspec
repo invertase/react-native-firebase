@@ -24,9 +24,24 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = "10.0"
   s.source_files        = 'ios/**/*.{h,m}'
 
+  # Must be set before install_modules_dependencies so RN can append use_frameworks
+  # HEADER_SEARCH_PATHS (React-debug etc.). Assigning after overwrites those paths
+  # and breaks from-source builds: react/timing/primitives.h → react/debug/flags.h.
+  # CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES is required so the
+  # framework module validates when consumers build with use_frameworks!.
+  s.pod_target_xcconfig = {
+    "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
+  }
+
   # React Native dependencies
   s.dependency          'React-Core'
   s.dependency          'RNFBApp'
+
+  # Wire up prebuilt React-Core (RN 0.83+, default on 0.84+) so the legacy
+  # <React/...> header imports resolve when RCT_USE_PREBUILT_RNCORE=1.
+  if defined?(add_rncore_dependency)
+    add_rncore_dependency(s)
+  end
 
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
