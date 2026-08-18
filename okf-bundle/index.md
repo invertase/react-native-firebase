@@ -31,7 +31,6 @@ okf_version: '0.1'
 - [TurboModule migration](/new-architecture/index.md) — Codegen TurboModules, coordinated New Architecture break, phase queue
 - [iOS SPM native integration decisions](/ios-spm-native-imports.md) — dual imports, Swift-product helpers, and runtime framework embedding
 - [iOS RNCore podspec invariants](/ios-rncore-podspec.md) — Clang non-modular-includes flag and `pod_target_xcconfig` order under `use_frameworks!`
-- [iOS RNCore prebuilt podspec work queue](/ios-rncore-podspec-work-queue.md) — CPRN-237 / #9200 tracker (ephemeral)
 - [Monorepo tooling](/monorepo-tooling/index.md) — Nx local cache, deterministic prepare graph, declaration maps, dependency-cycle linting, dev watch; decisions (ADR) + rollout queue
 
 # Packages

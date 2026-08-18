@@ -12,12 +12,10 @@ Canonical owner for RNFB **handwritten** `RNFB*.podspec` xcconfig around React
 Native's prebuilt RNCore and `use_frameworks!`. Not consumer setup.
 
 Two independent RNCore problems. This file is **Issue 1** (compile-time,
-inside RNFB pods). Tracker:
-[CPRN-237](https://linear.app/invertase/issue/CPRN-237) / GitHub #9200.
+inside RNFB pods), GitHub #9200.
 **Issue 2** (link-time, `tests/` only: third-party dynamic pods vs prebuilt
 RNCore) is owned by
-[test app dependency pins](testing/test-app-dependency-pins.md) and tracked
-as [CPRN-321](https://linear.app/invertase/issue/CPRN-321). Firebase SPM
+[test app dependency pins](testing/test-app-dependency-pins.md). Firebase SPM
 imports and embed: [iOS SPM native integration decisions](ios-spm-native-imports.md).
 
 **Policy:** [OKF documentation and commit policy](documentation-policy.md).
@@ -63,7 +61,5 @@ When RNFB podspecs change:
 
 Expo `forceStaticLinking` / `$RNFirebaseAsStaticFramework` consumer
 guidance stays in [`docs/index.mdx`](../docs/index.mdx) until a
-consumer-side proof exists
-([CPRN-153](https://linear.app/invertase/issue/CPRN-153)). Related
-compile reports:
+consumer-side proof exists. Related compile reports:
 [GitHub #8883](https://github.com/invertase/react-native-firebase/issues/8883).
