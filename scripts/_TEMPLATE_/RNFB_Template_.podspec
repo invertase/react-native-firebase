@@ -37,8 +37,9 @@ Pod::Spec.new do |s|
   s.dependency          'React-Core'
   s.dependency          'RNFBApp'
 
-  # Wire up prebuilt React-Core (RN 0.83+, default on 0.84+) so the legacy
-  # <React/...> header imports resolve when RCT_USE_PREBUILT_RNCORE=1.
+  # This template does not call install_modules_dependencies, so it must
+  # opt into prebuilt React-Core itself. Live RNFB pods get this from the
+  # helper; see okf-bundle/ios-rncore-podspec.md.
   if defined?(add_rncore_dependency)
     add_rncore_dependency(s)
   end
