@@ -7,6 +7,38 @@ set -e
 TMP_DIR=$(mktemp -d)
 echo "Step logs directory: $TMP_DIR"
 
+kill_listen_port() {
+  local port="$1"
+  local pids
+  pids="$(lsof -nP -iTCP:"$port" -sTCP:LISTEN -t 2>/dev/null || true)"
+  if [ -n "$pids" ]; then
+    # shellcheck disable=SC2086
+    kill $pids 2>/dev/null || true
+  fi
+}
+
+# Metro only — keep Firebase emulators up when switching tests/ vs tests-macos.
+# After #9192 both apps bind :8081; macOS Jet must use tests-macos Metro.
+stop_packager() {
+  ps -ef | grep node | grep react-native | grep cli.js | awk '{print $2}' | xargs kill 2>/dev/null || true
+  kill_listen_port 8081
+  killall "io.invertase.testing" 2>/dev/null || true
+  kill_listen_port 8090
+  sleep 2
+}
+
+wait_for_packager() {
+  local i
+  for i in $(seq 1 30); do
+    if curl -sf http://127.0.0.1:8081/status >/dev/null; then
+      return 0
+    fi
+    sleep 1
+  done
+  echo "Packager did not become ready on http://127.0.0.1:8081/status"
+  return 1
+}
+
 # Clean up any stale metro bundler or firebase emulator processes
 function terminate_testing_processes() {
   # The emulator and packager are tough to kill in the background
@@ -15,6 +47,8 @@ function terminate_testing_processes() {
   # they will fail if the upstream command lines spawned change but they work now
   ps -ef | grep node | grep firebase.js | grep emulators:start | awk '{print $2}' | xargs kill 2>/dev/null || true
   ps -ef | grep node | grep react-native | grep cli.js | awk '{print $2}' | xargs kill 2>/dev/null || true
+  kill_listen_port 8081
+  kill_listen_port 8090
 
   # The macOS app stays running even after the run, clean it up as well
   killall "io.invertase.testing" 2>/dev/null || true
@@ -84,6 +118,28 @@ run_yarn_scripts_parallel() {
   ) || return 1
 }
 
+# One platform, up to 3 attempts. Caller must already have the matching packager.
+run_e2e_flavor() {
+  local flavor="$1"
+  local i e2e_log
+  for i in 1 2 3; do
+    e2e_log="${TMP_DIR}/tests:${flavor}:test.attempt${i}.log"
+    echo "Running $flavor E2E test run attempt $i... (log: $e2e_log)"
+    if ! yarn tests:"$flavor":test > "$e2e_log" 2>&1; then
+      echo "E2E attempt failed. Full log preserved at: $e2e_log"
+      cat "$e2e_log"
+      if [ "$i" -eq 3 ]; then
+        echo "$flavor E2E test failed all $i attempts. Logs preserved in: $TMP_DIR"
+        terminate_testing_processes
+        exit 1
+      fi
+    else
+      echo "Successful $flavor E2E test run on attempt $i."
+      return 0
+    fi
+  done
+}
+
 echo "Starting full test execution..."
 
 # 1. Dependency Installation
@@ -122,33 +178,25 @@ yarn detox clean-framework-cache || { echo "Clean framework cache failed"; exit 
 yarn detox build-framework-cache || { echo "Build framework cache failed"; exit 1; }
 popd
 
-# Start our bundler and emulator clean
+# Start emulator + mobile Metro (tests/) for iOS/Android. macOS needs tests-macos
+# Metro on the same :8081 — switch after native platforms. See running-e2e.md §1.
 terminate_testing_processes
-echo "starting e2e emulator and packager..."
+echo "starting e2e emulator and mobile packager..."
 yarn tests:emulator:start &
 yarn tests:packager:jet &
 
 sleep 30
+wait_for_packager || exit 1
 
-# Run E2E tests - 3 chances to succeed for flake tolerance
-for flavor in "ios" "android" "macos"; do
-  for i in {1..3}; do
-    e2e_log="${TMP_DIR}/tests:${flavor}:test.attempt${i}.log"
-    echo "Running $flavor E2E test run attempt $i... (log: $e2e_log)"
-    if ! yarn tests:"$flavor":test > "$e2e_log" 2>&1; then
-      echo "E2E attempt failed. Full log preserved at: $e2e_log"
-      cat "$e2e_log"
-      if [ $i -eq 3 ]; then
-        echo "$flavor E2E test failed all $i attempts. Logs preserved in: $TMP_DIR"
-        terminate_testing_processes
-        exit 1;
-      fi
-    else
-      echo "Successful $flavor E2E test run on attempt $i."
-      break;
-    fi
-  done
-done
+run_e2e_flavor ios
+run_e2e_flavor android
+
+echo "switching Metro to tests-macos for macOS e2e (Firebase emulators stay up)..."
+stop_packager
+yarn tests:macos:packager:jet &
+wait_for_packager || exit 1
+
+run_e2e_flavor macos
 
 # Clean up after ourselves
 terminate_testing_processes
