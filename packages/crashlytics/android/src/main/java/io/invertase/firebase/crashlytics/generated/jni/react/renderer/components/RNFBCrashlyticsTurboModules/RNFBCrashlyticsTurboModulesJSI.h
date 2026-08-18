@@ -15,15 +15,14 @@
 namespace facebook::react {
 
 
-  
 #pragma mark - NativeRNFBTurboCrashlyticsCrashlyticsStackFrame
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct NativeRNFBTurboCrashlyticsCrashlyticsStackFrame {
-  P0 src;
-  P1 line;
-  P2 col;
-  P3 fn;
+  P0 src{};
+  P1 line{};
+  P2 col{};
+  P3 fn{};
   P4 file;
   bool operator==(const NativeRNFBTurboCrashlyticsCrashlyticsStackFrame &other) const {
     return src == other.src && line == other.line && col == other.col && fn == other.fn && file == other.file;
@@ -51,19 +50,15 @@ struct NativeRNFBTurboCrashlyticsCrashlyticsStackFrameBridging {
   static jsi::String srcToJs(jsi::Runtime &rt, decltype(types.src) value) {
     return bridging::toJs(rt, value);
   }
-
   static double lineToJs(jsi::Runtime &rt, decltype(types.line) value) {
     return bridging::toJs(rt, value);
   }
-
   static double colToJs(jsi::Runtime &rt, decltype(types.col) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::String fnToJs(jsi::Runtime &rt, decltype(types.fn) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::String fileToJs(jsi::Runtime &rt, decltype(types.file) value) {
     return bridging::toJs(rt, value);
   }
@@ -89,8 +84,8 @@ struct NativeRNFBTurboCrashlyticsCrashlyticsStackFrameBridging {
 
 template <typename P0, typename P1, typename P2>
 struct NativeRNFBTurboCrashlyticsJavaScriptErrorObject {
-  P0 message;
-  P1 isUnhandledRejection;
+  P0 message{};
+  P1 isUnhandledRejection{};
   P2 frames;
   bool operator==(const NativeRNFBTurboCrashlyticsJavaScriptErrorObject &other) const {
     return message == other.message && isUnhandledRejection == other.isUnhandledRejection && frames == other.frames;
@@ -116,11 +111,9 @@ struct NativeRNFBTurboCrashlyticsJavaScriptErrorObjectBridging {
   static jsi::String messageToJs(jsi::Runtime &rt, decltype(types.message) value) {
     return bridging::toJs(rt, value);
   }
-
   static bool isUnhandledRejectionToJs(jsi::Runtime &rt, decltype(types.isUnhandledRejection) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::Array framesToJs(jsi::Runtime &rt, decltype(types.frames) value) {
     return bridging::toJs(rt, value);
   }
@@ -138,183 +131,146 @@ struct NativeRNFBTurboCrashlyticsJavaScriptErrorObjectBridging {
   }
 };
 
-class JSI_EXPORT NativeRNFBTurboCrashlyticsCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboCrashlyticsCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
-  virtual jsi::Value checkForUnsentReports(jsi::Runtime &rt) = 0;
-  virtual void crash(jsi::Runtime &rt) = 0;
-  virtual jsi::Value crashWithStackPromise(jsi::Runtime &rt, jsi::Object jsErrorDict) = 0;
-  virtual jsi::Value deleteUnsentReports(jsi::Runtime &rt) = 0;
-  virtual jsi::Value didCrashOnPreviousExecution(jsi::Runtime &rt) = 0;
-  virtual void log(jsi::Runtime &rt, jsi::String message) = 0;
-  virtual jsi::Value logPromise(jsi::Runtime &rt, jsi::String message) = 0;
-  virtual void sendUnsentReports(jsi::Runtime &rt) = 0;
-  virtual jsi::Value setAttribute(jsi::Runtime &rt, jsi::String key, jsi::String value) = 0;
-  virtual jsi::Value setAttributes(jsi::Runtime &rt, jsi::Object attributes) = 0;
-  virtual jsi::Value setUserId(jsi::Runtime &rt, jsi::String userId) = 0;
-  virtual void recordError(jsi::Runtime &rt, jsi::Object jsErrorDict) = 0;
-  virtual jsi::Value recordErrorPromise(jsi::Runtime &rt, jsi::Object jsErrorDict) = 0;
-  virtual jsi::Value setCrashlyticsCollectionEnabled(jsi::Runtime &rt, bool enabled) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboCrashlyticsCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboCrashlytics";
 
 protected:
-  NativeRNFBTurboCrashlyticsCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboCrashlyticsCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboCrashlyticsCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboCrashlyticsCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["getConstants"] = MethodMetadata {.argCount = 0, .invoker = __getConstants};
+    methodMap_["checkForUnsentReports"] = MethodMetadata {.argCount = 0, .invoker = __checkForUnsentReports};
+    methodMap_["crash"] = MethodMetadata {.argCount = 0, .invoker = __crash};
+    methodMap_["crashWithStackPromise"] = MethodMetadata {.argCount = 1, .invoker = __crashWithStackPromise};
+    methodMap_["deleteUnsentReports"] = MethodMetadata {.argCount = 0, .invoker = __deleteUnsentReports};
+    methodMap_["didCrashOnPreviousExecution"] = MethodMetadata {.argCount = 0, .invoker = __didCrashOnPreviousExecution};
+    methodMap_["log"] = MethodMetadata {.argCount = 1, .invoker = __log};
+    methodMap_["logPromise"] = MethodMetadata {.argCount = 1, .invoker = __logPromise};
+    methodMap_["sendUnsentReports"] = MethodMetadata {.argCount = 0, .invoker = __sendUnsentReports};
+    methodMap_["setAttribute"] = MethodMetadata {.argCount = 2, .invoker = __setAttribute};
+    methodMap_["setAttributes"] = MethodMetadata {.argCount = 1, .invoker = __setAttributes};
+    methodMap_["setUserId"] = MethodMetadata {.argCount = 1, .invoker = __setUserId};
+    methodMap_["recordError"] = MethodMetadata {.argCount = 1, .invoker = __recordError};
+    methodMap_["recordErrorPromise"] = MethodMetadata {.argCount = 1, .invoker = __recordErrorPromise};
+    methodMap_["setCrashlyticsCollectionEnabled"] = MethodMetadata {.argCount = 1, .invoker = __setCrashlyticsCollectionEnabled};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboCrashlyticsCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboCrashlyticsCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getConstants) == 1,
+      "Expected getConstants(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Object>(rt, &T::getConstants,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-    }
+  static jsi::Value __checkForUnsentReports(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::checkForUnsentReports) == 1,
+      "Expected checkForUnsentReports(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::checkForUnsentReports,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-    jsi::Object getConstants(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getConstants) == 1,
-          "Expected getConstants(...) to have 1 parameters");
+  static jsi::Value __crash(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::crash) == 1,
+      "Expected crash(...) to have 1 parameters");
+    bridging::callFromJs<void>(rt, &T::crash,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Object>(
-          rt, &T::getConstants, jsInvoker_, instance_);
-    }
-    jsi::Value checkForUnsentReports(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::checkForUnsentReports) == 1,
-          "Expected checkForUnsentReports(...) to have 1 parameters");
+  static jsi::Value __crashWithStackPromise(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::crashWithStackPromise) == 2,
+      "Expected crashWithStackPromise(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::crashWithStackPromise,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::checkForUnsentReports, jsInvoker_, instance_);
-    }
-    void crash(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::crash) == 1,
-          "Expected crash(...) to have 1 parameters");
+  static jsi::Value __deleteUnsentReports(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::deleteUnsentReports) == 1,
+      "Expected deleteUnsentReports(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::deleteUnsentReports,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::crash, jsInvoker_, instance_);
-    }
-    jsi::Value crashWithStackPromise(jsi::Runtime &rt, jsi::Object jsErrorDict) override {
-      static_assert(
-          bridging::getParameterCount(&T::crashWithStackPromise) == 2,
-          "Expected crashWithStackPromise(...) to have 2 parameters");
+  static jsi::Value __didCrashOnPreviousExecution(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::didCrashOnPreviousExecution) == 1,
+      "Expected didCrashOnPreviousExecution(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::didCrashOnPreviousExecution,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::crashWithStackPromise, jsInvoker_, instance_, std::move(jsErrorDict));
-    }
-    jsi::Value deleteUnsentReports(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::deleteUnsentReports) == 1,
-          "Expected deleteUnsentReports(...) to have 1 parameters");
+  static jsi::Value __log(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::log) == 2,
+      "Expected log(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::log,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::deleteUnsentReports, jsInvoker_, instance_);
-    }
-    jsi::Value didCrashOnPreviousExecution(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::didCrashOnPreviousExecution) == 1,
-          "Expected didCrashOnPreviousExecution(...) to have 1 parameters");
+  static jsi::Value __logPromise(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::logPromise) == 2,
+      "Expected logPromise(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::logPromise,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::didCrashOnPreviousExecution, jsInvoker_, instance_);
-    }
-    void log(jsi::Runtime &rt, jsi::String message) override {
-      static_assert(
-          bridging::getParameterCount(&T::log) == 2,
-          "Expected log(...) to have 2 parameters");
+  static jsi::Value __sendUnsentReports(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::sendUnsentReports) == 1,
+      "Expected sendUnsentReports(...) to have 1 parameters");
+    bridging::callFromJs<void>(rt, &T::sendUnsentReports,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::log, jsInvoker_, instance_, std::move(message));
-    }
-    jsi::Value logPromise(jsi::Runtime &rt, jsi::String message) override {
-      static_assert(
-          bridging::getParameterCount(&T::logPromise) == 2,
-          "Expected logPromise(...) to have 2 parameters");
+  static jsi::Value __setAttribute(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setAttribute) == 3,
+      "Expected setAttribute(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setAttribute,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::logPromise, jsInvoker_, instance_, std::move(message));
-    }
-    void sendUnsentReports(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::sendUnsentReports) == 1,
-          "Expected sendUnsentReports(...) to have 1 parameters");
+  static jsi::Value __setAttributes(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setAttributes) == 2,
+      "Expected setAttributes(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setAttributes,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt));
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::sendUnsentReports, jsInvoker_, instance_);
-    }
-    jsi::Value setAttribute(jsi::Runtime &rt, jsi::String key, jsi::String value) override {
-      static_assert(
-          bridging::getParameterCount(&T::setAttribute) == 3,
-          "Expected setAttribute(...) to have 3 parameters");
+  static jsi::Value __setUserId(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setUserId) == 2,
+      "Expected setUserId(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setUserId,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setAttribute, jsInvoker_, instance_, std::move(key), std::move(value));
-    }
-    jsi::Value setAttributes(jsi::Runtime &rt, jsi::Object attributes) override {
-      static_assert(
-          bridging::getParameterCount(&T::setAttributes) == 2,
-          "Expected setAttributes(...) to have 2 parameters");
+  static jsi::Value __recordError(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::recordError) == 2,
+      "Expected recordError(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::recordError,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setAttributes, jsInvoker_, instance_, std::move(attributes));
-    }
-    jsi::Value setUserId(jsi::Runtime &rt, jsi::String userId) override {
-      static_assert(
-          bridging::getParameterCount(&T::setUserId) == 2,
-          "Expected setUserId(...) to have 2 parameters");
+  static jsi::Value __recordErrorPromise(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::recordErrorPromise) == 2,
+      "Expected recordErrorPromise(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::recordErrorPromise,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setUserId, jsInvoker_, instance_, std::move(userId));
-    }
-    void recordError(jsi::Runtime &rt, jsi::Object jsErrorDict) override {
-      static_assert(
-          bridging::getParameterCount(&T::recordError) == 2,
-          "Expected recordError(...) to have 2 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::recordError, jsInvoker_, instance_, std::move(jsErrorDict));
-    }
-    jsi::Value recordErrorPromise(jsi::Runtime &rt, jsi::Object jsErrorDict) override {
-      static_assert(
-          bridging::getParameterCount(&T::recordErrorPromise) == 2,
-          "Expected recordErrorPromise(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::recordErrorPromise, jsInvoker_, instance_, std::move(jsErrorDict));
-    }
-    jsi::Value setCrashlyticsCollectionEnabled(jsi::Runtime &rt, bool enabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::setCrashlyticsCollectionEnabled) == 2,
-          "Expected setCrashlyticsCollectionEnabled(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setCrashlyticsCollectionEnabled, jsInvoker_, instance_, std::move(enabled));
-    }
-
-  private:
-    friend class NativeRNFBTurboCrashlyticsCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __setCrashlyticsCollectionEnabled(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setCrashlyticsCollectionEnabled) == 2,
+      "Expected setCrashlyticsCollectionEnabled(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setCrashlyticsCollectionEnabled,  static_cast<NativeRNFBTurboCrashlyticsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asBool());
+  }
 };
 
 } // namespace facebook::react

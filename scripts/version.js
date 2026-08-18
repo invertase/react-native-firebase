@@ -9,6 +9,24 @@ const firebaseAppPackageName = '@react-native-firebase/app';
 const lernaVersion = JSON.parse(readFileSync('lerna.json')).version;
 console.log(`Found lerna version: ${lernaVersion}`);
 
+const syncTestAppVersions = packageJsonPath => {
+  const packageJsonContents = JSON.parse(readFileSync(packageJsonPath).toString('utf-8'));
+
+  packageJsonContents.version = lernaVersion;
+
+  Object.keys(packageJsonContents.dependencies).forEach(dependencyName => {
+    if (
+      dependencyName.startsWith('@react-native-firebase/') &&
+      dependencyName !== '@react-native-firebase/app-types'
+    ) {
+      packageJsonContents.dependencies[dependencyName] = lernaVersion;
+    }
+  });
+
+  writeFileSync(packageJsonPath, JSON.stringify(packageJsonContents, null, 2) + '\n');
+  console.log(`Synced RNFB workspace pins in ${packageJsonPath} to ${lernaVersion}`);
+};
+
 packages.forEach(package => {
   const { location } = package;
 
@@ -38,7 +56,7 @@ packages.forEach(package => {
   const packageJsonContents = JSON.parse(readFileSync(packageJsonPath).toString('utf-8'));
 
   // Make sure that the app package has the correct version, it has been failing periodically
-  if (!packageJsonContents.version === lernaVersion) {
+  if (packageJsonContents.version !== lernaVersion) {
     console.log(
       `app package version ${packageJsonContents.version} but should be ${lernaVersion}? Exiting.`,
     );
@@ -71,3 +89,6 @@ packages.forEach(package => {
     );
   });
 });
+
+syncTestAppVersions(`tests${sep}package.json`);
+syncTestAppVersions(`tests-macos${sep}package.json`);

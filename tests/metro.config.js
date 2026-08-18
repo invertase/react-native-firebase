@@ -20,7 +20,8 @@ const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 const { resolve, join, dirname } = require('path');
 const { readdirSync, statSync, existsSync } = require('fs');
 
-const exclusionList = require('metro-config/src/defaults/exclusionList');
+// metro-config ≥0.82 only exports `./private/*` (not `./src/defaults/...`).
+const exclusionList = require('metro-config/private/defaults/exclusionList').default;
 
 const rootDir = resolve(__dirname, '..');
 const packagesDir = resolve(rootDir, 'packages');
@@ -45,6 +46,12 @@ const config = {
       new RegExp(`^${escape(resolve(rootDir, 'tests/e2e'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/android'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/functions'))}\\/.*$`),
+      // Belt-and-suspenders: block nested @react-native-async-storage under packages/*
+      // so package e2e imports cannot load a stray 2.x RNCAsyncStorage JS copy against
+      // the mobile 3.x native module (NativeModule: AsyncStorage is null).
+      new RegExp(
+        `^${escape(resolve(rootDir, 'packages'))}\\/.*\\/node_modules\\/@react-native-async-storage\\/.*$`,
+      ),
     ]),
     extraNodeModules: new Proxy(
       {},
@@ -70,12 +77,25 @@ const config = {
       // `Requiring unknown module "undefined"`. Resolve to a committed empty stub
       // when the local file does not exist so the dependency map stays intact.
       if (moduleName === './harness.overrides.js') {
-        const originDir = context.originModulePath
-          ? dirname(context.originModulePath)
-          : __dirname;
+        const originDir = context.originModulePath ? dirname(context.originModulePath) : __dirname;
         if (!existsSync(resolve(originDir, 'harness.overrides.js'))) {
           return { type: 'sourceFile', filePath: resolve(__dirname, 'harness.overrides.stub.js') };
         }
+      }
+      // Force mobile app singleton: always the tests/ 3.x package (matches CocoaPods
+      // AsyncStorage / Android autolink). Do not let hierarchical lookup pick a nested
+      // packages/*/node_modules copy when resolving from packages/*/e2e.
+      if (
+        moduleName === '@react-native-async-storage/async-storage' ||
+        moduleName.startsWith('@react-native-async-storage/async-storage/')
+      ) {
+        const subpath = moduleName.slice('@react-native-async-storage/async-storage'.length);
+        return {
+          type: 'sourceFile',
+          filePath: require.resolve(`@react-native-async-storage/async-storage${subpath}`, {
+            paths: [__dirname],
+          }),
+        };
       }
       if (moduleName === '@react-native-firebase/firestore/pipelines') {
         const filePath = join(rootDir, 'packages', 'firestore', 'lib', 'pipelines', 'index.ts');

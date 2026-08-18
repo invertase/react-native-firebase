@@ -288,7 +288,7 @@ yarn tests:jest -- packages/app/__tests__/turboModuleSpecNativeParity.test.ts
 
 **When required:** any change to `packages/*/specs/**` or Codegen/RN version bumps that could regenerate native artifacts — run before closing `implementation_gate` or `review_gate`.
 
-**Wipe-then-regen:** [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs) must **delete each package's configured `--outputPath`** before CLI codegen writes ([NewArch-AD-22](#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)), then run [NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted) `patch-ios-codegen-resultt.mjs` after iOS regen. Package `android:codegen` / `ios:codegen` scripts use the same wipe pattern so local and CI match.
+**Wipe-then-regen:** [`scripts/codegen-package.mjs`](../../../scripts/codegen-package.mjs) (invoked by package `android:codegen` / `ios:codegen` and by [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs)) must **delete each package's configured `--outputPath`** before CLI codegen writes ([NewArch-AD-22](#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)). ResultT inject is retired on the current mobile pin ([NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted) superseded).
 
 **Why:** The current Jest mocks are plain enumerable objects and structurally cannot reproduce the enumeration bug that already cost an iteration; these tests close that blind spot and make iterations faster and higher quality.
 
@@ -342,31 +342,21 @@ Committed generated native artifacts ([NewArch-AD-5](#newarch-ad-5--commit-gener
 
 **Decision:**
 
-- Pin the RN/Codegen toolchain to the app's RN line via root `resolutions` — `react-native`, `@react-native/codegen`, and `@react-native-community/cli` fixed to the same line (no floating `latest` / `*` / stray package `react-native` devDeps). Current pin values and the **`react-native-macos` reason the test-app RN line cannot move independently** live in [test app dependency pins](../testing/test-app-dependency-pins.md) — do not restate version numbers here.
-- **No floating specifiers** (`latest`, `*`, `^0.80`, …) for the RN toolchain in any workspace `package.json`. Individual packages must **not** declare their own `react-native` devDependency — rely on the hoisted, pinned version (as `app-check` / `storage` do).
-- Treat a React Native upgrade as **one coordinated breaking change**: bump the app RN **and** the pinned `resolutions` together (including `react-native-macos` when the test app moves), regenerate all `generated/**`, rebuild native on iOS + Android, and re-run `codegen:verify` — in a single change. See the **Updating React Native** checklist in [CONTRIBUTING.md](../../CONTRIBUTING.md) and [test app dependency pins § When pins may move](../testing/test-app-dependency-pins.md#when-pins-may-move).
+- Pin the RN/Codegen toolchain to the **mobile test app** (`tests/`) RN line via that workspace's dependencies — `react-native`, `@react-native/codegen`, and `@react-native-community/cli` fixed to the same line (no floating `latest` / `*` / stray package `react-native` devDeps). Do **not** use blanket root `resolutions` for those packages: the macOS e2e app (`tests-macos/`) may pin a different RN + `react-native-macos` pair. `yarn codegen` / `codegen:verify` must resolve the toolchain from **`tests/`**. Current pin values and the dual-app model live in [test app dependency pins](../testing/test-app-dependency-pins.md) — do not restate version numbers here.
+- **No floating specifiers** (`latest`, `*`, `^0.80`, …) for the RN toolchain in any workspace `package.json`. Individual packages must **not** declare their own `react-native` devDependency — rely on the hoisted version from the mobile test app (as `app-check` / `storage` do).
+- Treat a React Native upgrade of the **mobile** app as **one coordinated breaking change**: bump `tests/` RN **and** regenerate all `generated/**`, rebuild native on iOS + Android, and re-run `codegen:verify` — in a single change. Bumping `tests-macos/` follows `react-native-macos` compatibility and does not by itself require codegen regen. See the **Updating React Native** checklist in [CONTRIBUTING.md](../../CONTRIBUTING.md) and [test app dependency pins § When pins may move](../testing/test-app-dependency-pins.md#when-pins-may-move).
 
 **Why:** makes generated output reproducible everywhere (local + CI), prevents silent native-build breaks, and makes the RN coupling explicit and auditable.
 
 ---
 
-## NewArch-AD-21 — Interim iOS `ResultT` alias without full codegen regen — **Accepted**
+## NewArch-AD-21 — Interim iOS `ResultT` alias without full codegen regen — **Superseded (exit complete)**
 
-**Context:** Consumer apps on RN **0.84+** require `using ResultT = Constants;` inside each codegen `Constants::Builder` ([RN #54919](https://github.com/facebook/react-native/pull/54919)). Our committed iOS headers were produced with the pinned **0.78** codegen ([NewArch-AD-20](#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted)) and omit the alias → iOS compile failure for modules that export constants. Full `yarn codegen:all` against 0.84+ would also rewrite Android `generated/**` and other iOS templates (CMake macros, method serialization, …) — high risk while the monorepo test app remains on 0.78.
+**Context (historical):** Consumer apps on RN **0.84+** require `using ResultT = Constants;` inside each codegen `Constants::Builder` ([RN #54919](https://github.com/facebook/react-native/pull/54919)). While the mobile test app was pinned to **0.78**, committed iOS headers omitted the alias, so an interim inject script patched headers after each 0.78 codegen pass.
 
-**Decision (interim):**
+**Exit (CPRN-236 / NewArch-AD-20 mobile bump):** The mobile app is on **RN 0.86.2**. Upstream `@react-native/codegen@0.86.2` emits `using ResultT = …` natively. The inject script (`scripts/patch-ios-codegen-resultt.mjs`) and its `codegen:verify` hook are **removed**. Regenerate with `yarn codegen:all` ([`scripts/codegen-package.mjs`](../../../scripts/codegen-package.mjs) from `tests/`).
 
-1. **Do not** bump the RN/codegen pin or fully regenerate artifacts solely to obtain `ResultT`.
-2. **Do** commit the additive ObjC++ alias `using ResultT = Constants;` (and the short codegen comment) on every iOS `Constants::Builder` that lacks it.
-3. **Do** run [`scripts/patch-ios-codegen-resultt.mjs`](../../../scripts/patch-ios-codegen-resultt.mjs) after every iOS codegen pass — wired into [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs) — so [NewArch-AD-17.3](#newarch-ad-173--codegen-verify-ci--accepted) does not wipe the alias when regenerating with 0.78 codegen.
-
-**Android:** No change required for this interim. `ResultT` is iOS/`RCTTypedModuleConstants` only; Android Java Specs use `getTypedExportedConstants()` with no analog. When the durable NewArch-AD-20 bump lands, regenerate **both** platforms in that single change ([CP-264](https://linear.app/invertase/issue/CP-264)).
-
-**Wipe risk if inject is skipped:** wipe-then-regen ([NewArch-AD-22](#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)) via `yarn ios:codegen` / `yarn codegen:verify` recreates `packages/*/ios/generated/**` from the 0.78 template → the alias is lost and CI fails `git diff --exit-code`.
-
-**Exit criteria (durable):** Under NewArch-AD-20, bump toolchain to **0.84+** (or whatever line the test app moves to), regenerate all packages, remove the inject script once upstream codegen emits `ResultT` natively, keep `codegen:verify` green. Tracked in CP-264.
-
-**Why interim is safe for old RN:** On RN ≤0.83, `Builder::ResultT` is unused; the alias is inert. On RN ≥0.84 it is required.
+**Do not reintroduce** the inject on the current mobile pin. macOS remains on 0.78 for the shell only and does not own codegen artifacts.
 
 ---
 
@@ -374,10 +364,9 @@ Committed generated native artifacts ([NewArch-AD-5](#newarch-ad-5--commit-gener
 
 **Decision:** Before every Codegen write to a package's configured `--outputPath`, **delete that directory entirely**, then run CLI codegen. Applies to:
 
-- Each migrated package's `android:codegen` / `ios:codegen` scripts (`rimraf <outputPath> && …`)
-- [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs) (same wipe so CI matches local)
+- [`scripts/codegen-package.mjs`](../../../scripts/codegen-package.mjs) (mobile toolchain from `tests/`; used by each package's `android:codegen` / `ios:codegen` and by [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs))
 
-Keep [NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted) `patch-ios-codegen-resultt.mjs` **after** iOS regen.
+ResultT inject ([NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted)) is **retired** on the current mobile pin (0.86 emits `ResultT` natively). Do not reintroduce `patch-ios-codegen-resultt.mjs` after wipe+regen.
 
 **Why:** React Native Codegen does not reliably remove obsolete generated files when specs, `codegenConfig.name`, or templates change. Incremental overwrite leaves orphan classes / wrong library trees under the same `outputPath`, which break Android (`duplicate class`) or leave stale committed artifacts that [NewArch-AD-17.3](#newarch-ad-173--codegen-verify-ci--accepted) would not catch without a wipe. Wipe-then-regen makes the committed tree match a clean emit ([NewArch-AD-5](#newarch-ad-5--commit-generated-code--accepted)).
 
@@ -387,7 +376,7 @@ Keep [NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-without-full-code
 - Wipe removes orphans **on the same path**. A **sibling** wrong tree from a prior bad `outputPath` (e.g. `src/main/java/.../generated` vs `src/reactnative/java/.../generated`) still needs a one-time manual delete — see [workflow § Duplicate generated trees](turbomodule-implementation-workflow.md#duplicate-generated-trees).
 - After a `codegenConfig.name` rename ([NewArch-AD-7](#newarch-ad-7--codegenconfigname--aggregate-library-name-one-codegenconfig-per-package--accepted)), wipe clears the old library under `outputPath`; update `cmakeListsPath` / imports only when those paths embed the old name.
 
-**Related:** [NewArch-AD-5](#newarch-ad-5--commit-generated-code--accepted), [NewArch-AD-7](#newarch-ad-7--codegenconfigname--aggregate-library-name-one-codegenconfig-per-package--accepted), [NewArch-AD-17.3](#newarch-ad-173--codegen-verify-ci--accepted), [NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted).
+**Related:** [NewArch-AD-5](#newarch-ad-5--commit-generated-code--accepted), [NewArch-AD-7](#newarch-ad-7--codegenconfigname--aggregate-library-name-one-codegenconfig-per-package--accepted), [NewArch-AD-17.3](#newarch-ad-173--codegen-verify-ci--accepted), [NewArch-AD-20](#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted), [NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted).
 
 ---
 

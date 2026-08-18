@@ -15,18 +15,17 @@
 namespace facebook::react {
 
 
-  
 #pragma mark - NativeRNFBTurboMessagingIOSPermissions
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
 struct NativeRNFBTurboMessagingIOSPermissions {
-  P0 alert;
-  P1 announcement;
-  P2 badge;
-  P3 carPlay;
-  P4 criticalAlert;
-  P5 provisional;
-  P6 sound;
+  P0 alert{};
+  P1 announcement{};
+  P2 badge{};
+  P3 carPlay{};
+  P4 criticalAlert{};
+  P5 provisional{};
+  P6 sound{};
   P7 providesAppNotificationSettings;
   bool operator==(const NativeRNFBTurboMessagingIOSPermissions &other) const {
     return alert == other.alert && announcement == other.announcement && badge == other.badge && carPlay == other.carPlay && criticalAlert == other.criticalAlert && provisional == other.provisional && sound == other.sound && providesAppNotificationSettings == other.providesAppNotificationSettings;
@@ -57,31 +56,24 @@ struct NativeRNFBTurboMessagingIOSPermissionsBridging {
   static bool alertToJs(jsi::Runtime &rt, decltype(types.alert) value) {
     return bridging::toJs(rt, value);
   }
-
   static bool announcementToJs(jsi::Runtime &rt, decltype(types.announcement) value) {
     return bridging::toJs(rt, value);
   }
-
   static bool badgeToJs(jsi::Runtime &rt, decltype(types.badge) value) {
     return bridging::toJs(rt, value);
   }
-
   static bool carPlayToJs(jsi::Runtime &rt, decltype(types.carPlay) value) {
     return bridging::toJs(rt, value);
   }
-
   static bool criticalAlertToJs(jsi::Runtime &rt, decltype(types.criticalAlert) value) {
     return bridging::toJs(rt, value);
   }
-
   static bool provisionalToJs(jsi::Runtime &rt, decltype(types.provisional) value) {
     return bridging::toJs(rt, value);
   }
-
   static bool soundToJs(jsi::Runtime &rt, decltype(types.sound) value) {
     return bridging::toJs(rt, value);
   }
-
   static bool providesAppNotificationSettingsToJs(jsi::Runtime &rt, decltype(types.providesAppNotificationSettings) value) {
     return bridging::toJs(rt, value);
   }
@@ -120,237 +112,197 @@ struct NativeRNFBTurboMessagingIOSPermissionsBridging {
   }
 };
 
-class JSI_EXPORT NativeRNFBTurboMessagingCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboMessagingCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
-  virtual jsi::Value getInitialNotification(jsi::Runtime &rt) = 0;
-  virtual jsi::Value getDidOpenSettingsForNotification(jsi::Runtime &rt) = 0;
-  virtual jsi::Value setAutoInitEnabled(jsi::Runtime &rt, bool enabled) = 0;
-  virtual void signalBackgroundMessageHandlerSet(jsi::Runtime &rt) = 0;
-  virtual void completeNotificationProcessing(jsi::Runtime &rt) = 0;
-  virtual jsi::Value getToken(jsi::Runtime &rt, jsi::String appName, jsi::String senderId) = 0;
-  virtual jsi::Value deleteToken(jsi::Runtime &rt, jsi::String appName, jsi::String senderId) = 0;
-  virtual jsi::Value getAPNSToken(jsi::Runtime &rt) = 0;
-  virtual jsi::Value setAPNSToken(jsi::Runtime &rt, jsi::String token, std::optional<jsi::String> type) = 0;
-  virtual jsi::Value getIsHeadless(jsi::Runtime &rt) = 0;
-  virtual jsi::Value requestPermission(jsi::Runtime &rt, jsi::Object permissions) = 0;
-  virtual jsi::Value registerForRemoteNotifications(jsi::Runtime &rt) = 0;
-  virtual jsi::Value unregisterForRemoteNotifications(jsi::Runtime &rt) = 0;
-  virtual jsi::Value hasPermission(jsi::Runtime &rt) = 0;
-  virtual jsi::Value sendMessage(jsi::Runtime &rt, jsi::Object remoteMessageMap) = 0;
-  virtual jsi::Value subscribeToTopic(jsi::Runtime &rt, jsi::String topic) = 0;
-  virtual jsi::Value unsubscribeFromTopic(jsi::Runtime &rt, jsi::String topic) = 0;
-  virtual jsi::Value setDeliveryMetricsExportToBigQuery(jsi::Runtime &rt, bool enabled) = 0;
-  virtual jsi::Value setNotificationDelegationEnabled(jsi::Runtime &rt, bool enabled) = 0;
-  virtual jsi::Value isNotificationDelegationEnabled(jsi::Runtime &rt) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboMessagingCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboMessaging";
 
 protected:
-  NativeRNFBTurboMessagingCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboMessagingCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboMessagingCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboMessagingCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["getConstants"] = MethodMetadata {.argCount = 0, .invoker = __getConstants};
+    methodMap_["getInitialNotification"] = MethodMetadata {.argCount = 0, .invoker = __getInitialNotification};
+    methodMap_["getDidOpenSettingsForNotification"] = MethodMetadata {.argCount = 0, .invoker = __getDidOpenSettingsForNotification};
+    methodMap_["setAutoInitEnabled"] = MethodMetadata {.argCount = 1, .invoker = __setAutoInitEnabled};
+    methodMap_["signalBackgroundMessageHandlerSet"] = MethodMetadata {.argCount = 0, .invoker = __signalBackgroundMessageHandlerSet};
+    methodMap_["completeNotificationProcessing"] = MethodMetadata {.argCount = 0, .invoker = __completeNotificationProcessing};
+    methodMap_["getToken"] = MethodMetadata {.argCount = 2, .invoker = __getToken};
+    methodMap_["deleteToken"] = MethodMetadata {.argCount = 2, .invoker = __deleteToken};
+    methodMap_["getAPNSToken"] = MethodMetadata {.argCount = 0, .invoker = __getAPNSToken};
+    methodMap_["setAPNSToken"] = MethodMetadata {.argCount = 2, .invoker = __setAPNSToken};
+    methodMap_["getIsHeadless"] = MethodMetadata {.argCount = 0, .invoker = __getIsHeadless};
+    methodMap_["requestPermission"] = MethodMetadata {.argCount = 1, .invoker = __requestPermission};
+    methodMap_["registerForRemoteNotifications"] = MethodMetadata {.argCount = 0, .invoker = __registerForRemoteNotifications};
+    methodMap_["unregisterForRemoteNotifications"] = MethodMetadata {.argCount = 0, .invoker = __unregisterForRemoteNotifications};
+    methodMap_["hasPermission"] = MethodMetadata {.argCount = 0, .invoker = __hasPermission};
+    methodMap_["sendMessage"] = MethodMetadata {.argCount = 1, .invoker = __sendMessage};
+    methodMap_["subscribeToTopic"] = MethodMetadata {.argCount = 1, .invoker = __subscribeToTopic};
+    methodMap_["unsubscribeFromTopic"] = MethodMetadata {.argCount = 1, .invoker = __unsubscribeFromTopic};
+    methodMap_["setDeliveryMetricsExportToBigQuery"] = MethodMetadata {.argCount = 1, .invoker = __setDeliveryMetricsExportToBigQuery};
+    methodMap_["setNotificationDelegationEnabled"] = MethodMetadata {.argCount = 1, .invoker = __setNotificationDelegationEnabled};
+    methodMap_["isNotificationDelegationEnabled"] = MethodMetadata {.argCount = 0, .invoker = __isNotificationDelegationEnabled};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboMessagingCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboMessagingCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getConstants) == 1,
+      "Expected getConstants(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Object>(rt, &T::getConstants,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-    }
+  static jsi::Value __getInitialNotification(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getInitialNotification) == 1,
+      "Expected getInitialNotification(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getInitialNotification,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-    jsi::Object getConstants(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getConstants) == 1,
-          "Expected getConstants(...) to have 1 parameters");
+  static jsi::Value __getDidOpenSettingsForNotification(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getDidOpenSettingsForNotification) == 1,
+      "Expected getDidOpenSettingsForNotification(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getDidOpenSettingsForNotification,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Object>(
-          rt, &T::getConstants, jsInvoker_, instance_);
-    }
-    jsi::Value getInitialNotification(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getInitialNotification) == 1,
-          "Expected getInitialNotification(...) to have 1 parameters");
+  static jsi::Value __setAutoInitEnabled(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setAutoInitEnabled) == 2,
+      "Expected setAutoInitEnabled(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setAutoInitEnabled,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asBool());
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getInitialNotification, jsInvoker_, instance_);
-    }
-    jsi::Value getDidOpenSettingsForNotification(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getDidOpenSettingsForNotification) == 1,
-          "Expected getDidOpenSettingsForNotification(...) to have 1 parameters");
+  static jsi::Value __signalBackgroundMessageHandlerSet(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::signalBackgroundMessageHandlerSet) == 1,
+      "Expected signalBackgroundMessageHandlerSet(...) to have 1 parameters");
+    bridging::callFromJs<void>(rt, &T::signalBackgroundMessageHandlerSet,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getDidOpenSettingsForNotification, jsInvoker_, instance_);
-    }
-    jsi::Value setAutoInitEnabled(jsi::Runtime &rt, bool enabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::setAutoInitEnabled) == 2,
-          "Expected setAutoInitEnabled(...) to have 2 parameters");
+  static jsi::Value __completeNotificationProcessing(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::completeNotificationProcessing) == 1,
+      "Expected completeNotificationProcessing(...) to have 1 parameters");
+    bridging::callFromJs<void>(rt, &T::completeNotificationProcessing,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setAutoInitEnabled, jsInvoker_, instance_, std::move(enabled));
-    }
-    void signalBackgroundMessageHandlerSet(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::signalBackgroundMessageHandlerSet) == 1,
-          "Expected signalBackgroundMessageHandlerSet(...) to have 1 parameters");
+  static jsi::Value __getToken(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getToken) == 3,
+      "Expected getToken(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getToken,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::signalBackgroundMessageHandlerSet, jsInvoker_, instance_);
-    }
-    void completeNotificationProcessing(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::completeNotificationProcessing) == 1,
-          "Expected completeNotificationProcessing(...) to have 1 parameters");
+  static jsi::Value __deleteToken(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::deleteToken) == 3,
+      "Expected deleteToken(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::deleteToken,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::completeNotificationProcessing, jsInvoker_, instance_);
-    }
-    jsi::Value getToken(jsi::Runtime &rt, jsi::String appName, jsi::String senderId) override {
-      static_assert(
-          bridging::getParameterCount(&T::getToken) == 3,
-          "Expected getToken(...) to have 3 parameters");
+  static jsi::Value __getAPNSToken(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getAPNSToken) == 1,
+      "Expected getAPNSToken(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getAPNSToken,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getToken, jsInvoker_, instance_, std::move(appName), std::move(senderId));
-    }
-    jsi::Value deleteToken(jsi::Runtime &rt, jsi::String appName, jsi::String senderId) override {
-      static_assert(
-          bridging::getParameterCount(&T::deleteToken) == 3,
-          "Expected deleteToken(...) to have 3 parameters");
+  static jsi::Value __setAPNSToken(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setAPNSToken) == 3,
+      "Expected setAPNSToken(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setAPNSToken,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 || args[1].isUndefined() ? std::nullopt : std::make_optional(args[1].asString(rt)));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::deleteToken, jsInvoker_, instance_, std::move(appName), std::move(senderId));
-    }
-    jsi::Value getAPNSToken(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getAPNSToken) == 1,
-          "Expected getAPNSToken(...) to have 1 parameters");
+  static jsi::Value __getIsHeadless(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getIsHeadless) == 1,
+      "Expected getIsHeadless(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getIsHeadless,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getAPNSToken, jsInvoker_, instance_);
-    }
-    jsi::Value setAPNSToken(jsi::Runtime &rt, jsi::String token, std::optional<jsi::String> type) override {
-      static_assert(
-          bridging::getParameterCount(&T::setAPNSToken) == 3,
-          "Expected setAPNSToken(...) to have 3 parameters");
+  static jsi::Value __requestPermission(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::requestPermission) == 2,
+      "Expected requestPermission(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::requestPermission,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setAPNSToken, jsInvoker_, instance_, std::move(token), std::move(type));
-    }
-    jsi::Value getIsHeadless(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getIsHeadless) == 1,
-          "Expected getIsHeadless(...) to have 1 parameters");
+  static jsi::Value __registerForRemoteNotifications(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::registerForRemoteNotifications) == 1,
+      "Expected registerForRemoteNotifications(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::registerForRemoteNotifications,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getIsHeadless, jsInvoker_, instance_);
-    }
-    jsi::Value requestPermission(jsi::Runtime &rt, jsi::Object permissions) override {
-      static_assert(
-          bridging::getParameterCount(&T::requestPermission) == 2,
-          "Expected requestPermission(...) to have 2 parameters");
+  static jsi::Value __unregisterForRemoteNotifications(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::unregisterForRemoteNotifications) == 1,
+      "Expected unregisterForRemoteNotifications(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::unregisterForRemoteNotifications,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::requestPermission, jsInvoker_, instance_, std::move(permissions));
-    }
-    jsi::Value registerForRemoteNotifications(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::registerForRemoteNotifications) == 1,
-          "Expected registerForRemoteNotifications(...) to have 1 parameters");
+  static jsi::Value __hasPermission(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::hasPermission) == 1,
+      "Expected hasPermission(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::hasPermission,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::registerForRemoteNotifications, jsInvoker_, instance_);
-    }
-    jsi::Value unregisterForRemoteNotifications(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::unregisterForRemoteNotifications) == 1,
-          "Expected unregisterForRemoteNotifications(...) to have 1 parameters");
+  static jsi::Value __sendMessage(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::sendMessage) == 2,
+      "Expected sendMessage(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::sendMessage,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::unregisterForRemoteNotifications, jsInvoker_, instance_);
-    }
-    jsi::Value hasPermission(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::hasPermission) == 1,
-          "Expected hasPermission(...) to have 1 parameters");
+  static jsi::Value __subscribeToTopic(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::subscribeToTopic) == 2,
+      "Expected subscribeToTopic(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::subscribeToTopic,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::hasPermission, jsInvoker_, instance_);
-    }
-    jsi::Value sendMessage(jsi::Runtime &rt, jsi::Object remoteMessageMap) override {
-      static_assert(
-          bridging::getParameterCount(&T::sendMessage) == 2,
-          "Expected sendMessage(...) to have 2 parameters");
+  static jsi::Value __unsubscribeFromTopic(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::unsubscribeFromTopic) == 2,
+      "Expected unsubscribeFromTopic(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::unsubscribeFromTopic,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::sendMessage, jsInvoker_, instance_, std::move(remoteMessageMap));
-    }
-    jsi::Value subscribeToTopic(jsi::Runtime &rt, jsi::String topic) override {
-      static_assert(
-          bridging::getParameterCount(&T::subscribeToTopic) == 2,
-          "Expected subscribeToTopic(...) to have 2 parameters");
+  static jsi::Value __setDeliveryMetricsExportToBigQuery(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setDeliveryMetricsExportToBigQuery) == 2,
+      "Expected setDeliveryMetricsExportToBigQuery(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setDeliveryMetricsExportToBigQuery,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asBool());
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::subscribeToTopic, jsInvoker_, instance_, std::move(topic));
-    }
-    jsi::Value unsubscribeFromTopic(jsi::Runtime &rt, jsi::String topic) override {
-      static_assert(
-          bridging::getParameterCount(&T::unsubscribeFromTopic) == 2,
-          "Expected unsubscribeFromTopic(...) to have 2 parameters");
+  static jsi::Value __setNotificationDelegationEnabled(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setNotificationDelegationEnabled) == 2,
+      "Expected setNotificationDelegationEnabled(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setNotificationDelegationEnabled,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asBool());
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::unsubscribeFromTopic, jsInvoker_, instance_, std::move(topic));
-    }
-    jsi::Value setDeliveryMetricsExportToBigQuery(jsi::Runtime &rt, bool enabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::setDeliveryMetricsExportToBigQuery) == 2,
-          "Expected setDeliveryMetricsExportToBigQuery(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setDeliveryMetricsExportToBigQuery, jsInvoker_, instance_, std::move(enabled));
-    }
-    jsi::Value setNotificationDelegationEnabled(jsi::Runtime &rt, bool enabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::setNotificationDelegationEnabled) == 2,
-          "Expected setNotificationDelegationEnabled(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setNotificationDelegationEnabled, jsInvoker_, instance_, std::move(enabled));
-    }
-    jsi::Value isNotificationDelegationEnabled(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::isNotificationDelegationEnabled) == 1,
-          "Expected isNotificationDelegationEnabled(...) to have 1 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::isNotificationDelegationEnabled, jsInvoker_, instance_);
-    }
-
-  private:
-    friend class NativeRNFBTurboMessagingCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __isNotificationDelegationEnabled(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::isNotificationDelegationEnabled) == 1,
+      "Expected isNotificationDelegationEnabled(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::isNotificationDelegationEnabled,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 };
 
 } // namespace facebook::react

@@ -15,13 +15,12 @@
 namespace facebook::react {
 
 
-  
 #pragma mark - NativeRNFBTurboAppFirebaseAppConfig
 
 template <typename P0, typename P1, typename P2>
 struct NativeRNFBTurboAppFirebaseAppConfig {
-  P0 name;
-  P1 automaticResourceManagement;
+  P0 name{};
+  P1 automaticResourceManagement{};
   P2 automaticDataCollectionEnabled;
   bool operator==(const NativeRNFBTurboAppFirebaseAppConfig &other) const {
     return name == other.name && automaticResourceManagement == other.automaticResourceManagement && automaticDataCollectionEnabled == other.automaticDataCollectionEnabled;
@@ -47,11 +46,9 @@ struct NativeRNFBTurboAppFirebaseAppConfigBridging {
   static jsi::String nameToJs(jsi::Runtime &rt, decltype(types.name) value) {
     return bridging::toJs(rt, value);
   }
-
   static bool automaticResourceManagementToJs(jsi::Runtime &rt, decltype(types.automaticResourceManagement) value) {
     return bridging::toJs(rt, value);
   }
-
   static bool automaticDataCollectionEnabledToJs(jsi::Runtime &rt, decltype(types.automaticDataCollectionEnabled) value) {
     return bridging::toJs(rt, value);
   }
@@ -79,15 +76,15 @@ struct NativeRNFBTurboAppFirebaseAppConfigBridging {
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename P9>
 struct NativeRNFBTurboAppFirebaseAppOptions {
-  P0 apiKey;
-  P1 appId;
-  P2 databaseURL;
-  P3 messagingSenderId;
-  P4 projectId;
-  P5 storageBucket;
-  P6 authDomain;
-  P7 iosBundleId;
-  P8 iosClientId;
+  P0 apiKey{};
+  P1 appId{};
+  P2 databaseURL{};
+  P3 messagingSenderId{};
+  P4 projectId{};
+  P5 storageBucket{};
+  P6 authDomain{};
+  P7 iosBundleId{};
+  P8 iosClientId{};
   P9 appGroupId;
   bool operator==(const NativeRNFBTurboAppFirebaseAppOptions &other) const {
     return apiKey == other.apiKey && appId == other.appId && databaseURL == other.databaseURL && messagingSenderId == other.messagingSenderId && projectId == other.projectId && storageBucket == other.storageBucket && authDomain == other.authDomain && iosBundleId == other.iosBundleId && iosClientId == other.iosClientId && appGroupId == other.appGroupId;
@@ -120,39 +117,30 @@ struct NativeRNFBTurboAppFirebaseAppOptionsBridging {
   static jsi::String apiKeyToJs(jsi::Runtime &rt, decltype(types.apiKey) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::String appIdToJs(jsi::Runtime &rt, decltype(types.appId) value) {
     return bridging::toJs(rt, value);
   }
-
   static std::optional<jsi::String> databaseURLToJs(jsi::Runtime &rt, decltype(types.databaseURL) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::String messagingSenderIdToJs(jsi::Runtime &rt, decltype(types.messagingSenderId) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::String projectIdToJs(jsi::Runtime &rt, decltype(types.projectId) value) {
     return bridging::toJs(rt, value);
   }
-
   static std::optional<jsi::String> storageBucketToJs(jsi::Runtime &rt, decltype(types.storageBucket) value) {
     return bridging::toJs(rt, value);
   }
-
   static std::optional<jsi::String> authDomainToJs(jsi::Runtime &rt, decltype(types.authDomain) value) {
     return bridging::toJs(rt, value);
   }
-
   static std::optional<jsi::String> iosBundleIdToJs(jsi::Runtime &rt, decltype(types.iosBundleId) value) {
     return bridging::toJs(rt, value);
   }
-
   static std::optional<jsi::String> iosClientIdToJs(jsi::Runtime &rt, decltype(types.iosClientId) value) {
     return bridging::toJs(rt, value);
   }
-
   static std::optional<jsi::String> appGroupIdToJs(jsi::Runtime &rt, decltype(types.appGroupId) value) {
     return bridging::toJs(rt, value);
   }
@@ -195,7 +183,7 @@ struct NativeRNFBTurboAppFirebaseAppOptionsBridging {
 
 template <typename P0, typename P1>
 struct NativeRNFBTurboAppNativeFirebaseApp {
-  P0 appConfig;
+  P0 appConfig{};
   P1 options;
   bool operator==(const NativeRNFBTurboAppNativeFirebaseApp &other) const {
     return appConfig == other.appConfig && options == other.options;
@@ -220,7 +208,6 @@ struct NativeRNFBTurboAppNativeFirebaseAppBridging {
   static jsi::Object appConfigToJs(jsi::Runtime &rt, decltype(types.appConfig) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::Object optionsToJs(jsi::Runtime &rt, decltype(types.options) value) {
     return bridging::toJs(rt, value);
   }
@@ -237,222 +224,189 @@ struct NativeRNFBTurboAppNativeFirebaseAppBridging {
   }
 };
 
-class JSI_EXPORT NativeRNFBTurboAppCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboAppCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
-  virtual jsi::Value initializeApp(jsi::Runtime &rt, jsi::Object options, jsi::Object appConfig) = 0;
-  virtual void setAutomaticDataCollectionEnabled(jsi::Runtime &rt, jsi::String appName, bool enabled) = 0;
-  virtual jsi::Value deleteApp(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual void eventsNotifyReady(jsi::Runtime &rt, bool ready) = 0;
-  virtual jsi::Value eventsGetListeners(jsi::Runtime &rt) = 0;
-  virtual jsi::Value eventsPing(jsi::Runtime &rt, jsi::String eventName, jsi::Object eventBody) = 0;
-  virtual void eventsAddListener(jsi::Runtime &rt, jsi::String eventName) = 0;
-  virtual void eventsRemoveListener(jsi::Runtime &rt, jsi::String eventName, bool all) = 0;
-  virtual void addListener(jsi::Runtime &rt, jsi::String eventName) = 0;
-  virtual void removeListeners(jsi::Runtime &rt, double count) = 0;
-  virtual jsi::Value metaGetAll(jsi::Runtime &rt) = 0;
-  virtual jsi::Value jsonGetAll(jsi::Runtime &rt) = 0;
-  virtual jsi::Value preferencesSetBool(jsi::Runtime &rt, jsi::String key, bool value) = 0;
-  virtual jsi::Value preferencesSetString(jsi::Runtime &rt, jsi::String key, jsi::String value) = 0;
-  virtual jsi::Value preferencesGetAll(jsi::Runtime &rt) = 0;
-  virtual jsi::Value preferencesClearAll(jsi::Runtime &rt) = 0;
-  virtual void setLogLevel(jsi::Runtime &rt, jsi::String logLevel) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboAppCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboApp";
 
 protected:
-  NativeRNFBTurboAppCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboAppCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboAppCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboAppCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["getConstants"] = MethodMetadata {.argCount = 0, .invoker = __getConstants};
+    methodMap_["initializeApp"] = MethodMetadata {.argCount = 2, .invoker = __initializeApp};
+    methodMap_["setAutomaticDataCollectionEnabled"] = MethodMetadata {.argCount = 2, .invoker = __setAutomaticDataCollectionEnabled};
+    methodMap_["deleteApp"] = MethodMetadata {.argCount = 1, .invoker = __deleteApp};
+    methodMap_["eventsNotifyReady"] = MethodMetadata {.argCount = 1, .invoker = __eventsNotifyReady};
+    methodMap_["eventsGetListeners"] = MethodMetadata {.argCount = 0, .invoker = __eventsGetListeners};
+    methodMap_["eventsPing"] = MethodMetadata {.argCount = 2, .invoker = __eventsPing};
+    methodMap_["eventsAddListener"] = MethodMetadata {.argCount = 1, .invoker = __eventsAddListener};
+    methodMap_["eventsRemoveListener"] = MethodMetadata {.argCount = 2, .invoker = __eventsRemoveListener};
+    methodMap_["addListener"] = MethodMetadata {.argCount = 1, .invoker = __addListener};
+    methodMap_["removeListeners"] = MethodMetadata {.argCount = 1, .invoker = __removeListeners};
+    methodMap_["metaGetAll"] = MethodMetadata {.argCount = 0, .invoker = __metaGetAll};
+    methodMap_["jsonGetAll"] = MethodMetadata {.argCount = 0, .invoker = __jsonGetAll};
+    methodMap_["preferencesSetBool"] = MethodMetadata {.argCount = 2, .invoker = __preferencesSetBool};
+    methodMap_["preferencesSetString"] = MethodMetadata {.argCount = 2, .invoker = __preferencesSetString};
+    methodMap_["preferencesGetAll"] = MethodMetadata {.argCount = 0, .invoker = __preferencesGetAll};
+    methodMap_["preferencesClearAll"] = MethodMetadata {.argCount = 0, .invoker = __preferencesClearAll};
+    methodMap_["setLogLevel"] = MethodMetadata {.argCount = 1, .invoker = __setLogLevel};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboAppCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboAppCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getConstants) == 1,
+      "Expected getConstants(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Object>(rt, &T::getConstants,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-    }
+  static jsi::Value __initializeApp(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::initializeApp) == 3,
+      "Expected initializeApp(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::initializeApp,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt));
+  }
 
-    jsi::Object getConstants(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getConstants) == 1,
-          "Expected getConstants(...) to have 1 parameters");
+  static jsi::Value __setAutomaticDataCollectionEnabled(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setAutomaticDataCollectionEnabled) == 3,
+      "Expected setAutomaticDataCollectionEnabled(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::setAutomaticDataCollectionEnabled,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asBool());return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Object>(
-          rt, &T::getConstants, jsInvoker_, instance_);
-    }
-    jsi::Value initializeApp(jsi::Runtime &rt, jsi::Object options, jsi::Object appConfig) override {
-      static_assert(
-          bridging::getParameterCount(&T::initializeApp) == 3,
-          "Expected initializeApp(...) to have 3 parameters");
+  static jsi::Value __deleteApp(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::deleteApp) == 2,
+      "Expected deleteApp(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::deleteApp,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::initializeApp, jsInvoker_, instance_, std::move(options), std::move(appConfig));
-    }
-    void setAutomaticDataCollectionEnabled(jsi::Runtime &rt, jsi::String appName, bool enabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::setAutomaticDataCollectionEnabled) == 3,
-          "Expected setAutomaticDataCollectionEnabled(...) to have 3 parameters");
+  static jsi::Value __eventsNotifyReady(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::eventsNotifyReady) == 2,
+      "Expected eventsNotifyReady(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::eventsNotifyReady,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asBool());return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::setAutomaticDataCollectionEnabled, jsInvoker_, instance_, std::move(appName), std::move(enabled));
-    }
-    jsi::Value deleteApp(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::deleteApp) == 2,
-          "Expected deleteApp(...) to have 2 parameters");
+  static jsi::Value __eventsGetListeners(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::eventsGetListeners) == 1,
+      "Expected eventsGetListeners(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::eventsGetListeners,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::deleteApp, jsInvoker_, instance_, std::move(appName));
-    }
-    void eventsNotifyReady(jsi::Runtime &rt, bool ready) override {
-      static_assert(
-          bridging::getParameterCount(&T::eventsNotifyReady) == 2,
-          "Expected eventsNotifyReady(...) to have 2 parameters");
+  static jsi::Value __eventsPing(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::eventsPing) == 3,
+      "Expected eventsPing(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::eventsPing,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt));
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::eventsNotifyReady, jsInvoker_, instance_, std::move(ready));
-    }
-    jsi::Value eventsGetListeners(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::eventsGetListeners) == 1,
-          "Expected eventsGetListeners(...) to have 1 parameters");
+  static jsi::Value __eventsAddListener(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::eventsAddListener) == 2,
+      "Expected eventsAddListener(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::eventsAddListener,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::eventsGetListeners, jsInvoker_, instance_);
-    }
-    jsi::Value eventsPing(jsi::Runtime &rt, jsi::String eventName, jsi::Object eventBody) override {
-      static_assert(
-          bridging::getParameterCount(&T::eventsPing) == 3,
-          "Expected eventsPing(...) to have 3 parameters");
+  static jsi::Value __eventsRemoveListener(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::eventsRemoveListener) == 3,
+      "Expected eventsRemoveListener(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::eventsRemoveListener,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asBool());return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::eventsPing, jsInvoker_, instance_, std::move(eventName), std::move(eventBody));
-    }
-    void eventsAddListener(jsi::Runtime &rt, jsi::String eventName) override {
-      static_assert(
-          bridging::getParameterCount(&T::eventsAddListener) == 2,
-          "Expected eventsAddListener(...) to have 2 parameters");
+  static jsi::Value __addListener(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::addListener) == 2,
+      "Expected addListener(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::addListener,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::eventsAddListener, jsInvoker_, instance_, std::move(eventName));
-    }
-    void eventsRemoveListener(jsi::Runtime &rt, jsi::String eventName, bool all) override {
-      static_assert(
-          bridging::getParameterCount(&T::eventsRemoveListener) == 3,
-          "Expected eventsRemoveListener(...) to have 3 parameters");
+  static jsi::Value __removeListeners(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::removeListeners) == 2,
+      "Expected removeListeners(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::removeListeners,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber());return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::eventsRemoveListener, jsInvoker_, instance_, std::move(eventName), std::move(all));
-    }
-    void addListener(jsi::Runtime &rt, jsi::String eventName) override {
-      static_assert(
-          bridging::getParameterCount(&T::addListener) == 2,
-          "Expected addListener(...) to have 2 parameters");
+  static jsi::Value __metaGetAll(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::metaGetAll) == 1,
+      "Expected metaGetAll(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::metaGetAll,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::addListener, jsInvoker_, instance_, std::move(eventName));
-    }
-    void removeListeners(jsi::Runtime &rt, double count) override {
-      static_assert(
-          bridging::getParameterCount(&T::removeListeners) == 2,
-          "Expected removeListeners(...) to have 2 parameters");
+  static jsi::Value __jsonGetAll(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::jsonGetAll) == 1,
+      "Expected jsonGetAll(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::jsonGetAll,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::removeListeners, jsInvoker_, instance_, std::move(count));
-    }
-    jsi::Value metaGetAll(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::metaGetAll) == 1,
-          "Expected metaGetAll(...) to have 1 parameters");
+  static jsi::Value __preferencesSetBool(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::preferencesSetBool) == 3,
+      "Expected preferencesSetBool(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::preferencesSetBool,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asBool());
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::metaGetAll, jsInvoker_, instance_);
-    }
-    jsi::Value jsonGetAll(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::jsonGetAll) == 1,
-          "Expected jsonGetAll(...) to have 1 parameters");
+  static jsi::Value __preferencesSetString(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::preferencesSetString) == 3,
+      "Expected preferencesSetString(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::preferencesSetString,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::jsonGetAll, jsInvoker_, instance_);
-    }
-    jsi::Value preferencesSetBool(jsi::Runtime &rt, jsi::String key, bool value) override {
-      static_assert(
-          bridging::getParameterCount(&T::preferencesSetBool) == 3,
-          "Expected preferencesSetBool(...) to have 3 parameters");
+  static jsi::Value __preferencesGetAll(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::preferencesGetAll) == 1,
+      "Expected preferencesGetAll(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::preferencesGetAll,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::preferencesSetBool, jsInvoker_, instance_, std::move(key), std::move(value));
-    }
-    jsi::Value preferencesSetString(jsi::Runtime &rt, jsi::String key, jsi::String value) override {
-      static_assert(
-          bridging::getParameterCount(&T::preferencesSetString) == 3,
-          "Expected preferencesSetString(...) to have 3 parameters");
+  static jsi::Value __preferencesClearAll(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::preferencesClearAll) == 1,
+      "Expected preferencesClearAll(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::preferencesClearAll,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::preferencesSetString, jsInvoker_, instance_, std::move(key), std::move(value));
-    }
-    jsi::Value preferencesGetAll(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::preferencesGetAll) == 1,
-          "Expected preferencesGetAll(...) to have 1 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::preferencesGetAll, jsInvoker_, instance_);
-    }
-    jsi::Value preferencesClearAll(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::preferencesClearAll) == 1,
-          "Expected preferencesClearAll(...) to have 1 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::preferencesClearAll, jsInvoker_, instance_);
-    }
-    void setLogLevel(jsi::Runtime &rt, jsi::String logLevel) override {
-      static_assert(
-          bridging::getParameterCount(&T::setLogLevel) == 2,
-          "Expected setLogLevel(...) to have 2 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::setLogLevel, jsInvoker_, instance_, std::move(logLevel));
-    }
-
-  private:
-    friend class NativeRNFBTurboAppCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __setLogLevel(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setLogLevel) == 2,
+      "Expected setLogLevel(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::setLogLevel,  static_cast<NativeRNFBTurboAppCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));return jsi::Value::undefined();
+  }
 };
 
 
-  
 #pragma mark - NativeRNFBTurboUtilsPlayServicesAvailability
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct NativeRNFBTurboUtilsPlayServicesAvailability {
-  P0 isAvailable;
-  P1 status;
-  P2 hasResolution;
-  P3 isUserResolvableError;
+  P0 isAvailable{};
+  P1 status{};
+  P2 hasResolution{};
+  P3 isUserResolvableError{};
   P4 error;
   bool operator==(const NativeRNFBTurboUtilsPlayServicesAvailability &other) const {
     return isAvailable == other.isAvailable && status == other.status && hasResolution == other.hasResolution && isUserResolvableError == other.isUserResolvableError && error == other.error;
@@ -480,19 +434,15 @@ struct NativeRNFBTurboUtilsPlayServicesAvailabilityBridging {
   static bool isAvailableToJs(jsi::Runtime &rt, decltype(types.isAvailable) value) {
     return bridging::toJs(rt, value);
   }
-
   static double statusToJs(jsi::Runtime &rt, decltype(types.status) value) {
     return bridging::toJs(rt, value);
   }
-
   static bool hasResolutionToJs(jsi::Runtime &rt, decltype(types.hasResolution) value) {
     return bridging::toJs(rt, value);
   }
-
   static bool isUserResolvableErrorToJs(jsi::Runtime &rt, decltype(types.isUserResolvableError) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::String errorToJs(jsi::Runtime &rt, decltype(types.error) value) {
     return bridging::toJs(rt, value);
   }
@@ -514,93 +464,56 @@ struct NativeRNFBTurboUtilsPlayServicesAvailabilityBridging {
   }
 };
 
-class JSI_EXPORT NativeRNFBTurboUtilsCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboUtilsCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
-  virtual jsi::Value androidGetPlayServicesStatus(jsi::Runtime &rt) = 0;
-  virtual jsi::Value androidPromptForPlayServices(jsi::Runtime &rt) = 0;
-  virtual jsi::Value androidResolutionForPlayServices(jsi::Runtime &rt) = 0;
-  virtual jsi::Value androidMakePlayServicesAvailable(jsi::Runtime &rt) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboUtilsCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboUtils";
 
 protected:
-  NativeRNFBTurboUtilsCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboUtilsCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboUtilsCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboUtilsCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["getConstants"] = MethodMetadata {.argCount = 0, .invoker = __getConstants};
+    methodMap_["androidGetPlayServicesStatus"] = MethodMetadata {.argCount = 0, .invoker = __androidGetPlayServicesStatus};
+    methodMap_["androidPromptForPlayServices"] = MethodMetadata {.argCount = 0, .invoker = __androidPromptForPlayServices};
+    methodMap_["androidResolutionForPlayServices"] = MethodMetadata {.argCount = 0, .invoker = __androidResolutionForPlayServices};
+    methodMap_["androidMakePlayServicesAvailable"] = MethodMetadata {.argCount = 0, .invoker = __androidMakePlayServicesAvailable};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboUtilsCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboUtilsCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getConstants) == 1,
+      "Expected getConstants(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Object>(rt, &T::getConstants,  static_cast<NativeRNFBTurboUtilsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-    }
+  static jsi::Value __androidGetPlayServicesStatus(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::androidGetPlayServicesStatus) == 1,
+      "Expected androidGetPlayServicesStatus(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::androidGetPlayServicesStatus,  static_cast<NativeRNFBTurboUtilsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-    jsi::Object getConstants(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getConstants) == 1,
-          "Expected getConstants(...) to have 1 parameters");
+  static jsi::Value __androidPromptForPlayServices(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::androidPromptForPlayServices) == 1,
+      "Expected androidPromptForPlayServices(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::androidPromptForPlayServices,  static_cast<NativeRNFBTurboUtilsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Object>(
-          rt, &T::getConstants, jsInvoker_, instance_);
-    }
-    jsi::Value androidGetPlayServicesStatus(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::androidGetPlayServicesStatus) == 1,
-          "Expected androidGetPlayServicesStatus(...) to have 1 parameters");
+  static jsi::Value __androidResolutionForPlayServices(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::androidResolutionForPlayServices) == 1,
+      "Expected androidResolutionForPlayServices(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::androidResolutionForPlayServices,  static_cast<NativeRNFBTurboUtilsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::androidGetPlayServicesStatus, jsInvoker_, instance_);
-    }
-    jsi::Value androidPromptForPlayServices(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::androidPromptForPlayServices) == 1,
-          "Expected androidPromptForPlayServices(...) to have 1 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::androidPromptForPlayServices, jsInvoker_, instance_);
-    }
-    jsi::Value androidResolutionForPlayServices(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::androidResolutionForPlayServices) == 1,
-          "Expected androidResolutionForPlayServices(...) to have 1 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::androidResolutionForPlayServices, jsInvoker_, instance_);
-    }
-    jsi::Value androidMakePlayServicesAvailable(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::androidMakePlayServicesAvailable) == 1,
-          "Expected androidMakePlayServicesAvailable(...) to have 1 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::androidMakePlayServicesAvailable, jsInvoker_, instance_);
-    }
-
-  private:
-    friend class NativeRNFBTurboUtilsCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __androidMakePlayServicesAvailable(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::androidMakePlayServicesAvailable) == 1,
+      "Expected androidMakePlayServicesAvailable(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::androidMakePlayServicesAvailable,  static_cast<NativeRNFBTurboUtilsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 };
 
 } // namespace facebook::react

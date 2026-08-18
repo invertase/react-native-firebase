@@ -1,6 +1,6 @@
 {
   "npmClient": "yarn",
-  "packages": ["packages/*", "tests"],
+  "packages": ["packages/*", "tests", "tests-macos"],
   "command": {
     "version": {
       "allowBranch": ["main", "release-v*"],
@@ -75,7 +75,7 @@
     "compareUrlFormat": "{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}",
     "userUrlFormat": "{{host}}/{{user}}"
   },
-  "ignoreChanges": ["**/docs/**", "**/.github/**", "**/e2e/**", "**/tests/**"],
+  "ignoreChanges": ["**/docs/**", "**/.github/**", "**/e2e/**", "**/tests/**", "**/tests-macos/**"],
   "version": "26.2.0",
   "$schema": "node_modules/lerna/schemas/lerna-schema.json"
 }

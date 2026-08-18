@@ -12,7 +12,7 @@
     "test:functions:build": "cd .github/workflows/scripts/functions && yarn build",
     "compare:types": "cd .github/scripts/compare-types && yarn install && yarn compare",
     "attw:check": "cd .github/scripts/attw && yarn install && yarn check",
-    "codegen:all": "lerna run codegen",
+    "codegen:all": "node ./scripts/codegen-package.mjs --all",
     "codegen:verify": "node ./scripts/codegen-verify.mjs && git diff --exit-code -- 'packages/*/android/**/generated/**' 'packages/*/ios/generated/**'",
     "lint": "yarn lint:js && yarn lint:deps && yarn lint:android && yarn lint:ios:check",
     "lint:js": "eslint packages/* --max-warnings=0",
@@ -71,11 +71,14 @@
     "tests:ios:pod:install": "cd tests && rm -f ios/Podfile.lock && rm -rf ios/ReactNativeFirebaseDemo.xcworkspace && cd ios && pod install",
     "lint:ruby": "bundle exec --gemfile=packages/app/__tests__/Gemfile rubocop --config packages/app/__tests__/.rubocop.yml packages/app/firebase_spm.rb packages/app/firebase_json.rb packages/app/__tests__",
     "tests:ios:ruby": "yarn lint:ruby && ruby packages/app/__tests__/run_with_coverage.rb",
-    "tests:macos:build": "cd tests && yarn build:macos",
-    "tests:macos:pod:install": "cd tests && rm -f macos/Podfile.lock && cd macos && pod install",
-    "tests:macos:manual": "cd tests && yarn react-native run-macos",
-    "tests:macos:test": "cd tests && npx jet --target=macos --coverage",
-    "tests:macos:test-cover": "cd tests && npx jet --target=macos --coverage",
+    "tests:macos:build": "cd tests-macos && yarn build:macos",
+    "tests:macos:pod:install": "cd tests-macos && rm -f macos/Podfile.lock && cd macos && pod install",
+    "tests:macos:manual": "cd tests-macos && yarn react-native run-macos",
+    "tests:macos:packager:jet": "cd tests-macos && yarn react-native start --client-logs",
+    "tests:macos:packager:jet-ci": "cd tests-macos && (mkdir $HOME/.metro || true) && cross-env TMPDIR=$HOME/.metro yarn react-native start",
+    "tests:macos:packager:jet-reset-cache": "cd tests-macos && yarn react-native start --reset-cache",
+    "tests:macos:test": "cd tests-macos && npx jet --target=macos --coverage",
+    "tests:macos:test-cover": "cd tests-macos && npx jet --target=macos --coverage",
     "format:js": "prettier --write \"packages/**/*.{js,ts,tsx}\"",
     "format:markdown": "prettier --write \"docs/**/*.md[x]\""
   },
@@ -91,7 +94,8 @@
     "@firebase/rules-unit-testing": "^5.0.0",
     "@inquirer/prompts": "^8.4.2",
     "@octokit/core": "^7.0.6",
-    "@react-native-community/cli": "15.1.3",
+    "@react-native-community/cli": "20.1.0",
+    "@react-native/jest-preset": "0.86.2",
     "@tsconfig/node-lts": "^24.0.0",
     "@types/react": "~19.2.14",
     "@types/react-native": "^0.73.0",
@@ -128,17 +132,15 @@
     "typescript-eslint": "^8.59.1"
   },
   "resolutions": {
-    "@types/react": "~19.0.0",
-    "react-native": "0.78.3",
-    "@react-native/codegen": "0.78.3",
-    "@react-native-community/cli": "15.1.3",
+    "@types/react": "~19.2.0",
     "mocha-remote-client@npm:^1.13.0": "patch:mocha-remote-client@npm%3A1.13.2#~/.yarn/patches/mocha-remote-client-npm-1.13.2-a2e7596aba.patch",
     "mocha-remote-server@npm:^1.13.0": "patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch"
   },
   "workspaces": {
     "packages": [
       "packages/*",
-      "tests"
+      "tests",
+      "tests-macos"
     ]
   },
   "packageManager": "yarn@4.14.1",

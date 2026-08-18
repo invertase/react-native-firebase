@@ -15,597 +15,646 @@
 namespace facebook::react {
 
 
-  class JSI_EXPORT NativeRNFBTurboAuthCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboAuthCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
-  virtual void configureAuthDomain(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual jsi::Value getCustomAuthDomain(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual void addAuthStateListener(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual void removeAuthStateListener(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual void addIdTokenListener(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual void removeIdTokenListener(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual jsi::Value forceRecaptchaFlowForTesting(jsi::Runtime &rt, jsi::String appName, bool forceRecaptchaFlow) = 0;
-  virtual jsi::Value setAutoRetrievedSmsCodeForPhoneNumber(jsi::Runtime &rt, jsi::String appName, jsi::String phoneNumber, jsi::String smsCode) = 0;
-  virtual jsi::Value setAppVerificationDisabledForTesting(jsi::Runtime &rt, jsi::String appName, bool disabled) = 0;
-  virtual jsi::Value useUserAccessGroup(jsi::Runtime &rt, jsi::String appName, jsi::String userAccessGroup) = 0;
-  virtual jsi::Value signOut(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual jsi::Value signInAnonymously(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual jsi::Value createUserWithEmailAndPassword(jsi::Runtime &rt, jsi::String appName, jsi::String email, jsi::String password) = 0;
-  virtual bool isSignInWithEmailLink(jsi::Runtime &rt, jsi::String appName, jsi::String emailLink) = 0;
-  virtual jsi::Value signInWithEmailAndPassword(jsi::Runtime &rt, jsi::String appName, jsi::String email, jsi::String password) = 0;
-  virtual jsi::Value signInWithEmailLink(jsi::Runtime &rt, jsi::String appName, jsi::String email, jsi::String emailLink) = 0;
-  virtual jsi::Value signInWithCustomToken(jsi::Runtime &rt, jsi::String appName, jsi::String token) = 0;
-  virtual jsi::Value revokeToken(jsi::Runtime &rt, jsi::String appName, jsi::String authorizationCode) = 0;
-  virtual jsi::Value sendPasswordResetEmail(jsi::Runtime &rt, jsi::String appName, jsi::String email, std::optional<jsi::Object> actionCodeSettings) = 0;
-  virtual jsi::Value sendSignInLinkToEmail(jsi::Runtime &rt, jsi::String appName, jsi::String email, jsi::Object actionCodeSettings) = 0;
-  virtual jsi::Value deleteUser(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual jsi::Value reload(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual jsi::Value sendEmailVerification(jsi::Runtime &rt, jsi::String appName, std::optional<jsi::Object> actionCodeSettings) = 0;
-  virtual jsi::Value verifyBeforeUpdateEmail(jsi::Runtime &rt, jsi::String appName, jsi::String email, std::optional<jsi::Object> actionCodeSettings) = 0;
-  virtual jsi::Value updateEmail(jsi::Runtime &rt, jsi::String appName, jsi::String email) = 0;
-  virtual jsi::Value updatePassword(jsi::Runtime &rt, jsi::String appName, jsi::String password) = 0;
-  virtual jsi::Value updatePhoneNumber(jsi::Runtime &rt, jsi::String appName, jsi::String provider, jsi::String authToken, jsi::String authSecret) = 0;
-  virtual jsi::Value updateProfile(jsi::Runtime &rt, jsi::String appName, jsi::Object props) = 0;
-  virtual jsi::Value getIdToken(jsi::Runtime &rt, jsi::String appName, bool forceRefresh) = 0;
-  virtual jsi::Value getIdTokenResult(jsi::Runtime &rt, jsi::String appName, bool forceRefresh) = 0;
-  virtual jsi::Value signInWithCredential(jsi::Runtime &rt, jsi::String appName, jsi::String provider, jsi::String authToken, jsi::String authSecret, std::optional<jsi::Object> fullName) = 0;
-  virtual jsi::Value signInWithProvider(jsi::Runtime &rt, jsi::String appName, jsi::Object provider) = 0;
-  virtual jsi::Value signInWithPhoneNumber(jsi::Runtime &rt, jsi::String appName, jsi::String phoneNumber, bool forceResend) = 0;
-  virtual jsi::Value verifyPhoneNumberWithMultiFactorInfo(jsi::Runtime &rt, jsi::String appName, jsi::String hintUid, jsi::String sessionKey) = 0;
-  virtual jsi::Value verifyPhoneNumberForMultiFactor(jsi::Runtime &rt, jsi::String appName, jsi::String phoneNumber, jsi::String sessionKey) = 0;
-  virtual jsi::Value resolveMultiFactorSignIn(jsi::Runtime &rt, jsi::String appName, jsi::String session, jsi::String verificationId, jsi::String verificationCode) = 0;
-  virtual jsi::Value resolveTotpSignIn(jsi::Runtime &rt, jsi::String appName, jsi::String sessionKey, jsi::String uid, jsi::String oneTimePassword) = 0;
-  virtual jsi::Value generateTotpSecret(jsi::Runtime &rt, jsi::String appName, jsi::String sessionKey) = 0;
-  virtual jsi::String generateQrCodeUrl(jsi::Runtime &rt, jsi::String appName, jsi::String secretKey, jsi::String account, jsi::String issuer) = 0;
-  virtual void openInOtpApp(jsi::Runtime &rt, jsi::String appName, jsi::String secretKey, jsi::String qrCodeUri) = 0;
-  virtual jsi::Value getSession(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual jsi::Value unenrollMultiFactor(jsi::Runtime &rt, jsi::String appName, jsi::String factorUID) = 0;
-  virtual jsi::Value finalizeMultiFactorEnrollment(jsi::Runtime &rt, jsi::String appName, jsi::String verificationId, jsi::String verificationCode, std::optional<jsi::String> displayName) = 0;
-  virtual jsi::Value finalizeTotpEnrollment(jsi::Runtime &rt, jsi::String appName, jsi::String totpSecret, jsi::String verificationCode, std::optional<jsi::String> displayName) = 0;
-  virtual jsi::Value confirmationResultConfirm(jsi::Runtime &rt, jsi::String appName, jsi::String verificationCode) = 0;
-  virtual void verifyPhoneNumber(jsi::Runtime &rt, jsi::String appName, jsi::String phoneNumber, jsi::String requestKey, double timeout, bool forceResend) = 0;
-  virtual jsi::Value confirmPasswordReset(jsi::Runtime &rt, jsi::String appName, jsi::String code, jsi::String newPassword) = 0;
-  virtual jsi::Value applyActionCode(jsi::Runtime &rt, jsi::String appName, jsi::String code) = 0;
-  virtual jsi::Value checkActionCode(jsi::Runtime &rt, jsi::String appName, jsi::String code) = 0;
-  virtual jsi::Value linkWithCredential(jsi::Runtime &rt, jsi::String appName, jsi::String provider, jsi::String authToken, jsi::String authSecret) = 0;
-  virtual jsi::Value linkWithProvider(jsi::Runtime &rt, jsi::String appName, jsi::Object provider) = 0;
-  virtual jsi::Value unlink(jsi::Runtime &rt, jsi::String appName, jsi::String providerId) = 0;
-  virtual jsi::Value reauthenticateWithCredential(jsi::Runtime &rt, jsi::String appName, jsi::String provider, jsi::String authToken, jsi::String authSecret) = 0;
-  virtual jsi::Value reauthenticateWithProvider(jsi::Runtime &rt, jsi::String appName, jsi::Object provider) = 0;
-  virtual jsi::Value fetchSignInMethodsForEmail(jsi::Runtime &rt, jsi::String appName, jsi::String email) = 0;
-  virtual void setLanguageCode(jsi::Runtime &rt, jsi::String appName, std::optional<jsi::String> code) = 0;
-  virtual jsi::Value setTenantId(jsi::Runtime &rt, jsi::String appName, std::optional<jsi::String> tenantId) = 0;
-  virtual void useDeviceLanguage(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual jsi::Value verifyPasswordResetCode(jsi::Runtime &rt, jsi::String appName, jsi::String code) = 0;
-  virtual void useEmulator(jsi::Runtime &rt, jsi::String appName, jsi::String host, double port) = 0;
-
-};
-
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboAuthCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboAuth";
 
 protected:
-  NativeRNFBTurboAuthCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboAuthCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboAuthCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboAuthCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["getConstants"] = MethodMetadata {.argCount = 0, .invoker = __getConstants};
+    methodMap_["configureAuthDomain"] = MethodMetadata {.argCount = 1, .invoker = __configureAuthDomain};
+    methodMap_["getCustomAuthDomain"] = MethodMetadata {.argCount = 1, .invoker = __getCustomAuthDomain};
+    methodMap_["addAuthStateListener"] = MethodMetadata {.argCount = 1, .invoker = __addAuthStateListener};
+    methodMap_["removeAuthStateListener"] = MethodMetadata {.argCount = 1, .invoker = __removeAuthStateListener};
+    methodMap_["addIdTokenListener"] = MethodMetadata {.argCount = 1, .invoker = __addIdTokenListener};
+    methodMap_["removeIdTokenListener"] = MethodMetadata {.argCount = 1, .invoker = __removeIdTokenListener};
+    methodMap_["forceRecaptchaFlowForTesting"] = MethodMetadata {.argCount = 2, .invoker = __forceRecaptchaFlowForTesting};
+    methodMap_["setAutoRetrievedSmsCodeForPhoneNumber"] = MethodMetadata {.argCount = 3, .invoker = __setAutoRetrievedSmsCodeForPhoneNumber};
+    methodMap_["setAppVerificationDisabledForTesting"] = MethodMetadata {.argCount = 2, .invoker = __setAppVerificationDisabledForTesting};
+    methodMap_["useUserAccessGroup"] = MethodMetadata {.argCount = 2, .invoker = __useUserAccessGroup};
+    methodMap_["signOut"] = MethodMetadata {.argCount = 1, .invoker = __signOut};
+    methodMap_["signInAnonymously"] = MethodMetadata {.argCount = 1, .invoker = __signInAnonymously};
+    methodMap_["createUserWithEmailAndPassword"] = MethodMetadata {.argCount = 3, .invoker = __createUserWithEmailAndPassword};
+    methodMap_["isSignInWithEmailLink"] = MethodMetadata {.argCount = 2, .invoker = __isSignInWithEmailLink};
+    methodMap_["signInWithEmailAndPassword"] = MethodMetadata {.argCount = 3, .invoker = __signInWithEmailAndPassword};
+    methodMap_["signInWithEmailLink"] = MethodMetadata {.argCount = 3, .invoker = __signInWithEmailLink};
+    methodMap_["signInWithCustomToken"] = MethodMetadata {.argCount = 2, .invoker = __signInWithCustomToken};
+    methodMap_["revokeToken"] = MethodMetadata {.argCount = 2, .invoker = __revokeToken};
+    methodMap_["sendPasswordResetEmail"] = MethodMetadata {.argCount = 3, .invoker = __sendPasswordResetEmail};
+    methodMap_["sendSignInLinkToEmail"] = MethodMetadata {.argCount = 3, .invoker = __sendSignInLinkToEmail};
+    methodMap_["deleteUser"] = MethodMetadata {.argCount = 1, .invoker = __deleteUser};
+    methodMap_["reload"] = MethodMetadata {.argCount = 1, .invoker = __reload};
+    methodMap_["sendEmailVerification"] = MethodMetadata {.argCount = 2, .invoker = __sendEmailVerification};
+    methodMap_["verifyBeforeUpdateEmail"] = MethodMetadata {.argCount = 3, .invoker = __verifyBeforeUpdateEmail};
+    methodMap_["updateEmail"] = MethodMetadata {.argCount = 2, .invoker = __updateEmail};
+    methodMap_["updatePassword"] = MethodMetadata {.argCount = 2, .invoker = __updatePassword};
+    methodMap_["updatePhoneNumber"] = MethodMetadata {.argCount = 4, .invoker = __updatePhoneNumber};
+    methodMap_["updateProfile"] = MethodMetadata {.argCount = 2, .invoker = __updateProfile};
+    methodMap_["getIdToken"] = MethodMetadata {.argCount = 2, .invoker = __getIdToken};
+    methodMap_["getIdTokenResult"] = MethodMetadata {.argCount = 2, .invoker = __getIdTokenResult};
+    methodMap_["signInWithCredential"] = MethodMetadata {.argCount = 5, .invoker = __signInWithCredential};
+    methodMap_["signInWithProvider"] = MethodMetadata {.argCount = 2, .invoker = __signInWithProvider};
+    methodMap_["signInWithPhoneNumber"] = MethodMetadata {.argCount = 3, .invoker = __signInWithPhoneNumber};
+    methodMap_["verifyPhoneNumberWithMultiFactorInfo"] = MethodMetadata {.argCount = 3, .invoker = __verifyPhoneNumberWithMultiFactorInfo};
+    methodMap_["verifyPhoneNumberForMultiFactor"] = MethodMetadata {.argCount = 3, .invoker = __verifyPhoneNumberForMultiFactor};
+    methodMap_["resolveMultiFactorSignIn"] = MethodMetadata {.argCount = 4, .invoker = __resolveMultiFactorSignIn};
+    methodMap_["resolveTotpSignIn"] = MethodMetadata {.argCount = 4, .invoker = __resolveTotpSignIn};
+    methodMap_["generateTotpSecret"] = MethodMetadata {.argCount = 2, .invoker = __generateTotpSecret};
+    methodMap_["generateQrCodeUrl"] = MethodMetadata {.argCount = 4, .invoker = __generateQrCodeUrl};
+    methodMap_["openInOtpApp"] = MethodMetadata {.argCount = 3, .invoker = __openInOtpApp};
+    methodMap_["getSession"] = MethodMetadata {.argCount = 1, .invoker = __getSession};
+    methodMap_["unenrollMultiFactor"] = MethodMetadata {.argCount = 2, .invoker = __unenrollMultiFactor};
+    methodMap_["finalizeMultiFactorEnrollment"] = MethodMetadata {.argCount = 4, .invoker = __finalizeMultiFactorEnrollment};
+    methodMap_["finalizeTotpEnrollment"] = MethodMetadata {.argCount = 4, .invoker = __finalizeTotpEnrollment};
+    methodMap_["confirmationResultConfirm"] = MethodMetadata {.argCount = 2, .invoker = __confirmationResultConfirm};
+    methodMap_["verifyPhoneNumber"] = MethodMetadata {.argCount = 5, .invoker = __verifyPhoneNumber};
+    methodMap_["confirmPasswordReset"] = MethodMetadata {.argCount = 3, .invoker = __confirmPasswordReset};
+    methodMap_["applyActionCode"] = MethodMetadata {.argCount = 2, .invoker = __applyActionCode};
+    methodMap_["checkActionCode"] = MethodMetadata {.argCount = 2, .invoker = __checkActionCode};
+    methodMap_["linkWithCredential"] = MethodMetadata {.argCount = 4, .invoker = __linkWithCredential};
+    methodMap_["linkWithProvider"] = MethodMetadata {.argCount = 2, .invoker = __linkWithProvider};
+    methodMap_["unlink"] = MethodMetadata {.argCount = 2, .invoker = __unlink};
+    methodMap_["reauthenticateWithCredential"] = MethodMetadata {.argCount = 4, .invoker = __reauthenticateWithCredential};
+    methodMap_["reauthenticateWithProvider"] = MethodMetadata {.argCount = 2, .invoker = __reauthenticateWithProvider};
+    methodMap_["fetchSignInMethodsForEmail"] = MethodMetadata {.argCount = 2, .invoker = __fetchSignInMethodsForEmail};
+    methodMap_["setLanguageCode"] = MethodMetadata {.argCount = 2, .invoker = __setLanguageCode};
+    methodMap_["setTenantId"] = MethodMetadata {.argCount = 2, .invoker = __setTenantId};
+    methodMap_["useDeviceLanguage"] = MethodMetadata {.argCount = 1, .invoker = __useDeviceLanguage};
+    methodMap_["verifyPasswordResetCode"] = MethodMetadata {.argCount = 2, .invoker = __verifyPasswordResetCode};
+    methodMap_["useEmulator"] = MethodMetadata {.argCount = 3, .invoker = __useEmulator};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboAuthCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboAuthCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
-
-    }
-
-    jsi::Object getConstants(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getConstants) == 1,
-          "Expected getConstants(...) to have 1 parameters");
-
-      return bridging::callFromJs<jsi::Object>(
-          rt, &T::getConstants, jsInvoker_, instance_);
-    }
-    void configureAuthDomain(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::configureAuthDomain) == 2,
-          "Expected configureAuthDomain(...) to have 2 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::configureAuthDomain, jsInvoker_, instance_, std::move(appName));
-    }
-    jsi::Value getCustomAuthDomain(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::getCustomAuthDomain) == 2,
-          "Expected getCustomAuthDomain(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getCustomAuthDomain, jsInvoker_, instance_, std::move(appName));
-    }
-    void addAuthStateListener(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::addAuthStateListener) == 2,
-          "Expected addAuthStateListener(...) to have 2 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::addAuthStateListener, jsInvoker_, instance_, std::move(appName));
-    }
-    void removeAuthStateListener(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::removeAuthStateListener) == 2,
-          "Expected removeAuthStateListener(...) to have 2 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::removeAuthStateListener, jsInvoker_, instance_, std::move(appName));
-    }
-    void addIdTokenListener(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::addIdTokenListener) == 2,
-          "Expected addIdTokenListener(...) to have 2 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::addIdTokenListener, jsInvoker_, instance_, std::move(appName));
-    }
-    void removeIdTokenListener(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::removeIdTokenListener) == 2,
-          "Expected removeIdTokenListener(...) to have 2 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::removeIdTokenListener, jsInvoker_, instance_, std::move(appName));
-    }
-    jsi::Value forceRecaptchaFlowForTesting(jsi::Runtime &rt, jsi::String appName, bool forceRecaptchaFlow) override {
-      static_assert(
-          bridging::getParameterCount(&T::forceRecaptchaFlowForTesting) == 3,
-          "Expected forceRecaptchaFlowForTesting(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::forceRecaptchaFlowForTesting, jsInvoker_, instance_, std::move(appName), std::move(forceRecaptchaFlow));
-    }
-    jsi::Value setAutoRetrievedSmsCodeForPhoneNumber(jsi::Runtime &rt, jsi::String appName, jsi::String phoneNumber, jsi::String smsCode) override {
-      static_assert(
-          bridging::getParameterCount(&T::setAutoRetrievedSmsCodeForPhoneNumber) == 4,
-          "Expected setAutoRetrievedSmsCodeForPhoneNumber(...) to have 4 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setAutoRetrievedSmsCodeForPhoneNumber, jsInvoker_, instance_, std::move(appName), std::move(phoneNumber), std::move(smsCode));
-    }
-    jsi::Value setAppVerificationDisabledForTesting(jsi::Runtime &rt, jsi::String appName, bool disabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::setAppVerificationDisabledForTesting) == 3,
-          "Expected setAppVerificationDisabledForTesting(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setAppVerificationDisabledForTesting, jsInvoker_, instance_, std::move(appName), std::move(disabled));
-    }
-    jsi::Value useUserAccessGroup(jsi::Runtime &rt, jsi::String appName, jsi::String userAccessGroup) override {
-      static_assert(
-          bridging::getParameterCount(&T::useUserAccessGroup) == 3,
-          "Expected useUserAccessGroup(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::useUserAccessGroup, jsInvoker_, instance_, std::move(appName), std::move(userAccessGroup));
-    }
-    jsi::Value signOut(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::signOut) == 2,
-          "Expected signOut(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::signOut, jsInvoker_, instance_, std::move(appName));
-    }
-    jsi::Value signInAnonymously(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::signInAnonymously) == 2,
-          "Expected signInAnonymously(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::signInAnonymously, jsInvoker_, instance_, std::move(appName));
-    }
-    jsi::Value createUserWithEmailAndPassword(jsi::Runtime &rt, jsi::String appName, jsi::String email, jsi::String password) override {
-      static_assert(
-          bridging::getParameterCount(&T::createUserWithEmailAndPassword) == 4,
-          "Expected createUserWithEmailAndPassword(...) to have 4 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::createUserWithEmailAndPassword, jsInvoker_, instance_, std::move(appName), std::move(email), std::move(password));
-    }
-    bool isSignInWithEmailLink(jsi::Runtime &rt, jsi::String appName, jsi::String emailLink) override {
-      static_assert(
-          bridging::getParameterCount(&T::isSignInWithEmailLink) == 3,
-          "Expected isSignInWithEmailLink(...) to have 3 parameters");
-
-      return bridging::callFromJs<bool>(
-          rt, &T::isSignInWithEmailLink, jsInvoker_, instance_, std::move(appName), std::move(emailLink));
-    }
-    jsi::Value signInWithEmailAndPassword(jsi::Runtime &rt, jsi::String appName, jsi::String email, jsi::String password) override {
-      static_assert(
-          bridging::getParameterCount(&T::signInWithEmailAndPassword) == 4,
-          "Expected signInWithEmailAndPassword(...) to have 4 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::signInWithEmailAndPassword, jsInvoker_, instance_, std::move(appName), std::move(email), std::move(password));
-    }
-    jsi::Value signInWithEmailLink(jsi::Runtime &rt, jsi::String appName, jsi::String email, jsi::String emailLink) override {
-      static_assert(
-          bridging::getParameterCount(&T::signInWithEmailLink) == 4,
-          "Expected signInWithEmailLink(...) to have 4 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::signInWithEmailLink, jsInvoker_, instance_, std::move(appName), std::move(email), std::move(emailLink));
-    }
-    jsi::Value signInWithCustomToken(jsi::Runtime &rt, jsi::String appName, jsi::String token) override {
-      static_assert(
-          bridging::getParameterCount(&T::signInWithCustomToken) == 3,
-          "Expected signInWithCustomToken(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::signInWithCustomToken, jsInvoker_, instance_, std::move(appName), std::move(token));
-    }
-    jsi::Value revokeToken(jsi::Runtime &rt, jsi::String appName, jsi::String authorizationCode) override {
-      static_assert(
-          bridging::getParameterCount(&T::revokeToken) == 3,
-          "Expected revokeToken(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::revokeToken, jsInvoker_, instance_, std::move(appName), std::move(authorizationCode));
-    }
-    jsi::Value sendPasswordResetEmail(jsi::Runtime &rt, jsi::String appName, jsi::String email, std::optional<jsi::Object> actionCodeSettings) override {
-      static_assert(
-          bridging::getParameterCount(&T::sendPasswordResetEmail) == 4,
-          "Expected sendPasswordResetEmail(...) to have 4 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::sendPasswordResetEmail, jsInvoker_, instance_, std::move(appName), std::move(email), std::move(actionCodeSettings));
-    }
-    jsi::Value sendSignInLinkToEmail(jsi::Runtime &rt, jsi::String appName, jsi::String email, jsi::Object actionCodeSettings) override {
-      static_assert(
-          bridging::getParameterCount(&T::sendSignInLinkToEmail) == 4,
-          "Expected sendSignInLinkToEmail(...) to have 4 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::sendSignInLinkToEmail, jsInvoker_, instance_, std::move(appName), std::move(email), std::move(actionCodeSettings));
-    }
-    jsi::Value deleteUser(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::deleteUser) == 2,
-          "Expected deleteUser(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::deleteUser, jsInvoker_, instance_, std::move(appName));
-    }
-    jsi::Value reload(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::reload) == 2,
-          "Expected reload(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::reload, jsInvoker_, instance_, std::move(appName));
-    }
-    jsi::Value sendEmailVerification(jsi::Runtime &rt, jsi::String appName, std::optional<jsi::Object> actionCodeSettings) override {
-      static_assert(
-          bridging::getParameterCount(&T::sendEmailVerification) == 3,
-          "Expected sendEmailVerification(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::sendEmailVerification, jsInvoker_, instance_, std::move(appName), std::move(actionCodeSettings));
-    }
-    jsi::Value verifyBeforeUpdateEmail(jsi::Runtime &rt, jsi::String appName, jsi::String email, std::optional<jsi::Object> actionCodeSettings) override {
-      static_assert(
-          bridging::getParameterCount(&T::verifyBeforeUpdateEmail) == 4,
-          "Expected verifyBeforeUpdateEmail(...) to have 4 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::verifyBeforeUpdateEmail, jsInvoker_, instance_, std::move(appName), std::move(email), std::move(actionCodeSettings));
-    }
-    jsi::Value updateEmail(jsi::Runtime &rt, jsi::String appName, jsi::String email) override {
-      static_assert(
-          bridging::getParameterCount(&T::updateEmail) == 3,
-          "Expected updateEmail(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::updateEmail, jsInvoker_, instance_, std::move(appName), std::move(email));
-    }
-    jsi::Value updatePassword(jsi::Runtime &rt, jsi::String appName, jsi::String password) override {
-      static_assert(
-          bridging::getParameterCount(&T::updatePassword) == 3,
-          "Expected updatePassword(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::updatePassword, jsInvoker_, instance_, std::move(appName), std::move(password));
-    }
-    jsi::Value updatePhoneNumber(jsi::Runtime &rt, jsi::String appName, jsi::String provider, jsi::String authToken, jsi::String authSecret) override {
-      static_assert(
-          bridging::getParameterCount(&T::updatePhoneNumber) == 5,
-          "Expected updatePhoneNumber(...) to have 5 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::updatePhoneNumber, jsInvoker_, instance_, std::move(appName), std::move(provider), std::move(authToken), std::move(authSecret));
-    }
-    jsi::Value updateProfile(jsi::Runtime &rt, jsi::String appName, jsi::Object props) override {
-      static_assert(
-          bridging::getParameterCount(&T::updateProfile) == 3,
-          "Expected updateProfile(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::updateProfile, jsInvoker_, instance_, std::move(appName), std::move(props));
-    }
-    jsi::Value getIdToken(jsi::Runtime &rt, jsi::String appName, bool forceRefresh) override {
-      static_assert(
-          bridging::getParameterCount(&T::getIdToken) == 3,
-          "Expected getIdToken(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getIdToken, jsInvoker_, instance_, std::move(appName), std::move(forceRefresh));
-    }
-    jsi::Value getIdTokenResult(jsi::Runtime &rt, jsi::String appName, bool forceRefresh) override {
-      static_assert(
-          bridging::getParameterCount(&T::getIdTokenResult) == 3,
-          "Expected getIdTokenResult(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getIdTokenResult, jsInvoker_, instance_, std::move(appName), std::move(forceRefresh));
-    }
-    jsi::Value signInWithCredential(jsi::Runtime &rt, jsi::String appName, jsi::String provider, jsi::String authToken, jsi::String authSecret, std::optional<jsi::Object> fullName) override {
-      static_assert(
-          bridging::getParameterCount(&T::signInWithCredential) == 6,
-          "Expected signInWithCredential(...) to have 6 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::signInWithCredential, jsInvoker_, instance_, std::move(appName), std::move(provider), std::move(authToken), std::move(authSecret), std::move(fullName));
-    }
-    jsi::Value signInWithProvider(jsi::Runtime &rt, jsi::String appName, jsi::Object provider) override {
-      static_assert(
-          bridging::getParameterCount(&T::signInWithProvider) == 3,
-          "Expected signInWithProvider(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::signInWithProvider, jsInvoker_, instance_, std::move(appName), std::move(provider));
-    }
-    jsi::Value signInWithPhoneNumber(jsi::Runtime &rt, jsi::String appName, jsi::String phoneNumber, bool forceResend) override {
-      static_assert(
-          bridging::getParameterCount(&T::signInWithPhoneNumber) == 4,
-          "Expected signInWithPhoneNumber(...) to have 4 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::signInWithPhoneNumber, jsInvoker_, instance_, std::move(appName), std::move(phoneNumber), std::move(forceResend));
-    }
-    jsi::Value verifyPhoneNumberWithMultiFactorInfo(jsi::Runtime &rt, jsi::String appName, jsi::String hintUid, jsi::String sessionKey) override {
-      static_assert(
-          bridging::getParameterCount(&T::verifyPhoneNumberWithMultiFactorInfo) == 4,
-          "Expected verifyPhoneNumberWithMultiFactorInfo(...) to have 4 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::verifyPhoneNumberWithMultiFactorInfo, jsInvoker_, instance_, std::move(appName), std::move(hintUid), std::move(sessionKey));
-    }
-    jsi::Value verifyPhoneNumberForMultiFactor(jsi::Runtime &rt, jsi::String appName, jsi::String phoneNumber, jsi::String sessionKey) override {
-      static_assert(
-          bridging::getParameterCount(&T::verifyPhoneNumberForMultiFactor) == 4,
-          "Expected verifyPhoneNumberForMultiFactor(...) to have 4 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::verifyPhoneNumberForMultiFactor, jsInvoker_, instance_, std::move(appName), std::move(phoneNumber), std::move(sessionKey));
-    }
-    jsi::Value resolveMultiFactorSignIn(jsi::Runtime &rt, jsi::String appName, jsi::String session, jsi::String verificationId, jsi::String verificationCode) override {
-      static_assert(
-          bridging::getParameterCount(&T::resolveMultiFactorSignIn) == 5,
-          "Expected resolveMultiFactorSignIn(...) to have 5 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::resolveMultiFactorSignIn, jsInvoker_, instance_, std::move(appName), std::move(session), std::move(verificationId), std::move(verificationCode));
-    }
-    jsi::Value resolveTotpSignIn(jsi::Runtime &rt, jsi::String appName, jsi::String sessionKey, jsi::String uid, jsi::String oneTimePassword) override {
-      static_assert(
-          bridging::getParameterCount(&T::resolveTotpSignIn) == 5,
-          "Expected resolveTotpSignIn(...) to have 5 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::resolveTotpSignIn, jsInvoker_, instance_, std::move(appName), std::move(sessionKey), std::move(uid), std::move(oneTimePassword));
-    }
-    jsi::Value generateTotpSecret(jsi::Runtime &rt, jsi::String appName, jsi::String sessionKey) override {
-      static_assert(
-          bridging::getParameterCount(&T::generateTotpSecret) == 3,
-          "Expected generateTotpSecret(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::generateTotpSecret, jsInvoker_, instance_, std::move(appName), std::move(sessionKey));
-    }
-    jsi::String generateQrCodeUrl(jsi::Runtime &rt, jsi::String appName, jsi::String secretKey, jsi::String account, jsi::String issuer) override {
-      static_assert(
-          bridging::getParameterCount(&T::generateQrCodeUrl) == 5,
-          "Expected generateQrCodeUrl(...) to have 5 parameters");
-
-      return bridging::callFromJs<jsi::String>(
-          rt, &T::generateQrCodeUrl, jsInvoker_, instance_, std::move(appName), std::move(secretKey), std::move(account), std::move(issuer));
-    }
-    void openInOtpApp(jsi::Runtime &rt, jsi::String appName, jsi::String secretKey, jsi::String qrCodeUri) override {
-      static_assert(
-          bridging::getParameterCount(&T::openInOtpApp) == 4,
-          "Expected openInOtpApp(...) to have 4 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::openInOtpApp, jsInvoker_, instance_, std::move(appName), std::move(secretKey), std::move(qrCodeUri));
-    }
-    jsi::Value getSession(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::getSession) == 2,
-          "Expected getSession(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getSession, jsInvoker_, instance_, std::move(appName));
-    }
-    jsi::Value unenrollMultiFactor(jsi::Runtime &rt, jsi::String appName, jsi::String factorUID) override {
-      static_assert(
-          bridging::getParameterCount(&T::unenrollMultiFactor) == 3,
-          "Expected unenrollMultiFactor(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::unenrollMultiFactor, jsInvoker_, instance_, std::move(appName), std::move(factorUID));
-    }
-    jsi::Value finalizeMultiFactorEnrollment(jsi::Runtime &rt, jsi::String appName, jsi::String verificationId, jsi::String verificationCode, std::optional<jsi::String> displayName) override {
-      static_assert(
-          bridging::getParameterCount(&T::finalizeMultiFactorEnrollment) == 5,
-          "Expected finalizeMultiFactorEnrollment(...) to have 5 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::finalizeMultiFactorEnrollment, jsInvoker_, instance_, std::move(appName), std::move(verificationId), std::move(verificationCode), std::move(displayName));
-    }
-    jsi::Value finalizeTotpEnrollment(jsi::Runtime &rt, jsi::String appName, jsi::String totpSecret, jsi::String verificationCode, std::optional<jsi::String> displayName) override {
-      static_assert(
-          bridging::getParameterCount(&T::finalizeTotpEnrollment) == 5,
-          "Expected finalizeTotpEnrollment(...) to have 5 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::finalizeTotpEnrollment, jsInvoker_, instance_, std::move(appName), std::move(totpSecret), std::move(verificationCode), std::move(displayName));
-    }
-    jsi::Value confirmationResultConfirm(jsi::Runtime &rt, jsi::String appName, jsi::String verificationCode) override {
-      static_assert(
-          bridging::getParameterCount(&T::confirmationResultConfirm) == 3,
-          "Expected confirmationResultConfirm(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::confirmationResultConfirm, jsInvoker_, instance_, std::move(appName), std::move(verificationCode));
-    }
-    void verifyPhoneNumber(jsi::Runtime &rt, jsi::String appName, jsi::String phoneNumber, jsi::String requestKey, double timeout, bool forceResend) override {
-      static_assert(
-          bridging::getParameterCount(&T::verifyPhoneNumber) == 6,
-          "Expected verifyPhoneNumber(...) to have 6 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::verifyPhoneNumber, jsInvoker_, instance_, std::move(appName), std::move(phoneNumber), std::move(requestKey), std::move(timeout), std::move(forceResend));
-    }
-    jsi::Value confirmPasswordReset(jsi::Runtime &rt, jsi::String appName, jsi::String code, jsi::String newPassword) override {
-      static_assert(
-          bridging::getParameterCount(&T::confirmPasswordReset) == 4,
-          "Expected confirmPasswordReset(...) to have 4 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::confirmPasswordReset, jsInvoker_, instance_, std::move(appName), std::move(code), std::move(newPassword));
-    }
-    jsi::Value applyActionCode(jsi::Runtime &rt, jsi::String appName, jsi::String code) override {
-      static_assert(
-          bridging::getParameterCount(&T::applyActionCode) == 3,
-          "Expected applyActionCode(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::applyActionCode, jsInvoker_, instance_, std::move(appName), std::move(code));
-    }
-    jsi::Value checkActionCode(jsi::Runtime &rt, jsi::String appName, jsi::String code) override {
-      static_assert(
-          bridging::getParameterCount(&T::checkActionCode) == 3,
-          "Expected checkActionCode(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::checkActionCode, jsInvoker_, instance_, std::move(appName), std::move(code));
-    }
-    jsi::Value linkWithCredential(jsi::Runtime &rt, jsi::String appName, jsi::String provider, jsi::String authToken, jsi::String authSecret) override {
-      static_assert(
-          bridging::getParameterCount(&T::linkWithCredential) == 5,
-          "Expected linkWithCredential(...) to have 5 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::linkWithCredential, jsInvoker_, instance_, std::move(appName), std::move(provider), std::move(authToken), std::move(authSecret));
-    }
-    jsi::Value linkWithProvider(jsi::Runtime &rt, jsi::String appName, jsi::Object provider) override {
-      static_assert(
-          bridging::getParameterCount(&T::linkWithProvider) == 3,
-          "Expected linkWithProvider(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::linkWithProvider, jsInvoker_, instance_, std::move(appName), std::move(provider));
-    }
-    jsi::Value unlink(jsi::Runtime &rt, jsi::String appName, jsi::String providerId) override {
-      static_assert(
-          bridging::getParameterCount(&T::unlink) == 3,
-          "Expected unlink(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::unlink, jsInvoker_, instance_, std::move(appName), std::move(providerId));
-    }
-    jsi::Value reauthenticateWithCredential(jsi::Runtime &rt, jsi::String appName, jsi::String provider, jsi::String authToken, jsi::String authSecret) override {
-      static_assert(
-          bridging::getParameterCount(&T::reauthenticateWithCredential) == 5,
-          "Expected reauthenticateWithCredential(...) to have 5 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::reauthenticateWithCredential, jsInvoker_, instance_, std::move(appName), std::move(provider), std::move(authToken), std::move(authSecret));
-    }
-    jsi::Value reauthenticateWithProvider(jsi::Runtime &rt, jsi::String appName, jsi::Object provider) override {
-      static_assert(
-          bridging::getParameterCount(&T::reauthenticateWithProvider) == 3,
-          "Expected reauthenticateWithProvider(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::reauthenticateWithProvider, jsInvoker_, instance_, std::move(appName), std::move(provider));
-    }
-    jsi::Value fetchSignInMethodsForEmail(jsi::Runtime &rt, jsi::String appName, jsi::String email) override {
-      static_assert(
-          bridging::getParameterCount(&T::fetchSignInMethodsForEmail) == 3,
-          "Expected fetchSignInMethodsForEmail(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::fetchSignInMethodsForEmail, jsInvoker_, instance_, std::move(appName), std::move(email));
-    }
-    void setLanguageCode(jsi::Runtime &rt, jsi::String appName, std::optional<jsi::String> code) override {
-      static_assert(
-          bridging::getParameterCount(&T::setLanguageCode) == 3,
-          "Expected setLanguageCode(...) to have 3 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::setLanguageCode, jsInvoker_, instance_, std::move(appName), std::move(code));
-    }
-    jsi::Value setTenantId(jsi::Runtime &rt, jsi::String appName, std::optional<jsi::String> tenantId) override {
-      static_assert(
-          bridging::getParameterCount(&T::setTenantId) == 3,
-          "Expected setTenantId(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setTenantId, jsInvoker_, instance_, std::move(appName), std::move(tenantId));
-    }
-    void useDeviceLanguage(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::useDeviceLanguage) == 2,
-          "Expected useDeviceLanguage(...) to have 2 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::useDeviceLanguage, jsInvoker_, instance_, std::move(appName));
-    }
-    jsi::Value verifyPasswordResetCode(jsi::Runtime &rt, jsi::String appName, jsi::String code) override {
-      static_assert(
-          bridging::getParameterCount(&T::verifyPasswordResetCode) == 3,
-          "Expected verifyPasswordResetCode(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::verifyPasswordResetCode, jsInvoker_, instance_, std::move(appName), std::move(code));
-    }
-    void useEmulator(jsi::Runtime &rt, jsi::String appName, jsi::String host, double port) override {
-      static_assert(
-          bridging::getParameterCount(&T::useEmulator) == 4,
-          "Expected useEmulator(...) to have 4 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::useEmulator, jsInvoker_, instance_, std::move(appName), std::move(host), std::move(port));
-    }
-
-  private:
-    friend class NativeRNFBTurboAuthCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getConstants) == 1,
+      "Expected getConstants(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Object>(rt, &T::getConstants,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
+
+  static jsi::Value __configureAuthDomain(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::configureAuthDomain) == 2,
+      "Expected configureAuthDomain(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::configureAuthDomain,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));return jsi::Value::undefined();
+  }
+
+  static jsi::Value __getCustomAuthDomain(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getCustomAuthDomain) == 2,
+      "Expected getCustomAuthDomain(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getCustomAuthDomain,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
+
+  static jsi::Value __addAuthStateListener(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::addAuthStateListener) == 2,
+      "Expected addAuthStateListener(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::addAuthStateListener,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));return jsi::Value::undefined();
+  }
+
+  static jsi::Value __removeAuthStateListener(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::removeAuthStateListener) == 2,
+      "Expected removeAuthStateListener(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::removeAuthStateListener,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));return jsi::Value::undefined();
+  }
+
+  static jsi::Value __addIdTokenListener(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::addIdTokenListener) == 2,
+      "Expected addIdTokenListener(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::addIdTokenListener,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));return jsi::Value::undefined();
+  }
+
+  static jsi::Value __removeIdTokenListener(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::removeIdTokenListener) == 2,
+      "Expected removeIdTokenListener(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::removeIdTokenListener,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));return jsi::Value::undefined();
+  }
+
+  static jsi::Value __forceRecaptchaFlowForTesting(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::forceRecaptchaFlowForTesting) == 3,
+      "Expected forceRecaptchaFlowForTesting(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::forceRecaptchaFlowForTesting,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asBool());
+  }
+
+  static jsi::Value __setAutoRetrievedSmsCodeForPhoneNumber(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setAutoRetrievedSmsCodeForPhoneNumber) == 4,
+      "Expected setAutoRetrievedSmsCodeForPhoneNumber(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setAutoRetrievedSmsCodeForPhoneNumber,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt));
+  }
+
+  static jsi::Value __setAppVerificationDisabledForTesting(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setAppVerificationDisabledForTesting) == 3,
+      "Expected setAppVerificationDisabledForTesting(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setAppVerificationDisabledForTesting,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asBool());
+  }
+
+  static jsi::Value __useUserAccessGroup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::useUserAccessGroup) == 3,
+      "Expected useUserAccessGroup(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::useUserAccessGroup,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __signOut(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::signOut) == 2,
+      "Expected signOut(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::signOut,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
+
+  static jsi::Value __signInAnonymously(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::signInAnonymously) == 2,
+      "Expected signInAnonymously(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::signInAnonymously,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
+
+  static jsi::Value __createUserWithEmailAndPassword(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::createUserWithEmailAndPassword) == 4,
+      "Expected createUserWithEmailAndPassword(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::createUserWithEmailAndPassword,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt));
+  }
+
+  static jsi::Value __isSignInWithEmailLink(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::isSignInWithEmailLink) == 3,
+      "Expected isSignInWithEmailLink(...) to have 3 parameters");
+    return bridging::callFromJs<bool>(rt, &T::isSignInWithEmailLink,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __signInWithEmailAndPassword(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::signInWithEmailAndPassword) == 4,
+      "Expected signInWithEmailAndPassword(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::signInWithEmailAndPassword,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt));
+  }
+
+  static jsi::Value __signInWithEmailLink(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::signInWithEmailLink) == 4,
+      "Expected signInWithEmailLink(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::signInWithEmailLink,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt));
+  }
+
+  static jsi::Value __signInWithCustomToken(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::signInWithCustomToken) == 3,
+      "Expected signInWithCustomToken(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::signInWithCustomToken,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __revokeToken(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::revokeToken) == 3,
+      "Expected revokeToken(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::revokeToken,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __sendPasswordResetEmail(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::sendPasswordResetEmail) == 4,
+      "Expected sendPasswordResetEmail(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::sendPasswordResetEmail,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asObject(rt)));
+  }
+
+  static jsi::Value __sendSignInLinkToEmail(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::sendSignInLinkToEmail) == 4,
+      "Expected sendSignInLinkToEmail(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::sendSignInLinkToEmail,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asObject(rt));
+  }
+
+  static jsi::Value __deleteUser(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::deleteUser) == 2,
+      "Expected deleteUser(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::deleteUser,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
+
+  static jsi::Value __reload(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::reload) == 2,
+      "Expected reload(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::reload,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
+
+  static jsi::Value __sendEmailVerification(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::sendEmailVerification) == 3,
+      "Expected sendEmailVerification(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::sendEmailVerification,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 || args[1].isNull() || args[1].isUndefined() ? std::nullopt : std::make_optional(args[1].asObject(rt)));
+  }
+
+  static jsi::Value __verifyBeforeUpdateEmail(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::verifyBeforeUpdateEmail) == 4,
+      "Expected verifyBeforeUpdateEmail(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::verifyBeforeUpdateEmail,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asObject(rt)));
+  }
+
+  static jsi::Value __updateEmail(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::updateEmail) == 3,
+      "Expected updateEmail(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::updateEmail,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __updatePassword(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::updatePassword) == 3,
+      "Expected updatePassword(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::updatePassword,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __updatePhoneNumber(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::updatePhoneNumber) == 5,
+      "Expected updatePhoneNumber(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::updatePhoneNumber,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asString(rt));
+  }
+
+  static jsi::Value __updateProfile(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::updateProfile) == 3,
+      "Expected updateProfile(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::updateProfile,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt));
+  }
+
+  static jsi::Value __getIdToken(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getIdToken) == 3,
+      "Expected getIdToken(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getIdToken,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asBool());
+  }
+
+  static jsi::Value __getIdTokenResult(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getIdTokenResult) == 3,
+      "Expected getIdTokenResult(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getIdTokenResult,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asBool());
+  }
+
+  static jsi::Value __signInWithCredential(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::signInWithCredential) == 6,
+      "Expected signInWithCredential(...) to have 6 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::signInWithCredential,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asString(rt),
+      count <= 4 || args[4].isNull() || args[4].isUndefined() ? std::nullopt : std::make_optional(args[4].asObject(rt)));
+  }
+
+  static jsi::Value __signInWithProvider(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::signInWithProvider) == 3,
+      "Expected signInWithProvider(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::signInWithProvider,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt));
+  }
+
+  static jsi::Value __signInWithPhoneNumber(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::signInWithPhoneNumber) == 4,
+      "Expected signInWithPhoneNumber(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::signInWithPhoneNumber,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asBool());
+  }
+
+  static jsi::Value __verifyPhoneNumberWithMultiFactorInfo(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::verifyPhoneNumberWithMultiFactorInfo) == 4,
+      "Expected verifyPhoneNumberWithMultiFactorInfo(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::verifyPhoneNumberWithMultiFactorInfo,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt));
+  }
+
+  static jsi::Value __verifyPhoneNumberForMultiFactor(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::verifyPhoneNumberForMultiFactor) == 4,
+      "Expected verifyPhoneNumberForMultiFactor(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::verifyPhoneNumberForMultiFactor,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt));
+  }
+
+  static jsi::Value __resolveMultiFactorSignIn(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::resolveMultiFactorSignIn) == 5,
+      "Expected resolveMultiFactorSignIn(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::resolveMultiFactorSignIn,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asString(rt));
+  }
+
+  static jsi::Value __resolveTotpSignIn(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::resolveTotpSignIn) == 5,
+      "Expected resolveTotpSignIn(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::resolveTotpSignIn,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asString(rt));
+  }
+
+  static jsi::Value __generateTotpSecret(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::generateTotpSecret) == 3,
+      "Expected generateTotpSecret(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::generateTotpSecret,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __generateQrCodeUrl(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::generateQrCodeUrl) == 5,
+      "Expected generateQrCodeUrl(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::String>(rt, &T::generateQrCodeUrl,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asString(rt));
+  }
+
+  static jsi::Value __openInOtpApp(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::openInOtpApp) == 4,
+      "Expected openInOtpApp(...) to have 4 parameters");
+    bridging::callFromJs<void>(rt, &T::openInOtpApp,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt));return jsi::Value::undefined();
+  }
+
+  static jsi::Value __getSession(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getSession) == 2,
+      "Expected getSession(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getSession,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
+
+  static jsi::Value __unenrollMultiFactor(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::unenrollMultiFactor) == 3,
+      "Expected unenrollMultiFactor(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::unenrollMultiFactor,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __finalizeMultiFactorEnrollment(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::finalizeMultiFactorEnrollment) == 5,
+      "Expected finalizeMultiFactorEnrollment(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::finalizeMultiFactorEnrollment,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 || args[3].isNull() || args[3].isUndefined() ? std::nullopt : std::make_optional(args[3].asString(rt)));
+  }
+
+  static jsi::Value __finalizeTotpEnrollment(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::finalizeTotpEnrollment) == 5,
+      "Expected finalizeTotpEnrollment(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::finalizeTotpEnrollment,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 || args[3].isNull() || args[3].isUndefined() ? std::nullopt : std::make_optional(args[3].asString(rt)));
+  }
+
+  static jsi::Value __confirmationResultConfirm(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::confirmationResultConfirm) == 3,
+      "Expected confirmationResultConfirm(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::confirmationResultConfirm,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __verifyPhoneNumber(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::verifyPhoneNumber) == 6,
+      "Expected verifyPhoneNumber(...) to have 6 parameters");
+    bridging::callFromJs<void>(rt, &T::verifyPhoneNumber,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asNumber(),
+      count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asBool());return jsi::Value::undefined();
+  }
+
+  static jsi::Value __confirmPasswordReset(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::confirmPasswordReset) == 4,
+      "Expected confirmPasswordReset(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::confirmPasswordReset,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt));
+  }
+
+  static jsi::Value __applyActionCode(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::applyActionCode) == 3,
+      "Expected applyActionCode(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::applyActionCode,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __checkActionCode(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::checkActionCode) == 3,
+      "Expected checkActionCode(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::checkActionCode,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __linkWithCredential(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::linkWithCredential) == 5,
+      "Expected linkWithCredential(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::linkWithCredential,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asString(rt));
+  }
+
+  static jsi::Value __linkWithProvider(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::linkWithProvider) == 3,
+      "Expected linkWithProvider(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::linkWithProvider,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt));
+  }
+
+  static jsi::Value __unlink(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::unlink) == 3,
+      "Expected unlink(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::unlink,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __reauthenticateWithCredential(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::reauthenticateWithCredential) == 5,
+      "Expected reauthenticateWithCredential(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::reauthenticateWithCredential,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asString(rt));
+  }
+
+  static jsi::Value __reauthenticateWithProvider(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::reauthenticateWithProvider) == 3,
+      "Expected reauthenticateWithProvider(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::reauthenticateWithProvider,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt));
+  }
+
+  static jsi::Value __fetchSignInMethodsForEmail(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::fetchSignInMethodsForEmail) == 3,
+      "Expected fetchSignInMethodsForEmail(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::fetchSignInMethodsForEmail,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __setLanguageCode(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setLanguageCode) == 3,
+      "Expected setLanguageCode(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::setLanguageCode,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 || args[1].isNull() || args[1].isUndefined() ? std::nullopt : std::make_optional(args[1].asString(rt)));return jsi::Value::undefined();
+  }
+
+  static jsi::Value __setTenantId(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setTenantId) == 3,
+      "Expected setTenantId(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setTenantId,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 || args[1].isNull() || args[1].isUndefined() ? std::nullopt : std::make_optional(args[1].asString(rt)));
+  }
+
+  static jsi::Value __useDeviceLanguage(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::useDeviceLanguage) == 2,
+      "Expected useDeviceLanguage(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::useDeviceLanguage,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));return jsi::Value::undefined();
+  }
+
+  static jsi::Value __verifyPasswordResetCode(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::verifyPasswordResetCode) == 3,
+      "Expected verifyPasswordResetCode(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::verifyPasswordResetCode,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __useEmulator(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::useEmulator) == 4,
+      "Expected useEmulator(...) to have 4 parameters");
+    bridging::callFromJs<void>(rt, &T::useEmulator,  static_cast<NativeRNFBTurboAuthCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asNumber());return jsi::Value::undefined();
+  }
 };
 
 } // namespace facebook::react

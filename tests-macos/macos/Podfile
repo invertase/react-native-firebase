@@ -1,0 +1,32 @@
+require_relative '../node_modules/react-native-macos/scripts/react_native_pods'
+# require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+prepare_react_native_project!
+
+# The "Other" platform react-native-macos tests is non-native, so
+# new arch changes should not affect it. Test it specifically with
+# old architecture (until that goes away completely) to make sure
+# we work with no react-native-firebase native modules
+ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+
+target 'io.invertase.testing-macOS' do
+  platform :macos, '11.0'
+  # use_native_modules!
+
+  # Flags change depending on the env values.
+  flags = get_default_flags()
+
+  use_react_native!(
+    :path => '../node_modules/react-native-macos',
+    :hermes_enabled => false,
+    :fabric_enabled => ENV['RCT_NEW_ARCH_ENABLED'] == '1',
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
+
+  post_install do |installer|
+    react_native_post_install(installer)
+  end
+end

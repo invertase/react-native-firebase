@@ -15,7 +15,6 @@
 namespace facebook::react {
 
 
-  
 #pragma mark - NativeRNFBTurboAppCheckAppCheckTokenResult
 
 template <typename P0>
@@ -55,120 +54,94 @@ struct NativeRNFBTurboAppCheckAppCheckTokenResultBridging {
   }
 };
 
-class JSI_EXPORT NativeRNFBTurboAppCheckCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboAppCheckCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Value activate(jsi::Runtime &rt, jsi::String appName, jsi::String siteKeyProvider, bool isTokenAutoRefreshEnabled) = 0;
-  virtual jsi::Value configureProvider(jsi::Runtime &rt, jsi::String appName, jsi::String providerName, std::optional<jsi::String> debugToken) = 0;
-  virtual void setTokenAutoRefreshEnabled(jsi::Runtime &rt, jsi::String appName, bool isTokenAutoRefreshEnabled) = 0;
-  virtual jsi::Value isTokenAutoRefreshEnabled(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual jsi::Value getToken(jsi::Runtime &rt, jsi::String appName, bool forceRefresh) = 0;
-  virtual jsi::Value getLimitedUseToken(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual void addAppCheckListener(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual void removeAppCheckListener(jsi::Runtime &rt, jsi::String appName) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboAppCheckCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboAppCheck";
 
 protected:
-  NativeRNFBTurboAppCheckCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboAppCheckCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboAppCheckCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboAppCheckCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["activate"] = MethodMetadata {.argCount = 3, .invoker = __activate};
+    methodMap_["configureProvider"] = MethodMetadata {.argCount = 3, .invoker = __configureProvider};
+    methodMap_["setTokenAutoRefreshEnabled"] = MethodMetadata {.argCount = 2, .invoker = __setTokenAutoRefreshEnabled};
+    methodMap_["isTokenAutoRefreshEnabled"] = MethodMetadata {.argCount = 1, .invoker = __isTokenAutoRefreshEnabled};
+    methodMap_["getToken"] = MethodMetadata {.argCount = 2, .invoker = __getToken};
+    methodMap_["getLimitedUseToken"] = MethodMetadata {.argCount = 1, .invoker = __getLimitedUseToken};
+    methodMap_["addAppCheckListener"] = MethodMetadata {.argCount = 1, .invoker = __addAppCheckListener};
+    methodMap_["removeAppCheckListener"] = MethodMetadata {.argCount = 1, .invoker = __removeAppCheckListener};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboAppCheckCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboAppCheckCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __activate(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::activate) == 4,
+      "Expected activate(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::activate,  static_cast<NativeRNFBTurboAppCheckCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asBool());
+  }
 
-    }
+  static jsi::Value __configureProvider(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::configureProvider) == 4,
+      "Expected configureProvider(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::configureProvider,  static_cast<NativeRNFBTurboAppCheckCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asString(rt)));
+  }
 
-    jsi::Value activate(jsi::Runtime &rt, jsi::String appName, jsi::String siteKeyProvider, bool isTokenAutoRefreshEnabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::activate) == 4,
-          "Expected activate(...) to have 4 parameters");
+  static jsi::Value __setTokenAutoRefreshEnabled(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setTokenAutoRefreshEnabled) == 3,
+      "Expected setTokenAutoRefreshEnabled(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::setTokenAutoRefreshEnabled,  static_cast<NativeRNFBTurboAppCheckCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asBool());return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::activate, jsInvoker_, instance_, std::move(appName), std::move(siteKeyProvider), std::move(isTokenAutoRefreshEnabled));
-    }
-    jsi::Value configureProvider(jsi::Runtime &rt, jsi::String appName, jsi::String providerName, std::optional<jsi::String> debugToken) override {
-      static_assert(
-          bridging::getParameterCount(&T::configureProvider) == 4,
-          "Expected configureProvider(...) to have 4 parameters");
+  static jsi::Value __isTokenAutoRefreshEnabled(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::isTokenAutoRefreshEnabled) == 2,
+      "Expected isTokenAutoRefreshEnabled(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::isTokenAutoRefreshEnabled,  static_cast<NativeRNFBTurboAppCheckCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::configureProvider, jsInvoker_, instance_, std::move(appName), std::move(providerName), std::move(debugToken));
-    }
-    void setTokenAutoRefreshEnabled(jsi::Runtime &rt, jsi::String appName, bool isTokenAutoRefreshEnabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::setTokenAutoRefreshEnabled) == 3,
-          "Expected setTokenAutoRefreshEnabled(...) to have 3 parameters");
+  static jsi::Value __getToken(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getToken) == 3,
+      "Expected getToken(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getToken,  static_cast<NativeRNFBTurboAppCheckCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asBool());
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::setTokenAutoRefreshEnabled, jsInvoker_, instance_, std::move(appName), std::move(isTokenAutoRefreshEnabled));
-    }
-    jsi::Value isTokenAutoRefreshEnabled(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::isTokenAutoRefreshEnabled) == 2,
-          "Expected isTokenAutoRefreshEnabled(...) to have 2 parameters");
+  static jsi::Value __getLimitedUseToken(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getLimitedUseToken) == 2,
+      "Expected getLimitedUseToken(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getLimitedUseToken,  static_cast<NativeRNFBTurboAppCheckCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::isTokenAutoRefreshEnabled, jsInvoker_, instance_, std::move(appName));
-    }
-    jsi::Value getToken(jsi::Runtime &rt, jsi::String appName, bool forceRefresh) override {
-      static_assert(
-          bridging::getParameterCount(&T::getToken) == 3,
-          "Expected getToken(...) to have 3 parameters");
+  static jsi::Value __addAppCheckListener(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::addAppCheckListener) == 2,
+      "Expected addAppCheckListener(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::addAppCheckListener,  static_cast<NativeRNFBTurboAppCheckCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getToken, jsInvoker_, instance_, std::move(appName), std::move(forceRefresh));
-    }
-    jsi::Value getLimitedUseToken(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::getLimitedUseToken) == 2,
-          "Expected getLimitedUseToken(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getLimitedUseToken, jsInvoker_, instance_, std::move(appName));
-    }
-    void addAppCheckListener(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::addAppCheckListener) == 2,
-          "Expected addAppCheckListener(...) to have 2 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::addAppCheckListener, jsInvoker_, instance_, std::move(appName));
-    }
-    void removeAppCheckListener(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::removeAppCheckListener) == 2,
-          "Expected removeAppCheckListener(...) to have 2 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::removeAppCheckListener, jsInvoker_, instance_, std::move(appName));
-    }
-
-  private:
-    friend class NativeRNFBTurboAppCheckCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __removeAppCheckListener(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::removeAppCheckListener) == 2,
+      "Expected removeAppCheckListener(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::removeAppCheckListener,  static_cast<NativeRNFBTurboAppCheckCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));return jsi::Value::undefined();
+  }
 };
 
 } // namespace facebook::react

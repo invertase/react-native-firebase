@@ -35,6 +35,13 @@ min_ios_version_supported = 15.1
 # We need new arch support in the iOS test runner now
 ENV['RCT_NEW_ARCH_ENABLED'] = '1'
 
+# RN 0.86+ defaults RCT_USE_PREBUILT_RNCORE / RCT_USE_RN_DEP to 1 inside use_react_native!.
+# Prebuilt React.xcframework does not satisfy link deps for third-party *dynamic* pods
+# (RNDeviceInfo, RNAppleAuthentication → undefined RCTEventEmitter). Keep SPM+dynamic
+# linkage for Firebase, but build RN core/deps from source for the mobile e2e app.
+ENV['RCT_USE_PREBUILT_RNCORE'] = '0'
+ENV['RCT_USE_RN_DEP'] = '0'
+
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(

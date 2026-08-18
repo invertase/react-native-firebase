@@ -27,8 +27,8 @@
     "compile": "bob build",
     "prepare": "yarn run build && yarn compile && yarn run build:plugin",
     "codegen": "yarn android:codegen && yarn ios:codegen",
-    "android:codegen": "rimraf android/src/main/java/io/invertase/firebase/appcheck/generated && npx @react-native-community/cli codegen --platform android --outputPath=./android/src/main/java/io/invertase/firebase/appcheck/generated",
-    "ios:codegen": "rimraf ios/generated && npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
+    "android:codegen": "node ../../scripts/codegen-package.mjs app-check android",
+    "ios:codegen": "node ../../scripts/codegen-package.mjs app-check ios"
   },
   "repository": {
     "type": "git",

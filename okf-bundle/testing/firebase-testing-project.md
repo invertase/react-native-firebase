@@ -222,7 +222,7 @@ Firebase CLI must be authenticated for `react-native-firebase-testing`. Scripts 
 |---------|----------|
 | JS `firebase-tools` | Repo root `package.json`, `tests/package.json`, `.github/workflows/scripts/functions/package.json` — run `yarn` at repo root and `yarn` in `functions/` |
 | JS Firebase SDK (compare-types) | Repo root `firebase` dependency — [`.github/scripts/compare-types/`](../../.github/scripts/compare-types/) does **not** declare `firebase-tools`; it uses root `node_modules/firebase` for SDK types only |
-| Native test apps | `tests/android/build.gradle`, `tests/android/app/build.gradle`, `tests/ios/Podfile`, `tests/macos/Podfile` |
+| Native test apps | `tests/android/build.gradle`, `tests/android/app/build.gradle`, `tests/ios/Podfile`, `tests-macos/macos/Podfile` |
 
 Verify CLI: `node_modules/.bin/firebase --version`.
 

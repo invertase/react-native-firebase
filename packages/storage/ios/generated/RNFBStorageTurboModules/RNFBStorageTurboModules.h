@@ -148,8 +148,8 @@ namespace JS {
 - (NSNumber *)setTaskStatus:(NSString *)appName
                      taskId:(double)taskId
                      status:(double)status;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants>)getConstants;
 
 @end
 

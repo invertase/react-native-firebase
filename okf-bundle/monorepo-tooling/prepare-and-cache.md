@@ -103,15 +103,18 @@ Add `nx.json`; keep the `yarn lerna:prepare` entrypoint name, with `NX_NO_CLOUD`
 
 ### `patch-package` prepare must not be Nx-cached
 
-Most packages' `prepare` is bob transpile (`lib/**` → `dist/**`) and is correctly cached under [MonoTool-AD-11](architecture-decisions.md#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted). The **tests** workspace is different: its `prepare` script is **`patch-package`**, which mutates `tests/node_modules/**` (including React Native's `fmt.podspec` via `tests/patches/react-native+0.78.3.patch`).
+Most packages' `prepare` is bob transpile (`lib/**` → `dist/**`) and is correctly cached under [MonoTool-AD-11](architecture-decisions.md#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted). The **tests** and **tests-macos** workspaces are different: their `prepare` script is **`patch-package`**, which mutates that app's `node_modules/**`.
 
-That target must set **`"cache": false`** on the project-level Nx `prepare` override. Reasons:
+- **`tests/`** (mobile RN **0.86.2**): still runs `patch-package` for non-fmt patches (e.g. `@firebase+rules-unit-testing`). Mobile RN ships fmt **12.1.0** upstream; there is **no** `tests/patches/react-native+*.patch` fmt bump.
+- **`tests-macos/`** (RN **0.78.3** + `react-native-macos@0.78.6`): applies [`tests-macos/patches/react-native+0.78.3.patch`](../../tests-macos/patches/react-native+0.78.3.patch) (fmt **12.1.0**) and the macos patch.
 
-1. **Inputs ≠ side effects.** For tests, the `jsSource` prepare hash **is** stable across yarn re-links (no `lib/**` to change), so re-link does not invalidate prepare and a warm Nx cache always reports a hit — that was the bug.
-2. **Yarn re-link resets the mutation.** Root `yarn` re-links packages to unpatched content, then `lerna:prepare` runs. If Nx skips `tests:prepare`, patches are never re-applied.
+Those targets must set **`"cache": false`** on the project-level Nx `prepare` override. Reasons:
+
+1. **Inputs ≠ side effects.** For the e2e apps, the `jsSource` prepare hash **is** stable across yarn re-links (no `lib/**` to change), so re-link does not invalidate prepare and a warm Nx cache always reports a hit — that was the bug.
+2. **Yarn re-link resets the mutation.** Root `yarn` re-links packages to unpatched content, then `lerna:prepare` runs. If Nx skips `tests:prepare` / `tests-macos:prepare`, patches are never re-applied.
 3. **Adding `patches/**` to inputs is not enough.** After a re-link the patch files are unchanged → still a cache hit → still skipped.
 
-Root `prepare` is also `patch-package`, but it runs via Yarn (`postinstallDev` → `yarn prepare`) outside Nx, so only `tests` needs the override. Agent verification of fmt after install remains mandatory: [install / patch / fmt gate](../testing/agent-command-policy.md#install-patch-fmt-gate-blocking).
+Root `prepare` is also `patch-package`, but it runs via Yarn (`postinstallDev` → `yarn prepare`) outside Nx, so only the e2e app workspaces need the override. Agent verification of fmt after install remains mandatory: [install / patch / fmt gate](../testing/agent-command-policy.md#install-patch-fmt-gate-blocking).
 
 ### Generated-file outputs (cache correctness)
 

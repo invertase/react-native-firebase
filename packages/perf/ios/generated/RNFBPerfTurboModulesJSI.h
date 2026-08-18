@@ -15,15 +15,14 @@
 namespace facebook::react {
 
 
-  
 #pragma mark - NativeRNFBTurboPerfHttpMetricData
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct NativeRNFBTurboPerfHttpMetricData {
-  P0 attributes;
-  P1 httpResponseCode;
-  P2 requestPayloadSize;
-  P3 responsePayloadSize;
+  P0 attributes{};
+  P1 httpResponseCode{};
+  P2 requestPayloadSize{};
+  P3 responsePayloadSize{};
   P4 responseContentType;
   bool operator==(const NativeRNFBTurboPerfHttpMetricData &other) const {
     return attributes == other.attributes && httpResponseCode == other.httpResponseCode && requestPayloadSize == other.requestPayloadSize && responsePayloadSize == other.responsePayloadSize && responseContentType == other.responseContentType;
@@ -51,19 +50,15 @@ struct NativeRNFBTurboPerfHttpMetricDataBridging {
   static jsi::Object attributesToJs(jsi::Runtime &rt, decltype(types.attributes) value) {
     return bridging::toJs(rt, value);
   }
-
   static double httpResponseCodeToJs(jsi::Runtime &rt, decltype(types.httpResponseCode) value) {
     return bridging::toJs(rt, value);
   }
-
   static double requestPayloadSizeToJs(jsi::Runtime &rt, decltype(types.requestPayloadSize) value) {
     return bridging::toJs(rt, value);
   }
-
   static double responsePayloadSizeToJs(jsi::Runtime &rt, decltype(types.responsePayloadSize) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::String responseContentTypeToJs(jsi::Runtime &rt, decltype(types.responseContentType) value) {
     return bridging::toJs(rt, value);
   }
@@ -97,7 +92,7 @@ struct NativeRNFBTurboPerfHttpMetricDataBridging {
 
 template <typename P0, typename P1>
 struct NativeRNFBTurboPerfTraceData {
-  P0 metrics;
+  P0 metrics{};
   P1 attributes;
   bool operator==(const NativeRNFBTurboPerfTraceData &other) const {
     return metrics == other.metrics && attributes == other.attributes;
@@ -122,7 +117,6 @@ struct NativeRNFBTurboPerfTraceDataBridging {
   static jsi::Object metricsToJs(jsi::Runtime &rt, decltype(types.metrics) value) {
     return bridging::toJs(rt, value);
   }
-
   static jsi::Object attributesToJs(jsi::Runtime &rt, decltype(types.attributes) value) {
     return bridging::toJs(rt, value);
   }
@@ -139,129 +133,102 @@ struct NativeRNFBTurboPerfTraceDataBridging {
   }
 };
 
-class JSI_EXPORT NativeRNFBTurboPerfCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboPerfCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
-  virtual jsi::Value setPerformanceCollectionEnabled(jsi::Runtime &rt, bool enabled) = 0;
-  virtual jsi::Value instrumentationEnabled(jsi::Runtime &rt, bool enabled) = 0;
-  virtual void startTrace(jsi::Runtime &rt, double id, jsi::String identifier) = 0;
-  virtual void stopTrace(jsi::Runtime &rt, double id, jsi::Object traceData) = 0;
-  virtual void startScreenTrace(jsi::Runtime &rt, double id, jsi::String identifier) = 0;
-  virtual void stopScreenTrace(jsi::Runtime &rt, double id) = 0;
-  virtual void startHttpMetric(jsi::Runtime &rt, double id, jsi::String url, jsi::String httpMethod) = 0;
-  virtual void stopHttpMetric(jsi::Runtime &rt, double id, jsi::Object metricData) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboPerfCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboPerf";
 
 protected:
-  NativeRNFBTurboPerfCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboPerfCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboPerfCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboPerfCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["getConstants"] = MethodMetadata {.argCount = 0, .invoker = __getConstants};
+    methodMap_["setPerformanceCollectionEnabled"] = MethodMetadata {.argCount = 1, .invoker = __setPerformanceCollectionEnabled};
+    methodMap_["instrumentationEnabled"] = MethodMetadata {.argCount = 1, .invoker = __instrumentationEnabled};
+    methodMap_["startTrace"] = MethodMetadata {.argCount = 2, .invoker = __startTrace};
+    methodMap_["stopTrace"] = MethodMetadata {.argCount = 2, .invoker = __stopTrace};
+    methodMap_["startScreenTrace"] = MethodMetadata {.argCount = 2, .invoker = __startScreenTrace};
+    methodMap_["stopScreenTrace"] = MethodMetadata {.argCount = 1, .invoker = __stopScreenTrace};
+    methodMap_["startHttpMetric"] = MethodMetadata {.argCount = 3, .invoker = __startHttpMetric};
+    methodMap_["stopHttpMetric"] = MethodMetadata {.argCount = 2, .invoker = __stopHttpMetric};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboPerfCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboPerfCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getConstants) == 1,
+      "Expected getConstants(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Object>(rt, &T::getConstants,  static_cast<NativeRNFBTurboPerfCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-    }
+  static jsi::Value __setPerformanceCollectionEnabled(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setPerformanceCollectionEnabled) == 2,
+      "Expected setPerformanceCollectionEnabled(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setPerformanceCollectionEnabled,  static_cast<NativeRNFBTurboPerfCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asBool());
+  }
 
-    jsi::Object getConstants(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getConstants) == 1,
-          "Expected getConstants(...) to have 1 parameters");
+  static jsi::Value __instrumentationEnabled(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::instrumentationEnabled) == 2,
+      "Expected instrumentationEnabled(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::instrumentationEnabled,  static_cast<NativeRNFBTurboPerfCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asBool());
+  }
 
-      return bridging::callFromJs<jsi::Object>(
-          rt, &T::getConstants, jsInvoker_, instance_);
-    }
-    jsi::Value setPerformanceCollectionEnabled(jsi::Runtime &rt, bool enabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::setPerformanceCollectionEnabled) == 2,
-          "Expected setPerformanceCollectionEnabled(...) to have 2 parameters");
+  static jsi::Value __startTrace(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::startTrace) == 3,
+      "Expected startTrace(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::startTrace,  static_cast<NativeRNFBTurboPerfCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber(),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setPerformanceCollectionEnabled, jsInvoker_, instance_, std::move(enabled));
-    }
-    jsi::Value instrumentationEnabled(jsi::Runtime &rt, bool enabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::instrumentationEnabled) == 2,
-          "Expected instrumentationEnabled(...) to have 2 parameters");
+  static jsi::Value __stopTrace(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::stopTrace) == 3,
+      "Expected stopTrace(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::stopTrace,  static_cast<NativeRNFBTurboPerfCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber(),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::instrumentationEnabled, jsInvoker_, instance_, std::move(enabled));
-    }
-    void startTrace(jsi::Runtime &rt, double id, jsi::String identifier) override {
-      static_assert(
-          bridging::getParameterCount(&T::startTrace) == 3,
-          "Expected startTrace(...) to have 3 parameters");
+  static jsi::Value __startScreenTrace(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::startScreenTrace) == 3,
+      "Expected startScreenTrace(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::startScreenTrace,  static_cast<NativeRNFBTurboPerfCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber(),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::startTrace, jsInvoker_, instance_, std::move(id), std::move(identifier));
-    }
-    void stopTrace(jsi::Runtime &rt, double id, jsi::Object traceData) override {
-      static_assert(
-          bridging::getParameterCount(&T::stopTrace) == 3,
-          "Expected stopTrace(...) to have 3 parameters");
+  static jsi::Value __stopScreenTrace(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::stopScreenTrace) == 2,
+      "Expected stopScreenTrace(...) to have 2 parameters");
+    bridging::callFromJs<void>(rt, &T::stopScreenTrace,  static_cast<NativeRNFBTurboPerfCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber());return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::stopTrace, jsInvoker_, instance_, std::move(id), std::move(traceData));
-    }
-    void startScreenTrace(jsi::Runtime &rt, double id, jsi::String identifier) override {
-      static_assert(
-          bridging::getParameterCount(&T::startScreenTrace) == 3,
-          "Expected startScreenTrace(...) to have 3 parameters");
+  static jsi::Value __startHttpMetric(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::startHttpMetric) == 4,
+      "Expected startHttpMetric(...) to have 4 parameters");
+    bridging::callFromJs<void>(rt, &T::startHttpMetric,  static_cast<NativeRNFBTurboPerfCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber(),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::startScreenTrace, jsInvoker_, instance_, std::move(id), std::move(identifier));
-    }
-    void stopScreenTrace(jsi::Runtime &rt, double id) override {
-      static_assert(
-          bridging::getParameterCount(&T::stopScreenTrace) == 2,
-          "Expected stopScreenTrace(...) to have 2 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::stopScreenTrace, jsInvoker_, instance_, std::move(id));
-    }
-    void startHttpMetric(jsi::Runtime &rt, double id, jsi::String url, jsi::String httpMethod) override {
-      static_assert(
-          bridging::getParameterCount(&T::startHttpMetric) == 4,
-          "Expected startHttpMetric(...) to have 4 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::startHttpMetric, jsInvoker_, instance_, std::move(id), std::move(url), std::move(httpMethod));
-    }
-    void stopHttpMetric(jsi::Runtime &rt, double id, jsi::Object metricData) override {
-      static_assert(
-          bridging::getParameterCount(&T::stopHttpMetric) == 3,
-          "Expected stopHttpMetric(...) to have 3 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::stopHttpMetric, jsInvoker_, instance_, std::move(id), std::move(metricData));
-    }
-
-  private:
-    friend class NativeRNFBTurboPerfCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __stopHttpMetric(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::stopHttpMetric) == 3,
+      "Expected stopHttpMetric(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::stopHttpMetric,  static_cast<NativeRNFBTurboPerfCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber(),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt));return jsi::Value::undefined();
+  }
 };
 
 } // namespace facebook::react

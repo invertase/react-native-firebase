@@ -22,8 +22,8 @@
   },
   "scripts": {
     "codegen": "yarn android:codegen && yarn ios:codegen",
-    "android:codegen": "rimraf android/src/reactnative/java/io/invertase/firebase/app/generated && npx @react-native-community/cli codegen --platform android --outputPath=./android/src/reactnative/java/io/invertase/firebase/app/generated",
-    "ios:codegen": "rimraf ios/generated && npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated",
+    "android:codegen": "node ../../scripts/codegen-package.mjs app android",
+    "ios:codegen": "node ../../scripts/codegen-package.mjs app ios",
     "build": "genversion --esm --semi lib/version.ts && npm run build:version",
     "build:version": "node ./scripts/genversion-ios && node ./scripts/genversion-android",
     "build:clean": "rimraf android/build && rimraf ios/build",
@@ -115,7 +115,6 @@
     "firebase": "12.17.0"
   },
   "devDependencies": {
-    "@react-native-async-storage/async-storage": "^3.1.1",
     "expo": "^55.0.18",
     "react-native-builder-bob": "^0.41.0"
   },

@@ -15,84 +15,50 @@
 namespace facebook::react {
 
 
-  class JSI_EXPORT NativeRNFBTurboFiamCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboFiamCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
-  virtual jsi::Value setAutomaticDataCollectionEnabled(jsi::Runtime &rt, bool enabled) = 0;
-  virtual jsi::Value setMessagesDisplaySuppressed(jsi::Runtime &rt, bool enabled) = 0;
-  virtual jsi::Value triggerEvent(jsi::Runtime &rt, jsi::String eventId) = 0;
-
-};
-
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboFiamCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboFiam";
 
 protected:
-  NativeRNFBTurboFiamCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboFiamCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboFiamCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboFiamCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["getConstants"] = MethodMetadata {.argCount = 0, .invoker = __getConstants};
+    methodMap_["setAutomaticDataCollectionEnabled"] = MethodMetadata {.argCount = 1, .invoker = __setAutomaticDataCollectionEnabled};
+    methodMap_["setMessagesDisplaySuppressed"] = MethodMetadata {.argCount = 1, .invoker = __setMessagesDisplaySuppressed};
+    methodMap_["triggerEvent"] = MethodMetadata {.argCount = 1, .invoker = __triggerEvent};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboFiamCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboFiamCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getConstants) == 1,
+      "Expected getConstants(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Object>(rt, &T::getConstants,  static_cast<NativeRNFBTurboFiamCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-    }
+  static jsi::Value __setAutomaticDataCollectionEnabled(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setAutomaticDataCollectionEnabled) == 2,
+      "Expected setAutomaticDataCollectionEnabled(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setAutomaticDataCollectionEnabled,  static_cast<NativeRNFBTurboFiamCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asBool());
+  }
 
-    jsi::Object getConstants(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getConstants) == 1,
-          "Expected getConstants(...) to have 1 parameters");
+  static jsi::Value __setMessagesDisplaySuppressed(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setMessagesDisplaySuppressed) == 2,
+      "Expected setMessagesDisplaySuppressed(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setMessagesDisplaySuppressed,  static_cast<NativeRNFBTurboFiamCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asBool());
+  }
 
-      return bridging::callFromJs<jsi::Object>(
-          rt, &T::getConstants, jsInvoker_, instance_);
-    }
-    jsi::Value setAutomaticDataCollectionEnabled(jsi::Runtime &rt, bool enabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::setAutomaticDataCollectionEnabled) == 2,
-          "Expected setAutomaticDataCollectionEnabled(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setAutomaticDataCollectionEnabled, jsInvoker_, instance_, std::move(enabled));
-    }
-    jsi::Value setMessagesDisplaySuppressed(jsi::Runtime &rt, bool enabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::setMessagesDisplaySuppressed) == 2,
-          "Expected setMessagesDisplaySuppressed(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setMessagesDisplaySuppressed, jsInvoker_, instance_, std::move(enabled));
-    }
-    jsi::Value triggerEvent(jsi::Runtime &rt, jsi::String eventId) override {
-      static_assert(
-          bridging::getParameterCount(&T::triggerEvent) == 2,
-          "Expected triggerEvent(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::triggerEvent, jsInvoker_, instance_, std::move(eventId));
-    }
-
-  private:
-    friend class NativeRNFBTurboFiamCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __triggerEvent(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::triggerEvent) == 2,
+      "Expected triggerEvent(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::triggerEvent,  static_cast<NativeRNFBTurboFiamCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
 };
 
 } // namespace facebook::react

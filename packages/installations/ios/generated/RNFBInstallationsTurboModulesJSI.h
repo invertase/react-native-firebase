@@ -15,75 +15,43 @@
 namespace facebook::react {
 
 
-  class JSI_EXPORT NativeRNFBTurboInstallationsCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboInstallationsCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Value deleteInstallations(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual jsi::Value getId(jsi::Runtime &rt, jsi::String appName) = 0;
-  virtual jsi::Value getToken(jsi::Runtime &rt, jsi::String appName, bool forceRefresh) = 0;
-
-};
-
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboInstallationsCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboInstallations";
 
 protected:
-  NativeRNFBTurboInstallationsCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboInstallationsCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboInstallationsCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboInstallationsCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["deleteInstallations"] = MethodMetadata {.argCount = 1, .invoker = __deleteInstallations};
+    methodMap_["getId"] = MethodMetadata {.argCount = 1, .invoker = __getId};
+    methodMap_["getToken"] = MethodMetadata {.argCount = 2, .invoker = __getToken};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboInstallationsCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboInstallationsCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __deleteInstallations(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::deleteInstallations) == 2,
+      "Expected deleteInstallations(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::deleteInstallations,  static_cast<NativeRNFBTurboInstallationsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
 
-    }
+  static jsi::Value __getId(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getId) == 2,
+      "Expected getId(...) to have 2 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getId,  static_cast<NativeRNFBTurboInstallationsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt));
+  }
 
-    jsi::Value deleteInstallations(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::deleteInstallations) == 2,
-          "Expected deleteInstallations(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::deleteInstallations, jsInvoker_, instance_, std::move(appName));
-    }
-    jsi::Value getId(jsi::Runtime &rt, jsi::String appName) override {
-      static_assert(
-          bridging::getParameterCount(&T::getId) == 2,
-          "Expected getId(...) to have 2 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getId, jsInvoker_, instance_, std::move(appName));
-    }
-    jsi::Value getToken(jsi::Runtime &rt, jsi::String appName, bool forceRefresh) override {
-      static_assert(
-          bridging::getParameterCount(&T::getToken) == 3,
-          "Expected getToken(...) to have 3 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getToken, jsInvoker_, instance_, std::move(appName), std::move(forceRefresh));
-    }
-
-  private:
-    friend class NativeRNFBTurboInstallationsCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __getToken(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getToken) == 3,
+      "Expected getToken(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getToken,  static_cast<NativeRNFBTurboInstallationsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asBool());
+  }
 };
 
 } // namespace facebook::react

@@ -15,12 +15,11 @@
 namespace facebook::react {
 
 
-  
 #pragma mark - NativeRNFBTurboStorageStorageListOptions
 
 template <typename P0, typename P1>
 struct NativeRNFBTurboStorageStorageListOptions {
-  P0 maxResults;
+  P0 maxResults{};
   P1 pageToken;
   bool operator==(const NativeRNFBTurboStorageStorageListOptions &other) const {
     return maxResults == other.maxResults && pageToken == other.pageToken;
@@ -45,7 +44,6 @@ struct NativeRNFBTurboStorageStorageListOptionsBridging {
   static double maxResultsToJs(jsi::Runtime &rt, decltype(types.maxResults) value) {
     return bridging::toJs(rt, value);
   }
-
   static std::optional<jsi::String> pageTokenToJs(jsi::Runtime &rt, decltype(types.pageToken) value) {
     return bridging::toJs(rt, value);
   }
@@ -64,183 +62,178 @@ struct NativeRNFBTurboStorageStorageListOptionsBridging {
   }
 };
 
-class JSI_EXPORT NativeRNFBTurboStorageCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboStorageCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
-  virtual jsi::Value deleteObject(jsi::Runtime &rt, jsi::String appName, jsi::String url) = 0;
-  virtual jsi::Value getDownloadURL(jsi::Runtime &rt, jsi::String appName, jsi::String url) = 0;
-  virtual jsi::Value getMetadata(jsi::Runtime &rt, jsi::String appName, jsi::String url) = 0;
-  virtual jsi::Value updateMetadata(jsi::Runtime &rt, jsi::String appName, jsi::String url, std::optional<jsi::Object> metadata) = 0;
-  virtual jsi::Value list(jsi::Runtime &rt, jsi::String appName, jsi::String url, jsi::Object listOptions) = 0;
-  virtual jsi::Value listAll(jsi::Runtime &rt, jsi::String appName, jsi::String url) = 0;
-  virtual jsi::Value setMaxDownloadRetryTime(jsi::Runtime &rt, jsi::String appName, double milliseconds) = 0;
-  virtual jsi::Value setMaxOperationRetryTime(jsi::Runtime &rt, jsi::String appName, double milliseconds) = 0;
-  virtual jsi::Value setMaxUploadRetryTime(jsi::Runtime &rt, jsi::String appName, double milliseconds) = 0;
-  virtual void useEmulator(jsi::Runtime &rt, jsi::String appName, jsi::String host, double port, jsi::String bucketUrl) = 0;
-  virtual jsi::Value writeToFile(jsi::Runtime &rt, jsi::String appName, jsi::String url, jsi::String localFilePath, double taskId) = 0;
-  virtual jsi::Value putFile(jsi::Runtime &rt, jsi::String appName, jsi::String url, jsi::String localFilePath, std::optional<jsi::Object> metadata, double taskId) = 0;
-  virtual jsi::Value putString(jsi::Runtime &rt, jsi::String appName, jsi::String url, jsi::String string, jsi::String format, std::optional<jsi::Object> metadata, double taskId) = 0;
-  virtual bool setTaskStatus(jsi::Runtime &rt, jsi::String appName, double taskId, double status) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboStorageCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboStorage";
 
 protected:
-  NativeRNFBTurboStorageCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboStorageCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboStorageCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboStorageCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["getConstants"] = MethodMetadata {.argCount = 0, .invoker = __getConstants};
+    methodMap_["deleteObject"] = MethodMetadata {.argCount = 2, .invoker = __deleteObject};
+    methodMap_["getDownloadURL"] = MethodMetadata {.argCount = 2, .invoker = __getDownloadURL};
+    methodMap_["getMetadata"] = MethodMetadata {.argCount = 2, .invoker = __getMetadata};
+    methodMap_["updateMetadata"] = MethodMetadata {.argCount = 3, .invoker = __updateMetadata};
+    methodMap_["list"] = MethodMetadata {.argCount = 3, .invoker = __list};
+    methodMap_["listAll"] = MethodMetadata {.argCount = 2, .invoker = __listAll};
+    methodMap_["setMaxDownloadRetryTime"] = MethodMetadata {.argCount = 2, .invoker = __setMaxDownloadRetryTime};
+    methodMap_["setMaxOperationRetryTime"] = MethodMetadata {.argCount = 2, .invoker = __setMaxOperationRetryTime};
+    methodMap_["setMaxUploadRetryTime"] = MethodMetadata {.argCount = 2, .invoker = __setMaxUploadRetryTime};
+    methodMap_["useEmulator"] = MethodMetadata {.argCount = 4, .invoker = __useEmulator};
+    methodMap_["writeToFile"] = MethodMetadata {.argCount = 4, .invoker = __writeToFile};
+    methodMap_["putFile"] = MethodMetadata {.argCount = 5, .invoker = __putFile};
+    methodMap_["putString"] = MethodMetadata {.argCount = 6, .invoker = __putString};
+    methodMap_["setTaskStatus"] = MethodMetadata {.argCount = 3, .invoker = __setTaskStatus};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboStorageCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboStorageCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::getConstants) == 1,
+      "Expected getConstants(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Object>(rt, &T::getConstants,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
 
-    }
+  static jsi::Value __deleteObject(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::deleteObject) == 3,
+      "Expected deleteObject(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::deleteObject,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
 
-    jsi::Object getConstants(jsi::Runtime &rt) override {
-      static_assert(
-          bridging::getParameterCount(&T::getConstants) == 1,
-          "Expected getConstants(...) to have 1 parameters");
+  static jsi::Value __getDownloadURL(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getDownloadURL) == 3,
+      "Expected getDownloadURL(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getDownloadURL,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Object>(
-          rt, &T::getConstants, jsInvoker_, instance_);
-    }
-    jsi::Value deleteObject(jsi::Runtime &rt, jsi::String appName, jsi::String url) override {
-      static_assert(
-          bridging::getParameterCount(&T::deleteObject) == 3,
-          "Expected deleteObject(...) to have 3 parameters");
+  static jsi::Value __getMetadata(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getMetadata) == 3,
+      "Expected getMetadata(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::getMetadata,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::deleteObject, jsInvoker_, instance_, std::move(appName), std::move(url));
-    }
-    jsi::Value getDownloadURL(jsi::Runtime &rt, jsi::String appName, jsi::String url) override {
-      static_assert(
-          bridging::getParameterCount(&T::getDownloadURL) == 3,
-          "Expected getDownloadURL(...) to have 3 parameters");
+  static jsi::Value __updateMetadata(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::updateMetadata) == 4,
+      "Expected updateMetadata(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::updateMetadata,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asObject(rt)));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getDownloadURL, jsInvoker_, instance_, std::move(appName), std::move(url));
-    }
-    jsi::Value getMetadata(jsi::Runtime &rt, jsi::String appName, jsi::String url) override {
-      static_assert(
-          bridging::getParameterCount(&T::getMetadata) == 3,
-          "Expected getMetadata(...) to have 3 parameters");
+  static jsi::Value __list(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::list) == 4,
+      "Expected list(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::list,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asObject(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getMetadata, jsInvoker_, instance_, std::move(appName), std::move(url));
-    }
-    jsi::Value updateMetadata(jsi::Runtime &rt, jsi::String appName, jsi::String url, std::optional<jsi::Object> metadata) override {
-      static_assert(
-          bridging::getParameterCount(&T::updateMetadata) == 4,
-          "Expected updateMetadata(...) to have 4 parameters");
+  static jsi::Value __listAll(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::listAll) == 3,
+      "Expected listAll(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::listAll,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::updateMetadata, jsInvoker_, instance_, std::move(appName), std::move(url), std::move(metadata));
-    }
-    jsi::Value list(jsi::Runtime &rt, jsi::String appName, jsi::String url, jsi::Object listOptions) override {
-      static_assert(
-          bridging::getParameterCount(&T::list) == 4,
-          "Expected list(...) to have 4 parameters");
+  static jsi::Value __setMaxDownloadRetryTime(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setMaxDownloadRetryTime) == 3,
+      "Expected setMaxDownloadRetryTime(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setMaxDownloadRetryTime,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asNumber());
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::list, jsInvoker_, instance_, std::move(appName), std::move(url), std::move(listOptions));
-    }
-    jsi::Value listAll(jsi::Runtime &rt, jsi::String appName, jsi::String url) override {
-      static_assert(
-          bridging::getParameterCount(&T::listAll) == 3,
-          "Expected listAll(...) to have 3 parameters");
+  static jsi::Value __setMaxOperationRetryTime(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setMaxOperationRetryTime) == 3,
+      "Expected setMaxOperationRetryTime(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setMaxOperationRetryTime,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asNumber());
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::listAll, jsInvoker_, instance_, std::move(appName), std::move(url));
-    }
-    jsi::Value setMaxDownloadRetryTime(jsi::Runtime &rt, jsi::String appName, double milliseconds) override {
-      static_assert(
-          bridging::getParameterCount(&T::setMaxDownloadRetryTime) == 3,
-          "Expected setMaxDownloadRetryTime(...) to have 3 parameters");
+  static jsi::Value __setMaxUploadRetryTime(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setMaxUploadRetryTime) == 3,
+      "Expected setMaxUploadRetryTime(...) to have 3 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setMaxUploadRetryTime,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asNumber());
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setMaxDownloadRetryTime, jsInvoker_, instance_, std::move(appName), std::move(milliseconds));
-    }
-    jsi::Value setMaxOperationRetryTime(jsi::Runtime &rt, jsi::String appName, double milliseconds) override {
-      static_assert(
-          bridging::getParameterCount(&T::setMaxOperationRetryTime) == 3,
-          "Expected setMaxOperationRetryTime(...) to have 3 parameters");
+  static jsi::Value __useEmulator(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::useEmulator) == 5,
+      "Expected useEmulator(...) to have 5 parameters");
+    bridging::callFromJs<void>(rt, &T::useEmulator,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asNumber(),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asString(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setMaxOperationRetryTime, jsInvoker_, instance_, std::move(appName), std::move(milliseconds));
-    }
-    jsi::Value setMaxUploadRetryTime(jsi::Runtime &rt, jsi::String appName, double milliseconds) override {
-      static_assert(
-          bridging::getParameterCount(&T::setMaxUploadRetryTime) == 3,
-          "Expected setMaxUploadRetryTime(...) to have 3 parameters");
+  static jsi::Value __writeToFile(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::writeToFile) == 5,
+      "Expected writeToFile(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::writeToFile,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asNumber());
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setMaxUploadRetryTime, jsInvoker_, instance_, std::move(appName), std::move(milliseconds));
-    }
-    void useEmulator(jsi::Runtime &rt, jsi::String appName, jsi::String host, double port, jsi::String bucketUrl) override {
-      static_assert(
-          bridging::getParameterCount(&T::useEmulator) == 5,
-          "Expected useEmulator(...) to have 5 parameters");
+  static jsi::Value __putFile(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::putFile) == 6,
+      "Expected putFile(...) to have 6 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::putFile,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 || args[3].isNull() || args[3].isUndefined() ? std::nullopt : std::make_optional(args[3].asObject(rt)),
+      count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asNumber());
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::useEmulator, jsInvoker_, instance_, std::move(appName), std::move(host), std::move(port), std::move(bucketUrl));
-    }
-    jsi::Value writeToFile(jsi::Runtime &rt, jsi::String appName, jsi::String url, jsi::String localFilePath, double taskId) override {
-      static_assert(
-          bridging::getParameterCount(&T::writeToFile) == 5,
-          "Expected writeToFile(...) to have 5 parameters");
+  static jsi::Value __putString(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::putString) == 7,
+      "Expected putString(...) to have 7 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::putString,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asString(rt),
+      count <= 4 || args[4].isNull() || args[4].isUndefined() ? std::nullopt : std::make_optional(args[4].asObject(rt)),
+      count <= 5 ? throw jsi::JSError(rt, "Expected argument in position 5 to be passed") : args[5].asNumber());
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::writeToFile, jsInvoker_, instance_, std::move(appName), std::move(url), std::move(localFilePath), std::move(taskId));
-    }
-    jsi::Value putFile(jsi::Runtime &rt, jsi::String appName, jsi::String url, jsi::String localFilePath, std::optional<jsi::Object> metadata, double taskId) override {
-      static_assert(
-          bridging::getParameterCount(&T::putFile) == 6,
-          "Expected putFile(...) to have 6 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::putFile, jsInvoker_, instance_, std::move(appName), std::move(url), std::move(localFilePath), std::move(metadata), std::move(taskId));
-    }
-    jsi::Value putString(jsi::Runtime &rt, jsi::String appName, jsi::String url, jsi::String string, jsi::String format, std::optional<jsi::Object> metadata, double taskId) override {
-      static_assert(
-          bridging::getParameterCount(&T::putString) == 7,
-          "Expected putString(...) to have 7 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::putString, jsInvoker_, instance_, std::move(appName), std::move(url), std::move(string), std::move(format), std::move(metadata), std::move(taskId));
-    }
-    bool setTaskStatus(jsi::Runtime &rt, jsi::String appName, double taskId, double status) override {
-      static_assert(
-          bridging::getParameterCount(&T::setTaskStatus) == 4,
-          "Expected setTaskStatus(...) to have 4 parameters");
-
-      return bridging::callFromJs<bool>(
-          rt, &T::setTaskStatus, jsInvoker_, instance_, std::move(appName), std::move(taskId), std::move(status));
-    }
-
-  private:
-    friend class NativeRNFBTurboStorageCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __setTaskStatus(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setTaskStatus) == 4,
+      "Expected setTaskStatus(...) to have 4 parameters");
+    return bridging::callFromJs<bool>(rt, &T::setTaskStatus,  static_cast<NativeRNFBTurboStorageCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asNumber(),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asNumber());
+  }
 };
 
 } // namespace facebook::react

@@ -205,8 +205,8 @@ namespace JS {
 - (void)preferencesClearAll:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
 - (void)setLogLevel:(NSString *)logLevel;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboApp::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboApp::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboApp::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboApp::Constants>)getConstants;
 
 @end
 
@@ -280,8 +280,8 @@ namespace JS {
                                   reject:(RCTPromiseRejectBlock)reject;
 - (void)androidMakePlayServicesAvailable:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants>)getConstants;
 
 @end
 

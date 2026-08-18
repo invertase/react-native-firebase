@@ -15,426 +15,318 @@
 namespace facebook::react {
 
 
-  class JSI_EXPORT NativeRNFBTurboDatabaseCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboDatabaseCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual void goOnline(jsi::Runtime &rt, jsi::String app, jsi::String dbURL) = 0;
-  virtual void goOffline(jsi::Runtime &rt, jsi::String app, jsi::String dbURL) = 0;
-  virtual void setPersistenceEnabled(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, bool enabled) = 0;
-  virtual void setLoggingEnabled(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, bool enabled) = 0;
-  virtual void setPersistenceCacheSizeBytes(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, double cacheSizeBytes) = 0;
-  virtual void useEmulator(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String host, double port) = 0;
-
-};
-
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboDatabaseCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboDatabase";
 
 protected:
-  NativeRNFBTurboDatabaseCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboDatabaseCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboDatabaseCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboDatabaseCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["goOnline"] = MethodMetadata {.argCount = 2, .invoker = __goOnline};
+    methodMap_["goOffline"] = MethodMetadata {.argCount = 2, .invoker = __goOffline};
+    methodMap_["setPersistenceEnabled"] = MethodMetadata {.argCount = 3, .invoker = __setPersistenceEnabled};
+    methodMap_["setLoggingEnabled"] = MethodMetadata {.argCount = 3, .invoker = __setLoggingEnabled};
+    methodMap_["setPersistenceCacheSizeBytes"] = MethodMetadata {.argCount = 3, .invoker = __setPersistenceCacheSizeBytes};
+    methodMap_["useEmulator"] = MethodMetadata {.argCount = 4, .invoker = __useEmulator};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboDatabaseCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboDatabaseCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __goOnline(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::goOnline) == 3,
+      "Expected goOnline(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::goOnline,  static_cast<NativeRNFBTurboDatabaseCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));return jsi::Value::undefined();
+  }
 
-    }
+  static jsi::Value __goOffline(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::goOffline) == 3,
+      "Expected goOffline(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::goOffline,  static_cast<NativeRNFBTurboDatabaseCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));return jsi::Value::undefined();
+  }
 
-    void goOnline(jsi::Runtime &rt, jsi::String app, jsi::String dbURL) override {
-      static_assert(
-          bridging::getParameterCount(&T::goOnline) == 3,
-          "Expected goOnline(...) to have 3 parameters");
+  static jsi::Value __setPersistenceEnabled(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setPersistenceEnabled) == 4,
+      "Expected setPersistenceEnabled(...) to have 4 parameters");
+    bridging::callFromJs<void>(rt, &T::setPersistenceEnabled,  static_cast<NativeRNFBTurboDatabaseCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asBool());return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::goOnline, jsInvoker_, instance_, std::move(app), std::move(dbURL));
-    }
-    void goOffline(jsi::Runtime &rt, jsi::String app, jsi::String dbURL) override {
-      static_assert(
-          bridging::getParameterCount(&T::goOffline) == 3,
-          "Expected goOffline(...) to have 3 parameters");
+  static jsi::Value __setLoggingEnabled(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setLoggingEnabled) == 4,
+      "Expected setLoggingEnabled(...) to have 4 parameters");
+    bridging::callFromJs<void>(rt, &T::setLoggingEnabled,  static_cast<NativeRNFBTurboDatabaseCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asBool());return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::goOffline, jsInvoker_, instance_, std::move(app), std::move(dbURL));
-    }
-    void setPersistenceEnabled(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, bool enabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::setPersistenceEnabled) == 4,
-          "Expected setPersistenceEnabled(...) to have 4 parameters");
+  static jsi::Value __setPersistenceCacheSizeBytes(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setPersistenceCacheSizeBytes) == 4,
+      "Expected setPersistenceCacheSizeBytes(...) to have 4 parameters");
+    bridging::callFromJs<void>(rt, &T::setPersistenceCacheSizeBytes,  static_cast<NativeRNFBTurboDatabaseCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asNumber());return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::setPersistenceEnabled, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(enabled));
-    }
-    void setLoggingEnabled(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, bool enabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::setLoggingEnabled) == 4,
-          "Expected setLoggingEnabled(...) to have 4 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::setLoggingEnabled, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(enabled));
-    }
-    void setPersistenceCacheSizeBytes(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, double cacheSizeBytes) override {
-      static_assert(
-          bridging::getParameterCount(&T::setPersistenceCacheSizeBytes) == 4,
-          "Expected setPersistenceCacheSizeBytes(...) to have 4 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::setPersistenceCacheSizeBytes, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(cacheSizeBytes));
-    }
-    void useEmulator(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String host, double port) override {
-      static_assert(
-          bridging::getParameterCount(&T::useEmulator) == 5,
-          "Expected useEmulator(...) to have 5 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::useEmulator, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(host), std::move(port));
-    }
-
-  private:
-    friend class NativeRNFBTurboDatabaseCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __useEmulator(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::useEmulator) == 5,
+      "Expected useEmulator(...) to have 5 parameters");
+    bridging::callFromJs<void>(rt, &T::useEmulator,  static_cast<NativeRNFBTurboDatabaseCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asNumber());return jsi::Value::undefined();
+  }
 };
 
-
-  class JSI_EXPORT NativeRNFBTurboDatabaseOnDisconnectCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboDatabaseOnDisconnectCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Value onDisconnectCancel(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path) = 0;
-  virtual jsi::Value onDisconnectRemove(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path) = 0;
-  virtual jsi::Value onDisconnectSet(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) = 0;
-  virtual jsi::Value onDisconnectSetWithPriority(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) = 0;
-  virtual jsi::Value onDisconnectUpdate(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboDatabaseOnDisconnectCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboDatabaseOnDisconnect";
 
 protected:
-  NativeRNFBTurboDatabaseOnDisconnectCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboDatabaseOnDisconnectCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboDatabaseOnDisconnectCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboDatabaseOnDisconnectCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["onDisconnectCancel"] = MethodMetadata {.argCount = 3, .invoker = __onDisconnectCancel};
+    methodMap_["onDisconnectRemove"] = MethodMetadata {.argCount = 3, .invoker = __onDisconnectRemove};
+    methodMap_["onDisconnectSet"] = MethodMetadata {.argCount = 4, .invoker = __onDisconnectSet};
+    methodMap_["onDisconnectSetWithPriority"] = MethodMetadata {.argCount = 4, .invoker = __onDisconnectSetWithPriority};
+    methodMap_["onDisconnectUpdate"] = MethodMetadata {.argCount = 4, .invoker = __onDisconnectUpdate};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboDatabaseOnDisconnectCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboDatabaseOnDisconnectCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __onDisconnectCancel(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::onDisconnectCancel) == 4,
+      "Expected onDisconnectCancel(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::onDisconnectCancel,  static_cast<NativeRNFBTurboDatabaseOnDisconnectCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt));
+  }
 
-    }
+  static jsi::Value __onDisconnectRemove(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::onDisconnectRemove) == 4,
+      "Expected onDisconnectRemove(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::onDisconnectRemove,  static_cast<NativeRNFBTurboDatabaseOnDisconnectCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt));
+  }
 
-    jsi::Value onDisconnectCancel(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path) override {
-      static_assert(
-          bridging::getParameterCount(&T::onDisconnectCancel) == 4,
-          "Expected onDisconnectCancel(...) to have 4 parameters");
+  static jsi::Value __onDisconnectSet(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::onDisconnectSet) == 5,
+      "Expected onDisconnectSet(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::onDisconnectSet,  static_cast<NativeRNFBTurboDatabaseOnDisconnectCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asObject(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::onDisconnectCancel, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(path));
-    }
-    jsi::Value onDisconnectRemove(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path) override {
-      static_assert(
-          bridging::getParameterCount(&T::onDisconnectRemove) == 4,
-          "Expected onDisconnectRemove(...) to have 4 parameters");
+  static jsi::Value __onDisconnectSetWithPriority(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::onDisconnectSetWithPriority) == 5,
+      "Expected onDisconnectSetWithPriority(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::onDisconnectSetWithPriority,  static_cast<NativeRNFBTurboDatabaseOnDisconnectCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asObject(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::onDisconnectRemove, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(path));
-    }
-    jsi::Value onDisconnectSet(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) override {
-      static_assert(
-          bridging::getParameterCount(&T::onDisconnectSet) == 5,
-          "Expected onDisconnectSet(...) to have 5 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::onDisconnectSet, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(path), std::move(props));
-    }
-    jsi::Value onDisconnectSetWithPriority(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) override {
-      static_assert(
-          bridging::getParameterCount(&T::onDisconnectSetWithPriority) == 5,
-          "Expected onDisconnectSetWithPriority(...) to have 5 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::onDisconnectSetWithPriority, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(path), std::move(props));
-    }
-    jsi::Value onDisconnectUpdate(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) override {
-      static_assert(
-          bridging::getParameterCount(&T::onDisconnectUpdate) == 5,
-          "Expected onDisconnectUpdate(...) to have 5 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::onDisconnectUpdate, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(path), std::move(props));
-    }
-
-  private:
-    friend class NativeRNFBTurboDatabaseOnDisconnectCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __onDisconnectUpdate(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::onDisconnectUpdate) == 5,
+      "Expected onDisconnectUpdate(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::onDisconnectUpdate,  static_cast<NativeRNFBTurboDatabaseOnDisconnectCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asObject(rt));
+  }
 };
 
-
-  class JSI_EXPORT NativeRNFBTurboDatabaseQueryCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboDatabaseQueryCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Value once(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Array modifiers, jsi::String eventType) = 0;
-  virtual void on(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::Object props) = 0;
-  virtual void off(jsi::Runtime &rt, jsi::String queryKey, jsi::String eventRegistrationKey) = 0;
-  virtual jsi::Value keepSynced(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String key, jsi::String path, jsi::Array modifiers, bool enabled) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboDatabaseQueryCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboDatabaseQuery";
 
 protected:
-  NativeRNFBTurboDatabaseQueryCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboDatabaseQueryCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboDatabaseQueryCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboDatabaseQueryCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["once"] = MethodMetadata {.argCount = 5, .invoker = __once};
+    methodMap_["on"] = MethodMetadata {.argCount = 3, .invoker = __on};
+    methodMap_["off"] = MethodMetadata {.argCount = 2, .invoker = __off};
+    methodMap_["keepSynced"] = MethodMetadata {.argCount = 6, .invoker = __keepSynced};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboDatabaseQueryCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboDatabaseQueryCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __once(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::once) == 6,
+      "Expected once(...) to have 6 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::once,  static_cast<NativeRNFBTurboDatabaseQueryCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asObject(rt).asArray(rt),
+      count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asString(rt));
+  }
 
-    }
+  static jsi::Value __on(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::on) == 4,
+      "Expected on(...) to have 4 parameters");
+    bridging::callFromJs<void>(rt, &T::on,  static_cast<NativeRNFBTurboDatabaseQueryCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asObject(rt));return jsi::Value::undefined();
+  }
 
-    jsi::Value once(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Array modifiers, jsi::String eventType) override {
-      static_assert(
-          bridging::getParameterCount(&T::once) == 6,
-          "Expected once(...) to have 6 parameters");
+  static jsi::Value __off(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::off) == 3,
+      "Expected off(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::off,  static_cast<NativeRNFBTurboDatabaseQueryCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::once, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(path), std::move(modifiers), std::move(eventType));
-    }
-    void on(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::Object props) override {
-      static_assert(
-          bridging::getParameterCount(&T::on) == 4,
-          "Expected on(...) to have 4 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::on, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(props));
-    }
-    void off(jsi::Runtime &rt, jsi::String queryKey, jsi::String eventRegistrationKey) override {
-      static_assert(
-          bridging::getParameterCount(&T::off) == 3,
-          "Expected off(...) to have 3 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::off, jsInvoker_, instance_, std::move(queryKey), std::move(eventRegistrationKey));
-    }
-    jsi::Value keepSynced(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String key, jsi::String path, jsi::Array modifiers, bool enabled) override {
-      static_assert(
-          bridging::getParameterCount(&T::keepSynced) == 7,
-          "Expected keepSynced(...) to have 7 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::keepSynced, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(key), std::move(path), std::move(modifiers), std::move(enabled));
-    }
-
-  private:
-    friend class NativeRNFBTurboDatabaseQueryCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __keepSynced(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::keepSynced) == 7,
+      "Expected keepSynced(...) to have 7 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::keepSynced,  static_cast<NativeRNFBTurboDatabaseQueryCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asString(rt),
+      count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asObject(rt).asArray(rt),
+      count <= 5 ? throw jsi::JSError(rt, "Expected argument in position 5 to be passed") : args[5].asBool());
+  }
 };
 
-
-  class JSI_EXPORT NativeRNFBTurboDatabaseReferenceCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboDatabaseReferenceCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Value set(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) = 0;
-  virtual jsi::Value update(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) = 0;
-  virtual jsi::Value setWithPriority(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) = 0;
-  virtual jsi::Value remove(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path) = 0;
-  virtual jsi::Value setPriority(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboDatabaseReferenceCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboDatabaseReference";
 
 protected:
-  NativeRNFBTurboDatabaseReferenceCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboDatabaseReferenceCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboDatabaseReferenceCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboDatabaseReferenceCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["set"] = MethodMetadata {.argCount = 4, .invoker = __set};
+    methodMap_["update"] = MethodMetadata {.argCount = 4, .invoker = __update};
+    methodMap_["setWithPriority"] = MethodMetadata {.argCount = 4, .invoker = __setWithPriority};
+    methodMap_["remove"] = MethodMetadata {.argCount = 3, .invoker = __remove};
+    methodMap_["setPriority"] = MethodMetadata {.argCount = 4, .invoker = __setPriority};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboDatabaseReferenceCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboDatabaseReferenceCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __set(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::set) == 5,
+      "Expected set(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::set,  static_cast<NativeRNFBTurboDatabaseReferenceCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asObject(rt));
+  }
 
-    }
+  static jsi::Value __update(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::update) == 5,
+      "Expected update(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::update,  static_cast<NativeRNFBTurboDatabaseReferenceCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asObject(rt));
+  }
 
-    jsi::Value set(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) override {
-      static_assert(
-          bridging::getParameterCount(&T::set) == 5,
-          "Expected set(...) to have 5 parameters");
+  static jsi::Value __setWithPriority(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setWithPriority) == 5,
+      "Expected setWithPriority(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setWithPriority,  static_cast<NativeRNFBTurboDatabaseReferenceCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asObject(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::set, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(path), std::move(props));
-    }
-    jsi::Value update(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) override {
-      static_assert(
-          bridging::getParameterCount(&T::update) == 5,
-          "Expected update(...) to have 5 parameters");
+  static jsi::Value __remove(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::remove) == 4,
+      "Expected remove(...) to have 4 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::remove,  static_cast<NativeRNFBTurboDatabaseReferenceCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt));
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::update, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(path), std::move(props));
-    }
-    jsi::Value setWithPriority(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) override {
-      static_assert(
-          bridging::getParameterCount(&T::setWithPriority) == 5,
-          "Expected setWithPriority(...) to have 5 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setWithPriority, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(path), std::move(props));
-    }
-    jsi::Value remove(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path) override {
-      static_assert(
-          bridging::getParameterCount(&T::remove) == 4,
-          "Expected remove(...) to have 4 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::remove, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(path));
-    }
-    jsi::Value setPriority(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, jsi::Object props) override {
-      static_assert(
-          bridging::getParameterCount(&T::setPriority) == 5,
-          "Expected setPriority(...) to have 5 parameters");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::setPriority, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(path), std::move(props));
-    }
-
-  private:
-    friend class NativeRNFBTurboDatabaseReferenceCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __setPriority(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::setPriority) == 5,
+      "Expected setPriority(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::setPriority,  static_cast<NativeRNFBTurboDatabaseReferenceCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asObject(rt));
+  }
 };
 
-
-  class JSI_EXPORT NativeRNFBTurboDatabaseTransactionCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboDatabaseTransactionCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual void transactionStart(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, double transactionId, bool applyLocally) = 0;
-  virtual void transactionTryCommit(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, double transactionId, jsi::Object updates) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboDatabaseTransactionCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboDatabaseTransaction";
 
 protected:
-  NativeRNFBTurboDatabaseTransactionCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboDatabaseTransactionCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboDatabaseTransactionCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboDatabaseTransactionCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["transactionStart"] = MethodMetadata {.argCount = 5, .invoker = __transactionStart};
+    methodMap_["transactionTryCommit"] = MethodMetadata {.argCount = 4, .invoker = __transactionTryCommit};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboDatabaseTransactionCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboDatabaseTransactionCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __transactionStart(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::transactionStart) == 6,
+      "Expected transactionStart(...) to have 6 parameters");
+    bridging::callFromJs<void>(rt, &T::transactionStart,  static_cast<NativeRNFBTurboDatabaseTransactionCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asNumber(),
+      count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asBool());return jsi::Value::undefined();
+  }
 
-    }
-
-    void transactionStart(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, jsi::String path, double transactionId, bool applyLocally) override {
-      static_assert(
-          bridging::getParameterCount(&T::transactionStart) == 6,
-          "Expected transactionStart(...) to have 6 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::transactionStart, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(path), std::move(transactionId), std::move(applyLocally));
-    }
-    void transactionTryCommit(jsi::Runtime &rt, jsi::String app, jsi::String dbURL, double transactionId, jsi::Object updates) override {
-      static_assert(
-          bridging::getParameterCount(&T::transactionTryCommit) == 5,
-          "Expected transactionTryCommit(...) to have 5 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::transactionTryCommit, jsInvoker_, instance_, std::move(app), std::move(dbURL), std::move(transactionId), std::move(updates));
-    }
-
-  private:
-    friend class NativeRNFBTurboDatabaseTransactionCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __transactionTryCommit(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::transactionTryCommit) == 5,
+      "Expected transactionTryCommit(...) to have 5 parameters");
+    bridging::callFromJs<void>(rt, &T::transactionTryCommit,  static_cast<NativeRNFBTurboDatabaseTransactionCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asNumber(),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asObject(rt));return jsi::Value::undefined();
+  }
 };
 
 } // namespace facebook::react

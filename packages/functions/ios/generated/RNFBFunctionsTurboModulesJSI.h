@@ -15,93 +15,88 @@
 namespace facebook::react {
 
 
-  class JSI_EXPORT NativeRNFBTurboFunctionsCxxSpecJSI : public TurboModule {
-protected:
-  NativeRNFBTurboFunctionsCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual jsi::Value httpsCallable(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String name, jsi::Object data, jsi::Object options) = 0;
-  virtual jsi::Value httpsCallableFromUrl(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String url, jsi::Object data, jsi::Object options) = 0;
-  virtual void httpsCallableStream(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String name, jsi::Object data, jsi::Object options, double listenerId) = 0;
-  virtual void httpsCallableStreamFromUrl(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String url, jsi::Object data, jsi::Object options, double listenerId) = 0;
-  virtual void removeFunctionsStreaming(jsi::Runtime &rt, jsi::String appName, jsi::String region, double listenerId) = 0;
-
-};
-
 template <typename T>
 class JSI_EXPORT NativeRNFBTurboFunctionsCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "NativeRNFBTurboFunctions";
 
 protected:
-  NativeRNFBTurboFunctionsCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeRNFBTurboFunctionsCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeRNFBTurboFunctionsCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboFunctionsCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["httpsCallable"] = MethodMetadata {.argCount = 7, .invoker = __httpsCallable};
+    methodMap_["httpsCallableFromUrl"] = MethodMetadata {.argCount = 7, .invoker = __httpsCallableFromUrl};
+    methodMap_["httpsCallableStream"] = MethodMetadata {.argCount = 8, .invoker = __httpsCallableStream};
+    methodMap_["httpsCallableStreamFromUrl"] = MethodMetadata {.argCount = 8, .invoker = __httpsCallableStreamFromUrl};
+    methodMap_["removeFunctionsStreaming"] = MethodMetadata {.argCount = 3, .invoker = __removeFunctionsStreaming};
+  }
+  
 private:
-  class Delegate : public NativeRNFBTurboFunctionsCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeRNFBTurboFunctionsCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __httpsCallable(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::httpsCallable) == 8,
+      "Expected httpsCallable(...) to have 8 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::httpsCallable,  static_cast<NativeRNFBTurboFunctionsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asString(rt)),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asNumber(),
+      count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asString(rt),
+      count <= 5 ? throw jsi::JSError(rt, "Expected argument in position 5 to be passed") : args[5].asObject(rt),
+      count <= 6 ? throw jsi::JSError(rt, "Expected argument in position 6 to be passed") : args[6].asObject(rt));
+  }
 
-    }
+  static jsi::Value __httpsCallableFromUrl(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::httpsCallableFromUrl) == 8,
+      "Expected httpsCallableFromUrl(...) to have 8 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::httpsCallableFromUrl,  static_cast<NativeRNFBTurboFunctionsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asString(rt)),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asNumber(),
+      count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asString(rt),
+      count <= 5 ? throw jsi::JSError(rt, "Expected argument in position 5 to be passed") : args[5].asObject(rt),
+      count <= 6 ? throw jsi::JSError(rt, "Expected argument in position 6 to be passed") : args[6].asObject(rt));
+  }
 
-    jsi::Value httpsCallable(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String name, jsi::Object data, jsi::Object options) override {
-      static_assert(
-          bridging::getParameterCount(&T::httpsCallable) == 8,
-          "Expected httpsCallable(...) to have 8 parameters");
+  static jsi::Value __httpsCallableStream(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::httpsCallableStream) == 9,
+      "Expected httpsCallableStream(...) to have 9 parameters");
+    bridging::callFromJs<void>(rt, &T::httpsCallableStream,  static_cast<NativeRNFBTurboFunctionsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asString(rt)),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asNumber(),
+      count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asString(rt),
+      count <= 5 ? throw jsi::JSError(rt, "Expected argument in position 5 to be passed") : args[5].asObject(rt),
+      count <= 6 ? throw jsi::JSError(rt, "Expected argument in position 6 to be passed") : args[6].asObject(rt),
+      count <= 7 ? throw jsi::JSError(rt, "Expected argument in position 7 to be passed") : args[7].asNumber());return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::httpsCallable, jsInvoker_, instance_, std::move(appName), std::move(region), std::move(emulatorHost), std::move(emulatorPort), std::move(name), std::move(data), std::move(options));
-    }
-    jsi::Value httpsCallableFromUrl(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String url, jsi::Object data, jsi::Object options) override {
-      static_assert(
-          bridging::getParameterCount(&T::httpsCallableFromUrl) == 8,
-          "Expected httpsCallableFromUrl(...) to have 8 parameters");
+  static jsi::Value __httpsCallableStreamFromUrl(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::httpsCallableStreamFromUrl) == 9,
+      "Expected httpsCallableStreamFromUrl(...) to have 9 parameters");
+    bridging::callFromJs<void>(rt, &T::httpsCallableStreamFromUrl,  static_cast<NativeRNFBTurboFunctionsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asString(rt)),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asNumber(),
+      count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asString(rt),
+      count <= 5 ? throw jsi::JSError(rt, "Expected argument in position 5 to be passed") : args[5].asObject(rt),
+      count <= 6 ? throw jsi::JSError(rt, "Expected argument in position 6 to be passed") : args[6].asObject(rt),
+      count <= 7 ? throw jsi::JSError(rt, "Expected argument in position 7 to be passed") : args[7].asNumber());return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::httpsCallableFromUrl, jsInvoker_, instance_, std::move(appName), std::move(region), std::move(emulatorHost), std::move(emulatorPort), std::move(url), std::move(data), std::move(options));
-    }
-    void httpsCallableStream(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String name, jsi::Object data, jsi::Object options, double listenerId) override {
-      static_assert(
-          bridging::getParameterCount(&T::httpsCallableStream) == 9,
-          "Expected httpsCallableStream(...) to have 9 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::httpsCallableStream, jsInvoker_, instance_, std::move(appName), std::move(region), std::move(emulatorHost), std::move(emulatorPort), std::move(name), std::move(data), std::move(options), std::move(listenerId));
-    }
-    void httpsCallableStreamFromUrl(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String url, jsi::Object data, jsi::Object options, double listenerId) override {
-      static_assert(
-          bridging::getParameterCount(&T::httpsCallableStreamFromUrl) == 9,
-          "Expected httpsCallableStreamFromUrl(...) to have 9 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::httpsCallableStreamFromUrl, jsInvoker_, instance_, std::move(appName), std::move(region), std::move(emulatorHost), std::move(emulatorPort), std::move(url), std::move(data), std::move(options), std::move(listenerId));
-    }
-    void removeFunctionsStreaming(jsi::Runtime &rt, jsi::String appName, jsi::String region, double listenerId) override {
-      static_assert(
-          bridging::getParameterCount(&T::removeFunctionsStreaming) == 4,
-          "Expected removeFunctionsStreaming(...) to have 4 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::removeFunctionsStreaming, jsInvoker_, instance_, std::move(appName), std::move(region), std::move(listenerId));
-    }
-
-  private:
-    friend class NativeRNFBTurboFunctionsCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __removeFunctionsStreaming(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::removeFunctionsStreaming) == 4,
+      "Expected removeFunctionsStreaming(...) to have 4 parameters");
+    bridging::callFromJs<void>(rt, &T::removeFunctionsStreaming,  static_cast<NativeRNFBTurboFunctionsCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asNumber());return jsi::Value::undefined();
+  }
 };
 
 } // namespace facebook::react

@@ -211,9 +211,9 @@ jobs:
         id: pods-cache
         continue-on-error: true
         with:
-          path: tests/ios/Pods
-          key: ${{ runner.os }}-macos-pods-v3-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-macos-pods-v3
+          path: tests-macos/macos/Pods
+          key: ${{ runner.os }}-macos-pods-v4-${{ hashFiles('tests-macos/macos/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-macos-pods-v4
 
       - name: Pod Install
         # https://github.com/nick-fields/retry/releases
@@ -273,7 +273,7 @@ jobs:
 
       - name: Pre-fetch Javascript bundle
         run: |
-          nohup sh -c "yarn tests:packager:jet-ci > metro.log 2>&1 &"
+          nohup sh -c "yarn tests:macos:packager:jet-ci > metro.log 2>&1 &"
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
@@ -369,7 +369,7 @@ jobs:
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
-          path: tests/ios/Pods
+          path: tests-macos/macos/Pods
           key: ${{ steps.pods-cache.outputs.cache-primary-key }}
 
       - name: Firestore Emulator Cache Save

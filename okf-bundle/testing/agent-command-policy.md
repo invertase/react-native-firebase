@@ -42,7 +42,7 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 | E2e + coverage                                                  | [running e2e](running-e2e.md) — **only** `yarn tests:*`                                                                                                                                                                                                                                    | `jet`, `npx jet`, `yarn jet`, `detox test`, bare `detox`, `cd tests && …`, direct Metro/emulator starts                                                       |
 | iOS Detox framework cache rebuild                               | `yarn tests:ios:detox-framework-cache:rebuild`                                                                                                                                                                                                                                             | `cd tests && yarn detox clean-framework-cache`, `cd tests && yarn detox build-framework-cache`, bare `detox …`                                                |
 | Host pre-flight (before each `:test-cover`)                     | [running e2e § pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) — host-clear + services ready + **[checkout ownership](running-e2e.md#services-checkout-ownership-blocking)** + harness tier                                                                                                                                                                                                                        | Port/HTTP checks alone when Metro/emulators belong to another worktree; `pgrep`/spawn probes of Jet/Detox as completion signals                                                                                                           |
-| TurboModule codegen (all migrated / CI)                         | `yarn codegen:verify` (wipe + regen + ResultT patch + diff); `yarn codegen:all` for local regen via package scripts                                                                                                                         | ad-hoc CLI without wipe; inventing alternate codegen yarn scripts — see [TurboModule codegen](#turbomodule-codegen)                                           |
+| TurboModule codegen (all migrated / CI)                         | `yarn codegen:verify` (wipe + regen + diff); `yarn codegen:all` for local regen via package scripts                                                                                                                         | ad-hoc CLI without wipe; inventing alternate codegen yarn scripts — see [TurboModule codegen](#turbomodule-codegen)                                           |
 
 ### Prepare / transpile (detail)
 
@@ -60,7 +60,7 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 | Do not start until prepare exits 0        | Why                                                                                                            |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `yarn tests:*` (e2e, packager, build)     | Metro (debug JS) reads **`dist/module/**`**, not `lib/\*\*` — partial prepare → missing modules, stale bundles |
-| `yarn tests:packager:jet-reset-cache`     | Reset after prepare, not during it                                                                             |
+| `yarn tests:packager:jet-reset-cache`     | Reset after prepare, not during it. Free `:8081` first — [running e2e § packager reset-cache](running-e2e.md#packager-reset-cache-eaddrinuse) |
 | `yarn tsc:compile`, Jest, `compare:types` | May read transpiled output or assume `dist/` is current                                                        |
 | Another `yarn` / scoped prepare           | Overlapping Nx/Lerna runs race on `dist/`                                                                      |
 
@@ -77,16 +77,20 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 **Before any** `yarn tests:ios:build`, `yarn tests:android:build`, or other Detox native build path:
 
 1. **Root `yarn` MUST have run and exited 0** in this checkout. Required on a fresh checkout, after deleting `node_modules`, after pulling patch changes, and whenever patches may be stale. Do **not** start native `:build` until that install finished successfully.
-2. Root `yarn` applies **`.yarn/patches`** (jet, detox, mocha-remote) and workspace **`patch-package`** patches, including **`tests/patches/react-native+0.78.3.patch`** (bumps React Native's fmt pin to **12.1.0**). `tests` `prepare` is `patch-package` and must **not** be Nx-cache-skipped ([MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted)).
-3. **Verify** the patched React Native fmt podspec reports version **≥ 12.1.0** (Xcode 26 / Apple Clang 21-safe floor for this pin). **Yarn exit 0 alone is not sufficient** — always run the check below before native `:build` (a prepare cache-skip historically left fmt at **11.0.2** despite a green install):
+2. Root `yarn` applies **`.yarn/patches`** (jet, detox, mocha-remote) and workspace **`patch-package`** patches. **macOS** still applies **`tests-macos/patches/react-native+0.78.3.patch`** (fmt **12.1.0**). **Mobile RN 0.86.2** ships fmt **12.1.0** upstream (no `tests/patches/react-native+*.patch` fmt bump). `tests` / `tests-macos` `prepare` is `patch-package` and must **not** be Nx-cache-skipped ([MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted)).
+3. **Verify** the React Native fmt podspec reports version **≥ 12.1.0** (Xcode 26 / Apple Clang 21-safe floor for this pin). **Yarn exit 0 alone is not sufficient** — always run the check below before native `:build` (a prepare cache-skip historically left fmt at **11.0.2** despite a green install):
 
 ```bash
+# Mobile toolchain (tests/) — required before ios/android :build
 rg 'spec\.version|:tag' tests/node_modules/react-native/third-party-podspecs/fmt.podspec
+# macOS app (tests-macos/) — required before macos :build (path may be workspace-local or hoisted)
+rg 'spec\.version|:tag' tests-macos/node_modules/react-native/third-party-podspecs/fmt.podspec \
+  || rg 'spec\.version|:tag' node_modules/react-native/third-party-podspecs/fmt.podspec
 ```
 
 Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 
-4. If fmt is still **11.0.2** (or anything **< 12.1.0**): **STOP**. Re-run root `yarn` / fix patch application (including Nx `tests:prepare` cache policy — [MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted)). Do **not** invent Podfile `post_install` fmt hacks, `FMT_USE_CONSTEVAL` / `base.h` patches, c++17-for-fmt-only, or web-search workarounds — the durable fix is the existing patch applied on install.
+4. If fmt is still **11.0.2** (or anything **< 12.1.0**): **STOP**. Re-run root `yarn` / fix patch application for **macOS** (including Nx `tests-macos:prepare` cache policy — [MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted)). On mobile 0.86+, fmt should already be ≥12.1.0 without a patch; if not, investigate the resolved `react-native` version. Do **not** invent Podfile `post_install` fmt hacks, `FMT_USE_CONSTEVAL` / `base.h` patches, c++17-for-fmt-only, or web-search workarounds.
 
 **Symptoms when violated:** Apple Clang 21 consteval errors compiling unpatched fmt **11.0.2**; agents inventing Podfile/fmt workarounds instead of re-running root `yarn` / fixing prepare cache policy.
 
@@ -127,6 +131,7 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 
 - **`yarn jet --help`** working or failing in `tests/` is **not** a valid e2e or install gate.
 - Jet is started **internally** by `yarn tests:<platform>:test-cover`. Stale `:8090` → [pre-flight recovery](running-e2e.md#pre-flight-recovery), then re-run the same `:test-cover` command.
+- Metro `EADDRINUSE` on `:8081` from `yarn tests:packager:jet-reset-cache` → [packager reset-cache](running-e2e.md#packager-reset-cache-eaddrinuse) (free `:8081`, then the same yarn target). Not the `:8090` pre-flight kill.
 
 ### Android Java format
 
@@ -152,15 +157,15 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 
 - **`cd packages/<pkg> && yarn ios:codegen`** (or `yarn android:codegen`) often fails with **`unknown command 'codegen'`** after a clean `yarn` — `@react-native-community/cli` resolves from the **test app** workspace.
 - Package scripts **wipe then regen** the configured `--outputPath` ([NewArch-AD-22](../new-architecture/architecture-decisions.md#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)). Prefer those yarn scripts when CLI resolution works.
-- **Canonical (CLI from tests/):** [turbomodule workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical) — wipe the package `outputPath` first, then `cd tests`, `npx @react-native-community/cli codegen --path ../packages/<pkg> …` with `--outputPath` copied from that package's `package.json` script. After iOS regen: `node ./scripts/patch-ios-codegen-resultt.mjs` ([NewArch-AD-21](../new-architecture/architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted)).
-- **CI / all packages:** `yarn codegen:verify` (wipe + regen + ResultT patch + `git diff --exit-code` on generated trees).
+- **Canonical (mobile toolchain from `tests/`):** use each package's `yarn android:codegen` / `yarn ios:codegen` script, which delegates to [`scripts/codegen-package.mjs`](../../scripts/codegen-package.mjs). The shared runner wipes the configured output path and invokes the pinned mobile CLI from `tests/`; do not run the CLI manually. RN 0.86 emits `ResultT` natively, so the former inject script is retired ([NewArch-AD-21](../new-architecture/architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted)).
+- **CI / all packages:** `yarn codegen:verify` (wipe + regen + `git diff --exit-code` on generated trees).
 - After regen: commit `android/.../generated` + `ios/generated`, then `:build` + Metro reset-cache before `:test-cover`.
 
 ### fmt / Apple Clang 21 (unpatched React Native)
 
-- Unpatched RN ships fmt **11.0.2**. On Xcode 26 / Apple Clang 21 that fails consteval builds.
-- **Canonical fix:** root `yarn` applying `tests/patches/react-native+0.78.3.patch` → fmt **12.1.0**. See [install / patch / fmt gate](#install-patch-fmt-gate-blocking).
-- **Trap:** yarn exit **0** does **not** prove the patch landed. If Nx cache-skips `react-native-firebase-tests:prepare` (`patch-package`), fmt stays at **11.0.2**. Durable policy: [MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted) (`tests` prepare `cache: false`). **Always** run the fmt `rg` verification before native `:build`.
+- Unpatched RN **0.78** ships fmt **11.0.2**. On Xcode 26 / Apple Clang 21 that fails consteval builds.
+- **Canonical fix (macOS 0.78):** root `yarn` applying `tests-macos/patches/react-native+0.78.3.patch` → fmt **12.1.0**. Mobile **0.86.2** already ships fmt **12.1.0**. See [install / patch / fmt gate](#install-patch-fmt-gate-blocking).
+- **Trap:** yarn exit **0** does **not** prove a macOS patch landed. If Nx cache-skips `react-native-firebase-tests-macos:prepare` (`patch-package`), fmt stays at **11.0.2**. Durable policy: [MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted). **Always** run the fmt `rg` verification before native `:build`.
 - **Never** invent Podfile `post_install` fmt hacks, `FMT_USE_CONSTEVAL`, `base.h` patches, or c++17-for-fmt-only as a substitute for a missed install/patch.
 
 ## Subagent handoff
@@ -174,7 +179,7 @@ Never: yarn workspace prepare, yarn jet, npx jet, cd packages/* && yarn prepare/
 Never invent format/install: yarn google-java-format, bare/npx google-java-format, npm install, yarn install in tests/ alone — use root yarn first; Java format = yarn lint:android ONLY.
 Never invent Android Gradle: ad-hoc ./gradlew outside yarn tests:android:unit / :build / :post-e2e-coverage / :test:jacoco-report; bare detox/jet/metro.
 Prepare/install: yarn or yarn lerna:prepare must exit 0 before ANY other command — never parallelize with e2e/Metro/build.
-Before native :build: root yarn exit 0 + verify tests/node_modules/react-native/third-party-podspecs/fmt.podspec ≥ 12.1.0 — okf-bundle/testing/agent-command-policy.md#install-patch-fmt-gate-blocking. If fmt < 12.1.0: STOP and re-run yarn; never invent Podfile/FMT_USE_CONSTEVAL/c++17 fmt hacks.
+Before native :build: root yarn exit 0 + verify tests/node_modules/react-native/third-party-podspecs/fmt.podspec (and tests-macos copy when building macOS) ≥ 12.1.0 — okf-bundle/testing/agent-command-policy.md#install-patch-fmt-gate-blocking. If fmt < 12.1.0: STOP and re-run yarn; never invent Podfile/FMT_USE_CONSTEVAL/c++17 fmt hacks.
 Area harness: okf-bundle/testing/running-e2e.md#local-harness-overrides-harnessoverridesjs — copy harness.overrides.example.js to gitignored harness.overrides.js; set modules + RNFBDebug; delete overrides after run.
 TurboModule contract test (NewArch-AD-17.1): packages/app/__tests__/nativeModuleContract.test.ts — yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts
 Android JVM unit (AndroidTest-AD-1): yarn tests:android:unit — not a substitute for platform e2e.

@@ -113,16 +113,35 @@ def configureJacocoReportTask(JacocoReport reportTask) {
 // (Jacoco plugin → build/jacoco/*.exec). Do not dependOn :app:testDebugUnitTest —
 // that task is hollow and produces no RNFB coverage. See tests/android/build.gradle
 // (enableAndroidTestCoverage for e2e .ec; Jacoco plugin for unit .exec).
+//
+// Only modules that ship sources under src/test (today: packages/app). Gradle 9 +
+// AGP 8.13 failOnNoDiscoveredTests when testOptions.unitTests.includeAndroidResources
+// is on but no tests exist — empty modules (analytics, app-check, …) would abort CI.
+def rnfbModuleHasJvmUnitTests(project) {
+    def testRoot = new File(project.projectDir, 'src/test')
+    if (!testRoot.exists()) {
+        return false
+    }
+    def hasTests = false
+    testRoot.eachFileRecurse { file ->
+        if (file.name.endsWith('.java') || file.name.endsWith('.kt')) {
+            hasTests = true
+        }
+    }
+    return hasTests
+}
+
 def rnfbDebugUnitTestTaskPaths() {
     return rootProject.subprojects
         .findAll { it.name.contains('react-native-firebase') }
+        .findAll { rnfbModuleHasJvmUnitTests(it) }
         .collect { "${it.path}:testDebugUnitTest" }
 }
 
-// Allowlisted via yarn tests:android:unit — all RNFB module JVM unit tests.
+// Allowlisted via yarn tests:android:unit — RNFB modules that ship src/test JVM tests.
 task rnfbDebugUnitTests {
     group = 'verification'
-    description = 'Run debug JVM unit tests for all react-native-firebase Android library modules'
+    description = 'Run debug JVM unit tests for react-native-firebase Android modules that ship src/test'
     dependsOn { rnfbDebugUnitTestTaskPaths() }
 }
 

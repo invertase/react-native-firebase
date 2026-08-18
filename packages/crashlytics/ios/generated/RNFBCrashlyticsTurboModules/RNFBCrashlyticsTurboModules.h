@@ -134,8 +134,8 @@ namespace JS {
 - (void)setCrashlyticsCollectionEnabled:(BOOL)enabled
                                 resolve:(RCTPromiseResolveBlock)resolve
                                  reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboCrashlytics::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboCrashlytics::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboCrashlytics::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboCrashlytics::Constants>)getConstants;
 
 @end
 
