@@ -1,18 +1,18 @@
 ---
 type: Reference
 title: iOS RNCore prebuilt podspec work queue
-description: Ephemeral tracker for wiring add_rncore_dependency + non-modular-includes into RNFB podspecs for RN 0.84+ prebuilt RNCore (CPRN-237, upstream PR #9024).
+description: Ephemeral tracker for RNFB podspec Clang non-modular-includes + xcconfig order (CPRN-237, #9200).
 tags: [ios, podspec, rncore, cocoapods, work-queue]
 timestamp: 2026-08-17T00:00:00Z
 ---
 
 # iOS RNCore prebuilt podspec — work queue
 
-> **Goal:** Land a maintainer-owned, same-repo reimplementation of invertase/react-native-firebase#9024 (`add_rncore_dependency` + `CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES` in every RNFB podspec), stacked on invertase/react-native-firebase#9192 (`split-tests-e2e-app-decouple-macos`), pilot-first on `packages/app`, then rolled out to the remaining podspecs, then used to document what Phase 2 (workaround-removal proof) can and can't currently show.
-> **Linear:** [CPRN-237](https://linear.app/invertase/issue/CPRN-237/track-pr-9024-rnfb-podspec-add-rncore-dependency-non-modular-includes) — Queue line set to `okf-work-queue` (`okf-bundle/ios-rncore-podspec-work-queue.md`).
-> **Upstream:** invertase/react-native-firebase#9024 (fork PR, producer-side fix — reimplemented here, not merged as-is). Consumer-side fix already upstream: facebook/react-native#56862 (in RN 0.86.2). Root issue: invertase/react-native-firebase#8883.
+> **Follow-up (2026-08-18):** Fresh-eyes review of [PR #9200](https://github.com/invertase/react-native-firebase/pull/9200). Durable owner is [iOS RNCore podspec invariants](ios-rncore-podspec.md). Live pods must not double-call `add_rncore_dependency` (`install_modules_dependencies` already does). Do not close #8883 from this PR.
+> **Linear:** [CPRN-237](https://linear.app/invertase/issue/CPRN-237) is Issue 1 only (this queue / #9200). Issue 2 (`tests/` prebuilt RNCore link) is [CPRN-321](https://linear.app/invertase/issue/CPRN-321), not this file. Queue line: `okf-work-queue` (`okf-bundle/ios-rncore-podspec-work-queue.md`).
+> **Upstream:** invertase/react-native-firebase#9024 (fork PR, producer-side — reimplemented here, not merged as-is). Consumer-side fix already upstream: facebook/react-native#56862 (in RN 0.86.2). Related issue: invertase/react-native-firebase#8883 (not closed by #9200).
 
-Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers / gate field ids: [iteration vocabulary](testing/iteration-vocabulary.md). **Loop, gates, host rule, harness:** [change authoring workflow](testing/change-authoring-workflow.md) — not restated here. **Agent commands:** [agent command policy](testing/agent-command-policy.md) only. Compile-boundary background: [iOS SPM native integration decisions](ios-spm-native-imports.md).
+Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers / gate field ids: [iteration vocabulary](testing/iteration-vocabulary.md). **Loop, gates, host rule, harness:** [change authoring workflow](testing/change-authoring-workflow.md) — not restated here. **Agent commands:** [agent command policy](testing/agent-command-policy.md) only. Durable invariants: [iOS RNCore podspec invariants](ios-rncore-podspec.md). SPM imports/embed: [iOS SPM native integration decisions](ios-spm-native-imports.md).
 
 ---
 
@@ -25,11 +25,13 @@ Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers
 | 3 | Queue covers **both** CPRN-237 phases: Phase 1 (land the podspec fix) and Phase 2 (workaround-removal proof). |
 | 4 | **Pilot first:** `packages/app` only (R1), proving the pattern before rolling out to the remaining ~14 podspecs (R2). |
 | 5 | **Validation floor (accepted exception):** a direct `xcodebuild` compile of the RNFB pod target(s) under a locally-forced `RCT_USE_PREBUILT_RNCORE=1`, not full `tests/` e2e — see [Required maintainer context](#required-maintainer-context) for why. User-accepted deferral, recorded 2026-08-17. |
-| 6 | The `react-native-device-info` / `@invertase/react-native-apple-authentication`-under-prebuilt-RNCore link-time conflict (discovered on #9192) is **out of scope** for this queue — tracked only via the [CPRN-237 discovery comment](https://linear.app/invertase/issue/CPRN-237#comment-8b021722), no fix item here. |
+| 6 | The `react-native-device-info` / `@invertase/react-native-apple-authentication`-under-prebuilt-RNCore link-time conflict (discovered on #9192) is **out of scope** for this queue. Tracker: [CPRN-321](https://linear.app/invertase/issue/CPRN-321). |
 | 7 | Phase 2 validation is **bare RN CLI only** (via `tests/`); Expo is explicitly deferred to CPRN-153 (separate, non-blocking). |
 | 8 | invertase/react-native-firebase#8994 (draft build-harness apps) is **not a dependency** of this queue — revisit opportunistically if it's further along by R3. |
 | 9 | Attribution: credit `wneel` via `Co-authored-by:` trailers on the reimplemented commit(s). Russell will message #9024 himself once the new PR is in draft — not an agent/queue action item. |
 | 10 | Human gate: CPRN-237's "Agent Suitable? Needs human first" flag is satisfied by this grill session for the overall approach; each item below follows [change authoring workflow](testing/change-authoring-workflow.md). |
+
+Superseded 2026-08-18 (do not treat as current): decision 1's `.m` extras did not ship; decision 2's stack ended when #9192 merged (`ios-podspec-rncore-prebuilt` rebases onto `main`); decision 7's `tests/` Phase 2 path cannot turn prebuilt on (Issue 2). Durable outcome is [ios-rncore-podspec.md](ios-rncore-podspec.md), not an expansion of the SPM ADR.
 
 ---
 
@@ -37,13 +39,13 @@ Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers
 
 **Two independent problems, only one is in scope here:**
 
-1. **Compile-time / header-visibility (in scope):** RNFB podspecs never opted into React Native's `add_rncore_dependency` helper, so under `RCT_USE_PREBUILT_RNCORE=1` (RN 0.84+ default), RNFB source can't resolve `<React/RCTConvert.h>` and friends. Separately, RNFBApp's umbrella header re-exporting `<React/...>` imports trips `-Werror,-Wnon-modular-include-in-framework-module` under `use_frameworks!`. Both fixed by two additions to every RNFB podspec — this is what R1/R2 below do.
-2. **Link-time / dynamic-linkage (out of scope, tracked separately):** `tests/ios/Podfile` (on #9192) keeps `RCT_USE_PREBUILT_RNCORE=0` because `react-native-device-info` and `@invertase/react-native-apple-authentication` (both dynamic pods, like `tests/`'s SPM-dynamic Firebase setup) fail to link (`undefined RCTEventEmitter`) under prebuilt RNCore. This is undocumented upstream and unrelated to RNFB's own podspecs — see [CPRN-237 discovery](https://linear.app/invertase/issue/CPRN-237#comment-8b021722). **Consequence:** `tests/` cannot exercise problem 1's fix end-to-end with prebuilt RNCore actually on, so R1/R2 use a direct pod-target `xcodebuild` compile instead of `tests/` e2e as their evidence floor (decision 5 above).
+1. **Compile-time / header-visibility (in scope):** RNFB umbrellas that re-export `<React/...>` trip `-Werror,-Wnon-modular-include-in-framework-module` under `use_frameworks!`. Fix: `CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES=YES` on `pod_target_xcconfig` **before** `install_modules_dependencies`. On RN 0.84+, that helper already calls `add_rncore_dependency`; live pods must not call it again. The package template still does, because it has no helper. Canonical: [ios-rncore-podspec.md](ios-rncore-podspec.md).
+2. **Link-time / dynamic-linkage (out of scope):** `tests/ios/Podfile` keeps `RCT_USE_PREBUILT_RNCORE=0` because `react-native-device-info` and `@invertase/react-native-apple-authentication` fail to link (`undefined RCTEventEmitter`) under prebuilt RNCore. Tracker: [CPRN-321](https://linear.app/invertase/issue/CPRN-321). Pin owner: [test app dependency pins](testing/test-app-dependency-pins.md). **Consequence:** `tests/` cannot exercise problem 1's fix end-to-end with prebuilt RNCore actually on, so R1/R2 used a direct pod-target `xcodebuild` compile instead of `tests/` e2e (decision 5 above).
 
 **Stack mechanics:**
 
-- Trunk: `main`. #9192 merged 2026-08-18 (`test(e2e): split macOS app; bump tests RN to 0.86 (#9192)`). This branch is **no longer stacked**; it was rebased `--onto origin/main` (R1+R2 only).
-- Branch: `ios-podspec-rncore-prebuilt`, 3 product/docs commits on `origin/main`. Post-rebase independent-review **green** (2026-08-18). Open the PR as **draft** targeting `main`. Russell messages #9024 once it's in draft (decision 9) — not a queue action item.
+- Trunk: `main`. #9192 merged 2026-08-18. This branch is **not stacked**; it was rebased `--onto origin/main`.
+- Branch: `ios-podspec-rncore-prebuilt`. Draft PR #9200 targeting `main`. Do not use `Fixes #8883`.
 
 ---
 
@@ -54,8 +56,9 @@ Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers
 | **R1** | `packages/app` pilot | Prove `add_rncore_dependency` + `CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES` compile clean under prebuilt RNCore on the umbrella pod first |
 | **R2** | Remaining ~14 podspecs | Roll the proven pattern out, mirroring #9024's file list |
 | **R3** | Phase 2 — bare RN CLI workaround-removal proof | Once #9192's RN 0.86.2 bump is available on the branch; producer-side proof only (see [context](#required-maintainer-context)) |
-| **R4** | Durable ADR write-up | Fold the proven pattern into [ios-spm-native-imports.md](ios-spm-native-imports.md) once R2 closes |
+| **R4** | Durable ADR write-up | Fold the proven pattern into [ios-rncore-podspec.md](ios-rncore-podspec.md) (not the SPM ADR) |
 | **R5** | PR handoff | Draft PR off `main`; fresh-eyes review ([Cross Platform guide § Step 7](https://linear.app/invertase/document/cross-platform-issue-authoring-and-agent-workflow-guide-2b429e4aace0#step-7--fresh-eyes-review-before-merge)) |
+| **R6** | Review corrections | Drop duplicate `add_rncore_dependency` on live pods; move durable text out of the SPM ADR; remove `Fixes #8883` |
 
 ---
 
@@ -76,10 +79,11 @@ Ephemeral tracker; see [OKF policy](documentation-policy.md). Work types / tiers
 | **R1** | `packages/app` podspec + `.m` changes, pilot | `fix(app, ios): wire add_rncore_dependency for prebuilt RNCore` | closed | closed | closed | `commit` | `area-focused` (evidence: `xcodebuild` compile, not e2e — see resume checklist #4) | `ios` | All gates closed. Docs scan ready (decision 10 now links change authoring; no durable ADR). Product: `packages/app/RNFBApp.podspec` only. Coverage n/a. See [R1 implementation evidence](#r1-implementation-evidence) and [R1 review evidence](#r1-review-evidence). |
 | **R2** | Remaining ~14 podspecs + `.m` files, mirroring #9024's file list | `fix(ios): wire add_rncore_dependency across remaining podspecs for prebuilt RNCore` | closed | closed | closed | `commit` | `area-focused` (same evidence shape as R1) | `ios` | All gates closed. Re-review green, no findings. xcconfig before helpers on all remaining specs. Native-import skip accepted. Coverage n/a. See [R2 re-review evidence](#r2-re-review-evidence). |
 | **R3** | Phase 2 producer-side workaround-removal proof, bare RN CLI, doc note | — (no commit; absorbed into R4) | closed | closed | closed | `documentation` | `none` | `ios` | Gap-analysis complete. Producer-side proof **already shipped** as R1/R2 `xcodebuild` (prebuilt on, dynamic `use_frameworks!`, no `$RNFirebaseAsStaticFramework`). Cannot prove full `tests/` link/e2e (Issue 2) or Expo `forceStaticLinking` (CPRN-153). No R3 product/docs commit. See [R3 gap analysis](#r3-gap-analysis). |
-| **R4** | Durable ADR addition to `ios-spm-native-imports.md` | `docs: record add_rncore_dependency for prebuilt RNCore` | closed | closed | closed | `commit` | `none` | — | All gates closed. Documentation pass ready. Canonical ADR + index blurb + pins cross-link. Expo `docs/index.mdx` / `docs/ios-spm.mdx` untouched (CPRN-153). See [R4 documentation evidence](#r4-documentation-evidence). |
-| **R5** | Mark PR ready; fresh-eyes review | — (no commit, PR-state change only) | closed | open | — | — | `none` | — | Post-rebase independent-review **green**, no findings. Draft PR: invertase/react-native-firebase#9200. Fresh-eyes (Step 7) when the PR is no longer draft / CI green — propose, don't assume. See [R5 post-rebase review evidence](#r5-post-rebase-review-evidence). |
+| **R4** | Durable ADR | `docs: record add_rncore_dependency for prebuilt RNCore` | closed | closed | closed | `commit` | `none` | — | Landed, then superseded by R6: canonical file is [ios-rncore-podspec.md](ios-rncore-podspec.md), not the SPM ADR. See [R4 documentation evidence](#r4-documentation-evidence). |
+| **R5** | Mark PR ready; fresh-eyes review | — (no commit, PR-state change only) | closed | closed | — | — | `none` | — | Fresh-eyes 2026-08-18 found ADR/home/`Fixes #8883` problems. See [R5 post-rebase review evidence](#r5-post-rebase-review-evidence) and CPRN-237 pr-review comment. |
+| **R6** | Apply #9200 review corrections | `fix(ios): drop duplicate add_rncore_dependency from live podspecs` | closed | closed | closed | `commit` | `unit-focused` | `ios` | Live pods no longer call `add_rncore_dependency`. Template still does. Durable owner [ios-rncore-podspec.md](ios-rncore-podspec.md). PR body already dropped `Fixes #8883`. See [R6 evidence](#r6-evidence). |
 
-**Current gates:** R1–R4 closed. R5 `implementation_gate` closed (draft PR open). **Next pickup:** Step 7 fresh-eyes when #9200 looks ready. **Current snapshot:** draft PR #9200 targeting `main`. Post-rebase `xcodebuild` evidence valid. Linear CPRN-237 last updated 2026-08-18 (pre-R4).
+**Current gates:** R1–R6 closed. **Next pickup:** merge #9200. **Current snapshot:** draft PR #9200 targeting `main`. Do not close #8883. Issue 2 is [CPRN-321](https://linear.app/invertase/issue/CPRN-321).
 
 ### R1 implementation evidence
 
@@ -188,7 +192,7 @@ Read-only. `harness narrowed: n/a`. No product edits. **No R3 commit.**
 | `okf-bundle/index.md` | Entry-point blurb now names prebuilt RNCore podspec wiring |
 | `okf-bundle/testing/test-app-dependency-pins.md` | Names both third-party pods; links to the ADR for RNFB podspec opt-in |
 
-Canonical: ADR owns RNFB podspec RNCore wiring; pins own `tests/ios` `RCT_USE_PREBUILT_RNCORE=0`; queue stays ephemeral evidence. Consumer `docs/index.mdx` / `docs/ios-spm.mdx` not edited.
+Canonical **at the time**: SPM ADR owned RNFB podspec RNCore wiring. **Superseded by R6:** [ios-rncore-podspec.md](ios-rncore-podspec.md) is the owner; the SPM ADR only links. Pins own `tests/ios` `RCT_USE_PREBUILT_RNCORE=0`; queue stays ephemeral. Consumer `docs/index.mdx` / `docs/ios-spm.mdx` not edited.
 
 ### R5 post-rebase review evidence
 
@@ -233,13 +237,29 @@ xcconfig-order: pass on all 16 live specs + template (`pod_target_xcconfig` befo
 ## R4 — durable ADR write-up (draft)
 
 - [x] Add a decision entry to [ios-spm-native-imports.md](ios-spm-native-imports.md) documenting `add_rncore_dependency` + `CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES` as the chosen fix for prebuilt-RNCore compile visibility, cross-referencing the Issue 2 link-time gap as a known, separately-tracked limitation
+- [x] **R6:** move that durable text to [ios-rncore-podspec.md](ios-rncore-podspec.md); SPM ADR only links
+
+## R6 — review corrections (draft)
+
+- [x] Live `packages/*/RNFB*.podspec` no longer call `add_rncore_dependency` after `install_modules_dependencies`
+- [x] Template still calls `add_rncore_dependency` (no `install_modules_dependencies`)
+- [x] Durable owner is [ios-rncore-podspec.md](ios-rncore-podspec.md); SPM ADR expansion reverted
+- [x] PR body does not use `Fixes #8883`
+
+### R6 evidence
+
+`harness narrowed: no`. Product commit `58ead7795`. No second `xcodebuild`: this pass only removes a duplicate helper call that `install_modules_dependencies` already makes (R1/R2 compiles still stand for the Clang flag + xcconfig order). Issue 2 remains [CPRN-321](https://linear.app/invertase/issue/CPRN-321).
+
+| Step | Command | Exit | Evidence |
+| ---- | ------- | ---- | -------- |
+| lint (CI) | `yarn lint` | 0 | google-java-format reported 116 files already formatted; no extra diff |
 
 ---
 
 ## Related product files (starting points)
 
-- `packages/app/RNFBApp.podspec` — pilot target
-- `scripts/_TEMPLATE_/RNFB_Template_.podspec` — template podspec, keep in sync so future packages inherit the pattern
+- `packages/app/RNFBApp.podspec` — umbrella pod; Clang flag + xcconfig before helpers
+- `scripts/_TEMPLATE_/RNFB_Template_.podspec` — still calls `add_rncore_dependency` itself
 - `tests/ios/Podfile` — `RCT_USE_PREBUILT_RNCORE` / `RCT_USE_RN_DEP` env vars (do not commit local overrides)
-- [ios-spm-native-imports.md](ios-spm-native-imports.md) — R4 target
-- Full #9024 file list (for R2 scope): all `packages/*/RNFB*.podspec` except `ml` and `perf` subtleties already noted in that PR's diff — re-derive from `gh pr view 9024 --json files` rather than trusting this list to stay current
+- [ios-rncore-podspec.md](ios-rncore-podspec.md) — durable invariants
+- [test app dependency pins](testing/test-app-dependency-pins.md) — `tests/` `PREBUILT=0` pin

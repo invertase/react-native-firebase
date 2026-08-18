@@ -1,18 +1,19 @@
 ---
 type: Reference
 title: iOS SPM native integration decisions
-description: Why RNFB uses dual imports, Objective-C helpers for Swift Firebase products, an app framework-embedding phase, and podspec RNCore wiring for prebuilt React Native.
-tags: [ios, spm, cocoapods, imports, firebase, cxx-modules, rncore]
-timestamp: 2026-08-18T00:00:00Z
+description: Why RNFB uses dual imports, Objective-C helpers for Swift Firebase products, and an app framework-embedding phase.
+tags: [ios, spm, cocoapods, imports, firebase, cxx-modules]
+timestamp: 2026-08-06T16:00:00Z
 ---
 
 # iOS SPM native integration decisions
 
-This is the canonical maintainer record for native iOS compile and link
-constraints around Firebase SPM dependency resolution and React Native
-prebuilt RNCore. It records decisions and invariants, not consumer setup.
-Consumer configuration and troubleshooting live in
-[`docs/ios-spm.mdx`](../docs/ios-spm.mdx).
+This is the canonical maintainer record for native constraints discovered while
+adding Firebase SPM dependency resolution. It records decisions and invariants,
+not consumer setup. Consumer configuration and troubleshooting live in
+[`docs/ios-spm.mdx`](../docs/ios-spm.mdx). Podspec RNCore /
+`use_frameworks!` Clang flags:
+[iOS RNCore podspec invariants](ios-rncore-podspec.md).
 
 **Policy:** [OKF documentation and commit policy](documentation-policy.md).
 
@@ -27,12 +28,6 @@ Consumer configuration and troubleshooting live in
    and keep TurboModule `.mm` files as Firebase-free delegators.
 5. SPM-built dynamic frameworks required at runtime must be embedded by the app
    target, not declared as unrelated public Firebase products in RNFB podspecs.
-6. Every RNFB podspec calls `add_rncore_dependency(s)` (guarded by `defined?`)
-   and sets `CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES=YES` in
-   `pod_target_xcconfig` **before** `install_modules_dependencies` /
-   `add_rncore_dependency`, so `<React/...>` headers resolve when
-   `RCT_USE_PREBUILT_RNCORE=1` (RN 0.84+ default) without overwriting
-   helper-injected `HEADER_SEARCH_PATHS` and `c++20`.
 
 ## CocoaPods/SPM dual imports
 
@@ -386,53 +381,10 @@ The hook is guarded the same way as the embed phase: a failure to add the
 build phase warns via `Pod::UI` with the manual fallback command instead of
 failing `pod install` outright.
 
-## Prebuilt React-Core header visibility
-
-React Native 0.84+ defaults `RCT_USE_PREBUILT_RNCORE=1`. RNFB podspecs must
-call React Native's `add_rncore_dependency(s)` helper, guarded by
-`defined?(add_rncore_dependency)`, so `<React/...>` headers resolve against
-the prebuilt `React-Core` overlay.
-Separately, `use_frameworks!` (required for SPM mode) treats RNFB pods as
-framework modules; umbrellas that re-export `<React/...>` then fail
-`-Werror,-Wnon-modular-include-in-framework-module` unless
-`CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES=YES` is set on
-`pod_target_xcconfig`.
-
-**Order invariant:** assign `pod_target_xcconfig` (including that Clang flag,
-plus any pod-local `HEADER_SEARCH_PATHS`) **before**
-`install_modules_dependencies` / `add_rncore_dependency`. Assigning a new
-hash afterwards overwrites helper-injected `HEADER_SEARCH_PATHS` and
-`CLANG_CXX_LANGUAGE_STANDARD=c++20`. From-source RNCore
-(`RCT_USE_PREBUILT_RNCORE=0`) then fails compiling
-`react/timing/primitives.h` → `react/debug/flags.h`. Do not assign a second
-hash after the helpers.
-
-Producer-side compile of every live RNFB pod scheme (Debug and Release)
-succeeds under forced prebuilt RNCore, dynamic `use_frameworks!`, and
-`$RNFirebaseAsStaticFramework` unset. That is what workaround removal can
-show **for RNFB pods**.
-
-It does **not** claim a full `tests/` link or e2e run with prebuilt on.
-[`tests/ios/Podfile`](../tests/ios/Podfile) keeps
-`RCT_USE_PREBUILT_RNCORE=0` because `react-native-device-info` and
-`@invertase/react-native-apple-authentication` fail to link under prebuilt
-RNCore plus SPM-dynamic Firebase. That test-app pin is owned by
-[test app dependency pins](testing/test-app-dependency-pins.md). Current
-compile evidence lives in the
-[iOS RNCore prebuilt podspec work queue](ios-rncore-podspec-work-queue.md);
-host `xcodebuild` invocation details stay there.
-
-Expo `forceStaticLinking` consumer guidance in `docs/index.mdx` is out of
-scope here ([CPRN-153](https://linear.app/invertase/issue/CPRN-153)).
-Consumer setup stays in [`docs/ios-spm.mdx`](../docs/ios-spm.mdx) and
-[`docs/index.mdx`](../docs/index.mdx). Root compile failures:
-[GitHub #8883](https://github.com/invertase/react-native-firebase/issues/8883)
-/ [CPRN-237](https://linear.app/invertase/issue/CPRN-237).
-
 ## Review invariants
 
-When native Firebase imports, SPM products, or RNFB podspec RNCore wiring
-change, review the diff for these invariants:
+When native Firebase imports or SPM products change, review the diff for these
+invariants:
 
 - no umbrella-header-to-`@import` fallback without a real product-header branch;
 - when product headers/modules are absent on a platform because upstream SPM
@@ -463,12 +415,10 @@ change, review the diff for these invariants:
   the resolved graph (e.g. a firebase-ios-sdk version bump),
   `RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES` is re-checked against a clean
   `-resolvePackageDependencies` run rather than assumed still complete;
-- `pod_target_xcconfig` must be assigned before `install_modules_dependencies`
-  / `add_rncore_dependency`; do not assign a second hash afterwards;
 - Debug and Release builds cover SPM and CocoaPods, and the real-device archive
   job verifies that every `@rpath` framework dependency is embedded.
 
-The bullets above are the native iOS / SPM review checklist. General build, lint,
+The bullets above are the SPM-specific review checklist. General build, lint,
 and evidence requirements are owned by the
 [validation checklist](testing/validation-checklist.md) and
 [change authoring workflow](testing/change-authoring-workflow.md). The archive
