@@ -47,11 +47,12 @@ function parsePort(value) {
   return Number.isFinite(n) ? n : null;
 }
 
-// NOTE: tests/.babelrc's `transform-inline-environment-variables` plugin only rewrites
-// static `process.env.NAME` member expressions at Metro-transform time — it cannot see
-// through computed/dynamic lookups such as `process.env[key]` or template-built names.
-// The packaged app has no real `process.env` at runtime, so every slotted var below must
-// be spelled out literally to match the include list in tests/.babelrc.
+// NOTE: tests/.babelrc and tests-macos/.babelrc's `transform-inline-environment-variables`
+// plugin only rewrites static `process.env.NAME` member expressions at Metro-transform
+// time — it cannot see through computed/dynamic lookups such as `process.env[key]` or
+// template-built names. The packaged app has no real `process.env` at runtime, so every
+// slotted var below must be spelled out literally to match the include list in both
+// tests/.babelrc and tests-macos/.babelrc.
 function staticEmulatorPort(pk, service) {
   switch (pk) {
     case 'android':

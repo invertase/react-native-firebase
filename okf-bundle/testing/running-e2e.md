@@ -52,7 +52,7 @@ yarn tests:emulator:start
    - **Before any native `:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) — root `yarn` exit 0 + fmt podspec **≥ 12.1.0**. Missing this gate → Apple Clang 21 consteval failures on unpatched fmt **11.0.2**.
    - Native changed → `yarn tests:ios:build` / `yarn tests:android:build` before e2e. macOS uses firebase-js-sdk only — no native rebuild.
    - **Committed codegen / generated native artifacts count as native** — any change under `packages/*/ios/generated/**` or `packages/*/android/**/generated/**` (including wipe-then-regen orphan deletions), or TurboModule **codegen / spec / podspec / native shell**, is a native change: rebuild + [platform coverage](#platform-coverage-gate-blocking) e2e on iOS and Android. **`yarn codegen:verify` is not a substitute** for `:test-cover` ([change authoring § forbidden shortcuts](change-authoring-workflow.md#forbidden-shortcuts)).
-   - `packages/*/lib/**` changed → **`yarn lerna:prepare` must run to completion (exit 0) before anything else** — Metro serves `dist/module/**`, not `lib/**`. See [prepare completion gate](#prepare-completion-gate-blocking) and [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first). After prepare finishes, restart the packager with `yarn tests:packager:jet-reset-cache` when Metro was already running ([packager reset-cache](#packager-reset-cache-eaddrinuse)).
+   - `packages/*/lib/**` changed → **`yarn lerna:prepare` must run to completion (exit 0) before anything else** — Metro serves `dist/module/**`, not `lib/**`. See [prepare completion gate](#prepare-completion-gate-blocking) and [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first). After prepare finishes, restart the **matching** packager when Metro was already running ([packager reset-cache](#packager-reset-cache-eaddrinuse)).
    - TurboModule **codegen / spec / podspec / native shell** changed → same as native changed, plus regen codegen ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)) when specs changed; if app loads with Metro redbox `Requiring unknown module "undefined"`, see [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
    - **JS bundle (debug):** all platforms (iOS, Android, macOS) load JS from Metro; only **release** builds pre-bundle/embed JS. `lib/**` edits alone do not require `:build` — use the [prepare completion gate](#prepare-completion-gate-blocking) and Metro restart above.
    - **TS coverage:** run `:build` before `:test-cover` on iOS/Android so Istanbul + patched test-runner coverage instrumentation is in the debug native app (bundle still from Metro). After test-runner patch changes, restart the packager with `yarn tests:packager:jet-reset-cache` ([packager reset-cache](#packager-reset-cache-eaddrinuse)).
@@ -166,7 +166,7 @@ Run **all four** steps before every `:test-cover`. After an [interrupted run](#i
 If product code under `packages/*/lib/**` was edited in this session, **`yarn lerna:prepare`** (or scoped `yarn lerna run prepare --scope …`) must have **fully finished with exit code 0** before pre-flight steps 1–3 or any `:test-cover` / `:build`.
 
 - **Wait** for the prepare shell to return — do not batch prepare in parallel with Metro restart, pre-flight probes, or e2e in the same agent turn.
-- **Then** restart Metro when it was already running: [packager reset-cache](#packager-reset-cache-eaddrinuse) (`yarn tests:packager:jet-reset-cache`).
+- **Then** restart Metro when it was already running: [packager reset-cache](#packager-reset-cache-eaddrinuse) (matching iOS/Android vs macOS packager — not interchangeable).
 - **Then** continue with host-clear probes and service checks below.
 
 Skipping this gate causes missing or half-written `dist/module/**` while Metro `/status` still returns 200 — a common source of bundle-load and module-not-found failures that look like product bugs.
@@ -260,11 +260,13 @@ Do **not** use `boot-simulator.sh` or `simctl shutdown all` as routine prep ([wh
 
 **Packager restart (`jet-reset-cache`)** — `yarn tests:packager:jet-reset-cache` and `yarn tests:macos:packager:jet-reset-cache` bind Metro on **`:8081`**. If Metro is already listening, reset fails with `listen EADDRINUSE: address already in use :::8081`. [Pre-flight recovery](#pre-flight-recovery) clears **`:8090` only**.
 
-Before either reset-cache command, free the existing Metro listener (same `lsof | xargs kill` as `:8090`; do **not** `kill -9`):
+Before the matching reset-cache command, free the existing Metro listener (same `lsof | xargs kill` as `:8090`; do **not** `kill -9`):
 
 ```bash
 lsof -nP -iTCP:8081 -sTCP:LISTEN -t | xargs kill 2>/dev/null || true
-yarn tests:packager:jet-reset-cache   # or tests:macos:packager:jet-reset-cache
+# Matching packager only — iOS/Android (`tests/`) vs macOS (`tests-macos/`); not interchangeable:
+yarn tests:packager:jet-reset-cache
+# yarn tests:macos:packager:jet-reset-cache
 ```
 
 Then re-check Metro HTTP and [checkout ownership](#services-checkout-ownership-blocking). Do not invent a yarn target for this kill.
@@ -355,7 +357,7 @@ Do not poll `pgrep`, process names, or `:8090` for _completion_ ([above](#how-a-
 | Edit only one platform block in `tests/app.js` (legacy pattern) while the other still pushes full list | macOS ~700 firestore tests pass; iOS/Android logs show `database`, `crashlytics`, etc.             | Run is **invalid** on iOS/Android — use [overrides file](#local-harness-overrides-harnessoverridesjs) instead |
 | Correct area harness via overrides                                                                     | Pass counts match loaded module/spec scope ([sanity table](#sanity-check-by-platform))             | Expected                                                                                                      |
 
-**Apply locally before every `:test-cover` at unit-focused or area-focused tier** — even when git shows the full push harness. **Remove** `tests/harness.overrides.js` (or export `{}`) after the run when the branch keeps full harness (typical until phase **R**). Never commit `harness.overrides.js`.
+**Apply locally before every `:test-cover` at unit-focused or area-focused tier** — even when git shows the full push harness. **Remove** `tests/harness.overrides.js` (or export `{}`) after the run when the branch keeps full harness (typical until **full** / pre-merge). Never commit `harness.overrides.js`.
 
 **Validation report must state:** harness narrowed (yes/no), override file used (yes/no), which module/spec loads, whether pass counts match area scope, and **which platforms ran** with exit codes. A green full-app run is not a substitute.
 
@@ -399,7 +401,7 @@ See also: [coverage design § platform parity](coverage-design.md#coverage-expec
 2. Overrides `modules` lists only the package under change (e.g. `['app', 'firestore']`).
 3. Spec load uses direct `require` of the area spec — not `require.context` for all packages — when sub-suite narrowing applies; otherwise full package `require.context` is OK when the module list is narrowed.
 4. No `.only` when tier is **area-focused**; `.only` optional when tier is **unit-focused**.
-5. Grep log: pass count consistent with area scope (~100 for pipeline-only, ~700 for full firestore package on macOS), not full app (~141+ macOS baseline with full load per [work queue](../packages/firestore/pipeline-coverage-work-queue.md)).
+5. Grep log: pass count consistent with area scope ([sanity table](#sanity-check-by-platform)), not a full-app load (hundreds or thousands of tests across unrelated modules).
 
 ### Unit-focused-tier iteration loop
 
@@ -629,7 +631,7 @@ bash scripts/e2e/release-e2e-resources.sh
 
 # 3) Start services for this platform×slot (packager before build)
 bash scripts/e2e/start-emulator-slotted.sh <platform>   # or … <platform> N to self-apply
-bash scripts/e2e/run-slotted-packager.sh <platform> N   # background OK; or yarn tests:packager:jet-reset-cache with env loaded
+bash scripts/e2e/run-slotted-packager.sh <platform> N   # background OK; canonical helper (macos → yarn tests:macos:packager:jet-reset-cache in tests-macos/; android/ios → yarn tests:packager:jet-reset-cache in tests/)
 
 # 4) Build for the slot (macOS uses RNFB_MACOS_PRODUCT_NAME → PRODUCT_NAME_SUFFIX)
 # After worktree reset/sync for iOS, if Pods/Manifest.lock may have drifted:
@@ -844,7 +846,7 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 1. [Prepare completion gate](#prepare-completion-gate-blocking) — `yarn lerna:prepare` exit 0.
 2. Regenerate codegen if specs changed — [workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical) (wipe configured `outputPath`, then CLI / package scripts).
 3. **`yarn tests:<platform>:build`** (includes `pod install` on iOS when needed).
-4. **`yarn tests:packager:jet-reset-cache`** (Metro was running during the edits) — [packager reset-cache](#packager-reset-cache-eaddrinuse).
+4. Matching packager reset-cache (Metro was running during the edits) — [packager reset-cache](#packager-reset-cache-eaddrinuse).
 5. [Pre-flight](#pre-flight-is-the-host-clear-to-start) → **`yarn tests:<platform>:test-cover`**.
 
 <a id="turbomodule-full-toolchain-refresh"></a>
@@ -858,7 +860,7 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 5. Regenerate **all** touched packages' codegen from `tests/` ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)).
 6. **`yarn tests:ios:pod:install`** when iOS native/codegen changed.
 7. **`yarn tests:<platform>:build`**.
-8. **`yarn tests:packager:jet-reset-cache`** ([packager reset-cache](#packager-reset-cache-eaddrinuse)) → pre-flight → `:test-cover`.
+8. Matching packager reset-cache ([packager reset-cache](#packager-reset-cache-eaddrinuse)) → pre-flight → `:test-cover`.
 
 Do **not** treat this redbox as a missing TurboModule registration until the refresh sequence has been run once on a clean tree.
 

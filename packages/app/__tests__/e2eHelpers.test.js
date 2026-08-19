@@ -159,6 +159,17 @@ describe('app e2e helpers — slotted env resolution', () => {
     });
   });
 
+  describe('getE2eEmulatorHost', () => {
+    it('uses 10.0.2.2 on android and 127.0.0.1 on ios/macos (never localhost)', () => {
+      setPlatform('android');
+      expect(helpers.getE2eEmulatorHost()).toBe('10.0.2.2');
+      setPlatform('ios');
+      expect(helpers.getE2eEmulatorHost()).toBe('127.0.0.1');
+      setPlatform('macos');
+      expect(helpers.getE2eEmulatorHost()).toBe('127.0.0.1');
+    });
+  });
+
   describe('getJetRemoteUrl', () => {
     it('builds a ws:// url from host + resolved jet port', () => {
       setPlatform('android');

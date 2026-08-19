@@ -4,7 +4,10 @@
 # Prefer env from tests/mellifera.env.json written by mellifera-apply-reservation.js.
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+# shellcheck source=lib/e2e-resource-env.sh
+source "${SCRIPT_DIR}/lib/e2e-resource-env.sh"
 MELLIFERA_URL="${MELLIFERA_URL:-http://127.0.0.1:8790}"
 PORTS_FILE="${REPO_ROOT}/tests/mellifera.env.json"
 WAIT_SEC="${RNFB_PREFLIGHT_WAIT_SEC:-300}"
@@ -68,10 +71,9 @@ for platform in "${_preflight_platforms[@]}"; do
   [[ -n "$fn" ]] && wait_listen "$fn" "functions-${platform}" "$WAIT_SEC" || true
 done
 
-MACOS_PRODUCT="${RNFB_MACOS_PRODUCT_NAME:-io.invertase.testing}"
-MACOS_APP="${REPO_ROOT}/tests-macos/macos/build/Build/Products/Debug/${MACOS_PRODUCT}.app"
 if [[ "$PREFLIGHT_PLATFORMS" == *macos* ]]; then
-  [[ -d "$MACOS_APP" ]] && log_ok "macOS app ${MACOS_PRODUCT}" || log_fail "macOS app missing (${MACOS_APP})"
+  MACOS_APP="$(e2e_macos_app_path)"
+  [[ -d "$MACOS_APP" ]] && log_ok "macOS app ${E2E_MACOS_APP_PROCESS}" || log_fail "macOS app missing (${MACOS_APP})"
 fi
 
 # Finding #7: gate iOS/Android artifact existence checks on RNFB_PREFLIGHT_PLATFORMS,

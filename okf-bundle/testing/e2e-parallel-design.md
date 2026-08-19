@@ -92,18 +92,9 @@ Commands for clear → start → build → test → free: [running e2e § slot l
 
 Serial defaults and conflict modes are summarized in [§ How parallel e2e works](#how-parallel-e2e-works-eli14). Slotted support: per-platform `RNFB_*` ports + `start-emulator-slotted.sh`, Detox slot configs, and **`RNFB_MACOS_PRODUCT_NAME`**. Cross-platform Jet note: stale macOS on a **shared** Jet port still breaks Android ([running e2e § Android app reset](running-e2e.md#android-app-reset-blocking)) — slotted runs give each platform its own Jet; teardown must still kill the **named** macOS process.
 
-### Slot lifecycle (mirror)
+### Slot lifecycle
 
-For arbitrary slot `N` and platform `android|ios|macos`, the committed path is:
-
-1. First use of a slot (incl. `N=0`): `yarn tests:e2e:setup-android-avds` / `yarn tests:e2e:setup-ios-sims`. Then `eval "$(bash scripts/e2e/export-slot-env.sh <platform> N)"` — full carry-in + slot device identities (`TestingAVD-N` / `RNFB E2E iOS slot-N` / `io.invertase.testing.sN`).
-2. `bash scripts/e2e/check-e2e-resources.sh` / `release-e2e-resources.sh` — **slot-scoped** when that env is loaded; default release clears **ports+apps** for all three platform blocks (not AVD/sims). Mid-wave early free: `--platform=<done>` (devices may stay up). Unscoped wipe of `.s0..sN` only when slot env is unset.
-3. `bash scripts/e2e/start-emulator-slotted.sh <platform>` (+ optional slot) + `bash scripts/e2e/run-slotted-packager.sh <platform> N`.
-4. `yarn tests:<platform>:build` (macOS: suffix via `RNFB_MACOS_PRODUCT_NAME`). After worktree reset/sync for iOS, run `yarn tests:ios:pod:install` first if Pods/Manifest.lock may have drifted.
-5. `bash scripts/e2e/run-slotted-test-cover.sh <platform> N`.
-6. End-of-slot / final free: `release-e2e-resources.sh --devices` with the **same** env still loaded — default release alone leaves sims/AVDs up; slotted `check --platform=ios` then reports **BUSY**.
-
-Full recipe and caveats: [running e2e § slot lifecycle](running-e2e.md#slot-lifecycle).
+The numbered recipe (setup devices → export env → check/release → slotted emulator + `run-slotted-packager.sh` → `:build` → slotted `:test-cover` → free) lives in [running e2e § slot lifecycle](running-e2e.md#slot-lifecycle). Do not duplicate those commands here. The packager helper starts **the matching Metro root** (`tests/` vs `tests-macos/`) — see [Metro per worktree](#metro-per-worktree-and-per-slot).
 
 ## Resource model
 
