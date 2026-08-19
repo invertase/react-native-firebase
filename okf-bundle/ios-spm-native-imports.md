@@ -11,7 +11,9 @@ timestamp: 2026-08-06T16:00:00Z
 This is the canonical maintainer record for native constraints discovered while
 adding Firebase SPM dependency resolution. It records decisions and invariants,
 not consumer setup. Consumer configuration and troubleshooting live in
-[`docs/ios-spm.mdx`](../docs/ios-spm.mdx).
+[`docs/ios-spm.mdx`](../docs/ios-spm.mdx). Podspec RNCore /
+`use_frameworks!` Clang flags:
+[iOS RNCore podspec invariants](ios-rncore-podspec.md).
 
 **Policy:** [OKF documentation and commit policy](documentation-policy.md).
 

@@ -33,9 +33,13 @@ Pod::Spec.new do |s|
      raise "#{s.name} requires New Architecture. Enable New Architecture to use this module"
   end
 
-  # App must define modules for static framework integration of other packages to work
+  # App must define modules for static framework integration of other packages to work.
+  # CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES is required so RNFB's umbrella,
+  # which re-exports <React/...> imports, validates when consumers build with use_frameworks!
+  # (the default on Expo, and required for the firebase-ios-sdk).
   s.pod_target_xcconfig = {
     "DEFINES_MODULE" => "YES",
+    "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
   }
 
   # RNFBUtilsModule.mm uses PHAsset (Photos.framework) to resolve local asset paths.

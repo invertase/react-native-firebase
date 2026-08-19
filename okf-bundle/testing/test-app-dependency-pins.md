@@ -3,7 +3,7 @@ type: Reference
 title: Test app dependency pins
 description: Intentional version locks for the mobile (tests/) and macOS (tests-macos/) e2e apps; codegen resolves from tests/.
 tags: [testing, dependencies, react-native-macos, cli, pins]
-timestamp: 2026-08-13T00:00:00Z
+timestamp: 2026-08-18T00:00:00Z
 ---
 
 # Test app dependency pins
@@ -45,7 +45,7 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 
 **fmt / Apple Clang:** RN **0.86.2** ships fmt **12.1.0** upstream (no mobile `patch-package` fmt bump). macOS **0.78.3** still applies [`tests-macos/patches/react-native+0.78.3.patch`](../../tests-macos/patches/react-native+0.78.3.patch). Always verify via [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking).
 
-**iOS pods (mobile):** RN 0.86 defaults `RCT_USE_PREBUILT_RNCORE` / `RCT_USE_RN_DEP` to **1** inside `use_react_native!`. The test app sets both to **`0`** in [`tests/ios/Podfile`](../../tests/ios/Podfile) before requiring `react_native_pods` so dynamic frameworks (e.g. `react-native-device-info`) link against source RNCore (`RCTEventEmitter`). Do not re-enable prebuilt RNCore for this app without re-validating third-party pods.
+**iOS pods (mobile):** RN 0.86 defaults `RCT_USE_PREBUILT_RNCORE` / `RCT_USE_RN_DEP` to **1** inside `use_react_native!`. The test app sets both to **`0`** in [`tests/ios/Podfile`](../../tests/ios/Podfile) before requiring `react_native_pods` so third-party dynamic pods (`react-native-device-info`, `@invertase/react-native-apple-authentication`) link against source RNCore (`RCTEventEmitter`) under SPM-dynamic Firebase. That pin is **Issue 2**. RNFB podspec Clang / xcconfig order is **Issue 1** ([iOS RNCore podspec invariants](../ios-rncore-podspec.md)). Do not re-enable prebuilt RNCore for this app without re-validating those third-party pods.
 
 **Agent / Dependabot rule:** leave these pins alone unless the change is an intentional dual-app or mobile-only upgrade. Reject RN / codegen / CLI bumps that only “look green” for one app while breaking the other or codegen verify.
 

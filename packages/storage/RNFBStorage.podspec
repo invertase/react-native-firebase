@@ -39,7 +39,8 @@ Pod::Spec.new do |s|
   # HEADER_SEARCH_PATHS (React-debug etc.). Assigning after overwrites those paths
   # and breaks from-source builds: react/timing/primitives.h → react/debug/flags.h.
   s.pod_target_xcconfig = {
-    'HEADER_SEARCH_PATHS' => '"$(PODS_TARGET_SRCROOT)/ios/generated/RNFBStorageTurboModules" "$(PODS_TARGET_SRCROOT)/ios/generated"'
+    'HEADER_SEARCH_PATHS' => '"$(PODS_TARGET_SRCROOT)/ios/generated/RNFBStorageTurboModules" "$(PODS_TARGET_SRCROOT)/ios/generated"',
+    "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
   }
 
   s.dependency          'RNFBApp'
