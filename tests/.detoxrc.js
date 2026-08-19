@@ -53,11 +53,19 @@ function iosSimulatorDevice(slot) {
   };
 }
 
+// Snapshot flags only. Detox LaunchCommand already prepends `-port ${FreePortFinder}`;
+// putting `-port` in bootArgs makes qemu use the last value while adb waits on the first.
+function androidEmulatorBootArgs() {
+  return (process.env.RNFB_ANDROID_EMULATOR_BOOT_ARGS || '-no-snapshot-load -no-snapshot-save')
+    .replace(/(?:^|\s)-port\s+\d+/g, '')
+    .trim();
+}
+
 function androidEmulatorDevice(slot) {
   return {
     type: 'android.emulator',
     device: { avdName: `TestingAVD-${slot}` },
-    bootArgs: process.env.RNFB_ANDROID_EMULATOR_BOOT_ARGS || '-no-snapshot-load -no-snapshot-save',
+    bootArgs: androidEmulatorBootArgs(),
     readonly: true,
   };
 }
@@ -98,7 +106,7 @@ const devices = {
   emulator: {
     type: 'android.emulator',
     device: { avdName: SERIAL_ANDROID_AVD },
-    bootArgs: process.env.RNFB_ANDROID_EMULATOR_BOOT_ARGS || '-no-snapshot-load -no-snapshot-save',
+    bootArgs: androidEmulatorBootArgs(),
     readonly: true,
   },
 };
@@ -112,14 +120,12 @@ const apps = {
   'ios.debug': {
     type: 'ios.app',
     binaryPath: 'ios/build/Build/Products/Debug-iphonesimulator/testing.app',
-    build:
-      `set -o pipefail && ${iosXcodebuildPrefix()} xcodebuild VALID_ARCHS="\`uname -m\`"  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify`,
+    build: `set -o pipefail && ${iosXcodebuildPrefix()} xcodebuild VALID_ARCHS="\`uname -m\`"  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify`,
   },
   'ios.release': {
     type: 'ios.app',
     binaryPath: 'ios/build/Build/Products/Release-iphonesimulator/testing.app',
-    build:
-      `export RCT_NO_LAUNCH_PACKAGER=true && set -o pipefail && ${iosXcodebuildPrefix()} xcodebuild  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify`,
+    build: `export RCT_NO_LAUNCH_PACKAGER=true && set -o pipefail && ${iosXcodebuildPrefix()} xcodebuild  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify`,
   },
   'android.debug': androidApp(ANDROID_REVERSE_DEFAULT),
   'android.debug.windows': androidAppWindows(ANDROID_REVERSE_DEFAULT),

@@ -182,10 +182,11 @@ e2e_resolve_android_serial() {
   if [[ -f "$json" ]] && e2e_mellifera_enabled; then
     from_json=$(node -e "try{const j=require('$json');console.log((j.android&&j.android.device&&j.android.device.androidSerial)||'')}catch(e){}" 2>/dev/null || true)
   fi
-  # Explicit serial (env or mellifera) always wins. For non-default slotted AVDs
-  # (including TestingAVD-0), do NOT fall back to emulator-5554 — that is the
-  # serial TestingAVD default and would make slot-scoped release kill the wrong
-  # qemu. Release then uses AVD-name pkill.
+  # Explicit serial (env or mellifera) always wins. For slotted AVDs
+  # (TestingAVD-N, including N=0), do NOT invent emulator-5554 or a guessed
+  # console port — Detox FreePortFinder assigns the qemu `-port`, so a baked
+  # 15554+N×2 serial desyncs from the live adb name. Release then uses
+  # AVD-name pkill.
   if [[ -n "$from_json" || -n "${ANDROID_SERIAL:-}" ]]; then
     e2e_first_set "$from_json" "${ANDROID_SERIAL:-}"
     return 0

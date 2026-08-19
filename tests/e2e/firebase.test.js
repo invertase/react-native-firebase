@@ -15,7 +15,9 @@
  * limitations under the License.
  *
  */
-const { execSync, spawn } = require('child_process');
+const { execSync, spawn, execFile: execFileCb } = require('child_process');
+const { promisify } = require('util');
+const execFile = promisify(execFileCb);
 const net = require('net');
 const path = require('path');
 
@@ -406,8 +408,7 @@ function adbDeviceState(serial) {
 }
 
 function resolveAndroidSerial() {
-  // Detox picks a dynamic emulator port (e.g. emulator-13226); prefer live device.id over
-  // a stale ANDROID_SERIAL from the environment when both are present.
+  // Prefer live Detox device.id (FreePortFinder serial) over a stale ANDROID_SERIAL.
   try {
     if (typeof device !== 'undefined' && device?.id) {
       return device.id;
@@ -514,8 +515,8 @@ async function waitForAndroidInstrumentationStopped(label, timeoutMs = 30000) {
 function usesSlottedJetPorts() {
   return Boolean(
     process.env.RNFB_ANDROID_JET_PORT ||
-      process.env.RNFB_IOS_JET_PORT ||
-      process.env.RNFB_MACOS_JET_PORT,
+    process.env.RNFB_IOS_JET_PORT ||
+    process.env.RNFB_MACOS_JET_PORT,
   );
 }
 
@@ -528,9 +529,7 @@ function clearStaleMacOsTestingForSharedJetPort(label) {
   }
 
   const macName = process.env.RNFB_MACOS_PRODUCT_NAME || 'io.invertase.testing';
-  console.log(
-    `[rnfb-e2e] ${label}: killing stale macOS ${macName} for shared :${jetRemotePort()}`,
-  );
+  console.log(`[rnfb-e2e] ${label}: killing stale macOS ${macName} for shared :${jetRemotePort()}`);
   try {
     execSync(`killall ${JSON.stringify(macName)}`, { stdio: 'inherit', timeout: 5000 });
   } catch (_) {
@@ -606,7 +605,9 @@ function coldBootAndroidEmulator() {
 
 async function waitForAndroidEmulatorReady() {
   const serial = resolveAndroidSerial();
-  console.log(`[rnfb-e2e] android-ready using serial=${serial} (device.id preferred over ANDROID_SERIAL)`);
+  console.log(
+    `[rnfb-e2e] android-ready using serial=${serial} (device.id preferred over ANDROID_SERIAL)`,
+  );
   const deadline = Date.now() + REBOOT_ANDROID_EMULATOR_TIMEOUT_MS;
   let stableLoadPolls = 0;
   let packageHandlerDone = false;
@@ -965,6 +966,44 @@ async function waitForMetro(port = metroPortForHost(), timeoutMs = 120000) {
   );
 }
 
+function metroBundleQuery() {
+  const pk = detoxPlatformKey();
+  let q =
+    `platform=${pk}&dev=true&lazy=true&minify=false&inlineSourceMap=true` +
+    '&modulesOnly=false&runModule=true';
+  if (pk === 'macos' && process.env.RNFB_MACOS_BUNDLE_IDENTIFIER) {
+    q += `&app=${process.env.RNFB_MACOS_BUNDLE_IDENTIFIER}`;
+  }
+  return q;
+}
+
+// /status can be up while the first bundle compile is still in-flight. Prefetch
+// so Detox/Jet does not launch into a hung "Loading from Metro" screen.
+async function waitForMetroBundle(port = metroPortForHost(), timeoutMs = 600000) {
+  const url = `http://127.0.0.1:${port}/index.bundle?${metroBundleQuery()}`;
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    const remainingSec = Math.max(30, Math.ceil((timeoutMs - (Date.now() - start)) / 1000));
+    const sliceSec = Math.min(120, remainingSec);
+    try {
+      await execFile('curl', ['-sf', '--max-time', String(sliceSec), '-o', '/dev/null', url]);
+      console.log(`[rnfb-e2e] Metro bundle prefetched from ${url}`);
+      return;
+    } catch (err) {
+      console.warn(
+        `[rnfb-e2e] Metro bundle prefetch retry (code=${err?.code ?? 'unknown'}) url=${url}`,
+      );
+    }
+    await new Promise(resolve => setTimeout(resolve, 3000));
+  }
+  throw new Error(`Metro bundle not available at ${url} after ${timeoutMs}ms`);
+}
+
+async function waitForLiveMetro(port = metroPortForHost()) {
+  await waitForMetro(port);
+  await waitForMetroBundle(port);
+}
+
 async function terminateAppWithTiming(label) {
   const start = Date.now();
   try {
@@ -1081,7 +1120,7 @@ async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {
           await rebootIosSimulator(testsDir);
         }
         if (liveMetro) {
-          await waitForMetro(metroPortForHost());
+          await waitForLiveMetro(metroPortForHost());
         }
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
@@ -1225,8 +1264,10 @@ async function runJetE2eAttempt(attempt) {
     logOrchestrateState('port-wait');
     await waitForTcpPort(jetRemotePort());
     if (usesLiveMetro()) {
-      console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for Metro on port ${metroPortForHost()}`);
-      await waitForMetro(metroPortForHost());
+      console.log(
+        `[rnfb-e2e] Jet attempt ${attempt}: waiting for Metro on port ${metroPortForHost()}`,
+      );
+      await waitForLiveMetro(metroPortForHost());
     } else {
       console.log(
         `[rnfb-e2e] Jet attempt ${attempt}: skipping Metro wait (configuration=${resolveDetoxConfigurationName() || 'unknown'}, binary=${resolveAppBinaryPath() || 'unknown'})`,

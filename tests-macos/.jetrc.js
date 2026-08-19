@@ -147,9 +147,20 @@ async function waitForMetroMacosBundle(metroPort = 8081, timeoutMs = 600000) {
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
-  const remainingSec = Math.max(60, Math.ceil((timeoutMs - (Date.now() - started)) / 1000));
-  await execFile('curl', ['-sf', '--max-time', String(remainingSec), '-o', '/dev/null', bundleUrl]);
-  console.warn(`[rnfb-e2e] macOS Metro bundle prefetched from ${bundleUrl}`);
+  while (Date.now() - started < timeoutMs) {
+    const remainingSec = Math.max(30, Math.ceil((timeoutMs - (Date.now() - started)) / 1000));
+    const sliceSec = Math.min(120, remainingSec);
+    try {
+      await execFile('curl', ['-sf', '--max-time', String(sliceSec), '-o', '/dev/null', bundleUrl]);
+      console.warn(`[rnfb-e2e] macOS Metro bundle prefetched from ${bundleUrl}`);
+      return;
+    } catch (err) {
+      // curl 18 = partial transfer; 28 = timeout while Metro is still compiling.
+      console.warn(`[rnfb-e2e] macOS Metro bundle prefetch retry (code=${err?.code ?? 'unknown'})`);
+    }
+    await new Promise(resolve => setTimeout(resolve, 3000));
+  }
+  throw new Error(`macOS Metro bundle not available at ${bundleUrl} after ${timeoutMs}ms`);
 }
 
 module.exports = {

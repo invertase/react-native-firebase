@@ -631,6 +631,10 @@ bash scripts/e2e/release-e2e-resources.sh
 
 # 3) Start services for this platform×slot (packager before build)
 bash scripts/e2e/start-emulator-slotted.sh <platform>   # or … <platform> N to self-apply
+# Packager must survive the starter shell: run-slotted-packager.sh ignores SIGHUP.
+# Tee recommended, e.g. … > /tmp/rnfb-metro-<platform>-sN.log 2>&1 &
+# Mid-wave release still needs --platform=<done>.
+# Metro listen port is per platform×slot (ios slot 0 = 12107, never android 12007).
 bash scripts/e2e/run-slotted-packager.sh <platform> N   # background OK; canonical helper (macos → yarn tests:macos:packager:jet-reset-cache in tests-macos/; android/ios → yarn tests:packager:jet-reset-cache in tests/)
 
 # 4) Build for the slot (macOS uses RNFB_MACOS_PRODUCT_NAME → PRODUCT_NAME_SUFFIX)
@@ -672,7 +676,7 @@ bash scripts/e2e/release-e2e-resources.sh --platform=android
 
 **`--platform=` never selects a slot.** It only narrows which platform’s devices/ports are probed among whatever env is already loaded. For slotted clear/check, always `export-slot-env` (or `run-slotted-*`) first so `RNFB_E2E_SLOT` + `RNFB_*_JET_PORT` are set; otherwise check/release fall back to serial defaults (`TestingAVD` / `:8090` / …). The scripts warn on stderr when `--platform` is set without slotted carry-in.
 
-**Slotted device identities (including slot 0):** slotted runs use `TestingAVD-N`, `RNFB E2E iOS slot-N`, Detox `*.slotN`, and `io.invertase.testing.sN` — **including `N=0`**. Serial unslotted defaults remain `TestingAVD` / `iPhone 17` / `io.invertase.testing`. First use of any slot (including 0): `yarn tests:e2e:setup-android-avds` / `yarn tests:e2e:setup-ios-sims` (slots 0–4).
+**Slotted device identities (including slot 0):** slotted runs use `TestingAVD-N`, `RNFB E2E iOS slot-N`, Detox `*.slotN`, and `io.invertase.testing.sN` — **including `N=0`**. Serial unslotted defaults remain `TestingAVD` / `iPhone 17` / `io.invertase.testing`. First use of any slot (including 0): `yarn tests:e2e:setup-android-avds` / `yarn tests:e2e:setup-ios-sims` (slots 0–4). Detox `FreePortFinder` / `LaunchCommand` already prepend `-port`; do not add `-port` to `bootArgs` (a second `-port` desyncs adb vs qemu).
 
 **Parallel / multi-platform carry-in (proven model):** when android + ios (+ macos) share a worktree, every Metro/Jest/Detox process for a slot must receive **the full set** of `RNFB_{ANDROID,IOS,MACOS}_*` port variables for that slot — not only the active platform’s block. Runtime selection uses platform self-detection (`Platform.*` in [`packages/app/e2e/helpers.js`](../../packages/app/e2e/helpers.js); Detox `device.getPlatform()` / configuration name on the host in [`tests/e2e/firebase.test.js`](../../tests/e2e/firebase.test.js)). Do **not** use `RNFB_E2E_PLATFORM` to choose ports: `tests/.babelrc` and `tests-macos/.babelrc` inline static `process.env.NAME` via `transform-inline-environment-variables`, and concurrent transforms in one worktree must see every labeled port present so each `process.env.RNFB_ANDROID_*` / `RNFB_IOS_*` / `RNFB_MACOS_*` literal bakes correctly. Computed keys (`process.env[\`RNFB_${x}_…\`]`) are **not** inlined — in-app code must use static member expressions (or helpers that do). Process-local listen/bind vars (`RCT_METRO_PORT`, `JET_REMOTE_PORT`, Detox config) still identify which socket/config **this** process owns. Host Jet config ([`tests/.jetrc.js`](../../tests/.jetrc.js) for iOS/Android, [`tests-macos/.jetrc.js`](../../tests-macos/.jetrc.js) for macOS) should prefer those process-local binds (and per-target `before()` hooks with an explicit platform key) — not `RNFB_E2E_PLATFORM`.
 
@@ -684,8 +688,8 @@ In-app / e2e specs must call `getE2eEmulatorPort('firestore'|…)` (and siblings
 
 | Variable | Purpose |
 |----------|---------|
-| `RCT_METRO_PORT`, `RNFB_METRO_PORT` | Metro bundler **listen** port for this process (global fallback; not the in-app selector when prefixed vars are set) |
-| `RNFB_{ANDROID,IOS,MACOS}_METRO_PORT` | Per-platform Metro port (in-app / host selection via self-detection) |
+| `RCT_METRO_PORT`, `RNFB_METRO_PORT` | Metro bundler **listen** port for this process (global fallback; not the in-app selector when prefixed vars are set). Slotted: matches the **active** platform×slot (`export-slot-env` / `run-slotted-packager.sh`), e.g. ios slot 0 = **12107**, android slot 0 = **12007** — never reuse android’s port for iOS |
+| `RNFB_{ANDROID,IOS,MACOS}_METRO_PORT` | Per-platform Metro port (in-app / host selection via self-detection). Formula + slot-0 worked example: [e2e parallel design § Metro](e2e-parallel-design.md#metro-per-worktree-and-per-slot) |
 | `JET_REMOTE_PORT`, `JET_METRO_PORT` | Process-local Jet / Metro hints (global fallback) |
 | `RNFB_{ANDROID,IOS,MACOS}_JET_PORT` | Per-platform Jet WebSocket port |
 | `RNFB_{ANDROID,IOS,MACOS}_JET_CONTROL_PORT` | Per-platform Jet HTTP control (preferred); `RNFB_JET_CONTROL_PORT` remains a process-local fallback |
@@ -694,7 +698,7 @@ In-app / e2e specs must call `getE2eEmulatorPort('firestore'|…)` (and siblings
 | `RNFB_DETOX_ANDROID_CONFIG`, `RNFB_DETOX_IOS_CONFIG` | Detox configuration name (e.g. `android.emu.debug.slot0`, `ios.sim.debug.slot1`) |
 | `RNFB_E2E_SLOT` | Slot index for orchestration / AVD / sim naming |
 | `RNFB_E2E_PLATFORM` | Optional orchestration label only — **not** used for port selection (prefer unset in slotted multi-platform launches) |
-| `RNFB_ANDROID_AVD`, `RNFB_IOS_SIMULATOR`, `RNFB_ANDROID_EMULATOR_BOOT_ARGS` | Device selection overrides. Slotted helpers set `TestingAVD-{n}` / `RNFB E2E iOS slot-{n}` (including `n=0`); serial defaults stay `TestingAVD` / `iPhone 17` |
+| `RNFB_ANDROID_AVD`, `RNFB_IOS_SIMULATOR`, `RNFB_ANDROID_EMULATOR_BOOT_ARGS` | Device selection overrides. Slotted helpers set `TestingAVD-{n}` / `RNFB E2E iOS slot-{n}` (including `n=0`); serial defaults stay `TestingAVD` / `iPhone 17`. `RNFB_ANDROID_EMULATOR_BOOT_ARGS` is snapshot flags only — never include `-port` |
 | `RNFB_MACOS_PRODUCT_NAME` | macOS `PRODUCT_NAME` / process name (default `io.invertase.testing`). Required distinct per concurrent macOS slot. Slotted helpers set `io.invertase.testing.s<slot>`; override via `RNFB_MACOS_PRODUCT_NAME_OVERRIDE` |
 | `RNFB_MACOS_BUNDLE_IDENTIFIER` | macOS `CFBundleIdentifier` (default derived from product name). Metro `app=` follows this. Slotted override: `RNFB_MACOS_BUNDLE_IDENTIFIER_OVERRIDE` |
 | `ORG_GRADLE_PROJECT_reactNativeDevServerPort` | Android Gradle Metro port baked into the APK's `react_native_dev_server_port` resource at build time. **Set automatically** by `yarn tests:android:build` (`RNFB_ANDROID_METRO_PORT` → `RCT_METRO_PORT` → `RNFB_METRO_PORT` → `JET_METRO_PORT` → `8081`) — only export it yourself when building Android outside that script (e.g. `detox build` invoked directly). Detox's `reversePorts` (`tests/.detoxrc.js`) already forwards the same slotted Metro port; this var makes the APK actually *ask* for that port. |

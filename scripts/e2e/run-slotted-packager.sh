@@ -17,7 +17,11 @@ CACHE_DIR="/tmp/rnfb-metrocache-${PLATFORM}-slot${SLOT}"
 mkdir -p "$CACHE_DIR"
 export TMPDIR="$CACHE_DIR"
 
-echo "[slotted-packager] active=${PLATFORM} slot${SLOT} metro=${RCT_METRO_PORT} macosProduct=${RNFB_MACOS_PRODUCT_NAME:-} cache=${TMPDIR}"
+# Ignore SIGHUP so Metro keeps running after the agent starter shell exits.
+# Do not add a "reuse if already up" path — android/ios/macos Metros are never shared.
+trap '' HUP
+
+echo "[slotted-packager] active=${PLATFORM} slot${SLOT} listen=${RCT_METRO_PORT} RCT_METRO_PORT=${RCT_METRO_PORT} RNFB_ANDROID_METRO_PORT=${RNFB_ANDROID_METRO_PORT:-} RNFB_IOS_METRO_PORT=${RNFB_IOS_METRO_PORT:-} RNFB_MACOS_METRO_PORT=${RNFB_MACOS_METRO_PORT:-} macosProduct=${RNFB_MACOS_PRODUCT_NAME:-} cache=${TMPDIR}"
 cd "$REPO_ROOT"
 if [[ "$PLATFORM" == "macos" ]]; then
   exec yarn tests:macos:packager:jet-reset-cache

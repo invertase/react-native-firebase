@@ -82,7 +82,7 @@ e2e_slot_env_apply() {
   # binds that belong only to the active platform process; slot identities below.
   unset RNFB_E2E_PLATFORM
   unset SIMCTL_CHILD_RCT_METRO_PORT AVD_NAME ORG_GRADLE_PROJECT_reactNativeDevServerPort
-  unset ANDROID_SERIAL
+  unset ANDROID_SERIAL RNFB_ANDROID_CONSOLE_PORT
 
   export RNFB_E2E_SLOT="$slot" RNFB_E2E_HOST_SLOT="$slot" RNFB_E2E_DEBUG="${RNFB_E2E_DEBUG:-1}"
   export RCT_METRO_PORT="$metro" RNFB_METRO_PORT="$metro" JET_METRO_PORT="$metro"
@@ -155,6 +155,7 @@ e2e_slot_env_print() {
   local clear_keys=(
     RNFB_E2E_PLATFORM
     ANDROID_SERIAL
+    RNFB_ANDROID_CONSOLE_PORT
     AVD_NAME
     SIMCTL_CHILD_RCT_METRO_PORT
     ORG_GRADLE_PROJECT_reactNativeDevServerPort

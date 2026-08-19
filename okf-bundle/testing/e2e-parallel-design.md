@@ -138,7 +138,7 @@ Cross-worktree: two worktrees **must not** share one Metro (different `packages/
 | **Devices / macOS process** | One AVD, one sim UDID, one `PRODUCT_NAME` per concurrent instance |
 | **Jet control HTTP** | Paired 1:1 with each Jet instance |
 
-**Port formula (proven):** `BASE = 12000 + slot×1000`; android offset `0`, ios `+100`, macos `+200`; within a platform block firestore…logging = `BLK+0..6`, metro `+7`, jet `+10`, jet-control `+11`. Emulator aux: firestore websocket / eventarc / tasks = `FS+8/+9/+12` inside `start-emulator-slotted.sh`.
+**Port formula (proven):** `BASE = 12000 + slot×1000`; android offset `0`, ios `+100`, macos `+200`; within a platform block firestore…logging = `BLK+0..6`, metro `+7`, jet `+10`, jet-control `+11`. Emulator aux: firestore websocket / eventarc / tasks = `FS+8/+9/+12` inside `start-emulator-slotted.sh`. Slot 0 Metro listen: android **12007**, ios **12107**, macos **12207** — distinct per platform×slot (do not point iOS at android’s `12007`). Commands: [running e2e § slot lifecycle](running-e2e.md#slot-lifecycle).
 
 **Babel carry-in:** every Metro/Jest process for a slot must receive the **full** `RNFB_{ANDROID,IOS,MACOS}_*` set — port selection uses `Platform.*` / Detox, not `RNFB_E2E_PLATFORM` ([running e2e](running-e2e.md#configurable-e2e-environment)).
 
