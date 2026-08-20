@@ -18,6 +18,7 @@
 		4D97BAD423042F2700077358 /* RNFBUtilsModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4D97BAD323042F2700077358 /* RNFBUtilsModule.mm */; };
 		DAA1F28522FCF6AD00F4DEC1 /* RNFBVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */; };
 		RNFB00001A2025011100000001 /* RNFBNullSentinelInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2025011100000002 /* RNFBNullSentinelInterceptor.m */; };
+		RNFB00001A2026082000000001 /* RNFBHandleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026082000000002 /* RNFBHandleMap.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -56,6 +57,8 @@
 		DAA1F28622FCF6C200F4DEC1 /* RNFBVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBVersion.h; sourceTree = "<group>"; };
 		RNFB00001A2025011100000002 /* RNFBNullSentinelInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBNullSentinelInterceptor.m; sourceTree = "<group>"; };
 		RNFB00001A2025011100000003 /* RNFBNullSentinelInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBNullSentinelInterceptor.h; sourceTree = "<group>"; };
+		RNFB00001A2026082000000002 /* RNFBHandleMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBHandleMap.m; sourceTree = "<group>"; };
+		RNFB00001A2026082000000003 /* RNFBHandleMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBHandleMap.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +105,8 @@
 				4D97BAD323042F2700077358 /* RNFBUtilsModule.mm */,
 				RNFB00001A2025011100000003 /* RNFBNullSentinelInterceptor.h */,
 				RNFB00001A2025011100000002 /* RNFBNullSentinelInterceptor.m */,
+				RNFB00001A2026082000000003 /* RNFBHandleMap.h */,
+				RNFB00001A2026082000000002 /* RNFBHandleMap.m */,
 			);
 			path = RNFBApp;
 			sourceTree = "<group>";
@@ -184,6 +189,7 @@
 				2744B9A421F48A4F004F8E3F /* RCTConvert+FIROptions.m in Sources */,
 				2748D8152236426300FC8DC8 /* RNFBJSON.m in Sources */,
 				RNFB00001A2025011100000001 /* RNFBNullSentinelInterceptor.m in Sources */,
+				RNFB00001A2026082000000001 /* RNFBHandleMap.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

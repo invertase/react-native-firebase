@@ -95,6 +95,18 @@ yarn tests:android:test:jacoco-report
 
 Merged Codecov path: `jacocoTestReport.xml` — [coverage design](coverage-design.md). JVM unit does **not** replace [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) e2e.
 
+<a id="ios-xctest-unit-tests"></a>
+
+## iOS XCTest unit tests
+
+When `packages/*/ios/**` Objective-C/C++ bridge logic changed (or an in-package `*UnitTests.xcodeproj` was added):
+
+```bash
+yarn tests:ios:unit                   # macOS/host-first — [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1)
+```
+
+Produces `coverage/ios-unit/lcov.info` and **merges into** `coverage/ios-native/lcov.info`. After iOS e2e, `yarn tests:ios:test:process-coverage` merges unit LCOV again so e2e export does not drop XCTest hits — [coverage design](coverage-design.md). In-package XCTest does **not** replace [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) e2e.
+
 <a id="ios-ruby-unit-tests"></a>
 
 ## iOS Ruby unit tests (SPM / CocoaPods helpers)
@@ -173,6 +185,7 @@ Goal: each iteration improves OKF and removes conflicting guidance. Check meanin
 | jest                      | yarn tests:jest <paths>              | 0    | N/N tests                                                                                                                                    |
 | ios Ruby unit             | yarn tests:ios:ruby                  | 0    | when `packages/app/**/*.rb` or `packages/app/__tests__/*_test.rb` touched — coverage/ios-ruby/lcov.info ([§ iOS Ruby](#ios-ruby-unit-tests)) |
 | android JVM unit          | yarn tests:android:unit              | 0    | when `packages/*/android/**` Java changed — [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1)                           |
+| ios XCTest unit           | yarn tests:ios:unit                  | 0    | when `packages/*/ios/**` ObjC/C++ or `*UnitTests.xcodeproj` changed — [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1)              |
 | e2e macOS                 | yarn tests:macos:test-cover          | 0    | X passing — /tmp/...log                                                                                                                      |
 | e2e iOS                   | yarn tests:ios:test-cover            | 0    | Y passing — /tmp/...log                                                                                                                      |
 | e2e Android               | yarn tests:android:test-cover        | 0    | Z passing — /tmp/...log                                                                                                                      |
@@ -197,6 +210,7 @@ Goal: each iteration improves OKF and removes conflicting guidance. Check meanin
 - [ ] `yarn tests:jest`
 - [ ] `yarn tests:ios:ruby` when `packages/app/**/*.rb` or `packages/app/__tests__/*_test.rb` touched ([§ iOS Ruby](#ios-ruby-unit-tests); [coverage design](coverage-design.md#ios-ruby-simplecov))
 - [ ] `yarn tests:android:unit` when `packages/*/android/**` Java / `src/test/java` changed ([AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1))
+- [ ] `yarn tests:ios:unit` when `packages/*/ios/**` ObjC/C++ or `packages/*/ios/*UnitTests` changed ([IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1))
 - [ ] TurboModule wrapper contract ([NewArch-AD-17.1](../new-architecture/architecture-decisions.md#newarch-ad-171--jest-turbomodule-contract-test--accepted)) when `packages/app/lib/internal/registry/nativeModule.ts`, `nativeModuleAndroidIos.ts`, or TurboModule wrapper behavior changed: `yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts`
 - [ ] `yarn compare:types` (stale config entries removed)
 - [ ] Lint by-tree / by-diff per [§ lint and formatting](#lint-and-formatting) (frozen `independent-review`: check-only — no `yarn lint:android` / full `yarn lint`)

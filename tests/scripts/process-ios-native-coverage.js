@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /*
  * Merge LLVM profraw from Detox iOS e2e runs and export an lcov report for Codecov.
+ * After e2e export, merge coverage/ios-unit/lcov.info when present so XCTest counts.
  *
  * See okf-bundle/testing/coverage-design.md for the full pipeline description.
  */
@@ -8,6 +9,7 @@ const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+const { mergeLcovFiles, normalizeSourcePath } = require('./ios-native-lcov');
 
 const repoRoot = path.resolve(__dirname, '../..');
 const testsDir = path.join(repoRoot, 'tests');
@@ -66,27 +68,6 @@ function walkFiles(dir, matcher, results = []) {
   }
 
   return results;
-}
-
-function normalizeSourcePath(sourcePath) {
-  const normalized = sourcePath.replace(/\\/g, '/');
-
-  const packagesIdx = normalized.indexOf('/packages/');
-  if (packagesIdx >= 0) {
-    return normalized.slice(packagesIdx + 1);
-  }
-
-  const rnfbMatch = normalized.match(/@react-native-firebase\/([^/]+)\/(.+)$/);
-  if (rnfbMatch) {
-    return `packages/${rnfbMatch[1]}/${rnfbMatch[2]}`;
-  }
-
-  const testsIdx = normalized.indexOf('/tests/');
-  if (testsIdx >= 0) {
-    return normalized.slice(testsIdx + 1);
-  }
-
-  return normalized.replace(/^\.\//, '');
 }
 
 function runOrThrow(command, args) {
@@ -245,6 +226,13 @@ async function main() {
     runToFileOrThrow('xcrun', exportArgs, rawLcovPath);
 
     const { sourceFileCount, packagesHits } = await rewriteLcovFile(rawLcovPath, options.output);
+
+    const unitLcov = path.join(repoRoot, 'coverage/ios-unit/lcov.info');
+    if (fs.existsSync(unitLcov)) {
+      mergeLcovFiles(options.output, [options.output, unitLcov]);
+      // eslint-disable-next-line no-console
+      console.log(`[ios-native-coverage] Merged unit LCOV from ${unitLcov}`);
+    }
 
     // eslint-disable-next-line no-console
     console.log(

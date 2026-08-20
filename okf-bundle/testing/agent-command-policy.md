@@ -38,6 +38,7 @@ Single source for **which shell commands agents may run** in this repo. E2e `yar
 | Docs lint                                                       | `yarn lint:markdown`, `yarn lint:spellcheck` — when: [validation checklist § lint and formatting](validation-checklist.md#lint-and-formatting) (`docs/**` only; OKF-only skips)                                                                                                           | ad-hoc prettier/eslint on single files                                                                                                                        |
 | iOS Ruby lint (RuboCop)                                         | `yarn lint:ruby` (also runs inside `yarn tests:ios:ruby`)                                                                                                                                                                                                                                  | ad-hoc `rubocop`, `bundle exec rubocop` without the Gemfile/config                                                                                            |
 | Android JVM unit tests                                          | `yarn tests:android:unit`                                                                                                                                                                                                                                                                  | ad-hoc `./gradlew …` outside this yarn script; bare Robolectric/JUnit IDE-only as the agent gate                                                              |
+| iOS XCTest unit tests (in-package)                              | `yarn tests:ios:unit`                                                                                                                                                                                                                                                                      | ad-hoc `xcodebuild test`; CocoaPods `test_spec`; `tests/ios/testingTests` host UI tests                                                                       |
 | iOS Ruby unit tests (SPM / CocoaPods helpers)                   | `yarn lint:ruby` / `yarn tests:ios:ruby` (after root `yarn` or `yarn ruby:install` when gems are missing)                                                                                                                                                                                  | ad-hoc `ruby packages/app/__tests__/…_test.rb`, bare `ruby …/run_with_coverage.rb` without the yarn script as the agent gate                                  |
 | iOS CocoaPods provisioning before shared build                 | `yarn tests:ios:pod:install` (after root `yarn` or `yarn ruby:install` when gems are missing; required order below)                                                                                                                                                                         | bare `pod install`, `cd tests/ios && pod install`, or assuming `yarn tests:ios:build` creates CocoaPods support files                                          |
 | Expo documented-path iOS link (workspace `test-expo/`)          | `yarn test-expo:ios:link` (repo root; script `.github/workflows/scripts/test-expo-ios-link.sh`)                                                                                                                                                                                             | ad-hoc `expo prebuild` / `xcodebuild` outside that script; `cd test-expo && …` as the agent gate                                                              |
@@ -116,6 +117,7 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 | `yarn google-java-format`, bare `google-java-format`, `npx google-java-format`, `google-java-format -i`                                                                          | Invented format entrypoints — **only** `yarn lint:android`                          |
 | `npm install` (any cwd) / `yarn` / `yarn install` only in `tests/` for monorepo deps                                                                                             | Root `yarn` applies patches and workspace links; tests-only install is insufficient |
 | Ad-hoc `./gradlew …` outside allowlisted yarn scripts (`tests:android:unit`, `tests:android:build`, `tests:android:post-e2e-coverage`, `tests:android:test:jacoco-report`, etc.) | Wrong task / cwd / report path; invents CI that does not match Codecov              |
+| Ad-hoc `xcodebuild test` / CocoaPods `test_spec` / `tests/ios/testingTests` as the iOS unit gate                                                                                  | Misses LCOV merge — **only** `yarn tests:ios:unit` ([IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1)) |
 | Ad-hoc `ruby packages/app/__tests__/…_test.rb` (or bare runner) as the validation gate                                                                                           | Misses SimpleCov / suite discovery — **only** `yarn tests:ios:ruby`                 |
 | Ad-hoc `expo prebuild`, `xcodebuild`, or `cd test-expo && …` as the Expo iOS link gate                                                                                            | **Only** `yarn test-expo:ios:link` from repo root — not Detox / `yarn tests:*`      |
 | `yarn jet`, `npx jet`, `cd tests && yarn jet …`                                                                                                                                  | [E2e agent rule](running-e2e.md#agent-rule-read-first)                              |
@@ -160,6 +162,11 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 - Merged coverage after e2e: **`yarn tests:android:post-e2e-coverage`** (Codecov path is `jacocoTestReport`, not e2e-only `jacocoAndroidTestReport`) — [coverage design](coverage-design.md).
 - Optional explicit merge: **`yarn tests:android:test:jacoco-report`**.
 
+### iOS XCTest (in-package)
+
+- **Canonical:** `yarn tests:ios:unit` — discovers `packages/*/ios/*UnitTests/*.xcodeproj`, macOS destination, writes `coverage/ios-unit/lcov.info` and **merges into** `coverage/ios-native/lcov.info` ([IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1); [coverage design](coverage-design.md)).
+- **Forbidden as the agent gate:** ad-hoc `xcodebuild test`, CocoaPods `test_spec`, `tests/ios/testingTests` host UI tests.
+
 ### JS lint / Bundler vendor
 
 <a id="js-lint-bundler-vendor"></a>
@@ -168,6 +175,7 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 - After `bundle install --gemfile=packages/app/__tests__/Gemfile`, Bundler follows root `.bundle/config` `BUNDLE_PATH: vendor/bundle` and drops a gitignored tree at `packages/app/__tests__/vendor/`. ESLint `globalIgnores` does not list that path, so lint reports thousands of vendor findings.
 - That is local checkout noise, not a product lint failure. CI without that tree stays green.
 - Do not invent a delete-vendor command as the lint gate. Do not patch `eslint.config.mjs` to hide it. Root `yarn ruby:install` or root `yarn` is the canonical install path above.
+
 
 ### iOS Ruby (SPM helpers)
 
@@ -230,6 +238,7 @@ Gate close / push: return [validation evidence package](validation-checklist.md#
 | Test-app RN / CLI pins (`react-native-macos`) | [test-app-dependency-pins.md](test-app-dependency-pins.md)                                                                                          |
 | Validation sequence                           | [validation-checklist.md](validation-checklist.md)                                                                                                  |
 | Android JVM unit ADR                          | [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1)                                                                              |
+| iOS XCTest unit ADR                           | [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1)                                                                                          |
 | iOS Ruby unit / SimpleCov                     | [coverage design § iOS Ruby](coverage-design.md#ios-ruby-simplecov); [validation checklist § iOS Ruby](validation-checklist.md#ios-ruby-unit-tests) |
 | JS lint vs local Bundler vendor               | [§ JS lint / Bundler vendor](#js-lint-bundler-vendor)                                                                                              |
 | Work types and gates                          | [change-authoring-workflow.md](change-authoring-workflow.md)                                                                                        |
