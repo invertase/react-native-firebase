@@ -30,7 +30,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase/tree/main/packages/in-app-messaging"
+    "url": "https://github.com/invertase/react-native-firebase",
+    "directory": "packages/in-app-messaging"
   },
   "license": "Apache-2.0",
   "keywords": [

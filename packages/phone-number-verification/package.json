@@ -25,7 +25,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase/tree/main/packages/phone-number-verification"
+    "url": "https://github.com/invertase/react-native-firebase",
+    "directory": "packages/phone-number-verification"
   },
   "license": "Apache-2.0",
   "keywords": [
