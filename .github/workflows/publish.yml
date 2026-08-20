@@ -7,11 +7,14 @@ jobs:
   publish_npm:
     if: "(github.repository == 'invertase/react-native-firebase') && (github.event_name == 'workflow_dispatch')"
     name: 'NPM'
-    timeout-minutes: 30
-    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    runs-on: macos-26
     permissions:
       id-token: write # enables OIDC for npmjs.com "Trusted Publisher" and provenance
       contents: read
+    env:
+      # macos-26 + latest-stable matches tests_e2e_ios.yml; needed for CocoaPods in scripts/version.js
+      XCODE_VERSION: latest-stable
     steps:
       # https://github.com/actions/checkout/releases
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -19,6 +22,10 @@ jobs:
           fetch-depth: 0
           # Repository admin required to evade PR+checks branch protection
           token: ${{ secrets.GH_TOKEN }}
+      # https://github.com/maxim-lobanov/setup-xcode/releases
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
       # https://github.com/actions/setup-node/releases
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -39,6 +46,23 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 3
           command: yarn
+      - name: Setup Ruby
+        # https://github.com/ruby/setup-ruby/releases
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version: 3
+      # Pinned cocoapods/xcodeproj from the root Gemfile. yarn tests:ios:pod:install
+      # and yarn tests:macos:pod:install use `bundle exec pod`. BUNDLE_FROZEN fails
+      # CI on Gemfile.lock drift (do not use deprecated --frozen; it would persist
+      # into .bundle/config). Do not gem update cocoapods.
+      - name: Bundle install
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: BUNDLE_FROZEN=true bundle install
       - name: GIT Setup
         # Alter branding of release commit, despite GITHUB_TOKEN having real owner
         run: |
