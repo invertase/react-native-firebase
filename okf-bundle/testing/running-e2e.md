@@ -662,6 +662,10 @@ yarn tests:<platform>:pod:install   # ios | macos only
 yarn tests:<platform>:build
 
 # 5) Run e2e
+# run-slotted-test-cover waits until Metro /status on RCT_METRO_PORT is
+# packager-status:running (abort non-zero if not within the gate wait). Android
+# cold-boot is not the recovery for Metro-not-ready — leave qemu alone and
+# re-wait Metro (see firebase.test.js launch retry classification).
 bash scripts/e2e/run-slotted-test-cover.sh <platform> N
 # yarn tests:e2e:slotted-test-cover <platform> N
 

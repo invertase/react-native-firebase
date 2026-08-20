@@ -32,6 +32,8 @@ const {
   qemuCmdlineMatchesAvd,
   qemuAvdPgrepPattern,
   adbRangeDiagnosis,
+  isMetroWaitFailure,
+  shouldColdBootAndroidOnLaunchRetry,
 } = require('./androidAdbRange');
 
 const E2E_TEST_PROJECT = 'react-native-firebase-testing';
@@ -169,6 +171,11 @@ const ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS = parseInt(
   process.env.RNFB_ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS || '20000',
   10,
 );
+// Cold-boot kill+relaunch under parallel load needs longer than serial appear poll.
+const ANDROID_COLD_BOOT_REGISTER_TIMEOUT_MS = parseInt(
+  process.env.RNFB_ANDROID_COLD_BOOT_REGISTER_TIMEOUT_MS || '120000',
+  10,
+);
 const ANDROID_PACKAGE_HANDLER_TIMEOUT_MS = parseInt(
   process.env.RNFB_ANDROID_PACKAGE_HANDLER_TIMEOUT_MS || '30000',
   10,
@@ -204,7 +211,7 @@ const CLOUD_QUOTA_RETRY_COOLDOWN_MS = parseInt(
   10,
 );
 const RETRYABLE_LAUNCH_RE =
-  /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding|Unknown application display identifier|Simulator device failed to launch|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain/i;
+  /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding|Metro bundle not available|Unknown application display identifier|Simulator device failed to launch|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain/i;
 const PORT_CLOSED_ERROR_CODES = new Set(['ECONNREFUSED', 'ECONNRESET', 'EPIPE']);
 
 let cachedUsesLiveMetro;
@@ -640,6 +647,42 @@ async function ensureAndroidJetHostClear(label = 'android-jet-host-clear') {
   console.log(`[rnfb-e2e] ${label}: host clear`);
 }
 
+async function waitUntilQemuGoneForAvd(avdName, timeoutMs = 60000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (!qemuRunningForAvd(avdName)) {
+      return;
+    }
+    await sleep(500);
+  }
+  throw new Error(
+    `[rnfb-e2e] cold-boot: qemu for AVD ${avdName} still present after kill within ${timeoutMs}ms`,
+  );
+}
+
+async function waitForColdBootEmulatorRegistered(serial, avdName, timeoutMs) {
+  const deadline = Date.now() + timeoutMs;
+  console.log(
+    `[rnfb-e2e] cold-boot: waiting up to ${timeoutMs}ms for qemu @${avdName} and adb serial ${serial}`,
+  );
+  while (Date.now() < deadline) {
+    const qemuUp = qemuRunningForAvd(avdName);
+    const state = adbDeviceState(serial);
+    if (qemuUp && state === 'device') {
+      console.log(`[rnfb-e2e] cold-boot: qemu+adb registered serial=${serial}`);
+      return;
+    }
+    await sleep(1000);
+  }
+  const qemuUp = qemuRunningForAvd(avdName);
+  const state = adbDeviceState(serial);
+  throw new Error(
+    `[rnfb-e2e] cold-boot spawn did not register: AVD=${avdName} serial=${serial} ` +
+      `qemuUp=${qemuUp} adb get-state=${state} within ${timeoutMs}ms ` +
+      `(not a Detox FreePortFinder diagnosis — spawn/re-attach after emu kill failed)`,
+  );
+}
+
 async function coldBootAndroidEmulator() {
   const adb = resolveAdbPath();
   const serial = resolveAndroidSerial();
@@ -668,6 +711,9 @@ async function coldBootAndroidEmulator() {
     // No matching emulator process.
   }
 
+  // Do not spawn while a dying Detox/prior qemu for this exact @AVD is still listed.
+  await waitUntilQemuGoneForAvd(ANDROID_AVD_NAME);
+
   const emulatorArgs = [
     '-verbose',
     '-no-audio',
@@ -685,7 +731,13 @@ async function coldBootAndroidEmulator() {
   });
   child.unref();
 
-  return waitForAdbSerialDevice(coldBootSerial);
+  // Wait until *this* cold-boot qemu cmdline exists and adb lists the serial.
+  // Do not fail-fast on a transient dying qemu via waitForAdbSerialDevice.
+  return waitForColdBootEmulatorRegistered(
+    coldBootSerial,
+    ANDROID_AVD_NAME,
+    ANDROID_COLD_BOOT_REGISTER_TIMEOUT_MS,
+  );
 }
 
 async function waitForAndroidEmulatorReady() {
@@ -1477,8 +1529,20 @@ describe('Jet Tests', function () {
           if (platform === 'ios' && process.platform === 'darwin') {
             await rebootIosSimulator(testsDir);
           } else if (platform === 'android') {
-            await coldBootAndroidEmulator();
-            await waitForAndroidEmulatorReady();
+            if (shouldColdBootAndroidOnLaunchRetry(lastFailure)) {
+              console.warn('[rnfb-e2e] Android device-side launch failure — cold booting emulator');
+              await coldBootAndroidEmulator();
+              await waitForAndroidEmulatorReady();
+            } else if (isMetroWaitFailure(lastFailure) && usesLiveMetro()) {
+              console.warn(
+                '[rnfb-e2e] Metro wait failure — waiting for Metro again (no Android cold boot)',
+              );
+              await waitForLiveMetro();
+            } else {
+              console.warn(
+                '[rnfb-e2e] Android retry without cold boot (not a device-side emulator fault)',
+              );
+            }
           } else {
             try {
               await device.terminateApp();

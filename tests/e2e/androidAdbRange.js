@@ -50,6 +50,34 @@ function qemuAvdPgrepPattern(avdName) {
   return `qemu-system.*@${escapeRegExp(avdName)}([[:space:]]|$)`;
 }
 
+// Metro /status or bundle wait failures — retryable, but not an emulator health fault.
+const METRO_WAIT_FAILURE_RE = /Metro not responding|Metro bundle not available|packager-probe/i;
+
+// Android cold-boot is only for device-side launch/health faults (ANR, offline, qemu/adb).
+const ANDROID_DEVICE_SIDE_LAUNCH_RE =
+  /ANR|\boffline\b|qemu-without-adb|did not become 'device'|cold-boot spawn did not register|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain/i;
+
+function errorMessage(messageOrErr) {
+  if (typeof messageOrErr === 'string') {
+    return messageOrErr;
+  }
+  return messageOrErr?.message || '';
+}
+
+function isMetroWaitFailure(messageOrErr) {
+  return METRO_WAIT_FAILURE_RE.test(errorMessage(messageOrErr));
+}
+
+// True only when an Android Jet retry should kill+relaunch qemu. Metro wait timeouts
+// must leave the emulator alone and re-wait for packager-status:running / bundle.
+function shouldColdBootAndroidOnLaunchRetry(messageOrErr) {
+  const message = errorMessage(messageOrErr);
+  if (isMetroWaitFailure(message)) {
+    return false;
+  }
+  return ANDROID_DEVICE_SIDE_LAUNCH_RE.test(message);
+}
+
 function adbRangeDiagnosis(serial, avdName) {
   const port = parseEmulatorConsolePort(serial);
   const portLabel = Number.isInteger(port) ? String(port) : String(serial);
@@ -84,4 +112,8 @@ module.exports = {
   qemuCmdlineMatchesAvd,
   qemuAvdPgrepPattern,
   adbRangeDiagnosis,
+  isMetroWaitFailure,
+  shouldColdBootAndroidOnLaunchRetry,
+  METRO_WAIT_FAILURE_RE,
+  ANDROID_DEVICE_SIDE_LAUNCH_RE,
 };

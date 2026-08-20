@@ -7,6 +7,8 @@ const {
   qemuCmdlineMatchesAvd,
   qemuAvdPgrepPattern,
   adbRangeDiagnosis,
+  isMetroWaitFailure,
+  shouldColdBootAndroidOnLaunchRetry,
 } = require('../../../tests/e2e/androidAdbRange');
 
 describe('androidAdbRange', function () {
@@ -78,5 +80,55 @@ describe('qemuAvdPgrepPattern', function () {
   it('is a complete-identity POSIX ERE (TestingAVD is not a prefix of TestingAVD-0)', function () {
     expect(qemuAvdPgrepPattern('TestingAVD')).toBe('qemu-system.*@TestingAVD([[:space:]]|$)');
     expect(qemuAvdPgrepPattern('TestingAVD-0')).toBe('qemu-system.*@TestingAVD-0([[:space:]]|$)');
+  });
+});
+
+describe('shouldColdBootAndroidOnLaunchRetry', function () {
+  it('does not cold-boot for Metro /status or bundle wait timeouts', function () {
+    expect(
+      shouldColdBootAndroidOnLaunchRetry(
+        new Error(
+          'Metro not responding with packager-status:running on 127.0.0.1:12007 after 120000ms',
+        ),
+      ),
+    ).toBe(false);
+    expect(
+      shouldColdBootAndroidOnLaunchRetry(
+        new Error(
+          'Metro bundle not available at http://127.0.0.1:12007/index.bundle after 600000ms',
+        ),
+      ),
+    ).toBe(false);
+    expect(shouldColdBootAndroidOnLaunchRetry('packager-probe failed')).toBe(false);
+    expect(isMetroWaitFailure('Metro not responding on port 12007')).toBe(true);
+  });
+
+  it('cold-boots for device-side ANR/offline/qemu-adb faults', function () {
+    expect(shouldColdBootAndroidOnLaunchRetry(new Error('ANR in com.example'))).toBe(true);
+    expect(shouldColdBootAndroidOnLaunchRetry(new Error('device offline'))).toBe(true);
+    expect(
+      shouldColdBootAndroidOnLaunchRetry(
+        new Error(
+          "[rnfb-e2e] qemu-without-adb: qemu is running for AVD TestingAVD-0 but adb serial emulator-5556 is not 'device'",
+        ),
+      ),
+    ).toBe(true);
+    expect(
+      shouldColdBootAndroidOnLaunchRetry(
+        new Error(
+          '[rnfb-e2e] cold-boot spawn did not register: AVD=TestingAVD-0 serial=emulator-5556',
+        ),
+      ),
+    ).toBe(true);
+    expect(
+      shouldColdBootAndroidOnLaunchRetry(
+        new Error("[rnfb-e2e] adb serial emulator-5556 did not become 'device' within 20000ms"),
+      ),
+    ).toBe(true);
+  });
+
+  it('does not cold-boot for Jet session noise that is not device-side', function () {
+    expect(shouldColdBootAndroidOnLaunchRetry(new Error('Jet WS closed 1006'))).toBe(false);
+    expect(shouldColdBootAndroidOnLaunchRetry(new Error('launchApp timed out'))).toBe(false);
   });
 });
