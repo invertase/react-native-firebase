@@ -246,7 +246,7 @@ ANDROID_SERIAL="${ANDROID_SERIAL:-emulator-5554}"
 
 <a id="pre-flight-recovery"></a>
 
-**Pre-flight recovery** — when probes fail **after** [Android app reset](#android-app-reset-blocking), abort, kill, or `EADDRINUSE` on the Jet port. Canonical recovery uses the env-aware scripts below. `EADDRINUSE` on **`:8081`** (or a slotted Metro port) during packager restart is a different path — [packager reset-cache](#packager-reset-cache-eaddrinuse) (this block does **not** free Metro).
+**Pre-flight recovery (serial)** — when probes fail **after** [Android app reset](#android-app-reset-blocking), abort, kill, or `EADDRINUSE` on the Jet port. Canonical recovery uses the env-aware scripts below. `EADDRINUSE` on **`:8081`** (or a slotted Metro port) during packager restart is a different path — [packager reset-cache](#packager-reset-cache-eaddrinuse) (this block does **not** free Metro).
 
 ```bash
 bash scripts/e2e/release-e2e-resources.sh
@@ -254,6 +254,8 @@ bash scripts/e2e/release-e2e-resources.sh
 bash scripts/e2e/release-e2e-resources.sh --devices
 bash scripts/e2e/check-e2e-resources.sh   # must exit 0
 ```
+
+A live overlapping 3×3 wave must not run unscoped `release-e2e-resources.sh` (metro wipe) until the wave is declared dead.
 
 Do **not** use `boot-simulator.sh` or `simctl shutdown all` as routine prep ([what not to do](#what-not-to-do)).
 
@@ -432,7 +434,7 @@ Each run owns its blocking `:test-cover` and returns summaries only.
 
 ### Interrupted run (abort, killed terminal, EADDRINUSE on :8090)
 
-**Check the log before recovering.** After a STOP/abort or a Shell tool interruption that leaves the exit status unknown, read the `/tmp/rnfb-e2e-<platform>.log` footer **first** — before `pkill`, [pre-flight recovery](#pre-flight-recovery), or any other kill/recovery step:
+**Serial recovery.** Check the log before recovering. After a STOP/abort or a Shell tool interruption that leaves the exit status unknown, read the `/tmp/rnfb-e2e-<platform>.log` footer **first** — before `pkill`, [pre-flight recovery](#pre-flight-recovery), or any other kill/recovery step:
 
 ```bash
 rg '^\s*\d+ (passing|failing)' /tmp/rnfb-e2e-<platform>.log | tail -2
@@ -651,10 +653,14 @@ bash scripts/e2e/release-e2e-resources.sh
 # backgrounds `emulators:start` and returns; do **not** wait for process death or
 # EMU_EXIT from a healthy start. Timeout / early firebase death → exit 1 (suite killed).
 bash scripts/e2e/start-emulator-slotted.sh <platform>   # or … <platform> N to self-apply
-# Packager must survive the starter shell: run-slotted-packager.sh ignores SIGHUP.
-# Tee recommended, e.g. … > /tmp/rnfb-metro-<platform>-sN.log 2>&1 &
+# Packager must survive the starter shell and stay up through :build.
+# run-slotted-packager.sh: trap '' HUP + setsid -w / os.setsid() so yarn/metro is
+# not in the agent shell’s process group (not nohup). Tee recommended, e.g.
+# … > /tmp/rnfb-metro-<platform>-sN.log 2>&1 &
 # Mid-wave release still needs --platform=<done>.
 # Metro listen port is per platform×slot (ios slot 0 = 12107, never android 12007).
+# Abort / recovery must NOT pkill packagers of a live wave except after the
+# wave is declared dead (overlapping pkill is infra abort, zero flake).
 bash scripts/e2e/run-slotted-packager.sh <platform> N   # background OK; canonical helper (macos → yarn tests:macos:packager:jet-reset-cache in tests-macos/; android/ios → yarn tests:packager:jet-reset-cache in tests/)
 
 # 4) Build for the slot (macOS uses RNFB_MACOS_PRODUCT_NAME → PRODUCT_NAME_SUFFIX)
@@ -663,10 +669,14 @@ bash scripts/e2e/run-slotted-packager.sh <platform> N   # background OK; canonic
 # (after codegen / podspec / native Apple changes; also in run-full-tests.sh / CI).
 # Skip pod:install for Android. A bare :build is allowed when pods are already
 # installed and you only need a compile.
+# Packagers started in step 3 must remain running through this :build.
 yarn tests:<platform>:pod:install   # ios | macos only
 yarn tests:<platform>:build
 
 # 5) Run e2e
+# Wave runners: wait for Metro /status again immediately before :test-cover
+# (run-slotted-test-cover already gates). Do not auto-restart Metro on empty
+# /status — fail loud (infra abort if packagers were pkill’d mid-wave).
 # run-slotted-test-cover waits until Metro /status on RCT_METRO_PORT is
 # packager-status:running (abort non-zero if not within the gate wait). Android
 # cold-boot is not the recovery for Metro-not-ready — leave qemu alone and
@@ -705,7 +715,7 @@ bash scripts/e2e/release-e2e-resources.sh --platform=android
 
 **`--platform=` never selects a slot.** It only narrows which platform’s devices/ports are probed among whatever env is already loaded. For slotted clear/check, always `export-slot-env` (or `run-slotted-*`) first so `RNFB_E2E_SLOT` + `RNFB_*_JET_PORT` are set; otherwise check/release fall back to serial defaults (`TestingAVD` / `:8090` / …) **plus** unscoped leftover slotted ports/devices (`0..E2E_SLOTTED_MAX`). The scripts warn on stderr when `--platform` is set without slotted carry-in.
 
-**Infra failures (zero flake budget):** emulator hub port taken, suite preflight busy, functions lock timeout, or other host-resource errors are **abort** — fix the leftover (unscoped `release-e2e-resources.sh`, often with `--devices`) or the code. Do **not** mid-wave release+retry the same start without a code fix.
+**Infra failures (zero flake budget):** emulator hub port taken, suite preflight busy, functions lock timeout, mid-wave `pkill` of live-wave packagers, or other host-resource errors are **abort** — fix the leftover (unscoped `release-e2e-resources.sh`, often with `--devices`) or the code. Do **not** mid-wave release+retry the same start without a code fix. Do **not** `pkill` slotted packagers while a wave is still live; only after the wave is declared dead.
 
 **Slotted device identities (including slot 0):** slotted runs use `TestingAVD-N`, `RNFB E2E iOS slot-N`, Detox `*.slotN`, and `io.invertase.testing.sN` — **including `N=0`**. Serial unslotted defaults remain `TestingAVD` / `iPhone 17` / `io.invertase.testing`. First use of any slot (including 0): `yarn tests:e2e:setup-android-avds` / `yarn tests:e2e:setup-ios-sims` (slots 0–4). **Android console ports are pinned** to even values in adb’s safe range: `RNFB_ANDROID_CONSOLE_PORT=$((5556+2*N))` → slot 0=`emulator-5556`, slot 1=`emulator-5558`, slot 2=`emulator-5560` (never `5554` for slotted slot 0, so unslotted `TestingAVD` / `emulator-5554` can coexist). Detox must honor `RNFB_ANDROID_CONSOLE_PORT`; it must **not** pick FreePortFinder ports in **10000–20000** (qemu stays up but `adb devices` never lists the guest). Detox `LaunchCommand` already prepends `-port`; do not add `-port` to `bootArgs` (a second `-port` desyncs adb vs qemu). Apple `:build` compiles only — run `yarn tests:ios:pod:install` / `yarn tests:macos:pod:install` as a **separate prior step** before the matching `:build` when pods may be stale (codegen / podspec / native Apple changes, slot lifecycle, CI). A bare `:build` is allowed when pods are already installed.
 

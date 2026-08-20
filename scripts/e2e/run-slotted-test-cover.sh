@@ -27,6 +27,9 @@ while true; do
   fi
   if (( elapsed >= METRO_STATUS_WAIT_SEC )); then
     echo "[slotted-test-cover] ERROR: Metro on :${metro_port} not packager-status:running within ${METRO_STATUS_WAIT_SEC}s (last body: ${body:-<empty>})" >&2
+    if [[ -z "${body}" ]]; then
+      echo "[slotted-test-cover] HINT: packager must still be running; overlapping pkill of packagers is infra abort (do not auto-restart — fail loud)." >&2
+    fi
     exit 1
   fi
   sleep 2
