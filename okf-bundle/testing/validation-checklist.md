@@ -82,7 +82,7 @@ Optional: `yarn tests:jest-coverage`.
 When `packages/*/android/**` Java bridge/state-machine logic changed (or added under `src/test/java`):
 
 ```bash
-yarn tests:android:unit               # Robolectric + Mockito — [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1--robolectric--mockito-for-android-jvm-unit-tests--accepted)
+yarn tests:android:unit               # JUnit-first — [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1)
 ```
 
 Produces Jacoco `*.exec` that **counts** toward native touched-line coverage when merged. After Android e2e:
