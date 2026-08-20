@@ -22,7 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -73,7 +74,16 @@ public class TaskExecutorService {
 
   private ExecutorService getNewExecutor(boolean isTransactional) {
     if (isTransactional) {
-      return Executors.newSingleThreadExecutor();
+      // A bare Executors.newSingleThreadExecutor() has no rejection handler, so a
+      // play-services Task completing after shutdown() (module invalidation racing
+      // in-flight work, e.g. App Check attestation or Auth network calls finishing
+      // while the React instance is torn down) posts to the dead executor and
+      // crashes the process with an uncaught RejectedExecutionException. Use an
+      // equivalent single-thread pool that discards work arriving after shutdown.
+      ThreadPoolExecutor transactionalExecutor =
+          new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+      transactionalExecutor.setRejectedExecutionHandler(discardAfterShutdown);
+      return transactionalExecutor;
     } else {
       ThreadPoolExecutor threadPoolExecutor =
           new ThreadPoolExecutor(
@@ -82,6 +92,16 @@ public class TaskExecutorService {
       return threadPoolExecutor;
     }
   }
+
+  private static final RejectedExecutionHandler discardAfterShutdown =
+      (r, executor) -> {
+        if (executor.isShutdown() || executor.isTerminated() || executor.isTerminating()) {
+          return;
+        }
+        // Unreachable with an unbounded queue, but preserve AbortPolicy semantics
+        // for any rejection that is not caused by shutdown.
+        throw new RejectedExecutionException("Task " + r + " rejected from " + executor);
+      };
 
   private final RejectedExecutionHandler executeInFallback =
       (r, executor) -> {
