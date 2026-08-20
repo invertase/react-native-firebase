@@ -5995,13 +5995,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/ai@npm:26.3.0, @react-native-firebase/ai@workspace:packages/ai":
+"@react-native-firebase/ai@npm:26.3.1, @react-native-firebase/ai@workspace:packages/ai":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/ai@workspace:packages/ai"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
-    "@react-native-firebase/app-check": "npm:26.3.0"
-    "@react-native-firebase/auth": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
+    "@react-native-firebase/app-check": "npm:26.3.1"
+    "@react-native-firebase/auth": "npm:26.3.1"
     "@types/text-encoding": "npm:^0.0.40"
     react-native-builder-bob: "npm:^0.41.0"
     react-native-fetch-api: "npm:^3.0.0"
@@ -6009,21 +6009,21 @@ __metadata:
     typescript: "npm:^6.0.3"
     web-streams-polyfill: "npm:^4.2.0"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/analytics@npm:26.3.0, @react-native-firebase/analytics@workspace:packages/analytics":
+"@react-native-firebase/analytics@npm:26.3.1, @react-native-firebase/analytics@workspace:packages/analytics":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/analytics@workspace:packages/analytics"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.41.0"
     superstruct: "npm:^2.0.2"
     typescript: "npm:^6.0.3"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
@@ -6031,16 +6031,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/app-check@npm:26.3.0, @react-native-firebase/app-check@workspace:packages/app-check":
+"@react-native-firebase/app-check@npm:26.3.1, @react-native-firebase/app-check@workspace:packages/app-check":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/app-check@workspace:packages/app-check"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.41.0"
     typescript: "npm:^6.0.3"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
@@ -6048,15 +6048,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/app-distribution@npm:26.3.0, @react-native-firebase/app-distribution@workspace:packages/app-distribution":
+"@react-native-firebase/app-distribution@npm:26.3.1, @react-native-firebase/app-distribution@workspace:packages/app-distribution":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/app-distribution@workspace:packages/app-distribution"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.41.0"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
@@ -6071,7 +6071,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/app@npm:26.3.0, @react-native-firebase/app@workspace:packages/app":
+"@react-native-firebase/app@npm:26.3.1, @react-native-firebase/app@workspace:packages/app":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/app@workspace:packages/app"
   dependencies:
@@ -6088,16 +6088,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/auth@npm:26.3.0, @react-native-firebase/auth@workspace:packages/auth":
+"@react-native-firebase/auth@npm:26.3.1, @react-native-firebase/auth@workspace:packages/auth":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/auth@workspace:packages/auth"
   dependencies:
     "@expo/plist": "npm:^0.8.1"
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.40.13"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
@@ -6105,17 +6105,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/crashlytics@npm:26.3.0, @react-native-firebase/crashlytics@workspace:packages/crashlytics":
+"@react-native-firebase/crashlytics@npm:26.3.1, @react-native-firebase/crashlytics@workspace:packages/crashlytics":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/crashlytics@workspace:packages/crashlytics"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.41.0"
     stacktrace-js: "npm:^2.0.2"
     typescript: "npm:^6.0.3"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
@@ -6123,75 +6123,75 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/database@npm:26.3.0, @react-native-firebase/database@workspace:packages/database":
+"@react-native-firebase/database@npm:26.3.1, @react-native-firebase/database@workspace:packages/database":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/database@workspace:packages/database"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     react-native-builder-bob: "npm:^0.41.0"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/firestore@npm:26.3.0, @react-native-firebase/firestore@workspace:packages/firestore":
+"@react-native-firebase/firestore@npm:26.3.1, @react-native-firebase/firestore@workspace:packages/firestore":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/firestore@workspace:packages/firestore"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     react-native-builder-bob: "npm:^0.41.0"
     react-native-url-polyfill: "npm:4.0.0"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/functions@npm:26.3.0, @react-native-firebase/functions@workspace:packages/functions":
+"@react-native-firebase/functions@npm:26.3.1, @react-native-firebase/functions@workspace:packages/functions":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/functions@workspace:packages/functions"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     "@react-native-firebase/private-tests-firebase-functions": "npm:^0.0.1"
     react-native-builder-bob: "npm:^0.41.0"
     typescript: "npm:^6.0.3"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/in-app-messaging@npm:26.3.0, @react-native-firebase/in-app-messaging@workspace:packages/in-app-messaging":
+"@react-native-firebase/in-app-messaging@npm:26.3.1, @react-native-firebase/in-app-messaging@workspace:packages/in-app-messaging":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/in-app-messaging@workspace:packages/in-app-messaging"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     react-native-builder-bob: "npm:^0.41.0"
   peerDependencies:
-    "@react-native-firebase/analytics": 26.3.0
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/analytics": 26.3.1
+    "@react-native-firebase/app": 26.3.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/installations@npm:26.3.0, @react-native-firebase/installations@workspace:packages/installations":
+"@react-native-firebase/installations@npm:26.3.1, @react-native-firebase/installations@workspace:packages/installations":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/installations@workspace:packages/installations"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     react-native-builder-bob: "npm:^0.40.13"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/messaging@npm:26.3.0, @react-native-firebase/messaging@workspace:packages/messaging":
+"@react-native-firebase/messaging@npm:26.3.1, @react-native-firebase/messaging@workspace:packages/messaging":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/messaging@workspace:packages/messaging"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.41.0"
     typescript: "npm:^6.0.3"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
@@ -6199,26 +6199,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/ml@npm:26.3.0, @react-native-firebase/ml@workspace:packages/ml":
+"@react-native-firebase/ml@npm:26.3.1, @react-native-firebase/ml@workspace:packages/ml":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/ml@workspace:packages/ml"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     react-native-builder-bob: "npm:^0.41.0"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/perf@npm:26.3.0, @react-native-firebase/perf@workspace:packages/perf":
+"@react-native-firebase/perf@npm:26.3.1, @react-native-firebase/perf@workspace:packages/perf":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/perf@workspace:packages/perf"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     expo: "npm:^55.0.18"
     react-native-builder-bob: "npm:^0.40.13"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
@@ -6226,15 +6226,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/phone-number-verification@npm:26.3.0, @react-native-firebase/phone-number-verification@workspace:packages/phone-number-verification":
+"@react-native-firebase/phone-number-verification@npm:26.3.1, @react-native-firebase/phone-number-verification@workspace:packages/phone-number-verification":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/phone-number-verification@workspace:packages/phone-number-verification"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     react-native-builder-bob: "npm:^0.41.0"
     typescript: "npm:^6.0.3"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
   languageName: unknown
   linkType: soft
 
@@ -6245,11 +6245,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/remote-config@npm:26.3.0, @react-native-firebase/remote-config@workspace:packages/remote-config":
+"@react-native-firebase/remote-config@npm:26.3.1, @react-native-firebase/remote-config@workspace:packages/remote-config":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/remote-config@workspace:packages/remote-config"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     "@types/text-encoding": "npm:^0.0.40"
     react-native-builder-bob: "npm:^0.41.0"
     react-native-fetch-api: "npm:^3.0.0"
@@ -6257,19 +6257,19 @@ __metadata:
     typescript: "npm:^6.0.3"
     web-streams-polyfill: "npm:^4.2.0"
   peerDependencies:
-    "@react-native-firebase/analytics": 26.3.0
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/analytics": 26.3.1
+    "@react-native-firebase/app": 26.3.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/storage@npm:26.3.0, @react-native-firebase/storage@workspace:packages/storage":
+"@react-native-firebase/storage@npm:26.3.1, @react-native-firebase/storage@workspace:packages/storage":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/storage@workspace:packages/storage"
   dependencies:
-    "@react-native-firebase/app": "npm:26.3.0"
+    "@react-native-firebase/app": "npm:26.3.1"
     react-native-builder-bob: "npm:^0.41.0"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
   languageName: unknown
   linkType: soft
 
@@ -6277,7 +6277,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/vertexai@workspace:packages/vertexai"
   dependencies:
-    "@react-native-firebase/ai": "npm:26.3.0"
+    "@react-native-firebase/ai": "npm:26.3.1"
     "@types/text-encoding": "npm:^0.0.40"
     react-native-builder-bob: "npm:^0.41.0"
     react-native-fetch-api: "npm:^3.0.0"
@@ -6285,7 +6285,7 @@ __metadata:
     typescript: "npm:^6.0.3"
     web-streams-polyfill: "npm:^4.2.0"
   peerDependencies:
-    "@react-native-firebase/app": 26.3.0
+    "@react-native-firebase/app": 26.3.1
   languageName: unknown
   linkType: soft
 
@@ -22337,25 +22337,25 @@ __metadata:
     "@react-native-async-storage/async-storage": "npm:^2.0.2"
     "@react-native-community/cli": "npm:15.1.3"
     "@react-native-community/cli-platform-ios": "npm:15.1.3"
-    "@react-native-firebase/ai": "npm:26.3.0"
-    "@react-native-firebase/analytics": "npm:26.3.0"
-    "@react-native-firebase/app": "npm:26.3.0"
-    "@react-native-firebase/app-check": "npm:26.3.0"
-    "@react-native-firebase/app-distribution": "npm:26.3.0"
+    "@react-native-firebase/ai": "npm:26.3.1"
+    "@react-native-firebase/analytics": "npm:26.3.1"
+    "@react-native-firebase/app": "npm:26.3.1"
+    "@react-native-firebase/app-check": "npm:26.3.1"
+    "@react-native-firebase/app-distribution": "npm:26.3.1"
     "@react-native-firebase/app-types": "npm:6.7.2"
-    "@react-native-firebase/auth": "npm:26.3.0"
-    "@react-native-firebase/crashlytics": "npm:26.3.0"
-    "@react-native-firebase/database": "npm:26.3.0"
-    "@react-native-firebase/firestore": "npm:26.3.0"
-    "@react-native-firebase/functions": "npm:26.3.0"
-    "@react-native-firebase/in-app-messaging": "npm:26.3.0"
-    "@react-native-firebase/installations": "npm:26.3.0"
-    "@react-native-firebase/messaging": "npm:26.3.0"
-    "@react-native-firebase/ml": "npm:26.3.0"
-    "@react-native-firebase/perf": "npm:26.3.0"
-    "@react-native-firebase/phone-number-verification": "npm:26.3.0"
-    "@react-native-firebase/remote-config": "npm:26.3.0"
-    "@react-native-firebase/storage": "npm:26.3.0"
+    "@react-native-firebase/auth": "npm:26.3.1"
+    "@react-native-firebase/crashlytics": "npm:26.3.1"
+    "@react-native-firebase/database": "npm:26.3.1"
+    "@react-native-firebase/firestore": "npm:26.3.1"
+    "@react-native-firebase/functions": "npm:26.3.1"
+    "@react-native-firebase/in-app-messaging": "npm:26.3.1"
+    "@react-native-firebase/installations": "npm:26.3.1"
+    "@react-native-firebase/messaging": "npm:26.3.1"
+    "@react-native-firebase/ml": "npm:26.3.1"
+    "@react-native-firebase/perf": "npm:26.3.1"
+    "@react-native-firebase/phone-number-verification": "npm:26.3.1"
+    "@react-native-firebase/remote-config": "npm:26.3.1"
+    "@react-native-firebase/storage": "npm:26.3.1"
     "@react-native/babel-preset": "npm:^0.78.3"
     "@react-native/metro-config": "npm:^0.78.3"
     assert: "npm:^2.1.0"
@@ -22390,25 +22390,25 @@ __metadata:
     "@react-native-community/cli": "npm:20.1.0"
     "@react-native-community/cli-platform-android": "npm:20.1.0"
     "@react-native-community/cli-platform-ios": "npm:20.1.0"
-    "@react-native-firebase/ai": "npm:26.3.0"
-    "@react-native-firebase/analytics": "npm:26.3.0"
-    "@react-native-firebase/app": "npm:26.3.0"
-    "@react-native-firebase/app-check": "npm:26.3.0"
-    "@react-native-firebase/app-distribution": "npm:26.3.0"
+    "@react-native-firebase/ai": "npm:26.3.1"
+    "@react-native-firebase/analytics": "npm:26.3.1"
+    "@react-native-firebase/app": "npm:26.3.1"
+    "@react-native-firebase/app-check": "npm:26.3.1"
+    "@react-native-firebase/app-distribution": "npm:26.3.1"
     "@react-native-firebase/app-types": "npm:6.7.2"
-    "@react-native-firebase/auth": "npm:26.3.0"
-    "@react-native-firebase/crashlytics": "npm:26.3.0"
-    "@react-native-firebase/database": "npm:26.3.0"
-    "@react-native-firebase/firestore": "npm:26.3.0"
-    "@react-native-firebase/functions": "npm:26.3.0"
-    "@react-native-firebase/in-app-messaging": "npm:26.3.0"
-    "@react-native-firebase/installations": "npm:26.3.0"
-    "@react-native-firebase/messaging": "npm:26.3.0"
-    "@react-native-firebase/ml": "npm:26.3.0"
-    "@react-native-firebase/perf": "npm:26.3.0"
-    "@react-native-firebase/phone-number-verification": "npm:26.3.0"
-    "@react-native-firebase/remote-config": "npm:26.3.0"
-    "@react-native-firebase/storage": "npm:26.3.0"
+    "@react-native-firebase/auth": "npm:26.3.1"
+    "@react-native-firebase/crashlytics": "npm:26.3.1"
+    "@react-native-firebase/database": "npm:26.3.1"
+    "@react-native-firebase/firestore": "npm:26.3.1"
+    "@react-native-firebase/functions": "npm:26.3.1"
+    "@react-native-firebase/in-app-messaging": "npm:26.3.1"
+    "@react-native-firebase/installations": "npm:26.3.1"
+    "@react-native-firebase/messaging": "npm:26.3.1"
+    "@react-native-firebase/ml": "npm:26.3.1"
+    "@react-native-firebase/perf": "npm:26.3.1"
+    "@react-native-firebase/phone-number-verification": "npm:26.3.1"
+    "@react-native-firebase/remote-config": "npm:26.3.1"
+    "@react-native-firebase/storage": "npm:26.3.1"
     "@react-native/babel-preset": "npm:0.86.2"
     "@react-native/jest-preset": "npm:0.86.2"
     "@react-native/metro-config": "npm:0.86.2"
