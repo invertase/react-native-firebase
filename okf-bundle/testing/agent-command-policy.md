@@ -156,7 +156,7 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 ### Android build / unit / Jacoco
 
 - **Do not** invent `cd tests && yarn install`, then bare `./gradlew` from an arbitrary cwd.
-- Unit: **`yarn tests:android:unit`** only ([AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1--robolectric--mockito-for-android-jvm-unit-tests--accepted)).
+- Unit: **`yarn tests:android:unit`** only. Runner choice (plain JUnit4 vs Robolectric): [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1).
 - Merged coverage after e2e: **`yarn tests:android:post-e2e-coverage`** (Codecov path is `jacocoTestReport`, not e2e-only `jacocoAndroidTestReport`) — [coverage design](coverage-design.md).
 - Optional explicit merge: **`yarn tests:android:test:jacoco-report`**.
 
@@ -213,7 +213,7 @@ Prepare/install: yarn or yarn lerna:prepare must exit 0 before ANY other command
 Before native :build: root yarn exit 0 + verify tests/node_modules/react-native/third-party-podspecs/fmt.podspec (and tests-macos copy when building macOS) ≥ 12.1.0 — okf-bundle/testing/agent-command-policy.md#install-patch-fmt-gate-blocking. Before iOS build on a clean checkout: root yarn, then yarn tests:ios:pod:install exit 0. If fmt < 12.1.0: STOP and re-run yarn; never invent Podfile/FMT_USE_CONSTEVAL/c++17 fmt hacks.
 Area harness: okf-bundle/testing/running-e2e.md#local-harness-overrides-harnessoverridesjs — copy harness.overrides.example.js to gitignored harness.overrides.js; set modules + RNFBDebug; delete overrides after run.
 TurboModule contract test (NewArch-AD-17.1): packages/app/__tests__/nativeModuleContract.test.ts — yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts
-Android JVM unit (AndroidTest-AD-1): yarn tests:android:unit — not a substitute for platform e2e.
+Android JVM unit (AndroidTest-AD-1, JUnit-first; omit @Config/sdk unless proven): yarn tests:android:unit — not a substitute for platform e2e.
 iOS Ruby (SPM helpers): yarn tests:ios:ruby — never ad-hoc ruby packages/app/__tests__/…_test.rb as the gate. Never bundle install --gemfile=packages/app/__tests__/Gemfile. Host Ruby >= 3.3.1 (not 3.3.0); do not downgrade simplecov.
 JS lint vendor flood under packages/app/__tests__/vendor/: local Bundler tree, not product lint. Never invent delete-vendor as the lint gate. See #js-lint-bundler-vendor.
 On failure: fix product code (or re-run yarn for patch miss), re-run the same canonical command.
