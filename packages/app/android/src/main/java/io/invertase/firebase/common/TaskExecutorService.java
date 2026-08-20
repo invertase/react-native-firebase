@@ -95,7 +95,9 @@ public class TaskExecutorService {
 
   private static final RejectedExecutionHandler discardAfterShutdown =
       (r, executor) -> {
-        if (executor.isShutdown() || executor.isTerminated() || executor.isTerminating()) {
+        // isShutdown() remains true through the terminating and terminated states,
+        // so it is the only check needed to detect work arriving after shutdown.
+        if (executor.isShutdown()) {
           return;
         }
         // Unreachable with an unbounded queue, but preserve AbortPolicy semantics
@@ -105,7 +107,9 @@ public class TaskExecutorService {
 
   private final RejectedExecutionHandler executeInFallback =
       (r, executor) -> {
-        if (executor.isShutdown() || executor.isTerminated() || executor.isTerminating()) {
+        // isShutdown() remains true through the terminating and terminated states,
+        // so it is the only check needed to detect work arriving after shutdown.
+        if (executor.isShutdown()) {
           return;
         }
         ExecutorService fallbackExecutor = getTransactionalExecutor();
