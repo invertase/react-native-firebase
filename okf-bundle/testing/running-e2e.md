@@ -51,6 +51,7 @@ yarn tests:emulator:start
 3. **Rebuild when needed**
    - **Before any native `:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) — root `yarn` exit 0 + fmt podspec **≥ 12.1.0**. Missing this gate → Apple Clang 21 consteval failures on unpatched fmt **11.0.2**.
    - Native changed → `yarn tests:ios:build` / `yarn tests:android:build` before e2e. macOS uses firebase-js-sdk only — no native rebuild.
+   - **Apple `:build` compiles only.** `yarn tests:ios:build` / `yarn tests:macos:build` do not run CocoaPods. Full e2e / test process **requires** `yarn tests:ios:pod:install` or `yarn tests:macos:pod:install` as a **separate prior step** before the matching `:build` (after codegen / podspec / native Apple changes, and in [slot lifecycle](#slot-lifecycle) / `run-full-tests.sh` / CI). A bare `:build` without pod install is allowed when pods are already installed and you only need a compile.
    - **Committed codegen / generated native artifacts count as native** — any change under `packages/*/ios/generated/**` or `packages/*/android/**/generated/**` (including wipe-then-regen orphan deletions), or TurboModule **codegen / spec / podspec / native shell**, is a native change: rebuild + [platform coverage](#platform-coverage-gate-blocking) e2e on iOS and Android. **`yarn codegen:verify` is not a substitute** for `:test-cover` ([change authoring § forbidden shortcuts](change-authoring-workflow.md#forbidden-shortcuts)).
    - `packages/*/lib/**` changed → **`yarn lerna:prepare` must run to completion (exit 0) before anything else** — Metro serves `dist/module/**`, not `lib/**`. See [prepare completion gate](#prepare-completion-gate-blocking) and [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first). After prepare finishes, restart the **matching** packager when Metro was already running ([packager reset-cache](#packager-reset-cache-eaddrinuse)).
    - TurboModule **codegen / spec / podspec / native shell** changed → same as native changed, plus regen codegen ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)) when specs changed; if app loads with Metro redbox `Requiring unknown module "undefined"`, see [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
@@ -214,7 +215,7 @@ MACOS_APP="${RNFB_MACOS_PRODUCT_NAME:-io.invertase.testing}"
 
 **Host-clear probes** — prefer the generic scripts (env-aware, mellifera-agnostic). They resolve [configurable e2e environment](#configurable-e2e-environment) vars first, then fall back to serial defaults (`8090`, `8081`, `emulator-5554`, …). **Exit 0 = clear.**
 
-`check-e2e-resources.sh` **default mode reports Jet WebSocket + apps + simulators only** — it does **not** fail solely on Metro `:8081` or the Firebase emulator ports being open, because those are expected to be up already ([step 2, services ready](#2-services-ready), the opposite check). Pass `--services` (alias `--strict`) to additionally treat Metro/emulator ports as BUSY. `--platform=android|ios|macos` scopes device probes to one platform (otherwise an ambiguous serial "global" fallback is used — it does not treat android+ios+macos as all simultaneously active; see [global device scoping](#global-device-scoping)). Unscoped check (no slot env) can report **CLEAR** while slotted leftovers (`.sN` apps, slot ports, booted `TestingAVD-N` / `RNFB E2E iOS slot-N`) remain — load `export-slot-env` (or `--mellifera`) before trusting CLEAR for a slot. `tests/mellifera.env.json` is only consulted with `--mellifera` or `RNFB_MELLIFERA=1` — see [mellifera JSON scoping](#mellifera-json-scoping).
+`check-e2e-resources.sh` **default mode reports Jet WebSocket + apps + simulators only** — it does **not** fail solely on Metro `:8081` or the Firebase emulator ports being open, because those are expected to be up already ([step 2, services ready](#2-services-ready), the opposite check). Pass `--services` (alias `--strict`) to additionally treat Metro/emulator ports as BUSY. `--platform=android|ios|macos` scopes device probes to one platform (otherwise an ambiguous serial "global" fallback is used — it does not treat android+ios+macos as all simultaneously active; see [global device scoping](#global-device-scoping)). Unscoped **check** default (host-clear, no `--services`) can still print leftover slotted emulator ports as INFO and exit **CLEAR** — those listeners do not fail host-clear. Unscoped **collect** (global, no slot env) still **lists** leftover slotted suites (`0..E2E_SLOTTED_MAX` × android/ios/macos, e.g. hub `:13005` for android slot 1) so unscoped `release-e2e-resources.sh` (default wipe includes emulators+metro) actually kills them. Unscoped `--devices` also stops `TestingAVD-N` and shuts down `RNFB E2E iOS slot-N` (same sibling wipe as macOS `.sN`). With slot env loaded, check/release stay slot-scoped. `tests/mellifera.env.json` is only consulted with `--mellifera` or `RNFB_MELLIFERA=1` — see [mellifera JSON scoping](#mellifera-json-scoping).
 
 ```bash
 # Host-clear (default): Jet + apps + sims only — Metro/emulator ports are informational.
@@ -474,9 +475,12 @@ yarn tests:emulator:start
 yarn tests:packager:jet            # iOS/Android
 # yarn tests:macos:packager:jet    # when running macOS Jet instead
 
-# Per platform (rebuild when native changed):
+# Per platform (rebuild when native changed). Apple :build compiles only —
+# full e2e requires pod:install as a separate prior step (skip for Android).
+yarn tests:ios:pod:install
 yarn tests:ios:build && yarn tests:ios:test-cover
 yarn tests:android:build && yarn tests:android:test-cover
+yarn tests:macos:pod:install
 yarn tests:macos:build && yarn tests:macos:test-cover
 ```
 
@@ -619,17 +623,28 @@ Serial e2e uses committed defaults (Metro `:8081`, Jet `:8090`, emulators `:8080
 # 1) Load slot env (full RNFB_{ANDROID,IOS,MACOS}_* carry-in + device identities)
 eval "$(bash scripts/e2e/export-slot-env.sh <platform> N)"
 # yarn tests:e2e:export-slot-env <platform> N
-# Emits unset for parent leftovers (ANDROID_SERIAL, AVD_NAME, …) that would poison check/release.
+# Emits unset for parent leftovers (AVD_NAME, …) that would poison check/release.
+# Exports ANDROID_SERIAL=emulator-$((5556+2*N)) and RNFB_ANDROID_CONSOLE_PORT for
+# the slot (not unset). Detox honors that console port — do not let FreePortFinder
+# pick 10000–20000 (outside adb’s emulator console range).
 
 # 2) Clear this slot (see release scope / --devices below)
-bash scripts/e2e/check-e2e-resources.sh          # expect CLEAR (or release then re-check)
+# When about to (re)start emulators, prefer --services so leftover suite ports
+# are BUSY (default host-clear treats metro/emulator as INFO and can still be CLEAR).
+bash scripts/e2e/check-e2e-resources.sh --services   # expect CLEAR, or release then re-check
 # Default release = ports+apps for all three platform blocks; does NOT stop AVD/sims
 bash scripts/e2e/release-e2e-resources.sh
 # For a CLEAR iOS check afterward, also shut down devices:
 # bash scripts/e2e/release-e2e-resources.sh --devices
-# Unscoped (no slot env): release also wipes io.invertase.testing.s0..sN leftovers.
+# Unscoped (no slot env): release wipes serial defaults **and** leftover slotted
+# ports (hubs/metros 0..E2E_SLOTTED_MAX × android|ios|macos) plus, with --devices,
+# TestingAVD-N / RNFB E2E iOS slot-N (same sibling wipe as io.invertase.testing.sN).
 
 # 3) Start services for this platform×slot (packager before build)
+# Suite ports must be free. start-emulator-slotted.sh aborts (exit 1, ports/pids)
+# if any of FS/AUTH/DB/FN/ST/HUB/LOG/WS/EVENTARC/TASKS is already listening —
+# do not wait for firebase "port taken". Infra failures: **abort** (zero flake
+# budget); do not mid-wave release+retry without a code fix.
 bash scripts/e2e/start-emulator-slotted.sh <platform>   # or … <platform> N to self-apply
 # Packager must survive the starter shell: run-slotted-packager.sh ignores SIGHUP.
 # Tee recommended, e.g. … > /tmp/rnfb-metro-<platform>-sN.log 2>&1 &
@@ -638,8 +653,12 @@ bash scripts/e2e/start-emulator-slotted.sh <platform>   # or … <platform> N to
 bash scripts/e2e/run-slotted-packager.sh <platform> N   # background OK; canonical helper (macos → yarn tests:macos:packager:jet-reset-cache in tests-macos/; android/ios → yarn tests:packager:jet-reset-cache in tests/)
 
 # 4) Build for the slot (macOS uses RNFB_MACOS_PRODUCT_NAME → PRODUCT_NAME_SUFFIX)
-# After worktree reset/sync for iOS, if Pods/Manifest.lock may have drifted:
-# yarn tests:ios:pod:install
+# yarn tests:ios:build / yarn tests:macos:build compile only.
+# Full e2e requires yarn tests:<platform>:pod:install as a separate prior step
+# (after codegen / podspec / native Apple changes; also in run-full-tests.sh / CI).
+# Skip pod:install for Android. A bare :build is allowed when pods are already
+# installed and you only need a compile.
+yarn tests:<platform>:pod:install   # ios | macos only
 yarn tests:<platform>:build
 
 # 5) Run e2e
@@ -658,6 +677,7 @@ eval "$(bash scripts/e2e/export-slot-env.sh macos 1)"
 bash scripts/e2e/release-e2e-resources.sh --devices
 bash scripts/e2e/start-emulator-slotted.sh macos
 bash scripts/e2e/run-slotted-packager.sh macos 1   # background OK
+yarn tests:macos:pod:install
 yarn tests:macos:build
 bash scripts/e2e/run-slotted-test-cover.sh macos 1
 bash scripts/e2e/release-e2e-resources.sh --devices
@@ -674,15 +694,17 @@ bash scripts/e2e/release-e2e-resources.sh --platform=android
 # bash scripts/e2e/release-e2e-resources.sh --devices
 ```
 
-**`--platform=` never selects a slot.** It only narrows which platform’s devices/ports are probed among whatever env is already loaded. For slotted clear/check, always `export-slot-env` (or `run-slotted-*`) first so `RNFB_E2E_SLOT` + `RNFB_*_JET_PORT` are set; otherwise check/release fall back to serial defaults (`TestingAVD` / `:8090` / …). The scripts warn on stderr when `--platform` is set without slotted carry-in.
+**`--platform=` never selects a slot.** It only narrows which platform’s devices/ports are probed among whatever env is already loaded. For slotted clear/check, always `export-slot-env` (or `run-slotted-*`) first so `RNFB_E2E_SLOT` + `RNFB_*_JET_PORT` are set; otherwise check/release fall back to serial defaults (`TestingAVD` / `:8090` / …) **plus** unscoped leftover slotted ports/devices (`0..E2E_SLOTTED_MAX`). The scripts warn on stderr when `--platform` is set without slotted carry-in.
 
-**Slotted device identities (including slot 0):** slotted runs use `TestingAVD-N`, `RNFB E2E iOS slot-N`, Detox `*.slotN`, and `io.invertase.testing.sN` — **including `N=0`**. Serial unslotted defaults remain `TestingAVD` / `iPhone 17` / `io.invertase.testing`. First use of any slot (including 0): `yarn tests:e2e:setup-android-avds` / `yarn tests:e2e:setup-ios-sims` (slots 0–4). Detox `FreePortFinder` / `LaunchCommand` already prepend `-port`; do not add `-port` to `bootArgs` (a second `-port` desyncs adb vs qemu).
+**Infra failures (zero flake budget):** emulator hub port taken, suite preflight busy, functions lock timeout, or other host-resource errors are **abort** — fix the leftover (unscoped `release-e2e-resources.sh`, often with `--devices`) or the code. Do **not** mid-wave release+retry the same start without a code fix.
+
+**Slotted device identities (including slot 0):** slotted runs use `TestingAVD-N`, `RNFB E2E iOS slot-N`, Detox `*.slotN`, and `io.invertase.testing.sN` — **including `N=0`**. Serial unslotted defaults remain `TestingAVD` / `iPhone 17` / `io.invertase.testing`. First use of any slot (including 0): `yarn tests:e2e:setup-android-avds` / `yarn tests:e2e:setup-ios-sims` (slots 0–4). **Android console ports are pinned** to even values in adb’s safe range: `RNFB_ANDROID_CONSOLE_PORT=$((5556+2*N))` → slot 0=`emulator-5556`, slot 1=`emulator-5558`, slot 2=`emulator-5560` (never `5554` for slotted slot 0, so unslotted `TestingAVD` / `emulator-5554` can coexist). Detox must honor `RNFB_ANDROID_CONSOLE_PORT`; it must **not** pick FreePortFinder ports in **10000–20000** (qemu stays up but `adb devices` never lists the guest). Detox `LaunchCommand` already prepends `-port`; do not add `-port` to `bootArgs` (a second `-port` desyncs adb vs qemu). Apple `:build` compiles only — run `yarn tests:ios:pod:install` / `yarn tests:macos:pod:install` as a **separate prior step** before the matching `:build` when pods may be stale (codegen / podspec / native Apple changes, slot lifecycle, CI). A bare `:build` is allowed when pods are already installed.
 
 **Parallel / multi-platform carry-in (proven model):** when android + ios (+ macos) share a worktree, every Metro/Jest/Detox process for a slot must receive **the full set** of `RNFB_{ANDROID,IOS,MACOS}_*` port variables for that slot — not only the active platform’s block. Runtime selection uses platform self-detection (`Platform.*` in [`packages/app/e2e/helpers.js`](../../packages/app/e2e/helpers.js); Detox `device.getPlatform()` / configuration name on the host in [`tests/e2e/firebase.test.js`](../../tests/e2e/firebase.test.js)). Do **not** use `RNFB_E2E_PLATFORM` to choose ports: `tests/.babelrc` and `tests-macos/.babelrc` inline static `process.env.NAME` via `transform-inline-environment-variables`, and concurrent transforms in one worktree must see every labeled port present so each `process.env.RNFB_ANDROID_*` / `RNFB_IOS_*` / `RNFB_MACOS_*` literal bakes correctly. Computed keys (`process.env[\`RNFB_${x}_…\`]`) are **not** inlined — in-app code must use static member expressions (or helpers that do). Process-local listen/bind vars (`RCT_METRO_PORT`, `JET_REMOTE_PORT`, Detox config) still identify which socket/config **this** process owns. Host Jet config ([`tests/.jetrc.js`](../../tests/.jetrc.js) for iOS/Android, [`tests-macos/.jetrc.js`](../../tests-macos/.jetrc.js) for macOS) should prefer those process-local binds (and per-target `before()` hooks with an explicit platform key) — not `RNFB_E2E_PLATFORM`.
 
 In-app / e2e specs must call `getE2eEmulatorPort('firestore'|…)` (and siblings) — never hardcode `:8080` / `:5001` / other serial emulator ports.
 
-**Slotted Firebase emulator suites (full isolation):** each platform×slot suite needs its **own** Firebase Tools process with **non-overlapping** ports for every listener the suite actually binds. [`scripts/e2e/start-emulator-slotted.sh`](../../scripts/e2e/start-emulator-slotted.sh) assigns auth/database/firestore/functions/storage/hub/logging **and** Firestore `websocketPort`, Eventarc, and Cloud Tasks (derived as `firestore+8/+9/+12` inside the platform block). Defaults `9150` / `9299` / `9499` collide across suites: Firebase Tools still starts Eventarc+Tasks as Functions dependencies even when `--only` omits them; `EADDRINUSE` on those aux ports aborts the suite and leaves Functions dead while Firestore may still listen — e2e then hangs on callables. Parallel readiness must require the **Functions** port up (not only hub). Serialize `scripts/functions` `yarn`/`yarn build` across concurrent suite starts (shared source dir).
+**Slotted Firebase emulator suites (full isolation):** each platform×slot suite needs its **own** Firebase Tools process with **non-overlapping** ports for every listener the suite actually binds. [`scripts/e2e/start-emulator-slotted.sh`](../../scripts/e2e/start-emulator-slotted.sh) assigns auth/database/firestore/functions/storage/hub/logging **and** Firestore `websocketPort`, Eventarc, and Cloud Tasks (derived as `firestore+8/+9/+12` inside the platform block). It **aborts before `emulators:start`** if any of those suite ports is already listening on localhost (prints port/pids). Defaults `9150` / `9299` / `9499` collide across suites: Firebase Tools still starts Eventarc+Tasks as Functions dependencies even when `--only` omits them; `EADDRINUSE` on those aux ports aborts the suite and leaves Functions dead while Firestore may still listen — e2e then hangs on callables. Parallel readiness must require the **Functions** port up (not only hub). Serialize `scripts/functions` `yarn`/`yarn build` across concurrent suite starts (shared source dir).
 
 **macOS concurrency:** default process name `io.invertase.testing` is host-global (`pgrep`/`killall`). For per-worktree / multi-slot macOS, set **`RNFB_MACOS_PRODUCT_NAME`** (and optionally **`RNFB_MACOS_BUNDLE_IDENTIFIER`**) before `:build` and `:test-cover` — `export-slot-env.sh` / `run-slotted-*` do this as `io.invertase.testing.s<slot>`. `yarn tests:macos:build` derives `RNFB_MACOS_PRODUCT_NAME_SUFFIX` (e.g. `.s1`) for the pbxproj `PRODUCT_NAME = "io.invertase.testing$(RNFB_MACOS_PRODUCT_NAME_SUFFIX)"` — do **not** pass global `PRODUCT_NAME=` on the `xcodebuild` CLI (that renames Pods and breaks linking). [`tests-macos/.jetrc.js`](../../tests-macos/.jetrc.js) spawn/kill/Metro `app=` follow the same env. Unset → serial defaults. No Firebase Console / GoogleService change is required (JS/Other path). See [macOS process identity](#macos-process-identity-concurrency).
 
@@ -699,6 +721,7 @@ In-app / e2e specs must call `getE2eEmulatorPort('firestore'|…)` (and siblings
 | `RNFB_E2E_SLOT` | Slot index for orchestration / AVD / sim naming |
 | `RNFB_E2E_PLATFORM` | Optional orchestration label only — **not** used for port selection (prefer unset in slotted multi-platform launches) |
 | `RNFB_ANDROID_AVD`, `RNFB_IOS_SIMULATOR`, `RNFB_ANDROID_EMULATOR_BOOT_ARGS` | Device selection overrides. Slotted helpers set `TestingAVD-{n}` / `RNFB E2E iOS slot-{n}` (including `n=0`); serial defaults stay `TestingAVD` / `iPhone 17`. `RNFB_ANDROID_EMULATOR_BOOT_ARGS` is snapshot flags only — never include `-port` |
+| `RNFB_ANDROID_CONSOLE_PORT`, `ANDROID_SERIAL` | Slotted Android qemu console port and adb serial. Helpers pin `5556+2×slot` / `emulator-${port}` (adb-safe **[5554, 5584]**, skipping 5554 so unslotted `emulator-5554` can coexist). Detox patch uses this instead of FreePortFinder 10000–20000 |
 | `RNFB_MACOS_PRODUCT_NAME` | macOS `PRODUCT_NAME` / process name (default `io.invertase.testing`). Required distinct per concurrent macOS slot. Slotted helpers set `io.invertase.testing.s<slot>`; override via `RNFB_MACOS_PRODUCT_NAME_OVERRIDE` |
 | `RNFB_MACOS_BUNDLE_IDENTIFIER` | macOS `CFBundleIdentifier` (default derived from product name). Metro `app=` follows this. Slotted override: `RNFB_MACOS_BUNDLE_IDENTIFIER_OVERRIDE` |
 | `ORG_GRADLE_PROJECT_reactNativeDevServerPort` | Android Gradle Metro port baked into the APK's `react_native_dev_server_port` resource at build time. **Set automatically** by `yarn tests:android:build` (`RNFB_ANDROID_METRO_PORT` → `RCT_METRO_PORT` → `RNFB_METRO_PORT` → `JET_METRO_PORT` → `8081`) — only export it yourself when building Android outside that script (e.g. `detox build` invoked directly). Detox's `reversePorts` (`tests/.detoxrc.js`) already forwards the same slotted Metro port; this var makes the APK actually *ask* for that port. |
@@ -729,7 +752,7 @@ Helper scripts (not canonical `:test-cover` entrypoints): see [slot lifecycle](#
 | Metro `app=` query | matches bundle ID | [`tests-macos/.jetrc.js`](../../tests-macos/.jetrc.js) reads the same env |
 | Firebase / GoogleService | **None on macOS target** | No cloud re-registration for JS/Other e2e |
 
-`yarn tests:macos:build` exports `RNFB_MACOS_PRODUCT_NAME_SUFFIX` into the xcodebuild environment (pbxproj expansion only). Check/release use `RNFB_MACOS_PRODUCT_NAME` for `pgrep`/`killall`; unscoped host wipe also clears `.s0`…`.sN`. Same-platform parallel still needs **one worktree per macOS instance** ([parallel topology](#parallel-e2e-topology)). Mild residual: shared `io.invertase.firebase` preferences suite across apps.
+`yarn tests:macos:build` exports `RNFB_MACOS_PRODUCT_NAME_SUFFIX` into the xcodebuild environment (pbxproj expansion only). Check/release use `RNFB_MACOS_PRODUCT_NAME` for `pgrep`/`killall`; unscoped host wipe also clears `.s0`…`.sN` **and** leftover slotted emulator/metro ports plus `TestingAVD-N` / `RNFB E2E iOS slot-N` when `--devices` is passed. Same-platform parallel still needs **one worktree per macOS instance** ([parallel topology](#parallel-e2e-topology)). Mild residual: shared `io.invertase.firebase` preferences suite across apps.
 
 ### Android emulator gray screen / Quick Boot (blocking)
 
@@ -743,7 +766,7 @@ Detox's default emulator launch **restores the AVD Quick Boot snapshot** unless 
 
 ```bash
 adb devices -l   # emulator-XXXX offline
-pgrep -fl 'qemu-system.*TestingAVD'
+pgrep -fl "$(node -e "console.log(require('./tests/e2e/androidAdbRange').qemuAvdPgrepPattern('TestingAVD'))")"
 rg 'SPAWN_CMD.*@TestingAVD' /tmp/rnfb-e2e-android.log   # no -no-snapshot-load → stale runbook / config
 ```
 
@@ -751,7 +774,9 @@ rg 'SPAWN_CMD.*@TestingAVD' /tmp/rnfb-e2e-android.log   # no -no-snapshot-load �
 
 ```bash
 adb -s emulator-5554 emu kill 2>/dev/null || true
-pkill -f 'qemu-system.*TestingAVD' 2>/dev/null || true
+# Complete @AVD identity — do not pkill qemu-system.*TestingAVD (matches TestingAVD-0).
+# Unscoped leftover slotted AVDs: bash scripts/e2e/release-e2e-resources.sh --devices
+pkill -f 'qemu-system.*@TestingAVD([[:space:]]|$)' 2>/dev/null || true
 adb kill-server && adb start-server && adb devices   # must be empty
 # If gray screen persists after cold-boot config, wipe Quick Boot snapshots:
 # rm -rf ~/.android/avd/TestingAVD.avd/snapshots
@@ -782,7 +807,7 @@ pkill -f 'detox test --configuration android' 2>/dev/null || true
 
 ```bash
 adb emu kill 2>/dev/null || true
-pkill -f 'qemu-system.*TestingAVD' 2>/dev/null || true
+pkill -f 'qemu-system.*@TestingAVD([[:space:]]|$)' 2>/dev/null || true
 adb kill-server && adb start-server && adb devices   # must be empty
 ```
 
@@ -827,7 +852,7 @@ ls ~/Library/Detox/ios/framework/*/Detox.framework
 ls ~/Library/Detox/ios/xcuitest-runner/*/
 ```
 
-Then resume the normal iOS loop: [pre-flight](#pre-flight-is-the-host-clear-to-start) → `yarn tests:ios:build` (if native changed) → `yarn tests:ios:test-cover`.
+Then resume the normal iOS loop: [pre-flight](#pre-flight-is-the-host-clear-to-start) → `yarn tests:ios:pod:install` (when pods may be stale) → `yarn tests:ios:build` (if native changed; compiles only) → `yarn tests:ios:test-cover`.
 
 CI restores the same tree from `~/Library/Detox/ios` keyed by Xcode version ([iOS workflow § Detox Framework Cache Restore](../ci-workflows/ios.md)). Local developers must rebuild when the cache is missing — it is not committed to git.
 
@@ -849,7 +874,7 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 
 1. [Prepare completion gate](#prepare-completion-gate-blocking) — `yarn lerna:prepare` exit 0.
 2. Regenerate codegen if specs changed — [workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical) (wipe configured `outputPath`, then CLI / package scripts).
-3. **`yarn tests:<platform>:build`** (includes `pod install` on iOS when needed).
+3. **`yarn tests:<platform>:build`** — iOS and macOS **compile only**. Full e2e / test process **requires** `yarn tests:ios:pod:install` / `yarn tests:macos:pod:install` as a **separate prior step** before the matching `:build` (after codegen / podspec / native Apple changes). A bare `:build` without pod install is allowed when pods are already installed and you only need a compile. Android `:build` does not use CocoaPods.
 4. Matching packager reset-cache (Metro was running during the edits) — [packager reset-cache](#packager-reset-cache-eaddrinuse).
 5. [Pre-flight](#pre-flight-is-the-host-clear-to-start) → **`yarn tests:<platform>:test-cover`**.
 
@@ -862,9 +887,8 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 3. **`yarn`** at repo root (wait for exit 0 — includes `lerna:prepare` and patches).
 4. Confirm [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (fmt **≥ 12.1.0**) before any native `:build`.
 5. Regenerate **all** touched packages' codegen from `tests/` ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)).
-6. **`yarn tests:ios:pod:install`** when iOS native/codegen changed.
-7. **`yarn tests:<platform>:build`**.
-8. Matching packager reset-cache ([packager reset-cache](#packager-reset-cache-eaddrinuse)) → pre-flight → `:test-cover`.
+6. **iOS/macOS:** `yarn tests:<platform>:pod:install` then `yarn tests:<platform>:build` as two commands (`:build` compiles only). Required after codegen / podspec / native Apple changes. A bare `:build` is allowed when pods are already installed. Android skips `pod:install`.
+7. Matching packager reset-cache ([packager reset-cache](#packager-reset-cache-eaddrinuse)) → pre-flight → `:test-cover`.
 
 Do **not** treat this redbox as a missing TurboModule registration until the refresh sequence has been run once on a clean tree.
 

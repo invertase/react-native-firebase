@@ -240,10 +240,14 @@ clear_ios_sims() {
   want ios-sims || return 0
   platform_active ios || return 0
   command -v xcrun >/dev/null 2>&1 || return 0
-  echo "[release] simctl shutdown ${E2E_IOS_SIMULATOR}"
-  xcrun simctl shutdown "$E2E_IOS_SIMULATOR" 2>/dev/null || true
-  # If still using default name and any booted remain, shut down booted (serial mode).
-  if [[ "$E2E_IOS_SIMULATOR" == "$E2E_DEFAULT_IOS_SIMULATOR" ]]; then
+  local name
+  while IFS= read -r name; do
+    [[ -z "$name" ]] && continue
+    echo "[release] simctl shutdown ${name}"
+    xcrun simctl shutdown "$name" 2>/dev/null || true
+  done < <(e2e_ios_simulator_names_for_release)
+  # Unscoped serial: also shut down any other booted sim (same as historical iPhone 17).
+  if [[ -z "${RNFB_IOS_SIMULATOR:-}" && -z "${RNFB_E2E_SLOT:-${RNFB_E2E_HOST_SLOT:-}}" ]]; then
     xcrun simctl shutdown booted 2>/dev/null || true
   fi
 }
@@ -255,10 +259,20 @@ clear_android_emulator() {
   if [[ -n "${E2E_ANDROID_SERIAL:-}" ]] && command -v adb >/dev/null 2>&1; then
     adb -s "$E2E_ANDROID_SERIAL" emu kill 2>/dev/null || true
   fi
-  # Prefer AVD-name match so slotted release never kills another slot's qemu via
-  # a guessed serial. Requires a non-empty AVD name (always set after collect).
-  if [[ -n "${E2E_ANDROID_AVD:-}" ]]; then
-    pkill -f "qemu-system.*${E2E_ANDROID_AVD}" 2>/dev/null || true
+  local avd
+  while IFS= read -r avd; do
+    [[ -z "$avd" ]] && continue
+    echo "[release] pkill qemu complete-avd=${avd}"
+    e2e_pkill_qemu_for_avd "$avd"
+  done < <(e2e_android_avd_names_for_release)
+  # Unscoped: also emu-kill known slotted adb serials (5556+2*slot).
+  if [[ -z "${RNFB_ANDROID_AVD:-}${RNFB_ANDROID_AVD_NAME:-}" && -z "${RNFB_E2E_SLOT:-${RNFB_E2E_HOST_SLOT:-}}" ]] &&
+    command -v adb >/dev/null 2>&1; then
+    local i serial
+    for ((i = 0; i <= E2E_SLOTTED_MAX; i++)); do
+      serial="emulator-$(e2e_slot_android_console_port "$i")"
+      adb -s "$serial" emu kill 2>/dev/null || true
+    done
   fi
 }
 

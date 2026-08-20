@@ -15,7 +15,9 @@
 #
 # Always sets full RNFB_{ANDROID,IOS,MACOS}_* ports plus slot device identities
 # (TestingAVD-N / RNFB E2E iOS slot-N / RNFB_MACOS_PRODUCT_NAME=io.invertase.testing.s<slot>).
-# Also emits unset for parent leftovers (ANDROID_SERIAL, AVD_NAME, …) that apply clears.
+# Pins RNFB_ANDROID_CONSOLE_PORT=$((5556+2*slot)) and ANDROID_SERIAL=emulator-${port}
+# (adb-safe; not FreePortFinder 10000–20000). Emits unset for other parent leftovers
+# (AVD_NAME, …) that apply clears.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

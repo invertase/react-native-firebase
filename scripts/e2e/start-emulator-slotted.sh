@@ -11,6 +11,7 @@
 # With [slot], applies full carry-in via e2e_slot_env_apply (same as run-slotted-*).
 # Without [slot], requires RNFB_<PLATFORM>_EMULATOR_* already exported (e.g. after
 # eval "$(export-slot-env.sh …)").
+# Aborts (exit 1) before emulators:start if any suite port is already listening.
 set -euo pipefail
 
 PLATFORM="${1:?platform required: android|ios|macos}"
@@ -19,9 +20,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 SCRIPTS="${REPO_ROOT}/.github/workflows/scripts"
 
+# shellcheck source=lib/e2e-resource-env.sh
+source "${SCRIPT_DIR}/lib/e2e-resource-env.sh"
+
 if [[ -n "$SLOT_ARG" ]]; then
-  # shellcheck source=lib/e2e-slot-env.sh
-  source "${SCRIPT_DIR}/lib/e2e-slot-env.sh"
   e2e_slot_env_apply "$PLATFORM" "$SLOT_ARG"
 fi
 
@@ -48,6 +50,11 @@ done
 WS_PORT=$((FS_PORT + 8))
 EVENTARC_PORT=$((FS_PORT + 9))
 TASKS_PORT=$((FS_PORT + 12))
+
+# Fail-fast before firebase (and before functions yarn): leftover suite listeners
+# must not become "Could not start emulator hub, port taken" after a long wait.
+e2e_abort_if_emulator_suite_ports_busy \
+  "$FS_PORT" "$AUTH_PORT" "$DB_PORT" "$FN_PORT" "$ST_PORT" "$HUB_PORT" "$LOG_PORT"
 
 CONFIG="${SCRIPTS}/.e2e-emulator-${PLATFORM}-${SLOT}.json"
 python3 - <<PY

@@ -27,7 +27,7 @@ After the `tests-macos/` split, **iOS/Android** Metro (`yarn tests:packager:*`, 
 | **Jet control HTTP** | Paired control plane | `:8091` (Jet+1) |
 | **Firebase emulator suite** | auth / database / firestore / functions / storage / hub / logging | `:9099` / `:9000` / `:8080` / `:5001` / `:9199` / `:4400` / `:4500` |
 | **Emulator aux ports** | Firestore websocket, Eventarc, Cloud Tasks (Firebase Tools still binds these) | `:9150` / `:9299` / `:9499` (collide if two suites share a host) |
-| **Android** | AVD + adb serial | Serial: `TestingAVD` / `emulator-5554`. Slotted: `TestingAVD-{n}` (incl. `-0`) |
+| **Android** | AVD + adb serial | Serial: `TestingAVD` / `emulator-5554`. Slotted: `TestingAVD-{n}` (incl. `-0`) + console `5556+2n` (`emulator-5556/5558/5560`, …). Detox must not pick FreePortFinder **10000–20000** |
 | **iOS** | Simulator device name | Serial: `iPhone 17`. Slotted: `RNFB E2E iOS slot-{n}` (incl. `slot-0`) |
 | **macOS** | Process / `PRODUCT_NAME` (+ derived bundle id) | `io.invertase.testing` |
 | **Coverage paths** | NYC / coverage under `tests/` | Fixed per worktree (same-platform parallel overwrites) |
@@ -69,7 +69,7 @@ Commands for clear → start → build → test → free: [running e2e § slot l
 | Worktree topology (`1× android ∥ 1× ios ∥ 1× macos` per tree) | **Shipped** | [parallel topology](running-e2e.md#parallel-e2e-topology) |
 | Slotted launch helpers | **Shipped** | `export-slot-env.sh`, `start-emulator-slotted.sh`, `run-slotted-packager.sh`, `run-slotted-test-cover.sh` + [slot lifecycle](running-e2e.md#slot-lifecycle) |
 | Concurrent macOS via `PRODUCT_NAME` | **Shipped** (e.g. `io.invertase.testing.s0`…`sN`) | [macOS process identity](running-e2e.md#macos-process-identity-concurrency) |
-| Host check/release env-aware (slot-scoped when env loaded; unscoped `.sN` wipe) | **Shipped** | `check-e2e-resources.sh` / `release-e2e-resources.sh` |
+| Host check/release env-aware (slot-scoped when env loaded; unscoped wipe of leftover slotted ports **and** `TestingAVD-N` / iOS slot sims / macOS `.sN`) | **Shipped** | `check-e2e-resources.sh` / `release-e2e-resources.sh` |
 | Coordinator / lease queue (mellifera) | **WIP** (uncommitted experimental) | [`mellifera/`](../../mellifera/) when present |
 
 > **Coordinator note:** [`mellifera/`](../../mellifera/) remains the experimental lease service (opt-in `RNFB_MELLIFERA=1`). Serial `yarn tests:*` and slotted scripts above do **not** require it. Older drafts called macOS `macos-global`; that lease shape is **superseded** by `macos-slot-N` + `RNFB_MACOS_PRODUCT_NAME`.
@@ -151,7 +151,7 @@ Each **android-slot** / **ios-slot** / **macos-slot** is a fixed **port block** 
 | Metro | `:8081` | `BASE + platform_off + 7` |
 | Jet WS / control | `:8090` / `:8091` | `+10` / `+11` in platform block |
 | Emulator suite | fixed serial ports | full `RNFB_*_EMULATOR_*` + aux |
-| Android | `TestingAVD` / `emulator-5554` | `TestingAVD-{n}` (incl. `-0`), Detox `android.emu.debug.slot{n}` |
+| Android | `TestingAVD` / `emulator-5554` | `TestingAVD-{n}` (incl. `-0`), console **`5556+2n`** (`emulator-5556` …), Detox `android.emu.debug.slot{n}` — not FreePortFinder 10000–20000 |
 | iOS | `iPhone 17` | `RNFB E2E iOS slot-{n}` (incl. `slot-0`), Detox `ios.sim.debug.slot{n}` |
 | macOS | `io.invertase.testing` | **`io.invertase.testing.s{n}`** via `RNFB_MACOS_PRODUCT_NAME` |
 
@@ -524,7 +524,7 @@ Work-queue rows for implementation track **Phase 0–3** in the `e2e-parallel` b
 | RAM / CPU exhaustion (N× emulators + Metros) | Capacity advertisement; document minimum host spec |
 | Cloud API quota (FIS / RC) under parallel worktrees | Harness narrowing; existing retry in `firebase.test.js` |
 | Stale leases after agent crash | TTL + pid check + `cleanup-stale` |
-| Operator confusion (wrong PRODUCT_NAME / slot) | `host-status` shows leased `macos-slot-N` + product name; unscoped release clears `.sN` |
+| Operator confusion (wrong PRODUCT_NAME / slot) | `host-status` shows leased `macos-slot-N` + product name; unscoped release clears leftover slotted ports, `.sN`, and (with `--devices`) `TestingAVD-N` / iOS slot sims |
 | Coverage merge complexity | Per-worktree artifacts; merge script optional for local dev |
 | Passing `PRODUCT_NAME=` on xcodebuild CLI | Forbidden — use suffix env only ([running e2e](running-e2e.md#macos-process-identity-concurrency)) |
 

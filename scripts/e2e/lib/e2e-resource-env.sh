@@ -14,6 +14,10 @@
 #
 # shellcheck shell=bash
 
+_E2E_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=e2e-slot-env.sh
+source "${_E2E_LIB_DIR}/e2e-slot-env.sh"
+
 # Serial defaults (legacy single-run behaviour).
 E2E_DEFAULT_METRO_PORT=8081
 E2E_DEFAULT_JET_PORT=8090
@@ -36,7 +40,8 @@ E2E_DEFAULT_MACOS_APP_PROCESS=io.invertase.testing
 E2E_MACOS_APP_PROCESS="${RNFB_MACOS_PRODUCT_NAME:-$E2E_DEFAULT_MACOS_APP_PROCESS}"
 # When RNFB_MACOS_PRODUCT_NAME is unset (serial / unscoped host wipe), also probe/kill
 # known slotted siblings so parallel leftovers fail host-clear and get released.
-E2E_MACOS_SLOTTED_MAX="${E2E_MACOS_SLOTTED_MAX:-7}"
+# Same slot ceiling as leftover Android/iOS devices and unscoped port collect.
+E2E_MACOS_SLOTTED_MAX="${E2E_MACOS_SLOTTED_MAX:-$E2E_SLOTTED_MAX}"
 
 e2e_repo_root() {
   local here
@@ -182,11 +187,11 @@ e2e_resolve_android_serial() {
   if [[ -f "$json" ]] && e2e_mellifera_enabled; then
     from_json=$(node -e "try{const j=require('$json');console.log((j.android&&j.android.device&&j.android.device.androidSerial)||'')}catch(e){}" 2>/dev/null || true)
   fi
-  # Explicit serial (env or mellifera) always wins. For slotted AVDs
-  # (TestingAVD-N, including N=0), do NOT invent emulator-5554 or a guessed
-  # console port — Detox FreePortFinder assigns the qemu `-port`, so a baked
-  # 15554+N×2 serial desyncs from the live adb name. Release then uses
-  # AVD-name pkill.
+  # Explicit serial (env or mellifera) always wins. Slotted export-slot-env
+  # pins ANDROID_SERIAL=emulator-$((5556+2*slot)) (console 5556, 5558, 5560, …)
+  # so check/release target the same adb name Detox launches with. Do not
+  # invent emulator-5554 for TestingAVD-N (that serial is unslotted TestingAVD).
+  # Detox must honor RNFB_ANDROID_CONSOLE_PORT — not FreePortFinder 10000–20000.
   if [[ -n "$from_json" || -n "${ANDROID_SERIAL:-}" ]]; then
     e2e_first_set "$from_json" "${ANDROID_SERIAL:-}"
     return 0
@@ -246,6 +251,104 @@ e2e_active_platforms() {
   printf '%s\n' "${platforms[@]}"
 }
 
+# Unscoped serial/global: no slot env, no mellifera, no --platform, no prefixed ports.
+e2e_is_unscoped_global() {
+  [[ -z "${RNFB_E2E_SLOT:-${RNFB_E2E_HOST_SLOT:-}}" ]] || return 1
+  [[ "$(e2e_active_platforms)" == "global" ]]
+}
+
+# POSIX ERE for pgrep/pkill — same complete @AVD identity as tests/e2e/androidAdbRange.js
+# qemuAvdPgrepPattern. `TestingAVD` must not match qemu for `@TestingAVD-0`.
+e2e_qemu_avd_pgrep_pattern() {
+  local avd=$1
+  local escaped
+  escaped=$(printf '%s' "$avd" | sed 's/[.[\*^$()+?{|]/\\&/g')
+  printf 'qemu-system.*@%s([[:space:]]|$)' "$escaped"
+}
+
+e2e_pkill_qemu_for_avd() {
+  local avd=$1
+  [[ -n "$avd" ]] || return 0
+  pkill -f "$(e2e_qemu_avd_pgrep_pattern "$avd")" 2>/dev/null || true
+}
+
+# Unscoped device wipe: no explicit AVD / sim / slot (mirrors macOS .sN siblings).
+e2e_android_avd_names_for_release() {
+  if [[ -n "${RNFB_ANDROID_AVD:-}${RNFB_ANDROID_AVD_NAME:-}" ]]; then
+    e2e_resolve_android_avd
+    return 0
+  fi
+  local slot="${RNFB_E2E_SLOT:-${RNFB_E2E_HOST_SLOT:-}}"
+  if [[ -n "$slot" ]]; then
+    echo "TestingAVD-${slot}"
+    return 0
+  fi
+  echo "$E2E_DEFAULT_ANDROID_AVD"
+  local i
+  for ((i = 0; i <= E2E_SLOTTED_MAX; i++)); do
+    echo "TestingAVD-${i}"
+  done
+}
+
+e2e_ios_simulator_names_for_release() {
+  if [[ -n "${RNFB_IOS_SIMULATOR:-}" ]]; then
+    echo "$RNFB_IOS_SIMULATOR"
+    return 0
+  fi
+  local slot="${RNFB_E2E_SLOT:-${RNFB_E2E_HOST_SLOT:-}}"
+  if [[ -n "$slot" ]]; then
+    echo "RNFB E2E iOS slot-${slot}"
+    return 0
+  fi
+  echo "$E2E_DEFAULT_IOS_SIMULATOR"
+  local i
+  for ((i = 0; i <= E2E_SLOTTED_MAX; i++)); do
+    echo "RNFB E2E iOS slot-${i}"
+  done
+}
+
+# Fail-fast for start-emulator-slotted: any suite listener already bound.
+# Args: firestore auth database functions storage hub logging (aux = FS+8/+9/+12).
+# Returns 1 and prints ports/pids when any are listening. Override e2e_port_listening
+# in tests to mock.
+e2e_abort_if_emulator_suite_ports_busy() {
+  local fs=$1 auth=$2 db=$3 fn=$4 st=$5 hub=$6 log=$7
+  local busy=0
+  local name port pids spec
+  for spec in \
+    "firestore:${fs}" \
+    "auth:${auth}" \
+    "database:${db}" \
+    "functions:${fn}" \
+    "storage:${st}" \
+    "hub:${hub}" \
+    "logging:${log}" \
+    "websocket:$((fs + 8))" \
+    "eventarc:$((fs + 9))" \
+    "tasks:$((fs + 12))"; do
+    name="${spec%%:*}"
+    port="${spec#*:}"
+    if e2e_port_listening "$port"; then
+      pids=$(e2e_listener_pids "$port" | tr '\n' ' ')
+      echo "error: emulator suite port busy: ${name} :${port} pids=${pids}" >&2
+      busy=1
+    fi
+  done
+  if [[ "$busy" -ne 0 ]]; then
+    echo "error: cannot start emulator suite — suite ports must be free (unscoped release-e2e-resources.sh or slot-scoped release). Abort; zero flake budget." >&2
+    return 1
+  fi
+  return 0
+}
+
+e2e_print_collected_ports() {
+  local i=0 port
+  for port in "${E2E_PORTS[@]+"${E2E_PORTS[@]}"}"; do
+    printf '%s %s\n' "$port" "${E2E_PORT_LABELS[$i]}"
+    i=$((i + 1))
+  done
+}
+
 # Populate arrays: E2E_PORTS (unique), E2E_PORT_LABELS (parallel labels), plus device fields.
 # shellcheck disable=SC2034
 e2e_collect_targets() {
@@ -255,19 +358,23 @@ e2e_collect_targets() {
   E2E_PORT_LABELS=()
   # Plain-string dedup (not an associative array) — bash 3.2 (macOS default /bin/bash) has no `local -A`.
   local seen=" "
-  local platform metro jet jc svc port label fs
+  local platform metro jet jc svc port label fs slot plat lab p
+  local unscoped_global=0
+  if e2e_is_unscoped_global; then
+    unscoped_global=1
+  fi
 
   add_port() {
-    local p=$1 lab=$2
-    [[ -z "$p" ]] && return 0
+    local port_num=$1 port_lab=$2
+    [[ -z "$port_num" ]] && return 0
     case "$seen" in
-      *" ${p} "*)
+      *" ${port_num} "*)
         return 0
         ;;
     esac
-    seen="${seen}${p} "
-    E2E_PORTS+=("$p")
-    E2E_PORT_LABELS+=("$lab")
+    seen="${seen}${port_num} "
+    E2E_PORTS+=("$port_num")
+    E2E_PORT_LABELS+=("$port_lab")
   }
 
   while IFS= read -r platform; do
@@ -305,6 +412,21 @@ e2e_collect_targets() {
       add_port "9499" "emulator-tasks:global"
     fi
   done < <(e2e_active_platforms)
+
+  # After the active-platform loop — do not nest this while-read inside that
+  # process substitution (bash 3.2 inner `read` steals the outer stdin).
+  if [[ "$unscoped_global" -eq 1 ]]; then
+    while read -r lab p; do
+      [[ -z "$lab" ]] && continue
+      add_port "$p" "$lab"
+    done < <(
+      for ((slot = 0; slot <= E2E_SLOTTED_MAX; slot++)); do
+        for plat in android ios macos; do
+          e2e_slot_block_port_lines "$plat" "$slot"
+        done
+      done
+    )
+  fi
 
   E2E_ANDROID_SERIAL=$(e2e_resolve_android_serial)
   E2E_ANDROID_AVD=$(e2e_resolve_android_avd)
@@ -344,7 +466,7 @@ e2e_macos_process_names_for_probe() {
   fi
   echo "$E2E_DEFAULT_MACOS_APP_PROCESS"
   local i
-  for ((i = 0; i <= E2E_MACOS_SLOTTED_MAX; i++)); do
+  for ((i = 0; i <= E2E_SLOTTED_MAX; i++)); do
     echo "${E2E_DEFAULT_MACOS_APP_PROCESS}.s${i}"
   done
 }

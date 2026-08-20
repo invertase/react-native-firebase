@@ -165,12 +165,14 @@ if [[ "$BOOT_MODE" == "logs" ]]; then
   exit 0
 fi
 
-# Get our simulator name from our test Detox config
-pushd "$(dirname "$0")/../../../tests" >/dev/null || exit 1
-SIM="$(grep iPhone .detoxrc.js | head -1 | cut -d"'" -f2)"
-popd >/dev/null || exit 1
-
-log_boot_status "phase=resolve_device name=\"${SIM}\" (from tests/.detoxrc.js)"
+# shellcheck source=resolve-ios-simulator-name.sh
+source "$(dirname "$0")/resolve-ios-simulator-name.sh"
+SIM="$(resolve_ios_simulator_name "$(dirname "$0")/../../../tests/.detoxrc.js")"
+if [[ -n "${RNFB_IOS_SIMULATOR:-}" ]]; then
+  log_boot_status "phase=resolve_device name=\"${SIM}\" (from RNFB_IOS_SIMULATOR)"
+else
+  log_boot_status "phase=resolve_device name=\"${SIM}\" (from tests/.detoxrc.js)"
+fi
 
 # Kill the resolved simulator first when present (CI pre-boot and e2e Jet retries).
 kill_resolved_simulator "$SIM"

@@ -53,8 +53,10 @@ function iosSimulatorDevice(slot) {
   };
 }
 
-// Snapshot flags only. Detox LaunchCommand already prepends `-port ${FreePortFinder}`;
-// putting `-port` in bootArgs makes qemu use the last value while adb waits on the first.
+// Snapshot flags only. Detox LaunchCommand already prepends `-port`.
+// Do not add `-port` to bootArgs (double -port desyncs adb vs qemu).
+// Slotted runs pin RNFB_ANDROID_CONSOLE_PORT (5556+2*slot); the Detox patch
+// makes FreePortFinder / EmulatorAllocDriver use that instead of 10000–20000.
 function androidEmulatorBootArgs() {
   return (process.env.RNFB_ANDROID_EMULATOR_BOOT_ARGS || '-no-snapshot-load -no-snapshot-save')
     .replace(/(?:^|\s)-port\s+\d+/g, '')

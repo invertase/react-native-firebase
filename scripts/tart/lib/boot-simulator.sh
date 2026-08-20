@@ -183,10 +183,6 @@ wait_for_simulator_ready() {
   return 1
 }
 
-pushd "${REPO_ROOT}/tests" >/dev/null || exit 1
-SIM="$(grep iPhone .detoxrc.js | head -1 | cut -d"'" -f2)"
-popd >/dev/null || exit 1
-
 BOOT_MODE="${RNFB_SIM_BOOT_MODE:-full}"
 # shellcheck source=../../../../.github/workflows/scripts/simulator-logging.sh
 source "${REPO_ROOT}/.github/workflows/scripts/simulator-logging.sh"
@@ -196,7 +192,14 @@ if [[ "$BOOT_MODE" == "logs" ]]; then
   exit 0
 fi
 
-log_boot_status "phase=resolve_device name=\"${SIM}\" (from tests/.detoxrc.js)"
+# shellcheck source=../../../../.github/workflows/scripts/resolve-ios-simulator-name.sh
+source "${REPO_ROOT}/.github/workflows/scripts/resolve-ios-simulator-name.sh"
+SIM="$(resolve_ios_simulator_name "${REPO_ROOT}/tests/.detoxrc.js")"
+if [[ -n "${RNFB_IOS_SIMULATOR:-}" ]]; then
+  log_boot_status "phase=resolve_device name=\"${SIM}\" (from RNFB_IOS_SIMULATOR)"
+else
+  log_boot_status "phase=resolve_device name=\"${SIM}\" (from tests/.detoxrc.js)"
+fi
 
 kill_resolved_simulator "$SIM"
 

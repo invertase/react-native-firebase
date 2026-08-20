@@ -3,7 +3,10 @@
 #
 # Port formula (proven): BASE=12000+slot*1000; android OFF=0, ios +100, macos +200.
 # Within a platform block: firestore..logging = BLK+0..6, metro=+7, jet=+10, jet-control=+11.
-# Firestore websocket / eventarc / tasks are derived in start-emulator-slotted.sh (FS+8/+9/+12).
+# Firestore websocket / eventarc / tasks = FS+8/+9/+12 (same as start-emulator-slotted.sh).
+#
+# Unscoped host wipe (no slot env) clears leftover ports/devices for slots 0..E2E_SLOTTED_MAX.
+E2E_SLOTTED_MAX="${E2E_SLOTTED_MAX:-${E2E_MACOS_SLOTTED_MAX:-7}}"
 #
 # macOS: concurrent slots require distinct PRODUCT_NAME via RNFB_MACOS_PRODUCT_NAME
 # (io.invertase.testing.s${SLOT}). Do not pass PRODUCT_NAME= on the xcodebuild CLI —
@@ -26,6 +29,46 @@ e2e_slot_platform_offset() {
 e2e_slot_base() {
   local slot=$1
   echo $((12000 + slot * 1000))
+}
+
+# Platform block origin: BASE + android|ios|macos offset.
+e2e_slot_blk() {
+  local plat=$1
+  local slot=$2
+  local base off
+  off=$(e2e_slot_platform_offset "$plat") || return 1
+  base=$(e2e_slot_base "$slot")
+  echo $((base + off))
+}
+
+# Print "label port" lines for one platform×slot (emulator suite + metro/jet + aux).
+e2e_slot_block_port_lines() {
+  local plat=$1
+  local slot=$2
+  local blk tag
+  blk=$(e2e_slot_blk "$plat" "$slot") || return 1
+  tag="${plat}-slot${slot}"
+  printf 'emulator-firestore:%s %s\n' "$tag" "$((blk + 0))"
+  printf 'emulator-auth:%s %s\n' "$tag" "$((blk + 1))"
+  printf 'emulator-database:%s %s\n' "$tag" "$((blk + 2))"
+  printf 'emulator-functions:%s %s\n' "$tag" "$((blk + 3))"
+  printf 'emulator-storage:%s %s\n' "$tag" "$((blk + 4))"
+  printf 'emulator-hub:%s %s\n' "$tag" "$((blk + 5))"
+  printf 'emulator-logging:%s %s\n' "$tag" "$((blk + 6))"
+  printf 'metro:%s %s\n' "$tag" "$((blk + 7))"
+  printf 'emulator-firestore-websocket:%s %s\n' "$tag" "$((blk + 8))"
+  printf 'emulator-eventarc:%s %s\n' "$tag" "$((blk + 9))"
+  printf 'jet:%s %s\n' "$tag" "$((blk + 10))"
+  printf 'jet-control:%s %s\n' "$tag" "$((blk + 11))"
+  printf 'emulator-tasks:%s %s\n' "$tag" "$((blk + 12))"
+}
+
+# Even emulator console port in adb's safe range [5554, 5584].
+# Do not use 5554 for slotted slot 0 — that serial (TestingAVD / emulator-5554)
+# must be able to coexist. Formula: 5556 + 2*slot → 0=5556, 1=5558, 2=5560.
+e2e_slot_android_console_port() {
+  local slot=$1
+  echo $((5556 + 2 * slot))
 }
 
 # Export one platform's full RNFB_<PLATFORM>_* port block into the current shell.
@@ -82,7 +125,6 @@ e2e_slot_env_apply() {
   # binds that belong only to the active platform process; slot identities below.
   unset RNFB_E2E_PLATFORM
   unset SIMCTL_CHILD_RCT_METRO_PORT AVD_NAME ORG_GRADLE_PROJECT_reactNativeDevServerPort
-  unset ANDROID_SERIAL RNFB_ANDROID_CONSOLE_PORT
 
   export RNFB_E2E_SLOT="$slot" RNFB_E2E_HOST_SLOT="$slot" RNFB_E2E_DEBUG="${RNFB_E2E_DEBUG:-1}"
   export RCT_METRO_PORT="$metro" RNFB_METRO_PORT="$metro" JET_METRO_PORT="$metro"
@@ -95,6 +137,10 @@ e2e_slot_env_apply() {
   # that would hit other slots or wipe-all .s0..sN.
   export RNFB_DETOX_ANDROID_CONFIG="android.emu.debug.slot${slot}"
   export RNFB_ANDROID_AVD="TestingAVD-${slot}" RNFB_ANDROID_AVD_NAME="TestingAVD-${slot}"
+  # Pin qemu -port / adb serial so Detox does not pick FreePortFinder 10000–20000
+  # (outside adb's emulator console range). check/release need ANDROID_SERIAL.
+  export RNFB_ANDROID_CONSOLE_PORT="$(e2e_slot_android_console_port "$slot")"
+  export ANDROID_SERIAL="emulator-${RNFB_ANDROID_CONSOLE_PORT}"
   export RNFB_DETOX_IOS_CONFIG="ios.sim.debug.slot${slot}"
   export RNFB_IOS_SIMULATOR="RNFB E2E iOS slot-${slot}"
   export RNFB_MACOS_PRODUCT_NAME="${RNFB_MACOS_PRODUCT_NAME_OVERRIDE:-io.invertase.testing.s${slot}}"
@@ -115,8 +161,9 @@ e2e_slot_env_apply() {
 # Print `export KEY=value` / `unset KEY` lines suitable for:
 #   eval "$(bash …/export-slot-env.sh macos 1)"
 # Must emit unset for process-local leftovers that e2e_slot_env_apply clears —
-# otherwise a dirty parent shell (ANDROID_SERIAL=emulator-5554, stale AVD_NAME,
-# etc.) keeps poisoning check/release after eval.
+# otherwise a dirty parent shell (stale AVD_NAME, etc.) keeps poisoning
+# check/release after eval. ANDROID_SERIAL / RNFB_ANDROID_CONSOLE_PORT are
+# pinned for the slot (emulator-$((5556+2*slot))) and must be exported.
 e2e_slot_env_print() {
   local platform=$1
   local slot=$2
@@ -141,6 +188,7 @@ e2e_slot_env_print() {
     RNFB_MACOS_EMULATOR_STORAGE_PORT RNFB_MACOS_EMULATOR_HUB_PORT
     RNFB_MACOS_EMULATOR_LOGGING_PORT
     RNFB_DETOX_ANDROID_CONFIG RNFB_ANDROID_AVD RNFB_ANDROID_AVD_NAME
+    RNFB_ANDROID_CONSOLE_PORT ANDROID_SERIAL
     RNFB_DETOX_IOS_CONFIG RNFB_IOS_SIMULATOR
     RNFB_MACOS_PRODUCT_NAME RNFB_MACOS_BUNDLE_IDENTIFIER
   )
@@ -154,8 +202,6 @@ e2e_slot_env_print() {
   # this active platform, otherwise unset so parent leftovers cannot stick.
   local clear_keys=(
     RNFB_E2E_PLATFORM
-    ANDROID_SERIAL
-    RNFB_ANDROID_CONSOLE_PORT
     AVD_NAME
     SIMCTL_CHILD_RCT_METRO_PORT
     ORG_GRADLE_PROJECT_reactNativeDevServerPort

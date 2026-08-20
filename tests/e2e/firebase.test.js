@@ -26,6 +26,13 @@ const {
   pullAndroidCoverageWithRetry,
 } = require('../scripts/pull-native-coverage');
 const { recordE2eCloudMetricFromHost } = require('../../packages/app/e2e/cloud-metrics');
+const {
+  parseEmulatorConsolePort,
+  shouldFailFastQemuWithoutAdb,
+  qemuCmdlineMatchesAvd,
+  qemuAvdPgrepPattern,
+  adbRangeDiagnosis,
+} = require('./androidAdbRange');
 
 const E2E_TEST_PROJECT = 'react-native-firebase-testing';
 const E2E_CLOUD_PRESSURE_LOG_FILTER = 'jsonPayload.message="[rnfb-e2e-metrics]"';
@@ -155,6 +162,13 @@ const REBOOT_ANDROID_EMULATOR_TIMEOUT_MS = parseInt(
 const ANDROID_READY_MAX_LOAD = parseFloat(process.env.RNFB_ANDROID_READY_MAX_LOAD || '5');
 const ANDROID_READY_LOAD_POLLS = parseInt(process.env.RNFB_ANDROID_READY_LOAD_POLLS || '3', 10);
 const ANDROID_READY_POLL_MS = parseInt(process.env.RNFB_ANDROID_READY_POLL_MS || '2000', 10);
+// Fail fast immediately only when qemu is up and -port is outside adb's emulator
+// console range [5554, 5584] (FreePortFinder 10000–20000). In-range serials
+// (slotted 5556/5558/5560) poll ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS first.
+const ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS = parseInt(
+  process.env.RNFB_ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS || '20000',
+  10,
+);
 const ANDROID_PACKAGE_HANDLER_TIMEOUT_MS = parseInt(
   process.env.RNFB_ANDROID_PACKAGE_HANDLER_TIMEOUT_MS || '30000',
   10,
@@ -354,6 +368,7 @@ function rebootIosSimulator(testsDir) {
     const child = spawn('bash', [bootScript], {
       cwd: repoRoot,
       stdio: 'inherit',
+      env: { ...process.env },
     });
     const timer = setTimeout(() => {
       child.kill('SIGTERM');
@@ -391,8 +406,8 @@ function resolveEmulatorPath() {
 }
 
 function resolveAndroidEmulatorPort(serial) {
-  const portMatch = serial.match(/^emulator-(\d+)$/);
-  return portMatch ? portMatch[1] : '5554';
+  const port = parseEmulatorConsolePort(serial);
+  return Number.isInteger(port) ? String(port) : '5554';
 }
 
 function adbDeviceState(serial) {
@@ -407,8 +422,33 @@ function adbDeviceState(serial) {
   }
 }
 
+function pinnedAndroidConsolePort() {
+  const raw = process.env.RNFB_ANDROID_CONSOLE_PORT;
+  if (raw === undefined || raw === '') {
+    return null;
+  }
+  const port = Number.parseInt(raw, 10);
+  return Number.isInteger(port) ? port : null;
+}
+
+function pinnedAndroidSerial() {
+  if (process.env.ANDROID_SERIAL) {
+    return process.env.ANDROID_SERIAL;
+  }
+  const port = pinnedAndroidConsolePort();
+  if (port != null) {
+    return `emulator-${port}`;
+  }
+  return null;
+}
+
 function resolveAndroidSerial() {
-  // Prefer live Detox device.id (FreePortFinder serial) over a stale ANDROID_SERIAL.
+  // Prefer the slotted pin (adb-safe 5556+2n) over a stale Detox device.id
+  // from FreePortFinder 10000–20000 after kill+relaunch.
+  const pinned = pinnedAndroidSerial();
+  if (pinned) {
+    return pinned;
+  }
   try {
     if (typeof device !== 'undefined' && device?.id) {
       return device.id;
@@ -416,10 +456,55 @@ function resolveAndroidSerial() {
   } catch (_) {
     // Detox device may not be ready yet.
   }
-  if (process.env.ANDROID_SERIAL) {
-    return process.env.ANDROID_SERIAL;
-  }
   return 'emulator-5554';
+}
+
+function qemuRunningForAvd(avdName) {
+  try {
+    const cmdlines = execSync('ps -Ao args=', {
+      encoding: 'utf8',
+      timeout: 5000,
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return cmdlines
+      .split('\n')
+      .some(line => line.includes('qemu-system') && qemuCmdlineMatchesAvd(line, avdName));
+  } catch (_) {
+    return false;
+  }
+}
+
+function qemuWithoutAdbError(serial, state) {
+  return new Error(
+    `[rnfb-e2e] ${adbRangeDiagnosis(serial, ANDROID_AVD_NAME)} (adb get-state=${state})`,
+  );
+}
+
+async function waitForAdbSerialDevice(serial, timeoutMs = ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS) {
+  let state = adbDeviceState(serial);
+  if (state === 'device') {
+    return;
+  }
+  if (qemuRunningForAvd(ANDROID_AVD_NAME) && shouldFailFastQemuWithoutAdb(serial, state)) {
+    throw qemuWithoutAdbError(serial, state);
+  }
+  console.log(
+    `[rnfb-e2e] waiting up to ${timeoutMs}ms for adb serial ${serial} to become 'device' (get-state=${state})`,
+  );
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (adbDeviceState(serial) === 'device') {
+      return;
+    }
+    await sleep(1000);
+  }
+  state = adbDeviceState(serial);
+  if (qemuRunningForAvd(ANDROID_AVD_NAME) && state !== 'device') {
+    throw qemuWithoutAdbError(serial, state);
+  }
+  throw new Error(
+    `[rnfb-e2e] adb serial ${serial} did not become 'device' within ${timeoutMs}ms (get-state=${state})`,
+  );
 }
 
 function adbShell(serial, command, timeoutMs = 15000) {
@@ -555,7 +640,7 @@ async function ensureAndroidJetHostClear(label = 'android-jet-host-clear') {
   console.log(`[rnfb-e2e] ${label}: host clear`);
 }
 
-function coldBootAndroidEmulator() {
+async function coldBootAndroidEmulator() {
   const adb = resolveAdbPath();
   const serial = resolveAndroidSerial();
   const port = resolveAndroidEmulatorPort(serial);
@@ -575,7 +660,10 @@ function coldBootAndroidEmulator() {
   }
 
   try {
-    execSync(`pkill -f "qemu-system.*@${ANDROID_AVD_NAME}"`, { stdio: 'ignore', timeout: 5000 });
+    execSync(`pkill -f ${JSON.stringify(qemuAvdPgrepPattern(ANDROID_AVD_NAME))}`, {
+      stdio: 'ignore',
+      timeout: 5000,
+    });
   } catch (_) {
     // No matching emulator process.
   }
@@ -597,17 +685,15 @@ function coldBootAndroidEmulator() {
   });
   child.unref();
 
-  execSync(`${adb} -s ${coldBootSerial} wait-for-device`, {
-    stdio: 'inherit',
-    timeout: REBOOT_ANDROID_EMULATOR_TIMEOUT_MS,
-  });
+  return waitForAdbSerialDevice(coldBootSerial);
 }
 
 async function waitForAndroidEmulatorReady() {
   const serial = resolveAndroidSerial();
   console.log(
-    `[rnfb-e2e] android-ready using serial=${serial} (device.id preferred over ANDROID_SERIAL)`,
+    `[rnfb-e2e] android-ready using serial=${serial} (pinned ANDROID_SERIAL / RNFB_ANDROID_CONSOLE_PORT preferred over device.id)`,
   );
+  await waitForAdbSerialDevice(serial);
   const deadline = Date.now() + REBOOT_ANDROID_EMULATOR_TIMEOUT_MS;
   let stableLoadPolls = 0;
   let packageHandlerDone = false;
@@ -616,14 +702,31 @@ async function waitForAndroidEmulatorReady() {
   while (Date.now() < deadline) {
     try {
       const deviceState = adbDeviceState(serial);
-      if (deviceState === 'offline') {
-        stableLoadPolls = 0;
-        console.warn(
-          `[rnfb-e2e] android-ready probe serial=${serial} state=offline (Quick Boot gray screen?) — ` +
-            'kill emulator and rerun; Detox should cold boot with -no-snapshot-load',
-        );
-        await sleep(ANDROID_READY_POLL_MS);
-        continue;
+      if (deviceState !== 'device') {
+        if (deviceState === 'unknown' && qemuRunningForAvd(ANDROID_AVD_NAME)) {
+          if (shouldFailFastQemuWithoutAdb(serial, deviceState)) {
+            throw qemuWithoutAdbError(serial, deviceState);
+          }
+          console.warn(
+            `[rnfb-e2e] android-ready serial=${serial} state=unknown with qemu up; ` +
+              `port is in adb range — polling ${ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS}ms`,
+          );
+          await waitForAdbSerialDevice(serial);
+        } else {
+          stableLoadPolls = 0;
+          if (deviceState === 'offline') {
+            console.warn(
+              `[rnfb-e2e] android-ready probe serial=${serial} state=offline (Quick Boot gray screen?) — ` +
+                'kill emulator and rerun; Detox should cold boot with -no-snapshot-load',
+            );
+          } else {
+            console.warn(
+              `[rnfb-e2e] android-ready probe serial=${serial} state=${deviceState} — waiting for adb`,
+            );
+          }
+          await sleep(ANDROID_READY_POLL_MS);
+          continue;
+        }
       }
 
       const bootCompleted = adbShell(serial, 'getprop sys.boot_completed');
@@ -705,8 +808,12 @@ async function waitForAndroidEmulatorReady() {
       }
       await sleep(ANDROID_READY_POLL_MS);
     } catch (err) {
+      const msg = err?.message || String(err);
+      if (msg.includes('qemu-without-adb')) {
+        throw err;
+      }
       stableLoadPolls = 0;
-      console.warn(`[rnfb-e2e] android-ready probe: ${err?.message || err}`);
+      console.warn(`[rnfb-e2e] android-ready probe: ${msg}`);
       await sleep(ANDROID_READY_POLL_MS);
     }
   }
@@ -1370,7 +1477,7 @@ describe('Jet Tests', function () {
           if (platform === 'ios' && process.platform === 'darwin') {
             await rebootIosSimulator(testsDir);
           } else if (platform === 'android') {
-            coldBootAndroidEmulator();
+            await coldBootAndroidEmulator();
             await waitForAndroidEmulatorReady();
           } else {
             try {
