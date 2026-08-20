@@ -15,11 +15,14 @@ Coverage shows exercised **TS library sources** (`packages/*/lib/**`), **native 
 | **Unit (Jest)** | Package logic with mocks | Fast feedback on `lib/**` |
 | **Unit (iOS Ruby)** | CocoaPods/SPM helper logic (`firebase_spm.rb`, etc.) via Minitest + SimpleCov | Fast feedback on `packages/app/**/*.rb`; LCOV `coverage/ios-ruby/lcov.info` |
 | **Unit (Android JVM)** | Java state-machine / bridge logic — [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1) | Fast feedback on `packages/*/android/**`; Jacoco `*.exec` |
+| **Unit (iOS XCTest)** | Foundation/UIKit-free native logic — [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1) | Fast feedback on `packages/*/ios/**`; LCOV merged into `coverage/ios-native/lcov.info` |
 | **E2e (Jet / Detox)** | Real app behaviour against Firebase emulators and cloud APIs | TS + native bridge integration |
 
 Codecov merges CI uploads. Project-level % can be noise; **file-level changed-source coverage** is signal. macOS e2e uses firebase-js-sdk only; no RNFB native coverage.
 
 **Android native coverage** merges JVM unit (`*.exec`) and e2e (`*.ec`) into **`jacocoTestReport`** — that merged XML is what Codecov `android-native` uploads. Lines exercised only by allowlisted Android unit tests **count** toward the 100% touched-line bar below.
+
+**iOS native coverage** merges in-package XCTest LCOV (`coverage/ios-unit/lcov.info` from `yarn tests:ios:unit`) and e2e LLVM export into **`coverage/ios-native/lcov.info`**. Lines exercised only by allowlisted iOS unit tests **count** toward the 100% touched-line bar — [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1).
 
 # Coverage expectations (policy)
 
@@ -28,6 +31,7 @@ For **new code**:
 * **Coverage only goes up** on files the change touches.
 * **100% on touched TS/native/Ruby helper sources is the requirement**, not an aspiration. "Mostly covered" does not close the gate.
 * **Android JVM unit Jacoco (`*.exec`)** counts toward that bar when allowlisted tests under `packages/*/android/src/test/java` exercise the touched lines — scope and e2e non-substitution: [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1); platforms where the module loads still need e2e ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)).
+* **iOS XCTest LCOV** counts toward that bar when allowlisted in-package tests (`yarn tests:ios:unit`) exercise touched `packages/*/ios/**` lines; unit LCOV **must merge** into `coverage/ios-native/lcov.info` — [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1); [§ Unit coverage (iOS XCTest)](#ios-xctest-unit-lcov).
 * **iOS Ruby SimpleCov** counts toward that bar for touched `packages/app/**/*.rb` (exclude `__tests__`) when exercised by `yarn tests:ios:ruby` — [§ iOS Ruby SimpleCov](#ios-ruby-simplecov).
 * **The only acceptable uncovered line is covered by an [acceptable exception](change-authoring-workflow.md#acceptable-exceptions)** — an evidence-backed intractable limitation, quantified (e.g. "~NN% provably-unreachable Swift codegen"), or a user-accepted deferral with recorded rationale.
 * **Every other gap is testable or dead code** — add the test (negative paths, failure branches, every reachable branch) or delete the unreachable/duplicate/superseded code.
@@ -114,7 +118,7 @@ After `tests:<platform>:test-cover`:
 
 * **JS:** `npx jest <path> --coverage --collectCoverageFrom='packages/<pkg>/lib/**/*.ts' --coverageReporters=text`
 * **iOS Ruby:** `yarn tests:ios:ruby` → `coverage/ios-ruby/lcov.info` (`SF:` / `DA:` lines); HTML under `coverage/ios-ruby/` — [§ iOS Ruby SimpleCov](#ios-ruby-simplecov)
-* **iOS native:** `yarn tests:ios:test:process-coverage` → `coverage/ios-native/lcov.info` (`DA:` lines). **Deletes processed `.profraw`** — re-run e2e before re-processing.
+* **iOS native:** `yarn tests:ios:unit` → `coverage/ios-unit/lcov.info` (merged into `coverage/ios-native/lcov.info`). After e2e: `yarn tests:ios:test:process-coverage` → e2e LLVM export **then merge unit LCOV** → `coverage/ios-native/lcov.info` (`DA:` lines). **Deletes processed `.profraw`** — re-run e2e before re-processing.
 * **Android native:** `yarn tests:android:unit` (produces module `*.exec`) then e2e + `yarn tests:android:post-e2e-coverage` → merged **`jacocoTestReport`** XML per `sourcefile`. **Deletes processed `emulator_coverage.ec`** after a successful report — re-run e2e before re-processing. Unit-only: `yarn tests:android:test:jacoco-report` (same merged task; needs fresh `*.exec` and any available `*.ec`).
 * macOS e2e overwrites `coverage/lcov.info`; process iOS/Android native before a macOS run if you need both.
 
@@ -144,6 +148,7 @@ If numbers look wrong, run the clean cycle before debugging generators — e2e s
 
 ```bash
 yarn tests:ios:test:process-coverage
+yarn tests:ios:unit                    # fresh coverage/ios-unit/lcov.info merged into ios-native
 yarn tests:android:unit                # fresh module *.exec when Android native touched
 yarn tests:android:post-e2e-coverage
 ```
@@ -157,8 +162,8 @@ flowchart LR
   subgraph unit [Unit Jest]
     J1[jest --coverage] --> J2[coverage/lcov.info]
   end
-  subgraph android_jvm [Unit Android JVM]
-    U1[yarn tests:android:unit] --> EXEC["module *.exec"]
+  subgraph ios_unit [Unit iOS XCTest]
+    U2[yarn tests:ios:unit] --> UNITLCOV["coverage/ios-unit/lcov.info"]
   end
   subgraph ts_e2e [E2e TypeScript]
     M[Metro + inline source maps] --> A[App bundle]
@@ -174,11 +179,12 @@ flowchart LR
     P1 --> JTR[jacocoTestReport]
     JTR --> AX[jacocoTestReport.xml]
   end
-  subgraph ios_native [E2e iOS native]
+  subgraph ios_native [iOS native LCOV]
     D2[Detox e2e] --> FLI[RNFBTestingCoverage.flush]
     FLI --> PR[coverage.profraw in Documents]
     PR --> P2[pull-native-coverage.js]
     P2 --> LLVM[process-ios-native-coverage.js]
+    UNITLCOV --> LLVM
     LLVM --> I2[coverage/ios-native/lcov.info]
   end
   J2 --> C[Codecov]
@@ -196,6 +202,20 @@ yarn tests:android:unit
 - Runner choice and `@Config` / `sdk` policy under `packages/*/android/src/test/java` — [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1).
 - Gradle entry: `tests/android` `./gradlew rnfbDebugUnitTests` (all RNFB library `:testDebugUnitTest` tasks).
 - Output: Jacoco `*.exec` under each module `build/` (and app build tree as configured).
+- **Counts toward** the 100% touched-line bar when allowlisted unit tests exercise those lines.
+- Not a substitute for e2e on platforms where the module loads ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)).
+
+<a id="ios-xctest-unit-lcov"></a>
+
+# Unit coverage (iOS XCTest)
+
+```bash
+yarn tests:ios:unit
+```
+
+- Host/macOS-first in-package xcodeproj — [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1).
+- Discovers `packages/*/ios/*UnitTests/*.xcodeproj`; LLVM export → `coverage/ios-unit/lcov.info`.
+- **Merges into** `coverage/ios-native/lcov.info` (create or max-hits merge per `SF:`/`DA:`). After e2e, `process-ios-native-coverage.js` merges the same unit file so e2e export does not drop XCTest hits.
 - **Counts toward** the 100% touched-line bar when allowlisted unit tests exercise those lines.
 - Not a substitute for e2e on platforms where the module loads ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)).
 
@@ -281,6 +301,7 @@ reporter: ['lcov', 'html', 'text-summary'],
    - merge from `tests/ios/build/output/coverage/` (+ optional `Build/ProfileData/` for `xcodebuild test`, unused by Detox)
    - `xcrun llvm-cov export -format=lcov` vs app binary → temp file (stdout buffer limit)
    - rewrite `SF:` to repo-relative `packages/**` → **`coverage/ios-native/lcov.info`**
+   - **merge** `coverage/ios-unit/lcov.info` when present (`tests/scripts/ios-native-lcov.js`) so XCTest counts for 100%
    - **delete processed `.profraw`** (missing file next run = no fresh coverage)
 
 ObjC + Swift share this. Raw export is mostly Pods/SDK; healthy full run includes ~50–60 `packages/*/ios/**` files among ~2000 entries.
@@ -320,7 +341,7 @@ iOS release legs: no upload. macOS: TS only.
 | Workflow | Steps |
 |----------|-------|
 | `tests_jest.yml` | `yarn tests:jest-coverage` → Codecov `jest` |
-| `tests_e2e_ios.yml` (debug) | Detox → `yarn tests:ios:test:process-coverage` (`continue-on-error: true` for now); **debug+spm:** `yarn tests:ios:ruby` → Codecov `ios-ruby` |
+| `tests_e2e_ios.yml` (debug) | `yarn tests:ios:unit` → Detox → `yarn tests:ios:test:process-coverage` (e2e LCOV + merge unit; `continue-on-error: true` for now); **debug+spm:** `yarn tests:ios:ruby` → Codecov `ios-ruby` |
 | `tests_e2e_android.yml` | `yarn tests:android:build` → `yarn tests:android:unit` → Detox → `yarn tests:android:post-e2e-coverage` (merged `jacocoTestReport`) |
 | `tests_e2e_other.yml` | macOS Jet e2e |
 
@@ -332,6 +353,7 @@ E2e per [runbook](running-e2e.md), Android JVM unit + native post-processing:
 
 ```bash
 yarn tests:android:unit
+yarn tests:ios:unit
 yarn tests:ios:test:process-coverage
 yarn tests:android:post-e2e-coverage   # pulls .ec then jacocoTestReport (merged)
 # optional explicit merge report without pull:
@@ -360,11 +382,13 @@ No `:test-cover-reuse` / `:test-reuse` — stale native risk ([runbook](running-
 | Flush after Mocha | Jet `after` in `tests/app.js` |
 | Profraw pull before Detox teardown (iOS) | `pull-native-coverage.js` on Jet `close` in `firebase.test.js` |
 | Android JVM unit before / with merge | `yarn tests:android:unit` → module `*.exec` |
+| iOS XCTest unit merged into ios-native | `yarn tests:ios:unit` → `coverage/ios-unit/lcov.info` merged into `coverage/ios-native/lcov.info` |
 | Android ec pull after Detox | `yarn tests:android:post-e2e-coverage` → **`jacocoTestReport`** (not e2e-only `jacocoAndroidTestReport`) |
 | Codecov android-native file | `jacocoTestReport/jacocoTestReport.xml` |
 | Fresh profraw processed (iOS) | `process-ios-native-coverage.js` deletes after export |
 | Fresh ec processed (Android) | `pull-native-coverage.js` deletes local `.ec` after successful Jacoco report |
 | JVM unit ≠ e2e substitute | [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1); [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) still applies |
+| iOS XCTest ≠ e2e substitute | [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1); unit LCOV still merges into ios-native |
 
 # Troubleshooting
 
