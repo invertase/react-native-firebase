@@ -2,7 +2,7 @@
   "description": "Expected toolchain pins for rnfb-ios-e2e-golden. Update when CI macos-26 / tests_e2e_ios.yml changes.",
   "tart_seed_image": "ghcr.io/cirruslabs/macos-tahoe-xcode:26.5",
   "xcode_version": "26.5",
-  "node_major": 22,
+  "node_major": 24,
   "java_distribution": "temurin",
   "java_version": "21",
   "ruby_version": 3,
