@@ -8,7 +8,7 @@ timestamp: 2026-07-22T00:00:00Z
 
 # Android unit testing decisions (ADR)
 
-**Canonical owner** of durable decisions for Android **JVM** unit tests under `packages/*/android/src/test/java`. Commands: [agent command policy](agent-command-policy.md), [validation checklist](validation-checklist.md). Coverage contract: [coverage design](coverage-design.md). CI shape: [Android CI workflows](../ci-workflows/android.md).
+**Canonical owner** of durable decisions for Android **JVM** unit tests under `packages/*/android/src/test/java`. Commands: [agent command policy](agent-command-policy.md), [validation checklist](validation-checklist.md). Coverage contract: [coverage design](coverage-design.md). CI shape: [Android CI workflows](../ci-workflows/android.md). iOS counterpart: [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1).
 
 **Policy:** [OKF documentation policy](../documentation-policy.md). Do not duplicate these decisions in work queues.
 

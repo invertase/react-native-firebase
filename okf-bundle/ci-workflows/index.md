@@ -4,7 +4,7 @@ GitHub Actions job shape, platform reliability, and artifact triage.
 
 ## Platforms
 
-* [iOS](ios.md) — simulator boot, logging, troubleshooting, [CI baseload policy](ios.md#ci-baseload-policy-instrumentation)
+* [iOS](ios.md) — XCTest unit (`yarn tests:ios:unit`), simulator boot, logging, troubleshooting, [CI baseload policy](ios.md#ci-baseload-policy-instrumentation)
 * [Android](android.md) — JVM unit step, idling, adb teardown, merged Jacoco / native coverage
 * [Other](other.md) — macOS e2e, Windows/shared
 
@@ -20,4 +20,4 @@ GitHub Actions job shape, platform reliability, and artifact triage.
 ## Related
 
 * [Running e2e tests](../testing/running-e2e.md) — local runbook; CI variants noted per platform
-* [Coverage design](../testing/coverage-design.md) — e2e coverage, Codecov flags/gates; [iOS Ruby SimpleCov](../testing/coverage-design.md#ios-ruby-simplecov) (`yarn tests:ios:ruby`, flag `ios-ruby` on `tests_e2e_ios.yml` only)
+* [Coverage design](../testing/coverage-design.md) — e2e coverage, Codecov flags/gates; [iOS XCTest](../testing/ios-architecture-decisions.md#iostest-ad-1) (`yarn tests:ios:unit`); [iOS Ruby SimpleCov](../testing/coverage-design.md#ios-ruby-simplecov) (`yarn tests:ios:ruby`, flag `ios-ruby` on `tests_e2e_ios.yml` only)

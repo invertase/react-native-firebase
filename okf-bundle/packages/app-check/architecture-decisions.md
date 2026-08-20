@@ -83,7 +83,7 @@ A firebase.json / Info.plist (or similar) knob to install a real provider before
 
 Prefer a small iOS unit/host test or injectable seam proving pre-configure `createProviderWithApp:` does not install debug and fail-closed token paths do not hit the network. If that requires standing up full package XCTest + CI wiring beyond this bugfix, use a cheap in-package seam first; if still intractable, ship with Jest (JS reorder) + plugin snapshot + area-focused app-check e2e and record an evidence-backed intractable limitation (user-accepted) in this ADR / coverage notes.
 
-**Why:** The monorepo has Android JVM unit tests ([AndroidTest-AD-1](../../testing/android-architecture-decisions.md#androidtest-ad-1)) but no package-level iOS XCTest harness. Introducing that platform is a separate decision, not a blocker for #9116.
+**Why:** The monorepo now has Android JVM unit tests ([AndroidTest-AD-1](../../testing/android-architecture-decisions.md#androidtest-ad-1)) and an in-package iOS XCTest platform ([IosTest-AD-1](../../testing/ios-architecture-decisions.md#iostest-ad-1)). This App Check bugfix still did **not** add package XCTest; that platform is a separate decision and was not a blocker for #9116.
 
 ---
 
