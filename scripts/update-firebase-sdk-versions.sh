@@ -17,10 +17,10 @@
 #       for freezing a release-notes snapshot in CI artifacts).
 #   ./scripts/update-firebase-sdk-versions.sh --apply [same fetch options as above]
 #       Phase 1: extract versions (printed as sorted KEY=value lines).
-#       Phase 2: write them into packages/app/package.json, root/tests
-#       package.json, .yarnrc.yml (firebase + transitive @firebase/* age-gate preapprovals),
-#       docs (.mdx), Gradle files, and Jest plugin snapshots; run yarn; run
-#       yarn tests:ios:pod:install.
+#       Phase 2: write them into packages/app/package.json, root/tests/
+#       tests-macos/package.json, .yarnrc.yml (firebase + transitive @firebase/*
+#       age-gate preapprovals), docs (.mdx), Gradle files, and Jest plugin
+#       snapshots; run yarn; run yarn tests:ios:pod:install when iOS SDK changed.
 #       If the JS or any native SDK / Android plugin / App Distribution API
 #       version changed, run yarn compare:types and yarn test:full (expects full
 #       Xcode/Android/macOS toolchains; exits 1 on failure).
@@ -268,7 +268,7 @@ app.sdkVersions.android.firebaseAppDistributionGradle =
   e.FIREBASE_ANDROID_APPDISTRIBUTION_GRADLE;
 fs.writeFileSync('packages/app/package.json', JSON.stringify(app, null, 2) + '\n');
 
-for (const path of ['package.json', 'tests/package.json']) {
+for (const path of ['package.json', 'tests/package.json', 'tests-macos/package.json']) {
   patchPackageJson(path);
 }
 NODE
@@ -458,8 +458,12 @@ rm -f "$tmp_snap_p"
 echo "update-firebase-sdk-versions: running yarn (refresh yarn.lock, workspace prepare)" >&2
 yarn
 
-echo "update-firebase-sdk-versions: running yarn tests:ios:pod:install" >&2
-yarn tests:ios:pod:install
+if [[ "$OLD_IOS" != "$FIREBASE_IOS_SDK" ]]; then
+  echo "update-firebase-sdk-versions: running yarn tests:ios:pod:install" >&2
+  yarn tests:ios:pod:install
+else
+  echo "update-firebase-sdk-versions: iOS SDK unchanged (${FIREBASE_IOS_SDK}); skipping yarn tests:ios:pod:install" >&2
+fi
 
 sdk_changed=false
 [[ "$js_changed" == true || "$native_changed" == true ]] && sdk_changed=true
