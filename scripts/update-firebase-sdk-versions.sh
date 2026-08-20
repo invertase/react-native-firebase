@@ -20,7 +20,8 @@
 #       Phase 2: write them into packages/app/package.json, root/tests/
 #       tests-macos/package.json, .yarnrc.yml (firebase + transitive @firebase/*
 #       age-gate preapprovals), docs (.mdx), Gradle files, and Jest plugin
-#       snapshots; run yarn; run yarn tests:ios:pod:install when iOS SDK changed.
+#       snapshots; run yarn; when iOS SDK changed, rm tests/ios/Podfile.lock then
+#       yarn tests:ios:pod:install (macOS e2e has no Firebase pods — do not rm that lockfile).
 #       If the JS or any native SDK / Android plugin / App Distribution API
 #       version changed, run yarn compare:types and yarn test:full (expects full
 #       Xcode/Android/macOS toolchains; exits 1 on failure).
@@ -459,6 +460,8 @@ echo "update-firebase-sdk-versions: running yarn (refresh yarn.lock, workspace p
 yarn
 
 if [[ "$OLD_IOS" != "$FIREBASE_IOS_SDK" ]]; then
+  echo "update-firebase-sdk-versions: iOS SDK changed; removing tests/ios/Podfile.lock before pod install" >&2
+  rm -f tests/ios/Podfile.lock
   echo "update-firebase-sdk-versions: running yarn tests:ios:pod:install" >&2
   yarn tests:ios:pod:install
 else
