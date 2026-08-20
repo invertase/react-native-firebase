@@ -36,14 +36,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 /**
  * JVM coverage for {@link NativeRNFBTurboUtils} appVersion constant export branches (null, empty,
  * package-manager failure).
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 34)
 public class NativeRNFBTurboUtilsTest {
 
   private ReactApplicationContext reactContext;

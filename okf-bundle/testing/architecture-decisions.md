@@ -10,7 +10,7 @@ timestamp: 2026-07-10T00:00:00Z
 
 **Canonical owner** of durable decisions for how RNFB validates published package types in CI. Procedure and commands: [validation checklist](validation-checklist.md). Implementation: `.attw.json`, `.github/scripts/attw/`, `tsconfig.consumer.json`.
 
-**Related (separate owner):** Android JVM unit testing — [android-architecture-decisions.md](android-architecture-decisions.md) (`AndroidTest-AD-*`).
+**Related (separate owner):** Android JVM unit testing — [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1).
 
 **Policy:** [OKF documentation policy](../documentation-policy.md). Do not duplicate these decisions in work queues.
 

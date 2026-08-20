@@ -172,7 +172,7 @@ Goal: each iteration improves OKF and removes conflicting guidance. Check meanin
 | prepare                   | yarn lerna:prepare                   | 0    | —                                                                                                                                            |
 | jest                      | yarn tests:jest <paths>              | 0    | N/N tests                                                                                                                                    |
 | ios Ruby unit             | yarn tests:ios:ruby                  | 0    | when `packages/app/**/*.rb` or `packages/app/__tests__/*_test.rb` touched — coverage/ios-ruby/lcov.info ([§ iOS Ruby](#ios-ruby-unit-tests)) |
-| android JVM unit          | yarn tests:android:unit              | 0    | when `packages/*/android/**` Java changed — [AndroidTest-AD-1](android-architecture-decisions.md)                                            |
+| android JVM unit          | yarn tests:android:unit              | 0    | when `packages/*/android/**` Java changed — [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1)                           |
 | e2e macOS                 | yarn tests:macos:test-cover          | 0    | X passing — /tmp/...log                                                                                                                      |
 | e2e iOS                   | yarn tests:ios:test-cover            | 0    | Y passing — /tmp/...log                                                                                                                      |
 | e2e Android               | yarn tests:android:test-cover        | 0    | Z passing — /tmp/...log                                                                                                                      |
@@ -196,7 +196,7 @@ Goal: each iteration improves OKF and removes conflicting guidance. Check meanin
 - [ ] Redirect audit when TypeDoc config changed ([documentation site maintenance § redirect audit](../documentation-site-maintenance.md#redirect-audit-required-when-typedoc-config-changes))
 - [ ] `yarn tests:jest`
 - [ ] `yarn tests:ios:ruby` when `packages/app/**/*.rb` or `packages/app/__tests__/*_test.rb` touched ([§ iOS Ruby](#ios-ruby-unit-tests); [coverage design](coverage-design.md#ios-ruby-simplecov))
-- [ ] `yarn tests:android:unit` when `packages/*/android/**` Java / `src/test/java` changed ([AndroidTest-AD-1](android-architecture-decisions.md))
+- [ ] `yarn tests:android:unit` when `packages/*/android/**` Java / `src/test/java` changed ([AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1))
 - [ ] TurboModule wrapper contract ([NewArch-AD-17.1](../new-architecture/architecture-decisions.md#newarch-ad-171--jest-turbomodule-contract-test--accepted)) when `packages/app/lib/internal/registry/nativeModule.ts`, `nativeModuleAndroidIos.ts`, or TurboModule wrapper behavior changed: `yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts`
 - [ ] `yarn compare:types` (stale config entries removed)
 - [ ] Lint by-tree / by-diff per [§ lint and formatting](#lint-and-formatting) (frozen `independent-review`: check-only — no `yarn lint:android` / full `yarn lint`)

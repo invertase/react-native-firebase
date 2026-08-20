@@ -2,7 +2,11 @@ buildscript {
   ext.buildToolsVersion = "36.1.0"
   ext.minSdkVersion = 24
   ext.compileSdkVersion = 36
-  ext.targetSdkVersion = 36
+  // Test *app* targetSdk only. Do not set rootProject.ext.targetSdkVersion —
+  // invertase applyAndroidVersions() copies it onto RNFB libraries, and
+  // Robolectric 4.14.1 DefaultSdkPicker then rejects package targetSdk 36
+  // (maxSdk 35). Libraries keep packages/*/package.json (app: 34). AndroidTest-AD-1.
+  ext.appTargetSdkVersion = 36
 
  ext.ndkVersion = "27.1.12297006"
 
@@ -56,7 +60,6 @@ subprojects {
   ext {
     compileSdk = rootProject.ext.compileSdkVersion
     minSdk = rootProject.ext.minSdkVersion
-    targetSdk = rootProject.ext.targetSdkVersion
   }
   afterEvaluate { project ->
     if (!project.name.equalsIgnoreCase('app')
@@ -65,7 +68,9 @@ subprojects {
         compileSdkVersion = compileSdk
         defaultConfig {
           minSdkVersion = minSdk
-          targetSdkVersion = targetSdk
+          // Do not overwrite library targetSdk (packages/*/package.json, typically 34).
+          // Forcing the test-app targetSdk 36 makes Robolectric 4.14.1 DefaultSdkPicker
+          // reject package targetSdkVersion=36 > maxSdkVersion=35 — AndroidTest-AD-1.
         }
       }
     }

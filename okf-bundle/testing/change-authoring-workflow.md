@@ -304,4 +304,4 @@ Ephemeral coordination (gate rows, `next_work_type`, `commit_subject`) lives in 
 | E2e commands                    | [running-e2e.md](running-e2e.md)                   |
 | Validation commands             | [validation-checklist.md](validation-checklist.md) |
 | Coverage policy                 | [coverage-design.md](coverage-design.md)           |
-| Android JVM unit ADR            | [android-architecture-decisions.md](android-architecture-decisions.md) |
+| Android JVM unit ADR            | [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1) |
