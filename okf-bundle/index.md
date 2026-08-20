@@ -20,7 +20,7 @@ okf_version: '0.1'
 - [Test app dependency pins](/testing/test-app-dependency-pins.md) — intentional RN / CLI locks (`react-native-macos`)
 - [Validation checklist](/testing/validation-checklist.md) — compile, Jest, lint, `compare:types`, e2e, coverage
 - [Published types ADR](/testing/architecture-decisions.md) — attw scope, Expo plugin checks, discarded resolutions
-- [Android unit testing ADR](/testing/android-architecture-decisions.md) — Robolectric + Mockito JVM unit tests (`AndroidTest-AD-*`)
+- [Android unit testing ADR](/testing/android-architecture-decisions.md) — JUnit-first JVM unit tests; Robolectric when Android APIs are required (`AndroidTest-AD-*`)
 - [Coverage design](/testing/coverage-design.md) — unit/e2e coverage policy, native gates, Codecov; [iOS Ruby SimpleCov](/testing/coverage-design.md#ios-ruby-simplecov)
 - [Firebase testing project](/testing/firebase-testing-project.md) — cloud vs emulator, live FIS/RC, helper callables, rules/indexes, deploy
 
