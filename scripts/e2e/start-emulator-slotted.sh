@@ -12,6 +12,10 @@
 # Without [slot], requires RNFB_<PLATFORM>_EMULATOR_* already exported (e.g. after
 # eval "$(export-slot-env.sh …)").
 # Aborts (exit 1) before emulators:start if any suite port is already listening.
+# Starts firebase emulators in the background, waits until the Functions port is
+# listening, then exits 0 leaving the suite running. Callers wait for this script's
+# exit 0 (= ready) — do not wait for process death / EMU_EXIT from a healthy start.
+# On readiness timeout, kills the suite started by this script and exits 1.
 set -euo pipefail
 
 PLATFORM="${1:?platform required: android|ios|macos}"
@@ -100,8 +104,66 @@ trap - EXIT
 # shellcheck source=firebase-cli.sh
 source "${SCRIPTS}/firebase-cli.sh"
 
+EMU_LOG="${RNFB_EMULATOR_LOG:-/tmp/rnfb-emulator-${PLATFORM}-s${SLOT}.log}"
+READY_TIMEOUT="${RNFB_EMULATOR_READY_TIMEOUT:-300}"
+EMU_PID=""
+
+# Kill only the suite this script started (timeout / early death path). Never register
+# this on EXIT — a healthy start must leave emulators running after exit 0.
+kill_started_suite() {
+  local port pids
+  if [[ -n "${EMU_PID:-}" ]] && kill -0 "${EMU_PID}" 2>/dev/null; then
+    kill "${EMU_PID}" 2>/dev/null || true
+    # firebase tools spawns children; escalate if parent ignores soft kill
+    sleep 1
+    if kill -0 "${EMU_PID}" 2>/dev/null; then
+      kill -9 "${EMU_PID}" 2>/dev/null || true
+    fi
+  fi
+  for port in "$FS_PORT" "$AUTH_PORT" "$DB_PORT" "$FN_PORT" "$ST_PORT" "$HUB_PORT" "$LOG_PORT" \
+    "$WS_PORT" "$EVENTARC_PORT" "$TASKS_PORT"; do
+    pids="$(e2e_listener_pids "$port" | tr '\n' ' ')"
+    if [[ -n "${pids// /}" ]]; then
+      # shellcheck disable=SC2086
+      kill ${pids} 2>/dev/null || true
+      sleep 0.5
+      pids="$(e2e_listener_pids "$port" | tr '\n' ' ')"
+      if [[ -n "${pids// /}" ]]; then
+        # shellcheck disable=SC2086
+        kill -9 ${pids} 2>/dev/null || true
+      fi
+    fi
+  done
+  wait "${EMU_PID}" 2>/dev/null || true
+}
+
 cd "${SCRIPTS}"
+# Ignore SIGHUP so the suite survives when the starter shell exits (wave runners).
+trap '' HUP
+echo "[emulator-${PLATFORM}] starting background suite log=${EMU_LOG}"
 "${FIREBASE_CMD[@]}" emulators:start \
   --config "${CONFIG}" \
   --only auth,database,firestore,functions,storage \
-  --project react-native-firebase-testing
+  --project react-native-firebase-testing \
+  >"${EMU_LOG}" 2>&1 &
+EMU_PID=$!
+# Detach from this shell's job control so EXIT does not signal the suite.
+disown "${EMU_PID}" 2>/dev/null || true
+
+ready_deadline=$((SECONDS + READY_TIMEOUT))
+while ! e2e_port_listening "$FN_PORT"; do
+  if (( SECONDS >= ready_deadline )); then
+    echo "error: timed out after ${READY_TIMEOUT}s waiting for Functions :${FN_PORT} (log=${EMU_LOG})" >&2
+    kill_started_suite
+    exit 1
+  fi
+  if ! kill -0 "${EMU_PID}" 2>/dev/null; then
+    echo "error: firebase emulators exited before Functions :${FN_PORT} was listening (log=${EMU_LOG})" >&2
+    kill_started_suite
+    exit 1
+  fi
+  sleep 1
+done
+
+echo "[emulator-${PLATFORM}] ready functions=:${FN_PORT} pid=${EMU_PID} log=${EMU_LOG}"
+exit 0

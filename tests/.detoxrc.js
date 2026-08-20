@@ -122,12 +122,12 @@ const apps = {
   'ios.debug': {
     type: 'ios.app',
     binaryPath: 'ios/build/Build/Products/Debug-iphonesimulator/testing.app',
-    build: `set -o pipefail && ${iosXcodebuildPrefix()} xcodebuild VALID_ARCHS="\`uname -m\`"  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify`,
+    build: `set -o pipefail && ${iosXcodebuildPrefix()} xcodebuild SWIFT_ENABLE_EXPLICIT_MODULES=NO VALID_ARCHS="\`uname -m\`"  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify`,
   },
   'ios.release': {
     type: 'ios.app',
     binaryPath: 'ios/build/Build/Products/Release-iphonesimulator/testing.app',
-    build: `export RCT_NO_LAUNCH_PACKAGER=true && set -o pipefail && ${iosXcodebuildPrefix()} xcodebuild  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify`,
+    build: `export RCT_NO_LAUNCH_PACKAGER=true && set -o pipefail && ${iosXcodebuildPrefix()} xcodebuild SWIFT_ENABLE_EXPLICIT_MODULES=NO CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify`,
   },
   'android.debug': androidApp(ANDROID_REVERSE_DEFAULT),
   'android.debug.windows': androidAppWindows(ANDROID_REVERSE_DEFAULT),

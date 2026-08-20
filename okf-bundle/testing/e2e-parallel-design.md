@@ -504,8 +504,9 @@ See [§ Lease store](#lease-store-reuse-vs-build-scope) for the build-vs-reuse d
 
 ### Builds
 
-- **Serial build, parallel test:** `build` phases stay serial per platform before parallel `:test-cover` (Gradle/Xcode lock contention).
-- Or: separate `GRADLE_USER_HOME` / `derivedDataPath` per slot (Phase 2+) if build parallelism is needed later.
+- **Cross-worktree Apple builds:** concurrent ios/macos `:build` across slotted worktrees is supported when each tree uses its own `derivedDataPath` **and** Detox/macOS `xcodebuild` disables Swift explicit precompiled modules (`SWIFT_ENABLE_EXPLICIT_MODULES=NO`) — otherwise concurrent SPM/header updates race `.pcm` files (`file … has been modified since the module file … was built`). See [running e2e § parallel topology](running-e2e.md#parallel-e2e-topology).
+- **Do not** run two overlapping 3×3 (or other multi-slot Apple-build) orchestrators against the **same** worktrees — shared `ios/build` / `macos/build` is not multi-writer-safe.
+- Android: still prefer avoiding same-tree Gradle contention; separate `GRADLE_USER_HOME` per slot remains optional if build parallelism needs hardening later.
 
 ## Documentation and policy updates (by phase)
 
@@ -527,6 +528,7 @@ Work-queue rows for implementation track **Phase 0–3** in the `e2e-parallel` b
 | Operator confusion (wrong PRODUCT_NAME / slot) | `host-status` shows leased `macos-slot-N` + product name; unscoped release clears leftover slotted ports, `.sN`, and (with `--devices`) `TestingAVD-N` / iOS slot sims |
 | Coverage merge complexity | Per-worktree artifacts; merge script optional for local dev |
 | Passing `PRODUCT_NAME=` on xcodebuild CLI | Forbidden — use suffix env only ([running e2e](running-e2e.md#macos-process-identity-concurrency)) |
+| Concurrent Apple `:build` PCM / explicit-module races | `SWIFT_ENABLE_EXPLICIT_MODULES=NO` on Detox/macOS xcodebuild; one orchestrator per worktree set |
 
 ## Open questions
 
