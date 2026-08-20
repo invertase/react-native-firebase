@@ -101,7 +101,7 @@ Merged Codecov path: `jacocoTestReport.xml` — [coverage design](coverage-desig
 - `packages/app/__tests__/*_test.rb`
 
 ```bash
-bundle install --gemfile=packages/app/__tests__/Gemfile   # once per checkout / Gemfile change
+bundle install                                            # root Gemfile; once per checkout / Gemfile change
 yarn tests:ios:ruby                                       # yarn lint:ruby (RuboCop) then all *_test.rb + SimpleCov → coverage/ios-ruby/lcov.info
 yarn lint:ruby                                          # RuboCop only (same Gemfile; not part of root yarn lint)
 ```

@@ -8,8 +8,10 @@
 # and opt-in shape/embed suites (real cocoapods/xcodeproj) never share a
 # process. Parent collates SimpleCov resultsets into coverage/ios-ruby/.
 #
-# Gem activation puts Gemfile gems on $LOAD_PATH without `Bundler.setup` /
-# `bundle exec` isolation so system gems remain visible for shape/embed suites.
+# Gem activation: `yarn tests:ios:ruby` runs this file via `bundle exec` so
+# Gemfile cocoapods/xcodeproj/simplecov are on $LOAD_PATH. Child suite
+# processes also use `bundle exec` so asdf/system minitest cannot shadow
+# the Bundler-activated copy (mixed minitest 5 + 6 → 0 runs).
 #
 # Unit suites `load` production `.rb` files repeatedly for isolation; Ruby's
 # Coverage module resets per-file counters on each `load`. The runner peeks
@@ -18,14 +20,14 @@
 require 'English'
 tests_dir = __dir__
 repo_root = File.expand_path('../../..', tests_dir)
-gemfile = File.expand_path('Gemfile', tests_dir)
+gemfile = File.join(repo_root, 'Gemfile')
 coverage_dir = File.join(repo_root, 'coverage', 'ios-ruby')
 lcov_path = File.join(coverage_dir, 'lcov.info')
 
 ENV['BUNDLE_GEMFILE'] = gemfile
 
-def activate_coverage_gems!(tests_dir, gemfile)
-  vendor_libs = Dir.glob(File.join(tests_dir, 'vendor', 'bundle', 'ruby', '*', 'gems', '*', 'lib'))
+def activate_coverage_gems!(bundle_root)
+  vendor_libs = Dir.glob(File.join(bundle_root, 'vendor', 'bundle', 'ruby', '*', 'gems', '*', 'lib'))
   vendor_libs.each { |path| $LOAD_PATH.unshift(path) unless $LOAD_PATH.include?(path) }
 
   begin
@@ -38,14 +40,14 @@ def activate_coverage_gems!(tests_dir, gemfile)
 
   begin
     require 'bundler'
-    Dir.chdir(tests_dir) do
+    Dir.chdir(bundle_root) do
       Bundler.reset!
       Bundler.configure
       definition = Bundler.definition
       if definition.missing_specs.any?
         names = definition.missing_specs.map(&:name).uniq.join(', ')
         warn "[tests:ios:ruby] Missing gems: #{names}."
-        warn "Run: bundle install --gemfile=#{gemfile}"
+        warn 'Run: bundle install (root Gemfile)'
         exit 1
       end
       definition.specs_for([:default]).each do |spec|
@@ -58,7 +60,7 @@ def activate_coverage_gems!(tests_dir, gemfile)
     require 'simplecov-lcov'
   rescue LoadError, Bundler::BundlerError => e
     warn "[tests:ios:ruby] #{e.message}"
-    warn "Run: bundle install --gemfile=#{gemfile}"
+    warn 'Run: bundle install (root Gemfile)'
     exit 1
   end
 end
@@ -241,7 +243,7 @@ end
 require 'fileutils'
 require 'rbconfig'
 
-activate_coverage_gems!(tests_dir, gemfile)
+activate_coverage_gems!(repo_root)
 configure_simplecov_formatters!(coverage_dir, lcov_path)
 
 if (suite_path = ENV.fetch('RNFB_IOS_RUBY_SUITE', nil))
@@ -278,6 +280,8 @@ else
         'BUNDLE_GEMFILE' => gemfile,
         'RNFB_IOS_RUBY_SUITE' => path
       },
+      'bundle',
+      'exec',
       RbConfig.ruby,
       __FILE__,
       out: log,

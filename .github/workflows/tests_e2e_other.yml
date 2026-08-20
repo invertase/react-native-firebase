@@ -196,14 +196,14 @@ jobs:
         with:
           ruby-version: 3
 
-      - name: Update Ruby build tools
+      - name: Bundle install
         # https://github.com/nick-fields/retry/releases
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: 2
+          timeout_minutes: 10
           retry_wait_seconds: 60
           max_attempts: 3
-          command: gem update cocoapods xcodeproj
+          command: BUNDLE_FROZEN=true bundle install
 
       - name: Pods Cache Restore
         # https://github.com/actions/cache/releases

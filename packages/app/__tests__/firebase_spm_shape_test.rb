@@ -29,8 +29,9 @@
 # Deliberately opt-in: skips cleanly (does not fail, does not define any
 # tests) when `cocoapods`/`xcodeproj` aren't installed, so it's always safe to
 # run unconditionally via `yarn tests:ios:ruby`. CI home is tests_e2e_ios.yml
-# (debug + spm): after `gem update cocoapods xcodeproj`, so the shape suite
-# runs for real there. Local / Linux runs without those gems still exit 0.
+# (debug + spm): after `BUNDLE_FROZEN=true bundle install` on the root Gemfile
+# (pinned cocoapods/xcodeproj), so the shape suite runs for real there.
+# Local / Linux runs without those gems still exit 0.
 
 begin
   require 'xcodeproj'

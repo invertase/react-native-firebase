@@ -121,7 +121,8 @@ end
 # namespace so production code's direct class references resolve to these
 # lightweight stand-ins, instead of requiring the real (much heavier) `xcodeproj`
 # gem. Local/Linux `yarn tests:ios:ruby` runs without installing xcodeproj;
-# CI shape coverage lives on tests_e2e_ios.yml (debug + spm) after gem update.
+# CI shape coverage lives on tests_e2e_ios.yml (debug + spm) after
+# `BUNDLE_FROZEN=true bundle install` on the root Gemfile.
 module Xcodeproj
   module Project
     module Object
