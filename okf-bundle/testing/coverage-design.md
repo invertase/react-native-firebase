@@ -193,7 +193,7 @@ flowchart LR
 yarn tests:android:unit
 ```
 
-- Runner choice (plain JUnit4 vs Robolectric) under `packages/*/android/src/test/java` — [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1).
+- Runner choice and `@Config` / `sdk` policy under `packages/*/android/src/test/java` — [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1).
 - Gradle entry: `tests/android` `./gradlew rnfbDebugUnitTests` (all RNFB library `:testDebugUnitTest` tasks).
 - Output: Jacoco `*.exec` under each module `build/` (and app build tree as configured).
 - **Counts toward** the 100% touched-line bar when allowlisted unit tests exercise those lines.
