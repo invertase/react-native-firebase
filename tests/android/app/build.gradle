@@ -84,7 +84,7 @@ android {
   defaultConfig {
     applicationId = 'com.invertase.testing'
     minSdkVersion = rootProject.ext.minSdkVersion
-    targetSdkVersion = rootProject.ext.targetSdkVersion
+    targetSdkVersion = rootProject.ext.appTargetSdkVersion
     versionCode = 200
     versionName = '1.0'
 

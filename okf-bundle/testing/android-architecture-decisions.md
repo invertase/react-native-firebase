@@ -38,13 +38,23 @@ Prefer **plain JUnit4** for Android Java state-machine / bridge logic that e2e c
 | Location | `packages/*/android/src/test/java/**` |
 | Default runner | Plain JUnit4 — when the class under test does not need Android APIs, or those APIs can be replaced by a ~1–5 line mock |
 | Robolectric | `@RunWith(RobolectricTestRunner.class)` only when Android APIs are necessary (Handler/Looper, Application, PackageInfo, and similar) |
+| `@Config` | Omit unless the test **fails without it**. Keep the smallest working annotation (for example `application = …` when a custom `Application` is required). **Never pin `sdk` unless that test fails without the pin** — an `sdk` pin triggers a large on-demand Robolectric `android-all` download. Do not treat an `sdk` pin as a general requirement. |
 | Doubles | Mockito (`mock`, `mockStatic`, etc.) for RN host/context APIs; prefer a small mock over pulling in Robolectric |
 | Entry command | `yarn tests:android:unit` → `tests/android` `./gradlew rnfbDebugUnitTests` |
 | Coverage artifact | Module Jacoco `*.exec` (merged into Codecov via `jacocoTestReport` — [coverage design](coverage-design.md)) |
 
 **Why:** Detox/Jet e2e loads one live React Native generation and cannot reliably drive overlapping context generations, synthetic host wiring, or precise looper scheduling needed for some bridge state machines. JVM tests prove those contracts without an emulator. Plain JUnit4 is enough for logic that does not need the Android framework; Robolectric stays reserved for Handler/Looper, Application, PackageInfo, and similar APIs.
 
-Existing tests that still need Robolectric include `ReactNativeFirebaseEventEmitter`, `NativeRNFBTurboApp`, and `NativeRNFBTurboUtils`.
+Existing tests that still need Robolectric include `ReactNativeFirebaseEventEmitter`, `NativeRNFBTurboApp`, and `NativeRNFBTurboUtils`. **Omit `@Config` unless a test fails without it. Never pin `sdk` unless that test fails.** EventEmitter and TurboApp require `application = HostApplication` (without it, `@Before` fails with `ClassCastException` when casting `RuntimeEnvironment.getApplication()`). Utils has no `@Config`.
+
+Do **not** put the test-app `targetSdk` **36** on `rootProject.ext.targetSdkVersion` in `tests/android/build.gradle`. Invertase `applyAndroidVersions()` treats that property as a library override (`android.targetSdk using custom value: 36`). Libraries must keep `packages/*/package.json` `sdkVersions.android.targetSdk` (**34** for `@react-native-firebase/app`). Overlaying 36 makes Robolectric **4.14.1** `DefaultSdkPicker` reject the package:
+
+```
+java.lang.IllegalArgumentException: Package targetSdkVersion=36 > maxSdkVersion=35
+    at org.robolectric.plugins.DefaultSdkPicker.configuredSdks(DefaultSdkPicker.java:119)
+```
+
+That exception is a reason **not** to inherit test-app targetSdk on libraries — not a reason to pin `@Config(sdk = 34)` on every Robolectric class. The test **application** named `app` stays at 36 via `ext.appTargetSdkVersion` (a name `applyAndroidVersions()` does not consume). The `subprojects` overlay may still align library `compileSdk` / `minSdk` with the test app so the composite project compiles; it must **not** assign `targetSdkVersion` on those libraries.
 
 **Not a substitute for area e2e:** JVM tests do **not** replace [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) delivery/integration e2e on platforms where the module loads. Multi-generation races may be proven **primarily** via JVM tests; e2e remains required for load, flush, and native↔JS delivery on those platforms.
 

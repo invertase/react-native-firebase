@@ -11,7 +11,7 @@ timestamp: 2026-08-26T00:00:00Z
 ## E2E job shape (CI — mirrors workflow YAML; local: [running e2e](../testing/running-e2e.md))
 
 1. `tests:android:build`
-2. `tests:android:unit` — JVM unit (no emulator); produces module Jacoco `*.exec` ([AndroidTest-AD-1](../testing/android-architecture-decisions.md))
+2. `tests:android:unit` — JVM unit (no emulator); produces module Jacoco `*.exec` ([AndroidTest-AD-1](../testing/android-architecture-decisions.md#androidtest-ad-1))
 3. `tests:android:test-cover --headless` — pass/fail gate
 4. `tests:android:post-e2e-coverage` — poll/pull `coverage.ec`, merged **`jacocoTestReport`** (unit `*.exec` + e2e `*.ec`; best-effort, never fails the job)
 5. **Codecov upload** — two flagged uploads (`e2e-ts-android`, `android-native` → `jacocoTestReport.xml`); `continue-on-error: true` on the action steps. **`codecov/project/android-native`** fails if the native flag upload is missing (see [coverage design](../testing/coverage-design.md#native-gates)).

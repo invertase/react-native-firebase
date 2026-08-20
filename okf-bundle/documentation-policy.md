@@ -48,11 +48,7 @@ Scan the **entire** `okf-bundle/` tree against:
 
 | Check | Requirement |
 |-------|-------------|
-<<<<<<< HEAD
 | **Canonical location** | Each topic has one owning doc; others link to it. Bundle owners: [index.md](index.md). Testing owners: [testing/index.md](testing/index.md) (file **and** section links). |
-=======
-| **Canonical location** | Each topic has one owning doc; others link to it ([agent command policy](testing/agent-command-policy.md) for **all** agent shell commands; [change authoring](testing/change-authoring-workflow.md) for workflow/gates/frozen tree; [change authoring § validation evidence (blocking)](testing/change-authoring-workflow.md#validation-evidence-blocking); [running e2e](testing/running-e2e.md) for e2e `yarn tests:*` detail — [agent rule](testing/running-e2e.md#agent-rule-read-first); [platform coverage gate](testing/running-e2e.md#platform-coverage-gate-blocking); [iteration vocabulary](testing/iteration-vocabulary.md) for term ids and gate field names (`coverage_evidence_gate`); [change authoring § quality standards](testing/change-authoring-workflow.md#quality-standards) for the review-findings resolution rule and the intractable-limitation bar; [compare-types README § justification bar](../.github/scripts/compare-types/README.md#justification-bar) for firebase-js-sdk type/API drift justification; [coverage design § expectations](testing/coverage-design.md#coverage-expectations-policy); [coverage design § evidence package](testing/coverage-design.md#coverage-evidence-package) for coverage completion evidence and anti-patterns; [documentation site maintenance](documentation-site-maintenance.md) for `docs.json`, TypeDoc, and legacy redirect audits; this file for doc/commit policy, etc.) |
->>>>>>> d49739206 (docs(testing): tighten up coverage evidence requirements)
 | **DRY** | No duplicated procedures, policy paragraphs, or ephemeral snapshots outside work queues |
 | **Efficiency** | Shortest text that stays **complete and true** ([§ Efficiency](#efficiency)). Completeness wins over brevity |
 | **Link hygiene** | Cross-links resolve; indexes list canonical entry points |

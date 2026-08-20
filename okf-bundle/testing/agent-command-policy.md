@@ -156,7 +156,7 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 ### Android build / unit / Jacoco
 
 - **Do not** invent `cd tests && yarn install`, then bare `./gradlew` from an arbitrary cwd.
-- Unit: **`yarn tests:android:unit`** only. Runner choice (plain JUnit4 vs Robolectric): [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1).
+- Unit: **`yarn tests:android:unit`** only. Runner choice and `@Config` / `sdk` policy: [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1).
 - Merged coverage after e2e: **`yarn tests:android:post-e2e-coverage`** (Codecov path is `jacocoTestReport`, not e2e-only `jacocoAndroidTestReport`) — [coverage design](coverage-design.md).
 - Optional explicit merge: **`yarn tests:android:test:jacoco-report`**.
 
@@ -229,7 +229,7 @@ Gate close / push: return [validation evidence package](validation-checklist.md#
 | Install / patch / fmt / iOS Pods before `:build` | [§ install / patch / fmt gate](#install-patch-fmt-gate-blocking)                                                                                 |
 | Test-app RN / CLI pins (`react-native-macos`) | [test-app-dependency-pins.md](test-app-dependency-pins.md)                                                                                          |
 | Validation sequence                           | [validation-checklist.md](validation-checklist.md)                                                                                                  |
-| Android JVM unit ADR                          | [android-architecture-decisions.md](android-architecture-decisions.md)                                                                              |
+| Android JVM unit ADR                          | [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1)                                                                              |
 | iOS Ruby unit / SimpleCov                     | [coverage design § iOS Ruby](coverage-design.md#ios-ruby-simplecov); [validation checklist § iOS Ruby](validation-checklist.md#ios-ruby-unit-tests) |
 | JS lint vs local Bundler vendor               | [§ JS lint / Bundler vendor](#js-lint-bundler-vendor)                                                                                              |
 | Work types and gates                          | [change-authoring-workflow.md](change-authoring-workflow.md)                                                                                        |
