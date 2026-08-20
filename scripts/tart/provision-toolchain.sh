@@ -49,10 +49,8 @@ if ! ruby -e "exit(Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.0.0') ?
 fi
 rnfb_tart_init_ruby_path
 gem update --system >/dev/null 2>&1 || true
-gem update cocoapods xcodeproj
-if ! command -v pod >/dev/null 2>&1; then
-  brew install cocoapods
-fi
+# CocoaPods is pinned in the repo-root Gemfile (`BUNDLE_FROZEN=true bundle install`
+# + `bundle exec pod`). Do not `gem update cocoapods xcodeproj` here.
 
 brew install ccache jq wget git
 rnfb_tart_enable_ccache

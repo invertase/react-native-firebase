@@ -28,9 +28,9 @@ updates:
     labels:
       - 'dependencies'
 
-  # iOS Ruby SimpleCov gems (packages/app/__tests__/Gemfile + Gemfile.lock)
+  # Root Gemfile (CocoaPods, xcodeproj, SimpleCov, RuboCop)
   - package-ecosystem: 'bundler'
-    directory: '/packages/app/__tests__'
+    directory: '/'
     schedule:
       interval: 'daily'
     cooldown:

@@ -243,26 +243,18 @@ jobs:
         with:
           ruby-version: 3
 
-      - name: Update Ruby build tools
+      # Pinned cocoapods/xcodeproj + SimpleCov/RuboCop from the root Gemfile.
+      # Shape/embed suites need those gems; yarn tests:ios:pod:install uses
+      # `bundle exec pod`. BUNDLE_FROZEN fails CI on Gemfile.lock drift
+      # (do not use deprecated --frozen; it would persist into .bundle/config).
+      - name: Bundle install
         # https://github.com/nick-fields/retry/releases
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: 2
+          timeout_minutes: 10
           retry_wait_seconds: 60
           max_attempts: 3
-          command: gem update cocoapods xcodeproj
-
-      # SPM/CocoaPods Ruby helpers: run once on debug+spm (not Jest / macos-other).
-      # Shape needs cocoapods/xcodeproj from the step above; embed-script needs
-      # clang/ar/file on macOS. Gemfile adds simplecov + simplecov-lcov only
-      # (minitest from env; BUNDLE_PATH via packages/app/__tests__/.bundle/config).
-      # yarn tests:ios:ruby globs all *_test.rb (unit + shape + embed).
-      - name: Bundle install (iOS Ruby coverage gems)
-        if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
-        # BUNDLE_FROZEN (not deprecated --frozen flag) fails CI on Gemfile.lock drift;
-        # checksums committed via `bundle lock --add-checksums`. Avoids writing
-        # BUNDLE_FROZEN into packages/app/__tests__/.bundle/config.
-        run: BUNDLE_FROZEN=true bundle install --gemfile=packages/app/__tests__/Gemfile
+          command: BUNDLE_FROZEN=true bundle install
 
       - name: Verify Firebase SPM Ruby helpers
         if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
@@ -664,13 +656,13 @@ jobs:
         with:
           ruby-version: 3
 
-      - name: Update Ruby build tools
+      - name: Bundle install
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: 2
+          timeout_minutes: 10
           retry_wait_seconds: 60
           max_attempts: 3
-          command: gem update cocoapods xcodeproj
+          command: BUNDLE_FROZEN=true bundle install
 
       - name: Pods Cache Restore
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0

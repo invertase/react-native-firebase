@@ -7,13 +7,13 @@ Unit tests for CocoaPods/SPM Ruby helpers under `packages/app/**/*.rb` (primaril
 From the **repo root**:
 
 ```bash
-bundle install --gemfile=packages/app/__tests__/Gemfile
-yarn tests:ios:ruby   # RuboCop (yarn lint:ruby) then SimpleCov suites
+bundle install            # root Gemfile
+yarn tests:ios:ruby       # RuboCop (yarn lint:ruby) then SimpleCov suites
 ```
 
 `yarn lint:ruby` is also available alone (same Gemfile / `BUNDLE_FROZEN` install). It is **not** part of root `yarn lint` — CI Lint has no Bundler step; Ruby lint runs with unit tests on `tests_e2e_ios.yml`.
 
-Gems install under `packages/app/__tests__/vendor/bundle` via the committed `.bundle/config` (`BUNDLE_PATH`); that directory is gitignored. Commit `Gemfile.lock` (including `CHECKSUMS`); CI installs with `BUNDLE_FROZEN=true bundle install` (Bundler 2.6 deprecates the `--frozen` CLI flag and would persist it into `.bundle/config`). Dependabot watches `package-ecosystem: bundler` at `/packages/app/__tests__` (with cooldown) — do not put Bundler-native `cooldown:` in the Gemfile (needs Bundler 4.0.13+; host/CI stay on 2.6.x).
+Gems install under `vendor/bundle` via the committed root `.bundle/config` (`BUNDLE_PATH`); that directory is gitignored. Commit `Gemfile.lock` (including `CHECKSUMS`); CI installs with `BUNDLE_FROZEN=true bundle install` (Bundler 2.6 deprecates the `--frozen` CLI flag and would persist it into `.bundle/config`). Dependabot watches `package-ecosystem: bundler` at `/` (with cooldown) — do not put Bundler-native `cooldown:` in the Gemfile (needs Bundler 4.0.13+; host/CI stay on 2.6.x).
 
 That discovers every `packages/app/__tests__/*_test.rb` (including suites added later), runs each suite in an **isolated process** (so mock-based unit tests and real cocoapods/xcodeproj shape checks never conflict), collects **SimpleCov** coverage (with peek-merge across production `load` resets), and writes:
 
@@ -34,7 +34,7 @@ A companion, opt-in Minitest suite — not a replacement for `firebase_spm_test.
 
 It skips cleanly (no failure, no tests defined) when `xcodeproj`/`cocoapods` aren't installed, so local runs without those gems still exit 0 via `yarn tests:ios:ruby`:
 
-- **CI home** is **`tests_e2e_ios.yml`** (iOS job, **debug + spm** matrix cell): after `gem update cocoapods xcodeproj`, runs `BUNDLE_FROZEN=true bundle install` for SimpleCov gems then `yarn tests:ios:ruby` so unit + shape + embed execute with the real toolchain, then uploads Codecov flag **`ios-ruby`**.
+- **CI home** is **`tests_e2e_ios.yml`** (iOS job, **debug + spm** matrix cell): after `BUNDLE_FROZEN=true bundle install` on the root Gemfile (pinned cocoapods/xcodeproj + SimpleCov), runs `yarn tests:ios:ruby` so unit + shape + embed execute with the real toolchain, then uploads Codecov flag **`ios-ruby`**.
 - **Jest** (`tests_jest.yml`) and **macOS/other** (`tests_e2e_other.yml`) do **not** run Ruby helpers — use `yarn tests:ios:ruby` locally / as the OKF gate.
 
 ### Embed-script suite (`firebase_spm_embed_script_test.rb`)

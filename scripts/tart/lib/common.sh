@@ -116,11 +116,11 @@ rnfb_tart_init_ruby() {
 }
 
 rnfb_tart_init_cocoapods() {
-  rnfb_tart_init_brew
-  if command -v pod >/dev/null 2>&1; then
-    return 0
+  if [[ ! -f Gemfile ]]; then
+    echo "error: root Gemfile missing; cannot install pinned CocoaPods" >&2
+    return 1
   fi
-  brew install cocoapods
+  BUNDLE_FROZEN=true bundle install
 }
 
 rnfb_tart_init_brew_utils() {
