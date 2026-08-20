@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.3.0](https://github.com/invertase/react-native-firebase/compare/v26.2.0...v26.3.0) (2026-08-20)
+
+### Features
+
+- **ai:** send X-Firebase-AppVersion when data collection enabled ([#9173](https://github.com/invertase/react-native-firebase/issues/9173)) ([ad06531](https://github.com/invertase/react-native-firebase/commit/ad065319b1014dcf53168a1a9f2c9daa0fd40eca))
+
 ## [26.2.0](https://github.com/invertase/react-native-firebase/compare/v26.1.0...v26.2.0) (2026-08-10)
 
 **Note:** Version bump only for package @react-native-firebase/ai

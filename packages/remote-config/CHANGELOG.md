@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.3.0](https://github.com/invertase/react-native-firebase/compare/v26.2.0...v26.3.0) (2026-08-20)
+
+### Bug Fixes
+
+- **ios:** allow non-modular React includes in RNFB podspecs ([#9200](https://github.com/invertase/react-native-firebase/issues/9200)) ([dd453ff](https://github.com/invertase/react-native-firebase/commit/dd453ff17a8bd645b9d0eb56bef74df53f217f93))
+- **remote-config:** apply queued settings before fetch ([16a8943](https://github.com/invertase/react-native-firebase/commit/16a89430c956f6eb5e3b12c298b70ed5eabef42c))
+
 ## [26.2.0](https://github.com/invertase/react-native-firebase/compare/v26.1.0...v26.2.0) (2026-08-10)
 
 ### Bug Fixes
