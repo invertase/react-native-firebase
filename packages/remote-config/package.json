@@ -30,7 +30,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase/tree/main/packages/remote-config"
+    "url": "https://github.com/invertase/react-native-firebase",
+    "directory": "packages/remote-config"
   },
   "license": "Apache-2.0",
   "keywords": [

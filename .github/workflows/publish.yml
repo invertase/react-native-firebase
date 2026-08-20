@@ -24,6 +24,7 @@ jobs:
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
       - name: Install latest NPM
         # OIDC publishing requires a very up to date npm version
         run: |
@@ -58,12 +59,7 @@ jobs:
           echo "Syncing unpublished versions with package registry..."
           yarn lerna publish from-package --yes --loglevel trace
         env:
-          # No NPM token needed, all of the packages have been configured
-          # on npmjs.com with this workflow file as an OIDC "Trusted Publisher"
-          # As of 20251208 tokenless OIDC Trusted Publish is not working.
-          # Unable to conclusively fix, using token for now. Expires 20250308
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          #
+          # Packages are configured on npmjs.com as OIDC Trusted Publisher for this workflow.
           # org admin Github Token required for the changelog/tag commit+push
           # to work via an exception to branch protection rules
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

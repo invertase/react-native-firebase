@@ -34,7 +34,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase/tree/main/packages/database"
+    "url": "https://github.com/invertase/react-native-firebase",
+    "directory": "packages/database"
   },
   "license": "Apache-2.0",
   "keywords": [

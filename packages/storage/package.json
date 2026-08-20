@@ -30,7 +30,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase/tree/main/packages/storage"
+    "url": "https://github.com/invertase/react-native-firebase",
+    "directory": "packages/storage"
   },
   "license": "Apache-2.0",
   "keywords": [
