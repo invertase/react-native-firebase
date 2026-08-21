@@ -17,7 +17,6 @@ package io.invertase.firebase.functions;
  *
  */
 
-import android.util.SparseArray;
 import com.facebook.fbreact.specs.NativeRNFBTurboFunctionsSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -52,8 +51,8 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   private static final String DETAILS_KEY = "details";
   private static final String STREAMING_EVENT = "functions_streaming_event";
 
-  private static final SparseArray<Object> functionsStreamingListeners = new SparseArray<>();
-  private static final Object functionsStreamingListenersLock = new Object();
+  private static final RNFBFunctionsStreamingRegistry functionsStreamingListeners =
+      new RNFBFunctionsStreamingRegistry();
   private final TaskExecutorService executorService;
 
   public NativeRNFBTurboFunctions(ReactApplicationContext reactContext) {
@@ -151,7 +150,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
 
   @Override
   public void removeFunctionsStreaming(String appName, String region, double listenerId) {
-    removeFunctionsStreamingListener((int) listenerId);
+    functionsStreamingListeners.takeAndCancel((int) listenerId);
   }
 
   // Internal implementation methods
@@ -223,6 +222,16 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       ReadableMap data,
       ReadableMap options,
       int listenerId) {
+    StreamingHolder holder = new StreamingHolder();
+    String collisionMessage = functionsStreamingListeners.putOrCollisionMessage(listenerId, holder);
+    if (collisionMessage != null) {
+      WritableMap errorMap = Arguments.createMap();
+      errorMap.putString(CODE_KEY, "internal");
+      errorMap.putString(MSG_KEY, collisionMessage);
+      emitStreamEvent(appName, listenerId, null, true, true, errorMap);
+      return;
+    }
+
     getExecutor()
         .execute(
             () -> {
@@ -269,10 +278,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
 
                       @Override
                       public void onSubscribe(Subscription s) {
-                        synchronized (functionsStreamingListenersLock) {
-                          functionsStreamingListeners.put(listenerId, s);
-                        }
-                        s.request(Long.MAX_VALUE);
+                        functionsStreamingListeners.attachOrCancel(listenerId, s);
                       }
 
                       @Override
@@ -289,66 +295,33 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                         }
 
                         if (isFinalResult) {
+                          functionsStreamingListeners.take(listenerId);
                           emitStreamEvent(appName, listenerId, responseData, true, false, null);
-                          // Map-only cleanup: do not cancel here (avoids cancel race with emit).
-                          unregisterFunctionsStreamingListener(listenerId);
-                        } else {
+                        } else if (functionsStreamingListeners.shouldEmit(listenerId)) {
                           emitStreamEvent(appName, listenerId, responseData, false, false, null);
                         }
                       }
 
                       @Override
                       public void onError(Throwable t) {
+                        functionsStreamingListeners.take(listenerId);
                         WritableMap errorMap = createErrorMap(t);
                         emitStreamEvent(appName, listenerId, null, true, true, errorMap);
-                        unregisterFunctionsStreamingListener(listenerId);
                       }
 
                       @Override
                       public void onComplete() {
-                        boolean stillRegistered;
-                        synchronized (functionsStreamingListenersLock) {
-                          stillRegistered = functionsStreamingListeners.get(listenerId) != null;
-                          if (stillRegistered) {
-                            functionsStreamingListeners.remove(listenerId);
-                          }
-                        }
-                        if (stillRegistered) {
+                        if (functionsStreamingListeners.takeAndShouldEmitComplete(listenerId)) {
                           emitStreamEvent(appName, listenerId, null, true, false, null);
                         }
                       }
                     });
               } catch (Exception e) {
+                functionsStreamingListeners.onExecutorFailure(listenerId);
                 WritableMap errorMap = createErrorMap(e);
                 emitStreamEvent(appName, listenerId, null, true, true, errorMap);
-                unregisterFunctionsStreamingListener(listenerId);
               }
             });
-  }
-
-  /**
-   * Removes the listener from the map only. Does not cancel the subscription — used after terminal
-   * stream events so emit is not raced by cancel. Explicit {@link
-   * #removeFunctionsStreamingListener} still cancels and removes for the JS {@code
-   * removeFunctionsStreaming} API.
-   */
-  private void unregisterFunctionsStreamingListener(int listenerId) {
-    synchronized (functionsStreamingListenersLock) {
-      functionsStreamingListeners.remove(listenerId);
-    }
-  }
-
-  /** Cancels the subscription and removes from the map (explicit JS teardown). */
-  private void removeFunctionsStreamingListener(int listenerId) {
-    synchronized (functionsStreamingListenersLock) {
-      Object listener = functionsStreamingListeners.get(listenerId);
-      if (listener != null) {
-        if (listener instanceof Subscription) {
-          ((Subscription) listener).cancel();
-        }
-        functionsStreamingListeners.remove(listenerId);
-      }
-    }
   }
 
   private void emitStreamEvent(
@@ -454,17 +427,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   public void invalidate() {
     super.invalidate();
 
-    // Cancel all active streaming listeners before shutdown
-    synchronized (functionsStreamingListenersLock) {
-      for (int i = 0; i < functionsStreamingListeners.size(); i++) {
-        int listenerId = functionsStreamingListeners.keyAt(i);
-        Object listener = functionsStreamingListeners.get(listenerId);
-        if (listener instanceof Subscription) {
-          ((Subscription) listener).cancel();
-        }
-      }
-      functionsStreamingListeners.clear();
-    }
+    functionsStreamingListeners.takeAllAndCancel();
 
     executorService.shutdown();
   }
