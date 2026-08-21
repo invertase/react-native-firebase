@@ -24,7 +24,23 @@
 #import "RNFBFirestoreTurboModules.h"
 
 static __strong NSMutableDictionary *transactions;
+// Guards access to the `transactions` CONTAINER itself (get/set/remove) -- nothing else.
+// Every other @synchronized in this file locks a per-transaction `transactionState`, which
+// serialises two callers touching the SAME transaction but does nothing for two DIFFERENT
+// transactions mutating this shared dictionary concurrently. That race corrupts the
+// dictionary's internal hash table and crashes with EXC_BAD_ACCESS in mdict_index_for_key.
+// Never hold this lock across the semaphore wait or an event dispatch.
+static __strong NSObject *transactionsLock;
 static NSString *const RNFB_FIRESTORE_TRANSACTION_EVENT = @"firestore_transaction_event";
+
+// Look a transaction's state up under the container lock and release that lock before the
+// caller locks the state. This also replaces `@synchronized(transactions[key])`, which locks
+// NOTHING when the key is absent -- @synchronized(nil) is a no-op.
+static NSMutableDictionary *RNFBTransactionStateFor(NSString *key) {
+  @synchronized(transactionsLock) {
+    return transactions[key];
+  }
+}
 
 @interface RNFBFirestoreTransactionModule () <NativeRNFBTurboFirestoreTransactionSpec,
                                               RCTBridgeModule>
@@ -46,6 +62,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     transactions = [[NSMutableDictionary alloc] init];
+    transactionsLock = [NSObject new];
   });
   return self;
 }
@@ -59,8 +76,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
 }
 
 - (void)invalidate {
-  for (NSString *key in [transactions allKeys]) {
-    [transactions removeObjectForKey:key];
+  @synchronized(transactionsLock) {
+    [transactions removeAllObjects];
   }
 }
 
@@ -86,8 +103,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
       transactionState[@"semaphore"] = semaphore;
       transactionState[@"transaction"] = transaction;
 
-      if (!transactions[[transactionIdNumber stringValue]]) {
-        transactions[[transactionIdNumber stringValue]] = transactionState;
+      @synchronized(transactionsLock) {
+        if (!transactions[[transactionIdNumber stringValue]]) {
+          transactions[[transactionIdNumber stringValue]] = transactionState;
+        }
       }
 
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -188,7 +207,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
                          }];
       }
 
-      [transactions removeObjectForKey:[transactionIdNumber stringValue]];
+      @synchronized(transactionsLock) {
+        [transactions removeObjectForKey:[transactionIdNumber stringValue]];
+      }
     }
   };
 
@@ -210,14 +231,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   NSNumber *transactionIdNumber = @(transactionId);
 
-  @synchronized(transactions[[transactionIdNumber stringValue]]) {
-    NSMutableDictionary *transactionState = transactions[[transactionIdNumber stringValue]];
+  NSMutableDictionary *transactionState =
+      RNFBTransactionStateFor([transactionIdNumber stringValue]);
 
-    if (!transactionState) {
-      DLog(@"transactionGetDocument called for non-existent transactionId %@", transactionIdNumber);
-      return;
-    }
+  if (!transactionState) {
+    DLog(@"transactionGetDocument called for non-existent transactionId %@", transactionIdNumber);
+    return;
+  }
 
+  @synchronized(transactionState) {
     NSError *error = nil;
     FIRTransaction *transaction = [transactionState valueForKey:@"transaction"];
     FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
@@ -249,13 +271,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
              transactionId:(double)transactionId {
   NSNumber *transactionIdNumber = @(transactionId);
 
-  @synchronized(transactions[[transactionIdNumber stringValue]]) {
-    NSMutableDictionary *transactionState = transactions[[transactionIdNumber stringValue]];
+  NSMutableDictionary *transactionState =
+      RNFBTransactionStateFor([transactionIdNumber stringValue]);
 
-    if (!transactionState) {
-      return;
-    }
+  if (!transactionState) {
+    return;
+  }
 
+  @synchronized(transactionState) {
     dispatch_semaphore_t semaphore = transactionState[@"semaphore"];
     transactionState[@"aborted"] = @(true);
     dispatch_semaphore_signal(semaphore);
@@ -268,14 +291,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
                  commandBuffer:(NSArray *)commandBuffer {
   NSNumber *transactionIdNumber = @(transactionId);
 
-  @synchronized(transactions[[transactionIdNumber stringValue]]) {
-    NSMutableDictionary *transactionState = transactions[[transactionIdNumber stringValue]];
+  NSMutableDictionary *transactionState =
+      RNFBTransactionStateFor([transactionIdNumber stringValue]);
 
-    if (!transactionState) {
-      DLog(@"transactionApplyBuffer called for non-existent transactionId %@", transactionIdNumber);
-      return;
-    }
+  if (!transactionState) {
+    DLog(@"transactionApplyBuffer called for non-existent transactionId %@", transactionIdNumber);
+    return;
+  }
 
+  @synchronized(transactionState) {
     dispatch_semaphore_t semaphore = [transactionState valueForKey:@"semaphore"];
     [transactionState setValue:commandBuffer forKey:@"commandBuffer"];
     dispatch_semaphore_signal(semaphore);
