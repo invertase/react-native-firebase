@@ -1,0 +1,261 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D8000000000000000000000A /* RNFBHandleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000008 /* RNFBHandleMap.m */; };
+		D8000000000000000000000B /* RNFBDatabaseListenerRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000018 /* RNFBDatabaseListenerRegistry.m */; };
+		D8000000000000000000000C /* RNFBDatabaseListenerRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000009 /* RNFBDatabaseListenerRegistryTests.m */; };
+		D80000000000000000000020 /* RNFBDatabaseQueryRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000021 /* RNFBDatabaseQueryRegistry.m */; };
+		D80000000000000000000022 /* RNFBDatabaseQueryRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000023 /* RNFBDatabaseQueryRegistryTests.m */; };
+		D80000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D80000000000000000000014 /* XCTest.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		D80000000000000000000003 /* RNFBDatabaseUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNFBDatabaseUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D80000000000000000000007 /* RNFBHandleMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBHandleMap.h; path = ../../../app/ios/RNFBApp/RNFBHandleMap.h; sourceTree = SOURCE_ROOT; };
+		D80000000000000000000008 /* RNFBHandleMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBHandleMap.m; path = ../../../app/ios/RNFBApp/RNFBHandleMap.m; sourceTree = SOURCE_ROOT; };
+		D80000000000000000000009 /* RNFBDatabaseListenerRegistryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseListenerRegistryTests.m; sourceTree = "<group>"; };
+		D80000000000000000000016 /* RNFBDatabaseListenerRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBDatabaseListenerRegistry.h; path = ../RNFBDatabase/RNFBDatabaseListenerRegistry.h; sourceTree = SOURCE_ROOT; };
+		D80000000000000000000018 /* RNFBDatabaseListenerRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBDatabaseListenerRegistry.m; path = ../RNFBDatabase/RNFBDatabaseListenerRegistry.m; sourceTree = SOURCE_ROOT; };
+		D80000000000000000000024 /* RNFBDatabaseQueryRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBDatabaseQueryRegistry.h; path = ../RNFBDatabase/RNFBDatabaseQueryRegistry.h; sourceTree = SOURCE_ROOT; };
+		D80000000000000000000021 /* RNFBDatabaseQueryRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBDatabaseQueryRegistry.m; path = ../RNFBDatabase/RNFBDatabaseQueryRegistry.m; sourceTree = SOURCE_ROOT; };
+		D80000000000000000000023 /* RNFBDatabaseQueryRegistryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseQueryRegistryTests.m; sourceTree = "<group>"; };
+		D80000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D8000000000000000000000D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D80000000000000000000015 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D80000000000000000000004 = {
+			isa = PBXGroup;
+			children = (
+				D80000000000000000000006 /* Sources */,
+				D80000000000000000000005 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D80000000000000000000005 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D80000000000000000000003 /* RNFBDatabaseUnitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D80000000000000000000006 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				D80000000000000000000007 /* RNFBHandleMap.h */,
+				D80000000000000000000008 /* RNFBHandleMap.m */,
+				D80000000000000000000016 /* RNFBDatabaseListenerRegistry.h */,
+				D80000000000000000000018 /* RNFBDatabaseListenerRegistry.m */,
+				D80000000000000000000024 /* RNFBDatabaseQueryRegistry.h */,
+				D80000000000000000000021 /* RNFBDatabaseQueryRegistry.m */,
+				D80000000000000000000009 /* RNFBDatabaseListenerRegistryTests.m */,
+				D80000000000000000000023 /* RNFBDatabaseQueryRegistryTests.m */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D80000000000000000000002 /* RNFBDatabaseUnitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D80000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBDatabaseUnitTests" */;
+			buildPhases = (
+				D8000000000000000000000E /* Sources */,
+				D8000000000000000000000D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RNFBDatabaseUnitTests;
+			productName = RNFBDatabaseUnitTests;
+			productReference = D80000000000000000000003 /* RNFBDatabaseUnitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D80000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2600;
+				ORGANIZATIONNAME = Invertase;
+				TargetAttributes = {
+					D80000000000000000000002 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+				};
+			};
+			buildConfigurationList = D80000000000000000000012 /* Build configuration list for PBXProject "RNFBDatabaseUnitTests" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D80000000000000000000004;
+			productRefGroup = D80000000000000000000005 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D80000000000000000000002 /* RNFBDatabaseUnitTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D8000000000000000000000E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D8000000000000000000000A /* RNFBHandleMap.m in Sources */,
+				D8000000000000000000000B /* RNFBDatabaseListenerRegistry.m in Sources */,
+				D80000000000000000000020 /* RNFBDatabaseQueryRegistry.m in Sources */,
+				D8000000000000000000000C /* RNFBDatabaseListenerRegistryTests.m in Sources */,
+				D80000000000000000000022 /* RNFBDatabaseQueryRegistryTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		D8000000000000000000001A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Debug;
+		};
+		D8000000000000000000001B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Release;
+		};
+		D80000000000000000000010 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_CODE_COVERAGE = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../../app/ios",
+					"$(SRCROOT)/../../../app/ios/RNFBApp",
+					"$(SRCROOT)/../RNFBDatabase",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_CFLAGS = (
+					"-fprofile-instr-generate",
+					"-fcoverage-mapping",
+				);
+				OTHER_LDFLAGS = (
+					"-fprofile-instr-generate",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBDatabaseUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Debug;
+		};
+		D80000000000000000000011 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_CODE_COVERAGE = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../../app/ios",
+					"$(SRCROOT)/../../../app/ios/RNFBApp",
+					"$(SRCROOT)/../RNFBDatabase",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBDatabaseUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D80000000000000000000012 /* Build configuration list for PBXProject "RNFBDatabaseUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D8000000000000000000001A /* Debug */,
+				D8000000000000000000001B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D80000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBDatabaseUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D80000000000000000000010 /* Debug */,
+				D80000000000000000000011 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D80000000000000000000001 /* Project object */;
+}
