@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "testexpo",
+    "slug": "testexpo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.invertase.testexpo",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "supportsTablet": true
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "dynamic"
+          }
+        }
+      ]
+    ]
+  }
+}
