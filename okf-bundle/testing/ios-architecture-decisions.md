@@ -45,6 +45,8 @@ Prefer a tiny **in-package xcodeproj** that compiles Foundation-only sources and
 
 **Why:** Detox/Jet e2e cannot reliably drive lock-only pointer maps, unique-put collisions, or `takeAll` invalidate paths. Host XCTest proves those contracts without a simulator. CocoaPods `test_spec` would pull React/Firebase into the unit graph; the Detox test app is an integration host, not a package unit harness.
 
+**Do not** add a production `*Bridge` type solely so those tests can compile TurboModule collision/invalidate branches. XCTest stays Foundation-only (Registry + HandleMap). TurboModule/Helper lines that only call Registry/HandleMap may stay uncovered — [coverage design](coverage-design.md#coverage-expectations-policy) (user-accepted exception).
+
 **Not a substitute for area e2e:** In-package XCTest does **not** replace [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) delivery/integration e2e on platforms where the module loads.
 
 **Podspec:** Exclude `ios/*UnitTests/**` from package `source_files` so XCTest sources are not compiled into the production pod.

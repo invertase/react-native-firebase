@@ -20,6 +20,7 @@ package io.invertase.firebase.common;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Thread-safe id → handle registry. The lock only moves pointers; this class never invokes methods
@@ -114,6 +115,24 @@ public class RNFBHandleMap<K, V> {
   public V take(K id) {
     synchronized (lock) {
       return map.remove(id);
+    }
+  }
+
+  /**
+   * When {@code id} is mapped and {@code shouldTake} accepts the handle, removes and returns it;
+   * otherwise returns {@code null} and leaves the map unchanged. Lookup, predicate, and removal run
+   * under one lock — use for check-and-take that must not race with concurrent {@link #put} /
+   * {@link #take} on the same id.
+   *
+   * <p>The predicate runs under this map's lock; keep it lightweight (no SDK cancel/remove).
+   */
+  public V takeIf(K id, Predicate<V> shouldTake) {
+    synchronized (lock) {
+      V value = map.get(id);
+      if (value != null && shouldTake.test(value)) {
+        return map.remove(id);
+      }
+      return null;
     }
   }
 

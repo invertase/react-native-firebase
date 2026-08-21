@@ -140,6 +140,33 @@
   XCTAssertEqual(second, [self.map get:@1]);
 }
 
+- (void)testTakeIf_whenConditionYes_removesAndReturns {
+  NSObject *handle = [[NSObject alloc] init];
+  XCTAssertTrue([self.map put:@1 value:handle error:nil]);
+  XCTAssertEqual(handle, [self.map takeIf:@1
+                                     when:^BOOL(id value) {
+                                       return value == handle;
+                                     }]);
+  XCTAssertNil([self.map get:@1]);
+}
+
+- (void)testTakeIf_whenConditionNo_leavesMapping {
+  NSObject *handle = [[NSObject alloc] init];
+  XCTAssertTrue([self.map put:@1 value:handle error:nil]);
+  XCTAssertNil([self.map takeIf:@1
+                           when:^BOOL(id value) {
+                             return NO;
+                           }]);
+  XCTAssertEqual(handle, [self.map get:@1]);
+}
+
+- (void)testTakeIf_whenMissing_returnsNil {
+  XCTAssertNil([self.map takeIf:@99
+                           when:^BOOL(id value) {
+                             return YES;
+                           }]);
+}
+
 - (void)testTake_sameIdFromTwoThreads_onlyOneReturnsNonNull {
   NSObject *handle = [[NSObject alloc] init];
   XCTAssertTrue([self.map put:@1 value:handle error:nil]);

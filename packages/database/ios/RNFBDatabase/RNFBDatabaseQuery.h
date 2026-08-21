@@ -28,10 +28,11 @@
 @import FirebaseDatabaseInternal;
 #endif
 #import <React/RCTBridgeModule.h>
+#import "RNFBDatabaseListenerRegistry.h"
 
 @interface RNFBDatabaseQuery : NSObject
 @property FIRDatabaseQuery *query;
-@property NSMutableDictionary *listeners;
+@property(nonatomic, strong, readonly) RNFBDatabaseListenerRegistry *listeners;
 
 - (RNFBDatabaseQuery *)initWithReferenceAndModifiers:(FIRDatabaseReference *)reference
                                            modifiers:(NSArray *)modifiers;
@@ -40,7 +41,7 @@
 
 - (BOOL)hasListeners;
 
-- (void)addEventListener:(NSString *)eventRegistrationKey handle:(FIRDatabaseHandle)handle;
+- (BOOL)addEventListener:(NSString *)eventRegistrationKey handle:(FIRDatabaseHandle)handle;
 
 - (void)removeEventListener:(NSString *)eventRegistrationKey;
 
