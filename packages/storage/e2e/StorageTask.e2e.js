@@ -943,6 +943,73 @@ describe('storage() -> StorageTask', function () {
 
         await expectMidTransferCancel(uploadTask, 'UploadTask');
       });
+
+      // Android-only: cancel while paused exercises takeAndCancel after pause() succeeded.
+      (Platform.android ? it : it.skip)('successfully cancels a paused upload', async function () {
+        if (Platform.other) return;
+        const { getStorage, ref, writeToFile, putFile, TaskState } = storageModular;
+
+        const localPath = `${FilePath.DOCUMENT_DIRECTORY}/cancelPausedUpload_large.bin`;
+        await writeToFile(ref(getStorage(), LARGE_FIXTURE_PATH), localPath);
+
+        const uploadRef = ref(getStorage(), `${PATH}/upload/cancelPaused.bin`);
+        const uploadTask = putFile(uploadRef, localPath);
+
+        const { resolve, reject, promise } = Promise.defer();
+        let hadRunningStatus = false;
+        let hadPausedStatus = false;
+        let settled = false;
+
+        const finishCancelled = error => {
+          if (settled) {
+            return;
+          }
+          settled = true;
+          should.equal(hadRunningStatus, true);
+          should.equal(hadPausedStatus, true);
+          if (error) {
+            error.code.should.equal('storage/cancelled');
+            error.message.should.containEql('User cancelled the operation.');
+          }
+          resolve();
+        };
+
+        uploadTask.on(
+          'state_changed',
+          snapshot => {
+            if (snapshot.state === TaskState.RUNNING && !hadRunningStatus) {
+              hadRunningStatus = true;
+              uploadTask.pause().should.eql(true);
+            }
+
+            if (snapshot.state === TaskState.PAUSED) {
+              hadPausedStatus = true;
+              uploadTask.cancel().should.eql(true);
+            }
+
+            if (isCancelledState(snapshot.state)) {
+              finishCancelled();
+            }
+
+            if (snapshot.state === TaskState.ERROR) {
+              throw new Error('Should not error if cancelled?');
+            }
+
+            if (snapshot.state === TaskState.SUCCESS) {
+              reject(new Error('UploadTask did not cancel while paused!'));
+            }
+          },
+          error => {
+            finishCancelled(error);
+          },
+        );
+
+        uploadTask.catch(error => {
+          finishCancelled(error);
+        });
+
+        await promise;
+      });
     });
   });
 });

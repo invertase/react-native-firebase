@@ -56,7 +56,7 @@ public class NativeRNFBTurboStorage extends NativeRNFBTurboStorageSpec {
 
   @Override
   public void invalidate() {
-    ReactNativeFirebaseStorageTask.destroyAllTasks();
+    ReactNativeFirebaseStorageTask.PENDING_TASKS.takeAllAndCancel();
     super.invalidate();
   }
 
@@ -274,6 +274,10 @@ public class NativeRNFBTurboStorage extends NativeRNFBTurboStorageSpec {
       ReactNativeFirebaseStorageDownloadTask storageTask =
           new ReactNativeFirebaseStorageDownloadTask((int) taskId, reference, appName);
       storageTask.begin(getTransactionalExecutor(), localFilePath);
+      if (storageTask.hasStorageTask() && !storageTask.registerPending()) {
+        rejectPromiseWithCodeAndMessage(promise, "internal", "Handle id already registered");
+        return;
+      }
       storageTask.addOnCompleteListener(getTransactionalExecutor(), promise);
     } catch (Exception e) {
       promiseRejectStorageException(promise, e);
@@ -294,6 +298,10 @@ public class NativeRNFBTurboStorage extends NativeRNFBTurboStorageSpec {
       ReactNativeFirebaseStorageUploadTask storageTask =
           new ReactNativeFirebaseStorageUploadTask((int) taskId, reference, appName);
       storageTask.begin(getTransactionalExecutor(), string, format, metadataMap);
+      if (!storageTask.registerPending()) {
+        rejectPromiseWithCodeAndMessage(promise, "internal", "Handle id already registered");
+        return;
+      }
       storageTask.addOnCompleteListener(getTransactionalExecutor(), promise);
     } catch (Exception e) {
       promiseRejectStorageException(promise, e);
@@ -313,6 +321,10 @@ public class NativeRNFBTurboStorage extends NativeRNFBTurboStorageSpec {
       ReactNativeFirebaseStorageUploadTask storageTask =
           new ReactNativeFirebaseStorageUploadTask((int) taskId, reference, appName);
       storageTask.begin(getTransactionalExecutor(), localFilePath, metadata);
+      if (!storageTask.registerPending()) {
+        rejectPromiseWithCodeAndMessage(promise, "internal", "Handle id already registered");
+        return;
+      }
       storageTask.addOnCompleteListener(getTransactionalExecutor(), promise);
     } catch (Exception e) {
       promiseRejectStorageException(promise, e);
@@ -321,13 +333,21 @@ public class NativeRNFBTurboStorage extends NativeRNFBTurboStorageSpec {
 
   @Override
   public boolean setTaskStatus(String appName, double taskId, double status) {
+    RNFBStorageTaskRegistry tasks = ReactNativeFirebaseStorageTask.PENDING_TASKS;
+    int id = (int) taskId;
     switch ((int) status) {
       case 0:
-        return ReactNativeFirebaseStorageTask.pauseTaskById((int) taskId);
+        {
+          StoragePendingHandle handle = tasks.get(id);
+          return handle != null && handle.pause();
+        }
       case 1:
-        return ReactNativeFirebaseStorageTask.resumeTaskById((int) taskId);
+        {
+          StoragePendingHandle handle = tasks.get(id);
+          return handle != null && handle.resume();
+        }
       case 2:
-        return ReactNativeFirebaseStorageTask.cancelTaskById((int) taskId);
+        return tasks.takeAndCancel(id);
       default:
         return false;
     }
