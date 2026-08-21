@@ -15,7 +15,9 @@
  * limitations under the License.
  *
  */
-const { execSync, spawn } = require('child_process');
+const { execSync, spawn, execFile: execFileCb } = require('child_process');
+const { promisify } = require('util');
+const execFile = promisify(execFileCb);
 const net = require('net');
 const path = require('path');
 
@@ -24,6 +26,15 @@ const {
   pullAndroidCoverageWithRetry,
 } = require('../scripts/pull-native-coverage');
 const { recordE2eCloudMetricFromHost } = require('../../packages/app/e2e/cloud-metrics');
+const {
+  parseEmulatorConsolePort,
+  shouldFailFastQemuWithoutAdb,
+  qemuCmdlineMatchesAvd,
+  qemuAvdPgrepPattern,
+  adbRangeDiagnosis,
+  isMetroWaitFailure,
+  shouldColdBootAndroidOnLaunchRetry,
+} = require('./androidAdbRange');
 
 const E2E_TEST_PROJECT = 'react-native-firebase-testing';
 const E2E_CLOUD_PRESSURE_LOG_FILTER = 'jsonPayload.message="[rnfb-e2e-metrics]"';
@@ -41,12 +52,100 @@ function logCloudPressureAnalysisPointer(context) {
   );
 }
 
-const JET_REMOTE_PORT = parseInt(process.env.JET_REMOTE_PORT || '8090', 10);
-const JET_CONTROL_PORT = parseInt(
-  process.env.RNFB_JET_CONTROL_PORT || String(JET_REMOTE_PORT + 1),
-  10,
-);
-const METRO_PORT = parseInt(process.env.JET_METRO_PORT || process.env.RCT_METRO_PORT || '8081', 10);
+function platformFromDetoxConfigurationName(name) {
+  if (!name || typeof name !== 'string') {
+    return null;
+  }
+  const lower = name.toLowerCase();
+  if (lower.includes('android')) {
+    return 'android';
+  }
+  if (lower.includes('ios')) {
+    return 'ios';
+  }
+  if (lower.includes('macos') || lower.includes('mac')) {
+    return 'macos';
+  }
+  return null;
+}
+
+// Host-side platform identity: Detox device / configuration only — never RNFB_E2E_PLATFORM.
+function detoxPlatformKey() {
+  try {
+    if (typeof detox !== 'undefined' && detox?.device?.getPlatform) {
+      return detox.device.getPlatform();
+    }
+    if (typeof device !== 'undefined' && device?.getPlatform) {
+      return device.getPlatform();
+    }
+  } catch (_e) {
+    // device not ready
+  }
+  return platformFromDetoxConfigurationName(resolveDetoxConfigurationName()) || 'android';
+}
+
+function parseEnvPort(value) {
+  if (value === undefined || value === null || value === '') {
+    return null;
+  }
+  const n = parseInt(value, 10);
+  return Number.isFinite(n) ? n : null;
+}
+
+// Static process.env.RNFB_{ANDROID,IOS,MACOS}_* so babel inline-env bakes every platform's
+// ports when launchers export the full slot block. Runtime picks via detoxPlatformKey().
+function staticPrefixedJetPort(pk) {
+  switch (pk) {
+    case 'android':
+      return parseEnvPort(process.env.RNFB_ANDROID_JET_PORT);
+    case 'macos':
+      return parseEnvPort(process.env.RNFB_MACOS_JET_PORT);
+    case 'ios':
+    default:
+      return parseEnvPort(process.env.RNFB_IOS_JET_PORT);
+  }
+}
+
+function staticPrefixedJetControlPort(pk) {
+  switch (pk) {
+    case 'android':
+      return parseEnvPort(process.env.RNFB_ANDROID_JET_CONTROL_PORT);
+    case 'macos':
+      return parseEnvPort(process.env.RNFB_MACOS_JET_CONTROL_PORT);
+    case 'ios':
+    default:
+      return parseEnvPort(process.env.RNFB_IOS_JET_CONTROL_PORT);
+  }
+}
+
+function staticPrefixedMetroPort(pk) {
+  switch (pk) {
+    case 'android':
+      return parseEnvPort(process.env.RNFB_ANDROID_METRO_PORT);
+    case 'macos':
+      return parseEnvPort(process.env.RNFB_MACOS_METRO_PORT);
+    case 'ios':
+    default:
+      return parseEnvPort(process.env.RNFB_IOS_METRO_PORT);
+  }
+}
+
+function jetRemotePort() {
+  return staticPrefixedJetPort(detoxPlatformKey()) || 8090;
+}
+
+function jetControlPort() {
+  const prefixed = staticPrefixedJetControlPort(detoxPlatformKey());
+  if (prefixed) {
+    return prefixed;
+  }
+  return jetRemotePort() + 1;
+}
+
+function metroPortForHost() {
+  return staticPrefixedMetroPort(detoxPlatformKey()) || 8081;
+}
+
 const LAUNCH_APP_TIMEOUT_MS = parseInt(process.env.RNFB_LAUNCH_APP_TIMEOUT_MS || '180000', 10);
 const LAUNCH_APP_RELEASE_TIMEOUT_MS = parseInt(
   process.env.RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS || '120000',
@@ -65,12 +164,25 @@ const REBOOT_ANDROID_EMULATOR_TIMEOUT_MS = parseInt(
 const ANDROID_READY_MAX_LOAD = parseFloat(process.env.RNFB_ANDROID_READY_MAX_LOAD || '5');
 const ANDROID_READY_LOAD_POLLS = parseInt(process.env.RNFB_ANDROID_READY_LOAD_POLLS || '3', 10);
 const ANDROID_READY_POLL_MS = parseInt(process.env.RNFB_ANDROID_READY_POLL_MS || '2000', 10);
+// Fail fast immediately only when qemu is up and -port is outside adb's emulator
+// console range [5554, 5584] (FreePortFinder 10000–20000). In-range serials
+// (slotted 5556/5558/5560) poll ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS first.
+const ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS = parseInt(
+  process.env.RNFB_ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS || '20000',
+  10,
+);
+// Cold-boot kill+relaunch under parallel load needs longer than serial appear poll.
+const ANDROID_COLD_BOOT_REGISTER_TIMEOUT_MS = parseInt(
+  process.env.RNFB_ANDROID_COLD_BOOT_REGISTER_TIMEOUT_MS || '120000',
+  10,
+);
 const ANDROID_PACKAGE_HANDLER_TIMEOUT_MS = parseInt(
   process.env.RNFB_ANDROID_PACKAGE_HANDLER_TIMEOUT_MS || '30000',
   10,
 );
 const ANDROID_BOOT_SETTLE_MS = parseInt(process.env.RNFB_ANDROID_BOOT_SETTLE_MS || '30000', 10);
-const ANDROID_AVD_NAME = process.env.RNFB_ANDROID_AVD_NAME || 'TestingAVD';
+const ANDROID_AVD_NAME =
+  process.env.RNFB_ANDROID_AVD || process.env.RNFB_ANDROID_AVD_NAME || 'TestingAVD';
 const ANDROID_EMULATOR_COLD_BOOT_ARGS = (
   process.env.RNFB_ANDROID_EMULATOR_BOOT_ARGS || '-no-snapshot-load -no-snapshot-save'
 ).trim();
@@ -99,7 +211,7 @@ const CLOUD_QUOTA_RETRY_COOLDOWN_MS = parseInt(
   10,
 );
 const RETRYABLE_LAUNCH_RE =
-  /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding|Unknown application display identifier|Simulator device failed to launch|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain/i;
+  /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding|Metro bundle not available|Unknown application display identifier|Simulator device failed to launch|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain/i;
 const PORT_CLOSED_ERROR_CODES = new Set(['ECONNREFUSED', 'ECONNRESET', 'EPIPE']);
 
 let cachedUsesLiveMetro;
@@ -196,6 +308,8 @@ function logLaunchInstallState(label) {
   try {
     if (typeof detox !== 'undefined' && detox?.device?.getPlatform) {
       platform = detox.device.getPlatform();
+    } else if (typeof device !== 'undefined' && device?.getPlatform) {
+      platform = device.getPlatform();
     }
   } catch (_) {
     // Detox device may not be ready yet.
@@ -261,6 +375,7 @@ function rebootIosSimulator(testsDir) {
     const child = spawn('bash', [bootScript], {
       cwd: repoRoot,
       stdio: 'inherit',
+      env: { ...process.env },
     });
     const timer = setTimeout(() => {
       child.kill('SIGTERM');
@@ -298,8 +413,8 @@ function resolveEmulatorPath() {
 }
 
 function resolveAndroidEmulatorPort(serial) {
-  const portMatch = serial.match(/^emulator-(\d+)$/);
-  return portMatch ? portMatch[1] : '5554';
+  const port = parseEmulatorConsolePort(serial);
+  return Number.isInteger(port) ? String(port) : '5554';
 }
 
 function adbDeviceState(serial) {
@@ -314,7 +429,33 @@ function adbDeviceState(serial) {
   }
 }
 
+function pinnedAndroidConsolePort() {
+  const raw = process.env.RNFB_ANDROID_CONSOLE_PORT;
+  if (raw === undefined || raw === '') {
+    return null;
+  }
+  const port = Number.parseInt(raw, 10);
+  return Number.isInteger(port) ? port : null;
+}
+
+function pinnedAndroidSerial() {
+  if (process.env.ANDROID_SERIAL) {
+    return process.env.ANDROID_SERIAL;
+  }
+  const port = pinnedAndroidConsolePort();
+  if (port != null) {
+    return `emulator-${port}`;
+  }
+  return null;
+}
+
 function resolveAndroidSerial() {
+  // Prefer the slotted pin (adb-safe 5556+2n) over a stale Detox device.id
+  // from FreePortFinder 10000–20000 after kill+relaunch.
+  const pinned = pinnedAndroidSerial();
+  if (pinned) {
+    return pinned;
+  }
   try {
     if (typeof device !== 'undefined' && device?.id) {
       return device.id;
@@ -322,7 +463,55 @@ function resolveAndroidSerial() {
   } catch (_) {
     // Detox device may not be ready yet.
   }
-  return process.env.ANDROID_SERIAL || 'emulator-5554';
+  return 'emulator-5554';
+}
+
+function qemuRunningForAvd(avdName) {
+  try {
+    const cmdlines = execSync('ps -Ao args=', {
+      encoding: 'utf8',
+      timeout: 5000,
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return cmdlines
+      .split('\n')
+      .some(line => line.includes('qemu-system') && qemuCmdlineMatchesAvd(line, avdName));
+  } catch (_) {
+    return false;
+  }
+}
+
+function qemuWithoutAdbError(serial, state) {
+  return new Error(
+    `[rnfb-e2e] ${adbRangeDiagnosis(serial, ANDROID_AVD_NAME)} (adb get-state=${state})`,
+  );
+}
+
+async function waitForAdbSerialDevice(serial, timeoutMs = ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS) {
+  let state = adbDeviceState(serial);
+  if (state === 'device') {
+    return;
+  }
+  if (qemuRunningForAvd(ANDROID_AVD_NAME) && shouldFailFastQemuWithoutAdb(serial, state)) {
+    throw qemuWithoutAdbError(serial, state);
+  }
+  console.log(
+    `[rnfb-e2e] waiting up to ${timeoutMs}ms for adb serial ${serial} to become 'device' (get-state=${state})`,
+  );
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (adbDeviceState(serial) === 'device') {
+      return;
+    }
+    await sleep(1000);
+  }
+  state = adbDeviceState(serial);
+  if (qemuRunningForAvd(ANDROID_AVD_NAME) && state !== 'device') {
+    throw qemuWithoutAdbError(serial, state);
+  }
+  throw new Error(
+    `[rnfb-e2e] adb serial ${serial} did not become 'device' within ${timeoutMs}ms (get-state=${state})`,
+  );
 }
 
 function adbShell(serial, command, timeoutMs = 15000) {
@@ -415,16 +604,26 @@ async function waitForAndroidInstrumentationStopped(label, timeoutMs = 30000) {
   throw new Error(`[rnfb-e2e] ${label}: instrumentation pid still present after ${timeoutMs}ms`);
 }
 
+function usesSlottedJetPorts() {
+  return Boolean(
+    process.env.RNFB_ANDROID_JET_PORT ||
+    process.env.RNFB_IOS_JET_PORT ||
+    process.env.RNFB_MACOS_JET_PORT,
+  );
+}
+
 function clearStaleMacOsTestingForSharedJetPort(label) {
+  if (usesSlottedJetPorts()) {
+    return;
+  }
   if (process.platform !== 'darwin') {
     return;
   }
 
-  console.log(
-    `[rnfb-e2e] ${label}: killing stale macOS io.invertase.testing for shared :${JET_REMOTE_PORT}`,
-  );
+  const macName = process.env.RNFB_MACOS_PRODUCT_NAME || 'io.invertase.testing';
+  console.log(`[rnfb-e2e] ${label}: killing stale macOS ${macName} for shared :${jetRemotePort()}`);
   try {
-    execSync('killall "io.invertase.testing"', { stdio: 'inherit', timeout: 5000 });
+    execSync(`killall ${JSON.stringify(macName)}`, { stdio: 'inherit', timeout: 5000 });
   } catch (_) {
     // not running — expected
   }
@@ -444,11 +643,47 @@ async function ensureAndroidJetHostClear(label = 'android-jet-host-clear') {
   clearStaleMacOsTestingForSharedJetPort(label);
   forceStopAndroidTestingApps(label);
   await waitForAndroidInstrumentationStopped(label);
-  await ensureTcpPortClosed(JET_REMOTE_PORT, label);
+  await ensureTcpPortClosed(jetRemotePort(), label);
   console.log(`[rnfb-e2e] ${label}: host clear`);
 }
 
-function coldBootAndroidEmulator() {
+async function waitUntilQemuGoneForAvd(avdName, timeoutMs = 60000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (!qemuRunningForAvd(avdName)) {
+      return;
+    }
+    await sleep(500);
+  }
+  throw new Error(
+    `[rnfb-e2e] cold-boot: qemu for AVD ${avdName} still present after kill within ${timeoutMs}ms`,
+  );
+}
+
+async function waitForColdBootEmulatorRegistered(serial, avdName, timeoutMs) {
+  const deadline = Date.now() + timeoutMs;
+  console.log(
+    `[rnfb-e2e] cold-boot: waiting up to ${timeoutMs}ms for qemu @${avdName} and adb serial ${serial}`,
+  );
+  while (Date.now() < deadline) {
+    const qemuUp = qemuRunningForAvd(avdName);
+    const state = adbDeviceState(serial);
+    if (qemuUp && state === 'device') {
+      console.log(`[rnfb-e2e] cold-boot: qemu+adb registered serial=${serial}`);
+      return;
+    }
+    await sleep(1000);
+  }
+  const qemuUp = qemuRunningForAvd(avdName);
+  const state = adbDeviceState(serial);
+  throw new Error(
+    `[rnfb-e2e] cold-boot spawn did not register: AVD=${avdName} serial=${serial} ` +
+      `qemuUp=${qemuUp} adb get-state=${state} within ${timeoutMs}ms ` +
+      `(not a Detox FreePortFinder diagnosis — spawn/re-attach after emu kill failed)`,
+  );
+}
+
+async function coldBootAndroidEmulator() {
   const adb = resolveAdbPath();
   const serial = resolveAndroidSerial();
   const port = resolveAndroidEmulatorPort(serial);
@@ -468,10 +703,16 @@ function coldBootAndroidEmulator() {
   }
 
   try {
-    execSync(`pkill -f "qemu-system.*@${ANDROID_AVD_NAME}"`, { stdio: 'ignore', timeout: 5000 });
+    execSync(`pkill -f ${JSON.stringify(qemuAvdPgrepPattern(ANDROID_AVD_NAME))}`, {
+      stdio: 'ignore',
+      timeout: 5000,
+    });
   } catch (_) {
     // No matching emulator process.
   }
+
+  // Do not spawn while a dying Detox/prior qemu for this exact @AVD is still listed.
+  await waitUntilQemuGoneForAvd(ANDROID_AVD_NAME);
 
   const emulatorArgs = [
     '-verbose',
@@ -490,14 +731,21 @@ function coldBootAndroidEmulator() {
   });
   child.unref();
 
-  execSync(`${adb} -s ${coldBootSerial} wait-for-device`, {
-    stdio: 'inherit',
-    timeout: REBOOT_ANDROID_EMULATOR_TIMEOUT_MS,
-  });
+  // Wait until *this* cold-boot qemu cmdline exists and adb lists the serial.
+  // Do not fail-fast on a transient dying qemu via waitForAdbSerialDevice.
+  return waitForColdBootEmulatorRegistered(
+    coldBootSerial,
+    ANDROID_AVD_NAME,
+    ANDROID_COLD_BOOT_REGISTER_TIMEOUT_MS,
+  );
 }
 
 async function waitForAndroidEmulatorReady() {
   const serial = resolveAndroidSerial();
+  console.log(
+    `[rnfb-e2e] android-ready using serial=${serial} (pinned ANDROID_SERIAL / RNFB_ANDROID_CONSOLE_PORT preferred over device.id)`,
+  );
+  await waitForAdbSerialDevice(serial);
   const deadline = Date.now() + REBOOT_ANDROID_EMULATOR_TIMEOUT_MS;
   let stableLoadPolls = 0;
   let packageHandlerDone = false;
@@ -506,14 +754,31 @@ async function waitForAndroidEmulatorReady() {
   while (Date.now() < deadline) {
     try {
       const deviceState = adbDeviceState(serial);
-      if (deviceState === 'offline') {
-        stableLoadPolls = 0;
-        console.warn(
-          `[rnfb-e2e] android-ready probe serial=${serial} state=offline (Quick Boot gray screen?) — ` +
-            'kill emulator and rerun; Detox should cold boot with -no-snapshot-load',
-        );
-        await sleep(ANDROID_READY_POLL_MS);
-        continue;
+      if (deviceState !== 'device') {
+        if (deviceState === 'unknown' && qemuRunningForAvd(ANDROID_AVD_NAME)) {
+          if (shouldFailFastQemuWithoutAdb(serial, deviceState)) {
+            throw qemuWithoutAdbError(serial, deviceState);
+          }
+          console.warn(
+            `[rnfb-e2e] android-ready serial=${serial} state=unknown with qemu up; ` +
+              `port is in adb range — polling ${ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS}ms`,
+          );
+          await waitForAdbSerialDevice(serial);
+        } else {
+          stableLoadPolls = 0;
+          if (deviceState === 'offline') {
+            console.warn(
+              `[rnfb-e2e] android-ready probe serial=${serial} state=offline (Quick Boot gray screen?) — ` +
+                'kill emulator and rerun; Detox should cold boot with -no-snapshot-load',
+            );
+          } else {
+            console.warn(
+              `[rnfb-e2e] android-ready probe serial=${serial} state=${deviceState} — waiting for adb`,
+            );
+          }
+          await sleep(ANDROID_READY_POLL_MS);
+          continue;
+        }
       }
 
       const bootCompleted = adbShell(serial, 'getprop sys.boot_completed');
@@ -595,8 +860,12 @@ async function waitForAndroidEmulatorReady() {
       }
       await sleep(ANDROID_READY_POLL_MS);
     } catch (err) {
+      const msg = err?.message || String(err);
+      if (msg.includes('qemu-without-adb')) {
+        throw err;
+      }
       stableLoadPolls = 0;
-      console.warn(`[rnfb-e2e] android-ready probe: ${err?.message || err}`);
+      console.warn(`[rnfb-e2e] android-ready probe: ${msg}`);
       await sleep(ANDROID_READY_POLL_MS);
     }
   }
@@ -647,7 +916,7 @@ async function drainJetAttempt(platform) {
   if (platform === 'android') {
     await ensureAndroidJetHostClear('drain');
   } else {
-    await waitForTcpPortClosed(JET_REMOTE_PORT);
+    await waitForTcpPortClosed(jetRemotePort());
   }
 
   console.log('[rnfb-e2e] Jet attempt drain complete');
@@ -831,7 +1100,7 @@ function logRetryEligibility(err, attempt) {
   );
 }
 
-async function waitForMetro(port = METRO_PORT, timeoutMs = 120000) {
+async function waitForMetro(port = metroPortForHost(), timeoutMs = 120000) {
   const start = Date.now();
 
   while (Date.now() - start < timeoutMs) {
@@ -854,6 +1123,44 @@ async function waitForMetro(port = METRO_PORT, timeoutMs = 120000) {
   throw new Error(
     `Metro not responding with packager-status:running on 127.0.0.1:${port} after ${timeoutMs}ms`,
   );
+}
+
+function metroBundleQuery() {
+  const pk = detoxPlatformKey();
+  let q =
+    `platform=${pk}&dev=true&lazy=true&minify=false&inlineSourceMap=true` +
+    '&modulesOnly=false&runModule=true';
+  if (pk === 'macos' && process.env.RNFB_MACOS_BUNDLE_IDENTIFIER) {
+    q += `&app=${process.env.RNFB_MACOS_BUNDLE_IDENTIFIER}`;
+  }
+  return q;
+}
+
+// /status can be up while the first bundle compile is still in-flight. Prefetch
+// so Detox/Jet does not launch into a hung "Loading from Metro" screen.
+async function waitForMetroBundle(port = metroPortForHost(), timeoutMs = 600000) {
+  const url = `http://127.0.0.1:${port}/index.bundle?${metroBundleQuery()}`;
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    const remainingSec = Math.max(30, Math.ceil((timeoutMs - (Date.now() - start)) / 1000));
+    const sliceSec = Math.min(120, remainingSec);
+    try {
+      await execFile('curl', ['-sf', '--max-time', String(sliceSec), '-o', '/dev/null', url]);
+      console.log(`[rnfb-e2e] Metro bundle prefetched from ${url}`);
+      return;
+    } catch (err) {
+      console.warn(
+        `[rnfb-e2e] Metro bundle prefetch retry (code=${err?.code ?? 'unknown'}) url=${url}`,
+      );
+    }
+    await new Promise(resolve => setTimeout(resolve, 3000));
+  }
+  throw new Error(`Metro bundle not available at ${url} after ${timeoutMs}ms`);
+}
+
+async function waitForLiveMetro(port = metroPortForHost()) {
+  await waitForMetro(port);
+  await waitForMetroBundle(port);
 }
 
 async function terminateAppWithTiming(label) {
@@ -907,7 +1214,7 @@ async function launchAppWithTimeout(launchArgs, { deleteApp = true, timeoutMs } 
 }
 
 async function postJetControl(path, body) {
-  const url = `http://127.0.0.1:${JET_CONTROL_PORT}${path}`;
+  const url = `http://127.0.0.1:${jetControlPort()}${path}`;
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -946,7 +1253,7 @@ async function killJetForLaunchRetry(jetProcess) {
   }
 
   try {
-    await waitForTcpPortClosed(JET_REMOTE_PORT, '127.0.0.1', KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS);
+    await waitForTcpPortClosed(jetRemotePort(), '127.0.0.1', KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS);
   } catch (err) {
     console.warn(`[rnfb-e2e] launch-retry: Jet port still open after kill: ${err?.message || err}`);
   }
@@ -972,7 +1279,7 @@ async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {
           await rebootIosSimulator(testsDir);
         }
         if (liveMetro) {
-          await waitForMetro(METRO_PORT);
+          await waitForLiveMetro(metroPortForHost());
         }
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
@@ -1043,6 +1350,9 @@ function createJetSession(jetArgs, testsDir) {
   };
 
   const spawnJet = () => {
+    const jp = jetRemotePort();
+    const mp = metroPortForHost();
+    const jcp = jetControlPort();
     const proc = spawn('yarn', jetArgs, {
       stdio: ['ignore', 'pipe', 'pipe'],
       shell: true,
@@ -1050,6 +1360,10 @@ function createJetSession(jetArgs, testsDir) {
       env: {
         ...process.env,
         RNFB_JET_DEFER_RUN: '1',
+        JET_REMOTE_PORT: String(jp),
+        JET_METRO_PORT: String(mp),
+        RCT_METRO_PORT: String(mp),
+        RNFB_JET_CONTROL_PORT: String(jcp),
       },
     });
     bindProcess(proc);
@@ -1072,7 +1386,7 @@ function createJetSession(jetArgs, testsDir) {
         await killJetForLaunchRetry(jetProcess);
         output += '\n[rnfb-e2e] --- jet respawn after launch retry ---\n';
         spawnJet();
-        await waitForTcpPort(JET_REMOTE_PORT);
+        await waitForTcpPort(jetRemotePort());
         logOrchestrateState('launch-retry-jet-respawned');
       } finally {
         ignoreExit = false;
@@ -1085,12 +1399,17 @@ async function runJetE2eAttempt(attempt) {
   cachedUsesLiveMetro = undefined;
   cacheUsesLiveMetro();
 
-  const platform = detox.device.getPlatform();
+  const platform = detoxPlatformKey();
   const testsDir = path.resolve(__dirname, '..');
+  const jp = jetRemotePort();
+  const mp = metroPortForHost();
+  console.log(
+    `[rnfb-e2e] runJetE2eAttempt platform=${platform} jet=${jp} metro=${mp} androidSerial=${resolveAndroidSerial()} detoxConfig=${resolveDetoxConfigurationName() || 'n/a'}`,
+  );
   const jetArgs =
     process.platform === 'win32'
-      ? ['jet', `--target=${platform}`]
-      : ['jet', `--target=${platform}`, '--coverage'];
+      ? ['jet', `--target=${platform}`, '-P', String(jp), '-M', String(mp)]
+      : ['jet', `--target=${platform}`, '--coverage', '-P', String(jp), '-M', String(mp)];
 
   if (platform === 'android') {
     await ensureAndroidJetHostClear(`jet-attempt-${attempt}`);
@@ -1100,12 +1419,14 @@ async function runJetE2eAttempt(attempt) {
 
   const orchestrate = async () => {
     logOrchestrateState('jet-spawned');
-    console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for port ${JET_REMOTE_PORT}`);
+    console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for port ${jetRemotePort()}`);
     logOrchestrateState('port-wait');
-    await waitForTcpPort(JET_REMOTE_PORT);
+    await waitForTcpPort(jetRemotePort());
     if (usesLiveMetro()) {
-      console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for Metro on port ${METRO_PORT}`);
-      await waitForMetro(METRO_PORT);
+      console.log(
+        `[rnfb-e2e] Jet attempt ${attempt}: waiting for Metro on port ${metroPortForHost()}`,
+      );
+      await waitForLiveMetro(metroPortForHost());
     } else {
       console.log(
         `[rnfb-e2e] Jet attempt ${attempt}: skipping Metro wait (configuration=${resolveDetoxConfigurationName() || 'unknown'}, binary=${resolveAppBinaryPath() || 'unknown'})`,
@@ -1160,8 +1481,8 @@ describe('Jet Tests', function () {
   jest.retryTimes(0, { logErrorsBeforeRetry: true });
 
   it('runs all tests', async function () {
-    const platform = detox.device.getPlatform();
-    const deviceId = detox.device.id;
+    const platform = detoxPlatformKey();
+    const deviceId = detox.device?.id ?? device?.id;
     const testsDir = path.resolve(__dirname, '..');
 
     cacheUsesLiveMetro();
@@ -1208,8 +1529,20 @@ describe('Jet Tests', function () {
           if (platform === 'ios' && process.platform === 'darwin') {
             await rebootIosSimulator(testsDir);
           } else if (platform === 'android') {
-            coldBootAndroidEmulator();
-            await waitForAndroidEmulatorReady();
+            if (shouldColdBootAndroidOnLaunchRetry(lastFailure)) {
+              console.warn('[rnfb-e2e] Android device-side launch failure — cold booting emulator');
+              await coldBootAndroidEmulator();
+              await waitForAndroidEmulatorReady();
+            } else if (isMetroWaitFailure(lastFailure) && usesLiveMetro()) {
+              console.warn(
+                '[rnfb-e2e] Metro wait failure — waiting for Metro again (no Android cold boot)',
+              );
+              await waitForLiveMetro();
+            } else {
+              console.warn(
+                '[rnfb-e2e] Android retry without cold boot (not a device-side emulator fault)',
+              );
+            }
           } else {
             try {
               await device.terminateApp();

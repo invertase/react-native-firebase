@@ -4,7 +4,8 @@
 * [Documentation/commit policy](../documentation-policy.md) — durable vs ephemeral, OKF scan
 * [Change authoring workflow](change-authoring-workflow.md) — verified product change loop (unit-focused → area-focused review → commit); [§ quality standards](change-authoring-workflow.md#quality-standards); [§ validation evidence (blocking)](change-authoring-workflow.md#validation-evidence-blocking); [coverage evidence package](coverage-design.md#coverage-evidence-package)
 * [Iteration vocabulary](iteration-vocabulary.md) — work type, tier, and queue field identifiers
-* [Running e2e tests](running-e2e.md) — canonical e2e commands; start here for `:test-cover`
+* [Running e2e tests](running-e2e.md) — canonical e2e commands; start here for `:test-cover`; [§ slot lifecycle](running-e2e.md#slot-lifecycle) owns slotted packager/Metro
+* [E2e parallel design](e2e-parallel-design.md) — why resources collide, parameterization, coordinator rollout (commands stay in running-e2e)
 * [Validation checklist](validation-checklist.md) — handoff command sequence
 * [Coverage design](coverage-design.md) — coverage policy, Codecov/native gates (merged Android `jacocoTestReport`); [iOS Ruby SimpleCov](coverage-design.md#ios-ruby-simplecov) (`yarn tests:ios:ruby`, flag `ios-ruby`)
 * [Android unit testing ADR](android-architecture-decisions.md) — Robolectric + Mockito (`AndroidTest-AD-1`)

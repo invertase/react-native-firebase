@@ -218,3 +218,104 @@ index da29ae99c8b90877f15715cdeb692ed8a2b47569..f53f49bca03b3acca4c4d8b05d087a8c
  
        this._isLocked = true;
        this._invalidate();
+diff --git a/src/devices/allocation/drivers/android/emulator/FreePortFinder.js b/src/devices/allocation/drivers/android/emulator/FreePortFinder.js
+index 37263e87f18fb2cf0f7def74de6e4d13a486cd3c..68c4f79db9b5ec4d7c1e028a34bec7460e2db61a 100644
+--- a/src/devices/allocation/drivers/android/emulator/FreePortFinder.js
++++ b/src/devices/allocation/drivers/android/emulator/FreePortFinder.js
+@@ -6,7 +6,32 @@
+     this._max = max;
+   }
+ 
++  _pinnedConsolePort() {
++    const raw = process.env.RNFB_ANDROID_CONSOLE_PORT;
++    if (raw === undefined || raw === '') {
++      return null;
++    }
++    const port = Number.parseInt(raw, 10);
++    if (!Number.isInteger(port) || port % 2 !== 0) {
++      throw new Error(
++        `RNFB_ANDROID_CONSOLE_PORT must be an even integer (adb emulator console); got ${JSON.stringify(raw)}`,
++      );
++    }
++    return port;
++  }
++
+   async findFreePort() {
++    const pinned = this._pinnedConsolePort();
++    if (pinned != null) {
++      if (await this.isPortTaken(pinned)) {
++        throw new Error(
++          `RNFB_ANDROID_CONSOLE_PORT=${pinned} is taken; Detox will not fall back to FreePortFinder ` +
++            `10000–20000 (outside adb emulator console range [5554, 5586])`,
++        );
++      }
++      return pinned;
++    }
++
+     let port;
+ 
+     do {
+diff --git a/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js b/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js
+index a9a7ec21421f4751343e9b4b397538e6a4091738..991484053811dbc8ec8ff6ad5345fd5d01ed43ac 100644
+--- a/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js
++++ b/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js
+@@ -9,6 +9,20 @@
+ 
+ const { patchAvdSkinConfig } = require('./patchAvdSkinConfig');
+ 
++function pinnedAndroidConsolePort() {
++  const raw = process.env.RNFB_ANDROID_CONSOLE_PORT;
++  if (raw === undefined || raw === '') {
++    return null;
++  }
++  const port = Number.parseInt(raw, 10);
++  if (!Number.isInteger(port) || port % 2 !== 0) {
++    throw new Error(
++      `RNFB_ANDROID_CONSOLE_PORT must be an even integer (adb emulator console); got ${JSON.stringify(raw)}`,
++    );
++  }
++  return port;
++}
++
+ class EmulatorAllocDriver extends AndroidAllocDriver {
+   /**
+    * @param {object} options
+@@ -57,6 +71,38 @@
+     await this._fixAvdConfigIniSkinNameIfNeeded(avdName, deviceConfig.headless);
+ 
+     const adbName = await this._deviceRegistry.registerDevice(async () => {
++      const pinnedPort = pinnedAndroidConsolePort();
++      if (pinnedPort != null) {
++        const pinnedAdbName = `emulator-${pinnedPort}`;
++        const existing = await this._freeDeviceFinder.findFreeDevice(avdName);
++        if (existing && existing !== pinnedAdbName) {
++          throw new Error(
++            `RNFB_ANDROID_CONSOLE_PORT=${pinnedPort} requires ${pinnedAdbName} for AVD ${avdName}, ` +
++              `but that AVD is already online as ${existing}. Kill the leftover guest; Detox will not ` +
++              `use FreePortFinder 10000–20000 (outside adb emulator console range [5554, 5586]).`,
++          );
++        }
++        if (existing === pinnedAdbName) {
++          return pinnedAdbName;
++        }
++        if (await this._freePortFinder.isPortTaken(pinnedPort)) {
++          throw new Error(
++            `RNFB_ANDROID_CONSOLE_PORT=${pinnedPort} is taken (wanted ${pinnedAdbName} for AVD ${avdName}). ` +
++              `Detox will not pick a FreePortFinder port in 10000–20000.`,
++          );
++        }
++        await this._emulatorLauncher.launch({
++          bootArgs: deviceConfig.bootArgs,
++          gpuMode: deviceConfig.gpuMode,
++          headless: deviceConfig.headless,
++          readonly: deviceConfig.readonly,
++          avdName,
++          adbName: pinnedAdbName,
++          port: pinnedPort,
++        });
++        return pinnedAdbName;
++      }
++
+       let adbName = await this._freeDeviceFinder.findFreeDevice(avdName);
+       if (!adbName) {
+         const port = await this._freePortFinder.findFreePort();

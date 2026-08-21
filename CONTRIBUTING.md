@@ -149,10 +149,10 @@ To run end-to-end tests for `iOS`, please run:
 To run end-to-end tests for `Other`, please run:
 
 - `yarn tests:macos:pod:install`
-- `yarn tests:macos:build` - builds `iOS` test application.
-- `yarn tests:packager:jet-reset-cache` - runs JavaScript bundler.
+- `yarn tests:macos:build` - builds `macOS` test application.
+- `yarn tests:macos:packager:jet` / `yarn tests:macos:packager:jet-reset-cache` - runs JavaScript bundler (from `tests-macos/`). Do not use the mobile packager (`yarn tests:packager:*`) for macOS Jet.
 - `yarn tests:emulator:start` - runs Firestore emulator for Firestore tests.
-- `yarn tests:macos:test-cover` - runs tests using Detox library. Tests for each package can be found in the `e2e` directory (i.e. `[PACKAGE]/e2e/*.e2e.js`)
+- `yarn tests:macos:test-cover` - runs tests (Jet; no Detox). Tests for each package can be found in the `e2e` directory (i.e. `[PACKAGE]/e2e/*.e2e.js`)
 
 See [the local testing guide](https://github.com/invertase/react-native-firebase/blob/main/tests/README.md) to get started
 with `e2e` testing this project.

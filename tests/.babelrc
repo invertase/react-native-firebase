@@ -4,7 +4,37 @@
     [
       "transform-inline-environment-variables",
       {
-        "include": ["CI"]
+        "include": [
+          "CI",
+          "RNFB_E2E_PLATFORM",
+          "RNFB_E2E_DEBUG",
+          "RCT_METRO_PORT",
+          "RNFB_METRO_PORT",
+          "JET_METRO_PORT",
+          "JET_REMOTE_PORT",
+          "RNFB_JET_CONTROL_PORT",
+          "RNFB_ANDROID_METRO_PORT",
+          "RNFB_IOS_METRO_PORT",
+          "RNFB_MACOS_METRO_PORT",
+          "RNFB_ANDROID_JET_PORT",
+          "RNFB_IOS_JET_PORT",
+          "RNFB_MACOS_JET_PORT",
+          "RNFB_ANDROID_EMULATOR_FIRESTORE_PORT",
+          "RNFB_ANDROID_EMULATOR_AUTH_PORT",
+          "RNFB_ANDROID_EMULATOR_DATABASE_PORT",
+          "RNFB_ANDROID_EMULATOR_FUNCTIONS_PORT",
+          "RNFB_ANDROID_EMULATOR_STORAGE_PORT",
+          "RNFB_IOS_EMULATOR_FIRESTORE_PORT",
+          "RNFB_IOS_EMULATOR_AUTH_PORT",
+          "RNFB_IOS_EMULATOR_DATABASE_PORT",
+          "RNFB_IOS_EMULATOR_FUNCTIONS_PORT",
+          "RNFB_IOS_EMULATOR_STORAGE_PORT",
+          "RNFB_MACOS_EMULATOR_FIRESTORE_PORT",
+          "RNFB_MACOS_EMULATOR_AUTH_PORT",
+          "RNFB_MACOS_EMULATOR_DATABASE_PORT",
+          "RNFB_MACOS_EMULATOR_FUNCTIONS_PORT",
+          "RNFB_MACOS_EMULATOR_STORAGE_PORT"
+        ]
       }
     ],
     [

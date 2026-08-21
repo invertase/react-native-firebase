@@ -21,6 +21,12 @@ import { StyleSheet, View, StatusBar, AppRegistry, Text, Button } from 'react-na
 
 import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
 
+import {
+  getE2eEmulatorHost,
+  getE2eEmulatorPort,
+  getJetRemoteUrl,
+} from '@react-native-firebase/app/e2e/helpers';
+
 import { TestComponents } from './local-tests';
 
 let harnessOverrides = {};
@@ -91,24 +97,29 @@ function loadTests(_) {
     }
 
     before(async function () {
+      const emuHost = getE2eEmulatorHost();
       if (platformSupportedModules.includes('functions')) {
         const { connectFunctionsEmulator, getFunctions } = functionsModular;
-        connectFunctionsEmulator(getFunctions(), 'localhost', 5001);
+        connectFunctionsEmulator(getFunctions(), emuHost, getE2eEmulatorPort('functions'));
       }
       if (platformSupportedModules.includes('database')) {
         const { connectDatabaseEmulator, getDatabase } = databaseModular;
-        connectDatabaseEmulator(getDatabase(), 'localhost', 9000);
+        connectDatabaseEmulator(getDatabase(), emuHost, getE2eEmulatorPort('database'));
       }
       if (platformSupportedModules.includes('auth')) {
         const { connectAuthEmulator, getAuth } = authModular;
-        connectAuthEmulator(getAuth(), 'http://localhost:9099');
+        connectAuthEmulator(
+          getAuth(),
+          `http://${emuHost}:${getE2eEmulatorPort('auth')}`,
+        );
       }
       if (platformSupportedModules.includes('firestore')) {
         const { getApp } = modular;
         const { connectFirestoreEmulator, clearIndexedDbPersistence, getFirestore } =
           firestoreModular;
-        connectFirestoreEmulator(getFirestore(), 'localhost', 8080);
-        connectFirestoreEmulator(getFirestore(getApp(), 'second-rnfb'), 'localhost', 8080);
+        const fsPort = getE2eEmulatorPort('firestore');
+        connectFirestoreEmulator(getFirestore(), emuHost, fsPort);
+        connectFirestoreEmulator(getFirestore(getApp(), 'second-rnfb'), emuHost, fsPort);
         // Firestore caches documents locally (a great feature!) and that confounds tests
         // as data from previous runs pollutes following runs until re-install the app. Clear it.
         if (!Platform.other) {
@@ -118,12 +129,13 @@ function loadTests(_) {
       if (platformSupportedModules.includes('storage')) {
         const { getApp } = modular;
         const { getStorage, connectStorageEmulator } = storageModular;
-        connectStorageEmulator(getStorage(), 'localhost', 9199);
-        connectStorageEmulator(getStorage(getApp('secondaryFromNative')), 'localhost', 9199);
+        const stPort = getE2eEmulatorPort('storage');
+        connectStorageEmulator(getStorage(), emuHost, stPort);
+        connectStorageEmulator(getStorage(getApp('secondaryFromNative')), emuHost, stPort);
         connectStorageEmulator(
           getStorage(getApp(), 'gs://react-native-firebase-testing'),
-          'localhost',
-          9199,
+          emuHost,
+          stPort,
         );
       }
     });
@@ -314,7 +326,7 @@ function App() {
         <Button title="Show Manual Tests" onPress={() => setShowManualTestPicker(true)} />
         <View style={styles.hardRule} />
         <Text>Automated Tests:</Text>
-        <JetProvider tests={loadTests}>
+        <JetProvider url={getJetRemoteUrl()} tests={loadTests}>
           <ConnectionText style={styles.connectionText} />
           <View style={styles.statusContainer}>
             <StatusEmoji style={styles.statusEmoji} />

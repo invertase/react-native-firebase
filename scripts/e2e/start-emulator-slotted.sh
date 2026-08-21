@@ -1,0 +1,169 @@
+#!/usr/bin/env bash
+# Start one Firebase emulator suite for a platform using RNFB_<PLATFORM>_EMULATOR_* env vars.
+#
+# Also pins Firestore websocket / Eventarc / Cloud Tasks ports. Firebase Tools still
+# starts eventarc+tasks as Functions dependencies and defaults Firestore's UI websocket
+# to 9150 — those collide when multiple suites share a host (EADDRINUSE → suite dies;
+# only the winner keeps a working Functions emulator).
+#
+# Usage:
+#   bash scripts/e2e/start-emulator-slotted.sh <android|ios|macos> [slot]
+# With [slot], applies full carry-in via e2e_slot_env_apply (same as run-slotted-*).
+# Without [slot], requires RNFB_<PLATFORM>_EMULATOR_* already exported (e.g. after
+# eval "$(export-slot-env.sh …)").
+# Aborts (exit 1) before emulators:start if any suite port is already listening.
+# Starts firebase emulators in the background, waits until the Functions port is
+# listening, then exits 0 leaving the suite running. Callers wait for this script's
+# exit 0 (= ready) — do not wait for process death / EMU_EXIT from a healthy start.
+# On readiness timeout, kills the suite started by this script and exits 1.
+set -euo pipefail
+
+PLATFORM="${1:?platform required: android|ios|macos}"
+SLOT_ARG="${2:-}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+SCRIPTS="${REPO_ROOT}/.github/workflows/scripts"
+
+# shellcheck source=lib/e2e-resource-env.sh
+source "${SCRIPT_DIR}/lib/e2e-resource-env.sh"
+
+if [[ -n "$SLOT_ARG" ]]; then
+  e2e_slot_env_apply "$PLATFORM" "$SLOT_ARG"
+fi
+
+SLOT="${RNFB_E2E_HOST_SLOT:-${RNFB_E2E_SLOT:-0}}"
+prefix="$(echo "${PLATFORM}" | tr '[:lower:]' '[:upper:]')"
+
+eval "FS_PORT=\$RNFB_${prefix}_EMULATOR_FIRESTORE_PORT"
+eval "AUTH_PORT=\$RNFB_${prefix}_EMULATOR_AUTH_PORT"
+eval "DB_PORT=\$RNFB_${prefix}_EMULATOR_DATABASE_PORT"
+eval "FN_PORT=\$RNFB_${prefix}_EMULATOR_FUNCTIONS_PORT"
+eval "ST_PORT=\$RNFB_${prefix}_EMULATOR_STORAGE_PORT"
+eval "HUB_PORT=\$RNFB_${prefix}_EMULATOR_HUB_PORT"
+eval "LOG_PORT=\$RNFB_${prefix}_EMULATOR_LOGGING_PORT"
+
+for v in FS_PORT AUTH_PORT DB_PORT FN_PORT ST_PORT HUB_PORT LOG_PORT; do
+  if [[ -z "${!v:-}" ]]; then
+    echo "error: ${v} not set (export RNFB_${prefix}_EMULATOR_* ports first, or pass slot: start-emulator-slotted.sh ${PLATFORM} <slot>)" >&2
+    exit 1
+  fi
+done
+
+# Offsets within the platform block (FS_PORT is BLK+0):
+# +8 websocket, +9 eventarc, +12 tasks (skip +10/+11 Jet).
+WS_PORT=$((FS_PORT + 8))
+EVENTARC_PORT=$((FS_PORT + 9))
+TASKS_PORT=$((FS_PORT + 12))
+
+# Fail-fast before firebase (and before functions yarn): leftover suite listeners
+# must not become "Could not start emulator hub, port taken" after a long wait.
+e2e_abort_if_emulator_suite_ports_busy \
+  "$FS_PORT" "$AUTH_PORT" "$DB_PORT" "$FN_PORT" "$ST_PORT" "$HUB_PORT" "$LOG_PORT"
+
+CONFIG="${SCRIPTS}/.e2e-emulator-${PLATFORM}-${SLOT}.json"
+python3 - <<PY
+import json
+tpl = json.load(open("${SCRIPTS}/firebase.emulator.template.json"))
+tpl["emulators"]["firestore"] = {
+    "port": int("${FS_PORT}"),
+    "websocketPort": int("${WS_PORT}"),
+}
+tpl["emulators"]["auth"]["port"] = int("${AUTH_PORT}")
+tpl["emulators"]["database"]["port"] = int("${DB_PORT}")
+tpl["emulators"]["functions"]["port"] = int("${FN_PORT}")
+tpl["emulators"]["storage"]["port"] = int("${ST_PORT}")
+tpl["emulators"]["hub"] = {"port": int("${HUB_PORT}")}
+tpl["emulators"]["logging"] = {"port": int("${LOG_PORT}")}
+tpl["emulators"]["eventarc"] = {"port": int("${EVENTARC_PORT}")}
+tpl["emulators"]["tasks"] = {"port": int("${TASKS_PORT}")}
+json.dump(tpl, open("${CONFIG}", "w"), indent=2)
+PY
+
+echo "[emulator-${PLATFORM}] config=${CONFIG} firestore=${FS_PORT} functions=${FN_PORT} websocket=${WS_PORT} eventarc=${EVENTARC_PORT} tasks=${TASKS_PORT}"
+
+# Serialize functions yarn/build — parallel suites share this directory (macOS has no flock).
+LOCK_DIR="${SCRIPTS}/functions/.build.lock.d"
+mkdir -p "${SCRIPTS}/functions"
+deadline=$((SECONDS + 300))
+while ! mkdir "${LOCK_DIR}" 2>/dev/null; do
+  if (( SECONDS >= deadline )); then
+    echo "error: timed out waiting for functions build lock ${LOCK_DIR}" >&2
+    exit 1
+  fi
+  sleep 1
+done
+cleanup_lock() { rmdir "${LOCK_DIR}" 2>/dev/null || true; }
+trap cleanup_lock EXIT
+pushd "${SCRIPTS}/functions" >/dev/null
+yarn >/dev/null 2>&1 || yarn
+yarn build
+popd >/dev/null
+cleanup_lock
+trap - EXIT
+
+# shellcheck source=firebase-cli.sh
+source "${SCRIPTS}/firebase-cli.sh"
+
+EMU_LOG="${RNFB_EMULATOR_LOG:-/tmp/rnfb-emulator-${PLATFORM}-s${SLOT}.log}"
+READY_TIMEOUT="${RNFB_EMULATOR_READY_TIMEOUT:-300}"
+EMU_PID=""
+
+# Kill only the suite this script started (timeout / early death path). Never register
+# this on EXIT — a healthy start must leave emulators running after exit 0.
+kill_started_suite() {
+  local port pids
+  if [[ -n "${EMU_PID:-}" ]] && kill -0 "${EMU_PID}" 2>/dev/null; then
+    kill "${EMU_PID}" 2>/dev/null || true
+    # firebase tools spawns children; escalate if parent ignores soft kill
+    sleep 1
+    if kill -0 "${EMU_PID}" 2>/dev/null; then
+      kill -9 "${EMU_PID}" 2>/dev/null || true
+    fi
+  fi
+  for port in "$FS_PORT" "$AUTH_PORT" "$DB_PORT" "$FN_PORT" "$ST_PORT" "$HUB_PORT" "$LOG_PORT" \
+    "$WS_PORT" "$EVENTARC_PORT" "$TASKS_PORT"; do
+    pids="$(e2e_listener_pids "$port" | tr '\n' ' ')"
+    if [[ -n "${pids// /}" ]]; then
+      # shellcheck disable=SC2086
+      kill ${pids} 2>/dev/null || true
+      sleep 0.5
+      pids="$(e2e_listener_pids "$port" | tr '\n' ' ')"
+      if [[ -n "${pids// /}" ]]; then
+        # shellcheck disable=SC2086
+        kill -9 ${pids} 2>/dev/null || true
+      fi
+    fi
+  done
+  wait "${EMU_PID}" 2>/dev/null || true
+}
+
+cd "${SCRIPTS}"
+# Ignore SIGHUP so the suite survives when the starter shell exits (wave runners).
+trap '' HUP
+echo "[emulator-${PLATFORM}] starting background suite log=${EMU_LOG}"
+"${FIREBASE_CMD[@]}" emulators:start \
+  --config "${CONFIG}" \
+  --only auth,database,firestore,functions,storage \
+  --project react-native-firebase-testing \
+  >"${EMU_LOG}" 2>&1 &
+EMU_PID=$!
+# Detach from this shell's job control so EXIT does not signal the suite.
+disown "${EMU_PID}" 2>/dev/null || true
+
+ready_deadline=$((SECONDS + READY_TIMEOUT))
+while ! e2e_port_listening "$FN_PORT"; do
+  if (( SECONDS >= ready_deadline )); then
+    echo "error: timed out after ${READY_TIMEOUT}s waiting for Functions :${FN_PORT} (log=${EMU_LOG})" >&2
+    kill_started_suite
+    exit 1
+  fi
+  if ! kill -0 "${EMU_PID}" 2>/dev/null; then
+    echo "error: firebase emulators exited before Functions :${FN_PORT} was listening (log=${EMU_LOG})" >&2
+    kill_started_suite
+    exit 1
+  fi
+  sleep 1
+done
+
+echo "[emulator-${PLATFORM}] ready functions=:${FN_PORT} pid=${EMU_PID} log=${EMU_LOG}"
+exit 0
