@@ -43,6 +43,7 @@ callables
 CarPlay
 CDN
 Changelog
+CHANGELOG
 changelogs
 checkForUpdate
 CLI
