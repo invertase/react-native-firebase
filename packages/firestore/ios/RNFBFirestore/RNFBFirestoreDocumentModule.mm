@@ -20,9 +20,10 @@
 #import "RNFBApp/RCTConvert+FIRApp.h"
 
 #import "RNFBFirestoreDocumentModule.h"
+#import "RNFBFirestoreListenerRegistry.h"
 #import "RNFBFirestoreTurboModules.h"
 
-static __strong NSMutableDictionary *documentSnapshotListeners;
+static RNFBFirestoreListenerRegistry *documentSnapshotListeners;
 static NSString *const RNFB_FIRESTORE_DOCUMENT_SYNC = @"firestore_document_sync_event";
 
 @interface RNFBFirestoreDocumentModule () <NativeRNFBTurboFirestoreDocumentSpec, RCTBridgeModule>
@@ -47,7 +48,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreDocument);
   self = [super init];
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    documentSnapshotListeners = [[NSMutableDictionary alloc] init];
+    documentSnapshotListeners = [[RNFBFirestoreListenerRegistry alloc] init];
   });
   return self;
 }
@@ -57,11 +58,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreDocument);
 }
 
 - (void)invalidate {
-  for (NSString *key in [documentSnapshotListeners allKeys]) {
-    id<FIRListenerRegistration> listener = documentSnapshotListeners[key];
-    [listener remove];
-    [documentSnapshotListeners removeObjectForKey:key];
-  }
+  [documentSnapshotListeners removeAll];
 }
 
 #pragma mark -
@@ -76,7 +73,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreDocument);
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   NSNumber *listenerIdNumber = @(listenerId);
 
-  if (documentSnapshotListeners[listenerIdNumber]) {
+  if ([documentSnapshotListeners get:listenerIdNumber] != nil) {
     return;
   }
 
@@ -98,11 +95,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreDocument);
   __weak RNFBFirestoreDocumentModule *weakSelf = self;
   id listenerBlock = ^(FIRDocumentSnapshot *snapshot, NSError *error) {
     if (error) {
-      id<FIRListenerRegistration> listener = documentSnapshotListeners[listenerIdNumber];
-      if (listener) {
-        [listener remove];
-        [documentSnapshotListeners removeObjectForKey:listenerIdNumber];
-      }
+      [documentSnapshotListeners takeAndRemove:listenerIdNumber];
       [weakSelf sendSnapshotError:firebaseApp
                        databaseId:databaseId
                        listenerId:listenerIdNumber
@@ -129,18 +122,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreDocument);
   id<FIRListenerRegistration> listener =
       [documentReference addSnapshotListenerWithOptions:nativeSnapshotListenOptions
                                                listener:listenerBlock];
-  documentSnapshotListeners[listenerIdNumber] = listener;
+  [documentSnapshotListeners putOrDiscard:listenerIdNumber value:listener];
 }
 
 - (void)documentOffSnapshot:(NSString *)appName
                  databaseId:(NSString *)databaseId
                  listenerId:(double)listenerId {
   NSNumber *listenerIdNumber = @(listenerId);
-  id<FIRListenerRegistration> listener = documentSnapshotListeners[listenerIdNumber];
-  if (listener) {
-    [listener remove];
-    [documentSnapshotListeners removeObjectForKey:listenerIdNumber];
-  }
+  [documentSnapshotListeners takeAndRemove:listenerIdNumber];
 }
 
 - (void)documentGet:(NSString *)appName

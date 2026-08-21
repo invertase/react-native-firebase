@@ -42,6 +42,12 @@ public class NativeRNFBTurboFirestore extends NativeRNFBTurboFirestoreSpec {
   }
 
   @Override
+  public void invalidate() {
+    module.invalidateSnapshotsInSync();
+    super.invalidate();
+  }
+
+  @Override
   public void setLogLevel(String logLevel) {
     if ("debug".equals(logLevel) || "error".equals(logLevel)) {
       FirebaseFirestore.setLoggingEnabled(true);

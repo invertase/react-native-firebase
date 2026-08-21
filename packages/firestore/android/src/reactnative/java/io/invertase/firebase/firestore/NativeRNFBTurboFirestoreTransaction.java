@@ -26,7 +26,6 @@ import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.g
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
 
 import android.os.AsyncTask;
-import android.util.SparseArray;
 import com.facebook.fbreact.specs.NativeRNFBTurboFirestoreTransactionSpec;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Task;
@@ -42,8 +41,8 @@ public class NativeRNFBTurboFirestoreTransaction extends NativeRNFBTurboFirestor
   private final FirestoreTurboModuleSupport turboSupport =
       new FirestoreTurboModuleSupport("RNFBTransaction");
   private static final String SERVICE_NAME = "FirestoreTransaction";
-  private SparseArray<ReactNativeFirebaseFirestoreTransactionHandler> transactionHandlers =
-      new SparseArray<>();
+  private static final RNFBFirestoreTransactionRegistry transactionHandlers =
+      new RNFBFirestoreTransactionRegistry();
 
   public NativeRNFBTurboFirestoreTransaction(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -51,17 +50,7 @@ public class NativeRNFBTurboFirestoreTransaction extends NativeRNFBTurboFirestor
 
   @Override
   public void invalidate() {
-    for (int i = 0, size = transactionHandlers.size(); i < size; i++) {
-      int key = transactionHandlers.keyAt(i);
-      ReactNativeFirebaseFirestoreTransactionHandler transactionHandler =
-          transactionHandlers.get(key);
-
-      if (transactionHandler != null) {
-        transactionHandler.abort();
-      }
-    }
-
-    transactionHandlers.clear();
+    transactionHandlers.takeAllAndAbort();
     turboSupport.invalidate();
   }
 
@@ -103,13 +92,7 @@ public class NativeRNFBTurboFirestoreTransaction extends NativeRNFBTurboFirestor
 
   @Override
   public void transactionDispose(String appName, String databaseId, double transactionId) {
-    ReactNativeFirebaseFirestoreTransactionHandler transactionHandler =
-        transactionHandlers.get((int) transactionId);
-
-    if (transactionHandler != null) {
-      transactionHandler.abort();
-      transactionHandlers.delete((int) transactionId);
-    }
+    transactionHandlers.takeAndAbort((int) transactionId);
   }
 
   @Override
@@ -128,7 +111,9 @@ public class NativeRNFBTurboFirestoreTransaction extends NativeRNFBTurboFirestor
       String appName, String databaseId, double transactionId, double maxAttempts) {
     ReactNativeFirebaseFirestoreTransactionHandler transactionHandler =
         new ReactNativeFirebaseFirestoreTransactionHandler(appName, (int) transactionId);
-    transactionHandlers.put((int) transactionId, transactionHandler);
+    if (!transactionHandlers.putOrSkip((int) transactionId, transactionHandler)) {
+      return;
+    }
 
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
