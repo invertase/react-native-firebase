@@ -138,6 +138,10 @@ A JS-only (or docs-only) diff does **not** require full `yarn lint`. Full `yarn 
 
 Frozen review is [report/check-only except revert `.only`](change-authoring-workflow.md#frozen-tree). **Do not** run `yarn lint:android` or full `yarn lint` — `lint:android` `--replace` mutates the tree. Run the **check-only** by-diff scripts: `lint:js` (JS/TS), `lint:deps` (lib), `lint:ios:check` (ios), markdown/spellcheck (`docs/**` only).
 
+## Expo documented-path iOS link (not e2e)
+
+Workspace fixture `test-expo/`: **`yarn test-expo:ios:link`** only — [agent command policy](agent-command-policy.md). Not Detox; do not add `yarn tests:ios:*` or ad-hoc `expo prebuild` / `xcodebuild` as that closer. App package: [packages/app](../packages/app/index.md).
+
 ## E2e with coverage
 
 [Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) (host-clear probes + services + **[checkout ownership](running-e2e.md#services-checkout-ownership-blocking)** + harness tier) before every run — [agent command policy](agent-command-policy.md) and [e2e agent rule](running-e2e.md#agent-rule-read-first): use **only** `yarn tests:*` commands from [running e2e](running-e2e.md). Match harness to work type — **unit-focused**/**area-focused** never use full app load ([running e2e § harness](running-e2e.md#3-harness-matches-validation-tier)).

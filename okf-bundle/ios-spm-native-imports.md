@@ -240,6 +240,14 @@ already gets a matching build file via SPM's own attach path. Tracked from
 GitHub [#9158](https://github.com/invertase/react-native-firebase/issues/9158)
 / Linear CPRN-301.
 
+Maintainer check of the **Expo documented path** (SPM + dynamic frameworks +
+prebuild-generated AppDelegate `FIRApp` call) is **`yarn test-expo:ios:link`**
+only — [agent command policy](testing/agent-command-policy.md). That is a
+workspace **link** fixture (`test-expo/`), not Detox e2e (`yarn tests:ios:*`).
+Do not restate `expo prebuild` / `xcodebuild` here. The fixture currently
+fails with the same `_OBJC_CLASS_$_FIRApp` signature; see
+[App package index](packages/app/index.md).
+
 ### Idempotency guard must distinguish "declared" from "linked"
 
 `rnfirebase_add_spm_core_to_app_target` runs on every `pod install`, so its

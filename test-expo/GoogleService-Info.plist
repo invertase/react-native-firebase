@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>000000000000-testexpofakefakefakefakefake.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.000000000000-testexpofakefakefakefakefake</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>000000000000-testexpoandroidfakefakefake.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyFAKEFAKEFAKEFAKEFAKEFAKEFAKEFAKEFAKE</string>
+	<key>GCM_SENDER_ID</key>
+	<string>000000000000</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.invertase.testexpo</string>
+	<key>PROJECT_ID</key>
+	<string>test-expo-fixture-fake</string>
+	<key>STORAGE_BUCKET</key>
+	<string>test-expo-fixture-fake.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<false></false>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<false></false>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:000000000000:ios:fakefakefakefakefake</string>
+	<key>DATABASE_URL</key>
+	<string>https://test-expo-fixture-fake.firebaseio.com</string>
+</dict>
+</plist>
