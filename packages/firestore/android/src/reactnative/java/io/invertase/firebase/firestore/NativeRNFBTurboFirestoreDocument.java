@@ -22,7 +22,6 @@ import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerial
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getDocumentForFirestore;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
 
-import android.util.SparseArray;
 import com.facebook.fbreact.specs.NativeRNFBTurboFirestoreDocumentSpec;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Task;
@@ -38,7 +37,8 @@ public class NativeRNFBTurboFirestoreDocument extends NativeRNFBTurboFirestoreDo
   private final FirestoreTurboModuleSupport turboSupport =
       new FirestoreTurboModuleSupport("RNFBDocument");
   private static final String SERVICE_NAME = "FirestoreDocument";
-  private static SparseArray<ListenerRegistration> documentSnapshotListeners = new SparseArray<>();
+  private static final RNFBFirestoreListenerRegistry documentSnapshotListeners =
+      new RNFBFirestoreListenerRegistry();
 
   public NativeRNFBTurboFirestoreDocument(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -46,13 +46,7 @@ public class NativeRNFBTurboFirestoreDocument extends NativeRNFBTurboFirestoreDo
 
   @Override
   public void invalidate() {
-    for (int i = 0, size = documentSnapshotListeners.size(); i < size; i++) {
-      int key = documentSnapshotListeners.keyAt(i);
-      ListenerRegistration listenerRegistration = documentSnapshotListeners.get(key);
-      listenerRegistration.remove();
-    }
-    documentSnapshotListeners.clear();
-
+    documentSnapshotListeners.takeAllAndRemove();
     turboSupport.invalidate();
   }
 
@@ -73,12 +67,7 @@ public class NativeRNFBTurboFirestoreDocument extends NativeRNFBTurboFirestoreDo
     final EventListener<DocumentSnapshot> listener =
         (documentSnapshot, exception) -> {
           if (exception != null) {
-            ListenerRegistration listenerRegistration =
-                documentSnapshotListeners.get((int) listenerId);
-            if (listenerRegistration != null) {
-              listenerRegistration.remove();
-              documentSnapshotListeners.remove((int) listenerId);
-            }
+            documentSnapshotListeners.takeAndRemove((int) listenerId);
             sendOnSnapshotError(appName, databaseId, listenerId, exception);
           } else {
             sendOnSnapshotEvent(appName, databaseId, listenerId, documentSnapshot);
@@ -107,16 +96,12 @@ public class NativeRNFBTurboFirestoreDocument extends NativeRNFBTurboFirestoreDo
     ListenerRegistration listenerRegistration =
         documentReference.addSnapshotListener(snapshotListenOptionsBuilder.build(), listener);
 
-    documentSnapshotListeners.put((int) listenerId, listenerRegistration);
+    documentSnapshotListeners.putOrDiscard((int) listenerId, listenerRegistration);
   }
 
   @Override
   public void documentOffSnapshot(String appName, String databaseId, double listenerId) {
-    ListenerRegistration listenerRegistration = documentSnapshotListeners.get((int) listenerId);
-    if (listenerRegistration != null) {
-      listenerRegistration.remove();
-      documentSnapshotListeners.remove((int) listenerId);
-    }
+    documentSnapshotListeners.takeAndRemove((int) listenerId);
   }
 
   @Override
