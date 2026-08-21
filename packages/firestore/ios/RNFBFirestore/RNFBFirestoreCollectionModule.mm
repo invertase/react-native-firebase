@@ -96,7 +96,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreCollection);
 
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
-  [firestore getQueryNamed:queryName]
+  [firestore getQueryNamed:queryName
                 completion:^(FIRQuery *query) {
                   if (query == nil) {
                     [self sendSnapshotError:firebaseApp
