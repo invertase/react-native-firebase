@@ -28,6 +28,7 @@
 #import "RNFBRCTEventEmitter.h"
 #import "RNFBStorageCommon.h"
 #import "RNFBStorageHelper.h"
+#import "RNFBStorageTaskRegistry.h"
 
 static NSString *const RNFB_STORAGE_EVENT = @"storage_event";
 static NSString *const RNFB_STORAGE_STATE_CHANGED = @"state_changed";
@@ -36,7 +37,7 @@ static NSString *const RNFB_STORAGE_UPLOAD_FAILURE = @"upload_failure";
 static NSString *const RNFB_STORAGE_DOWNLOAD_SUCCESS = @"download_success";
 static NSString *const RNFB_STORAGE_DOWNLOAD_FAILURE = @"download_failure";
 
-static NSMutableDictionary *PENDING_TASKS;
+static RNFBStorageTaskRegistry *pendingTasks;
 
 // The iOS SDK has a short memory on settings, store these globally and set them in each time
 static NSString *emulatorHost = nil;
@@ -54,16 +55,14 @@ static NSTimeInterval maxOperationRetryTime = 120;
 + (void)initializeSharedStateOnce {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    PENDING_TASKS = [[NSMutableDictionary alloc] init];
+    pendingTasks = [[RNFBStorageTaskRegistry alloc] init];
     emulatorConfigs = [[NSMutableDictionary alloc] init];
   });
 }
 
 + (void)invalidate {
   [self initializeSharedStateOnce];
-  for (NSString *key in [PENDING_TASKS allKeys]) {
-    [PENDING_TASKS removeObjectForKey:key];
-  }
+  [pendingTasks cancelAll];
 }
 
 #pragma mark -
@@ -283,7 +282,10 @@ static NSTimeInterval maxOperationRetryTime = 120;
     downloadTask = [storageReference writeToFile:localFile];
   });
 
-  PENDING_TASKS[taskIdNumber] = downloadTask;
+  if (![pendingTasks putOrDiscard:taskIdNumber value:downloadTask]) {
+    reject(@"internal", @"Handle id already registered", nil);
+    return;
+  }
 
   [downloadTask
       observeStatus:FIRStorageTaskStatusResume
@@ -324,7 +326,7 @@ static NSTimeInterval maxOperationRetryTime = 120;
   [downloadTask
       observeStatus:FIRStorageTaskStatusSuccess
             handler:^(FIRStorageTaskSnapshot *snapshot) {
-              [PENDING_TASKS removeObjectForKey:taskIdNumber];
+              [pendingTasks take:taskIdNumber];
 
               NSDictionary *stateChangedEventBody =
                   [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
@@ -349,7 +351,7 @@ static NSTimeInterval maxOperationRetryTime = 120;
   [downloadTask
       observeStatus:FIRStorageTaskStatusFailure
             handler:^(FIRStorageTaskSnapshot *snapshot) {
-              [PENDING_TASKS removeObjectForKey:taskIdNumber];
+              [pendingTasks take:taskIdNumber];
 
               NSDictionary *stateChangedEventBody =
                   [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
@@ -501,7 +503,7 @@ static NSTimeInterval maxOperationRetryTime = 120;
 + (NSNumber *)setTaskStatus:(NSString *)appName taskId:(double)taskId status:(double)status {
   [self initializeSharedStateOnce];
   NSNumber *taskIdNumber = @(taskId);
-  id task = PENDING_TASKS[taskIdNumber];
+  id task = [pendingTasks get:taskIdNumber];
   if (task == nil) {
     return @NO;
   }
@@ -546,7 +548,7 @@ static NSTimeInterval maxOperationRetryTime = 120;
           (currentStatus == FIRStorageTaskStatusResume ||
            currentStatus == FIRStorageTaskStatusProgress ||
            currentStatus == FIRStorageTaskStatusPause)) {
-        [PENDING_TASKS removeObjectForKey:taskIdNumber];
+        [pendingTasks take:taskIdNumber];
         if ([task isKindOfClass:[FIRStorageDownloadTask class]]) {
           [(FIRStorageDownloadTask *)task cancel];
         } else {
@@ -595,7 +597,10 @@ static NSTimeInterval maxOperationRetryTime = 120;
                       resolver:(RCTPromiseResolveBlock)resolve
                       rejecter:(RCTPromiseRejectBlock)reject {
   [self initializeSharedStateOnce];
-  PENDING_TASKS[taskId] = uploadTask;
+  if (![pendingTasks putOrDiscard:taskId value:uploadTask]) {
+    reject(@"internal", @"Handle id already registered", nil);
+    return;
+  }
 
   [uploadTask
       observeStatus:FIRStorageTaskStatusResume
@@ -635,7 +640,7 @@ static NSTimeInterval maxOperationRetryTime = 120;
 
   [uploadTask observeStatus:FIRStorageTaskStatusSuccess
                     handler:^(FIRStorageTaskSnapshot *snapshot) {
-                      [PENDING_TASKS removeObjectForKey:taskId];
+                      [pendingTasks take:taskId];
 
                       NSDictionary *eventBody =
                           [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
@@ -661,7 +666,7 @@ static NSTimeInterval maxOperationRetryTime = 120;
   [uploadTask
       observeStatus:FIRStorageTaskStatusFailure
             handler:^(FIRStorageTaskSnapshot *snapshot) {
-              [PENDING_TASKS removeObjectForKey:taskId];
+              [pendingTasks take:taskId];
 
               NSMutableDictionary *taskSnapshotDict =
                   [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];

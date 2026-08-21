@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
     'ios/RNFBStorage/*.h',
     'ios/generated/**/*.h',
   ]
-  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**'
 
   # Must be set before install_modules_dependencies so RN can append use_frameworks
   # HEADER_SEARCH_PATHS (React-debug etc.). Assigning after overwrites those paths

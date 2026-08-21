@@ -1,0 +1,251 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E7000000000000000000000A /* RNFBHandleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000008 /* RNFBHandleMap.m */; };
+		E7000000000000000000000B /* RNFBStorageTaskRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000018 /* RNFBStorageTaskRegistry.m */; };
+		E7000000000000000000000C /* RNFBStorageTaskRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000009 /* RNFBStorageTaskRegistryTests.m */; };
+		E70000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E70000000000000000000014 /* XCTest.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		E70000000000000000000003 /* RNFBStorageUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNFBStorageUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E70000000000000000000007 /* RNFBHandleMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBHandleMap.h; path = ../../../app/ios/RNFBApp/RNFBHandleMap.h; sourceTree = SOURCE_ROOT; };
+		E70000000000000000000008 /* RNFBHandleMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBHandleMap.m; path = ../../../app/ios/RNFBApp/RNFBHandleMap.m; sourceTree = SOURCE_ROOT; };
+		E70000000000000000000009 /* RNFBStorageTaskRegistryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBStorageTaskRegistryTests.m; sourceTree = "<group>"; };
+		E70000000000000000000016 /* RNFBStorageTaskRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBStorageTaskRegistry.h; path = ../RNFBStorage/RNFBStorageTaskRegistry.h; sourceTree = SOURCE_ROOT; };
+		E70000000000000000000018 /* RNFBStorageTaskRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBStorageTaskRegistry.m; path = ../RNFBStorage/RNFBStorageTaskRegistry.m; sourceTree = SOURCE_ROOT; };
+		E70000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E7000000000000000000000D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E70000000000000000000015 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E70000000000000000000004 = {
+			isa = PBXGroup;
+			children = (
+				E70000000000000000000006 /* Sources */,
+				E70000000000000000000005 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E70000000000000000000005 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E70000000000000000000003 /* RNFBStorageUnitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E70000000000000000000006 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				E70000000000000000000007 /* RNFBHandleMap.h */,
+				E70000000000000000000008 /* RNFBHandleMap.m */,
+				E70000000000000000000016 /* RNFBStorageTaskRegistry.h */,
+				E70000000000000000000018 /* RNFBStorageTaskRegistry.m */,
+				E70000000000000000000009 /* RNFBStorageTaskRegistryTests.m */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E70000000000000000000002 /* RNFBStorageUnitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E70000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBStorageUnitTests" */;
+			buildPhases = (
+				E7000000000000000000000E /* Sources */,
+				E7000000000000000000000D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RNFBStorageUnitTests;
+			productName = RNFBStorageUnitTests;
+			productReference = E70000000000000000000003 /* RNFBStorageUnitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E70000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2600;
+				ORGANIZATIONNAME = Invertase;
+				TargetAttributes = {
+					E70000000000000000000002 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+				};
+			};
+			buildConfigurationList = E70000000000000000000012 /* Build configuration list for PBXProject "RNFBStorageUnitTests" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E70000000000000000000004;
+			productRefGroup = E70000000000000000000005 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E70000000000000000000002 /* RNFBStorageUnitTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E7000000000000000000000E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E7000000000000000000000A /* RNFBHandleMap.m in Sources */,
+				E7000000000000000000000B /* RNFBStorageTaskRegistry.m in Sources */,
+				E7000000000000000000000C /* RNFBStorageTaskRegistryTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		E7000000000000000000001A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Debug;
+		};
+		E7000000000000000000001B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Release;
+		};
+		E70000000000000000000010 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_CODE_COVERAGE = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../../app/ios",
+					"$(SRCROOT)/../../../app/ios/RNFBApp",
+					"$(SRCROOT)/../RNFBStorage",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_CFLAGS = (
+					"-fprofile-instr-generate",
+					"-fcoverage-mapping",
+				);
+				OTHER_LDFLAGS = (
+					"-fprofile-instr-generate",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBStorageUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Debug;
+		};
+		E70000000000000000000011 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_CODE_COVERAGE = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../../app/ios",
+					"$(SRCROOT)/../../../app/ios/RNFBApp",
+					"$(SRCROOT)/../RNFBStorage",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBStorageUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E70000000000000000000012 /* Build configuration list for PBXProject "RNFBStorageUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E7000000000000000000001A /* Debug */,
+				E7000000000000000000001B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E70000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBStorageUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E70000000000000000000010 /* Debug */,
+				E70000000000000000000011 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E70000000000000000000001 /* Project object */;
+}
