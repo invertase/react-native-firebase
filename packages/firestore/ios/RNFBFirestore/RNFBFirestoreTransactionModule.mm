@@ -21,9 +21,10 @@
 #import "RNFBApp/RCTConvert+FIRApp.h"
 
 #import "RNFBFirestoreTransactionModule.h"
+#import "RNFBFirestoreTransactionRegistry.h"
 #import "RNFBFirestoreTurboModules.h"
 
-static __strong NSMutableDictionary *transactions;
+static RNFBFirestoreTransactionRegistry *transactions;
 static NSString *const RNFB_FIRESTORE_TRANSACTION_EVENT = @"firestore_transaction_event";
 
 @interface RNFBFirestoreTransactionModule () <NativeRNFBTurboFirestoreTransactionSpec,
@@ -45,7 +46,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
   self = [super init];
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    transactions = [[NSMutableDictionary alloc] init];
+    transactions = [[RNFBFirestoreTransactionRegistry alloc] init];
   });
   return self;
 }
@@ -59,9 +60,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
 }
 
 - (void)invalidate {
-  for (NSString *key in [transactions allKeys]) {
-    [transactions removeObjectForKey:key];
-  }
+  [transactions abortAll];
 }
 
 #pragma mark -
@@ -85,24 +84,27 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
     @synchronized(transactionState) {
       transactionState[@"semaphore"] = semaphore;
       transactionState[@"transaction"] = transaction;
-
-      if (!transactions[[transactionIdNumber stringValue]]) {
-        transactions[[transactionIdNumber stringValue]] = transactionState;
-      }
-
-      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableDictionary *eventMap = [NSMutableDictionary new];
-        eventMap[@"type"] = @"update";
-        [[RNFBRCTEventEmitter shared]
-            sendEventWithName:RNFB_FIRESTORE_TRANSACTION_EVENT
-                         body:@{
-                           @"listenerId" : transactionIdNumber,
-                           @"appName" : [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name],
-                           @"databaseId" : databaseId,
-                           @"body" : eventMap,
-                         }];
-      });
     }
+
+    if (![transactions putOrSkip:transactionIdNumber value:transactionState]) {
+      *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain
+                                          code:FIRFirestoreErrorCodeAborted
+                                      userInfo:@{}];
+      return nil;
+    }
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      NSMutableDictionary *eventMap = [NSMutableDictionary new];
+      eventMap[@"type"] = @"update";
+      [[RNFBRCTEventEmitter shared]
+          sendEventWithName:RNFB_FIRESTORE_TRANSACTION_EVENT
+                       body:@{
+                         @"listenerId" : transactionIdNumber,
+                         @"appName" : [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name],
+                         @"databaseId" : databaseId,
+                         @"body" : eventMap,
+                       }];
+    });
 
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, 15 * NSEC_PER_SEC);
     BOOL timedOut = dispatch_semaphore_wait(semaphore, delayTime) != 0;
@@ -163,6 +165,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
   };
 
   id completionBlock = ^(id result, NSError *error) {
+    [transactions take:transactionIdNumber];
     @synchronized(transactionState) {
       if (aborted == NO) {
         NSMutableDictionary *eventMap = [NSMutableDictionary new];
@@ -187,8 +190,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
                            @"body" : eventMap,
                          }];
       }
-
-      [transactions removeObjectForKey:[transactionIdNumber stringValue]];
     }
   };
 
@@ -209,15 +210,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
                         reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   NSNumber *transactionIdNumber = @(transactionId);
+  NSMutableDictionary *transactionState = [transactions get:transactionIdNumber];
 
-  @synchronized(transactions[[transactionIdNumber stringValue]]) {
-    NSMutableDictionary *transactionState = transactions[[transactionIdNumber stringValue]];
+  if (!transactionState) {
+    DLog(@"transactionGetDocument called for non-existent transactionId %@", transactionIdNumber);
+    return;
+  }
 
-    if (!transactionState) {
-      DLog(@"transactionGetDocument called for non-existent transactionId %@", transactionIdNumber);
-      return;
-    }
-
+  @synchronized(transactionState) {
     NSError *error = nil;
     FIRTransaction *transaction = [transactionState valueForKey:@"transaction"];
     FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
@@ -248,14 +248,13 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
                 databaseId:(NSString *)databaseId
              transactionId:(double)transactionId {
   NSNumber *transactionIdNumber = @(transactionId);
+  NSMutableDictionary *transactionState = [transactions get:transactionIdNumber];
 
-  @synchronized(transactions[[transactionIdNumber stringValue]]) {
-    NSMutableDictionary *transactionState = transactions[[transactionIdNumber stringValue]];
+  if (!transactionState) {
+    return;
+  }
 
-    if (!transactionState) {
-      return;
-    }
-
+  @synchronized(transactionState) {
     dispatch_semaphore_t semaphore = transactionState[@"semaphore"];
     transactionState[@"aborted"] = @(true);
     dispatch_semaphore_signal(semaphore);
@@ -267,15 +266,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
                  transactionId:(double)transactionId
                  commandBuffer:(NSArray *)commandBuffer {
   NSNumber *transactionIdNumber = @(transactionId);
+  NSMutableDictionary *transactionState = [transactions get:transactionIdNumber];
 
-  @synchronized(transactions[[transactionIdNumber stringValue]]) {
-    NSMutableDictionary *transactionState = transactions[[transactionIdNumber stringValue]];
+  if (!transactionState) {
+    DLog(@"transactionApplyBuffer called for non-existent transactionId %@", transactionIdNumber);
+    return;
+  }
 
-    if (!transactionState) {
-      DLog(@"transactionApplyBuffer called for non-existent transactionId %@", transactionIdNumber);
-      return;
-    }
-
+  @synchronized(transactionState) {
     dispatch_semaphore_t semaphore = [transactionState valueForKey:@"semaphore"];
     [transactionState setValue:commandBuffer forKey:@"commandBuffer"];
     dispatch_semaphore_signal(semaphore);

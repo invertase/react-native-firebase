@@ -22,11 +22,12 @@
 #import "FirebaseFirestoreInternal/FIRPersistentCacheIndexManager.h"
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBFirestoreCommon.h"
+#import "RNFBFirestoreListenerRegistry.h"
 #import "RNFBFirestoreTurboModules.h"
 #import "RNFBPreferences.h"
 
 NSMutableDictionary *emulatorConfigs;
-static __strong NSMutableDictionary *snapshotsInSyncListeners;
+static RNFBFirestoreListenerRegistry *snapshotsInSyncListeners;
 static NSString *const RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC = @"firestore_snapshots_in_sync_event";
 
 @interface RNFBFirestoreModule () <NativeRNFBTurboFirestoreSpec, RCTBridgeModule>
@@ -45,6 +46,23 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestore);
 
 + (BOOL)requiresMainQueueSetup {
   return NO;
+}
+
+- (id)init {
+  self = [super init];
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    snapshotsInSyncListeners = [[RNFBFirestoreListenerRegistry alloc] init];
+  });
+  return self;
+}
+
+- (void)dealloc {
+  [self invalidate];
+}
+
+- (void)invalidate {
+  [snapshotsInSyncListeners removeAll];
 }
 
 #pragma mark -
@@ -256,7 +274,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestore);
                 listenerId:(double)listenerId {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   NSNumber *listenerIdNumber = @(listenerId);
-  if (snapshotsInSyncListeners[listenerIdNumber]) {
+  if ([snapshotsInSyncListeners get:listenerIdNumber] != nil) {
     return;
   }
 
@@ -273,18 +291,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestore);
                                                }];
   }];
 
-  snapshotsInSyncListeners[listenerIdNumber] = listener;
+  [snapshotsInSyncListeners putOrDiscard:listenerIdNumber value:listener];
 }
 
 - (void)removeSnapshotsInSync:(NSString *)appName
                    databaseId:(NSString *)databaseId
                    listenerId:(double)listenerId {
   NSNumber *listenerIdNumber = @(listenerId);
-  id<FIRListenerRegistration> listener = snapshotsInSyncListeners[listenerIdNumber];
-  if (listener) {
-    [listener remove];
-    [snapshotsInSyncListeners removeObjectForKey:listenerIdNumber];
-  }
+  [snapshotsInSyncListeners takeAndRemove:listenerIdNumber];
 }
 
 - (NSMutableDictionary *)taskProgressToDictionary:(FIRLoadBundleTaskProgress *)progress {

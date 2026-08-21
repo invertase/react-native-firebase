@@ -22,7 +22,6 @@ import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.g
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.instanceCache;
 
 import android.content.Context;
-import android.util.SparseArray;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
@@ -39,7 +38,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
-  private static SparseArray<ListenerRegistration> onSnapshotInSyncListeners = new SparseArray<>();
+  private static final RNFBFirestoreListenerRegistry onSnapshotInSyncListeners =
+      new RNFBFirestoreListenerRegistry();
 
   private static HashMap<String, String> emulatorConfigs = new HashMap<>();
 
@@ -65,15 +65,15 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
                       listenerId));
             });
 
-    onSnapshotInSyncListeners.put(listenerId, listenerRegistration);
+    onSnapshotInSyncListeners.putOrDiscard(listenerId, listenerRegistration);
   }
 
   void removeSnapshotsInSync(String appName, String databaseId, int listenerId) {
-    ListenerRegistration listenerRegistration = onSnapshotInSyncListeners.get(listenerId);
-    if (listenerRegistration != null) {
-      listenerRegistration.remove();
-      onSnapshotInSyncListeners.remove(listenerId);
-    }
+    onSnapshotInSyncListeners.takeAndRemove(listenerId);
+  }
+
+  void invalidateSnapshotsInSync() {
+    onSnapshotInSyncListeners.takeAllAndRemove();
   }
 
   Task<Void> disableNetwork(String appName, String databaseId) {

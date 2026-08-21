@@ -25,7 +25,6 @@ import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerial
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getQueryForFirestore;
 
-import android.util.SparseArray;
 import com.facebook.fbreact.specs.NativeRNFBTurboFirestoreCollectionSpec;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
@@ -37,8 +36,8 @@ public class NativeRNFBTurboFirestoreCollection extends NativeRNFBTurboFirestore
   private final FirestoreTurboModuleSupport turboSupport =
       new FirestoreTurboModuleSupport("RNFBCollection");
   private static final String SERVICE_NAME = "FirestoreCollection";
-  private static SparseArray<ListenerRegistration> collectionSnapshotListeners =
-      new SparseArray<>();
+  private static final RNFBFirestoreListenerRegistry collectionSnapshotListeners =
+      new RNFBFirestoreListenerRegistry();
 
   public NativeRNFBTurboFirestoreCollection(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -46,13 +45,7 @@ public class NativeRNFBTurboFirestoreCollection extends NativeRNFBTurboFirestore
 
   @Override
   public void invalidate() {
-    for (int i = 0, size = collectionSnapshotListeners.size(); i < size; i++) {
-      int key = collectionSnapshotListeners.keyAt(i);
-      ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(key);
-      listenerRegistration.remove();
-    }
-    collectionSnapshotListeners.clear();
-
+    collectionSnapshotListeners.takeAllAndRemove();
     turboSupport.invalidate();
   }
 
@@ -123,10 +116,9 @@ public class NativeRNFBTurboFirestoreCollection extends NativeRNFBTurboFirestore
 
   @Override
   public void collectionOffSnapshot(String appName, String databaseId, double listenerId) {
-    ListenerRegistration listenerRegistration = collectionSnapshotListeners.get((int) listenerId);
+    ListenerRegistration listenerRegistration = collectionSnapshotListeners.take((int) listenerId);
     if (listenerRegistration != null) {
       listenerRegistration.remove();
-      collectionSnapshotListeners.remove((int) listenerId);
       turboSupport.removeEventListeningExecutor(Integer.toString((int) listenerId));
     }
   }
@@ -373,12 +365,7 @@ public class NativeRNFBTurboFirestoreCollection extends NativeRNFBTurboFirestore
     final EventListener<QuerySnapshot> listener =
         (querySnapshot, exception) -> {
           if (exception != null) {
-            ListenerRegistration listenerRegistration =
-                collectionSnapshotListeners.get((int) listenerId);
-            if (listenerRegistration != null) {
-              listenerRegistration.remove();
-              collectionSnapshotListeners.remove((int) listenerId);
-            }
+            collectionSnapshotListeners.takeAndRemove((int) listenerId);
             sendOnSnapshotError(appName, databaseId, listenerId, exception);
           } else {
             sendOnSnapshotEvent(appName, databaseId, listenerId, querySnapshot, metadataChanges);
@@ -388,7 +375,7 @@ public class NativeRNFBTurboFirestoreCollection extends NativeRNFBTurboFirestore
     ListenerRegistration listenerRegistration =
         firestoreQuery.query.addSnapshotListener(snapshotListenOptionsBuilder.build(), listener);
 
-    collectionSnapshotListeners.put((int) listenerId, listenerRegistration);
+    collectionSnapshotListeners.putOrDiscard((int) listenerId, listenerRegistration);
   }
 
   private void handleQueryGet(
