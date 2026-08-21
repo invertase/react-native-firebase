@@ -145,18 +145,14 @@ end
 
 ### Framework-embedding fallback
 
-RNFB normally installs its SPM framework-embedding phase automatically. If
-`pod install` warns that automatic embedding could not be configured, call the
-documented fallback in your existing `post_install` block:
+RNFB normally installs its SPM framework-embedding phase automatically after
+CocoaPods has integrated `[CP] Embed Pods Frameworks` into the app target
+(`post_integrate`). If `pod install` warns that automatic embedding could not
+be configured, call the documented fallback from `post_integrate` (use
+`post_install` only if your CocoaPods version has no `post_integrate` hook):
 
 ```ruby
-post_install do |installer|
-  react_native_post_install(
-    installer,
-    config[:reactNativePath],
-    # your existing options
-  )
-
+post_integrate do |installer|
   rnfirebase_add_spm_embed_phase(installer)
 end
 ```
@@ -252,12 +248,13 @@ time with duplicate symbols (and `pod install` rejects the combination).
   ```
 
 - **Archive fails with `Undefined symbols ... _OBJC_CLASS_$_FIRApp`:** RNFB
-  links `FirebaseCore` into your app target automatically so the required
+  links `FirebaseCore` into your app target automatically (after CocoaPods
+  integrates `[CP] Embed Pods Frameworks`) so the required
   `[FIRApp configure]`/`FirebaseApp.configure()` call links. This only
   surfaces if that automatic step could not run; call
-  `rnfirebase_add_spm_core_to_app_target(installer)` in your `post_install`
-  block as a fallback if your own native code also calls Firebase APIs
-  directly.
+  `rnfirebase_add_spm_core_to_app_target(installer)` from `post_integrate`
+  (or `post_install` on CocoaPods without that hook) as a fallback if your
+  own native code also calls Firebase APIs directly.
 - **A stale "firebase-ios-sdk" Swift Package reference remains on the app
   target after switching from SPM to `$RNFirebaseDisableSPM = true`:** RNFB
   removes it automatically on the next `pod install`; if that could not run,

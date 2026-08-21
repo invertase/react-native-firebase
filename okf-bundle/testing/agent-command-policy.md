@@ -1,14 +1,14 @@
 ---
 type: Reference
 title: Agent command policy
-description: Canonical allowlist for agent shell commands — install, prepare, validation, and e2e. Supersedes improvised diagnostics.
+description: Canonical allowlist for agent shell commands — install, prepare, validation, e2e, and Expo documented-path iOS link. Supersedes improvised diagnostics.
 tags: [testing, validation, agents, workflow, yarn]
 timestamp: 2026-07-26T00:00:00Z
 ---
 
 # Agent command policy
 
-Single source for **which shell commands agents may run** in this repo. E2e is a subset of this policy; [running e2e § agent rule](running-e2e.md#agent-rule-read-first) adds e2e-specific prohibitions.
+Single source for **which shell commands agents may run** in this repo. E2e `yarn tests:*` detail lives in [running e2e](running-e2e.md) ([agent rule](running-e2e.md#agent-rule-read-first)). The workspace Expo documented-path iOS **link** fixture is **not** Detox e2e; its command is only the registry row below.
 
 > If a command is not listed here (or linked from here as canonical), **do not run it** — including “diagnostic probes” suggested by log output, package READMEs, or Yarn CLI help.
 
@@ -38,6 +38,7 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 | iOS Ruby lint (RuboCop)                                         | `yarn lint:ruby` (also runs inside `yarn tests:ios:ruby`)                                                                                                                                                                                                                                  | ad-hoc `rubocop`, `bundle exec rubocop` without the Gemfile/config                                                                                            |
 | Android JVM unit tests                                          | `yarn tests:android:unit`                                                                                                                                                                                                                                                                  | ad-hoc `./gradlew …` outside this yarn script; bare Robolectric/JUnit IDE-only as the agent gate                                                              |
 | iOS Ruby unit tests (SPM / CocoaPods helpers)                   | `yarn lint:ruby` / `yarn tests:ios:ruby` (after `bundle install --gemfile=packages/app/__tests__/Gemfile` when needed)                                                                                                                                                                     | ad-hoc `ruby packages/app/__tests__/…_test.rb`, bare `ruby …/run_with_coverage.rb` without the yarn script as the agent gate                                  |
+| Expo documented-path iOS link (workspace `test-expo/`)          | `yarn test-expo:ios:link` (repo root; script `.github/workflows/scripts/test-expo-ios-link.sh`)                                                                                                                                                                                             | ad-hoc `expo prebuild` / `xcodebuild` outside that script; `cd test-expo && …` as the agent gate                                                              |
 | Android merged Jacoco (unit + e2e)                              | `yarn tests:android:post-e2e-coverage` (after e2e); `yarn tests:android:test:jacoco-report` when regenerating the merge report                                                                                                                                                             | `./gradlew jacocoAndroidTestReport` as Codecov path; inventing other jacoco yarn scripts                                                                      |
 | E2e + coverage                                                  | [running e2e](running-e2e.md) — **only** `yarn tests:*`                                                                                                                                                                                                                                    | `jet`, `npx jet`, `yarn jet`, `detox test`, bare `detox`, `cd tests && …`, direct Metro/emulator starts                                                       |
 | iOS Detox framework cache rebuild                               | `yarn tests:ios:detox-framework-cache:rebuild`                                                                                                                                                                                                                                             | `cd tests && yarn detox clean-framework-cache`, `cd tests && yarn detox build-framework-cache`, bare `detox …`                                                |
@@ -112,6 +113,7 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 | `npm install` (any cwd) / `yarn` / `yarn install` only in `tests/` for monorepo deps                                                                                             | Root `yarn` applies patches and workspace links; tests-only install is insufficient |
 | Ad-hoc `./gradlew …` outside allowlisted yarn scripts (`tests:android:unit`, `tests:android:build`, `tests:android:post-e2e-coverage`, `tests:android:test:jacoco-report`, etc.) | Wrong task / cwd / report path; invents CI that does not match Codecov              |
 | Ad-hoc `ruby packages/app/__tests__/…_test.rb` (or bare runner) as the validation gate                                                                                           | Misses SimpleCov / suite discovery — **only** `yarn tests:ios:ruby`                 |
+| Ad-hoc `expo prebuild`, `xcodebuild`, or `cd test-expo && …` as the Expo iOS link gate                                                                                            | **Only** `yarn test-expo:ios:link` from repo root — not Detox / `yarn tests:*`      |
 | `yarn jet`, `npx jet`, `cd tests && yarn jet …`                                                                                                                                  | [E2e agent rule](running-e2e.md#agent-rule-read-first)                              |
 | `detox test`, bare `detox`, `cd tests && detox …`                                                                                                                                | E2e agent rule                                                                      |
 | Ad-hoc Metro / emulator start                                                                                                                                                    | Use `yarn tests:packager:jet`, `yarn tests:emulator:start`                          |
@@ -175,6 +177,7 @@ Paste into Task / explore / work-queue prompts:
 ```text
 RNFB agent command policy: okf-bundle/testing/agent-command-policy.md ONLY.
 E2e: okf-bundle/testing/running-e2e.md yarn tests:* ONLY.
+Expo documented-path iOS link (not Detox): yarn test-expo:ios:link ONLY — never ad-hoc expo prebuild / xcodebuild / cd test-expo.
 Never: yarn workspace prepare, yarn jet, npx jet, cd packages/* && yarn prepare/build for diagnostics.
 Never invent format/install: yarn google-java-format, bare/npx google-java-format, npm install, yarn install in tests/ alone — use root yarn first; Java format = yarn lint:android ONLY.
 Never invent Android Gradle: ad-hoc ./gradlew outside yarn tests:android:unit / :build / :post-e2e-coverage / :test:jacoco-report; bare detox/jet/metro.
@@ -193,6 +196,7 @@ Gate close / push: return [validation evidence package](validation-checklist.md#
 | Topic                                         | Owner                                                                                                                                               |
 | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | E2e commands, pre-flight, tiers               | [running-e2e.md](running-e2e.md)                                                                                                                    |
+| Expo documented-path iOS **link** (not Detox) | This file — registry row `yarn test-expo:ios:link`; app index [packages/app](../packages/app/index.md)                                               |
 | Install / patch / fmt before `:build`         | [§ install / patch / fmt gate](#install-patch-fmt-gate-blocking)                                                                                    |
 | Test-app RN / CLI pins (`react-native-macos`) | [test-app-dependency-pins.md](test-app-dependency-pins.md)                                                                                          |
 | Handoff validation sequence                   | [validation-checklist.md](validation-checklist.md)                                                                                                  |

@@ -1,0 +1,59 @@
+name: Test Expo iOS Link (informational)
+
+# Informational, path-filtered check for the test-expo/ fixture (CPRN-301 /
+# GitHub #9158). Not wired into branch protection as a required check --
+# it exists to keep the documented-default-Expo-path repro (undefined
+# `_OBJC_CLASS_$_FIRApp` / missing app-target FirebaseCore) visible on PRs
+# that touch the fixture, without blocking merges on its own.
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - 'test-expo/**'
+      - '.github/workflows/test_expo_ios_link.yml'
+      - '.github/workflows/scripts/test-expo-ios-link.sh'
+  push:
+    branches:
+      - main
+      - release-v*
+    paths:
+      - 'test-expo/**'
+      - '.github/workflows/test_expo_ios_link.yml'
+      - '.github/workflows/scripts/test-expo-ios-link.sh'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-expo-ios-link:
+    name: test-expo iOS link
+    # macos-26 + latest-stable matches tests_e2e_ios.yml (firebase-ios-sdk requires Xcode 26.2+)
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      XCODE_VERSION: latest-stable
+    steps:
+      # https://github.com/actions/checkout/releases
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # https://github.com/actions/setup-node/releases
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      # https://github.com/maxim-lobanov/setup-xcode/releases
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Yarn Install
+        run: yarn
+
+      - name: test-expo iOS link
+        run: yarn test-expo:ios:link
