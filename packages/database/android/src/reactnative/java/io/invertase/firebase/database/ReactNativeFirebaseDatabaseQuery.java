@@ -25,15 +25,14 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import java.util.HashMap;
-import java.util.Iterator;
+import io.invertase.firebase.common.RNFBHandleCollisionException;
+import java.util.List;
 import java.util.Map;
 
-public class ReactNativeFirebaseDatabaseQuery {
+public class ReactNativeFirebaseDatabaseQuery implements DatabaseQueryHandle {
 
   public Query query;
-  private HashMap<String, ChildEventListener> childEventListeners = new HashMap<>();
-  private HashMap<String, ValueEventListener> valueEventListeners = new HashMap<>();
+  final RNFBDatabaseListenerRegistry listeners = new RNFBDatabaseListenerRegistry();
 
   ReactNativeFirebaseDatabaseQuery(DatabaseReference reference, ReadableArray modifiers) {
     this.query = reference;
@@ -78,7 +77,11 @@ public class ReactNativeFirebaseDatabaseQuery {
    * @param listener
    */
   public void addEventListener(String eventRegistrationKey, ValueEventListener listener) {
-    valueEventListeners.put(eventRegistrationKey, listener);
+    try {
+      listeners.putValue(eventRegistrationKey, listener);
+    } catch (RNFBHandleCollisionException | NullPointerException collision) {
+      return;
+    }
     query.addValueEventListener(listener);
   }
 
@@ -89,7 +92,11 @@ public class ReactNativeFirebaseDatabaseQuery {
    * @param listener
    */
   public void addEventListener(String eventRegistrationKey, ChildEventListener listener) {
-    childEventListeners.put(eventRegistrationKey, listener);
+    try {
+      listeners.putChild(eventRegistrationKey, listener);
+    } catch (RNFBHandleCollisionException | NullPointerException collision) {
+      return;
+    }
     query.addChildEventListener(listener);
   }
 
@@ -117,36 +124,26 @@ public class ReactNativeFirebaseDatabaseQuery {
    * @param eventRegistrationKey
    */
   public void removeEventListener(String eventRegistrationKey) {
-    if (valueEventListeners.containsKey(eventRegistrationKey)) {
-      query.removeEventListener(valueEventListeners.get(eventRegistrationKey));
-      valueEventListeners.remove(eventRegistrationKey);
+    Object valueListener = listeners.takeValue(eventRegistrationKey);
+    if (valueListener instanceof ValueEventListener) {
+      query.removeEventListener((ValueEventListener) valueListener);
     }
 
-    if (childEventListeners.containsKey(eventRegistrationKey)) {
-      query.removeEventListener(childEventListeners.get(eventRegistrationKey));
-      childEventListeners.remove(eventRegistrationKey);
+    Object childListener = listeners.takeChild(eventRegistrationKey);
+    if (childListener instanceof ChildEventListener) {
+      query.removeEventListener((ChildEventListener) childListener);
     }
   }
 
   /** Iterates over all current event listeners on the current query and removes each one */
+  @Override
   public void removeAllEventListeners() {
-    if (hasListeners()) {
-      Iterator valueIterator = valueEventListeners.entrySet().iterator();
-
-      while (valueIterator.hasNext()) {
-        Map.Entry pair = (Map.Entry) valueIterator.next();
-        ValueEventListener valueEventListener = (ValueEventListener) pair.getValue();
-        query.removeEventListener(valueEventListener);
-        valueIterator.remove();
-      }
-
-      Iterator childIterator = childEventListeners.entrySet().iterator();
-
-      while (childIterator.hasNext()) {
-        Map.Entry pair = (Map.Entry) childIterator.next();
-        ChildEventListener childEventListener = (ChildEventListener) pair.getValue();
-        query.removeEventListener(childEventListener);
-        childIterator.remove();
+    List<Object> remaining = listeners.takeAll();
+    for (Object listener : remaining) {
+      if (listener instanceof ValueEventListener) {
+        query.removeEventListener((ValueEventListener) listener);
+      } else if (listener instanceof ChildEventListener) {
+        query.removeEventListener((ChildEventListener) listener);
       }
     }
   }
@@ -158,8 +155,7 @@ public class ReactNativeFirebaseDatabaseQuery {
    * @return
    */
   public Boolean hasEventListener(String eventRegistrationKey) {
-    return valueEventListeners.containsKey(eventRegistrationKey)
-        || childEventListeners.containsKey(eventRegistrationKey);
+    return listeners.hasEventListener(eventRegistrationKey);
   }
 
   /**
@@ -167,8 +163,9 @@ public class ReactNativeFirebaseDatabaseQuery {
    *
    * @return
    */
+  @Override
   public Boolean hasListeners() {
-    return valueEventListeners.size() > 0 || childEventListeners.size() > 0;
+    return listeners.hasListeners();
   }
 
   /**

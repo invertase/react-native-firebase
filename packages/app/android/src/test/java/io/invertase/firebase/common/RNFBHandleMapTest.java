@@ -157,6 +157,27 @@ public class RNFBHandleMapTest {
   }
 
   @Test
+  public void takeIf_whenPredicateTrue_removesAndReturns() throws Exception {
+    Object handle = new Object();
+    map.put(1, handle);
+    assertSame(handle, map.takeIf(1, v -> v == handle));
+    assertNull(map.get(1));
+  }
+
+  @Test
+  public void takeIf_whenPredicateFalse_leavesMapping() throws Exception {
+    Object handle = new Object();
+    map.put(1, handle);
+    assertNull(map.takeIf(1, v -> false));
+    assertSame(handle, map.get(1));
+  }
+
+  @Test
+  public void takeIf_whenMissing_returnsNull() {
+    assertNull(map.takeIf(99, v -> true));
+  }
+
+  @Test
   public void take_sameIdFromTwoThreads_onlyOneReturnsNonNull() throws Exception {
     Object handle = new Object();
     map.put(1, handle);

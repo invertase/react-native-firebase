@@ -58,6 +58,12 @@ typedef NS_ERROR_ENUM(RNFBHandleMapErrorDomain, RNFBHandleMapErrorCode){
 /// Removes and returns the handle for `key`, or nil if absent.
 - (nullable id)take:(id)key;
 
+/// When `key` is mapped and `condition` returns YES for the handle, removes and returns it;
+/// otherwise returns nil and leaves the map unchanged. Lookup, condition, and removal run under one
+/// lock — use for check-and-take that must not race with concurrent `put` / `take` on the same key.
+/// Keep `condition` lightweight (no SDK cancel/remove).
+- (nullable id)takeIf:(id)key when:(BOOL (^)(id value))condition;
+
 /// Snapshot of current values, then clear. Cancel/remove each returned object after this method
 /// returns, not under this map's lock.
 - (NSArray *)takeAll;

@@ -94,6 +94,17 @@ NSErrorDomain const RNFBHandleMapErrorDomain = @"io.invertase.firebase.RNFBHandl
   }
 }
 
+- (id)takeIf:(id)key when:(BOOL (^)(id))condition {
+  @synchronized(self.lock) {
+    id value = self.map[key];
+    if (value != nil && condition(value)) {
+      [self.map removeObjectForKey:key];
+      return value;
+    }
+    return nil;
+  }
+}
+
 - (NSArray *)takeAll {
   @synchronized(self.lock) {
     NSArray *values = [self.map allValues];

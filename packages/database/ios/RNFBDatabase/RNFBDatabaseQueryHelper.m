@@ -26,29 +26,24 @@
 #import "RNFBDatabaseCommon.h"
 #import "RNFBDatabaseQuery.h"
 #import "RNFBDatabaseQueryHelper.h"
+#import "RNFBDatabaseQueryRegistry.h"
 #import "RNFBRCTEventEmitter.h"
 
-static __strong NSMutableDictionary *queryDictionary;
+static RNFBDatabaseQueryRegistry *queryRegistry;
 static NSString *const RNFB_DATABASE_SYNC = @"database_sync_event";
 
 @implementation RNFBDatabaseQueryHelper
 
-+ (NSMutableDictionary *)queryDictionary {
++ (RNFBDatabaseQueryRegistry *)queryRegistry {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    queryDictionary = [[NSMutableDictionary alloc] init];
+    queryRegistry = [[RNFBDatabaseQueryRegistry alloc] init];
   });
-  return queryDictionary;
+  return queryRegistry;
 }
 
 + (void)invalidate {
-  NSMutableDictionary *queries = [self queryDictionary];
-  NSArray *queryKeys = [queries allKeys];
-  for (NSString *key in queryKeys) {
-    RNFBDatabaseQuery *query = queries[key];
-    [query removeAllEventListeners];
-    [queries removeObjectForKey:key];
-  }
+  [[self queryRegistry] removeAll];
 }
 
 + (RNFBDatabaseQuery *)getDatabaseQueryInstance:(FIRDatabaseReference *)reference
@@ -59,17 +54,23 @@ static NSString *const RNFB_DATABASE_SYNC = @"database_sync_event";
 + (RNFBDatabaseQuery *)getDatabaseQueryInstance:(NSString *)key
                                       reference:(FIRDatabaseReference *)reference
                                       modifiers:(NSArray *)modifiers {
-  NSMutableDictionary *queries = [self queryDictionary];
-  RNFBDatabaseQuery *cachedQuery = queries[key];
+  RNFBDatabaseQueryRegistry *queries = [self queryRegistry];
+  id cachedQuery = [queries get:key];
 
-  if (cachedQuery != nil) {
+  if ([cachedQuery isKindOfClass:[RNFBDatabaseQuery class]]) {
     return cachedQuery;
   }
 
   RNFBDatabaseQuery *query = [[RNFBDatabaseQuery alloc] initWithReferenceAndModifiers:reference
                                                                             modifiers:modifiers];
 
-  queries[key] = query;
+  NSError *error = nil;
+  if (![queries put:key value:query error:&error]) {
+    id winner = [queries get:key];
+    if ([winner isKindOfClass:[RNFBDatabaseQuery class]]) {
+      return winner;
+    }
+  }
   return query;
 }
 
@@ -167,7 +168,9 @@ static NSString *const RNFB_DATABASE_SYNC = @"database_sync_event";
     FIRDatabaseHandle handle = [databaseQuery.query observeEventType:firDataEventType
                                       andPreviousSiblingKeyWithBlock:andPreviousSiblingKeyWithBlock
                                                      withCancelBlock:errorBlock];
-    [databaseQuery addEventListener:eventRegistrationKey handle:handle];
+    if (![databaseQuery addEventListener:eventRegistrationKey handle:handle]) {
+      [databaseQuery.query removeObserverWithHandle:handle];
+    }
   }
 }
 
@@ -206,14 +209,14 @@ static NSString *const RNFB_DATABASE_SYNC = @"database_sync_event";
 }
 
 + (void)off:(NSString *)queryKey eventRegistrationKey:(NSString *)eventRegistrationKey {
-  NSMutableDictionary *queries = [self queryDictionary];
-  RNFBDatabaseQuery *databaseQuery = queries[queryKey];
+  RNFBDatabaseQueryRegistry *queries = [self queryRegistry];
+  id cached = [queries get:queryKey];
 
-  if (databaseQuery != nil) {
+  if ([cached isKindOfClass:[RNFBDatabaseQuery class]]) {
+    RNFBDatabaseQuery *databaseQuery = cached;
     [databaseQuery removeEventListener:eventRegistrationKey];
 
-    if (![databaseQuery hasListeners]) {
-      [queries removeObjectForKey:queryKey];
+    if ([queries takeIfIdle:queryKey] != nil) {
       [RNFBDatabaseCommon removeReferenceByKey:queryKey];
     }
   }

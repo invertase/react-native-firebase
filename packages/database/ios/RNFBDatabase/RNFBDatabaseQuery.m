@@ -17,6 +17,7 @@
  */
 
 #import "RNFBDatabaseQuery.h"
+#import "RNFBDatabaseListenerRegistry.h"
 
 @implementation RNFBDatabaseQuery
 
@@ -26,7 +27,7 @@
 
   if (self) {
     _query = [self buildQueryWithModifiers:reference modifiers:modifiers];
-    _listeners = [NSMutableDictionary dictionary];
+    _listeners = [[RNFBDatabaseListenerRegistry alloc] init];
   }
 
   return self;
@@ -112,32 +113,32 @@
   }
 }
 
-- (void)addEventListener:(NSString *)eventRegistrationKey handle:(FIRDatabaseHandle)handle {
-  _listeners[eventRegistrationKey] = @(handle);
+- (BOOL)addEventListener:(NSString *)eventRegistrationKey handle:(FIRDatabaseHandle)handle {
+  NSError *error = nil;
+  return [_listeners put:eventRegistrationKey value:@(handle) error:&error];
 }
 
 - (void)removeEventListener:(NSString *)eventRegistrationKey {
-  FIRDatabaseHandle handle = (FIRDatabaseHandle)[_listeners[eventRegistrationKey] integerValue];
-  if (handle) {
-    [_query removeObserverWithHandle:handle];
-    [_listeners removeObjectForKey:eventRegistrationKey];
+  NSNumber *handleNumber = [_listeners take:eventRegistrationKey];
+  if (handleNumber != nil) {
+    [_query removeObserverWithHandle:(FIRDatabaseHandle)[handleNumber integerValue]];
   }
 }
 
 - (void)removeAllEventListeners {
-  NSArray *eventRegistrationKeys = [_listeners allKeys];
-
-  for (NSString *eventRegistrationKey in eventRegistrationKeys) {
-    [self removeEventListener:eventRegistrationKey];
+  NSArray *handles = [_listeners takeAll];
+  for (NSNumber *handleNumber in handles) {
+    FIRDatabaseHandle handle = (FIRDatabaseHandle)[handleNumber integerValue];
+    [_query removeObserverWithHandle:handle];
   }
 }
 
 - (BOOL)hasEventListener:(NSString *)eventRegistrationKey {
-  return _listeners[eventRegistrationKey] != nil;
+  return [_listeners hasEventListener:eventRegistrationKey];
 }
 
 - (BOOL)hasListeners {
-  return [[_listeners allKeys] count] > 0;
+  return [_listeners hasListeners];
 }
 
 @end
