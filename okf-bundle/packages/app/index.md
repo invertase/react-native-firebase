@@ -4,7 +4,7 @@ Knowledge for the core app package: Firebase app lifecycle, Expo config plugin, 
 
 **Policy:** [OKF documentation and commit policy](../../documentation-policy.md). Agent shell commands: [agent command policy](../../testing/agent-command-policy.md) only.
 
-The workspace Expo documented-path iOS **link** fixture (`test-expo/`) is not Detox e2e. Canonical command: `yarn test-expo:ios:link` ([agent command policy](../../testing/agent-command-policy.md)). That path currently fails at link with undefined `_OBJC_CLASS_$_FIRApp` (missing app-target FirebaseCore) — GitHub [#9158](https://github.com/invertase/react-native-firebase/issues/9158) / [CPRN-301](https://linear.app/invertase/issue/CPRN-301/ios-spm-dynamic-linkage-app-target-never-gets-firebasecore). Do not treat duplicate `_FIRFirebaseVersion` ([#9202](https://github.com/invertase/react-native-firebase/issues/9202)) as this closer.
+The workspace Expo documented-path iOS **link** fixture (`test-expo/`) is not Detox e2e. Canonical command: `yarn test-expo:ios:link` ([agent command policy](../../testing/agent-command-policy.md)). App-target FirebaseCore linking and CocoaPods hook order: [iOS SPM native integration](../../ios-spm-native-imports.md#app-target-firebasecore-link-package-dependency-alone-is-not-enough). Do not treat duplicate `_FIRFirebaseVersion` ([#9202](https://github.com/invertase/react-native-firebase/issues/9202)) as that closer.
 
 ## Documents
 

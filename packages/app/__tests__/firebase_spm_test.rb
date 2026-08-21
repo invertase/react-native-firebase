@@ -1489,6 +1489,125 @@ class FirebaseSpmTest < Minitest::Test
     assert_empty Pod::UI.warnings
   end
 
+  # Current CocoaPods: `run_podfile_post_integrate_hooks` exists and is what
+  # actually runs after `integrate_user_project` writes `[CP] Embed Pods
+  # Frameworks`. User-project SPM helpers must not run from post_install or
+  # Expo CNG `--clean` (no CP phase yet) silently skips the app target.
+  def new_fake_cocoapods_installer_class_with_post_integrate
+    klass = Class.new do
+      attr_reader :original_hook_calls, :original_integrate_calls
+
+      def initialize
+        @original_hook_calls = 0
+        @original_integrate_calls = 0
+      end
+
+      define_method(:run_podfile_post_install_hooks) do
+        @original_hook_calls += 1
+        :original_result
+      end
+
+      define_method(:run_podfile_post_integrate_hooks) do
+        @original_integrate_calls += 1
+        :integrate_result
+      end
+    end
+    klass.send(:private, :run_podfile_post_install_hooks)
+    klass.send(:private, :run_podfile_post_integrate_hooks)
+    klass
+  end
+
+  def test_hook_defers_user_project_helpers_to_post_integrate_when_available
+    load_firebase_spm
+    user_hook_calls = []
+    Object.define_method(:rnfirebase_run_spm_user_project_hooks) { |installer| user_hook_calls << installer }
+
+    klass = new_fake_cocoapods_installer_class_with_post_integrate
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    instance = klass.new
+
+    instance.send(:run_podfile_post_install_hooks)
+    assert_equal 1, instance.original_hook_calls
+    assert_empty user_hook_calls
+
+    result = instance.send(:run_podfile_post_integrate_hooks)
+    assert_equal :integrate_result, result
+    assert_equal 1, instance.original_integrate_calls
+    assert_equal 1, user_hook_calls.length
+    assert_same instance, user_hook_calls[0]
+  end
+
+  def test_hook_with_post_integrate_is_idempotent_across_repeated_podspec_requires
+    load_firebase_spm
+    user_hook_calls = []
+    Object.define_method(:rnfirebase_run_spm_user_project_hooks) { |installer| user_hook_calls << installer }
+
+    klass = new_fake_cocoapods_installer_class_with_post_integrate
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    instance = klass.new
+
+    instance.send(:run_podfile_post_install_hooks)
+    instance.send(:run_podfile_post_integrate_hooks)
+
+    assert_equal 1, instance.original_hook_calls
+    assert_equal 1, instance.original_integrate_calls
+    assert_equal 1, user_hook_calls.length
+  end
+
+  # Expo CNG `prebuild --clean` graph: at post_install the app target has no
+  # `[CP] Embed Pods Frameworks` yet, so add_core / embed no-op. After
+  # integrate adds that phase, post_integrate must attach FirebaseCore.
+  def test_expo_clean_prebuild_attaches_firebase_core_on_post_integrate
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    target = MockTarget.new([]) # no CP embed yet -- Expo template / pre-integrate
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    klass = new_fake_cocoapods_installer_class_with_post_integrate
+    klass.send(:attr_accessor, :aggregate_targets)
+    klass.send(:define_method, :pods_project) { nil }
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    instance = klass.new
+    instance.aggregate_targets = installer.aggregate_targets
+
+    instance.send(:run_podfile_post_install_hooks)
+    assert_empty target.package_product_dependencies
+    assert_equal 0, user_project.save_count
+    refute(target.shell_script_build_phases.any? { |phase| phase.name == RNFIREBASE_SPM_EMBED_PHASE_NAME })
+
+    # CocoaPods UserProjectIntegrator adds the CP embed phase, then
+    # run_podfile_post_integrate_hooks.
+    target.shell_script_build_phases << MockPhase.new('[CP] Embed Pods Frameworks')
+    instance.send(:run_podfile_post_integrate_hooks)
+
+    assert_equal 1, target.package_product_dependencies.length
+    assert_equal 'FirebaseCore', target.package_product_dependencies[0].product_name
+    assert_equal 1, target.frameworks_build_phase.files.length
+    assert(target.shell_script_build_phases.any? { |phase| phase.name == RNFIREBASE_SPM_EMBED_PHASE_NAME })
+    assert user_project.save_count >= 1
+  end
+
+  def test_run_spm_user_project_hooks_swallows_embed_errors_then_verifies
+    load_firebase_spm
+    Object.define_method(:rnfirebase_add_spm_embed_phase) { |*| raise 'boom' }
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+    RNFirebaseSPM.activate!('12.10.0')
+    Pod::UI.warnings.clear
+
+    error = assert_raises(Pod::Informative) do
+      rnfirebase_run_spm_user_project_hooks(installer)
+    end
+    assert_includes error.message, 'Failed to add the Firebase SPM embed build phase'
+    assert_equal 1, Pod::UI.warnings.length
+    assert_includes Pod::UI.warnings[0], 'embed Firebase SPM frameworks'
+  end
+
   # ── rnfirebase_verify_spm_embed_phase_applied! ──
 
   def test_verify_embed_phase_noop_when_spm_not_active

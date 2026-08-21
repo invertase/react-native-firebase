@@ -244,9 +244,31 @@ Maintainer check of the **Expo documented path** (SPM + dynamic frameworks +
 prebuild-generated AppDelegate `FIRApp` call) is **`yarn test-expo:ios:link`**
 only — [agent command policy](testing/agent-command-policy.md). That is a
 workspace **link** fixture (`test-expo/`), not Detox e2e (`yarn tests:ios:*`).
-Do not restate `expo prebuild` / `xcodebuild` here. The fixture currently
-fails with the same `_OBJC_CLASS_$_FIRApp` signature; see
-[App package index](packages/app/index.md).
+Do not restate `expo prebuild` / `xcodebuild` here. Package index:
+[App package](packages/app/index.md).
+
+### User-project helpers must run after CocoaPods integrate
+
+`rnfirebase_add_spm_core_to_app_target` and `[RNFB] Embed Firebase SPM
+Frameworks` skip every native target that does not already have
+`[CP] Embed Pods Frameworks`. CocoaPods `post_install`
+(`run_podfile_post_install_hooks`) runs **before** `integrate_user_project`,
+which is when that CP phase is added and the app `.pbxproj` is saved.
+
+Expo `prebuild --clean` starts from a template with **no** CP embed phase
+yet. Running those helpers from `post_install` therefore skipped every
+native target: integrate then wrote the CP phase without a FirebaseCore
+`PBXBuildFile` or the RNFB embed phase, which is the `_OBJC_CLASS_$_FIRApp`
+link failure on GitHub
+[#9158](https://github.com/invertase/react-native-firebase/issues/9158) /
+Linear CPRN-301. Incremental `pod install` on a project that already has
+the Frameworks `PBXBuildFile` still no-ops (no double-link).
+
+`packages/app/firebase_spm.rb` therefore runs **user-project** SPM helpers
+from `run_podfile_post_integrate_hooks` (end of `integrate_user_project`,
+after that save). Pods-project work (UUID counter, RN SPM integrity,
+static-linkage guard) stays on `post_install`. If `post_integrate` is
+missing, user-project helpers stay on `post_install`.
 
 ### Idempotency guard must distinguish "declared" from "linked"
 
@@ -284,10 +306,12 @@ app-bundle problem, and internal interop targets are not public products.
 ### Chosen integration
 
 `packages/app/firebase_spm.rb` tracks whether any RNFB dependency selected SPM.
-It wraps CocoaPods'
-`Pod::Installer#run_podfile_post_install_hooks` and adds
-`[RNFB] Embed Firebase SPM Frameworks` to application targets that already have
-`[CP] Embed Pods Frameworks`.
+User-project mutations (embed phase, FirebaseCore on the app target) run from
+CocoaPods `run_podfile_post_integrate_hooks` so `[CP] Embed Pods Frameworks`
+already exists; see
+[user-project helpers must run after CocoaPods integrate](#user-project-helpers-must-run-after-cocoapods-integrate).
+The embed helper adds `[RNFB] Embed Firebase SPM Frameworks` only to
+application targets that already have that CP phase.
 
 The phase:
 
@@ -405,6 +429,10 @@ invariants:
 - no private/transitive Firebase target added as if it were a public product;
 - SPM mode still adds exactly one app framework-embedding phase and CocoaPods
   mode does not require it;
+- user-project SPM helpers (`rnfirebase_add_spm_core_to_app_target`, RNFB
+  embed phase) still run from `post_integrate` (after `[CP] Embed Pods
+  Frameworks` exists), not from `post_install`, except the older-CocoaPods
+  fallback that has no `post_integrate`;
 - `rnfirebase_add_spm_core_to_app_target`'s guard still checks for a matching
   `PBXBuildFile`/`product_ref` on the Frameworks build phase, not just a
   `package_product_dependencies` entry, so it self-heals a pre-fix
