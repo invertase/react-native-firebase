@@ -8,9 +8,9 @@ timestamp: 2026-08-21T00:00:00Z
 
 # Expo SPM FirebaseCore app-target link — work queue
 
-> **IN PROGRESS:** Pickup **E1** (product fix). Branch: `feature/cprn-301-ios-spm-dynamic-linkage-app-target-never-gets-firebasecore`.
+> **IN PROGRESS:** none (E1 commit landing). Branch: `feature/cprn-301-ios-spm-dynamic-linkage-app-target-never-gets-firebasecore`.
 > **Goal:** Documented Expo path (SPM on, `useFrameworks: "dynamic"`, prebuilt RNCore on) links with `FirebaseCore` on the app target so `FirebaseApp.configure()` / `FIRApp` resolves. Closer is past `_OBJC_CLASS_$_FIRApp`, not past `#9202` duplicate `_FIRFirebaseVersion`.
-> **Linear:** [CPRN-301](https://linear.app/invertase/issue/CPRN-301/ios-spm-dynamic-linkage-app-target-never-gets-firebasecore). Upstream GitHub [#9158](https://github.com/invertase/react-native-firebase/issues/9158). Prior fix [#9164](https://github.com/invertase/react-native-firebase/pull/9164) is on this tree; Expo `test-expo/` still red with the same signature.
+> **Linear:** [CPRN-301](https://linear.app/invertase/issue/CPRN-301/ios-spm-dynamic-linkage-app-target-never-gets-firebasecore). Upstream GitHub [#9158](https://github.com/invertase/react-native-firebase/issues/9158). E0+E1 on this branch.
 > **Blocks:** [CPRN-321](https://linear.app/invertase/issue/CPRN-321/expo-documented-path-ios-link-fails-under-prebuilt-rncore) / [#9202](https://github.com/invertase/react-native-firebase/issues/9202). Do not chase duplicate-symbol work here.
 
 Ephemeral tracker; see [OKF policy](../../documentation-policy.md). Work types / tiers / gate field ids: [iteration vocabulary](../../testing/iteration-vocabulary.md). **Loop, gates, host rule, harness:** [change authoring workflow](../../testing/change-authoring-workflow.md) — not restated. **Agent commands:** [agent command policy](../../testing/agent-command-policy.md) only.
@@ -23,7 +23,7 @@ Durable SPM context: [iOS SPM native integration decisions](../../ios-spm-native
 
 | Decision | Notes |
 | -------- | ----- |
-| Reopen CPRN-301; do not open a parallel Private Task | Same `_OBJC_CLASS_$_FIRApp` / missing app-target FirebaseCore link as #9158. #9164 shipped; Expo prebuild path still fails. |
+| Reopen CPRN-301; do not open a parallel Private Task | Same `_OBJC_CLASS_$_FIRApp` / missing app-target FirebaseCore link as #9158. #9164 shipped; Expo `--clean` still skipped the helper until E1 `post_integrate`. |
 | Red/green closer is `yarn test-expo:ios:link` | E0 red with `#9158` signature. E1 green past that signature. Stop if red is `undefined RCTEventEmitter` (wrong graph) or `#9202` duplicate `_FIRFirebaseVersion` (belongs on CPRN-321). |
 | Reuse WIP on this branch | E0 fixture/script/workflow were retargeted from CPRN-321 WIP; do not rebuild `test-expo/` from scratch unless broken. |
 | Forbidden “fixes” | `disableSPM`, `forceStaticLinking` of RNFB, `buildReactNativeFromSource` as the product fix. |
@@ -54,11 +54,11 @@ Durable SPM context: [iOS SPM native integration decisions](../../ios-spm-native
 
 ## Current snapshot
 
-**Label:** `cprn-301-expo-spm-firebasecore-link-e0-commit-2026-08-21`
+**Label:** `cprn-301-expo-spm-firebasecore-link-e1-commit-2026-08-21`
 
-**Next pickup:** **E1** — product fix; `yarn test-expo:ios:link` green past `_OBJC_CLASS_$_FIRApp`.
+**Next pickup:** none on this queue after E1 commit. Unblock CPRN-321 / #9202 chase separately.
 
-**Current gates:** E0 all gates closed. E1 `implementation_gate` open.
+**Current gates:** E0 closed. E1–E3 closed with E1 commit.
 
 ---
 
@@ -67,10 +67,10 @@ Durable SPM context: [iOS SPM native integration decisions](../../ios-spm-native
 | Item | Scope | `commit_subject` | `implementation_gate` | `review_gate` | `commit_gate` | `next_work_type` | `validation_tier` | `platform` | Notes |
 | ---- | ----- | ---------------- | ----------------------- | ------------- | ------------- | ---------------- | ------------------- | ---------- | ----- |
 | **E0** | Red Expo documented-path link fixture (`test-expo/` + script + optional informational workflow) | `test(expo): reproduce FIRApp undefined under SPM dynamic prebuild` | closed | closed | closed | `commit` | `none` | `ios` | Gates closed with evidence. Reviewer green, no findings. Docs DRY: allowlist + app/SPM/e2e indexes point at `yarn test-expo:ios:link` (not Detox). Split commit from E1. |
-| **E1** | Product fix so helper links FirebaseCore under Expo prebuild; Ruby/Jest | `fix(ios): link FirebaseCore into Expo app target under SPM` | open | open | open | `implementation` | `unit-focused` | `ios` | Pass: same command green past FIRApp. First suspect (skip unless `[CP] Embed Pods Frameworks`) is **weaker**: E0 pbxproj **has** that phase and the helper still did not attach. |
-| **E2** | Independent review of E1 (E0 already committed) | `fix(ios): link FirebaseCore into Expo app target under SPM` | open | open | open | `independent-review` | `area-focused` | `ios` | Frozen tree. Include Ruby SPM tests + `yarn test-expo:ios:link`. |
-| **E3** | Durable docs / OKF only if path changes | (same as product commit or docs-only subject) | open | open | open | `documentation` | `none` | — | E0 already shipped command-policy + index links. Skip unless E1 changes SPM/Expo path text. |
-| **E4** | Commit memorial | (subjects above) | open | open | open | `commit` | `none` | — | Stage product + this queue together. |
+| **E1** | Product fix so helper links FirebaseCore under Expo prebuild; Ruby/Jest | `fix(ios): link FirebaseCore into Expo app target under SPM` | closed | closed | closed | `commit` | `none` | `ios` | Reviewer green, no findings. Docs: post_integrate invariant in `ios-spm-native-imports.md` + consumer `docs/ios-spm.mdx`. |
+| **E2** | Independent review of E1 (E0 already committed) | `fix(ios): link FirebaseCore into Expo app target under SPM` | closed | closed | closed | `commit` | `none` | `ios` | Same frozen review as E1; no findings. |
+| **E3** | Durable docs / OKF only if path changes | `fix(ios): link FirebaseCore into Expo app target under SPM` | closed | closed | closed | `commit` | `none` | — | Hook-timing invariant recorded. Bundled in E1 product commit. |
+| **E4** | Commit memorial | `fix(ios): link FirebaseCore into Expo app target under SPM` | closed | closed | closed | `commit` | `none` | — | Stage product + this queue together. |
 
 ---
 
@@ -96,13 +96,24 @@ Durable SPM context: [iOS SPM native integration decisions](../../ios-spm-native
 
 ## E1 — green fix acceptance
 
-- [ ] Root cause named (why `#9164` helper did not attach under this Expo prebuild graph)
-- [ ] Product change in `packages/app` (likely `firebase_spm.rb` and/or Pod activation path)
-- [ ] Ruby unit coverage for the Expo/app-target selection gap (extend `packages/app/__tests__/firebase_spm*_test.rb`)
-- [ ] `yarn test-expo:ios:link` green past `_OBJC_CLASS_$_FIRApp`
-- [ ] If shared native/plugin code changed beyond Ruby: `yarn tests:ios:build` per change-authoring when required
+- [x] Root cause named (why `#9164` helper did not attach under this Expo prebuild graph)
+- [x] Product change in `packages/app` (likely `firebase_spm.rb` and/or Pod activation path)
+- [x] Ruby unit coverage for the Expo/app-target selection gap (extend `packages/app/__tests__/firebase_spm*_test.rb`)
+- [x] `yarn test-expo:ios:link` green past `_OBJC_CLASS_$_FIRApp`
+- [x] If shared native/plugin code changed beyond Ruby: `yarn tests:ios:build` per change-authoring when required (N/A — Ruby only)
 
-**E1 unit-focused validation evidence:** _(fill on close)_
+**E1 validation evidence:** (implementer 2026-08-21; reviewer re-run 2026-08-21)
+
+| Step | Command | Exit | Evidence |
+| --- | --- | --- | --- |
+| install | `yarn` | 0 | repo root |
+| gems | `bundle install --gemfile=packages/app/__tests__/Gemfile` | 0 | first-time gems in this worktree |
+| ios Ruby (impl) | `yarn tests:ios:ruby` | 0 | 78 runs; 318/318 (100%); `coverage/ios-ruby/lcov.info` |
+| expo iOS link (impl) | `yarn test-expo:ios:link` | 0 | past FIRApp; **BUILD SUCCEEDED**; no `#9202`. `/tmp/test-expo-prebuild.log`, `/tmp/test-expo-xcodebuild.log` |
+| ios Ruby (review) | `yarn tests:ios:ruby` | 0 | RuboCop 8 files; 78 runs; 318/318 (100%); `coverage/ios-ruby/lcov.info` (2026-08-21 11:20) |
+| expo iOS link (review) | `yarn test-expo:ios:link` | 0 | past FIRApp; **BUILD SUCCEEDED**; no `#9202`. pbxproj has CP embed + `[RNFB] Embed Firebase SPM Frameworks` + FirebaseCore `PBXBuildFile`. `/tmp/test-expo-prebuild.log` (11:20), `/tmp/test-expo-xcodebuild.log` (11:21) |
+
+**E1 coverage evidence (Ruby, reviewer):** `firebase_spm.rb` 288/288 executable lines; suite 318/318. Touched `rnfirebase_run_spm_user_project_hooks` + post_integrate alias: 100%. Gaps: none.
 
 ---
 
