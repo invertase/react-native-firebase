@@ -37,7 +37,6 @@ import io.invertase.firebase.common.ReactNativeFirebaseEvent;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,8 +47,8 @@ public class NativeRNFBTurboConfig extends NativeRNFBTurboConfigSpec {
   private static final String SERVICE_NAME = "Config";
   private final UniversalFirebaseConfigModule module;
 
-  private static final HashMap<String, ConfigUpdateListenerRegistration>
-      mConfigUpdateRegistrations = new HashMap<>();
+  private static final RNFBRemoteConfigListenerRegistry configUpdateListeners =
+      new RNFBRemoteConfigListenerRegistry();
 
   public NativeRNFBTurboConfig(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -60,15 +59,7 @@ public class NativeRNFBTurboConfig extends NativeRNFBTurboConfigSpec {
   public void invalidate() {
     super.invalidate();
 
-    Iterator<Map.Entry<String, ConfigUpdateListenerRegistration>> configRegistrationsIterator =
-        mConfigUpdateRegistrations.entrySet().iterator();
-
-    while (configRegistrationsIterator.hasNext()) {
-      Map.Entry<String, ConfigUpdateListenerRegistration> pair = configRegistrationsIterator.next();
-      ConfigUpdateListenerRegistration mConfigRegistration = pair.getValue();
-      mConfigRegistration.remove();
-      configRegistrationsIterator.remove();
-    }
+    configUpdateListeners.takeAllAndRemove();
 
     module.onTearDown();
   }
@@ -198,79 +189,76 @@ public class NativeRNFBTurboConfig extends NativeRNFBTurboConfigSpec {
 
   @Override
   public void onConfigUpdated(String appName) {
-    if (mConfigUpdateRegistrations.get(appName) == null) {
-      ConfigUpdateListenerRegistration registration =
-          FirebaseRemoteConfig.getInstance(FirebaseApp.getInstance(appName))
-              .addOnConfigUpdateListener(
-                  new ConfigUpdateListener() {
-                    @Override
-                    public void onUpdate(@NotNull ConfigUpdate configUpdate) {
-                      ReactNativeFirebaseEventEmitter emitter =
-                          ReactNativeFirebaseEventEmitter.getSharedInstance();
-
-                      Set<String> updatedKeys = configUpdate.getUpdatedKeys();
-                      List<String> updatedKeysList = new ArrayList<>(updatedKeys);
-
-                      Map<String, Object> results = new HashMap<>();
-                      results.put("appName", appName);
-                      results.put("resultType", "success");
-                      results.put("updatedKeys", updatedKeysList);
-                      ReactNativeFirebaseEvent event =
-                          new ReactNativeFirebaseEvent(
-                              "on_config_updated", Arguments.makeNativeMap(results), appName);
-                      emitter.sendEvent(event);
-                    }
-
-                    @Override
-                    public void onError(@NotNull FirebaseRemoteConfigException error) {
-                      ReactNativeFirebaseEventEmitter emitter =
-                          ReactNativeFirebaseEventEmitter.getSharedInstance();
-
-                      WritableMap userInfoMap = Arguments.createMap();
-                      userInfoMap.putString("resultType", "error");
-                      userInfoMap.putString("appName", appName);
-
-                      FirebaseRemoteConfigException.Code code = error.getCode();
-                      switch (code) {
-                        case CONFIG_UPDATE_STREAM_ERROR:
-                          userInfoMap.putString("code", "config_update_stream_error");
-                          break;
-                        case CONFIG_UPDATE_MESSAGE_INVALID:
-                          userInfoMap.putString("code", "config_update_message_invalid");
-                          break;
-                        case CONFIG_UPDATE_NOT_FETCHED:
-                          userInfoMap.putString("code", "config_update_not_fetched");
-                          break;
-                        case CONFIG_UPDATE_UNAVAILABLE:
-                          userInfoMap.putString("code", "config_update_unavailable");
-                          break;
-                        case UNKNOWN:
-                          userInfoMap.putString("code", "unknown");
-                          break;
-                        default:
-                          userInfoMap.putString("code", "internal");
-                      }
-
-                      userInfoMap.putString("message", error.getMessage());
-                      userInfoMap.putString("nativeErrorMessage", error.getMessage());
-                      ReactNativeFirebaseEvent event =
-                          new ReactNativeFirebaseEvent("on_config_updated", userInfoMap, appName);
-                      emitter.sendEvent(event);
-                    }
-                  });
-
-      mConfigUpdateRegistrations.put(appName, registration);
+    if (configUpdateListeners.get(appName) != null) {
+      return;
     }
+
+    ConfigUpdateListenerRegistration registration =
+        FirebaseRemoteConfig.getInstance(FirebaseApp.getInstance(appName))
+            .addOnConfigUpdateListener(
+                new ConfigUpdateListener() {
+                  @Override
+                  public void onUpdate(@NotNull ConfigUpdate configUpdate) {
+                    ReactNativeFirebaseEventEmitter emitter =
+                        ReactNativeFirebaseEventEmitter.getSharedInstance();
+
+                    Set<String> updatedKeys = configUpdate.getUpdatedKeys();
+                    List<String> updatedKeysList = new ArrayList<>(updatedKeys);
+
+                    Map<String, Object> results = new HashMap<>();
+                    results.put("appName", appName);
+                    results.put("resultType", "success");
+                    results.put("updatedKeys", updatedKeysList);
+                    ReactNativeFirebaseEvent event =
+                        new ReactNativeFirebaseEvent(
+                            "on_config_updated", Arguments.makeNativeMap(results), appName);
+                    emitter.sendEvent(event);
+                  }
+
+                  @Override
+                  public void onError(@NotNull FirebaseRemoteConfigException error) {
+                    ReactNativeFirebaseEventEmitter emitter =
+                        ReactNativeFirebaseEventEmitter.getSharedInstance();
+
+                    WritableMap userInfoMap = Arguments.createMap();
+                    userInfoMap.putString("resultType", "error");
+                    userInfoMap.putString("appName", appName);
+
+                    FirebaseRemoteConfigException.Code code = error.getCode();
+                    switch (code) {
+                      case CONFIG_UPDATE_STREAM_ERROR:
+                        userInfoMap.putString("code", "config_update_stream_error");
+                        break;
+                      case CONFIG_UPDATE_MESSAGE_INVALID:
+                        userInfoMap.putString("code", "config_update_message_invalid");
+                        break;
+                      case CONFIG_UPDATE_NOT_FETCHED:
+                        userInfoMap.putString("code", "config_update_not_fetched");
+                        break;
+                      case CONFIG_UPDATE_UNAVAILABLE:
+                        userInfoMap.putString("code", "config_update_unavailable");
+                        break;
+                      case UNKNOWN:
+                        userInfoMap.putString("code", "unknown");
+                        break;
+                      default:
+                        userInfoMap.putString("code", "internal");
+                    }
+
+                    userInfoMap.putString("message", error.getMessage());
+                    userInfoMap.putString("nativeErrorMessage", error.getMessage());
+                    ReactNativeFirebaseEvent event =
+                        new ReactNativeFirebaseEvent("on_config_updated", userInfoMap, appName);
+                    emitter.sendEvent(event);
+                  }
+                });
+
+    configUpdateListeners.putOrDiscard(appName, registration::remove);
   }
 
   @Override
   public void removeConfigUpdateRegistration(String appName) {
-    ConfigUpdateListenerRegistration mConfigRegistration = mConfigUpdateRegistrations.get(appName);
-
-    if (mConfigRegistration != null) {
-      mConfigRegistration.remove();
-      mConfigUpdateRegistrations.remove(appName);
-    }
+    configUpdateListeners.takeAndRemove(appName);
   }
 
   @Override
