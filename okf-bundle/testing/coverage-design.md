@@ -52,9 +52,9 @@ Do not hand off closable gaps. Package workflows may define snapshot tooling (e.
 
 <a id="coverage-evidence-package"></a>
 
-## Coverage evidence package (blocking)
+## Coverage evidence package
 
-Required before **`review` gate** closes when the frozen diff touches `packages/*/lib/**`, native bridge sources (`packages/*/{android,ios}/**`), **or** iOS Ruby helpers (`packages/app/**/*.rb`). Jest green alone is insufficient.
+**Blocking.** Required before **`review` gate** closes when the frozen diff touches `packages/*/lib/**`, native bridge sources (`packages/*/{android,ios}/**`), **or** iOS Ruby helpers (`packages/app/**/*.rb`). Jest green alone is insufficient.
 
 Produce after fresh e2e on every required platform (when native/lib touched), then post-process native artifacts ([§ stale coverage](#stale-coverage-data)); for Ruby-only diffs, fresh `yarn tests:ios:ruby` is enough:
 

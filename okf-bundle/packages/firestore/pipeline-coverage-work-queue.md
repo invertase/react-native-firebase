@@ -255,7 +255,7 @@ Each J0 probe / J1–J6 bridge step follows **one** serial loop. No overlap. Wor
 | ----- | -------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **1** | `implementation`     | `implementation` | Code/e2e changes; Jest + **unit-focused** tier; `.only` / tight area narrowing OK locally; **no commit**                                                                         |
 | **2** | `independent-review` | `review`         | **Frozen tree**; **area-focused** tier; no `.only`; area narrowing only in `tests/app.js` + `tests/globals.js`; serial [host rule](../../testing/change-authoring-workflow.md#host-rule) |
-| **3** | `commit`             | `commit`         | One focused commit only after `review_gate` closed **with** [validation/coverage evidence](../../testing/validation-checklist.md#validation-evidence-package) recorded |
+| **3** | `commit`             | `commit`         | After `review_gate` closed: [change authoring § commit](../../testing/change-authoring-workflow.md#commit) |
 
 
 Canonical commands: [serialized dispatch](../../testing/running-e2e.md#serialized-e2e-dispatch), [one iteration](../../testing/running-e2e.md#running-one-iteration), [guard probes](pipeline-implementation-workflow.md#ios-guard-probe-iterations).

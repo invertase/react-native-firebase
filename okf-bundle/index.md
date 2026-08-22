@@ -4,7 +4,7 @@ okf_version: '0.1'
 
 # React Native Firebase knowledge bundle
 
-- [Documentation/commit policy](/documentation-policy.md) — durable vs ephemeral, commits as documentation, PR titles, OKF consistency
+- [Documentation/commit policy](/documentation-policy.md#durable-vs-ephemeral) — public **reference** docs vs ephemeral **fields** in work-queue files vs private items (private stays off GitHub); [Efficiency](/documentation-policy.md#efficiency); OKF consistency
 - [Documentation site maintenance](/documentation-site-maintenance.md) — docs.json, TypeDoc reference site, legacy `/reference/` redirect audits
 
 # CI workflows
