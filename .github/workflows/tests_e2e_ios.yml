@@ -237,6 +237,11 @@ jobs:
           max_attempts: 3
           command: yarn
 
+      # In-package macOS XCTest (Foundation). Analogous to yarn tests:android:unit.
+      # Produces coverage/ios-unit/lcov.info and merges into coverage/ios-native/lcov.info.
+      - name: iOS XCTest unit tests
+        run: yarn tests:ios:unit
+
       - name: Setup Ruby
         # https://github.com/ruby/setup-ruby/releases
         uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0

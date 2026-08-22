@@ -20,19 +20,19 @@ package io.invertase.firebase.database;
 import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
 
 import android.os.AsyncTask;
-import android.util.SparseArray;
 import com.facebook.fbreact.specs.NativeRNFBTurboDatabaseTransactionSpec;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.database.*;
+import io.invertase.firebase.common.RNFBHandleCollisionException;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import javax.annotation.Nonnull;
 
 public class NativeRNFBTurboDatabaseTransaction extends NativeRNFBTurboDatabaseTransactionSpec {
   private static final String SERVICE_NAME = "DatabaseTransaction";
-  private static SparseArray<ReactNativeFirebaseDatabaseTransactionHandler> transactionHandlers =
-      new SparseArray<>();
+  private static final RNFBDatabaseTransactionRegistry transactionHandlers =
+      new RNFBDatabaseTransactionRegistry();
   private final DatabaseTurboModuleSupport turboSupport =
       new DatabaseTurboModuleSupport("RNFBDatabaseTransaction");
 
@@ -42,17 +42,7 @@ public class NativeRNFBTurboDatabaseTransaction extends NativeRNFBTurboDatabaseT
 
   @Override
   public void invalidate() {
-    for (int i = 0, size = transactionHandlers.size(); i < size; i++) {
-      int key = transactionHandlers.keyAt(i);
-      ReactNativeFirebaseDatabaseTransactionHandler transactionHandler =
-          transactionHandlers.get(key);
-
-      if (transactionHandler != null) {
-        transactionHandler.abort();
-      }
-    }
-
-    transactionHandlers.clear();
+    transactionHandlers.takeAllAndAbort();
     turboSupport.invalidate();
   }
 
@@ -71,7 +61,11 @@ public class NativeRNFBTurboDatabaseTransaction extends NativeRNFBTurboDatabaseT
                   final ReactNativeFirebaseDatabaseTransactionHandler transactionHandler =
                       new ReactNativeFirebaseDatabaseTransactionHandler(
                           (int) transactionId, app, dbURL);
-                  transactionHandlers.put((int) transactionId, transactionHandler);
+                  try {
+                    transactionHandlers.registerReplacing((int) transactionId, transactionHandler);
+                  } catch (RNFBHandleCollisionException collision) {
+                    return Transaction.abort();
+                  }
                   final WritableMap updatesMap = transactionHandler.createUpdateMap(mutableData);
 
                   AsyncTask.execute(
@@ -109,13 +103,14 @@ public class NativeRNFBTurboDatabaseTransaction extends NativeRNFBTurboDatabaseT
                 @Override
                 public void onComplete(
                     DatabaseError error, boolean committed, DataSnapshot snapshot) {
-                  ReactNativeFirebaseDatabaseTransactionHandler transactionHandler =
-                      transactionHandlers.get((int) transactionId);
+                  DatabaseAbortable abortable = transactionHandlers.take((int) transactionId);
 
-                  if (transactionHandler == null) {
-                    transactionHandlers.delete((int) transactionId);
+                  if (!(abortable instanceof ReactNativeFirebaseDatabaseTransactionHandler)) {
                     return;
                   }
+
+                  ReactNativeFirebaseDatabaseTransactionHandler transactionHandler =
+                      (ReactNativeFirebaseDatabaseTransactionHandler) abortable;
 
                   WritableMap resultMap =
                       transactionHandler.createResultMap(error, committed, snapshot);
@@ -129,8 +124,6 @@ public class NativeRNFBTurboDatabaseTransaction extends NativeRNFBTurboDatabaseT
                           resultMap,
                           app,
                           (int) transactionId));
-
-                  transactionHandlers.delete((int) transactionId);
                 }
               },
               applyLocally);
@@ -140,11 +133,10 @@ public class NativeRNFBTurboDatabaseTransaction extends NativeRNFBTurboDatabaseT
   @Override
   public void transactionTryCommit(
       String app, String dbURL, double transactionId, ReadableMap updates) {
-    ReactNativeFirebaseDatabaseTransactionHandler handler =
-        transactionHandlers.get((int) transactionId);
+    DatabaseAbortable abortable = transactionHandlers.get((int) transactionId);
 
-    if (handler != null) {
-      handler.signalUpdateReceived(updates);
+    if (abortable instanceof ReactNativeFirebaseDatabaseTransactionHandler) {
+      ((ReactNativeFirebaseDatabaseTransactionHandler) abortable).signalUpdateReceived(updates);
     }
   }
 }

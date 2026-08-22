@@ -63,7 +63,7 @@ import org.robolectric.shadows.ShadowLooper;
  * preferences bridges.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 34, application = NativeRNFBTurboAppTest.HostApplication.class)
+@Config(application = NativeRNFBTurboAppTest.HostApplication.class)
 public class NativeRNFBTurboAppTest {
 
   public static class HostApplication extends Application implements ReactApplication {

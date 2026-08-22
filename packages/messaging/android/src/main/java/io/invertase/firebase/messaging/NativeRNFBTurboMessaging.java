@@ -374,7 +374,7 @@ public class NativeRNFBTurboMessaging extends NativeRNFBTurboMessagingSpec
           WritableNativeMap newInitialNotification = new WritableNativeMap();
           newInitialNotification.merge(remoteMessageMap);
           initialNotification = newInitialNotification;
-          ReactNativeFirebaseMessagingReceiver.notifications.remove(messageId);
+          ReactNativeFirebaseMessagingReceiver.notifications.take(messageId);
 
           ReactNativeFirebaseEventEmitter emitter =
               ReactNativeFirebaseEventEmitter.getSharedInstance();

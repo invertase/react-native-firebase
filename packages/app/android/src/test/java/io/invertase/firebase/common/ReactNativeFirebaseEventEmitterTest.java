@@ -65,7 +65,7 @@ import org.robolectric.shadows.ShadowLooper;
  * require the Detox/Jet harness.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 34, application = ReactNativeFirebaseEventEmitterTest.HostApplication.class)
+@Config(application = ReactNativeFirebaseEventEmitterTest.HostApplication.class)
 public class ReactNativeFirebaseEventEmitterTest {
 
   private static final String EVENT = "auth_state_changed";

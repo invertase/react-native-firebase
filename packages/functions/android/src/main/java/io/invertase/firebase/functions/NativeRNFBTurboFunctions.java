@@ -17,7 +17,6 @@ package io.invertase.firebase.functions;
  *
  */
 
-import android.util.SparseArray;
 import com.facebook.fbreact.specs.NativeRNFBTurboFunctionsSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -52,7 +51,8 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   private static final String DETAILS_KEY = "details";
   private static final String STREAMING_EVENT = "functions_streaming_event";
 
-  private static final SparseArray<Object> functionsStreamingListeners = new SparseArray<>();
+  private static final RNFBFunctionsStreamingRegistry functionsStreamingListeners =
+      new RNFBFunctionsStreamingRegistry();
   private final TaskExecutorService executorService;
 
   public NativeRNFBTurboFunctions(ReactApplicationContext reactContext) {
@@ -150,7 +150,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
 
   @Override
   public void removeFunctionsStreaming(String appName, String region, double listenerId) {
-    removeFunctionsStreamingListener((int) listenerId);
+    functionsStreamingListeners.takeAndCancel((int) listenerId);
   }
 
   // Internal implementation methods
@@ -222,6 +222,16 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       ReadableMap data,
       ReadableMap options,
       int listenerId) {
+    StreamingHolder holder = new StreamingHolder();
+    String collisionMessage = functionsStreamingListeners.putOrCollisionMessage(listenerId, holder);
+    if (collisionMessage != null) {
+      WritableMap errorMap = Arguments.createMap();
+      errorMap.putString(CODE_KEY, "internal");
+      errorMap.putString(MSG_KEY, collisionMessage);
+      emitStreamEvent(appName, listenerId, null, true, true, errorMap);
+      return;
+    }
+
     getExecutor()
         .execute(
             () -> {
@@ -268,8 +278,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
 
                       @Override
                       public void onSubscribe(Subscription s) {
-                        functionsStreamingListeners.put(listenerId, s);
-                        s.request(Long.MAX_VALUE);
+                        functionsStreamingListeners.attachOrCancel(listenerId, s);
                       }
 
                       @Override
@@ -286,45 +295,33 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                         }
 
                         if (isFinalResult) {
+                          functionsStreamingListeners.take(listenerId);
                           emitStreamEvent(appName, listenerId, responseData, true, false, null);
-                          removeFunctionsStreamingListener(listenerId);
-                        } else {
+                        } else if (functionsStreamingListeners.shouldEmit(listenerId)) {
                           emitStreamEvent(appName, listenerId, responseData, false, false, null);
                         }
                       }
 
                       @Override
                       public void onError(Throwable t) {
+                        functionsStreamingListeners.take(listenerId);
                         WritableMap errorMap = createErrorMap(t);
                         emitStreamEvent(appName, listenerId, null, true, true, errorMap);
-                        removeFunctionsStreamingListener(listenerId);
                       }
 
                       @Override
                       public void onComplete() {
-                        Object listener = functionsStreamingListeners.get(listenerId);
-                        if (listener != null) {
+                        if (functionsStreamingListeners.takeAndShouldEmitComplete(listenerId)) {
                           emitStreamEvent(appName, listenerId, null, true, false, null);
-                          removeFunctionsStreamingListener(listenerId);
                         }
                       }
                     });
               } catch (Exception e) {
+                functionsStreamingListeners.onExecutorFailure(listenerId);
                 WritableMap errorMap = createErrorMap(e);
                 emitStreamEvent(appName, listenerId, null, true, true, errorMap);
-                removeFunctionsStreamingListener(listenerId);
               }
             });
-  }
-
-  private void removeFunctionsStreamingListener(int listenerId) {
-    Object listener = functionsStreamingListeners.get(listenerId);
-    if (listener != null) {
-      if (listener instanceof Subscription) {
-        ((Subscription) listener).cancel();
-      }
-      functionsStreamingListeners.remove(listenerId);
-    }
   }
 
   private void emitStreamEvent(
@@ -348,10 +345,6 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
         new FirebaseFunctionsStreamHandler(STREAMING_EVENT, body, appName, listenerId);
 
     ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(handler);
-
-    if (done) {
-      removeFunctionsStreamingListener(listenerId);
-    }
   }
 
   private void handleFunctionsException(Exception exception, Promise promise) {
@@ -434,15 +427,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   public void invalidate() {
     super.invalidate();
 
-    // Cancel all active streaming listeners before shutdown
-    for (int i = 0; i < functionsStreamingListeners.size(); i++) {
-      int listenerId = functionsStreamingListeners.keyAt(i);
-      Object listener = functionsStreamingListeners.get(listenerId);
-      if (listener instanceof Subscription) {
-        ((Subscription) listener).cancel();
-      }
-    }
-    functionsStreamingListeners.clear();
+    functionsStreamingListeners.takeAllAndCancel();
 
     executorService.shutdown();
   }

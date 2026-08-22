@@ -10,11 +10,11 @@ import com.google.firebase.messaging.RemoteMessage;
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.SharedUtils;
-import java.util.HashMap;
 
 public class ReactNativeFirebaseMessagingReceiver extends BroadcastReceiver {
   private static final String TAG = "RNFirebaseMsgReceiver";
-  static HashMap<String, RemoteMessage> notifications = new HashMap<>();
+  static final RNFBMessagingNotificationRegistry<RemoteMessage> notifications =
+      new RNFBMessagingNotificationRegistry<>();
 
   @Override
   public void onReceive(Context context, Intent intent) {
@@ -45,9 +45,10 @@ public class ReactNativeFirebaseMessagingReceiver extends BroadcastReceiver {
     RemoteMessage remoteMessage = new RemoteMessage(intent.getExtras());
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
-    // Add a RemoteMessage if the message contains a notification payload
+    // Add a RemoteMessage if the message contains a notification payload.
+    // Unique put: duplicate message ids keep the first (no HashMap upsert).
     if (remoteMessage.getNotification() != null) {
-      notifications.put(remoteMessage.getMessageId(), remoteMessage);
+      notifications.putOrDiscard(remoteMessage.getMessageId(), remoteMessage);
       ReactNativeFirebaseMessagingStoreHelper.getInstance()
           .getMessagingStore()
           .storeFirebaseMessage(remoteMessage);

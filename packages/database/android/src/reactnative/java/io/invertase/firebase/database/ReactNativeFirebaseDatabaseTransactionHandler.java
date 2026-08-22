@@ -32,7 +32,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nullable;
 
-public class ReactNativeFirebaseDatabaseTransactionHandler {
+public class ReactNativeFirebaseDatabaseTransactionHandler implements DatabaseAbortable {
   private final ReentrantLock lock;
   private final Condition condition;
   public Object value;
@@ -81,8 +81,8 @@ public class ReactNativeFirebaseDatabaseTransactionHandler {
     }
   }
 
-  /** Abort the currently in progress transaction if any. */
-  void abort() {
+  @Override
+  public void abort() {
     lock.lock();
     try {
       abort = true;

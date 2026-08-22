@@ -26,11 +26,9 @@ import com.facebook.fbreact.specs.NativeRNFBTurboDatabaseQuerySpec;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.*;
+import io.invertase.firebase.common.RNFBHandleCollisionException;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,7 +36,7 @@ import javax.annotation.Nullable;
 public class NativeRNFBTurboDatabaseQuery extends NativeRNFBTurboDatabaseQuerySpec {
   private final DatabaseTurboModuleSupport turboSupport =
       new DatabaseTurboModuleSupport("RNFBDatabaseQuery");
-  private HashMap<String, ReactNativeFirebaseDatabaseQuery> queryMap = new HashMap<>();
+  private final RNFBDatabaseQueryRegistry queryMap = new RNFBDatabaseQueryRegistry();
 
   public NativeRNFBTurboDatabaseQuery(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -47,14 +45,7 @@ public class NativeRNFBTurboDatabaseQuery extends NativeRNFBTurboDatabaseQuerySp
   @Override
   @CallSuper
   public void invalidate() {
-    Iterator refIterator = queryMap.entrySet().iterator();
-    while (refIterator.hasNext()) {
-      Map.Entry pair = (Map.Entry) refIterator.next();
-      ReactNativeFirebaseDatabaseQuery databaseQuery =
-          (ReactNativeFirebaseDatabaseQuery) pair.getValue();
-      databaseQuery.removeAllEventListeners();
-      refIterator.remove();
-    }
+    queryMap.takeAllAndRemove();
 
     turboSupport.invalidate();
     super.invalidate();
@@ -67,16 +58,23 @@ public class NativeRNFBTurboDatabaseQuery extends NativeRNFBTurboDatabaseQuerySp
 
   private ReactNativeFirebaseDatabaseQuery getDatabaseQueryInstance(
       String key, DatabaseReference reference, ReadableArray modifiers) {
-    ReactNativeFirebaseDatabaseQuery cachedDatabaseQuery = queryMap.get(key);
+    DatabaseQueryHandle cached = queryMap.get(key);
 
-    if (cachedDatabaseQuery != null) {
-      return cachedDatabaseQuery;
+    if (cached instanceof ReactNativeFirebaseDatabaseQuery) {
+      return (ReactNativeFirebaseDatabaseQuery) cached;
     }
 
     ReactNativeFirebaseDatabaseQuery databaseQuery =
         new ReactNativeFirebaseDatabaseQuery(reference, modifiers);
 
-    queryMap.put(key, databaseQuery);
+    try {
+      queryMap.put(key, databaseQuery);
+    } catch (RNFBHandleCollisionException collision) {
+      DatabaseQueryHandle winner = queryMap.get(key);
+      if (winner instanceof ReactNativeFirebaseDatabaseQuery) {
+        return (ReactNativeFirebaseDatabaseQuery) winner;
+      }
+    }
     return databaseQuery;
   }
 
@@ -396,15 +394,13 @@ public class NativeRNFBTurboDatabaseQuery extends NativeRNFBTurboDatabaseQuerySp
 
   @Override
   public void off(String queryKey, String eventRegistrationKey) {
-    ReactNativeFirebaseDatabaseQuery databaseQuery = queryMap.get(queryKey);
+    DatabaseQueryHandle handle = queryMap.get(queryKey);
 
-    if (databaseQuery != null) {
+    if (handle instanceof ReactNativeFirebaseDatabaseQuery) {
+      ReactNativeFirebaseDatabaseQuery databaseQuery = (ReactNativeFirebaseDatabaseQuery) handle;
       databaseQuery.removeEventListener(eventRegistrationKey);
       turboSupport.removeEventListeningExecutor(eventRegistrationKey);
-
-      if (!databaseQuery.hasListeners()) {
-        queryMap.remove(queryKey);
-      }
+      queryMap.takeIfIdle(queryKey);
     }
   }
 

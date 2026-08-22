@@ -35,9 +35,11 @@ Pod::Spec.new do |s|
     'ios/RNFBFirestore/RNFBFirestoreCollectionModule.h',
     'ios/RNFBFirestore/RNFBFirestoreDocumentModule.h',
     'ios/RNFBFirestore/RNFBFirestoreTransactionModule.h',
+    'ios/RNFBFirestore/RNFBFirestoreListenerRegistry.h',
+    'ios/RNFBFirestore/RNFBFirestoreTransactionRegistry.h',
     'ios/generated/**/*.h',
   ]
-  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**'
 
   s.pod_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ios/generated/RNFBFirestoreTurboModules\" \"$(PODS_TARGET_SRCROOT)/ios/generated\"",

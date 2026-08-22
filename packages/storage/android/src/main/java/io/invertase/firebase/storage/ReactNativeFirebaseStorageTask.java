@@ -23,14 +23,14 @@ import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.STA
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getExceptionCodeAndMessage;
 
 import android.util.Log;
-import android.util.SparseArray;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
+import io.invertase.firebase.common.RNFBHandleCollisionException;
 import javax.annotation.Nullable;
 
-class ReactNativeFirebaseStorageTask {
+class ReactNativeFirebaseStorageTask implements StoragePendingHandle {
   static final String KEY_STATE = "state";
   static final String KEY_META_DATA = "metadata";
   static final String KEY_TOTAL_BYTES = "totalBytes";
@@ -39,8 +39,7 @@ class ReactNativeFirebaseStorageTask {
   private static final String KEY_CODE = "code";
   private static final String KEY_MESSAGE = "message";
   private static final String KEY_NATIVE_ERROR_MESSAGE = "nativeErrorMessage";
-  private static final SparseArray<ReactNativeFirebaseStorageTask> PENDING_TASKS =
-      new SparseArray<>();
+  static final RNFBStorageTaskRegistry PENDING_TASKS = new RNFBStorageTaskRegistry();
   private static final String TAG = "RNFBStorageTask";
   int taskId;
   String appName;
@@ -51,43 +50,11 @@ class ReactNativeFirebaseStorageTask {
     this.taskId = taskId;
     this.storageReference = storageReference;
     this.appName = appName;
-    PENDING_TASKS.put(taskId, this);
-  }
-
-  static boolean pauseTaskById(int taskId) {
-    ReactNativeFirebaseStorageTask reactNativeFirebaseStorageTask = PENDING_TASKS.get(taskId);
-    if (reactNativeFirebaseStorageTask != null) {
-      return reactNativeFirebaseStorageTask.pause();
+    try {
+      PENDING_TASKS.put(taskId, this);
+    } catch (RNFBHandleCollisionException collision) {
+      throw new IllegalStateException(collision.getMessage());
     }
-
-    return false;
-  }
-
-  static boolean resumeTaskById(int taskId) {
-    ReactNativeFirebaseStorageTask reactNativeFirebaseStorageTask = PENDING_TASKS.get(taskId);
-    if (reactNativeFirebaseStorageTask != null) {
-      return reactNativeFirebaseStorageTask.resume();
-    }
-
-    return false;
-  }
-
-  static boolean cancelTaskById(int taskId) {
-    ReactNativeFirebaseStorageTask reactNativeFirebaseStorageTask = PENDING_TASKS.get(taskId);
-    if (reactNativeFirebaseStorageTask != null) {
-      return reactNativeFirebaseStorageTask.cancel();
-    }
-
-    return false;
-  }
-
-  static void destroyAllTasks() {
-    for (int i = 0, size = PENDING_TASKS.size(); i < size; i++) {
-      int key = PENDING_TASKS.keyAt(i);
-      ReactNativeFirebaseStorageTask reactNativeFirebaseStorageTask = PENDING_TASKS.get(key);
-      reactNativeFirebaseStorageTask.cancel();
-    }
-    PENDING_TASKS.clear();
   }
 
   static WritableMap buildCancelledSnapshotMap(WritableMap snapshot) {
@@ -108,30 +75,33 @@ class ReactNativeFirebaseStorageTask {
     return taskMap;
   }
 
-  private boolean pause() {
+  @Override
+  public boolean pause() {
     Log.d(TAG, "pausing task for " + storageReference.toString());
 
-    if (!storageTask.isPaused() && storageTask.isInProgress()) {
+    if (storageTask != null && !storageTask.isPaused() && storageTask.isInProgress()) {
       return storageTask.pause();
     }
 
     return false;
   }
 
-  private boolean resume() {
+  @Override
+  public boolean resume() {
     Log.d(TAG, "resuming task for " + storageReference.toString());
 
-    if (storageTask.isPaused()) {
+    if (storageTask != null && storageTask.isPaused()) {
       return storageTask.resume();
     }
 
     return false;
   }
 
-  private boolean cancel() {
+  @Override
+  public boolean cancel() {
     Log.d(TAG, "cancelling task for " + storageReference.toString());
 
-    if (!storageTask.isCanceled() && storageTask.isInProgress()) {
+    if (storageTask != null && !storageTask.isCanceled() && storageTask.isInProgress()) {
       destroyTask();
       return storageTask.cancel();
     }
@@ -140,7 +110,7 @@ class ReactNativeFirebaseStorageTask {
   }
 
   void destroyTask() {
-    PENDING_TASKS.remove(taskId);
+    PENDING_TASKS.take(taskId);
 
     Log.d(TAG, "destroyed completed task for " + storageReference.toString());
   }

@@ -20,7 +20,6 @@ package io.invertase.firebase.perf;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.SparseArray;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.perf.FirebasePerformance;
@@ -33,9 +32,11 @@ import java.util.Objects;
 import java.util.Set;
 
 public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
-  private static SparseArray<Trace> traces = new SparseArray<>();
-  private static SparseArray<ScreenTrace> screenTraces = new SparseArray<>();
-  private static SparseArray<HttpMetric> httpMetrics = new SparseArray<>();
+  private static final RNFBPerfHandleRegistry<Trace> traces = new RNFBPerfHandleRegistry<>();
+  private static final RNFBPerfHandleRegistry<ScreenTrace> screenTraces =
+      new RNFBPerfHandleRegistry<>();
+  private static final RNFBPerfHandleRegistry<HttpMetric> httpMetrics =
+      new RNFBPerfHandleRegistry<>();
 
   UniversalFirebasePerfModule(Context context, String serviceName) {
     super(context, serviceName);
@@ -44,9 +45,10 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
   @Override
   public void onTearDown() {
     super.onTearDown();
-    traces.clear();
-    httpMetrics.clear();
-    screenTraces.clear();
+    // Drop mappings only — matches prior SparseArray.clear() (no stop/cancel).
+    traces.takeAll();
+    httpMetrics.takeAll();
+    screenTraces.takeAll();
   }
 
   @Override
@@ -72,9 +74,9 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
         () -> {
           Trace trace = FirebasePerformance.getInstance().newTrace(identifier);
           trace.start();
-
-          traces.put(id, trace);
-
+          if (!traces.putOrDiscard(id, trace, Trace::stop)) {
+            throw new IllegalStateException("perf trace id already registered: " + id);
+          }
           return null;
         });
   }
@@ -82,7 +84,7 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
   Task<Void> stopTrace(int id, Bundle metrics, Bundle attributes) {
     return Tasks.call(
         () -> {
-          Trace trace = traces.get(id);
+          Trace trace = traces.take(id);
           // Traces can be cleared during module teardown before JS stops them.
           if (trace == null) {
             return null;
@@ -102,7 +104,6 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
           }
 
           trace.stop();
-          traces.remove(id);
 
           return null;
         });
@@ -113,8 +114,9 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
         () -> {
           ScreenTrace screenTrace = new ScreenTrace(activity, identifier);
           screenTrace.recordScreenTrace();
-          screenTraces.put(id, screenTrace);
-
+          if (!screenTraces.putOrDiscard(id, screenTrace, ScreenTrace::sendScreenTrace)) {
+            throw new IllegalStateException("perf screen trace id already registered: " + id);
+          }
           return null;
         });
   }
@@ -122,13 +124,12 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
   Task<Void> stopScreenTrace(int id) {
     return Tasks.call(
         () -> {
-          ScreenTrace trace = screenTraces.get(id);
+          ScreenTrace trace = screenTraces.take(id);
           // Screen traces can be cleared during module teardown before JS stops them.
           if (trace == null) {
             return null;
           }
           trace.sendScreenTrace();
-          screenTraces.remove(id);
 
           return null;
         });
@@ -139,7 +140,9 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
         () -> {
           HttpMetric httpMetric = FirebasePerformance.getInstance().newHttpMetric(url, httpMethod);
           httpMetric.start();
-          httpMetrics.put(id, httpMetric);
+          if (!httpMetrics.putOrDiscard(id, httpMetric, HttpMetric::stop)) {
+            throw new IllegalStateException("perf http metric id already registered: " + id);
+          }
           return null;
         });
   }
@@ -147,7 +150,7 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
   Task<Void> stopHttpMetric(int id, Bundle httpMetricConfig, Bundle attributes) {
     return Tasks.call(
         () -> {
-          HttpMetric httpMetric = httpMetrics.get(id);
+          HttpMetric httpMetric = httpMetrics.take(id);
           // HTTP metrics can be cleared during module teardown before JS stops them.
           if (httpMetric == null) {
             return null;
@@ -179,7 +182,6 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
           }
 
           httpMetric.stop();
-          httpMetrics.remove(id);
 
           return null;
         });
@@ -190,11 +192,13 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
   void startTraceSync(int id, String identifier) {
     Trace trace = FirebasePerformance.getInstance().newTrace(identifier);
     trace.start();
-    traces.put(id, trace);
+    if (!traces.putOrDiscard(id, trace, Trace::stop)) {
+      throw new IllegalStateException("perf trace id already registered: " + id);
+    }
   }
 
   void stopTraceSync(int id, Bundle metrics, Bundle attributes) {
-    Trace trace = traces.get(id);
+    Trace trace = traces.take(id);
     // Traces can be cleared during module teardown before JS stops them.
     if (trace == null) {
       return;
@@ -214,33 +218,35 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
     }
 
     trace.stop();
-    traces.remove(id);
   }
 
   void startScreenTraceSync(Activity activity, int id, String identifier) {
     ScreenTrace screenTrace = new ScreenTrace(activity, identifier);
     screenTrace.recordScreenTrace();
-    screenTraces.put(id, screenTrace);
+    if (!screenTraces.putOrDiscard(id, screenTrace, ScreenTrace::sendScreenTrace)) {
+      throw new IllegalStateException("perf screen trace id already registered: " + id);
+    }
   }
 
   void stopScreenTraceSync(int id) {
-    ScreenTrace trace = screenTraces.get(id);
+    ScreenTrace trace = screenTraces.take(id);
     // Screen traces can be cleared during module teardown before JS stops them.
     if (trace == null) {
       return;
     }
     trace.sendScreenTrace();
-    screenTraces.remove(id);
   }
 
   void startHttpMetricSync(int id, String url, String httpMethod) {
     HttpMetric httpMetric = FirebasePerformance.getInstance().newHttpMetric(url, httpMethod);
     httpMetric.start();
-    httpMetrics.put(id, httpMetric);
+    if (!httpMetrics.putOrDiscard(id, httpMetric, HttpMetric::stop)) {
+      throw new IllegalStateException("perf http metric id already registered: " + id);
+    }
   }
 
   void stopHttpMetricSync(int id, Bundle httpMetricConfig, Bundle attributes) {
-    HttpMetric httpMetric = httpMetrics.get(id);
+    HttpMetric httpMetric = httpMetrics.take(id);
     // HTTP metrics can be cleared during module teardown before JS stops them.
     if (httpMetric == null) {
       return;
@@ -270,6 +276,5 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
     }
 
     httpMetric.stop();
-    httpMetrics.remove(id);
   }
 }

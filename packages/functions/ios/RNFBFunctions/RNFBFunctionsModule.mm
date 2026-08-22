@@ -34,6 +34,7 @@
 #import "RNFBApp/RNFBRCTEventEmitter.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBFunctionsModule.h"
+#import "RNFBFunctionsStreamingRegistry.h"
 #import "RNFBFunctionsTurboModules.h"
 
 #if __has_include(<RNFBFunctions/RNFBFunctions-Swift.h>)
@@ -48,7 +49,7 @@
 #import "RNFBFunctions-Swift.h"
 #endif
 
-static __strong NSMutableDictionary *streamListeners;
+static RNFBFunctionsStreamingRegistry *streamListeners;
 
 @implementation RNFBFunctionsModule
 #pragma mark -
@@ -61,20 +62,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
   if (self) {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      streamListeners = [[NSMutableDictionary alloc] init];
+      streamListeners = [[RNFBFunctionsStreamingRegistry alloc] init];
     });
   }
   return self;
 }
 
 - (void)invalidate {
-  for (NSString *key in [streamListeners allKeys]) {
-    id handler = streamListeners[key];
-    if (handler && [handler respondsToSelector:@selector(cancel)]) {
-      [handler cancel];
-    }
-    [streamListeners removeObjectForKey:key];
-  }
+  [streamListeners cancelAll];
 }
 
 #pragma mark -
@@ -268,7 +263,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
     double timeoutValue = timeout.has_value() ? timeout.value() : 0;
 
     void (^eventCallback)(NSDictionary *) = ^(NSDictionary *event) {
-      NSMutableDictionary *normalisedEvent = @{
+      if (![streamListeners shouldForwardEvent:event listenerId:listenerIdNumber]) {
+        return;
+      }
+      NSDictionary *normalisedEvent = @{
         @"appName" : appName,
         @"eventName" : @"functions_streaming_event",
         @"listenerId" : listenerIdNumber,
@@ -276,12 +274,26 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
       };
       [[RNFBRCTEventEmitter shared] sendEventWithName:@"functions_streaming_event"
                                                  body:normalisedEvent];
-
-      // Remove handler when done
-      if ([event[@"done"] boolValue]) {
-        [self removeFunctionsStreamingListener:listenerIdNumber];
-      }
     };
+
+    NSString *collisionMessage = [streamListeners putOrCollisionMessage:listenerIdNumber
+                                                                  value:handler];
+    if (collisionMessage != nil) {
+      NSDictionary *collisionEvent = @{
+        @"appName" : appName,
+        @"eventName" : @"functions_streaming_event",
+        @"listenerId" : listenerIdNumber,
+        @"body" : @{
+          @"data" : [NSNull null],
+          @"error" :
+              @{@"code" : @"internal", @"message" : collisionMessage, @"details" : [NSNull null]},
+          @"done" : @YES
+        }
+      };
+      [[RNFBRCTEventEmitter shared] sendEventWithName:@"functions_streaming_event"
+                                                 body:collisionEvent];
+      return;
+    }
 
     // Call based on whether url or name is provided
     if (url != nil) {
@@ -299,8 +311,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                           timeout:timeoutValue
                     eventCallback:eventCallback];
     }
-
-    streamListeners[listenerIdNumber] = handler;
   } else {
     NSDictionary *eventBody = @{
       @"appName" : appName,
@@ -324,15 +334,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                           region:(NSString *)region
                       listenerId:(double)listenerId {
   NSNumber *listenerIdNumber = @((int)listenerId);
-  [self removeFunctionsStreamingListener:listenerIdNumber];
-}
-
-- (void)removeFunctionsStreamingListener:(NSNumber *)listenerIdNumber {
-  id handler = streamListeners[listenerIdNumber];
-  if (handler) {
-    [handler cancel];
-  }
-  [streamListeners removeObjectForKey:listenerIdNumber];
+  [streamListeners takeAndCancel:listenerIdNumber];
 }
 
 @end
