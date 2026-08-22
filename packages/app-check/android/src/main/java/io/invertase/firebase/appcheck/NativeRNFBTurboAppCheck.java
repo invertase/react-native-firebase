@@ -36,9 +36,6 @@ import io.invertase.firebase.common.ReactNativeFirebaseJSON;
 import io.invertase.firebase.common.ReactNativeFirebaseMeta;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
 import io.invertase.firebase.common.TaskExecutorService;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
@@ -46,8 +43,8 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
   private static final String LOGTAG = "RNFBAppCheck";
   private static final String KEY_APPCHECK_TOKEN_REFRESH_ENABLED = "app_check_token_auto_refresh";
 
-  private static HashMap<String, FirebaseAppCheck.AppCheckListener> mAppCheckListeners =
-      new HashMap<>();
+  private static final RNFBAppCheckListenerRegistry appCheckListeners =
+      new RNFBAppCheckListenerRegistry();
 
   private final TaskExecutorService executorService;
   private final ReactNativeFirebaseAppCheckProviderFactory providerFactory =
@@ -116,18 +113,7 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
     super.invalidate();
     Log.d(TAG, "instance-destroyed");
 
-    Iterator appCheckListenerIterator = mAppCheckListeners.entrySet().iterator();
-
-    while (appCheckListenerIterator.hasNext()) {
-      Map.Entry pair = (Map.Entry) appCheckListenerIterator.next();
-      String appName = (String) pair.getKey();
-      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-      FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance(firebaseApp);
-      FirebaseAppCheck.AppCheckListener mAppCheckListener =
-          (FirebaseAppCheck.AppCheckListener) pair.getValue();
-      firebaseAppCheck.removeAppCheckListener(mAppCheckListener);
-      appCheckListenerIterator.remove();
-    }
+    appCheckListeners.takeAllAndRemove();
 
     executorService.shutdown();
   }
@@ -256,38 +242,32 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance(firebaseApp);
 
-    if (mAppCheckListeners.get(appName) == null) {
-      FirebaseAppCheck.AppCheckListener newAppCheckListener =
-          appCheckToken -> {
-            WritableMap eventBody = Arguments.createMap();
-            eventBody.putString("appName", appName);
-            eventBody.putString("token", appCheckToken.getToken());
-            eventBody.putDouble("expireTimeMillis", appCheckToken.getExpireTimeMillis());
-
-            ReactNativeFirebaseEventEmitter emitter =
-                ReactNativeFirebaseEventEmitter.getSharedInstance();
-            ReactNativeFirebaseEvent event =
-                new ReactNativeFirebaseEvent("appCheck_token_changed", eventBody, appName);
-            emitter.sendEvent(event);
-          };
-
-      firebaseAppCheck.addAppCheckListener(newAppCheckListener);
-      mAppCheckListeners.put(appName, newAppCheckListener);
+    if (appCheckListeners.get(appName) != null) {
+      return;
     }
+
+    FirebaseAppCheck.AppCheckListener newAppCheckListener =
+        appCheckToken -> {
+          WritableMap eventBody = Arguments.createMap();
+          eventBody.putString("appName", appName);
+          eventBody.putString("token", appCheckToken.getToken());
+          eventBody.putDouble("expireTimeMillis", appCheckToken.getExpireTimeMillis());
+
+          ReactNativeFirebaseEventEmitter emitter =
+              ReactNativeFirebaseEventEmitter.getSharedInstance();
+          ReactNativeFirebaseEvent event =
+              new ReactNativeFirebaseEvent("appCheck_token_changed", eventBody, appName);
+          emitter.sendEvent(event);
+        };
+
+    firebaseAppCheck.addAppCheckListener(newAppCheckListener);
+    appCheckListeners.putOrDiscard(
+        appName, () -> firebaseAppCheck.removeAppCheckListener(newAppCheckListener));
   }
 
   @Override
   public void removeAppCheckListener(String appName) {
     Log.d(TAG, "removeAppCheckListener " + appName);
-
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance(firebaseApp);
-
-    FirebaseAppCheck.AppCheckListener mAppCheckListener = mAppCheckListeners.get(appName);
-
-    if (mAppCheckListener != null) {
-      firebaseAppCheck.removeAppCheckListener(mAppCheckListener);
-      mAppCheckListeners.remove(appName);
-    }
+    appCheckListeners.takeAndRemove(appName);
   }
 }
