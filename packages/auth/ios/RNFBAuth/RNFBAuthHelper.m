@@ -37,6 +37,22 @@
 #import "RNFBApp/RNFBAppModule.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBAuthHelper.h"
+#import "RNFBAuthListenerRegistry.h"
+
+@interface RNFBAuthListenerRemover : NSObject
+@property(nonatomic, copy, nullable) void (^onRemove)(void);
+- (void)remove;
+@end
+
+@implementation RNFBAuthListenerRemover
+- (void)remove {
+  if (self.onRemove != nil) {
+    void (^block)(void) = self.onRemove;
+    self.onRemove = nil;
+    block();
+  }
+}
+@end
 
 static void RNFBAuthThrowSyncErrorWithCode(NSString *code, NSString *message) {
   @throw [NSException exceptionWithName:code
@@ -133,8 +149,8 @@ static NSString *const AuthErrorCode_toJSErrorCode[] = {
     [FIRAuthErrorCodeMalformedJWT] = @"malformed-jwt",
     [FIRAuthErrorCodeSecondFactorRequired] = @"multi-factor-auth-required"};
 
-static __strong NSMutableDictionary *authStateHandlers;
-static __strong NSMutableDictionary *idTokenHandlers;
+static __strong RNFBAuthListenerRegistry *authStateHandlers;
+static __strong RNFBAuthListenerRegistry *idTokenHandlers;
 static __strong NSMutableDictionary *emulatorConfigs;
 // Used for caching credentials between method calls.
 static __strong NSMutableDictionary<NSString *, FIRAuthCredential *> *credentials;
@@ -200,8 +216,8 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 + (void)initializeSharedStateOnce {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    authStateHandlers = [[NSMutableDictionary alloc] init];
-    idTokenHandlers = [[NSMutableDictionary alloc] init];
+    authStateHandlers = [[RNFBAuthListenerRegistry alloc] init];
+    idTokenHandlers = [[RNFBAuthListenerRegistry alloc] init];
     emulatorConfigs = [[NSMutableDictionary alloc] init];
     credentials = [[NSMutableDictionary alloc] init];
 #if TARGET_OS_IOS
@@ -215,20 +231,8 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 + (void)invalidate {
   [self initializeSharedStateOnce];
 
-  for (NSString *key in authStateHandlers) {
-    FIRApp *firebaseApp = [RCTConvert firAppFromString:key];
-
-    [[FIRAuth authWithApp:firebaseApp]
-        removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
-  }
-  [authStateHandlers removeAllObjects];
-
-  for (NSString *key in idTokenHandlers) {
-    FIRApp *firebaseApp = [RCTConvert firAppFromString:key];
-    [[FIRAuth authWithApp:firebaseApp]
-        removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
-  }
-  [idTokenHandlers removeAllObjects];
+  [authStateHandlers removeAll];
+  [idTokenHandlers removeAll];
 
   [credentials removeAllObjects];
 #if TARGET_OS_IOS
@@ -245,62 +249,66 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
   [self initializeSharedStateOnce];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
-  if (![authStateHandlers valueForKey:firebaseApp.name]) {
-    FIRAuthStateDidChangeListenerHandle newListenerHandle = [[FIRAuth authWithApp:firebaseApp]
-        addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
-          if (user != nil) {
-            [RNFBSharedUtils sendJSEventForApp:firebaseApp
-                                          name:AUTH_STATE_CHANGED_EVENT
-                                          body:@{keyUser : [self firebaseUserToDict:user]}];
-          } else {
-            [RNFBSharedUtils sendJSEventForApp:firebaseApp name:AUTH_STATE_CHANGED_EVENT body:@{}];
-          }
-        }];
-    authStateHandlers[firebaseApp.name] = newListenerHandle;
+  if ([authStateHandlers get:firebaseApp.name] != nil) {
+    return;
   }
+
+  FIRAuth *auth = [FIRAuth authWithApp:firebaseApp];
+  FIRAuthStateDidChangeListenerHandle newListenerHandle = [auth
+      addAuthStateDidChangeListener:^(FIRAuth *_Nonnull authInstance, FIRUser *_Nullable user) {
+        if (user != nil) {
+          [RNFBSharedUtils sendJSEventForApp:firebaseApp
+                                        name:AUTH_STATE_CHANGED_EVENT
+                                        body:@{keyUser : [self firebaseUserToDict:user]}];
+        } else {
+          [RNFBSharedUtils sendJSEventForApp:firebaseApp name:AUTH_STATE_CHANGED_EVENT body:@{}];
+        }
+      }];
+
+  RNFBAuthListenerRemover *remover = [[RNFBAuthListenerRemover alloc] init];
+  remover.onRemove = ^{
+    [auth removeAuthStateDidChangeListener:newListenerHandle];
+  };
+  [authStateHandlers putOrDiscard:firebaseApp.name value:remover];
 }
 
 + (void)removeAuthStateListener:(NSString *)appName {
   [self initializeSharedStateOnce];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
-
-  if ([authStateHandlers valueForKey:firebaseApp.name]) {
-    [[FIRAuth authWithApp:firebaseApp]
-        removeAuthStateDidChangeListener:[authStateHandlers valueForKey:firebaseApp.name]];
-    [authStateHandlers removeObjectForKey:firebaseApp.name];
-  }
+  [authStateHandlers takeAndRemove:firebaseApp.name];
 }
 
 + (void)addIdTokenListener:(NSString *)appName {
   [self initializeSharedStateOnce];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
-  if (![idTokenHandlers valueForKey:firebaseApp.name]) {
-    FIRIDTokenDidChangeListenerHandle newListenerHandle = [[FIRAuth authWithApp:firebaseApp]
-        addIDTokenDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
-          if (user != nil) {
-            [RNFBSharedUtils sendJSEventForApp:firebaseApp
-                                          name:AUTH_ID_TOKEN_CHANGED_EVENT
-                                          body:@{keyUser : [self firebaseUserToDict:user]}];
-          } else {
-            [RNFBSharedUtils sendJSEventForApp:firebaseApp
-                                          name:AUTH_ID_TOKEN_CHANGED_EVENT
-                                          body:@{}];
-          }
-        }];
-    idTokenHandlers[firebaseApp.name] = newListenerHandle;
+  if ([idTokenHandlers get:firebaseApp.name] != nil) {
+    return;
   }
+
+  FIRAuth *auth = [FIRAuth authWithApp:firebaseApp];
+  FIRIDTokenDidChangeListenerHandle newListenerHandle =
+      [auth addIDTokenDidChangeListener:^(FIRAuth *_Nonnull authInstance, FIRUser *_Nullable user) {
+        if (user != nil) {
+          [RNFBSharedUtils sendJSEventForApp:firebaseApp
+                                        name:AUTH_ID_TOKEN_CHANGED_EVENT
+                                        body:@{keyUser : [self firebaseUserToDict:user]}];
+        } else {
+          [RNFBSharedUtils sendJSEventForApp:firebaseApp name:AUTH_ID_TOKEN_CHANGED_EVENT body:@{}];
+        }
+      }];
+
+  RNFBAuthListenerRemover *remover = [[RNFBAuthListenerRemover alloc] init];
+  remover.onRemove = ^{
+    [auth removeIDTokenDidChangeListener:newListenerHandle];
+  };
+  [idTokenHandlers putOrDiscard:firebaseApp.name value:remover];
 }
 
 + (void)removeIdTokenListener:(NSString *)appName {
   [self initializeSharedStateOnce];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
-
-  if ([idTokenHandlers valueForKey:firebaseApp.name]) {
-    [[FIRAuth authWithApp:firebaseApp]
-        removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:firebaseApp.name]];
-    [idTokenHandlers removeObjectForKey:firebaseApp.name];
-  }
+  [idTokenHandlers takeAndRemove:firebaseApp.name];
 }
 
 + (void)configureAuthDomain:(NSString *)appName {
