@@ -26,10 +26,11 @@
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBConfigHelper.h"
+#import "RNFBRemoteConfigListenerRegistry.h"
 
 static NSString *const ON_CONFIG_UPDATED_EVENT = @"on_config_updated";
 
-static __strong NSMutableDictionary *configUpdateHandlers;
+static __strong RNFBRemoteConfigListenerRegistry *configUpdateHandlers;
 
 static NSString *convertFIRRemoteConfigFetchStatusToNSString(FIRRemoteConfigFetchStatus value) {
   switch (value) {
@@ -97,6 +98,13 @@ static FIRApp *firebaseAppForName(NSString *appName) {
 }
 
 @implementation RNFBConfigHelper
+
++ (void)initializeConfigUpdateHandlersOnce {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    configUpdateHandlers = [[RNFBRemoteConfigListenerRegistry alloc] init];
+  });
+}
 
 + (NSDictionary *)getConstantsForAppName:(NSString *)appName {
   FIRApp *firebaseApp = firebaseAppForName(appName);
@@ -311,61 +319,54 @@ static FIRApp *firebaseAppForName(NSString *appName) {
 }
 
 + (void)onConfigUpdated:(NSString *)appName {
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    configUpdateHandlers = [[NSMutableDictionary alloc] init];
-  });
+  [self initializeConfigUpdateHandlersOnce];
 
   FIRApp *firebaseApp = firebaseAppForName(appName);
-  if (![configUpdateHandlers valueForKey:firebaseApp.name]) {
-    FIRConfigUpdateListenerRegistration *newRegistration =
-        [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
-            addOnConfigUpdateListener:^(FIRRemoteConfigUpdate *_Nonnull configUpdate,
-                                        NSError *_Nullable error) {
-              if (error != nil) {
-                NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+  if ([configUpdateHandlers get:firebaseApp.name] != nil) {
+    return;
+  }
 
-                [userInfo setValue:@"error" forKey:@"resultType"];
-                [userInfo setValue:convertFIRRemoteConfigUpdateErrorToNSString(
-                                       (FIRRemoteConfigUpdateError)error.code)
-                            forKey:@"code"];
-                [userInfo setValue:error.localizedDescription forKey:@"message"];
-                [userInfo setValue:error.localizedDescription forKey:@"nativeErrorMessage"];
-                [RNFBSharedUtils sendJSEventForApp:firebaseApp
-                                              name:ON_CONFIG_UPDATED_EVENT
-                                              body:userInfo];
-                return;
-              }
+  FIRConfigUpdateListenerRegistration *newRegistration =
+      [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
+          addOnConfigUpdateListener:^(FIRRemoteConfigUpdate *_Nonnull configUpdate,
+                                      NSError *_Nullable error) {
+            if (error != nil) {
+              NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
 
-              NSMutableDictionary *results = [NSMutableDictionary dictionary];
-
-              [results setValue:@"success" forKey:@"resultType"];
-              [results setValue:[configUpdate.updatedKeys allObjects] forKey:@"updatedKeys"];
-
+              [userInfo setValue:@"error" forKey:@"resultType"];
+              [userInfo setValue:convertFIRRemoteConfigUpdateErrorToNSString(
+                                     (FIRRemoteConfigUpdateError)error.code)
+                          forKey:@"code"];
+              [userInfo setValue:error.localizedDescription forKey:@"message"];
+              [userInfo setValue:error.localizedDescription forKey:@"nativeErrorMessage"];
               [RNFBSharedUtils sendJSEventForApp:firebaseApp
                                             name:ON_CONFIG_UPDATED_EVENT
-                                            body:results];
-            }];
+                                            body:userInfo];
+              return;
+            }
 
-    configUpdateHandlers[firebaseApp.name] = newRegistration;
-  }
+            NSMutableDictionary *results = [NSMutableDictionary dictionary];
+
+            [results setValue:@"success" forKey:@"resultType"];
+            [results setValue:[configUpdate.updatedKeys allObjects] forKey:@"updatedKeys"];
+
+            [RNFBSharedUtils sendJSEventForApp:firebaseApp
+                                          name:ON_CONFIG_UPDATED_EVENT
+                                          body:results];
+          }];
+
+  [configUpdateHandlers putOrDiscard:firebaseApp.name value:newRegistration];
 }
 
 + (void)removeConfigUpdateRegistration:(NSString *)appName {
+  [self initializeConfigUpdateHandlersOnce];
   FIRApp *firebaseApp = firebaseAppForName(appName);
-  if ([configUpdateHandlers valueForKey:firebaseApp.name]) {
-    [[configUpdateHandlers objectForKey:firebaseApp.name] remove];
-    [configUpdateHandlers removeObjectForKey:firebaseApp.name];
-  }
+  [configUpdateHandlers takeAndRemove:firebaseApp.name];
 }
 
 + (void)removeAllConfigUpdateRegistrations {
-  for (NSString *key in [configUpdateHandlers allKeys]) {
-    FIRConfigUpdateListenerRegistration *registration = [configUpdateHandlers objectForKey:key];
-    [registration remove];
-  }
-
-  [configUpdateHandlers removeAllObjects];
+  [self initializeConfigUpdateHandlersOnce];
+  [configUpdateHandlers removeAll];
 }
 
 + (void)setCustomSignals:(NSString *)appName
