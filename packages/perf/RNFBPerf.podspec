@@ -31,7 +31,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = firebase_tvos_target
   s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
   s.private_header_files = "ios/**/*.h"
-  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**'
 
   # Must be set before install_modules_dependencies so RN can append use_frameworks
   # HEADER_SEARCH_PATHS (React-debug etc.). Assigning after overwrites those paths

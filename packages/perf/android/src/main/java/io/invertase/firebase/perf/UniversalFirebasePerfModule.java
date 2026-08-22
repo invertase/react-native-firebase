@@ -20,7 +20,6 @@ package io.invertase.firebase.perf;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.SparseArray;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.perf.FirebasePerformance;
@@ -33,9 +32,11 @@ import java.util.Objects;
 import java.util.Set;
 
 public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
-  private static SparseArray<Trace> traces = new SparseArray<>();
-  private static SparseArray<ScreenTrace> screenTraces = new SparseArray<>();
-  private static SparseArray<HttpMetric> httpMetrics = new SparseArray<>();
+  private static final RNFBPerfHandleRegistry<Trace> traces = new RNFBPerfHandleRegistry<>();
+  private static final RNFBPerfHandleRegistry<ScreenTrace> screenTraces =
+      new RNFBPerfHandleRegistry<>();
+  private static final RNFBPerfHandleRegistry<HttpMetric> httpMetrics =
+      new RNFBPerfHandleRegistry<>();
 
   UniversalFirebasePerfModule(Context context, String serviceName) {
     super(context, serviceName);
@@ -44,9 +45,10 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
   @Override
   public void onTearDown() {
     super.onTearDown();
-    traces.clear();
-    httpMetrics.clear();
-    screenTraces.clear();
+    // Drop mappings only — matches prior SparseArray.clear() (no stop/cancel).
+    traces.takeAll();
+    httpMetrics.takeAll();
+    screenTraces.takeAll();
   }
 
   @Override
@@ -72,9 +74,7 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
         () -> {
           Trace trace = FirebasePerformance.getInstance().newTrace(identifier);
           trace.start();
-
-          traces.put(id, trace);
-
+          registerStartedTrace(id, trace);
           return null;
         });
   }
@@ -101,8 +101,10 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
                 attributeKey, (String) Objects.requireNonNull(attributes.get(attributeKey)));
           }
 
-          trace.stop();
-          traces.remove(id);
+          Trace taken = traces.takeIf(id, t -> t == trace);
+          if (taken != null) {
+            taken.stop();
+          }
 
           return null;
         });
@@ -113,8 +115,7 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
         () -> {
           ScreenTrace screenTrace = new ScreenTrace(activity, identifier);
           screenTrace.recordScreenTrace();
-          screenTraces.put(id, screenTrace);
-
+          registerRecordedScreenTrace(id, screenTrace);
           return null;
         });
   }
@@ -127,8 +128,11 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
           if (trace == null) {
             return null;
           }
-          trace.sendScreenTrace();
-          screenTraces.remove(id);
+
+          ScreenTrace taken = screenTraces.takeIf(id, t -> t == trace);
+          if (taken != null) {
+            taken.sendScreenTrace();
+          }
 
           return null;
         });
@@ -139,7 +143,7 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
         () -> {
           HttpMetric httpMetric = FirebasePerformance.getInstance().newHttpMetric(url, httpMethod);
           httpMetric.start();
-          httpMetrics.put(id, httpMetric);
+          registerStartedHttpMetric(id, httpMetric);
           return null;
         });
   }
@@ -178,8 +182,10 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
                 attributeKey, Objects.requireNonNull(attributes.getString(attributeKey)));
           }
 
-          httpMetric.stop();
-          httpMetrics.remove(id);
+          HttpMetric taken = httpMetrics.takeIf(id, m -> m == httpMetric);
+          if (taken != null) {
+            taken.stop();
+          }
 
           return null;
         });
@@ -190,7 +196,7 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
   void startTraceSync(int id, String identifier) {
     Trace trace = FirebasePerformance.getInstance().newTrace(identifier);
     trace.start();
-    traces.put(id, trace);
+    registerStartedTrace(id, trace);
   }
 
   void stopTraceSync(int id, Bundle metrics, Bundle attributes) {
@@ -213,14 +219,16 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
           attributeKey, (String) Objects.requireNonNull(attributes.get(attributeKey)));
     }
 
-    trace.stop();
-    traces.remove(id);
+    Trace taken = traces.takeIf(id, t -> t == trace);
+    if (taken != null) {
+      taken.stop();
+    }
   }
 
   void startScreenTraceSync(Activity activity, int id, String identifier) {
     ScreenTrace screenTrace = new ScreenTrace(activity, identifier);
     screenTrace.recordScreenTrace();
-    screenTraces.put(id, screenTrace);
+    registerRecordedScreenTrace(id, screenTrace);
   }
 
   void stopScreenTraceSync(int id) {
@@ -229,14 +237,17 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
     if (trace == null) {
       return;
     }
-    trace.sendScreenTrace();
-    screenTraces.remove(id);
+
+    ScreenTrace taken = screenTraces.takeIf(id, t -> t == trace);
+    if (taken != null) {
+      taken.sendScreenTrace();
+    }
   }
 
   void startHttpMetricSync(int id, String url, String httpMethod) {
     HttpMetric httpMetric = FirebasePerformance.getInstance().newHttpMetric(url, httpMethod);
     httpMetric.start();
-    httpMetrics.put(id, httpMetric);
+    registerStartedHttpMetric(id, httpMetric);
   }
 
   void stopHttpMetricSync(int id, Bundle httpMetricConfig, Bundle attributes) {
@@ -269,7 +280,33 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
           attributeKey, Objects.requireNonNull(attributes.getString(attributeKey)));
     }
 
-    httpMetric.stop();
-    httpMetrics.remove(id);
+    HttpMetric taken = httpMetrics.takeIf(id, m -> m == httpMetric);
+    if (taken != null) {
+      taken.stop();
+    }
+  }
+
+  /** Last-wins registration: stop any displaced trace outside the HandleMap lock. */
+  private static void registerStartedTrace(int id, Trace trace) {
+    Trace displaced = traces.putReplacing(id, trace);
+    if (displaced != null) {
+      displaced.stop();
+    }
+  }
+
+  /** Last-wins registration: stop any displaced HTTP metric outside the HandleMap lock. */
+  private static void registerStartedHttpMetric(int id, HttpMetric httpMetric) {
+    HttpMetric displaced = httpMetrics.putReplacing(id, httpMetric);
+    if (displaced != null) {
+      displaced.stop();
+    }
+  }
+
+  /** Last-wins registration: finalize any displaced screen trace outside the HandleMap lock. */
+  private static void registerRecordedScreenTrace(int id, ScreenTrace screenTrace) {
+    ScreenTrace displaced = screenTraces.putReplacing(id, screenTrace);
+    if (displaced != null) {
+      displaced.sendScreenTrace();
+    }
   }
 }
