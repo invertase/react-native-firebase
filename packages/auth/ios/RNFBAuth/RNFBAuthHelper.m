@@ -36,6 +36,7 @@
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBAppModule.h"
 #import "RNFBApp/RNFBSharedUtils.h"
+#import "RNFBAuthCacheRegistry.h"
 #import "RNFBAuthHelper.h"
 #import "RNFBAuthListenerRegistry.h"
 
@@ -153,11 +154,11 @@ static __strong RNFBAuthListenerRegistry *authStateHandlers;
 static __strong RNFBAuthListenerRegistry *idTokenHandlers;
 static __strong NSMutableDictionary *emulatorConfigs;
 // Used for caching credentials between method calls.
-static __strong NSMutableDictionary<NSString *, FIRAuthCredential *> *credentials;
+static __strong RNFBAuthCacheRegistry *credentials;
 #if TARGET_OS_IOS
-static __strong NSMutableDictionary<NSString *, FIRMultiFactorResolver *> *cachedResolver;
-static __strong NSMutableDictionary<NSString *, FIRMultiFactorSession *> *cachedSessions;
-static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecrets;
+static __strong RNFBAuthCacheRegistry *cachedResolver;
+static __strong RNFBAuthCacheRegistry *cachedSessions;
+static __strong RNFBAuthCacheRegistry *cachedTotpSecrets;
 #endif
 
 @interface RNFBAuthHelper ()
@@ -219,11 +220,11 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
     authStateHandlers = [[RNFBAuthListenerRegistry alloc] init];
     idTokenHandlers = [[RNFBAuthListenerRegistry alloc] init];
     emulatorConfigs = [[NSMutableDictionary alloc] init];
-    credentials = [[NSMutableDictionary alloc] init];
+    credentials = [[RNFBAuthCacheRegistry alloc] init];
 #if TARGET_OS_IOS
-    cachedResolver = [[NSMutableDictionary alloc] init];
-    cachedSessions = [[NSMutableDictionary alloc] init];
-    cachedTotpSecrets = [[NSMutableDictionary alloc] init];
+    cachedResolver = [[RNFBAuthCacheRegistry alloc] init];
+    cachedSessions = [[RNFBAuthCacheRegistry alloc] init];
+    cachedTotpSecrets = [[RNFBAuthCacheRegistry alloc] init];
 #endif
   });
 }
@@ -234,11 +235,11 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
   [authStateHandlers removeAll];
   [idTokenHandlers removeAll];
 
-  [credentials removeAllObjects];
+  [credentials clear];
 #if TARGET_OS_IOS
-  [cachedResolver removeAllObjects];
-  [cachedSessions removeAllObjects];
-  [cachedTotpSecrets removeAllObjects];
+  [cachedResolver clear];
+  [cachedSessions clear];
+  [cachedTotpSecrets clear];
 #endif
 }
 
@@ -1062,7 +1063,8 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
   [self initializeSharedStateOnce];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
-  if ([cachedResolver valueForKey:sessionKey] == nil) {
+  FIRMultiFactorResolver *resolver = [cachedResolver get:sessionKey];
+  if (resolver == nil) {
     [RNFBSharedUtils
         rejectPromiseWithUserInfo:reject
                          userInfo:(NSMutableDictionary *)@{
@@ -1071,10 +1073,10 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
                          }];
     return;
   }
-  FIRMultiFactorSession *session = cachedResolver[sessionKey].session;
+  FIRMultiFactorSession *session = resolver.session;
   NSPredicate *findByUid = [NSPredicate predicateWithFormat:@"UID == %@", hintUid];
   FIRMultiFactorInfo *_Nullable hint =
-      [[cachedResolver[sessionKey].hints filteredArrayUsingPredicate:findByUid] firstObject];
+      [[resolver.hints filteredArrayUsingPredicate:findByUid] firstObject];
   if (hint == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                       userInfo:(NSMutableDictionary *)@{
@@ -1112,7 +1114,7 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
   DLog(@"verifyPhoneNumberForMultifactor using app: %@", firebaseApp.name);
   DLog(@"verifyPhoneNumberForMultifactor phoneNumber: %@", phoneNumber);
   DLog(@"verifyPhoneNumberForMultifactor sessionKey: %@", sessionKey);
-  FIRMultiFactorSession *session = cachedSessions[sessionKey];
+  FIRMultiFactorSession *session = [cachedSessions get:sessionKey];
   if (session == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                       userInfo:(NSMutableDictionary *)@{
@@ -1155,18 +1157,19 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
   FIRMultiFactorAssertion *assertion =
       [FIRPhoneMultiFactorGenerator assertionWithCredential:credential];
 
-  [cachedResolver[session] resolveSignInWithAssertion:assertion
-                                           completion:^(FIRAuthDataResult *_Nullable authResult,
-                                                        NSError *_Nullable error) {
-                                             DLog(@"authError: %@", error) if (error) {
-                                               [self promiseRejectAuthException:reject error:error];
-                                             }
-                                             else {
-                                               [self promiseWithAuthResult:resolve
-                                                                  rejecter:reject
-                                                                authResult:authResult];
-                                             }
-                                           }];
+  FIRMultiFactorResolver *signInResolver = [cachedResolver get:session];
+  [signInResolver resolveSignInWithAssertion:assertion
+                                  completion:^(FIRAuthDataResult *_Nullable authResult,
+                                               NSError *_Nullable error) {
+                                    DLog(@"authError: %@", error) if (error) {
+                                      [self promiseRejectAuthException:reject error:error];
+                                    }
+                                    else {
+                                      [self promiseWithAuthResult:resolve
+                                                         rejecter:reject
+                                                       authResult:authResult];
+                                    }
+                                  }];
 }
 
 + (void)resolveTotpSignIn:(NSString *)appName
@@ -1183,19 +1186,19 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
   FIRMultiFactorAssertion *assertion =
       [FIRTOTPMultiFactorGenerator assertionForSignInWithEnrollmentID:uid
                                                       oneTimePassword:oneTimePassword];
-  [cachedResolver[sessionKey] resolveSignInWithAssertion:assertion
-                                              completion:^(FIRAuthDataResult *_Nullable authResult,
-                                                           NSError *_Nullable error) {
-                                                DLog(@"authError: %@", error) if (error) {
-                                                  [self promiseRejectAuthException:reject
-                                                                             error:error];
-                                                }
-                                                else {
-                                                  [self promiseWithAuthResult:resolve
-                                                                     rejecter:reject
-                                                                   authResult:authResult];
-                                                }
-                                              }];
+  FIRMultiFactorResolver *totpSignInResolver = [cachedResolver get:sessionKey];
+  [totpSignInResolver resolveSignInWithAssertion:assertion
+                                      completion:^(FIRAuthDataResult *_Nullable authResult,
+                                                   NSError *_Nullable error) {
+                                        DLog(@"authError: %@", error) if (error) {
+                                          [self promiseRejectAuthException:reject error:error];
+                                        }
+                                        else {
+                                          [self promiseWithAuthResult:resolve
+                                                             rejecter:reject
+                                                           authResult:authResult];
+                                        }
+                                      }];
 }
 
 + (void)generateTotpSecret:(NSString *)appName
@@ -1207,7 +1210,7 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 
   DLog(@"using instance resolve generateTotpSecret: %@", firebaseApp.name);
 
-  FIRMultiFactorSession *session = cachedSessions[sessionKey];
+  FIRMultiFactorSession *session = [cachedSessions get:sessionKey];
   DLog(@"using sessionKey: %@", sessionKey);
   DLog(@"using session: %@", session);
   [FIRTOTPMultiFactorGenerator
@@ -1220,8 +1223,8 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
                                   else {
                                     NSString *secretKey = totpSecret.sharedSecretKey;
                                     DLog(@"secretKey generated: %@", secretKey);
-                                    cachedTotpSecrets[secretKey] = totpSecret;
-                                    DLog(@"cachedSecret: %@", cachedTotpSecrets[secretKey]);
+                                    [cachedTotpSecrets putReplacing:secretKey value:totpSecret];
+                                    DLog(@"cachedSecret: %@", [cachedTotpSecrets get:secretKey]);
                                     resolve(@{
                                       @"secretKey" : secretKey,
                                     });
@@ -1238,7 +1241,7 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 
   DLog(@"generateQrCodeUrl using instance resolve generateQrCodeUrl: %@", firebaseApp.name);
   DLog(@"generateQrCodeUrl using secretKey: %@", secretKey);
-  FIRTOTPSecret *totpSecret = cachedTotpSecrets[secretKey];
+  FIRTOTPSecret *totpSecret = [cachedTotpSecrets get:secretKey];
   if (!totpSecret) {
     RNFBAuthThrowSyncErrorWithCode(@"invalid-multi-factor-secret",
                                    @"can't find secret for provided key");
@@ -1254,7 +1257,7 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
   [self initializeSharedStateOnce];
 
   DLog(@"generateQrCodeUrl using secretKey: %@", secretKey);
-  FIRTOTPSecret *totpSecret = cachedTotpSecrets[secretKey];
+  FIRTOTPSecret *totpSecret = [cachedTotpSecrets get:secretKey];
   DLog(@"openInOtpApp using qrCodeUri: %@", qrCodeUri);
   [totpSecret openInOTPAppWithQRCodeURL:qrCodeUri];
 }
@@ -1274,7 +1277,7 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
     }
 
     NSString *sessionId = [NSString stringWithFormat:@"%@", @([session hash])];
-    cachedSessions[sessionId] = session;
+    [cachedSessions putReplacing:sessionId value:session];
     resolve(sessionId);
   }];
 }
@@ -1341,7 +1344,7 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
 
   DLog(@"using instance finalizeTotpEnrollment: %@", firebaseApp.name);
 
-  FIRTOTPSecret *cachedTotpSecret = cachedTotpSecrets[totpSecret];
+  FIRTOTPSecret *cachedTotpSecret = [cachedTotpSecrets get:totpSecret];
   DLog(@"using totpSecretKey: %@", totpSecret);
   DLog(@"using cachedSecret: %@", cachedTotpSecret);
   FIRTOTPMultiFactorAssertion *assertion =
@@ -1797,8 +1800,9 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
   FIRAuthCredential *credential;
 
   // First check if we cached an authToken
-  if (credentials[authToken] != nil && ![credentials[authToken] isEqual:[NSNull null]]) {
-    credential = credentials[authToken];
+  FIRAuthCredential *cachedCredential = [credentials get:authToken];
+  if (cachedCredential != nil) {
+    credential = cachedCredential;
   } else if ([provider compare:@"twitter.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
   } else if ([provider compare:@"facebook.com" options:NSCaseInsensitiveSearch] == NSOrderedSame &&
@@ -1994,7 +1998,7 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
     resolverDict = [self multiFactorResolverToDict:resolver];
 
     NSString *sessionKey = [NSString stringWithFormat:@"%@", @([resolver.session hash])];
-    cachedResolver[sessionKey] = resolver;
+    [cachedResolver putReplacing:sessionKey value:resolver];
   }
 #endif
 
@@ -2183,7 +2187,7 @@ static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecr
   NSString *authCredentialHash = [NSString stringWithFormat:@"%@", @([authCredential hash])];
 
   // Temporarily store the non-serializable credential for later
-  credentials[authCredentialHash] = authCredential;
+  [credentials putReplacing:authCredentialHash value:authCredential];
 
   return @{
     keyProviderId : authCredential.provider,

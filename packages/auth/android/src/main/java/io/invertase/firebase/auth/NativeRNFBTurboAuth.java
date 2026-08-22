@@ -111,13 +111,15 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
   private PhoneAuthProvider.ForceResendingToken mForceResendingToken;
   private PhoneAuthCredential mCredential;
 
-  private final HashMap<String, MultiFactorResolver> mCachedResolvers = new HashMap<>();
-  private final HashMap<String, MultiFactorSession> mMultiFactorSessions = new HashMap<>();
-  private final HashMap<String, TotpSecret> mTotpSecrets = new HashMap<>();
+  private final RNFBAuthCacheRegistry<MultiFactorResolver> mCachedResolvers =
+      new RNFBAuthCacheRegistry<>();
+  private final RNFBAuthCacheRegistry<MultiFactorSession> mMultiFactorSessions =
+      new RNFBAuthCacheRegistry<>();
+  private final RNFBAuthCacheRegistry<TotpSecret> mTotpSecrets = new RNFBAuthCacheRegistry<>();
 
   // storage for anonymous phone auth credentials, used for linkWithCredentials
   // https://github.com/invertase/react-native-firebase/issues/4911
-  private HashMap<String, AuthCredential> credentials = new HashMap<>();
+  private final RNFBAuthCacheRegistry<AuthCredential> credentials = new RNFBAuthCacheRegistry<>();
 
   private final TaskExecutorService executorService;
 
@@ -147,6 +149,7 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
     mCachedResolvers.clear();
     mMultiFactorSessions.clear();
     mTotpSecrets.clear();
+    // credentials intentionally not cleared (prior HashMap behavior)
   }
 
   @Override
@@ -1116,7 +1119,7 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
 
               final MultiFactorSession session = task.getResult();
               final String sessionId = Integer.toString(session.hashCode());
-              mMultiFactorSessions.put(sessionId, session);
+              mMultiFactorSessions.putReplacing(sessionId, session);
 
               promise.resolve(sessionId);
             });
@@ -1457,7 +1460,7 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
               if (task.isSuccessful()) {
                 TotpSecret totpSecret = task.getResult();
                 String totpSecretKey = totpSecret.getSharedSecretKey();
-                mTotpSecrets.put(totpSecretKey, totpSecret);
+                mTotpSecrets.putReplacing(totpSecretKey, totpSecret);
                 WritableMap result = Arguments.createMap();
                 result.putString("secretKey", totpSecretKey);
                 promise.resolve(result);
@@ -2025,8 +2028,9 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
     if (provider.startsWith("oidc.")) {
       return OAuthProvider.newCredentialBuilder(provider).setIdToken(authToken).build();
     }
-    if (credentials.containsKey(authToken) && credentials.get(authToken) != null) {
-      return credentials.get(authToken);
+    AuthCredential cachedCredential = credentials.get(authToken);
+    if (cachedCredential != null) {
+      return cachedCredential;
     }
 
     switch (provider) {
@@ -2427,7 +2431,7 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
     authCredentialsMap.putString("secret", null);
 
     // Temporarily store the non-serializable credential for later
-    credentials.put(authHashCode, authCredential);
+    credentials.putReplacing(authHashCode, authCredential);
 
     WritableMap userInfoMap = Arguments.createMap();
     userInfoMap.putString("code", error.getString("code"));
@@ -2529,7 +2533,7 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
       code = "MULTI_FACTOR_AUTH_REQUIRED";
       final MultiFactorResolver resolver = multiFactorException.getResolver();
       final String sessionId = Integer.toString(resolver.getSession().hashCode());
-      mCachedResolvers.put(sessionId, resolver);
+      mCachedResolvers.putReplacing(sessionId, resolver);
       // Passing around a resolver ReadableMap leads to issues when trying to send the data back by
       // calling Promise#reject. Building the map just before sending solves that issue.
       error.putString("sessionId", sessionId);
