@@ -97,6 +97,7 @@ expo-dev-client
 Fastlane
 FCM
 FieldValue
+FDL
 firebase
 Firebase
 firebase-admin
@@ -192,6 +193,7 @@ onwards
 OpenID
 parsers
 passwordless
+project-config
 perf
 Perf
 performant
@@ -237,12 +239,12 @@ RNFB
 RNFB's
 RNFirebase
 RTDB
-rutvik24
 SafetyNet
 Salakar
 scalable
 screenview
 scrollable
+SendGrid
 SDK
 SDK.
 SDK51
@@ -258,6 +260,7 @@ SIGABRT
 signInTester
 Siri
 SMS
+SMTP
 SNS
 SPII
 SPM
