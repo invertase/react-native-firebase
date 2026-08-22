@@ -15,6 +15,8 @@
  *
  */
 
+const { getE2eEmulatorHost } = require('../../app/e2e/helpers');
+
 // Keep this in sync with the data in:
 // https://github.com/invertase/react-native-firebase/blob/main/.github/workflows/scripts/functions/src/sample-data.ts
 const SAMPLE_DATA = {
@@ -189,7 +191,7 @@ describe('functions() modular', function () {
         const region = 'us-central1';
         const fnName = 'helloWorldV2';
         const functions = getFunctions(getApp(), region);
-        connectFunctionsEmulator(functions, 'localhost', 5001);
+        connectFunctionsEmulator(functions, getE2eEmulatorHost(), 5001);
         const response = await httpsCallable(functions, fnName, e2eCallableTimeoutOptions())();
         response.data.should.equal('Hello from Firebase!');
       });
@@ -200,7 +202,7 @@ describe('functions() modular', function () {
         const region = 'us-central1';
         const fnName = 'helloWorldV2';
         const functions = getFunctions(getApp(), region);
-        connectFunctionsEmulator(functions, 'localhost', 5001);
+        connectFunctionsEmulator(functions, getE2eEmulatorHost(), 5001);
         const response = await httpsCallable(functions, fnName, e2eCallableTimeoutOptions())();
         response.data.should.equal('Hello from Firebase!');
       });
@@ -212,7 +214,7 @@ describe('functions() modular', function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp(), 'us-central1');
-        connectFunctionsEmulator(functions, 'localhost', 5001);
+        connectFunctionsEmulator(functions, getE2eEmulatorHost(), 5001);
         const response = await httpsCallable(functions, 'helloWorldV2', { timeout: 10000 })();
         response.data.should.equal('Hello from Firebase!');
       });
@@ -223,10 +225,7 @@ describe('functions() modular', function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallableFromUrl } = functionsModular;
 
-        let hostname = 'localhost';
-        if (Platform.android) {
-          hostname = '10.0.2.2';
-        }
+        const hostname = getE2eEmulatorHost();
         const functions = getFunctions(getApp());
         const functionRunner = httpsCallableFromUrl(
           functions,
@@ -941,10 +940,7 @@ describe('functions() modular', function () {
         it('HttpsError when calling stream from URL', async function () {
           const { getApp } = modular;
           const { getFunctions, httpsCallableFromUrl } = functionsModular;
-          let hostname = 'localhost';
-          if (Platform.android) {
-            hostname = '10.0.2.2';
-          }
+          const hostname = getE2eEmulatorHost();
           const functionRunner = httpsCallableFromUrl(
             getFunctions(getApp()),
             `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamWithHttpsErrorFromUrl`,
@@ -1024,10 +1020,7 @@ describe('functions() modular', function () {
       it('should stream data chunks from URL', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallableFromUrl } = functionsModular;
-        let hostname = 'localhost';
-        if (Platform.android) {
-          hostname = '10.0.2.2';
-        }
+        const hostname = getE2eEmulatorHost();
         const functionRunner = httpsCallableFromUrl(
           getFunctions(getApp()),
           `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
@@ -1054,10 +1047,7 @@ describe('functions() modular', function () {
       it('should work with HttpsCallableOptions.timeout on URL stream', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallableFromUrl } = functionsModular;
-        let hostname = 'localhost';
-        if (Platform.android) {
-          hostname = '10.0.2.2';
-        }
+        const hostname = getE2eEmulatorHost();
         const functionRunner = httpsCallableFromUrl(
           getFunctions(getApp()),
           `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
@@ -1084,10 +1074,7 @@ describe('functions() modular', function () {
       it('should accept stream options as second parameter for URL', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallableFromUrl } = functionsModular;
-        let hostname = 'localhost';
-        if (Platform.android) {
-          hostname = '10.0.2.2';
-        }
+        const hostname = getE2eEmulatorHost();
         const functionRunner = httpsCallableFromUrl(
           getFunctions(getApp()),
           `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
@@ -1117,10 +1104,7 @@ describe('functions() modular', function () {
       it('should return both stream and data promise for URL', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallableFromUrl } = functionsModular;
-        let hostname = 'localhost';
-        if (Platform.android) {
-          hostname = '10.0.2.2';
-        }
+        const hostname = getE2eEmulatorHost();
         const functionRunner = httpsCallableFromUrl(
           getFunctions(getApp()),
           `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,

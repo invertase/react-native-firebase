@@ -16,6 +16,7 @@
  *
  */
 
+import { getE2eEmulatorHost } from '@react-native-firebase/app/e2e/helpers';
 import React, { useState } from 'react';
 import { StyleSheet, View, StatusBar, AppRegistry, Text, Button } from 'react-native';
 
@@ -93,7 +94,7 @@ function loadTests(_) {
     before(async function () {
       if (platformSupportedModules.includes('functions')) {
         const { connectFunctionsEmulator, getFunctions } = functionsModular;
-        connectFunctionsEmulator(getFunctions(), 'localhost', 5001);
+        connectFunctionsEmulator(getFunctions(), getE2eEmulatorHost(), 5001);
       }
       if (platformSupportedModules.includes('database')) {
         const { connectDatabaseEmulator, getDatabase } = databaseModular;
