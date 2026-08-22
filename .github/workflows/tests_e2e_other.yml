@@ -181,21 +181,15 @@ jobs:
           path: .nx/cache
           key: ${{ runner.os }}-nx-v1-${{ hashFiles('yarn.lock', 'nx.json', 'lerna.json') }}
           restore-keys: ${{ runner.os }}-nx-v1
-      - name: Yarn Install
-        # https://github.com/nick-fields/retry/releases
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          timeout_minutes: 15
-          retry_wait_seconds: 60
-          max_attempts: 3
-          command: DETOX_DISABLE_POSTINSTALL=1 yarn
-
       - name: Setup Ruby
         # https://github.com/ruby/setup-ruby/releases
         uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
         with:
           ruby-version: 3
 
+      # Run frozen bundle install BEFORE yarn so CI remains supply-chain
+      # attack-hardened via the freeze; after yarn, postinstallDev → yarn
+      # ruby:install is a no-op (bundle check succeeds).
       - name: Bundle install
         # https://github.com/nick-fields/retry/releases
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -204,6 +198,15 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 3
           command: BUNDLE_FROZEN=true bundle install
+
+      - name: Yarn Install
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: 15
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn
 
       - name: Pods Cache Restore
         # https://github.com/actions/cache/releases

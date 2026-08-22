@@ -94,12 +94,12 @@ Minitest suites under `packages/app/__tests__/*_test.rb` cover production Ruby h
 
 | Item | Value |
 |------|-------|
-| **Command** | `yarn tests:ios:ruby` (after `bundle install` on the root Gemfile; CI uses `BUNDLE_FROZEN=true`) |
+| **Command** | `yarn tests:ios:ruby` (after `yarn ruby:install` or root `yarn`; CI uses `BUNDLE_FROZEN=true bundle install`) |
 | **Runner** | `packages/app/__tests__/run_with_coverage.rb` — SimpleCov starts before any production `.rb` / suite load; glob-discovers all `*_test.rb`; each suite runs in an **isolated subprocess** (mock unit vs real cocoapods/xcodeproj cannot share a process); Coverage counters are peek-merged across production `load` resets |
 | **LCOV** | `coverage/ios-ruby/lcov.info` (repo-relative `SF:…/packages/app/…`) |
 | **HTML** | `coverage/ios-ruby/index.html` (optional local browse) |
 | **Codecov flag** | `ios-ruby` — dedicated upload from `tests_e2e_ios.yml` debug+spm cell (same regime as `jest`: flag upload, **no** `flag_management` hard gate; local OKF review gate owns the touched-line bar) |
-| **CI** | `tests_e2e_ios.yml` (debug + spm): `BUNDLE_FROZEN=true bundle install` (root Gemfile, pinned cocoapods/xcodeproj) → `yarn tests:ios:ruby` → Codecov `flags: ios-ruby`. Not run on Jest or `tests_e2e_other.yml` — iOS job guarantees clang/ar/file for embed suites |
+| **CI** | `tests_e2e_ios.yml` (debug + spm): `BUNDLE_FROZEN=true bundle install` → yarn → `yarn tests:ios:ruby` → Codecov `flags: ios-ruby`. Not run on Jest or `tests_e2e_other.yml` — iOS job guarantees clang/ar/file for embed suites |
 | **Gems** | Committed root `Gemfile`/`Gemfile.lock` (+ `CHECKSUMS`); Dependabot `bundler` at `/` (cooldown in dependabot.yml — not Gemfile `cooldown:`, which needs Bundler 4+) |
 
 **Review gate:** when the frozen diff touches `packages/app/**/*.rb` or `packages/app/__tests__/*_test.rb`, `review_gate` **cannot close** without `yarn tests:ios:ruby` exit 0 and coverage evidence that touched production Ruby lines have test support ([validation checklist § iOS Ruby](validation-checklist.md#ios-ruby-unit-tests)).

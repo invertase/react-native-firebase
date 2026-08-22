@@ -228,15 +228,6 @@ jobs:
           path: .nx/cache
           key: ${{ runner.os }}-nx-v1-${{ hashFiles('yarn.lock', 'nx.json', 'lerna.json') }}
           restore-keys: ${{ runner.os }}-nx-v1
-      - name: Yarn Install
-        # https://github.com/nick-fields/retry/releases
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          timeout_minutes: 15
-          retry_wait_seconds: 60
-          max_attempts: 3
-          command: yarn
-
       - name: Setup Ruby
         # https://github.com/ruby/setup-ruby/releases
         uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
@@ -245,8 +236,11 @@ jobs:
 
       # Pinned cocoapods/xcodeproj + SimpleCov/RuboCop from the root Gemfile.
       # Shape/embed suites need those gems; yarn tests:ios:pod:install uses
-      # `bundle exec pod`. BUNDLE_FROZEN fails CI on Gemfile.lock drift
-      # (do not use deprecated --frozen; it would persist into .bundle/config).
+      # `bundle exec pod`. Run frozen bundle install BEFORE yarn so CI remains
+      # supply-chain attack-hardened via the freeze; after yarn, postinstallDev →
+      # yarn ruby:install is a no-op (bundle check succeeds).
+      # BUNDLE_FROZEN fails CI on Gemfile.lock drift (do not use deprecated
+      # --frozen; it would persist into .bundle/config).
       - name: Bundle install
         # https://github.com/nick-fields/retry/releases
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -255,6 +249,15 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 3
           command: BUNDLE_FROZEN=true bundle install
+
+      - name: Yarn Install
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: 15
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn
 
       - name: Verify Firebase SPM Ruby helpers
         if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
@@ -643,19 +646,16 @@ jobs:
           create-symlink: true
           max-size: 1500M
 
-      - name: Yarn Install
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          timeout_minutes: 15
-          retry_wait_seconds: 60
-          max_attempts: 3
-          command: yarn
-
       - name: Setup Ruby
         uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
         with:
           ruby-version: 3
 
+      # Run frozen bundle install BEFORE yarn so CI remains supply-chain
+      # attack-hardened via the freeze; after yarn, postinstallDev → yarn
+      # ruby:install is a no-op (bundle check succeeds).
+      # BUNDLE_FROZEN fails CI on Gemfile.lock drift (do not use deprecated
+      # --frozen; it would persist into .bundle/config).
       - name: Bundle install
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
@@ -663,6 +663,14 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 3
           command: BUNDLE_FROZEN=true bundle install
+
+      - name: Yarn Install
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: 15
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn
 
       - name: Pods Cache Restore
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
