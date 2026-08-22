@@ -54,9 +54,7 @@ Work queues use these **field names** (values: `open` | `closed`):
 | `review_gate` | `independent-review` work type complete |
 | `commit_gate` | Durable commit exists for the item **after** prior gates closed with [validation evidence](change-authoring-workflow.md#validation-evidence-blocking) |
 
-What closes each gate, trust rules, and loop transitions: [change authoring § gates](change-authoring-workflow.md#gates).
-
-`commit_gate` closes when a durable commit exists whose subject matches the row's `commit_subject`, **after** `implementation_gate` and `review_gate` closed with [validation evidence](change-authoring-workflow.md#validation-evidence-blocking).
+What closes each gate, trust rules, and loop transitions: [change authoring § gates](change-authoring-workflow.md#gates). `commit_subject` match and staging: [change authoring § commit](change-authoring-workflow.md#commit).
 
 Items may also be marked **`blocked`** when a dependency gate is open elsewhere.
 
@@ -72,7 +70,7 @@ Ephemeral work queues may record:
 | `implementation_gate` | `open` \| `closed` |
 | `review_gate` | `open` \| `closed` |
 | `commit_gate` | `open` \| `closed` |
-| `commit_subject` | Planned or landed **first line** of the item's focused commit (Conventional Commits subject). Set **before** `git commit`; must match the commit that closes `commit_gate`. Do not record SHAs. |
+| `commit_subject` | Planned or landed **first line** of the item's focused commit (Conventional Commits subject). Staging, match, and no-SHA rules: [change authoring § commit](change-authoring-workflow.md#commit). |
 | `blocked` | Item or dependency blocked until named gate closes |
 
 Queues record **state**, not who executes the work.

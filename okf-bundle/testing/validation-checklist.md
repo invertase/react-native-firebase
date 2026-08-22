@@ -156,19 +156,19 @@ Some suites hit **cloud APIs**, e.g. Firestore Pipelines → `pipelines-e2e` Ent
 
 ## OKF bundle review
 
-Before handoff, follow [OKF policy](../documentation-policy.md#okf-update-contract):
+Before handoff, run the [OKF update contract](../documentation-policy.md#okf-update-contract) in a **fresh context**:
 
 1. Update relevant `okf-bundle/packages/<pkg>/` docs with durable learnings.
 2. Check `okf-bundle/testing/` for conflicts with verified behavior; fix drift.
-3. Run independent scan for canonical ownership, DRY refs, link hygiene, durability.
+3. Independent scan of the **entire** `okf-bundle/` tree. Give the scanner a short summary of what changed and which files were touched. Confirm every contract row: Canonical location, DRY, [Efficiency](../documentation-policy.md#efficiency), link hygiene, Durability. Fix violations before handoff/merge.
 
-Goal: each iteration improves OKF and removes conflicting guidance.
+Goal: each iteration improves OKF and removes conflicting guidance. The contract owns check meanings; this section is the handoff entry — do not skip the hop by treating this list as a thinner substitute.
 
 <a id="validation-evidence-package"></a>
 
-## Validation evidence package (blocking)
+## Validation evidence package
 
-Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, or publishing (`git push` / PR update), record evidence per [change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking). Minimum template:
+**Blocking.** Before closing **`implementation_gate`**, **`review_gate`**, **`commit_gate`**, or publishing (`git push` / PR update), record evidence per [change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking). Minimum template:
 
 ```markdown
 | Step                      | Command                              | Exit | Evidence                                                                                                                                     |

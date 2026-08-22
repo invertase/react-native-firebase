@@ -262,7 +262,7 @@ Package workflows define **which module/spec** to load (e.g. Firestore → [pipe
 - One focused commit per item when gates close.
 - **Evidence required:** [§ validation evidence](#validation-evidence-blocking) must be recorded before `commit_gate` closes; orchestration summaries are not substitutes for exit codes, e2e counts, and coverage tables.
 - **Never stage:** `tests/harness.overrides.js`, any `.only`, temporary sub-suite edits in `tests/app.js`, or native instrumentation ([running e2e § before merge](running-e2e.md#before-merge-pr-handoff), [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)).
-- **Work queue:** before `git commit`, set the row's `commit_subject` to the commit's subject line, close `commit_gate`, and stage the queue doc **in the same commit** as the product change ([documentation policy § work queues](../documentation-policy.md#work-queue-documents)). Do not record SHAs in queue docs.
+- **Work queue:** before `git commit`, set the row's `commit_subject` to the commit's subject line, close `commit_gate`, and stage the queue doc **in the same commit** as the product change. Do not record SHAs in queue docs. After commit, the git subject and the queue `commit_subject` must match character-for-character. Single-commit PR titles: [documentation-policy § pull requests](../documentation-policy.md#pull-requests). Queues are ephemeral ([documentation policy § work-queue documents](../documentation-policy.md#work-queue-documents)); do not copy policy here.
 
 ```bash
 git status
@@ -278,7 +278,7 @@ rg '\.only\(' packages/
 | TurboModule migration | Spec inventory, codegen commit, New Architecture harness, multi-module spec split — [turbomodule implementation workflow](../new-architecture/turbomodule-implementation-workflow.md)     |
 | Other packages        | `okf-bundle/packages/<pkg>/` index when a workflow exists                                                                                                                                 |
 
-Ephemeral coordination (gate rows, `next_work_type`, `commit_subject`): **work queues only** — not part of this workflow.
+Ephemeral coordination (gate rows, `next_work_type`, `commit_subject`) lives in **work queues only** — do not paste gate rows into this file. How to stage those fields: [§ commit](#commit).
 
 ## Related docs
 

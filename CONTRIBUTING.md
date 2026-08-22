@@ -171,8 +171,7 @@ To aid review we also ask that you fill out the PR template as much as possible.
 
 ### Your PR title
 
-We use the [Conventional Commits](https://www.conventionalcommits.org/) format throughout the project. Your Pull Request title should be
-in this format; however your commits themselves do not need to follow this format as all PRs are eventually squash merged.
+Commit subjects and Pull Request titles use [Conventional Commits](https://www.conventionalcommits.org/). Full rules, including the squash/amend exception to **fix** a non-conforming subject: [OKF documentation policy § pull requests](okf-bundle/documentation-policy.md#pull-requests).
 
 #### Examples
 
