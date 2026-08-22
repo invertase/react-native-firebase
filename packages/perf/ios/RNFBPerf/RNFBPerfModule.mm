@@ -35,10 +35,11 @@
 #define RNFB_PERF_SDK_AVAILABLE 0
 #endif
 #import "RNFBApp/RNFBSharedUtils.h"
+#import "RNFBPerfHandleRegistry.h"
 #import "RNFBPerfModule.h"
 
-static __strong NSMutableDictionary *traces;
-static __strong NSMutableDictionary *httpMetrics;
+static RNFBPerfHandleRegistry *traces;
+static RNFBPerfHandleRegistry *httpMetrics;
 
 @implementation RNFBPerfModule
 
@@ -53,23 +54,16 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
 
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    traces = [[NSMutableDictionary alloc] init];
-    httpMetrics = [[NSMutableDictionary alloc] init];
+    traces = [[RNFBPerfHandleRegistry alloc] init];
+    httpMetrics = [[RNFBPerfHandleRegistry alloc] init];
   });
 
   return self;
 }
 
 - (void)invalidate {
-  @synchronized([self class]) {
-    for (NSString *key in [traces allKeys]) {
-      [traces removeObjectForKey:key];
-    }
-
-    for (NSString *key in [httpMetrics allKeys]) {
-      [httpMetrics removeObjectForKey:key];
-    }
-  }
+  [traces takeAll];
+  [httpMetrics takeAll];
 }
 
 #if !RNFB_PERF_SDK_AVAILABLE
@@ -141,8 +135,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   FIRTrace *trace = [[FIRPerformance sharedInstance] traceWithName:identifier];
   [trace start];
 
-  @synchronized([self class]) {
-    traces[@((int)id)] = trace;
+  FIRTrace *displaced = [traces putReplacing:@((int)id) value:trace];
+  if (displaced != nil) {
+    [displaced stop];
   }
 #else
   (void)id;
@@ -152,9 +147,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
 
 - (void)stopTrace:(double)id traceData:(JS::NativeRNFBTurboPerf::TraceData &)traceData {
 #if RNFB_PERF_SDK_AVAILABLE
-  FIRTrace *trace;
-  @synchronized([self class]) {
-    trace = traces[@((int)id)];
+  NSNumber *traceId = @((int)id);
+  FIRTrace *trace = [traces get:traceId];
+  if (trace == nil) {
+    return;
   }
 
   NSDictionary *metrics = (NSDictionary *)traceData.metrics();
@@ -169,10 +165,13 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
         [trace setValue:value forAttribute:attributeName];
       }];
 
-  [trace stop];
-
-  @synchronized([self class]) {
-    [traces removeObjectForKey:@((int)id)];
+  FIRTrace *expected = trace;
+  trace = [traces takeIf:traceId
+                    when:^BOOL(NSObject *value) {
+                      return value == expected;
+                    }];
+  if (trace != nil) {
+    [trace stop];
   }
 #else
   (void)id;
@@ -215,8 +214,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   FIRHTTPMetric *httpMetric = [[FIRHTTPMetric alloc] initWithURL:toNSURL HTTPMethod:method];
   [httpMetric start];
 
-  @synchronized([self class]) {
-    httpMetrics[@((int)id)] = httpMetric;
+  FIRHTTPMetric *displaced = [httpMetrics putReplacing:@((int)id) value:httpMetric];
+  if (displaced != nil) {
+    [displaced stop];
   }
 #else
   (void)id;
@@ -227,9 +227,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
 
 - (void)stopHttpMetric:(double)id metricData:(JS::NativeRNFBTurboPerf::HttpMetricData &)metricData {
 #if RNFB_PERF_SDK_AVAILABLE
-  FIRHTTPMetric *httpMetric;
-  @synchronized([self class]) {
-    httpMetric = httpMetrics[@((int)id)];
+  NSNumber *metricId = @((int)id);
+  FIRHTTPMetric *httpMetric = [httpMetrics get:metricId];
+  if (httpMetric == nil) {
+    return;
   }
 
   NSDictionary *attributes = (NSDictionary *)metricData.attributes();
@@ -254,10 +255,13 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
     [httpMetric setResponseContentType:metricData.responseContentType()];
   }
 
-  [httpMetric stop];
-
-  @synchronized([self class]) {
-    [httpMetrics removeObjectForKey:@((int)id)];
+  FIRHTTPMetric *expected = httpMetric;
+  httpMetric = [httpMetrics takeIf:metricId
+                              when:^BOOL(NSObject *value) {
+                                return value == expected;
+                              }];
+  if (httpMetric != nil) {
+    [httpMetric stop];
   }
 #else
   (void)id;
