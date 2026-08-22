@@ -27,8 +27,8 @@ Glossary of **string identifiers** and **work-queue field names** used across OK
 | `gap-analysis` | Read-only feasibility / semantics check |
 | `baseline-capture` | Record before snapshots or baselines |
 | `implementation` | Author product code and tests |
-| `independent-review` | Verify a frozen diff |
-| `documentation` | User docs and durable OKF updates |
+| `documentation` | Promote user docs and durable OKF — does not run the scan |
+| `independent-review` | Verify a frozen diff (OKF scan when those files are in the tree) |
 | `commit` | Stage and create one commit |
 | `pre-merge-validation` | Branch-wide merge gate |
 
@@ -73,7 +73,7 @@ Ephemeral work queues may record:
 | `commit_subject` | Planned or landed **first line** of the item's focused commit (Conventional Commits subject). Staging, match, and no-SHA rules: [change authoring § commit](change-authoring-workflow.md#commit). |
 | `blocked` | Item or dependency blocked until named gate closes |
 
-Queues record **state**, not who executes the work.
+Queues record **state** (gate fields and `next_work_type`). Public OKF owns the terms, gates, and commands.
 
 ## Related docs
 

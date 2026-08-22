@@ -86,22 +86,31 @@ On a **frozen tree** — full [change authoring § independent-review](../../tes
 
 ## Pipeline area harness
 
-Extends [change authoring § harness narrowing](../../testing/change-authoring-workflow.md#harness-narrowing). **Mechanics:** [running e2e § local harness overrides](../../testing/running-e2e.md#local-harness-overrides-harnessoverridesjs).
+Extends [change authoring § harness narrowing](../../testing/change-authoring-workflow.md#harness-narrowing). **How:** [running e2e § local harness overrides](../../testing/running-e2e.md#local-harness-overrides-harnessoverridesjs). Do **not** edit committed `tests/app.js` / `tests/globals.js` for module narrowing. Frozen `independent-review` is [report-only except revert `.only`](../../testing/change-authoring-workflow.md#frozen-tree).
 
-**Area setup (required for `unit-focused` and `area-focused` tiers):** firestore-only `platformSupportedModules` with **both** `if (Platform.other)` and `if (!Platform.other)` disabled (`if (false && …)` on each) or trimmed inside each block; load `require('../packages/firestore/e2e/Pipeline.e2e.js')` or full firestore `require.context` per scope; **`RNFBDebug = true`** locally per [running e2e § fail-fast](../../testing/running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing) — **never commit**. Revert **both** platform blocks before **full** tier or `commit`.
+**Override values** (required for `unit-focused` and `area-focused` before `:test-cover`):
 
-**Sanity check:** ~**100** passing per platform when only `Pipeline.e2e.js` loads. Pass counts in the **hundreds or thousands** mean full app load — stop and re-apply narrowing ([running-e2e § gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking)).
+```javascript
+module.exports = {
+  RNFBDebug: true,
+  modules: ['app', 'firestore'],
+};
+```
+
+**Area spec:** `packages/firestore/e2e/Pipeline.e2e.js` (committed firestore `require.context` loads it). **Area-focused** / frozen review: overrides only; no `.only`; do not replace `require.context`. **Unit-focused** may optionally narrow to that spec via [running e2e § spec loading](../../testing/running-e2e.md#local-harness-overrides-harnessoverridesjs) — **never commit**; **never** on frozen `independent-review`.
+
+**Sanity check:** [running e2e § sanity check by platform](../../testing/running-e2e.md#local-harness-overrides-harnessoverridesjs) — ~**700** firestore-only via overrides; ~**100** only if unit-focused Pipeline spec narrowing. Pass counts in the **thousands** mean full app load — stop ([running-e2e § gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking)).
 
 ## Pipeline `documentation`
 
-Per export, same commit:
+On the same change set **before** `independent-review` — [change authoring § primary loop](../../testing/change-authoring-workflow.md#primary-loop). This work type promotes durable text; the OKF scan is the frozen review ([§ OKF bundle review](../../testing/validation-checklist.md#okf-bundle-review)).
 
 **User docs**
 
 - Page or section under `docs/firestore/pipelines/`
 - Parity table row on pipelines overview
 - `docs.json` sidebar entry for new pages
-- [Validation checklist § lint and formatting](../../testing/validation-checklist.md#lint-and-formatting) — markdown/spellcheck when docs changed
+- [Validation checklist § lint and formatting](../../testing/validation-checklist.md#lint-and-formatting)
 
 **OKF bundle maintenance**
 
@@ -115,7 +124,7 @@ Per export, same commit:
 feat(firestore): expose pipeline <export-name>
 ```
 
-**Never stage:** area narrowing in `tests/app.js` / `tests/globals.js`, any `.only`.
+**Never stage:** `tests/harness.overrides.js`, any `.only` — [change authoring § commit](../../testing/change-authoring-workflow.md#commit).
 
 Before `git commit`: [validation evidence package](../../testing/validation-checklist.md#validation-evidence-package) recorded; [coverage evidence package](../../testing/coverage-design.md#coverage-evidence-package) when lib/native bridge touched ([change authoring § commit](../../testing/change-authoring-workflow.md#commit)).
 

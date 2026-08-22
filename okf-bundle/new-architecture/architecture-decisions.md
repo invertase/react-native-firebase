@@ -8,9 +8,9 @@ timestamp: 2026-06-29T00:00:00Z
 
 # New Architecture decisions (ADR)
 
-**Canonical owner of durable architectural decisions** for the TurboModule migration. Each entry is a decision plus a brief rationale. Procedure lives in [implementation workflow](turbomodule-implementation-workflow.md); ephemeral phase/gate state lives in the [migration work queue](migration-work-queue.md). Those docs **link here** for the "why" — they do not copy decisions.
+**Canonical owner of durable architectural decisions** for React Native Firebase TurboModules. Each entry is a decision plus a brief rationale. Product how-to lives in [change authoring](../testing/change-authoring-workflow.md), [running e2e](../testing/running-e2e.md), and [agent command policy](../testing/agent-command-policy.md).
 
-**Policy:** [OKF documentation and commit policy](../documentation-policy.md). Durable decisions belong here; never in the ephemeral work queue.
+**Policy:** [OKF documentation and commit policy](../documentation-policy.md). Durable decisions belong here.
 
 ## Decision ID convention
 
@@ -40,25 +40,27 @@ Codegen spec/module names use the `NativeRNFBTurbo*` prefix (`NativeRNFBTurboAut
 
 **Why:** Disambiguates from legacy `RNFB*` module names during transition; satisfies Codegen's `Native*` spec-file requirement.
 
+**Web / macOS registration:** [`nativeModuleWeb.ts`](../../../packages/app/lib/internal/nativeModuleWeb.ts) registers JS-SDK shims by module name in the **registry object initializer** (not deferred to bottom-of-file calls) so `NativeRNFBTurbo*` keys exist before `RNFBNativeEventEmitter` instantiates during circular imports. When `APP_NATIVE_MODULE` changes, register **both** the legacy `RNFBAppModule` key and the turbo name. Missing that registration surfaces as a macOS blank window / `Native module NativeRNFBTurboApp is not registered`.
+
 ---
 
 ## NewArch-AD-3 — Strong Codegen typing — **Accepted**
 
 Strong Codegen types wherever the API allows. Source of truth: `packages/*/lib/types/internal.ts`, native method inventories, firebase-js-sdk shapes. Use `Object` / open maps only where payloads are genuinely dynamic.
 
-**Codegen-safe naming:** Spec methods and generated symbols must avoid language keywords or reserved identifiers across TypeScript, C++, Java, and ObjC++ targets. Known blockers from this migration: `delete` as a method name breaks generated native code, and TypeScript primitive `object` is rejected by RN Codegen for NativeModule specs (`TSObjectKeyword`). Procedure and the current reserved-word checklist live in [implementation workflow § Codegen-safe names and types](turbomodule-implementation-workflow.md#codegen-safe-names-and-types-blocking).
+**Codegen-safe naming:** Spec methods and generated symbols must avoid language keywords or reserved identifiers across TypeScript, C++, Java, and ObjC++ targets. Known blockers: `delete` as a method name breaks generated native code; TypeScript primitive `object` is rejected by RN Codegen for NativeModule specs (`TSObjectKeyword`) — use a shaped type, Codegen `Object` for truly dynamic maps, or a named interface. Also avoid generated-target reserved words (`class`, `default`, `new`, `switch`, `case`, `try`, `catch`, `return`, `void`, `static`, `public`, `private`, `protected`, `namespace`, `operator`, `template`, `this`, `self`). If a legacy method already uses a reserved word, rename the spec method and keep the public JS API stable via the wrapper.
 
 ---
 
 ## NewArch-AD-4 — Events deferred to Phase C — **Accepted**
 
-Keep the legacy event path (`RNFBNativeEventEmitter` → app-module proxy → `RNFBRCTEventEmitter` / `ReactNativeFirebaseEventEmitter` → `SharedEventEmitter` fan-out) under TurboModules. Defer Codegen EventEmitter cutover to [Phase C](migration-work-queue.md#deferred-cleanup-phase-eventemitter).
+Keep the legacy event path (`RNFBNativeEventEmitter` → app-module proxy → `RNFBRCTEventEmitter` / `ReactNativeFirebaseEventEmitter` → `SharedEventEmitter` fan-out) under TurboModules. Codegen EventEmitter cutover is a **future** change, not part of the method-call shell.
 
-**Deferral discriminator:** if area-focused e2e or device testing shows a package's events cannot work over the legacy proxy under TurboModules, escalate that package's event path into its own migration PR rather than waiting for Phase C. **Highest risk:** `messaging` (background/iOS AppDelegate, headless JS task).
+**Escalation:** if area-focused e2e or device testing shows a package's events cannot work over the legacy proxy under TurboModules, cut that package's event path over in its own change rather than waiting. **Highest risk:** `messaging` (background/iOS AppDelegate, headless JS task).
 
-### messaging — defer EventEmitter cutover; migrate shell only in Phase 4
+### messaging — EventEmitter stays on the legacy proxy
 
-**Decision:** Phase 4 `messaging` migrates the **method-call TurboModule shell** only. Event emit/subscribe stays on the legacy proxy until [Phase C](migration-work-queue.md#deferred-cleanup-phase-eventemitter).
+**Decision:** `messaging` ships the **method-call TurboModule shell** only. Event emit/subscribe stays on the legacy proxy until a future Codegen EventEmitter cutover.
 
 | Assertion | Primary source |
 |-----------|----------------|
@@ -70,7 +72,7 @@ Keep the legacy event path (`RNFBNativeEventEmitter` → app-module proxy → `R
 
 The deferral discriminator is **not** satisfied by structure alone: nothing in the messaging native tree requires EventEmitter cutover when the shell becomes a TurboModule.
 
-**Testing requirement (Phase 4 review gate):** Messaging is the highest-risk legacy-proxy package. Area-focused e2e must be designed deliberately for **event delivery**, not only turbo method calls — foreground message receipt, token refresh, notification-opened, and (on iOS) background handler timing against `signalBackgroundMessageHandlerSet`. Device validation is required where the harness cannot automate FCM delivery or AppDelegate background races. Escalate event cutover into Phase 4 **only** if that testing proves the proxy fails. iOS `RCTRootView` / `addCustomPropsToUserProps` headless wiring is a separate shell implementation concern, not an event-path escalation trigger.
+**Testing:** Messaging is the highest-risk legacy-proxy package. Area-focused e2e must cover **event delivery**, not only turbo method calls — foreground message receipt, token refresh, notification-opened, and (on iOS) background handler timing against `signalBackgroundMessageHandlerSet`. Device validation is required where the harness cannot automate FCM delivery or AppDelegate background races. Escalate event cutover **only** if that testing proves the proxy fails. iOS `RCTRootView` / `addCustomPropsToUserProps` headless wiring is a separate shell implementation concern, not an event-path escalation trigger.
 
 ---
 
@@ -136,7 +138,7 @@ iOS TurboModule shells return `NO` from `+ requiresMainQueueSetup`. Any genuinel
 
 **Direction:** treat the current `public static` maps as tolerated legacy carryover; a new cross-package channel should be an explicit app-owned API/singleton with tests, not a new public static.
 
-**Encapsulation cleanup ([Phase E](migration-work-queue.md#phase-e-shared-state-encapsulation-optional), optional):** a post-migration pass that refactors the un-encapsulated shared-state items (bare `public static` maps such as `authDomains`) behind explicit, testable `app`-owned accessor methods, and audits that all inter-module state is genuinely centralized in `app`. Optional and deferrable — it does not block the coordinated break — but the canonical home for that work.
+**Encapsulation (optional, later):** refactor un-encapsulated shared-state items (bare `public static` maps such as `authDomains`) behind explicit, testable `app`-owned accessor methods, and audit that all inter-module state is genuinely centralized in `app`. Optional — it does not block shipping TurboModules.
 
 ---
 
@@ -150,7 +152,7 @@ Multiple specs/modules in one package are **merged flat** into a single resolved
 
 ## NewArch-AD-12 — One commit per package — **Accepted**
 
-Convert a whole package (all its legacy modules → all its specs) in one `implementation → independent-review → commit` loop; land it as one `feat(<pkg>)!: migrate <pkg> to TurboModules` (breaking: New Architecture required). Multiple specs ≠ multiple commits — they share `codegenConfig`, generated artifacts, podspec/gradle guards, and JS wiring that only build and pass e2e together.
+Convert a whole package (all its legacy modules → all its specs) in one [change authoring](../testing/change-authoring-workflow.md#primary-loop) loop (`documentation?` before frozen `independent-review`); land it as one `feat(<pkg>)!: migrate <pkg> to TurboModules` (breaking: New Architecture required). Multiple specs ≠ multiple commits — they share `codegenConfig`, generated artifacts, podspec/gradle guards, and JS wiring that only build and pass e2e together.
 
 ---
 
@@ -223,7 +225,7 @@ Memoize constants that are **static after init** (e.g. app `NATIVE_FIREBASE_APPS
 
 ## NewArch-AD-16 — Phase S (async→sync conversion) — **Open**
 
-Some RNFB methods are `Promise<T>` only because the legacy bridge forced async, while firebase-js-sdk is synchronous. TurboModules support sync JSI methods, so those can return to sync parity. Scope, discriminator, and the required gap-analysis live in [migration work queue § Phase S](migration-work-queue.md#phase-s-sync-conversion-forced-async--sync) and [implementation workflow § Phase S](turbomodule-implementation-workflow.md#phase-s-sync-conversion-forced-async--sync).
+Some RNFB methods are `Promise<T>` only because the legacy bridge forced async, while firebase-js-sdk is synchronous. TurboModules support sync JSI methods, so those can return to sync parity. **Discriminator:** keep `Promise<T>` when the native work has real latency (network / disk / keychain / token); convert only pure bridge-forced async.
 
 **Open question driving the gap-analysis:** the "keep async if it does network/IO/disk" rule assumes firebase-js-sdk's sync methods do **not** do blocking IO for the same functionality. That must be verified per method (does the web SDK do the work in-memory, or defer it?), because if web is genuinely sync-and-non-blocking, RNFB may be able to be sync too. Do not lock the conversion list until that inventory exists. Blocked by NewArch-AD-9 (`requiresMainQueueSetup = NO`) — sync methods require it.
 
@@ -243,7 +245,7 @@ Jest-level tests, reused across packages:
 
 **Describe block (grep anchor):** `TurboModule wrapper contract (NewArch-AD-17.1)`
 
-**Scoped Jest command (review / implementer handoff):**
+**Scoped Jest command:**
 
 ```bash
 yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts
@@ -305,13 +307,13 @@ Two resolution surfaces exist and must be used deliberately:
 
 **Default rule:** new product code uses the **wrapped** surface. Raw access is allowed **only** when listed in the canonical exception table below (or after a gap-analysis finds a new legitimate case, documents it here, and adds an in-code rationale comment). Raw callers must use the **turbo** module name ([NewArch-AD-2](#newarch-ad-2--naming-nativernfbturbo--accepted)). Raw callers do **not** get error mapping — they must handle native errors themselves.
 
-**Gap-analysis gate (every package):** as part of spec authoring, `grep` the repo for `getReactNativeModule(` in product code. For each hit: (1) is it already in the table below? (2) if not, is it a bug (legacy module name, should be wrapped)? (3) if genuinely new, add a row here with policy rationale **before** landing the PR. See [workflow § gap-analysis](turbomodule-implementation-workflow.md#spec-authoring-gap-analysis--pre-implementation).
+**Gap-analysis gate (every package):** as part of spec authoring, `grep` the repo for `getReactNativeModule(` in product code. For each hit: (1) is it already in the table below? (2) if not, is it a bug (legacy module name, should be wrapped)? (3) if genuinely new, add a row here with policy rationale **before** landing the PR.
 
 ### Canonical exception table
 
 | # | Call site | Module name | Category | Why raw (policy) | Action |
 |---|-----------|---------------|----------|------------------|--------|
-| E1 | [`RNFBNativeEventEmitter.ts`](../../../packages/app/lib/internal/RNFBNativeEventEmitter.ts) (constructor, `addListener`, `removeAllListeners`, `removeSubscription`) | `NativeRNFBTurboApp` | **Permanent** | React Native's `NativeEventEmitter` must receive the **same raw host object** that implements `addListener` / `removeListeners` on the native side. Wrapping would break event subscription identity and the RN event-bridge contract. Deferred to [Phase C](migration-work-queue.md#deferred-cleanup-phase-eventemitter) for a typed Codegen event path. | Keep raw; turbo name. |
+| E1 | [`RNFBNativeEventEmitter.ts`](../../../packages/app/lib/internal/RNFBNativeEventEmitter.ts) (constructor, `addListener`, `removeAllListeners`, `removeSubscription`) | `NativeRNFBTurboApp` | **Permanent** | React Native's `NativeEventEmitter` must receive the **same raw host object** that implements `addListener` / `removeListeners` on the native side. Wrapping would break event subscription identity and the RN event-bridge contract. A typed Codegen event path is a future cutover, not a reason to wrap this site. | Keep raw; turbo name. |
 | E2 | [`nativeModule.ts`](../../../packages/app/lib/internal/registry/nativeModule.ts) `initialiseNativeModule` / `getAppModule` bootstrap | any | **Infrastructure** | The wrapper factory itself must read the bare host to build the [NewArch-AD-14](#newarch-ad-14--native-module-wrapper-memoizing-lazy-proxy--accepted) Proxy/composite. Not a product bypass. | N/A |
 | E3 | [`nativeModuleAndroidIos.ts`](../../../packages/app/lib/internal/nativeModuleAndroidIos.ts) unified resolver | any | **Infrastructure** | Defines `getReactNativeModule`; applies `withTurboConstants` before returning. Not a product bypass. | N/A |
 | E4 | [`tests/globals.js`](../../../tests/globals.js) `NativeModules` proxy getter | `RNF*` / `NativeRNFBTurbo*` | **Infrastructure** | E2e harness routes RNFB module names through the real unified resolver so specs that read `NativeModules.NativeRNFBTurboApp` (e.g. [`events.e2e.js`](../../../packages/app/e2e/events.e2e.js)) get a live module, not a stub. Durable product wiring — not harness narrowing. | Keep; part of Phase 0. |
@@ -320,7 +322,7 @@ Two resolution surfaces exist and must be used deliberately:
 | E7 | [`app/lib/modular.ts`](../../../packages/app/lib/modular.ts) `metaGetAll`, `jsonGetAll`, `preferences*` | `NativeRNFBTurboApp` | **Not an exception — migrate** | No policy reason for raw; these are app-module method calls with no arg-prepend skip. Should use **`getAppModule()`** (wrapped) for error mapping consistency. Listed here so gap-analysis catches them. | Migrate to `getAppModule()` in Phase 0. |
 | E8 | [`FirestoreStatics.ts`](../../../packages/firestore/lib/FirestoreStatics.ts) `setLogLevel` | `NativeRNFBTurboFirestore` | **Phase 1 fix** | Cross-package static helper bypasses `FirebaseModule`/`getNativeModule`. Uses turbo main host via [`getStaticFirestoreMainModule()`](../../../packages/firestore/lib/internal/staticNativeModule.ts) (NewArch-AD-18 E8). Raw access retained — no wrapped surface for static helpers. | Done — firestore Phase 1. |
 | E9 | [`DatabaseSyncTree.ts`](../../../packages/database/lib/DatabaseSyncTree.ts) `native` getter | `RNFBDatabaseQueryModule` | **Deferred — Phase 4** | Internal sync listener tree calls query module directly for low-latency sync ops, bypassing the merged multi-module surface. Acceptable until database migrates; then turbo name + evaluate whether wrapped merge surface suffices. | Fix when `database` migrates. |
-| E10 | [`phone-number-verification/lib/index.ts`](../../../packages/phone-number-verification/lib/index.ts) `getNativeModule()` | `RNFBPnvModule` | **Deferred — Phase 5** | Package bypasses `createModuleNamespace` by design ([workflow § gotchas](turbomodule-implementation-workflow.md#gotchas)). Direct resolver is intentional; update to `NativeRNFBTurboPnv` on migration. | Fix when `phone-number-verification` migrates. |
+| E10 | [`phone-number-verification/lib/index.ts`](../../../packages/phone-number-verification/lib/index.ts) `getNativeModule()` | `RNFBPnvModule` / `NativeRNFBTurboPnv` | **Permanent (direct resolver)** | Package bypasses `createModuleNamespace` by design. Direct resolver is intentional; use the turbo name. | Keep direct; turbo name. |
 
 **Adding a new exception:** gap-analysis must justify why wrapping breaks (not merely "it's convenient"). Update this table and add a one-line `// NewArch-AD-18 E<n>: <reason>` comment at the call site.
 
@@ -373,7 +375,7 @@ ResultT inject ([NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-withou
 **Scope / limits:**
 
 - Wipe targets **only** the configured `--outputPath` (e.g. `android/.../generated`, `ios/generated`). Hand-written sources outside that path (e.g. `RCTConvert+FIROptions`) are untouched.
-- Wipe removes orphans **on the same path**. A **sibling** wrong tree from a prior bad `outputPath` (e.g. `src/main/java/.../generated` vs `src/reactnative/java/.../generated`) still needs a one-time manual delete — see [workflow § Duplicate generated trees](turbomodule-implementation-workflow.md#duplicate-generated-trees).
+- Wipe removes orphans **on the same path**. A **sibling** wrong tree from a prior bad `outputPath` (e.g. `src/main/java/.../generated` vs `src/reactnative/java/.../generated`) still needs a one-time manual delete. Keep **one** canonical tree; align shell imports, `build.gradle` `sourceSets`, and `cmakeListsPath`.
 - After a `codegenConfig.name` rename ([NewArch-AD-7](#newarch-ad-7--codegenconfigname--aggregate-library-name-one-codegenconfig-per-package--accepted)), wipe clears the old library under `outputPath`; update `cmakeListsPath` / imports only when those paths embed the old name.
 
 **Related:** [NewArch-AD-5](#newarch-ad-5--commit-generated-code--accepted), [NewArch-AD-7](#newarch-ad-7--codegenconfigname--aggregate-library-name-one-codegenconfig-per-package--accepted), [NewArch-AD-17.3](#newarch-ad-173--codegen-verify-ci--accepted), [NewArch-AD-20](#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted), [NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted).
@@ -384,8 +386,7 @@ ResultT inject ([NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-withou
 
 | Topic | Document |
 |-------|----------|
-| Procedure / how-to | [turbomodule-implementation-workflow.md](turbomodule-implementation-workflow.md) |
-| Phase/gate/ephemeral state | [migration-work-queue.md](migration-work-queue.md) |
 | Index | [index.md](index.md) |
 | Change loop, gates, tiers | [change-authoring-workflow.md](../testing/change-authoring-workflow.md) |
+| E2e / codegen commands | [running-e2e.md](../testing/running-e2e.md); [agent command policy § TurboModule codegen](../testing/agent-command-policy.md#turbomodule-codegen) |
 | Doc/commit policy | [documentation-policy.md](../documentation-policy.md) |

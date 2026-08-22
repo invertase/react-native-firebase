@@ -42,12 +42,9 @@ PRs are squash-merged. Maintainers or agents may amend or squash to **fix** a no
 
 ## OKF update contract
 
-OKF markdown edits require an **independent bundle consistency pass**. Use a fresh context with:
+OKF markdown edits require an **independent bundle consistency pass**. That pass **is** `independent-review` when the frozen tree includes `okf-bundle/` reference docs, `AGENTS.md`, or `CONTRIBUTING.md` — [validation-checklist § OKF bundle review](testing/validation-checklist.md#okf-bundle-review). The `documentation` work type **promotes** durable text; it does not run this scan. Loop order: [change authoring § primary loop](testing/change-authoring-workflow.md#primary-loop).
 
-1. A short summary of what changed and which files were touched.
-2. Instruction to scan the **entire** `okf-bundle/` tree.
-
-Confirm:
+Scan the **entire** `okf-bundle/` tree against:
 
 | Check | Requirement |
 |-------|-------------|
@@ -57,7 +54,7 @@ Confirm:
 | **Link hygiene** | Cross-links resolve; indexes list canonical entry points |
 | **Durability** | No ephemeral or private fields in GitHub-public **reference** docs, commits, or PR titles. Work-queue **files** may hold ephemeral fields. Private items stay off GitHub |
 
-Fix violations before handoff/merge. Work-queue edits still follow this split. Handoff entry: [validation-checklist § OKF bundle review](testing/validation-checklist.md#okf-bundle-review).
+**Report-only** during `independent-review` ([frozen tree](testing/change-authoring-workflow.md#frozen-tree)). **Fix before `git commit`**. Do not add OKF after a frozen review without another `independent-review`. Work-queue edits still follow this split.
 
 ## Efficiency
 
@@ -82,6 +79,6 @@ If shortening would change how an agent acts, keep the longer text.
 
 Work queues are **intentionally ephemeral**: phases, **commit subjects**, gates, active coordination. They are not policy or finalized registry/design homes.
 
-Work queues record **gates**, **`next_work_type`**, **`validation_tier`**, and **`commit_subject`** using field names and allowed values from [iteration vocabulary](testing/iteration-vocabulary.md). Gate semantics, workflow rules, and `commit_subject` staging: [change authoring workflow](testing/change-authoring-workflow.md) (including [§ commit](testing/change-authoring-workflow.md#commit)). They do **not** name agent roles, dispatch instructions, or session choreography — those are out of scope for the public repo.
+Work queues record **gates**, **`next_work_type`**, **`validation_tier`**, and **`commit_subject`** using field names and allowed values from [iteration vocabulary](testing/iteration-vocabulary.md). Gate semantics, workflow rules, and `commit_subject` staging: [change authoring workflow](testing/change-authoring-workflow.md) (including [§ commit](testing/change-authoring-workflow.md#commit)). Public OKF owns those terms, gates, and commands.
 
 New work queues link here in frontmatter/opening section; do not copy policy inline.

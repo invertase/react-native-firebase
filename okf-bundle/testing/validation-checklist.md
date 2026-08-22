@@ -14,14 +14,18 @@ Coverage acceptance: [expectations](coverage-design.md#coverage-expectations-pol
 
 ## When to run what
 
-Work types and tiers: [change authoring workflow](change-authoring-workflow.md). Term ids: [iteration vocabulary](iteration-vocabulary.md).
+<a id="work-types"></a>
+
+Work types and tiers: [change authoring workflow](change-authoring-workflow.md#work-types). Term ids: [iteration vocabulary](iteration-vocabulary.md).
 
 | Work type              | Scope                                                                                                                                                                                                                                                                                                          | Shortcuts                                                                                                                                                                                                                                                                                                                             |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `gap-analysis`         | `compare:types`, config read, SDK declarations                                                                                                                                                                                                                                                                 | n/a                                                                                                                                                                                                                                                                                                                                   |
 | `baseline-capture`     | Full loaded spec(s) + e2e on [**every required platform**](running-e2e.md#platform-coverage-gate-blocking)                                                                                                                                                                                                     | **area-focused** tier; [area narrowing required](running-e2e.md#harness-narrowing-gate-blocking); no `.only`, no `:test-cover-reuse`; **no platform shortcuts**                                                                                                                                                                       |
 | `implementation`       | Unit-focused Jest + e2e on **every required platform** when native bridge, **committed `**/generated/**`**, podspec/spec/codegen wiring, or macOS TS/runtime path changed — **Jest-only / `yarn codegen:verify` do not close `implementation_gate`**; `lib/**` edits need `yarn lerna:prepare` + Metro restart, not platform `:build` for JS alone ([running e2e § Rules #3](running-e2e.md#rules)) | **unit-focused** tier; [harness overrides + RNFBDebug](running-e2e.md#local-harness-overrides-harnessoverridesjs) before `:test-cover`; optional `.only` / sub-suite for diagnosis; [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) — no platform shortcuts                                                  |
-| `independent-review`   | Full checklist; e2e on **every required platform** (macOS / iOS / Android per harness)                                                                                                                                                                                                                         | **area-focused** tier; [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) — **no shortcuts**; [frozen tree](change-authoring-workflow.md#frozen-tree); never commit overrides, sub-suite `.only`, or temporary `tests/app.js` edits ([fail-fast §](running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing)) |
+| `documentation`        | Promote user docs + durable OKF + `AGENTS.md` + `CONTRIBUTING.md` on the same change set **before** `independent-review`                                                                                                                                                                                       | none — does **not** run the [OKF bundle scan](#okf-bundle-review); loop: [change authoring § work types](change-authoring-workflow.md#work-types)                                                                                                                                                                                  |
+| `independent-review`   | Full checklist; e2e on **every required platform** (macOS / iOS / Android per harness); **this pass is the OKF scan** when `okf-bundle/` reference docs, `AGENTS.md`, or `CONTRIBUTING.md` are in the frozen tree                                                                                                | **area-focused** tier; [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) — **no shortcuts**; [frozen tree](change-authoring-workflow.md#frozen-tree) (report-only except revert `.only`); never commit overrides, sub-suite `.only`, or temporary `tests/app.js` edits ([fail-fast §](running-e2e.md#fail-fast-rnfbdebug-and-sub-suite-narrowing)) |
+| `commit`               | Stage after gates closed                                                                                                                                                                                                                                                                                       | [change authoring § commit](change-authoring-workflow.md#commit) — staging only; OKF contract findings → `documentation?` then re-scan                                                                                                                                                                                              |
 | `pre-merge-validation` | Full unfocused suite                                                                                                                                                                                                                                                                                           | **full** tier — [running-e2e § merge](running-e2e.md#before-merge-pr-handoff); entire PR branch, once                                                                                                                                                                                                                                 |
 
 ## Prepare and compile
@@ -47,7 +51,7 @@ yarn reference:api                    # after consumer tsc
 yarn compare:types                    # remove stale config entries when fixed
 ```
 
-Configs: `.github/scripts/compare-types/configs/`. Package workflows define ordering (e.g. [pipelines](../packages/firestore/pipeline-implementation-workflow.md#step-1--compare-types-gap-analysis)).
+Configs: `.github/scripts/compare-types/configs/`. Package workflows define ordering (e.g. [pipelines](../packages/firestore/pipeline-implementation-workflow.md#compare-types-gap-analysis)).
 
 When **`typedoc.json` or `packages/*/typedoc.json`** changes anything that can alter reference URL structure, also run the [legacy redirect audit](../documentation-site-maintenance.md#redirect-audit-required-when-typedoc-config-changes) (verify every `docs.json` → `redirects` target; add mappings for newly orphaned legacy `/reference/...` paths).
 
@@ -112,39 +116,27 @@ Opt-in shape/embed suites skip cleanly when cocoapods/xcodeproj are absent; exit
 
 ## Lint and formatting
 
-**Blocking before `implementation` handoff and on the frozen tree for `independent-review`.** Run from repo root after prepare/compile when TS/JS changed.
+**Blocking before `implementation` handoff and on the frozen tree for `independent-review`.** Run from repo root after prepare/compile when TS/JS changed. **Owner of which script to run** — [change authoring](change-authoring-workflow.md) hops here; do not duplicate this table there.
 
-```bash
-yarn lint:js                          # eslint packages/* — must exit 0
-yarn lint:js --fix                    # auto-fix; re-run yarn lint:js until clean
-yarn lint:deps                        # dependency-cruiser no-circular on packages/*/lib/** — blocking when packages/*/lib/** in diff (see [prepare-and-cache § dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting))
-yarn lint:android                     # google-java-format on packages/*/android/src — ONLY entrypoint ([agent command policy](agent-command-policy.md)); never invent yarn google-java-format / npx google-java-format
-yarn format:js                        # inspect diff after; prefer lint:js --fix first
-```
+**CI Lint job** (`.github/workflows/linting.yml`) is `yarn lint` = `lint:js` + `lint:deps` + `lint:android` + `lint:ios:check`.
 
-Docs (when `docs/**` or OKF markdown changed):
+### Lint-by-tree / by-diff
 
-```bash
-yarn lint:markdown
-yarn lint:spellcheck
-```
+Run **only** the scripts whose trees are in the diff (exit 0). Do not run the rest.
 
-**CI Lint job equivalent** (required before `review` / publication when the diff touches JS, Java, or Objective-C/C++ sources):
+| Tree in diff | Script | Notes |
+| ------------ | ------ | ----- |
+| `packages/**` JS/TS | `yarn lint:js` | ESLint `packages/*`. Implementation may `yarn lint:js --fix` then re-run until clean. Prefer that over `yarn format:js`. |
+| `packages/*/lib/**` | `yarn lint:deps` | Blocking. [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting). |
+| Java under `packages/*/android` | `yarn lint:android` | **Implementation only.** `google-java-format --set-exit-if-changed --replace` — **mutates**. Only entrypoint ([agent command policy](agent-command-policy.md)); never invent `yarn google-java-format` / `npx google-java-format`. Can flake; rerun once/twice if failure is not clearly in diff. Commit formatter output. |
+| iOS native (`packages/*/ios` `.h` / `.cpp` / `.m` / `.mm`, not generated) | `yarn lint:ios:check` | clang-format **check** (`-n -Werror`). Implementation may `yarn lint:ios:fix` then re-check. |
+| `docs/**` | `yarn lint:markdown` then `yarn lint:spellcheck` | Scripts glob `docs/**` only (CI docs job). OKF-only diffs skip these. |
 
-```bash
-yarn lint                              # lint:js + lint:deps + lint:android + lint:ios:check — matches .github/workflows/linting.yml
-```
+A JS-only (or docs-only) diff does **not** require full `yarn lint`. Full `yarn lint` is the CI equivalent when the diff spans those package trees **and** mutating `lint:android` is allowed (`implementation`).
 
-When `packages/*/lib/**` is in the diff, **`yarn lint:deps`** is a **blocking** gate (runs inside `yarn lint`, which matches the CI Lint job). Config and rule detail: [prepare-and-cache § dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting).
+### Frozen `independent-review` (check-only)
 
-`yarn lint:android` runs `google-java-format` and fails if it would change committed files — commit formatter output. **Agents:** only `yarn lint:android` ([agent command policy](agent-command-policy.md)) — do not invent `yarn google-java-format` or bare/`npx` `google-java-format`. `lint:android` can flake; rerun once/twice if failure is not clearly in diff.
-
-**CI docs job equivalent** (required before `review` / publication when `docs/**` changed):
-
-```bash
-yarn lint:markdown                     # matches .github/workflows/docs.yml
-yarn lint:spellcheck
-```
+Frozen review is [report/check-only except revert `.only`](change-authoring-workflow.md#frozen-tree). **Do not** run `yarn lint:android` or full `yarn lint` — `lint:android` `--replace` mutates the tree. Run the **check-only** by-diff scripts: `lint:js` (JS/TS), `lint:deps` (lib), `lint:ios:check` (ios), markdown/spellcheck (`docs/**` only).
 
 ## E2e with coverage
 
@@ -156,13 +148,9 @@ Some suites hit **cloud APIs**, e.g. Firestore Pipelines → `pipelines-e2e` Ent
 
 ## OKF bundle review
 
-Before handoff, run the [OKF update contract](../documentation-policy.md#okf-update-contract) in a **fresh context**:
+When the frozen tree includes `okf-bundle/` reference docs, `AGENTS.md`, or `CONTRIBUTING.md`, **`independent-review` is this scan**. Confirm every [OKF update contract](../documentation-policy.md#okf-update-contract) row: Canonical location, DRY, [Efficiency](../documentation-policy.md#efficiency), link hygiene, Durability. **Report only** — do not edit the frozen tree. The `documentation` work type promotes durable text; it does not run this scan. Close `commit` only after this scan when those files changed. Do not add OKF after a frozen review without another `independent-review`.
 
-1. Update relevant `okf-bundle/packages/<pkg>/` docs with durable learnings.
-2. Check `okf-bundle/testing/` for conflicts with verified behavior; fix drift.
-3. Independent scan of the **entire** `okf-bundle/` tree. Give the scanner a short summary of what changed and which files were touched. Confirm every contract row: Canonical location, DRY, [Efficiency](../documentation-policy.md#efficiency), link hygiene, Durability. Fix violations before handoff/merge.
-
-Goal: each iteration improves OKF and removes conflicting guidance. The contract owns check meanings; this section is the handoff entry — do not skip the hop by treating this list as a thinner substitute.
+Goal: each iteration improves OKF and removes conflicting guidance. Check meanings live in the contract; do not treat this list as a thinner substitute.
 
 <a id="validation-evidence-package"></a>
 
@@ -182,10 +170,7 @@ Goal: each iteration improves OKF and removes conflicting guidance. The contract
 | e2e Android               | yarn tests:android:test-cover        | 0    | Z passing — /tmp/...log                                                                                                                      |
 | android merged Jacoco     | yarn tests:android:post-e2e-coverage | 0    | jacocoTestReport.xml (unit + e2e) — [coverage design](coverage-design.md)                                                                    |
 | compare:types             | yarn compare:types                   | 0    | <pkg> 0/0/0                                                                                                                                  |
-| lint (CI)                 | yarn lint                            | 0    | —                                                                                                                                            |
-| lint:deps (lib diff)      | yarn lint:deps                       | 0    | when `packages/*/lib/**` in diff — [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)             |
-| lint:markdown (CI docs)   | yarn lint:markdown                   | 0    | when `docs/**` in diff                                                                                                                       |
-| lint:spellcheck (CI docs) | yarn lint:spellcheck                 | 0    | when `docs/**` in diff                                                                                                                       |
+| lint (by-tree)            | [§ lint and formatting](#lint-and-formatting) | 0    | matching scripts; frozen review: check-only (no `lint:android` / full `yarn lint`)                                                            |
 | coverage                  | post-process + region table          | —    | see coverage-design § evidence package                                                                                                       |
 ```
 
@@ -203,11 +188,11 @@ Goal: each iteration improves OKF and removes conflicting guidance. The contract
 - [ ] `yarn tests:android:unit` when `packages/*/android/**` Java / `src/test/java` changed ([AndroidTest-AD-1](android-architecture-decisions.md))
 - [ ] TurboModule wrapper contract ([NewArch-AD-17.1](../new-architecture/architecture-decisions.md#newarch-ad-171--jest-turbomodule-contract-test--accepted)) when `packages/app/lib/internal/registry/nativeModule.ts`, `nativeModuleAndroidIos.ts`, or TurboModule wrapper behavior changed: `yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts`
 - [ ] `yarn compare:types` (stale config entries removed)
-- [ ] `yarn lint` (CI Lint job) including **`yarn lint:android`** when Java changed ([agent command policy](agent-command-policy.md)); **`yarn lint:deps`** when `packages/*/lib/**` in diff ([dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)); `yarn lint:markdown` + `yarn lint:spellcheck` when `docs/**` changed
+- [ ] Lint by-tree / by-diff per [§ lint and formatting](#lint-and-formatting) (frozen `independent-review`: check-only — no `yarn lint:android` / full `yarn lint`)
 - [ ] E2e green on **every required platform** for the changed module ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking); [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking); no `.only`; committed `RNFBDebug` remains `false`)
 - [ ] Android post-e2e merged Jacoco when Android native touched: `yarn tests:android:post-e2e-coverage` → `jacocoTestReport.xml` ([coverage design](coverage-design.md))
 - [ ] [Validation evidence package](validation-checklist.md#validation-evidence-package) recorded (exit codes, e2e counts, log paths)
 - [ ] [Coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native bridge **or** `packages/app/**/*.rb` touched — gaps investigated to fix, delete, or acceptable-exception bar
-- [ ] OKF bundle reviewed/updated per § above
+- [ ] Durable OKF / `AGENTS.md` / `CONTRIBUTING.md` promoted in `documentation` **before** frozen review; [OKF bundle scan](#okf-bundle-review) completed in `independent-review` when those files changed (contract findings → `documentation?` then re-scan, not `commit`-pass edits)
 
 Package workflows may add items (e.g. pipeline before/after snapshots — [pipeline workflow](../packages/firestore/pipeline-implementation-workflow.md)).

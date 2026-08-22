@@ -1,19 +1,17 @@
 # New Architecture (TurboModules)
 
-TurboModule migration for React Native Firebase native bridge packages.
+Durable architectural decisions for React Native Firebase TurboModules. Product changes use [change authoring](../testing/change-authoring-workflow.md), [running e2e](../testing/running-e2e.md), and [agent command policy](../testing/agent-command-policy.md) — not a separate migration checklist.
 
 **Policy:** [OKF documentation and commit policy](../documentation-policy.md).
 
 ## Documents
 
-* [Architecture decisions (ADR)](architecture-decisions.md) — **canonical owner** of durable decisions (the "what + why"); other docs reference it
-* [Migration work queue](migration-work-queue.md) — ephemeral gates, phase ordering, package inventory
-* [TurboModule implementation workflow](turbomodule-implementation-workflow.md) — spec/codegen/native conversion, area harness; extends [change authoring](../testing/change-authoring-workflow.md)
+* [Architecture decisions (ADR)](architecture-decisions.md) — **canonical owner** of durable decisions
 
 ## Reference implementation
 
 * [`packages/functions`](../../../packages/functions/) — first TurboModule package ([PR #8603](https://github.com/invertase/react-native-firebase/pull/8603); new-arch-only from v24)
-* [`packages/app`](../../../packages/app/) — Phase 0 foundation; first [multi-spec package](migration-work-queue.md#package-inventory) (`NativeRNFBTurboApp` + `NativeRNFBTurboUtils`); see [workflow § multi-spec / gotchas](turbomodule-implementation-workflow.md#multi-spec-packages-app-precedent)
+* [`packages/app`](../../../packages/app/) — first multi-spec package (`NativeRNFBTurboApp` + `NativeRNFBTurboUtils`)
 
 ## Related repository files
 
