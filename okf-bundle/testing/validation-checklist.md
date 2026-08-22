@@ -33,7 +33,7 @@ Work types and tiers: [change authoring workflow](change-authoring-workflow.md#w
 Repo root. **Agents:** [agent command policy](agent-command-policy.md) — only these invocations; never `yarn workspace … prepare` or package-scoped `yarn run build` for diagnostics.
 
 ```bash
-yarn                                  # install + postinstallDev (includes lerna:prepare)
+yarn                                  # install + postinstallDev (lerna:prepare + ruby:install)
 yarn lerna:prepare                    # after packages/*/lib/** edits — transpiles lib → dist/module via each package prepare target
 yarn tsc:compile
 yarn tsc:compile:consumer
@@ -105,7 +105,7 @@ Merged Codecov path: `jacocoTestReport.xml` — [coverage design](coverage-desig
 - `packages/app/__tests__/*_test.rb`
 
 ```bash
-bundle install                                            # root Gemfile; once per checkout / Gemfile change
+yarn ruby:install                                         # root Gemfile; included in root yarn via postinstallDev; skips exit 0 when bundle not on PATH
 yarn tests:ios:ruby                                       # yarn lint:ruby (RuboCop) then all *_test.rb + SimpleCov → coverage/ios-ruby/lcov.info
 yarn lint:ruby                                          # RuboCop only (same Gemfile; not part of root yarn lint)
 ```

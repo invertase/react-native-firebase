@@ -689,7 +689,7 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 
 1. [Pre-flight recovery](#pre-flight-recovery) — stop Metro, Jet, Detox; shutdown booted simulators.
 2. Remove **all** `node_modules` (repo root, `tests/`, and under `packages/*` if present).
-3. **`yarn`** at repo root (wait for exit 0 — includes `lerna:prepare` and patches).
+3. **`yarn`** at repo root (wait for exit 0 — includes `lerna:prepare`, root Gemfile gems via `yarn ruby:install`, and patches).
 4. Confirm [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (fmt **≥ 12.1.0**) before any native `:build`.
 5. Regenerate **all** touched packages' codegen from `tests/` ([agent command policy § TurboModule codegen](agent-command-policy.md#turbomodule-codegen)).
 6. **`yarn tests:ios:pod:install`** when iOS native/codegen changed.

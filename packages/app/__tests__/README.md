@@ -7,7 +7,7 @@ Unit tests for CocoaPods/SPM Ruby helpers under `packages/app/**/*.rb` (primaril
 From the **repo root**:
 
 ```bash
-bundle install            # root Gemfile
+yarn ruby:install         # root Gemfile (or root `yarn` covers it via postinstallDev)
 yarn tests:ios:ruby       # RuboCop (yarn lint:ruby) then SimpleCov suites
 ```
 
