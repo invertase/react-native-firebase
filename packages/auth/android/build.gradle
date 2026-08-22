@@ -91,6 +91,8 @@ dependencies {
   api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-auth"
+
+  testImplementation "junit:junit:4.13.2"
 }
 
 ReactNative.shared.applyPackageVersion()
