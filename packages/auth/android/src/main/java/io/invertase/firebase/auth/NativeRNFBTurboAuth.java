@@ -84,7 +84,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -104,8 +103,8 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
       new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
   private static final String TAG = "Auth";
-  private static HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
-  private static HashMap<String, FirebaseAuth.IdTokenListener> mIdTokenListeners = new HashMap<>();
+  private static final RNFBAuthListenerRegistry authStateListeners = new RNFBAuthListenerRegistry();
+  private static final RNFBAuthListenerRegistry idTokenListeners = new RNFBAuthListenerRegistry();
   private static HashMap<String, String> emulatorConfigs = new HashMap<>();
   private String mVerificationId;
   private String mLastPhoneNumber;
@@ -142,30 +141,8 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
     super.invalidate();
     Log.d(TAG, "instance-destroyed");
 
-    Iterator authListenerIterator = mAuthListeners.entrySet().iterator();
-
-    while (authListenerIterator.hasNext()) {
-      Map.Entry pair = (Map.Entry) authListenerIterator.next();
-      String appName = (String) pair.getKey();
-      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-      FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-      FirebaseAuth.AuthStateListener mAuthListener =
-          (FirebaseAuth.AuthStateListener) pair.getValue();
-      firebaseAuth.removeAuthStateListener(mAuthListener);
-      authListenerIterator.remove();
-    }
-
-    Iterator idTokenListenerIterator = mIdTokenListeners.entrySet().iterator();
-
-    while (idTokenListenerIterator.hasNext()) {
-      Map.Entry pair = (Map.Entry) idTokenListenerIterator.next();
-      String appName = (String) pair.getKey();
-      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-      FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-      FirebaseAuth.IdTokenListener mAuthListener = (FirebaseAuth.IdTokenListener) pair.getValue();
-      firebaseAuth.removeIdTokenListener(mAuthListener);
-      idTokenListenerIterator.remove();
-    }
+    authStateListeners.takeAllAndRemove();
+    idTokenListeners.takeAllAndRemove();
 
     mCachedResolvers.clear();
     mMultiFactorSessions.clear();
@@ -199,46 +176,39 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
 
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-    FirebaseAuth.AuthStateListener mAuthListener = mAuthListeners.get(appName);
-    if (mAuthListener == null) {
-      FirebaseAuth.AuthStateListener newAuthListener =
-          firebaseAuth1 -> {
-            FirebaseUser user = firebaseAuth1.getCurrentUser();
-            WritableMap eventBody = Arguments.createMap();
-            ReactNativeFirebaseEventEmitter emitter =
-                ReactNativeFirebaseEventEmitter.getSharedInstance();
-            if (user != null) {
-              eventBody.putString("appName", appName); // for js side distribution
-              eventBody.putMap("user", firebaseUserToMap(user));
-            } else {
-              eventBody.putString("appName", appName); // for js side distribution
-            }
-            Log.d(TAG, "addAuthStateListener:eventBody " + eventBody.toString());
-
-            ReactNativeFirebaseEvent event =
-                new ReactNativeFirebaseEvent("auth_state_changed", eventBody, appName);
-            emitter.sendEvent(event);
-          };
-
-      firebaseAuth.addAuthStateListener(newAuthListener);
-      mAuthListeners.put(appName, newAuthListener);
+    if (authStateListeners.get(appName) != null) {
+      return;
     }
+
+    FirebaseAuth.AuthStateListener newAuthListener =
+        firebaseAuth1 -> {
+          FirebaseUser user = firebaseAuth1.getCurrentUser();
+          WritableMap eventBody = Arguments.createMap();
+          ReactNativeFirebaseEventEmitter emitter =
+              ReactNativeFirebaseEventEmitter.getSharedInstance();
+          if (user != null) {
+            eventBody.putString("appName", appName); // for js side distribution
+            eventBody.putMap("user", firebaseUserToMap(user));
+          } else {
+            eventBody.putString("appName", appName); // for js side distribution
+          }
+          Log.d(TAG, "addAuthStateListener:eventBody " + eventBody.toString());
+
+          ReactNativeFirebaseEvent event =
+              new ReactNativeFirebaseEvent("auth_state_changed", eventBody, appName);
+          emitter.sendEvent(event);
+        };
+
+    firebaseAuth.addAuthStateListener(newAuthListener);
+    authStateListeners.putOrDiscard(
+        appName, () -> firebaseAuth.removeAuthStateListener(newAuthListener));
   }
 
   /** Removes the current auth state listener */
   @Override
   public void removeAuthStateListener(String appName) {
     Log.d(TAG, "removeAuthStateListener");
-
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-
-    FirebaseAuth.AuthStateListener mAuthListener = mAuthListeners.get(appName);
-
-    if (mAuthListener != null) {
-      firebaseAuth.removeAuthStateListener(mAuthListener);
-      mAuthListeners.remove(appName);
-    }
+    authStateListeners.takeAndRemove(appName);
   }
 
   /** Add a new id token listener - if one doesn't exist already */
@@ -249,46 +219,40 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    if (!mIdTokenListeners.containsKey(appName)) {
-      FirebaseAuth.IdTokenListener newIdTokenListener =
-          firebaseAuth1 -> {
-            FirebaseUser user = firebaseAuth1.getCurrentUser();
-            ReactNativeFirebaseEventEmitter emitter =
-                ReactNativeFirebaseEventEmitter.getSharedInstance();
-            WritableMap eventBody = Arguments.createMap();
-            if (user != null) {
-              eventBody.putBoolean("authenticated", true);
-              eventBody.putString("appName", appName);
-              eventBody.putMap("user", firebaseUserToMap(user));
-            } else {
-              eventBody.putString("appName", appName);
-              eventBody.putBoolean("authenticated", false);
-            }
-
-            ReactNativeFirebaseEvent event =
-                new ReactNativeFirebaseEvent("auth_id_token_changed", eventBody, appName);
-            emitter.sendEvent(event);
-          };
-
-      firebaseAuth.addIdTokenListener(newIdTokenListener);
-      mIdTokenListeners.put(appName, newIdTokenListener);
+    if (idTokenListeners.get(appName) != null) {
+      return;
     }
+
+    FirebaseAuth.IdTokenListener newIdTokenListener =
+        firebaseAuth1 -> {
+          FirebaseUser user = firebaseAuth1.getCurrentUser();
+          ReactNativeFirebaseEventEmitter emitter =
+              ReactNativeFirebaseEventEmitter.getSharedInstance();
+          WritableMap eventBody = Arguments.createMap();
+          if (user != null) {
+            eventBody.putBoolean("authenticated", true);
+            eventBody.putString("appName", appName);
+            eventBody.putMap("user", firebaseUserToMap(user));
+          } else {
+            eventBody.putString("appName", appName);
+            eventBody.putBoolean("authenticated", false);
+          }
+
+          ReactNativeFirebaseEvent event =
+              new ReactNativeFirebaseEvent("auth_id_token_changed", eventBody, appName);
+          emitter.sendEvent(event);
+        };
+
+    firebaseAuth.addIdTokenListener(newIdTokenListener);
+    idTokenListeners.putOrDiscard(
+        appName, () -> firebaseAuth.removeIdTokenListener(newIdTokenListener));
   }
 
   /** Removes the current id token listener */
   @Override
   public void removeIdTokenListener(String appName) {
     Log.d(TAG, "removeIdTokenListener");
-
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-
-    FirebaseAuth.IdTokenListener mIdTokenListener = mIdTokenListeners.get(appName);
-
-    if (mIdTokenListener != null) {
-      firebaseAuth.removeIdTokenListener(mIdTokenListener);
-      mIdTokenListeners.remove(appName);
-    }
+    idTokenListeners.takeAndRemove(appName);
   }
 
   /**
