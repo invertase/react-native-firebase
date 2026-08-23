@@ -25,13 +25,17 @@ function readJetPort(platformKey) {
     case 'ios':
       prefixed = parseEnvPort(process.env.RNFB_IOS_JET_PORT);
       break;
-    default:
+    case 'macos':
+      prefixed = parseEnvPort(process.env.RNFB_MACOS_JET_PORT);
       break;
+    default:
+      throw new Error(`Unknown jet platform key: ${platformKey}`);
   }
   return prefixed != null ? prefixed : SERIAL_JET_PORT;
 }
 
 module.exports = {
+  readJetPort,
   config: {
     // Prefer process-local JET_REMOTE_PORT when already exported (slotted launchers);
     // each target.before() still re-applies the platform-prefixed port and logs it.
