@@ -35,6 +35,7 @@ const {
   isMetroWaitFailure,
   shouldColdBootAndroidOnLaunchRetry,
 } = require('./androidAdbRange');
+const { shouldSkipAndroidSettleAndLoad } = require('./androidReadyPolicy');
 
 const E2E_TEST_PROJECT = 'react-native-firebase-testing';
 const E2E_CLOUD_PRESSURE_LOG_FILTER = 'jsonPayload.message="[rnfb-e2e-metrics]"';
@@ -211,7 +212,7 @@ const CLOUD_QUOTA_RETRY_COOLDOWN_MS = parseInt(
   10,
 );
 const RETRYABLE_LAUNCH_RE =
-  /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding|Metro bundle not available|Unknown application display identifier|Simulator device failed to launch|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain/i;
+  /launchApp timed out|RCTJavaScriptDidFailToLoad|packager-probe|Metro not responding|Metro bundle not available|Unknown application display identifier|Simulator device failed to launch|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain|ReactContext is null/i;
 const PORT_CLOSED_ERROR_CODES = new Set(['ECONNREFUSED', 'ECONNRESET', 'EPIPE']);
 
 let cachedUsesLiveMetro;
@@ -824,7 +825,7 @@ async function waitForAndroidEmulatorReady() {
         }
       }
 
-      if (!isCI()) {
+      if (shouldSkipAndroidSettleAndLoad(isCI())) {
         console.log('[rnfb-e2e] android-ready: skipping settle/load (not CI)');
         console.log(`[rnfb-e2e] Android emulator ready serial=${serial}`);
         return;
@@ -1438,7 +1439,7 @@ async function runJetE2eAttempt(attempt) {
       {
         detoxURLBlacklistRegex: `.*`,
         // Avoid sync/idling blocking the main queue while Detox WS login is pending.
-        detoxEnableSynchronization: 'NO',
+        detoxEnableSynchronization: '0',
       },
       {
         testsDir,
