@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, expect, it, jest, afterEach } from '@jest/globals';
+import { describe, expect, it, jest, afterEach, beforeEach } from '@jest/globals';
+import { Platform } from 'react-native';
 import {
   RequestUrl,
   Task,
@@ -151,6 +152,149 @@ describe('request methods', () => {
       expect(urlStr).toContain(fakeApiSettings.location);
       expect(urlStr).toContain(fakeApiSettings.project);
       expect(urlStr).not.toContain('alt=sse');
+    });
+
+    describe('RNFB test environment emulator URL', () => {
+      const ENV_KEYS = [
+        'RNFB_ANDROID_EMULATOR_FUNCTIONS_PORT',
+        'RNFB_IOS_EMULATOR_FUNCTIONS_PORT',
+        'RNFB_MACOS_EMULATOR_FUNCTIONS_PORT',
+      ] as const;
+      const originalEnv: Partial<Record<(typeof ENV_KEYS)[number], string | undefined>> = {};
+      const originalEmulatorFlag = (globalThis as { RNFB_VERTEXAI_EMULATOR_URL?: boolean })
+        .RNFB_VERTEXAI_EMULATOR_URL;
+      let originalPlatformOs: string;
+
+      beforeEach(() => {
+        originalPlatformOs = Platform.OS;
+        ENV_KEYS.forEach(key => {
+          originalEnv[key] = process.env[key];
+          delete process.env[key];
+        });
+        (globalThis as { RNFB_VERTEXAI_EMULATOR_URL?: boolean }).RNFB_VERTEXAI_EMULATOR_URL = true;
+      });
+
+      afterEach(() => {
+        Object.defineProperty(Platform, 'OS', { configurable: true, value: originalPlatformOs });
+        ENV_KEYS.forEach(key => {
+          if (originalEnv[key] === undefined) {
+            delete process.env[key];
+          } else {
+            process.env[key] = originalEnv[key];
+          }
+        });
+        if (originalEmulatorFlag === undefined) {
+          delete (globalThis as { RNFB_VERTEXAI_EMULATOR_URL?: boolean })
+            .RNFB_VERTEXAI_EMULATOR_URL;
+        } else {
+          (globalThis as { RNFB_VERTEXAI_EMULATOR_URL?: boolean }).RNFB_VERTEXAI_EMULATOR_URL =
+            originalEmulatorFlag;
+        }
+      });
+
+      function setPlatformOs(os: string): void {
+        Object.defineProperty(Platform, 'OS', { configurable: true, value: os });
+      }
+
+      it('uses 10.0.2.2 and default port on android', () => {
+        setPlatformOs('android');
+        const url = new RequestUrl(
+          'models/model-name',
+          Task.GENERATE_CONTENT,
+          fakeApiSettings,
+          false,
+          {},
+        );
+        expect(url.toString()).toBe(
+          'http://10.0.2.2:5001/react-native-firebase-testing/us-central1/testFetch',
+        );
+      });
+
+      it('uses 127.0.0.1 and default port on ios', () => {
+        setPlatformOs('ios');
+        const url = new RequestUrl(
+          'models/model-name',
+          Task.GENERATE_CONTENT,
+          fakeApiSettings,
+          false,
+          {},
+        );
+        expect(url.toString()).toBe(
+          'http://127.0.0.1:5001/react-native-firebase-testing/us-central1/testFetch',
+        );
+      });
+
+      it('uses 127.0.0.1 and macos env port', () => {
+        setPlatformOs('macos');
+        process.env.RNFB_MACOS_EMULATOR_FUNCTIONS_PORT = '5101';
+        const url = new RequestUrl(
+          'models/model-name',
+          Task.GENERATE_CONTENT,
+          fakeApiSettings,
+          false,
+          {},
+        );
+        expect(url.toString()).toBe(
+          'http://127.0.0.1:5101/react-native-firebase-testing/us-central1/testFetch',
+        );
+      });
+
+      it('uses platform-prefixed functions port when set', () => {
+        setPlatformOs('android');
+        process.env.RNFB_ANDROID_EMULATOR_FUNCTIONS_PORT = '5201';
+        const url = new RequestUrl(
+          'models/model-name',
+          Task.GENERATE_CONTENT,
+          fakeApiSettings,
+          false,
+          {},
+        );
+        expect(url.toString()).toBe(
+          'http://10.0.2.2:5201/react-native-firebase-testing/us-central1/testFetch',
+        );
+      });
+
+      it('falls back to default port when env port is invalid', () => {
+        setPlatformOs('ios');
+        process.env.RNFB_IOS_EMULATOR_FUNCTIONS_PORT = 'not-a-number';
+        const url = new RequestUrl(
+          'models/model-name',
+          Task.GENERATE_CONTENT,
+          fakeApiSettings,
+          false,
+          {},
+        );
+        expect(url.toString()).toBe(
+          'http://127.0.0.1:5001/react-native-firebase-testing/us-central1/testFetch',
+        );
+      });
+
+      it('uses testFetchStream path when streaming', () => {
+        setPlatformOs('android');
+        const url = new RequestUrl(
+          'models/model-name',
+          Task.GENERATE_CONTENT,
+          fakeApiSettings,
+          true,
+          {},
+        );
+        expect(url.toString()).toBe(
+          'http://10.0.2.2:5001/react-native-firebase-testing/us-central1/testFetchStream',
+        );
+      });
+
+      it('throws on unknown Platform.OS', () => {
+        setPlatformOs('web');
+        expect(() =>
+          new RequestUrl(
+            'models/model-name',
+            Task.GENERATE_CONTENT,
+            fakeApiSettings,
+            false,
+            {},
+          ).toString(),
+        ).toThrow(/Unknown Platform\.OS for e2e emulator routing.*web.*android\|ios\|macos/);
+      });
     });
   });
 

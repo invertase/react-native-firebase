@@ -553,6 +553,8 @@ google-services.json
 GoogleService-Info.plist
 
 tests/harness.overrides.js
+tests/e2e-slots.env.json
+.github/workflows/scripts/.e2e-emulator-*.json
 
 # RNFB TurboModule codegen — misplaced iOS provider stubs under Android output paths
 # (NewArch-AD-5: okf-bundle/new-architecture/architecture-decisions.md — commit generated
