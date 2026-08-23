@@ -21,6 +21,7 @@ Patches are in-repo. Prefer direct patch-file edits or headless workflow; `yarn 
 | Disable network idling | `NetworkIdlingResource.kt` | Android | OkHttp never idle in RN Firebase tests → Detox sync timeout |
 | Disable timers idling | `TimersIdlingResource.kt` | Android | RN timer queue never drains → infinite idle wait |
 | Disable Fabric UI idling | `FabricUIManagerIdlingResources.kt` | Android | Stuck mount items on API 36+ / edge-to-edge → false busy |
+| Suppress emulator crash-report modal | `EmulatorExec.js` `LaunchCommand` | Android | Pass `-crash-report-mode never` so a crashed qemu cannot block unattended waves on the Google crash-report dialog |
 | Buffer early `ready` | `AnonymousConnectionHandler.js` | iOS | App sends `ready` before Detox login → `launchApp` stuck |
 | Ignore missing adb reverse on teardown | `ADB.js` | Android | Jet WS 1006 triggers mid-run `reverse --remove` → adb exit 1 |
 | **2× device-registry lock stale** | `ExclusiveLockfile.js` | iOS, macOS, Android | `proper-lockfile` `ECOMPROMISED` before tests start |
