@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Platform } from 'react-native';
 import { AIErrorCode, ErrorDetails, SingleRequestOptions } from '../types';
 import { AIError } from '../errors';
 import { ApiSettings } from '../types/internal';
@@ -26,6 +25,44 @@ import {
 } from '../constants';
 import { logger } from '../logger';
 import { BackendType } from '../public-types';
+import { Platform } from 'react-native';
+
+const DEFAULT_FUNCTIONS_EMULATOR_PORT = 5001;
+
+function parseEmulatorPort(value: string | undefined): number | null {
+  if (!value) {
+    return null;
+  }
+  const n = parseInt(value, 10);
+  return Number.isFinite(n) ? n : null;
+}
+
+// Intentional duplicate of getE2eEmulatorHost() in packages/app/e2e/helpers.js.
+// @react-native-firebase/ai cannot import app e2e/helpers (not published to npm;
+// Metro static resolution breaks consumer builds). Inline duplicate is an accepted
+// tradeoff vs exporting test helpers on the public API.
+function getRnfbTestEmulatorHost(): string {
+  if (Platform.OS === 'android') {
+    return '10.0.2.2';
+  }
+  return '127.0.0.1';
+}
+
+function getRnfbTestFunctionsEmulatorPort(): number {
+  let raw: string | undefined;
+  if (Platform.OS === 'android') {
+    raw = process.env.RNFB_ANDROID_EMULATOR_FUNCTIONS_PORT;
+  } else if (Platform.OS === 'ios') {
+    raw = process.env.RNFB_IOS_EMULATOR_FUNCTIONS_PORT;
+  } else if (Platform.OS === 'macos') {
+    raw = process.env.RNFB_MACOS_EMULATOR_FUNCTIONS_PORT;
+  } else {
+    throw new Error(
+      `Unknown Platform.OS for e2e emulator routing (got ${Platform.OS}; expected android|ios|macos)`,
+    );
+  }
+  return parseEmulatorPort(raw) ?? DEFAULT_FUNCTIONS_EMULATOR_PORT;
+}
 
 export enum Task {
   GENERATE_CONTENT = 'generateContent',
@@ -56,12 +93,13 @@ export class RequestUrl {
       logger.info(
         'Running VertexAI in test environment, pointing to Firebase Functions emulator URL',
       );
-      const isAndroid = Platform.OS === 'android';
+      const fnHost = getRnfbTestEmulatorHost();
+      const fnPort = getRnfbTestFunctionsEmulatorPort();
 
       if (this.stream) {
-        emulatorUrl = `http://${isAndroid ? '10.0.2.2' : '127.0.0.1'}:5001/react-native-firebase-testing/us-central1/testFetchStream`;
+        emulatorUrl = `http://${fnHost}:${fnPort}/react-native-firebase-testing/us-central1/testFetchStream`;
       } else {
-        emulatorUrl = `http://${isAndroid ? '10.0.2.2' : '127.0.0.1'}:5001/react-native-firebase-testing/us-central1/testFetch`;
+        emulatorUrl = `http://${fnHost}:${fnPort}/react-native-firebase-testing/us-central1/testFetch`;
       }
       return emulatorUrl;
     }
