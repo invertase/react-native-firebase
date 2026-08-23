@@ -85,7 +85,8 @@ AASA needs your Apple Team ID + bundle ID and paths covering `/__/auth/links*`
 ([Supporting associated domains](https://developer.apple.com/documentation/xcode/supporting-associated-domains)). Serve both
 with `Content-Type: application/json` and no attachment disposition.
 
-Community generators exist for these JSON files; they are optional — see [Optional community helpers](#optional-community-helpers) at the end of this page.
+Community generators exist for these JSON files; they are optional and unofficial — see
+[Optional community helpers](#optional-community-helpers) at the end of this page.
 
 # Firebase Console setup
 
@@ -335,16 +336,20 @@ on Firebase's [Android](https://firebase.google.com/docs/auth/android/email-link
 
 # Optional community helpers
 
-The [default Hosting path](#choose-a-hosting-path) above is the simplest integration for most apps. If you need a **custom
-domain**, a branded continue page, or help generating association files and native snippets, these community-maintained
-projects can reduce setup work. They are **not** official React Native Firebase or Firebase products — evaluate them for your
-own project.
+The [default Hosting path](#choose-a-hosting-path) above is the simplest integration for most apps. The projects below were
+built by community contributors for setups that need more than that — a **custom domain**, **your brand in the sign-in
+email** (instead of the default `firebaseapp.com` link), a branded continue page, or association files on a host you already
+operate. That work may genuinely help when you have those requirements.
 
-## No existing website — branded custom domain
+React Native Firebase does not maintain, control, or endorse these tools; we cannot vouch for their security or long-term
+availability. Prefer the default Hosting path when it fits, and evaluate each project for your own requirements.
 
-[email-link-host](https://github.com/rutvik24/email-link-host) is a static host purpose-built for email-link auth: it
-generates `assetlinks.json` and `apple-app-site-association` from environment variables, serves a branded continue page, and
-can deploy to Firebase Hosting, Cloudflare Pages, Vercel, Netlify, Amplify, or Docker.
+## No existing website — ready-made hosting helper
+
+[email-link-host](https://github.com/rutvik24/email-link-host) is an optional community helper that provides a **ready-made
+hosting solution** so you do not have to create association files and a continue-page host from scratch. It generates
+`assetlinks.json` and `apple-app-site-association` from environment variables, serves a branded continue page, and can
+deploy to Firebase Hosting, Cloudflare Pages, Vercel, Netlify, Amplify, or Docker.
 
 - [Documentation](https://rutvik24.github.io/email-link-host/)
 - [Live demo](https://fir-email-link-host.web.app)
@@ -353,15 +358,16 @@ can deploy to Firebase Hosting, Cloudflare Pages, Vercel, Netlify, Amplify, or D
 Set your Android package name, SHA-256 fingerprints, and Apple Team ID / bundle ID, then confirm
 `/.well-known/assetlinks.json` and `/.well-known/apple-app-site-association` render as inline JSON (not a file download).
 
-## Existing website — generate association files
+## Existing website — form-based file generator
 
-[App Universal Links Helper](https://rutvik24.github.io/app-universal-links-helper/) (or [run locally](https://github.com/rutvik24/app-universal-links-helper))
-generates `assetlinks.json`, `apple-app-site-association`, an AndroidManifest `<intent-filter>` snippet, and optional
-`adb` / `curl` / `swcutil` verification commands from your hosts, package name, fingerprints, and path rules (include
-`/__/auth/links` for Auth links). It does **not** upload files — publish the JSON under `/.well-known/` on your domain.
+If you already operate a website or Hosting domain, [App Universal Links Helper](https://rutvik24.github.io/app-universal-links-helper/)
+(or [run locally](https://github.com/rutvik24/app-universal-links-helper)) is an optional community helper: fill in your hosts,
+package name, fingerprints, and path rules (include `/__/auth/links` for Auth links) in a form, then download the generated
+`assetlinks.json`, `apple-app-site-association`, AndroidManifest `<intent-filter>` snippet, and optional `adb` / `curl` /
+`swcutil` verification commands. It does **not** upload files — publish the JSON under `/.well-known/` on your domain.
 
 ## End-to-end sample app
 
-[firebase-email-link-host-demo](https://github.com/rutvik24/firebase-email-link-host-demo) wires React Native modular Auth +
-App Links + Universal Links + AsyncStorage. Useful starting points: `src/services/firebaseAuth.ts`, `useEmailLinkAuth.ts`,
-and the platform manifest / entitlements files.
+[firebase-email-link-host-demo](https://github.com/rutvik24/firebase-email-link-host-demo) is an optional community sample that
+wires React Native modular Auth + App Links + Universal Links + AsyncStorage. Useful starting points:
+`src/services/firebaseAuth.ts`, `useEmailLinkAuth.ts`, and the platform manifest / entitlements files.
