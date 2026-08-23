@@ -21,12 +21,14 @@ Patches are in-repo. Prefer direct patch-file edits or headless workflow; `yarn 
 | Disable network idling | `NetworkIdlingResource.kt` | Android | OkHttp never idle in RN Firebase tests → Detox sync timeout |
 | Disable timers idling | `TimersIdlingResource.kt` | Android | RN timer queue never drains → infinite idle wait |
 | Disable Fabric UI idling | `FabricUIManagerIdlingResources.kt` | Android | Stuck mount items on API 36+ / edge-to-edge → false busy |
+| Raise Login / CurrentStatus timeouts | `src/client/actions/actions.js` | iOS, Android, macOS | Patch Login **15000ms** / CurrentStatus **30000ms** (Detox defaults 1000 / 5000). Status-query timeout under load is latency, not fail-fast. RNFB-side launch retries: [`tests/e2e/detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js) ([running e2e § slot lifecycle](../testing/running-e2e.md#slot-lifecycle)) |
+| Raise ADB `pm install` spawn timeout | `ADB.js` `DEFAULT_INSTALL_OPTIONS` | Android | Detox default **60000ms** hard-kills slow installs under 9-way load (`terminated with SIGTERM`). Patched to **300000ms** (same latency class as launchApp). Contract: `androidAdbInstallTimeoutMs()` in [`detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js). **`RNFB_ANDROID_ADB_INSTALL_TIMEOUT_MS` is read by policy only** — the Detox patch hardcodes **300000** at yarn apply time; changing the env alone does not change Detox until the patch is regenerated |
 | Suppress emulator crash-report modal | `EmulatorExec.js` `LaunchCommand` | Android | Pass `-crash-report-mode never` so a crashed qemu cannot block unattended waves on the Google crash-report dialog |
 | Buffer early `ready` | `AnonymousConnectionHandler.js` | iOS | App sends `ready` before Detox login → `launchApp` stuck |
 | Ignore missing adb reverse on teardown | `ADB.js` | Android | Jet WS 1006 triggers mid-run `reverse --remove` → adb exit 1 |
 | **2× device-registry lock stale** | `ExclusiveLockfile.js` | iOS, macOS, Android | `proper-lockfile` `ECOMPROMISED` before tests start |
 
-Related patches: `jet`, `mocha-remote-client`, `mocha-remote-server` — WS reconnect grace, coverage handshake, client keepalive, parse buffering, reconnect assignment order, `transformFailure` Metro symbolication soft-fail; **host control HTTP on `JET_REMOTE_PORT + 1` (default 8091)** for launch defer + orchestrate phase (`RNFB_JET_DEFER_RUN`); HTTP POST `/coverage` on 8090 removed. See [Jet host orchestration](../testing/running-e2e.md#jet-host-orchestration-ports-and-launch-gate), [coverage design](../testing/coverage-design.md), [iOS issues 6–8](ios.md#6-jet-websocket-disconnect-1006--1001) (incl. [6c](ios.md#6c-release-transformfailure-masks-real-errors-metro-symbolication)).
+Related patches: `jet`, `mocha-remote-client`, `mocha-remote-server` — WS reconnect grace, coverage handshake, client keepalive, parse buffering, reconnect assignment order, `transformFailure` Metro symbolication soft-fail; **host control HTTP on `JET_REMOTE_PORT + 1` (default 8091)** for launch defer + orchestrate phase (`RNFB_JET_DEFER_RUN`); HTTP POST `/coverage` on 8090 removed; **`fatal_disconnect` / exitOnError must `process.exit(1)` after `cleanup()`** so Detox Jest cannot sit for `testTimeout` (1h) after native crash + Jet dead disconnect. See [Jet host orchestration](../testing/running-e2e.md#jet-host-orchestration-ports-and-launch-gate), [coverage design](../testing/coverage-design.md), [iOS issues 6–8](ios.md#6-jet-websocket-disconnect-1006--1001) (incl. [6c](ios.md#6c-release-transformfailure-masks-real-errors-metro-symbolication)).
 
 ## Updating the jet patch (headless)
 
@@ -107,6 +109,7 @@ SRC=tests/node_modules/detox
 
 # Copy ONLY the files this patch touches (see inventory table above)
 /bin/cp -f "$SRC/src/utils/ExclusiveLockfile.js" "$PATCH_DIR/src/utils/ExclusiveLockfile.js"
+/bin/cp -f "$SRC/src/client/actions/actions.js" "$PATCH_DIR/src/client/actions/actions.js"
 /bin/cp -f "$SRC/src/server/handlers/AnonymousConnectionHandler.js" "$PATCH_DIR/src/server/handlers/AnonymousConnectionHandler.js"
 /bin/cp -f "$SRC/src/devices/common/drivers/android/exec/ADB.js" "$PATCH_DIR/src/devices/common/drivers/android/exec/ADB.js"
 /bin/cp -f "$SRC/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt" \

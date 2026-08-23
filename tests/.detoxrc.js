@@ -55,8 +55,9 @@ function iosSimulatorDevice(slot) {
 
 // Snapshot flags only. Detox LaunchCommand already prepends `-port`.
 // Do not add `-port` to bootArgs (double -port desyncs adb vs qemu).
-// Slotted runs pin RNFB_ANDROID_CONSOLE_PORT (5556+2*slot); the Detox patch
-// makes FreePortFinder / EmulatorAllocDriver use that instead of 10000–20000.
+// Serial yarn tests:android:* pin RNFB_ANDROID_CONSOLE_PORT=5554; slotted runs
+// pin 5556+2*slot. The Detox patch makes FreePortFinder / EmulatorAllocDriver
+// use that instead of 10000–20000.
 function androidEmulatorBootArgs() {
   return (process.env.RNFB_ANDROID_EMULATOR_BOOT_ARGS || '-no-snapshot-load -no-snapshot-save')
     .replace(/(?:^|\s)-port\s+\d+/g, '')
@@ -127,7 +128,7 @@ const apps = {
   'ios.release': {
     type: 'ios.app',
     binaryPath: 'ios/build/Build/Products/Release-iphonesimulator/testing.app',
-    build: `export RCT_NO_LAUNCH_PACKAGER=true && set -o pipefail && ${iosXcodebuildPrefix()} xcodebuild  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify`,
+    build: `export RCT_NO_LAUNCH_PACKAGER=true && set -o pipefail && ${iosXcodebuildPrefix()} xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify`,
   },
   'android.debug': androidApp(ANDROID_REVERSE_DEFAULT),
   'android.debug.windows': androidAppWindows(ANDROID_REVERSE_DEFAULT),
@@ -172,6 +173,11 @@ module.exports = {
   testRunner: {
     args: { $0: 'jest', config: 'e2e/jest.config.js' },
     jest: { setupTimeout: 120000 },
+  },
+  // Delay Detox currentStatus probes; pair with patched CurrentStatus timeout
+  // (tests/e2e/detoxLatencyPolicy.js) so 9-way / CI load does not 5000ms-flake.
+  session: {
+    debugSynchronization: 30000,
   },
   apps,
   devices,

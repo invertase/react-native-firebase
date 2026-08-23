@@ -53,9 +53,11 @@ function qemuAvdPgrepPattern(avdName) {
 // Metro /status or bundle wait failures — retryable, but not an emulator health fault.
 const METRO_WAIT_FAILURE_RE = /Metro not responding|Metro bundle not available|packager-probe/i;
 
-// Android cold-boot is only for device-side launch/health faults (ANR, offline, qemu/adb).
+// Android cold-boot is only for device-side launch/health faults (ANR, offline, qemu/adb,
+// package-manager / ActivityManager collapse, install SIGTERM under load, unreachable app).
+// Metro wait failures are excluded via isMetroWaitFailure before this regex runs.
 const ANDROID_DEVICE_SIDE_LAUNCH_RE =
-  /ANR|\boffline\b|qemu-without-adb|did not become 'device'|cold-boot spawn did not register|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain/i;
+  /ANR|\boffline\b|qemu-without-adb|did not become 'device'|cold-boot spawn did not register|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain|Can't find service: package|Can't find service: activity|terminated with SIGTERM|Process was killed with SIGTERM|APP_UNREACHABLE|Failed to run application/i;
 
 function errorMessage(messageOrErr) {
   if (typeof messageOrErr === 'string') {

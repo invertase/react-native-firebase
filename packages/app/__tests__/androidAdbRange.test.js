@@ -131,6 +131,31 @@ describe('shouldColdBootAndroidOnLaunchRetry', function () {
     ).toBe(true);
   });
 
+  it('cold-boots for pm-install SIGTERM, missing package/activity services, APP_UNREACHABLE', function () {
+    expect(
+      shouldColdBootAndroidOnLaunchRetry(
+        new Error('adb -s emulator-5556 shell pm install ... terminated with SIGTERM'),
+      ),
+    ).toBe(true);
+    expect(shouldColdBootAndroidOnLaunchRetry(new Error('Process was killed with SIGTERM'))).toBe(
+      true,
+    );
+    expect(shouldColdBootAndroidOnLaunchRetry(new Error("cmd: Can't find service: package"))).toBe(
+      true,
+    );
+    expect(shouldColdBootAndroidOnLaunchRetry(new Error("cmd: Can't find service: activity"))).toBe(
+      true,
+    );
+    expect(
+      shouldColdBootAndroidOnLaunchRetry(
+        new Error("APP_UNREACHABLE Detox can't seem to connect to the test app(s)!"),
+      ),
+    ).toBe(true);
+    expect(
+      shouldColdBootAndroidOnLaunchRetry(new Error('Failed to run application on the device')),
+    ).toBe(true);
+  });
+
   it('does not cold-boot for Jet session noise that is not device-side', function () {
     expect(shouldColdBootAndroidOnLaunchRetry(new Error('Jet WS closed 1006'))).toBe(false);
     expect(shouldColdBootAndroidOnLaunchRetry(new Error('launchApp timed out'))).toBe(false);

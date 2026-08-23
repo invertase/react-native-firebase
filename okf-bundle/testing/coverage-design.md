@@ -192,9 +192,9 @@ Jet self-wraps under NYC with `--coverage`.
 
 **Tooling:**
 
-- Metro bundles `packages/*/dist/module/**` with inline source maps (`tests/.babelrc`: `useInlineSourceMaps: true`).
-- NYC (`tests/nyc.config.js`) remaps to `packages/*/lib/**` → **`coverage/lcov.info`** (`cwd: '..'`).
-- Jet re-invokes under `tests/node_modules/.bin/nyc` (checks `NYC_CONFIG`). Detox/macOS need no extra `nyc` prefix; Jet must run from `tests/`.
+- Metro bundles `packages/*/dist/module/**` with inline source maps (`tests/.babelrc` and `tests-macos/.babelrc`: `useInlineSourceMaps: true`).
+- NYC (`tests/nyc.config.js` and `tests-macos/nyc.config.js`) remaps to `packages/*/lib/**` → **`coverage/lcov.info`** (`cwd: '..'`).
+- Jet re-invokes under the test-app `nyc` (checks `NYC_CONFIG`) — `tests/` for iOS/Android, `tests-macos/` for macOS. Detox/macOS need no extra `nyc` prefix; start Jet only via [running e2e](running-e2e.md) packager commands.
 - **Transfer:** patched test-runner/mocha-remote WS only (`coverage-ready` → `pull-coverage` → `coverage-data` → `coverage-ack`); HTTP POST `/coverage` deleted (`attachHttpServer` removed). Host launch/orchestrate control uses a **separate** HTTP server on **8091** (not the 8090 WS stack) — see [test-runner orchestration (log triage)](running-e2e.md#test-runner-host-orchestration-log-triage-only). Patches: `.yarn/patches/` (`jet`, `mocha-remote-client`, `mocha-remote-server`). See [iOS issues 6–6b](../ci-workflows/ios.md#6-jet-websocket-disconnect-1006--1001), [issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00), [jet patch workflow](../ci-workflows/detox-patches.md#updating-the-jet-patch-headless).
 
 **NYC settings:**
