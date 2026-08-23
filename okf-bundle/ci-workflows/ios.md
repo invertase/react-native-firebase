@@ -208,8 +208,8 @@ Error: Unable to update lock within the stale threshold
 | Defer `server.run()` until host `POST /launch-ready` on control port **8091** (`RNFB_JET_DEFER_RUN=1`) | Jet patch + `firebase.test.js` — [Jet host orchestration](../testing/running-e2e.md#jet-host-orchestration-ports-and-launch-gate) |
 | `POST /orchestrate-state` + `[rnfb-e2e] orchestrate-state=` for launch/retry triage | `firebase.test.js` + Jet patch |
 | Wait for Metro (`/status`) before `launchApp` | `tests/e2e/firebase.test.js` (debug Detox configs only; release skips Metro wait) |
-| Bounded `launchApp` timeout (debug default 180s; release default 120s via `RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS`) | `tests/e2e/firebase.test.js` |
-| `detoxEnableSynchronization: 'NO'` at launch | `tests/e2e/firebase.test.js` |
+| Bounded `launchApp` timeout / retries | [`tests/e2e/detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js) (consumed by `firebase.test.js`); release uses `RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS` in `firebase.test.js`; Detox Login / CurrentStatus: [detox-patches](detox-patches.md) |
+| `detoxEnableSynchronization: '0'` at launch (native `equals("0")`; `'NO'` still installs Fabric idling) | `tests/e2e/firebase.test.js` — [running e2e § gray screen](../testing/running-e2e.md#android-emulator-gray-screen--quick-boot-blocking) |
 | `detoxURLBlacklistRegex: '.*'` | `tests/e2e/firebase.test.js` (existing) |
 
 #### 4. `waitForActive` / scene never foreground-active
@@ -243,12 +243,12 @@ Metro can look healthy on the **host** during pre-fetch minutes earlier while be
 | Change | Location |
 |--------|----------|
 | Wait for Metro `/status` before `launchApp` | `tests/e2e/firebase.test.js` (debug Detox configs only) |
-| In-process `launchApp` retry on launch failure (max 2 attempts; logs `launchApp failure reason=`) | `tests/e2e/firebase.test.js` (`RNFB_LAUNCH_APP_MAX_ATTEMPTS`) |
+| In-process `launchApp` retry on launch failure (logs `launchApp failure reason=`) | `tests/e2e/firebase.test.js` (`RNFB_LAUNCH_APP_MAX_ATTEMPTS` — default in [`detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js)) |
 | Keep install on inner retry (`delete: false` on attempt 2+) | `tests/e2e/firebase.test.js` |
 | Slow `terminateApp` (≥ `RNFB_SLOW_TERMINATE_MS`, default 10s) → reboot via `boot-simulator.sh` | `tests/e2e/firebase.test.js` |
 | Full Jet e2e retry when inner launch retries exhausted or WS/coverage teardown retryable | `tests/e2e/firebase.test.js` (`retryableAtJetLevel`, `isRetryableE2eFailure`) |
 | `simctl get_app_container` / `listapps` before and after each launch attempt | `tests/e2e/firebase.test.js` (`[rnfb-e2e] install-state`) |
-| Bounded `launchApp` timeout (debug `RNFB_LAUNCH_APP_TIMEOUT_MS` 180s; release `RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS` 120s) | `tests/e2e/firebase.test.js` |
+| Bounded `launchApp` timeout | Debug: `RNFB_LAUNCH_APP_TIMEOUT_MS` ([`detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js)). Release: `RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS` in `firebase.test.js` |
 | Metro log artifact (`metro.log`) | `.github/workflows/tests_e2e_ios.yml` |
 | JS load failure + packager probe logging | `tests/ios/testing/AppDelegate.mm` |
 | Bundle URL pinned to `127.0.0.1` (bypasses RN `localhost` fallback) | `tests/ios/testing/AppDelegate.mm` |
@@ -315,8 +315,9 @@ rg -i 'BUNDLE|index\.bundle|8081|error|ECONN|transform' metro.log
 | Change | Location |
 |--------|----------|
 | Buffer early `ready`, replay after app `login` | `.yarn/patches/detox-npm-20.51.0-*.patch` → `AnonymousConnectionHandler.js` |
+| Raise Login / CurrentStatus timeouts | [detox-patches inventory](detox-patches.md) → `actions.js` |
 | 2× device-registry lock stale (20s) | `.yarn/patches/detox-npm-20.51.0-*.patch` → `ExclusiveLockfile.js` |
-| Jet + Metro wait, bounded `launchApp` with retry, Detox launch args, install-state + retry-eligibility logging | `tests/e2e/firebase.test.js` |
+| Jet + Metro wait, bounded `launchApp` with retry, Detox launch args, install-state + retry-eligibility logging | `tests/e2e/firebase.test.js` + [`detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js) |
 | Cloud quota Jet retry + cooldown + metrics/summary hooks | `tests/e2e/firebase.test.js`, `packages/app/e2e/cloud-metrics.js` — see [cloud API quota triage](../testing/firebase-testing-project.md#ci-triage-cloud-api-quota-pressure) |
 | Lifecycle + JS load / packager probe logging; bundle URL `127.0.0.1` | `tests/ios/testing/AppDelegate.mm` |
 | Pre-boot + `bootstatus` + shutdown wait before install | `boot-simulator.sh` |

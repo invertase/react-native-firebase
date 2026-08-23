@@ -36,6 +36,12 @@ const {
   shouldColdBootAndroidOnLaunchRetry,
 } = require('./androidAdbRange');
 const { shouldSkipAndroidSettleAndLoad } = require('./androidReadyPolicy');
+const {
+  launchAppTimeoutMs,
+  launchAppMaxAttempts,
+  androidAdbSerialAppearTimeoutMs,
+  jetAwaitExitStallTimeoutMs,
+} = require('./detoxLatencyPolicy');
 
 const E2E_TEST_PROJECT = 'react-native-firebase-testing';
 const E2E_CLOUD_PRESSURE_LOG_FILTER = 'jsonPayload.message="[rnfb-e2e-metrics]"';
@@ -102,8 +108,9 @@ function staticPrefixedJetPort(pk) {
     case 'macos':
       return parseEnvPort(process.env.RNFB_MACOS_JET_PORT);
     case 'ios':
-    default:
       return parseEnvPort(process.env.RNFB_IOS_JET_PORT);
+    default:
+      throw new Error(`Unknown detox platform key: ${pk}`);
   }
 }
 
@@ -114,8 +121,9 @@ function staticPrefixedJetControlPort(pk) {
     case 'macos':
       return parseEnvPort(process.env.RNFB_MACOS_JET_CONTROL_PORT);
     case 'ios':
-    default:
       return parseEnvPort(process.env.RNFB_IOS_JET_CONTROL_PORT);
+    default:
+      throw new Error(`Unknown detox platform key: ${pk}`);
   }
 }
 
@@ -126,8 +134,9 @@ function staticPrefixedMetroPort(pk) {
     case 'macos':
       return parseEnvPort(process.env.RNFB_MACOS_METRO_PORT);
     case 'ios':
-    default:
       return parseEnvPort(process.env.RNFB_IOS_METRO_PORT);
+    default:
+      throw new Error(`Unknown detox platform key: ${pk}`);
   }
 }
 
@@ -147,12 +156,12 @@ function metroPortForHost() {
   return staticPrefixedMetroPort(detoxPlatformKey()) || 8081;
 }
 
-const LAUNCH_APP_TIMEOUT_MS = parseInt(process.env.RNFB_LAUNCH_APP_TIMEOUT_MS || '180000', 10);
+const LAUNCH_APP_TIMEOUT_MS = launchAppTimeoutMs();
 const LAUNCH_APP_RELEASE_TIMEOUT_MS = parseInt(
   process.env.RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS || '120000',
   10,
 );
-const LAUNCH_APP_MAX_ATTEMPTS = parseInt(process.env.RNFB_LAUNCH_APP_MAX_ATTEMPTS || '2', 10);
+const LAUNCH_APP_MAX_ATTEMPTS = launchAppMaxAttempts();
 const SLOW_TERMINATE_MS = parseInt(process.env.RNFB_SLOW_TERMINATE_MS || '10000', 10);
 const REBOOT_IOS_SIMULATOR_TIMEOUT_MS = parseInt(
   process.env.RNFB_REBOOT_IOS_SIMULATOR_TIMEOUT_MS || String(12 * 60 * 1000),
@@ -168,10 +177,7 @@ const ANDROID_READY_POLL_MS = parseInt(process.env.RNFB_ANDROID_READY_POLL_MS ||
 // Fail fast immediately only when qemu is up and -port is outside adb's emulator
 // console range [5554, 5584] (FreePortFinder 10000–20000). In-range serials
 // (slotted 5556/5558/5560) poll ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS first.
-const ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS = parseInt(
-  process.env.RNFB_ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS || '20000',
-  10,
-);
+const ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS = androidAdbSerialAppearTimeoutMs();
 // Cold-boot kill+relaunch under parallel load needs longer than serial appear poll.
 const ANDROID_COLD_BOOT_REGISTER_TIMEOUT_MS = parseInt(
   process.env.RNFB_ANDROID_COLD_BOOT_REGISTER_TIMEOUT_MS || '120000',
@@ -529,24 +535,24 @@ function parseGuestLoad1Min(loadavgLine) {
   return Number.isFinite(load) ? load : NaN;
 }
 
-function killTcpPortListener(port, label) {
+function listTcpListenPids(port) {
   let pidList = '';
   try {
     pidList = execSync(`lsof -nP -iTCP:${port} -sTCP:LISTEN -t 2>/dev/null || true`, {
       encoding: 'utf8',
       timeout: 5000,
     }).trim();
-  } catch (err) {
-    console.warn(
-      `[rnfb-e2e] ${label}: unable to inspect :${port} listener: ${err?.message || err}`,
-    );
-    return;
+  } catch (_) {
+    return [];
   }
-
-  const pids = pidList
+  return pidList
     .split(/\s+/)
     .filter(Boolean)
     .filter(pid => /^\d+$/.test(pid));
+}
+
+async function killTcpPortListener(port, label) {
+  let pids = listTcpListenPids(port);
   if (pids.length === 0) {
     console.log(`[rnfb-e2e] ${label}: no listener on :${port}`);
     return;
@@ -556,12 +562,23 @@ function killTcpPortListener(port, label) {
   try {
     execSync(`kill ${pids.join(' ')}`, { stdio: 'inherit', timeout: 5000 });
   } catch (err) {
-    console.warn(`[rnfb-e2e] ${label}: failed to kill :${port} listener: ${err?.message || err}`);
+    console.warn(`[rnfb-e2e] ${label}: SIGTERM :${port} failed: ${err?.message || err}`);
+  }
+  await sleep(500);
+  pids = listTcpListenPids(port);
+  if (pids.length === 0) {
+    return;
+  }
+  console.warn(`[rnfb-e2e] ${label}: SIGKILL leftover listener on :${port} pid=${pids.join(',')}`);
+  try {
+    execSync(`kill -9 ${pids.join(' ')}`, { stdio: 'inherit', timeout: 5000 });
+  } catch (err) {
+    console.warn(`[rnfb-e2e] ${label}: SIGKILL :${port} failed: ${err?.message || err}`);
   }
 }
 
 async function ensureTcpPortClosed(port, label, timeoutMs = KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS) {
-  killTcpPortListener(port, label);
+  await killTcpPortListener(port, label);
   await waitForTcpPortClosed(port, '127.0.0.1', timeoutMs);
 }
 
@@ -909,15 +926,13 @@ async function drainJetAttempt(platform) {
   if (ctx?.jetProcess && !ctx.jetProcess.killed) {
     ctx.jetProcess.kill('SIGTERM');
     await sleep(500);
-    if (!ctx.jetProcess.killed) {
-      ctx.jetProcess.kill('SIGKILL');
-    }
+    killSpawnedProcessTree(ctx.jetProcess);
   }
 
   if (platform === 'android') {
     await ensureAndroidJetHostClear('drain');
   } else {
-    await waitForTcpPortClosed(jetRemotePort());
+    await ensureTcpPortClosed(jetRemotePort(), 'drain');
   }
 
   console.log('[rnfb-e2e] Jet attempt drain complete');
@@ -1059,6 +1074,11 @@ function isRetryableCloudQuotaFailure(jetOutput) {
 function isRetryableLaunchFailure(err) {
   const message = err?.message || '';
   if (err?.retryableAtJetLevel) {
+    return true;
+  }
+  // Device-side Android faults that warrant cold-boot must also be retryable at
+  // launch/Jet level (pm install SIGTERM, package/activity service missing, etc.).
+  if (shouldColdBootAndroidOnLaunchRetry(err)) {
     return true;
   }
   if (!usesLiveMetro()) {
@@ -1240,6 +1260,62 @@ async function signalJetLaunchReady() {
   await postJetControl('/launch-ready', {});
 }
 
+function killSpawnedProcessTree(proc) {
+  if (!proc?.pid) {
+    return;
+  }
+  const killDescendants = pid => {
+    try {
+      const kids = execSync(`pgrep -P ${pid}`, { encoding: 'utf8' })
+        .trim()
+        .split('\n')
+        .filter(Boolean);
+      for (const child of kids) {
+        killDescendants(child);
+        try {
+          process.kill(Number(child), 'SIGKILL');
+        } catch (_) {
+          // already gone
+        }
+      }
+    } catch (_) {
+      // no children
+    }
+  };
+  killDescendants(String(proc.pid));
+  try {
+    proc.kill('SIGKILL');
+  } catch (_) {
+    // already gone
+  }
+}
+
+async function awaitJetExitWithStallGuard(jetSession, stallMs = jetAwaitExitStallTimeoutMs()) {
+  let stallTimer;
+  const stallPromise = new Promise((_, reject) => {
+    stallTimer = setTimeout(() => {
+      const err = new Error(
+        `[rnfb-e2e] Jet awaiting-jet-exit stalled ${stallMs}ms after launch-ready — aborting cell`,
+      );
+      err.jetOutput = jetSession.output;
+      reject(err);
+    }, stallMs);
+  });
+  try {
+    return await Promise.race([jetSession.exitPromise, stallPromise]);
+  } catch (err) {
+    await killJetForLaunchRetry(jetSession.process);
+    if (!err.jetOutput) {
+      err.jetOutput = jetSession.output;
+    }
+    throw err;
+  } finally {
+    if (stallTimer) {
+      clearTimeout(stallTimer);
+    }
+  }
+}
+
 async function killJetForLaunchRetry(jetProcess) {
   if (!jetProcess || jetProcess.killed) {
     return;
@@ -1249,12 +1325,14 @@ async function killJetForLaunchRetry(jetProcess) {
   console.warn('[rnfb-e2e] launch-retry: killing Jet before terminateApp/reboot');
   jetProcess.kill('SIGTERM');
   await sleep(500);
-  if (!jetProcess.killed) {
-    jetProcess.kill('SIGKILL');
-  }
+  killSpawnedProcessTree(jetProcess);
 
   try {
-    await waitForTcpPortClosed(jetRemotePort(), '127.0.0.1', KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS);
+    await ensureTcpPortClosed(
+      jetRemotePort(),
+      'launch-retry',
+      KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS,
+    );
   } catch (err) {
     console.warn(`[rnfb-e2e] launch-retry: Jet port still open after kill: ${err?.message || err}`);
   }
@@ -1262,6 +1340,7 @@ async function killJetForLaunchRetry(jetProcess) {
 
 async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {}) {
   const liveMetro = usesLiveMetro();
+  let lastLaunchFailure;
 
   for (let launchAttempt = 1; launchAttempt <= LAUNCH_APP_MAX_ATTEMPTS; launchAttempt++) {
     try {
@@ -1269,6 +1348,16 @@ async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {
         console.warn(
           `[rnfb-e2e] Retrying launchApp after launch failure (attempt ${launchAttempt}/${LAUNCH_APP_MAX_ATTEMPTS}) liveMetro=${liveMetro}`,
         );
+        if (
+          detoxPlatformKey() === 'android' &&
+          shouldColdBootAndroidOnLaunchRetry(lastLaunchFailure)
+        ) {
+          console.warn(
+            '[rnfb-e2e] Android device-side launch failure — cold booting emulator before relaunch',
+          );
+          await coldBootAndroidEmulator();
+          await waitForAndroidEmulatorReady();
+        }
         if (onBeforeRelaunch) {
           await onBeforeRelaunch();
         }
@@ -1290,6 +1379,7 @@ async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {
       });
       return;
     } catch (err) {
+      lastLaunchFailure = err;
       console.warn(`[rnfb-e2e] launchApp failure reason=${err?.message || err}`);
       logLaunchInstallState(`after-launch-failure attempt=${launchAttempt}`);
       const innerRetryable =
@@ -1438,7 +1528,9 @@ async function runJetE2eAttempt(attempt) {
     await launchAppWithRetry(
       {
         detoxURLBlacklistRegex: `.*`,
-        // Avoid sync/idling blocking the main queue while Detox WS login is pending.
+        // Detox Android LaunchArgs.shouldDisableSynchronization() equals "0"
+        // (not "NO"). "NO" still registers Fabric idling resources, which throw
+        // `ReactContext is null!` if RN is not ready yet.
         detoxEnableSynchronization: '0',
       },
       {
@@ -1460,13 +1552,11 @@ async function runJetE2eAttempt(attempt) {
     orchestratePromise
       .then(() => {
         logOrchestrateState('awaiting-jet-exit');
-        return jetSession.exitPromise;
+        return awaitJetExitWithStallGuard(jetSession);
       })
-      .catch(err => {
+      .catch(async err => {
         logOrchestrateState('orchestrate-failed');
-        if (!jetSession.process.killed) {
-          jetSession.process.kill();
-        }
+        await killJetForLaunchRetry(jetSession.process);
         err.jetOutput = jetSession.output;
         throw err;
       }),

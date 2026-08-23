@@ -1,8 +1,8 @@
 diff --git a/lib/commonjs/cli.js b/lib/commonjs/cli.js
-index 35c04da87c63a79bc26707aaffe3156fb98eca79..3ad2cea4c214e8c3c4f4698acacfff2610902863 100644
+index 35c04da87c63a79bc26707aaffe3156fb98eca79..c212d6845e5b78129ed8b7efe889158851281620 100644
 --- a/lib/commonjs/cli.js
 +++ b/lib/commonjs/cli.js
-@@ -71,23 +71,77 @@ function cleanup() {
+@@ -71,23 +71,81 @@ function cleanup() {
      console.log(`[🟥] Failed to run a cleanup task: ${err.message}`);
    });
  }
@@ -56,7 +56,7 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..3ad2cea4c214e8c3c4f4698acacfff26
 +    }
 +    if (code === 1000 || !config.exitOnError) {
 +      return;
-+    }
+     }
 +    const graceMs = config.reconnectGraceMs ?? 30000;
 +    const transientCodes = [1006, 1001];
 +    if (transientCodes.includes(code)) {
@@ -75,18 +75,25 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..3ad2cea4c214e8c3c4f4698acacfff26
 +        print(`[🟥] Exiting after an abnormal disconnect.`);
 +        process.exitCode = 1;
 +        cleanup();
++        // Must hard-exit: cleanup() alone leaves Jet alive and Detox Jest waits testTimeout (1h).
++        process.exit(1);
 +      }, graceMs);
 +      return;
-     }
++    }
 +    console.error(`[jet-ws] fatal_disconnect code=${code} reason="${reason || ''}" immediate=true`);
 +    print(`[🟥] Exiting after an abnormal disconnect.`);
 +    process.exitCode = 1;
 +    cleanup();
++    // Must hard-exit: cleanup() alone leaves Jet alive and Detox Jest waits testTimeout (1h).
++    process.exit(1);
    });
    server.on('error', error => {
      if (error instanceof _mochaRemoteServer.ClientError) {
-@@ -100,6 +154,25 @@ async function startServer(server, config, after) {
+@@ -98,8 +156,28 @@ async function startServer(server, config, after) {
+     if (config.exitOnError) {
+       process.exitCode = 1;
        cleanup();
++      process.exit(1);
      }
    });
 +  server.on('coverage-upload-start', () => {
@@ -111,7 +118,7 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..3ad2cea4c214e8c3c4f4698acacfff26
    cleanupTasks.add(async () => {
      if (server.listening) {
        await server.stop();
-@@ -115,39 +188,48 @@ async function startServer(server, config, after) {
+@@ -115,39 +193,48 @@ async function startServer(server, config, after) {
    process.on('SIGINT', cleanup);
    process.on('exit', cleanup);
  }
@@ -184,7 +191,7 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..3ad2cea4c214e8c3c4f4698acacfff26
    });
  }
  (0, _yargs.default)((0, _helpers.hideBin)(process.argv)).scriptName('jet').version('version', 'Show version number & exit', jetPackageJson.version).alias('v', 'version').option('target', {
-@@ -301,17 +383,34 @@ function attachHttpServer(wss) {
+@@ -301,17 +388,34 @@ function attachHttpServer(wss) {
      timeout: finalConfig.timeout,
      slow: finalConfig.slow
    });

@@ -16,7 +16,8 @@ okf_version: '0.1'
 - [Agent command policy](/testing/agent-command-policy.md) — allowlisted shell commands for agents (install, prepare, validation, e2e, Expo documented-path iOS **link**; not Detox)
 - [Change authoring workflow](/testing/change-authoring-workflow.md) — verified product change loop (unit-focused → `documentation?` → area-focused `independent-review` → commit); [§ validation evidence (blocking)](testing/change-authoring-workflow.md#validation-evidence-blocking); [coverage evidence package](testing/coverage-design.md#coverage-evidence-package)
 - [Iteration vocabulary](/testing/iteration-vocabulary.md) — work type, tier, and queue field identifiers
-- [Running e2e tests](/testing/running-e2e.md) — canonical e2e commands, narrowing, environment, diagnosis
+- [Running e2e tests](/testing/running-e2e.md) — canonical e2e commands, narrowing, environment, diagnosis; [§ slot lifecycle](testing/running-e2e.md#slot-lifecycle)
+- [E2e parallel design](/testing/e2e-parallel-design.md) — resources, why they collide, parameterization, 9 overlapping cells, coordinator rollout
 - [Test app dependency pins](/testing/test-app-dependency-pins.md) — intentional RN / CLI locks (`react-native-macos`)
 - [Validation checklist](/testing/validation-checklist.md) — compile, Jest, lint, `compare:types`, e2e, coverage
 - [Published types ADR](/testing/architecture-decisions.md) — attw scope, Expo plugin checks, discarded resolutions

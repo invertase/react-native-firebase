@@ -11947,7 +11947,7 @@ __metadata:
 
 "detox@patch:detox@npm%3A20.51.0#~/.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch":
   version: 20.51.0
-  resolution: "detox@patch:detox@npm%3A20.51.0#~/.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch::version=20.51.0&hash=8b3736"
+  resolution: "detox@patch:detox@npm%3A20.51.0#~/.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch::version=20.51.0&hash=e5c5bb"
   dependencies:
     "@wix-pilot/core": "npm:^3.4.2"
     "@wix-pilot/detox": "npm:^1.0.13"
@@ -11993,7 +11993,7 @@ __metadata:
       optional: true
   bin:
     detox: local-cli/cli.js
-  checksum: 10/9f9e3d47d3439171506be8429bb2b59c3ab846ead71d87f2858a71a7b43822f17bb5eecfdaebee017808459881f607876352208e2eaa07da758387f0a3d24ccf
+  checksum: 10/5f1deaab0f83cd70718ff947ca0d620df8cb4a261b17b8cc8e2841a1a0ca7b4518c00c6941d886ae58c9a01c5230edcea89e6d678a442d92186afefaa636106d
   languageName: node
   linkType: hard
 
@@ -17401,7 +17401,7 @@ __metadata:
 
 "jet@patch:jet@npm%3A0.9.0-dev.13#~/.yarn/patches/jet-npm-0.9.0-dev.13-3321aeea6e.patch":
   version: 0.9.0-dev.13
-  resolution: "jet@patch:jet@npm%3A0.9.0-dev.13#~/.yarn/patches/jet-npm-0.9.0-dev.13-3321aeea6e.patch::version=0.9.0-dev.13&hash=0d87d1"
+  resolution: "jet@patch:jet@npm%3A0.9.0-dev.13#~/.yarn/patches/jet-npm-0.9.0-dev.13-3321aeea6e.patch::version=0.9.0-dev.13&hash=1a9118"
   dependencies:
     "@types/mocha": "npm:^10.0.10"
     babel-plugin-istanbul: "npm:^7.0.0"
@@ -17418,7 +17418,7 @@ __metadata:
     react-native: "*"
   bin:
     jet: jet.js
-  checksum: 10/f999c7ec39f34c123517e06f797913599f3768456d8e3d391ea98c80d1d6e151777f957c7cf8404f2d62a5c24bacb508f1d60c71a6395222b1e18d086176a82e
+  checksum: 10/00d8beae343284f979c06bb0d1a48ee14d4393289a077b6ef7836e51e21d4f1c24778d0f3066e009d4a8c67a87abd69ce72ab84edfd9696bdc0298a4e531c00e
   languageName: node
   linkType: hard
 

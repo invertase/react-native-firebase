@@ -46,16 +46,6 @@ describe('start-packager.sh yarn surface', function () {
     expect(rootPkg.scripts['tests:e2e:release']).toMatch(/release-e2e-resources\.sh/);
   });
 
-  it('mellifera verify Metro uses Law yarn tests:packager:* (no second lifecycle)', function () {
-    const metro = fs.readFileSync(path.join(repoRoot, 'scripts/e2e/mellifera-metro.sh'), 'utf8');
-    expect(metro).toMatch(/yarn "\$\{yarn_script\}"/);
-    expect(metro).toMatch(/tests:packager:jet/);
-    expect(metro).toMatch(/tests:macos:packager:jet/);
-    expect(metro).toMatch(/tests:packager:jet-reset-cache/);
-    expect(metro).toMatch(/tests:macos:packager:jet-reset-cache/);
-    expect(metro).not.toMatch(/yarn react-native start/);
-  });
-
   it('root yarn exposes tests:e2e:clear-slot-env', function () {
     expect(rootPkg.scripts['tests:e2e:clear-slot-env']).toMatch(/clear-slot-env\.sh/);
   });

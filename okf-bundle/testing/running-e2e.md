@@ -3,7 +3,7 @@ type: Reference
 title: Running e2e tests
 description: The canonical, minimal command set for running React Native Firebase e2e tests on every platform.
 tags: [testing, e2e, detox, jet, ios, android, macos, coverage]
-timestamp: 2026-08-14T00:00:00Z
+timestamp: 2026-08-20T00:00:00Z
 ---
 
 # Running e2e tests
@@ -51,8 +51,9 @@ yarn tests:emulator:start
 3. **Rebuild when needed**
    - **Before any native `:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) — root `yarn` exit 0 + fmt podspec **≥ 12.1.0**. Missing this gate → Apple Clang 21 consteval failures on unpatched fmt **11.0.2**.
    - Native changed → `yarn tests:ios:build` / `yarn tests:android:build` before e2e. macOS uses firebase-js-sdk only — no native rebuild.
+   - **Apple `:build` compiles only.** `yarn tests:ios:build` / `yarn tests:macos:build` do not run CocoaPods. Full e2e / test process **requires** `yarn tests:ios:pod:install` or `yarn tests:macos:pod:install` as a **separate prior step** before the matching `:build` (after codegen / podspec / native Apple changes, and in [slot lifecycle](#slot-lifecycle) / `run-full-tests.sh` / CI). A bare `:build` without pod install is allowed when pods are already installed and you only need a compile.
    - **Committed codegen / generated native artifacts count as native** — any change under `packages/*/ios/generated/**` or `packages/*/android/**/generated/**` (including wipe-then-regen orphan deletions), or TurboModule **codegen / spec / podspec / native shell**, is a native change: rebuild + [platform coverage](#platform-coverage-gate-blocking) e2e on iOS and Android. **`yarn codegen:verify` is not a substitute** for `:test-cover` ([change authoring § forbidden shortcuts](change-authoring-workflow.md#forbidden-shortcuts)).
-   - `packages/*/lib/**` changed → **`yarn lerna:prepare` must run to completion (exit 0) before anything else** — Metro serves `dist/module/**`, not `lib/**`. See [prepare completion gate](#prepare-completion-gate-blocking) and [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first). After prepare finishes, restart the packager with `yarn tests:packager:jet-reset-cache` when Metro was already running ([packager reset-cache](#packager-reset-cache-eaddrinuse)).
+   - `packages/*/lib/**` changed → **`yarn lerna:prepare` must run to completion (exit 0) before anything else** — Metro serves `dist/module/**`, not `lib/**`. See [prepare completion gate](#prepare-completion-gate-blocking) and [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first). After prepare finishes, restart the **matching** packager when Metro was already running ([packager reset-cache](#packager-reset-cache-eaddrinuse)).
    - TurboModule **codegen / spec / podspec / native shell** changed → same as native changed, plus regen codegen ([agent command policy § TurboModule codegen](agent-command-policy.md#turbomodule-codegen); wipe-then-regen [NewArch-AD-22](../new-architecture/architecture-decisions.md#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)) when specs changed; if app loads with Metro redbox `Requiring unknown module "undefined"`, see [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
    - **JS bundle (debug):** all platforms (iOS, Android, macOS) load JS from Metro; only **release** builds pre-bundle/embed JS. `lib/**` edits alone do not require `:build` — use the [prepare completion gate](#prepare-completion-gate-blocking) and Metro restart above.
    - **TS coverage:** run `:build` before `:test-cover` on iOS/Android so Istanbul + patched test-runner coverage instrumentation is in the debug native app (bundle still from Metro). After test-runner patch changes, restart the packager with `yarn tests:packager:jet-reset-cache` ([packager reset-cache](#packager-reset-cache-eaddrinuse)).
@@ -69,13 +70,29 @@ Clean `:build` + `:test-cover` each time — not reuse variants.
 
 5. **Report locations** — [Coverage design](coverage-design.md). Android CI also runs `yarn tests:android:unit` (JVM) before Detox; post-e2e produces merged **`jacocoTestReport`** (unit + e2e) — details there, not duplicated here.
 
-6. **One e2e at a time** — never overlap `:test-cover` runs on one host. All platforms share Metro `:8081` and the test-runner WebSocket port (default **8090**); parallel runs race on coverage/device/emulator state. Every run starts after [clean pre-flight](#pre-flight-is-the-host-clear-to-start). Log triage for port/orchestration markers: [test-runner host orchestration](#test-runner-host-orchestration-log-triage-only).
+6. **One e2e at a time (default)** — never overlap `:test-cover` runs on one host unless each run uses a distinct port/device slot via [configurable e2e environment](#configurable-e2e-environment). Serial runs share Metro `:8081` and the test-runner WebSocket port (default **8090**); parallel runs race on coverage/device/emulator state without slotted env. Every run starts after [clean pre-flight](#pre-flight-is-the-host-clear-to-start). Log triage for port/orchestration markers: [test-runner host orchestration](#test-runner-host-orchestration-log-triage-only).
 
 7. **No source edits during e2e** — wait/cancel cleanly before editing `packages/**`, `tests/**`, or bundle-affecting OKF docs. Saves can hot reload/rebundle and invalidate tests/coverage.
 
+<a id="e2e-infrastructure-change-bar"></a>
+
+## E2e infrastructure change bar
+
+Permanent e2e-harness / runbook / host-script changes need **reproduced causation**, not a guessed flag.
+
+| Term | Meaning |
+|------|---------|
+| **Negative test** | With the change **absent**, the failure mode **reproduces reliably** (same command, same log signature). |
+| **Positive test** | With the change **present**, that failure is gone (or gated). |
+| **Non-slot test** | Unslotted serial defaults still work (`:8081` / `:8090` / `:8080`…, `TestingAVD`, `iPhone 17`, `io.invertase.testing`). |
+
+Also required: **one owner** — behavior lives in the canonical `yarn tests:*` command in this doc, not a parallel helper lifecycle.
+
+Unproven “maybe flake” ideas go on the **ephemeral work queue** only. Do not land them in product until they pass this bar. Do not change native **build settings** (for example Swift explicit modules) to paper over host races — e2e `:build` must stay representative of a real app build.
+
 ## Serialized e2e loops (shared dev host)
 
-Use [validation tiers](#e2e-validation-tiers-unit-focused-area-focused-full): **unit-focused**, **area-focused**, **full**. Match tier to [work type](change-authoring-workflow.md#work-types). Runs are serial from clean [pre-flight](#pre-flight-is-the-host-clear-to-start). Log long output; upstream gets exit code + short summary.
+Use [validation tiers](#e2e-validation-tiers-unit-focused-area-focused-full): **unit-focused**, **area-focused**, **full**. Match tier to [work type](change-authoring-workflow.md#work-types). **Serial default:** one unslotted `:test-cover` from clean [pre-flight](#pre-flight-is-the-host-clear-to-start). Slotted cross-platform concurrency: [parallel e2e topology](#parallel-e2e-topology). Log long output; upstream gets exit code + short summary.
 
 **Policy:** [OKF documentation and commit policy](../documentation-policy.md). **Terms:** [iteration vocabulary](iteration-vocabulary.md).
 
@@ -90,7 +107,7 @@ yarn tests:android:test-cover   # only command you run
 
 macOS: `yarn tests:macos:test-cover` only — same `:8090` transport, no Detox.
 
-**Do not poll `pgrep`, `detox`, process names, or `:8090` for completion.** They match stale wrappers, orphans, zombies, and contention.
+**Do not poll `pgrep`, `detox`, process names, or `:8090` for completion.** They match stale wrappers, orphans, zombies, and contention. Tee-log [startup fail-fast](#startup-fail-fast-poll) is required — that is log-marker polling, not process polling.
 
 <a id="jet-host-orchestration-ports-and-launch-gate"></a>
 <a id="test-runner-host-orchestration-log-triage-only"></a>
@@ -126,30 +143,62 @@ GitHub Actions **Testing E2E iOS** adds CI-only steps local `:test-cover` does n
 
 ### Running one iteration
 
+See also [startup fail-fast poll](#startup-fail-fast-poll) and [stalled run detection](#stalled-run-detection).
+
 1. [Pre-flight](#pre-flight-is-the-host-clear-to-start); if [host-clear probes](#host-clear-probes) fail, [pre-flight recovery](#pre-flight-recovery) first.
-2. One foreground Shell command; set `block_until_ms` large enough (~15m macOS, ~45–60m iOS/Android). Do **not** background/poll.
-3. From repo root, tee canonical command:
+2. One `:test-cover` Shell command. Prefer `block_until_ms` large enough for a **healthy** run (~15m macOS, ~45–60m iOS/Android). `block_until_ms: 0` is OK **if** you then poll the **tee file** (or `notify_on_output` / AwaitShell `pattern`) per [startup fail-fast poll](#startup-fail-fast-poll). Do **not** poll `pgrep`, Detox, process names, or `:8090` for **completion**. If the Shell tool returns no exit status under default sandbox permissions, see [agent command policy § Shell sandbox / permissions](agent-command-policy.md#shell-sandbox-permissions) before retrying or concluding failure.
+3. From repo root, tee the canonical command to a **unique** path (`/tmp/rnfb-e2e-<platform>-<item>.log`). **Never** overwrite a known-good 1×3 log. The short `/tmp/rnfb-e2e-<platform>.log` name is a human convenience only — agents must not reuse it across diagnostic items.
 
 ```bash
-yarn tests:android:test-cover 2>&1 | tee /tmp/rnfb-e2e-android.log
-yarn tests:ios:test-cover     2>&1 | tee /tmp/rnfb-e2e-ios.log
-yarn tests:macos:test-cover   2>&1 | tee /tmp/rnfb-e2e-macos.log
+yarn tests:android:test-cover 2>&1 | tee /tmp/rnfb-e2e-android-<item>.log
+yarn tests:ios:test-cover     2>&1 | tee /tmp/rnfb-e2e-ios-<item>.log
+yarn tests:macos:test-cover   2>&1 | tee /tmp/rnfb-e2e-macos-<item>.log
 ```
 
-Use `/tmp/rnfb-e2e-<platform>.log` (overwrite each iteration). Do not substitute other entrypoints — see [agent rule](#agent-rule-read-first).
+Do not substitute other entrypoints — see [agent rule](#agent-rule-read-first).
 
-4. Completion = shell exit code. `0` finished; non-zero failed/aborted. Read log for counts.
-5. Parse log tail; do not infer from processes:
+4. Completion — **prefer shell exit code** when the Shell tool returns one: `0` finished; non-zero failed/aborted. If the Shell tool is **aborted, interrupted, or returns no exit status**, do **not** conclude failure or incomplete from that alone — check the tee log footer for [done markers](#stalled-run-detection) before deciding; see [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090).
+5. Parse log tail with **anchored** patterns; do not infer from processes. Do **not** use bare `rg 'passing|failing'` — it matches mid-suite test titles too (e.g. `accepts passing in…`), not just the Jest summary line:
 
 ```bash
-rg 'passing|failing' /tmp/rnfb-e2e-<platform>.log | tail -1
-rg '^\s+\d+\)' /tmp/rnfb-e2e-<platform>.log          # failure blocks, if any
-rg 'Tests Complete|jet-coverage.*merged' /tmp/rnfb-e2e-<platform>.log | tail -3
+rg '^\s*\d+ (passing|failing)' /tmp/rnfb-e2e-<platform>.log | tail -2
+rg '^\s+\d+\)' /tmp/rnfb-e2e-<platform>.log                        # failure blocks, if any
+rg 'jet-coverage.*merged .* before NYC' /tmp/rnfb-e2e-<platform>.log | tail -1
+rg 'Tests Complete' /tmp/rnfb-e2e-<platform>.log | tail -1          # optional, see below
 ```
 
-Markers: `✨ Tests Complete ✨`, Jest `N passing` / `N failing`, `[jet-coverage] merged … before NYC shutdown`, `[rnfb-e2e] orchestrate-state=`, `[jet-control] launch-ready received`.
+**Done footers** (either is sufficient; both together is strongest): Jest summary `N passing` / `N failing`, **and** — on the coverage path — `[jet-coverage] merged … before NYC shutdown`. `✨ Tests Complete ✨` is **optional** — it is not always emitted on local macOS runs; never require it alone as the done signal. Other markers: `[rnfb-e2e] orchestrate-state=`, `[jet-control] launch-ready received`.
 
-6. Return only platform, exit code, pass/fail line, failing tests, log path, optional coverage-gap line. No full log upstream.
+6. Return only platform, exit code (or `unknown (tool aborted); log footer green|red` when the Shell tool gave no exit status — [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090)), pass/fail line, failing tests, log path, optional coverage-gap line. No full log upstream.
+7. **Waiting on output:** during the first ~60s, `notify_on_output` / AwaitShell `pattern` **must** be the [startup-fail notify pattern](#startup-fail-fast-poll) (`E2E_STARTUP_FAILFAST_NOTIFY_PATTERN` in [`scripts/e2e/lib/e2e-startup-failfast.sh`](../../scripts/e2e/lib/e2e-startup-failfast.sh) — hard infra only, not `currentStatus` / status-query timeout). After a healthy launch, never pattern bare `passing` or bare `APP_STATUS` — use an anchored pattern such as `^\s*\d+ (passing|failing)` or `jet-coverage.*merged .* before NYC`. Prefer the Shell tool's own exit code when it returns normally after launch is healthy.
+
+<a id="startup-fail-fast-poll"></a>
+
+### Startup fail-fast poll
+
+Startup failures are **immediate**. After a startup-fail marker, do **not** wait for `launchApp` (timeouts in [`tests/e2e/detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js)) or the 5-minute [stalled run](#stalled-run-detection) window.
+
+This is **tee-log monitoring**, not process polling. It complements [running one iteration](#running-one-iteration) and [stalled run detection](#stalled-run-detection); it does not change Detox flags ([infrastructure change bar](#e2e-infrastructure-change-bar)).
+
+After starting `:test-cover` teed to a **unique** path (`/tmp/rnfb-e2e-<platform>-<item>.log`):
+
+1. Check the tee **immediately**, then every **~5s for ~60s** (or `notify_on_output` / AwaitShell `pattern` with the markers below).
+2. On **any** marker: **STOP** the run, scoped [pre-flight recovery](#pre-flight-recovery) / `yarn tests:e2e:release`, and return YAML. Do not AwaitShell the full `launchApp` timeout.
+3. After a **healthy** launch (`Jet client connected` / `launch-ready received`), use existing stalled-run / done-footer rules.
+
+**Startup-fail markers** (abort immediately; do not wait the full `launchApp` timeout):
+
+| Match | Do not match |
+|-------|----------------|
+| `ReactContext is null` (dead Fabric launch that does not recover) | Detox `ws-client:APP_STATUS The app seems to be idle` (healthy idle after `launch-ready`) |
+| `TELNET_ERROR` / `Cannot connect` | Load-induced `ws-client:APP_STATUS` + `currentStatus` / status-query timeout (`response within …ms timeout`) — latency, not hard infra; do not serialize Android or kill a 9-cell wave for it |
+| serial leftover: `waiting for Metro on port 12007` **and** `emulator-5554` | slotted android slot-0 `waiting for Metro on port 12007` with `emulator-5556` (healthy) |
+| `emulator-16` in the adb list | — |
+| `Jest did not exit` | — |
+
+**notify_on_output / AwaitShell `pattern`:** `ReactContext is null\|TELNET_ERROR\|Cannot connect\|emulator-16\|Jest did not exit` — same string as `E2E_STARTUP_FAILFAST_NOTIFY_PATTERN`. **Must not** use bare `APP_STATUS`, bare `currentStatus`, bare `…ms timeout`, or bare `waiting for Metro on port 12007` (slot-0 Metro is `:12007`). Serial leftover `:12007` is `waiting for Metro on port 12007` **together with** `emulator-5554`.
+
+First infra fail on a wave (`pod:install` / `:build` / preflight / startup-fail marker): abort remaining cells (do not wait), then scoped release (`--all-slots --devices` only when the wave is declared dead). `yarn tests:<platform>:pod:install` or `:build` failure is infra (stop the wave) — not a product mocha fail to wait out.
 
 ### Pre-flight: is the host clear to start?
 
@@ -164,7 +213,7 @@ Run **all four** steps before every `:test-cover`. After an [interrupted run](#i
 If product code under `packages/*/lib/**` was edited in this session, **`yarn lerna:prepare`** (or scoped `yarn lerna run prepare --scope …`) must have **fully finished with exit code 0** before pre-flight steps 1–3 or any `:test-cover` / `:build`.
 
 - **Wait** for the prepare shell to return — do not batch prepare in parallel with Metro restart, pre-flight probes, or e2e in the same agent turn.
-- **Then** restart Metro when it was already running: [packager reset-cache](#packager-reset-cache-eaddrinuse) (`yarn tests:packager:jet-reset-cache`).
+- **Then** restart Metro when it was already running: [packager reset-cache](#packager-reset-cache-eaddrinuse) (matching iOS/Android vs macOS packager — not interchangeable).
 - **Then** continue with host-clear probes and service checks below.
 
 Skipping this gate causes missing or half-written `dist/module/**` while Metro `/status` still returns 200 — a common source of bundle-load and module-not-found failures that look like product bugs.
@@ -175,11 +224,11 @@ Owner for install/prepare serialization: [agent command policy § prepare must f
 
 No in-flight test run on the target platform:
 
-| Platform    | Clear when                                                                                                                                                                                                 |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Android** | [Android app reset](#android-app-reset-blocking) + [host-clear probes](#host-clear-probes) pass                                                                                                            |
-| **iOS**     | [Host-clear probes](#host-clear-probes) pass — **zero booted simulators** and no stray listener on `:8090`. Detox boots `iPhone 17` from `tests/.detoxrc.js`; do not pre-boot or leave simulators running. |
-| **macOS**   | [Host-clear probes](#host-clear-probes) pass (no `io.invertase.testing` process)                                                                                                                           |
+| Platform | Clear when |
+|----------|------------|
+| **Android** | [Android app reset](#android-app-reset-blocking) + `yarn tests:e2e:check --platform=android` pass |
+| **iOS** | `yarn tests:e2e:check --platform=ios` passes — **zero booted simulators** and no stray listener on `:8090`. Detox boots `iPhone 17` from `tests/.detoxrc.js`; do not pre-boot or leave simulators running. Plain [host-clear probes](#host-clear-probes) without `--platform=ios` intentionally do **not** fail on an unrelated booted simulator — see [global device scoping](#global-device-scoping). |
+| **macOS** | [Host-clear probes](#host-clear-probes) pass (no macOS test app process — default `io.invertase.testing`, or `RNFB_MACOS_PRODUCT_NAME` when set) |
 
 Also wait for any visible unfinished `yarn tests:*:test-cover`.
 
@@ -188,83 +237,100 @@ Also wait for any visible unfinished `yarn tests:*:test-cover`.
 **Android app reset (blocking)** — run **before every** Android `:test-cover`, not only after a failed run:
 
 ```bash
-adb -s emulator-5554 shell am force-stop com.invertase.testing
-adb -s emulator-5554 shell am force-stop com.invertase.testing.test
+ANDROID_SERIAL="${ANDROID_SERIAL:-emulator-5554}"
+adb -s "$ANDROID_SERIAL" shell am force-stop com.invertase.testing
+adb -s "$ANDROID_SERIAL" shell am force-stop com.invertase.testing.test
+# Or via generic release (also clears Jet/Metro per env):
+# yarn tests:e2e:release --only android-apps,jet
 ```
 
 The main app (`com.invertase.testing`) can sit on **“waiting for jet to start tests…”** while the [host-clear probe](#host-clear-probes) still passes (it only checks `com.invertase.testing.test`). A stale main app then connects as a **second Jet client** after Detox launches a fresh run → `Received a message from the client, but server wasn't running` and no Mocha summary. Force-stop **both** packages, then re-run the probe.
 
-On **darwin** hosts, also clear the macOS test app before Android `:test-cover` — macOS and Android share Jet **`:8090`**. Alternating macOS and Android runs without killing `io.invertase.testing` leaves a stale macOS Jet client that connects when Android starts → duplicate clients and `server wasn't running`.
+On **darwin** hosts, also clear the macOS test app before Android `:test-cover` when they share a Jet port (serial default `:8090`, or the same `JET_REMOTE_PORT` / platform Jet in slotted runs). Alternating macOS and Android without killing the macOS app leaves a stale macOS Jet client → duplicate clients and `server wasn't running`.
 
 ```bash
-! pgrep -x io.invertase.testing >/dev/null 2>&1
+MACOS_APP="${RNFB_MACOS_PRODUCT_NAME:-io.invertase.testing}"
+! pgrep -x "$MACOS_APP" >/dev/null 2>&1
+# or: yarn tests:e2e:release --only macos-app,jet
+# Unscoped release also clears io.invertase.testing.s0..sN leftovers from parallel runs.
 ```
 
 (`firebase.test.js` runs this automatically via `ensureAndroidJetHostClear` before spawning Android Jet; use the probe manually when prepping from the runbook.)
 
 <a id="host-clear-probes"></a>
 
-**Host-clear probes** — run after [Android app reset](#android-app-reset-blocking) (Android) or directly (iOS/macOS); **exit 0 = clear** (chain with `&&`):
+**Host-clear probes** — `yarn tests:e2e:check` / `yarn tests:e2e:release` (scripts under `scripts/e2e/`). They resolve [configurable e2e environment](#configurable-e2e-environment) first, else **serial defaults only**. **Exit 0 = clear.** Mellifera does **not** feed these commands a JSON file — it exports the same `RNFB_*` env, then calls these yarn targets ([e2e parallel design § layers](e2e-parallel-design.md#rnfb-mellifera-tart-layers)).
+
+`yarn tests:e2e:check` **default** reports Jet + apps + simulators — not Metro/emulator ports (those are [services ready](#2-services-ready)). Pass `--services` to treat Metro/emulator as BUSY. `--platform=android|ios|macos` scopes devices ([global device scoping](#global-device-scoping)). Android host-clear also flags **stray `emulator-*` serials** (console ports outside serial **5554** and slotted **5556+2n**) as BUSY — leftover Detox FreePortFinder **10000–20000** guests (`emulator-16xxx`) must not report CLEAR. `yarn tests:e2e:release` emu-kills those strays even without `--devices`.
+
+**Default (no args, no slot env):** serial ports/devices only. Do **not** wipe leftover `TestingAVD-N` / slot sims / slotted `12xxx` ports. **`--all-slots`:** explicit whole-host recover (dangerous if another owner is live). Slot scope: `eval "$(yarn tests:e2e:export-slot-env …)"` or `--slot=N`.
+
+Kill policy: SIGTERM then SIGKILL of **listener PIDs on in-scope ports**, plus named AVD/sim/`PRODUCT_NAME`. No process-group / starter-shell assumptions.
 
 ```bash
-# iOS — booted-device count must be 0
-test "$(xcrun simctl list devices booted | grep -c '(Booted)' || true)" -eq 0
-test -z "$(lsof -nP -iTCP:8090 -sTCP:LISTEN -t 2>/dev/null || true)"
+yarn tests:e2e:check
+yarn tests:e2e:check --services
+yarn tests:e2e:check --platform=ios
+yarn tests:e2e:release
+# yarn tests:e2e:release --only jet,android-apps
+# yarn tests:e2e:release --devices
+# yarn tests:e2e:release --all-slots --devices   # dedicated e2e Mac only
+```
 
-# Android
-! adb -s emulator-5554 shell pidof com.invertase.testing.test >/dev/null 2>&1
+Manual one-liners (defaults only — use when debugging without the scripts):
 
-# macOS
-! pgrep -x io.invertase.testing >/dev/null 2>&1
+```bash
+JET_PORT="${JET_REMOTE_PORT:-${RNFB_ANDROID_JET_PORT:-${RNFB_IOS_JET_PORT:-${RNFB_MACOS_JET_PORT:-8090}}}}"
+test -z "$(lsof -nP -iTCP:${JET_PORT} -sTCP:LISTEN -t 2>/dev/null || true)"
+ANDROID_SERIAL="${ANDROID_SERIAL:-emulator-5554}"
+! adb -s "$ANDROID_SERIAL" shell pidof com.invertase.testing.test >/dev/null 2>&1
+! pgrep -x "${RNFB_MACOS_PRODUCT_NAME:-io.invertase.testing}" >/dev/null 2>&1
 ```
 
 <a id="pre-flight-recovery"></a>
 
-**Pre-flight recovery** — when probes fail **after** [Android app reset](#android-app-reset-blocking), abort, kill, or `EADDRINUSE` on `:8090`. Before any new `:test-cover`, kill the stray **8090** listener, re-run force-stop (Android) or the iOS/macOS steps below, then [host-clear probes](#host-clear-probes). `EADDRINUSE` on **`:8081`** during packager restart is a different path — [packager reset-cache](#packager-reset-cache-eaddrinuse) (this block does **not** free Metro).
+**Pre-flight recovery (serial)** — when probes fail **after** [Android app reset](#android-app-reset-blocking), abort, kill, or `EADDRINUSE` on the Jet port. Canonical recovery uses the env-aware scripts below. `EADDRINUSE` on **`:8081`** (or a slotted Metro port) during packager restart is a different path — [packager reset-cache](#packager-reset-cache-eaddrinuse) (this block does **not** free Metro).
 
 ```bash
-# Android — force-stop both apps, then clear the Jet WS listener
-adb -s emulator-5554 shell am force-stop com.invertase.testing
-adb -s emulator-5554 shell am force-stop com.invertase.testing.test
-lsof -nP -iTCP:8090 -sTCP:LISTEN -t | xargs kill 2>/dev/null || true
-
-# iOS — Detox re-boots iPhone 17 after shutdown booted
-lsof -nP -iTCP:8090 -sTCP:LISTEN -t | xargs kill 2>/dev/null || true
-pkill -f 'detox test --configuration ios' 2>/dev/null || true
-pkill -f 'jet.js --target=ios' 2>/dev/null || true
-xcrun simctl shutdown booted
+yarn tests:e2e:release
+# If AVD/sim must go down too:
+yarn tests:e2e:release --devices
+yarn tests:e2e:check   # must exit 0
 ```
 
-After Android recovery, verify `pidof com.invertase.testing.test` is empty and `:8090` is closed before rerunning `:test-cover`.
+A live overlapping multi-slot wave must not run `yarn tests:e2e:release --all-slots` until that wave is declared dead.
 
 Do **not** use `boot-simulator.sh` or `simctl shutdown all` as routine prep ([what not to do](#what-not-to-do)).
 
+**Packager start** — `yarn tests:packager:jet` / `jet-reset-cache` (and macOS variants). Honor `RCT_METRO_PORT`. **Always kill** the listener on that port (SIGTERM then SIGKILL of **that port’s PIDs**), then start clean — a control layer (human or Mellifera) owns the slot, so reuse detection is not required. `TMPDIR` is per listen port (e.g. `$HOME/.metro/rnfb-${RCT_METRO_PORT}`). Wait until `http://127.0.0.1:${RCT_METRO_PORT}/status` contains `packager-status:running` (long documented timeout), then succeed or **fail** — no hidden restart inside `:test-cover`. Before start, drop a stale Watchman watch for **this Metro project root** and watch **only** the trees Metro would reload (allowlist), not the whole monorepo plus native `*/build`.
+
 <a id="packager-reset-cache-eaddrinuse"></a>
 
-**Packager restart (`jet-reset-cache`)** — `yarn tests:packager:jet-reset-cache` and `yarn tests:macos:packager:jet-reset-cache` bind Metro on **`:8081`**. If Metro is already listening, reset fails with `listen EADDRINUSE: address already in use :::8081`. [Pre-flight recovery](#pre-flight-recovery) clears **`:8090` only**.
-
-Before either reset-cache command, free the existing Metro listener (same `lsof | xargs kill` as `:8090`; do **not** `kill -9`):
+**Packager restart (`jet-reset-cache`)** — same kill-then-start as above (port from env, default `:8081`). Matching packager only — iOS/Android (`tests/`) vs macOS (`tests-macos/`); not interchangeable.
 
 ```bash
-lsof -nP -iTCP:8081 -sTCP:LISTEN -t | xargs kill 2>/dev/null || true
-yarn tests:packager:jet-reset-cache   # or tests:macos:packager:jet-reset-cache
+yarn tests:packager:jet-reset-cache
+# yarn tests:macos:packager:jet-reset-cache
 ```
-
-Then re-check Metro HTTP and [checkout ownership](#services-checkout-ownership-blocking). Do not invent a yarn target for this kill.
 
 #### 2. Services ready
 
-Metro and emulators must be **running and responsive** — do not assume from a prior session or background start.
+Metro and emulators must be **running and responsive** — do not assume from a prior session or background start. This is the **opposite** of [host-clear](#host-clear-probes) (clear = nothing listening; ready = packager/emulators up).
 
 ```bash
-curl -sf http://127.0.0.1:8081/status >/dev/null   # Metro (127.0.0.1 matches test app bundle URL)
-curl -sf http://127.0.0.1:8080 >/dev/null          # Firestore emulator
-test -n "$(lsof -nP -iTCP:5001 -sTCP:LISTEN -t 2>/dev/null || true)"   # Functions emulator — listener only
+METRO_PORT="${RCT_METRO_PORT:-${RNFB_METRO_PORT:-8081}}"
+FIRESTORE_PORT="${RNFB_ANDROID_EMULATOR_FIRESTORE_PORT:-${RNFB_IOS_EMULATOR_FIRESTORE_PORT:-${RNFB_MACOS_EMULATOR_FIRESTORE_PORT:-8080}}}"
+FUNCTIONS_PORT="${RNFB_ANDROID_EMULATOR_FUNCTIONS_PORT:-${RNFB_IOS_EMULATOR_FUNCTIONS_PORT:-${RNFB_MACOS_EMULATOR_FUNCTIONS_PORT:-5001}}}"
+curl -sf "http://127.0.0.1:${METRO_PORT}/status" >/dev/null
+curl -sf "http://127.0.0.1:${FIRESTORE_PORT}" >/dev/null
+test -n "$(lsof -nP -iTCP:${FUNCTIONS_PORT} -sTCP:LISTEN -t 2>/dev/null || true)"   # Functions emulator — listener only
 ```
 
-If Metro or Firestore checks fail: start `yarn tests:packager:jet` (iOS/Android) or `yarn tests:macos:packager:jet` (macOS) and `yarn tests:emulator:start` (background) from **this checkout's repo root**; re-check until both pass. After **`yarn lerna:prepare` has finished** (step [0](#prepare-completion-gate-blocking)) or test-runner patch edits, restart the packager via [packager reset-cache](#packager-reset-cache-eaddrinuse) — never restart Metro while prepare is still running.
+If Metro or Firestore checks fail: start `yarn tests:packager:jet` (iOS/Android) or `yarn tests:macos:packager:jet` (macOS) and `yarn tests:emulator:start` (background) from **this checkout's repo root**; re-check until both pass. After **`yarn lerna:prepare` has finished** (step [0](#prepare-completion-gate-blocking)) or test-runner patch edits, restart the packager via [packager start](#packager-reset-cache-eaddrinuse) — never restart Metro while prepare is still running.
 
-A listener on `:8081`, `:8080`, or `:5001` alone is **not** sufficient for Metro/Firestore — their HTTP checks must succeed. **Functions (`:5001`):** verify the listener is up; `curl -sf http://127.0.0.1:5001/` exits non-zero because the root path returns **404** — that is expected and **not** a service failure (do not treat it like the Metro/Firestore gates).
+A listener on the Metro/Firestore ports (or Functions) alone is **not** sufficient for Metro/Firestore — their HTTP checks must succeed. **Functions:** verify the listener is up; `curl -sf` of the Functions root path exits non-zero (**404**) — expected, not a service failure.
+
+`yarn tests:emulator:start` honors the active platform’s `RNFB_*_EMULATOR_*` ports (serial `firebase.json` defaults when unset), including Firebase Tools aux binds (websocket / eventarc / tasks). Ready-check uses **those** ports, never a hardcoded `:8080` / `:5001`. Interactive `--no-daemon` may stay foreground; CI / background callers wait until the suite is ready then return — same implementation, two invocation modes.
 
 <a id="services-checkout-ownership-blocking"></a>
 
@@ -286,7 +352,7 @@ case "$metro_cwd" in "$REPO_ROOT"|"$REPO_ROOT"/*) ;; *) echo "Metro cwd not this
 case "$fs_cwd" in "$REPO_ROOT"|"$REPO_ROOT"/*) ;; *) echo "Firestore emulator cwd not this checkout: $fs_cwd"; false ;; esac
 ```
 
-Expected shapes when started via this checkout's `yarn tests:*`: Metro cwd ends with `/tests`; Firestore/Auth/Functions cwd ends with `/.github/workflows/scripts`. If ownership fails: stop the foreign listeners (or finish that worktree's run), then start `yarn tests:packager:jet` and `yarn tests:emulator:start` from **this** `$REPO_ROOT` and re-check curls **and** cwd. Do not proceed to `:test-cover` on a foreign-owned stack.
+Expected shapes when started via this checkout's `yarn tests:*`: Metro cwd ends with `/tests` (iOS/Android packager) or `/tests-macos` (macOS packager); Firestore/Auth/Functions cwd ends with `/.github/workflows/scripts`. A full parallel slot that runs android/ios **and** macos has **two** Metro listeners (distinct ports) — verify **each**. If ownership fails: stop the foreign listeners (or finish that worktree's run), then start `yarn tests:packager:jet` and/or `yarn tests:macos:packager:jet` plus `yarn tests:emulator:start` from **this** `$REPO_ROOT` and re-check curls **and** cwd. Do not proceed to `:test-cover` on a foreign-owned stack.
 
 #### 3. Harness matches validation tier
 
@@ -304,14 +370,18 @@ See [Harness narrowing gate (blocking)](#harness-narrowing-gate-blocking) — a 
 
 ### Stalled run detection
 
+See also [startup fail-fast poll](#startup-fail-fast-poll) (check immediately for launch-fail markers; do not wait this 5-minute window first).
+
 Completion = shell exit code + log markers — not open-ended log tailing.
 
-| Platform        | Early markers (≈2–3 min)                  | Done                                     |
-| --------------- | ----------------------------------------- | ---------------------------------------- |
-| **macOS**       | `Jet client connected`                    | `✨ Tests Complete ✨`, Jest `N passing` |
-| **iOS/Android** | Detox launch done, `Jet client connected` | Same                                     |
+| Platform | Early markers (≈2–3 min) | Done |
+|----------|--------------------------|------|
+| **macOS** | `Jet client connected` | Jest `N passing` / `N failing`, preferably **and** `[jet-coverage] merged … before NYC shutdown` |
+| **iOS/Android** | Detox launch done, `Jet client connected` | Same |
 
-**If stalled** — no new markers for **5 minutes**, or past tier budget (~15m macOS, ~45–60m iOS/Android) without `Tests Complete`: treat as [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090). Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) and [services ready](#2-services-ready), retry. Do not keep watching flat tee output.
+`✨ Tests Complete ✨` is **optional** if present — it is not always emitted on local macOS runs; treat it as a bonus signal, never a required one.
+
+**If stalled** — no new markers for **5 minutes**, or past tier budget (~15m macOS, ~45–60m iOS/Android) without a Jest summary (`N passing`/`N failing`) or `[jet-coverage] merged … before NYC shutdown`: treat as [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090). Do not gate the stall decision on emoji `Tests Complete` alone. Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) and [services ready](#2-services-ready), retry. Do not keep watching flat tee output.
 
 Android `:test-cover` that **FAIL**s then Jest `did not exit` is a hang, not a stall to wait out — kill hung yarn/jest/detox PIDs, then [Android Detox launch ANR](#android-detox-launch-anr-abi-mismatch) if logcat showed ANR / ABI mismatch, otherwise [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090).
 
@@ -332,7 +402,7 @@ Do not poll `pgrep`, process names, or `:8090` for _completion_ ([above](#how-a-
 | Edit only one platform block in `tests/app.js` (legacy pattern) while the other still pushes full list | macOS ~700 firestore tests pass; iOS/Android logs show `database`, `crashlytics`, etc.             | Run is **invalid** on iOS/Android — use [overrides file](#local-harness-overrides-harnessoverridesjs) instead |
 | Correct area harness via overrides                                                                     | Pass counts match loaded module/spec scope ([sanity table](#sanity-check-by-platform))             | Expected                                                                                                      |
 
-**Apply locally before every `:test-cover` at unit-focused or area-focused tier** — even when git shows the full push harness. **Remove** `tests/harness.overrides.js` (or export `{}`) after the run when the branch keeps full harness (typical until phase **R**). Never commit `harness.overrides.js`.
+**Apply locally before every `:test-cover` at unit-focused or area-focused tier** — even when git shows the full push harness. **Remove** `tests/harness.overrides.js` (or export `{}`) after the run when the branch keeps full harness (typical until **full** / pre-merge). Never commit `harness.overrides.js`.
 
 **Validation report must state:** harness narrowed (yes/no), override file used (yes/no), which module/spec loads, whether pass counts match area scope, and **which platforms ran** with exit codes. A green full-app run is not a substitute.
 
@@ -376,7 +446,7 @@ See also: [coverage design § platform parity](coverage-design.md#coverage-expec
 2. Overrides `modules` lists only the package under change (e.g. `['app', 'firestore']`).
 3. Spec load uses direct `require` of the area spec — not `require.context` for all packages — when sub-suite narrowing applies; otherwise full package `require.context` is OK when the module list is narrowed.
 4. No `.only` when tier is **area-focused**; `.only` optional when tier is **unit-focused**.
-5. Grep log: pass count consistent with area scope (~100 for pipeline-only, ~700 for full firestore package on macOS), not full app (~141+ macOS baseline with full load per [work queue](../packages/firestore/pipeline-coverage-work-queue.md)).
+5. Grep log: pass count consistent with area scope ([sanity table](#sanity-check-by-platform)), not a full-app load (hundreds or thousands of tests across unrelated modules).
 
 ### Unit-focused-tier iteration loop
 
@@ -393,11 +463,11 @@ For `implementation` work type — validation tier **unit-focused** ([change aut
 
 ### One `:test-cover` at a time
 
-Never overlap runs that use `:test-cover`. See [host rule](change-authoring-workflow.md#host-rule).
+**Serial default** for gate closure and unslotted hosts — see [host rule](change-authoring-workflow.md#host-rule). Slotted exception: [parallel e2e topology](#parallel-e2e-topology) + [configurable e2e environment](#configurable-e2e-environment).
 
 | Rule                           | Requirement                                                                                                                                                                                                                   |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **One e2e run at a time**      | Wait for prior shell exit code + short log summary                                                                                                                                                                            |
+| **One unslotted e2e at a time** | Wait for prior shell exit code + short log summary (unless each run has distinct slotted ports/devices per [parallel e2e topology](#parallel-e2e-topology))                                                                   |
 | **No overlapping tiers**       | Never run unit-focused-tier and area-focused-tier `:test-cover` concurrently on one host                                                                                                                                      |
 | **Clean pre-flight every run** | [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes), services, harness tier                                                                                                        |
 | **Phase J e2e**                | Same serial `:test-cover` rule. Authoring loop: [change authoring primary loop](change-authoring-workflow.md#primary-loop) (`documentation?` before frozen `independent-review`). Harness: [pipeline area harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness) |
@@ -408,7 +478,23 @@ Each run owns its blocking `:test-cover` and returns summaries only.
 
 ### Interrupted run (abort, killed terminal, EADDRINUSE on :8090)
 
-Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) pass, then rerun from repo root: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover` (foreground; tee if logging). Keep one `:test-cover` active at a time on a host.
+**Serial recovery.** Check the log before recovering. After a STOP/abort or a Shell tool interruption that leaves the exit status unknown, read the `/tmp/rnfb-e2e-<platform>.log` footer **first** — before `pkill`, [pre-flight recovery](#pre-flight-recovery), or any other kill/recovery step:
+
+```bash
+rg '^\s*\d+ (passing|failing)' /tmp/rnfb-e2e-<platform>.log | tail -2
+rg 'jet-coverage.*merged .* before NYC' /tmp/rnfb-e2e-<platform>.log | tail -1
+```
+
+- **Done footers present** (Jest `N passing`/`N failing`, preferably with `[jet-coverage] merged … before NYC shutdown`) → treat the run as **complete**. Record pass/fail from the log; report exit as `unknown (tool aborted); log footer green|red` — do not conclude failure or incomplete just because the Shell tool gave no exit status.
+- **Log shows incomplete or stalled** (no done footers, matches [stalled run detection](#stalled-run-detection)) → only then run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) pass, then rerun from repo root: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover` (foreground; tee if logging). Keep one `:test-cover` active at a time on a host.
+
+<a id="macos-done-but-tee-pipe-still-blocked"></a>
+
+#### macOS: done footer green but `tee`/shell never returns
+
+**Failure mode (fixed):** the Jest summary and `[jet-coverage] merged … before NYC shutdown` footer print, but the foreground `| tee /tmp/rnfb-e2e-macos*.log` shell never exits — Agent Shell looks idle/hung forever. Root cause was spawning `io.invertase.testing` with `stdio: ['ignore', 'inherit', 'inherit']`: the app inherited the write end of the tee pipe, so the pipe never saw EOF even after the suite finished. Fixed by detaching macOS app stdio (`stdio: ['ignore', 'ignore', 'ignore']`) and hardening `killMacOsTestApp()` (soft kill → wait → `killall -9` → verify) in [`tests-macos/.jetrc.js`](../../tests-macos/.jetrc.js).
+
+If this recurs: `pgrep -x io.invertase.testing` — if still alive after the done footer, kill it (`killall -9 io.invertase.testing`) so the tee pipe can close; the anchored log footer ([done footers](#stalled-run-detection)) is still the authoritative completion signal, not the shell exit code alone. The recommended tee command (`yarn tests:macos:test-cover 2>&1 | tee /tmp/rnfb-e2e-macos.log` — [running one iteration](#running-one-iteration)) is unchanged by this fix.
 
 `:test-cover` FAIL followed by Jest `did not exit` will **not** self-exit — kill the hung yarn/jest/detox PIDs, then recover. If Android logcat showed ANR / `Package uses different ABI(s) than its instrumentation`, use [Android Detox launch ANR](#android-detox-launch-anr-abi-mismatch) (not gray-screen snapshot wipe alone). Packager `EADDRINUSE` on `:8081` is [packager reset-cache](#packager-reset-cache-eaddrinuse), not this `:8090` block.
 
@@ -417,10 +503,10 @@ Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#ho
 - Do not invoke the test runner (Jet), Detox, Metro, or emulators except through repo-root `yarn tests:*` commands in this doc — see [agent rule](#agent-rule-read-first).
 - Do not run `:test-cover`, `:build`, Metro restart, or pre-flight while **`yarn` / `yarn lerna:prepare` is still in progress** — wait for exit 0 first ([prepare completion gate](#prepare-completion-gate-blocking)).
 - Do not run native `:build` until [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) is satisfied (fmt **≥ 12.1.0**).
-- Do not background `:test-cover` and poll `pgrep`, `detox`, or process names for completion.
+- Do not background `:test-cover` and poll `pgrep`, `detox`, or process names for **completion**. Do poll the **tee log** for [startup-fail markers](#startup-fail-fast-poll) (immediately, then ~5s for ~60s). Do not wait the full `launchApp` timeout after a marker.
 - Do not use `:test-cover-reuse`, `:test-cover-and-process`, or `:test-reuse` when measuring coverage or closing review gates.
 - Do not use `:8090` listening as “e2e still running” without the platform active signal above.
-- Do not start iOS/Android/macOS `:test-cover` concurrently on one host.
+- Do not start unslotted iOS/Android/macOS `:test-cover` concurrently on one host (same Metro/Jet/emulator defaults). Slotted cross-platform concurrency only per [parallel e2e topology](#parallel-e2e-topology).
 - Do not edit source while a tee'd run is still in progress.
 - Do not passively tail tee output when progress markers stop — follow [stalled run detection](#stalled-run-detection).
 - Do not run **full** harness (`require.context`, all modules) for **unit-focused**/**area-focused** tier — match [harness to tier](#3-harness-matches-validation-tier).
@@ -435,9 +521,12 @@ yarn tests:emulator:start
 yarn tests:packager:jet            # iOS/Android
 # yarn tests:macos:packager:jet    # when running macOS Jet instead
 
-# Per platform (rebuild when native changed):
+# Per platform (rebuild when native changed). Apple :build compiles only —
+# full e2e requires pod:install as a separate prior step (skip for Android).
+yarn tests:ios:pod:install
 yarn tests:ios:build && yarn tests:ios:test-cover
 yarn tests:android:build && yarn tests:android:test-cover
+yarn tests:macos:pod:install
 yarn tests:macos:build && yarn tests:macos:test-cover
 ```
 
@@ -547,7 +636,7 @@ All tiers use [canonical commands](#rules), [host rule](change-authoring-workflo
 
 **Universal rules:**
 
-- E2e is **always serial** — one `:test-cover` at a time on the host.
+- **Serial default** for gate closure — one unslotted `:test-cover` at a time. Slotted cross-platform concurrency only per [parallel e2e topology](#parallel-e2e-topology) (still never two of the **same** platform from one worktree).
 - Every run starts from **verified [pre-flight](#pre-flight-is-the-host-clear-to-start)**; if probes fail, [pre-flight recovery](#pre-flight-recovery) before another run.
 - Use **only** canonical commands from this doc.
 - Never overlap unit-focused-tier and area-focused-tier `:test-cover` on one host.
@@ -556,10 +645,108 @@ See also: [unit-focused-tier loop](#unit-focused-tier-iteration-loop), [one :tes
 
 ## Environment
 
-- **Devices** — Detox boots simulator/emulator (`iPhone 17` on iOS, `TestingAVD` on Android); [host-clear probes](#host-clear-probes) require zero booted iOS simulators before `:test-cover`. macOS auto-starts app.
+- **Devices** — Detox boots simulator/emulator (`iPhone 17` on iOS, `TestingAVD` on Android); slotted runs use `TestingAVD-N` / `RNFB E2E iOS slot-N` — see [slot lifecycle](#slot-lifecycle). iOS `:test-cover` should preflight with `yarn tests:e2e:check --platform=ios` for the stricter zero-booted-simulators check — see [global device scoping](#global-device-scoping). macOS auto-starts app.
 - **adb empty** — `adb kill-server && adb start-server && adb devices`
-- **Stale processes** — one Metro (`:8081`), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, `:5001`, …). Stray listener on `:8090` after a run → [pre-flight recovery](#pre-flight-recovery), then restart background services with [Rules §1–2](#rules) (`yarn tests:packager:jet`, `yarn tests:emulator:start`). Reset-cache `EADDRINUSE` on `:8081` → [packager reset-cache](#packager-reset-cache-eaddrinuse).
-- **Android Gradle home** — when Android `:build` or `:test-cover` fails with missing/wrong Gradle cache on a host that does not default to `~/.gradle`, export `GRADLE_USER_HOME=$HOME/.gradle` before the run.
+- **Stale processes (serial default)** — one Metro (`:8081`) per packager project (`tests/` for iOS/Android, `tests-macos/` for macOS), one emulator set (`:8080`, `:9099`, `:9000`, `:4400`, `:5001`, …). Stray listener on `:8090` after a run → [pre-flight recovery](#pre-flight-recovery), then restart background services with [Rules §1–2](#rules) (`yarn tests:packager:jet` or `yarn tests:macos:packager:jet`, `yarn tests:emulator:start`). Reset-cache `EADDRINUSE` on `:8081` → [packager reset-cache](#packager-reset-cache-eaddrinuse). Slotted runs: [configurable e2e environment](#configurable-e2e-environment).
+- **Android Gradle home** — leave `GRADLE_USER_HOME` unset so Gradle uses the host default (`~/.gradle`). Slotted `export-slot-env` does **not** isolate a per-slot Gradle home; independent git worktrees share `~/.gradle` by design (Gradle’s user home is built for concurrent CI). If a host does not default there, optionally set `GRADLE_USER_HOME=$HOME/.gradle` as host setup — not slot isolation. Historical “cross-worktree Gradle race” (`bundleLibRuntimeToDirDebug` resolving another tree’s absolute `node_modules` paths) was **rsync path poisoning** (stale `autolinking.json` / config-cache worktree roots), not a Gradle cache concurrency bug.
+
+<a id="configurable-e2e-environment"></a>
+
+### Configurable e2e environment
+
+Serial e2e uses committed defaults (Metro `:8081`, Jet `:8090`, emulators `:8080` / `:9099` / …). Slotted parallel runs export **per-platform prefixed** ports (e.g. `RNFB_ANDROID_JET_PORT`, `RNFB_IOS_METRO_PORT`) **before** Metro/native build and `:test-cover`. Unset vars keep legacy serial behaviour.
+
+<a id="parallel-e2e-topology"></a>
+<a id="slot-lifecycle"></a>
+
+**Parallel e2e topology (worktrees):** same-platform parallel needs **one git worktree per concurrent instance** of that platform. Populate each instance with `git worktree add` (or clone) + `yarn` in **that** tree — never `rsync` sources between local slot worktrees. A single worktree may run **at most** `1× android ∥ 1× ios ∥ 1× macos` (distinct Metro/Jet/emulator blocks + distinct AVD/sim + distinct macOS `PRODUCT_NAME`). Example: `3× android + 3× ios + 3× macos` ⇒ three worktrees. Do **not** launch two of the same platform from one worktree — native products, Detox configs, coverage, and (macOS) one `macos/build` tree are not multi-instance-safe. Why: [e2e parallel design](e2e-parallel-design.md). iOS derived data is `tests/ios/build`; macOS is `tests-macos/macos/build`. Do **not** change Swift explicit-module (or other) xcodebuild settings to paper over concurrent builds — [infrastructure change bar](#e2e-infrastructure-change-bar).
+
+**The Law — same runbook as serial:** set slot env, then **only** [Rules §1–4](#rules):
+
+```bash
+eval "$(yarn tests:e2e:clear-slot-env)"                 # serial only: drop leftover export-slot-env
+eval "$(yarn tests:e2e:export-slot-env <platform> N)"   # omit for serial defaults
+yarn tests:e2e:check                                    # optional; default = serial-only
+yarn tests:packager:jet                                 # or yarn tests:macos:packager:jet
+yarn tests:emulator:start
+yarn tests:<platform>:pod:install                       # Apple, when needed — serialize across worktrees (shared CocoaPods CDN)
+yarn tests:<platform>:build                             # compiles only; does not invoke pod install
+yarn tests:<platform>:test-cover
+yarn tests:e2e:release [--devices]                      # optional
+```
+
+No second lifecycle (no host flock, no Metro-after-build, no slotted packager/test-cover yarn aliases, no `clean-slot-build-artifacts`). Collision control is **slot identity + check/release**. Mellifera leases slots; Tart may host a slot VM — [layers](e2e-parallel-design.md#rnfb-mellifera-tart-layers).
+
+**First use of a slot:** `yarn tests:e2e:setup-android-avds [count]` / `yarn tests:e2e:setup-ios-sims [count]`. Default **count=1** (CI / typical developer). Pass a higher count on a host that can sustain it (e.g. `8`). Serial unslotted devices stay `TestingAVD` / `iPhone 17`.
+
+Keep exported env in the **same shell**. `export-slot-env` loads full `RNFB_{ANDROID,IOS,MACOS}_*` carry-in, `ANDROID_SERIAL=emulator-$((5556+2*N))`, `RNFB_ANDROID_CONSOLE_PORT` (Detox must not FreePortFinder **10000–20000**), `RNFB_MACOS_PRODUCT_NAME=io.invertase.testing.sN`. Does not set `GRADLE_USER_HOME`.
+
+**Serial leftover env + Jest transform cache:** `tests/.babelrc` / `tests-macos/.babelrc` `babel-plugin-transform-inline-environment-variables` inlines `RNFB_*` at transform time. Jest’s transform cache does **not** include those env values, so a prior slotted shell can make serial `:test-cover` wait on android slot-0 Metro **`:12007`**. Mitigations: `eval "$(yarn tests:e2e:clear-slot-env)"` before a serial Law run; `e2e_sanitize_serial_env` inside packager / emulator / `:build` / `:test-cover` when `RNFB_E2E_SLOT` is unset (then **pins** `RNFB_ANDROID_CONSOLE_PORT=5554` / `ANDROID_SERIAL=emulator-5554` so Detox does not FreePortFinder **10000–20000**); `cache: false` in `tests/e2e/jest.config.js` so Detox Jest cannot replay a slotted transform. Host Metro wait is not the only leftover: a **slot-baked APK** (`react_native_dev_server_port=12007`) on serial `:test-cover` still launches `TestingAVD`/`emulator-5554` then fails Detox `isReady` / APP_STATUS — `e2e_assert_android_apk_metro_port` fail-fasts that mismatch.
+
+**Check/release with slot env loaded:** all three platform port blocks for that slot (ports+apps; `--devices` for AVD/sims). Mid-wave free of one platform: `--platform=<done>`. `--platform=` never selects a slot. No slot env → serial defaults only (not leftover slots 0..N) unless `--all-slots`.
+
+**Infra failures:** hub/port taken, suite busy, Detox `TELNET_ERROR` / leftover `emulator-16xxx`, wrong-owner Metro, **`yarn tests:ios:pod:install` / `yarn tests:macos:pod:install` / `:build` failure** → **abort the wave**. On the first infra fail: stop remaining platform×slot cells (do **not** wait for them to finish), then scoped `yarn tests:e2e:release` (wave declared dead → `yarn tests:e2e:release --all-slots --devices` is allowed). Do not mid-wave unscoped `--all-slots` while another owner is still live. `:test-cover` does not restart Metro.
+
+**Overlapping Apple `pod:install`:** CocoaPods trunk CDN (`source 'https://cdn.cocoapods.org/'` in `tests/ios/Podfile`, shared `~/.cocoapods`) is a **host-global** cache. Concurrent `yarn tests:ios:pod:install` (which deletes `ios/Podfile.lock` then resolves) can miss trunk specs (`Unable to find a specification for SocketRocket (~> 0.7.1)`) while sibling worktrees succeed. macOS SocketRocket is a **local** `react-native-macos` podspec, so that miss is iOS CDN/spec — not a missing git repo and not Swift explicit modules. **Serialize** all Apple `yarn tests:<platform>:pod:install` across worktrees **before** overlapping `:build` / `:test-cover`. `:build` still must not invoke pod install.
+
+**Wave operator checklist (before 9 cells):** dedicated e2e Mac only — full host recovery then serialized Apple pods. `.agents/tmp/run-uni-3x3.sh` runs `preflight_wave_host` (`yarn tests:e2e:release --all-slots --devices` + `yarn tests:e2e:check` must be CLEAR) **before** `serialize_apple_pods`. Then serialize `yarn tests:ios:pod:install` and `yarn tests:macos:pod:install` across all worktrees (one platform×slot at a time — **not** a host flock). `serialize_apple_pods` runs ios then macos for slots 0–2 in each worktree before overlapping `:build` / `:test-cover`. Do **not** launch concurrent Apple `pod:install` across worktrees. Pre-wave release clears leftover qemu/AVDs/sims; it does **not** dismiss an already-visible Android Emulator crash-report modal. That dialog is the **emulator binary’s** Google crash reporter (not Android Studio IDE settings, not macOS ReportCrash). Detox spawns `emulator` from CLI — use `emulator -crash-report-mode never` (see `emulator -help`) or set macOS `com.android.Emulator` `set.crashReportPreference` to `2` (Never; `0`=Ask, `1`=Always per AOSP `qt-settings.h`). The UI control **When to send crash reports** lives only under the **standalone** emulator window: Extended controls → Settings → General ([Android docs](https://developer.android.com/studio/run/emulator-extended-controls)); it is unavailable when the emulator runs embedded in Android Studio or headless from Detox.
+
+**Overlapping 3×3 is 9 cells at once.** After serialized Apple `pod:install` (CDN only), launch android + ios + macos `:test-cover` on all three worktrees together — qemu included while Apple Jets are live. Do **not** serialize Android. Do **not** wait for Apple `:test-cover` to finish before qemu. Do **not** treat Detox `currentStatus` / status-query timeout latency as host-capacity proof or as a reason to run fewer than 9 cells. Latency is tolerated: raise Detox ready/status timeouts and launch retries ([`tests/e2e/detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js), [Detox yarn patch](../ci-workflows/detox-patches.md)) so CI-like slowness waits instead of flakes. Hard infra still aborts ([startup fail-fast poll](#startup-fail-fast-poll)). Metro `/status` can be `packager-status:running` before `:build` and dead at `:test-cover` — start `yarn tests:packager:*` kill-then-start again immediately before `:test-cover` (same `RCT_METRO_PORT` / `$HOME/.metro/rnfb-${port}` / `/status` re-gate). Jet launch-retry/drain leftover listen PIDs (SIGTERM then SIGKILL); macOS bundle wait fail-fast if `/status` is not `packager-status:running` within 120s. Same-platform 3× still needs **three worktrees**. Do **not** use host flock, Metro-after-build, per-slot `GRADLE_USER_HOME`, or `setsid`.
+
+**Slotted device identities (including slot 0):** `TestingAVD-N`, `RNFB E2E iOS slot-N`, Detox `*.slotN`, `io.invertase.testing.sN`. Console `5556+2N` (never `5554` for slotted 0). Detox `LaunchCommand` already prepends `-port`; do not add `-port` to `bootArgs`. Apple `:build` compiles only — `pod:install` is a prior step when pods may be stale.
+
+**Parallel / multi-platform carry-in:** every Metro/Jest/Detox process for a slot gets the **full** `RNFB_{ANDROID,IOS,MACOS}_*` set (`tests/.babelrc` / `tests-macos/.babelrc` inline static `process.env.RNFB_*`). Do not use `RNFB_E2E_PLATFORM` to choose ports. In-app: `getE2eEmulatorPort(…)` — never hardcode serial emulator ports.
+
+**Firebase emulator suites:** one suite per platform×slot; `yarn tests:emulator:start` pins auth/database/firestore/functions/storage/hub/logging **and** Firestore websocket / Eventarc / Tasks (`FS+8/+9/+12`). Abort if those ports are busy. Ready = Functions port listening. Serialize `scripts/functions` yarn/build across concurrent starts.
+
+**macOS:** `yarn tests:macos:build` derives `RNFB_MACOS_PRODUCT_NAME_SUFFIX` for pbxproj — never pass global `PRODUCT_NAME=` on the xcodebuild CLI. See [macOS process identity](#macos-process-identity-concurrency).
+
+| Variable | Purpose |
+|----------|---------|
+| `RCT_METRO_PORT`, `RNFB_METRO_PORT` | Metro bundler **listen** port for this process. Slotted: matches the **active** platform×slot (`export-slot-env`), e.g. ios slot 0 = **12107**, android slot 0 = **12007** — never reuse android’s port for iOS |
+| `RNFB_{ANDROID,IOS,MACOS}_METRO_PORT` | Per-platform Metro port (in-app / host selection via self-detection). Formula + slot-0 worked example: [e2e parallel design § Metro](e2e-parallel-design.md#metro-per-worktree-and-per-slot) |
+| `JET_REMOTE_PORT`, `JET_METRO_PORT` | Process-local Jet / Metro hints (global fallback) |
+| `RNFB_{ANDROID,IOS,MACOS}_JET_PORT` | Per-platform Jet WebSocket port |
+| `RNFB_{ANDROID,IOS,MACOS}_JET_CONTROL_PORT` | Per-platform Jet HTTP control (preferred); `RNFB_JET_CONTROL_PORT` remains a process-local fallback |
+| `RNFB_JET_CONTROL_PORT` | Process-local Jet HTTP control plane fallback (default `JET_REMOTE_PORT + 1`) |
+| `RNFB_{ANDROID,IOS,MACOS}_EMULATOR_{FIRESTORE,AUTH,DATABASE,FUNCTIONS,STORAGE,HUB,LOGGING}_PORT` | Per-platform Firebase emulator suite (in-app + host). `yarn tests:emulator:start` also derives Firestore `websocketPort` / Eventarc / Tasks from the firestore port |
+| `RNFB_DETOX_ANDROID_CONFIG`, `RNFB_DETOX_IOS_CONFIG` | Detox configuration name (e.g. `android.emu.debug.slot0`, `ios.sim.debug.slot1`) |
+| `RNFB_DETOX_STATUS_QUERY_TIMEOUT_MS`, `RNFB_DETOX_LOGIN_TIMEOUT_MS`, `RNFB_DETOX_DEBUG_SYNCHRONIZATION_MS`, `RNFB_LAUNCH_APP_TIMEOUT_MS`, `RNFB_LAUNCH_APP_MAX_ATTEMPTS` | Load-latency knobs. **Defaults live in** [`tests/e2e/detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js). Detox Login / CurrentStatus floors also require the yarn patch ([detox-patches](../ci-workflows/detox-patches.md)). Do not copy timeout numbers elsewhere |
+| `RNFB_ANDROID_ADB_INSTALL_TIMEOUT_MS` | Android Detox `pm install` spawn timeout (policy default **300000ms**). **Defaults live in** [`tests/e2e/detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js). Detox `ADB.js` patch hardcodes the same value at yarn apply time — env override does not reach Detox without patch regen ([detox-patches](../ci-workflows/detox-patches.md)) |
+| `RNFB_JET_AWAIT_EXIT_STALL_MS` | Stall guard after fatal Jet disconnect before killing Detox Jest (policy default **1200000ms**). **Defaults live in** [`tests/e2e/detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js) |
+| `RNFB_E2E_SLOT` | Slot index for orchestration / AVD / sim naming |
+| `GRADLE_USER_HOME` | Optional host setup only. Leave unset for the Gradle default (`~/.gradle`); slotted `export-slot-env` does not set or isolate it. If the host does not default to `$HOME/.gradle`, you may set `GRADLE_USER_HOME=$HOME/.gradle` — not a per-slot override |
+| `RNFB_E2E_PLATFORM` | Optional orchestration label only — **not** used for port selection (prefer unset in slotted multi-platform launches) |
+| `RNFB_ANDROID_AVD`, `RNFB_IOS_SIMULATOR`, `RNFB_ANDROID_EMULATOR_BOOT_ARGS` | Device selection overrides. Slotted helpers set `TestingAVD-{n}` / `RNFB E2E iOS slot-{n}` (including `n=0`); serial defaults stay `TestingAVD` / `iPhone 17`. `RNFB_ANDROID_EMULATOR_BOOT_ARGS` is snapshot flags only — never include `-port` |
+| `RNFB_ANDROID_CONSOLE_PORT`, `ANDROID_SERIAL` | Android qemu console port and adb serial. **Serial** `e2e_sanitize_serial_env` pins `5554` / `emulator-5554` (`TestingAVD`). **Slotted** helpers pin `5556+2×slot` / `emulator-${port}` (adb-safe **[5554, 5584]**, skipping 5554 so unslotted `emulator-5554` can coexist). Detox patch uses this instead of FreePortFinder 10000–20000 |
+| `RNFB_MACOS_PRODUCT_NAME` | macOS `PRODUCT_NAME` / process name (default `io.invertase.testing`). Required distinct per concurrent macOS slot. Slotted helpers set `io.invertase.testing.s<slot>`; override via `RNFB_MACOS_PRODUCT_NAME_OVERRIDE` |
+| `RNFB_MACOS_BUNDLE_IDENTIFIER` | macOS `CFBundleIdentifier` (default derived from product name). Metro `app=` follows this. Slotted override: `RNFB_MACOS_BUNDLE_IDENTIFIER_OVERRIDE` |
+| `ORG_GRADLE_PROJECT_reactNativeDevServerPort` | Android Gradle Metro port baked into the APK's `react_native_dev_server_port` resource at build time. **Set automatically** by `yarn tests:android:build` (`RNFB_ANDROID_METRO_PORT` → `RCT_METRO_PORT` → `RNFB_METRO_PORT` → `JET_METRO_PORT` → `8081`) — only export it yourself when building Android outside that script (e.g. `detox build` invoked directly). Detox's `reversePorts` (`tests/.detoxrc.js`) already forwards the same slotted Metro port; this var makes the APK actually *ask* for that port. `yarn tests:android:test-cover` asserts that baked integer matches the active Metro port after `e2e_sanitize_serial_env` (serial **8081**, slotted `RNFB_ANDROID_METRO_PORT`). A slot-baked **12007** APK plus serial host wait/reverse **8081** is APP_STATUS `currentStatus` / `isReady` hang — host Metro prefetch of `:8081` still succeeds. Re-`:build` in the same env; do not skip `:build` after a slotted APK in this worktree. |
+| `SIMCTL_CHILD_RCT_METRO_PORT` | iOS simulator child Metro port |
+| `RNFB_E2E_DEBUG` | Verbose `[rnfb-e2e]` port resolution logging in app helpers |
+| `RNFB_MELLIFERA` | Mellifera-only. Must **not** change RNFB `yarn tests:e2e:check` / `release` behavior. Mellifera maps a reservation to `RNFB_*` env, then calls those yarn targets |
+
+See [host-clear probes](#host-clear-probes) (`yarn tests:e2e:check` / `yarn tests:e2e:release`).
+
+<a id="global-device-scoping"></a>
+
+**Global device scoping** — with no `--platform`, no `RNFB_E2E_PLATFORM`, and no per-platform port env set, check/release use **serial defaults only**. They probe android app state on the default serial and the macOS default process name, but do **not** escalate “any booted iOS simulator” to BUSY (an unrelated sim would fail every host-clear). Pass `--platform=ios` when iOS is about to run ([host clear](#1-host-clear)). `--platform=` does **not** load a slot — see [slot lifecycle](#slot-lifecycle). `--all-slots` is the only unscoped leftover-slot wipe.
+
+Setup: `yarn tests:e2e:setup-android-avds [count]` / `yarn tests:e2e:setup-ios-sims [count]` (default count **1**).
+
+<a id="macos-process-identity-concurrency"></a>
+
+#### macOS process identity (concurrency)
+
+| Surface | Default | Concurrent macOS |
+|---------|---------|------------------|
+| **Process / `PRODUCT_NAME`** | `io.invertase.testing` | Set `RNFB_MACOS_PRODUCT_NAME` (e.g. `io.invertase.testing.s1`) — required for isolation |
+| App path | `…/${PRODUCT_NAME}.app/Contents/MacOS/${PRODUCT_NAME}` | Follows product name |
+| `CFBundleIdentifier` | `org.reactjs.native.io-invertase-testing` | `RNFB_MACOS_BUNDLE_IDENTIFIER` or derived `org.reactjs.native.${PRODUCT_NAME with dots→hyphens}` |
+| Metro `app=` query | matches bundle ID | [`tests-macos/.jetrc.js`](../../tests-macos/.jetrc.js) reads the same env |
+| Firebase / GoogleService | **None on macOS target** | No cloud re-registration for JS/Other e2e |
+
+`yarn tests:macos:build` exports `RNFB_MACOS_PRODUCT_NAME_SUFFIX` into the xcodebuild environment (pbxproj expansion only). Check/release use `RNFB_MACOS_PRODUCT_NAME` for `pgrep`/`killall`. Same-platform parallel still needs **one worktree per macOS instance** ([parallel topology](#parallel-e2e-topology)). Mild residual: shared `io.invertase.firebase` preferences suite across apps.
 
 ### Android emulator gray screen / Quick Boot (blocking)
 
@@ -573,7 +760,7 @@ Detox's default emulator launch **restores the AVD Quick Boot snapshot** unless 
 
 ```bash
 adb devices -l   # emulator-XXXX offline
-pgrep -fl 'qemu-system.*TestingAVD'
+pgrep -fl "$(node -e "console.log(require('./tests/e2e/androidAdbRange').qemuAvdPgrepPattern('TestingAVD'))")"
 rg 'SPAWN_CMD.*@TestingAVD' /tmp/rnfb-e2e-android.log   # no -no-snapshot-load → stale runbook / config
 ```
 
@@ -581,13 +768,19 @@ rg 'SPAWN_CMD.*@TestingAVD' /tmp/rnfb-e2e-android.log   # no -no-snapshot-load �
 
 ```bash
 adb -s emulator-5554 emu kill 2>/dev/null || true
-pkill -f 'qemu-system.*TestingAVD' 2>/dev/null || true
+# Complete @AVD identity — do not pkill qemu-system.*TestingAVD (matches TestingAVD-0).
+# Leftover slotted AVDs (explicit): yarn tests:e2e:release --all-slots --devices
+pkill -f 'qemu-system.*@TestingAVD([[:space:]]|$)' 2>/dev/null || true
 adb kill-server && adb start-server && adb devices   # must be empty
 # If gray screen persists after cold-boot config, wipe Quick Boot snapshots:
 # rm -rf ~/.android/avd/TestingAVD.avd/snapshots
 ```
 
 Then rerun [pre-flight](#pre-flight-is-the-host-clear-to-start) and `yarn tests:android:test-cover`. Cold boot adds ~30–60s to the first Android launch vs Quick Boot — expected.
+
+**Local settle/load stays skipped** (not CI). Serial local runs log `android-ready: skipping settle/load (not CI)` then `launchApp complete`. Forcing local settle/load without that bar can fail in ~3s with Fabric `ReactContext is null!` while Metro prefetch succeeds.
+
+**Android `detoxEnableSynchronization` must be `0`.** Detox native `LaunchArgs.shouldDisableSynchronization()` is `enableSynchronization.equals("0")`. Passing `'NO'` still registers Fabric idling resources (`FabricDetoxIdlingResourceFactoryStrategy` → `getCurrentReactContextSafe`). Negative: `am instrument … -e detoxEnableSynchronization NO` then `ReactContext is null!` at that factory. Positive: launch args `'0'` so idling is not installed before RN has a context. `ReactContext is null` is also retryable at launch/Jet level. After FAIL, Detox Jest `forceExit: true` plus killing the yarn/jet process tree so `:test-cover` cannot hang on open handles.
 
 If Detox launches then ANRs (~6s) with logcat ABI mismatch, that is **not** this path — [Android Detox launch ANR](#android-detox-launch-anr-abi-mismatch).
 
@@ -612,7 +805,7 @@ pkill -f 'detox test --configuration android' 2>/dev/null || true
 
 ```bash
 adb emu kill 2>/dev/null || true
-pkill -f 'qemu-system.*TestingAVD' 2>/dev/null || true
+pkill -f 'qemu-system.*@TestingAVD([[:space:]]|$)' 2>/dev/null || true
 adb kill-server && adb start-server && adb devices   # must be empty
 ```
 
@@ -657,7 +850,7 @@ ls ~/Library/Detox/ios/framework/*/Detox.framework
 ls ~/Library/Detox/ios/xcuitest-runner/*/
 ```
 
-Then resume the normal iOS loop: [pre-flight](#pre-flight-is-the-host-clear-to-start) → `yarn tests:ios:build` (if native changed) → `yarn tests:ios:test-cover`.
+Then resume the normal iOS loop: [pre-flight](#pre-flight-is-the-host-clear-to-start) → `yarn tests:ios:pod:install` (when pods may be stale) → `yarn tests:ios:build` (if native changed; compiles only) → `yarn tests:ios:test-cover`.
 
 CI restores the same tree from `~/Library/Detox/ios` keyed by Xcode version ([iOS workflow § Detox Framework Cache Restore](../ci-workflows/ios.md)). Local developers must rebuild when the cache is missing — it is not committed to git.
 
@@ -679,8 +872,8 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 
 1. [Prepare completion gate](#prepare-completion-gate-blocking) — `yarn lerna:prepare` exit 0.
 2. Regenerate codegen if specs changed — [agent command policy § TurboModule codegen](agent-command-policy.md#turbomodule-codegen) (wipe configured `outputPath`, then package `android:codegen` / `ios:codegen`).
-3. **`yarn tests:<platform>:build`** (includes `pod install` on iOS when needed).
-4. **`yarn tests:packager:jet-reset-cache`** (Metro was running during the edits) — [packager reset-cache](#packager-reset-cache-eaddrinuse).
+3. **`yarn tests:<platform>:build`** — iOS and macOS **compile only**. Full e2e / test process **requires** `yarn tests:ios:pod:install` / `yarn tests:macos:pod:install` as a **separate prior step** before the matching `:build` (after codegen / podspec / native Apple changes). A bare `:build` without pod install is allowed when pods are already installed and you only need a compile. Android `:build` does not use CocoaPods.
+4. Matching packager reset-cache (Metro was running during the edits) — [packager reset-cache](#packager-reset-cache-eaddrinuse).
 5. [Pre-flight](#pre-flight-is-the-host-clear-to-start) → **`yarn tests:<platform>:test-cover`**.
 
 <a id="turbomodule-full-toolchain-refresh"></a>
@@ -692,9 +885,8 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 3. **`yarn`** at repo root (wait for exit 0 — includes `lerna:prepare`, root Gemfile gems via `yarn ruby:install`, and patches).
 4. Confirm [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (fmt **≥ 12.1.0**) before any native `:build`.
 5. Regenerate **all** touched packages' codegen from `tests/` ([agent command policy § TurboModule codegen](agent-command-policy.md#turbomodule-codegen)).
-6. **`yarn tests:ios:pod:install`** when iOS native/codegen changed.
-7. **`yarn tests:<platform>:build`**.
-8. **`yarn tests:packager:jet-reset-cache`** ([packager reset-cache](#packager-reset-cache-eaddrinuse)) → pre-flight → `:test-cover`.
+6. **iOS/macOS:** `yarn tests:<platform>:pod:install` then `yarn tests:<platform>:build` as two commands (`:build` compiles only). Required after codegen / podspec / native Apple changes. A bare `:build` is allowed when pods are already installed. Android skips `pod:install`.
+7. Matching packager reset-cache ([packager reset-cache](#packager-reset-cache-eaddrinuse)) → pre-flight → `:test-cover`.
 
 Do **not** treat this redbox as a missing TurboModule registration until the refresh sequence has been run once on a clean tree.
 
