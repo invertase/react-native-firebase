@@ -94,7 +94,7 @@ Unproven “maybe flake” ideas go on the **ephemeral work queue** only. Do not
 
 Use [validation tiers](#e2e-validation-tiers-unit-focused-area-focused-full): **unit-focused**, **area-focused**, **full**. Match tier to [work type](change-authoring-workflow.md#work-types). **Serial default:** one unslotted `:test-cover` from clean [pre-flight](#pre-flight-is-the-host-clear-to-start). Slotted cross-platform concurrency: [parallel e2e topology](#parallel-e2e-topology). Log long output; upstream gets exit code + short summary.
 
-**Policy:** [OKF documentation and commit policy](../documentation-policy.md). **Terms:** [iteration vocabulary](iteration-vocabulary.md).
+**Policy:** [OKF documentation and commit policy](../documentation-policy.md) — public vs ephemeral vs private; [Efficiency](../documentation-policy.md#efficiency). **Terms:** [iteration vocabulary](iteration-vocabulary.md).
 
 ### How a platform run is structured (Android/iOS)
 
