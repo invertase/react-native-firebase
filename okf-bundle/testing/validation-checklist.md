@@ -110,6 +110,8 @@ yarn tests:ios:ruby                                       # yarn lint:ruby (Rubo
 yarn lint:ruby                                          # RuboCop only (same Gemfile; not part of root yarn lint)
 ```
 
+Do not `bundle install --gemfile=packages/app/__tests__/Gemfile`. That vendors under `packages/app/__tests__/vendor/` and `yarn lint:js` then fails on vendor. [JS lint / Bundler vendor](agent-command-policy.md#js-lint-bundler-vendor).
+
 Opt-in shape/embed suites skip cleanly when cocoapods/xcodeproj are absent; exit **0** when only skips occur alongside a green unit suite. Coverage artifact and Codecov flag **`ios-ruby`**: [coverage design § iOS Ruby](coverage-design.md#ios-ruby-simplecov). Touched production Ruby lines need test support in the [coverage evidence package](coverage-design.md#coverage-evidence-package) before `review_gate` closes — same spirit as JS/native touched-line bar. Canonical command only ([agent command policy](agent-command-policy.md)); do **not** use ad-hoc `ruby packages/app/__tests__/…_test.rb` as the gate.
 
 <a id="lint-and-formatting"></a>
@@ -126,7 +128,7 @@ Run **only** the scripts whose trees are in the diff (exit 0). Do not run the re
 
 | Tree in diff | Script | Notes |
 | ------------ | ------ | ----- |
-| `packages/**` JS/TS | `yarn lint:js` | ESLint `packages/*`. Implementation may `yarn lint:js --fix` then re-run until clean. Prefer that over `yarn format:js`. |
+| `packages/**` JS/TS | `yarn lint:js` | ESLint `packages/*`. Implementation may `yarn lint:js --fix` then re-run until clean. Prefer that over `yarn format:js`. A flood under `packages/app/__tests__/vendor/` is local Bundler vendor, not product lint. Do not treat it as the lint gate. [Agent command policy § JS lint / Bundler vendor](agent-command-policy.md#js-lint-bundler-vendor). |
 | `packages/*/lib/**` | `yarn lint:deps` | Blocking. [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting). |
 | Java under `packages/*/android` | `yarn lint:android` | **Implementation only.** `google-java-format --set-exit-if-changed --replace` — **mutates**. Only entrypoint ([agent command policy](agent-command-policy.md)); never invent `yarn google-java-format` / `npx google-java-format`. Can flake; rerun once/twice if failure is not clearly in diff. Commit formatter output. |
 | iOS native (`packages/*/ios` `.h` / `.cpp` / `.m` / `.mm`, not generated) | `yarn lint:ios:check` | clang-format **check** (`-n -Werror`). Implementation may `yarn lint:ios:fix` then re-check. |

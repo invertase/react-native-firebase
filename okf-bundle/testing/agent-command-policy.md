@@ -3,7 +3,7 @@ type: Reference
 title: Agent command policy
 description: Canonical allowlist for agent shell commands — install, prepare, validation, e2e, and Expo documented-path iOS link. Supersedes improvised diagnostics.
 tags: [testing, validation, agents, workflow, yarn]
-timestamp: 2026-07-26T00:00:00Z
+timestamp: 2026-08-24T00:00:00Z
 ---
 
 # Agent command policy
@@ -149,12 +149,22 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 - Merged coverage after e2e: **`yarn tests:android:post-e2e-coverage`** (Codecov path is `jacocoTestReport`, not e2e-only `jacocoAndroidTestReport`) — [coverage design](coverage-design.md).
 - Optional explicit merge: **`yarn tests:android:test:jacoco-report`**.
 
+### JS lint / Bundler vendor
+
+<a id="js-lint-bundler-vendor"></a>
+
+- `yarn lint:js` is `eslint packages/* --max-warnings=0`. That glob covers `packages/app/__tests__/`. `scripts/version.js` is not in it.
+- After `bundle install --gemfile=packages/app/__tests__/Gemfile`, Bundler follows root `.bundle/config` `BUNDLE_PATH: vendor/bundle` and drops a gitignored tree at `packages/app/__tests__/vendor/`. ESLint `globalIgnores` does not list that path, so lint reports thousands of vendor findings.
+- That is local checkout noise, not a product lint failure. CI without that tree stays green.
+- Do not invent a delete-vendor command as the lint gate. Do not patch `eslint.config.mjs` to hide it. Root `bundle install` is the install path above.
+
 ### iOS Ruby (SPM helpers)
 
 - **Canonical:** `yarn tests:ios:ruby` — discovers all `packages/app/__tests__/*_test.rb`, SimpleCov → `coverage/ios-ruby/lcov.info`, Codecov flag `ios-ruby`.
 - **CI home:** `tests_e2e_ios.yml` (debug + spm) only — not Jest / `tests_e2e_other.yml`.
 - **Forbidden as the agent gate:** `ruby packages/app/__tests__/firebase_spm_test.rb` (or any single-suite / bare-ruby invocation). One-off debugging may use bare ruby locally; gate close / handoff evidence must cite the yarn target.
 - First-time / Gemfile change: **`yarn ruby:install`** (or root `yarn`, which runs it via `postinstallDev`). Path via committed `.bundle/config`. When `bundle` is not on PATH, `yarn ruby:install` **skips with exit 0** (no setup-ruby required in lint/Jest/Android CI). CI uses `BUNDLE_FROZEN=true bundle install` **before** yarn in e2e/publish workflows; after yarn, `yarn ruby:install` is a no-op (`bundle check` succeeds). Do not `gem update cocoapods xcodeproj`.
+- Never `bundle install --gemfile=packages/app/__tests__/Gemfile`. That writes a gitignored vendor tree under `packages/app/__tests__/vendor/` and then `yarn lint:js` explodes. See [JS lint / Bundler vendor](#js-lint-bundler-vendor).
 - Blocking when Ruby sources or `*_test.rb` touched: [validation checklist § iOS Ruby](validation-checklist.md#ios-ruby-unit-tests).
 
 ### TurboModule codegen
@@ -190,7 +200,8 @@ Before native :build: root yarn exit 0 + verify tests/node_modules/react-native/
 Area harness: okf-bundle/testing/running-e2e.md#local-harness-overrides-harnessoverridesjs — copy harness.overrides.example.js to gitignored harness.overrides.js; set modules + RNFBDebug; delete overrides after run.
 TurboModule contract test (NewArch-AD-17.1): packages/app/__tests__/nativeModuleContract.test.ts — yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts
 Android JVM unit (AndroidTest-AD-1): yarn tests:android:unit — not a substitute for platform e2e.
-iOS Ruby (SPM helpers): yarn tests:ios:ruby — never ad-hoc ruby packages/app/__tests__/…_test.rb as the gate.
+iOS Ruby (SPM helpers): yarn tests:ios:ruby — never ad-hoc ruby packages/app/__tests__/…_test.rb as the gate. Never bundle install --gemfile=packages/app/__tests__/Gemfile.
+JS lint vendor flood under packages/app/__tests__/vendor/: local Bundler tree, not product lint. Never invent delete-vendor as the lint gate. See #js-lint-bundler-vendor.
 On failure: fix product code (or re-run yarn for patch miss), re-run the same canonical command.
 Gate close / push: return [validation evidence package](validation-checklist.md#validation-evidence-package) and [coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native/Ruby helpers touched — required before commit or publication ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)).
 ```
@@ -206,5 +217,6 @@ Gate close / push: return [validation evidence package](validation-checklist.md#
 | Validation sequence                           | [validation-checklist.md](validation-checklist.md)                                                                                                  |
 | Android JVM unit ADR                          | [android-architecture-decisions.md](android-architecture-decisions.md)                                                                              |
 | iOS Ruby unit / SimpleCov                     | [coverage design § iOS Ruby](coverage-design.md#ios-ruby-simplecov); [validation checklist § iOS Ruby](validation-checklist.md#ios-ruby-unit-tests) |
+| JS lint vs local Bundler vendor               | [§ JS lint / Bundler vendor](#js-lint-bundler-vendor)                                                                                              |
 | Work types and gates                          | [change-authoring-workflow.md](change-authoring-workflow.md)                                                                                        |
 | Doc / commit policy                           | [documentation-policy.md](../documentation-policy.md)                                                                                               |
