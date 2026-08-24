@@ -16,7 +16,6 @@ The workspace Expo documented-path iOS **link** fixture (`test-expo/`) is not De
 
 ## Documents
 
-* [Expo SPM FirebaseCore app-target link work queue](expo-spm-firebasecore-link-work-queue.md) — ephemeral gates for CPRN-301 / #9158
 * Cross-cutting durable SPM decisions: [iOS SPM native integration](../../ios-spm-native-imports.md) ([app-target FirebaseCore link](../../ios-spm-native-imports.md#app-target-firebasecore-link-package-dependency-alone-is-not-enough))
 
 ## Related repository files

@@ -38,7 +38,7 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 | macOS CLI band | **`15.1.3`** | `tests-macos/package.json` |
 | `@react-native-async-storage/async-storage` (mobile) | **`^3.1.1`** | `tests/package.json` (iOS pod `AsyncStorage` 3.x; Android autolink) |
 | `@react-native-async-storage/async-storage` (macOS) | **`^2.0.2`** | `tests-macos/package.json` |
-| `@react-native-firebase/*` (both e2e apps) | **`26.2.0`** (must match current lerna / package version) | `tests/package.json` and `tests-macos/package.json` — see [RNFB workspace pins](#rnfb-workspace-pins-both-e2e-apps) |
+| `@react-native-firebase/*` (e2e apps + `test-expo`) | **must match current lerna / package version** | `tests/package.json`, `tests-macos/package.json`, and `test-expo/package.json` — see [RNFB workspace pins](#rnfb-workspace-pins) |
 | `@react-native-firebase/app-types` | **`6.7.2`** | both apps (legacy types package; not a workspace) |
 
 **CLI rationale:** mobile CLI **`20.1.0`** matches the React Native **0.86** community template. macOS keeps the **0.78** CLI band with `react-native-macos@0.78.6`. Never add a global resolution that would pull `tests-macos` onto the mobile line.
@@ -49,13 +49,13 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 
 **Agent / Dependabot rule:** leave these pins alone unless the change is an intentional dual-app or mobile-only upgrade. Reject RN / codegen / CLI bumps that only “look green” for one app while breaking the other or codegen verify.
 
-## RNFB workspace pins (both e2e apps)
+## RNFB workspace pins
 
-Both e2e apps must declare every `@react-native-firebase/*` dependency (except `app-types`) at the **current lerna / package version** so Yarn **workspace-links** them (`workspace:packages/<pkg>`) instead of fetching published npm tarballs.
+`tests/`, `tests-macos/`, and `test-expo/` must declare every `@react-native-firebase/*` dependency (except `app-types`) at the **current lerna / package version** so Yarn **workspace-links** them (`workspace:packages/<pkg>`) instead of fetching published npm tarballs. `test-expo` uses exact version strings, not `workspace:` protocol.
 
-Today that version is **`26.2.0`**, matching `packages/*/package.json`. A stale pin (for example `26.1.0` while packages are `26.2.0`) resolves as `npm:26.1.0` and a fresh `yarn` downloads ~19 published tarballs. Metro may still remap JS to `packages/*`, so CI can look green while the lockfile is wrong.
+A stale pin (for example `26.3.0` while packages are `26.3.2`) resolves as `npm:26.3.0` and a fresh `yarn` downloads published tarballs. Metro may still remap JS to `packages/*`, so CI can look green while the lockfile is wrong. Hardened Yarn Install then fails YN0028.
 
-The root `version` lifecycle runs [`scripts/version.js`](../../scripts/version.js) during `lerna version`. It deterministically updates **both** `tests/package.json` and `tests-macos/package.json`, including each app's private `"version"` and every `@react-native-firebase/*` dependency except `app-types`. Keep that automation intact; `@react-native-firebase/app-types` remains independently pinned at `6.7.2`.
+The root `version` lifecycle runs [`scripts/version.js`](../../scripts/version.js) during `lerna version`. It deterministically updates `tests/package.json`, `tests-macos/package.json`, and `test-expo/package.json`, including each app's private `"version"` and every `@react-native-firebase/*` dependency except `app-types`. Keep that automation intact; `@react-native-firebase/app-types` remains independently pinned at `6.7.2` on the e2e apps.
 
 ## AsyncStorage (dual pin + Metro singleton)
 
@@ -87,5 +87,5 @@ Mobile `tests/` is on async-storage **3.x** (TurboModule `RNAsyncStorage`). macO
 - [NewArch-AD-21](../new-architecture/architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted) — ResultT inject **retired** on mobile 0.86 (upstream emits `ResultT`)
 - [Other CI — macOS e2e](../ci-workflows/other.md) — macOS pipeline (`tests-macos/`)
 - [Agent command policy](agent-command-policy.md) — install / patch / fmt gate
-- [`tests/package.json`](../../tests/package.json) / [`tests-macos/package.json`](../../tests-macos/package.json) — declared pins
+- [`tests/package.json`](../../tests/package.json) / [`tests-macos/package.json`](../../tests-macos/package.json) / [`test-expo/package.json`](../../test-expo/package.json) — declared pins
 - [`tests/metro.config.js`](../../tests/metro.config.js) — mobile async-storage singleton + nested blocklist

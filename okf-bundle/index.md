@@ -34,7 +34,7 @@ okf_version: '0.1'
 # Packages
 
 - [AI](/packages/ai/index.md) — Agent Platform / Vertex backend naming, compare-types, generative models
-- [App](/packages/app/index.md) — core app / Expo plugin / iOS SPM helpers; work queue for CPRN-301 Expo FirebaseCore app-target link
+- [App](/packages/app/index.md) — core app / Expo plugin / iOS SPM helpers; Expo documented-path iOS link (`test-expo/`)
 - [App Check](/packages/app-check/index.md) — iOS provider-factory init (pending + fail-closed), ADRs + work queue for #9116
 - [Auth](/packages/auth/index.md) — modular API type parity, platform matrix, `compare:types`
 - [Firestore](/packages/firestore/index.md) — Pipelines architecture, parity, e2e coverage
