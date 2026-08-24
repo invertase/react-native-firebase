@@ -1086,13 +1086,29 @@ def rnfirebase_apply_spm_build_settings(installer)
     project.save if project_modified
   end
 
-  installer.pods_project.targets.each do |target|
+  # User-project settings are `project.save`d above. Pods settings used to
+  # live only on the in-memory `installer.pods_project` during `post_install`,
+  # when CocoaPods still writes that file. The user-project hooks now run
+  # from `post_integrate` (after that write), so these mutations are lost
+  # unless we save. Xcode 26 then keeps explicit modules on RNFB pod
+  # targets and fails Swift compiles that import Firebase SPM internals
+  # (`FirebaseCoreInternal`, `FirebaseSharedSwift`) with "compilation
+  # search paths unable to resolve module dependency".
+  pods_project = installer.pods_project
+  return unless pods_project
+
+  pods_modified = false
+  pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       explicit_modules_settings.each do |setting|
-        config.build_settings[setting] = 'NO'
+        unless config.build_settings[setting] == 'NO'
+          config.build_settings[setting] = 'NO'
+          pods_modified = true
+        end
       end
     end
   end
+  pods_project.save if pods_modified
 end
 
 rnfirebase_hook_cocoapods_post_install!
