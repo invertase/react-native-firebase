@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # Change authoring workflow
 
-Single source for **how to author and verify a product change** in RNFB (bug fix, feature, parity, coverage). Package workflows add artifacts; work queues add ephemeral gate state — neither restates this loop.
+Single source for **how to author and verify a product change** in RNFB (bug fix, feature, parity, coverage). Package workflows add artifacts; work queues add ephemeral gate state. Queue home is a Linear project document ([documentation policy](../documentation-policy.md#work-queue-documents)); existing repo `*work-queue.md` files stay until next pickup. Neither restates this loop.
 
 **Policy:** [OKF documentation and commit policy](../documentation-policy.md). **Terms:** [iteration vocabulary](iteration-vocabulary.md).
 

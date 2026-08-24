@@ -15,12 +15,12 @@ Single source of truth for OKF knowledge and commit wording. Other OKF docs/work
 | Kind | Where it lives | What it contains |
 |------|----------------|------------------|
 | **Durable** | OKF reference docs (design, runbooks, registries, workflows) | Stable API names, registry IDs, SDK versions, classifications, verification **methods**, architecture, canonical commands |
-| **Ephemeral** | Explicit **work-queue** docs only | Session phase/probe IDs, **planned commit subjects** (`commit_subject`), gate state, `next_work_type`, snapshot labels, dated banners, run counts |
+| **Ephemeral** | Linear **project** work-queue documents (grandfathered `okf-bundle/**/*work-queue.md` until migrated) | Session phase/probe IDs, **planned commit subjects** (`commit_subject`), gate state, `next_work_type`, snapshot labels, dated banners, run counts |
 
 **Rules**
 
 1. General OKF docs get **durable only** updates: no phase IDs, **commit subjects**, session e2e counts, or gate snapshots.
-2. Ephemeral state lives **only** in work queues. When an item closes, durable outcomes move to reference docs; queue rows may archive/delete.
+2. Ephemeral state lives **only** in work queues. When an item closes, durable outcomes move to reference docs; archive the Linear queue document (un-archive on reopen).
 3. Durable docs may link to a work queue for current status; do not duplicate ephemeral fields.
 
 ## Commits as documentation
@@ -55,8 +55,12 @@ Fix violations before handoff/merge. Work-queue edits still follow this split.
 
 Work queues are **intentionally ephemeral**: phases, **commit subjects**, gates, active coordination. They are not policy or finalized registry/design homes.
 
-Work queues record **gates**, **`next_work_type`**, **`validation_tier`**, and **`commit_subject`** using field names and allowed values from [iteration vocabulary](testing/iteration-vocabulary.md). Gate semantics and workflow rules: [change authoring workflow](testing/change-authoring-workflow.md). They do **not** name agent roles, dispatch instructions, or session choreography — those are out of scope for the public repo.
+**Home:** a Linear **project** document on the issue's Linear project. Not a git file, and not the issue description. One copy. Document shape: [How the Work Queue Orchestrator Works](https://linear.app/invertase/document/how-the-work-queue-orchestrator-works-ad928da78c5a). Issue pointer rules: [Cross Platform Issue Authoring & Agent Workflow Guide](https://linear.app/invertase/document/cross-platform-issue-authoring-and-agent-workflow-guide-2b429e4aace0) Step 10.
 
-Record **`commit_subject`** (the planned Conventional Commit subject line) **before** `git commit`, in the same staged changeset as the item being memorialized. Do not record SHAs — they are unstable under history rewrite. After commit, the subject in git and in the queue must match character-for-character ([PR title rule](#pull-requests) for single-commit PRs).
+**Do not create** new `okf-bundle/**/*work-queue.md` files.
 
-New work queues link here in frontmatter/opening section; do not copy policy inline.
+**Existing repo queues:** stay the source of truth until that item is next picked up. On pickup, copy the file into a Linear project document, point the Linear issue at it (`Queue: linear-work-queue`), and delete the file in the same change. Do not dual-write.
+
+Work queues record **gates**, **`next_work_type`**, **`validation_tier`**, and **`commit_subject`** using field names and allowed values from [iteration vocabulary](testing/iteration-vocabulary.md). Gate semantics and workflow rules: [change authoring workflow](testing/change-authoring-workflow.md). They do **not** name agent roles, dispatch instructions, or session choreography. Those are out of scope for the public repo.
+
+Record **`commit_subject`** (the planned Conventional Commit subject line) **before** `git commit`. After commit, the subject in git and in the Linear queue document must match character-for-character ([PR title rule](#pull-requests) for single-commit PRs). Do not record SHAs. The queue document is not part of the git changeset.

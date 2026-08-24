@@ -13,8 +13,8 @@
 - Follow local package patterns; check `type-test.ts`, `__tests__/`, and plugin dirs before public API/platform changes.
 - Start with `okf-bundle/index.md` for repo-specific implementation/testing/maintenance knowledge.
 - **Change authoring:** [change-authoring-workflow.md](okf-bundle/testing/change-authoring-workflow.md) — baseline → unit-focused implementation → area-focused review → commit; [**validation evidence**](okf-bundle/testing/change-authoring-workflow.md#validation-evidence-blocking) and [**coverage evidence**](okf-bundle/testing/coverage-design.md#coverage-evidence-package) required before gates close or push.
-- Use package indexes under `okf-bundle/packages/` for package-specific workflows and active work queues.
-- Follow `okf-bundle/documentation-policy.md`: durable knowledge in reference docs; ephemeral state only in explicit work queues; commits are documentation; single-commit PR titles must match the commit subject exactly.
+- Use package indexes under `okf-bundle/packages/` for package-specific workflows and active work queues (Linear project documents; see [documentation-policy.md](okf-bundle/documentation-policy.md#work-queue-documents)).
+- Follow `okf-bundle/documentation-policy.md`: durable knowledge in reference docs; ephemeral state only in work queues; commits are documentation; single-commit PR titles must match the commit subject exactly. Do not create new `okf-bundle/**/*work-queue.md` files.
 - Testing entry points: `okf-bundle/testing/index.md`; validation requirements: `okf-bundle/testing/validation-checklist.md`.
 - Match validation to the **work type** and **validation tier** in OKF ([change authoring workflow](okf-bundle/testing/change-authoring-workflow.md); term ids in [iteration vocabulary](okf-bundle/testing/iteration-vocabulary.md)).
 
