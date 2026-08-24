@@ -112,6 +112,8 @@ yarn lint:ruby                                          # RuboCop only (same Gem
 
 Do not `bundle install --gemfile=packages/app/__tests__/Gemfile`. That vendors under `packages/app/__tests__/vendor/` and `yarn lint:js` then fails on vendor. [JS lint / Bundler vendor](agent-command-policy.md#js-lint-bundler-vendor).
 
+Host Ruby must be **>= 3.3.1** (not 3.3.0); do not downgrade lockfile `simplecov` — [agent command policy § iOS Ruby](agent-command-policy.md#ios-ruby-spm-helpers).
+
 Opt-in shape/embed suites skip cleanly when cocoapods/xcodeproj are absent; exit **0** when only skips occur alongside a green unit suite. Coverage artifact and Codecov flag **`ios-ruby`**: [coverage design § iOS Ruby](coverage-design.md#ios-ruby-simplecov). Touched production Ruby lines need test support in the [coverage evidence package](coverage-design.md#coverage-evidence-package) before `review_gate` closes — same spirit as JS/native touched-line bar. Canonical command only ([agent command policy](agent-command-policy.md)); do **not** use ad-hoc `ruby packages/app/__tests__/…_test.rb` as the gate.
 
 <a id="lint-and-formatting"></a>
