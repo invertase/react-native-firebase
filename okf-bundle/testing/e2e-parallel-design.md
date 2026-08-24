@@ -10,7 +10,7 @@ timestamp: 2026-08-20T00:00:00Z
 
 Architecture and lifecycle for running Android, iOS, and macOS e2e in parallel (within a worktree and across worktrees). **Commands** live in [running e2e](running-e2e.md) ([slot lifecycle](running-e2e.md#slot-lifecycle), [parallel topology](running-e2e.md#parallel-e2e-topology), [infrastructure change bar](running-e2e.md#e2e-infrastructure-change-bar)); this doc explains *why* resources collide, how parameterization isolates them, and how Mellifera / Tart relate.
 
-**Policy:** [OKF documentation and commit policy](../documentation-policy.md). **Coverage:** [coverage design](coverage-design.md).
+**Policy:** [OKF documentation and commit policy](../documentation-policy.md) — public vs ephemeral vs private; [Efficiency](../documentation-policy.md#efficiency). **Coverage:** [coverage design](coverage-design.md).
 
 ## How parallel e2e works (ELI14)
 
@@ -72,7 +72,7 @@ Commands for clear → start → build → test → free: [running e2e § slot l
 | Slot env + serial `yarn tests:*` | **Shipped** — `export-slot-env` then the same commands as [running e2e § Rules](running-e2e.md#rules) | [slot lifecycle](running-e2e.md#slot-lifecycle) |
 | Concurrent macOS via `PRODUCT_NAME` | **Shipped** (e.g. `io.invertase.testing.s0`…`sN`) | [macOS process identity](running-e2e.md#macos-process-identity-concurrency) |
 | Host check/release (`yarn tests:e2e:check` / `release`) | **Shipped** — serial default; slot via env; `--all-slots` explicit; Mellifera maps reservations to `RNFB_*` then calls these yarn targets (no JSON feed) | [host-clear probes](running-e2e.md#host-clear-probes) |
-| Coordinator / lease queue (mellifera) | **WIP** (experimental tree) | [`mellifera/`](../../mellifera/) — consumes RNFB slots; does not own the runbook |
+| Coordinator / lease queue (Mellifera) | **WIP** — co-developed out-of-tree (not part of the contention PR) | Optional local `mellifera/` when present — consumes RNFB slots; does not own the runbook ([§ layers](#rnfb-mellifera-tart-layers)) |
 
 <a id="rnfb-mellifera-tart-layers"></a>
 
@@ -564,7 +564,7 @@ Work-queue rows for implementation are ephemeral — not duplicated here per [do
 * [Running e2e tests](running-e2e.md) — canonical commands, change bar, slot lifecycle
 * [Coverage design](coverage-design.md) — per-platform artifact policy
 * [Firebase testing project](firebase-testing-project.md) — emulator vs cloud
-* [mellifera/README.md](../../mellifera/README.md) — leases only
+* Mellifera coordinator — co-developed out-of-tree; see [§ RNFB e2e, Mellifera, and Tart](#rnfb-mellifera-tart-layers) (not shipped in the contention PR)
 * [scripts/tart/README.md](../../scripts/tart/README.md) — separate VM system
 * [Change authoring workflow § host rule](change-authoring-workflow.md#host-rule) — serial default; slotted exception via running-e2e
 * [Agent command policy](agent-command-policy.md) — allowlisted `yarn tests:*`
