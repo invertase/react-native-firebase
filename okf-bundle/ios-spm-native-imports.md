@@ -269,6 +269,10 @@ from `run_podfile_post_integrate_hooks` (end of `integrate_user_project`,
 after that save). Pods-project work (UUID counter, RN SPM integrity,
 static-linkage guard) stays on `post_install`. If `post_integrate` is
 missing, user-project helpers stay on `post_install`.
+Pods-project setting changes made from those `post_integrate` hooks (for
+example `SWIFT_ENABLE_EXPLICIT_MODULES`) must call `pods_project.save`:
+CocoaPods has already written `Pods.xcodeproj`, so in-memory-only edits
+are discarded.
 
 ### Idempotency guard must distinguish "declared" from "linked"
 

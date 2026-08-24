@@ -308,7 +308,7 @@ end
 # `rnfirebase_verify_pods_project_uuid_integrity!` read and mutate.
 class MockPodsProject
   attr_reader :objects_by_uuid, :targets
-  attr_accessor :root_object
+  attr_accessor :root_object, :save_count
 
   def initialize(uuid_prefix:, objects_by_uuid: {}, generated_uuids: [], available_uuids: [], root_object: nil,
                  targets: [])
@@ -318,6 +318,11 @@ class MockPodsProject
     @available_uuids = available_uuids
     @root_object = root_object
     @targets = targets
+    @save_count = 0
+  end
+
+  def save
+    @save_count += 1
   end
 end
 
@@ -876,6 +881,9 @@ class FirebaseSpmTest < Minitest::Test
       assert_equal 'NO', config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES']
     end
     assert_equal 1, user_project.save_count
+    # post_integrate runs after CocoaPods writes Pods.xcodeproj -- in-memory
+    # mutations here are lost unless the Pods project is saved too.
+    assert_equal 1, pods_project.save_count
   end
 
   def test_apply_spm_build_settings_is_idempotent_when_already_configured
@@ -905,9 +913,25 @@ class FirebaseSpmTest < Minitest::Test
     # OTHER_LDFLAGS already had -ObjC and explicit modules were already NO,
     # so the user project must not be re-saved.
     assert_equal 0, user_project.save_count
+    assert_equal 0, pods_project.save_count
     user_target.build_configurations.each do |config|
       assert_equal '$(inherited) -ObjC', config.build_settings['OTHER_LDFLAGS']
     end
+  end
+
+  def test_apply_spm_build_settings_tolerates_missing_pods_project
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    user_target = MockTarget.new(['[CP] Embed Pods Frameworks'], name: 'testing')
+    user_project = MockUserProject.new([user_target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_apply_spm_build_settings(installer)
+
+    assert_equal 1, user_project.save_count
+    assert_equal 'NO', user_target.build_settings('Debug')['SWIFT_ENABLE_EXPLICIT_MODULES']
+    assert_includes user_target.build_settings('Debug')['OTHER_LDFLAGS'], '-ObjC'
   end
 
   # ── rnfirebase_remove_spm_core_from_app_target (the fix for CP-149: undoes
