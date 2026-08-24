@@ -30,7 +30,7 @@ After the `tests-macos/` split, **iOS/Android** Metro (`yarn tests:packager:*`, 
 | **Android** | AVD + adb serial | Serial: `TestingAVD` / `emulator-5554` (yarn tests:* pin `RNFB_ANDROID_CONSOLE_PORT=5554`). Slotted: `TestingAVD-{n}` (incl. `-0`) + console `5556+2n` (`emulator-5556/5558/5560`, …). Detox must not pick FreePortFinder **10000–20000**; check/release treat those leftover serials as BUSY / kill |
 | **iOS** | Simulator device name | Serial: `iPhone 17`. Slotted: `RNFB E2E iOS slot-{n}` (incl. `slot-0`) |
 | **macOS** | Process / `PRODUCT_NAME` (+ derived bundle id) | `io.invertase.testing` |
-| **Coverage paths** | NYC / coverage under `tests/` | Fixed per worktree (same-platform parallel overwrites) |
+| **Coverage paths** | NYC / coverage — `tests/` (iOS/Android) and `tests-macos/` (macOS); see [coverage design § e2e TS](coverage-design.md#e2e-typescript-coverage-jet--nyc) | Fixed per worktree (same-platform parallel overwrites) |
 | **CocoaPods CDN cache** | Trunk spec CDN under `~/.cocoapods` | **Not** parameterized. Overlapping `yarn tests:ios:pod:install` can miss trunk specs (`SocketRocket (~> 0.7.1)`) while siblings succeed. Serialize Apple `pod:install` before overlapping `:build`/`:test-cover` ([running e2e § slot lifecycle](running-e2e.md#slot-lifecycle)). `:build` does not run pod install. |
 
 One worktree also has **one** `tests-macos/macos/build` (and iOS/Android build product tree) — not safe for two same-platform `:test-cover`s in that tree.

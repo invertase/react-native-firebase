@@ -72,7 +72,7 @@ Under load, Jet may run only a small prefix before mocha-remote desync, often af
 | Inbound parse buffer + `tryDeserialize` in `serialization.js` / `parse_skip` logging | mocha-remote-server patch |
 | Outbound queue flushed on reconnect | mocha-remote-client patch |
 | `JET_PROTOCOL_ERROR_RE` → retryable Jet session (attempt 2) | `tests/e2e/firebase.test.js` |
-| Cold-boot ready wait + post-boot settle before Jet attempt 1 | `firebase.test.js` (`waitForAndroidEmulatorReady`, `RNFB_ANDROID_BOOT_SETTLE_MS`) — **local and CI**; do not skip settle/load when `CI` is unset ([running e2e § gray screen](../testing/running-e2e.md#android-emulator-gray-screen--quick-boot-blocking)) |
+| Cold-boot ready wait; post-boot settle + loadavg gate before Jet attempt 1 | `firebase.test.js` `waitForAndroidEmulatorReady` (ready wait **local and CI**); post-boot settle + loadavg gate **CI only** — [`androidReadyPolicy.js`](../../tests/e2e/androidReadyPolicy.js) `shouldSkipAndroidSettleAndLoad(!isCI)` ([running e2e](../testing/running-e2e.md) — local settle/load skipped when `CI` unset) |
 | Load gate before starting Jet (threshold 5, 3 consecutive polls) | `firebase.test.js` |
 
 **Patch workflow:** after editing `tests/node_modules/jet` or `mocha-remote-*`, run `yarn patch-commit` **and** root `yarn install`; CI uses lockfile patch hashes.
