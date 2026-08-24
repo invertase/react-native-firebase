@@ -79,7 +79,7 @@ If shortening would change how an agent acts, keep the longer text.
 
 Work queues are **intentionally ephemeral**: phases, **commit subjects**, gates, active coordination. They are not policy or finalized registry/design homes.
 
-**Home:** a Linear **project** document on the issue's Linear project. Not a git file, and not the issue description. One copy. Document shape: [How the Work Queue Orchestrator Works](https://linear.app/invertase/document/how-the-work-queue-orchestrator-works-ad928da78c5a). Issue pointer rules: [Cross Platform Issue Authoring & Agent Workflow Guide](https://linear.app/invertase/document/cross-platform-issue-authoring-and-agent-workflow-guide-2b429e4aace0) Step 10.
+**Home:** a Linear **project** document on the issue's Linear project. Not a git file, and not the issue description. One copy. Document shape: How the Work Queue Orchestrator Works. Issue pointer rules: Cross Platform Issue Authoring & Agent Workflow Guide, Step 10.
 
 **Do not create** new `okf-bundle/**/*work-queue.md` files.
 
