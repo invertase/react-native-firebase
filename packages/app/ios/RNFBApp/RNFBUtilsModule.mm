@@ -69,12 +69,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboUtils)
   return [constants copy];
 }
 
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants::Builder>)
-    constantsToExport {
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants>)constantsToExport {
   return [_RCTTypedModuleConstants newWithUnsafeDictionary:[self utilsConstantsDictionary]];
 }
 
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants::Builder>)getConstants {
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants>)getConstants {
   return [self constantsToExport];
 }
 
