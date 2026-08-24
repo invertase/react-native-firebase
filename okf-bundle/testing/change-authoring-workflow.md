@@ -10,7 +10,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 Single source for **how to author and verify a product change** in RNFB (bug fix, feature, parity, coverage). Package workflows add artifacts; work queues add ephemeral gate state — neither restates this loop.
 
-**Policy:** [OKF documentation and commit policy](../documentation-policy.md). **Terms:** [iteration vocabulary](iteration-vocabulary.md).
+**Policy:** [OKF documentation and commit policy](../documentation-policy.md) — public vs ephemeral vs private; [Efficiency](../documentation-policy.md#efficiency). **Terms:** [iteration vocabulary](iteration-vocabulary.md).
 
 ## Primary loop
 
