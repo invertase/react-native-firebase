@@ -56,14 +56,14 @@ Durable decisions: **[architecture-decisions.md](architecture-decisions.md)**. D
 
 Gate prerequisites before any `:test-cover` ([host rule](../testing/change-authoring-workflow.md#host-rule)):
 
-1. [Pre-flight](../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): [host-clear probes](../testing/running-e2e.md#host-clear-probes), [services ready](../testing/running-e2e.md#2-services-ready), [harness matches validation tier](../testing/running-e2e.md#3-harness-matches-validation-tier); serial `:test-cover` runs; [frozen tree](../testing/change-authoring-workflow.md#frozen-tree) for `independent-review`.
+1. [Pre-flight](../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): [host-clear probes](../testing/running-e2e.md#host-clear-probes), [services ready](../testing/running-e2e.md#2-services-ready), [harness matches validation tier](../testing/running-e2e.md#3-harness-matches-validation-tier); [one :test-cover at a time](../testing/running-e2e.md#one-test-cover-at-a-time); [frozen tree](../testing/change-authoring-workflow.md#frozen-tree) for `independent-review`.
 2. Most items here are config/build/docs (no `:test-cover`); e2e applies only where the row's `validation_tier` names it (**MTV**, and the deferred **MT-WATCH** if/when it reaches implementation).
 
 ---
 
 ## Per-item detail
 
-Each item is one serial loop: `implementation` (unit-focused) → `independent-review` (frozen) → `commit`. Gate fields: [iteration vocabulary](../testing/iteration-vocabulary.md). No item touches `packages/*/lib/**` runtime or `android/ios` native, so **`coverage_evidence_gate: n/a`** throughout (verify per item against the [coverage grep](../testing/coverage-design.md)).
+Each item uses the [change authoring primary loop](../testing/change-authoring-workflow.md#primary-loop) (`documentation?` before frozen `independent-review`). Gate fields: [iteration vocabulary](../testing/iteration-vocabulary.md). No item touches `packages/*/lib/**` runtime or `android/ios` native, so **`coverage_evidence_gate: n/a`** throughout (verify per item against the [coverage grep](../testing/coverage-design.md)).
 
 ### MT0.0 — Update Lerna to current (prerequisite)
 

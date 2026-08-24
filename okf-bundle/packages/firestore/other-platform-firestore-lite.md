@@ -10,7 +10,7 @@ timestamp: 2026-06-27T00:00:00Z
 
 Product and web-bridge rules for **macOS / Other** Firestore. User-facing summary: [`docs/platforms.mdx`](../../../docs/platforms.mdx) § Firestore.
 
-**Policy:** [OKF documentation and commit policy](../../documentation-policy.md). **Current namespace-removal status:** [work queue](../../namespace-api-removal-work-queue.md) (ephemeral gates only there).
+**Policy:** [OKF documentation and commit policy](../../documentation-policy.md).
 
 ## Platform split
 
@@ -59,9 +59,8 @@ Modular public APIs that Firestore Lite provides must work on Other, including: 
 | **macOS / Other** | Lite-supported specs must pass. Lite-unsupported specs: `Platform.other` skip **or** assert message contains `Not supported in the lite SDK` (see `packages/firestore/e2e/firestore.e2e.js`). Do not expect native iOS/Android error codes on Other. |
 | **iOS / Android** | Native SDK — bundle, named-query, persistence, and listener specs apply. |
 
-Commands, pre-flight, harness narrowing, and validation tiers: [running e2e](../../testing/running-e2e.md) and [namespace API removal workflow](../../namespace-api-removal-workflow.md) § module area harness — not restated here.
+Commands, pre-flight, harness narrowing, and validation tiers: [running e2e](../../testing/running-e2e.md) — not restated here.
 
 ## Related
 
 - [Pipeline platform parity](pipeline-platform-parity.md) — pipeline-specific macOS-js drift (separate from core Firestore lite policy)
-- [Namespace API removal workflow](../../namespace-api-removal-workflow.md) — per-module removal checklist and gotchas

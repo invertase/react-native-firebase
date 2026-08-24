@@ -163,6 +163,8 @@ with `e2e` testing this project.
 
 All code changes should be submitted as a pull request to the main branch.
 
+User docs, durable OKF, `AGENTS.md`, and `CONTRIBUTING.md` belong on the **same change set before** `independent-review` — [change authoring workflow](okf-bundle/testing/change-authoring-workflow.md#primary-loop). Do not add those files after a frozen review without another `independent-review`.
+
 The bigger the pull request, the longer it will take to review and merge. Try to break down large pull requests in smaller chunks that are easier to review and merge. It is also always helpful to have some context for your pull request. What was the purpose? Why does it matter to you? Tag in any linked issues.
 
 To aid review we also ask that you fill out the PR template as much as possible.
@@ -171,8 +173,7 @@ To aid review we also ask that you fill out the PR template as much as possible.
 
 ### Your PR title
 
-We use the [Conventional Commits](https://www.conventionalcommits.org/) format throughout the project. Your Pull Request title should be
-in this format; however your commits themselves do not need to follow this format as all PRs are eventually squash merged.
+Commit subjects and Pull Request titles use [Conventional Commits](https://www.conventionalcommits.org/). Full rules, including the squash/amend exception to **fix** a non-conforming subject: [OKF documentation policy § pull requests](okf-bundle/documentation-policy.md#pull-requests).
 
 #### Examples
 

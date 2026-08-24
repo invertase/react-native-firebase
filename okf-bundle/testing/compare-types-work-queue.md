@@ -391,7 +391,7 @@ Per [change authoring workflow](change-authoring-workflow.md):
 1. **`gap-analysis`** — confirm diff still present (`yarn compare:types`); read SDK `.d.ts` + RN `dist/typescript`.
 2. **`implementation`** — fix types/product; **`unit-focused`** or **`area-focused`** per arbiter table.
 3. **`independent-review`** — frozen tree; `yarn compare:types` must show row removed or reason updated.
-4. **`commit`** — one focused commit; `commit_subject` set before commit; [validation evidence package](validation-checklist.md#validation-evidence-package) recorded ([documentation policy](../documentation-policy.md)).
+4. **`commit`** — one focused commit; `commit_subject` and staging: [change authoring § commit](change-authoring-workflow.md#commit); [validation evidence package](validation-checklist.md#validation-evidence-package) recorded.
 5. Remove stale config entries when shapes match.
 
 **Scope-review items (`*0`):** `gap-analysis` only — no product commits until scope Notes complete and gates on `*0` closed.

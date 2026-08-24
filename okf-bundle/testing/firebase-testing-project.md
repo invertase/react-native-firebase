@@ -273,7 +273,7 @@ Pipeline tests share Jet session with Firestore e2e but execute on cloud; `(defa
 
 Run e2e via [runbook](running-e2e.md). This doc owns only emulator/cloud setup.
 
-Pipeline-only debugging may temporarily scope `tests/app.js` to `Pipeline.e2e.js`; revert before merge.
+Pipeline-only debugging: [pipeline area harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness) (override values + optional unit-focused spec narrowing).
 
 # Learnings and pitfalls
 
