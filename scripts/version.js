@@ -184,6 +184,7 @@ packages.forEach(package => {
 
 syncTestAppVersions(`tests${sep}package.json`);
 syncTestAppVersions(`tests-macos${sep}package.json`);
+syncTestAppVersions(`test-expo${sep}package.json`);
 
 // Darwin-only: refresh CocoaPods lockfiles during `lerna version` so the release
 // commit includes them. Publish CI is macos-26 so this path runs there; Linux
