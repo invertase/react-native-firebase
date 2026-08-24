@@ -1,7 +1,7 @@
 ---
 type: Reference
 title: Change authoring workflow
-description: Canonical cross-package loop for verified product changes — baseline, unit-focused implementation, area-focused review, documentation, commit, and pre-merge validation.
+description: Canonical cross-package loop for verified product changes — baseline, unit-focused implementation, documentation, area-focused review, commit, and pre-merge validation.
 tags: [testing, validation, workflow, implementation, review]
 timestamp: 2026-06-26T00:00:00Z
 ---
@@ -28,17 +28,18 @@ flowchart TD
   IMPL["implementation<br/>tier: unit-focused<br/>Jest + narrow e2e loop"]
   IMPL --> IG{implementation gate<br/>green?}
   IG -->|no| IMPL
-  IG -->|yes| REV
-
-  REV["independent-review<br/>tier: area-focused<br/>frozen tree"]
-  REV --> RG{all findings<br/>resolved?}
-  RG -->|any unresolved| IMPL
-  RG -->|yes| DOC
+  IG -->|yes| DOC
 
   DOC{User-facing or<br/>OKF durable updates?}
   DOC -->|yes| DOCS["documentation<br/>tier: none"]
-  DOC -->|no| COMMIT
-  DOCS --> COMMIT
+  DOC -->|no| REV
+  DOCS --> REV
+
+  REV["independent-review<br/>tier: area-focused<br/>frozen tree"]
+  REV --> RG{all findings<br/>resolved?}
+  RG -->|product / tests / lint| IMPL
+  RG -->|OKF / AGENTS / CONTRIBUTING only| DOCS
+  RG -->|yes| COMMIT
 
   COMMIT["commit<br/>tier: none"]
   COMMIT --> PM{Branch ready<br/>to merge?}
@@ -54,9 +55,9 @@ flowchart TD
 | `gap-analysis`         | Unclear feasibility, export shape, platform support | none            | read-only                        | no     |
 | `baseline-capture`     | Need before metrics or area-focused e2e on the item | `area-focused`  | harness narrow OK locally        | no     |
 | `implementation`       | Author fix/feature + tests                          | `unit-focused`  | yes                              | no     |
-| `independent-review`   | Verify frozen diff                                  | `area-focused`  | no — [frozen tree](#frozen-tree) | no     |
-| `documentation`        | User docs + durable OKF updates                     | none            | docs only                        | no     |
-| `commit`               | Gates closed for the item                           | none            | staging only                     | yes    |
+| `documentation`        | Promote user docs + durable OKF + `AGENTS.md` + `CONTRIBUTING.md` on the **same change set**, **before** `independent-review`. Does **not** run the OKF scan | none            | those files only                 | no     |
+| `independent-review`   | Verify frozen diff. When the frozen tree includes `okf-bundle/` reference docs, `AGENTS.md`, or `CONTRIBUTING.md`, this pass **is** the [OKF bundle scan](validation-checklist.md#okf-bundle-review) | `area-focused`  | no — [frozen tree](#frozen-tree) except revert `.only` | no     |
+| `commit`               | Gates closed for the item; **staging only**          | none            | staging only                     | yes    |
 | `pre-merge-validation` | Branch merge gate                                   | `full`          | revert narrowing first           | no     |
 
 **Commands per work type:** [validation checklist](validation-checklist.md) — link only; do not duplicate here.
@@ -98,24 +99,24 @@ E2e scope, pre-flight, and harness gate: [running e2e § agent rule](running-e2e
 | Gate             | Closes when                                                                                                                                                                                                                                                                                                                        |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `implementation` | `implementation` work type complete — code plus **unit-focused**-tier checks green on **every required platform** when native bridge, **committed `**/generated/**`**, podspec/spec/codegen wiring, or macOS TS/runtime path changed ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking); [running e2e § Rules #3](running-e2e.md#rules)); [static analysis](validation-checklist.md#lint-and-formatting) green on the diff |
-| `review`         | `independent-review` complete — **area-focused**-tier checks green on frozen tree; applicable [validation checklist](validation-checklist.md) rows green (including static analysis); **every review finding resolved** ([§ quality standards](#quality-standards))                                                                |
-| `commit`         | Durable commit exists for the item **after** prior gates closed with [recorded evidence](#validation-evidence-blocking)                                                                                                                                                                                                            |
+| `review`         | `independent-review` complete — **area-focused**-tier checks green on frozen tree; applicable [validation checklist](validation-checklist.md) rows green (including static analysis); **OKF bundle scan** when `okf-bundle/` reference docs, `AGENTS.md`, or `CONTRIBUTING.md` are in the frozen tree ([§ OKF bundle review](validation-checklist.md#okf-bundle-review)); **every review finding resolved** ([§ quality standards](#quality-standards)) |
+| `commit`         | Durable commit exists for the item **after** prior gates closed with [recorded evidence](#validation-evidence-blocking). When those OKF/`AGENTS.md`/`CONTRIBUTING.md` files changed, close only after the frozen scan. **Fix** OKF contract violations before **`git commit`** — the frozen scan reports only |
 
 **Trust rule:** Code on disk or in git with `review` still **open** is unverified until `independent-review` closes the gate.
 
-Any unresolved review finding returns the item to **`implementation`** (`unit-focused`), then repeats **`independent-review`** (`area-focused`) — see [§ quality standards](#quality-standards).
+Follow-up **splits by what failed** ([§ frozen tree](#frozen-tree), [§ quality standards](#quality-standards)): product/tests/lint → **`implementation`**; `okf-bundle/` / `AGENTS.md` / `CONTRIBUTING.md` → **`documentation`** then another frozen `independent-review`. Do not send every finding to `documentation`.
 
 <a id="validation-evidence-blocking"></a>
 
 ### Validation evidence (blocking)
 
-Gates close **only** when **recorded evidence** shows the required validation tier ran and passed. Assumed green, implementer summaries without exit codes, or "tests passed earlier" without a log path **do not** close a gate.
+Gates close **only** when **recorded evidence** shows the required validation tier ran and passed. Assumed green, summaries without exit codes, or "tests passed earlier" without a log path **do not** close a gate.
 
 | Gate                                                 | Minimum evidence (record in work-queue notes or review handoff)                                                                                                                                                                                                                                                                                                                                                                                     |
 | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`implementation`**                                 | Prepare/tsc/jest **exit codes**; when `packages/app/**/*.rb` or `packages/app/__tests__/*_test.rb` touched: **`yarn tests:ios:ruby` exit 0** + `coverage/ios-ruby/lcov.info` ([validation checklist § iOS Ruby](validation-checklist.md#ios-ruby-unit-tests)); when native bridge, **`packages/*/ios/generated/**` / `packages/*/android/**/generated/**`**, podspec/spec/codegen wiring, or macOS runtime touched: **e2e pass count per required platform** + log path (e.g. `/tmp/rnfb-e2e-*.log`) — **`yarn codegen:verify` alone does not close this**; **`yarn lint` exit code 0**; when `packages/*/lib/**` in diff: **`yarn lint:deps` exit code 0** ([dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)); when `docs/**` changed: **`yarn lint:markdown`** + **`yarn lint:spellcheck` exit code 0** |
-| **`review`**                                         | Frozen-tree re-run of area-focused checklist; **`yarn lint` exit code 0**; when `docs/**` in frozen diff: **`yarn lint:markdown`** + **`yarn lint:spellcheck` exit code 0**; **coverage evidence package** when native, **`**/generated/**`**, `packages/*/lib/**` bridge code, **or** `packages/app/**/*.rb` touched ([coverage design § evidence package](coverage-design.md#coverage-evidence-package); Ruby: [§ iOS Ruby SimpleCov](coverage-design.md#ios-ruby-simplecov)); compare:types row for touched registered package; e2e evidence must include [services checkout ownership](running-e2e.md#services-checkout-ownership-blocking) when platforms ran |
-| **`commit`**                                         | Prior gates closed **with evidence**; no `.only` / harness overrides staged                                                                                                                                                                                                                                                                                                                                                                         |
+| **`implementation`**                                 | Prepare/tsc/jest **exit codes**; when `packages/app/**/*.rb` or `packages/app/__tests__/*_test.rb` touched: **`yarn tests:ios:ruby` exit 0** + `coverage/ios-ruby/lcov.info` ([validation checklist § iOS Ruby](validation-checklist.md#ios-ruby-unit-tests)); when native bridge, **`packages/*/ios/generated/**` / `packages/*/android/**/generated/**`**, podspec/spec/codegen wiring, or macOS runtime touched: **e2e pass count per required platform** + log path (e.g. `/tmp/rnfb-e2e-*.log`) — **`yarn codegen:verify` alone does not close this**; [lint and formatting](validation-checklist.md#lint-and-formatting) evidence (by-tree scripts; exit 0) |
+| **`review`**                                         | Frozen-tree re-run of area-focused checklist; [lint and formatting](validation-checklist.md#lint-and-formatting) evidence (check-only by-tree); **OKF bundle scan report** when `okf-bundle/` reference docs, `AGENTS.md`, or `CONTRIBUTING.md` in the frozen tree ([§ OKF bundle review](validation-checklist.md#okf-bundle-review)); **coverage evidence package** when native, **`**/generated/**`**, `packages/*/lib/**` bridge code, **or** `packages/app/**/*.rb` touched ([coverage design § evidence package](coverage-design.md#coverage-evidence-package); Ruby: [§ iOS Ruby SimpleCov](coverage-design.md#ios-ruby-simplecov)); compare:types row for touched registered package; e2e evidence must include [services checkout ownership](running-e2e.md#services-checkout-ownership-blocking) when platforms ran |
+| **`commit`**                                         | Prior gates closed **with evidence**; no `.only` / harness overrides staged; OKF contract violations **fixed before `git commit`** when those files changed (frozen scan was report-only)                                                                                                                                                                                                                                                                                                                                                                         |
 | **Publication** (`git push`, force-push, PR refresh) | **`review` gate closed on the exact commits being published**; evidence still valid (no product edits since last area-focused run)                                                                                                                                                                                                                                                                                                                  |
 
 **Investigate before close:** Any coverage plateau, parity asymmetry, or review finding gets **root-cause analysis** — add tests, delete dead code, or record an [acceptable exception](#acceptable-exceptions) with evidence. Do not label gaps "informational" or "defensive" without wire/runtime proof.
@@ -141,7 +142,7 @@ Two authoring standards gate every item, and both admit the same narrow set of [
 
 ### Acceptable exceptions
 
-Only two things may be documented and tracked instead of fixed. **Both require the user's explicit acceptance and confirmation plus a recorded rationale** — an agent or reviewer may not grant either on its own, and the item stays tracked until resolved.
+Only two things may be documented and tracked instead of fixed. **Both require the user's explicit acceptance and confirmation plus a recorded rationale** — neither exception may be granted without that, and the item stays tracked until resolved.
 
 1. **Intractable-limitation bar.** The gap or firebase-js-sdk divergence is caused by an intractable technical limitation of the language, platform SDK, compiler, or toolchain, shown with evidence — e.g. a compiler/codegen-expanded branch that is provably unreachable, or a native SDK that does not expose the capability, cited by version.
 2. **User-accepted deferral.** The gap is addressable, but the user explicitly defers it with a documented rationale — e.g. it needs architectural design or human review not available now, or the compute cost is not currently justified.
@@ -156,9 +157,9 @@ Anything else is drift or a defect, never a self-justifying exception:
 
 ### Review findings — resolve, do not defer
 
-`independent-review` classifies findings **critical / serious / minor / nit**. The **`review` gate closes only when every finding — including minor and nit — is resolved by a fix**, unless the finding is covered by one of the two [acceptable exceptions](#acceptable-exceptions). An agent or reviewer may **not** defer a finding on its own authority: "green with minors" is not green, and parity, quality, and coverage gaps are cheapest to fix while the diff is fresh.
+`independent-review` classifies findings **critical / serious / minor / nit**. The **`review` gate closes only when every finding — including minor and nit — is resolved by a fix**, unless the finding is covered by one of the two [acceptable exceptions](#acceptable-exceptions). Do **not** defer a finding without that exception: "green with minors" is not green, and parity, quality, and coverage gaps are cheapest to fix while the diff is fresh.
 
-A finding covered by an accepted exception is recorded — with evidence or the user's rationale — and tracked, not silently dropped. A finding that is neither fixed nor covered by an accepted exception returns the item to **`implementation`**.
+A finding covered by an accepted exception is recorded — with evidence or the user's rationale — and tracked, not silently dropped. A finding that is neither fixed nor covered by an accepted exception follows [§ frozen tree](#frozen-tree): product/tests/lint → **`implementation`**; `okf-bundle/` / `AGENTS.md` / `CONTRIBUTING.md` → **`documentation`** then another frozen `independent-review`.
 
 Domain applications reference this section rather than restating it:
 
@@ -169,10 +170,20 @@ Domain applications reference this section rather than restating it:
 
 Required for **`independent-review`** and for any `:test-cover` run that closes the **`review`** gate:
 
-- No edits to `packages/**`, `tests/**` (except reverting `.only`), or bundle-affecting OKF docs during the run.
+- **Report/check-only** except reverting `.only`.
+- No edits to `packages/**`, `tests/**` (except reverting `.only`), `okf-bundle/` **reference** docs, `AGENTS.md`, or `CONTRIBUTING.md` during the run.
 - Wait for or cancel in-flight runs before editing again.
 
-Keep **`implementation`** and **`independent-review`** in separate passes. E2e enforcement during runs: [running e2e § rules](running-e2e.md#rules).
+Keep **`implementation`**, **`documentation`**, and **`independent-review`** in separate passes. Do **not** add OKF / `AGENTS.md` / `CONTRIBUTING.md` after a frozen review without another `independent-review`. E2e enforcement during runs: [running e2e § rules](running-e2e.md#rules).
+
+Follow-up **splits by what failed**:
+
+| Failed in | Next work type |
+|-----------|----------------|
+| Product, tests, or lint | `implementation` (then `documentation?`, then frozen scan) |
+| `okf-bundle/` reference docs, `AGENTS.md`, or `CONTRIBUTING.md` | `documentation` then another frozen `independent-review` |
+
+Do not send every finding to `documentation`.
 
 ## Host rule
 
@@ -202,7 +213,7 @@ flowchart TD
 
 **Host rule:** one `:test-cover` at a time; never overlap **unit-focused** and **area-focused** tiers on one host ([§ host rule](#host-rule)).
 
-**Static analysis before handoff:** Before closing the **`implementation`** gate, run the [validation checklist § lint and formatting](validation-checklist.md#lint-and-formatting) rows — **`yarn lint`** (CI Lint job: js + deps + android + ios check) on every diff with package sources; when `packages/*/lib/**` is in the diff, confirm **`yarn lint:deps`** passes ([dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)); **`yarn lint:markdown`** + **`yarn lint:spellcheck`** when `docs/**` changed (CI docs job). Fix violations in product code — do not hand off with lint failures. Command list lives only in the checklist; do not duplicate here.
+**Static analysis before handoff:** Before closing the **`implementation`** gate, run the [validation checklist § lint and formatting](validation-checklist.md#lint-and-formatting) rows that match the diff. Fix violations in product code — do not hand off with lint failures. Commands live only in that section.
 
 Step detail: [running e2e § unit-focused iteration loop](running-e2e.md#unit-focused-tier-iteration-loop).
 
@@ -228,7 +239,7 @@ When **`unit-focused`** e2e fails and product cause is unclear:
 3. If sub-suite runs still fail without actionable assertion text → add **temporary native instrumentation** (NSLog, `adb logcat` tags, etc.) on the code path under test; use [running e2e § diagnosing hangs](running-e2e.md#diagnosing-hangs) for log commands. **Remove instrumentation before `commit`** and before **`area-focused`** gate closure on a frozen tree.
 4. Do not treat Jet WS disconnect / orchestration timeout alone as product failure — [stalled run detection](running-e2e.md#stalled-run-detection) and pre-flight recovery first.
 
-This escalation applies to **any** change authoring item, not only namespace removal. Work queues record outcomes; they do not restate this loop.
+This escalation is general change authoring. Work queues record outcomes; they do not restate this loop.
 
 ## `independent-review`
 
@@ -236,11 +247,12 @@ On a **frozen tree**:
 
 1. Revert all `.only`.
 2. Keep area narrowing; run **area-focused**-tier e2e for loaded package spec(s) on [**every required platform**](running-e2e.md#platform-coverage-gate-blocking) (serial; pre-flight each run).
-3. Run applicable [validation checklist](validation-checklist.md) rows — **blocking:** [static analysis § lint and formatting](validation-checklist.md#lint-and-formatting) (`yarn lint:js` on the frozen tree; markdown/spellcheck when docs touched); `yarn reference:api` when public surface changed. For packages registered in `compare:types`, `yarn compare:types` is a **blocking review gate**: the touched package must have zero undocumented or stale differences before `review_gate` closes. If the global command fails on unrelated registered packages, record/fix that drift in the work queue; do not treat an unrelated failure as permission to skip the touched package's type-parity check.
+3. Run applicable [validation checklist](validation-checklist.md) rows — **blocking:** [static analysis § lint and formatting](validation-checklist.md#lint-and-formatting) (frozen: check-only by-tree); `yarn reference:api` when public surface changed. For packages registered in `compare:types`, `yarn compare:types` is a **blocking review gate**: the touched package must have zero undocumented or stale differences before `review_gate` closes. If the global command fails on unrelated registered packages, record/fix that drift in the work queue; do not treat an unrelated failure as permission to skip the touched package's type-parity check.
 4. **Coverage evidence package** — **blocking** when `packages/*/lib/**` or native bridge sources in the frozen diff: produce and attach per [coverage design § evidence package](coverage-design.md#coverage-evidence-package); investigate every non-100% reachable line before closing `review`.
-5. Outcome closes **review gate** or returns to **`implementation`**.
+5. When the frozen tree includes `okf-bundle/` reference docs, `AGENTS.md`, or `CONTRIBUTING.md`, run the [OKF bundle scan](validation-checklist.md#okf-bundle-review) — **report only**.
+6. Outcome closes **review gate** or follows [§ frozen tree](#frozen-tree) split (not every finding → `documentation`).
 
-Keep **`implementation`** and **`independent-review`** in separate passes ([§ frozen tree](#frozen-tree)).
+Keep **`implementation`**, **`documentation`**, and **`independent-review`** in separate passes ([§ frozen tree](#frozen-tree)). Do not add OKF after this pass without another `independent-review`.
 
 ## Harness narrowing
 
@@ -260,9 +272,10 @@ Package workflows define **which module/spec** to load (e.g. Firestore → [pipe
 ## `commit`
 
 - One focused commit per item when gates close.
-- **Evidence required:** [§ validation evidence](#validation-evidence-blocking) must be recorded before `commit_gate` closes; orchestration summaries are not substitutes for exit codes, e2e counts, and coverage tables.
+- When `okf-bundle/` reference docs, `AGENTS.md`, or `CONTRIBUTING.md` changed, **`commit` closes only after** the frozen [OKF bundle scan](validation-checklist.md#okf-bundle-review) is clean. Contract findings belong in **`documentation?`** then another frozen `independent-review` — not edits on the `commit` pass.
+- **Evidence required:** [§ validation evidence](#validation-evidence-blocking) must be recorded before `commit_gate` closes; summaries without exit codes, e2e counts, and coverage tables do not substitute.
 - **Never stage:** `tests/harness.overrides.js`, any `.only`, temporary sub-suite edits in `tests/app.js`, or native instrumentation ([running e2e § before merge](running-e2e.md#before-merge-pr-handoff), [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)).
-- **Work queue:** before `git commit`, set the row's `commit_subject` to the commit's subject line, close `commit_gate`, and stage the queue doc **in the same commit** as the product change ([documentation policy § work queues](../documentation-policy.md#work-queue-documents)). Do not record SHAs in queue docs.
+- **Work queue:** before `git commit`, set the row's `commit_subject` to the commit's subject line, close `commit_gate`, and stage the queue doc **in the same commit** as the product change. Do not record SHAs in queue docs. After commit, the git subject and the queue `commit_subject` must match character-for-character. Single-commit PR titles: [documentation-policy § pull requests](../documentation-policy.md#pull-requests). Queues are ephemeral ([documentation policy § work-queue documents](../documentation-policy.md#work-queue-documents)); do not copy policy here.
 
 ```bash
 git status
@@ -275,10 +288,10 @@ rg '\.only\(' packages/
 | Package / area        | Adds to this loop                                                                                                                                                                         |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Firestore Pipelines   | Compare-types gap pick, serialization matrix, `Pipeline.e2e.js` setup, coverage snapshots — [pipeline implementation workflow](../packages/firestore/pipeline-implementation-workflow.md) |
-| TurboModule migration | Spec inventory, codegen commit, New Architecture harness, multi-module spec split — [turbomodule implementation workflow](../new-architecture/turbomodule-implementation-workflow.md)     |
+| TurboModules          | Durable decisions — [New Architecture ADR](../new-architecture/architecture-decisions.md) / [index](../new-architecture/index.md). Codegen commands: [agent command policy](agent-command-policy.md#turbomodule-codegen) |
 | Other packages        | `okf-bundle/packages/<pkg>/` index when a workflow exists                                                                                                                                 |
 
-Ephemeral coordination (gate rows, `next_work_type`, `commit_subject`): **work queues only** — not part of this workflow.
+Ephemeral coordination (gate rows, `next_work_type`, `commit_subject`) lives in **work queues only** — do not paste gate rows into this file. How to stage those fields: [§ commit](#commit).
 
 ## Related docs
 

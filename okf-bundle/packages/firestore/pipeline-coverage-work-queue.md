@@ -28,7 +28,7 @@ Ephemeral tracker; see [OKF policy](../../documentation-policy.md).
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Ib**    | Reconcile SDK CHANGELOG + bridge audit vs RNFB lowering; [repeatable method](pipeline-sdk-support-audit.md)                                                                                       |
 | **J0**    | iOS runtime probes — one function per commit; authoritative guard list                                                                                                                            |
-| **J0b**   | **iOS NodeBuilder lowering consolidation** — dedupe boolean/receiver-chain paths added during J0 (see [J0b](#j0b--ios-nodebuilder-lowering-consolidation-after-j0-before-j1j6)); **before J1–J6** |
+| **J0b**   | **iOS NodeBuilder lowering consolidation** — dedupe boolean/receiver-chain paths added during J0 (see [J0b](#j0b--ios-nodebuilder-lowering-consolidation-complete)); **before J1–J6** |
 | **J1–J6** | Bridge remediation (P-001, P-005, P-010–P-012, P-034) after **J0 + J0b**                                                                                                                          |
 
 
@@ -38,7 +38,7 @@ Ephemeral tracker; see [OKF policy](../../documentation-policy.md).
 
 Gate prerequisites before any `:test-cover` ([host rule](../../testing/change-authoring-workflow.md#host-rule)):
 
-1. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): [host-clear probes](../../testing/running-e2e.md#host-clear-probes), [services ready](../../testing/running-e2e.md#2-services-ready), [harness matches validation tier](../../testing/running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking) — required for **unit-focused** and **area-focused**; not [push harness](#harness)); [serial `:test-cover](../../testing/running-e2e.md#serialized-e2e-dispatch)`; [frozen tree](../../testing/change-authoring-workflow.md#frozen-tree) for `independent-review`.
+1. [Pre-flight](../../testing/running-e2e.md#pre-flight-is-the-host-clear-to-start): [host-clear probes](../../testing/running-e2e.md#host-clear-probes), [services ready](../../testing/running-e2e.md#2-services-ready), [harness matches validation tier](../../testing/running-e2e.md#3-harness-matches-validation-tier) ([narrowing gate](../../testing/running-e2e.md#harness-narrowing-gate-blocking) — required for **unit-focused** and **area-focused**; not [push harness](#harness)); [one :test-cover at a time](../../testing/running-e2e.md#one-test-cover-at-a-time); [frozen tree](../../testing/change-authoring-workflow.md#frozen-tree) for `independent-review`.
 2. Guard probes: [SDK runtime verification](pipeline-sdk-support-audit.md#6-runtime-verification-authoritative) + [Phase J protocol](#phase-j-iteration-protocol-strict) below.
 3. Coverage deltas: full clean cycle; never trust stale `.ec`/profraw ([coverage stale data](../../testing/coverage-design.md#stale-coverage-data)).
 
@@ -248,17 +248,11 @@ Earlier: A–E baseline, dead code, gap map, lowering/executor e2e.
 
 ### Phase J iteration protocol (strict)
 
-Each J0 probe / J1–J6 bridge step follows **one** serial loop. No overlap. Work types: [change authoring workflow](../../testing/change-authoring-workflow.md#work-types).
+Each J0 probe / J1–J6 bridge step uses the [change authoring primary loop](../../testing/change-authoring-workflow.md#primary-loop) and [work types](../../testing/change-authoring-workflow.md#work-types) (`documentation?` before frozen `independent-review`). No overlapping `:test-cover`.
 
+**Phase J harness / e2e (not a second loop):** `implementation` is Jest + **unit-focused** (`.only` / tight narrowing OK locally; **no commit**). Frozen `independent-review` is **area-focused**: [harness overrides](../../testing/running-e2e.md#local-harness-overrides-harnessoverridesjs); no `tests/**` except revert `.only` ([frozen tree](../../testing/change-authoring-workflow.md#frozen-tree)); serial [host rule](../../testing/change-authoring-workflow.md#host-rule). `commit` only after `review_gate` closed ([change authoring § commit](../../testing/change-authoring-workflow.md#commit)).
 
-| Step  | Work type            | Closes gate      | Rules                                                                                                                                                                       |
-| ----- | -------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1** | `implementation`     | `implementation` | Code/e2e changes; Jest + **unit-focused** tier; `.only` / tight area narrowing OK locally; **no commit**                                                                         |
-| **2** | `independent-review` | `review`         | **Frozen tree**; **area-focused** tier; no `.only`; area narrowing only in `tests/app.js` + `tests/globals.js`; serial [host rule](../../testing/change-authoring-workflow.md#host-rule) |
-| **3** | `commit`             | `commit`         | One focused commit only after `review_gate` closed **with** [validation/coverage evidence](../../testing/validation-checklist.md#validation-evidence-package) recorded |
-
-
-Canonical commands: [serialized dispatch](../../testing/running-e2e.md#serialized-e2e-dispatch), [one iteration](../../testing/running-e2e.md#running-one-iteration), [guard probes](pipeline-implementation-workflow.md#ios-guard-probe-iterations).
+Canonical commands: [one :test-cover at a time](../../testing/running-e2e.md#one-test-cover-at-a-time), [one iteration](../../testing/running-e2e.md#running-one-iteration), [guard probes](pipeline-sdk-support-audit.md#6-runtime-verification-authoritative) ([J0](#j0--ios-runtime-guard-probes-do-first)).
 
 ### J0 — iOS runtime guard probes (do first)
 
@@ -290,7 +284,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 **Scope:** `packages/firestore/ios/RNFBFirestore/RNFBFirestorePipelineNodeBuilder.swift` only (unless consolidation requires Parser touch — stop and note).
 
-**Protocol:** Same [Phase J iteration protocol](#phase-j-iteration-protocol-strict) — `implementation` (**unit-focused**, switchOn + affected probe tests) → `independent-review` (**area-focused**) → `commit`.
+**Protocol:** [Change authoring primary loop](../../testing/change-authoring-workflow.md#primary-loop) (`documentation?` before frozen `independent-review`). Phase J harness/e2e: [Phase J iteration protocol](#phase-j-iteration-protocol-strict) — **unit-focused** `implementation` (switchOn + affected probe tests), then **area-focused** frozen review.
 
 **Gate for J1–J6:** **J0 complete + J0b committed** + parity registry updated.
 
@@ -372,7 +366,7 @@ Per [SDK audit §6](pipeline-sdk-support-audit.md): one function/commit; remove 
 
 1. Audit or implement bridge fix with **shared** e2e assertions.
 2. Update OKF parity registry (open/close rows).
-3. **Phase J:** follow [Phase J iteration protocol](#phase-j-iteration-protocol-strict) — `implementation` (Jest + **unit-focused** tier) → `independent-review` (**area-focused** tier, frozen tree) → `commit`; never commit before `review_gate` closed; never overlap `:test-cover` ([host rule](../../testing/change-authoring-workflow.md#host-rule)).
+3. **Phase J:** [change authoring primary loop](../../testing/change-authoring-workflow.md#primary-loop) (`documentation?` before frozen `independent-review`); Phase J harness/e2e in [Phase J iteration protocol](#phase-j-iteration-protocol-strict); never overlap `:test-cover` ([host rule](../../testing/change-authoring-workflow.md#host-rule)).
 4. 3-platform e2e on canonical commands ([running-e2e rules 6–7](../../testing/running-e2e.md)).
 
 **Phases K–Q (coverage):**

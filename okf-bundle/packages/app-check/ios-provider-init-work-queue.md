@@ -41,7 +41,7 @@ Durable decisions: **[architecture-decisions.md](architecture-decisions.md)**. P
 | **AC1** | `implementation` | Pending factory + fail-closed + tests; JS reorder; plugin comment (single item if reasonably sized) |
 | **AC2** | `independent-review` | Frozen tree; area-focused; **iOS + Android + macOS** app-check e2e |
 | **AC3** | `documentation` | Site troubleshooting (`exchangeDebugToken` 403); usage “configure before use”; OKF durable moves; release-note wording |
-| **AC4** | `commit` | One focused Conventional Commit (or per-split subjects if AC0 re-slices) |
+| **AC4** | `commit` | [change authoring § commit](../../testing/change-authoring-workflow.md#commit) (or per-split subjects if AC0 re-slices) |
 
 **Re-slice rule (AC0):** Prefer one AC1 implementation if the diff stays reasonably sized. If AC0 estimates a large blast radius, split before coding into e.g. **AC1a** native pending/fail-closed + tests, **AC1b** JS reorder, **AC1c** plugin comment — each with its own gates/commit subjects as needed.
 
@@ -210,7 +210,7 @@ Harness: `app`+`appCheck`, reverted after. Coverage: pre-check helper FNDA:7; AD
 | `yarn format:js` | 0 | no reformat needed on target files (unrelated `packages/app/type-test.ts` drift reformatted then reverted, out of scope) |
 | `yarn compare:types` | 0 | app-check: 4 missing / 9 extra / 2 different — documented (pre-existing) |
 
-**OKF bundle consistency pass:** full `okf-bundle/` sweep, focused on `packages/app-check/**` and inbound links. No DRY violations or dangling anchors found in files touched by this item. One **pre-existing, unrelated** dangling anchor flagged (not fixed — out of scope): `documentation-policy.md`'s OKF update contract table links `testing/coverage-design.md#coverage-evidence-package`, actual heading slug is `#coverage-evidence-package-blocking`. Route to a separate cleanup.
+**OKF bundle consistency pass:** full `okf-bundle/` sweep, focused on `packages/app-check/**` and inbound links. No DRY violations or dangling anchors found in files touched by this item.
 
 **Draft release-note wording** (repo has no CHANGELOG/changeset file; for PR body use):
 

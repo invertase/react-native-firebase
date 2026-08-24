@@ -21,7 +21,7 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 3. **Before any native `:build`:** root `yarn` exit 0 **and** patched fmt **≥ 12.1.0** — [install / patch / fmt gate](#install-patch-fmt-gate-blocking). Do **not** invent Podfile/fmt workarounds.
 4. When a canonical command fails: read the **full** output, fix **product code** (or re-run root `yarn` for a patch miss), re-run the **same** command. Do **not** switch invocation style.
 5. Do **not** infer alternate commands from error strings (`command not found: genversion`, `Couldn't find a script named "jet"`, etc.) — see [known traps](#known-traps).
-6. Subagents (Task, explore, orchestrator): same rule — paste the [handoff block](#subagent-handoff) into every RNFB task prompt.
+6. The [command constraints](#command-constraints) below apply to every shell session in this repo.
 
 ## Canonical registry
 
@@ -34,7 +34,7 @@ Single source for **which shell commands agents may run** in this repo. E2e is a
 | TS/JS validation sequence                                       | [validation checklist](validation-checklist.md)                                                                                                                                                                                                                                            | ad-hoc `tsc` in package dirs unless listed there                                                                                                              |
 | JS lint (implementation / review gate)                          | `yarn lint:js`, `yarn lint:js --fix`                                                                                                                                                                                                                                                       | package-scoped `eslint`, `npx eslint`                                                                                                                         |
 | Android Java format / lint                                      | `yarn lint:android`                                                                                                                                                                                                                                                                        | `yarn google-java-format`, bare `google-java-format`, `google-java-format -i`, `npx google-java-format`, any invented format script                           |
-| Docs lint (when docs in diff)                                   | `yarn lint:markdown`, `yarn lint:spellcheck`                                                                                                                                                                                                                                               | ad-hoc prettier/eslint on single files                                                                                                                        |
+| Docs lint                                                       | `yarn lint:markdown`, `yarn lint:spellcheck` — when: [validation checklist § lint and formatting](validation-checklist.md#lint-and-formatting) (`docs/**` only; OKF-only skips)                                                                                                           | ad-hoc prettier/eslint on single files                                                                                                                        |
 | iOS Ruby lint (RuboCop)                                         | `yarn lint:ruby` (also runs inside `yarn tests:ios:ruby`)                                                                                                                                                                                                                                  | ad-hoc `rubocop`, `bundle exec rubocop` without the Gemfile/config                                                                                            |
 | Android JVM unit tests                                          | `yarn tests:android:unit`                                                                                                                                                                                                                                                                  | ad-hoc `./gradlew …` outside this yarn script; bare Robolectric/JUnit IDE-only as the agent gate                                                              |
 | iOS Ruby unit tests (SPM / CocoaPods helpers)                   | `yarn lint:ruby` / `yarn tests:ios:ruby` (after `bundle install` on the **root** Gemfile when needed)                                                                                                                                                                                       | ad-hoc `ruby packages/app/__tests__/…_test.rb`, bare `ruby …/run_with_coverage.rb` without the yarn script as the agent gate                                  |
@@ -155,6 +155,8 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 
 ### TurboModule codegen
 
+<a id="turbomodule-codegen"></a>
+
 - **`cd packages/<pkg> && yarn ios:codegen`** (or `yarn android:codegen`) often fails with **`unknown command 'codegen'`** after a clean `yarn` — `@react-native-community/cli` resolves from the **test app** workspace.
 - Package scripts **wipe then regen** the configured `--outputPath` ([NewArch-AD-22](../new-architecture/architecture-decisions.md#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)). Prefer those yarn scripts when CLI resolution works.
 - **Canonical (mobile toolchain from `tests/`):** use each package's `yarn android:codegen` / `yarn ios:codegen` script, which delegates to [`scripts/codegen-package.mjs`](../../scripts/codegen-package.mjs). The shared runner wipes the configured output path and invokes the pinned mobile CLI from `tests/`; do not run the CLI manually. RN 0.86 emits `ResultT` natively, so the former inject script is retired ([NewArch-AD-21](../new-architecture/architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted)).
@@ -168,9 +170,9 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 - **Trap:** yarn exit **0** does **not** prove a macOS patch landed. If Nx cache-skips `react-native-firebase-tests-macos:prepare` (`patch-package`), fmt stays at **11.0.2**. Durable policy: [MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted). **Always** run the fmt `rg` verification before native `:build`.
 - **Never** invent Podfile `post_install` fmt hacks, `FMT_USE_CONSTEVAL`, `base.h` patches, or c++17-for-fmt-only as a substitute for a missed install/patch.
 
-## Subagent handoff
+## Command constraints
 
-Paste into Task / explore / work-queue prompts:
+<a id="command-constraints"></a>
 
 ```text
 RNFB agent command policy: okf-bundle/testing/agent-command-policy.md ONLY.
@@ -195,7 +197,7 @@ Gate close / push: return [validation evidence package](validation-checklist.md#
 | E2e commands, pre-flight, tiers               | [running-e2e.md](running-e2e.md)                                                                                                                    |
 | Install / patch / fmt before `:build`         | [§ install / patch / fmt gate](#install-patch-fmt-gate-blocking)                                                                                    |
 | Test-app RN / CLI pins (`react-native-macos`) | [test-app-dependency-pins.md](test-app-dependency-pins.md)                                                                                          |
-| Handoff validation sequence                   | [validation-checklist.md](validation-checklist.md)                                                                                                  |
+| Validation sequence                           | [validation-checklist.md](validation-checklist.md)                                                                                                  |
 | Android JVM unit ADR                          | [android-architecture-decisions.md](android-architecture-decisions.md)                                                                              |
 | iOS Ruby unit / SimpleCov                     | [coverage design § iOS Ruby](coverage-design.md#ios-ruby-simplecov); [validation checklist § iOS Ruby](validation-checklist.md#ios-ruby-unit-tests) |
 | Work types and gates                          | [change-authoring-workflow.md](change-authoring-workflow.md)                                                                                        |

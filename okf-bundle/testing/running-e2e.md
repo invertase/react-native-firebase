@@ -53,7 +53,7 @@ yarn tests:emulator:start
    - Native changed → `yarn tests:ios:build` / `yarn tests:android:build` before e2e. macOS uses firebase-js-sdk only — no native rebuild.
    - **Committed codegen / generated native artifacts count as native** — any change under `packages/*/ios/generated/**` or `packages/*/android/**/generated/**` (including wipe-then-regen orphan deletions), or TurboModule **codegen / spec / podspec / native shell**, is a native change: rebuild + [platform coverage](#platform-coverage-gate-blocking) e2e on iOS and Android. **`yarn codegen:verify` is not a substitute** for `:test-cover` ([change authoring § forbidden shortcuts](change-authoring-workflow.md#forbidden-shortcuts)).
    - `packages/*/lib/**` changed → **`yarn lerna:prepare` must run to completion (exit 0) before anything else** — Metro serves `dist/module/**`, not `lib/**`. See [prepare completion gate](#prepare-completion-gate-blocking) and [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first). After prepare finishes, restart the packager with `yarn tests:packager:jet-reset-cache` when Metro was already running ([packager reset-cache](#packager-reset-cache-eaddrinuse)).
-   - TurboModule **codegen / spec / podspec / native shell** changed → same as native changed, plus regen codegen ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)) when specs changed; if app loads with Metro redbox `Requiring unknown module "undefined"`, see [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
+   - TurboModule **codegen / spec / podspec / native shell** changed → same as native changed, plus regen codegen ([agent command policy § TurboModule codegen](agent-command-policy.md#turbomodule-codegen); wipe-then-regen [NewArch-AD-22](../new-architecture/architecture-decisions.md#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)) when specs changed; if app loads with Metro redbox `Requiring unknown module "undefined"`, see [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
    - **JS bundle (debug):** all platforms (iOS, Android, macOS) load JS from Metro; only **release** builds pre-bundle/embed JS. `lib/**` edits alone do not require `:build` — use the [prepare completion gate](#prepare-completion-gate-blocking) and Metro restart above.
    - **TS coverage:** run `:build` before `:test-cover` on iOS/Android so Istanbul + patched test-runner coverage instrumentation is in the debug native app (bundle still from Metro). After test-runner patch changes, restart the packager with `yarn tests:packager:jet-reset-cache` ([packager reset-cache](#packager-reset-cache-eaddrinuse)).
 
@@ -387,9 +387,11 @@ For `implementation` work type — validation tier **unit-focused** ([change aut
 3. macOS first when TS-only: `yarn tests:macos:test-cover 2>&1 | tee /tmp/rnfb-e2e-macos.log` — wait for exit code ([stalled run](#stalled-run-detection) if markers stop).
 4. If macOS green and native touched: `yarn tests:<platform>:build && yarn tests:<platform>:test-cover 2>&1 | tee /tmp/rnfb-e2e-<platform>.log`; one platform at a time.
 5. Grep log tail → fix → repeat from step 1.
-6. When `implementation_gate` closes, next work type is `independent-review` at **area-focused** tier — [frozen tree](change-authoring-workflow.md#frozen-tree); no `.only`; area narrowing per package workflow.
+6. When `implementation_gate` closes, next work type is `documentation?` then `independent-review` at **area-focused** tier — [change authoring § primary loop](change-authoring-workflow.md#primary-loop); [frozen tree](change-authoring-workflow.md#frozen-tree); no `.only`; area narrowing per package workflow.
 
-### Serialized e2e dispatch
+<a id="one-test-cover-at-a-time"></a>
+
+### One `:test-cover` at a time
 
 Never overlap runs that use `:test-cover`. See [host rule](change-authoring-workflow.md#host-rule).
 
@@ -398,7 +400,7 @@ Never overlap runs that use `:test-cover`. See [host rule](change-authoring-work
 | **One e2e run at a time**      | Wait for prior shell exit code + short log summary                                                                                                                                                                            |
 | **No overlapping tiers**       | Never run unit-focused-tier and area-focused-tier `:test-cover` concurrently on one host                                                                                                                                      |
 | **Clean pre-flight every run** | [Pre-flight](#pre-flight-is-the-host-clear-to-start) — [host-clear probes](#host-clear-probes), services, harness tier                                                                                                        |
-| **Phase J loop**               | `implementation` (Jest + **unit-focused**) → `independent-review` (**area-focused**, frozen tree) → `commit` — [work queue protocol](../packages/firestore/pipeline-coverage-work-queue.md#phase-j-iteration-protocol-strict) |
+| **Phase J e2e**                | Same serial `:test-cover` rule. Authoring loop: [change authoring primary loop](change-authoring-workflow.md#primary-loop) (`documentation?` before frozen `independent-review`). Harness: [pipeline area harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness) |
 
 Tier scope table: [E2e validation tiers](#e2e-validation-tiers-unit-focused-area-focused-full).
 
@@ -514,7 +516,7 @@ Pass counts in the **thousands** or unrelated suites (`database`, `crashlytics`,
 
 **Area example:** `modules: ['app', 'firestore']` + full firestore specs via existing `require.context`.
 
-Package-specific spec names: [Firestore pipeline harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness), [namespace removal § module area harness](../namespace-api-removal-workflow.md#module-area-harness).
+Package-specific spec names: [Firestore pipeline harness](../packages/firestore/pipeline-implementation-workflow.md#pipeline-area-harness). Area narrowing otherwise: [§ local harness overrides](#local-harness-overrides-harnessoverridesjs).
 
 <a id="fail-fast-rnfbdebug-and-sub-suite-narrowing"></a>
 
@@ -535,7 +537,7 @@ Package workflows may further restrict narrowing per [validation tier](#e2e-vali
 
 ## E2e validation tiers (unit-focused / area-focused / full)
 
-All tiers use [canonical commands](#rules), [host rule](change-authoring-workflow.md#host-rule), and clean [pre-flight](#pre-flight-is-the-host-clear-to-start). Tier names describe **scope**, not who runs the commands — see [iteration vocabulary](iteration-vocabulary.md#validation-tier-identifiers).
+All tiers use [canonical commands](#rules), [host rule](change-authoring-workflow.md#host-rule), and clean [pre-flight](#pre-flight-is-the-host-clear-to-start). Tier names describe **scope** — see [iteration vocabulary](iteration-vocabulary.md#validation-tier-identifiers). Public OKF owns the terms, gates, and commands.
 
 | Validation tier  | E2e scope                                             | Narrowing allowed                                                                                    | Typical work type                        |
 | ---------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------- |
@@ -550,7 +552,7 @@ All tiers use [canonical commands](#rules), [host rule](change-authoring-workflo
 - Use **only** canonical commands from this doc.
 - Never overlap unit-focused-tier and area-focused-tier `:test-cover` on one host.
 
-See also: [unit-focused-tier loop](#unit-focused-tier-iteration-loop), [dispatch](#serialized-e2e-dispatch), [pre-merge](#before-merge-pr-handoff).
+See also: [unit-focused-tier loop](#unit-focused-tier-iteration-loop), [one :test-cover at a time](#one-test-cover-at-a-time), [pre-merge](#before-merge-pr-handoff).
 
 ## Environment
 
@@ -663,11 +665,11 @@ CI restores the same tree from `~/Library/Detox/ios` keyed by Xcode version ([iO
 
 ### TurboModule migration — stale JS/native toolchain (blocking)
 
-During TurboModule work, three different **`undefined`** / load failures are easy to confuse — only the third row below is fixed by the [native registration checklist](../new-architecture/turbomodule-implementation-workflow.md#turbomodule-native-registration-checklist-blocking):
+During TurboModule work, three different **`undefined`** / load failures are easy to confuse:
 
 | Symptom                                                             | Likely cause                                                                                                  | Fix (escalate in order)                                                                                                                          |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `this.native.isFoo` is **`undefined`** in JS                        | Spec/native **constants** chain incomplete (`getConstants`, `getTypedExportedConstants`, iOS typed constants) | [Workflow checklist rows 1, 6, 8](../new-architecture/turbomodule-implementation-workflow.md#turbomodule-native-registration-checklist-blocking) |
+| `this.native.isFoo` is **`undefined`** in JS                        | Spec/native **constants** chain incomplete (`getConstants`, `getTypedExportedConstants`, iOS typed constants) | [NewArch-AD-15](../new-architecture/architecture-decisions.md#newarch-ad-15--constant-memoization-scope-static-only--accepted); spec must declare `getConstants` when JS reads native constants |
 | Android `Proxy target must be an Object`                            | JNI not linked / **stale autolinking cache**                                                                  | Delete `tests/android/build/generated/autolinking/autolinking.json` + `*.sha`, `:build`                                                          |
 | Metro redbox **`Requiring unknown module "undefined"`** at app load | **Stale Metro and/or partial native refresh** after codegen / `lib/**` / podspec changes                      | Steps below; then [full refresh](#turbomodule-full-toolchain-refresh) if needed                                                                  |
 
@@ -676,7 +678,7 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 **Routine fix** (try first after codegen, podspec, or `packages/*/lib/**` edits):
 
 1. [Prepare completion gate](#prepare-completion-gate-blocking) — `yarn lerna:prepare` exit 0.
-2. Regenerate codegen if specs changed — [workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical) (wipe configured `outputPath`, then CLI / package scripts).
+2. Regenerate codegen if specs changed — [agent command policy § TurboModule codegen](agent-command-policy.md#turbomodule-codegen) (wipe configured `outputPath`, then package `android:codegen` / `ios:codegen`).
 3. **`yarn tests:<platform>:build`** (includes `pod install` on iOS when needed).
 4. **`yarn tests:packager:jet-reset-cache`** (Metro was running during the edits) — [packager reset-cache](#packager-reset-cache-eaddrinuse).
 5. [Pre-flight](#pre-flight-is-the-host-clear-to-start) → **`yarn tests:<platform>:test-cover`**.
@@ -689,7 +691,7 @@ During TurboModule work, three different **`undefined`** / load failures are eas
 2. Remove **all** `node_modules` (repo root, `tests/`, and under `packages/*` if present).
 3. **`yarn`** at repo root (wait for exit 0 — includes `lerna:prepare` and patches).
 4. Confirm [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (fmt **≥ 12.1.0**) before any native `:build`.
-5. Regenerate **all** touched packages' codegen from `tests/` ([workflow § Running codegen](../new-architecture/turbomodule-implementation-workflow.md#running-codegen-canonical)).
+5. Regenerate **all** touched packages' codegen from `tests/` ([agent command policy § TurboModule codegen](agent-command-policy.md#turbomodule-codegen)).
 6. **`yarn tests:ios:pod:install`** when iOS native/codegen changed.
 7. **`yarn tests:<platform>:build`**.
 8. **`yarn tests:packager:jet-reset-cache`** ([packager reset-cache](#packager-reset-cache-eaddrinuse)) → pre-flight → `:test-cover`.
@@ -702,8 +704,8 @@ Do **not** treat this redbox as a missing TurboModule registration until the ref
 
 **Native / device logs** (remove instrumentation before merge):
 
-- **macOS** — `log show --predicate 'process == "io.invertase.testing"' --last 10m --style compact`; filter `com.facebook.react.log:javascript` for bundle errors. **Blank window / Jet never connects:** often `Native module NativeRNFBTurboApp is not registered` — see [TurboModule workflow § gotchas — macOS web registration](../new-architecture/turbomodule-implementation-workflow.md#gotchas). Other bundle errors → [other.md](../ci-workflows/other.md)
-- **iOS** — `xcrun simctl spawn booted log stream --level debug --style compact --predicate 'process == "testing"'`; silent hangs: `sample <pid>` on `testing`. Metro redbox **`Requiring unknown module "undefined"`** → [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking), not registration checklist alone.
+- **macOS** — `log show --predicate 'process == "io.invertase.testing"' --last 10m --style compact`; filter `com.facebook.react.log:javascript` for bundle errors. **Blank window / Jet never connects:** often `Native module NativeRNFBTurboApp is not registered` — [NewArch-AD-2](../new-architecture/architecture-decisions.md#newarch-ad-2--naming-nativernfbturbo--accepted) (web/macOS registry must include turbo keys). Other bundle errors → [other.md](../ci-workflows/other.md)
+- **iOS** — `xcrun simctl spawn booted log stream --level debug --style compact --predicate 'process == "testing"'`; silent hangs: `sample <pid>` on `testing`. Metro redbox **`Requiring unknown module "undefined"`** → [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
 - **Android** — `adb logcat` (filter your tags)
 
 **Benign noise:** iOS Detox `EXEC_FAIL "xcrun simctl terminate … io.invertase.testing" … found nothing to terminate` — app wasn't running; ignore.
