@@ -18,6 +18,8 @@ native application code do not change.
 - `$RNFirebaseDisableSPM = true` selects CocoaPods.
 - React Native versions older than 0.75 use CocoaPods because their pod tooling
   does not provide `spm_dependency`.
+- SPM requires CocoaPods 1.10 or newer. React Native 0.75+ templates already
+  satisfy this requirement.
 
 SPM requires dynamic framework linkage:
 
@@ -148,8 +150,7 @@ end
 RNFB normally installs its SPM framework-embedding phase automatically after
 CocoaPods has integrated `[CP] Embed Pods Frameworks` into the app target
 (`post_integrate`). If `pod install` warns that automatic embedding could not
-be configured, call the documented fallback from `post_integrate` (use
-`post_install` only if your CocoaPods version has no `post_integrate` hook):
+be configured, call the documented fallback from `post_integrate`:
 
 ```ruby
 post_integrate do |installer|
@@ -253,8 +254,7 @@ time with duplicate symbols (and `pod install` rejects the combination).
   `[FIRApp configure]`/`FirebaseApp.configure()` call links. This only
   surfaces if that automatic step could not run; call
   `rnfirebase_add_spm_core_to_app_target(installer)` from `post_integrate`
-  (or `post_install` on CocoaPods without that hook) as a fallback if your
-  own native code also calls Firebase APIs directly.
+  as a fallback if your own native code also calls Firebase APIs directly.
 - **A stale "firebase-ios-sdk" Swift Package reference remains on the app
   target after switching from SPM to `$RNFirebaseDisableSPM = true`:** RNFB
   removes it automatically on the next `pod install`; if that could not run,
