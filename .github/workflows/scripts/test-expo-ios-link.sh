@@ -1,10 +1,9 @@
 #!/bin/bash
-# Reproduces the CPRN-301 / GitHub #9158 iOS *link* failure using a minimal
-# Expo SDK 57 fixture (test-expo/) on the documented default install path:
-# SPM on, useFrameworks: "dynamic", prebuilt RNCore on (no
-# RCT_USE_PREBUILT_RNCORE=0, no disableSPM, no forceStaticLinking, no
-# buildReactNativeFromSource anywhere). This is item E0 -- land the fixture
-# and confirm RED only, no product fix.
+# Documented-path Expo iOS *link* closer for GitHub #9158: a minimal Expo
+# SDK 57 fixture (test-expo/) with SPM on, useFrameworks: "dynamic",
+# prebuilt RNCore on (no RCT_USE_PREBUILT_RNCORE=0, no disableSPM, no
+# forceStaticLinking, no buildReactNativeFromSource). Must finish green
+# past undefined `_OBJC_CLASS_$_FIRApp` (missing app-target FirebaseCore).
 #
 # This is a *different* bug from two other RNCore issues tracked elsewhere
 # in this repo -- do not "fix" this script by touching their owning docs:
@@ -17,7 +16,7 @@
 #   - duplicate `_FIRFirebaseVersion` after FIRApp resolves:
 #     GitHub #9202 / CPRN-321 (out of scope until past FIRApp)
 #
-# Expected RED signature (from GitHub #9158): undefined `_OBJC_CLASS_$_FIRApp`
+# Historical #9158 signature to stay past: undefined `_OBJC_CLASS_$_FIRApp`
 # (and/or missing app-target FirebaseCore / packageProductDependencies) --
 # not a compile error, not "undefined RCTEventEmitter", not #9202 duplicate
 # `_FIRFirebaseVersion`.
@@ -51,10 +50,10 @@ if [[ ! -d "$WORKSPACE" ]]; then
   exit 1
 fi
 
-# E0 diagnosis: did #9164's rnfirebase_add_spm_core_to_app_target run during
+# Diagnosis: did #9164's rnfirebase_add_spm_core_to_app_target run during
 # Expo CNG `pod install`, and did the resulting pbxproj keep FirebaseCore on
 # the app target? Do not "fix" a wipe by hand-editing pbxproj or adding a
-# custom Podfile post_install -- that is not the documented Expo path.
+# custom Podfile post_integrate -- that is not the documented Expo path.
 log "--- SPM helper / pbxproj diagnosis ---"
 if grep -E '\[react-native-firebase\]' "$PREBUILD_LOG" >/dev/null 2>&1; then
   log "pod/prebuild lines matching [react-native-firebase]:"
@@ -81,7 +80,7 @@ if [[ -f "$PBXPROJ" ]]; then
     log "pbxproj HAS NO [CP] Embed Pods Frameworks -- helper would skip every native target"
   fi
   if grep -q '\[RNFB\] Embed Firebase SPM Frameworks' "$PBXPROJ"; then
-    log "pbxproj HAS [RNFB] Embed Firebase SPM Frameworks (post_install hook did mutate app project)"
+    log "pbxproj HAS [RNFB] Embed Firebase SPM Frameworks (post_integrate hook did mutate app project)"
   else
     log "pbxproj HAS NO [RNFB] Embed Firebase SPM Frameworks"
   fi

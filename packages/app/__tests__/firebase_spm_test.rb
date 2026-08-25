@@ -1455,6 +1455,7 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 1, Pod::UI.warnings.length
     assert_includes Pod::UI.warnings[0], 'run_podfile_post_install_hooks'
     assert_includes Pod::UI.warnings[0], 'rnfirebase_add_spm_embed_phase(installer)'
+    assert_includes Pod::UI.warnings[0], 'post_integrate'
   end
 
   def test_hook_raises_and_skips_original_hook_when_spm_static_linkage_detected
@@ -1491,6 +1492,7 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 1, Pod::UI.warnings.length
     assert_includes Pod::UI.warnings[0], 'Pod::Installer'
     assert_includes Pod::UI.warnings[0], 'rnfirebase_add_spm_embed_phase(installer)'
+    assert_includes Pod::UI.warnings[0], 'post_integrate'
   end
 
   def test_hook_does_not_warn_when_already_hooked
@@ -1631,6 +1633,45 @@ class FirebaseSpmTest < Minitest::Test
     assert_includes error.message, 'Failed to add the Firebase SPM embed build phase'
     assert_equal 1, Pod::UI.warnings.length
     assert_includes Pod::UI.warnings[0], 'embed Firebase SPM frameworks'
+    assert_includes Pod::UI.warnings[0], 'post_integrate'
+  end
+
+  def test_run_spm_user_project_hooks_warns_on_add_core_failure
+    load_firebase_spm
+    Object.define_method(:rnfirebase_add_spm_core_to_app_target) { |*| raise 'core boom' }
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+    RNFirebaseSPM.activate!('12.10.0')
+    Pod::UI.warnings.clear
+
+    rnfirebase_run_spm_user_project_hooks(installer)
+
+    core_warn = Pod::UI.warnings.find { |warning| warning.include?('link FirebaseCore') }
+    refute_nil core_warn
+    assert_includes core_warn, 'core boom'
+    assert_includes core_warn, 'post_integrate'
+    assert_includes core_warn, 'rnfirebase_add_spm_core_to_app_target(installer)'
+  end
+
+  def test_run_spm_user_project_hooks_warns_on_build_settings_failure
+    load_firebase_spm
+    Object.define_method(:rnfirebase_apply_spm_build_settings) { |*| raise 'settings boom' }
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+    RNFirebaseSPM.activate!('12.10.0')
+    Pod::UI.warnings.clear
+
+    rnfirebase_run_spm_user_project_hooks(installer)
+
+    settings_warn = Pod::UI.warnings.find { |warning| warning.include?('apply Firebase SPM build settings') }
+    refute_nil settings_warn
+    assert_includes settings_warn, 'settings boom'
+    assert_includes settings_warn, 'post_integrate'
+    assert_includes settings_warn, 'rnfirebase_apply_spm_build_settings(installer)'
   end
 
   # ── rnfirebase_verify_spm_embed_phase_applied! ──
@@ -1688,6 +1729,7 @@ class FirebaseSpmTest < Minitest::Test
     assert_includes error.message, 'Failed to add the Firebase SPM embed build phase'
     assert_includes error.message, 'testing'
     assert_includes error.message, 'rnfirebase_add_spm_embed_phase(installer)'
+    assert_includes error.message, 'post_integrate'
   end
 
   def test_verify_embed_phase_lists_every_missing_target_by_name
@@ -1890,6 +1932,7 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 1, Pod::UI.warnings.length
     assert_includes Pod::UI.warnings[0], "Couldn't hook CocoaPods to auto-embed Firebase SPM"
     assert_includes Pod::UI.warnings[0], 'install boom'
+    assert_includes Pod::UI.warnings[0], 'post_integrate'
   end
 end
 

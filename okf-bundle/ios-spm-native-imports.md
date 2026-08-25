@@ -260,8 +260,8 @@ yet. Running those helpers from `post_install` therefore skipped every
 native target: integrate then wrote the CP phase without a FirebaseCore
 `PBXBuildFile` or the RNFB embed phase, which is the `_OBJC_CLASS_$_FIRApp`
 link failure on GitHub
-[#9158](https://github.com/invertase/react-native-firebase/issues/9158) /
-Linear CPRN-301. Incremental `pod install` on a project that already has
+[#9158](https://github.com/invertase/react-native-firebase/issues/9158).
+Incremental `pod install` on a project that already has
 the Frameworks `PBXBuildFile` still no-ops (no double-link).
 
 `packages/app/firebase_spm.rb` therefore runs **user-project** SPM helpers
