@@ -38,7 +38,6 @@ PBXPROJ="ios/testexpo.xcodeproj/project.pbxproj"
 # documented `expo prebuild` command; un-silence CocoaPods so we can see
 # whether firebase_spm.rb / rnfirebase_add_spm_core_to_app_target ran.
 log "expo prebuild --platform ios --clean (log: ${PREBUILD_LOG})"
-set -o pipefail
 EXPO_DEBUG=1 npx expo prebuild --platform ios --clean 2>&1 | tee "$PREBUILD_LOG"
 
 WORKSPACE="${RNFB_TEST_EXPO_WORKSPACE:-ios/testexpo.xcworkspace}"
@@ -106,7 +105,6 @@ export RCT_NO_LAUNCH_PACKAGER=1
 # does not default to a foreign arch (x86_64 on Apple Silicon).
 HOST_ARCH="$(uname -m)"
 log "xcodebuild build (iOS Simulator, unsigned, Release, arch=${HOST_ARCH}) (log: ${XCODEBUILD_LOG})"
-set -o pipefail
 xcodebuild_args=(
   ARCHS="${HOST_ARCH}"
   VALID_ARCHS="${HOST_ARCH}"
