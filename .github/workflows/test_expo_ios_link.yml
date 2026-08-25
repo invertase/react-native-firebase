@@ -14,6 +14,8 @@ on:
       - 'test-expo/**'
       - '.github/workflows/test_expo_ios_link.yml'
       - '.github/workflows/scripts/test-expo-ios-link.sh'
+      - 'packages/app/firebase_spm.rb'
+      - 'packages/app/__tests__/firebase_spm*_test.rb'
   push:
     branches:
       - main
@@ -22,6 +24,8 @@ on:
       - 'test-expo/**'
       - '.github/workflows/test_expo_ios_link.yml'
       - '.github/workflows/scripts/test-expo-ios-link.sh'
+      - 'packages/app/firebase_spm.rb'
+      - 'packages/app/__tests__/firebase_spm*_test.rb'
 
 permissions:
   contents: read

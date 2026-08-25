@@ -313,10 +313,11 @@ end
 # release restructures `Pod::Installer`), it prints a `pod install`-time
 # warning telling you to call this explicitly instead:
 #
-#   post_install do |installer|
-#     react_native_post_install(installer, ...)
+#   post_integrate do |installer|
 #     rnfirebase_add_spm_embed_phase(installer)
 #   end
+#
+# Use `post_install` only if your CocoaPods version has no `post_integrate`.
 def rnfirebase_add_spm_embed_phase(installer)
   return unless RNFirebaseSPM.active?
 
@@ -386,7 +387,7 @@ def rnfirebase_verify_spm_embed_phase_applied!(installer)
 
     Without it, this app will crash at launch with a missing-library dyld error, because Firebase's Swift Package frameworks never get copied into the app bundle.
 
-    Add `rnfirebase_add_spm_embed_phase(installer)` to your Podfile's post_install block as a fallback, then run `pod install` again. # rubocop:disable Layout/LineLength
+    Add `rnfirebase_add_spm_embed_phase(installer)` to your Podfile's post_integrate block as a fallback, then run `pod install` again. # rubocop:disable Layout/LineLength
   MESSAGE
 end
 
@@ -540,7 +541,7 @@ def rnfirebase_run_spm_user_project_hooks(installer)
     if defined?(Pod::UI)
       Pod::UI.warn "[react-native-firebase] Couldn't embed Firebase SPM frameworks " \
                    "automatically (#{e.class}: #{e.message}). Add `rnfirebase_add_spm_embed_phase(installer)` " \
-                   'to your Podfile\'s post_install block as a fallback.'
+                   'to your Podfile\'s post_integrate block as a fallback.'
     end
   end
   # Deliberately outside the `rescue` above: dynamic framework embedding is
@@ -556,7 +557,7 @@ def rnfirebase_run_spm_user_project_hooks(installer)
       Pod::UI.warn "[react-native-firebase] Couldn't link FirebaseCore into the app target " \
                    "automatically (#{e.class}: #{e.message}). " \
                    'Add `rnfirebase_add_spm_core_to_app_target(installer)` ' \
-                   'to your Podfile\'s post_install block as a fallback if your own native code calls ' \
+                   'to your Podfile\'s post_integrate block as a fallback if your own native code calls ' \
                    'FIRApp/FIROptions APIs directly.'
     end
   end
@@ -589,7 +590,7 @@ def rnfirebase_run_spm_user_project_hooks(installer)
       Pod::UI.warn "[react-native-firebase] Couldn't apply Firebase SPM build settings " \
                    "automatically (#{e.class}: #{e.message}). " \
                    'Add `rnfirebase_apply_spm_build_settings(installer)` ' \
-                   'to your Podfile\'s post_install block as a fallback if Release builds crash at launch with ' \
+                   'to your Podfile\'s post_integrate block as a fallback if Release builds crash at launch with ' \
                    'missing FIRComponent registrations, or Xcode reports that a Firebase module such as ' \
                    '`FirebaseCoreInternal`/`FirebaseSharedSwift` cannot be resolved.'
     end
@@ -646,7 +647,7 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
     if defined?(Pod::UI)
       Pod::UI.warn '[react-native-firebase] `Pod::Installer` isn\'t defined -- automatic Firebase SPM setup ' \
                    '(dynamic framework embedding, etc.) was not hooked into `pod install`. Add ' \
-                   '`rnfirebase_add_spm_embed_phase(installer)` to your Podfile\'s post_install block as a fallback.'
+                   '`rnfirebase_add_spm_embed_phase(installer)` to your Podfile\'s post_integrate block as a fallback.'
     end
     return
   end
@@ -656,7 +657,7 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
     if defined?(Pod::UI)
       Pod::UI.warn "[react-native-firebase] `Pod::Installer##{hook_method}` doesn't exist (a CocoaPods " \
                    'release may have renamed or removed it) -- automatic Firebase SPM setup was not hooked into ' \
-                   '`pod install`. Add `rnfirebase_add_spm_embed_phase(installer)` to your Podfile\'s post_install ' \
+                   '`pod install`. Add `rnfirebase_add_spm_embed_phase(installer)` to your Podfile\'s post_integrate ' \
                    'block as a fallback.'
     end
     return
@@ -728,7 +729,7 @@ rescue StandardError => e
   if defined?(Pod::UI)
     Pod::UI.warn "[react-native-firebase] Couldn't hook CocoaPods to auto-embed Firebase SPM " \
                  "frameworks (#{e.class}: #{e.message}). Add `rnfirebase_add_spm_embed_phase(installer)` " \
-                 'to your Podfile\'s post_install block as a fallback.'
+                 'to your Podfile\'s post_integrate block as a fallback.'
   end
 end
 
