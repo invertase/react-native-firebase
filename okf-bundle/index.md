@@ -28,7 +28,7 @@ okf_version: '0.1'
 # Cross-cutting work
 
 - [TurboModule / New Architecture](/new-architecture/index.md) — [ADR](/new-architecture/architecture-decisions.md); Codegen TurboModules, coordinated New Architecture break
-- [iOS SPM native integration decisions](/ios-spm-native-imports.md) — dual imports, Swift-product helpers, and runtime framework embedding
+- [iOS SPM native integration decisions](/ios-spm-native-imports.md) — dual imports, Swift-product helpers, runtime framework embedding, Expo precompiled module linkage repair
 - [iOS RNCore podspec invariants](/ios-rncore-podspec.md) — Clang non-modular-includes flag and `pod_target_xcconfig` order under `use_frameworks!`
 - [Monorepo tooling](/monorepo-tooling/index.md) — Nx local cache, deterministic prepare graph, declaration maps, dependency-cycle linting, dev watch; decisions (ADR) + rollout queue
 
