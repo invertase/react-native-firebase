@@ -1,3 +1,11 @@
+---
+type: Reference
+title: Android CI workflows
+description: Android CI job structure, coverage handling, Detox failure modes, mitigations, and troubleshooting guidance.
+tags: [ci, android, detox, e2e, coverage, troubleshooting]
+timestamp: 2026-08-26T00:00:00Z
+---
+
 # Android CI workflows
 
 ## E2E job shape (CI — mirrors workflow YAML; local: [running e2e](../testing/running-e2e.md))

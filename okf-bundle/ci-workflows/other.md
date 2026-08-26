@@ -1,3 +1,11 @@
+---
+type: Reference
+title: Other CI workflows
+description: macOS and shared CI pipeline behavior, known failure modes, mitigations, and troubleshooting guidance.
+tags: [ci, macos, e2e, metro, jet, troubleshooting]
+timestamp: 2026-08-26T00:00:00Z
+---
+
 # Other CI workflows
 
 ## macOS e2e (`tests_e2e_other.yml`)

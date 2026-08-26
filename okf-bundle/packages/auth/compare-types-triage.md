@@ -1,3 +1,11 @@
+---
+type: Reference
+title: Auth modular API compare:types triage
+description: Durable classification of modular Auth type and runtime differences from the Firebase JavaScript SDK.
+tags: [auth, modular-api, types, compare-types, firebase-js-sdk, parity]
+timestamp: 2026-08-26T00:00:00Z
+---
+
 # Auth modular API — compare:types triage
 
 Known differences between `@react-native-firebase/auth` and firebase-js-sdk modular Auth.

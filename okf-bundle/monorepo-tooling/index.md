@@ -1,11 +1,3 @@
----
-type: Reference
-title: Monorepo tooling
-description: Durable decisions and design for React Native Firebase monorepo build tooling — Nx local cache, prepare graph, declaration maps, dependency cycle linting, dev watch, and the ephemeral rollout queue.
-tags: [monorepo, tooling, nx, lerna, bob, build, work-queue]
-timestamp: 2026-07-10T00:00:00Z
----
-
 # Monorepo tooling
 
 Build-tooling decisions and design for the React Native Firebase monorepo: task orchestration, caching, package build graph, declaration maps, dependency-cycle linting, and developer watch/TDD ergonomics.
