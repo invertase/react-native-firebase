@@ -59,7 +59,7 @@ const db = getFirestore();
 const usersCollection = collection(db, 'Users');
 ```
 
-The `collection` function returns a [`CollectionReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/CollectionReference.html) class, which provides
+The `collection` function returns a [`CollectionReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/CollectionReference.html) class, which provides
 properties and methods to query and fetch the data from Cloud Firestore. We can also directly reference a single document
 on the collection by calling the `doc` function:
 
@@ -72,11 +72,11 @@ const db = getFirestore();
 const userDocument = doc(collection(db, 'Users'), 'ABC');
 ```
 
-The `doc` function returns a [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentReference.html).
+The `doc` function returns a [`DocumentReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentReference.html).
 
 A document can contain different types of data, including scalar values (strings, booleans, numbers), arrays (lists) and
-objects (maps) along with specific Cloud Firestore data such as [Timestamps](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/Timestamp.html),
-[GeoPoints](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/GeoPoint.html), [Bytes](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/Bytes.html#frombase64string) and more.
+objects (maps) along with specific Cloud Firestore data such as [Timestamps](https://reference.rnfirebase.io/_react-native-firebase/firestore/index/Timestamp.html),
+[GeoPoints](https://reference.rnfirebase.io/_react-native-firebase/firestore/index/GeoPoint.html), [Bytes](https://reference.rnfirebase.io/_react-native-firebase/firestore/index/Bytes.html#frombase64string) and more.
 
 ## Read Data
 
@@ -85,8 +85,8 @@ realtime updates when the data within a query changes.
 
 ### One-time read
 
-To read a collection or document once, call `getDocs` on a [`CollectionReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/CollectionReference.html)
-or `getDoc` on a [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentReference.html):
+To read a collection or document once, call `getDocs` on a [`CollectionReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/CollectionReference.html)
+or `getDoc` on a [`DocumentReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentReference.html):
 
 ```js
 import { collection, doc, getDoc, getDocs, getFirestore } from '@react-native-firebase/firestore';
@@ -142,14 +142,14 @@ Realtime changes via `onSnapshot` can be applied to both collections and documen
 
 ### Snapshots
 
-Once a query has returned a result, Firestore returns either a [`QuerySnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/QuerySnapshot.html) (for
-collection queries) or a [`DocumentSnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentSnapshot.html) (for document queries). These snapshots
+Once a query has returned a result, Firestore returns either a [`QuerySnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/QuerySnapshot.html) (for
+collection queries) or a [`DocumentSnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentSnapshot.html) (for document queries). These snapshots
 provide the ability to view the data, view query metadata (such as whether the data was from local cache), whether the
 document exists or not and more.
 
 #### `QuerySnapshot`
 
-A [`QuerySnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/QuerySnapshot.html) returned from a collection query allows you to inspect the collection,
+A [`QuerySnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/QuerySnapshot.html) returned from a collection query allows you to inspect the collection,
 such as how many documents exist within it, access to the documents within the collection, any changes since the last query
 and more.
 
@@ -169,13 +169,13 @@ getDocs(collection(db, 'Users')).then(querySnapshot => {
 });
 ```
 
-Each child document of a `QuerySnapshot` is a [`QueryDocumentSnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/QueryDocumentSnapshot.html), which
+Each child document of a `QuerySnapshot` is a [`QueryDocumentSnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/QueryDocumentSnapshot.html), which
 allows you to access specific information about a document (see below).
 
 #### `DocumentSnapshot`
 
-A [`DocumentSnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentSnapshot.html) is returned from a query to a specific document, or as part
-of the documents returned via a [`QuerySnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/QuerySnapshot.html). The snapshot provides the ability
+A [`DocumentSnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentSnapshot.html) is returned from a query to a specific document, or as part
+of the documents returned via a [`QuerySnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/QuerySnapshot.html). The snapshot provides the ability
 to view a documents data, metadata and whether a document actually exists.
 
 To view a documents data, call the `data` method on the snapshot:
@@ -371,7 +371,7 @@ getDocs(query(collection(db, 'Users'), orderBy('age', 'desc'), startAt(18), endA
 
 The above query orders the users by age in descending order, but only returns users whose age is between 18 and 30.
 
-You can further specify a [`DocumentSnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentSnapshot.html) instead of a specific value. For example:
+You can further specify a [`DocumentSnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentSnapshot.html) instead of a specific value. For example:
 
 ```js
 import {
@@ -413,7 +413,7 @@ For a more in-depth look at what is possible when writing data to Firestore plea
 
 ## Adding documents
 
-To add a new document to a collection, use `addDoc` with a [`CollectionReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/CollectionReference.html):
+To add a new document to a collection, use `addDoc` with a [`CollectionReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/CollectionReference.html):
 
 ```js
 import { addDoc, collection, getFirestore } from '@react-native-firebase/firestore';
@@ -429,7 +429,7 @@ addDoc(collection(db, 'Users'), {
 ```
 
 `addDoc` adds the new document to your collection with a random unique ID. If you'd like to specify your own ID,
-call `setDoc` with a [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentReference.html) instead:
+call `setDoc` with a [`DocumentReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentReference.html) instead:
 
 ```js
 import { collection, doc, getFirestore, setDoc } from '@react-native-firebase/firestore';
@@ -446,7 +446,7 @@ setDoc(doc(collection(db, 'Users'), 'ABC'), {
 
 ### Updating documents
 
-The `setDoc` example above replaces any existing data on a given [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentReference.html).
+The `setDoc` example above replaces any existing data on a given [`DocumentReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentReference.html).
 if you'd like to update a document instead, use `updateDoc`:
 
 ```js
@@ -477,10 +477,10 @@ updateDoc(doc(collection(db, 'Users'), 'ABC'), {
 
 #### Field values
 
-Cloud Firestore supports storing and manipulating values on your database, such as [Timestamps](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/Timestamp.html),
-[GeoPoints](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/GeoPoint.html), [Bytes](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/Bytes.html#frombase64string) and array management.
+Cloud Firestore supports storing and manipulating values on your database, such as [Timestamps](https://reference.rnfirebase.io/_react-native-firebase/firestore/index/Timestamp.html),
+[GeoPoints](https://reference.rnfirebase.io/_react-native-firebase/firestore/index/GeoPoint.html), [Bytes](https://reference.rnfirebase.io/_react-native-firebase/firestore/index/Bytes.html#frombase64string) and array management.
 
-To store [`GeoPoint`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/GeoPoint.html) values, provide the latitude and longitude to a new instance of the
+To store [`GeoPoint`](https://reference.rnfirebase.io/_react-native-firebase/firestore/index/GeoPoint.html) values, provide the latitude and longitude to a new instance of the
 class:
 
 ```js
@@ -493,7 +493,7 @@ updateDoc(doc(db, 'users', 'ABC'), {
 });
 ```
 
-To store raw [Bytes](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/Bytes.html#frombase64string) (for example of a `Base64` image string), provide the string to the static
+To store raw [Bytes](https://reference.rnfirebase.io/_react-native-firebase/firestore/index/Bytes.html#frombase64string) (for example of a `Base64` image string), provide the string to the static
 `fromBase64String` method on the class:
 
 ```js
@@ -548,7 +548,7 @@ updateDoc(doc(db, 'users', 'ABC'), {
 
 ## Removing data
 
-You can delete documents within Cloud Firestore using the `deleteDoc` method with a [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/deleteDoc.html):
+You can delete documents within Cloud Firestore using the `deleteDoc` method with a [`DocumentReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/index/deleteDoc.html):
 
 ```js
 import { deleteDoc, doc, getFirestore } from '@react-native-firebase/firestore';

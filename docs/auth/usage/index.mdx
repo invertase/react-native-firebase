@@ -95,7 +95,7 @@ function App() {
 ```
 
 If the `user` returned within the handler is `null` we assume the user is currently signed-out, otherwise they are
-signed-in and a [`User`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html) interface is returned.
+signed-in and a [`User`](https://reference.rnfirebase.io/_react-native-firebase/auth/User.html) interface is returned.
 
 The `onAuthStateChanged` method also returns an unsubscriber function which allows us to stop listening for events whenever
 the hook is no longer in use.
@@ -134,7 +134,7 @@ signInAnonymously(getAuth())
 ```
 
 Once successfully signed in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger an event
-with the [`User`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html) details.
+with the [`User`](https://reference.rnfirebase.io/_react-native-firebase/auth/User.html) details.
 
 In case any errors occur, the module provides support for identifying what specifically went wrong by attaching a code
 to the error. For a full list of error codes available, view the [Firebase documentation](https://firebase.google.com/docs/reference/js/auth.md#autherrorcodes).
@@ -171,14 +171,14 @@ createUserWithEmailAndPassword(getAuth(), 'jane.doe@example.com', 'SuperSecretPa
 ```
 
 Once successfully created and/or signed in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger an event
-with the [`User`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html) details.
+with the [`User`](https://reference.rnfirebase.io/_react-native-firebase/auth/User.html) details.
 
 In case any errors occur, the module provides support for identifying what specifically went wrong by attaching a code
 to the error. For a full list of error codes available, view the [Firebase documentation](https://firebase.google.com/docs/reference/js/auth.md#autherrorcodes).
 
 ## Authenticate with backend server
 
-The user's token should be used for authentication with your backend systems. The token is fetched with the [getIdToken](https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/User.html#getIdToken) method. As mentioned in the [Firebase documentation](https://firebase.google.com/docs/auth/web/manage-users#get_a_users_profile), the uid should not be used for authentication.
+The user's token should be used for authentication with your backend systems. The token is fetched with the [getIdToken](https://reference.rnfirebase.io/_react-native-firebase/auth/getIdToken.html) method. As mentioned in the [Firebase documentation](https://firebase.google.com/docs/auth/web/manage-users#get_a_users_profile), the uid should not be used for authentication.
 
 ## Signing out
 
