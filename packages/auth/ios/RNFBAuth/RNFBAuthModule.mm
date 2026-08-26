@@ -577,12 +577,12 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAuth);
 #pragma mark -
 #pragma mark Constants
 
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboAuth::Constants::Builder>)constantsToExport {
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboAuth::Constants>)constantsToExport {
   return
       [_RCTTypedModuleConstants newWithUnsafeDictionary:[RNFBAuthHelper authConstantsDictionary]];
 }
 
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboAuth::Constants::Builder>)getConstants {
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboAuth::Constants>)getConstants {
   return [self constantsToExport];
 }
 

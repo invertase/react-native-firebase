@@ -239,13 +239,12 @@ RCT_EXPORT_MODULE(NativeRNFBTurboStorage);
 #pragma mark -
 #pragma mark Constants
 
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants::Builder>)
-    constantsToExport {
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants>)constantsToExport {
   return [_RCTTypedModuleConstants
       newWithUnsafeDictionary:[RNFBStorageHelper storageConstantsDictionary]];
 }
 
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants::Builder>)getConstants {
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboStorage::Constants>)getConstants {
   return [self constantsToExport];
 }
 

@@ -38,11 +38,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFiam)
   return constants;
 }
 
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboFiam::Constants::Builder>)constantsToExport {
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboFiam::Constants>)constantsToExport {
   return [_RCTTypedModuleConstants newWithUnsafeDictionary:[self fiamConstantsDictionary]];
 }
 
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboFiam::Constants::Builder>)getConstants {
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboFiam::Constants>)getConstants {
   return [self constantsToExport];
 }
 
