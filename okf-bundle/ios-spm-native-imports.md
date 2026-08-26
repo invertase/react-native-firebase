@@ -417,6 +417,56 @@ The hook is guarded the same way as the embed phase: a failure to add the
 build phase warns via `Pod::UI` with the manual fallback command instead of
 failing `pod install` outright.
 
+## Expo precompiled module linkage repair
+
+Expo's prebuilt RNCore path activates a CocoaPods pre-install hook that changes React-Core-dependent pod targets to static libraries during `pod install`, even when the Podfile specifies `use_frameworks! :linkage => :dynamic` and SPM is active (`$RNFirebaseDisableSPM` is not set to true).
+
+The issue is a mutual-incompatibility between two separate mechanisms:
+
+- **Expo's scope**: Expo runs a pre-install hook that can downgrade
+  React-Core-dependent pod targets to static libraries before RNFB's product
+  generation restore point.
+- **SPM's scope**: each pod target has Firebase SPM products automatically
+  attached as dependencies via React Native's `spm_dependency`. When a pod
+  target is later marked static, those embedded SPM products (FirebaseCore,
+  etc.) are linked statically **inside** that pod's static archive. The
+  Podfile-level dynamic guard (`rnfirebase_fail_if_spm_static_linkage!`) runs
+  at post-install time and only sees the original declared linkage, not this
+  later per-pod mutation. It does not catch the per-pod-embedded-SPM case.
+- **Link-time consequence**: multiple static RNFB archives each carry an embedded
+  `FirebaseCore` copy. The app link reports duplicate symbols because the
+  product archives include conflicting FirebaseCore objects.
+
+### Chosen repair
+
+`rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!` restores RNFB
+targets to dynamic frameworks when:
+
+1. SPM is active (`RNFirebaseSPM.active?`),
+2. Expo precompiled modules are active and report dynamic linkage intent
+   (`Expo::PrecompiledModules.enabled?` and
+   `Expo::PrecompiledModules.linkage(installer) == :dynamic`), and
+3. One or more RNFB targets are currently static.
+
+RNFB wraps CocoaPods' `generate_pods_project` phase and restores RNFB targets
+immediately before CocoaPods reads pod target build types to generate products
+and link inputs. This timing catches autolinking downgrades that happened in
+Expo's pre-install hook. The helper redefines the `build_type` method on each
+RNFB static target to return `dynamic_framework` instead, restoring those
+targets to dynamic linkage and eliminating the embedded SPM duplicate. Bare
+CocoaPods (no SPM), source-built Expo, non-Expo apps, and already-dynamic
+targets are unaffected.
+
+### Regression check
+
+The documented Podfile configuration does not change: SPM on,
+`use_frameworks! :linkage => :dynamic`, prebuilt RNCore on. The canonical regression
+fixture is **`yarn test-expo:ios:link`** ([agent command policy](testing/agent-command-policy.md)).
+Link success confirms both RNFB framework products are in dynamic form and
+duplicate Firebase symbols are absent, while still validating the app target's
+own FirebaseCore dependency (the original purpose of that fixture). See
+[Maintainer check of the Expo documented path](#app-target-firebasecore-link-package-dependency-alone-is-not-enough).
+
 ## Review invariants
 
 When native Firebase imports or SPM products change, review the diff for these
@@ -456,7 +506,11 @@ invariants:
   `RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES` is re-checked against a clean
   `-resolvePackageDependencies` run rather than assumed still complete;
 - Debug and Release builds cover SPM and CocoaPods, and the real-device archive
-  job verifies that every `@rpath` framework dependency is embedded.
+  job verifies that every `@rpath` framework dependency is embedded;
+- when Expo precompiled modules are active, `rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!`
+  still restores RNFB targets from static back to dynamic if Expo's pre-install
+  hook downgraded them, and the `test-expo:ios:link` fixture still passes with no
+  duplicate Firebase symbols.
 
 The bullets above are the SPM-specific review checklist. General build, lint,
 and evidence requirements are owned by the
