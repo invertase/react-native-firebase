@@ -1,10 +1,9 @@
 name: Test Expo iOS Link (informational)
 
-# Informational, path-filtered check for the test-expo/ fixture (CPRN-301 /
-# GitHub #9158). Not wired into branch protection as a required check --
-# it exists to keep the documented-default-Expo-path repro (undefined
-# `_OBJC_CLASS_$_FIRApp` / missing app-target FirebaseCore) visible on PRs
-# that touch the fixture, without blocking merges on its own.
+# Informational, path-filtered check for the test-expo/ fixture (GitHub #9158
+# and #9202). Not wired into branch protection as a required check. It keeps
+# the documented-default Expo SPM + dynamic + prebuilt-RNCore link graph
+# visible on PRs that touch the fixture, without blocking merges on its own.
 
 on:
   pull_request:

@@ -5,9 +5,9 @@ import { Text, View } from 'react-native';
 // Referencing both native modules here (not just declaring them as
 // dependencies) keeps the JS graph from tree-shaking/dead-code-eliminating
 // the native dependency before it ever reaches the linker. This fixture
-// exists only to exercise the native iOS link step for CPRN-301 /
-// GitHub #9158 (undefined `_OBJC_CLASS_$_FIRApp` / missing app-target
-// FirebaseCore under SPM + dynamic frameworks) - it is never meant to run.
+// exists only to exercise the native iOS link step for GitHub #9158
+// (missing app-target FirebaseCore) and #9202 (duplicate Firebase symbols
+// from static RNFB archives) under SPM + dynamic frameworks. It never runs.
 getMessaging(getApp());
 
 export default function App() {
