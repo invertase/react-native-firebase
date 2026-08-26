@@ -1653,6 +1653,32 @@ class FirebaseSpmTest < Minitest::Test
     assert_includes Pod::UI.warnings[0], 'restore boom'
   end
 
+  # When Expo::PrecompiledModules responds to both enabled? and linkage but
+  # linkage has the wrong arity (signature drift), the generate_pods_project
+  # wrapper must emit the directed restore warning with the error detail and
+  # re-raise the ArgumentError without calling the original generate method.
+  def test_generate_pods_project_warns_and_reraises_on_linkage_arity_drift
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+    ensure_expo_module!
+    drift_mod = Module.new
+    drift_mod.define_singleton_method(:enabled?) { true }
+    # Zero-arity linkage: calling it as linkage(installer) raises ArgumentError.
+    drift_mod.define_singleton_method(:linkage) { :wrong_arity }
+    Expo.const_set(:PrecompiledModules, drift_mod)
+
+    klass = new_fake_cocoapods_installer_class
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    instance = klass.new
+    Pod::UI.warnings.clear
+
+    raised = assert_raises(ArgumentError) { instance.send(:generate_pods_project) }
+    assert_equal 0, instance.original_generate_calls
+    assert_equal 1, Pod::UI.warnings.length
+    assert_includes Pod::UI.warnings[0], 'Expo prebuilt RNFB dynamic-linkage restoration'
+    assert_includes Pod::UI.warnings[0], raised.message
+  end
+
   def test_hook_swallows_embed_phase_errors_without_breaking_original_hook
     load_firebase_spm
     Object.define_method(:rnfirebase_add_spm_embed_phase) { |*| raise 'boom' }
