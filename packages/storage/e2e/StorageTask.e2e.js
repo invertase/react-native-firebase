@@ -845,10 +845,8 @@ describe('storage() -> StorageTask', function () {
         await promise;
       });
 
-      // Platform gap — iOS upload mid-transfer pause/resume (temporary skip pending diagnosis).
-      // CI iOS debug+release fail with [storage/unknown] after ~50s on first RUNNING pause;
-      // Android and macOS pass. Download pause/resume passes on iOS. Related cancel gap:
-      // firebase-ios-sdk#16353, RNFB #2043. Re-enable after B3.1 local e2e + sim-app.log review.
+      // iOS skipped: CI still fails with [storage/unknown] on pause/resume (firebase-ios-sdk#16353).
+      // firebase-ios-sdk#16359 fixed cancel, not pause/resume — track in Linear CPRN-391.
       (Platform.ios ? it.skip : it)('successfully pauses and resumes an upload', async function () {
         if (Platform.other) return;
         const { getStorage, ref, writeToFile, putFile, TaskState } = storageModular;
@@ -924,14 +922,10 @@ describe('storage() -> StorageTask', function () {
         await expectMidTransferCancel(downloadTask, 'DownloadTask');
       });
 
-      // Platform gap — iOS upload mid-transfer cancel (user-accepted acceptable exception).
-      // Firebase Storage iOS SDK 12.15.0: immediate cancel on first RUNNING hangs (~7+ min);
-      // delayed cancel races SUCCESS; pause-then-cancel also hangs. Android passes below.
-      // Related: immediate pause() after first progress was unreliable since 2019-05-03 (RNFB
-      // #2043); a ~750ms delay before pause worked, but that timing is hard to test reliably
-      // against the fixture size. Revisit when Podfile.lock FirebaseStorage != 12.15.0 or when
-      // https://github.com/firebase/firebase-ios-sdk/issues/16353 is closed/fixed.
-      (Platform.ios ? it.skip : it)('successfully cancels an upload', async function () {
+      // Re-enabled on iOS with Firebase iOS SDK 12.18.0 (firebase-ios-sdk#16359). Previously
+      // skipped: upload cancel hung on 12.15.0 (firebase-ios-sdk#16353); RNFB #2043 ~750ms pause
+      // workaround was unreliable against fixture size.
+      it('successfully cancels an upload', async function () {
         if (Platform.other) return;
         const { getStorage, ref, writeToFile, putFile } = storageModular;
 
@@ -944,72 +938,75 @@ describe('storage() -> StorageTask', function () {
         await expectMidTransferCancel(uploadTask, 'UploadTask');
       });
 
-      // Android-only: cancel while paused exercises takeAndCancel after pause() succeeded.
-      (Platform.android ? it : it.skip)('successfully cancels a paused upload', async function () {
-        if (Platform.other) return;
-        const { getStorage, ref, writeToFile, putFile, TaskState } = storageModular;
+      // iOS + Android: cancel while paused exercises takeAndCancel after pause() succeeded.
+      (Platform.ios || Platform.android ? it : it.skip)(
+        'successfully cancels a paused upload',
+        async function () {
+          if (Platform.other) return;
+          const { getStorage, ref, writeToFile, putFile, TaskState } = storageModular;
 
-        const localPath = `${FilePath.DOCUMENT_DIRECTORY}/cancelPausedUpload_large.bin`;
-        await writeToFile(ref(getStorage(), LARGE_FIXTURE_PATH), localPath);
+          const localPath = `${FilePath.DOCUMENT_DIRECTORY}/cancelPausedUpload_large.bin`;
+          await writeToFile(ref(getStorage(), LARGE_FIXTURE_PATH), localPath);
 
-        const uploadRef = ref(getStorage(), `${PATH}/upload/cancelPaused.bin`);
-        const uploadTask = putFile(uploadRef, localPath);
+          const uploadRef = ref(getStorage(), `${PATH}/upload/cancelPaused.bin`);
+          const uploadTask = putFile(uploadRef, localPath);
 
-        const { resolve, reject, promise } = Promise.defer();
-        let hadRunningStatus = false;
-        let hadPausedStatus = false;
-        let settled = false;
+          const { resolve, reject, promise } = Promise.defer();
+          let hadRunningStatus = false;
+          let hadPausedStatus = false;
+          let settled = false;
 
-        const finishCancelled = error => {
-          if (settled) {
-            return;
-          }
-          settled = true;
-          should.equal(hadRunningStatus, true);
-          should.equal(hadPausedStatus, true);
-          if (error) {
-            error.code.should.equal('storage/cancelled');
-            error.message.should.containEql('User cancelled the operation.');
-          }
-          resolve();
-        };
-
-        uploadTask.on(
-          'state_changed',
-          snapshot => {
-            if (snapshot.state === TaskState.RUNNING && !hadRunningStatus) {
-              hadRunningStatus = true;
-              uploadTask.pause().should.eql(true);
+          const finishCancelled = error => {
+            if (settled) {
+              return;
             }
-
-            if (snapshot.state === TaskState.PAUSED) {
-              hadPausedStatus = true;
-              uploadTask.cancel().should.eql(true);
+            settled = true;
+            should.equal(hadRunningStatus, true);
+            should.equal(hadPausedStatus, true);
+            if (error) {
+              error.code.should.equal('storage/cancelled');
+              error.message.should.containEql('User cancelled the operation.');
             }
+            resolve();
+          };
 
-            if (isCancelledState(snapshot.state)) {
-              finishCancelled();
-            }
+          uploadTask.on(
+            'state_changed',
+            snapshot => {
+              if (snapshot.state === TaskState.RUNNING && !hadRunningStatus) {
+                hadRunningStatus = true;
+                uploadTask.pause().should.eql(true);
+              }
 
-            if (snapshot.state === TaskState.ERROR) {
-              throw new Error('Should not error if cancelled?');
-            }
+              if (snapshot.state === TaskState.PAUSED) {
+                hadPausedStatus = true;
+                uploadTask.cancel().should.eql(true);
+              }
 
-            if (snapshot.state === TaskState.SUCCESS) {
-              reject(new Error('UploadTask did not cancel while paused!'));
-            }
-          },
-          error => {
+              if (isCancelledState(snapshot.state)) {
+                finishCancelled();
+              }
+
+              if (snapshot.state === TaskState.ERROR) {
+                throw new Error('Should not error if cancelled?');
+              }
+
+              if (snapshot.state === TaskState.SUCCESS) {
+                reject(new Error('UploadTask did not cancel while paused!'));
+              }
+            },
+            error => {
+              finishCancelled(error);
+            },
+          );
+
+          uploadTask.catch(error => {
             finishCancelled(error);
-          },
-        );
+          });
 
-        uploadTask.catch(error => {
-          finishCancelled(error);
-        });
-
-        await promise;
-      });
+          await promise;
+        },
+      );
     });
   });
 });
