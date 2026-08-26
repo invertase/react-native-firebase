@@ -60,6 +60,12 @@ if RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE
              'Pod::Installer no longer exposes #aggregate_targets -- every ' \
              'rnfirebase_* post-install helper in firebase_spm.rb reads ' \
              'installer.aggregate_targets directly.'
+      assert Pod::Installer.method_defined?(:pod_targets),
+             'Pod::Installer no longer exposes #pod_targets -- the Expo prebuilt ' \
+             'dynamic-linkage repair selects RNFB pod targets from this collection.'
+      assert Pod::Installer.method_defined?(:podfile),
+             'Pod::Installer no longer exposes #podfile -- Expo linkage detection ' \
+             'reads the generated Podfile configuration through the installer.'
     end
 
     # We can't construct a real Pod::Installer without a full `pod install`
@@ -77,6 +83,15 @@ if RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE
              'private) -- this is the exact method rnfirebase_hook_cocoapods_post_install! ' \
              'aliases and wraps so our post-install logic runs automatically on every ' \
              '`pod install`.'
+    end
+
+    def test_installer_defines_generate_pods_project
+      method_defined = Pod::Installer.method_defined?(:generate_pods_project) ||
+                       Pod::Installer.private_method_defined?(:generate_pods_project)
+      assert method_defined,
+             'Pod::Installer#generate_pods_project no longer exists (public or private) -- ' \
+             'RNFB wraps it so the dynamic-linkage repair runs after CocoaPods validates ' \
+             'Expo\'s downgraded graph but before product generation.'
     end
 
     # ── Pod::AggregateTarget / Pod::Podfile::TargetDefinition / Pod::BuildType
@@ -120,6 +135,15 @@ if RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE
       refute Pod::BuildType.dynamic_library.static?
       assert Pod::BuildType.static_framework.static?
       assert Pod::BuildType.static_library.static?
+    end
+
+    def test_pod_target_exposes_name_and_build_type
+      assert Pod::PodTarget.method_defined?(:name)
+      build_type_defined = Pod::PodTarget.method_defined?(:build_type) ||
+                           Pod::PodTarget.private_method_defined?(:build_type)
+      assert build_type_defined
+      assert_respond_to Pod::BuildType, :dynamic_framework
+      assert_respond_to Pod::BuildType, :static_library
     end
 
     # ── Xcodeproj::Project::Object::XCRemoteSwiftPackageReference /

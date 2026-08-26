@@ -16,9 +16,9 @@
 #     RCT_USE_PREBUILT_RNCORE=0 / RCT_USE_RN_DEP=0 pin)
 # Historical #9158 signature to stay past: undefined `_OBJC_CLASS_$_FIRApp`
 # (and/or missing app-target FirebaseCore / packageProductDependencies).
-# Expected #9202 signature: duplicate `_FIRFirebaseVersion` from both
-# libRNFBApp.a(FirebaseCore.o) and libRNFBMessaging.a(FirebaseCore.o), not a
-# compile error or undefined RCTEventEmitter.
+# Regression #9202 signature: duplicate `_FIRFirebaseVersion` from both
+# libRNFBApp.a(FirebaseCore.o) and libRNFBMessaging.a(FirebaseCore.o). The
+# green graph must produce RNFB frameworks and link them with `-framework`.
 set -euo pipefail
 
 cd "$(dirname "$0")/../../.."
@@ -121,6 +121,49 @@ else
 fi
 log "--- end generated linkage diagnosis ---"
 
+pod_target_product_type() {
+  local target_name="$1"
+  awk -v target_name="$target_name" '
+    /\/\* Begin PBXNativeTarget section \*\// { in_native_targets = 1; next }
+    /\/\* End PBXNativeTarget section \*\// { in_native_targets = 0 }
+    in_native_targets && $0 ~ "/\\* " target_name " \\*/ = \\{" { in_target = 1 }
+    in_target && /productType = / {
+      value = $0
+      sub(/^.*productType = /, "", value)
+      sub(/;.*$/, "", value)
+      gsub(/"/, "", value)
+      print value
+      exit
+    }
+    in_target && /^[[:space:]]*};[[:space:]]*$/ { in_target = 0 }
+  ' "$PODS_PBXPROJ"
+}
+
+for rnfb_target in RNFBApp RNFBMessaging; do
+  product_type="$(pod_target_product_type "$rnfb_target")"
+  if [[ "$product_type" != "com.apple.product-type.framework" ]]; then
+    log "ERROR: ${rnfb_target} generated with wrong product type '${product_type:-missing}' (expected dynamic framework)"
+    exit 1
+  fi
+  if ! grep -E -q "/\\* ${rnfb_target} \\*/ = \\{isa = PBXFileReference; explicitFileType = wrapper\\.framework;.*path = ${rnfb_target}\\.framework;" "$PODS_PBXPROJ"; then
+    log "ERROR: ${rnfb_target} framework product reference is missing from Pods.xcodeproj"
+    exit 1
+  fi
+done
+
+app_ldflags="$(grep '^OTHER_LDFLAGS = ' "$PODS_XCCONFIG" || true)"
+for rnfb_target in RNFBApp RNFBMessaging; do
+  if grep -Fq -- "-l\"${rnfb_target}\"" <<<"$app_ldflags"; then
+    log "ERROR: app link inputs still use static library -l\"${rnfb_target}\""
+    exit 1
+  fi
+  if ! grep -Fq -- "-framework \"${rnfb_target}\"" <<<"$app_ldflags"; then
+    log "ERROR: app link inputs are missing -framework \"${rnfb_target}\""
+    exit 1
+  fi
+done
+log "generated RNFB products/link inputs are dynamic frameworks"
+
 export SKIP_BUNDLING=1
 export RCT_NO_LAUNCH_PACKAGER=1
 
@@ -159,16 +202,26 @@ log "--- app link-result diagnosis ---"
 grep -n -E -m 120 'libRNFB(App|Messaging)\.a|RNFB(App|Messaging)\.framework|_FIRFirebaseVersion|FirebaseCore\.o' "$XCODEBUILD_LOG" || true
 log "--- end app link-result diagnosis ---"
 
-if [[ "$xcodebuild_status" -eq 0 ]]; then
-  log "ERROR: expected the #9202 duplicate-symbol reproduction, but xcodebuild passed"
-  exit 1
-fi
-if ! grep -q "duplicate symbol '_FIRFirebaseVersion'" "$XCODEBUILD_LOG" ||
-   ! grep -q 'libRNFBApp\.a.*FirebaseCore\.o' "$XCODEBUILD_LOG" ||
-   ! grep -q 'libRNFBMessaging\.a.*FirebaseCore\.o' "$XCODEBUILD_LOG"; then
-  log "ERROR: xcodebuild failed without the exact #9202 RNFBApp/RNFBMessaging duplicate-symbol signature"
+if [[ "$xcodebuild_status" -ne 0 ]]; then
+  if grep -q "duplicate symbol '_FIRFirebaseVersion'" "$XCODEBUILD_LOG"; then
+    log "ERROR: #9202 duplicate _FIRFirebaseVersion signature remains"
+  elif grep -q '_OBJC_CLASS_\$_FIRApp' "$XCODEBUILD_LOG"; then
+    log "ERROR: #9158 FIRApp app-target link failure returned"
+  elif grep -q '_OBJC_CLASS_\$_RCTEventEmitter' "$XCODEBUILD_LOG"; then
+    log "ERROR: RCTEventEmitter link failure returned"
+  elif grep -E -q 'CompileC|CompileSwift|fatal error:| error:' "$XCODEBUILD_LOG"; then
+    log "ERROR: xcodebuild failed during compilation; inspect ${XCODEBUILD_LOG}"
+  else
+    log "ERROR: xcodebuild failed without a known RNFB link signature; inspect ${XCODEBUILD_LOG}"
+  fi
   exit "$xcodebuild_status"
 fi
 
-log "EXPECTED RED: duplicate _FIRFirebaseVersion from libRNFBApp.a(FirebaseCore.o) and libRNFBMessaging.a(FirebaseCore.o)"
-exit "$xcodebuild_status"
+if grep -q "duplicate symbol '_FIRFirebaseVersion'" "$XCODEBUILD_LOG" ||
+   grep -q 'libRNFBApp\.a.*FirebaseCore\.o' "$XCODEBUILD_LOG" ||
+   grep -q 'libRNFBMessaging\.a.*FirebaseCore\.o' "$XCODEBUILD_LOG"; then
+  log "ERROR: xcodebuild passed but the #9202 static-archive signature remains in its log"
+  exit 1
+fi
+
+log "PASS: Expo documented path links RNFBApp/RNFBMessaging as frameworks without duplicate Firebase symbols"

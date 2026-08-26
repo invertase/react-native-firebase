@@ -445,6 +445,41 @@ def rnfirebase_fail_if_spm_static_linkage!(installer)
   MESSAGE
 end
 
+# Expo's precompiled-module pre-install hook runs after Podfile pre-install
+# hooks and changes React-Core-dependent pod targets to static libraries.
+# That is required for Expo's own source-built pods, but RNFB's Firebase SPM
+# products are automatic libraries: making more than one RNFB pod static
+# absorbs the same Firebase objects into each archive and the app link fails
+# with duplicate symbols.
+#
+# Restore only Expo's generated prebuilt-RNCore + dynamic-framework path, and
+# only RNFB targets that Expo actually changed to `static_library`. Bare
+# consumers never define `Expo::PrecompiledModules`; source-built Expo installs
+# make `enabled?` false; static/no-framework Podfiles do not report `:dynamic`.
+# Existing dynamic RNFB targets and explicit static frameworks are untouched.
+def rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!(installer)
+  return unless RNFirebaseSPM.active?
+  return unless defined?(Expo::PrecompiledModules)
+  return unless Expo::PrecompiledModules.respond_to?(:enabled?) &&
+                Expo::PrecompiledModules.respond_to?(:linkage)
+  return unless Expo::PrecompiledModules.enabled?
+  return unless Expo::PrecompiledModules.linkage(installer) == :dynamic
+
+  static_library = Pod::BuildType.static_library
+  dynamic_framework = Pod::BuildType.dynamic_framework
+  restored_targets = installer.pod_targets.select do |target|
+    target.name.start_with?('RNFB') && target.build_type == static_library
+  end
+
+  restored_targets.each do |target|
+    target.define_singleton_method(:build_type) { dynamic_framework }
+  end
+  return if restored_targets.empty? || !defined?(Pod::UI)
+
+  names = restored_targets.map(&:name).join(', ')
+  Pod::UI.puts "[react-native-firebase] Restored dynamic framework linkage after Expo prebuilt downgrade: #{names}"
+end
+
 # CocoaPods `TargetUUIDGenerator` replaces `@generated_uuids` with leftover
 # `@available_uuids` before Podfile `post_install`. RN's SPM integration then
 # calls `project.new` for Firebase package product deps; with an empty/short
@@ -597,8 +632,11 @@ def rnfirebase_run_spm_user_project_hooks(installer)
   end
 end
 
-# We wrap `Pod::Installer#run_podfile_post_install_hooks` (Pods project: UUID
-# counter, RN SPM integrity, static-linkage guard) and, when present,
+# We wrap `Pod::Installer#generate_pods_project` (restore RNFB dynamic
+# frameworks after Expo's prebuilt downgrade and CocoaPods' transitive-static
+# validation, but before product/link-input generation),
+# `Pod::Installer#run_podfile_post_install_hooks` (Pods project: UUID counter,
+# RN SPM integrity, static-linkage guard) and, when present,
 # `Pod::Installer#run_podfile_post_integrate_hooks` (user project: embed
 # Firebase SPM frameworks + link FirebaseCore onto the app target).
 #
@@ -638,6 +676,8 @@ end
 # `installer_class` is only ever overridden by tests -- there's no real
 # `Pod::Installer` outside of a full CocoaPods environment.
 def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if defined?(Pod::Installer)))
+  generate_method = :generate_pods_project
+  generate_original_method = :rnfirebase_original_generate_pods_project
   hook_method = :run_podfile_post_install_hooks
   original_method = :rnfirebase_original_run_podfile_post_install_hooks
   integrate_hook_method = :run_podfile_post_integrate_hooks
@@ -665,15 +705,37 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
 
   already_hooked_post_install = installer_class.method_defined?(original_method) ||
                                 installer_class.private_method_defined?(original_method)
+  already_hooked_generate = installer_class.method_defined?(generate_original_method) ||
+                            installer_class.private_method_defined?(generate_original_method)
   already_hooked_post_integrate = installer_class.method_defined?(integrate_original_method) ||
                                   installer_class.private_method_defined?(integrate_original_method)
 
-  # Already hooked -- e.g. a second RNFB podspec also `require`d this same
-  # file within one `pod install` process. Expected and idempotent.
-  return if already_hooked_post_install && already_hooked_post_integrate
-
+  generate_was_private = installer_class.private_method_defined?(generate_method)
+  generate_available = generate_was_private || installer_class.method_defined?(generate_method)
   integrate_was_private = installer_class.private_method_defined?(integrate_hook_method)
   post_integrate_available = integrate_was_private || installer_class.method_defined?(integrate_hook_method)
+
+  # Already hooked -- e.g. a second RNFB podspec also `require`d this same
+  # file within one `pod install` process. Expected and idempotent.
+  return if (already_hooked_generate || !generate_available) &&
+            already_hooked_post_install &&
+            (already_hooked_post_integrate || !post_integrate_available)
+
+  unless already_hooked_generate || !generate_available
+    installer_class.class_eval do
+      alias_method generate_original_method, generate_method
+
+      define_method(generate_method) do
+        # Expo's patched pre-install implementation has already downgraded
+        # React-Core-dependent targets, and CocoaPods has already validated
+        # that graph. Restore RNFB immediately before CocoaPods reads each
+        # pod target's build type to generate products and app link inputs.
+        rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!(self)
+        send(generate_original_method)
+      end
+    end
+    installer_class.send(:private, generate_method) if generate_was_private
+  end
 
   unless already_hooked_post_integrate || !post_integrate_available
     installer_class.class_eval do
