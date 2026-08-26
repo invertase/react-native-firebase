@@ -9,8 +9,8 @@
   "dependencies": {
     "@react-native-firebase/app": "26.3.2",
     "@react-native-firebase/messaging": "26.3.2",
-    "expo": "57.0.11",
-    "expo-build-properties": "57.0.9",
+    "expo": "57.0.14",
+    "expo-build-properties": "57.0.12",
     "react": "19.2.3",
     "react-native": "0.86.2"
   },
