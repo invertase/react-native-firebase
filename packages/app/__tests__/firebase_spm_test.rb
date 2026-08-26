@@ -202,12 +202,30 @@ end
 # `:linkage` (see `Installer::Analyzer#generate_aggregate_target`), so it's
 # always `true` and can't distinguish the case this check cares about.
 class MockBuildType
-  def initialize(static: false)
-    @static = static
+  attr_reader :kind
+
+  def self.dynamic_framework
+    new(kind: :dynamic_framework)
+  end
+
+  def self.static_framework
+    new(kind: :static_framework)
+  end
+
+  def self.static_library
+    new(kind: :static_library)
+  end
+
+  def initialize(static: false, kind: nil)
+    @kind = kind || (static ? :static_framework : :dynamic_framework)
   end
 
   def static?
-    @static
+    %i[static_framework static_library].include?(@kind)
+  end
+
+  def ==(other)
+    other.is_a?(MockBuildType) && other.kind == kind
   end
 end
 
@@ -244,6 +262,17 @@ unless defined?(Pod::Informative)
   module Pod
     class Informative < StandardError
     end
+  end
+end
+
+Pod.const_set(:BuildType, MockBuildType) unless defined?(Pod::BuildType)
+
+class MockPodTarget
+  attr_reader :name, :build_type
+
+  def initialize(name, build_type:)
+    @name = name
+    @build_type = build_type
   end
 end
 
@@ -293,11 +322,13 @@ end
 # `new_fake_cocoapods_installer_class` below), since there's no real
 # `Pod::Installer` to alias/wrap without a full CocoaPods environment.
 class MockInstaller
-  attr_reader :aggregate_targets, :pods_project
+  attr_reader :aggregate_targets, :pods_project, :pod_targets, :podfile
 
-  def initialize(aggregate_targets, pods_project: nil)
+  def initialize(aggregate_targets, pods_project: nil, pod_targets: [], podfile: nil)
     @aggregate_targets = aggregate_targets
     @pods_project = pods_project
+    @pod_targets = pod_targets
+    @podfile = podfile
   end
 end
 
@@ -356,6 +387,7 @@ class FirebaseSpmTest < Minitest::Test
     # Guarded with `defined?` because the very first test's `setup` runs before
     # any test has `load`ed firebase_spm.rb yet, so the constant doesn't exist.
     RNFirebaseSPM.reset! if defined?(RNFirebaseSPM)
+    Expo.send(:remove_const, :PrecompiledModules) if defined?(Expo::PrecompiledModules)
     # Reset the `Pod::UI` mock's captured output between tests.
     Pod::UI.warnings = []
     Pod::UI.messages = []
@@ -364,6 +396,14 @@ class FirebaseSpmTest < Minitest::Test
   def load_firebase_spm
     # Force re-evaluation of the file
     load File.join(__dir__, '..', 'firebase_spm.rb')
+  end
+
+  def stub_expo_precompiled_modules(enabled:, linkage:)
+    Object.const_set(:Expo, Module.new) unless defined?(Expo)
+    precompiled_modules = Module.new
+    precompiled_modules.define_singleton_method(:enabled?) { enabled }
+    precompiled_modules.define_singleton_method(:linkage) { |_| linkage }
+    Expo.const_set(:PrecompiledModules, precompiled_modules)
   end
 
   # ── CocoaPods path (spm_dependency NOT defined) ──
@@ -1186,6 +1226,84 @@ class FirebaseSpmTest < Minitest::Test
     refute_includes error.message, 'Pods-dynamic-extension'
   end
 
+  # ── Expo prebuilt RNCore dynamic-linkage repair ──
+
+  def test_restore_expo_prebuilt_dynamic_linkage_noops_when_spm_is_inactive
+    load_firebase_spm
+    stub_expo_precompiled_modules(enabled: true, linkage: :dynamic)
+    target = MockPodTarget.new('RNFBApp', build_type: Pod::BuildType.static_library)
+
+    rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!(
+      MockInstaller.new([], pod_targets: [target])
+    )
+
+    assert_equal Pod::BuildType.static_library, target.build_type
+  end
+
+  def test_restore_expo_prebuilt_dynamic_linkage_noops_outside_expo
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+    target = MockPodTarget.new('RNFBApp', build_type: Pod::BuildType.static_library)
+
+    rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!(
+      MockInstaller.new([], pod_targets: [target])
+    )
+
+    assert_equal Pod::BuildType.static_library, target.build_type
+  end
+
+  def test_restore_expo_prebuilt_dynamic_linkage_noops_when_prebuilt_modules_are_disabled
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+    stub_expo_precompiled_modules(enabled: false, linkage: :dynamic)
+    target = MockPodTarget.new('RNFBApp', build_type: Pod::BuildType.static_library)
+
+    rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!(
+      MockInstaller.new([], pod_targets: [target])
+    )
+
+    assert_equal Pod::BuildType.static_library, target.build_type
+  end
+
+  def test_restore_expo_prebuilt_dynamic_linkage_preserves_static_podfile_linkage
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+    stub_expo_precompiled_modules(enabled: true, linkage: :static)
+    target = MockPodTarget.new('RNFBApp', build_type: Pod::BuildType.static_library)
+
+    rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!(
+      MockInstaller.new([], pod_targets: [target])
+    )
+
+    assert_equal Pod::BuildType.static_library, target.build_type
+  end
+
+  def test_restore_expo_prebuilt_dynamic_linkage_restores_only_static_library_rnfb_targets
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+    stub_expo_precompiled_modules(enabled: true, linkage: :dynamic)
+    app = MockPodTarget.new('RNFBApp', build_type: Pod::BuildType.static_library)
+    messaging = MockPodTarget.new('RNFBMessaging', build_type: Pod::BuildType.static_library)
+    already_dynamic = MockPodTarget.new('RNFBAuth', build_type: Pod::BuildType.dynamic_framework)
+    explicitly_static = MockPodTarget.new('RNFBStorage', build_type: Pod::BuildType.static_framework)
+    react_core = MockPodTarget.new('React-Core', build_type: Pod::BuildType.static_library)
+    installer = MockInstaller.new(
+      [],
+      pod_targets: [app, messaging, already_dynamic, explicitly_static, react_core]
+    )
+
+    rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!(installer)
+    rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!(installer)
+
+    assert_equal Pod::BuildType.dynamic_framework, app.build_type
+    assert_equal Pod::BuildType.dynamic_framework, messaging.build_type
+    assert_equal Pod::BuildType.dynamic_framework, already_dynamic.build_type
+    assert_equal Pod::BuildType.static_framework, explicitly_static.build_type
+    assert_equal Pod::BuildType.static_library, react_core.build_type
+    restore_messages = Pod::UI.messages.select { |message| message.include?('RNFBApp, RNFBMessaging') }
+    assert_equal 1, restore_messages.length
+  end
+
   # ── rnfirebase_ensure_pods_uuid_counter_safe! ──
 
   def cocoapods_uuid(prefix, index)
@@ -1361,10 +1479,16 @@ class FirebaseSpmTest < Minitest::Test
 
   def new_fake_cocoapods_installer_class(hook_private: true)
     klass = Class.new do
-      attr_reader :original_hook_calls
+      attr_reader :original_hook_calls, :original_generate_calls
 
       def initialize
         @original_hook_calls = 0
+        @original_generate_calls = 0
+      end
+
+      define_method(:generate_pods_project) do
+        @original_generate_calls += 1
+        :original_generate_result
       end
 
       define_method(:run_podfile_post_install_hooks) do
@@ -1372,6 +1496,7 @@ class FirebaseSpmTest < Minitest::Test
         :original_result
       end
     end
+    klass.send(:private, :generate_pods_project) if hook_private
     klass.send(:private, :run_podfile_post_install_hooks) if hook_private
     klass
   end
@@ -1421,6 +1546,44 @@ class FirebaseSpmTest < Minitest::Test
     # more than once per install.
     assert_equal 1, instance.original_hook_calls
     assert_equal 1, embed_phase_calls.length
+  end
+
+  def test_hook_restores_rnfb_linkage_before_pods_project_generation
+    load_firebase_spm
+    order = []
+    Object.define_method(:rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!) { |*| order << :restore }
+
+    klass = new_fake_cocoapods_installer_class
+    klass.send(:define_method, :generate_pods_project) do
+      order << :original
+      :original_generate_result
+    end
+    klass.send(:private, :generate_pods_project)
+    rnfirebase_hook_cocoapods_post_install!(klass)
+
+    result = klass.new.send(:generate_pods_project)
+
+    assert_equal :original_generate_result, result
+    assert_equal %i[restore original], order
+  end
+
+  def test_generate_pods_project_hook_is_idempotent_across_repeated_podspec_requires
+    load_firebase_spm
+    restore_calls = []
+    Object.define_method(:rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!) do |installer|
+      restore_calls << installer
+    end
+
+    klass = new_fake_cocoapods_installer_class
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    instance = klass.new
+
+    result = instance.send(:generate_pods_project)
+
+    assert_equal :original_generate_result, result
+    assert_equal 1, instance.original_generate_calls
+    assert_equal [instance], restore_calls
   end
 
   def test_hook_swallows_embed_phase_errors_without_breaking_original_hook
@@ -1522,11 +1685,17 @@ class FirebaseSpmTest < Minitest::Test
   # Expo CNG `--clean` (no CP phase yet) silently skips the app target.
   def new_fake_cocoapods_installer_class_with_post_integrate
     klass = Class.new do
-      attr_reader :original_hook_calls, :original_integrate_calls
+      attr_reader :original_hook_calls, :original_integrate_calls, :original_generate_calls
 
       def initialize
         @original_hook_calls = 0
         @original_integrate_calls = 0
+        @original_generate_calls = 0
+      end
+
+      define_method(:generate_pods_project) do
+        @original_generate_calls += 1
+        :original_generate_result
       end
 
       define_method(:run_podfile_post_install_hooks) do
@@ -1539,6 +1708,7 @@ class FirebaseSpmTest < Minitest::Test
         :integrate_result
       end
     end
+    klass.send(:private, :generate_pods_project)
     klass.send(:private, :run_podfile_post_install_hooks)
     klass.send(:private, :run_podfile_post_integrate_hooks)
     klass
