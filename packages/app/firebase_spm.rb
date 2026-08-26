@@ -730,7 +730,15 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
         # React-Core-dependent targets, and CocoaPods has already validated
         # that graph. Restore RNFB immediately before CocoaPods reads each
         # pod target's build type to generate products and app link inputs.
-        rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!(self)
+        begin
+          rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!(self)
+        rescue StandardError => e
+          if defined?(Pod::UI)
+            Pod::UI.warn '[react-native-firebase] Expo prebuilt RNFB dynamic-linkage restoration failed ' \
+                         "(#{e.class}: #{e.message}). Pod install aborted to avoid a partial restore."
+          end
+          raise
+        end
         send(generate_original_method)
       end
     end
