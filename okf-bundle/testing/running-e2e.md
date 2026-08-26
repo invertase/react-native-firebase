@@ -173,6 +173,7 @@ rg 'Tests Complete' /tmp/rnfb-e2e-<platform>.log | tail -1          # optional, 
 7. **Waiting on output:** during the first ~60s, `notify_on_output` / AwaitShell `pattern` **must** be the [startup-fail notify pattern](#startup-fail-fast-poll) (`E2E_STARTUP_FAILFAST_NOTIFY_PATTERN` in [`scripts/e2e/lib/e2e-startup-failfast.sh`](../../scripts/e2e/lib/e2e-startup-failfast.sh) — hard infra only, not `currentStatus` / status-query timeout). After a healthy launch, never pattern bare `passing` or bare `APP_STATUS` — use an anchored pattern such as `^\s*\d+ (passing|failing)` or `jet-coverage.*merged .* before NYC`. Prefer the Shell tool's own exit code when it returns normally after launch is healthy.
 
 <a id="startup-fail-fast-poll"></a>
+<a id="startup-fail-fast-markers"></a>
 
 ### Startup fail-fast poll
 
@@ -195,6 +196,11 @@ After starting `:test-cover` teed to a **unique** path (`/tmp/rnfb-e2e-<platform
 | serial leftover: `waiting for Metro on port 12007` **and** `emulator-5554` | slotted android slot-0 `waiting for Metro on port 12007` with `emulator-5556` (healthy) |
 | `emulator-16` in the adb list | — |
 | `Jest did not exit` | — |
+| `Could not connect to development server` / `No script URL provided` | — |
+| `Detox.framework could not be found` | — |
+| `Package uses different ABI(s) than its instrumentation` | — |
+| `Received a message from the client, but server wasn't running` | — |
+| `[rnfb-e2e] launchApp timed out after` | In-process `launchApp` retry still running (max 2; logs `launchApp failure reason=` first) |
 
 **notify_on_output / AwaitShell `pattern`:** `ReactContext is null\|TELNET_ERROR\|Cannot connect\|emulator-16\|Jest did not exit` — same string as `E2E_STARTUP_FAILFAST_NOTIFY_PATTERN`. **Must not** use bare `APP_STATUS`, bare `currentStatus`, bare `…ms timeout`, or bare `waiting for Metro on port 12007` (slot-0 Metro is `:12007`). Serial leftover `:12007` is `waiting for Metro on port 12007` **together with** `emulator-5554`.
 
@@ -381,7 +387,7 @@ Completion = shell exit code + log markers — not open-ended log tailing.
 
 `✨ Tests Complete ✨` is **optional** if present — it is not always emitted on local macOS runs; treat it as a bonus signal, never a required one.
 
-**If stalled** — no new markers for **5 minutes**, or past tier budget (~15m macOS, ~45–60m iOS/Android) without a Jest summary (`N passing`/`N failing`) or `[jet-coverage] merged … before NYC shutdown`: treat as [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090). Do not gate the stall decision on emoji `Tests Complete` alone. Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) and [services ready](#2-services-ready), retry. Do not keep watching flat tee output.
+**If stalled** — no new markers for **5 minutes**, or past tier budget (~15m macOS, ~45–60m iOS/Android) without a Jest summary (`N passing`/`N failing`) or `[jet-coverage] merged … before NYC shutdown`: treat as [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090). Do not gate the stall decision on emoji `Tests Complete` alone. Run [pre-flight recovery](#pre-flight-recovery), confirm [host-clear probes](#host-clear-probes) and [services ready](#2-services-ready), retry. Do not keep watching flat tee output. Launch-time failures are [startup fail-fast poll](#startup-fail-fast-poll), not this window.
 
 Android `:test-cover` that **FAIL**s then Jest `did not exit` is a hang, not a stall to wait out — kill hung yarn/jest/detox PIDs, then [Android Detox launch ANR](#android-detox-launch-anr-abi-mismatch) if logcat showed ANR / ABI mismatch, otherwise [interrupted run](#interrupted-run-abort-killed-terminal-eaddrinuse-on-8090).
 
