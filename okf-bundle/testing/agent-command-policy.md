@@ -117,7 +117,7 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 | Ad-hoc `expo prebuild`, `xcodebuild`, or `cd test-expo && …` as the Expo iOS link gate                                                                                            | **Only** `yarn test-expo:ios:link` from repo root — not Detox / `yarn tests:*`      |
 | `yarn jet`, `npx jet`, `cd tests && yarn jet …`                                                                                                                                  | [E2e agent rule](running-e2e.md#agent-rule-read-first)                              |
 | `detox test`, bare `detox`, `cd tests && detox …`                                                                                                                                | E2e agent rule                                                                      |
-| bare `bundle install` at repo root                                                                                              | Use **`yarn ruby:install`** or root **`yarn`** (`postinstallDev` includes ruby:install)                                                                         |
+| bare `bundle install` at repo root                                                                                                                                                | Use **`yarn ruby:install`** or root **`yarn`** (`postinstallDev` includes ruby:install) |
 | Ad-hoc Metro / emulator start                                                                                                                                                    | Use `yarn tests:packager:jet`, `yarn tests:emulator:start`                          |
 | Spawn / PATH probes to “test” Jet or genversion                                                                                                                                  | Log triage only; fix product code and re-run canonical command                      |
 
@@ -156,7 +156,7 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 - `yarn lint:js` is `eslint packages/* --max-warnings=0`. That glob covers `packages/app/__tests__/`. `scripts/version.js` is not in it.
 - After `bundle install --gemfile=packages/app/__tests__/Gemfile`, Bundler follows root `.bundle/config` `BUNDLE_PATH: vendor/bundle` and drops a gitignored tree at `packages/app/__tests__/vendor/`. ESLint `globalIgnores` does not list that path, so lint reports thousands of vendor findings.
 - That is local checkout noise, not a product lint failure. CI without that tree stays green.
-- Do not invent a delete-vendor command as the lint gate. Do not patch `eslint.config.mjs` to hide it. Root `bundle install` is the install path above.
+- Do not invent a delete-vendor command as the lint gate. Do not patch `eslint.config.mjs` to hide it. Root `yarn ruby:install` or root `yarn` is the canonical install path above.
 
 ### iOS Ruby (SPM helpers)
 
