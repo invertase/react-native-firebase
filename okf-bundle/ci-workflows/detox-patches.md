@@ -1,3 +1,11 @@
+---
+type: Reference
+title: Detox yarn patches
+description: Inventory, rationale, diagnosis, and update procedures for the repository's Detox and related Yarn patches.
+tags: [ci, detox, yarn, patches, e2e, troubleshooting]
+timestamp: 2026-08-26T00:00:00Z
+---
+
 # Detox yarn patches
 
 E2E runs on **Detox 20.51.0** (`tests/package.json`), applied via Yarn Berry patch:

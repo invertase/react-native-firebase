@@ -1,3 +1,11 @@
+---
+type: Reference
+title: iOS CI workflows
+description: iOS CI simulator reliability, instrumentation, Detox orchestration, failure triage, and pinned tooling guidance.
+tags: [ci, ios, detox, simulator, e2e, troubleshooting]
+timestamp: 2026-08-26T00:00:00Z
+---
+
 # iOS CI workflows
 
 **Testing E2E iOS** workflow (`.github/workflows/tests_e2e_ios.yml`) and `.github/workflows/scripts/`.
