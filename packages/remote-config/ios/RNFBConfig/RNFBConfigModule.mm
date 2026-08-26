@@ -38,13 +38,12 @@ RCT_EXPORT_MODULE(NativeRNFBTurboConfig)
   return std::make_shared<facebook::react::NativeRNFBTurboConfigSpecJSI>(params);
 }
 
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants::Builder>)
-    constantsToExport {
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants>)constantsToExport {
   return [_RCTTypedModuleConstants
       newWithUnsafeDictionary:[RNFBConfigHelper getConstantsForAppName:DEFAULT_APP_DISPLAY_NAME]];
 }
 
-- (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants::Builder>)getConstants {
+- (facebook::react::ModuleConstants<JS::NativeRNFBTurboConfig::Constants>)getConstants {
   return [self constantsToExport];
 }
 
