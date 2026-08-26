@@ -111,7 +111,8 @@ if [[ -f "$PODS_PBXPROJ" ]]; then
   log "Pods product references / product types for RNFBApp and RNFBMessaging:"
   grep -n -E -m 120 'RNFB(App|Messaging)|productType = "com.apple.product-type.(framework|library.static)"' "$PODS_PBXPROJ" || true
 else
-  log "ERROR: missing ${PODS_PBXPROJ}"
+  log "ERROR: missing ${PODS_PBXPROJ} -- product type and file reference checks cannot run"
+  exit 1
 fi
 if [[ -f "$PODS_XCCONFIG" ]]; then
   log "app target CocoaPods link inputs:"
@@ -140,13 +141,45 @@ pod_target_product_type() {
   ' "$PODS_PBXPROJ"
 }
 
+# Validates that a PBXFileReference entry for <target>.framework is present and
+# complete. Parsing is scoped to the PBXFileReference section; the entry text is
+# accumulated until its closing }; so the check works for both compact
+# single-line and multi-line CocoaPods formats. All comparisons use index()
+# (fixed-string) to avoid dynamic regex on caller-controlled target names.
+pod_framework_file_ref_ok() {
+  local target_name="$1"
+  awk -v target_name="$target_name" '
+    /\/\* Begin PBXFileReference section \*\// { in_section = 1; next }
+    /\/\* End PBXFileReference section \*\// { in_section = 0; in_entry = 0; buf = "" }
+    in_section && index($0, "/* " target_name " */ = {") > 0 {
+      buf = $0
+      if (index(buf, "isa = PBXFileReference;") > 0 &&
+          index(buf, "explicitFileType = wrapper.framework;") > 0 &&
+          index(buf, "path = " target_name ".framework;") > 0) {
+        print "ok"; exit
+      }
+      in_entry = 1; next
+    }
+    in_entry { buf = buf " " $0 }
+    in_entry && /^[[:space:]]*};[[:space:]]*$/ {
+      if (index(buf, "isa = PBXFileReference;") > 0 &&
+          index(buf, "explicitFileType = wrapper.framework;") > 0 &&
+          index(buf, "path = " target_name ".framework;") > 0) {
+        print "ok"
+        exit
+      }
+      in_entry = 0
+    }
+  ' "$PODS_PBXPROJ"
+}
+
 for rnfb_target in RNFBApp RNFBMessaging; do
   product_type="$(pod_target_product_type "$rnfb_target")"
   if [[ "$product_type" != "com.apple.product-type.framework" ]]; then
     log "ERROR: ${rnfb_target} generated with wrong product type '${product_type:-missing}' (expected dynamic framework)"
     exit 1
   fi
-  if ! grep -E -q "/\\* ${rnfb_target} \\*/ = \\{isa = PBXFileReference; explicitFileType = wrapper\\.framework;.*path = ${rnfb_target}\\.framework;" "$PODS_PBXPROJ"; then
+  if [[ "$(pod_framework_file_ref_ok "$rnfb_target")" != "ok" ]]; then
     log "ERROR: ${rnfb_target} framework product reference is missing from Pods.xcodeproj"
     exit 1
   fi
