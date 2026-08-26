@@ -159,10 +159,25 @@ target 'testing' do
     rnfb_link_profile = (linkage.to_s == 'dynamic')
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
-        config.build_settings["GCC_WARN_INHIBIT_ALL_WARNINGS"] = "YES"
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
         if target.name.include?('RNFB')
           apply_ios_native_coverage.call(config.build_settings, link_profile: rnfb_link_profile)
+
+          # Keep warnings visible on our own targets (unlike third-party deps above) and
+          # escalate one specific diagnostic to a hard build error: an Objective-C/C++ method
+          # whose return type disagrees with the protocol it implements. Clang only warns on
+          # this by default (-Wmismatched-return-types), it does not fail the build, which is
+          # exactly how a committed TurboModule Spec header (packages/*/ios/generated/**)
+          # drifted out of sync with its hand-written .mm implementation and shipped for weeks
+          # unnoticed (issue #9212: constantsToExport/getConstants returned
+          # ModuleConstants<...::Builder> against a generated protocol declaring
+          # ModuleConstants<...>). Scoped to this one diagnostic, not a blanket -Werror, so
+          # unrelated warning noise elsewhere in RNFB code doesn't start failing CI.
+          config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'NO'
+          other_cflags = config.build_settings['OTHER_CFLAGS'] || '$(inherited)'
+          config.build_settings['OTHER_CFLAGS'] = "#{other_cflags} -Werror=mismatched-return-types"
+        else
+          config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'YES'
         end
       end
     end
