@@ -117,7 +117,8 @@ if [[ -f "$PODS_XCCONFIG" ]]; then
   log "app target CocoaPods link inputs:"
   grep -n -E -m 20 'OTHER_LDFLAGS|RNFB(App|Messaging)' "$PODS_XCCONFIG" || true
 else
-  log "ERROR: missing ${PODS_XCCONFIG}"
+  log "ERROR: missing ${PODS_XCCONFIG} -- linker flags cannot be checked"
+  exit 1
 fi
 log "--- end generated linkage diagnosis ---"
 
@@ -126,7 +127,7 @@ pod_target_product_type() {
   awk -v target_name="$target_name" '
     /\/\* Begin PBXNativeTarget section \*\// { in_native_targets = 1; next }
     /\/\* End PBXNativeTarget section \*\// { in_native_targets = 0 }
-    in_native_targets && $0 ~ "/\\* " target_name " \\*/ = \\{" { in_target = 1 }
+    in_native_targets && index($0, "/* " target_name " */ = {") > 0 { in_target = 1 }
     in_target && /productType = / {
       value = $0
       sub(/^.*productType = /, "", value)

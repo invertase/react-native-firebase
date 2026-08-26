@@ -387,7 +387,9 @@ class FirebaseSpmTest < Minitest::Test
     # Guarded with `defined?` because the very first test's `setup` runs before
     # any test has `load`ed firebase_spm.rb yet, so the constant doesn't exist.
     RNFirebaseSPM.reset! if defined?(RNFirebaseSPM)
+    @expo_created_by_test = false
     Expo.send(:remove_const, :PrecompiledModules) if defined?(Expo::PrecompiledModules)
+    # Outer Expo constant removal is ownership-gated: see teardown.
     # Reset the `Pod::UI` mock's captured output between tests.
     Pod::UI.warnings = []
     Pod::UI.messages = []
@@ -398,8 +400,32 @@ class FirebaseSpmTest < Minitest::Test
     load File.join(__dir__, '..', 'firebase_spm.rb')
   end
 
+  # Removes the outer `Expo` constant only when this test instance created it
+  # (tracked via @expo_created_by_test) and it is still an empty module. A
+  # pre-existing Expo constant that existed before the test ran is preserved.
+  # Direct testing of teardown mechanics is impractical without calling teardown
+  # manually or examining cross-instance state; the Expo restore tests exercise
+  # the full create-use-clean path through the normal Minitest lifecycle.
+  def teardown
+    Expo.send(:remove_const, :PrecompiledModules) if defined?(Expo::PrecompiledModules)
+    return unless @expo_created_by_test
+
+    Object.send(:remove_const, :Expo) if defined?(Expo) && Expo.is_a?(Module) && Expo.constants.empty?
+  end
+
+  # Creates the outer `Expo` module if not already defined, marking this test
+  # instance as the owner so teardown can remove it. Both
+  # `stub_expo_precompiled_modules` and any test that manually constructs a
+  # partial `Expo::PrecompiledModules` must go through this helper.
+  def ensure_expo_module!
+    return if defined?(Expo)
+
+    Object.const_set(:Expo, Module.new)
+    @expo_created_by_test = true
+  end
+
   def stub_expo_precompiled_modules(enabled:, linkage:)
-    Object.const_set(:Expo, Module.new) unless defined?(Expo)
+    ensure_expo_module!
     precompiled_modules = Module.new
     precompiled_modules.define_singleton_method(:enabled?) { enabled }
     precompiled_modules.define_singleton_method(:linkage) { |_| linkage }
@@ -1304,6 +1330,26 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 1, restore_messages.length
   end
 
+  # A partial Expo::PrecompiledModules API (enabled? present, linkage absent)
+  # must fail closed: the respond_to?(:linkage) guard returns early and leaves
+  # every RNFB static target unchanged.
+  def test_restore_expo_prebuilt_noop_when_linkage_method_absent
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+    ensure_expo_module!
+    partial = Module.new
+    partial.define_singleton_method(:enabled?) { true }
+    # Deliberately omit :linkage -- tests the guard in production code.
+    Expo.const_set(:PrecompiledModules, partial)
+
+    target = MockPodTarget.new('RNFBApp', build_type: Pod::BuildType.static_library)
+    rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!(
+      MockInstaller.new([], pod_targets: [target])
+    )
+
+    assert_equal Pod::BuildType.static_library, target.build_type
+  end
+
   # ── rnfirebase_ensure_pods_uuid_counter_safe! ──
 
   def cocoapods_uuid(prefix, index)
@@ -1584,6 +1630,27 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal :original_generate_result, result
     assert_equal 1, instance.original_generate_calls
     assert_equal [instance], restore_calls
+  end
+
+  # The generate_pods_project wrapper must not call the original generate method
+  # after a restore failure: it must warn with a directed message identifying
+  # Expo prebuilt dynamic-linkage restoration and re-raise the original error.
+  def test_generate_pods_project_hook_warns_and_reraises_on_restore_failure
+    load_firebase_spm
+    boom = RuntimeError.new('restore boom')
+    Object.define_method(:rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!) { |*| raise boom }
+    Pod::UI.warnings.clear
+
+    klass = new_fake_cocoapods_installer_class
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    instance = klass.new
+
+    raised = assert_raises(RuntimeError) { instance.send(:generate_pods_project) }
+    assert_same boom, raised
+    assert_equal 0, instance.original_generate_calls
+    assert_equal 1, Pod::UI.warnings.length
+    assert_includes Pod::UI.warnings[0], 'Expo prebuilt RNFB dynamic-linkage restoration'
+    assert_includes Pod::UI.warnings[0], 'restore boom'
   end
 
   def test_hook_swallows_embed_phase_errors_without_breaking_original_hook
