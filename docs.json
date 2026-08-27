@@ -145,6 +145,7 @@
         { "title": "Usage", "href": "/auth/usage" },
         { "title": "Social Auth", "href": "/auth/social-auth" },
         { "title": "Phone Auth", "href": "/auth/phone-auth" },
+        { "title": "Email Link Auth", "href": "/auth/email-link-auth" },
         { "title": "OpenID Connect Auth", "href": "/auth/oidc-auth" },
         { "title": "Multi-factor Auth", "href": "/auth/multi-factor-auth" }
       ]
