@@ -1632,6 +1632,58 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal [instance], restore_calls
   end
 
+  def test_hook_warns_once_when_generate_pods_project_is_unavailable_for_expo
+    load_firebase_spm
+    stub_expo_precompiled_modules(enabled: true, linkage: :dynamic)
+    klass = new_fake_cocoapods_installer_class
+    klass.send(:remove_method, :generate_pods_project)
+
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    rnfirebase_hook_cocoapods_post_install!(klass)
+    instance = klass.new
+
+    result = instance.send(:run_podfile_post_install_hooks)
+
+    assert_equal :original_result, result
+    assert_equal 1, instance.original_hook_calls
+    warnings = Pod::UI.warnings.select { |warning| warning.include?('generate_pods_project') }
+    assert_equal 1, warnings.length
+    assert_includes warnings[0], 'Expo prebuilt RNFB dynamic-linkage restoration was not hooked'
+  end
+
+  def test_hook_does_not_warn_when_generate_pods_project_is_unavailable_and_expo_prebuilt_is_disabled
+    load_firebase_spm
+    stub_expo_precompiled_modules(enabled: false, linkage: :dynamic)
+    klass = new_fake_cocoapods_installer_class
+    klass.send(:remove_method, :generate_pods_project)
+
+    rnfirebase_hook_cocoapods_post_install!(klass)
+
+    refute(Pod::UI.warnings.any? { |warning| warning.include?('generate_pods_project') })
+  end
+
+  def test_hook_does_not_warn_when_generate_pods_project_is_unavailable_outside_expo
+    load_firebase_spm
+    klass = new_fake_cocoapods_installer_class
+    klass.send(:remove_method, :generate_pods_project)
+
+    rnfirebase_hook_cocoapods_post_install!(klass)
+
+    refute(Pod::UI.warnings.any? { |warning| warning.include?('generate_pods_project') })
+  end
+
+  def test_hook_does_not_warn_when_expo_precompiled_enabled_api_is_unavailable
+    load_firebase_spm
+    ensure_expo_module!
+    Expo.const_set(:PrecompiledModules, Module.new)
+    klass = new_fake_cocoapods_installer_class
+    klass.send(:remove_method, :generate_pods_project)
+
+    rnfirebase_hook_cocoapods_post_install!(klass)
+
+    refute(Pod::UI.warnings.any? { |warning| warning.include?('generate_pods_project') })
+  end
+
   # The generate_pods_project wrapper must not call the original generate method
   # after a restore failure: it must warn with a directed message identifying
   # Expo prebuilt dynamic-linkage restoration and re-raise the original error.

@@ -457,6 +457,11 @@ targets to dynamic linkage and eliminating the embedded SPM duplicate. Bare
 CocoaPods (no SPM), source-built Expo, non-Expo apps, and already-dynamic
 targets are unaffected.
 
+If CocoaPods no longer exposes `generate_pods_project`, RNFB cannot install
+the restore at the required boundary. Expo-precompiled installs warn once per
+installer class and continue without the restore; non-Expo and source-built
+Expo paths do not warn.
+
 ### Regression check
 
 The documented Podfile configuration does not change: SPM on,
@@ -466,6 +471,9 @@ Link success confirms both RNFB framework products are in dynamic form and
 duplicate Firebase symbols are absent, while still validating the app target's
 own FirebaseCore dependency (the original purpose of that fixture). See
 [Maintainer check of the Expo documented path](#app-target-firebasecore-link-package-dependency-alone-is-not-enough).
+The [#9202](https://github.com/invertase/react-native-firebase/issues/9202)
+regression signature is duplicate `_FIRFirebaseVersion` symbols from
+`libRNFBApp.a` and `libRNFBMessaging.a`.
 
 ## Review invariants
 
