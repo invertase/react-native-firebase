@@ -715,6 +715,22 @@ def rnfirebase_hook_cocoapods_post_install!(installer_class = (Pod::Installer if
   integrate_was_private = installer_class.private_method_defined?(integrate_hook_method)
   post_integrate_available = integrate_was_private || installer_class.method_defined?(integrate_hook_method)
 
+  generate_unavailable_warning = :@rnfirebase_generate_pods_project_unavailable_warning
+  if !already_hooked_generate &&
+     !generate_available &&
+     defined?(Expo::PrecompiledModules) &&
+     Expo::PrecompiledModules.respond_to?(:enabled?) &&
+     Expo::PrecompiledModules.enabled? &&
+     defined?(Pod::UI) &&
+     !installer_class.instance_variable_defined?(generate_unavailable_warning)
+    Pod::UI.warn '[react-native-firebase] `Pod::Installer#generate_pods_project` does not exist ' \
+                 '(a CocoaPods release may have renamed or removed it) -- Expo prebuilt RNFB ' \
+                 'dynamic-linkage restoration was not hooked into `pod install`. Use the CocoaPods ' \
+                 'version required by your Expo SDK and report this version combination if the app ' \
+                 'links duplicate Firebase symbols.'
+    installer_class.instance_variable_set(generate_unavailable_warning, true)
+  end
+
   # Already hooked -- e.g. a second RNFB podspec also `require`d this same
   # file within one `pod install` process. Expected and idempotent.
   return if (already_hooked_generate || !generate_available) &&

@@ -12,11 +12,11 @@ Knowledge for the core app package: Firebase app lifecycle, Expo config plugin, 
 
 **Policy:** [OKF documentation and commit policy](../../documentation-policy.md). Agent shell commands: [agent command policy](../../testing/agent-command-policy.md) only.
 
-The workspace Expo documented-path iOS **link** fixture (`test-expo/`) is not Detox e2e. Canonical command: `yarn test-expo:ios:link` ([agent command policy](../../testing/agent-command-policy.md)). App-target FirebaseCore linking and CocoaPods hook order: [iOS SPM native integration](../../ios-spm-native-imports.md#app-target-firebasecore-link-package-dependency-alone-is-not-enough). Expo precompiled RNCore linkage repair: [iOS SPM native integration § Expo precompiled module linkage repair](../../ios-spm-native-imports.md#expo-precompiled-module-linkage-repair). Do not treat duplicate `_FIRFirebaseVersion` ([#9202](https://github.com/invertase/react-native-firebase/issues/9202)) as that closer.
+The workspace Expo documented-path iOS **link** fixture (`test-expo/`) is not Detox e2e. Canonical command: `yarn test-expo:ios:link` ([agent command policy](../../testing/agent-command-policy.md)). App-target FirebaseCore linking and CocoaPods hook order: [iOS SPM native integration](../../ios-spm-native-imports.md#app-target-firebasecore-link-package-dependency-alone-is-not-enough). Expo precompiled RNCore linkage repair and duplicate-symbol regression: [iOS SPM native integration § Expo precompiled module linkage repair](../../ios-spm-native-imports.md#expo-precompiled-module-linkage-repair).
 
 ## Documents
 
-* Cross-cutting durable SPM decisions: [iOS SPM native integration](../../ios-spm-native-imports.md) ([app-target FirebaseCore link](../../ios-spm-native-imports.md#app-target-firebasecore-link-package-dependency-alone-is-not-enough))
+* Cross-cutting durable SPM decisions: [iOS SPM native integration](../../ios-spm-native-imports.md) ([app-target FirebaseCore link](../../ios-spm-native-imports.md#app-target-firebasecore-link-package-dependency-alone-is-not-enough); [Expo precompiled linkage repair](../../ios-spm-native-imports.md#expo-precompiled-module-linkage-repair))
 
 ## Related repository files
 
