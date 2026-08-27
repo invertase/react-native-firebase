@@ -122,7 +122,7 @@ struct {
     // Don't send an event if contentAvailable is true -
     // application:didReceiveRemoteNotification will send the event for us, we
     // don't want to duplicate them
-    if (!notificationDict[@"contentAvailable"]) {
+    if (![notificationDict[@"contentAvailable"] boolValue]) {
       [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received"
                                                  body:notificationDict];
     }
