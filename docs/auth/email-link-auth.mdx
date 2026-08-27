@@ -292,9 +292,12 @@ import {
   reauthenticateWithCredential,
 } from '@react-native-firebase/auth';
 
-const credential = EmailAuthProvider.credentialWithLink(email, url);
-await linkWithCredential(getAuth().currentUser, credential);
-// or: await reauthenticateWithCredential(getAuth().currentUser, credential);
+const user = getAuth().currentUser;
+if (user) {
+  const credential = EmailAuthProvider.credentialWithLink(email, url);
+  await linkWithCredential(user, credential);
+  // or: await reauthenticateWithCredential(user, credential);
+}
 ```
 
 URL handling (App Links / Universal Links + `isSignInWithEmailLink`) is the same as for sign-in.
