@@ -18,7 +18,7 @@ Glossary of **string identifiers** and **work-queue field names** used across OK
 | **All agent shell commands** (install, prepare, validation, e2e) | [agent command policy](agent-command-policy.md) |
 | E2e-only detail, pre-flight, harness gate, tier scope | [running e2e](running-e2e.md) — `yarn tests:*` subset of agent command policy |
 | Validation command sequence | [validation checklist](validation-checklist.md) |
-| Work-queue gate snapshots | Package work queues (ephemeral) |
+| Work-queue gate snapshots | Linear project work-queue documents (ephemeral). Grandfathered `okf-bundle/**/*work-queue.md` until migrated. See [documentation policy](../documentation-policy.md#work-queue-documents). |
 
 ## Work type identifiers
 

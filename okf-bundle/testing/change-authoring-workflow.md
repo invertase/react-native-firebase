@@ -8,7 +8,7 @@ timestamp: 2026-06-26T00:00:00Z
 
 # Change authoring workflow
 
-Single source for **how to author and verify a product change** in RNFB (bug fix, feature, parity, coverage). Package workflows add artifacts; work queues add ephemeral gate state — neither restates this loop.
+Single source for **how to author and verify a product change** in RNFB (bug fix, feature, parity, coverage). Package workflows add artifacts; work queues add ephemeral gate state. Queue home is a Linear project document ([documentation policy](../documentation-policy.md#work-queue-documents)); existing repo `*work-queue.md` files stay until next pickup. Neither restates this loop.
 
 **Policy:** [OKF documentation and commit policy](../documentation-policy.md) — public vs ephemeral vs private; [Efficiency](../documentation-policy.md#efficiency). **Terms:** [iteration vocabulary](iteration-vocabulary.md).
 
@@ -275,7 +275,7 @@ Package workflows define **which module/spec** to load (e.g. Firestore → [pipe
 - When `okf-bundle/` reference docs, `AGENTS.md`, or `CONTRIBUTING.md` changed, **`commit` closes only after** the frozen [OKF bundle scan](validation-checklist.md#okf-bundle-review) is clean. Contract findings belong in **`documentation?`** then another frozen `independent-review` — not edits on the `commit` pass.
 - **Evidence required:** [§ validation evidence](#validation-evidence-blocking) must be recorded before `commit_gate` closes; summaries without exit codes, e2e counts, and coverage tables do not substitute.
 - **Never stage:** `tests/harness.overrides.js`, any `.only`, temporary sub-suite edits in `tests/app.js`, or native instrumentation ([running e2e § before merge](running-e2e.md#before-merge-pr-handoff), [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)).
-- **Work queue:** before `git commit`, set the row's `commit_subject` to the commit's subject line, close `commit_gate`, and stage the queue doc **in the same commit** as the product change. Do not record SHAs in queue docs. After commit, the git subject and the queue `commit_subject` must match character-for-character. Single-commit PR titles: [documentation-policy § pull requests](../documentation-policy.md#pull-requests). Queues are ephemeral ([documentation policy § work-queue documents](../documentation-policy.md#work-queue-documents)); do not copy policy here.
+- **Work queue:** before `git commit`, set the row's `commit_subject` on the Linear queue document to the commit's subject line and close `commit_gate`. Do not stage a queue file. Do not record SHAs. After commit, the git subject and the queue `commit_subject` must match character-for-character. Single-commit PR titles: [documentation-policy § pull requests](../documentation-policy.md#pull-requests). Queues are ephemeral ([documentation policy § work-queue documents](../documentation-policy.md#work-queue-documents)); do not copy policy here.
 
 ```bash
 git status
