@@ -146,7 +146,12 @@ Run **only** the scripts whose trees are in the diff (exit 0). Do not run the re
 | `packages/*/lib/**` | `yarn lint:deps` | Blocking. [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting). |
 | Java under `packages/*/android` | `yarn lint:android` | **Implementation only.** `google-java-format --set-exit-if-changed --replace` — **mutates**. Only entrypoint ([agent command policy](agent-command-policy.md)); never invent `yarn google-java-format` / `npx google-java-format`. Can flake; rerun once/twice if failure is not clearly in diff. Commit formatter output. |
 | iOS native (`packages/*/ios` `.h` / `.cpp` / `.m` / `.mm`, not generated) | `yarn lint:ios:check` | clang-format **check** (`-n -Werror`). Implementation may `yarn lint:ios:fix` then re-check. |
-| `docs/**` | `yarn lint:markdown` then `yarn lint:spellcheck` | Scripts glob `docs/**` only (CI docs job). OKF-only diffs skip these. |
+| `docs/**` | `yarn lint:markdown` then `yarn lint:spellcheck` | Scripts glob `docs/**` only (CI docs job). OKF-only diffs skip these. Gotchas below. |
+
+**Docs lint gotchas** (`docs/**` only):
+
+- **Markdown tables:** `yarn lint:markdown` runs Prettier `--check` (exact column padding). No `lint:markdown:fix`; no allowlisted formatter for this tree ([agent command policy](agent-command-policy.md)). Wide tables: prefix `{/* prettier-ignore */}`, compact single-space cells — see `docs/migrating-to-v26.mdx`.
+- **Spellcheck frontmatter:** `yarn lint:spellcheck` exits **0** when YAML frontmatter fails to parse (`Failed to parse YAML frontmatter, ignoring it`); that page's frontmatter is not checked. Unquoted colons in values (e.g. `description: v27: Imagen API removal`) are a common trigger — quote the value. Read stdout, not exit code alone.
 
 A JS-only (or docs-only) diff does **not** require full `yarn lint`. Full `yarn lint` is the CI equivalent when the diff spans those package trees **and** mutating `lint:android` is allowed (`implementation`).
 
