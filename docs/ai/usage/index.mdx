@@ -410,10 +410,6 @@ function App() {
 }
 ```
 
-## Generating images from text
-
-Imagen models are deprecated and scheduled for shutdown around June 2026. Use a Gemini image model such as `gemini-3.1-flash-lite-image` with `getGenerativeModel()` instead. See [Generate images with Gemini models](#generate-images-with-gemini-models) below.
-
 ## Generate images with Gemini models
 
 Some Gemini models can return generated images in addition to text. Configure `generationConfig.responseModalities` and `generationConfig.imageConfig` on `getGenerativeModel()` to control output format, aspect ratio, and size.
@@ -441,7 +437,7 @@ function App() {
           const app = getApp();
           const ai = getAI(app);
           const model = getGenerativeModel(ai, {
-            model: 'gemini-3.1-flash-lite-image',
+            model: 'gemini-3.1-flash-image',
             generationConfig: {
               responseModalities: [ResponseModality.IMAGE],
               imageConfig: {

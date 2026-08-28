@@ -130,6 +130,88 @@ const config: PackageConfig = {
       reason:
         'Per-speaker voice config type added in firebase-js-sdk for multi-speaker TTS; not yet surfaced in React Native Firebase AI.',
     },
+    /*
+     * Imagen (user-accepted deferral).
+     *
+     * The Imagen models were shut down as a service on 2026-08-17, and React Native Firebase
+     * removed the whole Imagen API in v27 as a breaking change. The pinned firebase@12.17.1
+     * (@firebase/ai@2.14.0) still declares these exports; upstream removed them in
+     * @firebase/ai@2.15.0, shipped in firebase@12.18.0. Bumping the pin was out of scope for the
+     * removal, so these entries document the gap in the meantime.
+     *
+     * Remove every entry in this group once the root `firebase` pin reaches >= 12.18.0 — at that
+     * point the SDK no longer exports them and compare-types will report each one as stale.
+     */
+    {
+      name: 'getImagenModel',
+      reason:
+        'Entry point for creating an Imagen model instance. Removed from React Native Firebase in v27 after the Imagen service shutdown on 2026-08-17.',
+    },
+    {
+      name: 'getTemplateImagenModel',
+      reason:
+        'Server-template variant of the Imagen model factory. Removed alongside the rest of the Imagen API in React Native Firebase v27.',
+    },
+    {
+      name: 'ImagenModel',
+      reason:
+        'Imagen model class exposing image generation calls against a shut-down service; deleted from React Native Firebase in the v27 Imagen removal.',
+    },
+    {
+      name: 'TemplateImagenModel',
+      reason:
+        'Server-template Imagen model class, deleted from React Native Firebase in the v27 Imagen removal.',
+    },
+    {
+      name: 'ImagenModelParams',
+      reason:
+        'Constructor params for the removed Imagen model, so it has no consumer left in React Native Firebase.',
+    },
+    {
+      name: 'ImagenImageFormat',
+      reason:
+        'Output image format helper (PNG / JPEG) used only when requesting Imagen generations, removed with the Imagen API.',
+    },
+    {
+      name: 'ImagenGenerationConfig',
+      reason:
+        'Per-request generation config for Imagen prompts, removed with the Imagen API in React Native Firebase v27.',
+    },
+    {
+      name: 'ImagenGenerationResponse',
+      reason:
+        'Response wrapper returned by the removed Imagen generation calls, so it is no longer reachable in React Native Firebase.',
+    },
+    {
+      name: 'ImagenInlineImage',
+      reason:
+        'Base64 inline image result type produced only by Imagen generations, removed with the Imagen API.',
+    },
+    {
+      name: 'ImagenGCSImage',
+      reason:
+        'Cloud Storage image result type produced only by Imagen generations, removed with the Imagen API.',
+    },
+    {
+      name: 'ImagenAspectRatio',
+      reason:
+        'Aspect ratio option accepted only by the removed Imagen generation config, so React Native Firebase no longer declares it.',
+    },
+    {
+      name: 'ImagenPersonFilterLevel',
+      reason:
+        'Person / face generation filter level scoped to Imagen safety settings, removed with the Imagen API.',
+    },
+    {
+      name: 'ImagenSafetyFilterLevel',
+      reason:
+        'Safety filter threshold scoped to Imagen safety settings, removed with the Imagen API.',
+    },
+    {
+      name: 'ImagenSafetySettings',
+      reason:
+        'Safety settings object accepted only by the removed Imagen model params, so it has no consumer left in React Native Firebase.',
+    },
   ],
   extraInRN: [
     {

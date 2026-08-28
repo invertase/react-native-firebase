@@ -19,33 +19,18 @@ import './polyfills';
 import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
 import { AgentPlatformBackend, Backend, GoogleAIBackend, VertexAIBackend } from './backend';
 import { AIErrorCode, LiveModelParams, ModelParams, RequestOptions } from './types';
-import { AI, AIOptions, ImagenModelParams } from './public-types';
+import { AI, AIOptions } from './public-types';
 import { AIError } from './errors';
 import { GenerativeModel } from './models/generative-model';
-import {
-  AIModel,
-  ImagenModel,
-  LiveGenerativeModel,
-  TemplateGenerativeModel,
-  TemplateImagenModel,
-} from './models';
+import { AIModel, LiveGenerativeModel, TemplateGenerativeModel } from './models';
 import { WebSocketHandlerImpl } from './websocket';
 
 export * from './public-types';
 export { ChatSession, ChatSessionBase, TemplateChatSession } from './methods/chat-session';
 export { LiveSession } from './methods/live-session';
 export * from './requests/schema-builder';
-export { ImagenImageFormat } from './requests/imagen-image-format';
 export { Backend, GoogleAIBackend, VertexAIBackend, AgentPlatformBackend } from './backend';
-export {
-  GenerativeModel,
-  AIError,
-  AIModel,
-  ImagenModel,
-  LiveGenerativeModel,
-  TemplateGenerativeModel,
-  TemplateImagenModel,
-};
+export { GenerativeModel, AIError, AIModel, LiveGenerativeModel, TemplateGenerativeModel };
 
 /**
  * Returns the default {@link AI} instance that is associated with the provided
@@ -120,38 +105,6 @@ export function getGenerativeModel(
 }
 
 /**
- * Returns an {@link ImagenModel} class with methods for using Imagen.
- *
- * @deprecated Imagen models are deprecated. Use {@link getGenerativeModel} with a Gemini image
- * model such as `gemini-3.1-flash-lite-image` instead. See the
- * {@link https://firebase.google.com/docs/ai-logic/generate-images-gemini | Gemini image generation guide}.
- *
- * Only Imagen 3 models (named `imagen-3.0-*`) are supported.
- *
- * @param ai - An {@link AI} instance.
- * @param modelParams - Parameters to use when making Imagen requests.
- * @param requestOptions - Additional options to use when making requests.
- *
- * @throws If the `apiKey` or `projectId` fields are missing in your
- * Firebase config.
- *
- * @beta
- */
-export function getImagenModel(
-  ai: AI,
-  modelParams: ImagenModelParams,
-  requestOptions?: RequestOptions,
-): ImagenModel {
-  if (!modelParams.model) {
-    throw new AIError(
-      AIErrorCode.NO_MODEL,
-      `Must provide a model name. Example: getImagenModel({ model: 'my-model-name' })`,
-    );
-  }
-  return new ImagenModel(ai, modelParams, requestOptions);
-}
-
-/**
  * Returns a {@link LiveGenerativeModel} class for real-time, bidirectional communication.
  *
  * The Live API is only supported in modern browser windows and Node >= 22.
@@ -187,23 +140,4 @@ export function getTemplateGenerativeModel(
   requestOptions?: RequestOptions,
 ): TemplateGenerativeModel {
   return new TemplateGenerativeModel(ai, requestOptions);
-}
-
-/**
- * Returns a {@link TemplateImagenModel} class for executing server-side Imagen templates.
- *
- * @deprecated Imagen models are deprecated. Use {@link getGenerativeModel} with a Gemini image
- * model such as `gemini-3.1-flash-lite-image` instead. See the
- * {@link https://firebase.google.com/docs/ai-logic/generate-images-gemini | Gemini image generation guide}.
- *
- * @param ai - An {@link AI} instance.
- * @param requestOptions - Additional options to use when making requests.
- *
- * @beta
- */
-export function getTemplateImagenModel(
-  ai: AI,
-  requestOptions?: RequestOptions,
-): TemplateImagenModel {
-  return new TemplateImagenModel(ai, requestOptions);
 }

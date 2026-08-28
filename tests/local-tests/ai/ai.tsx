@@ -17,9 +17,7 @@ import {
   LiveSession,
   ResponseModality,
   getTemplateGenerativeModel,
-  getTemplateImagenModel,
   TemplateGenerativeModel,
-  TemplateImagenModel,
   GoogleAIBackend,
 } from '@react-native-firebase/ai';
 import {
@@ -501,30 +499,6 @@ export function AITestComponent() {
             console.log('Template complete:', text);
           } catch (e) {
             console.error('Template stream error:', e);
-          }
-        }}
-      />
-      <Button
-        title="Template Imagen Model"
-        onPress={async (): Promise<void> => {
-          try {
-            const app = getApp();
-            const ai: AI = getAI(app);
-            const templateImagenModel: TemplateImagenModel = getTemplateImagenModel(ai);
-
-            const templateId = 'imagen-template';
-            const templateVariables = {
-              prompt: 'frog',
-            };
-
-            const result = await templateImagenModel.generateImages(templateId, templateVariables);
-
-            console.log('Generated images from template:', result.images);
-            if (result.filteredReason) {
-              console.log('Some images were filtered:', result.filteredReason);
-            }
-          } catch (e) {
-            console.error('Template Imagen error:', e);
           }
         }}
       />
