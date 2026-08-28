@@ -68,13 +68,11 @@ export enum Task {
   GENERATE_CONTENT = 'generateContent',
   STREAM_GENERATE_CONTENT = 'streamGenerateContent',
   COUNT_TOKENS = 'countTokens',
-  PREDICT = 'predict',
 }
 
 export const enum ServerPromptTemplateTask {
   TEMPLATE_GENERATE_CONTENT = 'templateGenerateContent',
   TEMPLATE_STREAM_GENERATE_CONTENT = 'templateStreamGenerateContent',
-  TEMPLATE_PREDICT = 'templatePredict',
 }
 
 export class RequestUrl {

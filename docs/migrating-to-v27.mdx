@@ -1,0 +1,88 @@
+---
+title: Migrating to v27
+description: Migrate to React Native Firebase v27 — Imagen API removal.
+previous: /migrating-to-v26
+next: /typescript
+---
+
+Version 27 removes the **Imagen** API from `@react-native-firebase/ai`. Google shut down the Imagen models as a service on **2026-08-17**, so the exports could no longer serve a request. Generate images with a Gemini image model through `getGenerativeModel()` instead.
+
+If you are upgrading from v25 or earlier, complete [Migrating to v26](/migrating-to-v26) first — the namespaced API removal still applies.
+
+## Table of contents
+
+- [Removed Imagen API](/migrating-to-v27#removed-imagen-api)
+- [Example](/migrating-to-v27#example)
+
+# Removed Imagen API
+
+Nothing else in `@react-native-firebase/ai` changed. `getGenerativeModel()`, `getTemplateGenerativeModel()`, `TemplateGenerativeModel`, and Gemini image generation are unaffected.
+
+## Removed exports
+
+{/* prettier-ignore */}
+| Removed | Replacement |
+| --- | --- |
+| `getImagenModel` | `getGenerativeModel()` with a Gemini image model |
+| `getTemplateImagenModel` | `getTemplateGenerativeModel()` with a template that uses an image model |
+| `ImagenModel` | `GenerativeModel` |
+| `TemplateImagenModel` | `TemplateGenerativeModel` |
+| `ImagenModelParams` | `ModelParams` |
+| `ImagenGenerationConfig` | `GenerationConfig` with `responseModalities` and `imageConfig` |
+| `ImagenImageFormat` | No replacement — Gemini image models always return `PNG`; read `inlineData.mimeType` to confirm |
+| `ImagenGenerationResponse` | `GenerateContentResult` |
+| `ImagenInlineImage` | `InlineDataPart` on the response candidate |
+| `ImagenGCSImage` | No replacement — Gemini image models return inline data |
+| `ImagenAspectRatio` | `ImageConfigAspectRatio` |
+| `ImagenSafetySettings` | `SafetySetting[]` on `getGenerativeModel()` |
+| `ImagenSafetyFilterLevel` | `HarmBlockThreshold` |
+| `ImagenPersonFilterLevel` | No replacement — Gemini image models allow generating people by default |
+
+# Example
+
+```js
+// Previously (removed)
+import { getApp } from '@react-native-firebase/app';
+import { getAI, getImagenModel, ImagenAspectRatio } from '@react-native-firebase/ai';
+
+const ai = getAI(getApp());
+const imagenModel = getImagenModel(ai, {
+  model: 'imagen-3.0-generate-002',
+  generationConfig: {
+    aspectRatio: ImagenAspectRatio.LANDSCAPE_16x9,
+  },
+});
+
+const result = await imagenModel.generateImages('Draw a red bicycle on a beach at sunset');
+console.log(result.images[0].mimeType);
+```
+
+```js
+// Now
+import { getApp } from '@react-native-firebase/app';
+import {
+  getAI,
+  getGenerativeModel,
+  ImageConfigAspectRatio,
+  ImageConfigImageSize,
+  ResponseModality,
+} from '@react-native-firebase/ai';
+
+const ai = getAI(getApp());
+const model = getGenerativeModel(ai, {
+  model: 'gemini-3.1-flash-image',
+  generationConfig: {
+    responseModalities: [ResponseModality.IMAGE],
+    imageConfig: {
+      aspectRatio: ImageConfigAspectRatio.LANDSCAPE_16x9,
+      imageSize: ImageConfigImageSize.SIZE_1K,
+    },
+  },
+});
+
+const result = await model.generateContent('Draw a red bicycle on a beach at sunset');
+const imagePart = result.response.inlineDataParts()?.[0];
+console.log(imagePart?.inlineData.mimeType);
+```
+
+See [AI Logic usage](/ai/usage) for more image generation examples, and Google's [Imagen to Gemini migration guide](https://firebase.google.com/docs/ai-logic/imagen-models-migration) for model and prompt guidance.

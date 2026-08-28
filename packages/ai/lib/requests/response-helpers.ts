@@ -24,12 +24,9 @@ import {
   AIErrorCode,
   InlineDataPart,
   Part,
-  ImagenInlineImage,
-  ImagenGCSImage,
 } from '../types';
 import { AIError } from '../errors';
 import { logger } from '../logger';
-import { ImagenResponseInternal } from '../types/imagen/internal';
 
 /**
  * Check that at least one candidate exists and does not have a bad
@@ -247,53 +244,4 @@ export function formatBlockErrorMessage(response: GenerateContentResponse): stri
     }
   }
   return message;
-}
-
-/**
- * Convert a generic successful fetch response body to an Imagen response object
- * that can be returned to the user. This converts the REST APIs response format to our
- * APIs representation of a response.
- *
- * @internal
- */
-export async function handlePredictResponse<T extends ImagenInlineImage | ImagenGCSImage>(
-  response: Response,
-): Promise<{ images: T[]; filteredReason?: string }> {
-  const responseJson: ImagenResponseInternal = await response.json();
-
-  const images: T[] = [];
-  let filteredReason: string | undefined = undefined;
-
-  // The backend should always send a non-empty array of predictions if the response was successful.
-  if (!responseJson.predictions || responseJson.predictions?.length === 0) {
-    throw new AIError(
-      AIErrorCode.RESPONSE_ERROR,
-      'No predictions or filtered reason received from Vertex AI. Please report this issue with the full error details at https://github.com/invertase/react-native-firebase.',
-    );
-  }
-
-  for (const prediction of responseJson.predictions) {
-    if (prediction.raiFilteredReason) {
-      filteredReason = prediction.raiFilteredReason;
-    } else if (prediction.mimeType && prediction.bytesBase64Encoded) {
-      images.push({
-        mimeType: prediction.mimeType,
-        bytesBase64Encoded: prediction.bytesBase64Encoded,
-      } as T);
-    } else if (prediction.mimeType && prediction.gcsUri) {
-      images.push({
-        mimeType: prediction.mimeType,
-        gcsURI: prediction.gcsUri,
-      } as T);
-    } else if (prediction.safetyAttributes) {
-      // Ignore safetyAttributes "prediction" to avoid throwing an error below.
-    } else {
-      throw new AIError(
-        AIErrorCode.RESPONSE_ERROR,
-        `Unexpected element in 'predictions' array in response: '${JSON.stringify(prediction)}'`,
-      );
-    }
-  }
-
-  return { images, filteredReason };
 }
