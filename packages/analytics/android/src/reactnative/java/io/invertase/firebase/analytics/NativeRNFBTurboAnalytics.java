@@ -271,12 +271,13 @@ public class NativeRNFBTurboAnalytics extends NativeRNFBTurboAnalyticsSpec {
       return null;
     }
 
-    ArrayList itemsArray = (ArrayList) bundle.getSerializable(FirebaseAnalytics.Param.ITEMS);
-    if (itemsArray != null) {
+    Object itemsValue = bundle.get(FirebaseAnalytics.Param.ITEMS);
+    if (itemsValue instanceof ArrayList<?>) {
+      ArrayList<?> itemsArray = (ArrayList<?>) itemsValue;
       if (itemsArray.isEmpty()) {
         bundle.putParcelableArray(FirebaseAnalytics.Param.ITEMS, new Bundle[0]);
       } else {
-        ArrayList<Bundle> validBundles = new ArrayList<>();
+        ArrayList<Bundle> validBundles = new ArrayList<>(itemsArray.size());
         for (Object item : itemsArray) {
           if (item instanceof Bundle) {
             Bundle itemBundle = (Bundle) item;
