@@ -21,6 +21,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import io.invertase.firebase.BuildConfig;
 import java.util.ArrayList;
+import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -91,11 +92,12 @@ public class ReactNativeFirebaseJSON {
 
   public WritableMap getAll() {
     WritableMap writableMap = Arguments.createMap();
+    if (jsonObject == null) return writableMap;
 
-    JSONArray keys = jsonObject.names();
-    for (int i = 0; i < keys.length(); ++i) {
+    Iterator<String> keys = jsonObject.keys();
+    while (keys.hasNext()) {
       try {
-        String key = keys.getString(i);
+        String key = keys.next();
         SharedUtils.mapPutValue(key, jsonObject.get(key), writableMap);
       } catch (JSONException e) {
         // ignore
