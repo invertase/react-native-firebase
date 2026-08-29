@@ -83,7 +83,7 @@ export default function remoteMessageOptions(
     for (const key in remoteMessage.data) {
       if (hasOwnProperty(remoteMessage.data, key)) {
         const value = remoteMessage.data[key];
-        if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
+        if (typeof value === 'object' && value !== null) {
           out.data[key] = JSON.stringify(value);
         } else {
           out.data[key] = String(value);
