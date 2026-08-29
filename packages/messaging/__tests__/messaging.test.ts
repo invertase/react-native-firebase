@@ -28,31 +28,35 @@ import {
   subscribeToTopic,
   unsubscribeFromTopic,
   isDeliveryMetricsExportToBigQueryEnabled,
+  isNotificationDelegationEnabled,
   isSupported,
   experimentalSetDeliveryMetricsExportedToBigQueryEnabled,
+  setNotificationDelegationEnabled,
   AuthorizationStatus,
   NotificationAndroidPriority,
   NotificationAndroidVisibility,
 } from '../lib';
 
-// @ts-ignore test
-import FirebaseModule from '../../app/lib/internal/FirebaseModule';
-
 describe('Messaging', function () {
   describe('modular', function () {
+    let nativeOverrides: Record<string, ReturnType<typeof jest.fn>>;
+
     beforeEach(function () {
-      // @ts-ignore test
-      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
-        return new Proxy(
-          {},
-          {
-            get: () =>
-              jest.fn().mockResolvedValue({
-                result: true,
-              } as never),
-          },
-        );
-      });
+      nativeOverrides = {};
+      (
+        getMessaging() as ReturnType<typeof getMessaging> & {
+          _nativeModule: Record<string, unknown>;
+        }
+      )._nativeModule = new Proxy(
+        {},
+        {
+          get: (_target, property) =>
+            nativeOverrides[String(property)] ??
+            jest.fn().mockResolvedValue({
+              result: true,
+            } as never),
+        },
+      );
     });
 
     it('`getMessaging` function is properly exposed to end user', function () {
@@ -169,6 +173,53 @@ describe('Messaging', function () {
 
     it('`experimentalSetDeliveryMetricsExportedToBigQueryEnabled` function is properly exposed to end user', function () {
       expect(experimentalSetDeliveryMetricsExportedToBigQueryEnabled).toBeDefined();
+    });
+
+    describe('cached native settings', function () {
+      function mockNativeRejection(method: string, error: Error) {
+        nativeOverrides[method] = jest.fn().mockRejectedValue(error as never);
+      }
+
+      it('preserves auto-init state when the native update rejects', async function () {
+        const messaging = getMessaging();
+        const error = new Error('native update failed');
+        (messaging as typeof messaging & { _isAutoInitEnabled: boolean })._isAutoInitEnabled =
+          false;
+        mockNativeRejection('setAutoInitEnabled', error);
+
+        await expect(setAutoInitEnabled(messaging, true)).rejects.toBe(error);
+        expect(isAutoInitEnabled(messaging)).toBe(false);
+      });
+
+      it('preserves delivery-metrics state when the native update rejects', async function () {
+        const messaging = getMessaging();
+        const error = new Error('native update failed');
+        (
+          messaging as typeof messaging & {
+            _isDeliveryMetricsExportToBigQueryEnabled: boolean;
+          }
+        )._isDeliveryMetricsExportToBigQueryEnabled = false;
+        mockNativeRejection('setDeliveryMetricsExportToBigQuery', error);
+
+        await expect(
+          experimentalSetDeliveryMetricsExportedToBigQueryEnabled(messaging, true),
+        ).rejects.toBe(error);
+        expect(isDeliveryMetricsExportToBigQueryEnabled(messaging)).toBe(false);
+      });
+
+      it('preserves notification-delegation state when the native update rejects', async function () {
+        const messaging = getMessaging();
+        const error = new Error('native update failed');
+        (
+          messaging as typeof messaging & {
+            _isNotificationDelegationEnabled: boolean;
+          }
+        )._isNotificationDelegationEnabled = false;
+        mockNativeRejection('setNotificationDelegationEnabled', error);
+
+        await expect(setNotificationDelegationEnabled(messaging, true)).rejects.toBe(error);
+        expect(isNotificationDelegationEnabled(messaging)).toBe(false);
+      });
     });
 
     it('`AuthorizationStatus` static is exposed to end user', function () {
