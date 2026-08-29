@@ -51,12 +51,12 @@ import StoreKit
     }
 
     var foundTransaction: StoreKit.Transaction?
-    for await result in StoreKit.Transaction.all {
+    transactionSearch: for await result in StoreKit.Transaction.all {
       switch result {
       case let .verified(transaction):
         if transaction.id == id {
           foundTransaction = transaction
-          break
+          break transactionSearch
         }
       case .unverified:
         continue
