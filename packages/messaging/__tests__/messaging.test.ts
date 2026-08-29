@@ -37,6 +37,21 @@ import {
   NotificationAndroidVisibility,
 } from '../lib';
 
+import remoteMessageOptions from '../lib/remoteMessageOptions';
+
+describe('remoteMessageOptions', function () {
+  it('serializes array data values as JSON', function () {
+    const options = remoteMessageOptions('sender-id', {
+      data: {
+        items: [{ id: 1 }, { id: 2 }],
+      },
+      fcmOptions: {},
+    });
+
+    expect(options.data.items).toBe('[{"id":1},{"id":2}]');
+  });
+});
+
 describe('Messaging', function () {
   describe('modular', function () {
     let nativeOverrides: Record<string, ReturnType<typeof jest.fn>>;
