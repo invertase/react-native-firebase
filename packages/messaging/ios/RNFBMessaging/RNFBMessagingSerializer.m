@@ -157,8 +157,9 @@
 
     // iOS only
     // message.notification.ios.badge
-    if (apsDict[@"badge"] != nil) {
-      notificationIOS[@"badge"] = apsDict[@"badge"];
+    id badge = apsDict[@"badge"];
+    if (badge != nil) {
+      notificationIOS[@"badge"] = [badge description];
     }
 
     // message.notification.*
