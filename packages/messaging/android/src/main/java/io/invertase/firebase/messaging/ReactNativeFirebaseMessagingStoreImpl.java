@@ -66,18 +66,24 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
 
   @Override
   public void storeFirebaseMessage(RemoteMessage remoteMessage) {
+    UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
+    int limit = getMaxNotificationSize();
+    String notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
+    List<String> allNotificationList = convertToArray(notificationIds);
+    int retainedNotificationCount = limit > 0 ? limit - 1 : 0;
+    while (!allNotificationList.isEmpty()
+        && allNotificationList.size() > retainedNotificationCount) {
+      clearFirebaseMessage(allNotificationList.get(0));
+      allNotificationList.remove(0);
+    }
+
+    if (limit <= 0) {
+      return;
+    }
+
     try {
       String remoteMessageString =
           reactToJSON(remoteMessageToWritableMap(remoteMessage)).toString();
-      UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
-
-      int limit = getMaxNotificationSize();
-      String notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
-      List<String> allNotificationList = convertToArray(notificationIds);
-      while (allNotificationList.size() > limit - 1) {
-        clearFirebaseMessage(allNotificationList.get(0));
-        allNotificationList.remove(0);
-      }
 
       notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
       preferences.setStringValue(remoteMessage.getMessageId(), remoteMessageString);
@@ -138,6 +144,9 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
   }
 
   private List<String> convertToArray(String string) {
+    if (string.isEmpty()) {
+      return new ArrayList<>();
+    }
     return new ArrayList<>(Arrays.asList(string.split(DELIMITER)));
   }
 }

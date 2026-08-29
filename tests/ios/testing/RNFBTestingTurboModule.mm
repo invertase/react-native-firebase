@@ -46,4 +46,11 @@ RCT_EXPORT_MODULE(NativeRNFBTesting)
   resolve(@(completed));
 }
 
+- (void)messagingStoreSupportsDisabledStorage:(RCTPromiseResolveBlock)resolve
+                                     reject:(RCTPromiseRejectBlock)reject
+{
+  // Android-only probe — SharedPreferences / messaging store path is not used on iOS.
+  resolve(@(NO));
+}
+
 @end
