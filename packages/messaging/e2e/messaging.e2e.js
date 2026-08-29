@@ -554,7 +554,7 @@ describe('messaging()', function () {
 
         should.equal(isNotificationDelegationEnabled(getMessaging()), false);
         await setNotificationDelegationEnabled(getMessaging(), true);
-        should.equal(isNotificationDelegationEnabled(getMessaging()), true);
+        should.equal(isNotificationDelegationEnabled(getMessaging()), Platform.android);
       });
     });
 

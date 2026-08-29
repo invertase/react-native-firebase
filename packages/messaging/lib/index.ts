@@ -163,8 +163,9 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
       throw new Error("getMessaging().setAutoInitEnabled(*) 'enabled' expected a boolean value.");
     }
 
-    this._isAutoInitEnabled = enabled;
-    return this.native.setAutoInitEnabled(enabled);
+    return this.native.setAutoInitEnabled(enabled).then(() => {
+      this._isAutoInitEnabled = enabled;
+    });
   }
 
   getInitialNotification(): Promise<RemoteMessage | null> {
@@ -483,8 +484,9 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
       );
     }
 
-    this._isDeliveryMetricsExportToBigQueryEnabled = enabled;
-    return this.native.setDeliveryMetricsExportToBigQuery(enabled);
+    return this.native.setDeliveryMetricsExportToBigQuery(enabled).then(() => {
+      this._isDeliveryMetricsExportToBigQueryEnabled = enabled;
+    });
   }
 
   setNotificationDelegationEnabled(enabled: boolean): Promise<void> {
@@ -494,12 +496,13 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
       );
     }
 
-    this._isNotificationDelegationEnabled = enabled;
     if (isIOS) {
       return Promise.resolve();
     }
 
-    return this.native.setNotificationDelegationEnabled(enabled);
+    return this.native.setNotificationDelegationEnabled(enabled).then(() => {
+      this._isNotificationDelegationEnabled = enabled;
+    });
   }
 
   async isSupported(): Promise<boolean> {
