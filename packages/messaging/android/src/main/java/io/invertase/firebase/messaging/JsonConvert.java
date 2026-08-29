@@ -27,11 +27,7 @@ public abstract class JsonConvert {
           jsonObject.put(key, readableMap.getBoolean(key));
           break;
         case Number:
-          try {
-            jsonObject.put(key, readableMap.getInt(key));
-          } catch (Exception e) {
-            jsonObject.put(key, readableMap.getDouble(key));
-          }
+          jsonObject.put(key, readableMap.getDouble(key));
           break;
         case String:
           jsonObject.put(key, readableMap.getString(key));
@@ -60,11 +56,7 @@ public abstract class JsonConvert {
           jsonArray.put(readableArray.getBoolean(i));
           break;
         case Number:
-          try {
-            jsonArray.put(readableArray.getInt(i));
-          } catch (Exception e) {
-            jsonArray.put(readableArray.getDouble(i));
-          }
+          jsonArray.put(readableArray.getDouble(i));
           break;
         case String:
           jsonArray.put(readableArray.getString(i));
@@ -82,14 +74,14 @@ public abstract class JsonConvert {
 
   public static WritableMap jsonToReact(JSONObject jsonObject) throws JSONException {
     WritableMap writableMap = Arguments.createMap();
-    Iterator iterator = jsonObject.keys();
+    Iterator<String> iterator = jsonObject.keys();
     while (iterator.hasNext()) {
-      String key = (String) iterator.next();
+      String key = iterator.next();
       Object value = jsonObject.get(key);
-      if (value instanceof Float || value instanceof Double) {
-        writableMap.putDouble(key, jsonObject.getDouble(key));
+      if (value instanceof Boolean) {
+        writableMap.putBoolean(key, jsonObject.getBoolean(key));
       } else if (value instanceof Number) {
-        writableMap.putInt(key, jsonObject.getInt(key));
+        writableMap.putDouble(key, jsonObject.getDouble(key));
       } else if (value instanceof String) {
         writableMap.putString(key, jsonObject.getString(key));
       } else if (value instanceof JSONObject) {
@@ -108,10 +100,10 @@ public abstract class JsonConvert {
     WritableArray writableArray = Arguments.createArray();
     for (int i = 0; i < jsonArray.length(); i++) {
       Object value = jsonArray.get(i);
-      if (value instanceof Float || value instanceof Double) {
-        writableArray.pushDouble(jsonArray.getDouble(i));
+      if (value instanceof Boolean) {
+        writableArray.pushBoolean(jsonArray.getBoolean(i));
       } else if (value instanceof Number) {
-        writableArray.pushInt(jsonArray.getInt(i));
+        writableArray.pushDouble(jsonArray.getDouble(i));
       } else if (value instanceof String) {
         writableArray.pushString(jsonArray.getString(i));
       } else if (value instanceof JSONObject) {
