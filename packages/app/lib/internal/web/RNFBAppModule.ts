@@ -174,7 +174,7 @@ export default {
    *
    * @returns The meta data
    */
-  metaGetAll(): Record<string, never> {
+  async metaGetAll(): Promise<Record<string, never>> {
     return {};
   },
 
@@ -184,7 +184,7 @@ export default {
    *
    * @returns The JSON data for the firebase.json file.
    */
-  jsonGetAll(): Record<string, never> {
+  async jsonGetAll(): Promise<Record<string, never>> {
     return {};
   },
 
@@ -206,7 +206,7 @@ export default {
    * @param key - The key of the preference.
    * @param value - The value to set.
    */
-  preferencesSetString(key: string, value: string): void {
+  async preferencesSetString(key: string, value: string): Promise<void> {
     fakePreferencesStorage[key] = value;
   },
 
@@ -216,7 +216,7 @@ export default {
    *
    * @returns The preferences.
    */
-  preferencesGetAll(): PreferencesStorage {
+  async preferencesGetAll(): Promise<PreferencesStorage> {
     return Object.assign({}, fakePreferencesStorage);
   },
 
@@ -224,7 +224,7 @@ export default {
    * Clears all preferences.
    * Unsupported on web.
    */
-  preferencesClearAll(): void {
+  async preferencesClearAll(): Promise<void> {
     fakePreferencesStorage = {};
   },
 
@@ -269,7 +269,7 @@ export default {
    *
    * @returns The listeners for the event.
    */
-  eventsGetListeners(): ListenersMap {
+  async eventsGetListeners(): Promise<ListenersMap> {
     return eventsGetListenersMap();
   },
 
@@ -280,8 +280,9 @@ export default {
    * @param eventBody - The body of the event to send.
    * @returns void
    */
-  eventsPing(eventName: string, eventBody: any): void {
+  async eventsPing(eventName: string, eventBody: any): Promise<any> {
     eventsSendEvent(eventName, eventBody);
+    return eventBody;
   },
 
   /**

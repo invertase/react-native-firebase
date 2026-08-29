@@ -16,6 +16,30 @@ jest.mock('../lib/internal/web/firebaseApp', () => ({
 
 const appModule = require('../lib/internal/web/RNFBAppModule.ts').default;
 
+describe('RNFBAppModule Promise contracts', () => {
+  it('matches native async configuration and event methods', async () => {
+    await expect(appModule.metaGetAll()).resolves.toEqual({});
+    await expect(appModule.jsonGetAll()).resolves.toEqual({});
+
+    await expect(
+      appModule.preferencesSetString('promise-contract', 'value'),
+    ).resolves.toBeUndefined();
+    await expect(appModule.preferencesGetAll()).resolves.toMatchObject({
+      'promise-contract': 'value',
+    });
+    await expect(appModule.preferencesClearAll()).resolves.toBeUndefined();
+
+    await expect(appModule.eventsGetListeners()).resolves.toMatchObject({
+      listeners: expect.any(Number),
+      queued: expect.any(Number),
+      events: expect.any(Object),
+    });
+    await expect(appModule.eventsPing('promise_contract_event', { value: true })).resolves.toEqual({
+      value: true,
+    });
+  });
+});
+
 describe('RNFBAppModule setImmediate guards', () => {
   describe('with setImmediate available', () => {
     beforeEach(() => {
