@@ -58,12 +58,13 @@ class AnalyticsApi implements IAnalyticsApi {
   private userProperties: AnalyticsUserProperties;
   private consent: AnalyticsConsent;
   private analyticsCollectionEnabled: boolean;
-  private started: boolean;
+  private processingQueue: boolean;
   private installationId: string | null;
   private debug: boolean;
   private currentScreen: string | null;
   private sessionId?: number;
   private cid?: string | null;
+  private cidPromise?: Promise<string>;
 
   constructor(appName: string, measurementId: string) {
     this.appName = appName;
@@ -76,7 +77,7 @@ class AnalyticsApi implements IAnalyticsApi {
     this.userProperties = {};
     this.consent = {};
     this.analyticsCollectionEnabled = true;
-    this.started = false;
+    this.processingQueue = false;
     this.installationId = null;
     this.debug = false;
     this.currentScreen = null;
@@ -170,9 +171,8 @@ class AnalyticsApi implements IAnalyticsApi {
   }
 
   private _startQueueProcessing(): void {
-    if (this.started) return;
+    if (this.queueTimer !== null || this.eventQueue.length === 0) return;
     this.sessionId = Math.floor(Date.now() / 1000);
-    this.started = true;
     this.queueTimer = setInterval(
       () => this._processQueue().catch(console.error),
       this.queueInterval,
@@ -180,23 +180,39 @@ class AnalyticsApi implements IAnalyticsApi {
   }
 
   private _stopQueueProcessing(): void {
-    if (!this.started) return;
-    this.started = false;
-    if (this.queueTimer) {
+    if (this.queueTimer !== null) {
       clearInterval(this.queueTimer);
+      this.queueTimer = null;
     }
   }
 
   private async _processQueue(): Promise<void> {
-    if (this.eventQueue.length === 0) return;
-    const events = this.eventQueue.splice(0, 5);
-    await this._sendEvents(events);
-    if (this.eventQueue.length === 0) {
-      this._stopQueueProcessing();
+    if (this.processingQueue || this.eventQueue.length === 0) return;
+    this.processingQueue = true;
+    try {
+      const events = this.eventQueue.splice(0, 5);
+      await this._sendEvents(events);
+    } finally {
+      this.processingQueue = false;
+      if (this.eventQueue.length === 0) {
+        this._stopQueueProcessing();
+      }
     }
   }
 
   async _getCid(): Promise<string> {
+    if (this.cid) {
+      return this.cid;
+    }
+    if (!this.cidPromise) {
+      this.cidPromise = this._loadOrCreateCid().finally(() => {
+        this.cidPromise = undefined;
+      });
+    }
+    return this.cidPromise;
+  }
+
+  private async _loadOrCreateCid(): Promise<string> {
     this.cid = await getItem('analytics:cid');
     if (this.cid) {
       return this.cid;
