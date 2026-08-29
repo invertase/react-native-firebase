@@ -230,8 +230,19 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
     tokenType = FIRMessagingAPNSTokenTypeSandbox;
   }
 
-  [[FIRMessaging messaging] setAPNSToken:[RNFBMessagingSerializer APNSTokenDataFromNSString:token]
-                                    type:tokenType];
+  NSData *tokenData = [RNFBMessagingSerializer APNSTokenDataFromNSString:token];
+  if (tokenData == nil) {
+    [RNFBSharedUtils
+        rejectPromiseWithUserInfo:reject
+                         userInfo:[@{
+                           @"code" : @"invalid-apns-token",
+                           @"message" : @"APNs token must be a non-empty, even-length hexadecimal "
+                                        @"string."
+                         } mutableCopy]];
+    return;
+  }
+
+  [[FIRMessaging messaging] setAPNSToken:tokenData type:tokenType];
   resolve([NSNull null]);
 }
 

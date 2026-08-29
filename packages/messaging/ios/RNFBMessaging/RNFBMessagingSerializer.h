@@ -29,7 +29,7 @@
 
 @interface RNFBMessagingSerializer : NSObject
 
-+ (NSData *)APNSTokenDataFromNSString:(NSString *)token;
++ (nullable NSData *)APNSTokenDataFromNSString:(NSString *)token;
 
 + (NSString *)APNSTokenFromNSData:(NSData *)tokenData;
 

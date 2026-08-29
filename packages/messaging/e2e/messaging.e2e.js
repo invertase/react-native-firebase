@@ -252,6 +252,20 @@ describe('messaging()', function () {
         }
       });
 
+      it('requires a non-empty, even-length hexadecimal token on Apple platforms', function () {
+        const { getMessaging, setAPNSToken } = messagingModular;
+        if (!Platform.ios && !Platform.macos) {
+          this.skip();
+        }
+
+        for (const token of ['', '0', 'xyz', '001z']) {
+          (() => setAPNSToken(getMessaging(), token)).should.throw(
+            Error,
+            /'token' expected a non-empty, even-length hexadecimal string/,
+          );
+        }
+      });
+
       it('resolves on android', async function () {
         const { getMessaging, setAPNSToken } = messagingModular;
         if (Platform.android) {

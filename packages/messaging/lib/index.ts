@@ -352,6 +352,12 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
       return Promise.resolve();
     }
 
+    if (token.length === 0 || token.length % 2 !== 0 || !/^[0-9a-f]+$/i.test(token)) {
+      throw new Error(
+        "getMessaging().setAPNSToken(*) 'token' expected a non-empty, even-length hexadecimal string.",
+      );
+    }
+
     return this.native.setAPNSToken(token, type);
   }
 
