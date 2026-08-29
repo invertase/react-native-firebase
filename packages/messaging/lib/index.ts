@@ -390,7 +390,10 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
       throw new Error("getMessaging().onMessageSent(*) 'listener' expected a function.");
     }
 
-    const subscription = this.emitter.addListener('messaging_message_sent', listener);
+    const subscription = this.emitter.addListener(
+      'messaging_message_sent',
+      (event: { messageId: string }) => listener(event.messageId),
+    );
     return () => {
       subscription.remove();
     };

@@ -38,6 +38,7 @@ import {
 } from '../lib';
 
 import remoteMessageOptions from '../lib/remoteMessageOptions';
+import { SharedEventEmitter } from '@react-native-firebase/app/dist/module/internal';
 
 describe('remoteMessageOptions', function () {
   it('serializes array data values as JSON', function () {
@@ -152,6 +153,16 @@ describe('Messaging', function () {
 
     it('`onMessageSent` function is properly exposed to end user', function () {
       expect(onMessageSent).toBeDefined();
+    });
+
+    it('`onMessageSent` passes the sent message ID to its listener', function () {
+      const listener = jest.fn();
+      const unsubscribe = onMessageSent(getMessaging(), listener);
+
+      SharedEventEmitter.emit('messaging_message_sent', { messageId: 'message-id' });
+
+      expect(listener).toHaveBeenCalledWith('message-id');
+      unsubscribe();
     });
 
     it('`onSendError` function is properly exposed to end user', function () {
