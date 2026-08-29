@@ -2,6 +2,7 @@
 
 #import <FirebaseMessaging/FirebaseMessaging.h>
 #import <RNFBMessaging/RNFBMessaging+AppDelegate.h>
+#import <RNFBMessaging/RNFBMessagingSerializer.h>
 #import <UIKit/UIKit.h>
 
 @implementation RNFBTestingTurboModule
@@ -51,6 +52,13 @@ RCT_EXPORT_MODULE(NativeRNFBTesting)
 {
   // Android-only probe — SharedPreferences / messaging store path is not used on iOS.
   resolve(@(NO));
+}
+
+- (void)serializeMessagingUserInfo:(NSDictionary *)userInfo
+                           resolve:(RCTPromiseResolveBlock)resolve
+                            reject:(RCTPromiseRejectBlock)reject
+{
+  resolve([RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]);
 }
 
 @end

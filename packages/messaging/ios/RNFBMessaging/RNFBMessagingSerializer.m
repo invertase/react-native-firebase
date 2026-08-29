@@ -204,7 +204,7 @@
     if (apsDict[@"sound"] != nil) {
       if ([apsDict[@"sound"] isKindOfClass:[NSString class]]) {
         // message.notification.ios.sound
-        notification[@"sound"] = apsDict[@"sound"];
+        notificationIOS[@"sound"] = apsDict[@"sound"];
       } else if ([apsDict[@"sound"] isKindOfClass:[NSDictionary class]]) {
         NSDictionary *apsSoundDict = apsDict[@"sound"];
         NSMutableDictionary *notificationIOSSound = [[NSMutableDictionary alloc] init];
