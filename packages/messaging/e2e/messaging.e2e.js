@@ -501,6 +501,24 @@ describe('messaging()', function () {
           return Promise.resolve();
         }
       });
+
+      it('passes the sent message ID to the listener', async function () {
+        if (!Platform.android) {
+          this.skip();
+        }
+
+        const { getMessaging, onMessageSent } = messagingModular;
+        const spy = sinon.spy();
+        const unsubscribe = onMessageSent(getMessaging(), spy);
+
+        await NativeModules.NativeRNFBTurboApp.eventsPing('messaging_message_sent', {
+          messageId: 'message-id',
+        });
+        await Utils.spyToBeCalledOnceAsync(spy);
+
+        spy.firstCall.args[0].should.equal('message-id');
+        unsubscribe();
+      });
     });
 
     describe('onSendError()', function () {
