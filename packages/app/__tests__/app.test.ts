@@ -8,7 +8,7 @@ import {
   getApp,
   setLogLevel,
 } from '../lib';
-import { Logger } from '../lib/internal/logger';
+import { Logger, LogLevel } from '../lib/internal/logger';
 import { NativeFirebaseError } from '../lib/internal';
 
 describe('App', function () {
@@ -69,8 +69,43 @@ describe('App', function () {
           }),
         );
       } finally {
+        onLog(null);
         // eslint-disable-next-line no-console
         console.info = origInfo;
+      }
+    });
+
+    it('applies the global log level to Logger instances created later', function () {
+      setLogLevel('error');
+
+      try {
+        expect(new Logger('late-logger').logLevel).toBe(LogLevel.ERROR);
+      } finally {
+        setLogLevel('info');
+      }
+    });
+
+    it('applies the global log handler to Logger instances created later', function () {
+      const spy = jest.fn();
+      onLog(spy, { level: 'warn' });
+
+      try {
+        const logger = new Logger('late-logger');
+        logger.logHandler = jest.fn();
+        logger.info('ignored');
+        logger.warn('captured');
+
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            args: ['captured'],
+            level: 'warn',
+            message: 'captured',
+            type: 'late-logger',
+          }),
+        );
+      } finally {
+        onLog(null);
       }
     });
   });
