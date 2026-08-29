@@ -67,6 +67,37 @@ static void RNFBAnalyticsAddConsentStatus(NSMutableDictionary *consent,
   }
 }
 
+static int RNFBAnalyticsHexDigit(unichar character) {
+  if (character >= '0' && character <= '9') {
+    return character - '0';
+  }
+  if (character >= 'a' && character <= 'f') {
+    return character - 'a' + 10;
+  }
+  if (character >= 'A' && character <= 'F') {
+    return character - 'A' + 10;
+  }
+  return -1;
+}
+
+static NSData *RNFBAnalyticsDataFromSHA256HexString(NSString *hexString) {
+  if (hexString.length != 64) {
+    return nil;
+  }
+
+  unsigned char bytes[32];
+  for (NSUInteger i = 0; i < sizeof(bytes); i++) {
+    int high = RNFBAnalyticsHexDigit([hexString characterAtIndex:i * 2]);
+    int low = RNFBAnalyticsHexDigit([hexString characterAtIndex:i * 2 + 1]);
+    if (high < 0 || low < 0) {
+      return nil;
+    }
+    bytes[i] = (high << 4) | low;
+  }
+
+  return [NSData dataWithBytes:bytes length:sizeof(bytes)];
+}
+
 @implementation RNFBAnalyticsModule
 #pragma mark -
 #pragma mark Module Setup
@@ -233,7 +264,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
                                                             resolve:(RCTPromiseResolveBlock)resolve
                                                              reject:(RCTPromiseRejectBlock)reject {
   @try {
-    NSData *emailAddress = [self dataFromHexString:hashedEmailAddress];
+    NSData *emailAddress = RNFBAnalyticsDataFromSHA256HexString(hashedEmailAddress);
+    if (emailAddress == nil) {
+      reject(@"firebase_analytics", @"Expected a 64-character SHA-256 hex string", nil);
+      return;
+    }
     [FIRAnalytics initiateOnDeviceConversionMeasurementWithHashedEmailAddress:emailAddress];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
@@ -258,7 +293,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
                                                            resolve:(RCTPromiseResolveBlock)resolve
                                                             reject:(RCTPromiseRejectBlock)reject {
   @try {
-    NSData *phoneNumber = [self dataFromHexString:hashedPhoneNumber];
+    NSData *phoneNumber = RNFBAnalyticsDataFromSHA256HexString(hashedPhoneNumber);
+    if (phoneNumber == nil) {
+      reject(@"firebase_analytics", @"Expected a 64-character SHA-256 hex string", nil);
+      return;
+    }
     [FIRAnalytics initiateOnDeviceConversionMeasurementWithHashedPhoneNumber:phoneNumber];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
@@ -352,22 +391,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
 /// @param value Nullable string value
 - (NSString *)convertNSNullToNil:(NSString *)value {
   return [value isEqual:[NSNull null]] ? nil : value;
-}
-
-/// Converts a hex string to NSData
-/// @param hexString A hex string (e.g., SHA256 hash as 64-character hex string)
-/// @return NSData containing the decoded bytes (e.g., 32 bytes for SHA256)
-- (NSData *)dataFromHexString:(NSString *)hexString {
-  NSMutableData *data = [NSMutableData dataWithCapacity:hexString.length / 2];
-  unsigned char wholeByte;
-  char byteChars[3] = {'\0', '\0', '\0'};
-  for (NSUInteger i = 0; i < hexString.length; i += 2) {
-    byteChars[0] = [hexString characterAtIndex:i];
-    byteChars[1] = [hexString characterAtIndex:i + 1];
-    wholeByte = strtol(byteChars, NULL, 16);
-    [data appendBytes:&wholeByte length:1];
-  }
-  return data;
 }
 
 @end
