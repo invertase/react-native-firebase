@@ -178,13 +178,13 @@ struct {
   id<UNUserNotificationCenterDelegate> strongOriginalDelegate = _originalDelegate;
   if (strongOriginalDelegate != nil && originalDelegateRespondsTo.openSettingsForNotification) {
     [strongOriginalDelegate userNotificationCenter:center openSettingsForNotification:notification];
-  } else {
-    NSDictionary *notificationDict = [RNFBMessagingSerializer notificationToDict:notification];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_settings_for_notification_opened"
-                                               body:notificationDict];
-
-    _didOpenSettingsForNotification = YES;
   }
+
+  NSDictionary *notificationDict = [RNFBMessagingSerializer notificationToDict:notification];
+  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_settings_for_notification_opened"
+                                             body:notificationDict];
+
+  _didOpenSettingsForNotification = YES;
 }
 
 @end
