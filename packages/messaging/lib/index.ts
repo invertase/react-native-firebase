@@ -84,34 +84,36 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
       this.native.getConstants?.()?.isNotificationDelegationEnabled ?? false;
 
     AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => {
-      if (!backgroundMessageHandler) {
+      const handler = backgroundMessageHandler;
+      if (!handler) {
         // eslint-disable-next-line no-console
         console.warn(
           'No background message handler has been set. Set a handler via the "setBackgroundMessageHandler" method.',
         );
         return () => Promise.resolve();
       }
-      return (remoteMessage: RemoteMessage) => backgroundMessageHandler!(remoteMessage);
+      return (remoteMessage: RemoteMessage) => Promise.resolve().then(() => handler(remoteMessage));
     });
 
     if (isIOS) {
       this.emitter.addListener(
         'messaging_message_received_background',
         (remoteMessage: RemoteMessage) => {
-          if (!backgroundMessageHandler) {
+          const handler = backgroundMessageHandler;
+          let handlerPromise: Promise<any>;
+          if (!handler) {
             // eslint-disable-next-line no-console
             console.warn(
               'No background message handler has been set. Set a handler via the "setBackgroundMessageHandler" method.',
             );
-            return Promise.resolve();
+            handlerPromise = Promise.resolve();
+          } else {
+            handlerPromise = Promise.resolve().then(() => handler(remoteMessage));
           }
 
-          const handlerPromise = Promise.resolve(backgroundMessageHandler(remoteMessage));
-          handlerPromise.finally(() => {
+          return handlerPromise.finally(() => {
             this.native.completeNotificationProcessing();
           });
-
-          return handlerPromise;
         },
       );
 
