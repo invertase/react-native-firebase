@@ -102,6 +102,19 @@ describe('messaging()', function () {
     }
   });
 
+  it('serializes iOS notification badges as strings', async function () {
+    if (!Platform.ios) {
+      this.skip();
+    }
+
+    const { getRNFBTesting } = require('../../app/e2e/helpers');
+    const message = await getRNFBTesting().serializeMessagingUserInfo({
+      aps: { badge: 7 },
+    });
+
+    message.notification.ios.badge.should.equal('7');
+  });
+
   before(async function () {
     // our device registration tests require permissions. Set them up
     const { getMessaging, requestPermission } = messagingModular;
