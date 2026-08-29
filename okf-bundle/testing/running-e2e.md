@@ -93,6 +93,7 @@ The Detox host exposes **two** native modules. Coverage flush is **not** this Tu
 - **iOS:** `tests/ios/testing/RNFBTestingTurboModule.{h,mm}`
 - **Android:** `tests/android/app/src/main/java/com/invertase/testing/NativeRNFBTesting.kt` — unsupported methods **resolve `false`**
 - **JS:** `getRNFBTesting()` in `packages/app/e2e/helpers.js` via `TurboModuleRegistry.get('NativeRNFBTesting')`
+- **Probes:** `messagingPreservesExistingDelegate`, `completesNonFCMRemoteNotification` (iOS); `messagingStoreSupportsDisabledStorage` (Android). Cross-platform methods resolve `false` on the unsupported platform.
 - Production packages must **not** ship this TurboModule (test-app only).
 
 Probe hits in `coverage/ios-native/lcov.info`: [coverage design § two test native modules](coverage-design.md#test-native-modules). Test-app vs library codegen (not committed; wipe derived `tests/ios/build/generated/ios`; gitignore `tests/ios/Package.swift` and sibling app dumps): [NewArch-AD-5](../new-architecture/architecture-decisions.md#newarch-ad-5--commit-generated-code--accepted).

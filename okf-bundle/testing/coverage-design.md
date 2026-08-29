@@ -383,7 +383,7 @@ The Detox host has **two** native modules. Do **not** conflate them.
 | **`RNFBTestingCoverage`** | Legacy `RCTBridgeModule` | **This doc.** Coverage flush only: `NativeModules.RNFBTestingCoverage.flush()` from Jet `after` in `tests/app.js`. |
 | **`NativeRNFBTesting`** | TurboModule | E2e **integration probes**, not flush — spec, native paths, JS accessor: [running e2e § test-app native modules](running-e2e.md#test-app-native-modules). |
 
-**Probe hits in native LCOV:** Messaging e2e `getRNFBTesting().completesNonFCMRemoteNotification()` and `getRNFBTesting().messagingPreservesExistingDelegate()` exercise product sources (for example `RNFBMessaging+AppDelegate.m` non-FCM `completionHandler`). After iOS `:test-cover` and `yarn tests:ios:test:process-coverage`, those lines appear as hits in `coverage/ios-native/lcov.info`. Record them in the [coverage evidence package](#coverage-evidence-package); passing probes are not a substitute for that LCOV.
+**Probe hits in native LCOV:** Messaging e2e `getRNFBTesting().completesNonFCMRemoteNotification()` and `getRNFBTesting().messagingPreservesExistingDelegate()` exercise product sources (for example `RNFBMessaging+AppDelegate.m` non-FCM `completionHandler`). Android e2e `getRNFBTesting().messagingStoreSupportsDisabledStorage()` exercises `ReactNativeFirebaseMessagingStoreImpl` disabled-storage paths. After iOS `:test-cover` and `yarn tests:ios:test:process-coverage`, those lines appear as hits in `coverage/ios-native/lcov.info`. Record them in the [coverage evidence package](#coverage-evidence-package); passing probes are not a substitute for that LCOV.
 
 # Critical invariants
 

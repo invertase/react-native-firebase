@@ -10,6 +10,8 @@ export interface Spec extends TurboModule {
   messagingPreservesExistingDelegate(): Promise<boolean>;
   /** iOS: RNFBMessagingAppDelegate completes fetch handler for non-FCM remote notifications. */
   completesNonFCMRemoteNotification(): Promise<boolean>;
+  /** Android: messaging store clears / skips persistence when max stored notifications is <= 0. */
+  messagingStoreSupportsDisabledStorage(): Promise<boolean>;
 }
 
 export default TurboModuleRegistry.get<Spec>('NativeRNFBTesting');

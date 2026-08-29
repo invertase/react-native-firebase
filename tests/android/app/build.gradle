@@ -149,6 +149,10 @@ dependencies {
   // The version of react-native is set by the React Native Gradle Plugin
   implementation("com.facebook.react:react-android")
 
+  def firebaseBomVersion = new JsonSlurper().parseText(new File('../node_modules/@react-native-firebase/app/package.json').text).sdkVersions.android.firebase
+  compileOnly platform("com.google.firebase:firebase-bom:${firebaseBomVersion}")
+  compileOnly "com.google.firebase:firebase-messaging"
+
   implementation("androidx.annotation:annotation:${rootProject.ext.androidxAnnotationVersion}")
   implementation("androidx.appcompat:appcompat:${rootProject.ext.appCompatVersion}")
   implementation("androidx.core:core:${rootProject.ext.supportLibVersion}")
@@ -173,7 +177,6 @@ dependencies {
     exclude module: "protobuf-lite"
   }
 
-  def firebaseBomVersion = new JsonSlurper().parseText(new File('../node_modules/@react-native-firebase/app/package.json').text).sdkVersions.android.firebase
   androidTestImplementation platform("com.google.firebase:firebase-bom:${firebaseBomVersion}")
   androidTestImplementation "com.google.firebase:firebase-appcheck-debug-testing"
 }

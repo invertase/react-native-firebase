@@ -324,6 +324,17 @@ describe('messaging()', function () {
       });
     });
 
+    describe('notification storage', function () {
+      it('can be disabled on android', async function () {
+        if (!Platform.android) {
+          this.skip();
+        }
+
+        const { getRNFBTesting } = require('../../app/e2e/helpers');
+        should.equal(await getRNFBTesting().messagingStoreSupportsDisabledStorage(), true);
+      });
+    });
+
     describe('deleteToken()', function () {
       it('generate a new token after deleting', async function () {
         const { getMessaging, getToken, deleteToken } = messagingModular;

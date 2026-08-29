@@ -120,7 +120,7 @@
           "type": "array"
         },
         "messaging_max_stored_notifications": {
-          "description": "Controls how many notifications are retained on-device for background storage. Configuration priority order is SharedPreferences -> firebase.json -> AndroidManifest. Default 100. Very small values may cause unwanted excessive deletions, large values or large message contents run the risk of OutOfMemoryErrors.",
+          "description": "Controls how many notifications are retained on-device for background storage. Values less than or equal to zero disable storage and clear previously retained notifications. Configuration priority order is SharedPreferences -> firebase.json -> AndroidManifest. Default 100. Very small positive values may cause unwanted excessive deletions, large values or large message contents run the risk of OutOfMemoryErrors.",
           "type": "number"
         },
         "perf_auto_collection_enabled": {
