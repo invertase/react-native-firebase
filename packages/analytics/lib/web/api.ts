@@ -45,7 +45,10 @@ function generateGAClientId(): string {
 interface AnalyticsEvent {
   name: string;
   params: AnalyticsEventParameters;
+  sessionId: number;
 }
+
+const DEFAULT_SESSION_TIMEOUT_MS = 1_800_000;
 
 class AnalyticsApi implements IAnalyticsApi {
   public readonly appName: string;
@@ -63,6 +66,7 @@ class AnalyticsApi implements IAnalyticsApi {
   private debug: boolean;
   private currentScreen: string | null;
   private sessionId?: number;
+  private lastEventTime?: number;
   private cid?: string | null;
   private cidPromise?: Promise<string>;
 
@@ -144,9 +148,19 @@ class AnalyticsApi implements IAnalyticsApi {
 
   logEvent(eventName: string, eventParams: AnalyticsEventParameters = {}): void {
     if (!this.analyticsCollectionEnabled) return;
+    const eventTime = Date.now();
+    if (
+      this.sessionId === undefined ||
+      this.lastEventTime === undefined ||
+      eventTime - this.lastEventTime >= DEFAULT_SESSION_TIMEOUT_MS
+    ) {
+      this.sessionId = Math.floor(eventTime / 1000);
+    }
+    this.lastEventTime = eventTime;
     this.eventQueue.push({
       name: eventName,
       params: { ...this.defaultEventParameters, ...eventParams },
+      sessionId: this.sessionId,
     });
     this._startQueueProcessing();
   }
@@ -175,7 +189,6 @@ class AnalyticsApi implements IAnalyticsApi {
 
   private _startQueueProcessing(): void {
     if (this.queueTimer !== null || this.eventQueue.length === 0) return;
-    this.sessionId = Math.floor(Date.now() / 1000);
     this.queueTimer = setInterval(
       () => this._processQueue().catch(console.error),
       this.queueInterval,
@@ -254,7 +267,7 @@ class AnalyticsApi implements IAnalyticsApi {
         en: event.name,
         cid,
         pscdl: 'noapi',
-        sid: String(this.sessionId),
+        sid: String(event.sessionId),
         'ep.origin': 'firebase',
         _z: 'fetch',
         _p: '' + Date.now(),
