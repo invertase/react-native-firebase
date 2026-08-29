@@ -323,6 +323,8 @@
                        body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
       completionHandler(UIBackgroundFetchResultNoData);
     }
+  } else {
+    completionHandler(UIBackgroundFetchResultNoData);
   }
 }
 

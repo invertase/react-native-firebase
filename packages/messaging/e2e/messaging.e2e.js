@@ -48,6 +48,16 @@ async function isAPNSCapableSimulator() {
 }
 
 describe('messaging()', function () {
+  it('completes non-FCM remote notifications on iOS', async function () {
+    if (!Platform.ios) {
+      this.skip();
+    }
+
+    const completed = await NativeModules.RNFBTestingCoverage.completesNonFCMRemoteNotification();
+
+    completed.should.equal(true);
+  });
+
   before(async function () {
     // our device registration tests require permissions. Set them up
     const { getMessaging, requestPermission } = messagingModular;
