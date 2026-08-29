@@ -17,6 +17,7 @@
 
 #import "RNFBMessagingSerializer.h"
 #import <React/RCTConvert.h>
+#include <limits.h>
 
 @implementation RNFBMessagingSerializer
 
@@ -95,7 +96,13 @@
 
     // message.sentTime
     if ([key isEqualToString:@"google.c.a.ts"]) {
-      message[@"sentTime"] = userInfo[key];
+      id timestamp = userInfo[key];
+      if ([timestamp respondsToSelector:@selector(longLongValue)]) {
+        long long sentTimeSeconds = [timestamp longLongValue];
+        if (sentTimeSeconds > 0 && sentTimeSeconds <= LLONG_MAX / 1000) {
+          message[@"sentTime"] = @(sentTimeSeconds * 1000);
+        }
+      }
       continue;
     }
 

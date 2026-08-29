@@ -72,6 +72,19 @@ describe('messaging()', function () {
     message.notification.should.eql({ ios: { sound: 'tone.aiff' } });
   });
 
+  it('serializes iOS sent times as epoch milliseconds', async function () {
+    if (!Platform.ios) {
+      this.skip();
+    }
+
+    const { getRNFBTesting } = require('../../app/e2e/helpers');
+    const message = await getRNFBTesting().serializeMessagingUserInfo({
+      'google.c.a.ts': '1522880044',
+    });
+
+    message.sentTime.should.equal(1522880044000);
+  });
+
   before(async function () {
     // our device registration tests require permissions. Set them up
     const { getMessaging, requestPermission } = messagingModular;
