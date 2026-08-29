@@ -176,6 +176,7 @@ const ValidEventName = /^[a-zA-Z][a-zA-Z0-9_]{0,39}$/;
 const namespace = 'analytics';
 
 const nativeModuleName = 'NativeRNFBTurboAnalytics' as const;
+const SHA256_HEX_PATTERN = /^[0-9a-f]{64}$/i;
 
 class FirebaseAnalyticsModule extends FirebaseModule<typeof nativeModuleName> {
   logEvent(
@@ -882,6 +883,12 @@ class FirebaseAnalyticsModule extends FirebaseModule<typeof nativeModuleName> {
       );
     }
 
+    if (!SHA256_HEX_PATTERN.test(hashedEmailAddress)) {
+      throw new Error(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(*) 'hashedEmailAddress' expected a 64-character SHA-256 hex string.",
+      );
+    }
+
     if (!isIOS) {
       return Promise.resolve();
     }
@@ -922,6 +929,12 @@ class FirebaseAnalyticsModule extends FirebaseModule<typeof nativeModuleName> {
     if (!isString(hashedPhoneNumber)) {
       throw new Error(
         "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a string value.",
+      );
+    }
+
+    if (!SHA256_HEX_PATTERN.test(hashedPhoneNumber)) {
+      throw new Error(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a 64-character SHA-256 hex string.",
       );
     }
 
@@ -1845,7 +1858,7 @@ export function initiateOnDeviceConversionMeasurementWithEmailAddress(
  * `logTransaction`, non-iOS platforms do not reject.
  *
  * @param analytics Analytics instance.
- * @param hashedEmailAddress sha256-hashed of normalized email address, properly formatted complete with domain name e.g, 'user@example.com'
+ * @param hashedEmailAddress SHA-256 hash of the normalized email address, encoded as a 64-character hex string.
  */
 export function initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
   analytics: Analytics,
@@ -1882,7 +1895,7 @@ export function initiateOnDeviceConversionMeasurementWithPhoneNumber(
  * `logTransaction`, non-iOS platforms do not reject.
  *
  * @param analytics Analytics instance.
- * @param hashedPhoneNumber sha256-hashed of normalized phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
+ * @param hashedPhoneNumber SHA-256 hash of the normalized E.164 phone number, encoded as a 64-character hex string.
  */
 export function initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
   analytics: Analytics,
