@@ -18,10 +18,10 @@
 import type { FirebaseApp } from '@react-native-firebase/app';
 import { Platform } from 'react-native';
 import {
-  isAlphaNumericUnderscore,
   isE164PhoneNumber,
   isIOS,
   isBoolean,
+  isFinite,
   isNull,
   isNumber,
   isObject,
@@ -170,6 +170,9 @@ const ReservedEventNames: readonly string[] = [
   'user_engagement',
 ] as const;
 
+const ReservedEventNamePrefixes = ['firebase_', 'google_', 'ga_'] as const;
+const ValidEventName = /^[a-zA-Z][a-zA-Z0-9_]{0,39}$/;
+
 const namespace = 'analytics';
 
 const nativeModuleName = 'NativeRNFBTurboAnalytics' as const;
@@ -189,16 +192,22 @@ class FirebaseAnalyticsModule extends FirebaseModule<typeof nativeModuleName> {
     }
 
     // check name is not a reserved event name
-    if (isOneOf(name, ReservedEventNames as any[])) {
+    if (ReservedEventNames.includes(name)) {
       throw new Error(
         `firebase.analytics().logEvent(*) 'name' the event name '${name}' is reserved and can not be used.`,
       );
     }
 
-    // name format validation
-    if (!isAlphaNumericUnderscore(name) || name.length > 40) {
+    if (ReservedEventNamePrefixes.some(prefix => name.startsWith(prefix))) {
       throw new Error(
-        `firebase.analytics().logEvent(*) 'name' invalid event name '${name}'. Names should contain 1 to 40 alphanumeric characters or underscores.`,
+        `firebase.analytics().logEvent(*) 'name' the event name '${name}' uses a reserved prefix and can not be used.`,
+      );
+    }
+
+    // name format validation
+    if (!ValidEventName.test(name)) {
+      throw new Error(
+        `firebase.analytics().logEvent(*) 'name' invalid event name '${name}'. Names must start with an alphabetic character and contain 1 to 40 alphanumeric characters or underscores.`,
       );
     }
 
@@ -231,6 +240,12 @@ class FirebaseAnalyticsModule extends FirebaseModule<typeof nativeModuleName> {
     if (!isNumber(milliseconds)) {
       throw new Error(
         "firebase.analytics().setSessionTimeoutDuration(*) 'milliseconds' expected a number value.",
+      );
+    }
+
+    if (!isFinite(milliseconds)) {
+      throw new Error(
+        "firebase.analytics().setSessionTimeoutDuration(*) 'milliseconds' expected a finite number value.",
       );
     }
 
