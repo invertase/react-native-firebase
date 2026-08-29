@@ -168,7 +168,6 @@ sendMessage(modularMessaging1, {
     title: 'Modular Test',
     body: 'Modular Test body',
   },
-  fcmOptions: {},
 }).then(() => {
   console.log('Modular message sent');
 });

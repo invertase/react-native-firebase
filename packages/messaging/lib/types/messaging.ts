@@ -95,7 +95,7 @@ export interface RemoteMessage {
   /**
    * Options for features provided by the FCM SDK for Web.
    */
-  fcmOptions: FcmOptions;
+  fcmOptions?: FcmOptions;
 
   /**
    * Priority - android-specific, undefined on non-android platforms, default PRIORITY_UNKNOWN
