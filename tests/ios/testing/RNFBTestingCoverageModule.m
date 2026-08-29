@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <FirebaseMessaging/FirebaseMessaging.h>
 #import <React/RCTBridgeModule.h>
+#import <RNFBMessaging/RNFBMessaging+AppDelegate.h>
+#import <UIKit/UIKit.h>
 
 #import "RNFBTestingCoverageProfile.h"
 
@@ -34,6 +36,20 @@ RCT_EXPORT_METHOD(messagingPreservesExistingDelegate
 
   resolve(@([defaults boolForKey:probeKey]));
   [defaults removeObjectForKey:probeKey];
+}
+
+RCT_EXPORT_METHOD(completesNonFCMRemoteNotification
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+  __block BOOL completed = NO;
+  [[RNFBMessagingAppDelegate sharedInstance]
+                  application:[UIApplication sharedApplication]
+      didReceiveRemoteNotification:@{@"custom" : @"value"}
+            fetchCompletionHandler:^(UIBackgroundFetchResult result) {
+              completed = YES;
+            }];
+  resolve(@(completed));
 }
 
 @end
