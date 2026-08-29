@@ -100,6 +100,11 @@ describe('messaging() APNs registration timeout', function () {
     } else {
       should.exist(settled.error, 'reject path must provide an error');
       settled.error.code.should.equal('messaging/registration-timeout');
+      should.equal(
+        isDeviceRegisteredForRemoteMessages(getMessaging()),
+        false,
+        'rejected registration must preserve the previous state',
+      );
     }
   });
 
