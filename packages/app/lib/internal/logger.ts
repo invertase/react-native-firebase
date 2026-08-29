@@ -108,6 +108,50 @@ const defaultLogHandler: LogHandler = (instance, logType, ...args) => {
 
 const defaultLogLevel = LogLevel.INFO;
 
+let currentLogLevel = defaultLogLevel;
+let currentUserLogHandler: LogHandler | null = null;
+
+function createUserLogHandler(
+  logCallback: LogCallback | null,
+  options?: LogOptions,
+): LogHandler | null {
+  if (logCallback === null) {
+    return null;
+  }
+
+  const customLogLevel = options?.level ? levelStringToEnum[options.level] : null;
+  return (instance, level, ...args) => {
+    const message = args
+      .map(arg => {
+        if (arg == null) {
+          return null;
+        } else if (typeof arg === 'string') {
+          return arg;
+        } else if (typeof arg === 'number' || typeof arg === 'boolean') {
+          return arg.toString();
+        } else if (arg instanceof Error) {
+          return arg.message;
+        } else {
+          try {
+            return JSON.stringify(arg);
+          } catch (_ignored) {
+            return null;
+          }
+        }
+      })
+      .filter(arg => arg)
+      .join(' ');
+    if (level >= (customLogLevel ?? instance.logLevel)) {
+      logCallback({
+        level: LogLevelReversed[level]!.toLowerCase() as LogLevelString,
+        message,
+        args,
+        type: instance.name,
+      });
+    }
+  };
+}
+
 /**
  * A container for all of the Logger instances
  */
@@ -118,9 +162,9 @@ export const instances: Logger[] = [];
  */
 export class Logger {
   name: string;
-  private _logLevel: LogLevel = defaultLogLevel;
+  private _logLevel: LogLevel = currentLogLevel;
   private _logHandler: LogHandler = defaultLogHandler;
-  private _userLogHandler: LogHandler | null = null;
+  private _userLogHandler: LogHandler | null = currentUserLogHandler;
 
   /**
    * Gives you an instance of a Logger to capture messages according to
@@ -215,9 +259,11 @@ export class Logger {
  * Sets the log level for all Logger instances
  */
 export function setLogLevel(level: LogLevelString | LogLevel): void {
-  instances.forEach(inst => {
-    inst.setLogLevel(level);
-  });
+  const normalizedLevel = typeof level === 'string' ? levelStringToEnum[level] : level;
+  currentLogLevel = normalizedLevel;
+  for (const instance of instances) {
+    instance.setLogLevel(normalizedLevel);
+  }
 }
 
 // Alias for compatibility
@@ -227,44 +273,8 @@ export const setLogLevelInternal = setLogLevel;
  * Sets a custom user log handler for all Logger instances
  */
 export function setUserLogHandler(logCallback: LogCallback | null, options?: LogOptions): void {
+  currentUserLogHandler = createUserLogHandler(logCallback, options);
   for (const instance of instances) {
-    let customLogLevel: LogLevel | null = null;
-    if (options?.level) {
-      customLogLevel = levelStringToEnum[options.level];
-    }
-    if (logCallback === null) {
-      instance.userLogHandler = null;
-    } else {
-      instance.userLogHandler = (_instance, level, ...args) => {
-        const message = args
-          .map(arg => {
-            if (arg == null) {
-              return null;
-            } else if (typeof arg === 'string') {
-              return arg;
-            } else if (typeof arg === 'number' || typeof arg === 'boolean') {
-              return arg.toString();
-            } else if (arg instanceof Error) {
-              return arg.message;
-            } else {
-              try {
-                return JSON.stringify(arg);
-              } catch (_ignored) {
-                return null;
-              }
-            }
-          })
-          .filter(arg => arg)
-          .join(' ');
-        if (level >= (customLogLevel ?? _instance.logLevel)) {
-          logCallback({
-            level: LogLevelReversed[level]!.toLowerCase() as LogLevelString,
-            message,
-            args,
-            type: _instance.name,
-          });
-        }
-      };
-    }
+    instance.userLogHandler = currentUserLogHandler;
   }
 }
