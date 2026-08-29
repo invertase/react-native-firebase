@@ -241,12 +241,12 @@
       // If app is in background state, register background task to guarantee async queues aren't
       // frozen.
       sharedInstance.backgroundTaskId = [application beginBackgroundTaskWithExpirationHandler:^{
-        dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
           if (sharedInstance.backgroundTaskId != UIBackgroundTaskInvalid) {
             [application endBackgroundTask:sharedInstance.backgroundTaskId];
             sharedInstance.backgroundTaskId = UIBackgroundTaskInvalid;
           }
-        };
+        });
       }];
 
       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(25 * NSEC_PER_SEC)),
