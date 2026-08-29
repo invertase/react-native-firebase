@@ -151,10 +151,13 @@ class AnalyticsApi implements IAnalyticsApi {
   }
 
   private async _getInstallationId(): Promise<void> {
-    // @ts-ignore
-    if (navigator !== null) {
-      // @ts-ignore
-      (navigator as any).onLine = true;
+    const navigatorObject = globalThis.navigator;
+    if (navigatorObject && !('onLine' in navigatorObject) && Object.isExtensible(navigatorObject)) {
+      Object.defineProperty(navigatorObject, 'onLine', {
+        configurable: true,
+        value: true,
+        writable: true,
+      });
     }
     makeIDBAvailable();
     const app = getApp(this.appName);
