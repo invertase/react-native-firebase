@@ -309,8 +309,9 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
       );
     }
 
-    this._isRegisteredForRemoteNotifications = true;
-    return this.native.registerForRemoteNotifications();
+    return this.native.registerForRemoteNotifications().then(() => {
+      this._isRegisteredForRemoteNotifications = true;
+    });
   }
 
   /**
@@ -320,8 +321,9 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
     if (isAndroid) {
       return Promise.resolve();
     }
-    this._isRegisteredForRemoteNotifications = false;
-    return this.native.unregisterForRemoteNotifications();
+    return this.native.unregisterForRemoteNotifications().then(() => {
+      this._isRegisteredForRemoteNotifications = false;
+    });
   }
 
   /**
