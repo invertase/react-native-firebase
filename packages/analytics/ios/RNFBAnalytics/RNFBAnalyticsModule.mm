@@ -171,26 +171,28 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
   });
 
   [FIRAnalytics sessionIDWithCompletion:^(int64_t sessionID, NSError *_Nullable error) {
-    if (completed) {
-      return;
-    }
-    completed = YES;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if (completed) {
+        return;
+      }
+      completed = YES;
 
-    // Occasionally sessionID is 0 despite nil error, reject as if it were an error
-    // https://github.com/firebase/firebase-ios-sdk/issues/15258
-    if (!error && [NSNumber numberWithLongLong:sessionID] == 0) {
-      DLog(@"getSessionId zero_without_error: sessionID=0 (firebase-ios-sdk#15258)");
-      return resolve([NSNull null]);
-    }
+      // Occasionally sessionID is 0 despite nil error, reject as if it were an error
+      // https://github.com/firebase/firebase-ios-sdk/issues/15258
+      if (!error && [NSNumber numberWithLongLong:sessionID] == 0) {
+        DLog(@"getSessionId zero_without_error: sessionID=0 (firebase-ios-sdk#15258)");
+        return resolve([NSNull null]);
+      }
 
-    if (error) {
-      DLog(@"getSessionId sdk_error: domain=%@ code=%ld description=%@", error.domain,
-           (long)error.code, error.localizedDescription ?: @"(none)");
-      return resolve([NSNull null]);
-    }
+      if (error) {
+        DLog(@"getSessionId sdk_error: domain=%@ code=%ld description=%@", error.domain,
+             (long)error.code, error.localizedDescription ?: @"(none)");
+        return resolve([NSNull null]);
+      }
 
-    DLog(@"getSessionId success: sessionID=%lld", sessionID);
-    return resolve([NSNumber numberWithLongLong:sessionID]);
+      DLog(@"getSessionId success: sessionID=%lld", sessionID);
+      return resolve([NSNumber numberWithLongLong:sessionID]);
+    });
   }];
 }
 
