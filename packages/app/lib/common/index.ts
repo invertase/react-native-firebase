@@ -30,18 +30,29 @@ export { default as ReferenceBase } from './ReferenceBase';
 export type { DataUrlParts, Observer };
 
 export function getDataUrlParts(dataUrlString: string): DataUrlParts {
-  const isBase64 = dataUrlString.includes(';base64');
-  let [mediaType, base64String] = dataUrlString.split(',');
-  if (!mediaType || !base64String) {
+  const match = /^data:([^,]*?)(;base64)?,([\s\S]*)$/.exec(dataUrlString);
+  if (!match) {
     return { base64String: undefined, mediaType: undefined };
   }
-  mediaType = mediaType.replace('data:', '').replace(';base64', '');
-  if (base64String && base64String.includes('%')) {
-    base64String = decodeURIComponent(base64String);
+
+  const mediaType = match[1] || undefined;
+  let base64String = match[3] ?? '';
+
+  try {
+    if (base64String.includes('%')) {
+      base64String = decodeURIComponent(base64String);
+    }
+    if (!match[2]) {
+      const binaryString = encodeURIComponent(base64String).replace(
+        /%([0-9A-F]{2})/g,
+        (_, hex: string) => String.fromCharCode(Number.parseInt(hex, 16)),
+      );
+      base64String = Base64.btoa(binaryString);
+    }
+  } catch (_) {
+    return { base64String: undefined, mediaType: undefined };
   }
-  if (!isBase64) {
-    base64String = Base64.btoa(base64String);
-  }
+
   return { base64String, mediaType };
 }
 
