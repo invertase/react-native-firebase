@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RNFBMessagingFIRMessagingDelegate : NSObject <FIRMessagingDelegate>
 
+@property(nonatomic, nullable, weak) id<FIRMessagingDelegate> originalDelegate;
+
 + (_Nonnull instancetype)sharedInstance;
 
 - (void)observe;

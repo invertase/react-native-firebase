@@ -302,6 +302,20 @@ describe('messaging()', function () {
       });
     });
 
+    describe('native messaging delegate', function () {
+      it('preserves an existing iOS Firebase Messaging delegate', async function () {
+        if (!Platform.ios) {
+          this.skip();
+        }
+
+        const { NativeModules } = require('react-native');
+        should.equal(
+          await NativeModules.RNFBTestingCoverage.messagingPreservesExistingDelegate(),
+          true,
+        );
+      });
+    });
+
     describe('deleteToken()', function () {
       it('generate a new token after deleting', async function () {
         const { getMessaging, getToken, deleteToken } = messagingModular;

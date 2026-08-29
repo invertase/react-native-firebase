@@ -39,7 +39,11 @@
   __weak RNFBMessagingFIRMessagingDelegate *weakSelf = self;
   dispatch_once(&once, ^{
     RNFBMessagingFIRMessagingDelegate *strongSelf = weakSelf;
-    [FIRMessaging messaging].delegate = strongSelf;
+    FIRMessaging *messaging = [FIRMessaging messaging];
+    if (messaging.delegate != strongSelf) {
+      strongSelf.originalDelegate = messaging.delegate;
+      messaging.delegate = strongSelf;
+    }
   });
 }
 
@@ -54,16 +58,23 @@
   [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_token_refresh"
                                              body:@{@"token" : fcmToken}];
 
-  // If the users AppDelegate implements messaging:didReceiveRegistrationToken: then call it
   SEL messaging_didReceiveRegistrationTokenSelector =
       NSSelectorFromString(@"messaging:didReceiveRegistrationToken:");
-  if ([[GULAppDelegateSwizzler sharedApplication].delegate
-          respondsToSelector:messaging_didReceiveRegistrationTokenSelector]) {
+  id<FIRMessagingDelegate> strongOriginalDelegate = self.originalDelegate;
+  if ([strongOriginalDelegate respondsToSelector:messaging_didReceiveRegistrationTokenSelector]) {
+    [strongOriginalDelegate messaging:messaging didReceiveRegistrationToken:fcmToken];
+  }
+
+  // Preserve the existing AppDelegate fallback for applications that implement the callback
+  // without assigning themselves as FIRMessaging.delegate.
+  id<UIApplicationDelegate> applicationDelegate =
+      [GULAppDelegateSwizzler sharedApplication].delegate;
+  if (applicationDelegate != strongOriginalDelegate &&
+      [applicationDelegate respondsToSelector:messaging_didReceiveRegistrationTokenSelector]) {
     void (*usersDidReceiveRegistrationTokenIMP)(id, SEL, FIRMessaging *, NSString *) =
         (typeof(usersDidReceiveRegistrationTokenIMP))&objc_msgSend;
-    usersDidReceiveRegistrationTokenIMP([GULAppDelegateSwizzler sharedApplication].delegate,
-                                        messaging_didReceiveRegistrationTokenSelector, messaging,
-                                        fcmToken);
+    usersDidReceiveRegistrationTokenIMP(
+        applicationDelegate, messaging_didReceiveRegistrationTokenSelector, messaging, fcmToken);
   }
 }
 
