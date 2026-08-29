@@ -254,7 +254,7 @@ class AnalyticsApi implements IAnalyticsApi {
         queryParams.append('ep.debug_mode', '1');
       }
 
-      if (this.consent && !this.consent.ad_personalization) {
+      if (this.consent.ad_personalization === false) {
         queryParams.append('npa', '1');
       } else {
         queryParams.append('npa', '0');

@@ -117,25 +117,27 @@ public class UniversalFirebaseAnalyticsModule extends UniversalFirebaseModule {
   Task<Void> setConsent(Bundle consentSettings) {
     return Tasks.call(
         () -> {
-          boolean analyticsStorage = consentSettings.getBoolean("analytics_storage");
-          boolean adStorage = consentSettings.getBoolean("ad_storage");
-          boolean adUserData = consentSettings.getBoolean("ad_user_data");
-          boolean adPersonalization = consentSettings.getBoolean("ad_personalization");
-
           Map<ConsentType, ConsentStatus> consentMap = new EnumMap<>(ConsentType.class);
-          consentMap.put(
-              ConsentType.ANALYTICS_STORAGE,
-              analyticsStorage ? ConsentStatus.GRANTED : ConsentStatus.DENIED);
-          consentMap.put(
-              ConsentType.AD_STORAGE, adStorage ? ConsentStatus.GRANTED : ConsentStatus.DENIED);
-          consentMap.put(
-              ConsentType.AD_USER_DATA, adUserData ? ConsentStatus.GRANTED : ConsentStatus.DENIED);
-          consentMap.put(
-              ConsentType.AD_PERSONALIZATION,
-              adPersonalization ? ConsentStatus.GRANTED : ConsentStatus.DENIED);
+          putConsent(
+              consentSettings, consentMap, "analytics_storage", ConsentType.ANALYTICS_STORAGE);
+          putConsent(consentSettings, consentMap, "ad_storage", ConsentType.AD_STORAGE);
+          putConsent(consentSettings, consentMap, "ad_user_data", ConsentType.AD_USER_DATA);
+          putConsent(
+              consentSettings, consentMap, "ad_personalization", ConsentType.AD_PERSONALIZATION);
 
           FirebaseAnalytics.getInstance(getContext()).setConsent(consentMap);
           return null;
         });
+  }
+
+  private static void putConsent(
+      Bundle consentSettings,
+      Map<ConsentType, ConsentStatus> consentMap,
+      String key,
+      ConsentType type) {
+    if (consentSettings.containsKey(key)) {
+      consentMap.put(
+          type, consentSettings.getBoolean(key) ? ConsentStatus.GRANTED : ConsentStatus.DENIED);
+    }
   }
 }

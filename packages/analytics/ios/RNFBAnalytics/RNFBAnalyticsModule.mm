@@ -58,6 +58,15 @@ static NSArray<NSString *> *RNFBAnalyticsLongNumericParameterKeys(void) {
   return keys;
 }
 
+static void RNFBAnalyticsAddConsentStatus(NSMutableDictionary *consent,
+                                          NSDictionary *consentSettings, NSString *key,
+                                          FIRConsentType type) {
+  NSNumber *value = consentSettings[key];
+  if (value != nil) {
+    consent[type] = value.boolValue ? FIRConsentStatusGranted : FIRConsentStatusDenied;
+  }
+}
+
 @implementation RNFBAnalyticsModule
 #pragma mark -
 #pragma mark Module Setup
@@ -271,18 +280,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
            resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject {
   @try {
-    BOOL analyticsStorage = [consentSettings[@"analytics_storage"] boolValue];
-    BOOL adStorage = [consentSettings[@"ad_storage"] boolValue];
-    BOOL adUserData = [consentSettings[@"ad_user_data"] boolValue];
-    BOOL adPersonalization = [consentSettings[@"ad_personalization"] boolValue];
-    [FIRAnalytics setConsent:@{
-      FIRConsentTypeAnalyticsStorage : analyticsStorage ? FIRConsentStatusGranted
-                                                        : FIRConsentStatusDenied,
-      FIRConsentTypeAdStorage : adStorage ? FIRConsentStatusGranted : FIRConsentStatusDenied,
-      FIRConsentTypeAdUserData : adUserData ? FIRConsentStatusGranted : FIRConsentStatusDenied,
-      FIRConsentTypeAdPersonalization : adPersonalization ? FIRConsentStatusGranted
-                                                          : FIRConsentStatusDenied,
-    }];
+    NSMutableDictionary *consent = [NSMutableDictionary dictionaryWithCapacity:4];
+    RNFBAnalyticsAddConsentStatus(consent, consentSettings, @"analytics_storage",
+                                  FIRConsentTypeAnalyticsStorage);
+    RNFBAnalyticsAddConsentStatus(consent, consentSettings, @"ad_storage", FIRConsentTypeAdStorage);
+    RNFBAnalyticsAddConsentStatus(consent, consentSettings, @"ad_user_data",
+                                  FIRConsentTypeAdUserData);
+    RNFBAnalyticsAddConsentStatus(consent, consentSettings, @"ad_personalization",
+                                  FIRConsentTypeAdPersonalization);
+    [FIRAnalytics setConsent:consent];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }
