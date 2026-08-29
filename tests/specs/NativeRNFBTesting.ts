@@ -12,6 +12,8 @@ export interface Spec extends TurboModule {
   completesNonFCMRemoteNotification(): Promise<boolean>;
   /** Android: messaging store clears / skips persistence when max stored notifications is <= 0. */
   messagingStoreSupportsDisabledStorage(): Promise<boolean>;
+  /** iOS: serialize FCM/APNs userInfo through RNFBMessagingSerializer for e2e contract checks. */
+  serializeMessagingUserInfo(userInfo: Object): Promise<Object>;
 }
 
 export default TurboModuleRegistry.get<Spec>('NativeRNFBTesting');

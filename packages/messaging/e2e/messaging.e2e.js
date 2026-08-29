@@ -59,6 +59,19 @@ describe('messaging()', function () {
     completed.should.equal(true);
   });
 
+  it('serializes string notification sounds under the iOS notification details', async function () {
+    if (!Platform.ios) {
+      this.skip();
+    }
+
+    const { getRNFBTesting } = require('../../app/e2e/helpers');
+    const message = await getRNFBTesting().serializeMessagingUserInfo({
+      aps: { sound: 'tone.aiff' },
+    });
+
+    message.notification.should.eql({ ios: { sound: 'tone.aiff' } });
+  });
+
   before(async function () {
     // our device registration tests require permissions. Set them up
     const { getMessaging, requestPermission } = messagingModular;

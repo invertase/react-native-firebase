@@ -1,8 +1,10 @@
 package com.invertase.testing
 
 import android.content.Context
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReadableMap
 import com.google.firebase.messaging.RemoteMessage
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingStoreImpl
 
@@ -16,6 +18,11 @@ class NativeRNFBTesting(reactContext: ReactApplicationContext) :
 
   override fun completesNonFCMRemoteNotification(promise: Promise) {
     promise.resolve(false)
+  }
+
+  override fun serializeMessagingUserInfo(userInfo: ReadableMap, promise: Promise) {
+    // iOS-only serializer probe — Android messaging RemoteMessage path is covered elsewhere.
+    promise.resolve(Arguments.createMap())
   }
 
   override fun messagingStoreSupportsDisabledStorage(promise: Promise) {
