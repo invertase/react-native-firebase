@@ -10,6 +10,7 @@ import {
 } from '../lib';
 import { Logger, LogLevel } from '../lib/internal/logger';
 import { NativeFirebaseError } from '../lib/internal';
+import Base64 from '../lib/common/Base64';
 
 describe('App', function () {
   describe('modular', function () {
@@ -106,6 +107,26 @@ describe('App', function () {
         );
       } finally {
         onLog(null);
+      }
+    });
+  });
+
+  describe('Base64', function () {
+    it('rejects when FileReader cannot start reading a Blob', async function () {
+      const OriginalFileReader = globalThis.FileReader;
+
+      class ThrowingFileReader {
+        readAsDataURL(): void {
+          throw new Error('read failed');
+        }
+      }
+
+      globalThis.FileReader = ThrowingFileReader as unknown as typeof FileReader;
+
+      try {
+        await expect(Base64.fromData(new Blob())).rejects.toThrow('read failed');
+      } finally {
+        globalThis.FileReader = OriginalFileReader;
       }
     });
   });
