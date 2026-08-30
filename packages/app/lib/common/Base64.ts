@@ -17,7 +17,6 @@
 
 // @ts-expect-error - No type declarations available
 import binaryToBase64 from 'react-native/Libraries/Utilities/binaryToBase64';
-import { promiseDefer } from './promise';
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
@@ -90,23 +89,18 @@ export interface Base64Result {
  */
 function fromData(data: Blob | ArrayBuffer | Uint8Array): Promise<Base64Result> {
   if (data instanceof Blob) {
-    const fileReader = new FileReader();
-    const { resolve, reject, promise } = promiseDefer<Base64Result>();
+    return new Promise<Base64Result>((resolve, reject) => {
+      const fileReader = new FileReader();
 
-    fileReader.readAsDataURL(data);
+      fileReader.onloadend = () => {
+        if (fileReader.result) {
+          resolve({ string: fileReader.result, format: 'data_url' });
+        }
+      };
 
-    fileReader.onloadend = () => {
-      if (fileReader?.result) {
-        resolve?.({ string: fileReader.result, format: 'data_url' });
-      }
-    };
-
-    fileReader.onerror = event => {
-      fileReader?.abort();
-      reject?.(event);
-    };
-
-    return promise;
+      fileReader.onerror = event => reject(event);
+      fileReader.readAsDataURL(data);
+    });
   }
 
   if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
