@@ -57,8 +57,9 @@ public class RCTConvertFirebase {
     options.put("messagingSenderId", appOptions.getGcmSenderId());
     options.put("storageBucket", appOptions.getStorageBucket());
 
-    if (NativeRNFBTurboApp.authDomains.get(name) != null) {
-      options.put("authDomain", NativeRNFBTurboApp.authDomains.get(name));
+    String authDomain = NativeRNFBTurboApp.authDomains.get(name);
+    if (authDomain != null) {
+      options.put("authDomain", authDomain);
     }
 
     root.put("options", options);
