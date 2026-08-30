@@ -15,6 +15,12 @@ import Base64 from '../lib/common/Base64';
 import FirebaseModule from '../lib/internal/FirebaseModule';
 import { getOrCreateModularInstance } from '../lib/internal/registry/modular';
 import type { ModuleConfig } from '../lib/types/internal';
+import {
+  getItem,
+  removeItem,
+  setItem,
+  setReactNativeAsyncStorageInternal,
+} from '../lib/internal/asyncStorage';
 
 const nativeAppModule = NativeModules.NativeRNFBTurboApp;
 nativeAppModule.initializeApp = jest.fn(() => Promise.resolve());
@@ -165,6 +171,19 @@ describe('App', function () {
         await expect(Base64.fromData(new Blob())).rejects.toThrow('read failed');
       } finally {
         globalThis.FileReader = OriginalFileReader;
+      }
+    });
+  });
+
+  describe('memory AsyncStorage', function () {
+    it('round-trips an empty string', async function () {
+      setReactNativeAsyncStorageInternal();
+
+      try {
+        await setItem('empty-value', '');
+        await expect(getItem('empty-value')).resolves.toBe('');
+      } finally {
+        await removeItem('empty-value');
       }
     });
   });
