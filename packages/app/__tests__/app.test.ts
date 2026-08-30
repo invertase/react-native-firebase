@@ -1,4 +1,5 @@
 import { describe, expect, it, jest } from '@jest/globals';
+import { NativeModules } from 'react-native';
 import {
   deleteApp,
   registerVersion,
@@ -11,6 +12,22 @@ import {
 import { Logger, LogLevel } from '../lib/internal/logger';
 import { NativeFirebaseError } from '../lib/internal';
 import Base64 from '../lib/common/Base64';
+import FirebaseModule from '../lib/internal/FirebaseModule';
+import { getOrCreateModularInstance } from '../lib/internal/registry/modular';
+import type { ModuleConfig } from '../lib/types/internal';
+
+const nativeAppModule = NativeModules.NativeRNFBTurboApp;
+nativeAppModule.initializeApp = jest.fn(() => Promise.resolve());
+nativeAppModule.deleteApp = jest.fn(() => Promise.resolve());
+
+const firebaseOptions = {
+  apiKey: 'api-key',
+  appId: 'app-id',
+  databaseURL: 'https://example.firebaseio.com',
+  messagingSenderId: 'sender-id',
+  projectId: 'project-id',
+  storageBucket: 'example.appspot.com',
+};
 
 describe('App', function () {
   describe('modular', function () {
@@ -46,6 +63,27 @@ describe('App', function () {
 
     it('`setLogLevel` function is properly exposed to end user', function () {
       expect(setLogLevel).toBeDefined();
+    });
+
+    it.each(['toString', '__proto__'])('supports the app name %s', async function (name) {
+      const app = await initializeApp(firebaseOptions, name);
+      const namespace = `registry-${name}`;
+      const config: ModuleConfig = {
+        namespace,
+        nativeModuleName: 'NativeRNFBTurboApp',
+        hasMultiAppSupport: true,
+      };
+
+      try {
+        expect(getApp(name)).toBe(app);
+        expect(getOrCreateModularInstance(FirebaseModule, config, app)).toBe(
+          getOrCreateModularInstance(FirebaseModule, config, app),
+        );
+        expect(Object.prototype.hasOwnProperty.call(Object.prototype, namespace)).toBe(false);
+      } finally {
+        await deleteApp(app);
+        delete (Object.prototype as Record<string, unknown>)[namespace];
+      }
     });
 
     it('`onLog()` is called when using Logger (currently only VertexAI uses `onLog()`)', function () {
