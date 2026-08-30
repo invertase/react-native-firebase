@@ -41,7 +41,12 @@
 #endif
 
 @interface RNFBAppModule () <NativeRNFBTurboAppSpec, RCTInvalidating>
+
++ (void)setCustomDomain:(nullable NSString *)authDomain forAppName:(NSString *)appName;
+
 @end
+
+static NSMutableDictionary<NSString *, NSString *> *customAuthDomains;
 
 @implementation RNFBAppModule
 
@@ -200,6 +205,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
   RCTUnsafeExecuteOnMainQueueSync(^{
     FIRApp *firApp;
     NSString *appName = [appConfig valueForKey:@"name"];
+    NSString *authDomain = [options valueForKey:@"authDomain"];
 
     NSString *appId = [options valueForKey:@"appId"];
     NSString *messagingSenderId = [options valueForKey:@"messagingSenderId"];
@@ -223,13 +229,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
       firOptions.appGroupID = [options valueForKey:@"appGroupId"];
     }
 
-    if ([options valueForKey:@"authDomain"] != nil) {
-      DLog(@"RNFBAuth app: %@ customAuthDomain: %@", appName, [options valueForKey:@"authDomain"]);
-      if (customAuthDomains == nil) {
-        customAuthDomains = [[NSMutableDictionary alloc] init];
-      }
-      customAuthDomains[appName] = [options valueForKey:@"authDomain"];
-    }
     @try {
       if (!appName || [appName isEqualToString:DEFAULT_APP_DISPLAY_NAME]) {
         [FIRApp configureWithOptions:firOptions];
@@ -242,6 +241,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
       return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
     }
 
+    [RNFBAppModule setCustomDomain:authDomain forAppName:appName];
+
     firApp.dataCollectionDefaultEnabled =
         (BOOL)[appConfig valueForKey:@"automaticDataCollectionEnabled"];
 
@@ -249,11 +250,25 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
   });
 }
 
-static NSMutableDictionary<NSString *, NSString *> *customAuthDomains;
-
 + (NSString *)getCustomDomain:(NSString *)appName {
-  DLog(@"authDomains: %@", customAuthDomains);
-  return customAuthDomains[appName];
+  @synchronized(self) {
+    DLog(@"authDomains: %@", customAuthDomains);
+    return customAuthDomains[appName];
+  }
+}
+
++ (void)setCustomDomain:(nullable NSString *)authDomain forAppName:(NSString *)appName {
+  @synchronized(self) {
+    if (authDomain != nil) {
+      DLog(@"RNFBAuth app: %@ customAuthDomain: %@", appName, authDomain);
+      if (customAuthDomains == nil) {
+        customAuthDomains = [[NSMutableDictionary alloc] init];
+      }
+      customAuthDomains[appName] = authDomain;
+    } else {
+      [customAuthDomains removeObjectForKey:appName];
+    }
+  }
 }
 
 - (void)setLogLevel:(NSString *)logLevel {
@@ -288,10 +303,12 @@ static NSMutableDictionary<NSString *, NSString *> *customAuthDomains;
 
   [firApp deleteApp:^(BOOL success) {
     if (success) {
+      [RNFBAppModule setCustomDomain:nil forAppName:appName];
       resolve([NSNull null]);
     } else {
       [firApp deleteApp:^(BOOL success2) {
         if (success2) {
+          [RNFBAppModule setCustomDomain:nil forAppName:appName];
           resolve([NSNull null]);
         } else {
           reject(@"app/delete-app-failed", @"Failed to delete the specified app.", nil);

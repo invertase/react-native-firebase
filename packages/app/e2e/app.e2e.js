@@ -15,6 +15,8 @@
  *
  */
 
+const APP_MODULE = NativeModules.NativeRNFBTurboApp;
+
 describe('modular', function () {
   describe('firebase v9 modular', function () {
     it('it should allow read the default app from native', function () {
@@ -139,6 +141,47 @@ describe('modular', function () {
         should.equal(getApps().length, appCount);
         should.equal(getApps().includes('myname'), false);
       }
+    });
+
+    it('does not retain a custom auth domain after deleting an app', async function () {
+      if (!Platform.ios) return;
+
+      const name = `authdomaintest${FirebaseHelpers.id}`;
+      const config = FirebaseHelpers.app.config();
+      const appConfig = { name, automaticDataCollectionEnabled: true };
+      const appWithAuthDomain = await APP_MODULE.initializeApp(config, appConfig);
+      appWithAuthDomain.options.authDomain.should.equal(config.authDomain);
+      await APP_MODULE.deleteApp(name);
+
+      const { authDomain: _authDomain, ...configWithoutAuthDomain } = config;
+      const recreatedApp = await APP_MODULE.initializeApp(configWithoutAuthDomain, appConfig);
+      const recreatedAuthDomain = recreatedApp.options.authDomain;
+      await APP_MODULE.deleteApp(name);
+      should.equal(recreatedAuthDomain, undefined);
+    });
+
+    it('does not retain a custom auth domain after failed initialization', async function () {
+      if (!Platform.ios) return;
+
+      const name = `failedauthdomaintest${FirebaseHelpers.id}`;
+      const config = FirebaseHelpers.app.config();
+      const { authDomain: _authDomain, ...configWithoutAuthDomain } = config;
+      const appConfig = { name, automaticDataCollectionEnabled: true };
+      await APP_MODULE.initializeApp(configWithoutAuthDomain, appConfig);
+
+      let rejected = false;
+      try {
+        await APP_MODULE.initializeApp(config, appConfig);
+      } catch (_error) {
+        rejected = true;
+      }
+      rejected.should.equal(true);
+
+      await APP_MODULE.deleteApp(name);
+      const recoveredApp = await APP_MODULE.initializeApp(configWithoutAuthDomain, appConfig);
+      const recoveredAuthDomain = recoveredApp.options.authDomain;
+      await APP_MODULE.deleteApp(name);
+      should.equal(recoveredAuthDomain, undefined);
     });
 
     it('apps can be deleted, but only if it exists', async function () {

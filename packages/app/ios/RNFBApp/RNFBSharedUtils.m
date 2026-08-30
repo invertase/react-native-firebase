@@ -64,8 +64,9 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
   // missing from android sdk - ios only:
   firAppOptions[@"clientId"] = firOptions.clientID;
   // not in FIROptions API but in JS SDK and project config JSON
-  if ([RNFBAppModule getCustomDomain:name] != nil) {
-    firAppOptions[@"authDomain"] = [RNFBAppModule getCustomDomain:name];
+  NSString *customAuthDomain = [RNFBAppModule getCustomDomain:name];
+  if (customAuthDomain != nil) {
+    firAppOptions[@"authDomain"] = customAuthDomain;
   }
 
   firAppDictionary[@"options"] = firAppOptions;
