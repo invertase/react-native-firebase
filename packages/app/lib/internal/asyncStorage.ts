@@ -29,11 +29,7 @@ const asyncStorageMemory: AsyncStorageStatic = {
     return Promise.resolve();
   },
   getItem(key: string): Promise<string | null> {
-    const hasValue = memoryStorage.has(key);
-    if (hasValue) {
-      return Promise.resolve(memoryStorage.get(key) || null);
-    }
-    return Promise.resolve(null);
+    return Promise.resolve(memoryStorage.get(key) ?? null);
   },
   removeItem(key: string): Promise<void> {
     memoryStorage.delete(key);
@@ -61,16 +57,16 @@ export function isMemoryStorage(): boolean {
 }
 
 // Set an item in storage with the React Native Firebase prefix
-export async function setItem(key: string, value: string): Promise<void> {
-  return await asyncStorage.setItem(prefix + key, value);
+export function setItem(key: string, value: string): Promise<void> {
+  return asyncStorage.setItem(prefix + key, value);
 }
 
 // Get an item from storage with the React Native Firebase prefix
-export async function getItem(key: string): Promise<string | null> {
-  return await asyncStorage.getItem(prefix + key);
+export function getItem(key: string): Promise<string | null> {
+  return asyncStorage.getItem(prefix + key);
 }
 
 // Remove an item from storage with the React Native Firebase prefix
-export async function removeItem(key: string): Promise<void> {
-  return await asyncStorage.removeItem(prefix + key);
+export function removeItem(key: string): Promise<void> {
+  return asyncStorage.removeItem(prefix + key);
 }
