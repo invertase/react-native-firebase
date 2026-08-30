@@ -1,11 +1,13 @@
 const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { loadCoverageConfig, resolveStrict } = require('./load-coverage-config');
 
-// Android applicationId stays com.invertase.testing; iOS PRODUCT_BUNDLE_IDENTIFIER is io.invertase.testing.
-const ANDROID_TEST_APP_PACKAGE = 'com.invertase.testing';
-const IOS_TEST_APP_BUNDLE_ID = 'io.invertase.testing';
-const ANDROID_COVERAGE_RELATIVE_PATH = 'files/coverage.ec';
+const coverageConfig = loadCoverageConfig();
+const ANDROID_TEST_APP_PACKAGE = coverageConfig.app.androidApplicationId;
+const IOS_TEST_APP_BUNDLE_ID = coverageConfig.app.iosBundleId;
+const ANDROID_COVERAGE_RELATIVE_PATH = coverageConfig.android.coverageRelativePath;
+const ANDROID_DETOX_STAGING_PATH = coverageConfig.android.detoxStagingPath;
 
 function getAdbBinary() {
   return process.env.ANDROID_HOME ? `${process.env.ANDROID_HOME}/platform-tools/adb` : 'adb';
@@ -52,7 +54,7 @@ function androidCoverageFileExists(deviceId) {
 
 function pullAndroidCoverage(deviceId, options = {}) {
   const { softFail = false, testsDir = path.resolve(__dirname, '..') } = options;
-  const emuDest = '/data/local/tmp/detox/coverage.ec';
+  const emuDest = ANDROID_DETOX_STAGING_PATH;
   const localDestDir = path.join(testsDir, 'android/app/build/output/coverage');
   const localDestFile = path.join(localDestDir, 'emulator_coverage.ec');
   const adb = getAdbBinary();
@@ -175,18 +177,16 @@ function deleteProcessedAndroidCoverageEc(ecFilePath) {
 }
 
 function isCoverageStrict(args = []) {
-  if (args.includes('--no-strict')) {
-    return false;
-  }
-  if (args.includes('--strict')) {
-    return true;
-  }
-  return process.env.RNFB_COVERAGE_STRICT !== '0';
+  return resolveStrict(args, coverageConfig);
 }
 
 async function main() {
   const args = process.argv.slice(2);
   const strict = isCoverageStrict(args);
+  if (!coverageConfig.enabled) {
+    console.warn('[native-coverage] disabled via tests/react-native-coverage.config.js');
+    return;
+  }
   const {
     assertAndroidJacoco,
     DEFAULT_ANDROID_JACOCO,

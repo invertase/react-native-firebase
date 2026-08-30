@@ -92,7 +92,8 @@
     "tests:e2e:release": "bash ./scripts/e2e/release-e2e-resources.sh",
     "tests:coverage:capture-baseline": "node tests/scripts/capture-native-coverage-baseline.js",
     "format:js": "prettier --write \"packages/**/*.{js,ts,tsx}\"",
-    "format:markdown": "prettier --write \"docs/**/*.md[x]\""
+    "format:markdown": "prettier --write \"docs/**/*.md[x]\"",
+    "tests:coverage:generate-native-config": "node tests/scripts/generate-coverage-native-config.js"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",

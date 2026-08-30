@@ -10,7 +10,13 @@ const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 const { mergeLcovFiles, normalizeSourcePath } = require('./ios-native-lcov');
+const {
+  loadCoverageConfig,
+  nameStartsWithAnyPrefix,
+  resolveStrict,
+} = require('./load-coverage-config');
 
+const coverageConfig = loadCoverageConfig();
 const repoRoot = path.resolve(__dirname, '../..');
 const testsDir = path.join(repoRoot, 'tests');
 
@@ -18,7 +24,7 @@ function parseArgs(argv) {
   const options = {
     derivedData: path.join(testsDir, 'ios/build'),
     configuration: 'Debug',
-    appName: 'testing',
+    appName: coverageConfig.app.iosProductName,
     output: path.join(repoRoot, 'coverage/ios-native/lcov.info'),
   };
 
@@ -100,7 +106,11 @@ function runToFileOrThrow(command, args, outputPath) {
  * binaries — not the app executable. llvm-cov must receive those objects or
  * packages/<pkg>/ios sources never appear in LCOV (packagesHits=0).
  */
-function collectCoverageObjects(productsDir, appName) {
+function collectCoverageObjects(
+  productsDir,
+  appName,
+  frameworkNamePrefixes = coverageConfig.ios.frameworkNamePrefixes,
+) {
   const objects = [];
   const seen = new Set();
 
@@ -117,7 +127,10 @@ function collectCoverageObjects(productsDir, appName) {
   const embeddedFrameworksDir = path.join(productsDir, `${appName}.app`, 'Frameworks');
   if (fs.existsSync(embeddedFrameworksDir)) {
     for (const entry of fs.readdirSync(embeddedFrameworksDir)) {
-      if (!entry.startsWith('RNFB') || !entry.endsWith('.framework')) {
+      if (
+        !nameStartsWithAnyPrefix(entry.replace(/\.framework$/, ''), frameworkNamePrefixes) ||
+        !entry.endsWith('.framework')
+      ) {
         continue;
       }
       const frameworkName = entry.slice(0, -'.framework'.length);
@@ -128,7 +141,7 @@ function collectCoverageObjects(productsDir, appName) {
   // Fallback when frameworks were not copied into the app bundle yet.
   if (objects.length <= 1 && fs.existsSync(productsDir)) {
     for (const entry of fs.readdirSync(productsDir, { withFileTypes: true })) {
-      if (!entry.isDirectory() || !entry.name.startsWith('RNFB')) {
+      if (!entry.isDirectory() || !nameStartsWithAnyPrefix(entry.name, frameworkNamePrefixes)) {
         continue;
       }
       const frameworkName = entry.name;
@@ -169,6 +182,10 @@ async function rewriteLcovFile(inputPath, outputPath) {
 }
 
 async function main() {
+  if (!coverageConfig.enabled) {
+    console.warn('[ios-native-coverage] disabled via tests/react-native-coverage.config.js');
+    return;
+  }
   const options = parseArgs(process.argv.slice(2));
   const productsDir = path.join(
     options.derivedData,
@@ -185,9 +202,7 @@ async function main() {
   ];
 
   const argv = process.argv.slice(2);
-  const strict =
-    !argv.includes('--no-strict') &&
-    (argv.includes('--strict') || process.env.RNFB_COVERAGE_STRICT !== '0');
+  const strict = resolveStrict(argv, coverageConfig);
   if (profrawFiles.length === 0) {
     const message = `[ios-native-coverage] No .profraw files under ${simulatorCoverageDir} or ${profileDataDir}.`;
     if (strict) {

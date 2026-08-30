@@ -21,25 +21,29 @@
 
 const fs = require('fs');
 const path = require('path');
+const {
+  loadCoverageConfig,
+  resolveRepoPath,
+  resolveStrict,
+  includesAny,
+} = require('./load-coverage-config');
 
 const EXIT_OK = 0;
 const EXIT_ERROR = 1;
 const EXIT_STRICT_EMPTY = 2;
 
+const coverageConfig = loadCoverageConfig();
 const repoRoot = path.resolve(__dirname, '../..');
 
-const DEFAULT_IOS_LCOV = path.join(repoRoot, 'coverage/ios-native/lcov.info');
-const DEFAULT_ANDROID_JACOCO = path.join(
-  repoRoot,
-  'tests/android/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml',
-);
+const DEFAULT_IOS_LCOV = resolveRepoPath(coverageConfig.assert.defaultLcovPath);
+const DEFAULT_ANDROID_JACOCO = resolveRepoPath(coverageConfig.assert.defaultJacocoXmlPath);
 
 function parseArgs(argv) {
   const options = {
     platform: 'all',
     lcov: DEFAULT_IOS_LCOV,
     jacocoXml: DEFAULT_ANDROID_JACOCO,
-    strict: process.env.RNFB_COVERAGE_STRICT !== '0',
+    strict: resolveStrict([], coverageConfig),
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -114,7 +118,7 @@ function assertIosLcov(lcovPath, strict) {
     if (line.startsWith('SF:')) {
       sourceFileCount += 1;
       const sf = line.slice(3).replace(/\\/g, '/');
-      if (sf.includes('packages/') || sf.startsWith('packages/')) {
+      if (includesAny(sf, coverageConfig.assert.lcovPathIncludes)) {
         packagesHits += 1;
       }
     } else if (line.startsWith('LH:')) {
@@ -125,7 +129,7 @@ function assertIosLcov(lcovPath, strict) {
   if (packagesHits === 0) {
     return failEmpty(
       strict,
-      `iOS LCOV has no packages/ hits (sourceFiles=${sourceFileCount}, linesHit=${linesHit}): ${path.relative(repoRoot, lcovPath)}`,
+      `iOS LCOV has no configured path hits (sourceFiles=${sourceFileCount}, linesHit=${linesHit}): ${path.relative(repoRoot, lcovPath)}`,
     );
   }
 
@@ -158,7 +162,7 @@ function assertAndroidJacoco(xmlPath, strict) {
   for (const match of packageBlocks) {
     const name = match[1];
     const body = match[2];
-    if (!/invertase|reactnativefirebase/i.test(name)) {
+    if (!includesAny(name, coverageConfig.assert.jacocoPackageIncludes)) {
       continue;
     }
     packageCount += 1;
@@ -180,7 +184,7 @@ function assertAndroidJacoco(xmlPath, strict) {
   if (packageCount === 0 || lineCovered === 0) {
     return failEmpty(
       strict,
-      `Android Jacoco has empty invertase package hits (packages=${packageCount}, lineCovered=${lineCovered}, lineMissed=${lineMissed}): ${path.relative(repoRoot, xmlPath)}`,
+      `Android Jacoco has empty configured package hits (packages=${packageCount}, lineCovered=${lineCovered}, lineMissed=${lineMissed}): ${path.relative(repoRoot, xmlPath)}`,
     );
   }
 
