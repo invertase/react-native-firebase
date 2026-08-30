@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rnfirebase.io/schemas/coverage-baseline.json",
+  "title": "RNFB native coverage baseline",
+  "type": "object",
+  "required": ["schemaVersion", "runs"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "provisionalThresholdPct": { "type": "number" },
+    "capturedAt": { "type": ["string", "null"], "format": "date-time" },
+    "gitSha": { "type": ["string", "null"] },
+    "slot": { "type": ["string", "null"] },
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["platform", "runIndex", "slot", "timestamp", "primaryMetricKey"],
+        "properties": {
+          "platform": { "enum": ["android", "ios", "macos"] },
+          "runIndex": { "type": "integer", "enum": [1, 2] },
+          "slot": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "gitSha": { "type": ["string", "null"] },
+          "exitCode": { "type": ["integer", "null"] },
+          "logPath": { "type": ["string", "null"] },
+          "primaryMetricKey": { "type": "string" },
+          "primaryMetricValue": { "type": ["number", "null"] },
+          "secondaryMetrics": { "type": "object" },
+          "metrics": { "type": "object" }
+        }
+      }
+    },
+    "variance": { "type": ["object", "null"] },
+    "recommendation": { "type": ["object", "null"] }
+  }
+}

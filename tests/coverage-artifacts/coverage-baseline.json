@@ -1,0 +1,350 @@
+{
+  "schemaVersion": 1,
+  "provisionalThresholdPct": 1,
+  "capturedAt": "2026-08-30T11:57:49.892Z",
+  "gitSha": "fecb129418066ae035ae2a271cf11466e508db54",
+  "slot": "1",
+  "runs": [
+    {
+      "platform": "android",
+      "runIndex": 1,
+      "slot": "1",
+      "timestamp": "2026-08-30T10:06:28.857Z",
+      "gitSha": "fecb129418066ae035ae2a271cf11466e508db54",
+      "exitCode": 0,
+      "logPath": null,
+      "primaryMetricKey": "packages.lineCovered",
+      "primaryMetricValue": 7476,
+      "secondaryMetrics": {
+        "packagesLineCoveragePct": 70.1774,
+        "packagesInstructionCovered": 29576,
+        "packagesInstructionCoveragePct": 70.3236,
+        "reportLineCovered": 7659,
+        "reportLineCoveragePct": 70.5638,
+        "packageCount": 20,
+        "sourcefileCount": 114,
+        "ecPresentAtCapture": false
+      },
+      "metrics": {
+        "native": true,
+        "jacoco": {
+          "reportPath": "tests/coverage-artifacts/runs/android-run1/jacocoTestReport.xml",
+          "report": {
+            "lineCovered": 7659,
+            "lineMissed": 3195,
+            "lineCoveragePct": 70.5638,
+            "instructionCovered": 30281,
+            "instructionMissed": 12715,
+            "instructionCoveragePct": 70.4275
+          },
+          "packages": {
+            "packageCount": 20,
+            "sourcefileCount": 114,
+            "lineCovered": 7476,
+            "lineMissed": 3177,
+            "lineCoveragePct": 70.1774,
+            "instructionCovered": 29576,
+            "instructionMissed": 12481,
+            "instructionCoveragePct": 70.3236
+          }
+        },
+        "ec": {
+          "emulatorCoverageEcPresent": false,
+          "emulatorCoverageEcPath": "tests/android/app/build/output/coverage/emulator_coverage.ec",
+          "relatedExecutionDataFiles": []
+        },
+        "artifactPaths": {
+          "jacocoXml": "tests/coverage-artifacts/runs/android-run1/jacocoTestReport.xml",
+          "snapshot": "tests/coverage-artifacts/runs/android-run1/jacocoTestReport.xml"
+        }
+      }
+    },
+    {
+      "platform": "android",
+      "runIndex": 2,
+      "slot": "1",
+      "timestamp": "2026-08-30T11:20:11.835Z",
+      "gitSha": "fecb129418066ae035ae2a271cf11466e508db54",
+      "exitCode": 0,
+      "logPath": null,
+      "primaryMetricKey": "packages.lineCovered",
+      "primaryMetricValue": 7493,
+      "secondaryMetrics": {
+        "packagesLineCoveragePct": 70.337,
+        "packagesInstructionCovered": 29640,
+        "packagesInstructionCoveragePct": 70.4758,
+        "reportLineCovered": 7676,
+        "reportLineCoveragePct": 70.7205,
+        "packageCount": 20,
+        "sourcefileCount": 114,
+        "ecPresentAtCapture": false
+      },
+      "metrics": {
+        "native": true,
+        "jacoco": {
+          "reportPath": "tests/coverage-artifacts/runs/android-run2/jacocoTestReport.xml",
+          "report": {
+            "lineCovered": 7676,
+            "lineMissed": 3178,
+            "lineCoveragePct": 70.7205,
+            "instructionCovered": 30345,
+            "instructionMissed": 12651,
+            "instructionCoveragePct": 70.5763
+          },
+          "packages": {
+            "packageCount": 20,
+            "sourcefileCount": 114,
+            "lineCovered": 7493,
+            "lineMissed": 3160,
+            "lineCoveragePct": 70.337,
+            "instructionCovered": 29640,
+            "instructionMissed": 12417,
+            "instructionCoveragePct": 70.4758
+          }
+        },
+        "ec": {
+          "emulatorCoverageEcPresent": false,
+          "emulatorCoverageEcPath": "tests/android/app/build/output/coverage/emulator_coverage.ec",
+          "relatedExecutionDataFiles": []
+        },
+        "artifactPaths": {
+          "jacocoXml": "tests/coverage-artifacts/runs/android-run2/jacocoTestReport.xml",
+          "snapshot": "tests/coverage-artifacts/runs/android-run2/jacocoTestReport.xml"
+        }
+      }
+    },
+    {
+      "platform": "ios",
+      "runIndex": 1,
+      "slot": "1",
+      "timestamp": "2026-08-30T10:05:48.281Z",
+      "gitSha": "fecb129418066ae035ae2a271cf11466e508db54",
+      "exitCode": 0,
+      "logPath": null,
+      "primaryMetricKey": "packagesHits",
+      "primaryMetricValue": 94,
+      "secondaryMetrics": {
+        "sourceFileCount": 229,
+        "trackedImageCount": 16,
+        "linesHit": 12962,
+        "linesFound": 25968
+      },
+      "metrics": {
+        "native": true,
+        "lcov": {
+          "sourceFileCount": 229,
+          "packagesHits": 94,
+          "linesFound": 25968,
+          "linesHit": 12962,
+          "lineCoveragePct": 49.9153,
+          "path": "tests/coverage-artifacts/runs/ios-run1/ios-native-lcov.info"
+        },
+        "trackedImageCount": 16,
+        "trackedImages": [
+          "RNFBAnalytics.framework",
+          "RNFBApp.framework",
+          "RNFBAppCheck.framework",
+          "RNFBAppDistribution.framework",
+          "RNFBAuth.framework",
+          "RNFBCrashlytics.framework",
+          "RNFBDatabase.framework",
+          "RNFBFirestore.framework",
+          "RNFBFunctions.framework",
+          "RNFBInAppMessaging.framework",
+          "RNFBInstallations.framework",
+          "RNFBML.framework",
+          "RNFBMessaging.framework",
+          "RNFBPerf.framework",
+          "RNFBRemoteConfig.framework",
+          "RNFBStorage.framework"
+        ],
+        "artifactPaths": {
+          "lcov": "tests/coverage-artifacts/runs/ios-run1/ios-native-lcov.info",
+          "snapshot": "tests/coverage-artifacts/runs/ios-run1/ios-native-lcov.info"
+        }
+      }
+    },
+    {
+      "platform": "ios",
+      "runIndex": 2,
+      "slot": "1",
+      "timestamp": "2026-08-30T11:20:07.947Z",
+      "gitSha": "fecb129418066ae035ae2a271cf11466e508db54",
+      "exitCode": 0,
+      "logPath": null,
+      "primaryMetricKey": "packagesHits",
+      "primaryMetricValue": 94,
+      "secondaryMetrics": {
+        "sourceFileCount": 229,
+        "trackedImageCount": 16,
+        "linesHit": 12962,
+        "linesFound": 25968
+      },
+      "metrics": {
+        "native": true,
+        "lcov": {
+          "sourceFileCount": 229,
+          "packagesHits": 94,
+          "linesFound": 25968,
+          "linesHit": 12962,
+          "lineCoveragePct": 49.9153,
+          "path": "tests/coverage-artifacts/runs/ios-run2/ios-native-lcov.info"
+        },
+        "trackedImageCount": 16,
+        "trackedImages": [
+          "RNFBAnalytics.framework",
+          "RNFBApp.framework",
+          "RNFBAppCheck.framework",
+          "RNFBAppDistribution.framework",
+          "RNFBAuth.framework",
+          "RNFBCrashlytics.framework",
+          "RNFBDatabase.framework",
+          "RNFBFirestore.framework",
+          "RNFBFunctions.framework",
+          "RNFBInAppMessaging.framework",
+          "RNFBInstallations.framework",
+          "RNFBML.framework",
+          "RNFBMessaging.framework",
+          "RNFBPerf.framework",
+          "RNFBRemoteConfig.framework",
+          "RNFBStorage.framework"
+        ],
+        "artifactPaths": {
+          "lcov": "tests/coverage-artifacts/runs/ios-run2/ios-native-lcov.info",
+          "snapshot": "tests/coverage-artifacts/runs/ios-run2/ios-native-lcov.info"
+        }
+      }
+    },
+    {
+      "platform": "macos",
+      "runIndex": 1,
+      "slot": "1",
+      "timestamp": "2026-08-30T10:07:41.691Z",
+      "gitSha": "fecb129418066ae035ae2a271cf11466e508db54",
+      "exitCode": 0,
+      "logPath": null,
+      "primaryMetricKey": "packagesHits",
+      "primaryMetricValue": 261,
+      "secondaryMetrics": {
+        "sourceFileCount": 261,
+        "linesHit": 6284,
+        "linesFound": 10504,
+        "lineCoveragePct": 59.8248
+      },
+      "metrics": {
+        "native": false,
+        "nativeNote": "macOS e2e uses firebase-js-sdk only; no RNFB native coverage (coverage-design.md). Metrics are JS/NYC lcov from tests:macos:test-cover.",
+        "lcov": {
+          "sourceFileCount": 261,
+          "packagesHits": 261,
+          "linesFound": 10504,
+          "linesHit": 6284,
+          "lineCoveragePct": 59.8248,
+          "path": "tests/coverage-artifacts/runs/macos-run1/js-lcov.info"
+        },
+        "artifactPaths": {
+          "lcov": "tests/coverage-artifacts/runs/macos-run1/js-lcov.info",
+          "snapshot": "tests/coverage-artifacts/runs/macos-run1/js-lcov.info"
+        }
+      }
+    },
+    {
+      "platform": "macos",
+      "runIndex": 2,
+      "slot": "1",
+      "timestamp": "2026-08-30T11:21:54.475Z",
+      "gitSha": "fecb129418066ae035ae2a271cf11466e508db54",
+      "exitCode": 0,
+      "logPath": null,
+      "primaryMetricKey": "packagesHits",
+      "primaryMetricValue": 261,
+      "secondaryMetrics": {
+        "sourceFileCount": 261,
+        "linesHit": 6284,
+        "linesFound": 10504,
+        "lineCoveragePct": 59.8248
+      },
+      "metrics": {
+        "native": false,
+        "nativeNote": "macOS e2e uses firebase-js-sdk only; no RNFB native coverage (coverage-design.md). Metrics are JS/NYC lcov from tests:macos:test-cover.",
+        "lcov": {
+          "sourceFileCount": 261,
+          "packagesHits": 261,
+          "linesFound": 10504,
+          "linesHit": 6284,
+          "lineCoveragePct": 59.8248,
+          "path": "tests/coverage-artifacts/runs/macos-run2/js-lcov.info"
+        },
+        "artifactPaths": {
+          "lcov": "tests/coverage-artifacts/runs/macos-run2/js-lcov.info",
+          "snapshot": "tests/coverage-artifacts/runs/macos-run2/js-lcov.info"
+        }
+      }
+    }
+  ],
+  "variance": {
+    "android": {
+      "status": "ok",
+      "primaryMetricKey": "packages.lineCovered",
+      "run1": 7476,
+      "run2": 7493,
+      "absoluteDelta": 17,
+      "observedVariancePct": 0.2271,
+      "provisionalThresholdPct": 1,
+      "withinThreshold": true,
+      "native": true
+    },
+    "ios": {
+      "status": "ok",
+      "primaryMetricKey": "packagesHits",
+      "run1": 94,
+      "run2": 94,
+      "absoluteDelta": 0,
+      "observedVariancePct": 0,
+      "provisionalThresholdPct": 1,
+      "withinThreshold": true,
+      "native": true
+    },
+    "macos": {
+      "status": "ok",
+      "primaryMetricKey": "packagesHits",
+      "run1": 261,
+      "run2": 261,
+      "absoluteDelta": 0,
+      "observedVariancePct": 0,
+      "provisionalThresholdPct": 1,
+      "withinThreshold": true,
+      "native": false
+    }
+  },
+  "recommendation": {
+    "provisionalThresholdPct": 1,
+    "perPlatform": [
+      {
+        "platform": "android",
+        "recommendation": "accept_T_1pct",
+        "observedVariancePct": 0.2271,
+        "detail": "Observed |Δ|%=0.2271 vs T=1%."
+      },
+      {
+        "platform": "ios",
+        "recommendation": "accept_T_1pct",
+        "observedVariancePct": 0,
+        "detail": "Observed |Δ|%=0 vs T=1%."
+      },
+      {
+        "platform": "macos",
+        "recommendation": "accept_T_1pct",
+        "observedVariancePct": 0,
+        "detail": "Observed |Δ|%=0 vs T=1%."
+      }
+    ],
+    "overall": "keep_provisional_T_1pct",
+    "notes": [
+      "T is provisional relative variance between two consecutive full :test-cover(+process) runs on the same slot.",
+      "macOS has no RNFB native coverage; variance uses JS NYC packagesHits.",
+      "Android primary metric is Jacoco packages/*.lineCovered for invertase packages.",
+      "iOS primary metric is LCOV packagesHits (SF under packages/)."
+    ]
+  }
+}
