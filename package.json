@@ -89,6 +89,7 @@
     "tests:e2e:clear-slot-env": "bash ./scripts/e2e/clear-slot-env.sh",
     "tests:e2e:check": "bash ./scripts/e2e/check-e2e-resources.sh",
     "tests:e2e:release": "bash ./scripts/e2e/release-e2e-resources.sh",
+    "tests:coverage:capture-baseline": "node tests/scripts/capture-native-coverage-baseline.js",
     "format:js": "prettier --write \"packages/**/*.{js,ts,tsx}\"",
     "format:markdown": "prettier --write \"docs/**/*.md[x]\""
   },

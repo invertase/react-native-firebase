@@ -1,0 +1,2 @@
+# Per-run snapshots (LCOV / Jacoco / capture.json) — keep summary + schema committed.
+runs/

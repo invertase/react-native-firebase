@@ -123,6 +123,8 @@ After `tests:<platform>:test-cover`:
 * **Android native:** `yarn tests:android:unit` (produces module `*.exec`) then e2e + `yarn tests:android:post-e2e-coverage` → merged **`jacocoTestReport`** XML per `sourcefile`. **Deletes processed `emulator_coverage.ec`** after a successful report — re-run e2e before re-processing. Unit-only: `yarn tests:android:test:jacoco-report` (same merged task; needs fresh `*.exec` and any available `*.ec`).
 * macOS e2e overwrites `coverage/lcov.info`; process iOS/Android native before a macOS run if you need both.
 
+**Baseline stability (repeatability):** after two full Law `:test-cover` (+ process) cycles on one slot, record metrics with `yarn tests:coverage:capture-baseline` → `tests/coverage-artifacts/coverage-baseline.json` (see `tests/coverage-artifacts/README.md`). Provisional relative variance threshold **T=1%** between run 1 and run 2; `--finalize` compares observed variance to T.
+
 <a id="ios-ruby-simplecov"></a>
 
 ## iOS Ruby SimpleCov
