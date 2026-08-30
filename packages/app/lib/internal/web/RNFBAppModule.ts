@@ -48,22 +48,22 @@ interface InitializeAppResult {
 let jsReady = false;
 let jsListenerCount = 0;
 let queuedEvents: QueuedEvent[] = [];
-let jsListeners: EventListeners = {};
+let jsListeners: EventListeners = Object.create(null);
 
 // For compatibility we have a fake preferences storage,
 // it does not persist across app restarts.
-let fakePreferencesStorage: PreferencesStorage = {};
+let fakePreferencesStorage: PreferencesStorage = Object.create(null);
 
 function eventsGetListenersMap(): ListenersMap {
   return {
     listeners: jsListenerCount,
     queued: queuedEvents.length,
-    events: jsListeners,
+    events: Object.assign(Object.create(null), jsListeners),
   };
 }
 
 function eventsSendEvent(eventName: string, eventBody: any): void {
-  if (!jsReady || !jsListeners.hasOwnProperty(eventName)) {
+  if (!jsReady || !Object.prototype.hasOwnProperty.call(jsListeners, eventName)) {
     const event: QueuedEvent = {
       eventName,
       eventBody,
@@ -217,7 +217,7 @@ export default {
    * @returns The preferences.
    */
   async preferencesGetAll(): Promise<PreferencesStorage> {
-    return Object.assign({}, fakePreferencesStorage);
+    return Object.assign(Object.create(null), fakePreferencesStorage);
   },
 
   /**
@@ -225,7 +225,7 @@ export default {
    * Unsupported on web.
    */
   async preferencesClearAll(): Promise<void> {
-    fakePreferencesStorage = {};
+    fakePreferencesStorage = Object.create(null);
   },
 
   /**
@@ -292,7 +292,7 @@ export default {
    */
   eventsAddListener(eventName: string): void {
     jsListenerCount++;
-    if (!jsListeners.hasOwnProperty(eventName)) {
+    if (!Object.prototype.hasOwnProperty.call(jsListeners, eventName)) {
       jsListeners[eventName] = 1;
     } else {
       if (jsListeners[eventName] !== undefined) {
@@ -313,7 +313,7 @@ export default {
    * @param all - Optional. Whether to remove all listeners for the event.
    */
   eventsRemoveListener(eventName: string, all?: boolean): void {
-    if (jsListeners.hasOwnProperty(eventName)) {
+    if (Object.prototype.hasOwnProperty.call(jsListeners, eventName)) {
       const count = jsListeners[eventName];
       if (count !== undefined) {
         if (count <= 1 || all) {

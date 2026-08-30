@@ -113,3 +113,34 @@ describe('RNFBAppModule setImmediate guards', () => {
     });
   });
 });
+
+describe('RNFBAppModule arbitrary keys', () => {
+  it('tracks event names that collide with Object prototype properties', async () => {
+    appModule.eventsAddListener('hasOwnProperty');
+    appModule.eventsAddListener('hasOwnProperty');
+    appModule.eventsAddListener('__proto__');
+
+    const events = (await appModule.eventsGetListeners()).events;
+    expect(events.hasOwnProperty).toBe(2);
+    expect(events['__proto__']).toBe(1);
+
+    appModule.eventsRemoveListener('hasOwnProperty', true);
+    appModule.eventsRemoveListener('__proto__', true);
+  });
+
+  it('does not expose the internal listener map', async () => {
+    const events = (await appModule.eventsGetListeners()).events;
+    events.externalMutation = 1;
+
+    expect((await appModule.eventsGetListeners()).events.externalMutation).toBeUndefined();
+  });
+
+  it('stores preference keys that collide with Object prototype properties', async () => {
+    await appModule.preferencesSetString('hasOwnProperty', 'method');
+    await appModule.preferencesSetString('__proto__', 'prototype');
+
+    const preferences = await appModule.preferencesGetAll();
+    expect(preferences.hasOwnProperty).toBe('method');
+    expect(preferences['__proto__']).toBe('prototype');
+  });
+});
